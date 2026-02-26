@@ -1,0 +1,23 @@
+{
+  "name": "e2e-test-reviewer",
+  "version": "1.0.0",
+  "plugins": [
+    {
+      "name": "e2e-test-reviewer",
+      "description": "Systematic 12-point checklist for reviewing E2E test spec quality. Catches always-passing assertions, naming-assertion mismatch, missing Then, duplicate scenarios, error swallowing, boolean traps, conditional skips, and YAGNI violations in Page Objects.",
+      "category": "testing",
+      "keywords": [
+        "e2e",
+        "testing",
+        "playwright",
+        "test-quality",
+        "review",
+        "audit",
+        "yagni",
+        "dry",
+        "kiss",
+        "page-object-model"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "e2e-test-reviewer",
+  "version": "1.0.0",
+  "description": "Systematic 12-point checklist for reviewing E2E test spec quality against YAGNI, DRY, KISS, and SOLID principles. Detects always-passing assertions, error swallowing, boolean traps, unused Page Object members, and more.",
+  "license": "Apache-2.0",
+  "author": "",
+  "skills": [
+    "./skills/e2e-test-reviewer"
+  ]
+}
