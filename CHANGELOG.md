@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.1.1] - 2026-03-02
+
+### Fixed
+- **#14 YAGNI in POM**: Clarified scope of "2+ specs" rule — it applies when **creating** new shared utils, not as grounds for deleting existing util files/classes that are actively imported and used. The rule now explicitly states: only flag unused individual members within util files, do not delete entire files that specs depend on.
+
 ## [2.1.0] - 2026-02-27
 
 ### Added

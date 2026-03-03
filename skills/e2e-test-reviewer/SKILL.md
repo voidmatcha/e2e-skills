@@ -265,7 +265,7 @@ await expect(items.nth(2)).toContainText('Settings');
 
 **Common patterns:** Convenience wrappers (`clickEdit()` when specs use `editButton.click()`), getter methods (`getCount()` when specs use `toHaveCount()`), state checkers (`isEditMode()` when specs assert on elements directly), pre-built "just in case" locators.
 
-**Rule:** Delete unused members. Make internal-only members `private`. Shared utils must be used by 2+ specs.
+**Rule:** Delete unused members. Make internal-only members `private`. When creating new shared utils, ensure they will be used by 2+ specs. Do not delete existing util files/classes that are actively imported and used by specs — only flag unused individual members within them.
 
 **Output:**
 ```
