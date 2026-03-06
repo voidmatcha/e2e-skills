@@ -93,6 +93,13 @@ test('should display paragraph status', () => {
 
 **Rule:** Every noun in the test name must have a corresponding assertion. Add it or rename.
 
+**Procedure:**
+1. Extract all nouns from the test name (e.g., "should display paragraph **status**")
+2. For each noun, search the test body for `expect()` that verifies it
+3. Missing noun → add assertion or remove noun from name
+
+**Common patterns:** "should display X" with only `toBeVisible()` (no content check), "should update X and Y" with assertion for X but not Y, "should validate form" with only happy-path assertion.
+
 #### 2. Missing Then `[LLM-only]`
 
 **Symptom:** Test acts but doesn't verify the final expected state.
@@ -108,6 +115,13 @@ test('should cancel edit on Escape', () => {
 ```
 
 **Rule:** For toggle/cancel/close actions, verify both the restored state AND the dismissed state.
+
+**Procedure:**
+1. Identify the action verb (toggle, cancel, close, delete, submit, undo)
+2. List the expected state changes (element appears/disappears, text changes, count changes)
+3. Check that BOTH sides of the state change are asserted
+
+**Common patterns:** Cancel/Escape without verifying input is hidden, delete without verifying count decreased, submit without verifying form resets, tab switch without verifying previous tab content is hidden.
 
 #### 3. Error Swallowing `[grep-detectable]`
 
@@ -211,6 +225,13 @@ Only use `evaluate`/`waitForFunction` when the framework API can't express the c
 **Rule (within file):** Merge tests that differ only in setup or a single assertion. Use the richer verification set from both.
 
 **Rule (cross-file):** After reviewing all files in scope, cross-check tests with similar names across different spec files. If test A in `feature-settings.spec.ts` is a subset of test B in `feature-form-validation.spec.ts`, delete A and strengthen B.
+
+**Procedure:**
+1. List all test names in the file — look for similar prefixes or overlapping verbs
+2. For each pair with >70% step overlap, compare their assertion sets
+3. If one is a subset of the other, delete the weaker test and keep the richer one
+
+**Common patterns:** "should add item" and "should add item and verify count" (subset), "should open dialog" in file A and "should open dialog and fill form" in file B (cross-file subset), parameterizable tests written as separate cases.
 
 #### 10. Misleading Test Names (KISS) `[LLM-only]`
 
