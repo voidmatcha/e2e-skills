@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.2.0] - 2026-03-06
+
+### Changed
+- **#5 Boolean Trap**: No longer flags `toBeTruthy()` on actual boolean return values (`response.ok()`, `isVisible()`, `isChecked()`, etc.). Only flags when used on non-boolean objects (Locator, ElementHandle) that are always truthy — the real bug. Phase 1 grep now excludes known boolean-returning methods via `grep -v`.
+- **Quick Reference** updated to clarify boolean trap scope
+
+### Context
+Validated against 5 major open-source projects (Cal.com, Ghost, Grafana, Documenso, Appsmith). Documenso had 230+ `expect(response.ok()).toBeTruthy()` instances — these are working assertions on actual booleans, not bugs. Previous versions would have flagged all of them as P1.
+
 ## [3.1.0] - 2026-03-06
 
 ### Changed

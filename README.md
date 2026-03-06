@@ -48,7 +48,7 @@ Are there any always-passing tests?
 | 2 | **Missing Then** | Cancel action, verify text restored — input still visible? | Verify both `text.toBeVisible()` and `input.toBeHidden()` |
 | 3 | **Error swallowing** | `try/catch` in spec, `.catch(() => {})` in POM | Let errors fail; remove silent catch from POM methods |
 | 4 | **Always-passing assertion** | `expect(count).toBeGreaterThanOrEqual(0)` | `expect(count).toBeGreaterThan(0)` |
-| 5 | **Boolean trap** | POM returns `Promise<boolean>`, spec does `expect(bool).toBe(true)` | POM exposes element handle, spec uses framework assertion |
+| 5 | **Boolean trap** | `expect(locator).toBeTruthy()` on non-boolean objects (always passes) | Use framework assertion (`toBeVisible()`); skip when value is actual boolean like `response.ok()` |
 | 6 | **Conditional bypass** | `if (visible) { expect(...) }` or mid-test `test.skip()` | Always assert; move env checks to `beforeEach` |
 | 7 | **Raw DOM queries** | `document.querySelector` in `evaluate()` | Use framework element API (`locator` / `cy.get` / `page.$`) |
 

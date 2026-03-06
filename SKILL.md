@@ -23,9 +23,10 @@ grep -rn '\.catch(\s*() =>' e2e/ --include='*.ts' --include='*.js' --include='*.
 echo "--- #4 Always-Passing ---"
 grep -rn -E 'toBeGreaterThanOrEqual\(0\)|should\(.*(gte|greaterThan).*0\)' e2e/ --include='*.ts' --include='*.js' --include='*.cy.*'
 
-# 5. Boolean Trap — toBeTruthy / should be.truthy
+# 5. Boolean Trap — toBeTruthy on non-boolean values (Locator, ElementHandle, selector result)
+#    Excludes cases where the value is already boolean (e.g., response.ok(), isVisible(), isChecked())
 echo "--- #5 Boolean Trap ---"
-grep -rn -E 'expect\(.*\)\.toBeTruthy\(\)|should\(.*(be\.truthy|be\.true)\)' e2e/ --include='*.spec.*' --include='*.test.*' --include='*.cy.*'
+grep -rn -E 'expect\(.*\)\.toBeTruthy\(\)|should\(.*(be\.truthy|be\.true)\)' e2e/ --include='*.spec.*' --include='*.test.*' --include='*.cy.*' | grep -v -E '\.(ok|isVisible|isChecked|isDisabled|isEnabled|isEditable|isHidden)\(\)'
 
 # 6. Conditional Bypass — expect inside if(isVisible)
 echo "--- #6 Conditional Bypass ---"
@@ -180,7 +181,9 @@ expect(count).toBeGreaterThanOrEqual(0);
 
 #### 5. Boolean Trap Assertions `[grep-detectable]`
 
-**Symptom (spec):** `expect(bool).toBe(true)` — failure message is just "expected false to be true".
+**Symptom (spec):** `expect(locator).toBeTruthy()` on a Locator/ElementHandle object — always passes because objects are always truthy regardless of whether the element exists in the DOM.
+
+**NOT a boolean trap:** `expect(response.ok()).toBeTruthy()` or `expect(await el.isVisible()).toBe(true)` — these operate on actual boolean return values. While `toBe(true)` is slightly more precise than `toBeTruthy()` for booleans, this is a **style preference, not a bug**. Only flag as P1 when the value is a non-boolean object (Locator, ElementHandle, Promise).
 
 **Symptom (POM):** Method returns `Promise<boolean>` instead of exposing an element handle — forces spec into boolean trap.
 
@@ -391,7 +394,7 @@ Present findings grouped by severity:
 | 2 | Missing Then | P0 | LLM | Action without final state verification |
 | 3 | Error Swallowing | P0 | grep | `try/catch` in spec, `.catch(() => {})` in POM |
 | 4 | Always-Passing | P0 | grep | `>=0`, truthy on non-empty, `\|\|` defaults |
-| 5 | Boolean Trap | P1 | grep | `expect(bool).toBe(true)`, POM returns boolean |
+| 5 | Boolean Trap | P1 | grep | `expect(locator).toBeTruthy()` on non-boolean objects; skip when value is actual boolean (`.ok()`, `.isVisible()`) |
 | 6 | Conditional Bypass | P0 | grep | `expect()` inside `if`, mid-test `test.skip()` |
 | 7 | Raw DOM Queries | P1 | grep | `document.querySelector` in `evaluate` |
 | 8 | Render-Only | P2 | LLM | Only `toBeVisible()`, no content/count |
