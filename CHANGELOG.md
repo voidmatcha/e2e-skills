@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.0.1] - 2026-03-11
+
+### Changed
+- **Skill names** renamed to `e2e-test-reviewer` and `e2e-test-debugger` — shorter, more intuitive
+
 ## [4.0.0] - 2026-03-10
 
 ### Changed

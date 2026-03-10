@@ -26,7 +26,7 @@ git clone https://github.com/dididy/e2e-test-skills.git ~/.claude/skills/e2e-tes
 
 ---
 
-## Skill 1: `e2e-test-skill-review` — Quality Review
+## Skill 1: `e2e-test-reviewer` — Quality Review
 
 Catches issues in E2E tests that pass CI but fail to catch real regressions.
 
@@ -75,7 +75,7 @@ Three-phase review with P0/P1/P2 severity:
 
 ---
 
-## Skill 2: `e2e-test-skill-debug` — Failure Debugger
+## Skill 2: `e2e-test-debugger` — Failure Debugger
 
 Diagnoses Playwright test failures from report files. Classifies root causes and provides concrete fixes.
 
