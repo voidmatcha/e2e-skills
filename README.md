@@ -130,10 +130,8 @@ Tests pass locally but fail in CI
 
 1. **Extract** — parse `results.json` for failed tests, error messages, duration
 2. **Classify** — map each failure to F1–F14 using error signals (most failures resolved here)
-3. **Trace** — if still unclear, parse `trace.zip` directly (`unzip -p | node`) for step-by-step analysis
+3. **Trace** — if still unclear, extract `trace.zip` and inspect step-by-step: failed actions, DOM snapshots, network errors, JS console errors
 4. **Fix** — concrete code suggestion per failure, P0/P1/P2 priority
-
-Trace analysis uses direct zip parsing (`unzip` + `node`) — no extra dependencies required.
 
 ---
 

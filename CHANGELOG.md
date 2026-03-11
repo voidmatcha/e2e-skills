@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.1.3] - 2026-03-11
+
+### Fixed
+- **`e2e-reviewer` YAML parse error**: colon in frontmatter description (`naming-assertion mismatch, missing Then, error swallowing, always-passing assertions, boolean traps, conditional bypass, raw DOM queries, render-only tests, duplicate scenarios, misleading names, over-broad assertions, subject-inversion`) caused a `YAMLException` in gray-matter, making the skills CLI skip the skill entirely — replaced colon with em dash
+
+### Changed
+- **`playwright-debugger`**: replaced dense inline `node -e` one-liners in Phase 1–3 with natural language instructions — LLM reads trace events directly instead of running shell scripts
+- **`e2e-reviewer`**: replaced Phase 1 bash grep block with a prose checklist — LLM uses the Grep tool per anti-pattern instead of running a shell script
+- **README**: updated `playwright-debugger` debug workflow description to reflect trace analysis approach
+
+> Motivation for code block changes: reduced code density to address Socket "Obfuscated File" false positive on SKILL.md files.
+
 ## [4.1.2] - 2026-03-11
 
 ### Changed
