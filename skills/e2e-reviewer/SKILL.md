@@ -9,68 +9,22 @@ Systematic checklist for reviewing E2E **spec files AND Page Object Model (POM) 
 
 ## Phase 1: Automated Grep Checks (Run First)
 
-Once the review target files are determined, run the following Bash commands **before** LLM analysis to mechanically detect known anti-patterns.
+Once the review target files are determined, use the Grep tool to mechanically detect known anti-patterns **before** LLM analysis. Run each check below against the `e2e/` directory (or equivalent). Replace `e2e/` with the actual test directory if different.
 
-```bash
-echo "=== E2E Mechanical Anti-Pattern Check ==="
-echo ""
+**What each check detects:**
 
-# Check #3: Error Swallowing
-# Detects .catch(() => {}) or .catch(() => false) — silently hides failures from callers
-echo "--- #3 Error Swallowing ---"
-grep -rn '\.catch(\s*() =>' e2e/ \
-  --include='*.ts' --include='*.js' --include='*.cy.*' \
-  | grep -v node_modules \
-  | grep -v '// justified'
-
-# Check #4: Always-Passing Assertions
-# Detects assertions that can never fail (e.g. count >= 0 is always true)
-echo "--- #4 Always-Passing ---"
-grep -rn -E 'toBeGreaterThanOrEqual\(0\)|should\(.*(gte|greaterThan).*0\)' e2e/ \
-  --include='*.ts' --include='*.js' --include='*.cy.*'
-
-# Check #5: Boolean Trap
-# Detects toBeTruthy() on Locator/ElementHandle objects (always truthy, never fails)
-# Excludes legitimate boolean methods: .ok(), .isVisible(), .isChecked(), etc.
-echo "--- #5 Boolean Trap ---"
-grep -rn -E 'expect\(.*\)\.toBeTruthy\(\)|should\(.*(be\.truthy|be\.true)\)' e2e/ \
-  --include='*.spec.*' --include='*.test.*' --include='*.cy.*' \
-  | grep -v -E '\.(ok|isVisible|isChecked|isDisabled|isEnabled|isEditable|isHidden)\(\)'
-
-# Check #6: Conditional Bypass
-# Detects expect() inside if(isVisible) — assertion silently skipped when element absent
-echo "--- #6 Conditional Bypass ---"
-grep -rn -E "if.*(isVisible|is\(.*:visible.*\))" e2e/ \
-  --include='*.spec.*' --include='*.test.*' --include='*.cy.*'
-
-# Check #7: Raw DOM Queries
-# Detects document.querySelector in spec files — bypasses framework auto-wait
-echo "--- #7 Raw DOM in specs ---"
-grep -rn 'document\.querySelector' e2e/ \
-  --include='*.spec.*' --include='*.test.*' --include='*.cy.*'
-
-# Check #12: Hard-coded Timeouts
-# Detects waitForTimeout() or cy.wait(number) — arbitrary sleeps cause flakiness
-echo "--- #12 Hard-coded Timeout ---"
-grep -rn -E 'waitForTimeout|cy\.wait\(\d' e2e/ \
-  --include='*.ts' --include='*.js' --include='*.cy.*'
-
-# Check #13b: Missing Network Mock
-# Detects page.goto/cy.visit without nearby route/intercept — real network dependency
-echo "--- #13b Missing Network Mock ---"
-grep -rn -E 'page\.goto|cy\.visit' e2e/ \
-  --include='*.spec.*' --include='*.test.*' --include='*.cy.*' \
-  | grep -v 'route\.\|intercept\|mock' \
-  | head -20
-
-echo ""
-echo "=== Done ==="
-```
+- **#3 Error Swallowing** — `.catch(() => {})` or `.catch(() => false)` silently hides failures. Search `.ts/.js/.cy.*` for `\.catch(\s*() =>`, excluding `node_modules` and lines with `// justified`.
+- **#4 Always-Passing** — assertions that can never fail (e.g. `count >= 0`). Search for `toBeGreaterThanOrEqual(0)` or `should.*(gte|greaterThan).*0`.
+- **#5 Boolean Trap** — `toBeTruthy()` on Locator/ElementHandle objects (objects are always truthy). Search `.spec.*/.test.*/.cy.*` for `expect(.*).toBeTruthy()`, excluding lines ending in `.ok()`, `.isVisible()`, `.isChecked()`, `.isDisabled()`, `.isEnabled()`, `.isEditable()`, `.isHidden()`.
+- **#6 Conditional Bypass** — `expect()` inside `if(isVisible)` silently skips assertions. Search `.spec.*/.test.*/.cy.*` for `if.*(isVisible|is\(.*:visible.*\))`.
+- **#7 Raw DOM Queries** — `document.querySelector` bypasses framework auto-wait. Search `.spec.*/.test.*/.cy.*` for `document\.querySelector`.
+- **#12 Hard-coded Timeouts** — arbitrary sleeps cause flakiness. Search `.ts/.js/.cy.*` for `waitForTimeout` or `cy\.wait\(\d`.
+- **#13b Missing Network Mock** — `page.goto`/`cy.visit` without nearby route/intercept creates real network dependency. Search `.spec.*/.test.*/.cy.*` for `page\.goto|cy\.visit`, then filter out lines containing `route.`, `intercept`, or `mock`.
 
 **Interpreting results:**
 - Zero hits → no mechanical issues found, proceed to Phase 2
 - Any hit → report each line as an issue (includes file:line)
-- Lines with `// justified` comments are excluded (intentional usage)
+- Lines with `// justified` comments are intentional — skip them
 
 **Output Phase 1 results as-is.** The LLM must not reinterpret them.
 
