@@ -42,14 +42,19 @@ cat playwright-report/results.json | jq '[
   select(.status == "failed" or .status == "timedOut") |
   {title: .title, status: .status, error: .error.message, file: .location.file, duration: .duration}
 ] | unique'
+```
 
-# Extract failed tests (node fallback)
-node -e "
+```js
+// Extract failed tests (node fallback) — save as extract-failures.js and run with node
 const r = require('./playwright-report/results.json');
-const flat = (s) => [s, ...(s.suites||[]).flatMap(flat), ...(s.specs||[]).flatMap(sp => sp.tests||[])];
-flat(r).filter(t => t.status === 'failed' || t.status === 'timedOut')
-  .forEach(t => console.log(t.status, t.title, t.error?.message?.slice(0,120)))
-"
+const flat = (s) => [
+  s,
+  ...(s.suites || []).flatMap(flat),
+  ...(s.specs || []).flatMap(sp => sp.tests || []),
+];
+flat(r)
+  .filter(t => t.status === 'failed' || t.status === 'timedOut')
+  .forEach(t => console.log(t.status, t.title, t.error?.message?.slice(0, 120)));
 ```
 
 ## Phase 2: Classify Root Cause
@@ -93,52 +98,98 @@ find playwright-report -name "*.zip" | head -10
 Progressive disclosure — stop as soon as root cause is clear:
 
 ```bash
+# Find trace zips
+find playwright-report -name "*.zip" | head -10
+
 # 1. Which step failed?
-unzip -p trace.zip trace.trace | node -e "
-process.stdin.resume(); let d='';
-process.stdin.on('data',c=>d+=c);
-process.stdin.on('end',()=>d.trim().split('\n').map(l=>JSON.parse(l))
-  .filter(e=>e.type==='after'&&e.error)
-  .forEach(e=>console.log(e.apiName, e.error.message)));"
+unzip -p trace.zip trace.trace | node parse-trace-errors.js
 
 # 2. All actions with pass/fail
-unzip -p trace.zip trace.trace | node -e "
-process.stdin.resume(); let d='';
-process.stdin.on('data',c=>d+=c);
-process.stdin.on('end',()=>d.trim().split('\n').map(l=>JSON.parse(l))
-  .filter(e=>e.type==='after')
-  .forEach((e,i)=>console.log(i, e.apiName, e.error?'❌ '+e.error.message.slice(0,80):'✓')));"
+unzip -p trace.zip trace.trace | node parse-trace-actions.js
 
-# 3a. Selector issue — DOM at failed step
-#     replace SNAPSHOT_NAME with beforeSnapshot value from step 2 (e.g. "snapshot@call@123")
-unzip -p trace.zip trace.trace | node -e "
-process.stdin.resume(); let d='';
-process.stdin.on('data',c=>d+=c);
-process.stdin.on('end',()=>d.trim().split('\n').map(l=>JSON.parse(l))
-  .filter(e=>e.type==='frame-snapshot'&&e.snapshot?.name==='SNAPSHOT_NAME')
-  .forEach(e=>console.log(JSON.stringify(e.snapshot.html).slice(0,3000))));"
+# 3a. Selector issue — DOM at failed step (replace SNAPSHOT_NAME with value from step 2)
+unzip -p trace.zip trace.trace | node parse-trace-snapshot.js SNAPSHOT_NAME
 
 # 3b. Network issue — failed requests
-unzip -p trace.zip trace.network | node -e "
-process.stdin.resume(); let d='';
-process.stdin.on('data',c=>d+=c);
-process.stdin.on('end',()=>d.trim().split('\n').map(l=>JSON.parse(l))
-  .filter(e=>e.type==='resource-snapshot'&&e.response?.status>=400)
-  .forEach(e=>console.log(e.response.status, e.request.url)));"
+unzip -p trace.zip trace.network | node parse-trace-network.js
 
 # 3c. JS errors
-unzip -p trace.zip trace.trace | node -e "
-process.stdin.resume(); let d='';
-process.stdin.on('data',c=>d+=c);
-process.stdin.on('end',()=>d.trim().split('\n').map(l=>JSON.parse(l))
-  .filter(e=>e.type==='console'&&e.messageType==='error')
-  .forEach(e=>console.log(e.text)));"
+unzip -p trace.zip trace.trace | node parse-trace-console.js
 
 # 3d. Still unclear — add temporary screenshots, re-run, inspect via browser agent
 #     await page.screenshot({ path: 'debug/before.png' });
 #     await someAction();
 #     await page.screenshot({ path: 'debug/after.png' });
 #     → dispatch browser agent to open and compare. Remove after debugging.
+```
+
+**Trace parsing scripts** (create these as needed, delete after use):
+
+```js
+// parse-trace-errors.js — step 1: which step failed?
+process.stdin.resume();
+let data = '';
+process.stdin.on('data', chunk => { data += chunk; });
+process.stdin.on('end', () => {
+  data.trim().split('\n')
+    .map(line => JSON.parse(line))
+    .filter(e => e.type === 'after' && e.error)
+    .forEach(e => console.log(e.apiName, e.error.message));
+});
+```
+
+```js
+// parse-trace-actions.js — step 2: all actions with pass/fail
+process.stdin.resume();
+let data = '';
+process.stdin.on('data', chunk => { data += chunk; });
+process.stdin.on('end', () => {
+  data.trim().split('\n')
+    .map(line => JSON.parse(line))
+    .filter(e => e.type === 'after')
+    .forEach((e, i) => console.log(i, e.apiName, e.error ? '❌ ' + e.error.message.slice(0, 80) : '✓'));
+});
+```
+
+```js
+// parse-trace-snapshot.js — step 3a: DOM at failed step
+// Usage: node parse-trace-snapshot.js SNAPSHOT_NAME
+const snapshotName = process.argv[2];
+process.stdin.resume();
+let data = '';
+process.stdin.on('data', chunk => { data += chunk; });
+process.stdin.on('end', () => {
+  data.trim().split('\n')
+    .map(line => JSON.parse(line))
+    .filter(e => e.type === 'frame-snapshot' && e.snapshot?.name === snapshotName)
+    .forEach(e => console.log(JSON.stringify(e.snapshot.html).slice(0, 3000)));
+});
+```
+
+```js
+// parse-trace-network.js — step 3b: failed network requests
+process.stdin.resume();
+let data = '';
+process.stdin.on('data', chunk => { data += chunk; });
+process.stdin.on('end', () => {
+  data.trim().split('\n')
+    .map(line => JSON.parse(line))
+    .filter(e => e.type === 'resource-snapshot' && e.response?.status >= 400)
+    .forEach(e => console.log(e.response.status, e.request.url));
+});
+```
+
+```js
+// parse-trace-console.js — step 3c: JS errors
+process.stdin.resume();
+let data = '';
+process.stdin.on('data', chunk => { data += chunk; });
+process.stdin.on('end', () => {
+  data.trim().split('\n')
+    .map(line => JSON.parse(line))
+    .filter(e => e.type === 'console' && e.messageType === 'error')
+    .forEach(e => console.log(e.text));
+});
 ```
 
 ## Phase 4: Fix Suggestions

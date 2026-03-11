@@ -15,34 +15,53 @@ Once the review target files are determined, run the following Bash commands **b
 echo "=== E2E Mechanical Anti-Pattern Check ==="
 echo ""
 
-# 3. Error Swallowing — .catch(() => {}) / .catch(() => false)
+# Check #3: Error Swallowing
+# Detects .catch(() => {}) or .catch(() => false) — silently hides failures from callers
 echo "--- #3 Error Swallowing ---"
-grep -rn '\.catch(\s*() =>' e2e/ --include='*.ts' --include='*.js' --include='*.cy.*' | grep -v node_modules | grep -v '// justified'
+grep -rn '\.catch(\s*() =>' e2e/ \
+  --include='*.ts' --include='*.js' --include='*.cy.*' \
+  | grep -v node_modules \
+  | grep -v '// justified'
 
-# 4. Always-Passing — assertion that can never fail
+# Check #4: Always-Passing Assertions
+# Detects assertions that can never fail (e.g. count >= 0 is always true)
 echo "--- #4 Always-Passing ---"
-grep -rn -E 'toBeGreaterThanOrEqual\(0\)|should\(.*(gte|greaterThan).*0\)' e2e/ --include='*.ts' --include='*.js' --include='*.cy.*'
+grep -rn -E 'toBeGreaterThanOrEqual\(0\)|should\(.*(gte|greaterThan).*0\)' e2e/ \
+  --include='*.ts' --include='*.js' --include='*.cy.*'
 
-# 5. Boolean Trap — toBeTruthy on non-boolean values (Locator, ElementHandle, selector result)
-#    Excludes cases where the value is already boolean (e.g., response.ok(), isVisible(), isChecked())
+# Check #5: Boolean Trap
+# Detects toBeTruthy() on Locator/ElementHandle objects (always truthy, never fails)
+# Excludes legitimate boolean methods: .ok(), .isVisible(), .isChecked(), etc.
 echo "--- #5 Boolean Trap ---"
-grep -rn -E 'expect\(.*\)\.toBeTruthy\(\)|should\(.*(be\.truthy|be\.true)\)' e2e/ --include='*.spec.*' --include='*.test.*' --include='*.cy.*' | grep -v -E '\.(ok|isVisible|isChecked|isDisabled|isEnabled|isEditable|isHidden)\(\)'
+grep -rn -E 'expect\(.*\)\.toBeTruthy\(\)|should\(.*(be\.truthy|be\.true)\)' e2e/ \
+  --include='*.spec.*' --include='*.test.*' --include='*.cy.*' \
+  | grep -v -E '\.(ok|isVisible|isChecked|isDisabled|isEnabled|isEditable|isHidden)\(\)'
 
-# 6. Conditional Bypass — expect inside if(isVisible)
+# Check #6: Conditional Bypass
+# Detects expect() inside if(isVisible) — assertion silently skipped when element absent
 echo "--- #6 Conditional Bypass ---"
-grep -rn -E "if.*(isVisible|is\(.*:visible.*\))" e2e/ --include='*.spec.*' --include='*.test.*' --include='*.cy.*'
+grep -rn -E "if.*(isVisible|is\(.*:visible.*\))" e2e/ \
+  --include='*.spec.*' --include='*.test.*' --include='*.cy.*'
 
-# 7. Raw DOM — document.querySelector in spec/test files
+# Check #7: Raw DOM Queries
+# Detects document.querySelector in spec files — bypasses framework auto-wait
 echo "--- #7 Raw DOM in specs ---"
-grep -rn 'document\.querySelector' e2e/ --include='*.spec.*' --include='*.test.*' --include='*.cy.*'
+grep -rn 'document\.querySelector' e2e/ \
+  --include='*.spec.*' --include='*.test.*' --include='*.cy.*'
 
-# 12. Hard-coded Timeout — waitForTimeout / cy.wait(number)
+# Check #12: Hard-coded Timeouts
+# Detects waitForTimeout() or cy.wait(number) — arbitrary sleeps cause flakiness
 echo "--- #12 Hard-coded Timeout ---"
-grep -rn -E 'waitForTimeout|cy\.wait\(\d' e2e/ --include='*.ts' --include='*.js' --include='*.cy.*'
+grep -rn -E 'waitForTimeout|cy\.wait\(\d' e2e/ \
+  --include='*.ts' --include='*.js' --include='*.cy.*'
 
-# 13b. Network dependency — goto/visit without route/intercept setup nearby
+# Check #13b: Missing Network Mock
+# Detects page.goto/cy.visit without nearby route/intercept — real network dependency
 echo "--- #13b Missing Network Mock ---"
-grep -rn -E 'page\.goto|cy\.visit' e2e/ --include='*.spec.*' --include='*.test.*' --include='*.cy.*' | grep -v 'route\.\|intercept\|mock' | head -20
+grep -rn -E 'page\.goto|cy\.visit' e2e/ \
+  --include='*.spec.*' --include='*.test.*' --include='*.cy.*' \
+  | grep -v 'route\.\|intercept\|mock' \
+  | head -20
 
 echo ""
 echo "=== Done ==="
