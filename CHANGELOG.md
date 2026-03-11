@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.1.2] - 2026-03-11
+
+### Changed
+- **`skills/e2e-test-reviewer/` renamed to `skills/e2e-reviewer/`** — shorter skill name for CLI discoverability
+- **`name: e2e-test-reviewer` → `name: e2e-reviewer`** in SKILL.md frontmatter
+
 ## [4.1.1] - 2026-03-11
 
 ### Changed

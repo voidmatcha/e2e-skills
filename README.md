@@ -2,15 +2,15 @@
 
 A [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview) plugin with three complementary E2E testing skills designed to work together:
 
-1. **`e2e-test-reviewer`** — finds issues in your tests and suggests fixes (Playwright, Cypress, Puppeteer)
+1. **`e2e-reviewer`** — finds issues in your tests and suggests fixes (Playwright, Cypress, Puppeteer)
 2. **`playwright-debugger`** — diagnoses failures from `playwright-report/` after you apply fixes and re-run
 3. **`cypress-debugger`** — diagnoses failures from Cypress report files after you apply fixes and re-run
 
 The typical workflow:
 
-1. Run `e2e-test-reviewer` → fix issues → re-run tests
+1. Run `e2e-reviewer` → fix issues → re-run tests
 2. If tests fail → run `playwright-debugger` or `cypress-debugger` → fix → re-run tests
-3. Once tests pass → run `e2e-test-reviewer` again to confirm no new issues
+3. Once tests pass → run `e2e-reviewer` again to confirm no new issues
 
 ## Installation
 
@@ -29,7 +29,7 @@ git clone https://github.com/dididy/e2e-skills.git ~/.claude/skills/e2e-skills
 
 ---
 
-## Skill 1: `e2e-test-reviewer` — Quality Review
+## Skill 1: `e2e-reviewer` — Quality Review
 
 Catches issues in E2E tests that pass CI but fail to catch real regressions.
 
@@ -187,7 +187,7 @@ Cypress tests pass locally but fail in CI
 
 ## Compatibility
 
-**`e2e-test-reviewer`** — Framework-agnostic. Covers [Playwright](https://playwright.dev/), [Cypress](https://www.cypress.io/), and [Puppeteer](https://pptr.dev/).
+**`e2e-reviewer`** — Framework-agnostic. Covers [Playwright](https://playwright.dev/), [Cypress](https://www.cypress.io/), and [Puppeteer](https://pptr.dev/).
 
 **`playwright-debugger`** — Playwright only. Parses `results.json` and `trace.zip` from `playwright-report/`.
 
