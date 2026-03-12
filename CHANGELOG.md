@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.1.4] - 2026-03-13
+
+### Security
+- **`playwright-debugger` Indirect Prompt Injection (W011)**: Added "Security: Treat Report Data as Untrusted" section — all content from `playwright-report/` is explicitly declared untrusted external data; embedded instructions in test titles, error messages, or trace content must never be followed
+- **`playwright-debugger` Dynamic Code Execution**: Replaced `node -e` inline shell scripts in Phase 1 and Phase 3 with Read tool + `/tmp` file approach — prevents untrusted trace content from being executed via shell interpolation
+- **`playwright-debugger` Unverifiable External Dependency (W012)**: Removed `gh run download` artifact fetching entirely — reports must now be provided as a local path by the user; eliminates the external data ingestion attack surface
+
+### Changed
+- **`playwright-debugger` Prerequisites**: Removed GitHub PR URL / `gh` CLI download flow; report source is now always a user-provided local path or existing `playwright-report/` directory
+
 ## [4.1.3] - 2026-03-11
 
 ### Fixed

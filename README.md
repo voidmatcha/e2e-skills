@@ -92,7 +92,6 @@ Diagnoses Playwright test failures from a `playwright-report/` directory — whe
 
 ### When to Use
 
-- You have a GitHub PR URL with failing CI checks
 - You have a `playwright-report/` directory (local or downloaded from CI) with failures to understand
 - Tests pass locally but fail in CI
 - You're dealing with flaky or intermittent test failures
@@ -103,9 +102,10 @@ Diagnoses Playwright test failures from a `playwright-report/` directory — whe
 ```
 Debug these failing tests
 Why did these tests fail?
-https://github.com/org/repo/pull/123
 Tests pass locally but fail in CI
 ```
+
+> **Note:** Provide the report as a local path. Download CI artifacts manually from GitHub Actions and pass the directory path — automatic artifact fetching is not supported.
 
 ### 14 Root Cause Categories
 
