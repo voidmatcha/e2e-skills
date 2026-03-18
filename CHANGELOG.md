@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.1] - 2026-03-18
+
+### Changed
+- **`e2e-reviewer` #4 Always-Passing — expanded with three new sub-cases**:
+  - Non-retrying state snapshot: `expect(await el.isDisabled()).toBe(true)` resolves a one-shot boolean with no auto-retry; use web-first assertions (`toBeDisabled()`, `toBeEnabled()`, `toBeChecked()`, `toBeHidden()`) instead. New grep pattern: `expect\(await.*\.(isDisabled|isEnabled|isChecked|isHidden)\(\)\)`.
+  - Assertion weakening — `toBeDefined()` passes for `null`; `not.toBeNull()` passes for `""`. Use `not.toBeNull()` when `null` is the sole invalid case; use `toBeTruthy()` when empty string is also invalid (OAuth codes, secrets, slugs).
+  - SKILL.md #4 section updated with concrete bad/good examples for assertion weakening.
+
 ## [1.1.0] - 2026-03-17
 
 ### Added

@@ -18,7 +18,7 @@ Once the review target files are determined, use the Grep tool to mechanically d
 **What each check detects:**
 
 - **#3 Error Swallowing** — `.catch(() => {})` or `.catch(() => false)` silently hides failures. Search `.ts/.js/.cy.*` for `\.catch\(\s*(async\s*)?\(\)\s*=>`, excluding `node_modules` and lines with `// JUSTIFIED` on the line above.
-- **#4 Always-Passing** — assertions that can never fail. Search for `toBeGreaterThanOrEqual(0)` or `should.*(gte|greaterThan).*0`. Also search `.ts/.js/.cy.*` (including POM/util files, not just specs) for `toBeAttached()` — flag every hit unless `// JUSTIFIED:` appears on the line above. Also search `.spec.*/.test.*/.cy.*` for `expect\(await.*\.isVisible\(\)\)` — one-shot boolean with no auto-retry; flag unless `// JUSTIFIED:` is on the line above.
+- **#4 Always-Passing** — assertions that can never fail. Search for `toBeGreaterThanOrEqual(0)` or `should.*(gte|greaterThan).*0`. Also search `.ts/.js/.cy.*` (including POM/util files, not just specs) for `toBeAttached()` — flag every hit unless `// JUSTIFIED:` appears on the line above. Also search `.spec.*/.test.*/.cy.*` for `expect\(await.*\.isVisible\(\)\)` — one-shot boolean with no auto-retry; flag unless `// JUSTIFIED:` is on the line above. Also search for `expect\(await.*\.(isDisabled|isEnabled|isChecked|isHidden)\(\)\)` — same one-shot boolean problem; use web-first assertions (`toBeDisabled()`, `toBeEnabled()`, etc.) instead. Also flag `toBeDefined()` or `not\.toBeNull\(\)` on values that should be non-empty strings or positive numbers — `toBeDefined()` passes for `null`, `not.toBeNull()` passes for `""` or `0`; use `toMatch(/\S/)` or `toBeGreaterThan(0)` instead.
 - **#5 Bypass Patterns** — two sub-patterns that suppress what the framework would normally catch: (a) `expect()` inside `if(isVisible)` silently skips assertions — search `.spec.*/.test.*/.cy.*` for `if.*(isVisible|is\(.*:visible.*\))`; (b) `{ force: true }` bypasses actionability checks (visibility, enabled state) — search `.ts/.js/.cy.*` for `force:\s*true`. Exclude lines where `// JUSTIFIED` appears on the line above. **Note:** The `if(isVisible)` grep covers spec files only — review POM helper methods manually in Phase 2.
 - **#6 Raw DOM Queries** — `document.querySelector` bypasses framework auto-wait. Search `.spec.*/.test.*/.cy.*` for `document\.querySelector` (covers both `evaluate()` and `waitForFunction()`).
 - **#7 Focused Test Leak** — `test.only` / `it.only` / `describe.only` committed to source silently skips the rest of the suite in CI. Search `.spec.*/.test.*/.cy.*` for `\.(only)\(`. No `// JUSTIFIED:` exemption — there are zero legitimate committed uses; remove before committing.
@@ -159,7 +159,19 @@ expect(visible).toBe(true);
 
 **Rule:** Search for `toBeGreaterThanOrEqual(0)` and `toBeAttached()`. Also flag `expect(await.*\.isVisible\(\))` — these resolve a one-shot boolean with no retry; use `expect(locator).toBeVisible()` instead (web-first, auto-retries). For `toBeAttached()` hits with no `// JUSTIFIED:` on the line above, confirm whether the element can ever be absent from the DOM. If it is unconditionally rendered or always present in the static HTML shell, the assertion is vacuous → flag P0. If `// JUSTIFIED:` explains the element is intentionally CSS-hidden (`visibility:hidden`, not `display:none`), skip.
 
-**Fix:** Replace `toBeGreaterThanOrEqual(0)` with `toBeGreaterThan(0)`. Replace vacuous `toBeAttached()` with `toBeVisible()`, or remove if other assertions already cover the element. `expect(await el.isVisible()).toBe(true)` → `await expect(el).toBeVisible()`
+Also flag **assertion weakening** — replacing `toBeTruthy()` with a weaker matcher silently reduces what the assertion catches:
+- `toBeDefined()` passes for `null` — use `not.toBeNull()` for nullable references, or `toBeTruthy()` if the value must also be non-empty
+- `not.toBeNull()` passes for `""` — for values that must be non-empty strings (OAuth codes, secrets, slugs), use `toBeTruthy()`
+
+```typescript
+// BAD — passes for null
+expect(user.username).toBeDefined();
+
+// BAD — passes for ""
+expect(token).not.toBeNull();
+```
+
+**Fix:** Replace `toBeGreaterThanOrEqual(0)` with `toBeGreaterThan(0)`. Replace vacuous `toBeAttached()` with `toBeVisible()`, or remove if other assertions already cover the element. `expect(await el.isVisible()).toBe(true)` → `await expect(el).toBeVisible()`. For nullable values: use `not.toBeNull()` when `null` is the sole invalid case; use `toBeTruthy()` when empty string is also invalid.
 
 #### 5. Bypass Patterns `[grep-detectable]`
 

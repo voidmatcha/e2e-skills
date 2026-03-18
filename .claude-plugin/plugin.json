@@ -1,6 +1,6 @@
 {
   "name": "e2e-skills",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Four E2E skills that generate, audit, and debug Playwright and Cypress tests. Generates Playwright tests from scratch via live browser exploration and a Plan Mode approval gate. Audits Playwright, Cypress, and Puppeteer specs against 10 anti-patterns (P0/P1/P2). Debugs failed Playwright tests from playwright-report/ and Cypress tests from cypress/reports/.",
   "license": "Apache-2.0",
   "author": {
