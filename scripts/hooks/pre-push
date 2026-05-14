@@ -1,22 +1,11 @@
 #!/usr/bin/env bash
-# pre-push: refresh the local e2e-skills install via `skills update` so the
-# installed copies match the HEAD being pushed. The initial install must be
-# done first via `bash scripts/dev/reinstall-skills.sh` (uses --copy mode).
+# pre-push: refresh the local e2e-skills install so it matches HEAD being pushed.
+# Delegates to scripts/dev/reinstall-skills.sh, which runs:
+#   `skills remove` (no-op if not installed) + `skills add --copy` (idempotent).
+# This handles both initial install (first push) and refresh (subsequent pushes).
 # Wired in by scripts/dev/install-hooks.sh (sets core.hooksPath=scripts/hooks).
-#
-# Overrides:
-#   E2E_SKILLS_AGENTS  default: "-a claude-code -a codex -a opencode"
-
 set -euo pipefail
 
-SKILLS_CSV="cypress-debugger,e2e-reviewer,playwright-debugger,playwright-test-generator"
-
-if [ -n "${E2E_SKILLS_AGENTS:-}" ]; then
-  # shellcheck disable=SC2206
-  AGENTS_FLAGS=($E2E_SKILLS_AGENTS)
-else
-  AGENTS_FLAGS=(-a claude-code -a codex -a opencode)
-fi
-
-echo "==> pre-push: refreshing local e2e-skills install (skills update)"
-npx -y skills update -g "${AGENTS_FLAGS[@]}" --skill "$SKILLS_CSV" -y
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+echo "==> pre-push: refreshing local e2e-skills install"
+"$REPO_ROOT/scripts/dev/reinstall-skills.sh"
