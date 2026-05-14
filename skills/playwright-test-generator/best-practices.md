@@ -13,7 +13,7 @@ From [playwright.dev/docs/best-practices](https://playwright.dev/docs/best-pract
 | Anti-patterns | No XPath — brittle, no auto-wait semantics |
 | Anti-patterns | No CSS class chains tied to styling — breaks on redesign |
 | Anti-patterns | No `waitUntil: 'networkidle'` — unreliable on SPAs with long-polling/WebSockets |
-| Anti-patterns | No `page.click(selector)` — deprecated; use `page.locator(selector).click()` |
+| Anti-patterns | Avoid direct `page.click(selector)` / `page.fill(selector, value)` — prefer locator-first actions such as `page.locator(selector).click()` |
 | Anti-patterns | No `expect()` or action without `await` — silently skips verification |
 | CI | `tsc --noEmit` before every commit |
 | CI | `--trace on-first-retry` for CI debugging — not `--trace on` (too expensive) |

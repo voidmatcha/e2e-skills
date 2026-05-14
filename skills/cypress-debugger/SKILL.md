@@ -1,6 +1,10 @@
 ---
 name: cypress-debugger
 description: Use when Cypress tests have actually failed and you need to diagnose runtime failures — from mochawesome or JUnit report files, local or CI. Triggers on "debug cypress tests", "why did cypress tests fail", "cypress CI failure", "flaky cypress test failures", "cypress timed out retrying", "cypress tests pass locally but fail in CI", "analyze cypress/reports". Classifies runtime failures into root causes (not static code analysis) and suggests concrete fixes.
+license: Apache-2.0
+metadata:
+  author: voidmatcha
+  version: "1.2.2"
 ---
 
 # Cypress Failed Test Debugger
@@ -57,7 +61,7 @@ Use Phase 1 output (error message + duration) to classify. **Most failures are i
 
 | # | Category | Signals | Review Pattern |
 |---|----------|---------|----------------|
-| F1 | **Flaky / Timing** | `Timed out retrying`, duration near defaultCommandTimeout, passes on retry | #9a |
+| F1 | **Flaky / Timing** | `Timed out retrying`, duration near defaultCommandTimeout, passes on retry | #9 |
 | F2 | **Selector Broken** | `Expected to find element: '...' but never found it`, `cy.get() failed` | #6, #10 |
 | F3 | **Network Dependency** | `cy.intercept()` not matched, `XHR failed`, unexpected API response | — |
 | F4 | **Assertion Mismatch** | `expected X to equal Y`, `AssertionError` | #4 |
@@ -70,7 +74,7 @@ Use Phase 1 output (error message + duration) to classify. **Most failures are i
 | F11 | **Async Order Assumption** | `.then()` chain order, parallel `cy.request()` race | — |
 | F12 | **Selector Drift** | DOM changed, custom command or Page Object selector not updated | #10 |
 | F13 | **Error Swallowing** | `cy.on('uncaught:exception', () => false)` hiding failures | #3 |
-| F14 | **Animation Race** | Element visible but content not yet rendered; CSS transition not complete | #9a |
+| F14 | **Animation Race** | Element visible but content not yet rendered; CSS transition not complete | #9 |
 
 Classification steps:
 1. Match error message to signals above

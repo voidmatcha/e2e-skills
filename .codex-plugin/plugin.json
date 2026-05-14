@@ -1,0 +1,73 @@
+{
+  "name": "e2e-skills",
+  "version": "1.2.2",
+  "description": "Generate, review, and debug Playwright and Cypress E2E tests. Four agent skills: generate tests from scratch with live browser exploration and explicit user approval; review existing specs against 19 anti-patterns grouped by P0/P1/P2 severity — P0 must-fix (name-assertion mismatch, missing Then, error swallowing, Cypress uncaught:exception suppression, always-passing assertions, bypass patterns, focused test leak, missing assertions, missing auth setup, missing await on expect, missing await on action), P1 should-fix (raw DOM queries, hard-coded sleeps, flaky test patterns, inconsistent POM usage, hardcoded credentials, direct page action API, expect.soft overuse), P2 nice-to-fix (YAGNI + zombie specs); debug failed Playwright tests from playwright-report/; debug failed Cypress tests from cypress/reports/.",
+  "author": {
+    "name": "YONGJAE LEE"
+  },
+  "repository": "https://github.com/voidmatcha/e2e-skills",
+  "license": "Apache-2.0",
+  "keywords": [
+    "e2e",
+    "testing",
+    "playwright",
+    "cypress",
+    "test-generation",
+    "test-generator",
+    "generate-tests",
+    "test-quality",
+    "review",
+    "audit",
+    "debug",
+    "trace",
+    "failure",
+    "page-object-model",
+    "pom",
+    "flaky-test",
+    "always-passing",
+    "error-swallowing",
+    "dom-queries",
+    "coverage-gap",
+    "coverage",
+    "severity",
+    "ci",
+    "ci-failure",
+    "playwright-debugger",
+    "cypress-debugger",
+    "test-review",
+    "test-audit",
+    "regression",
+    "test-smell",
+    "false-positive",
+    "end-to-end",
+    "spec",
+    "fragile-test",
+    "brittle-test",
+    "static-analysis",
+    "test-maintenance",
+    "yagni",
+    "bdd",
+    "scenario"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "e2e-skills",
+    "shortDescription": "Generate, review, and debug Playwright and Cypress E2E tests.",
+    "longDescription": "Four agent skills shared between Claude Code, Codex, and OpenCode from ./skills/: playwright-test-generator (live-browser exploration → approval gate → reviewed Playwright tests), e2e-reviewer (static review of Playwright and Cypress specs against 19 anti-patterns grouped P0/P1/P2 by severity — silent always-pass, poor diagnostics, maintenance), playwright-debugger (root-cause diagnosis from playwright-report/), cypress-debugger (root-cause diagnosis from cypress/reports/ mochawesome or JUnit). Includes a standalone scanner (scripts/e2e-smell-scan.sh) for CI use without an agent runtime.",
+    "developerName": "YONGJAE LEE",
+    "category": "Testing",
+    "capabilities": [
+      "Read",
+      "Write",
+      "Bash"
+    ],
+    "websiteURL": "https://github.com/voidmatcha/e2e-skills",
+    "defaultPrompt": [
+      "Use playwright-test-generator when generating new Playwright E2E tests from scratch — from coverage gap analysis to live-browser exploration, approval gate, and reviewed tests.",
+      "Use e2e-reviewer when auditing existing Playwright or Cypress specs against the 19 P0/P1/P2 anti-patterns; static analysis only, not for runtime failures.",
+      "Use playwright-debugger when Playwright tests have actually failed and you need to classify root causes from a playwright-report/ directory.",
+      "Use cypress-debugger when Cypress tests have actually failed and you need to classify root causes from cypress/reports/ mochawesome or JUnit output."
+    ],
+    "brandColor": "#2563eb"
+  }
+}

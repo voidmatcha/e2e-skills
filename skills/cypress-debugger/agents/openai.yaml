@@ -1,0 +1,5 @@
+name: cypress-debugger
+description: Diagnose failed Cypress test runs from mochawesome or JUnit reports, classify root causes, and suggest concrete fixes.
+metadata:
+  short-description: Debug Cypress failures
+allow_implicit_invocation: true

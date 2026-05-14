@@ -1,6 +1,10 @@
 ---
 name: playwright-debugger
 description: Use when Playwright tests have actually failed and you need to diagnose runtime failures — from a playwright-report directory, local or CI. Triggers on "debug playwright tests", "why did playwright tests fail", "playwright CI failure", "flaky playwright test failures", "playwright timeout error", "tests pass locally but fail in CI", "analyze playwright-report", "PR failing in CI". Classifies runtime failures into root causes (not static code analysis) and suggests concrete fixes.
+license: Apache-2.0
+metadata:
+  author: voidmatcha
+  version: "1.2.2"
 ---
 
 # Playwright Failed Test Debugger
@@ -41,7 +45,7 @@ Use Phase 1 output (error message + duration + file) to classify each failure. *
 
 | # | Category | Signals | Review Pattern |
 |---|----------|---------|----------------|
-| F1 | **Flaky / Timing** | `TimeoutError`, duration near maxTimeout, passes on retry | #9a |
+| F1 | **Flaky / Timing** | `TimeoutError`, duration near maxTimeout, passes on retry | #9 |
 | F2 | **Selector Broken** | `locator not found`, `strict mode violation`, element count mismatch | #6, #10 |
 | F3 | **Network Dependency** | `net::ERR_*`, unexpected API response, `404`/`500` | — |
 | F4 | **Assertion Mismatch** | `Expected X to equal Y`, over-broad check | #4 |
@@ -54,7 +58,7 @@ Use Phase 1 output (error message + duration + file) to classify each failure. *
 | F11 | **Async Order Assumption** | `Promise.all` order, parallel race | — |
 | F12 | **POM / Locator Drift** | DOM changed, POM locator not updated | #10 |
 | F13 | **Error Swallowing** | `.catch(() => {})` hiding failure, test passes silently | #3 |
-| F14 | **Animation Race** | Element visible but content not yet rendered | #9a |
+| F14 | **Animation Race** | Element visible but content not yet rendered | #9 |
 
 Classification steps:
 1. Match error message to signals above

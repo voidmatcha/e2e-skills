@@ -4,7 +4,7 @@
     {
       "id": 1,
       "prompt": "Review the Playwright E2E tests in evals/files/auth.spec.ts and its POM file pages/login-page.ts. Find any anti-patterns, weak assertions, or quality issues.",
-      "expected_output": "Should detect: test.only (P0), waitForTimeout (P1), dangling locator (P0), one-shot boolean (P0), conditional bypass (P0), force:true (P1), .catch(()=>{}) in POM (P0), raw DOM query in POM (P1), name-assertion mismatch (P0), missing then (P0), YAGNI unused POM members (P2), hardcoded credentials (P1), deprecated page.click API (P1)",
+      "expected_output": "Should detect: test.only (P0), waitForTimeout (P1), dangling locator (P0), one-shot boolean (P0), conditional bypass (P0), force:true (P1), .catch(()=>{}) in POM (P0), raw DOM query in POM (P1), name-assertion mismatch (P0), missing then (P0), YAGNI unused POM members (P2), hardcoded credentials (P1), direct page.click API usage (P1)",
       "files": ["evals/files/auth.spec.ts", "evals/files/pages/login-page.ts"],
       "assertions": [
         "Detects test.only on line 5 (#7, P0)",
@@ -19,7 +19,7 @@
         "Flags missing then: 'should logout' doesn't verify session cleared or dashboard gone (#2, P0)",
         "Identifies YAGNI: rememberMeCheckbox, forgotPasswordLink, socialLoginGoogle, socialLoginGithub, captchaWidget, termsCheckbox unused in auth.spec.ts (#11, P2)",
         "Detects hardcoded credentials 'admin'/'password123' on lines 8, 30 (#14, P1)",
-        "Detects deprecated page.click() on line 39 — should use locator.click() (#17, P1)",
+        "Flags direct page.click() on line 39 — prefer locator.click() (#17, P1)",
         "Does NOT flag page.goto('/reset-password') on line 45 as missing auth — public route (#12)",
         "Does NOT flag page.goto('/dashboard') on line 22 as missing auth in redirect test — testing the redirect itself",
         "Structured output with P0/P1/P2",
@@ -30,7 +30,7 @@
     {
       "id": 2,
       "prompt": "Review the Playwright E2E tests in evals/files/dashboard.spec.ts. Identify all anti-patterns and suggest improvements.",
-      "expected_output": "Should detect: serial() (P1), >=0 always-passing (P0), waitForTimeout (P1), missing assertion (P0), toBeAttached (P0), boolean discarded (P0), positional selectors (P1), raw DOM query (P1), missing then (P0), name-assertion mismatch (P0), missing auth setup (P0), deprecated page action API (P1)",
+      "expected_output": "Should detect: serial() (P1), >=0 always-passing (P0), waitForTimeout (P1), missing assertion (P0), toBeAttached (P0), boolean discarded (P0), positional selectors (P1), raw DOM query (P1), missing then (P0), name-assertion mismatch (P0), missing auth setup (P0), direct page action API usage (P1)",
       "files": ["evals/files/dashboard.spec.ts"],
       "assertions": [
         "Detects test.describe.serial on line 3 — breaks parallel sharding (#10b, P1)",
@@ -40,7 +40,7 @@
         "Detects boolean discarded: await badge.isVisible() on line 36 with result unused (#8b, P0)",
         "Detects positional selector .first() on line 28 and .nth(2) on line 29 (#10a, P1)",
         "Detects raw DOM query document.querySelector in evaluate() on line 49 (#6, P1)",
-        "Detects deprecated page.click() on lines 13-14, 21-22 (#17, P1)",
+        "Flags direct page.click() on lines 13-14, 21-22 (#17, P1)",
         "Flags missing auth setup: all tests navigate to /dashboard without login or storageState (#12, P0)",
         "Flags name-assertion mismatch: 'display correct user name' uses querySelector truthiness, doesn't check actual name (#1, P0)",
         "Flags missing then: 'export dashboard as PDF' just clicks export buttons, no download verification (#2, P0)",
@@ -96,14 +96,14 @@
     {
       "id": 5,
       "prompt": "Review the Playwright E2E tests in evals/files/search-justified.spec.ts. Check for anti-patterns and respect JUSTIFIED suppression markers.",
-      "expected_output": "Should skip patterns with JUSTIFIED comments above them (first() in search results, force:true on filter). Should flag: unjustified nth() on pagination, waitForTimeout without justification. Should detect deprecated page.locator usage patterns.",
+      "expected_output": "Should skip patterns with JUSTIFIED comments above them (first() in search results, force:true on filter). Should flag: unjustified nth() on pagination, waitForTimeout without justification. Should not flag locator-based page.locator usage patterns.",
       "files": ["evals/files/search-justified.spec.ts"],
       "assertions": [
         "Skips JUSTIFIED first() on line 20-21: comment explains results are server-ordered",
         "Skips JUSTIFIED force:true on line 27-28: comment explains custom overlay intercepting pointer events",
         "Flags unjustified .nth(2) on pagination line 39 — no JUSTIFIED comment above (#10a, P1)",
         "Flags waitForTimeout(500) on line 53 — should use auto-wait for suggestions (#9, P1)",
-        "Does NOT flag page.locator('#x').fill() as deprecated — locator-based API is correct",
+        "Does NOT flag page.locator('#x').fill() as direct page action usage — locator-based API is correct",
         "Does NOT over-flag: clean tests (special characters, clear-and-reset) should have zero or minimal findings",
         "Structured output with P0/P1/P2",
         "Summary table included"
@@ -133,12 +133,12 @@
     {
       "id": 7,
       "prompt": "Review the Playwright E2E tests in evals/files/profile-mixed.spec.ts. Find anti-patterns but don't over-flag legitimate try/catch and test.skip usage.",
-      "expected_output": "Should detect: missing await on expect (#15 P0), missing await on action (#16 P0), deprecated page.fill/page.click (#17 P1), networkidle usage (#9c P1). Should NOT flag: legitimate try/catch in beforeEach (setup retry), test.skip with reason, legitimate try/catch in cleanup (delete address test).",
+      "expected_output": "Should detect: missing await on expect (#15 P0), missing await on action (#16 P0), direct page.fill/page.click usage (#17 P1), networkidle usage (#9c P1). Should NOT flag: legitimate try/catch in beforeEach (setup retry), test.skip with reason, legitimate try/catch in cleanup (delete address test).",
       "files": ["evals/files/profile-mixed.spec.ts"],
       "assertions": [
         "Detects missing await on expect: line 35 expect(page.locator('.toast-success')).toBeVisible() without await — assertion never runs (#15, P0)",
         "Detects missing await on action: line 41 page.locator('#photo-upload').setInputFiles() without await — upload may never execute (#16, P0)",
-        "Detects deprecated page.fill on line 48 and page.click on line 49 — should use locator.fill/locator.click (#17, P1)",
+        "Flags direct page.fill on line 48 and page.click on line 49 — prefer locator.fill/locator.click (#17, P1)",
         "Detects networkidle on line 56: waitForLoadState('networkidle') is unreliable (#9c, P1)",
         "Does NOT flag try/catch in beforeEach lines 11-17 — legitimate retry for network timeout, not around assertions",
         "Does NOT flag test.skip on line 25 — has valid TEAM-892 tracking reason",

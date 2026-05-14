@@ -1,6 +1,10 @@
 ---
 name: playwright-test-generator
-description: Use when generating new Playwright E2E tests from scratch. Triggers on "generate playwright tests", "write e2e tests for X", "add playwright coverage for X", "create test for X page", "generate tests for the login page". Autonomous mode starts from coverage gap analysis when no target is specified; argument mode targets a specific page or feature directly. Explores the live app via Playwright CLI or agent-browser, designs scenarios with user approval via Plan Mode, auto-detects project structure (POM vs flat spec), runs YAGNI audit and e2e-reviewer after generation, and hands off to playwright-debugger after 3 failed fix attempts.
+description: Use when generating new Playwright E2E tests from scratch. Triggers on "generate playwright tests", "write e2e tests for X", "add playwright coverage for X", "create test for X page", "generate tests for the login page". Autonomous mode starts from coverage gap analysis when no target is specified; argument mode targets a specific page or feature directly. Explores the live app via agent-browser tools (with `npx playwright codegen` as a manual fallback), designs scenarios with an explicit user approval gate, auto-detects project structure (POM vs flat spec), runs YAGNI audit and e2e-reviewer after generation, and hands off to playwright-debugger after 3 failed fix attempts.
+license: Apache-2.0
+metadata:
+  author: voidmatcha
+  version: "1.2.2"
 ---
 
 # playwright-test-generator
@@ -12,8 +16,8 @@ General-purpose Playwright E2E test generation pipeline. From zero to reviewed, 
 ```
 Step 1: Environment Detection
 Step 2: Coverage Gap Analysis  (skipped if $ARGUMENT provided)
-Step 3: Browser Exploration    (Playwright CLI / agent-browser)
-Step 4: Scenario Design        (EnterPlanMode → user approve)
+Step 3: Browser Exploration    (agent-browser; playwright codegen as fallback)
+Step 4: Scenario Design        (plan → user approval)
 Step 5: Code Generation        (see code-rules.md)
 Step 6: YAGNI Audit + e2e-reviewer
 Step 7: TS Compile + Test Run  (playwright-debugger on failure)
@@ -102,7 +106,7 @@ If agent-browser tools are unavailable, use `npx playwright codegen <URL>` manua
 
 ## Step 4: Scenario Design + User Approval
 
-**Call `EnterPlanMode`.** This switches Claude Code into plan mode — the AI writes a plan in the conversation and waits for the user to explicitly approve before any files are written. Do not write any code until the user approves.
+Present a scenario plan in the conversation and wait for explicit user approval before writing files. In hosts with a dedicated planning mode, enter that mode before presenting the plan and exit it only after the user approves. In Codex/OpenCode, stop after presenting the plan until the user approves it. Do not write any code until the user approves.
 
 Write a plan containing:
 
@@ -132,7 +136,7 @@ Cover at minimum: one happy path + one error/edge case per feature.
 - No getter methods — locators are exposed directly as `readonly` properties
 - `.nth()`, `.first()`, `.last()` require `// JUSTIFIED: <reason>` on the line immediately above
 
-**Call `ExitPlanMode`.** Wait for user approval before proceeding to Step 5.
+**Approval gate:** Do not proceed to Step 5 until the user explicitly approves the plan. In hosts with a dedicated planning mode, exit that mode only after approval.
 
 ---
 
@@ -168,7 +172,7 @@ Key principle: detect project structure first, match existing patterns when exte
 
 Invoke the `e2e-reviewer` skill using the `Skill` tool, targeting the generated spec and POM files.
 
-- **P0 issues found:** fix immediately, re-invoke `e2e-reviewer`, repeat until 0 P0s
+- **P0 issues found:** fix immediately, re-invoke `e2e-reviewer`. **Max 3 attempts** — if any P0 remains after 3 fix passes (e.g. intentional `test.only` left for development, an unavoidable bypass with no `// JUSTIFIED:` rationale), list the remaining P0s in the final report and proceed to Step 7 with a warning. Do not loop indefinitely.
 - **P1/P2 issues found:** output in the final report, do not block Step 7
 
 ---
@@ -186,11 +190,13 @@ npx playwright test <generated-spec-file> --project=chromium
 
 ### Failure handling (max 3 auto-fix attempts)
 
-| Attempt | Focus | Action |
-|---------|-------|--------|
-| 1 | Selector mismatches | Re-snapshot the page if needed, update locators to match actual DOM |
-| 2 | Assertion failures | Fix expected values, add `{ timeout }` for slow elements |
-| 3 | Structural issues | Fix missing `await`, wrong test setup, incorrect `beforeEach` |
+Per attempt, diagnose the actual failure and apply the matching fix below (the order is heuristic — the real failure dictates which category to try first):
+
+| Likely cause | Fix |
+|--------------|-----|
+| Selector mismatches | Re-snapshot the page if needed, update locators to match actual DOM |
+| Assertion failures | Fix expected values, add `{ timeout }` for slow elements |
+| Structural issues | Fix missing `await`, wrong test setup, incorrect `beforeEach` |
 
 After 3 failed attempts: **invoke `playwright-debugger` skill** using the `Skill` tool. Do not attempt a 4th fix.
 

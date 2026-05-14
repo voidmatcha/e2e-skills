@@ -1,0 +1,63 @@
+name: E2E Skills CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  e2e-skills-ci:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run convention and security checks
+        shell: bash
+        env:
+          E2E_SKILLS_SKIP_SECURITY: "1"
+          E2E_SKILLS_SKIP_SMELL_SCAN: "1"
+        run: bash scripts/ci/ci-local.sh
+
+      - name: Run E2E smell scanner
+        shell: bash
+        env:
+          E2E_SMELL_FAIL_ON: p0
+        run: |
+          set -o pipefail
+          ./scripts/e2e-smell-scan.sh . | tee e2e-smell-report.txt
+
+      - name: Upload scan report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-smell-report
+          path: e2e-smell-report.txt
+
+      - name: Add job summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## E2E Smell Scan'
+            echo
+            if [ -f e2e-smell-report.txt ]; then
+              echo '```text'
+              cat e2e-smell-report.txt
+              echo '```'
+            else
+              echo 'Scan report was not generated because an earlier CI step failed.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  security:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pre-push security gate
+        shell: bash
+        run: bash scripts/ci/pre-push-security.sh

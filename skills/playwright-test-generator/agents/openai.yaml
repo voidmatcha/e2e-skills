@@ -1,0 +1,5 @@
+name: playwright-test-generator
+description: Generate Playwright E2E tests from scratch with coverage gap analysis, live app exploration, scenario approval, code generation, and review handoff.
+metadata:
+  short-description: Generate reviewed Playwright E2E tests
+allow_implicit_invocation: true

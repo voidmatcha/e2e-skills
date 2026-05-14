@@ -1,5 +1,9 @@
 .DS_Store
-docs/
+.agents/
+.claude/
+.sisyphus/
+docs/superpowers/
+testbed/
 
 # Eval fixture files (mock data for eval runs, not skill code)
 skills/*/evals/files/

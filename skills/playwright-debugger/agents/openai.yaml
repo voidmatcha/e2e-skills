@@ -1,0 +1,5 @@
+name: playwright-debugger
+description: Diagnose failed Playwright test runs from playwright-report artifacts, classify root causes, and suggest concrete fixes.
+metadata:
+  short-description: Debug Playwright failures
+allow_implicit_invocation: true

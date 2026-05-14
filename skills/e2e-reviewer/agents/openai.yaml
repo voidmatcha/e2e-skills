@@ -1,0 +1,5 @@
+name: e2e-reviewer
+description: Review Playwright and Cypress E2E specs against 19 anti-patterns grouped by P0/P1/P2 severity — silent always-pass bugs (name-assertion mismatch, missing assertions, missing await, error swallowing, missing auth setup, etc.), poor-diagnostic patterns (raw DOM queries, hard-coded sleeps, flaky selectors, expect.soft overuse, etc.), and maintenance issues (YAGNI + zombie specs).
+metadata:
+  short-description: Audit E2E test quality
+allow_implicit_invocation: true

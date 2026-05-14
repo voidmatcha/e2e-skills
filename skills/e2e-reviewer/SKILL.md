@@ -1,6 +1,10 @@
 ---
 name: e2e-reviewer
-description: Use when reviewing, auditing, or improving E2E test specs for Playwright or Cypress — static code analysis of existing test files, not diagnosing runtime failures. Triggers on "review my tests", "audit test quality", "find weak tests", "my tests always pass but miss bugs", "tests pass CI but miss regressions", "improve playwright tests", "improve cypress tests", "check test coverage gaps", "my tests are fragile", "tests break on every UI change", "test suite is hard to maintain", "we have coverage but bugs still slip through", "flaky tests", "test anti-patterns", "check my e2e tests", "tests pass locally but fail in CI". Detects 13 anti-patterns -- name-assertion mismatch, missing Then, error swallowing (.catch in POM via grep; try/catch in specs via LLM; Cypress uncaught:exception suppression), always-passing assertions (one-shot booleans, Locator-as-truthy, toBeAttached, timeout:0, one-shot URL), bypass patterns (conditional assertions + force:true), raw DOM queries, focused test leak (test.only committed), missing assertions (dangling locators + boolean result discarded), hard-coded sleeps (P1), flaky test patterns (positional selectors + serial ordering), YAGNI + zombie specs (unused POM members, single-use Util wrappers, zombie spec files), expect.soft() overuse. Also runs supplementary grep checks for general code quality issues (missing auth setup, inconsistent POM usage, hardcoded credentials, missing await, deprecated page API, networkidle).
+description: 'Use when reviewing, auditing, or improving E2E test specs for Playwright or Cypress — static code analysis of existing test files, not diagnosing runtime failures. Triggers on "review my tests", "audit test quality", "find weak tests", "my tests always pass but miss bugs", "tests pass CI but miss regressions", "improve playwright tests", "improve cypress tests", "check test coverage gaps", "my tests are fragile", "tests break on every UI change", "test suite is hard to maintain", "we have coverage but bugs still slip through", "flaky tests", "test anti-patterns", "check my e2e tests", "tests pass locally but fail in CI". Reviews 19 anti-patterns grouped by severity. P0 must-fix (silent always-pass): name-assertion mismatch, missing Then, error swallowing, Cypress uncaught:exception suppression, always-passing assertions, bypass patterns, focused test leak, missing assertions, missing auth setup, missing await on expect, missing await on action. P1 should-fix (poor diagnostics): raw DOM queries, hard-coded sleeps, flaky test patterns, inconsistent POM usage, hardcoded credentials, direct page action API, expect.soft overuse. P2 nice-to-fix (maintenance): YAGNI + zombie specs.'
+license: Apache-2.0
+metadata:
+  author: voidmatcha
+  version: "1.2.2"
 ---
 
 # E2E Test Scenario Quality Review
@@ -17,7 +21,7 @@ Before running checks, determine the framework by grepping for import statements
 - `@playwright/test` → Playwright
 - `cypress` → Cypress
 
-**Skip framework-irrelevant checks:** If Playwright, skip Cypress-specific greps (`cy.wait`, `#3b uncaught:exception`). If Cypress, skip Playwright-specific greps (`describe.serial`, dangling `page.locator`, `#18 expect.soft`, `#15/#16 missing await`, `#17 deprecated page API`). This eliminates noise in Phase 1 output.
+**Skip framework-irrelevant checks:** If Playwright, skip Cypress-specific greps (`#9b cy.wait(ms)`, `#3b Cypress uncaught:exception`). If Cypress, skip Playwright-specific greps (`#8a dangling page.locator`, `#10b describe.serial`, `#15 missing await on expect`, `#16 missing await on action`, `#17 direct page action API`, `#18 expect.soft overuse`). This eliminates noise in Phase 1 output.
 
 ---
 
@@ -25,20 +29,26 @@ Before running checks, determine the framework by grepping for import statements
 
 Once the review target files are determined, use the Grep tool to mechanically detect known anti-patterns **before** LLM analysis. Run each check against the test directory (auto-detect from project structure — common paths: `e2e/`, `tests/`, `__tests__/`, `spec/`, `cypress/e2e/`).
 
+**Evidence rule:** Phase 1 grep hits are mechanical review signals. Report exact matches, then use Phase 2 where the rule requires intent or project context. Official framework rules (web-first assertions, focused tests, missing awaits) can be reported directly; heuristic rules (`nth()`, `toBeAttached()`, `force:true`, raw DOM queries) need the `// JUSTIFIED:` and context checks below.
+
 **Read `references/grep-patterns.md` for the full pattern tables organized in 5 batches.** Execute all Grep calls within each batch in a SINGLE assistant message so they run in parallel — running greps one-by-one wastes 3-4x the wall-clock time.
 
 **Interpreting results:**
 - Zero hits → no mechanical issues found, proceed to Phase 2
 - Any hit → report each line as an issue (includes file:line)
-- Lines where the **immediately preceding line** contains `// JUSTIFIED:` are intentional — skip them (exception: #7 Focused Test Leak has no `// JUSTIFIED:` exemption)
+- A hit is intentional and must be **skipped** when `// JUSTIFIED:` appears in any of these positions (exception: #7 Focused Test Leak has no `// JUSTIFIED:` exemption):
+  1. The line **immediately preceding** the hit
+  2. The line immediately preceding the **enclosing call/block** when the hit is inside a callback body — e.g., `// JUSTIFIED:` above `page.evaluate(() => { … document.querySelector(…) … })` or `page.waitForFunction(() => { … })` covers every qualifying pattern inside that callback
+  3. For chained calls split across lines (`page.locator(…)\n  .filter(…)\n  .first()`), the line immediately preceding the chain's **starting expression** covers `.nth()` / `.first()` / `.last()` further down the chain
+- Before reporting any hit, read 1–3 lines of context above to verify a JUSTIFIED comment does not cover it. Stale grep output without surrounding context is the #1 source of false positives in this review.
 
 `try/catch` wrapping in spec files (#3 partial) requires LLM judgment (Phase 2) — too many legitimate uses to grep reliably.
 
-Output Phase 1 results as-is — do not reinterpret them.
+Output Phase 1 results as-is — do not reinterpret them as semantic findings until Phase 2 confirms context where needed.
 
 ---
 
-## Phase 2: LLM Review (Subjective Checks Only)
+## Phase 2: LLM Review (Semantic And Context Checks Only)
 
 Patterns already detected in Phase 1 (#3 partial, #4, #5, #6, #7, #8, #9, #10 partial, #14, #15, #16, #17, #18, #3b) are **skipped** unless they need LLM confirmation.
 The LLM performs only these checks:
@@ -50,10 +60,12 @@ The LLM performs only these checks:
 | 3 | Error Swallowing — `try/catch` in specs | Too many legitimate non-test uses; requires reading context |
 | 4 | Always-Passing — `.toBeTruthy()` confirmation | Phase 1 flags all `.toBeTruthy()` hits; LLM confirms which ones have a Locator subject (P0) vs. a legitimate boolean variable (OK). Do NOT re-report other #4 sub-patterns already covered in Phase 1. |
 | 8 | Missing Assertion — Cypress dangling selectors | `cy.get(...)` standalone requires manual check |
-| 10 | Flaky Test Patterns | Requires context judgment for nth() and serial ordering |
+| 10 | Flaky Test Patterns | For each grep hit that has `// JUSTIFIED:`, verify the rationale is concrete (e.g. "server returns in fixed order") rather than vague ("needed for now"); flag if the comment doesn't actually justify the position-coupling or serial dependency. Skip if no JUSTIFIED comment — Phase 1 already flagged. |
 | 11 | YAGNI in POM + Zombie Specs | Requires usage grep then judgment |
 | 12 | Missing Auth Setup | Spec navigates to protected routes (`/dashboard`, `/settings`, `/admin`, etc.) without preceding login, `storageState`, or auth `beforeEach`. Flag P0 — tests will hit login redirects. |
 | 13 | Inconsistent POM Usage | POM is imported but spec bypasses it with raw `page.fill`/`page.click` for operations the POM should encapsulate. Flag P1. |
+| 15 | Missing `await` on `expect()` confirmation | Phase 1 flags lines that start with `expect(` (no leading `await`). LLM confirms the subject is a Playwright `Locator` / `Page` — non-Locator expects like `expect(count).toBe(3)` don't need `await`. Flag P0 only when the subject is a Locator/Page. |
+| 16 | Missing `await` on action confirmation | Phase 1 flags lines that start with `page.locator(...).action(` or `page.getBy...(...).action(` (no leading `await`). LLM confirms the line lacks `await` and the action is a real Playwright action (not a synchronous chain). Flag P0. |
 | 18 | `expect.soft()` overuse confirmation | Phase 1 flags all `expect.soft()` hits; LLM counts: if >50% of assertions in a single test are `soft`, flag P1 — soft assertions mask cascading failures. A few `soft` assertions among many hard ones is fine. |
 
 **Consolidation rule:** If a single code block triggers multiple checks (e.g., `page.evaluate` + `toBeTruthy` + `document.querySelector`), report it as ONE finding with all rule numbers in the heading (e.g., `[P0] #4f + #6: ...`). Do not create 3-4 separate findings for the same lines of code.
@@ -73,15 +85,17 @@ After individual findings are catalogued, synthesize cross-cutting patterns that
 
 | Issue | How to check | Sev |
 |-------|-------------|-----|
-| **No authentication strategy** | Any spec navigates to protected routes without login/storageState | P0 |
-| **CSS-only selectors** | Zero uses of `getByRole`, `getByTestId`, `getByLabel`, `getByPlaceholder`, `getByText` across all files | P2 |
+| **No authentication strategy** (suite-level rollup of #12) | 3+ specs across the suite navigate to protected routes without login/storageState. Always emit a single rollup line here; do not enumerate per-file findings — those belong in Phase 2. | P0 |
+| **No stable user-facing selectors** | [Playwright] Zero uses of `getByRole` / `getByTestId` / `getByLabel` / `getByPlaceholder` / `getByText` across all files. [Cypress] Zero uses of `[data-cy=]` / `[data-testid=]` selectors and no `cy.findBy*` calls (cypress-testing-library). | P2 |
 | **Missing `beforeEach`** | 3+ tests in a `describe` repeat the same setup code (POM instantiation + navigation) | P2 |
+
+**Deduplication rule:** Phase 2.5 issues are *suite-wide* findings. If an issue is already raised once per file in Phase 2 (e.g. #12 Missing Auth Setup), do not also list each file under Phase 2.5 — emit a single rollup line with the affected file count.
 
 Output as a dedicated section:
 ```markdown
 ## Systemic Issues
-- **No authentication strategy:** N tests navigate to protected routes without auth setup. Add `storageState` or auth fixture.
-- **CSS-only selectors:** 0 uses of getByRole/getByTestId across N files. Migrate to user-facing locators.
+- **No authentication strategy:** N tests navigate to protected routes without auth setup. Add `storageState` or auth fixture. (Rolls up #12 across N files.)
+- **No stable user-facing selectors:** [Playwright] 0 uses of getByRole/getByTestId across N files. [Cypress] 0 uses of `[data-cy=]`/`[data-testid=]` across N files. Migrate to user-facing locators.
 ```
 
 Only report systemic issues that are actually present. Skip this section if none apply.
@@ -111,15 +125,17 @@ After completing Phase 1 + 2 + 2.5, identify scenarios the test suite does NOT c
 
 ---
 
-## Review Checklist
+## Pattern Reference
 
-Run each check against every **non-skipped** test and every **changed POM file**.
+Detailed specification for the 19 anti-patterns that Phase 1, Phase 2, and Phase 2.5 execute. Do **not** re-run these checks as a separate pass — the phases above already cover them. When emitting a finding, consult the matching section here for the canonical Symptom / Rule / Fix wording. Grouped by severity: P0 items are silent always-pass bugs, P1 items waste CI time or mislead developers, P2 items are maintenance concerns.
 
 **Important:** `test.skip()` with a reason comment or reason string is intentional — do NOT flag or remove these. Only flag assertions gated behind a runtime `if` check that cause the test to pass silently (see #5a).
 
 ---
 
-### Tier 1 — P0/P1 (always check)
+### P0 — Must Fix (silent always-pass)
+
+Tests pass when the feature is broken. No real verification is happening. Always check these.
 
 #### 1. Name-Assertion Alignment `[LLM-only]`
 
@@ -183,6 +199,23 @@ catch { console.log('skipped'); }
 
 **Rule (spec):** Never wrap assertions in `try/catch`. Use `test.skip()` in `beforeEach` if the test can't run. `try/catch` in non-assertion code (setup, teardown, optional cleanup) is fine — LLM must read context before flagging.
 
+#### 3b. Cypress `uncaught:exception` Suppression `[grep-detectable, Cypress only]`
+
+**Symptom:** `cy.on('uncaught:exception', () => false)` globally suppresses all unhandled app errors, hiding real bugs.
+
+```javascript
+// BAD — blanket suppression
+Cypress.on('uncaught:exception', () => false);
+
+// BETTER — scoped to a specific known error
+Cypress.on('uncaught:exception', (err) => {
+  if (err.message.includes('ResizeObserver loop')) return false;
+  throw err;
+});
+```
+
+**Rule:** Blanket `() => false` is P0 — equivalent to `.catch(() => {})`. Scoped handlers that filter specific known errors and re-throw others are acceptable with `// JUSTIFIED:`.
+
 #### 4. Always-Passing Assertions `[grep-detectable + LLM confirmation]`
 
 **Symptom:** Assertion that can never fail.
@@ -217,10 +250,12 @@ await expect(el).toHaveCount(0, { timeout: 0 });
 - `expect(locator).toBeTruthy()` → `await expect(locator).toBeVisible()`
 - `{ timeout: 0 }` on assertions → remove unless preceded by an explicit wait; add `// JUSTIFIED:` if intentional
 - `expect(page.url()).toContain(x)` → `await expect(page).toHaveURL(x)` (one-shot URL read with no retry)
+- **Multiple `expect(page.url()).toContain(...)` in sequence** → replace each call with its **own** `await expect(page).toHaveURL(/.../) `. Do NOT combine them into a single regex with `.*` (e.g., `toHaveURL(/A.*B/)`) — that adds an ordering constraint not present in the original substring checks.
+- **Compound boolean expression** like `expect(visible1 || visible2).toBe(true)` is the same one-shot anti-pattern as `expect(await el.isVisible()).toBe(true)`. Prefer a locator-level web-first assertion such as `await expect(page.locator('.a, .b')).toBeVisible()`. If both branches require independent assertions (e.g., different post-actions per branch), gate the test with `test.skip()` on the unsupported branch rather than collapsing into a single boolean check.
 
-#### 5. Bypass Patterns `[grep-detectable]`
+#### 5. Bypass Patterns `[grep-detectable]` (5a P0, 5b P1)
 
-Two sub-patterns that suppress what the framework would normally catch — making tests pass when they should fail.
+Two sub-patterns that suppress what the framework would normally catch — making tests pass when they should fail. Listed under P0 because 5a is a silent-pass bug; 5b is a P1 actionability issue documented in the same section for proximity.
 
 **5a. Conditional assertion bypass** — `expect()` gated behind a runtime `if` check. If the condition is false, no assertion runs and the test passes vacuously.
 
@@ -236,28 +271,6 @@ if (await spinner.isVisible()) {
 **5b. Force true bypass** — `{ force: true }` skips actionability checks (visibility, enabled state, pointer-events), hiding real UX problems that real users would encounter.
 
 **Rule:** Each `{ force: true }` must have `// JUSTIFIED:` on the line above explaining why the element is not normally actionable. Without a comment, flag P1.
-
-#### 6. Raw DOM Queries (Bypassing Framework API) `[grep-detectable]`
-
-**Symptom:** Test or POM uses `document.querySelector*` / `document.getElementById` inside `evaluate()` or `waitForFunction()` when the framework's element API could do the same job. Check both spec files and POM files — raw DOM in a POM helper is equally harmful since it bypasses the same auto-wait guarantees.
-
-**Why it matters:** No auto-waiting, no retry, boolean trap, framework error messages lost.
-
-```typescript
-// BAD
-await page.waitForFunction(() => document.querySelectorAll('.item').length > 0);
-const has = await page.evaluate(() => !!document.querySelector('.result'));
-
-// GOOD
-await page.locator('.item').waitFor({ state: 'attached' });
-await expect(page.locator('.result')).toBeVisible();
-```
-
-**Rule:** Use the framework's element API instead of raw DOM:
-- **Playwright:** `locator.waitFor({ state: 'attached' })` replaces `waitForFunction(() => querySelector(...) !== null)`; `page.locator()` + web-first assertions replaces `evaluate(() => querySelector(...))`
-- **Cypress:** `cy.get()` / `cy.find()` — avoid `cy.window().then(win => win.document.querySelector(...))`
-
-Only use `evaluate`/`waitForFunction` when the framework API genuinely can't express the condition: multi-condition AND/OR logic, `getComputedStyle`, `children.length`, cross-element DOM relationships, or `body.textContent` checks. Add `// JUSTIFIED:` explaining why.
 
 #### 7. Focused Test Leak (`test.only` / `it.only`) `[grep-detectable]`
 
@@ -298,9 +311,73 @@ await el.isEnabled();
 
 **Fix:** Replace with web-first assertion — `await expect(locator).toBeVisible()` / `toBeEnabled()` etc. These also auto-retry. Or delete the line if it's leftover debug code.
 
+#### 12. Missing Auth Setup `[LLM-only]`
+
+**Symptom:** Spec navigates to protected routes (`/dashboard`, `/settings`, `/admin`, `/account`, etc.) without any preceding login action, `storageState` configuration, or authentication `beforeEach` hook.
+
+**Why it matters:** Tests hit a login redirect instead of the intended page, making all assertions vacuous — they verify the login page, not the feature under test.
+
+**Rule:** Every spec that navigates to a route requiring authentication must either: (a) perform login in `beforeEach`, (b) use `storageState` from Playwright config, or (c) use a custom auth fixture. Flag P0 if no auth mechanism is visible.
+
+#### 15. Missing `await` on `expect()` `[grep-detectable]`
+
+**Symptom:** `expect(locator).toBeVisible()` without `await` — the expression returns a Promise that is never awaited. The test moves on immediately and the assertion never actually runs.
+
+```typescript
+// BAD — Promise returned but never awaited; test always passes
+expect(page.locator('.toast')).toBeVisible();
+
+// GOOD
+await expect(page.locator('.toast')).toBeVisible();
+```
+
+**Why it matters:** This is a silent P0. The test compiles and runs green, but zero verification happens. Extremely common mistake, especially when converting from non-async test frameworks.
+
+**Rule:** Every `expect()` on a Playwright Locator must be `await`ed. Grep flags lines starting with `expect(` — confirm in Phase 2 that the line lacks `await` and involves a Locator (non-Locator expects like `expect(count).toBe(3)` don't need `await`). Flag P0.
+
+#### 16. Missing `await` on Playwright Actions `[grep-detectable]`
+
+**Symptom:** `page.locator(...).click()` without `await` — the action is fired but never awaited. It may not execute at all, or execute out of order.
+
+```typescript
+// BAD — click may never complete before next line runs
+page.locator('#submit').click();
+
+// GOOD
+await page.locator('#submit').click();
+```
+
+**Why it matters:** Silent no-op. The test passes because it never waits for the action. Subsequent assertions may run against stale page state.
+
+**Rule:** Every Playwright action (`.click()`, `.fill()`, `.type()`, `.press()`, `.check()`, `.selectOption()`, `.setInputFiles()`, `.hover()`, `.focus()`, `.blur()`) must be `await`ed. Flag P0.
+
 ---
 
-### Tier 2 — P1/P2 (check when time permits)
+### P1 — Should Fix (poor diagnostics / wastes CI time)
+
+Tests work but mislead developers, waste CI time, or set up future regressions. Check on every review.
+
+#### 6. Raw DOM Queries (Bypassing Framework API) `[grep-detectable]`
+
+**Symptom:** Test or POM uses `document.querySelector*` / `document.getElementById` inside `evaluate()` or `waitForFunction()` when the framework's element API could do the same job. Check both spec files and POM files — raw DOM in a POM helper is equally harmful since it bypasses the same auto-wait guarantees.
+
+**Why it matters:** No auto-waiting, no retry, boolean trap, framework error messages lost.
+
+```typescript
+// BAD
+await page.waitForFunction(() => document.querySelectorAll('.item').length > 0);
+const has = await page.evaluate(() => !!document.querySelector('.result'));
+
+// GOOD
+await page.locator('.item').waitFor({ state: 'attached' });
+await expect(page.locator('.result')).toBeVisible();
+```
+
+**Rule:** Use the framework's element API instead of raw DOM:
+- **Playwright:** `locator.waitFor({ state: 'attached' })` replaces `waitForFunction(() => querySelector(...) !== null)`; `page.locator()` + web-first assertions replaces `evaluate(() => querySelector(...))`
+- **Cypress:** `cy.get()` / `cy.find()` — avoid `cy.window().then(win => win.document.querySelector(...))`
+
+Only use `evaluate`/`waitForFunction` when the framework API genuinely can't express the condition: multi-condition AND/OR logic, `getComputedStyle`, `children.length`, cross-element DOM relationships, or `body.textContent` checks. Add `// JUSTIFIED:` explaining why.
 
 #### 9. Hard-coded Sleeps `[grep-detectable]`
 
@@ -333,13 +410,92 @@ await expect(items.nth(2)).toContainText('expected text');
 
 **Rule:** Prefer `data-testid`, role-based, or attribute selectors. If `nth()` is unavoidable, add `// JUSTIFIED:` explaining why.
 
+**Exemptions (no `// JUSTIFIED:` needed):**
+- **Method-name self-documents intent** — when the enclosing method's name explicitly conveys positional access (e.g., `getParagraphByIndex(index) { return this.paragraphs.nth(index); }`, `nthRowOf(...)`, `firstResult()`). The name documents the intent.
+- **Fallback selector loops** — `.first()` inside `for (const selector of fallbackSelectors) { … this.page.locator(selector).first() … }`. Here `.first()` means "any match for this candidate selector", not "the first of multiple known elements".
+- **Single-result `toHaveCount(1)` adjacent** — `await expect(items).toHaveCount(1); const only = items.first();` (the count assertion documents that exactly one element exists).
+
 **Selector priority** (best → worst, per [Playwright docs](https://playwright.dev/docs/best-practices#use-locators)): `getByRole` → `getByLabel` → `getByTestId`/`data-cy` → `getByText` → attribute (`[name]`, `[id]`) → class → generic. Class and generic selectors are "Never" — coupled to CSS and DOM structure.
 
 **10b. Serial test ordering** `[Playwright only]` — `test.describe.serial()` makes tests order-dependent: a single failure cascades to all subsequent tests, and the suite can't be sharded.
 
 **Rule:** Replace serial suites with self-contained tests using `beforeEach` for shared setup. If sequential flow is genuinely required, use a single test with `test.step()` blocks. If serial is unavoidable, add `// JUSTIFIED:` on the line above `test.describe.serial(`.
 
-#### 11. YAGNI — Dead Test Code `[LLM-only]`
+#### 13. Inconsistent POM Usage `[LLM-only]`
+
+**Symptom:** A POM class is imported and used for some actions, but the spec also uses raw `page.fill()` / `page.click()` for operations the POM should encapsulate.
+
+**Why it matters:** Defeats the purpose of the POM pattern — when the UI changes, you must update both the POM and the spec. DRY principle violated.
+
+**Rule:** If a POM exists for a page, all interactions with that page should go through the POM. Flag P1 if spec bypasses POM with raw `page.*` calls for actions the POM should own. Suggest adding missing methods to the POM.
+
+#### 14. Hardcoded Credentials `[grep-detectable]`
+
+**Symptom:** String literals used as usernames, passwords, or API keys directly in test code.
+
+```typescript
+// BAD — credentials as string literals
+await loginPage.login('admin', 'password123');
+await page.fill('#password', 'secret');
+```
+
+**Why it matters:** Security risk if repo is public, couples tests to specific credentials, prevents running tests against different environments.
+
+**Rule:** Use environment variables (`process.env.TEST_USER`), Playwright config secrets, or test data fixtures. Flag P1.
+
+**Scope — only flag actual credentials, not input test data:**
+- **Flag** literals passed to authentication operations: `loginPage.login('admin', 'password')`, `page.locator('#password').fill('realPassword') ` followed by submit, API calls posting credentials, fixtures named `validUser` / `testAdmin`.
+- **Do NOT flag** literals used only to verify form input behavior (no auth attempt follows): `passwordInput.fill('anyText'); await expect(passwordInput).toHaveValue('anyText');` — this is input-acceptance testing, not credential storage. Intentional invalid-creds fixtures like `INVALID_USER = { username: 'wronguser', password: 'wrongpass' }` are also fine because they document a negative-path scenario.
+
+When grep flags a literal, read 2–3 lines below to confirm a login/auth call follows. If none, skip.
+
+#### 17. Direct `page.click(selector)` API `[grep-detectable, Playwright only]`
+
+**Symptom:** Using `page.click('#button')` or `page.fill('#input', 'text')` instead of the locator-based API.
+
+```typescript
+// BAD — direct page action
+await page.click('#submit');
+await page.fill('#email', 'user@test.com');
+
+// GOOD — locator-based, auto-wait, better errors
+await page.locator('#submit').click();
+await page.locator('#email').fill('user@test.com');
+```
+
+**Why it matters:** `page.click(selector)` skips the Locator layer, losing locator composition and producing worse review/error context. Playwright docs recommend locator-based actions.
+
+**Rule:** Flag P1. Suggest migrating to `page.locator(selector).action()`.
+
+#### 18. `expect.soft()` Overuse `[grep-detectable + LLM]`
+
+**Symptom:** Most or all assertions in a test use `expect.soft()`, so the test continues past failures and may mask cascading issues — functionally equivalent to error swallowing.
+
+```typescript
+// BAD — all assertions are soft; test never fails early
+test('should display profile', async ({ page }) => {
+  await expect.soft(page.locator('.name')).toBeVisible();
+  await expect.soft(page.locator('.email')).toBeVisible();
+  await expect.soft(page.locator('.avatar')).toBeVisible();
+});
+
+// GOOD — one hard assertion gates, soft assertions for independent checks
+test('should display profile', async ({ page }) => {
+  await expect(page.locator('.profile')).toBeVisible();          // hard gate
+  await expect.soft(page.locator('.name')).toHaveText('Alice');  // independent detail
+  await expect.soft(page.locator('.email')).toHaveText('a@b.c'); // independent detail
+});
+```
+
+**Rule:** `expect.soft()` is fine for independent, non-critical checks alongside hard assertions. Flag P1 when >50% of assertions in a single test are `soft` — the test likely needs at least one hard assertion to gate on the primary condition.
+
+---
+
+### P2 — Nice to Fix (maintenance / robustness)
+
+Weak but not wrong. Address when refactoring or before adopting wider conventions.
+
+#### 11. YAGNI + Zombie Specs `[LLM-only]`
 
 Two sub-patterns: unused code in Page Objects, and zombie spec files.
 
@@ -375,125 +531,6 @@ Two sub-patterns: unused code in Page Objects, and zombie spec files.
 | basic.spec.ts | (entire file) | covered by full.spec.ts | DELETE |
 ```
 
-#### 12. Missing Auth Setup `[LLM-only]`
-
-**Symptom:** Spec navigates to protected routes (`/dashboard`, `/settings`, `/admin`, `/account`, etc.) without any preceding login action, `storageState` configuration, or authentication `beforeEach` hook.
-
-**Why it matters:** Tests hit a login redirect instead of the intended page, making all assertions vacuous — they verify the login page, not the feature under test.
-
-**Rule:** Every spec that navigates to a route requiring authentication must either: (a) perform login in `beforeEach`, (b) use `storageState` from Playwright config, or (c) use a custom auth fixture. Flag P0 if no auth mechanism is visible.
-
-#### 13. Inconsistent POM Usage `[LLM-only]`
-
-**Symptom:** A POM class is imported and used for some actions, but the spec also uses raw `page.fill()` / `page.click()` for operations the POM should encapsulate.
-
-**Why it matters:** Defeats the purpose of the POM pattern — when the UI changes, you must update both the POM and the spec. DRY principle violated.
-
-**Rule:** If a POM exists for a page, all interactions with that page should go through the POM. Flag P1 if spec bypasses POM with raw `page.*` calls for actions the POM should own. Suggest adding missing methods to the POM.
-
-#### 14. Hardcoded Credentials `[grep-detectable]`
-
-**Symptom:** String literals used as usernames, passwords, or API keys directly in test code.
-
-```typescript
-// BAD — credentials as string literals
-await loginPage.login('admin', 'password123');
-await page.fill('#password', 'secret');
-```
-
-**Why it matters:** Security risk if repo is public, couples tests to specific credentials, prevents running tests against different environments.
-
-**Rule:** Use environment variables (`process.env.TEST_USER`), Playwright config secrets, or test data fixtures. Flag P1.
-
-#### 15. Missing `await` on `expect()` `[grep-detectable]`
-
-**Symptom:** `expect(locator).toBeVisible()` without `await` — the expression returns a Promise that is never awaited. The test moves on immediately and the assertion never actually runs.
-
-```typescript
-// BAD — Promise returned but never awaited; test always passes
-expect(page.locator('.toast')).toBeVisible();
-
-// GOOD
-await expect(page.locator('.toast')).toBeVisible();
-```
-
-**Why it matters:** This is a silent P0. The test compiles and runs green, but zero verification happens. Extremely common mistake, especially when converting from non-async test frameworks.
-
-**Rule:** Every `expect()` on a Playwright Locator must be `await`ed. Grep flags lines starting with `expect(` — confirm in Phase 2 that the line lacks `await` and involves a Locator (non-Locator expects like `expect(count).toBe(3)` don't need `await`). Flag P0.
-
-#### 16. Missing `await` on Playwright Actions `[grep-detectable]`
-
-**Symptom:** `page.locator(...).click()` without `await` — the action is fired but never awaited. It may not execute at all, or execute out of order.
-
-```typescript
-// BAD — click may never complete before next line runs
-page.locator('#submit').click();
-
-// GOOD
-await page.locator('#submit').click();
-```
-
-**Why it matters:** Silent no-op. The test passes because it never waits for the action. Subsequent assertions may run against stale page state.
-
-**Rule:** Every Playwright action (`.click()`, `.fill()`, `.type()`, `.press()`, `.check()`, `.selectOption()`, `.setInputFiles()`, `.hover()`, `.focus()`, `.blur()`) must be `await`ed. Flag P0.
-
-#### 17. Deprecated `page.click(selector)` API `[grep-detectable, Playwright only]`
-
-**Symptom:** Using `page.click('#button')` or `page.fill('#input', 'text')` instead of the locator-based API.
-
-```typescript
-// BAD — deprecated shorthand
-await page.click('#submit');
-await page.fill('#email', 'user@test.com');
-
-// GOOD — locator-based, auto-wait, better errors
-await page.locator('#submit').click();
-await page.locator('#email').fill('user@test.com');
-```
-
-**Why it matters:** The shorthand `page.click(selector)` skips the Locator layer, losing auto-wait improvements and producing worse error messages. Playwright docs recommend locator-based actions.
-
-**Rule:** Flag P1. Suggest migrating to `page.locator(selector).action()`.
-
-#### 18. `expect.soft()` Overuse `[grep-detectable + LLM]`
-
-**Symptom:** Most or all assertions in a test use `expect.soft()`, so the test continues past failures and may mask cascading issues — functionally equivalent to error swallowing.
-
-```typescript
-// BAD — all assertions are soft; test never fails early
-test('should display profile', async ({ page }) => {
-  await expect.soft(page.locator('.name')).toBeVisible();
-  await expect.soft(page.locator('.email')).toBeVisible();
-  await expect.soft(page.locator('.avatar')).toBeVisible();
-});
-
-// GOOD — one hard assertion gates, soft assertions for independent checks
-test('should display profile', async ({ page }) => {
-  await expect(page.locator('.profile')).toBeVisible();          // hard gate
-  await expect.soft(page.locator('.name')).toHaveText('Alice');  // independent detail
-  await expect.soft(page.locator('.email')).toHaveText('a@b.c'); // independent detail
-});
-```
-
-**Rule:** `expect.soft()` is fine for independent, non-critical checks alongside hard assertions. Flag P1 when >50% of assertions in a single test are `soft` — the test likely needs at least one hard assertion to gate on the primary condition.
-
-#### 3b. Cypress `uncaught:exception` Suppression `[grep-detectable, Cypress only]`
-
-**Symptom:** `cy.on('uncaught:exception', () => false)` globally suppresses all unhandled app errors, hiding real bugs.
-
-```javascript
-// BAD — blanket suppression
-Cypress.on('uncaught:exception', () => false);
-
-// BETTER — scoped to a specific known error
-Cypress.on('uncaught:exception', (err) => {
-  if (err.message.includes('ResizeObserver loop')) return false;
-  throw err;
-});
-```
-
-**Rule:** Blanket `() => false` is P0 — equivalent to `.catch(() => {})`. Scoped handlers that filter specific known errors and re-throw others are acceptable with `// JUSTIFIED:`.
-
 ---
 
 ## Output Format
@@ -501,9 +538,9 @@ Cypress.on('uncaught:exception', (err) => {
 Present findings grouped by severity:
 
 ```markdown
-## [P0/P1/P2] Task N: [filename] — [issue type]
+## [P0/P1/P2] [filename] — [issue type]
 
-### N-1. `[test name or POM method]`
+### `[test name or POM method]`
 - **Issue:** [description]
 - **Fix:** [name change / assertion addition / merge / deletion]
 - **Code:**

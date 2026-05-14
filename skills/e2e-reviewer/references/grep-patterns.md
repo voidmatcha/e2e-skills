@@ -2,7 +2,12 @@
 
 Each batch contains independent grep checks. Call all Grep tools within one batch in a SINGLE assistant message so they execute in parallel — each batch = one assistant turn with multiple Grep tool_use blocks.
 
-Lines where the **immediately preceding line** contains `// JUSTIFIED:` are intentional — skip them (exception: #7 Focused Test Leak has no `// JUSTIFIED:` exemption).
+A hit is intentional and must be **skipped** when `// JUSTIFIED:` appears in any of these positions (exception: #7 Focused Test Leak has no `// JUSTIFIED:` exemption):
+1. The line **immediately preceding** the hit.
+2. The line immediately preceding the **enclosing call/block** when the hit is inside a callback body — e.g., `// JUSTIFIED:` above `page.evaluate(() => { … document.querySelector(…) … })` covers every qualifying pattern inside that callback.
+3. For chained calls split across lines (`page.locator(…)\n  .filter(…)\n  .first()`), the line immediately preceding the chain's starting expression covers `.nth()` / `.first()` / `.last()` further down the chain.
+
+When raw grep output is the only thing you have, always read 1–3 lines of surrounding context before flagging — most false positives come from JUSTIFIED comments sitting just above the visible match.
 
 ---
 
@@ -54,7 +59,7 @@ Lines where the **immediately preceding line** contains `// JUSTIFIED:` are inte
 |-------|---------|------|-----------------|
 | #15 Missing await on expect | `^\s*expect\(` | `*.{spec.*,test.*}` | `[Playwright]` — `expect(locator).toBeVisible()` without `await` silently resolves to a Promise that is never checked. Always P0. |
 | #16 Missing await on action | `^\s*page\.(locator\|getBy\w+)\(.*\)\.(click\|fill\|type\|press\|check\|uncheck\|selectOption\|setInputFiles\|hover\|focus\|blur)\(` | `*.{spec.*,test.*}` | `[Playwright]` — Action without `await` creates an unresolved Promise. Always P0. Confirm in Phase 2 that the hit line lacks a leading `await`. |
-| #17 Deprecated page action API | `page\.(click\|fill\|type\|check\|uncheck\|selectOption)\(["'\`]` | `*.{spec.*,test.*}` | `[Playwright]` — `page.click(selector)` is deprecated; use `page.locator(selector).click()`. P1. |
+| #17 Direct page action API | `page\.(click\|fill\|type\|check\|uncheck\|selectOption)\(["'\`]` | `*.{spec.*,test.*}` | `[Playwright]` — prefer locator-based `page.locator(selector).click()` / `.fill()` for composition and clearer failures. P1. |
 | #9c Networkidle | `networkidle` | `*.{ts,js}` | Playwright docs warn against `networkidle` — unreliable on modern SPAs. P1. |
 | #18 expect.soft overuse | `expect\.soft\(` | `*.{spec.*,test.*}` | `[Playwright]` — `expect.soft()` continues on failure; flag in Phase 2 if >50% of assertions in a single test are `soft`. P1. |
 | #3b Cypress uncaught:exception (specs) | `on\('uncaught:exception'.*false` | `*.{cy.*}` | `[Cypress]` — blanket suppression of app errors. P0 unless scoped with `// JUSTIFIED:`. |
