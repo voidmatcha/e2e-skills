@@ -1,0 +1,35 @@
+# #15 — Missing await on Playwright expect (Locator/Page subject only)
+#
+# Why ast-grep over rg:
+#   - rg pattern `^\s*expect\(.*(locator|getBy[A-Za-z]+|page\))` requires literal
+#     "locator", "getBy*", or "page)" substring in the line. Misses real bugs where
+#     the Locator is bound to a variable: `expect(boldText).toBeVisible()`.
+#   - rg pattern matches Vitest mock matchers (`.toHaveBeenCalled()`,
+#     `.toEqual([])`, etc.) when the subject contains "getBy*" or "page" by
+#     coincidence (e.g., n8n's `credentialTypes.getByName` triggered ~2200 false
+#     positives that Phase 2 LLM had to filter manually).
+#
+# How this rule scopes precisely:
+#   1. Matches `expect($X).$M(...)` structurally (any subject, any matcher).
+#   2. Constrains $M to the Playwright web-first matcher whitelist.
+#   3. Skips matches inside `await_expression` (already awaited).
+#
+# Result: catches real bugs rg misses (variable-name Locators) AND skips Vitest
+# mock matchers rg flags as false positives.
+#
+# Tested against rocket-chat (30 ast-grep hits vs 9 rg hits, all real),
+# mattermost (54 vs 2, including `expect(boldText).toBeVisible()` rg missed).
+
+id: missing-await-playwright-expect
+language: TypeScript
+severity: error
+message: "Missing await on Playwright expect — web-first matcher needs `await` for auto-retry"
+
+rule:
+  pattern: 'expect($X).$M($$$ARGS)'
+  not:
+    inside:
+      kind: await_expression
+constraints:
+  M:
+    regex: '^(toBeVisible|toBeHidden|toBeEnabled|toBeDisabled|toBeChecked|toBeEmpty|toBeFocused|toBeAttached|toBeInViewport|toBeEditable|toHaveText|toContainText|toHaveValue|toHaveValues|toHaveCount|toHaveURL|toHaveTitle|toHaveAttribute|toHaveClass|toHaveCSS|toHaveScreenshot|toHaveJSProperty|toHaveAccessibleName|toHaveAccessibleDescription|toHaveRole)$'

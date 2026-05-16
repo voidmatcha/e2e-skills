@@ -1,6 +1,6 @@
 # E2E Test Smell Taxonomy
 
-This catalog is the public reference behind `e2e-reviewer` and `scripts/e2e-smell-scan.sh`. It focuses on tests that pass while proving little, tests that hide application bugs, and tests that fail for reasons unrelated to user behavior.
+This catalog is the public reference behind `e2e-reviewer` and `skills/e2e-reviewer/scripts/scan.sh`. It focuses on tests that pass while proving little, tests that hide application bugs, and tests that fail for reasons unrelated to user behavior.
 
 ## Evidence Levels
 

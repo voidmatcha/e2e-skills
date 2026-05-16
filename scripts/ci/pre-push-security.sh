@@ -41,7 +41,7 @@ for pattern in "${secret_patterns[@]}"; do
   hits=$(grep -rEn \
     --include='*.sh' --include='*.md' --include='*.json' --include='*.yaml' --include='*.yml' \
     --exclude="$SELF" --exclude='e2e-smell-report.txt' \
-    --exclude-dir=.git --exclude-dir='*-workspace' --exclude-dir=node_modules \
+    --exclude-dir=.git --exclude-dir='*-workspace' --exclude-dir=node_modules --exclude-dir=testbed \
     "$pattern" . 2>/dev/null || true)
   if [ -n "$hits" ]; then
     err "potential secret matching /$pattern/"
@@ -53,7 +53,7 @@ done
 
 section "Code injection"
 eval_hits=$(grep -rEn \
-  --include='*.sh' --exclude="$SELF" --exclude-dir=.git --exclude-dir=node_modules \
+  --include='*.sh' --exclude="$SELF" --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=testbed \
   "(^|[;&|])[[:space:]]*eval([[:space:]\"']|$)" . 2>/dev/null | \
   grep -vE "^[^:]+:[0-9]+:[[:space:]]*#" || true)
 if [ -z "$eval_hits" ]; then
@@ -64,7 +64,7 @@ else
 fi
 
 fixed_tmp_hits=$(grep -rEn \
-  --include='*.sh' --exclude="$SELF" --exclude-dir=.git --exclude-dir=node_modules \
+  --include='*.sh' --exclude="$SELF" --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=testbed \
   '/tmp(/|/[A-Za-z0-9_.-]+)' . 2>/dev/null | \
   grep -vE 'mktemp|TMPDIR|TEMP_FILE|RESULT_FILE' || true)
 if [ -z "$fixed_tmp_hits" ]; then
@@ -75,7 +75,7 @@ else
 fi
 
 backdoor_hits=$(grep -rEn \
-  --include='*.sh' --exclude="$SELF" --exclude-dir=.git --exclude-dir=node_modules \
+  --include='*.sh' --exclude="$SELF" --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=testbed \
   'nc -[el]|/dev/tcp/|bash -i.*&|reverse shell|exec [0-9]<>/dev/' . 2>/dev/null || true)
 if [ -z "$backdoor_hits" ]; then
   ok "no reverse-shell or backdoor shell patterns"
@@ -185,7 +185,7 @@ done < <(find scripts -name '*.sh' -type f 2>/dev/null)
 section "Hardcoded paths"
 hardcoded_paths=$(grep -rEn \
   --include='*.sh' --include='*.md' --include='*.json' --include='*.yaml' --include='*.yml' \
-  --exclude="$SELF" --exclude-dir=.git --exclude-dir=node_modules --exclude-dir='*-workspace' \
+  --exclude="$SELF" --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=testbed --exclude-dir='*-workspace' \
   '/Users/[A-Za-z0-9._-]+/|/home/[A-Za-z0-9._-]+/' . 2>/dev/null | \
   grep -vE 'CHANGELOG\.md|example|placeholder|~/' || true)
 if [ -z "$hardcoded_paths" ]; then

@@ -1,8 +1,8 @@
-› **Reading this in Claude Code?** See also `CLAUDE.md` if present. This file is read by Codex, Cursor, Copilot, Gemini CLI, OpenCode, and other agents that follow the `AGENTS.md` convention.
+› **Reading this in Claude Code?** See also `CLAUDE.md` if present. This file is read by Codex and other agents that follow the `AGENTS.md` convention.
 
 # AGENTS.md
 
-Guidance for AI coding agents (Claude Code, Codex, OpenCode, Cursor, Gemini CLI, Copilot, and others) working in this repository.
+Guidance for AI coding agents (Claude Code, Codex, and other AGENTS.md-compatible hosts) working in this repository.
 
 ## Repository Overview
 
@@ -13,7 +13,7 @@ Guidance for AI coding agents (Claude Code, Codex, OpenCode, Cursor, Gemini CLI,
 - `playwright-debugger` — root-cause diagnosis from `playwright-report/`.
 - `cypress-debugger` — root-cause diagnosis from `cypress/reports/` (mochawesome / JUnit).
 
-The repo doubles as a Claude Code plugin (`.claude-plugin/`), a Codex plugin (`.codex-plugin/`), a cross-agent skill source via the `skills` CLI, and a standalone scanner (`scripts/e2e-smell-scan.sh`).
+The repo doubles as a Claude Code plugin (`.claude-plugin/`), a Codex plugin (`.codex-plugin/`), a cross-agent skill source via the `skills` CLI, and a standalone scanner (`skills/e2e-reviewer/scripts/scan.sh`).
 
 ## Verification gate (must pass before commit)
 
@@ -45,9 +45,12 @@ The repo doubles as a Claude Code plugin (`.claude-plugin/`), a Codex plugin (`.
 │   ├── playwright-debugger/
 │   └── cypress-debugger/
 ├── scripts/
-│   ├── e2e-smell-scan.sh   # Standalone P0/P1 grep scanner
-│   └── ci/                 # CI parity, security, eval-metadata checks
-├── docs/                   # Open-source assets (taxonomy, case studies, evals, scope, compat)
+│   ├── ci/                 # CI parity, security, eval-metadata checks
+│   ├── dev/                # contributor reinstall + git hook setup
+│   ├── hooks/              # local git hooks
+│   ├── verify-fixes.sh     # post-bulk-fix verification (sed-artifact AST detection)
+│   └── validate-evals.sh
+├── docs/                   # Open-source assets (taxonomy, case studies, scope)
 ├── README.md
 └── CHANGELOG.md
 ```
@@ -79,7 +82,7 @@ bash scripts/ci/review.sh           # parity, language, links, framework scope, 
 bash scripts/ci/test-parity.sh      # drift smoke test (mutate-and-detect)
 bash scripts/ci/validate-evals.sh   # eval JSON schema
 bash scripts/ci/pre-push-security.sh
-bash scripts/e2e-smell-scan.sh path/to/tests   # standalone scanner
+bash skills/e2e-reviewer/scripts/scan.sh path/to/tests   # standalone scanner
 
 # Plugin manifest sanity
 python3 -m json.tool .claude-plugin/plugin.json
@@ -93,7 +96,7 @@ python3 -m json.tool .claude-plugin/marketplace.json
 ```bash
 # Clone any real Playwright/Cypress repo into testbed/ (gitignored) to exercise the skills
 git clone --depth 1 https://github.com/calcom/cal.com testbed/cal.com
-bash scripts/e2e-smell-scan.sh testbed/cal.com
+bash skills/e2e-reviewer/scripts/scan.sh testbed/cal.com
 # Invoke e2e-reviewer / playwright-debugger via the agent runtime as usual.
 
 # Install the four skills from this repo as real copies (one-time setup; also cleans up any prior symlink install)
@@ -103,13 +106,13 @@ bash scripts/dev/reinstall-skills.sh
 bash scripts/dev/install-hooks.sh
 ```
 
-The reinstall script runs `npx skills remove` then `npx skills add <repo-root> --copy`, scoped to the four e2e-skills (other installed skills are untouched). `--copy` mode means the install is a real copy, not a symlink — uncommitted local edits in this repo do **not** leak into the Claude Code / Codex runtime. The pre-push hook (after `install-hooks.sh`) runs `npx skills update` on every `git push`, refreshing the installed copies so they match the HEAD being pushed. Override the agent list via `E2E_SKILLS_AGENTS` (default: `-a claude-code -a codex -a opencode`).
+The reinstall script runs `npx skills remove` then `npx skills add <repo-root> --copy`, scoped to the four e2e-skills (other installed skills are untouched). `--copy` mode means the install is a real copy, not a symlink — uncommitted local edits in this repo do **not** leak into the Claude Code / Codex runtime. The pre-push hook (after `install-hooks.sh`) runs `npx skills update` on every `git push`, refreshing the installed copies so they match the HEAD being pushed. Override the agent list via `E2E_SKILLS_AGENTS` (default: `-a claude-code -a codex`).
 
 ## When You Edit Skills
 
-1. **Update parity surfaces in lock-step.** Adding or renaming a pattern means touching: the relevant `SKILL.md`, `docs/e2e-test-smells.md`, `README.md` Quick Reference table, `skills/e2e-reviewer/references/grep-patterns.md`, `.claude-plugin/plugin.json` description, `.claude-plugin/marketplace.json` description, and `.codex-plugin/plugin.json` description. CI fails fast if any one is out of step.
+1. **Update parity surfaces in lock-step.** Adding or renaming a pattern means touching: the relevant `SKILL.md` (Pattern Reference + Quick Reference), `docs/e2e-test-smells.md`, `README.md` 19 Patterns table, `skills/e2e-reviewer/references/grep-patterns.md`, `skills/e2e-reviewer/scripts/scan.sh`, `.claude-plugin/plugin.json` description, `.claude-plugin/marketplace.json` description, and `.codex-plugin/plugin.json` description. CI fails fast if any one is out of step.
 2. **Re-run the drift smoke test.** `scripts/ci/test-parity.sh` mutates known-bad versions of the files and asserts the parity check catches each one — keep it green when you add new parity rules.
-3. **Add or update evals when behavior changes.** Each skill has an `evals/evals.json`. Eval IDs must follow the skill's naming convention (CI validates).
+3. **Add or update evals when behavior changes.** Each skill has an `evals/evals.json`. Eval IDs must follow the skill's naming convention (CI validates). Each new smell or behavior change should add at least two assertions: one true positive that must be flagged, and one false-positive guard that names the exact line and why it must not be flagged.
 4. **Respect severity contracts.** P0 entries should be silent-always-pass smells; don't downgrade. P1/P2 should not creep into P0 just because they're easier to grep.
 
 ## Cross-host parity rules
@@ -129,16 +132,16 @@ When you bump the bundle version, touch all three manifests in one commit. The d
 - Do **not** silently change a pattern ID, severity, or failure category code. Downstream evals and OSS adopters depend on them.
 - Do **not** introduce out-of-scope framework code paths. Skills must say "out of scope" rather than emit half-working examples for Selenium/WebdriverIO/etc.
 - Do **not** push commits without running `bash scripts/ci/ci-local.sh`.
-- Do **not** edit `skills/e2e-reviewer/references/grep-patterns.md` without checking that the matching `Phase 1` block in `SKILL.md` still lines up — they are intentionally paired.
+- Do **not** edit `skills/e2e-reviewer/references/grep-patterns.md` without checking that the matching pattern IDs in `skills/e2e-reviewer/scripts/scan.sh` still line up — `scan.sh` is now the runtime source of truth, `grep-patterns.md` is an ID-meaning reference for Phase 2 / debugger lookup.
+- Do **not** create side effects on third-party repos when validating the skill. Cloning into `testbed/` and running `scan.sh` locally is allowed; pushing to forks, opening PRs/issues, posting comments, or any state-changing `gh` command is not.
 
 ## Installation Paths Documented for Users
 
 - **Claude Code marketplace**: `/plugin marketplace add voidmatcha/e2e-skills` → `/plugin install e2e-skills@voidmatcha` (reads `.claude-plugin/plugin.json` + `marketplace.json`).
-- **Codex plugin**: registered via the Codex marketplace UI; reads `.codex-plugin/plugin.json` for `interface.displayName`, `defaultPrompt[]`, `brandColor`, and capabilities. Shared `skills/` is the source of truth for both hosts.
-- **Cross-agent (Codex, OpenCode, Cursor, Gemini CLI, and 50+ others)**: `npx skills add voidmatcha/e2e-skills --skill '*' -g -a claude-code -a codex -a opencode` (uses the `vercel-labs/skills` npm CLI).
+- **Cross-agent (55 hosts via the `vercel-labs/skills` npm CLI)**: `npx skills add voidmatcha/e2e-skills --skill '*' -g -a claude-code -a codex` — pick specific agents with repeat `-a` flags or use `--agent '*'` to install everywhere. This is the recommended Codex install path; the bundle lands in `~/.codex/skills/` where Codex auto-discovers it. `.codex-plugin/plugin.json` is parsed at that point for the `interface` block (`displayName`, `defaultPrompt[]`, `brandColor`, capabilities, max 3 prompts × 128 chars per Codex spec). The native `codex plugin marketplace add` flow is intentionally not shipped — see CHANGELOG 1.3.0 for the rationale.
 - **Manual clone for Claude Code**: `git clone https://github.com/voidmatcha/e2e-skills.git ~/.claude/skills/e2e-skills`.
 
-See `docs/agent-compatibility.md` for the full matrix.
+The three install paths above cover every supported host. The cross-agent `skills` CLI route handles Codex and the broader `vercel-labs/skills` ecosystem (55 agents).
 
 ## License
 

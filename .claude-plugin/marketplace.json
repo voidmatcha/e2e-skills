@@ -8,7 +8,7 @@
       "name": "e2e-skills",
       "source": "./",
       "description": "Generate, review, and debug Playwright and Cypress E2E tests. Four agent skills: generate tests from scratch with live browser exploration and explicit user approval; review existing specs against 19 anti-patterns grouped by P0/P1/P2 severity — P0 must-fix (name-assertion mismatch, missing Then, error swallowing, Cypress uncaught:exception suppression, always-passing assertions, bypass patterns, focused test leak, missing assertions, missing auth setup, missing await on expect, missing await on action), P1 should-fix (raw DOM queries, hard-coded sleeps, flaky test patterns, inconsistent POM usage, hardcoded credentials, direct page action API, expect.soft overuse), P2 nice-to-fix (YAGNI + zombie specs); debug failed Playwright tests from playwright-report/; debug failed Cypress tests from cypress/reports/.",
-      "version": "1.2.2",
+      "version": "1.3.0",
       "author": {
         "name": "YONGJAE LEE"
       },

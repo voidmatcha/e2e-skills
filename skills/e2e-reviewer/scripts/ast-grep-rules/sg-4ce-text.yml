@@ -1,0 +1,22 @@
+# #4c-4e (subset) — One-shot Playwright text/value assertion
+#
+# Matches `expect(await x.textContent()).toBe(v)` / `innerText` / `inputValue`.
+# Replace with `await expect(x).toHaveText(v)` / `.toHaveValue(v)` per 4.1.
+
+id: one-shot-text-value-assertion
+language: TypeScript
+severity: error
+message: "One-shot text/value read — use web-first toHaveText/toHaveValue/toContainText"
+
+rule:
+  any:
+    - pattern: 'expect(await $X.textContent()).toBe($V)'
+    - pattern: 'expect(await $X.textContent()).toEqual($V)'
+    - pattern: 'expect(await $X.textContent()).toContain($V)'
+    - pattern: 'expect(await $X.innerText()).toBe($V)'
+    - pattern: 'expect(await $X.innerText()).toEqual($V)'
+    - pattern: 'expect(await $X.innerText()).toContain($V)'
+    - pattern: 'expect(await $X.inputValue()).toBe($V)'
+    - pattern: 'expect(await $X.inputValue()).toEqual($V)'
+    - pattern: 'expect(await $X.getAttribute($A)).toBe($V)'
+    - pattern: 'expect(await $X.getAttribute($A)).toEqual($V)'

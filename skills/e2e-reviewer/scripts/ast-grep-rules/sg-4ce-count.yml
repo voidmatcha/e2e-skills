@@ -1,0 +1,19 @@
+# #4c-4e + #15 (count variant) — One-shot Locator count assertion
+#
+# Matches `expect(await x.count()).toBe(N)` and `expect(await x.all()).toHaveLength(N)`.
+# Replace with `await expect(x).toHaveCount(N)` per 4.1 (canonical A).
+#
+# This is the row added empirically post-v3 (affine 30+ instances, posthog 4
+# scanner-blind-spot instances). The rg scanner could not catch the chained
+# `expect(await x.locator(y).count()).toBe(N)` shape reliably.
+
+id: one-shot-count-assertion
+language: TypeScript
+severity: error
+message: "One-shot count read — use await expect(x).toHaveCount(N)"
+
+rule:
+  any:
+    - pattern: 'expect(await $X.count()).toBe($N)'
+    - pattern: 'expect(await $X.count()).toEqual($N)'
+    - pattern: 'expect(await $X.all()).toHaveLength($N)'

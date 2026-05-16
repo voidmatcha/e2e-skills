@@ -49,9 +49,9 @@ fi
 if [ "${E2E_SKILLS_SKIP_SMELL_SCAN:-}" != "1" ]; then
   step "E2E smell scan"
   if [ "$QUIET" = "1" ]; then
-    E2E_SMELL_FAIL_ON=p0 ./scripts/e2e-smell-scan.sh . >/dev/null 2>&1 || fail "e2e-smell-scan.sh"
+    E2E_SMELL_FAIL_ON=p0 ./skills/e2e-reviewer/scripts/scan.sh . >/dev/null 2>&1 || fail "skills/e2e-reviewer/scripts/scan.sh"
   else
-    E2E_SMELL_FAIL_ON=p0 ./scripts/e2e-smell-scan.sh . || fail "e2e-smell-scan.sh"
+    E2E_SMELL_FAIL_ON=p0 ./skills/e2e-reviewer/scripts/scan.sh . || fail "skills/e2e-reviewer/scripts/scan.sh"
   fi
 fi
 

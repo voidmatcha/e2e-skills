@@ -1,6 +1,6 @@
 # e2e-skills — E2E Test Generation, Review, and Debugging
 
-E2E tests that always pass are worse than no tests — they give false confidence while real bugs slip through. An Agent Skills bundle for [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview), Codex, and OpenCode by [@voidmatcha](https://github.com/voidmatcha) that catches what CI misses: **tests that pass but prove nothing**, and **failures that are hard to trace**.
+E2E tests that always pass are worse than no tests — they give false confidence while real bugs slip through. An Agent Skills bundle for [Claude Code](https://claude.com/product/claude-code) and [Codex](https://github.com/openai/codex) (and other [`AGENTS.md`](https://agents.md)-compatible runtimes via the `skills` CLI) by [@voidmatcha](https://github.com/voidmatcha) that catches what CI misses: **tests that pass but prove nothing**, and **failures that are hard to trace**.
 
 Four complementary skills that cover the full E2E lifecycle:
 
@@ -11,9 +11,50 @@ Four complementary skills that cover the full E2E lifecycle:
 
 ### Contents
 
-- [Workflow](#workflow) · [Standalone scanner](#standalone-scanner) · [Open source proof](#proven-in-open-source) · [Installation](#installation)
+- [Install](#install) · [Workflow](#workflow) · [Standalone scanner](#standalone-scanner) · [Proven in OSS](#proven-in-open-source)
 - Skills: [generator](#skill-1-playwright-test-generator--test-generation) · [reviewer](#skill-2-e2e-reviewer--quality-review) · [playwright-debugger](#skill-3-playwright-debugger--playwright-failure-debugger) · [cypress-debugger](#skill-4-cypress-debugger--cypress-failure-debugger)
-- [Comparison with other tools](#comparison-with-other-tools) · [FAQ](#faq) · [Compatibility](#compatibility)
+- [License](#license)
+
+## Install
+
+```bash
+# Recommended — install for Claude Code + Codex (most common)
+npx skills add voidmatcha/e2e-skills --skill '*' -g -a claude-code -a codex
+
+# Install everywhere — every agent the `skills` CLI supports
+npx skills add voidmatcha/e2e-skills --skill '*' -g --agent '*'
+
+# Claude Code plugin marketplace
+/plugin marketplace add voidmatcha/e2e-skills
+/plugin install e2e-skills@voidmatcha
+
+# Manual clone (Claude Code)
+git clone https://github.com/voidmatcha/e2e-skills.git ~/.claude/skills/e2e-skills
+```
+
+Codex users: install via the `npx skills add` route above (`-a codex` drops the bundle into `~/.codex/skills/`, where Codex auto-discovers it).
+
+### Quick Example
+
+```
+You: Review my Playwright tests in apps/viewer/src/test/
+
+e2e-reviewer:
+
+  [P0] settings.spec.ts:88, 99 — #4h One-shot URL read
+    expect(page.url()).toEqual(`${baseURL}/${id}-public`);   // sync read, no auto-retry
+    → fix: await expect(page).toHaveURL(`${baseURL}/${id}-public`);
+    (also removes redundant `await page.waitForTimeout(1000)` above)
+
+  [P0] fileUpload.spec.ts:67 — #16 Missing await on action
+    page.getByRole('button', { name: 'Delete' }).click();   // fire-and-forget, races next line
+    → fix: await page.getByRole('button', { name: 'Delete' }).click();
+
+  Total: 3 P0 (2 #4h, 1 #16), 0 P1, 0 P2 in 24 spec files.
+  P1/P2 candidates (not yet flagged as bugs): 20× positional .nth() selectors, 5× direct page.click(selector).
+```
+
+Real findings from a recent typebot.io scan — silent always-pass bugs your test suite was hiding.
 
 ### Workflow
 
@@ -24,68 +65,25 @@ Four complementary skills that cover the full E2E lifecycle:
 
 ### Standalone Scanner
 
-Run the mechanical smell checks without an agent:
-
 ```bash
-./scripts/e2e-smell-scan.sh path/to/tests
-
-# Report only, never fail CI
-E2E_SMELL_FAIL_ON=none ./scripts/e2e-smell-scan.sh .
-
-# Fail on any finding, not just P0
-E2E_SMELL_FAIL_ON=any ./scripts/e2e-smell-scan.sh .
+./skills/e2e-reviewer/scripts/scan.sh path/to/tests
 ```
 
-The scanner is intentionally conservative as a first pass: it catches obvious P0/P1 smells, then `e2e-reviewer` handles semantic review and false-positive judgment. It reports justified patterns too; use `// JUSTIFIED:` to explain intent for human and agent review, not to hide findings.
+Three tiers run in priority order: (1) `eslint-plugin-playwright` / `eslint-plugin-cypress` — uses your local install if present, otherwise auto-downloads via `npx --yes` (set `E2E_SMELL_NO_ESLINT_DOWNLOAD=1` to disable); (2) `ast-grep` Tree-sitter rules for FP-prone patterns; (3) bundled regex covering all 19 patterns including gaps the lint plugins miss — Cypress `cy.on('uncaught:exception', () => false)` blanket suppression (#3b), `{timeout:0}.should("not.exist")` (#4g), and cross-framework heuristics. See [`docs/e2e-test-smells.md`](docs/e2e-test-smells.md) for the full P0/P1/P2 model. Use `// JUSTIFIED: <reason>` above an intentional pattern to suppress in both lint and scanner output.
+
+The `e2e-reviewer` skill adds what no lint can reach: semantic checks (name-assertion mismatch, missing Then, YAGNI/zombie specs, POM consistency, auth setup analysis) and fix guidance with band-aid awareness. Run [`eslint-plugin-playwright`](https://github.com/playwright-community/eslint-plugin-playwright) / [`eslint-plugin-cypress`](https://github.com/cypress-io/eslint-plugin-cypress) as your every-commit baseline; invoke the skill for PR review, suspected silent-pass bugs, or before bulk fixes.
 
 ### Proven in Open Source
 
-The checklist is grounded in real merged OSS work, not just synthetic examples:
+Three real merged PRs, not synthetic examples:
 
 | Repository | Merged PR | What it fixed |
 |------------|-----------|---------------|
-| Cal.com | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | Replaced false-passing Playwright assertions, no-op state checks, and hard-coded waits with web-first assertions and condition waits |
-| Storybook | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Fixed unawaited Playwright actions and discarded `isVisible()` calls that made E2E checks silently weak |
-| Element Web | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Removed always-passing assertions, unawaited checks, `toBeAttached()` misuse, and debugging leftovers |
+| Cal.com | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | False-passing Playwright assertions, no-op state checks, hard-coded waits → web-first assertions + condition waits |
+| Storybook | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Unawaited Playwright actions and discarded `isVisible()` calls that made E2E checks silently weak |
+| Element Web | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Always-passing assertions, unawaited checks, `toBeAttached()` misuse, debugging leftovers |
 
-See [Open Source Case Studies](docs/case-studies.md) for short before/after lessons from these PRs.
-
-### Open Source Assets
-
-| Asset | Purpose |
-|-------|---------|
-| [E2E Test Smell Taxonomy](docs/e2e-test-smells.md) | Shareable reference for the P0/P1/P2 smell model |
-| [`scripts/e2e-smell-scan.sh`](scripts/e2e-smell-scan.sh) | Agent-free scanner for obvious E2E smell patterns |
-| [`scripts/ci/ci-local.sh`](scripts/ci/ci-local.sh) | Local mirror for convention, security, eval, scanner, and pattern/description parity checks |
-| [GitHub Action](.github/workflows/e2e-smell-scan.yml) | CI example that runs convention/security checks, scanner checks, and uploads a report |
-| [Evals](docs/evals.md) | How to validate and extend skill eval definitions |
-| [Framework Scope](docs/framework-scope.md) | Explicit Playwright/Cypress support boundary |
-| [Agent Compatibility](docs/agent-compatibility.md) | Claude Code, Codex, and OpenCode setup notes |
-
-## Installation
-
-```bash
-# Claude Code / Codex / OpenCode quick install: install all four skills
-npx skills add voidmatcha/e2e-skills --skill '*' -g -a claude-code -a codex -a opencode
-
-# If the skills CLI is already installed, skip npx:
-skills add voidmatcha/e2e-skills --skill '*' -g -a claude-code -a codex -a opencode
-
-# Install to every supported agent instead:
-npx skills add voidmatcha/e2e-skills --skill '*' -g --agent '*'
-
-# Alternative: Claude Code plugin marketplace
-/plugin marketplace add voidmatcha/e2e-skills
-/plugin install e2e-skills@voidmatcha
-
-# Codex plugin (registered via the Codex marketplace UI; reads .codex-plugin/plugin.json)
-
-# Claude Code manual clone
-mkdir -p ~/.claude/skills
-git clone https://github.com/voidmatcha/e2e-skills.git ~/.claude/skills/e2e-skills
-```
-
----
+The skill was further iterated against 13 OSS Playwright/Cypress repos (1k+ stars) in a local testbed — zero GitHub side effects. The 4.4 cycle-count rule, 4.2 PR-culture cross-check, and Phase 2 retry-wrapper skip all came from observed agent behavior in those runs. See [`docs/case-studies.md`](docs/case-studies.md) for before/after lessons.
 
 ## Skill 1: `playwright-test-generator` — Test Generation
 
@@ -108,23 +106,13 @@ Add playwright coverage for checkout flow
 
 ### Pipeline
 
-```
-Step 1: Detect environment (config, baseURL, test dir, POM structure)
-Step 2: Coverage gap analysis → user picks target
-Step 3: Live browser exploration via agent-browser tools
-Step 4: Scenario design → approval gate → user approves
-Step 5: Code generation (POM + spec or flat spec, auto-detected)
-Step 6: YAGNI audit + e2e-reviewer quality gate
-Step 7: TS compile + test run → playwright-debugger on failure
-```
-
-### Key Behaviors
-
-- **Structure-aware**: detects POM pattern and matches project conventions
-- **No hallucinated selectors**: explores real DOM before writing any code
-- **Approval gate**: shows scenario plan and locator table before generating code
-- **Quality loop**: YAGNI audit removes unused locators; `e2e-reviewer` catches P0 issues before you ever run the tests
-- **Self-healing**: 3 auto-fix attempts on failure, then hands off to `playwright-debugger`
+1. **Detect environment** — config, baseURL, test dir, POM structure
+2. **Coverage gap analysis** — user picks target (skipped when target given as argument)
+3. **Live browser exploration** — via agent-browser tools (no hallucinated selectors)
+4. **Scenario design + approval gate** — shows plan and locator table before any code
+5. **Code generation** — POM + spec or flat spec, auto-detected from project conventions
+6. **YAGNI audit + e2e-reviewer** — removes unused locators, catches P0 issues before first run
+7. **TS compile + test run** — 3 auto-fix attempts on failure, then hands off to `playwright-debugger`
 
 ---
 
@@ -194,49 +182,9 @@ Weak but not wrong — addressed when refactoring.
 |---|---------|--------|-------|
 | 11 | **YAGNI + Zombie Specs** | `clickEdit()` never called; empty wrapper class; single-use Util; entire spec duplicated by another | Delete unused members; inline single-use Util methods; delete zombie spec files |
 
-### Full Review Surface
-
-After the grep and LLM checks, review the suite at the scenario level:
-
-| Area | Review questions |
-|------|------------------|
-| User intent | Does the test name match the actual assertions? Does every important noun in the scenario get verified? |
-| Selector strategy | Are locators based on role, label, accessible name, or stable test IDs instead of CSS classes, XPath, or DOM position? |
-| Waiting model | Does the test wait for a real UI, URL, or network signal instead of sleeping? Are Playwright `waitForResponse()` promises created before the triggering action? |
-| Isolation and state | Can each test run alone and in parallel? Is state created in `beforeEach` or fixtures rather than inherited from earlier tests? |
-| Network boundaries | Are third-party services and flaky/slow APIs mocked or routed? Are route/intercept handlers registered before navigation or the action that fires the request? |
-| Auth and permissions | Do protected pages use `storageState`, auth fixtures, or explicit login? Are expired-session and role-boundary states covered? |
-| Accessibility | Do flows cover keyboard navigation, focus after dialogs, labels/names for controls, and critical ARIA state? |
-| Visual confidence | If the test is mostly checking layout or style, should it use a visual diff instead of many fragile CSS assertions? |
-| CI diagnostics | Are Playwright traces captured on first retry, Cypress screenshots/videos or Test Replay available, and reports uploaded as artifacts? |
-| Test scope | Is this truly an E2E concern, or should logic-heavy branches move to unit/component/API tests? Are smoke and regression paths separated? |
-
 ### References
 
-- [Playwright best practices](https://playwright.dev/docs/best-practices)
-- [Playwright locators](https://playwright.dev/docs/locators)
-- [Playwright auto-waiting and actionability](https://playwright.dev/docs/actionability)
-- [Playwright test isolation](https://playwright.dev/docs/browser-contexts)
-- [Playwright authentication](https://playwright.dev/docs/auth)
-- [Playwright network mocking](https://playwright.dev/docs/network)
-- [Playwright accessibility testing](https://playwright.dev/docs/accessibility-testing)
-- [Playwright trace viewer](https://playwright.dev/docs/trace-viewer)
-- [Cypress best practices](https://docs.cypress.io/app/core-concepts/best-practices)
-- [Cypress test isolation](https://docs.cypress.io/guides/core-concepts/test-isolation)
-- [Cypress session](https://docs.cypress.io/api/commands/session)
-- [Cypress retry-ability](https://docs.cypress.io/guides/core-concepts/retry-ability)
-- [Cypress intercept](https://docs.cypress.io/api/commands/intercept)
-- [Cypress screenshots and videos](https://docs.cypress.io/app/guides/screenshots-and-videos)
-- [Cypress visual testing](https://docs.cypress.io/guides/tooling/visual-testing)
-- [Testing Library guiding principles](https://testing-library.com/docs/guiding-principles)
-
-### Review Workflow
-
-Three-phase review with P0/P1/P2 severity:
-
-1. **Phase 1: Automated grep** — mechanically detects #3 (POM `.catch()`), #3b (Cypress `uncaught:exception`), #4 (always-passing), #5 (bypass patterns), #6 (raw DOM queries), #7 (focused test leak), #8 (missing assertions), #9 (hard-coded sleeps), #10 partial (positional selectors, describe.serial), #14 (hardcoded credentials), #15 (missing await on expect), #16 (missing await on action), #17 (direct page action API), and #18 (`expect.soft()`)
-2. **Phase 2: LLM analysis** — #1 name-assertion alignment, #2 missing Then, #3 `try/catch` in specs (context-dependent), #4 `.toBeTruthy()` Locator-subject confirmation, #8 Cypress dangling selectors, #10 flaky pattern judgment, #11 YAGNI + zombie specs, #12 auth setup, #13 POM consistency, #15 missing-await-on-expect Locator confirmation, #16 missing-await-on-action confirmation, and #18 `expect.soft()` overuse confirmation
-3. **Phase 3: Coverage gaps** — suggests missing error paths, edge cases, accessibility, auth boundaries, network failure states, visual regressions, and CI observability gaps
+[Playwright best practices](https://playwright.dev/docs/best-practices) · [Cypress best practices](https://docs.cypress.io/app/core-concepts/best-practices) · [Testing Library guiding principles](https://testing-library.com/docs/guiding-principles)
 
 ---
 
@@ -337,51 +285,6 @@ Cypress tests pass locally but fail in CI
 
 ---
 
-## Comparison with Other Tools
-
-| Tool | What it is | Catches | Limits |
-|------|------------|---------|--------|
-| **`e2e-reviewer`** (this skill) | Agent skill: grep + LLM semantic review | All 19 anti-patterns including name-assertion mismatch, missing Then, YAGNI/zombie specs | Requires an agent runtime (Claude Code, Codex, or OpenCode) |
-| **`e2e-smell-scan.sh`** (this repo) | Standalone shell scanner | Grep-detectable P0/P1 subset (always-passing, `force: true`, `.only`, missing await, hard-coded sleeps) | Misses semantic checks (#1 name-assertion, #2 missing Then, #11 zombie specs) |
-| [`eslint-plugin-playwright`](https://github.com/playwright-community/eslint-plugin-playwright) | ESLint plugin | Playwright lint rules: missing await, no-focused-test, no-conditional-in-test | Playwright only; no Cypress; no semantic name-assertion check |
-| [Playwright best-practices docs](https://playwright.dev/docs/best-practices) | Reference guide | Official guidance — locators, web-first assertions, isolation | Not enforced; reviewer/scanner needed to catch drift |
-| Raw `grep` patterns | DIY | Whatever you write | High false-positive rate without `// JUSTIFIED:` convention |
-
-`e2e-reviewer` is closest in spirit to `eslint-plugin-playwright` but covers both frameworks and adds semantic checks (name-assertion alignment, missing-Then state restoration, zombie specs) that ESLint cannot reason about.
-
-## FAQ
-
-**How is this different from `eslint-plugin-playwright`?**
-ESLint catches syntactic patterns (missing await, focused tests, conditional in test). `e2e-reviewer` adds semantic checks an LLM can perform — does the test name match what's asserted, does an action verify both the new state and the dismissed prior state, are POM members actually used. It also covers Cypress.
-
-**Do I need both `e2e-reviewer` and the standalone scanner?**
-No. The standalone scanner is a CI-friendly subset for projects without an agent runtime. If you use Claude Code / Codex / OpenCode, `e2e-reviewer` does everything the scanner does plus the LLM-only checks.
-
-**Why do my tests pass CI but still miss bugs?**
-The most common causes are name-assertion mismatch (#1), always-passing assertions like `toBeAttached()` or `toBeGreaterThanOrEqual(0)` (#4), missing `await` (#15, #16), and missing auth setup that lets tests pass against the login page (#12). `e2e-reviewer` flags all of these.
-
-**Does this require modifying my existing tests?**
-No — `e2e-reviewer` and the debuggers are read-only by default. They produce findings; you decide what to fix. `playwright-test-generator` writes new test files (with your approval at the scenario gate).
-
-**Does it work with TypeScript-only repos?**
-Yes. Both Playwright and Cypress projects are detected by config files (`playwright.config.{ts,js}`, `cypress.config.{ts,js}`) and conventional report directories (`playwright-report/`, `cypress/reports/`).
-
-**Can I suppress a false positive?**
-Yes — add `// JUSTIFIED: <reason>` on the line above the pattern (or above the enclosing block / multi-line chain). The scanner and reviewer both honor this. Use it to explain intent for the next reviewer, not to silently hide findings.
-
-**Does it support other E2E frameworks?**
-No. Scope is explicit: Playwright and Cypress only. See [Framework Scope](docs/framework-scope.md) for the full list of out-of-scope frameworks and the rationale.
-
-## Compatibility
-
-**`playwright-test-generator`** — Playwright only. Generates tests for any project with a `playwright.config.ts`. Uses agent-browser tools for live exploration; falls back to `npx playwright codegen` for manual selector discovery.
-
-**`e2e-reviewer`** — Covers [Playwright](https://playwright.dev/) and [Cypress](https://www.cypress.io/) with full grep + LLM analysis. General principles (name-assertion alignment, missing Then, YAGNI) apply to any framework.
-
-**`playwright-debugger`** — Playwright only. Parses `results.json` and `trace.zip` from `playwright-report/`.
-
-**`cypress-debugger`** — Cypress only. Parses `mochawesome.json` or JUnit XML from `cypress/reports/`.
-
 ## License
 
-Apache-2.0 — same as [anthropics/skills](https://github.com/anthropics/skills).
+Apache-2.0. See [LICENSE.txt](./LICENSE.txt).

@@ -1,0 +1,29 @@
+# #4f — Locator (or RTL query) treated as truthy
+#
+# Matches `expect(getByX(...)).toBeTruthy()` shapes including:
+#   - Bare:    expect(getByText('x')).toBeTruthy()
+#   - Member:  expect(screen.getByRole(...)).toBeTruthy()
+#   - Page:    expect(page.locator(...)).toBeTruthy()
+#   - Wrapper: expect(wrapper.getByTestId(...)).toBeTruthy()
+#
+# RTL queries already throw on miss → `.toBeTruthy()` is redundant. Replace with
+# `.toBeInTheDocument()` (jest-dom) per 4.1 N (verify jest-dom prereq first).
+#
+# AST advantage: matches the Locator/query call structurally. The rg pattern
+# `expect\(.*(locator|getBy[A-Za-z]+).*\.toBeTruthy\(\)` catches the same in
+# practice but also matches false positives in mock-matcher contexts that
+# happen to contain "locator" or "getBy*" substrings.
+
+id: locator-as-truthy
+language: TypeScript
+severity: error
+message: "Locator/query as truthy — use jest-dom .toBeInTheDocument() (or web-first if Playwright Locator)"
+
+rule:
+  any:
+    - pattern: 'expect($X.$METHOD($$$ARGS)).toBeTruthy()'
+    - pattern: 'expect($METHOD($$$ARGS)).toBeTruthy()'
+    - pattern: 'expect($X.$METHOD($$$ARGS).$$$CHAIN).toBeTruthy()'
+constraints:
+  METHOD:
+    regex: '^(getByText|getByRole|getByTestId|getByLabel|getByLabelText|getByPlaceholderText|getByAltText|getByTitle|getByDisplayValue|findByText|findByRole|findByTestId|findByLabel|findByLabelText|findByPlaceholderText|findByAltText|findByTitle|findByDisplayValue|queryByText|queryByRole|queryByTestId|locator|getByName)$'

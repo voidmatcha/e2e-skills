@@ -7,7 +7,8 @@
 # refresh installs on every push, so first push acts as initial install.
 #
 # Overrides:
-#   E2E_SKILLS_AGENTS  default: "-a claude-code -a codex -a opencode"
+#   E2E_SKILLS_AGENTS  default: "-a claude-code -a codex"
+#                      (set to "-a claude-code -a codex -a opencode" or other -a flags to install elsewhere)
 
 set -euo pipefail
 
@@ -18,7 +19,7 @@ if [ -n "${E2E_SKILLS_AGENTS:-}" ]; then
   # shellcheck disable=SC2206
   AGENTS_FLAGS=($E2E_SKILLS_AGENTS)
 else
-  AGENTS_FLAGS=(-a claude-code -a codex -a opencode)
+  AGENTS_FLAGS=(-a claude-code -a codex)
 fi
 
 echo "reinstall-skills: removing prior install (${SKILLS[*]})"

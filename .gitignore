@@ -4,9 +4,11 @@
 .sisyphus/
 docs/superpowers/
 testbed/
+results/
 
 # Eval fixture files (mock data for eval runs, not skill code)
 skills/*/evals/files/
 
 # Eval run results (benchmarks, grading, timing)
 *-workspace/
+.serena/

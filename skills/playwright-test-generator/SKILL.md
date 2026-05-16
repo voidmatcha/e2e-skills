@@ -4,7 +4,7 @@ description: Use when generating new Playwright E2E tests from scratch. Triggers
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.2.2"
+  version: "1.3.0"
 ---
 
 # playwright-test-generator
@@ -106,7 +106,7 @@ If agent-browser tools are unavailable, use `npx playwright codegen <URL>` manua
 
 ## Step 4: Scenario Design + User Approval
 
-Present a scenario plan in the conversation and wait for explicit user approval before writing files. In hosts with a dedicated planning mode, enter that mode before presenting the plan and exit it only after the user approves. In Codex/OpenCode, stop after presenting the plan until the user approves it. Do not write any code until the user approves.
+Present a scenario plan in the conversation and wait for explicit user approval before writing files. In hosts with a dedicated planning mode, enter that mode before presenting the plan and exit it only after the user approves. In hosts without one, stop after presenting the plan until the user approves it. Do not write any code until the user approves.
 
 Write a plan containing:
 

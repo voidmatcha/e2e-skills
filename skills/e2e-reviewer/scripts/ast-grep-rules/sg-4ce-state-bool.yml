@@ -1,0 +1,26 @@
+# #4c-4e (subset) — One-shot Playwright boolean state assertion
+#
+# Matches `expect(await x.isXxx()).toBe(true|false)` / `.toBeTruthy()` / `.toBeFalsy()`
+# for is* state methods. Replace with web-first matcher per SKILL.md 4.1.
+#
+# AST advantage over rg: only matches actual call expressions; ignores comments,
+# strings, JSDoc. Skips `expect(await myService.isEnabled())` (custom service)
+# because it requires `await x.isXxx()` shape AND is constrained by next-step
+# matcher (toBe true/false). Phase 2 LLM still confirms x is a Locator.
+
+id: one-shot-state-bool-assertion
+language: TypeScript
+severity: error
+message: "One-shot boolean state — use web-first matcher (await expect(x).toBeXxx())"
+
+rule:
+  any:
+    - pattern: 'expect(await $X.$METHOD()).toBe(true)'
+    - pattern: 'expect(await $X.$METHOD()).toBe(false)'
+    - pattern: 'expect(await $X.$METHOD()).toBeTruthy()'
+    - pattern: 'expect(await $X.$METHOD()).toBeFalsy()'
+    - pattern: 'expect(await $X.$METHOD()).not.toBeTruthy()'
+    - pattern: 'expect(await $X.$METHOD()).not.toBeFalsy()'
+constraints:
+  METHOD:
+    regex: '^(isVisible|isHidden|isDisabled|isEnabled|isChecked|isEditable|isAttached|isFocused)$'

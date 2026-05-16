@@ -177,7 +177,7 @@ errors = []
 
 skill_text = pathlib.Path('skills/e2e-reviewer/SKILL.md').read_text(encoding='utf-8')
 grep_text = pathlib.Path('skills/e2e-reviewer/references/grep-patterns.md').read_text(encoding='utf-8')
-scan_text = pathlib.Path('scripts/e2e-smell-scan.sh').read_text(encoding='utf-8')
+scan_text = pathlib.Path('skills/e2e-reviewer/scripts/scan.sh').read_text(encoding='utf-8')
 docs_text = pathlib.Path('docs/e2e-test-smells.md').read_text(encoding='utf-8')
 readme_text = pathlib.Path('README.md').read_text(encoding='utf-8')
 plugin = json.loads(pathlib.Path('.claude-plugin/plugin.json').read_text(encoding='utf-8'))
@@ -210,7 +210,7 @@ scan_ids = sorted(set(re.findall(r"run_check\s+P[012]\s+'#(\d+[a-z]?(?:-\d+[a-z]
 docs_ids = sorted(set(re.findall(r'\|\s*#(\d+[a-z]?)\s*\|', docs_text)))
 for label, ids in (
     ('skills/e2e-reviewer/references/grep-patterns.md', grep_ids),
-    ('scripts/e2e-smell-scan.sh', scan_ids),
+    ('skills/e2e-reviewer/scripts/scan.sh', scan_ids),
     ('docs/e2e-test-smells.md', docs_ids),
 ):
     for pid in ids:
@@ -453,7 +453,7 @@ from urllib.parse import unquote
 errors = []
 link_re = re.compile(r"\[[^\]]+\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 for path in sorted(pathlib.Path('.').rglob('*.md')):
-    if any(part in {'.git', '.sisyphus'} for part in path.parts):
+    if any(part in {'.git', '.sisyphus', 'testbed', 'node_modules'} for part in path.parts):
         continue
     text = path.read_text(encoding='utf-8', errors='ignore')
     for match in link_re.finditer(text):
@@ -523,7 +523,7 @@ for doc in doc_files:
     in_readme = rel in readme_text or name in readme_text
     in_ci = rel in ci_text or name in ci_text
     if not (in_readme or in_ci):
-        errors.append(f"{rel}: orphan — not linked from README.md or referenced by any scripts/")
+        errors.append(f"{rel}: orphan — not linked from README.md or any scripts/")
 
 if errors:
     for err in errors:
@@ -531,7 +531,7 @@ if errors:
     sys.exit(1)
 PY
   then
-    ok "every docs/ file is linked from README or referenced by CI"
+    ok "every docs/ file is linked from README.md or referenced by CI"
   else
     err "orphan doc files found — link from README.md or remove"
   fi

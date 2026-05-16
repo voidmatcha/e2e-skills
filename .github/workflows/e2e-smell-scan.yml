@@ -16,6 +16,9 @@ jobs:
       - name: Install ripgrep
         run: sudo apt-get update && sudo apt-get install -y ripgrep
 
+      - name: Install ast-grep
+        run: npm i -g @ast-grep/cli
+
       - name: Run convention and security checks
         shell: bash
         env:
@@ -23,13 +26,13 @@ jobs:
           E2E_SKILLS_SKIP_SMELL_SCAN: "1"
         run: bash scripts/ci/ci-local.sh
 
-      - name: Run E2E smell scanner
+      - name: Run E2E smell scanner (auto-uses eslint plugins, ast-grep, regex)
         shell: bash
         env:
           E2E_SMELL_FAIL_ON: p0
         run: |
           set -o pipefail
-          ./scripts/e2e-smell-scan.sh . | tee e2e-smell-report.txt
+          ./skills/e2e-reviewer/scripts/scan.sh . | tee e2e-smell-report.txt
 
       - name: Upload scan report
         if: always()

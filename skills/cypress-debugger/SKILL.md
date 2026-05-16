@@ -4,7 +4,7 @@ description: Use when Cypress tests have actually failed and you need to diagnos
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.2.2"
+  version: "1.3.0"
 ---
 
 # Cypress Failed Test Debugger
@@ -71,9 +71,9 @@ Use Phase 1 output (error message + duration) to classify. **Most failures are i
 | F8 | **Environment Mismatch** | CI vs local only; baseUrl, viewport, OS differences | — |
 | F9 | **Data Dependency** | Missing seed data, hardcoded IDs, `cy.fixture()` mismatch | — |
 | F10 | **Auth / Session** | `cy.session()` expired, role-based UI not rendered | — |
-| F11 | **Async Order Assumption** | `.then()` chain order, parallel `cy.request()` race | — |
+| F11 | **Command Queue / Intercept Race** | `cy.intercept` registered AFTER the request fires; `.then()` chain order swap; parallel `cy.request()` race against a `cy.visit()` not yet finished | — |
 | F12 | **Selector Drift** | DOM changed, custom command or Page Object selector not updated | #10 |
-| F13 | **Error Swallowing** | `cy.on('uncaught:exception', () => false)` hiding failures | #3 |
+| F13 | **Error Swallowing** | `cy.on('uncaught:exception', () => false)` (blanket) hiding failures; `.catch(() => {})` / `.catch(() => false)` on POM wait/assertion helpers. NOT F13: handlers that call `expect(err.message.includes(...)).to.be.false` (scoped negative-regression test, asserts on error properties rather than suppressing them). | #3 |
 | F14 | **Animation Race** | Element visible but content not yet rendered; CSS transition not complete | #9 |
 
 Classification steps:

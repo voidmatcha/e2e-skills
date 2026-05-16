@@ -4,7 +4,7 @@ description: Use when Playwright tests have actually failed and you need to diag
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.2.2"
+  version: "1.3.0"
 ---
 
 # Playwright Failed Test Debugger
@@ -22,6 +22,19 @@ Determine the report source in this order:
 ```bash
 npx playwright test --reporter=json 2>/dev/null > playwright-report/results.json
 ```
+
+**3. Report exists but is from CI and you need to reproduce locally for Phase 3 trace inspection** → download the CI artifact (`gh run download <run-id> -n playwright-report` or via CI UI) into `playwright-report/`, then reproduce the specific failing test locally with the same environment:
+
+```bash
+# Match CI's chromium project + retries; capture trace + video for failed runs
+npx playwright test path/to/spec.spec.ts --project=chromium --retries=2 \
+  --trace=retain-on-failure --video=retain-on-failure
+
+# If CI uses a non-default baseURL or env, mirror it
+PLAYWRIGHT_BASE_URL=<ci-base-url> npx playwright test path/to/spec.spec.ts
+```
+
+If the test passes locally but failed in CI → likely **F7 (test isolation)** or **F8 (environment mismatch)**; jump to Phase 2 with that hypothesis instead of trying to repro further.
 
 ## Phase 1: Extract Failures
 
