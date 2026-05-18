@@ -69,7 +69,7 @@ Real findings from a recent typebot.io scan — silent always-pass bugs your tes
 ./skills/e2e-reviewer/scripts/scan.sh path/to/tests
 ```
 
-Three tiers run in priority order: (1) `eslint-plugin-playwright` / `eslint-plugin-cypress` — uses your local install if present, otherwise auto-downloads via `npx --yes` (set `E2E_SMELL_NO_ESLINT_DOWNLOAD=1` to disable); (2) `ast-grep` Tree-sitter rules for FP-prone patterns; (3) bundled regex covering all 19 patterns including gaps the lint plugins miss — Cypress `cy.on('uncaught:exception', () => false)` blanket suppression (#3b), `{timeout:0}.should("not.exist")` (#4g), and cross-framework heuristics. See [`docs/e2e-test-smells.md`](docs/e2e-test-smells.md) for the full P0/P1/P2 model. Use `// JUSTIFIED: <reason>` above an intentional pattern to suppress in both lint and scanner output.
+Three tiers run in priority order: (1) `eslint-plugin-playwright` / `eslint-plugin-cypress` — uses your local install if present, otherwise auto-downloads via `npx --yes` (set `E2E_SMELL_NO_ESLINT_DOWNLOAD=1` to disable); (2) `ast-grep` Tree-sitter rules for FP-prone patterns — uses `ast-grep` / `sg` on PATH if present, otherwise auto-downloads via `npx --yes @ast-grep/cli` (set `E2E_SMELL_NO_AST_GREP_DOWNLOAD=1` to disable); (3) bundled regex covering all 19 patterns including gaps the lint plugins miss — Cypress `cy.on('uncaught:exception', () => false)` blanket suppression (#3b), `{timeout:0}.should("not.exist")` (#4g), and cross-framework heuristics. See [`docs/e2e-test-smells.md`](docs/e2e-test-smells.md) for the full P0/P1/P2 model. Use `// JUSTIFIED: <reason>` above an intentional pattern to suppress in both lint and scanner output.
 
 The `e2e-reviewer` skill adds what no lint can reach: semantic checks (name-assertion mismatch, missing Then, YAGNI/zombie specs, POM consistency, auth setup analysis) and fix guidance with band-aid awareness. Run [`eslint-plugin-playwright`](https://github.com/playwright-community/eslint-plugin-playwright) / [`eslint-plugin-cypress`](https://github.com/cypress-io/eslint-plugin-cypress) as your every-commit baseline; invoke the skill for PR review, suspected silent-pass bugs, or before bulk fixes.
 
@@ -271,7 +271,7 @@ Cypress tests pass locally but fail in CI
 | F8 | **Environment Mismatch** | CI vs local only; baseUrl, viewport, OS |
 | F9 | **Data Dependency** | Missing seed data, `cy.fixture()` mismatch |
 | F10 | **Auth / Session** | `cy.session()` expired, role-based UI not rendered |
-| F11 | **Async Order Assumption** | `.then()` chain order, parallel `cy.request()` race |
+| F11 | **Command Queue / Intercept Race** | `cy.intercept` registered after request fires; `.then()` chain order swap; parallel `cy.request()` race against an unfinished `cy.visit()` |
 | F12 | **Selector Drift** | DOM changed, custom command or POM selector not updated |
 | F13 | **Error Swallowing** | `cy.on('uncaught:exception', () => false)` hiding failures |
 | F14 | **Animation Race** | Element visible but content not yet rendered |

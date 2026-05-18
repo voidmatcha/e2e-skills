@@ -60,7 +60,8 @@ try_eslint() {
   command -v npx >/dev/null 2>&1 || return 1
 
   local plugin_path="$ROOT/node_modules/eslint-plugin-$plugin"
-  local mode npx_args
+  local mode
+  local -a npx_args
   if [[ -d "$plugin_path" ]]; then
     mode="locally installed"
     npx_args=(--no-install eslint)
@@ -69,7 +70,11 @@ try_eslint() {
     return 1
   else
     mode="auto-downloaded via npx (set E2E_SMELL_NO_ESLINT_DOWNLOAD=1 to skip)"
-    npx_args=(--yes -p eslint -p "eslint-plugin-$plugin" $([[ "$plugin" == "cypress" ]] && printf -- '-p\neslint-plugin-mocha\n') eslint)
+    npx_args=(--yes -p eslint -p "eslint-plugin-$plugin")
+    if [[ "$plugin" == "cypress" ]]; then
+      npx_args+=(-p eslint-plugin-mocha)
+    fi
+    npx_args+=(eslint)
   fi
 
   printf '\n[ESLint] %s — running eslint-plugin-%s (%s)\n' "$label" "$plugin" "$mode"
@@ -107,9 +112,11 @@ fi
 
 # Tier 2: ast-grep — Tree-sitter AST patterns. Lower FP rate than regex on the patterns it covers
 # (#15, #4ce-state-bool/text/count, #4f). Skipped silently if ast-grep isn't on PATH and npx isn't either.
+# Set E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 to disable the npx fallback (matches eslint tier's escape hatch).
 ASTGREP_RULES_DIR="$(cd "$(dirname "$0")" && pwd)/ast-grep-rules"
 if command -v ast-grep >/dev/null 2>&1; then AST_GREP="ast-grep"
 elif command -v sg >/dev/null 2>&1; then AST_GREP="sg"
+elif [[ "${E2E_SMELL_NO_AST_GREP_DOWNLOAD:-}" == "1" ]]; then AST_GREP=""
 elif command -v npx >/dev/null 2>&1; then AST_GREP="npx --yes @ast-grep/cli"
 else AST_GREP=""; fi
 

@@ -17,7 +17,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y ripgrep
 
       - name: Install ast-grep
-        run: npm i -g @ast-grep/cli
+        run: npm i -g '@ast-grep/cli@^0.39'
 
       - name: Run convention and security checks
         shell: bash

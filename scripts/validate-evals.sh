@@ -1,29 +1,35 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ruby <<'RUBY'
-require 'json'
+python3 - <<'PY'
+import json
+import pathlib
+import sys
 
-files = Dir['skills/*/evals/evals.json'].sort
-abort 'no eval files found' if files.empty?
+files = sorted(pathlib.Path('.').glob('skills/*/evals/evals.json'))
+if not files:
+    sys.exit('no eval files found')
 
 total = 0
-files.each do |file|
-  data = JSON.parse(File.read(file))
-  skill = data.fetch('skill_name')
-  evals = data.fetch('evals')
-  raise "#{file}: evals must be an array" unless evals.is_a?(Array)
+for path in files:
+    data = json.loads(path.read_text(encoding='utf-8'))
+    try:
+        skill = data['skill_name']
+        evals = data['evals']
+    except KeyError as exc:
+        sys.exit(f"{path}: missing required key {exc.args[0]!r}")
+    if not isinstance(evals, list):
+        sys.exit(f"{path}: evals must be a list")
 
-  evals.each do |entry|
-    total += 1
-    %w[id prompt expected_output assertions].each do |key|
-      raise "#{file}: eval #{entry.inspect} missing #{key}" unless entry.key?(key)
-    end
-    raise "#{file}: #{entry['id']} assertions must be non-empty" unless entry['assertions'].is_a?(Array) && !entry['assertions'].empty?
-  end
+    for entry in evals:
+        total += 1
+        for key in ('id', 'prompt', 'expected_output', 'assertions'):
+            if key not in entry:
+                sys.exit(f"{path}: eval {entry!r} missing {key}")
+        if not isinstance(entry['assertions'], list) or not entry['assertions']:
+            sys.exit(f"{path}: {entry['id']} assertions must be a non-empty list")
 
-  puts "#{skill}: #{evals.length} eval(s)"
-end
+    print(f"{skill}: {len(evals)} eval(s)")
 
-puts "total: #{total} eval(s)"
-RUBY
+print(f"total: {total} eval(s)")
+PY

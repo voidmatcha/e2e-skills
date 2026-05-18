@@ -3,7 +3,7 @@
 # Each case applies a known-bad mutation, runs review.sh, asserts the expected
 # error substring appears, then restores the file from a backup.
 
-set -uo pipefail
+set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)" || {
   echo "test-parity.sh: cannot resolve repo root" >&2
@@ -19,10 +19,12 @@ FAIL=0
 BACKUPS=()
 
 cleanup() {
+  # Best-effort restore: under `set -e` an early `mv` failure would otherwise
+  # leave the remaining .parity-backup files on disk.
   for b in "${BACKUPS[@]:-}"; do
     if [ -n "$b" ] && [ -f "$b" ]; then
       local f="${b%.parity-backup}"
-      mv "$b" "$f"
+      mv "$b" "$f" || true
     fi
   done
 }
@@ -39,8 +41,8 @@ restore() {
   if [ -f "$b" ]; then
     mv "$b" "$f"
     local new=()
-    for x in "${BACKUPS[@]}"; do
-      [ "$x" != "$b" ] && new+=("$x")
+    for x in "${BACKUPS[@]:-}"; do
+      [ -n "$x" ] && [ "$x" != "$b" ] && new+=("$x")
     done
     BACKUPS=("${new[@]:-}")
   fi
@@ -129,7 +131,7 @@ restore "$file"
 # Case 8: manifest version drift — bump .codex-plugin/plugin.json out of sync with the others
 file=".codex-plugin/plugin.json"
 backup "$file"
-mutate "$file" "\"version\": \"1.3.0\"" "\"version\": \"9.9.9\""
+mutate "$file" "\"version\": \"1.3.1\"" "\"version\": \"9.9.9\""
 assert_fails "Check 6 — manifest version drift" "manifest version mismatch"
 restore "$file"
 
@@ -140,12 +142,27 @@ mutate "$file" "name-assertion mismatch, missing Then" "missing Then, name-asser
 assert_fails "Check 5 — codex-plugin out-of-order pattern phrase" "missing or out-of-order pattern"
 restore "$file"
 
-# Case 10: SKILL.md frontmatter description unquoted with colon-space — YAML parse regression of v0.7.3
+# Case 10: Codex plugin interface prompt limit — Codex displays at most 3 prompts
+file=".codex-plugin/plugin.json"
+backup "$file"
+mutate "$file" "\"Diagnose failed Playwright/Cypress tests with root-cause classification.\"" "\"Diagnose failed Playwright/Cypress tests with root-cause classification.\", \"Extra prompt that should fail\""
+assert_fails "Codex plugin guard — too many default prompts" "interface.defaultPrompt must contain 1-3 prompts"
+restore "$file"
+
+# Case 11: SKILL.md frontmatter description unquoted with colon-space — YAML parse regression of v0.7.3
 file="skills/e2e-reviewer/SKILL.md"
 backup "$file"
 mutate "$file" "description: 'Use when reviewing" "description: Use when reviewing"
 mutate "$file" "specs.'" "specs."
 assert_fails "Frontmatter YAML guard — unquoted description with ': '" "colon-space"
+restore "$file"
+
+# Case 12: SKILL.md metadata.version drift vs plugin manifest version — guards against
+# the v1.3.1 hole where one of four SKILL.md files got left behind during a lock-step bump
+file="skills/playwright-test-generator/SKILL.md"
+backup "$file"
+mutate "$file" "version: \"1.3.1\"" "version: \"9.9.9\""
+assert_fails "SKILL.md version drift vs manifest" "does not match plugin version"
 restore "$file"
 
 echo ""

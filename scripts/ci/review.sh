@@ -97,11 +97,15 @@ import pathlib
 import re
 import sys
 
+sys.path.insert(0, 'scripts/ci/lib')
+from validate_codex import collect_codex_errors
+
 errors = []
 skill_dirs = sorted(path for path in pathlib.Path('skills').iterdir() if path.is_dir())
 expected = {path.name for path in skill_dirs}
 
 plugin = json.loads(pathlib.Path('.claude-plugin/plugin.json').read_text())
+codex_plugin = json.loads(pathlib.Path('.codex-plugin/plugin.json').read_text())
 expected_paths = {f'./skills/{skill}' for skill in expected}
 plugin_paths = plugin.get('skills')
 if (
@@ -112,7 +116,10 @@ if (
 ):
     errors.append(f"Claude plugin skills must be exactly these paths: {sorted(expected_paths)!r}")
 
+errors.extend(collect_codex_errors(codex_plugin, expected, pathlib.Path('.')))
+
 frontmatter_names = set()
+plugin_version = plugin.get('version')
 for skill_dir in skill_dirs:
     skill_file = skill_dir / 'SKILL.md'
     text = skill_file.read_text(encoding='utf-8')
@@ -138,6 +145,18 @@ for skill_dir in skill_dirs:
                 "wrap the description in single quotes; YAML parsers (gray-matter / js-yaml) reject this and the "
                 "skills CLI will silently skip the skill (regression of bug fixed in v0.7.3)"
             )
+    # SKILL.md metadata.version must match the plugin manifest version. The
+    # manifest-vs-manifest version parity check above guards Claude/Codex/
+    # marketplace drift; this guard catches the case where a SKILL.md file
+    # gets left behind during a lock-step bump (see v1.3.1 changelog).
+    version_match = re.search(r"^  version:\s*['\"]?([^'\"\n]+)['\"]?\s*$", match.group(1), re.M)
+    if not version_match:
+        errors.append(f"{skill_file}: missing metadata.version in frontmatter")
+    elif plugin_version and version_match.group(1).strip() != plugin_version:
+        errors.append(
+            f"{skill_file}: metadata.version {version_match.group(1).strip()!r} "
+            f"does not match plugin version {plugin_version!r}"
+        )
 
 if frontmatter_names != expected:
     errors.append(f"skills/*/SKILL.md names mismatch: {sorted(frontmatter_names)} != {sorted(expected)}")
@@ -157,7 +176,7 @@ if errors:
     sys.exit(1)
 PY
   then
-    ok "Claude and OpenAI skill surfaces match"
+    ok "Claude, Codex, and OpenAI skill surfaces match"
   else
     err "public skill surface parity failed"
   fi

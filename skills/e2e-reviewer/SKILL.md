@@ -4,7 +4,7 @@ description: 'Use when reviewing, auditing, or improving E2E test specs for Play
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.3.0"
+  version: "1.3.1"
 ---
 
 # E2E Test Scenario Quality Review
@@ -913,6 +913,10 @@ This table is a **numerical index for scanning** — pattern # → severity, pha
 
 ## Suppression
 
-When a grep-detected pattern is intentional, add `// JUSTIFIED: [reason]` on the **line immediately above** the flagged line. When reviewing grep hits, if the line immediately above contains `// JUSTIFIED:`, skip the hit. Each individual flagged line needs its own `// JUSTIFIED:` — a comment higher up in the block does not count.
+When a grep-detected pattern is intentional, add `// JUSTIFIED: [reason]`. Reviewers skip a hit when `// JUSTIFIED:` appears in any of these three positions (matches Phase 1):
+
+1. The line **immediately preceding** the hit
+2. The line immediately preceding the **enclosing call/block** when the hit sits inside a body (e.g., `// JUSTIFIED:` above `page.evaluate(() => { … document.querySelector(…) … })` covers every qualifying pattern inside that callback)
+3. For chained calls split across lines, the line immediately preceding the chain's **starting expression** covers `.nth()` / `.first()` / `.last()` further down the chain
 
 **Exception — #7 Focused Test Leak:** `// JUSTIFIED:` does not suppress `.only` hits. There are no legitimate committed uses of `test.only` / `it.only` / `describe.only` — every hit is P0.

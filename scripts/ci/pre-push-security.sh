@@ -90,12 +90,17 @@ if command -v python3 >/dev/null 2>&1; then
     ok ".claude-plugin/plugin.json valid JSON" || err ".claude-plugin/plugin.json invalid JSON"
   python3 -c "import json; json.load(open('.claude-plugin/marketplace.json'))" 2>/dev/null && \
     ok ".claude-plugin/marketplace.json valid JSON" || err ".claude-plugin/marketplace.json invalid JSON"
+  python3 -c "import json; json.load(open('.codex-plugin/plugin.json'))" 2>/dev/null && \
+    ok ".codex-plugin/plugin.json valid JSON" || err ".codex-plugin/plugin.json invalid JSON"
 
   if python3 - <<'PY'
 import json
 import pathlib
 import re
 import sys
+
+sys.path.insert(0, 'scripts/ci/lib')
+from validate_codex import collect_codex_errors
 
 errors = []
 plugin = json.loads(pathlib.Path('.claude-plugin/plugin.json').read_text())
@@ -121,6 +126,8 @@ if (
     or len(plugin_paths) != len(expected_paths)
 ):
     errors.append(f"plugin skills must be exactly these paths: {sorted(expected_paths)!r}")
+
+errors.extend(collect_codex_errors(codex_plugin, expected, pathlib.Path('.')))
 
 for skill_dir in skill_dirs:
     manifest = skill_dir / 'agents' / 'openai.yaml'
@@ -183,15 +190,20 @@ done < <(find scripts -name '*.sh' -type f 2>/dev/null)
 [ "$syntax_fail" -eq 0 ] && ok "all shell scripts parse"
 
 section "Hardcoded paths"
+# Scope: scripts/, skills/, and the plugin manifests. README/CHANGELOG/docs are
+# allowed to use example paths freely (the previous `grep -vE '…|example|~/'`
+# exclusion was too loose to catch a real leak in those files anyway), but the
+# manifest JSON files MUST be scanned — a leaked `/Users/...` path there would
+# ship directly to every plugin user.
 hardcoded_paths=$(grep -rEn \
-  --include='*.sh' --include='*.md' --include='*.json' --include='*.yaml' --include='*.yml' \
+  --include='*.sh' --include='*.md' --include='*.json' --include='*.yaml' --include='*.yml' --include='*.py' \
   --exclude="$SELF" --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=testbed --exclude-dir='*-workspace' \
-  '/Users/[A-Za-z0-9._-]+/|/home/[A-Za-z0-9._-]+/' . 2>/dev/null | \
-  grep -vE 'CHANGELOG\.md|example|placeholder|~/' || true)
+  '/Users/[A-Za-z0-9._-]+/|/home/[A-Za-z0-9._-]+/' scripts skills .claude-plugin .codex-plugin 2>/dev/null | \
+  grep -vE 'example|placeholder|~/' || true)
 if [ -z "$hardcoded_paths" ]; then
-  ok "no hardcoded absolute user-home paths"
+  ok "no hardcoded absolute user-home paths in scripts/, skills/, or plugin manifests"
 else
-  err "hardcoded absolute user-home paths found"
+  err "hardcoded absolute user-home paths found in scripts/, skills/, or plugin manifests"
   printf '%s\n' "$hardcoded_paths" | head -5 | sed 's/^/      /' >&2
 fi
 
