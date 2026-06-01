@@ -64,3 +64,9 @@ When raw grep output is the only thing you have, always read 1–3 lines of surr
 | #18 expect.soft overuse | `expect\.soft\(` | `*.{spec.*,test.*}` | `[Playwright]` — `expect.soft()` continues on failure; flag in Phase 2 if >50% of assertions in a single test are `soft`. P1. |
 | #3b Cypress uncaught:exception (specs) | `on\('uncaught:exception'.*false` | `*.{cy.*}` | `[Cypress]` — blanket suppression of app errors. P0 unless scoped with `// JUSTIFIED:`. |
 | #3b Cypress uncaught:exception (support) | `on\('uncaught:exception'.*false` | `cypress/support/**/*.{ts,js}` | Same check in support files where global suppression is often placed. |
+
+## Batch 6 — single Grep call
+
+| Check | Pattern | Glob | What it detects |
+|-------|---------|------|-----------------|
+| #19 Module-Level Mutable State | `^let\s+` | `*.{ts,js,tsx,jsx,cy.ts,cy.js}` | Top-level (column-0) `let` declaration in test code. Persists across tests within a worker; collides under parallel workers and retries. Confirm in Phase 2 that the `let` has an initializer (`let counter = 0;`) — pure type declarations (`let page: Page;` reassigned in `beforeEach`) are idiomatic Playwright fixtures and must be SKIPPED. P1. |

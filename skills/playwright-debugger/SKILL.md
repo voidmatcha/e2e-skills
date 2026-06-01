@@ -4,7 +4,7 @@ description: Use when Playwright tests have actually failed and you need to diag
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.3.3"
+  version: "1.3.4"
 ---
 
 # Playwright Failed Test Debugger

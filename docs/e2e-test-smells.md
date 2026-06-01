@@ -41,6 +41,7 @@ The standalone scanner only fails CI on P0 findings by default. P1/P2 findings a
 | #14 | Hardcoded credentials | Public repos leak secrets and private repos become tied to one environment. | Use environment variables, fixtures, or test accounts. |
 | #17 | Direct page action API | `page.click(selector)` and friends give weaker locator semantics and poorer errors. | Use `page.locator(selector).click()` or user-facing locators. |
 | #18 | `expect.soft()` overuse | A test with mostly soft assertions may continue after the primary condition is broken. | Keep at least one hard assertion for the scenario's main outcome. |
+| #19 | Module-level mutable state in test code | A top-level (column-0) `let X = …` in a test utility or POM persists across tests within a worker — collides under parallel workers and survives retries. | Derive uniqueness from `Date.now()` + random suffix, or use `testInfo.workerIndex`; move state into `test.beforeEach`. Pure type declarations (`let page: Page;` reassigned in `beforeEach`) are idiomatic Playwright fixtures and out of scope. |
 
 ## P2: Maintainability
 

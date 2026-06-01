@@ -147,7 +147,7 @@ if [[ -n "$AST_GREP" && -d "$ASTGREP_RULES_DIR" ]]; then
   printf '\n'
 fi
 
-printf '\n--- Tier 3: Bundled regex checks (universal fallback — covers all 19 patterns including gaps eslint/ast-grep miss) ---\n'
+printf '\n--- Tier 3: Bundled regex checks (universal fallback — covers all 20 patterns including gaps eslint/ast-grep miss) ---\n'
 
 run_check() {
   local severity="$1"
@@ -236,6 +236,7 @@ run_check P1 '#17' 'Direct page action API' 'page\.(click|fill|type|check|unchec
 run_check P1 '#9c' 'Network-idle readiness check' 'networkidle' '*.{ts,js,tsx,jsx}'
 run_check P1 '#18' 'Soft assertion usage' 'expect\.soft\(' '*.{spec.ts,spec.js,test.ts,test.js}'
 run_check P0 '#3b' 'Cypress uncaught exception suppression' "on\('uncaught:exception'.*false" '*.{cy.ts,cy.js,ts,js}'
+run_check P1 '#19' 'Module-level mutable state in test code' '^let\s+' '*.{ts,js,tsx,jsx,cy.ts,cy.js}'
 
 printf '\nSummary: %s total hit(s), %s P0, %s P1/P2 heuristic.\n' "$total_hits" "$p0_hits" "$p1_hits"
 

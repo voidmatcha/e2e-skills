@@ -1,10 +1,10 @@
 ---
 name: e2e-reviewer
-description: 'Use when reviewing or improving existing Playwright/Cypress E2E specs or POMs via static analysis, not runtime failure debugging. Triggers on "review my tests", "audit test quality", "find weak tests", "improve playwright tests", "improve cypress tests", "flaky tests", "test anti-patterns", "coverage gaps", and tests that pass while missing bugs. Reviews 19 anti-patterns. P0 must-fix (silent always-pass): name-assertion mismatch, missing Then, error swallowing, Cypress uncaught:exception suppression, always-passing assertions, bypass patterns, focused test leak, missing assertions, missing auth setup, missing await on expect, missing await on action. P1 should-fix (poor diagnostics): raw DOM queries, hard-coded sleeps, flaky test patterns, inconsistent POM usage, hardcoded credentials, direct page action API, expect.soft overuse. P2 nice-to-fix (maintenance): YAGNI + zombie specs.'
+description: 'Use when reviewing or improving existing Playwright/Cypress E2E specs or POMs via static analysis, not runtime failure debugging. Triggers on "review my tests", "audit test quality", "find weak tests", "improve playwright tests", "improve cypress tests", "flaky tests", "test anti-patterns", "coverage gaps", and tests that pass while missing bugs. Reviews 20 anti-patterns. P0 must-fix (silent always-pass): name-assertion mismatch, missing Then, error swallowing, Cypress uncaught:exception suppression, always-passing assertions, bypass patterns, focused test leak, missing assertions, missing auth setup, missing await on expect, missing await on action. P1 should-fix (poor diagnostics): raw DOM queries, hard-coded sleeps, flaky test patterns, inconsistent POM usage, hardcoded credentials, direct page action API, expect.soft overuse, module-level mutable state in test utilities. P2 nice-to-fix (maintenance): YAGNI + zombie specs.'
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.3.3"
+  version: "1.3.4"
 ---
 
 # E2E Test Scenario Quality Review
@@ -92,6 +92,7 @@ The LLM performs only these checks:
 | 15 | Missing `await` on `expect()` confirmation | Phase 1 flags lines that start with `expect(` (no leading `await`). LLM confirms the subject is a Playwright `Locator` / `Page` — non-Locator expects like `expect(count).toBe(3)` don't need `await`. Flag P0 only when the subject is a Locator/Page. |
 | 16 | Missing `await` on action confirmation | Phase 1 flags lines that start with `page.locator(...).action(` or `page.getBy...(...).action(` (no leading `await`). LLM confirms the line lacks `await` and the action is a real Playwright action (not a synchronous chain). LLM also SKIPS the hit if the line is inside a `Promise.all([` or `Promise.race([` array — array elements don't need explicit `await` because the `Promise.all` awaits them. Flag P0 only for true standalone statements. |
 | 18 | `expect.soft()` overuse confirmation | Phase 1 flags all `expect.soft()` hits; LLM counts: if >50% of assertions in a single test are `soft`, flag P1 — soft assertions mask cascading failures. A few `soft` assertions among many hard ones is fine. |
+| 19 | Module-level mutable state confirmation | Phase 1 flags every `^let ` at column 0 in test code. LLM SKIPS the hit when it's a pure type declaration without an initializer (e.g., `let page: Page;` reassigned in `beforeEach` — idiomatic Playwright fixture). Flag P1 only when the `let` carries an initializer (`let counter = 0;`, `let cache: Map<string, T> = new Map();`) — that state survives across tests under parallel workers and retries. |
 
 **Retry-wrapper skip (applies to #4c-4e, #4h, #15, #16):** When a Phase 1 hit's enclosing function is the callback argument of `await expect(async () => { ... }).toPass({...})` (Playwright) or `await expect.poll(async () => { ... }).toX(...)`, the Playwright harness re-runs the callback until it passes or times out — one-shot reads and unawaited `expect()` lines inside are not silent-always-pass. SKIP P0 reporting for these hits. (Distinct from the Promise.all/Promise.race skip on the #16 row, which is about array elements, not retry callbacks.) Real case: a `payload` review found 9/20 `#4h` raw hits sat inside `.toPass(...)` callbacks — none were real P0.
 
@@ -421,7 +422,7 @@ Examples:
 
 ## Pattern Reference
 
-Detailed specification for the 19 anti-patterns that Phase 1, Phase 2, and Phase 2.5 execute. Do **not** re-run these checks as a separate pass — the phases above already cover them. When emitting a finding, consult the matching section here for the canonical Symptom / Rule / Fix wording. Grouped by severity: P0 items are silent always-pass bugs, P1 items waste CI time or mislead developers, P2 items are maintenance concerns.
+Detailed specification for the 20 anti-patterns that Phase 1, Phase 2, and Phase 2.5 execute. Do **not** re-run these checks as a separate pass — the phases above already cover them. When emitting a finding, consult the matching section here for the canonical Symptom / Rule / Fix wording. Grouped by severity: P0 items are silent always-pass bugs, P1 items waste CI time or mislead developers, P2 items are maintenance concerns.
 
 **Important:** `test.skip()` with a reason comment or reason string is intentional — do NOT flag or remove these. Only flag assertions gated behind a runtime `if` check that cause the test to pass silently (see #5a).
 
@@ -797,6 +798,37 @@ test('should display profile', async ({ page }) => {
 
 **Rule:** `expect.soft()` is fine for independent, non-critical checks alongside hard assertions. Flag P1 when >50% of assertions in a single test are `soft` — the test likely needs at least one hard assertion to gate on the primary condition.
 
+#### 19. Module-Level Mutable State In Test Utilities `[grep-detectable + LLM]`
+
+**Symptom:** A top-level (column-0) `let` declaration with an initializer in a test utility, helper, or POM file — state that persists across test invocations within the same worker.
+
+```typescript
+// BAD — module-level counter; survives across tests in the worker
+let testNotebookSequence = 0;
+
+export async function createTestNotebook(page: Page) {
+  testNotebookSequence += 1;
+  const name = `notebook_${testNotebookSequence}_${Date.now()}`;
+  // ...
+}
+
+// GOOD — derive uniqueness from data that's already unique
+export async function createTestNotebook(page: Page) {
+  const name = `notebook_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  // ...
+}
+```
+
+**Why it matters:** Playwright/Cypress run specs across multiple worker processes in parallel and retry failed tests within a worker. Module-level mutable state survives across tests within a worker but is independent across workers — so the same counter value can appear in two specs running concurrently in different workers, breaking the "unique" contract the variable was supposed to provide. Retries reuse the worker, so the second attempt sees state from the first. Both are silent bugs that only surface as intermittent name collisions or flake.
+
+**Rule:** Flag P1 when a `let` at column 0 has an initializer. Suppress with `// JUSTIFIED: [reason]` when the state is intentionally shared (e.g., a worker-scoped cache the framework's parallelism guarantees won't collide).
+
+**Phase 2 LLM filter:**
+- SKIP pure type declarations: `let page: Page;`, `let context: BrowserContext;` — these are idiomatic Playwright fixtures, reassigned in `beforeEach`, and never carry data across tests.
+- FLAG initialized lets: `let counter = 0;`, `let cache = new Map();`, `let lastResult: Result | null = null;`.
+
+**Fix pattern:** Replace counter-based uniqueness with `Date.now()` + `Math.random().toString(36).slice(2, 8)`, or use Playwright's `testInfo.workerIndex` for worker-scoped uniqueness, or move the state into a `test.beforeEach` so it's per-test rather than per-worker.
+
 ---
 
 ### P2 — Nice to Fix (maintenance / robustness)
@@ -807,19 +839,19 @@ Weak but not wrong. Address when refactoring or before adopting wider convention
 
 Two sub-patterns: unused code in Page Objects, and zombie spec files.
 
-**11a. YAGNI in Page Objects** — POM has locators or methods never referenced by any spec. Or a POM class extends a parent with zero additional members (empty wrapper class).
+**11a. YAGNI in Page Objects and Utility Modules** — POM or utility/helper file has locators, methods, or exported functions never referenced (or referenced exactly once) by any spec or other module. Or a POM class extends a parent with zero additional members (empty wrapper class).
 
 **Procedure:**
-1. List all public members of each changed POM file
-2. Grep each member across all test files and other POMs
-3. Classify: USED / INTERNAL-ONLY (`private`) / UNUSED (delete)
+1. List all public members of each changed POM file AND all exported symbols of each changed utility module (`utils.ts`, `helpers.ts`, `fixtures.ts`, etc.)
+2. Grep each member/export across all test files, POMs, and other utility modules
+3. Classify: USED / INTERNAL-ONLY (`private` for POMs, non-`export` for utility modules) / UNUSED (delete) / SINGLE-USE (inline at the call site)
 4. Check if any POM class has zero members beyond what it inherits — empty wrappers add no value unless the convention is intentional
 
-**Common patterns:** Convenience wrappers (`clickEdit()` when specs use `editButton.click()`), getter methods (`getCount()` when specs use `toHaveCount()`), state checkers (`isVisible()` when specs assert on locators directly), pre-built "just in case" locators, empty subclass created for future expansion.
+**Common patterns:** Convenience wrappers (`clickEdit()` when specs use `editButton.click()`), getter methods (`getCount()` when specs use `toHaveCount()`), state checkers (`isVisible()` when specs assert on locators directly), pre-built "just in case" locators, empty subclass created for future expansion. In utility modules: single-use auth helpers (`isLoginPageVisible()` called by exactly one other utility), single-use REST helpers (`getDefaultInterpreterGroup()` called by exactly one create function), single-use waits (`waitForNotebookParagraphVisible()` invoked from one navigation helper).
 
-**Single-use Util wrappers** — a separate `*Util` / `*Helper` class whose methods are each called from only one test. These add indirection with no reuse benefit; inline them. Keep a Util method only if called from **2+ tests** or invoked **2+ times** within one test.
+**Single-use Util wrappers** — a separate `*Util` / `*Helper` class OR a standalone exported function in a utility module whose body is called from only one place. These add indirection with no reuse benefit; inline them at the single call site. Keep a Util method or exported helper only if called from **2+ call sites** or invoked **2+ times** within one test.
 
-**Rule:** Delete unused members. Make internal-only members `private`. Apply the 2+ threshold before creating or keeping Util methods — if a helper is called from only one place, inline it. Flag empty wrapper classes for review — they may be intentional convention or dead code.
+**Rule:** Delete unused members and exports. Make internal-only POM members `private`; drop the `export` keyword from utility functions used only inside their own module. Apply the 2+ call-site threshold before creating or keeping any helper — if it's called from only one place, inline it. Flag empty wrapper classes for review — they may be intentional convention or dead code.
 
 **11b. Zombie spec files** — An entire spec file whose tests are all subsets of tests in another spec file covering the same feature. The file adds no coverage that isn't already verified elsewhere.
 
@@ -885,7 +917,7 @@ The "Top N Priorities" section should list the 3-5 highest-impact fixes in concr
 
 ## Quick Reference
 
-This table is a **numerical index for scanning** — pattern # → severity, phase, and the grep/LLM signal. For canonical **Symptom / Rule / Fix** wording (used when emitting a finding), consult the matching section under "Pattern Reference" above (organized by severity tier, not numerical order). Both views describe the same 19 patterns; pick whichever lookup matches your task.
+This table is a **numerical index for scanning** — pattern # → severity, phase, and the grep/LLM signal. For canonical **Symptom / Rule / Fix** wording (used when emitting a finding), consult the matching section under "Pattern Reference" above (organized by severity tier, not numerical order). Both views describe the same 20 patterns; pick whichever lookup matches your task.
 
 | # | Check | Sev | Phase | Detection Signal |
 |---|-------|-----|-------|-----------------|
@@ -907,6 +939,7 @@ This table is a **numerical index for scanning** — pattern # → severity, pha
 | 16 | Missing await on action | P0 | grep+LLM | `page.locator(...).click()` without `await` — action may never execute |
 | 17 | Deprecated page action API | P1 | grep | `page.click(selector)` instead of `page.locator(selector).click()` |
 | 18 | `expect.soft()` overuse | P1 | grep+LLM | >50% soft assertions in a test masks cascading failures |
+| 19 | Module-Level Mutable State | P1 | grep+LLM | `let x = ...` at column 0 in test code — survives across tests within a worker |
 | 3b | Cypress uncaught:exception suppression | P0 | grep | `cy.on('uncaught:exception', () => false)` globally swallows app errors |
 
 ---

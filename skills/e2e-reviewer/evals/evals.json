@@ -146,6 +146,23 @@
         "Structured output with P0/P1/P2",
         "Summary table included"
       ]
+    },
+    {
+      "id": 8,
+      "prompt": "Review the Playwright E2E test utilities in evals/files/notebook-utils.ts. Identify module-level mutable state anti-patterns but do not over-flag idiomatic Playwright fixture declarations.",
+      "expected_output": "Should detect: module-level mutable counter with initializer (#19 P1). Should NOT flag: pure type-only `let` declarations reassigned in beforeEach, JUSTIFIED worker-scoped state, indented `let` inside function bodies.",
+      "files": ["evals/files/notebook-utils.ts"],
+      "assertions": [
+        "Detects `let testNotebookSequence = 0` on line 5 — module-level counter with initializer; collides across parallel workers and survives retries (#19, P1)",
+        "Detects `let resultCache = new Map()` on line 8 — module-level mutable Map without JUSTIFIED (#19, P1)",
+        "Does NOT flag `let page: Page;` on line 12 — pure type declaration without initializer, reassigned in beforeEach, idiomatic Playwright fixture",
+        "Does NOT flag `let context: BrowserContext;` on line 13 — same idiomatic fixture pattern",
+        "Does NOT flag `let workerScopedCache = new Map()` on line 17 — JUSTIFIED on line 16 documents worker-scoped intent",
+        "Does NOT flag indented `let counter = 0` inside the function body on line 26 — local variable, not module-level state",
+        "Suggests fix: replace counter-based uniqueness with `Date.now() + Math.random().toString(36).slice(2, 8)` or `testInfo.workerIndex`",
+        "Structured output with P0/P1/P2",
+        "Summary table included"
+      ]
     }
   ]
 }

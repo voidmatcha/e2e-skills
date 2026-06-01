@@ -9,7 +9,7 @@ Guidance for AI coding agents (Claude Code, Codex, and other AGENTS.md-compatibl
 `e2e-skills` is a bundle of four Agent Skills for end-to-end test work on Playwright and Cypress projects:
 
 - `playwright-test-generator` — generates Playwright E2E tests from scratch (coverage-gap analysis → live-browser exploration → approval gate → review).
-- `e2e-reviewer` — static review of existing Playwright/Cypress specs against 19 anti-patterns grouped P0/P1/P2.
+- `e2e-reviewer` — static review of existing Playwright/Cypress specs against 20 anti-patterns grouped P0/P1/P2.
 - `playwright-debugger` — root-cause diagnosis from `playwright-report/`.
 - `cypress-debugger` — root-cause diagnosis from `cypress/reports/` (mochawesome / JUnit).
 
@@ -61,7 +61,7 @@ Each `skills/<name>/SKILL.md` is the contract. Everything in the skill body shou
 
 - **Skill names**: kebab-case, must match the directory name and the `name:` in SKILL.md frontmatter.
 - **SKILL.md frontmatter**: `name`, `description`, `license`, `metadata: { author, version }`. The description is the trigger surface — pack synonyms and the user's likely phrasing.
-- **Pattern IDs**: 19 numbered anti-patterns (`#1`–`#18` plus `#3b`) with P0/P1/P2 severity. IDs are stable; do not renumber. Severity rationale: P0 = silent always-pass, P1 = poor diagnostics, P2 = maintenance.
+- **Pattern IDs**: 20 numbered anti-patterns (`#1`–`#19` plus `#3b`) with P0/P1/P2 severity. IDs are stable; do not renumber. Severity rationale: P0 = silent always-pass, P1 = poor diagnostics, P2 = maintenance.
 - **Failure category IDs**: 14 codes (`F1`–`F14`) used by both debuggers. Codes are stable.
 - **JUSTIFIED comments**: `// JUSTIFIED: <reason>` on the line above (or above the enclosing block / multi-line chain) suppresses scanner findings. Suppress for documented intent, never to hide a real finding.
 - **Severity-first organization**: tables in SKILL.md, README, and `docs/e2e-test-smells.md` group by P0/P1/P2 in the same order.
@@ -110,7 +110,7 @@ The reinstall script runs `npx skills remove` then `npx skills add <repo-root> -
 
 ## When You Edit Skills
 
-1. **Update parity surfaces in lock-step.** Adding or renaming a pattern means touching: the relevant `SKILL.md` (Pattern Reference + Quick Reference), `docs/e2e-test-smells.md`, `README.md` 19 Patterns table, `skills/e2e-reviewer/references/grep-patterns.md`, `skills/e2e-reviewer/scripts/scan.sh`, `.claude-plugin/plugin.json` description, `.claude-plugin/marketplace.json` description, and `.codex-plugin/plugin.json` description. CI fails fast if any one is out of step.
+1. **Update parity surfaces in lock-step.** Adding or renaming a pattern means touching: the relevant `SKILL.md` (Pattern Reference + Quick Reference), `docs/e2e-test-smells.md`, `README.md` 20 Patterns table, `skills/e2e-reviewer/references/grep-patterns.md`, `skills/e2e-reviewer/scripts/scan.sh`, `.claude-plugin/plugin.json` description, `.claude-plugin/marketplace.json` description, and `.codex-plugin/plugin.json` description. CI fails fast if any one is out of step.
 2. **Re-run the drift smoke test.** `scripts/ci/test-parity.sh` mutates known-bad versions of the files and asserts the parity check catches each one — keep it green when you add new parity rules.
 3. **Add or update evals when behavior changes.** Each skill has an `evals/evals.json`. Eval IDs must follow the skill's naming convention (CI validates). Each new smell or behavior change should add at least two assertions: one true positive that must be flagged, and one false-positive guard that names the exact line and why it must not be flagged.
 4. **Respect severity contracts.** P0 entries should be silent-always-pass smells; don't downgrade. P1/P2 should not creep into P0 just because they're easier to grep.

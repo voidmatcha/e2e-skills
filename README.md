@@ -5,7 +5,7 @@ E2E tests that always pass are worse than no tests — they give false confidenc
 Four complementary skills cover the full E2E testing lifecycle, from Playwright test generation to Cypress test review and failure debugging:
 
 1. **`playwright-test-generator`** — generates Playwright E2E tests from scratch, from coverage gap analysis to passing, reviewed tests
-2. **`e2e-reviewer`** — static analysis of existing Playwright and Cypress specs; flags 19 anti-patterns (P0 silent always-pass, P1 poor diagnostics, P2 maintenance) that can make tests pass CI while missing real regressions
+2. **`e2e-reviewer`** — static analysis of existing Playwright and Cypress specs; flags 20 anti-patterns (P0 silent always-pass, P1 poor diagnostics, P2 maintenance) that can make tests pass CI while missing real regressions
 3. **`playwright-debugger`** — diagnoses failures from `playwright-report/` and classifies root causes (flaky timing, selector drift, auth, environment mismatch, and more)
 4. **`cypress-debugger`** — same for Cypress report files
 
@@ -69,7 +69,7 @@ Real findings from a recent typebot.io scan — silent always-pass bugs your tes
 ./skills/e2e-reviewer/scripts/scan.sh path/to/tests
 ```
 
-Three tiers run in priority order: (1) `eslint-plugin-playwright` / `eslint-plugin-cypress` — uses your local install if present, otherwise auto-downloads via `npx --yes` (set `E2E_SMELL_NO_ESLINT_DOWNLOAD=1` to disable); (2) `ast-grep` Tree-sitter rules for FP-prone patterns — uses `ast-grep` / `sg` on PATH if present, otherwise auto-downloads via `npx --yes @ast-grep/cli` (set `E2E_SMELL_NO_AST_GREP_DOWNLOAD=1` to disable); (3) bundled regex covering all 19 patterns including gaps the lint plugins miss — Cypress `cy.on('uncaught:exception', () => false)` blanket suppression (#3b), `{timeout:0}.should("not.exist")` (#4g), and cross-framework heuristics. See [`docs/e2e-test-smells.md`](docs/e2e-test-smells.md) for the full P0/P1/P2 model. Use `// JUSTIFIED: <reason>` above an intentional pattern to suppress in both lint and scanner output.
+Three tiers run in priority order: (1) `eslint-plugin-playwright` / `eslint-plugin-cypress` — uses your local install if present, otherwise auto-downloads via `npx --yes` (set `E2E_SMELL_NO_ESLINT_DOWNLOAD=1` to disable); (2) `ast-grep` Tree-sitter rules for FP-prone patterns — uses `ast-grep` / `sg` on PATH if present, otherwise auto-downloads via `npx --yes @ast-grep/cli` (set `E2E_SMELL_NO_AST_GREP_DOWNLOAD=1` to disable); (3) bundled regex covering all 20 patterns including gaps the lint plugins miss — Cypress `cy.on('uncaught:exception', () => false)` blanket suppression (#3b), `{timeout:0}.should("not.exist")` (#4g), and cross-framework heuristics. See [`docs/e2e-test-smells.md`](docs/e2e-test-smells.md) for the full P0/P1/P2 model. Use `// JUSTIFIED: <reason>` above an intentional pattern to suppress in both lint and scanner output.
 
 The `e2e-reviewer` skill adds what no lint can reach: semantic checks (name-assertion mismatch, missing Then, YAGNI/zombie specs, POM consistency, auth setup analysis) and fix guidance with band-aid awareness. Run [`eslint-plugin-playwright`](https://github.com/playwright-community/eslint-plugin-playwright) / [`eslint-plugin-cypress`](https://github.com/cypress-io/eslint-plugin-cypress) as your every-commit baseline; invoke the skill for PR review, suspected silent-pass bugs, or before bulk fixes.
 
@@ -173,6 +173,7 @@ Tests work but mislead developers, waste CI time, or set up future regressions.
 | 14 | **Hardcoded credentials** | `loginPage.login('admin', 'password123')` in test code | Use `process.env.TEST_USER`, Playwright config secrets, or test data fixtures |
 | 17 | **Direct `page.click(selector)` API** | `page.click('#submit')` / `page.fill('#input', 'text')` skips the Locator layer | Use `page.locator(selector).click()` for auto-wait and better error messages |
 | 18 | **`expect.soft()` overuse** | All assertions in a test are `expect.soft()` — test never fails early | Ensure at least one hard `expect()` gates per test; use `soft` only for independent details |
+| 19 | **Module-level mutable state in test code** | `let testNotebookSequence = 0;` at column 0 in a test utility — collides across parallel workers and survives retries | Drop the counter; derive uniqueness from `Date.now()` + `Math.random().toString(36).slice(2, 8)`, or move state into `test.beforeEach` |
 
 #### P2 — Nice to Fix (maintenance / robustness)
 

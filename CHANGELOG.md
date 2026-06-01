@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.3.4] - 2026-06-01
+
+### Added
+- **`e2e-reviewer/SKILL.md` — new anti-pattern `#19` Module-Level Mutable State In Test Utilities** (`P1`, grep + LLM). Catches top-level `let X = …` declarations in test utilities, helpers, and POMs — state that survives across tests within a Playwright/Cypress worker and across retries, breaking the "unique" contract counter-based identifiers were supposed to provide. Surfaced by the Zeppelin `fix/e2e-flaky-final` review where `let testNotebookNameSequence = 0;` collided under `workers > 1`. Phase 1 grep (`^let\s+`, glob `*.{ts,js,tsx,jsx,cy.ts,cy.js}`) flags every column-0 `let`; Phase 2 LLM filter SKIPS pure type declarations (`let page: Page;` reassigned in `beforeEach` — idiomatic Playwright fixture) and only confirms hits that carry an initializer. Suppress with `// JUSTIFIED: [reason]` for intentionally shared worker-scoped state. Fix pattern documented inline: derive uniqueness from `Date.now()` + `Math.random().toString(36).slice(2, 8)`, use `testInfo.workerIndex`, or move state into `test.beforeEach`.
+
+### Changed
+- **`e2e-reviewer/SKILL.md` — extended `#11` YAGNI scope from Page Objects to Page Objects + Utility Modules.** The procedure now lists exported symbols of `utils.ts` / `helpers.ts` / `fixtures.ts` alongside POM members and applies the 2+ call-site threshold uniformly. The rationalization for the extension is the same one as the original POM scope — single-use indirection adds maintenance cost without reuse benefit. Common new patterns explicitly enumerated: single-use auth helpers, single-use REST helpers, single-use waits. The `Rule` row clarifies that utility-module helpers used only inside their own module should drop the `export` keyword.
+- **Pattern count `19 → 20` across all parity surfaces** — frontmatter description ("Reviews 20 anti-patterns"), Quick Reference table (now 20 rows), Pattern Reference text, `docs/e2e-test-smells.md` P1 table, `README.md` Skill 2 description + Standalone Scanner blurb + P1 quick-reference table, `AGENTS.md` (pattern IDs `#1`–`#19` plus `#3b`; `20 Patterns table` in the editor guidance), `scripts/ci/review.sh` Check 3c QR row-count guard, `scripts/ci/review.sh` Check 5 frontmatter phrase-count guard, `scripts/ci/test-parity.sh` Case 3c expected substring, `skills/e2e-reviewer/scripts/scan.sh` Tier 3 banner. The `module-level mutable state in test utilities` phrase is appended to the P1 section of every manifest description (`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.codex-plugin/plugin.json`) so the severity-grouped parity check stays green.
+- **`evals.json` — added eval id `8`** covering `#19` true-positive flagging plus four false-positive guards: pure type declarations, JUSTIFIED-marked worker-scoped state, indented locals inside function bodies, and the canonical fix suggestion. Eval count `7 → 8`.
+- All four skill `SKILL.md` files and the three manifests (`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.codex-plugin/plugin.json`) bumped to `1.3.4` in lock-step per the cross-host parity contract. `scripts/ci/test-parity.sh` Cases 8 and 12 updated to mutate the new version string.
+
+### Rejected
+- **`#19` Debug Console Output In Test Code** was prototyped as a third addition and rejected before commit. `console.log` / `console.info` / `console.warn` / `console.debug` in spec, POM, or utility files do pollute the framework reporter output, but the harm is purely cosmetic — they cannot turn a real failure into a silent pass, which is the rule-set's defining concern. ESLint's `no-console` rule covers the same ground in a single line of config, and adding the pattern would have widened the scope of `e2e-reviewer` into general TypeScript cleanliness territory and diluted its identity. The Zeppelin PR cleanup that motivated the proposal was PR hygiene, not a test-correctness fix. Decision recorded here so the pattern is not re-proposed without new evidence of silent-pass harm specific to Playwright/Cypress.
+
+### Verified
+- `bash scripts/ci/ci-local.sh` — Review parity 10/10, Drift smoke 12/12, Security clean, E2E smell scan 0 hits against the repo itself.
+- Bundled scanner verified against a synthetic fixture: 1 true-positive flagged (`let testNotebookSequence = 0;` in a utility module), 3 expected false-positive candidates surfaced for Phase 2 LLM to filter (two pure type declarations + one JUSTIFIED-marked worker-scoped state).
+
 ## [1.3.3] - 2026-05-20
 
 ### Security
