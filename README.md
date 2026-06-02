@@ -140,7 +140,7 @@ My tests are fragile and break on every UI change
 We have coverage but bugs still slip through
 ```
 
-### 19 Patterns Detected — Grouped by Severity
+### 20 Patterns Detected — Grouped by Severity
 
 #### P0 — Must Fix (silent always-pass)
 
