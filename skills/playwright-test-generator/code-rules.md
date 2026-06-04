@@ -114,7 +114,7 @@ test.describe('Login', () => {
 | `waitForTimeout(N)` | `await expect(el).toBeVisible({ timeout: N })` |
 | `expect(await el.isVisible()).toBe(true)` | `await expect(el).toBeVisible()` |
 | `const n = await el.count()` | `await expect(el).toHaveCount(N)` or `.first()` + `toBeVisible()` |
-| `toBeAttached()` | `toBeVisible()` — `toBeAttached` is vacuous on always-rendered elements |
+| `toBeAttached()` | `toBeVisible()` — `toBeAttached` is vacuous on always-rendered elements Negative `not.toBeAttached()` and checks on dynamically-injected elements are acceptable (matches e2e-reviewer 4.1). |
 | `expect(locator).toBeTruthy()` | `await expect(locator).toBeVisible()` — Locator is always a truthy JS object |
 | `page.click(selector)` / `page.fill(selector, v)` | `page.locator(selector).click()` / `.fill(v)` — locator-first actions are easier to compose and review |
 | `{ force: true }` | Fix the root cause (element not actionable); if unavoidable, add `// JUSTIFIED:` |

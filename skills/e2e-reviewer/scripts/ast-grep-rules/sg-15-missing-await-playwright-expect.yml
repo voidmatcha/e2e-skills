@@ -33,3 +33,16 @@ rule:
 constraints:
   M:
     regex: '^(toBeVisible|toBeHidden|toBeEnabled|toBeDisabled|toBeChecked|toBeEmpty|toBeFocused|toBeAttached|toBeInViewport|toBeEditable|toHaveText|toContainText|toHaveValue|toHaveValues|toHaveCount|toHaveURL|toHaveTitle|toHaveAttribute|toHaveClass|toHaveCSS|toHaveScreenshot|toHaveJSProperty|toHaveAccessibleName|toHaveAccessibleDescription|toHaveRole)$'
+
+# File-level scoping: skip vendored/build artifacts (mirrors Tier 3 rg --glob excludes).
+ignores:
+- '**/node_modules/**'
+- '**/dist/**'
+- '**/build/**'
+- '**/.next/**'
+- '**/out/**'
+- '**/coverage/**'
+- '**/public/**'
+- '**/*.min.js'
+- '**/*.min.ts'
+- '**/evals/files/**'

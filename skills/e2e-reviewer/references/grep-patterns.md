@@ -27,7 +27,7 @@ When raw grep output is the only thing you have, always read 1–3 lines of surr
 |-------|---------|------|-----------------|
 | #4a Always-true math | `toBeGreaterThanOrEqual\(0\)` | `*.{ts,js,cy.*}` | Mathematically always true |
 | #4b Vacuous attached | `toBeAttached\(\)` | `*.{ts,js,cy.*}` | Flag every hit; confirm in Phase 2 whether the element is unconditionally rendered (→ P0 vacuous) or CSS-hidden (`// JUSTIFIED:` → skip) |
-| #4c One-shot isVisible | `expect\(await.*\.isVisible\(\)\)` | `*.{spec.*,test.*}` | One-shot boolean, no auto-retry |
+| #4c One-shot isVisible | `expect\(await.*\.isVisible\([^)]*\)\)` (state/text/attribute reads accept arguments, e.g. `getAttribute('src')`) | `*.{spec.*,test.*}` | One-shot boolean, no auto-retry |
 | #4d One-shot state | `expect\(await.*\.(isDisabled\|isEnabled\|isChecked\|isHidden)\(\)\)` | `*.{spec.*,test.*}` | Same one-shot boolean problem |
 | #4e One-shot content | `expect\(await.*\.(textContent\|innerText\|getAttribute\|inputValue)\(\)\)` | `*.{spec.*,test.*}` | Resolves immediately; use `toHaveText()`, `toHaveAttribute()`, `toHaveValue()` |
 | #4h One-shot URL | `expect\(page\.url\(\)\)` | `*.{spec.*,test.*}` | `page.url()` reads URL at one instant with no retry; use `await expect(page).toHaveURL(...)` |
@@ -46,7 +46,7 @@ When raw grep output is the only thing you have, always read 1–3 lines of surr
 
 | Check | Pattern | Glob | What it detects |
 |-------|---------|------|-----------------|
-| #8a Dangling locator | `^\s*(page\.locator\(\|page\.getBy)` | `*.{spec.*,test.*}` | `[Playwright only]` — locator created as standalone statement, no `expect()`, no action, no assignment. A complete no-op. |
+| #8a Dangling locator | `^\s*(await\s+)?page\.(locator\|getBy*)\(...\)\s*;?\s*$` + previous-line continuation filter (a hit is dropped when the preceding non-blank line ends with `(` or `,`) | `*.{spec.*,test.*}` | `[Playwright only]` — locator created as standalone statement, no `expect()`, no action, no assignment. A complete no-op. |
 | #8b Boolean discarded | `^\s*await .*\.(isVisible\|isEnabled\|isChecked\|isDisabled\|isEditable\|isHidden)\(\)\s*;` | `*.{spec.*,test.*,cy.*}` | Boolean result computed and thrown away — asserts nothing |
 | #10a Positional selectors | `\.nth\(\|\.first\(\)\|\.last\(\)` | `*.{spec.*,test.*,cy.*}` | Breaks when DOM order changes; needs `// JUSTIFIED:` |
 | #14 Hardcoded credentials | `(login\|fill\|type).*(['"].*password\|['"].*secret\|['"]admin['"])` | `*.{spec.*,test.*,cy.*}` | String literals as credentials; use env vars or fixtures |
@@ -57,10 +57,10 @@ When raw grep output is the only thing you have, always read 1–3 lines of surr
 
 | Check | Pattern | Glob | What it detects |
 |-------|---------|------|-----------------|
-| #15 Missing await on expect | `^\s*expect\(` | `*.{spec.*,test.*}` | `[Playwright]` — `expect(locator).toBeVisible()` without `await` silently resolves to a Promise that is never checked. Always P0. |
+| #15 Missing await on expect | `^\s*expect\(` excluding `expect(await ...)` (one-shot reads belong to #4c-4e) | `*.{spec.*,test.*}` | `[Playwright]` — `expect(locator).toBeVisible()` without `await` silently resolves to a Promise that is never checked. Always P0. |
 | #16 Missing await on action | `^\s*page\.(locator\|getBy\w+)\(.*\)\.(click\|fill\|type\|press\|check\|uncheck\|selectOption\|setInputFiles\|hover\|focus\|blur)\(` | `*.{spec.*,test.*}` | `[Playwright]` — Action without `await` creates an unresolved Promise. Always P0. Confirm in Phase 2 that the hit line lacks a leading `await`. |
 | #17 Direct page action API | `page\.(click\|fill\|type\|check\|uncheck\|selectOption)\(["'\`]` | `*.{spec.*,test.*}` | `[Playwright]` — prefer locator-based `page.locator(selector).click()` / `.fill()` for composition and clearer failures. P1. |
-| #9c Networkidle | `networkidle` | `*.{ts,js}` | Playwright docs warn against `networkidle` — unreliable on modern SPAs. P1. |
+| #9c Networkidle | `waitForLoadState('networkidle')` / `waitUntil: 'networkidle'` (API shapes only, e2e-scoped) | `*.{ts,js}` | Playwright docs warn against `networkidle` — unreliable on modern SPAs. P1. |
 | #18 expect.soft overuse | `expect\.soft\(` | `*.{spec.*,test.*}` | `[Playwright]` — `expect.soft()` continues on failure; flag in Phase 2 if >50% of assertions in a single test are `soft`. P1. |
 | #3b Cypress uncaught:exception (specs) | `on\('uncaught:exception'.*false` | `*.{cy.*}` | `[Cypress]` — blanket suppression of app errors. P0 unless scoped with `// JUSTIFIED:`. |
 | #3b Cypress uncaught:exception (support) | `on\('uncaught:exception'.*false` | `cypress/support/**/*.{ts,js}` | Same check in support files where global suppression is often placed. |

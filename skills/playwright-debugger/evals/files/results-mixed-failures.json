@@ -1,0 +1,139 @@
+{
+  "config": {
+    "configFile": "playwright.config.ts",
+    "rootDir": "/app/e2e",
+    "projects": [
+      {
+        "name": "chromium",
+        "retries": 0,
+        "timeout": 30000
+      }
+    ]
+  },
+  "suites": [
+    {
+      "title": "api-integration.spec.ts",
+      "file": "api-integration.spec.ts",
+      "specs": [
+        {
+          "title": "loads orders from the API",
+          "file": "api-integration.spec.ts",
+          "line": 14,
+          "ok": false,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "unexpected",
+              "results": [
+                {
+                  "status": "failed",
+                  "duration": 1873,
+                  "retry": 0,
+                  "error": {
+                    "message": "Error: expect(received).toBe(expected)\n\nExpected: 200\nReceived: 500\n\nRequest to https://staging.example.test/api/orders failed: net::ERR_CONNECTION_REFUSED, server responded 500 Internal Server Error",
+                    "stack": "Error: expect(received).toBe(expected)\n    at /app/e2e/api-integration.spec.ts:22:30"
+                  },
+                  "errorLocation": {
+                    "file": "api-integration.spec.ts",
+                    "line": 22,
+                    "column": 30
+                  }
+                }
+              ]
+            }
+          ],
+          "location": {
+            "file": "api-integration.spec.ts",
+            "line": 22,
+            "column": 5
+          }
+        }
+      ]
+    },
+    {
+      "title": "auth-session.spec.ts",
+      "file": "auth-session.spec.ts",
+      "specs": [
+        {
+          "title": "keeps the user signed in across navigation",
+          "file": "auth-session.spec.ts",
+          "line": 9,
+          "ok": false,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "unexpected",
+              "results": [
+                {
+                  "status": "failed",
+                  "duration": 2451,
+                  "retry": 0,
+                  "error": {
+                    "message": "Error: expect(page).toHaveURL(expected)\n\nExpected pattern: /\\/dashboard/\nReceived string:  \"https://staging.example.test/login?reason=session_expired\"\n\nThe session_token cookie has expired; the app redirected to /login.",
+                    "stack": "Error: expect(page).toHaveURL(expected)\n    at /app/e2e/auth-session.spec.ts:17:24"
+                  },
+                  "errorLocation": {
+                    "file": "auth-session.spec.ts",
+                    "line": 17,
+                    "column": 24
+                  }
+                }
+              ]
+            }
+          ],
+          "location": {
+            "file": "auth-session.spec.ts",
+            "line": 17,
+            "column": 5
+          }
+        }
+      ]
+    },
+    {
+      "title": "welcome.spec.ts",
+      "file": "welcome.spec.ts",
+      "specs": [
+        {
+          "title": "greets the signed-in user",
+          "file": "welcome.spec.ts",
+          "line": 8,
+          "ok": false,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "unexpected",
+              "results": [
+                {
+                  "status": "failed",
+                  "duration": 1320,
+                  "retry": 0,
+                  "error": {
+                    "message": "Error: expect(locator).toHaveText(expected)\n\nExpected string: \"Welcome\"\nReceived string: \"Login\"\n\nCall log:\n  - expect.toHaveText with timeout 5000ms\n  - waiting for getByRole('heading')",
+                    "stack": "Error: expect(locator).toHaveText(expected)\n    at /app/e2e/welcome.spec.ts:13:38"
+                  },
+                  "errorLocation": {
+                    "file": "welcome.spec.ts",
+                    "line": 13,
+                    "column": 38
+                  }
+                }
+              ]
+            }
+          ],
+          "location": {
+            "file": "welcome.spec.ts",
+            "line": 13,
+            "column": 5
+          }
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "expected": 0,
+    "unexpected": 3,
+    "flaky": 0,
+    "skipped": 0,
+    "duration": 5644
+  }
+}

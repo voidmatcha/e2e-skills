@@ -1,0 +1,154 @@
+{
+  "stats": {
+    "suites": 3,
+    "tests": 3,
+    "passes": 0,
+    "pending": 0,
+    "failures": 3,
+    "start": "2026-06-04T12:00:00.000Z",
+    "end": "2026-06-04T12:00:24.000Z",
+    "duration": 24000,
+    "testsRegistered": 3,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "spec-notification",
+      "title": "",
+      "fullFile": "cypress/e2e/notification.cy.ts",
+      "file": "cypress/e2e/notification.cy.ts",
+      "suites": [
+        {
+          "uuid": "suite-notification",
+          "title": "Notification badge",
+          "fullFile": "cypress/e2e/notification.cy.ts",
+          "file": "cypress/e2e/notification.cy.ts",
+          "tests": [
+            {
+              "title": "shows the badge after a postMessage push",
+              "fullTitle": "Notification badge shows the badge after a postMessage push",
+              "duration": 4000,
+              "state": "failed",
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "code": "cy.window().then(w => w.postMessage({ type: 'notify' }, '*')); cy.get('[data-testid=\"badge\"]').should('be.visible')",
+              "err": {
+                "message": "Timed out retrying after 4000ms: Expected to find element: '[data-testid=\"badge\"]', but never found it. The postMessage handler updates the DOM asynchronously and the assertion ran before the badge mounted.",
+                "estack": "CypressError: Timed out retrying after 4000ms: Expected to find element: '[data-testid=\"badge\"]', but never found it.\n    at cypress/e2e/notification.cy.ts:16:38",
+                "diff": null
+              },
+              "uuid": "test-notification"
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": ["test-notification"],
+          "pending": [],
+          "skipped": []
+        }
+      ],
+      "tests": [],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": []
+    },
+    {
+      "uuid": "spec-scroll",
+      "title": "",
+      "fullFile": "cypress/e2e/infinite-scroll.cy.ts",
+      "file": "cypress/e2e/infinite-scroll.cy.ts",
+      "suites": [
+        {
+          "uuid": "suite-scroll",
+          "title": "Infinite scroll feed",
+          "fullFile": "cypress/e2e/infinite-scroll.cy.ts",
+          "file": "cypress/e2e/infinite-scroll.cy.ts",
+          "tests": [
+            {
+              "title": "loads more items when scrolled to the bottom",
+              "fullTitle": "Infinite scroll feed loads more items when scrolled to the bottom",
+              "duration": 6500,
+              "state": "failed",
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "code": "cy.scrollTo('bottom'); cy.wait(2000); cy.get('[data-testid=\"feed-item\"]').should('have.length.greaterThan', 20)",
+              "err": {
+                "message": "AssertionError: Timed out retrying after 4000ms: expected '[data-testid=\"feed-item\"]' to have a length greater than 20 but got 20. The fixed cy.wait(2000) finished before the async fetch returned the next page.",
+                "estack": "AssertionError: Timed out retrying after 4000ms: expected '[data-testid=\"feed-item\"]' to have a length greater than 20 but got 20\n    at cypress/e2e/infinite-scroll.cy.ts:22:46",
+                "diff": null
+              },
+              "uuid": "test-scroll"
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": ["test-scroll"],
+          "pending": [],
+          "skipped": []
+        }
+      ],
+      "tests": [],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": []
+    },
+    {
+      "uuid": "spec-toast",
+      "title": "",
+      "fullFile": "cypress/e2e/toast.cy.ts",
+      "file": "cypress/e2e/toast.cy.ts",
+      "suites": [
+        {
+          "uuid": "suite-toast",
+          "title": "Save toast notification",
+          "fullFile": "cypress/e2e/toast.cy.ts",
+          "file": "cypress/e2e/toast.cy.ts",
+          "tests": [
+            {
+              "title": "shows a success toast after save",
+              "fullTitle": "Save toast notification shows a success toast after save",
+              "duration": 4000,
+              "state": "failed",
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "code": "cy.get('[data-testid=\"save\"]').click(); cy.get('.toast').should('contain', 'Saved')",
+              "err": {
+                "message": "Timed out retrying after 4000ms: Expected to find element: '.toast', but never found it. The toast auto-dismisses after 1500ms, so it may appear and disappear before the assertion observes it.",
+                "estack": "CypressError: Timed out retrying after 4000ms: Expected to find element: '.toast', but never found it.\n    at cypress/e2e/toast.cy.ts:13:36",
+                "diff": null
+              },
+              "uuid": "test-toast"
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": ["test-toast"],
+          "pending": [],
+          "skipped": []
+        }
+      ],
+      "tests": [],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": []
+    }
+  ],
+  "meta": {
+    "mocha": { "version": "7.2.0" },
+    "mochawesome": { "version": "7.1.3" },
+    "marge": {
+      "options": { "reportDir": "cypress/reports", "json": true, "html": false }
+    }
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "stats": {
+    "suites": 2,
+    "tests": 2,
+    "passes": 0,
+    "pending": 0,
+    "failures": 2,
+    "start": "2026-06-04T10:00:00.000Z",
+    "end": "2026-06-04T10:00:18.000Z",
+    "duration": 18000,
+    "testsRegistered": 2,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "spec-form",
+      "title": "",
+      "fullFile": "cypress/e2e/form.cy.ts",
+      "file": "cypress/e2e/form.cy.ts",
+      "suites": [
+        {
+          "uuid": "suite-form",
+          "title": "Form submission",
+          "fullFile": "cypress/e2e/form.cy.ts",
+          "file": "cypress/e2e/form.cy.ts",
+          "tests": [
+            {
+              "title": "submits the contact form",
+              "fullTitle": "Form submission submits the contact form",
+              "duration": 4000,
+              "state": "failed",
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "code": "cy.get('#submit-btn').click()",
+              "err": {
+                "message": "Timed out retrying after 4000ms: Expected to find element: '#submit-btn', but never found it.",
+                "estack": "CypressError: Timed out retrying after 4000ms: Expected to find element: '#submit-btn', but never found it.\n    at cypress/e2e/form.cy.ts:14:25",
+                "diff": null
+              },
+              "uuid": "test-submit-btn"
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": ["test-submit-btn"],
+          "pending": [],
+          "skipped": []
+        }
+      ],
+      "tests": [],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": []
+    },
+    {
+      "uuid": "spec-modal",
+      "title": "",
+      "fullFile": "cypress/e2e/modal.cy.ts",
+      "file": "cypress/e2e/modal.cy.ts",
+      "suites": [
+        {
+          "uuid": "suite-modal",
+          "title": "Delete confirmation modal",
+          "fullFile": "cypress/e2e/modal.cy.ts",
+          "file": "cypress/e2e/modal.cy.ts",
+          "tests": [
+            {
+              "title": "opens the confirmation modal after delete",
+              "fullTitle": "Delete confirmation modal opens the confirmation modal after delete",
+              "duration": 10000,
+              "state": "failed",
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "code": "cy.get('.modal', { timeout: 10000 }).should('be.visible')",
+              "err": {
+                "message": "Timed out retrying after 10000ms: Expected to find element: '.modal', but never found it.",
+                "estack": "CypressError: Timed out retrying after 10000ms: Expected to find element: '.modal', but never found it.\n    at cypress/e2e/modal.cy.ts:21:20",
+                "diff": null
+              },
+              "uuid": "test-modal"
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": ["test-modal"],
+          "pending": [],
+          "skipped": []
+        }
+      ],
+      "tests": [],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": []
+    }
+  ],
+  "meta": {
+    "mocha": { "version": "7.2.0" },
+    "mochawesome": { "version": "7.1.3" },
+    "marge": {
+      "options": { "reportDir": "cypress/reports", "json": true, "html": false }
+    }
+  }
+}

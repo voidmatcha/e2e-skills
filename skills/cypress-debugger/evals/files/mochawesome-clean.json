@@ -1,0 +1,128 @@
+{
+  "stats": {
+    "suites": 2,
+    "tests": 4,
+    "passes": 4,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-06-04T13:00:00.000Z",
+    "end": "2026-06-04T13:00:05.000Z",
+    "duration": 5000,
+    "testsRegistered": 4,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "spec-login",
+      "title": "",
+      "fullFile": "cypress/e2e/login.cy.ts",
+      "file": "cypress/e2e/login.cy.ts",
+      "suites": [
+        {
+          "uuid": "suite-login",
+          "title": "Login",
+          "fullFile": "cypress/e2e/login.cy.ts",
+          "file": "cypress/e2e/login.cy.ts",
+          "tests": [
+            {
+              "title": "logs in with valid credentials",
+              "fullTitle": "Login logs in with valid credentials",
+              "duration": 1100,
+              "state": "passed",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "code": "cy.get('[data-testid=\"email\"]').type('user@example.test'); cy.get('[data-testid=\"submit\"]').click(); cy.get('[data-testid=\"greeting\"]').should('contain', 'Welcome')",
+              "err": {},
+              "uuid": "test-login-valid"
+            },
+            {
+              "title": "shows an error for invalid credentials",
+              "fullTitle": "Login shows an error for invalid credentials",
+              "duration": 920,
+              "state": "passed",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "code": "cy.get('[data-testid=\"submit\"]').click(); cy.get('[data-testid=\"error\"]').should('contain', 'Invalid credentials')",
+              "err": {},
+              "uuid": "test-login-invalid"
+            }
+          ],
+          "suites": [],
+          "passes": ["test-login-valid", "test-login-invalid"],
+          "failures": [],
+          "pending": [],
+          "skipped": []
+        }
+      ],
+      "tests": [],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": []
+    },
+    {
+      "uuid": "spec-dashboard",
+      "title": "",
+      "fullFile": "cypress/e2e/dashboard.cy.ts",
+      "file": "cypress/e2e/dashboard.cy.ts",
+      "suites": [
+        {
+          "uuid": "suite-dashboard",
+          "title": "Dashboard",
+          "fullFile": "cypress/e2e/dashboard.cy.ts",
+          "file": "cypress/e2e/dashboard.cy.ts",
+          "tests": [
+            {
+              "title": "renders the welcome heading",
+              "fullTitle": "Dashboard renders the welcome heading",
+              "duration": 540,
+              "state": "passed",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "code": "cy.get('[data-testid=\"dashboard-heading\"]').should('have.text', 'Dashboard')",
+              "err": {},
+              "uuid": "test-dashboard-heading"
+            },
+            {
+              "title": "shows the notification count",
+              "fullTitle": "Dashboard shows the notification count",
+              "duration": 480,
+              "state": "passed",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "code": "cy.intercept('GET', '/api/notifications', { fixture: 'notifications.json' }).as('notes'); cy.wait('@notes'); cy.get('[data-testid=\"notification-count\"]').should('have.text', '3')",
+              "err": {},
+              "uuid": "test-dashboard-notifications"
+            }
+          ],
+          "suites": [],
+          "passes": ["test-dashboard-heading", "test-dashboard-notifications"],
+          "failures": [],
+          "pending": [],
+          "skipped": []
+        }
+      ],
+      "tests": [],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": []
+    }
+  ],
+  "meta": {
+    "mocha": { "version": "7.2.0" },
+    "mochawesome": { "version": "7.1.3" },
+    "marge": {
+      "options": { "reportDir": "cypress/reports", "json": true, "html": false }
+    }
+  }
+}

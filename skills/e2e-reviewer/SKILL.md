@@ -4,7 +4,7 @@ description: 'Use when reviewing or improving existing Playwright/Cypress E2E sp
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.3.4"
+  version: "1.4.0"
 ---
 
 # E2E Test Scenario Quality Review
@@ -44,10 +44,14 @@ bash <skill-base>/scripts/scan.sh <test-dir>
 
 The scanner internally uses, in priority order:
 1. **`eslint-plugin-playwright` / `eslint-plugin-cypress`** — when locally installed in the target project (AST-based, most accurate, lowest FP rate)
-2. **`ast-grep`** — Tree-sitter-backed for patterns the eslint plugins miss (e.g., `#3b` Cypress `uncaught:exception` blanket, `#4g` `{timeout:0}.should("not.exist")`, `#4f` Locator-as-truthy)
+2. **`ast-grep`** — Tree-sitter-backed for the FP-prone assertion patterns (`#15` missing-await, `#4c-4e` one-shot state/text/count, `#4f` Locator-as-truthy)
 3. **`ripgrep` regex** — universal fallback covering all remaining patterns
 
 Output is grouped per pattern ID (`#3`, `#4a`, `#15`, etc.) with `file:line:matched-line`. See `references/grep-patterns.md` for the meaning of each ID.
+
+**Tier scoping note:** Tier 2's `sg-4f` deliberately also matches RTL `getBy*().toBeTruthy()` in unit tests — that surface gets the jest-dom canonical fix from 4.1, not a P0 label. Severity classification of #4f stays with Phase 2 (Locator subject = P0; RTL = advisory). Tier 2 rules skip vendored/build artifacts via per-rule `ignores`.
+
+**E2E content scoping:** for the FP-prone patterns (P0: `#3`, `#4a`, `#4b`, `#4f`, `#4g`, `#15`; P1: `#9`, `#6`, `#5b`, `#19`) the Tier 3 regex keeps a hit only when its file carries a real Playwright/Cypress marker (`@playwright/test` import, `async ({ page` fixture destructure, direct `page.<api>` usage, or `cy.<cmd>(`). This filters Vitest/Jest/RTL unit-test bleed-through at Phase 1 — the dominant false-positive source observed across a 110-repo OSS validation corpus.
 
 **Evidence rule:** scanner hits are mechanical review signals. Report exact matches, then use Phase 2 where the rule requires intent or project context.
 
@@ -73,7 +77,7 @@ Phase 2 also recognizes these as JUSTIFIED-equivalent (informal):
 
 ## Phase 2: LLM Review (Semantic And Context Checks Only)
 
-Patterns already detected in Phase 1 (#3 partial, #4, #5, #6, #7, #8, #9, #10 partial, #14, #15, #16, #17, #18, #3b) are **skipped** unless they need LLM confirmation.
+Patterns already detected in Phase 1 (#3 partial, #4, #5, #6, #7, #8, #9, #10 partial, #14, #15, #16, #17, #18, #19, #3b) are **skipped** unless they need LLM confirmation.
 The LLM performs only these checks:
 
 | # | Check | Reason |
@@ -84,7 +88,9 @@ The LLM performs only these checks:
 | 4 | Always-Passing — `.toBeTruthy()` confirmation | Phase 1 flags all `.toBeTruthy()` hits; LLM confirms which ones have a Locator subject (P0) vs. a legitimate boolean variable (OK). Do NOT re-report other #4 sub-patterns already covered in Phase 1. |
 | 4c-4e | One-shot state — Locator-subject confirmation | Phase 1 flags `expect(await x.isVisible()/isDisabled()/textContent()/inputValue()/...)`. LLM confirms `x` is a Playwright `Locator`/`Page`, NOT a custom service or helper method. False positive examples: `expect(await myService.isEnabled()).toBe(true)` (custom service), `expect(await checkSessionValid(page)).toBe(true)` (helper returning Promise<boolean>). Flag P0 only when subject is a Locator/Page. |
 | 8 | Missing Assertion — Cypress dangling selectors | `cy.get(...)` standalone requires manual check |
-| 8a | Multi-line continuation skip | Phase 1 flags standalone `page.locator(...)` lines via `^\s*page\.(locator|getBy*)(...)$`. LLM SKIPS the hit if the previous non-empty line ends with `(` or `,` — it's a continuation inside a multi-line `await expect(\n  page.locator(...)\n)…`, not a dangling statement. |
+| 8a | Multi-line continuation skip | Phase 1 applies a previous-line continuation filter at scan time: a hit is dropped when the preceding non-blank line ends with `(` or `,` (an argument inside a multi-line `await expect(\n  page.locator(...)\n)…`, not a dangling statement). Semicolonless dangling locators are still detected. As a backstop, LLM SKIPS any residual hit with that same previous-line shape. |
+| 4b | `toBeAttached()` static-shell confirmation | Phase 1 flags positive `toBeAttached()`. P0 (vacuous) ONLY when the element is part of the static page shell that is always present. SKIP when the element is **dynamically injected / conditionally rendered** for the scenario under test (e.g. an expired-license banner, a just-registered block, a `<link rel=prefetch>` added at runtime) — then the assertion can genuinely fail and is meaningful. |
+| 5a | Conditional gates action vs assertion | Phase 1 flags `if (await x.isVisible())`. SKIP when the `if`-body contains **no `expect()`** — it gates a setup/navigation action (open a menu, dismiss a drawer, dual-mode UI handler) and the test still has unconditional assertions afterward. Flag P0 only when an `expect()` lives inside the conditional, so the assertion runs zero times when the branch is false (silent pass). `test.skip(reason)` is always intentional — never flag. |
 | 10 | Flaky Test Patterns | For each grep hit that has `// JUSTIFIED:`, verify the rationale is concrete (e.g. "server returns in fixed order") rather than vague ("needed for now"); flag if the comment doesn't actually justify the position-coupling or serial dependency. Skip if no JUSTIFIED comment — Phase 1 already flagged. |
 | 11 | YAGNI in POM + Zombie Specs | Requires usage grep then judgment |
 | 12 | Missing Auth Setup | Spec navigates to protected routes (`/dashboard`, `/settings`, `/admin`, etc.) without preceding login, `storageState`, or auth `beforeEach`. Flag P0 — tests will hit login redirects. |
@@ -328,6 +334,10 @@ await page.getByTestId('sql-editor-materialization-button').click({ force: true 
 This is a recurring mistake: agents frequently re-introduce the same regression even when prior context warns against it. The grep procedure above is the formal guard.
 
 For other band-aids (`waitForTimeout`, `#5a` conditional `if (isVisible())`), the 4.2 band-aid table + 4.3 cascade cleanup rule + Phase 2 LLM context-reading are sufficient guards — no separate pre-removal procedure is needed. The 13-repo OSS trial showed agents reliably distinguish "conditional gating an action vs gating an assertion" via Phase 2 alone, and `git blame` on `waitForTimeout` produces too many false signals (generic commit messages on intentional pacing patterns).
+
+9. **Framework self-test gray zone.** When the target repo is itself a framework or component library (Nuxt, SvelteKit, React Router, Ionic, Qwik, design systems), most Playwright/Cypress hits live in **framework test fixtures** — apps that exist only to test the framework. Real P0 mechanics (one-shot reads, missing awaits) still apply, but PR-worthiness differs: maintainers treat fixture tests as internal scaffolding, and a large mechanical migration there may be unwanted churn. Before proposing a PR on a framework repo, check whether the affected specs test the framework's own behavior (fixtures/examples/e2e harness) vs. a user-facing product surface, and say which in the finding. Lead with the smallest, highest-signal subset rather than the full bulk count.
+
+10. **PR-worthiness triage (when the goal is an upstream PR, not just a report).** A finding is PR-worthy if and only if at least one real P0 is a silent-always-pass or race defect in a real user-facing E2E spec. Findings that are only (a) framework self-test fixtures (see 9), (b) unit-test-scope smells (Vitest/Jest/RTL — out of e2e scope), or (c) cosmetic dead code with no masked behavior, do not justify an upstream PR on their own — fold them into an issue or skip. This is the empirical KEEP/DELETE bar from a 110-repo OSS validation: roughly half of scanned repos had zero PR-worthy surface despite nonzero raw P0 counts.
 
 ### 4.3 Cascade cleanups (look up after a #4h or web-first fix)
 
@@ -692,6 +702,8 @@ Only use `evaluate`/`waitForFunction` when the framework API genuinely can't exp
 
 **Symptom:** Explicit sleep calls pause execution for a fixed duration instead of waiting for a condition.
 
+Sub-variants share this entry: `#9` Playwright `waitForTimeout`, `#9b` Cypress `cy.wait(ms)`, `#9c` Playwright `waitForLoadState('networkidle')` — networkidle is explicitly discouraged by Playwright docs as unreliable on modern SPAs; replace with a web-first assertion on the element the test actually needs.
+
 ```typescript
 // BAD — arbitrary delay; still races if render takes longer
 await page.waitForTimeout(2000);
@@ -929,7 +941,7 @@ This table is a **numerical index for scanning** — pattern # → severity, pha
 | 6 | Raw DOM Queries | P1 | grep | `document.querySelector` in `evaluate` |
 | 7 | Focused Test Leak | P0 | grep | `test.only(`, `it.only(`, `describe.only(` — no `// JUSTIFIED:` exemption |
 | 8 | Missing Assertion | P0 | grep | 8a: `page.locator(...)` standalone; 8b: `await el.isVisible();` standalone — nothing ever asserts |
-| 9 | Hard-coded Sleeps | P1 | grep | `waitForTimeout()`, `cy.wait(ms)` |
+| 9 | Hard-coded Sleeps | P1 | grep | `waitForTimeout()`, `cy.wait(ms)`, `waitForLoadState('networkidle')` (#9c) |
 | 10 | Flaky Test Patterns | P1 | LLM+grep | `nth()` without comment; `test.describe.serial()` |
 | 11 | YAGNI + Zombie Specs | P2 | LLM | Unused POM member; empty wrapper; single-use Util; zombie spec file |
 | 12 | Missing Auth Setup | P0 | LLM | Spec navigates to protected route without login/storageState/auth beforeEach |

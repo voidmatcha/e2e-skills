@@ -1,0 +1,151 @@
+{
+  "config": {
+    "configFile": "playwright.config.ts",
+    "rootDir": "/app/e2e",
+    "projects": [
+      {
+        "name": "chromium",
+        "retries": 2,
+        "timeout": 30000
+      }
+    ]
+  },
+  "suites": [
+    {
+      "title": "dashboard.spec.ts",
+      "file": "dashboard.spec.ts",
+      "specs": [
+        {
+          "title": "notification count updates after new message",
+          "file": "dashboard.spec.ts",
+          "line": 11,
+          "ok": true,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "flaky",
+              "results": [
+                {
+                  "status": "failed",
+                  "duration": 4231,
+                  "retry": 0,
+                  "error": {
+                    "message": "Error: expect(locator).toHaveText(expected)\n\nExpected string: \"3\"\nReceived string: \"2\"\n\nCall log:\n  - waiting for getByTestId('notification-count')\n  - the count value arrives asynchronously after a websocket push",
+                    "stack": "Error: expect(locator).toHaveText(expected)\n    at /app/e2e/dashboard.spec.ts:16:42"
+                  }
+                },
+                {
+                  "status": "passed",
+                  "duration": 5012,
+                  "retry": 1,
+                  "error": null
+                }
+              ]
+            }
+          ],
+          "location": {
+            "file": "dashboard.spec.ts",
+            "line": 16,
+            "column": 5
+          }
+        },
+        {
+          "title": "revenue chart renders weekly totals",
+          "file": "dashboard.spec.ts",
+          "line": 24,
+          "ok": true,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "flaky",
+              "results": [
+                {
+                  "status": "failed",
+                  "duration": 6120,
+                  "retry": 0,
+                  "error": {
+                    "message": "Error: expect(locator).toBeVisible()\n\nCall log:\n  - waiting for getByTestId('revenue-chart') to be visible\n  - chart canvas is still rendering when the assertion runs",
+                    "stack": "Error: expect(locator).toBeVisible()\n    at /app/e2e/dashboard.spec.ts:30:46"
+                  }
+                },
+                {
+                  "status": "failed",
+                  "duration": 6233,
+                  "retry": 1,
+                  "error": {
+                    "message": "Error: expect(locator).toBeVisible()\n\nCall log:\n  - waiting for getByTestId('revenue-chart') to be visible\n  - chart canvas is still rendering when the assertion runs",
+                    "stack": "Error: expect(locator).toBeVisible()\n    at /app/e2e/dashboard.spec.ts:30:46"
+                  }
+                },
+                {
+                  "status": "passed",
+                  "duration": 7401,
+                  "retry": 2,
+                  "error": null
+                }
+              ]
+            }
+          ],
+          "location": {
+            "file": "dashboard.spec.ts",
+            "line": 30,
+            "column": 5
+          }
+        },
+        {
+          "title": "loading spinner disappears after data load",
+          "file": "dashboard.spec.ts",
+          "line": 38,
+          "ok": false,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "unexpected",
+              "results": [
+                {
+                  "status": "failed",
+                  "duration": 3110,
+                  "retry": 0,
+                  "error": {
+                    "message": "Error: expect(locator).toBeVisible()\n\nCall log:\n  - waiting for getByTestId('loading-spinner') to be visible\n  - the spinner is removed from the DOM before the assertion can observe it",
+                    "stack": "Error: expect(locator).toBeVisible()\n    at /app/e2e/dashboard.spec.ts:44:48"
+                  }
+                },
+                {
+                  "status": "failed",
+                  "duration": 3098,
+                  "retry": 1,
+                  "error": {
+                    "message": "Error: expect(locator).toBeVisible()\n\nCall log:\n  - waiting for getByTestId('loading-spinner') to be visible\n  - the spinner is removed from the DOM before the assertion can observe it",
+                    "stack": "Error: expect(locator).toBeVisible()\n    at /app/e2e/dashboard.spec.ts:44:48"
+                  }
+                },
+                {
+                  "status": "failed",
+                  "duration": 3125,
+                  "retry": 2,
+                  "error": {
+                    "message": "Error: expect(locator).toBeVisible()\n\nCall log:\n  - waiting for getByTestId('loading-spinner') to be visible\n  - the spinner is removed from the DOM before the assertion can observe it",
+                    "stack": "Error: expect(locator).toBeVisible()\n    at /app/e2e/dashboard.spec.ts:44:48"
+                  }
+                }
+              ]
+            }
+          ],
+          "location": {
+            "file": "dashboard.spec.ts",
+            "line": 44,
+            "column": 5
+          }
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "expected": 0,
+    "unexpected": 1,
+    "flaky": 2,
+    "skipped": 0,
+    "duration": 53774
+  }
+}

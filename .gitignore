@@ -8,8 +8,9 @@ docs/superpowers/
 testbed/
 results/
 
-# Eval fixture files (mock data for eval runs, not skill code)
-skills/*/evals/files/
+# Eval fixtures are committed: assertions cite exact file:line and must be reproducible
+# from a fresh clone. The scanner excludes **/evals/files/** in all three tiers, so the
+# intentional anti-patterns inside them cannot fail the repo's own smell-scan CI gate.
 
 # Eval run results (benchmarks, grading, timing)
 *-workspace/

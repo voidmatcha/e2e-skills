@@ -20,3 +20,16 @@ rule:
     - pattern: 'expect(await $X.inputValue()).toEqual($V)'
     - pattern: 'expect(await $X.getAttribute($A)).toBe($V)'
     - pattern: 'expect(await $X.getAttribute($A)).toEqual($V)'
+
+# File-level scoping: skip vendored/build artifacts (mirrors Tier 3 rg --glob excludes).
+ignores:
+- '**/node_modules/**'
+- '**/dist/**'
+- '**/build/**'
+- '**/.next/**'
+- '**/out/**'
+- '**/coverage/**'
+- '**/public/**'
+- '**/*.min.js'
+- '**/*.min.ts'
+- '**/evals/files/**'

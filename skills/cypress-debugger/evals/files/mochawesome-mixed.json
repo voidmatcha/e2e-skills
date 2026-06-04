@@ -1,0 +1,154 @@
+{
+  "stats": {
+    "suites": 3,
+    "tests": 3,
+    "passes": 0,
+    "pending": 0,
+    "failures": 3,
+    "start": "2026-06-04T11:00:00.000Z",
+    "end": "2026-06-04T11:00:09.000Z",
+    "duration": 9000,
+    "testsRegistered": 3,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "spec-payment",
+      "title": "",
+      "fullFile": "cypress/e2e/payment.cy.ts",
+      "file": "cypress/e2e/payment.cy.ts",
+      "suites": [
+        {
+          "uuid": "suite-payment",
+          "title": "Payment checkout",
+          "fullFile": "cypress/e2e/payment.cy.ts",
+          "file": "cypress/e2e/payment.cy.ts",
+          "tests": [
+            {
+              "title": "completes a successful payment",
+              "fullTitle": "Payment checkout completes a successful payment",
+              "duration": 1320,
+              "state": "failed",
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "code": "cy.intercept('POST', '/api/pay', { statusCode: 500 }).as('pay'); cy.wait('@pay'); cy.contains('Payment successful').should('be.visible')",
+              "err": {
+                "message": "AssertionError: Timed out retrying after 4000ms: expected '<div.alert>' to contain 'Payment successful' but the intercept for POST /api/pay returned statusCode 500",
+                "estack": "AssertionError: Timed out retrying after 4000ms: expected '<div.alert>' to contain 'Payment successful' but the intercept for POST /api/pay returned statusCode 500\n    at cypress/e2e/payment.cy.ts:19:38",
+                "diff": null
+              },
+              "uuid": "test-payment"
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": ["test-payment"],
+          "pending": [],
+          "skipped": []
+        }
+      ],
+      "tests": [],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": []
+    },
+    {
+      "uuid": "spec-home",
+      "title": "",
+      "fullFile": "cypress/e2e/home.cy.ts",
+      "file": "cypress/e2e/home.cy.ts",
+      "suites": [
+        {
+          "uuid": "suite-home",
+          "title": "Home page greeting",
+          "fullFile": "cypress/e2e/home.cy.ts",
+          "file": "cypress/e2e/home.cy.ts",
+          "tests": [
+            {
+              "title": "greets the logged-in user",
+              "fullTitle": "Home page greeting greets the logged-in user",
+              "duration": 980,
+              "state": "failed",
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "code": "cy.get('[data-testid=\"greeting\"]').should('have.text', 'Welcome')",
+              "err": {
+                "message": "AssertionError: expected '<h1>' to have text 'Welcome', but the text was 'Login'",
+                "estack": "AssertionError: expected '<h1>' to have text 'Welcome', but the text was 'Login'\n    at cypress/e2e/home.cy.ts:11:42",
+                "diff": "  - Welcome\n  + Login"
+              },
+              "uuid": "test-home"
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": ["test-home"],
+          "pending": [],
+          "skipped": []
+        }
+      ],
+      "tests": [],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": []
+    },
+    {
+      "uuid": "spec-discount",
+      "title": "",
+      "fullFile": "cypress/e2e/discount.cy.ts",
+      "file": "cypress/e2e/discount.cy.ts",
+      "suites": [
+        {
+          "uuid": "suite-discount",
+          "title": "Discount application",
+          "fullFile": "cypress/e2e/discount.cy.ts",
+          "file": "cypress/e2e/discount.cy.ts",
+          "tests": [
+            {
+              "title": "applies a discount code",
+              "fullTitle": "Discount application applies a discount code",
+              "duration": 640,
+              "state": "failed",
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "code": "cy.get('[data-testid=\"apply-discount\"]').click()",
+              "err": {
+                "message": "The following error originated from your application code, not from Cypress.\n\n  > Uncaught TypeError: Cannot read properties of undefined (reading 'amount')\n\nWhen Cypress detects uncaught errors originating from your application it will automatically fail the current test and command.",
+                "estack": "TypeError: Cannot read properties of undefined (reading 'amount')\n    at applyDiscount (http://localhost:3000/static/js/discount.js:42:18)\n    at HTMLButtonElement.onClick (http://localhost:3000/static/js/discount.js:8:5)",
+                "diff": null
+              },
+              "uuid": "test-discount"
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": ["test-discount"],
+          "pending": [],
+          "skipped": []
+        }
+      ],
+      "tests": [],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": []
+    }
+  ],
+  "meta": {
+    "mocha": { "version": "7.2.0" },
+    "mochawesome": { "version": "7.1.3" },
+    "marge": {
+      "options": { "reportDir": "cypress/reports", "json": true, "html": false }
+    }
+  }
+}

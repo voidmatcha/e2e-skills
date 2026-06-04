@@ -48,10 +48,14 @@ fi
 
 if [ "${E2E_SKILLS_SKIP_SMELL_SCAN:-}" != "1" ]; then
   step "E2E smell scan"
+  # Self-scan checks OUR files' Tier-3 cleanliness. Skip the eslint download tier here:
+  # local clones carry gitignored testbed/ trees that Tier 1 would otherwise lint for
+  # minutes (watchdog-bounded but slow). The GitHub workflow (no testbed) still runs
+  # scan.sh with Tier 1 enabled, so the eslint path stays CI-exercised.
   if [ "$QUIET" = "1" ]; then
-    E2E_SMELL_FAIL_ON=p0 ./skills/e2e-reviewer/scripts/scan.sh . >/dev/null 2>&1 || fail "skills/e2e-reviewer/scripts/scan.sh"
+    E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_FAIL_ON=p0 ./skills/e2e-reviewer/scripts/scan.sh . >/dev/null 2>&1 || fail "skills/e2e-reviewer/scripts/scan.sh"
   else
-    E2E_SMELL_FAIL_ON=p0 ./skills/e2e-reviewer/scripts/scan.sh . || fail "skills/e2e-reviewer/scripts/scan.sh"
+    E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_FAIL_ON=p0 ./skills/e2e-reviewer/scripts/scan.sh . || fail "skills/e2e-reviewer/scripts/scan.sh"
   fi
 fi
 

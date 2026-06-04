@@ -1,0 +1,150 @@
+{
+  "config": {
+    "configFile": "playwright.config.ts",
+    "rootDir": "/app/e2e",
+    "projects": [
+      {
+        "name": "chromium",
+        "retries": 0,
+        "timeout": 30000
+      }
+    ]
+  },
+  "suites": [
+    {
+      "title": "checkout.spec.ts",
+      "file": "checkout.spec.ts",
+      "specs": [
+        {
+          "title": "submits the checkout form",
+          "file": "checkout.spec.ts",
+          "line": 12,
+          "ok": false,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "unexpected",
+              "results": [
+                {
+                  "status": "failed",
+                  "duration": 30142,
+                  "retry": 0,
+                  "error": {
+                    "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('#submit-btn')\n  -   locator resolved to 0 elements",
+                    "stack": "TimeoutError: locator.click: Timeout 30000ms exceeded.\n    at /app/e2e/checkout.spec.ts:18:34"
+                  },
+                  "errorLocation": {
+                    "file": "checkout.spec.ts",
+                    "line": 18,
+                    "column": 34
+                  }
+                }
+              ]
+            }
+          ],
+          "location": {
+            "file": "checkout.spec.ts",
+            "line": 18,
+            "column": 5
+          }
+        },
+        {
+          "title": "shows order summary",
+          "file": "checkout.spec.ts",
+          "line": 28,
+          "ok": true,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "expected",
+              "results": [
+                {
+                  "status": "passed",
+                  "duration": 842,
+                  "retry": 0,
+                  "error": null
+                }
+              ]
+            }
+          ],
+          "location": {
+            "file": "checkout.spec.ts",
+            "line": 28,
+            "column": 5
+          }
+        }
+      ]
+    },
+    {
+      "title": "dialog.spec.ts",
+      "file": "dialog.spec.ts",
+      "specs": [
+        {
+          "title": "opens the confirmation dialog",
+          "file": "dialog.spec.ts",
+          "line": 10,
+          "ok": false,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "unexpected",
+              "results": [
+                {
+                  "status": "timedOut",
+                  "duration": 30008,
+                  "retry": 0,
+                  "error": {
+                    "message": "TimeoutError: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByRole('dialog') to be visible",
+                    "stack": "TimeoutError: locator.waitFor: Timeout 30000ms exceeded.\n    at /app/e2e/dialog.spec.ts:15:42"
+                  },
+                  "errorLocation": {
+                    "file": "dialog.spec.ts",
+                    "line": 15,
+                    "column": 42
+                  }
+                }
+              ]
+            }
+          ],
+          "location": {
+            "file": "dialog.spec.ts",
+            "line": 15,
+            "column": 5
+          }
+        },
+        {
+          "title": "renders the dialog title",
+          "file": "dialog.spec.ts",
+          "line": 24,
+          "ok": true,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "expected",
+              "results": [
+                {
+                  "status": "passed",
+                  "duration": 611,
+                  "retry": 0,
+                  "error": null
+                }
+              ]
+            }
+          ],
+          "location": {
+            "file": "dialog.spec.ts",
+            "line": 24,
+            "column": 5
+          }
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "expected": 2,
+    "unexpected": 2,
+    "flaky": 0,
+    "skipped": 0,
+    "duration": 61603
+  }
+}

@@ -4,7 +4,7 @@ description: Use when generating new Playwright E2E tests from scratch. Triggers
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.3.4"
+  version: "1.4.0"
 ---
 
 # playwright-test-generator

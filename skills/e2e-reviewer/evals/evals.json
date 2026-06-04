@@ -5,41 +5,49 @@
       "id": 1,
       "prompt": "Review the Playwright E2E tests in evals/files/auth.spec.ts and its POM file pages/login-page.ts. Find any anti-patterns, weak assertions, or quality issues.",
       "expected_output": "Should detect: test.only (P0), waitForTimeout (P1), dangling locator (P0), one-shot boolean (P0), conditional bypass (P0), force:true (P1), .catch(()=>{}) in POM (P0), raw DOM query in POM (P1), name-assertion mismatch (P0), missing then (P0), YAGNI unused POM members (P2), hardcoded credentials (P1), direct page.click API usage (P1)",
-      "files": ["evals/files/auth.spec.ts", "evals/files/pages/login-page.ts"],
+      "files": [
+        "evals/files/auth.spec.ts",
+        "evals/files/pages/login-page.ts"
+      ],
       "assertions": [
         "Detects test.only on line 5 (#7, P0)",
         "Detects waitForTimeout(2000) on line 16 (#9, P1)",
         "Detects dangling locator page.locator('.login-form') on line 24 with no assertion or await (#8a, P0)",
         "Detects one-shot boolean: isVisible() piped to toBeTruthy() on lines 17-18 (#4, P0)",
-        "Detects conditional bypass: if(await page.locator..isVisible()) gates assertion on line 48 (#5a, P0)",
-        "Detects force:true on page.click('.logout-btn') line 39 without JUSTIFIED comment (#5b, P1)",
-        "Detects .catch(() => {}) in POM goto() line 32 swallowing networkidle failure (#3, P0)",
-        "Detects raw DOM query document.querySelector in POM waitForDashboard() line 51 (#6, P1)",
+        "Detects conditional bypass: if(await page.locator..isVisible()) gates assertion on line 42 (#5a, P0)",
+        "Detects force:true on page.click('.logout-btn') line 36 without JUSTIFIED comment (#5b, P1)",
+        "Phase 2 LLM review detects .catch(() => {}) in POM goto() line 33 swallowing networkidle failure (#3, P0) — POM files are outside the Tier 3 spec globs, so this is a Phase 2 finding",
+        "Detects raw DOM query document.querySelector in POM waitForDashboard() line 48 (#6, P1)",
         "Flags name-assertion mismatch: 'should show user profile' only checks .user-avatar visibility, not profile info (#1, P0)",
         "Flags missing then: 'should logout' doesn't verify session cleared or dashboard gone (#2, P0)",
         "Identifies YAGNI: rememberMeCheckbox, forgotPasswordLink, socialLoginGoogle, socialLoginGithub, captchaWidget, termsCheckbox unused in auth.spec.ts (#11, P2)",
-        "Detects hardcoded credentials 'admin'/'password123' on lines 8, 30 (#14, P1)",
-        "Flags direct page.click() on line 39 — prefer locator.click() (#17, P1)",
-        "Does NOT flag page.goto('/reset-password') on line 45 as missing auth — public route (#12)",
+        "Detects hardcoded credentials 'admin'/'password123' on lines 8, 33 (#14, P1)",
+        "Flags direct page.click() on line 36 — prefer locator.click() (#17, P1)",
+        "Does NOT flag page.goto('/reset-password') on line 40 as missing auth — public route (#12)",
         "Does NOT flag page.goto('/dashboard') on line 22 as missing auth in redirect test — testing the redirect itself",
         "Structured output with P0/P1/P2",
         "Summary table included",
-        "Top Priorities section included"
+        "Top Priorities section included",
+        "Does NOT flag a continuation line page.locator(...) that sits inside a multi-line await expect(\\n  page.locator(...)\\n).toBeVisible(); block as #8a — the scanner's previous-line continuation filter drops hits whose preceding non-blank line ends with ( or , and the Phase 2 backstop covers residual shapes",
+        "Still detects a dangling locator statement that ends with a semicolon (e.g. page.locator('.login-form');) as #8a (P0) — and also detects semicolonless dangling locators whose preceding line is not a continuation opener"
       ]
     },
     {
       "id": 2,
       "prompt": "Review the Playwright E2E tests in evals/files/dashboard.spec.ts. Identify all anti-patterns and suggest improvements.",
       "expected_output": "Should detect: serial() (P1), >=0 always-passing (P0), waitForTimeout (P1), missing assertion (P0), toBeAttached (P0), boolean discarded (P0), positional selectors (P1), raw DOM query (P1), missing then (P0), name-assertion mismatch (P0), missing auth setup (P0), direct page action API usage (P1)",
-      "files": ["evals/files/dashboard.spec.ts"],
+      "files": [
+        "evals/files/dashboard.spec.ts",
+        "evals/files/unit-helpers.test.ts"
+      ],
       "assertions": [
         "Detects test.describe.serial on line 3 — breaks parallel sharding (#10b, P1)",
         "Detects toBeGreaterThanOrEqual(0) on line 8 — always passes regardless of content (#4, P0)",
         "Detects waitForTimeout(3000) on line 15 (#9, P1)",
         "Detects toBeAttached() on line 30 — weak assertion, element just needs to exist in DOM (#4, P0)",
-        "Detects boolean discarded: await badge.isVisible() on line 36 with result unused (#8b, P0)",
+        "Detects boolean discarded: await badge.isVisible() on line 32 with result unused (#8b, P0)",
         "Detects positional selector .first() on line 28 and .nth(2) on line 29 (#10a, P1)",
-        "Detects raw DOM query document.querySelector in evaluate() on line 49 (#6, P1)",
+        "Detects raw DOM query document.querySelector in evaluate() on line 44 (#6, P1)",
         "Flags direct page.click() on lines 13-14, 21-22 (#17, P1)",
         "Flags missing auth setup: all tests navigate to /dashboard without login or storageState (#12, P0)",
         "Flags name-assertion mismatch: 'display correct user name' uses querySelector truthiness, doesn't check actual name (#1, P0)",
@@ -48,25 +56,33 @@
         "Does NOT flag page.locator('.chart-container').toBeVisible() on line 16 as always-passing — toBeVisible is a proper web-first assertion",
         "Structured output with P0/P1/P2",
         "Summary table included",
-        "Top Priorities section included"
+        "Top Priorities section included",
+        "Does NOT flag unit-helpers.test.ts line 10 (toBeGreaterThanOrEqual(0)) or line 15 (expect(screen.getByText(...)).toBeTruthy()) — the file is a Vitest/RTL unit test with no Playwright/Cypress marker (no @playwright/test import, no page.* usage, no cy.*), so the Tier 3 regex e2e content scoping filters both (Tier 2 sg-4f may still surface the RTL toBeTruthy line as a jest-dom-fix advisory by design — see the SKILL.md Tier scoping note; it must NOT be reported as a P0)",
+        "Still flags toBeGreaterThanOrEqual(0) inside a real Playwright spec file (imports @playwright/test or uses page.*) as #4a (P0) — content scoping must not suppress in-scope hits"
       ]
     },
     {
       "id": 3,
       "prompt": "Review all Playwright test files in evals/files/ including POM files. Give me a full quality audit with severity ratings.",
       "expected_output": "Comprehensive report covering all spec files and POM files. Finds issues across all checks. Summary table with P0/P1/P2 counts. Coverage gap suggestions referencing specific findings. Cross-file YAGNI analysis. Systemic issues section. Top priorities.",
-      "files": ["evals/files/auth.spec.ts", "evals/files/dashboard.spec.ts", "evals/files/settings.spec.ts", "evals/files/pages/login-page.ts", "evals/files/pages/settings-page.ts"],
+      "files": [
+        "evals/files/auth.spec.ts",
+        "evals/files/dashboard.spec.ts",
+        "evals/files/settings.spec.ts",
+        "evals/files/pages/login-page.ts",
+        "evals/files/pages/settings-page.ts"
+      ],
       "assertions": [
         "Reviews all 3 spec files",
         "Reviews both POM files",
-        "Detects try/catch error swallowing in settings.spec.ts line 9-13: wraps toBeVisible assertion and logs instead of failing (#3, P0)",
+        "Phase 2 LLM review detects try/catch error swallowing in settings.spec.ts line 8-12: wraps toBeVisible assertion and logs instead of failing (#3, P0) — try/catch shapes are Phase 2 responsibility per SKILL.md (#3 partial)",
         "Flags name-assertion mismatch: settings 'change password' only checks .password-section visible, not that password actually changed (#1, P0)",
         "Flags missing assertion: settings 'toggle email notifications' clicks toggle with zero assertions (#2, P0)",
-        "Detects toBeAttached() in settings line 49 (#4, P0)",
-        "Detects one-shot getAttribute('src').toBeTruthy() in settings line 50 (#4, P0)",
+        "Detects toBeAttached() in settings line 48 (#4, P0)",
+        "Detects one-shot getAttribute('src').toBeTruthy() in settings line 49 (#4, P0)",
         "Detects one-shot URL: expect(page.url()).toContain on settings line 42 — no auto-retry (#4h, P0)",
         "Detects inconsistent POM usage in settings: SettingsPage imported but spec uses raw page.fill/page.click for password, toggle, delete (#13, P1)",
-        "Detects hardcoded credentials in auth lines 8, 30 (#14, P1)",
+        "Detects hardcoded credentials in auth lines 8, 33 (#14, P1)",
         "Detects missing auth setup in dashboard — no login before /dashboard (#12, P0)",
         "YAGNI in settings-page.ts: themeSelector, languageDropdown, timezoneDropdown, twoFactorToggle, backupCodesButton, cancelButton and their methods unused (#11, P2)",
         "YAGNI in login-page.ts: rememberMeCheckbox, forgotPasswordLink, socialLoginGoogle, socialLoginGithub, captchaWidget, termsCheckbox unused (#11, P2)",
@@ -81,10 +97,13 @@
       "id": 4,
       "prompt": "Review the Playwright E2E tests in evals/files/checkout.spec.ts and its POM file pages/checkout-page.ts. Find any anti-patterns or quality issues.",
       "expected_output": "Clean, well-written tests. Minimal or no P0/P1 findings. Should recognize good practices: beforeEach, getByTestId/getByRole, storageState auth, env vars for credentials, test.skip with reason. Should NOT flag: test.skip with reason comment, JUSTIFIED nth() usage in POM. May suggest minor improvements but should not produce false positives.",
-      "files": ["evals/files/checkout.spec.ts", "evals/files/pages/checkout-page.ts"],
+      "files": [
+        "evals/files/checkout.spec.ts",
+        "evals/files/pages/checkout-page.ts"
+      ],
       "assertions": [
-        "Does NOT flag test.skip on line 54 as #7 — has valid JIRA-4521 reason",
-        "Does NOT flag nth() in checkout-page.ts line 38 — has JUSTIFIED comment above",
+        "Does NOT flag test.skip on line 53 as #7 — has valid JIRA-4521 reason",
+        "Does NOT flag nth() in checkout-page.ts line 34 — has JUSTIFIED comment above",
         "Does NOT flag process.env.TEST_COUPON or process.env.TEST_SHIPPING_NAME as hardcoded credentials",
         "Does NOT produce false positives on getByTestId/getByRole/getByLabel assertions",
         "Reports zero or near-zero P0 issues",
@@ -97,12 +116,14 @@
       "id": 5,
       "prompt": "Review the Playwright E2E tests in evals/files/search-justified.spec.ts. Check for anti-patterns and respect JUSTIFIED suppression markers.",
       "expected_output": "Should skip patterns with JUSTIFIED comments above them (first() in search results, force:true on filter). Should flag: unjustified nth() on pagination, waitForTimeout without justification. Should not flag locator-based page.locator usage patterns.",
-      "files": ["evals/files/search-justified.spec.ts"],
+      "files": [
+        "evals/files/search-justified.spec.ts"
+      ],
       "assertions": [
-        "Skips JUSTIFIED first() on line 20-21: comment explains results are server-ordered",
-        "Skips JUSTIFIED force:true on line 27-28: comment explains custom overlay intercepting pointer events",
-        "Flags unjustified .nth(2) on pagination line 39 — no JUSTIFIED comment above (#10a, P1)",
-        "Flags waitForTimeout(500) on line 53 — should use auto-wait for suggestions (#9, P1)",
+        "Skips JUSTIFIED first() on line 22-24: comment explains results are server-ordered",
+        "Skips JUSTIFIED force:true on line 32-34: comment explains custom overlay intercepting pointer events",
+        "Flags unjustified .nth(2) on pagination line 42 — no JUSTIFIED comment above (#10a, P1)",
+        "Flags waitForTimeout(500) on line 56 — should use auto-wait for suggestions (#9, P1)",
         "Does NOT flag page.locator('#x').fill() as direct page action usage — locator-based API is correct",
         "Does NOT over-flag: clean tests (special characters, clear-and-reset) should have zero or minimal findings",
         "Structured output with P0/P1/P2",
@@ -113,36 +134,42 @@
       "id": 6,
       "prompt": "Review the Cypress E2E tests in evals/files/products.cy.ts. Identify all anti-patterns and suggest improvements.",
       "expected_output": "Should detect Cypress framework via Phase 0. Should detect: it.only (P0), cy.wait numeric sleeps (P1), dangling cy.get (P0), conditional assertion bypass (P0), force:true without justification (P1), name-assertion mismatch on add-to-cart (P0), missing then on product details (P0). Should skip Playwright-specific checks.",
-      "files": ["evals/files/products.cy.ts"],
+      "files": [
+        "evals/files/products.cy.ts"
+      ],
       "assertions": [
         "Detects Cypress framework in Phase 0 — uses describe/it/cy.* not Playwright",
-        "Detects it.only on line 18 (#7, P0)",
-        "Detects cy.wait(2000) on line 20, cy.wait(1500) on line 26, cy.wait(1000) on line 44 — numeric sleeps (#9b, P1)",
-        "Flags dangling cy.get('.product-card') on line 14 — no assertion chain, no action (#8, P0)",
-        "Flags conditional assertion bypass: if(Cypress.env('SHOW_EMPTY_STATE')) on line 57 — test passes vacuously when env not set (#5a, P0)",
-        "Flags force:true on #apply-discount click line 72 without JUSTIFIED comment (#5b, P1)",
-        "Flags name-assertion mismatch: 'add product to cart' on line 31 only clicks, doesn't verify cart updated (#1, P0)",
-        "Flags missing assertion: 'show product details' line 36 assigns cy.get to const but no should() chain (#2, P0)",
+        "Detects it.only on line 16 (#7, P0)",
+        "Detects cy.wait(2000) on line 18, cy.wait(1500) on line 24, cy.wait(1000) on line 41 — numeric sleeps (#9b, P1)",
+        "Phase 2 LLM review flags dangling cy.get('.product-card') on line 13 — no assertion chain, no action (#8, P0; Cypress dangling selectors are a manual Phase 2 check, not a scanner rule)",
+        "Flags conditional assertion bypass: if(Cypress.env('SHOW_EMPTY_STATE')) on line 53 — test passes vacuously when env not set (#5a, P0)",
+        "Flags force:true on #apply-discount click line 62 without JUSTIFIED comment (#5b, P1)",
+        "Flags name-assertion mismatch: 'add product to cart' on line 29 only clicks, doesn't verify cart updated (#1, P0)",
+        "Flags missing assertion: 'show product details' line 33 assigns cy.get to const but no should() chain (#2, P0)",
         "Skips Playwright-specific checks (dangling page.locator, describe.serial, missing await)",
-        "Does NOT flag cy.get('.product-price').first() on line 45 as dangling — it is chained with .invoke('text')",
-        "Does NOT flag the sort comparison logic (lines 45-50) as an anti-pattern — programmatic price comparison is legitimate",
+        "Does NOT flag cy.get('.product-price').first() on line 42 as dangling — it is chained with .invoke('text')",
+        "Does NOT flag the sort comparison logic (lines 42-49) as an anti-pattern — programmatic price comparison is legitimate",
         "Structured output with P0/P1/P2",
-        "Summary table included"
+        "Summary table included",
+        "Flags the blanket cy.on('uncaught:exception', () => false) on line 69 as #3b (P0) — it swallows every application exception for the suite",
+        "Does NOT flag the scoped handler on lines 79-81 as #3b — it contains an expect(err.message...) assertion on the error, the negative-regression pattern SKILL.md #3b explicitly exempts"
       ]
     },
     {
       "id": 7,
       "prompt": "Review the Playwright E2E tests in evals/files/profile-mixed.spec.ts. Find anti-patterns but don't over-flag legitimate try/catch and test.skip usage.",
       "expected_output": "Should detect: missing await on expect (#15 P0), missing await on action (#16 P0), direct page.fill/page.click usage (#17 P1), networkidle usage (#9c P1). Should NOT flag: legitimate try/catch in beforeEach (setup retry), test.skip with reason, legitimate try/catch in cleanup (delete address test).",
-      "files": ["evals/files/profile-mixed.spec.ts"],
+      "files": [
+        "evals/files/profile-mixed.spec.ts"
+      ],
       "assertions": [
-        "Detects missing await on expect: line 35 expect(page.locator('.toast-success')).toBeVisible() without await — assertion never runs (#15, P0)",
-        "Detects missing await on action: line 41 page.locator('#photo-upload').setInputFiles() without await — upload may never execute (#16, P0)",
-        "Flags direct page.fill on line 48 and page.click on line 49 — prefer locator.fill/locator.click (#17, P1)",
-        "Detects networkidle on line 56: waitForLoadState('networkidle') is unreliable (#9c, P1)",
-        "Does NOT flag try/catch in beforeEach lines 11-17 — legitimate retry for network timeout, not around assertions",
-        "Does NOT flag test.skip on line 25 — has valid TEAM-892 tracking reason",
-        "Does NOT flag try/catch in delete-address test lines 67-70 — best-effort cleanup, not assertion swallowing",
+        "Detects missing await on expect: line 33 expect(page.locator('.toast-success')).toBeVisible() without await — assertion never runs (#15, P0)",
+        "Detects missing await on action: line 38 page.locator('#photo-upload').setInputFiles() without await — upload may never execute (#16, P0)",
+        "Flags direct page.fill on line 44 and page.click on line 45 — prefer locator.fill/locator.click (#17, P1)",
+        "Detects networkidle on line 51: waitForLoadState('networkidle') is unreliable (#9c, P1)",
+        "Does NOT flag try/catch in beforeEach lines 8-14 — legitimate retry for network timeout, not around assertions",
+        "Does NOT flag test.skip on line 24 — has valid TEAM-892 tracking reason",
+        "Does NOT flag try/catch in delete-address test lines 58-62 — best-effort cleanup, not assertion swallowing",
         "Structured output with P0/P1/P2",
         "Summary table included"
       ]
@@ -151,7 +178,9 @@
       "id": 8,
       "prompt": "Review the Playwright E2E test utilities in evals/files/notebook-utils.ts. Identify module-level mutable state anti-patterns but do not over-flag idiomatic Playwright fixture declarations.",
       "expected_output": "Should detect: module-level mutable counter with initializer (#19 P1). Should NOT flag: pure type-only `let` declarations reassigned in beforeEach, JUSTIFIED worker-scoped state, indented `let` inside function bodies.",
-      "files": ["evals/files/notebook-utils.ts"],
+      "files": [
+        "evals/files/notebook-utils.ts"
+      ],
       "assertions": [
         "Detects `let testNotebookSequence = 0` on line 5 — module-level counter with initializer; collides across parallel workers and survives retries (#19, P1)",
         "Detects `let resultCache = new Map()` on line 8 — module-level mutable Map without JUSTIFIED (#19, P1)",

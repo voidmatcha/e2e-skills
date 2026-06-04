@@ -28,6 +28,13 @@ for path in files:
                 sys.exit(f"{path}: eval {entry!r} missing {key}")
         if not isinstance(entry['assertions'], list) or not entry['assertions']:
             sys.exit(f"{path}: {entry['id']} assertions must be a non-empty list")
+        # Reproducibility contract: every referenced fixture must exist in-repo.
+        # Assertions cite exact file:line — a missing fixture makes the eval unrunnable
+        # from a fresh clone (and nothing else in CI would notice).
+        for rel in entry.get('files', []):
+            fixture = path.parent.parent / rel
+            if not fixture.is_file():
+                sys.exit(f"{path}: eval {entry['id']} references missing fixture {rel}")
 
     print(f"{skill}: {len(evals)} eval(s)")
 

@@ -1,0 +1,152 @@
+{
+  "config": {
+    "configFile": "playwright.config.ts",
+    "rootDir": "/app/e2e",
+    "projects": [
+      {
+        "name": "chromium",
+        "retries": 2,
+        "timeout": 30000
+      }
+    ]
+  },
+  "suites": [
+    {
+      "title": "login.spec.ts",
+      "file": "login.spec.ts",
+      "specs": [
+        {
+          "title": "signs in with valid credentials",
+          "file": "login.spec.ts",
+          "line": 8,
+          "ok": true,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "expected",
+              "results": [
+                { "status": "passed", "duration": 1204, "retry": 0, "error": null }
+              ]
+            }
+          ],
+          "location": { "file": "login.spec.ts", "line": 8, "column": 5 }
+        },
+        {
+          "title": "shows an error for invalid credentials",
+          "file": "login.spec.ts",
+          "line": 18,
+          "ok": true,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "expected",
+              "results": [
+                { "status": "passed", "duration": 988, "retry": 0, "error": null }
+              ]
+            }
+          ],
+          "location": { "file": "login.spec.ts", "line": 18, "column": 5 }
+        }
+      ]
+    },
+    {
+      "title": "navigation.spec.ts",
+      "file": "navigation.spec.ts",
+      "specs": [
+        {
+          "title": "navigates to the dashboard",
+          "file": "navigation.spec.ts",
+          "line": 7,
+          "ok": true,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "expected",
+              "results": [
+                { "status": "passed", "duration": 742, "retry": 0, "error": null }
+              ]
+            }
+          ],
+          "location": { "file": "navigation.spec.ts", "line": 7, "column": 5 }
+        },
+        {
+          "title": "navigates to settings via the nav menu",
+          "file": "navigation.spec.ts",
+          "line": 15,
+          "ok": true,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "expected",
+              "results": [
+                { "status": "passed", "duration": 815, "retry": 0, "error": null }
+              ]
+            }
+          ],
+          "location": { "file": "navigation.spec.ts", "line": 15, "column": 5 }
+        },
+        {
+          "title": "highlights the active nav link",
+          "file": "navigation.spec.ts",
+          "line": 23,
+          "ok": true,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "expected",
+              "results": [
+                { "status": "passed", "duration": 533, "retry": 0, "error": null }
+              ]
+            }
+          ],
+          "location": { "file": "navigation.spec.ts", "line": 23, "column": 5 }
+        }
+      ]
+    },
+    {
+      "title": "search.spec.ts",
+      "file": "search.spec.ts",
+      "specs": [
+        {
+          "title": "returns results for a matching query",
+          "file": "search.spec.ts",
+          "line": 9,
+          "ok": true,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "expected",
+              "results": [
+                { "status": "passed", "duration": 1102, "retry": 0, "error": null }
+              ]
+            }
+          ],
+          "location": { "file": "search.spec.ts", "line": 9, "column": 5 }
+        },
+        {
+          "title": "shows an empty state for no matches",
+          "file": "search.spec.ts",
+          "line": 19,
+          "ok": true,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "expected",
+              "results": [
+                { "status": "passed", "duration": 690, "retry": 0, "error": null }
+              ]
+            }
+          ],
+          "location": { "file": "search.spec.ts", "line": 19, "column": 5 }
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "expected": 7,
+    "unexpected": 0,
+    "flaky": 0,
+    "skipped": 0,
+    "duration": 7064
+  }
+}
