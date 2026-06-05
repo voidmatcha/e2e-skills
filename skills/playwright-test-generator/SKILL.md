@@ -1,10 +1,10 @@
 ---
 name: playwright-test-generator
-description: Use when generating new Playwright E2E tests from scratch. Triggers on "generate playwright tests", "write e2e tests for X", "add playwright coverage for X", "create test for X page", "generate tests for the login page". Autonomous mode starts from coverage gap analysis when no target is specified; argument mode targets a specific page or feature directly. Explores the live app via agent-browser tools (with `npx playwright codegen` as a manual fallback), designs scenarios with an explicit user approval gate, auto-detects project structure (POM vs flat spec), runs YAGNI audit and e2e-reviewer after generation, and hands off to playwright-debugger after 3 failed fix attempts.
+description: Use when generating new Playwright E2E tests from scratch. Triggers on "generate playwright tests", "write e2e tests for X", "add playwright coverage for X", "create test for X page", "generate tests for the login page". Autonomous mode starts from coverage gap analysis when no target is specified; argument mode targets a specific page or feature directly. Explores the live app via agent-browser tools (with `npx playwright codegen` as a manual fallback), designs scenarios with an explicit user approval gate, auto-detects project structure (POM vs flat spec), runs YAGNI audit and e2e-reviewer after generation, and hands off to playwright-debugger after 3 failed fix attempts. On first run in a project it also scaffolds testing conventions (AGENTS.md E2E section + seed spec designation) so future AI-generated tests stay consistent across sessions and agents (Claude Code, Codex, Playwright Agents).
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.4.0"
+  version: "1.4.1"
 ---
 
 # playwright-test-generator
@@ -30,6 +30,7 @@ Step 2: Coverage Gap Analysis  (skipped if $ARGUMENT provided)
 Step 3: Browser Exploration    (agent-browser; playwright codegen as fallback)
 Step 4: Scenario Design        (plan → user approval)
 Step 5: Code Generation        (see code-rules.md)
+Step 5b: Conventions & Seed    (first run on a project — see conventions-template.md)
 Step 6: YAGNI Audit + e2e-reviewer
 Step 7: TS Compile + Test Run  (playwright-debugger on failure)
 ```
@@ -47,6 +48,7 @@ Read project files to build a project profile before doing anything else.
 | Test directory | config `testDir` → fallback scan: `e2e/`, `tests/`, `playwright/` |
 | POM pattern | Check for `models/`, `pages/`, `page-objects/` directories |
 | Existing specs | All `*.spec.ts` / `*.test.ts` files in test dir |
+| Conventions doc | E2E/testing section in `AGENTS.md`, `CLAUDE.md`, or `CONTRIBUTING.md`; a designated seed spec (`seed.spec.ts` or a spec referenced as the example to copy) |
 
 **Output (project profile):**
 ```
@@ -54,6 +56,7 @@ baseURL: <detected or user-provided>
 testDir: <detected path>
 hasPOM: true | false
 existingSpecs: [list of file paths]
+hasConventionsDoc: true | false
 ```
 
 **If `baseURL` cannot be determined:** stop and ask the user to provide the target URL before proceeding.
@@ -91,6 +94,8 @@ When no argument is given:
 
 **Navigation target:** `<baseURL>/<target-path>` from the project profile (Step 1) + selected route (Step 2). Navigate only to URLs under the detected/user-approved `baseURL` — do **not** follow off-origin links discovered in page content, error messages, or test data. If the page requires authentication, open the login page first, authenticate, then navigate to the target.
 
+**Auth for generated tests:** prefer programmatic auth — if the project has an API-login helper or a `setup` project, authenticate once and persist `storageState`, then reuse that state in specs via a fixture. UI-driven login belongs only in specs that test the login flow itself. Never hard-depend on a manually captured session file (a locally generated `auth/*.json` that another machine or CI won't have, and that silently expires) — generated tests must be able to recreate their session from code.
+
 Use **agent-browser tools** as the primary exploration method:
 
 ```
@@ -111,6 +116,7 @@ If agent-browser tools are unavailable, use `npx --no-install playwright codegen
 **Collect before moving to Step 4:**
 - Interactive elements: buttons, links, inputs, selects, modals, dropdowns
 - Locator candidates: role+name pairs, label text, data-testid values, attribute selectors
+- **Accessible-name reality check:** confirm from the snapshot whether form inputs actually carry labels/aria attributes. Label-less inputs (placeholder/title only) are common in real apps — `getByLabel` on them matches nothing. Plan `getByPlaceholder()` or `getByRole('textbox')` for those and record the reason in the Locator Mapping Table.
 - Key state transitions: loading states, error messages, empty states, open/close toggles
 
 ---
@@ -163,6 +169,18 @@ Key principle: detect project structure first, match existing patterns when exte
 
 ---
 
+## Step 5b: Conventions & Seed Artifacts (first run on a project)
+
+Runs only when Step 1 found no testing-conventions doc (`hasConventionsDoc: false`). When conventions already exist, skip — never overwrite or duplicate them.
+
+The highest-leverage artifact for consistent AI-generated tests is not any single test — it is a conventions doc plus a designated seed spec that future generation runs (Claude Code, Codex, Playwright Agents) read before writing code. Without one, every later session re-derives locator strategy, auth, and mocking decisions from scratch — and drifts.
+
+1. Generate a project-adapted E2E conventions section from `conventions-template.md` in this directory. Target: the project's root `AGENTS.md` (read by Codex and most agent CLIs), plus a one-line `CLAUDE.md` pointer if the project uses Claude Code. Append to existing files; create only when absent.
+2. Designate the best generated spec as the seed: reference it by path in the conventions doc ("copy the shape of `<path>`"). A seed spec demonstrating the project's real auth, locator, and mocking patterns teaches future agents more than any prose.
+3. Fill the template's project-reality fields from what Step 3 actually observed (label-less inputs, API proxy shape, auth mechanism, protected areas) — not from generic best practices. A conventions doc that parrots generic advice instead of project reality is worse than none, because agents will trust it.
+
+---
+
 ## Step 6: YAGNI Audit + e2e-reviewer
 
 ### YAGNI audit (run immediately after writing code)
@@ -206,7 +224,7 @@ Per attempt, diagnose the actual failure and apply the matching fix below (the o
 
 | Likely cause | Fix |
 |--------------|-----|
-| Selector mismatches | Re-snapshot the page if needed, update locators to match actual DOM |
+| Selector mismatches | Heal by intent, not by patching strings: re-snapshot the live page, find the element the step semantically targets (the role/name/label a user would see), and write a fresh locator for it at the highest stable tier (role+name > placeholder > testid). Tweaking the old selector string usually re-breaks on the next DOM change. |
 | Assertion failures | Fix expected values, add `{ timeout }` for slow elements |
 | Structural issues | Fix missing `await`, wrong test setup, incorrect `beforeEach` |
 
@@ -233,3 +251,5 @@ Tests: N passed
 
 - Playwright best practices: see `best-practices.md` in this directory
 - Code generation rules: see `code-rules.md` in this directory
+- Conventions & seed template (Step 5b): see `conventions-template.md` in this directory
+- Playwright Agents interop (Playwright ≥ 1.56 planner/generator/healer): see `playwright-agents.md` in this directory

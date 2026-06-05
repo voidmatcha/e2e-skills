@@ -5,7 +5,7 @@ E2E tests that always pass are worse than no tests — they give false confidenc
 Four complementary skills cover the full E2E testing lifecycle, from Playwright test generation to Cypress test review and failure debugging:
 
 1. **`playwright-test-generator`** — generates Playwright E2E tests from scratch, from coverage gap analysis to passing, reviewed tests
-2. **`e2e-reviewer`** — static analysis of existing Playwright and Cypress specs; flags 20 anti-patterns (P0 silent always-pass, P1 poor diagnostics, P2 maintenance) that can make tests pass CI while missing real regressions
+2. **`e2e-reviewer`** — static analysis of existing Playwright and Cypress specs; flags 22 anti-patterns (P0 silent always-pass, P1 poor diagnostics, P2 maintenance) that can make tests pass CI while missing real regressions
 3. **`playwright-debugger`** — diagnoses failures from `playwright-report/` and classifies root causes (flaky timing, selector drift, auth, environment mismatch, and more)
 4. **`cypress-debugger`** — same for Cypress report files
 
@@ -106,13 +106,14 @@ Add playwright coverage for checkout flow
 
 ### Pipeline
 
-1. **Detect environment** — config, baseURL, test dir, POM structure
+1. **Detect environment** — config, baseURL, test dir, POM structure, existing conventions doc
 2. **Coverage gap analysis** — user picks target (skipped when target given as argument)
-3. **Live browser exploration** — via agent-browser tools (no hallucinated selectors)
+3. **Live browser exploration** — via agent-browser tools (no hallucinated selectors); accessible-name reality check for label-less inputs
 4. **Scenario design + approval gate** — shows plan and locator table before any code
-5. **Code generation** — POM + spec or flat spec, auto-detected from project conventions
-6. **YAGNI audit + e2e-reviewer** — removes unused locators, catches P0 issues before first run
-7. **TS compile + test run** — 3 auto-fix attempts on failure, then hands off to `playwright-debugger`
+5. **Code generation** — POM + spec or flat spec, auto-detected from project conventions; writes must be route-stubbed (see Network Determinism in `code-rules.md`)
+6. **Conventions & seed scaffolding** (first run on a project) — appends a project-adapted E2E section to `AGENTS.md` and designates a seed spec, so future AI-generated tests (Claude Code, Codex, Playwright Agents) stay consistent
+7. **YAGNI audit + e2e-reviewer** — removes unused locators, catches P0 issues before first run
+8. **TS compile + test run** — 3 auto-fix attempts on failure (heal-by-intent locator re-resolution), then hands off to `playwright-debugger`
 
 ---
 
@@ -174,6 +175,7 @@ Tests work but mislead developers, waste CI time, or set up future regressions.
 | 17 | **Direct `page.click(selector)` API** | `page.click('#submit')` / `page.fill('#input', 'text')` skips the Locator layer | Use `page.locator(selector).click()` for auto-wait and better error messages |
 | 18 | **`expect.soft()` overuse** | All assertions in a test are `expect.soft()` — test never fails early | Ensure at least one hard `expect()` gates per test; use `soft` only for independent details |
 | 19 | **Module-level mutable state in test code** | `let testNotebookSequence = 0;` at column 0 in a test utility — collides across parallel workers and survives retries | Drop the counter; derive uniqueness from `Date.now()` + `Math.random().toString(36).slice(2, 8)`, or move state into `test.beforeEach` |
+| 20 | **Unmocked real-backend writes** | Signup/checkout spec submits real mutations — every CI run creates real accounts/orders | Stub write/credential endpoints with `page.route()` / `cy.intercept()`; one designated real-backend smoke spec max |
 
 #### P2 — Nice to Fix (maintenance / robustness)
 
@@ -182,6 +184,7 @@ Weak but not wrong — addressed when refactoring.
 | # | Pattern | Before | After |
 |---|---------|--------|-------|
 | 11 | **YAGNI + Zombie Specs** | `clickEdit()` never called; empty wrapper class; single-use Util; entire spec duplicated by another | Delete unused members; inline single-use Util methods; delete zombie spec files |
+| 21 | **Manually-captured session-file dependency** | `storageState: 'auth/member.json'` produced only by a manual capture script — absent on CI, silently expires | Regenerate session programmatically (API-login helper or `setup` project); manual files only as a cache with a programmatic fallback |
 
 ### References
 

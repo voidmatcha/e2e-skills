@@ -4,7 +4,7 @@ description: Use when Playwright tests have actually failed and you need to diag
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.4.0"
+  version: "1.4.1"
 ---
 
 # Playwright Failed Test Debugger
@@ -97,6 +97,8 @@ Classification steps:
 2. `duration` near timeout → F1 or F3
 3. CI-only failure → F7 or F8
 4. Passes on retry → F1
+
+**For F2 / F12 fixes — heal by intent, not by patching strings:** take a fresh snapshot of the live page, locate the element the failing step semantically targets (the role/name/label a user would see), and write a new locator at the highest stable tier (role+name > placeholder > testid). Tweaking the old selector string usually re-breaks on the next DOM change.
 
 ## Phase 3: Trace Analysis (only if Phase 2 is unclear)
 

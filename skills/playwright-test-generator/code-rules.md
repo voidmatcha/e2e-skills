@@ -15,12 +15,13 @@
 ## Selector Priority (best → worst)
 
 1. `getByRole('button', { name: 'Submit' })` — role + accessible name
-2. `getByLabel('Email')` — form label
-3. `getByTestId('submit-btn')` / `[data-testid="submit-btn"]` — explicit test hook
-4. `getByText('Save')` / `.filter({ hasText: 'text' })` — visible text
-5. attribute selector `[formControlName="email"]` — stable attribute
-6. CSS class — **POM files only**, stable structural classes only (not styling classes)
-7. `.nth()` / `.first()` / `.last()` — **forbidden** without `// JUSTIFIED:` on the line above
+2. `getByLabel('Email')` — form label — **only when the label/aria-label actually exists**; verify in the Step 3 snapshot before using
+3. `getByPlaceholder('Email')` — for label-less inputs (placeholder/title only). Common in real-world apps; `getByLabel` on these matches nothing and the test dies in `beforeEach`
+4. `getByTestId('submit-btn')` / `[data-testid="submit-btn"]` — explicit test hook
+5. `getByText('Save')` / `.filter({ hasText: 'text' })` — visible text
+6. attribute selector `[formControlName="email"]` — stable attribute
+7. CSS class — **POM files only**, stable structural classes only (not styling classes)
+8. `.nth()` / `.first()` / `.last()` — **forbidden** without `// JUSTIFIED:` on the line above
 
 Never use XPath. Never use CSS class chains that couple to styling.
 
@@ -124,6 +125,42 @@ test.describe('Login', () => {
 | XPath selectors | `getByRole` / `getByLabel` / `getByTestId` |
 
 **Await rule:** Every `expect()` on a Locator and every Playwright action (`.click()`, `.fill()`, `.type()`, `.press()`, `.check()`, `.selectOption()`, `.hover()`) **must** be `await`ed. Missing `await` silently skips the assertion or action.
+
+---
+
+## Network Determinism
+
+Decide per endpoint, not per suite:
+
+| Traffic | Strategy |
+|---------|----------|
+| **Writes / credential paths** (signup, login, payment, any mutation) | **Always stub** with `page.route()`. A generated test must never create real accounts, hit real payment providers, or mutate shared backend data — data pollution, rate-limit flakiness, and PII exposure in third-party logs are all silent until they aren't. |
+| Stable first-party reads | Real backend acceptable when responses are deterministic enough to assert on |
+| Third-party services | Always stub (also covered by Spec Rules above) |
+| Real-backend smoke | At most one small, clearly named smoke spec may exercise the real backend end-to-end (e.g. a throwaway guest session) — keep it isolated |
+
+When the app funnels API calls through a proxy endpoint (e.g. `/api/request?cmd=<path>`), write ONE shared route-mock helper that matches on the decoded routing parameter and exposes response builders — not per-test `page.route()` calls with duplicated URL parsing:
+
+```typescript
+// helpers/mockApi.ts — match on the decoded routing param; unlisted calls fall through
+await page.route('**/api/request?**', route => {
+  const cmd = decodeCmd(route.request().url());
+  const hit = map[cmd];
+  return hit
+    ? route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(hit) })
+    : route.continue();
+});
+```
+
+Fall-through (`route.continue()`) keeps reads real, but it means **a misspelled key silently leaks a write to the real backend** — list every write endpoint explicitly, and record that requirement in the project's conventions doc (Step 5b).
+
+---
+
+## Auth & Session
+
+- Authenticate **once**, programmatically (API-login helper or a `setup` project), persist with `storageState`, reuse it in specs that need a session. UI-driven login belongs only in specs that test the login flow itself.
+- Never hard-depend on a **manually captured** session file — a locally generated `auth/*.json` that a fresh clone or CI won't have, and that silently expires. Generated tests must be able to recreate their session from code.
+- Logged-out scenarios use a fresh context (no `storageState`) — don't "log out first" inside a test.
 
 ---
 

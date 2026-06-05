@@ -1,10 +1,10 @@
 ---
 name: e2e-reviewer
-description: 'Use when reviewing or improving existing Playwright/Cypress E2E specs or POMs via static analysis, not runtime failure debugging. Triggers on "review my tests", "audit test quality", "find weak tests", "improve playwright tests", "improve cypress tests", "flaky tests", "test anti-patterns", "coverage gaps", and tests that pass while missing bugs. Reviews 20 anti-patterns. P0 must-fix (silent always-pass): name-assertion mismatch, missing Then, error swallowing, Cypress uncaught:exception suppression, always-passing assertions, bypass patterns, focused test leak, missing assertions, missing auth setup, missing await on expect, missing await on action. P1 should-fix (poor diagnostics): raw DOM queries, hard-coded sleeps, flaky test patterns, inconsistent POM usage, hardcoded credentials, direct page action API, expect.soft overuse, module-level mutable state in test utilities. P2 nice-to-fix (maintenance): YAGNI + zombie specs.'
+description: 'Use when reviewing or improving existing Playwright/Cypress E2E specs or POMs via static analysis, not runtime failure debugging. Triggers on "review my tests", "audit test quality", "find weak tests", "improve playwright tests", "improve cypress tests", "flaky tests", "test anti-patterns", "coverage gaps", and tests that pass while missing bugs. Reviews 22 anti-patterns. P0 must-fix (silent always-pass): name-assertion mismatch, missing Then, error swallowing, Cypress uncaught:exception suppression, always-passing assertions, bypass patterns, focused test leak, missing assertions, missing auth setup, missing await on expect, missing await on action. P1 should-fix (poor diagnostics): raw DOM queries, hard-coded sleeps, flaky test patterns, inconsistent POM usage, hardcoded credentials, direct page action API, expect.soft overuse, module-level mutable state in test utilities, unmocked real-backend writes. P2 nice-to-fix (maintenance): YAGNI + zombie specs, manually-captured session-file dependency.'
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.4.0"
+  version: "1.4.1"
 ---
 
 # E2E Test Scenario Quality Review
@@ -843,6 +843,30 @@ export async function createTestNotebook(page: Page) {
 
 ---
 
+#### 20. Unmocked Real-Backend Writes `[LLM-only]`
+
+**Symptom:** A spec drives a write or credential path — signup, login, checkout, any data mutation — and no route stub (`page.route()` / `cy.intercept()`) in the spec or its fixtures covers the endpoint, so every run reaches a real backend.
+
+**Why it matters:** Each CI run creates real accounts, real orders, or real charges: shared-environment data pollution, rate-limit and quota flakiness, and PII/credential exposure in backend or third-party logs. The test is also non-deterministic — backend state, not the code under test, decides whether it passes.
+
+```typescript
+// BAD — every run registers a real account on the shared backend
+await signUpPage.fillForm(`test+${Date.now()}@corp.com`, 'hunter22!');
+await signUpPage.submitButton.click();
+
+// GOOD — the write is stubbed; the test asserts the app's handling of the response
+await page.route('**/api/auth/join**', r =>
+  r.fulfill({ status: 200, contentType: 'application/json', body: '{"result":"SUCCESS"}' }));
+await signUpPage.fillForm('user@example.com', 'hunter22!');
+await signUpPage.submitButton.click();
+```
+
+**Rule:** Write/credential endpoints must be stubbed in specs. One clearly named real-backend smoke spec (e.g. a throwaway guest session) is the only exemption — mark it `// JUSTIFIED: designated real-backend smoke`.
+
+**Detection (LLM):** In each spec, list actions that submit forms or trigger mutation-shaped requests (signup/login/checkout/save/delete). Check whether a route stub or mock fixture covers each one — read helper and fixture files before flagging; the stub may live there. Client-side-only validation tests (no request fired) are not hits.
+
+---
+
 ### P2 — Nice to Fix (maintenance / robustness)
 
 Weak but not wrong. Address when refactoring or before adopting wider conventions.
@@ -882,6 +906,16 @@ Two sub-patterns: unused code in Page Objects, and zombie spec files.
 | search-page.ts | (class body empty) | — | REVIEW |
 | basic.spec.ts | (entire file) | covered by full.spec.ts | DELETE |
 ```
+
+#### 21. Manually-Captured Session-File Dependency `[LLM-only]`
+
+**Symptom:** A spec, fixture, or project config loads a `storageState` JSON (e.g. `auth/member.json`) that only a manual capture script or a developer's one-off login produces — nothing in the automated test setup can regenerate it.
+
+**Why it matters:** The file is absent on fresh clones and CI, and silently expires. The suite then fails — or worse, soft-skips — for reasons unrelated to the code under test, and nobody trusts the signal.
+
+**Rule:** Session state must be reproducible from code: an API-login helper or a `setup` project that writes `storageState` before dependent specs run. A committed or manually captured file may serve only as a cache with a programmatic fallback.
+
+**Detection (LLM):** For each `storageState:` reference (spec, fixture, or `playwright.config` project), trace what writes that path. If only a manual script — or nothing in-repo — produces it, flag.
 
 ---
 
@@ -929,7 +963,7 @@ The "Top N Priorities" section should list the 3-5 highest-impact fixes in concr
 
 ## Quick Reference
 
-This table is a **numerical index for scanning** — pattern # → severity, phase, and the grep/LLM signal. For canonical **Symptom / Rule / Fix** wording (used when emitting a finding), consult the matching section under "Pattern Reference" above (organized by severity tier, not numerical order). Both views describe the same 20 patterns; pick whichever lookup matches your task.
+This table is a **numerical index for scanning** — pattern # → severity, phase, and the grep/LLM signal. For canonical **Symptom / Rule / Fix** wording (used when emitting a finding), consult the matching section under "Pattern Reference" above (organized by severity tier, not numerical order). Both views describe the same 22 patterns; pick whichever lookup matches your task.
 
 | # | Check | Sev | Phase | Detection Signal |
 |---|-------|-----|-------|-----------------|
@@ -952,6 +986,8 @@ This table is a **numerical index for scanning** — pattern # → severity, pha
 | 17 | Deprecated page action API | P1 | grep | `page.click(selector)` instead of `page.locator(selector).click()` |
 | 18 | `expect.soft()` overuse | P1 | grep+LLM | >50% soft assertions in a test masks cascading failures |
 | 19 | Module-Level Mutable State | P1 | grep+LLM | `let x = ...` at column 0 in test code — survives across tests within a worker |
+| 20 | Unmocked Real-Backend Writes | P1 | LLM | Form submit / mutation request with no route stub in spec or fixtures |
+| 21 | Manual Session-File Dependency | P2 | LLM | `storageState` JSON produced only by a manual capture script |
 | 3b | Cypress uncaught:exception suppression | P0 | grep | `cy.on('uncaught:exception', () => false)` globally swallows app errors |
 
 ---

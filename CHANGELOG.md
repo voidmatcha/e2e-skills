@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.4.1] - 2026-06-05
+
+Research-driven update: folds 2025–2026 community/official findings on AI-generated E2E tests (Playwright Agents planner/generator/healer model, seed-spec + conventions-doc leverage, network determinism, storageState auth) into the generator pipeline and reviewer catalog.
+
+### Added
+- **`playwright-test-generator` Step 5b — Conventions & Seed Artifacts.** On first run in a project (no testing-conventions doc detected in Step 1), the pipeline now scaffolds a project-adapted E2E section into root `AGENTS.md` (+ `CLAUDE.md` pointer) and designates the best generated spec as the seed to copy. Rationale: across practitioner reports, a conventions doc + seed spec is the highest-leverage artifact for keeping AI-generated tests consistent across sessions and agents — without one, every session re-derives locator/auth/mocking decisions and drifts. New `conventions-template.md` carries the fill-from-observed-reality template.
+- **`playwright-test-generator` — `playwright-agents.md` interop reference.** When to keep this pipeline vs hand off to Playwright ≥ 1.56 first-party agents (`npx playwright init-agents --loop=claude`), how Step 5b artifacts feed the planner/generator, and why projects pinned below 1.56 (e.g. pixel-perfect visual baselines that an upgrade would invalidate) should not upgrade just for agents.
+- **`code-rules.md` — Network Determinism section.** Per-endpoint strategy table: write/credential paths must be stubbed (`page.route()`) — generated tests must never create real accounts or hit real payment providers; stable first-party reads may stay real; at most one designated real-backend smoke spec. Includes the shared proxy route-mock helper pattern (match on decoded routing param, e.g. `/api/request?cmd=`) and the fall-through write-leak caveat.
+- **`code-rules.md` — Auth & Session section.** Authenticate once programmatically + `storageState` reuse; UI login only in login-flow specs; manually captured session files forbidden as hard dependencies.
+- **`e2e-reviewer` #20 — Unmocked Real-Backend Writes (P1, LLM).** Spec drives signup/login/checkout/mutation with no route stub in spec or fixtures — data pollution, rate-limit flakiness, PII exposure, backend-state-dependent results. Exemption: one `// JUSTIFIED:` designated real-backend smoke spec.
+- **`e2e-reviewer` #21 — Manually-Captured Session-File Dependency (P2, LLM).** `storageState` JSON produced only by a manual capture script — absent on fresh clones/CI, silently expires. Session state must be reproducible from code.
+
+### Changed
+- **`playwright-test-generator` selector priority** — added `getByPlaceholder` as tier 3 and a label-existence precondition on `getByLabel`: label-less inputs (placeholder/title only) are common in real apps and `getByLabel` on them matches nothing. Step 3 now includes an accessible-name reality check against the live snapshot before locators enter the mapping table.
+- **`playwright-test-generator` Step 3 — programmatic-auth guidance** for generated tests (API login / setup project + `storageState`), aligned with reviewer #21.
+- **`playwright-test-generator` Step 7 / `playwright-debugger` F2·F12 — heal by intent.** Selector-failure fixes now re-resolve the element a step semantically targets from a fresh snapshot at the highest stable locator tier, instead of patching the old selector string (the approach Playwright's healer agent uses).
+- Catalog count 20 → 22 across SKILL.md, README, and plugin description.
+
 ## [1.4.0] - 2026-06-04
 
 ### Added
