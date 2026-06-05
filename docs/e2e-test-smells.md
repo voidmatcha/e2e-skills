@@ -43,6 +43,7 @@ The standalone scanner only fails CI on P0 findings by default. P1/P2 findings a
 | #18 | `expect.soft()` overuse | A test with mostly soft assertions may continue after the primary condition is broken. | Keep at least one hard assertion for the scenario's main outcome. |
 | #19 | Module-level mutable state in test code | A top-level (column-0) `let X = …` in a test utility or POM persists across tests within a worker — collides under parallel workers and survives retries. | Derive uniqueness from `Date.now()` + random suffix, or use `testInfo.workerIndex`; move state into `test.beforeEach`. Pure type declarations (`let page: Page;` reassigned in `beforeEach`) are idiomatic Playwright fixtures and out of scope. |
 | #20 | Unmocked real-backend writes | Form submits / mutation requests with no route stub hit a live backend — polluted state, order-dependent runs, slow feedback. | Stub writes with `page.route()` / `cy.intercept()` fixtures; keep at most one real-backend smoke test. |
+| #22 | Optimistic UI without call proof | A write-control click asserted only via optimistically-updated UI can pass while the request never fires or fails server-side. | Pair the UI assertion with request proof: `page.waitForRequest()` / route-hit flag / `cy.wait('@alias')`. |
 
 ## P2: Maintainability
 
@@ -50,6 +51,7 @@ The standalone scanner only fails CI on P0 findings by default. P1/P2 findings a
 |----|-------|----------------|----------------|
 | #11 | YAGNI POM/util code + zombie specs | Unused locators, empty wrappers, single-use helpers, and specs that duplicate another file's coverage hide real coverage and slow review. | Delete unused members; inline single-use helpers; delete zombie spec files or merge unique assertions into the stronger suite. |
 | #21 | Manually-captured session-file dependency | `storageState` JSON produced only by a human-run capture script rots silently — suites fail when the session expires and nobody remembers why. | Generate auth state programmatically in a setup project (API login + `storageState` write) on every run. |
+| #23 | Fixture ignores render guards | A seeded fixture that fails the display component's early-return guards renders nothing — the test asserts on an empty view. | Mirror every guard condition of the component under test in the fixture (e.g. `liked: true` for a Liked view). |
 
 ## Review Surface Beyond Grep
 

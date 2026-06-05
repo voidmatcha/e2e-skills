@@ -291,10 +291,10 @@ for sev_name, required, pattern in skill_sev_specs:
                 f"e2e-reviewer/SKILL.md {sev_name} lists #{pid} but Quick Reference severity is {qr_sev}"
             )
 
-# Check 3c: Quick Reference row count equals 22 and ID set equals Pattern Reference section IDs
-if len(qr_severity) != 22:
+# Check 3c: Quick Reference row count equals 24 and ID set equals Pattern Reference section IDs
+if len(qr_severity) != 24:
     errors.append(
-        f"e2e-reviewer/SKILL.md Quick Reference: expected 22 rows, got {len(qr_severity)}"
+        f"e2e-reviewer/SKILL.md Quick Reference: expected 24 rows, got {len(qr_severity)}"
     )
 qr_only = qr_ids - section_ids
 section_only = section_ids - qr_ids
@@ -358,9 +358,9 @@ else:
             if phrase:
                 ordered_phrases.append(normalize(phrase))
 
-    if len(ordered_phrases) != 22:
+    if len(ordered_phrases) != 24:
         errors.append(
-            f"e2e-reviewer/SKILL.md frontmatter: expected 22 patterns across P0/P1/P2, got {len(ordered_phrases)}"
+            f"e2e-reviewer/SKILL.md frontmatter: expected 24 patterns across P0/P1/P2, got {len(ordered_phrases)}"
         )
 
     plugin_desc_norm = normalize(plugin.get('description', ''))
