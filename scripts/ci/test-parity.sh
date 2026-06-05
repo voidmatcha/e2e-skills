@@ -111,7 +111,7 @@ file="skills/e2e-reviewer/SKILL.md"
 backup "$file"
 mutate "$file" "| 1 | Name-Assertion | P0 | LLM | Noun in name with no matching \`expect()\` |
 " ""
-assert_fails "Check 3c — QR row count drift" "expected 20 rows"
+assert_fails "Check 3c — QR row count drift" "expected 22 rows"
 restore "$file"
 
 # Case 6: out-of-order plugin.json description (Check 5)
@@ -131,7 +131,7 @@ restore "$file"
 # Case 8: manifest version drift — bump .codex-plugin/plugin.json out of sync with the others
 file=".codex-plugin/plugin.json"
 backup "$file"
-mutate "$file" "\"version\": \"1.4.0\"" "\"version\": \"9.9.9\""
+mutate "$file" "\"version\": \"1.4.2\"" "\"version\": \"9.9.9\""
 assert_fails "Check 6 — manifest version drift" "manifest version mismatch"
 restore "$file"
 
@@ -153,7 +153,7 @@ restore "$file"
 file="skills/e2e-reviewer/SKILL.md"
 backup "$file"
 mutate "$file" "description: 'Use when reviewing" "description: Use when reviewing"
-mutate "$file" "specs.'" "specs."
+mutate "$file" "dependency.'" "dependency."
 assert_fails "Frontmatter YAML guard — unquoted description with ': '" "colon-space"
 restore "$file"
 
@@ -161,7 +161,7 @@ restore "$file"
 # the v1.3.1 hole where one of four SKILL.md files got left behind during a lock-step bump
 file="skills/playwright-test-generator/SKILL.md"
 backup "$file"
-mutate "$file" "version: \"1.4.0\"" "version: \"9.9.9\""
+mutate "$file" "version: \"1.4.2\"" "version: \"9.9.9\""
 assert_fails "SKILL.md version drift vs manifest" "does not match plugin version"
 restore "$file"
 

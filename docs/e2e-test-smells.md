@@ -42,12 +42,14 @@ The standalone scanner only fails CI on P0 findings by default. P1/P2 findings a
 | #17 | Direct page action API | `page.click(selector)` and friends give weaker locator semantics and poorer errors. | Use `page.locator(selector).click()` or user-facing locators. |
 | #18 | `expect.soft()` overuse | A test with mostly soft assertions may continue after the primary condition is broken. | Keep at least one hard assertion for the scenario's main outcome. |
 | #19 | Module-level mutable state in test code | A top-level (column-0) `let X = …` in a test utility or POM persists across tests within a worker — collides under parallel workers and survives retries. | Derive uniqueness from `Date.now()` + random suffix, or use `testInfo.workerIndex`; move state into `test.beforeEach`. Pure type declarations (`let page: Page;` reassigned in `beforeEach`) are idiomatic Playwright fixtures and out of scope. |
+| #20 | Unmocked real-backend writes | Form submits / mutation requests with no route stub hit a live backend — polluted state, order-dependent runs, slow feedback. | Stub writes with `page.route()` / `cy.intercept()` fixtures; keep at most one real-backend smoke test. |
 
 ## P2: Maintainability
 
 | ID | Smell | Why it matters | Better pattern |
 |----|-------|----------------|----------------|
 | #11 | YAGNI POM/util code + zombie specs | Unused locators, empty wrappers, single-use helpers, and specs that duplicate another file's coverage hide real coverage and slow review. | Delete unused members; inline single-use helpers; delete zombie spec files or merge unique assertions into the stronger suite. |
+| #21 | Manually-captured session-file dependency | `storageState` JSON produced only by a human-run capture script rots silently — suites fail when the session expires and nobody remembers why. | Generate auth state programmatically in a setup project (API login + `storageState` write) on every run. |
 
 ## Review Surface Beyond Grep
 

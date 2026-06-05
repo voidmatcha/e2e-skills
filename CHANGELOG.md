@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.2] - 2026-06-05
+
+### Added
+- **Cross-host convergence contract** (motivated by a 10-repo Claude-vs-Codex comparison where verdicts agreed 9/10 but `Real P0` counts varied by host discretion): Phase 1 "Deterministic mode" — canonical scanner invocation with download tiers pinned off and a mandatory tier-coverage statement in the report; Phase 2 "Counting contract" — `Real P0 = N` is the number of distinct surviving `file:line` entries after FP elimination and consolidation; Phase 2 "Bounded opening-token sweep" — the scanner-missed-shape hunt is a fixed 5-family token checklist instead of open-ended exploration.
+
+### Fixed
+- **`scan.sh` `#3b` matches every `uncaught:exception` handler opening** (single- or multi-line body). The old `.*false` suffix only caught one-line `() => false` and missed 51 multi-line blanket suppressors in one OSS Cypress suite — Phase 1 reported 0 P0 on the corpus's richest #3b surface. Blanket-vs-scoped classification stays with Phase 2 (handler containing `expect()` is exempt). Cross-host verification (Codex/omx, 10 repos) surfaced the gap: a host that trusted the mechanical zero stopped early and returned the only verdict mismatch of the run.
+- **`e2e-reviewer/SKILL.md` Phase 2 zero-P0 floor.** Explicit MANDATORY rule: Phase 1 reporting 0 P0 does not end the review — LLM-only checks and a scanner-missed-shape sweep always run.
+- **`AGENTS.md` Codex install path corrected** to `~/.agents/skills/` (empirically verified discovery path; was documented as `~/.codex/skills/`).
+
 ## [1.4.1] - 2026-06-05
 
 Research-driven update: folds 2025–2026 community/official findings on AI-generated E2E tests (Playwright Agents planner/generator/healer model, seed-spec + conventions-doc leverage, network determinism, storageState auth) into the generator pipeline and reviewer catalog.

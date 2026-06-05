@@ -432,7 +432,11 @@ run_check P0 '#16' 'Missing await on Playwright action' '^\s*page\.(locator|getB
 run_check P1 '#17' 'Direct page action API' 'page\.(click|fill|type|check|uncheck|selectOption)\(["'"'"'`]' '*.{spec.ts,spec.js,test.ts,test.js}'
 run_check P1 '#9c' 'Network-idle readiness check' '(waitForLoadState\(\s*[\x27\"]networkidle[\x27\"]|waitUntil:\s*[\x27\"]networkidle[\x27\"])' '*.{ts,js,tsx,jsx}' e2e
 run_check P1 '#18' 'Soft assertion usage' 'expect\.soft\(' '*.{spec.ts,spec.js,test.ts,test.js}'
-run_check P0 '#3b' 'Cypress uncaught exception suppression' "on\('uncaught:exception'.*false" '*.{cy.ts,cy.js,ts,js}'
+# #3b matches every uncaught:exception handler OPENING (single- or multi-line body): the
+# old `.*false` suffix only caught the one-line `() => false` form and missed 51 multi-line
+# `(err, runnable) => { return false; }` blanket suppressors in one OSS Cypress suite.
+# Blanket-vs-scoped is Phase 2's documented call (handler containing expect() is exempt).
+run_check P0 '#3b' 'Cypress uncaught exception suppression (Phase 2 confirms blanket vs scoped)' "on\(\s*['\"]uncaught:exception['\"]" '*.{cy.ts,cy.js,ts,js}'
 run_check P1 '#19' 'Module-level mutable state in test code' '^let\s+' '*.{ts,js,tsx,jsx,cy.ts,cy.js}' e2e
 
 printf '\nSummary: %s total hit(s), %s P0, %s P1/P2 heuristic.\n' "$total_hits" "$p0_hits" "$p1_hits"

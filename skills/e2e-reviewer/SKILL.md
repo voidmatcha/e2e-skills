@@ -4,7 +4,7 @@ description: 'Use when reviewing or improving existing Playwright/Cypress E2E sp
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.4.1"
+  version: "1.4.2"
 ---
 
 # E2E Test Scenario Quality Review
@@ -50,6 +50,14 @@ The scanner internally uses, in priority order:
 Output is grouped per pattern ID (`#3`, `#4a`, `#15`, etc.) with `file:line:matched-line`. See `references/grep-patterns.md` for the meaning of each ID.
 
 **Tier scoping note:** Tier 2's `sg-4f` deliberately also matches RTL `getBy*().toBeTruthy()` in unit tests — that surface gets the jest-dom canonical fix from 4.1, not a P0 label. Severity classification of #4f stays with Phase 2 (Locator subject = P0; RTL = advisory). Tier 2 rules skip vendored/build artifacts via per-rule `ignores`.
+
+**Deterministic mode (cross-host convergence contract):** different hosts (Claude Code, Codex, etc.) must produce comparable findings on the same repo. Tier 1/2 availability varies with the environment (local plugin installs, npx download policy, watchdog), which changes the raw hit set. For a comparable review, invoke the scanner in the canonical form and SAY SO in the report:
+
+```bash
+E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 bash <skill-base>/scripts/scan.sh <test-dir>
+```
+
+(Tier 3 regex always runs and is the deterministic baseline; Tier 1/2 add precision when locally installed but never subtract findings — the exit-code gate guarantees a crashed tier cannot suppress Tier 3.) The report MUST state which tiers actually ran ("Tier coverage: 3 only" / "1+2+3").
 
 **E2E content scoping:** for the FP-prone patterns (P0: `#3`, `#4a`, `#4b`, `#4f`, `#4g`, `#15`; P1: `#9`, `#6`, `#5b`, `#19`) the Tier 3 regex keeps a hit only when its file carries a real Playwright/Cypress marker (`@playwright/test` import, `async ({ page` fixture destructure, direct `page.<api>` usage, or `cy.<cmd>(`). This filters Vitest/Jest/RTL unit-test bleed-through at Phase 1 — the dominant false-positive source observed across a 110-repo OSS validation corpus.
 
@@ -99,6 +107,24 @@ The LLM performs only these checks:
 | 16 | Missing `await` on action confirmation | Phase 1 flags lines that start with `page.locator(...).action(` or `page.getBy...(...).action(` (no leading `await`). LLM confirms the line lacks `await` and the action is a real Playwright action (not a synchronous chain). LLM also SKIPS the hit if the line is inside a `Promise.all([` or `Promise.race([` array — array elements don't need explicit `await` because the `Promise.all` awaits them. Flag P0 only for true standalone statements. |
 | 18 | `expect.soft()` overuse confirmation | Phase 1 flags all `expect.soft()` hits; LLM counts: if >50% of assertions in a single test are `soft`, flag P1 — soft assertions mask cascading failures. A few `soft` assertions among many hard ones is fine. |
 | 19 | Module-level mutable state confirmation | Phase 1 flags every `^let ` at column 0 in test code. LLM SKIPS the hit when it's a pure type declaration without an initializer (e.g., `let page: Page;` reassigned in `beforeEach` — idiomatic Playwright fixture). Flag P1 only when the `let` carries an initializer (`let counter = 0;`, `let cache: Map<string, T> = new Map();`) — that state survives across tests under parallel workers and retries. |
+
+**Zero-P0 floor (MANDATORY):** Phase 1 reporting 0 P0 does NOT end the review. The LLM-only checks (#1 Name-Assertion, #2 Missing Then, #3 try/catch shapes, #12 Missing Auth) run regardless of mechanical hit counts. Real case: one Cypress suite scanned 0 P0 while containing 51 multi-line blanket `cy.on('uncaught:exception', (err) => { return false; })` suppressors the (since-fixed) single-line regex missed — a reviewer that stopped at the mechanical count returned DELETE on the single richest P0 surface in the corpus.
+
+**Bounded opening-token sweep (MANDATORY, exactly this list — no more, no less):** for cross-host convergence the scanner-missed-shape sweep is a fixed checklist, not open-ended exploration. For each P0 family whose Phase 1 count is 0, grep the family's opening token and read the bodies of any matches:
+
+| Family | Opening token grep |
+|--------|--------------------|
+| #3b | `cy\.on\(\s*['"]uncaught:exception` |
+| #3 | `catch\s*[({]` in spec files (bodies that swallow without rethrow/assert) |
+| #7 | `\.only\(` |
+| #8b | `^\s*await .*\.is[A-Z][a-zA-Z]*\(` standalone statements |
+| #4h | `expect\(\s*page\.url\(\)` |
+
+A zero on both the scanner AND its family token = genuinely clean; stop there.
+
+**Counting contract — `Real P0 = N` (MANDATORY definition):** N is the number of DISTINCT flagged source lines (`file:line`) that survive Phase 2 false-positive elimination, after the consolidation rule (a line triggering multiple patterns counts ONCE). Do not count clusters, files, or pattern categories; do not count P1/P2 findings; do not count findings in framework self-test fixtures separately — include them in N but label them per 4.2-9. Two hosts reviewing the same commit must arrive at the same N.
+
+
 
 **Retry-wrapper skip (applies to #4c-4e, #4h, #15, #16):** When a Phase 1 hit's enclosing function is the callback argument of `await expect(async () => { ... }).toPass({...})` (Playwright) or `await expect.poll(async () => { ... }).toX(...)`, the Playwright harness re-runs the callback until it passes or times out — one-shot reads and unawaited `expect()` lines inside are not silent-always-pass. SKIP P0 reporting for these hits. (Distinct from the Promise.all/Promise.race skip on the #16 row, which is about array elements, not retry callbacks.) Real case: a `payload` review found 9/20 `#4h` raw hits sat inside `.toPass(...)` callbacks — none were real P0.
 

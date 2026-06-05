@@ -152,7 +152,7 @@
         "Structured output with P0/P1/P2",
         "Summary table included",
         "Flags the blanket cy.on('uncaught:exception', () => false) on line 69 as #3b (P0) — it swallows every application exception for the suite",
-        "Does NOT flag the scoped handler on lines 79-81 as #3b — it contains an expect(err.message...) assertion on the error, the negative-regression pattern SKILL.md #3b explicitly exempts"
+        "Phase 1 surfaces the scoped handler on lines 79-81 as a #3b candidate (opening-match by design), but the FINAL report must NOT count it as P0 — it contains an expect(err.message...) assertion on the error, the negative-regression pattern SKILL.md #3b explicitly exempts in Phase 2"
       ]
     },
     {
