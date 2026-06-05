@@ -4,7 +4,7 @@ description: 'Use when reviewing or improving existing Playwright/Cypress E2E sp
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.4.2"
+  version: "1.4.3"
 ---
 
 # E2E Test Scenario Quality Review
@@ -891,6 +891,29 @@ await signUpPage.submitButton.click();
 
 **Detection (LLM):** In each spec, list actions that submit forms or trigger mutation-shaped requests (signup/login/checkout/save/delete). Check whether a route stub or mock fixture covers each one — read helper and fixture files before flagging; the stub may live there. Client-side-only validation tests (no request fired) are not hits.
 
+#### 22. Optimistic UI Without Call Proof `[LLM-only]`
+
+**Symptom:** An interaction test clicks a write control (like toggle, delete, save) and asserts only the resulting UI state — but the app updates that UI *optimistically*, before (and regardless of) the network call. The assertion passes even if the wiring to the API is deleted.
+
+**Why it matters:** This is a false positive specific to write interactions: the visible behavior under test is produced client-side, so the test proves the click handler ran, not that the write reached the backend contract. A regression that drops the API call (refactor, early return, swallowed promise) ships green.
+
+```typescript
+// BAD — aria-pressed flips optimistically; passes with the POST deleted
+await likeToggle.click();
+await expect(likeToggle).toHaveAttribute('aria-pressed', 'true');
+
+// GOOD — request proof + UI state
+const call = page.waitForRequest(r =>
+  r.method() === 'POST' && r.url().includes('/user/sentence/like'));
+await likeToggle.click();
+await call;
+await expect(likeToggle).toHaveAttribute('aria-pressed', 'true');
+```
+
+**Rule:** Every write-interaction test pairs its UI assertion with proof the request fired: `page.waitForRequest()`, a route-handler hit flag, or an assertion on mocked-request capture. Set up `waitForRequest` *before* the click to avoid racing fast responses.
+
+**Detection (LLM):** For each test that clicks a control whose handler issues a mutation (read the component if unsure), check whether the spec awaits any request evidence. If the only assertions are on DOM/UI state that the component updates optimistically, flag. Tests of pure client-side state (no request in the handler) are not hits.
+
 ---
 
 ### P2 — Nice to Fix (maintenance / robustness)
@@ -943,6 +966,16 @@ Two sub-patterns: unused code in Page Objects, and zombie spec files.
 
 **Detection (LLM):** For each `storageState:` reference (spec, fixture, or `playwright.config` project), trace what writes that path. If only a manual script — or nothing in-repo — produces it, flag.
 
+#### 23. Fixture Ignores Conditional Render Guards `[LLM-only]`
+
+**Symptom:** A seeded list/item fixture satisfies the API type but not the *render guards* of the component that displays it — e.g. a "Liked" tab whose item component does `if (tabIsLiked && !item.liked) return null;`, while the fixture seeds `liked: false`. The UI renders an empty container; the test fails with "element not found" that looks like infra flake, or—worse—a negative assertion (`toHaveCount(0)`, empty-state check) passes for the wrong reason.
+
+**Why it matters:** Type-correct fixtures aren't render-correct fixtures. Components self-hide on field+view-state combinations (`liked` in a liked view, `enabled`, `membershipOnly`, date windows, `items.slice(1)` init drops), and these guards live in the component, not the API contract. Hours go to debugging "flaky" tests whose mock data was simply unrenderable.
+
+**Rule:** Before seeding a list fixture, read the item component's early returns and filters; seed fields so the item passes every guard for the view under test. Document each discovered guard next to the fixture (e.g. "Like-tab items must seed `liked: true`") so the next generated test doesn't rediscover it.
+
+**Detection (LLM):** For each fixture consumed by a list/card component, open the component and collect conditions that suppress rendering (early `return null`, `.filter()`, `.slice()`). Cross-check fixture field values against them. Flag mismatches, and flag negative assertions whose truth could come from a guard-suppressed render rather than the intended state.
+
 ---
 
 ## Output Format
@@ -989,7 +1022,7 @@ The "Top N Priorities" section should list the 3-5 highest-impact fixes in concr
 
 ## Quick Reference
 
-This table is a **numerical index for scanning** — pattern # → severity, phase, and the grep/LLM signal. For canonical **Symptom / Rule / Fix** wording (used when emitting a finding), consult the matching section under "Pattern Reference" above (organized by severity tier, not numerical order). Both views describe the same 22 patterns; pick whichever lookup matches your task.
+This table is a **numerical index for scanning** — pattern # → severity, phase, and the grep/LLM signal. For canonical **Symptom / Rule / Fix** wording (used when emitting a finding), consult the matching section under "Pattern Reference" above (organized by severity tier, not numerical order). Both views describe the same 24 patterns; pick whichever lookup matches your task.
 
 | # | Check | Sev | Phase | Detection Signal |
 |---|-------|-----|-------|-----------------|
@@ -1014,6 +1047,8 @@ This table is a **numerical index for scanning** — pattern # → severity, pha
 | 19 | Module-Level Mutable State | P1 | grep+LLM | `let x = ...` at column 0 in test code — survives across tests within a worker |
 | 20 | Unmocked Real-Backend Writes | P1 | LLM | Form submit / mutation request with no route stub in spec or fixtures |
 | 21 | Manual Session-File Dependency | P2 | LLM | `storageState` JSON produced only by a manual capture script |
+| 22 | Optimistic UI Without Call Proof | P1 | LLM | Write-control click asserted only via optimistically-updated UI state — no `waitForRequest`/route-hit proof |
+| 23 | Fixture Ignores Render Guards | P2 | LLM | Seeded item fails the display component's early-return guards (e.g. `liked: false` in a Liked view) |
 | 3b | Cypress uncaught:exception suppression | P0 | grep | `cy.on('uncaught:exception', () => false)` globally swallows app errors |
 
 ---

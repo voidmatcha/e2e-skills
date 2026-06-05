@@ -154,6 +154,32 @@ await page.route('**/api/request?**', route => {
 
 Fall-through (`route.continue()`) keeps reads real, but it means **a misspelled key silently leaks a write to the real backend** — list every write endpoint explicitly, and record that requirement in the project's conventions doc (Step 5b).
 
+**Request-aware rules.** When the same endpoint must answer differently by method or parameters (tab filters, pagination pages, POST toggles), extend the helper with an ordered rule list instead of sprinkling conditional logic in specs:
+
+```typescript
+type MockRule = {
+  when?: { method?: string; params?: Record<string, string> };
+  response: { status?: number; body: unknown };
+};
+// map value: single response (back-compat) OR MockRule[] — first match wins.
+// params compare only the listed keys: URL query for GET/DELETE,
+// urlencoded body for POST (body value wins if a key exists in both).
+```
+
+Two hard rules learned from production use:
+
+- **A registered-but-unmatched rule array must NOT fall through to the network.** If the cmd is in the map but no rule matches, answer with an empty success + a loud warning that includes the method and params — a param typo (`liked: 'True'`) must surface as a warning, never as a real-backend write.
+- Pagination contracts become testable with a `start`/`offset` param rule per page: seed page 1 at exactly the page size (a short page often sets an internal "loaded end" flag that suppresses the next request), then assert the page-2 item appears after scroll *and* a page-1 item is still attached (append, not replace).
+
+**Prove the call, not just the pixels.** For write interactions with optimistic UI (like toggles, deletes), the UI updates before — and regardless of — the request. Pair every such assertion with request proof:
+
+```typescript
+const call = page.waitForRequest(r => r.method() === 'POST' && r.url().includes('cmd=%2Fv2%2Fuser%2Fsentence%2Flike'));
+await likeToggle.click();
+await call; // without this line the test passes even if the wiring to the API is deleted
+await expect(likeToggle).toHaveAttribute('aria-pressed', 'true');
+```
+
 ---
 
 ## Auth & Session
@@ -161,6 +187,7 @@ Fall-through (`route.continue()`) keeps reads real, but it means **a misspelled 
 - Authenticate **once**, programmatically (API-login helper or a `setup` project), persist with `storageState`, reuse it in specs that need a session. UI-driven login belongs only in specs that test the login flow itself.
 - Never hard-depend on a **manually captured** session file — a locally generated `auth/*.json` that a fresh clone or CI won't have, and that silently expires. Generated tests must be able to recreate their session from code.
 - Logged-out scenarios use a fresh context (no `storageState`) — don't "log out first" inside a test.
+- **Login-success flows: route mocks can't mint cookies.** Session cookies are usually issued server-side (the app server proxies the login call and sets cookies from the backend response); a browser-layer route mock returns the success body but no `Set-Cookie`, so the post-login SSR still sees an anonymous user. Hybrid pattern: mock the login POST for the form/UX behavior, seed the session cookies through the project's sanctioned test seam (test-auth endpoint, API login helper) right before submit, then assert the full redirect chain. Comment WHY in the spec — it reads like cheating until you know cookie issuance is server-side.
 
 ---
 

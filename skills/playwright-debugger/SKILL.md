@@ -4,7 +4,7 @@ description: Use when Playwright tests have actually failed and you need to diag
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.4.2"
+  version: "1.4.3"
 ---
 
 # Playwright Failed Test Debugger
@@ -99,6 +99,8 @@ Classification steps:
 4. Passes on retry → F1
 
 **For F2 / F12 fixes — heal by intent, not by patching strings:** take a fresh snapshot of the live page, locate the element the failing step semantically targets (the role/name/label a user would see), and write a new locator at the highest stable tier (role+name > placeholder > testid). Tweaking the old selector string usually re-breaks on the next DOM change.
+
+**Accessible-name collisions (strict-mode violation on role+name):** when two semantically different controls share a name — e.g. a "Like" *tab* button and a per-card "Like" *toggle* — don't downgrade to `.nth()`. Disambiguate by the semantic attribute that distinguishes the roles: `getByRole('button', { name: 'Like' }).and(page.locator('[aria-pressed]'))` selects the toggle; `.and(page.locator(':not([aria-pressed])'))` selects the tab. The attribute encodes intent (`aria-pressed` = toggle semantics), so the locator survives reordering that breaks positional selection.
 
 ## Phase 3: Trace Analysis (only if Phase 2 is unclear)
 

@@ -5,7 +5,7 @@ E2E tests that always pass are worse than no tests — they give false confidenc
 Four complementary skills cover the full E2E testing lifecycle, from Playwright test generation to Cypress test review and failure debugging:
 
 1. **`playwright-test-generator`** — generates Playwright E2E tests from scratch, from coverage gap analysis to passing, reviewed tests
-2. **`e2e-reviewer`** — static analysis of existing Playwright and Cypress specs; flags 22 anti-patterns (P0 silent always-pass, P1 poor diagnostics, P2 maintenance) that can make tests pass CI while missing real regressions
+2. **`e2e-reviewer`** — static analysis of existing Playwright and Cypress specs; flags 24 anti-patterns (P0 silent always-pass, P1 poor diagnostics, P2 maintenance) that can make tests pass CI while missing real regressions
 3. **`playwright-debugger`** — diagnoses failures from `playwright-report/` and classifies root causes (flaky timing, selector drift, auth, environment mismatch, and more)
 4. **`cypress-debugger`** — same for Cypress report files
 
@@ -176,6 +176,7 @@ Tests work but mislead developers, waste CI time, or set up future regressions.
 | 18 | **`expect.soft()` overuse** | All assertions in a test are `expect.soft()` — test never fails early | Ensure at least one hard `expect()` gates per test; use `soft` only for independent details |
 | 19 | **Module-level mutable state in test code** | `let testNotebookSequence = 0;` at column 0 in a test utility — collides across parallel workers and survives retries | Drop the counter; derive uniqueness from `Date.now()` + `Math.random().toString(36).slice(2, 8)`, or move state into `test.beforeEach` |
 | 20 | **Unmocked real-backend writes** | Signup/checkout spec submits real mutations — every CI run creates real accounts/orders | Stub write/credential endpoints with `page.route()` / `cy.intercept()`; one designated real-backend smoke spec max |
+| 22 | **Optimistic UI without call proof** | Like-toggle test asserts `aria-pressed` flip — UI updates optimistically, passes with the POST deleted | Pair UI assertion with `page.waitForRequest()` (armed before the click) or a route-hit flag |
 
 #### P2 — Nice to Fix (maintenance / robustness)
 
@@ -185,6 +186,7 @@ Weak but not wrong — addressed when refactoring.
 |---|---------|--------|-------|
 | 11 | **YAGNI + Zombie Specs** | `clickEdit()` never called; empty wrapper class; single-use Util; entire spec duplicated by another | Delete unused members; inline single-use Util methods; delete zombie spec files |
 | 21 | **Manually-captured session-file dependency** | `storageState: 'auth/member.json'` produced only by a manual capture script — absent on CI, silently expires | Regenerate session programmatically (API-login helper or `setup` project); manual files only as a cache with a programmatic fallback |
+| 23 | **Fixture ignores render guards** | Liked-tab fixture seeds `liked: false`; the card component `return null`s every item — empty UI looks like infra flake | Read the item component's early returns/filters before seeding; seed fields to pass every guard for the view under test |
 
 ### References
 

@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.4.3] - 2026-06-05
+
+Production-feedback update: patterns proven during a 38-test Wave 1–4 functional suite build on a Next.js Pages-Router app (proxy-cmd API, member-area mocking, write interactions), fed back into the generator rules, reviewer catalog, and debugger playbook.
+
+### Added
+- **`code-rules.md` — Request-aware mock rules.** Ordered `MockRule[]` per endpoint (`when: { method, params }`, first match wins; params compare only listed keys — URL query for GET/DELETE, urlencoded body for POST with body precedence). Two hard rules: a registered-but-unmatched rule array must answer empty-success + loud warning, never fall through to the network (param typos must not become real-backend writes); pagination contracts via per-page `start`/`offset` rules — seed page 1 at exactly the page size so the client's "loaded end" flag doesn't suppress the page-2 request, then assert append-not-replace.
+- **`code-rules.md` — "Prove the call, not just the pixels."** Write interactions with optimistic UI must pair the UI assertion with request proof (`waitForRequest` armed before the click).
+- **`code-rules.md` Auth & Session — login-success hybrid.** Route mocks can't mint server-issued session cookies; mock the login POST for form behavior, seed cookies through the project's sanctioned test seam, then assert the full post-login redirect chain — with a WHY comment in the spec.
+- **`e2e-reviewer` #22 — Optimistic UI Without Call Proof (P1, LLM).** Interaction test asserts only optimistically-updated UI state; passes even with the API wiring deleted. Require `waitForRequest`/route-hit proof for every write interaction.
+- **`e2e-reviewer` #23 — Fixture Ignores Conditional Render Guards (P2, LLM).** Type-correct fixtures aren't render-correct: components self-hide on field+view-state combos (e.g. `liked: false` items in a Liked view return `null`), producing empty-UI "flake" or wrong-reason negative passes. Read the item component's early returns before seeding.
+- **`playwright-debugger` — accessible-name collision guidance.** On role+name strict-mode violations between semantically different controls (tab vs toggle sharing a name), disambiguate by the semantic attribute (`[aria-pressed]` / `:not([aria-pressed])`) instead of downgrading to `.nth()`.
+
+### Changed
+- Catalog count 22 → 24 across SKILL.md Quick Reference, README, and plugin description.
+
 ## [1.4.2] - 2026-06-05
 
 ### Added
