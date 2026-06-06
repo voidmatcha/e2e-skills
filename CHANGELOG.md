@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.4.4] - 2026-06-06
+
+Production-feedback patch from extending the same Pages-Router functional suite to 68 tests (quiz solve loops, logout, password change, modal-gated entry flows): two failure modes that survived a clean v1.4.3 review and only surfaced at runtime, fed back into the debugger playbook and generator rules.
+
+### Added
+- **`playwright-debugger/SKILL.md` — Visible-but-unmatchable elements (`aria-hidden` ancestor).** New F2-family diagnosis: a role+name locator stuck at "waiting for" while the screenshot plainly shows the element means an ancestor `aria-hidden="true"` removed the subtree from the accessibility tree — `getByRole` can never match, `getByText` still can. Covers the nastier same-name variant where the role query silently resolves to a control *outside* the hidden subtree and the click is then blocked by the modal overlay. Fix pattern: text locator scoped to a stable container inside the hidden subtree (e.g. `locator('#modalBox').getByText(...)`) + report the root upstream as an app accessibility defect.
+- **`playwright-test-generator/code-rules.md` — Wire evidence before `when.params` narrowing.** Third hard rule for request-aware mocks: prove the app actually sends a param at that point in time before keying a rule on it. A `router.query` read in a first-render initializer fires the initial fetch during hydration (before `router.isReady`), silently dropping the param from the wire — a param-narrowed rule then never matches and a previously-green test fails for a contract the app never honors. If the param is best-effort in practice, keep the broad rule and record the WHY with a file:line citation.
+
+### Changed
+- Version metadata bumped to 1.4.4 across plugin manifests and all four skill frontmatters.
+
 ## [1.4.3] - 2026-06-05
 
 Production-feedback update: patterns proven during a 38-test Wave 1–4 functional suite build on a Next.js Pages-Router app (proxy-cmd API, member-area mocking, write interactions), fed back into the generator rules, reviewer catalog, and debugger playbook.

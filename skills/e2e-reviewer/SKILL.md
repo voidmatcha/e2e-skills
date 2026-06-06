@@ -4,7 +4,7 @@ description: 'Use when reviewing or improving existing Playwright/Cypress E2E sp
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.4.3"
+  version: "1.4.4"
 ---
 
 # E2E Test Scenario Quality Review

@@ -170,6 +170,7 @@ Two hard rules learned from production use:
 
 - **A registered-but-unmatched rule array must NOT fall through to the network.** If the cmd is in the map but no rule matches, answer with an empty success + a loud warning that includes the method and params — a param typo (`liked: 'True'`) must surface as a warning, never as a real-backend write.
 - Pagination contracts become testable with a `start`/`offset` param rule per page: seed page 1 at exactly the page size (a short page often sets an internal "loaded end" flag that suppresses the next request), then assert the page-2 item appears after scroll *and* a page-1 item is still attached (append, not replace).
+- **Before narrowing a rule with `when.params`, prove the app actually sends that param at that point in time — wire evidence, not source intent.** A component that reads `router.query` in a first-render `useRef`/initializer fires its initial fetch during hydration, before `router.isReady`, so the query param is silently dropped from the wire even though the source clearly "passes" it. A param-narrowed rule then never matches, the strict fallback answers empty, and a previously-green render test fails for a contract the app never honors. If the param is best-effort in practice, keep the broad rule and record the WHY as a comment citing the file:line of the early read.
 
 **Prove the call, not just the pixels.** For write interactions with optimistic UI (like toggles, deletes), the UI updates before — and regardless of — the request. Pair every such assertion with request proof:
 

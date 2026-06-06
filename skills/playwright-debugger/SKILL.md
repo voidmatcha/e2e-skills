@@ -4,7 +4,7 @@ description: Use when Playwright tests have actually failed and you need to diag
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.4.3"
+  version: "1.4.4"
 ---
 
 # Playwright Failed Test Debugger
@@ -101,6 +101,8 @@ Classification steps:
 **For F2 / F12 fixes — heal by intent, not by patching strings:** take a fresh snapshot of the live page, locate the element the failing step semantically targets (the role/name/label a user would see), and write a new locator at the highest stable tier (role+name > placeholder > testid). Tweaking the old selector string usually re-breaks on the next DOM change.
 
 **Accessible-name collisions (strict-mode violation on role+name):** when two semantically different controls share a name — e.g. a "Like" *tab* button and a per-card "Like" *toggle* — don't downgrade to `.nth()`. Disambiguate by the semantic attribute that distinguishes the roles: `getByRole('button', { name: 'Like' }).and(page.locator('[aria-pressed]'))` selects the toggle; `.and(page.locator(':not([aria-pressed])'))` selects the tab. The attribute encodes intent (`aria-pressed` = toggle semantics), so the locator survives reordering that breaks positional selection.
+
+**Visible but `getByRole` never matches (click stuck at "waiting for" on an element the screenshot plainly shows):** check the element's ancestors for `aria-hidden="true"`. An aria-hidden ancestor removes the entire subtree from the accessibility tree, so role queries can never match inside it — while `getByText` (DOM text matching) still works. App layer/modal wrappers that put `aria-hidden` on their own root are a common source. The nastier variant: if a control elsewhere on the page shares the accessible name, the role query silently resolves to *that* one and the click is then blocked by the modal overlay — same timeout, misleading target. Fix: locate by text scoped to a stable container inside the hidden subtree (e.g. `page.locator('#modalBox').getByText('Start quiz')`), leave a WHY comment, and report the `aria-hidden` root upstream as an application accessibility defect — screen readers lose the same subtree your locator did.
 
 ## Phase 3: Trace Analysis (only if Phase 2 is unclear)
 
