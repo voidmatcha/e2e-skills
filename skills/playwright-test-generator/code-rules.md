@@ -181,6 +181,8 @@ await call; // without this line the test passes even if the wiring to the API i
 await expect(likeToggle).toHaveAttribute('aria-pressed', 'true');
 ```
 
+**…but prove the call HAPPENS before asserting it (the inverse trap).** "Prove the call" only applies to calls the app actually makes at runtime. Unmount-cleanup API calls are the canonical counterexample: an empty-deps effect's cleanup captures its guard variables as a stale closure from mount time — if the guard (e.g. a `quizSetId` that arrives with the fetch response) was empty at mount, the cleanup's `if (id) api.cancel(id)` is a dead path forever, even though the source reads as an obvious contract. A `waitForRequest` assertion on such a call times out against correct test code. Before shipping a call-proof assertion on exit/unmount/cleanup paths, verify the request fires at least once (solo run, network log); if it never does, assert the user-visible outcome instead, file the stale closure as an app defect, and leave a comment with the file:line so the proof can be added when the defect is fixed.
+
 ---
 
 ## Auth & Session

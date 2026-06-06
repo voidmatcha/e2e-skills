@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.5] - 2026-06-06
+
+Follow-up patch to v1.4.4 from the same production suite (71 tests): the inverse of "prove the call".
+
+### Added
+- **`playwright-test-generator/code-rules.md` — Prove the call HAPPENS before asserting it.** Companion rule to "prove the call, not just the pixels": call-proof assertions only apply to calls the app actually makes at runtime. Unmount-cleanup API calls are the canonical trap — an empty-deps effect's cleanup captures guard variables as a stale closure from mount time, so a guard that's empty at mount (e.g. an id that arrives with the fetch response) makes the cleanup call a dead path forever, and a `waitForRequest` assertion times out against correct test code. Verify the request fires at least once before shipping the assertion; otherwise assert the user-visible outcome, file the stale closure as an app defect, and leave a file:line comment for when it's fixed.
+
+### Changed
+- Version metadata bumped to 1.4.5 across plugin manifests and all four skill frontmatters.
+
 ## [1.4.4] - 2026-06-06
 
 Production-feedback patch from extending the same Pages-Router functional suite to 68 tests (quiz solve loops, logout, password change, modal-gated entry flows): two failure modes that survived a clean v1.4.3 review and only surfaced at runtime, fed back into the debugger playbook and generator rules.
