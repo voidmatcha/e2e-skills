@@ -130,6 +130,27 @@ if (
 errors.extend(collect_codex_errors(codex_plugin, expected, pathlib.Path('.')))
 
 for skill_dir in skill_dirs:
+    skill_file = skill_dir / 'SKILL.md'
+    skill_text = skill_file.read_text(encoding='utf-8')
+    frontmatter = re.search(r"^---\n(.*?)\n---", skill_text, re.S)
+    if not frontmatter:
+        errors.append(f"{skill_file}: missing YAML frontmatter")
+    else:
+        desc = re.search(r"^description:\s*(.+?)\s*$", frontmatter.group(1), re.M)
+        if not desc:
+            errors.append(f"{skill_file}: missing frontmatter description")
+        else:
+            val = desc.group(1).strip()
+            quoted = (val.startswith("'") and val.endswith("'")) or (
+                val.startswith('"') and val.endswith('"')
+            )
+            desc_value = val[1:-1] if quoted else val
+            if len(desc_value) > 1024:
+                errors.append(
+                    f"{skill_file}: frontmatter description exceeds 1024 characters "
+                    f"({len(desc_value)})"
+                )
+
     manifest = skill_dir / 'agents' / 'openai.yaml'
     if not manifest.exists():
         errors.append(f"{manifest}: missing OpenAI agent manifest")
@@ -170,7 +191,7 @@ if errors:
     sys.exit(1)
 PY
   then
-    ok "plugin versions, skill list, and OpenAI manifests match repo conventions"
+    ok "plugin versions, skill list, SKILL.md descriptions, and OpenAI manifests match repo conventions"
   else
     err "plugin/OpenAI manifest convention check failed"
   fi

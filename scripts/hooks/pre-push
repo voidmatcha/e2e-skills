@@ -7,5 +7,7 @@
 set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
+echo "==> pre-push: running local security/manifest gate"
+"$REPO_ROOT/scripts/ci/pre-push-security.sh" --quiet
 echo "==> pre-push: refreshing local e2e-skills install"
 "$REPO_ROOT/scripts/dev/reinstall-skills.sh"

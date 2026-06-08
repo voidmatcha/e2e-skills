@@ -70,6 +70,21 @@ assert_fails() {
   fi
 }
 
+assert_security_fails() {
+  local name="$1"
+  local expected="$2"
+  local output
+  output=$(bash scripts/ci/pre-push-security.sh --quiet 2>&1 || true)
+  if echo "$output" | grep -qF "$expected"; then
+    echo "  [PASS] $name"
+    PASS=$((PASS + 1))
+  else
+    echo "  [FAIL] $name — expected substring not found: '$expected'" >&2
+    echo "$output" | sed 's/^/         /' >&2
+    FAIL=$((FAIL + 1))
+  fi
+}
+
 mutate() {
   python3 - "$1" "$2" "$3" <<'PY'
 import pathlib, sys
@@ -192,6 +207,7 @@ text = re.sub(
 path.write_text(text)
 PY_LONG_DESC
 assert_fails "SKILL.md description length guard" "frontmatter description exceeds 1024 characters"
+assert_security_fails "Pre-push SKILL.md description length guard" "frontmatter description exceeds 1024 characters"
 restore "$file"
 
 echo ""
