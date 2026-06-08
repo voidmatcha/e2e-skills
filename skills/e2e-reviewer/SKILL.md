@@ -1055,10 +1055,12 @@ This table is a **numerical index for scanning** — pattern # → severity, pha
 
 ## Suppression
 
-When a grep-detected pattern is intentional, add `// JUSTIFIED: [reason]`. Reviewers skip a hit when `// JUSTIFIED:` appears in any of these three positions (matches Phase 1):
+When a grep-detected pattern is intentional, add `// JUSTIFIED: [reason]`. The final report skips a hit when `// JUSTIFIED:` appears in any of these three positions:
 
 1. The line **immediately preceding** the hit
 2. The line immediately preceding the **enclosing call/block** when the hit sits inside a body (e.g., `// JUSTIFIED:` above `page.evaluate(() => { … document.querySelector(…) … })` covers every qualifying pattern inside that callback)
 3. For chained calls split across lines, the line immediately preceding the chain's **starting expression** covers `.nth()` / `.first()` / `.last()` further down the chain
+
+**Phase 1 vs Phase 2 suppression.** The mechanical scan (`scripts/scan.sh`) only pre-suppresses **position 1** — a contiguous `//`-comment block directly above the hit *line* (it walks up to 5 comment lines for wrapped rationales). Positions **2 and 3** (enclosing block / multi-line-chain start) require knowing the surrounding structure and are applied in **Phase 2 (LLM review)** only. So a hit JUSTIFIED via position 2 or 3 — e.g. `// JUSTIFIED:` above `await expect(` with `.first()` two lines down — **still appears in the Phase 1 mechanical output** and must be skipped during Phase 2, not counted in the final report. This is by design (Phase 1 over-flags; Phase 2 triages with full context), not a missed suppression.
 
 **Exception — #7 Focused Test Leak:** `// JUSTIFIED:` does not suppress `.only` hits. There are no legitimate committed uses of `test.only` / `it.only` / `describe.only` — every hit is P0.

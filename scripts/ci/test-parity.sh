@@ -14,6 +14,14 @@ cd "$REPO_ROOT" || {
   exit 1
 }
 
+PLUGIN_VERSION=$(python3 - <<'PY'
+import json
+import pathlib
+
+print(json.loads(pathlib.Path('.claude-plugin/plugin.json').read_text(encoding='utf-8'))['version'])
+PY
+)
+
 PASS=0
 FAIL=0
 BACKUPS=()
@@ -131,7 +139,7 @@ restore "$file"
 # Case 8: manifest version drift — bump .codex-plugin/plugin.json out of sync with the others
 file=".codex-plugin/plugin.json"
 backup "$file"
-mutate "$file" "\"version\": \"1.4.3\"" "\"version\": \"9.9.9\""
+mutate "$file" "\"version\": \"$PLUGIN_VERSION\"" "\"version\": \"9.9.9\""
 assert_fails "Check 6 — manifest version drift" "manifest version mismatch"
 restore "$file"
 
@@ -161,7 +169,7 @@ restore "$file"
 # the v1.3.1 hole where one of four SKILL.md files got left behind during a lock-step bump
 file="skills/playwright-test-generator/SKILL.md"
 backup "$file"
-mutate "$file" "version: \"1.4.3\"" "version: \"9.9.9\""
+mutate "$file" "version: \"$PLUGIN_VERSION\"" "version: \"9.9.9\""
 assert_fails "SKILL.md version drift vs manifest" "does not match plugin version"
 restore "$file"
 

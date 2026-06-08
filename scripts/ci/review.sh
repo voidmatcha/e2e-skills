@@ -23,6 +23,7 @@ err() { echo "  [FAIL] $*" >&2; ERRORS=$((ERRORS + 1)); }
 warn() { echo "  [WARN] $*" >&2; WARNINGS=$((WARNINGS + 1)); }
 ok() { [ "$QUIET" = "1" ] || echo "  [OK] $*"; PASSED=$((PASSED + 1)); }
 section() { [ "$QUIET" = "1" ] || { echo ""; echo "-- $* --"; }; }
+repo_files() { git ls-files -co --exclude-standard -- "$@" 2>/dev/null; }
 
 section "Eval metadata"
 eval_log=$(mktemp "${TMPDIR:-/tmp}/e2e-skills-evals.XXXXXX")
@@ -416,8 +417,13 @@ else
 fi
 
 section "Framework scope"
-unsupported=$(grep -rEn 'Puppeteer|puppeteer' README.md skills docs .claude-plugin .codex-plugin scripts 2>/dev/null | \
-  grep -vE '^docs/framework-scope\.md:|^scripts/ci/review\.sh:' || true)
+unsupported=$(
+  while IFS= read -r path; do
+    [ -f "$path" ] || continue
+    grep -En 'Puppeteer|puppeteer' "$path" 2>/dev/null | sed "s|^|$path:|" || true
+  done < <(repo_files README.md skills docs .claude-plugin .codex-plugin scripts) | \
+    grep -vE '^docs/framework-scope\.md:|^scripts/ci/review\.sh:' || true
+)
 if [ -z "$unsupported" ]; then
   ok "no accidental Puppeteer support claims outside framework-scope.md"
 else
@@ -466,12 +472,23 @@ if command -v python3 >/dev/null 2>&1; then
   if python3 - <<'PY'
 import pathlib
 import re
+import subprocess
 import sys
 from urllib.parse import unquote
 
+def repo_files():
+    try:
+        out = subprocess.check_output(
+            ['git', 'ls-files', '-co', '--exclude-standard', '--'],
+            text=True,
+        )
+        return [pathlib.Path(line) for line in out.splitlines() if line]
+    except Exception:
+        return [p for p in pathlib.Path('.').rglob('*') if p.is_file()]
+
 errors = []
 link_re = re.compile(r"\[[^\]]+\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
-for path in sorted(pathlib.Path('.').rglob('*.md')):
+for path in sorted(p for p in repo_files() if p.suffix == '.md'):
     if any(part in {'.git', '.sisyphus', 'testbed', 'node_modules'} for part in path.parts):
         continue
     text = path.read_text(encoding='utf-8', errors='ignore')
@@ -509,7 +526,18 @@ if command -v python3 >/dev/null 2>&1; then
   if python3 - <<'PY'
 import pathlib
 import re
+import subprocess
 import sys
+
+def repo_files():
+    try:
+        out = subprocess.check_output(
+            ['git', 'ls-files', '-co', '--exclude-standard', '--'],
+            text=True,
+        )
+        return [pathlib.Path(line) for line in out.splitlines() if line]
+    except Exception:
+        return [p for p in pathlib.Path('.').rglob('*') if p.is_file()]
 
 docs_dir = pathlib.Path('docs')
 if not docs_dir.is_dir():
@@ -521,16 +549,17 @@ if not docs_dir.is_dir():
 ci_referenced_globs = ['scripts/**/*.sh', 'scripts/**/*.py']
 excluded_paths = {'scripts/ci/test-parity.sh'}
 
-doc_files = sorted(p for p in docs_dir.rglob('*.md'))
+all_repo_files = repo_files()
+doc_files = sorted(p for p in all_repo_files if len(p.parts) > 1 and p.parts[0] == 'docs' and p.suffix == '.md')
 if not doc_files:
     sys.exit(0)
 
 readme_text = pathlib.Path('README.md').read_text(encoding='utf-8') if pathlib.Path('README.md').exists() else ''
 ci_text_parts = []
-for pattern in ci_referenced_globs:
-    for path in pathlib.Path('.').glob(pattern):
-        if path.as_posix() in excluded_paths:
-            continue
+for path in all_repo_files:
+    if path.as_posix() in excluded_paths:
+        continue
+    if len(path.parts) > 1 and path.parts[0] == 'scripts' and path.suffix in {'.sh', '.py'}:
         ci_text_parts.append(path.read_text(encoding='utf-8', errors='ignore'))
 ci_text = '\n'.join(ci_text_parts)
 
@@ -563,17 +592,27 @@ if command -v python3 >/dev/null 2>&1; then
   hangul_hits=$(python3 - <<'PY' 2>/dev/null || true
 import pathlib
 import re
+import subprocess
+
+def repo_files():
+    try:
+        out = subprocess.check_output(
+            ['git', 'ls-files', '-co', '--exclude-standard', '--'],
+            text=True,
+        )
+        return [pathlib.Path(line) for line in out.splitlines() if line]
+    except Exception:
+        return [p for p in pathlib.Path('.').rglob('*') if p.is_file()]
 
 hangul = re.compile(r'[\uAC00-\uD7AF]')
 hits = []
-for root in ('README.md', 'docs', 'skills'):
-    root_path = pathlib.Path(root)
-    paths = [root_path] if root_path.is_file() else sorted(root_path.rglob('*.md'))
-    for path in paths:
-        if '/evals/' in str(path):
-            continue
-        if path.exists() and hangul.search(path.read_text(encoding='utf-8', errors='ignore')):
-            hits.append(str(path))
+for path in sorted(p for p in repo_files() if p.suffix == '.md'):
+    if not (path.as_posix() == 'README.md' or path.parts[:1] in [('docs',), ('skills',)]):
+        continue
+    if '/evals/' in str(path):
+        continue
+    if path.exists() and hangul.search(path.read_text(encoding='utf-8', errors='ignore')):
+        hits.append(str(path))
 print('\n'.join(hits))
 PY
 )
