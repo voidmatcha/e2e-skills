@@ -1,0 +1,14 @@
+.git/
+.omx/
+.agents/
+.claude/
+.sisyphus/
+.serena/
+.DS_Store
+__pycache__/
+*.pyc
+
+# Local validation sandboxes and generated scan results; not part of the plugin bundle.
+testbed/
+results/
+*-workspace/

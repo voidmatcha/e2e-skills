@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">e2e-skills scanner preview</title>
+  <desc id="desc">Preview card showing Playwright and Cypress E2E generation, review, and debugging checks.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="720" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F172A"/>
+      <stop offset="1" stop-color="#1D4ED8"/>
+    </linearGradient>
+    <linearGradient id="card" x1="190" y1="110" x2="1010" y2="610" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#DBEAFE"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="720" fill="url(#bg)"/>
+  <circle cx="1060" cy="110" r="160" fill="#38BDF8" opacity="0.25"/>
+  <circle cx="120" cy="650" r="220" fill="#60A5FA" opacity="0.18"/>
+  <rect x="150" y="92" width="900" height="536" rx="42" fill="url(#card)"/>
+  <rect x="190" y="144" width="820" height="82" rx="24" fill="#0F172A"/>
+  <circle cx="236" cy="185" r="14" fill="#F87171"/>
+  <circle cx="282" cy="185" r="14" fill="#FBBF24"/>
+  <circle cx="328" cy="185" r="14" fill="#34D399"/>
+  <text x="380" y="196" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="700">e2e-skills</text>
+  <g font-family="Inter, Arial, sans-serif" font-size="28" font-weight="700">
+    <rect x="210" y="280" width="230" height="112" rx="24" fill="#2563EB"/>
+    <text x="250" y="348" fill="#FFFFFF">Generate</text>
+    <rect x="485" y="280" width="230" height="112" rx="24" fill="#0EA5E9"/>
+    <text x="548" y="348" fill="#FFFFFF">Review</text>
+    <rect x="760" y="280" width="230" height="112" rx="24" fill="#1E40AF"/>
+    <text x="824" y="348" fill="#FFFFFF">Debug</text>
+  </g>
+  <g fill="none" stroke="#2563EB" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M250 493l55 55 124-132"/>
+    <path d="M512 493l55 55 124-132"/>
+    <path d="M774 493l55 55 124-132"/>
+  </g>
+  <g fill="#1E293B" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="600">
+    <text x="208" y="585">Playwright</text>
+    <text x="366" y="585">Cypress</text>
+    <text x="506" y="585">24 anti-patterns</text>
+    <text x="744" y="585">root-cause reports</text>
+  </g>
+</svg>

@@ -272,7 +272,7 @@ if [[ -n "$AST_GREP" && -d "$ASTGREP_RULES_DIR" ]]; then
   printf '\n'
 fi
 
-printf '\n--- Tier 3: Bundled regex checks (universal fallback — covers all 20 patterns including gaps eslint/ast-grep miss) ---\n'
+printf '\n--- Tier 3: Bundled regex checks (universal fallback for grep-detectable patterns and gaps eslint/ast-grep miss) ---\n'
 
 run_check() {
   local severity="$1"

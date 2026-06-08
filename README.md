@@ -69,7 +69,7 @@ Real findings from a recent typebot.io scan — silent always-pass bugs your tes
 ./skills/e2e-reviewer/scripts/scan.sh path/to/tests
 ```
 
-Three tiers run in priority order: (1) `eslint-plugin-playwright` / `eslint-plugin-cypress` — uses your local install if present, otherwise auto-downloads via `npx --yes` (set `E2E_SMELL_NO_ESLINT_DOWNLOAD=1` to disable); (2) `ast-grep` Tree-sitter rules for FP-prone patterns — uses `ast-grep` / `sg` on PATH if present, otherwise auto-downloads via `npx --yes @ast-grep/cli` (set `E2E_SMELL_NO_AST_GREP_DOWNLOAD=1` to disable); (3) bundled regex covering all 20 patterns including gaps the lint plugins miss — Cypress `cy.on('uncaught:exception', () => false)` blanket suppression (#3b), `{timeout:0}.should("not.exist")` (#4g), and cross-framework heuristics. See [`docs/e2e-test-smells.md`](docs/e2e-test-smells.md) for the full P0/P1/P2 model. Use `// JUSTIFIED: <reason>` on (or in the comment block directly above) an intentional pattern to suppress it in the bundled scanner output; the eslint tier does not parse JUSTIFIED markers — pair with an `eslint-disable` comment there if needed. The eslint tier also runs under a hang watchdog (`E2E_SMELL_ESLINT_TIMEOUT_SECS`, default 300s) and never blocks Tier 2/3 coverage when it fails.
+Three tiers run in priority order: (1) `eslint-plugin-playwright` / `eslint-plugin-cypress` — uses your local install if present, otherwise auto-downloads via `npx --yes` (set `E2E_SMELL_NO_ESLINT_DOWNLOAD=1` to disable); (2) `ast-grep` Tree-sitter rules for FP-prone patterns — uses `ast-grep` / `sg` on PATH if present, otherwise auto-downloads via `npx --yes @ast-grep/cli` (set `E2E_SMELL_NO_AST_GREP_DOWNLOAD=1` to disable); (3) bundled regex coverage for grep-detectable P0/P1/P2 patterns and gaps the lint plugins miss — Cypress `cy.on('uncaught:exception', () => false)` blanket suppression (#3b), `{timeout:0}.should("not.exist")` (#4g), and cross-framework heuristics. See [`docs/e2e-test-smells.md`](docs/e2e-test-smells.md) for the full P0/P1/P2 model. Use `// JUSTIFIED: <reason>` on (or in the comment block directly above) an intentional pattern to suppress it in the bundled scanner output; the eslint tier does not parse JUSTIFIED markers — pair with an `eslint-disable` comment there if needed. The eslint tier also runs under a hang watchdog (`E2E_SMELL_ESLINT_TIMEOUT_SECS`, default 300s) and never blocks Tier 2/3 coverage when it fails.
 
 The `e2e-reviewer` skill adds what no lint can reach: semantic checks (name-assertion mismatch, missing Then, YAGNI/zombie specs, POM consistency, auth setup analysis) and fix guidance with band-aid awareness. Run [`eslint-plugin-playwright`](https://github.com/playwright-community/eslint-plugin-playwright) / [`eslint-plugin-cypress`](https://github.com/cypress-io/eslint-plugin-cypress) as your every-commit baseline; invoke the skill for PR review, suspected silent-pass bugs, or before bulk fixes.
 
@@ -141,7 +141,7 @@ My tests are fragile and break on every UI change
 We have coverage but bugs still slip through
 ```
 
-### 20 Patterns Detected — Grouped by Severity
+### 24 Patterns Detected — Grouped by Severity
 
 #### P0 — Must Fix (silent always-pass)
 
@@ -171,7 +171,7 @@ Tests work but mislead developers, waste CI time, or set up future regressions.
 | 9 | **Hard-coded sleep** | `waitForTimeout(2000)` / `cy.wait(2000)` / `waitForLoadState('networkidle')` | Rely on framework auto-wait; use condition-based waits |
 | 10 | **Flaky test patterns** | `items.nth(2)` without comment; `test.describe.serial()` | Use `data-testid` or role selectors; replace serial with self-contained tests |
 | 13 | **Inconsistent POM usage** | POM imported but spec uses raw `page.fill`/`page.click` for POM-owned actions | Route all interactions through the POM so UI changes update in one place |
-| 14 | **Hardcoded credentials** | `loginPage.login('admin', 'password123')` in test code | Use `process.env.TEST_USER`, Playwright config secrets, or test data fixtures |
+| 14 | **Hardcoded credentials** | `loginPage.login('demo-admin', '<literal-password>')` in test code | Use `process.env.TEST_USER`, Playwright config secrets, or test data fixtures |
 | 17 | **Direct `page.click(selector)` API** | `page.click('#submit')` / `page.fill('#input', 'text')` skips the Locator layer | Use `page.locator(selector).click()` for auto-wait and better error messages |
 | 18 | **`expect.soft()` overuse** | All assertions in a test are `expect.soft()` — test never fails early | Ensure at least one hard `expect()` gates per test; use `soft` only for independent details |
 | 19 | **Module-level mutable state in test code** | `let testNotebookSequence = 0;` at column 0 in a test utility — collides across parallel workers and survives retries | Drop the counter; derive uniqueness from `Date.now()` + `Math.random().toString(36).slice(2, 8)`, or move state into `test.beforeEach` |

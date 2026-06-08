@@ -21,7 +21,6 @@ import pathlib
 print(json.loads(pathlib.Path('.claude-plugin/plugin.json').read_text(encoding='utf-8'))['version'])
 PY
 )
-
 PASS=0
 FAIL=0
 BACKUPS=()
@@ -160,7 +159,7 @@ restore "$file"
 # Case 11: SKILL.md frontmatter description unquoted with colon-space — YAML parse regression of v0.7.3
 file="skills/e2e-reviewer/SKILL.md"
 backup "$file"
-mutate "$file" "description: 'Use when reviewing" "description: Use when reviewing"
+mutate "$file" "description: 'Use for" "description: Use for"
 mutate "$file" "name-assertion mismatch, missing Then" "missing Then, name-assertion mismatch"
 assert_fails "Frontmatter YAML guard — unquoted description with ': '" "colon-space"
 restore "$file"
@@ -171,6 +170,28 @@ file="skills/playwright-test-generator/SKILL.md"
 backup "$file"
 mutate "$file" "version: \"$PLUGIN_VERSION\"" "version: \"9.9.9\""
 assert_fails "SKILL.md version drift vs manifest" "does not match plugin version"
+restore "$file"
+
+# Case 13: SKILL.md description length — skills hosts reject descriptions over 1024 characters
+file="skills/e2e-reviewer/SKILL.md"
+backup "$file"
+python3 - "$file" <<'PY_LONG_DESC'
+import pathlib
+import re
+import sys
+
+path = pathlib.Path(sys.argv[1])
+text = path.read_text()
+text = re.sub(
+    r"^description: .+$",
+    "description: '" + ("Use when reviewing Playwright/Cypress tests. " * 40).strip() + "'",
+    text,
+    count=1,
+    flags=re.M,
+)
+path.write_text(text)
+PY_LONG_DESC
+assert_fails "SKILL.md description length guard" "frontmatter description exceeds 1024 characters"
 restore "$file"
 
 echo ""

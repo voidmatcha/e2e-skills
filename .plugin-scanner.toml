@@ -1,0 +1,7 @@
+# HOL/Cisco skill-scanner v2.0.528 treats bundled TypeScript eval fixtures
+# (`skills/**/evals/files/*.ts` and `*.tsx`) as opaque even though they are
+# plain UTF-8 source examples used only for repository-local eval metadata.
+# Keep every other scanner rule enabled; suppress only this aggregate
+# analyzability rule until the upstream scanner classifies TypeScript as text.
+[rules]
+disabled = ["LOW_ANALYZABILITY"]

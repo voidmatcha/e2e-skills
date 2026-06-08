@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">e2e-skills icon</title>
+  <desc id="desc">Blue browser window with a checkmark and test route nodes.</desc>
+  <defs>
+    <linearGradient id="bg" x1="64" y1="48" x2="448" y2="464" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38BDF8"/>
+      <stop offset="1" stop-color="#2563EB"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#0F172A" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <rect x="84" y="116" width="344" height="280" rx="34" fill="#F8FAFC" filter="url(#shadow)"/>
+  <path d="M84 160c0-24.3 19.7-44 44-44h256c24.3 0 44 19.7 44 44v38H84v-38Z" fill="#0F172A"/>
+  <circle cx="128" cy="157" r="12" fill="#F87171"/>
+  <circle cx="166" cy="157" r="12" fill="#FBBF24"/>
+  <circle cx="204" cy="157" r="12" fill="#34D399"/>
+  <path d="M162 301.5 223.5 363 352 234.5" fill="none" stroke="#2563EB" stroke-width="42" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M146 248h54M312 248h54M256 222v-46" fill="none" stroke="#93C5FD" stroke-width="24" stroke-linecap="round"/>
+  <circle cx="146" cy="248" r="20" fill="#2563EB"/>
+  <circle cx="256" cy="176" r="20" fill="#2563EB"/>
+  <circle cx="366" cy="248" r="20" fill="#2563EB"/>
+</svg>

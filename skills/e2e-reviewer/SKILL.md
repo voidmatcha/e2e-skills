@@ -1,6 +1,6 @@
 ---
 name: e2e-reviewer
-description: 'Use when reviewing or improving existing Playwright/Cypress E2E specs or POMs via static analysis, not runtime failure debugging. Triggers on "review my tests", "audit test quality", "find weak tests", "improve playwright tests", "improve cypress tests", "flaky tests", "test anti-patterns", "coverage gaps", and tests that pass while missing bugs. Reviews 22 anti-patterns. P0 must-fix (silent always-pass): name-assertion mismatch, missing Then, error swallowing, Cypress uncaught:exception suppression, always-passing assertions, bypass patterns, focused test leak, missing assertions, missing auth setup, missing await on expect, missing await on action. P1 should-fix (poor diagnostics): raw DOM queries, hard-coded sleeps, flaky test patterns, inconsistent POM usage, hardcoded credentials, direct page action API, expect.soft overuse, module-level mutable state in test utilities, unmocked real-backend writes, optimistic UI without call proof. P2 nice-to-fix (maintenance): YAGNI + zombie specs, manually-captured session-file dependency, fixture ignores render guards.'
+description: 'Use for Playwright/Cypress E2E spec/POM static review, not runtime failure debugging. Triggers: review tests, audit quality, weak/flaky tests, anti-patterns, coverage gaps, tests pass but miss bugs. Reviews 24 anti-patterns. P0 must-fix (silent always-pass): name-assertion mismatch, missing Then, error swallowing, Cypress uncaught:exception suppression, always-passing assertions, bypass patterns, focused test leak, missing assertions, missing auth setup, missing await on expect, missing await on action. P1 should-fix (poor diagnostics): raw DOM queries, hard-coded sleeps, flaky test patterns, inconsistent POM usage, hardcoded credentials, direct page action API, expect.soft overuse, module-level mutable state in test utilities, unmocked real-backend writes, optimistic UI without call proof. P2 nice-to-fix (maintenance): YAGNI + zombie specs, manually-captured session-file dependency, fixture ignores render guards.'
 license: Apache-2.0
 metadata:
   author: voidmatcha
@@ -458,7 +458,7 @@ Examples:
 
 ## Pattern Reference
 
-Detailed specification for the 20 anti-patterns that Phase 1, Phase 2, and Phase 2.5 execute. Do **not** re-run these checks as a separate pass — the phases above already cover them. When emitting a finding, consult the matching section here for the canonical Symptom / Rule / Fix wording. Grouped by severity: P0 items are silent always-pass bugs, P1 items waste CI time or mislead developers, P2 items are maintenance concerns.
+Detailed specification for the 24 anti-patterns that Phase 1, Phase 2, and Phase 2.5 execute. Do **not** re-run these checks as a separate pass — the phases above already cover them. When emitting a finding, consult the matching section here for the canonical Symptom / Rule / Fix wording. Grouped by severity: P0 items are silent always-pass bugs, P1 items waste CI time or mislead developers, P2 items are maintenance concerns.
 
 **Important:** `test.skip()` with a reason comment or reason string is intentional — do NOT flag or remove these. Only flag assertions gated behind a runtime `if` check that cause the test to pass silently (see #5a).
 
@@ -782,8 +782,8 @@ await expect(items.nth(2)).toContainText('expected text');
 
 ```typescript
 // BAD — credentials as string literals
-await loginPage.login('admin', 'password123');
-await page.fill('#password', 'secret');
+await loginPage.login('demo-admin', '<literal-password>');
+await page.fill('#password', '<literal-secret>');
 ```
 
 **Why it matters:** Security risk if repo is public, couples tests to specific credentials, prevents running tests against different environments.
@@ -791,8 +791,8 @@ await page.fill('#password', 'secret');
 **Rule:** Use environment variables (`process.env.TEST_USER`), Playwright config secrets, or test data fixtures. Flag P1.
 
 **Scope — only flag actual credentials, not input test data:**
-- **Flag** literals passed to authentication operations: `loginPage.login('admin', 'password')`, `page.locator('#password').fill('realPassword') ` followed by submit, API calls posting credentials, fixtures named `validUser` / `testAdmin`.
-- **Do NOT flag** literals used only to verify form input behavior (no auth attempt follows): `passwordInput.fill('anyText'); await expect(passwordInput).toHaveValue('anyText');` — this is input-acceptance testing, not credential storage. Intentional invalid-creds fixtures like `INVALID_USER = { username: 'wronguser', password: 'wrongpass' }` are also fine because they document a negative-path scenario.
+- **Flag** literals passed to authentication operations: `loginPage.login('demo-admin', '<literal-password>')`, `page.locator('#password').fill('<literal-password>')` followed by submit, API calls posting credentials, fixtures named `validUser` / `testAdmin`.
+- **Do NOT flag** literals used only to verify form input behavior (no auth attempt follows): `passwordInput.fill('anyText'); await expect(passwordInput).toHaveValue('anyText');` — this is input-acceptance testing, not credential storage. Intentional invalid-creds fixtures with dummy username/password values are also fine because they document a negative-path scenario.
 
 When grep flags a literal, read 2–3 lines below to confirm a login/auth call follows. If none, skip.
 

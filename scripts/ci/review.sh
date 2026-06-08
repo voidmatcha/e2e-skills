@@ -140,6 +140,12 @@ for skill_dir in skill_dirs:
     if desc:
         val = desc.group(1)
         quoted = (val.startswith("'") and val.endswith("'")) or (val.startswith('"') and val.endswith('"'))
+        desc_value = val[1:-1] if quoted else val
+        if len(desc_value) > 1024:
+            errors.append(
+                f"{skill_file}: frontmatter description exceeds 1024 characters "
+                f"({len(desc_value)})"
+            )
         if not quoted and re.search(r":\s", val):
             errors.append(
                 f"{skill_file}: frontmatter description contains ': ' (colon-space) in an unquoted plain scalar — "
