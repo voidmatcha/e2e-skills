@@ -293,4 +293,4 @@ Cypress tests pass locally but fail in CI
 
 ## License
 
-Apache-2.0. See [LICENSE.txt](./LICENSE.txt).
+Apache-2.0. See [LICENSE](./LICENSE).
