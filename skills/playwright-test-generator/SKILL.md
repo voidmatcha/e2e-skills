@@ -1,6 +1,6 @@
 ---
 name: playwright-test-generator
-description: Use when generating new Playwright E2E tests from scratch. Triggers on "generate playwright tests", "write e2e tests for X", "add playwright coverage for X", "create test for X page", "generate tests for the login page". Autonomous mode starts from coverage gap analysis when no target is specified; argument mode targets a specific page or feature directly. Explores the live app via agent-browser tools (with `npx playwright codegen` as a manual fallback), designs scenarios with an explicit user approval gate, auto-detects project structure (POM vs flat spec), runs YAGNI audit and e2e-reviewer after generation, and hands off to playwright-debugger after 3 failed fix attempts. On first run in a project it also scaffolds testing conventions (AGENTS.md E2E section + seed spec designation) so future AI-generated tests stay consistent across sessions and agents (Claude Code, Codex, Playwright Agents).
+description: "Generate new Playwright E2E tests for pages, flows, components; use for add/write/create test coverage."
 license: Apache-2.0
 metadata:
   author: voidmatcha

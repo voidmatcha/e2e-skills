@@ -1,6 +1,6 @@
 ---
 name: cypress-debugger
-description: Use when Cypress tests have actually failed and you need to diagnose runtime failures — from mochawesome or JUnit report files, local or CI. Triggers on "debug cypress tests", "why did cypress tests fail", "cypress CI failure", "flaky cypress test failures", "cypress timed out retrying", "cypress tests pass locally but fail in CI", "analyze cypress/reports". Classifies runtime failures into root causes (not static code analysis) and suggests concrete fixes.
+description: "Debug failed Cypress tests from mochawesome/JUnit/local/CI reports; diagnose runtime errors, flakes, selectors, timing."
 license: Apache-2.0
 metadata:
   author: voidmatcha

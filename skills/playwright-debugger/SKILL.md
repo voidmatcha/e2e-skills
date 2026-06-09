@@ -1,6 +1,6 @@
 ---
 name: playwright-debugger
-description: Use when Playwright tests have actually failed and you need to diagnose runtime failures — from a playwright-report directory, local or CI. Triggers on "debug playwright tests", "why did playwright tests fail", "playwright CI failure", "flaky playwright test failures", "playwright timeout error", "tests pass locally but fail in CI", "analyze playwright-report", "PR failing in CI". Classifies runtime failures into root causes (not static code analysis) and suggests concrete fixes.
+description: "Debug failed Playwright tests from reports/traces/screenshots/local/CI output; diagnose runtime failures and flakes."
 license: Apache-2.0
 metadata:
   author: voidmatcha
