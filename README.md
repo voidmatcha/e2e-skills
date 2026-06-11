@@ -32,7 +32,7 @@ npx skills add voidmatcha/e2e-skills --skill '*' -g --agent '*'
 git clone https://github.com/voidmatcha/e2e-skills.git ~/.claude/skills/e2e-skills
 ```
 
-Codex users: install via the `npx skills add` route above (`-a codex` drops the bundle into `~/.codex/skills/`, where Codex auto-discovers it).
+Codex users: install via the `npx skills add` route above (`-a codex` drops the bundle into `~/.agents/skills/`, the cross-agent skills dir Codex auto-discovers).
 
 ### Quick Example
 
@@ -215,7 +215,7 @@ Tests pass locally but fail in CI
 
 > **Note:** Provide the report as a local path. Download CI artifacts manually from GitHub Actions and pass the directory path — automatic artifact fetching is not supported.
 
-### 14 Root Cause Categories
+### 15 Root Cause Categories
 
 | # | Category | Signals |
 |---|----------|---------|
@@ -233,11 +233,12 @@ Tests pass locally but fail in CI
 | F12 | **POM / Locator Drift** | DOM structure changed, POM not updated |
 | F13 | **Error Swallowing** | `.catch(() => {})` hiding actual failure |
 | F14 | **Animation Race** | Element visible but content not yet rendered |
+| F15 | **Hydration Race** | Action succeeds but has no effect — SSR page not yet hydrated; fails at the next assertion |
 
 ### Debug Workflow
 
 1. **Extract** — parse `results.json` for failed tests, error messages, duration
-2. **Classify** — map each failure to F1–F14 using error signals (most failures resolved here)
+2. **Classify** — map each failure to F1–F15 using error signals (most failures resolved here)
 3. **Trace** — if still unclear, extract `trace.zip` and inspect step-by-step: failed actions, DOM snapshots, network errors, JS console errors
 4. **Fix** — concrete code suggestion per failure, P0/P1/P2 priority
 
@@ -263,7 +264,7 @@ Analyze cypress/reports/
 Cypress tests pass locally but fail in CI
 ```
 
-### 14 Root Cause Categories
+### 15 Root Cause Categories
 
 | # | Category | Signals |
 |---|----------|---------|
@@ -281,11 +282,12 @@ Cypress tests pass locally but fail in CI
 | F12 | **Selector Drift** | DOM changed, custom command or POM selector not updated |
 | F13 | **Error Swallowing** | `cy.on('uncaught:exception', () => false)` hiding failures |
 | F14 | **Animation Race** | Element visible but content not yet rendered |
+| F15 | **Hydration Race** | First click after `cy.visit()` succeeds but has no effect — SSR page not yet hydrated; fails at the next assertion |
 
 ### Debug Workflow
 
 1. **Extract** — parse `mochawesome.json` or JUnit XML for failed tests, error messages, duration
-2. **Classify** — map each failure to F1–F14 using error signals (most failures resolved here)
+2. **Classify** — map each failure to F1–F15 using error signals (most failures resolved here)
 3. **Screenshot/Video** — if still unclear, inspect `cypress/screenshots/` and `cypress/videos/`
 4. **Fix** — concrete code suggestion per failure, P0/P1/P2 priority
 

@@ -4,7 +4,7 @@ description: "Debug failed Playwright tests from reports/traces/screenshots/loca
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.4.5"
+  version: "1.5.0"
 ---
 
 # Playwright Failed Test Debugger
@@ -91,18 +91,22 @@ Use Phase 1 output (error message + duration + file) to classify each failure. *
 | F12 | **POM / Locator Drift** | DOM changed, POM locator not updated | #10 |
 | F13 | **Error Swallowing** | `.catch(() => {})` hiding failure, test passes silently | #3 |
 | F14 | **Animation Race** | Element visible but content not yet rendered | #9 |
+| F15 | **Hydration Race** | Action reported success but had no effect; first interaction after `goto` on a server-rendered page (Next.js/Nuxt/SvelteKit/Astro/Remix); failure surfaces at the next assertion; passes on retry | #9 |
 
 Classification steps:
 1. Match error message to signals above
 2. `duration` near timeout → F1 or F3
 3. CI-only failure → F7 or F8
-4. Passes on retry → F1
+4. Passes on retry (and no SSR first-interaction signature — see step 5) → F1
+5. Action succeeded but the *next* assertion timed out, SSR app, first interaction after `goto` → F15
 
 **For F2 / F12 fixes — heal by intent, not by patching strings:** take a fresh snapshot of the live page, locate the element the failing step semantically targets (the role/name/label a user would see), and write a new locator at the highest stable tier (role+name > placeholder > testid). Tweaking the old selector string usually re-breaks on the next DOM change.
 
 **Accessible-name collisions (strict-mode violation on role+name):** when two semantically different controls share a name — e.g. a "Like" *tab* button and a per-card "Like" *toggle* — don't downgrade to `.nth()`. Disambiguate by the semantic attribute that distinguishes the roles: `getByRole('button', { name: 'Like' }).and(page.locator('[aria-pressed]'))` selects the toggle; `.and(page.locator(':not([aria-pressed])'))` selects the tab. The attribute encodes intent (`aria-pressed` = toggle semantics), so the locator survives reordering that breaks positional selection.
 
 **Visible but `getByRole` never matches (click stuck at "waiting for" on an element the screenshot plainly shows):** check the element's ancestors for `aria-hidden="true"`. An aria-hidden ancestor removes the entire subtree from the accessibility tree, so role queries can never match inside it — while `getByText` (DOM text matching) still works. App layer/modal wrappers that put `aria-hidden` on their own root are a common source. The nastier variant: if a control elsewhere on the page shares the accessible name, the role query silently resolves to *that* one and the click is then blocked by the modal overlay — same timeout, misleading target. Fix: locate by text scoped to a stable container inside the hidden subtree (e.g. `page.locator('#modalBox').getByText('Start quiz')`), leave a WHY comment, and report the `aria-hidden` root upstream as an application accessibility defect — screen readers lose the same subtree your locator did.
+
+**Click landed but nothing happened (F15 hydration race):** server-rendered pages paint interactive-looking elements before the framework attaches event listeners. Playwright's actionability checks (visible, stable, enabled) all pass against the inert pre-hydration DOM, so the action is reported successful and the failure surfaces only at the *next* assertion. Signals: SSR/SSG framework (Next.js, Nuxt, SvelteKit, Astro, Remix), the failing assertion follows the first interaction after `page.goto()`, the failure screenshot shows a fully painted page, passes on retry or with `slowMo`. Distinguish from F14: in F14 the element isn't rendered yet; in F15 it is rendered but inert. Fix, in order of preference: (1) gate the first interaction on an app-provided hydration marker — `await expect(page.locator('html[data-hydrated]')).toBeAttached();` — and if the app exposes none, propose the one-line marker upstream (set an attribute in a root `useEffect`/`onMounted`); it fixes every spec at once. (2) Make the first interaction self-verifying so the click retries until it lands: `await expect(async () => { await button.click(); await expect(dialog).toBeVisible({ timeout: 1000 }); }).toPass();`. Do NOT paper over it with `waitForTimeout()` after `goto` — that's the #9 band-aid the reviewer flags, and it still races on slow CI.
 
 ## Phase 3: Trace Analysis (only if Phase 2 is unclear)
 
@@ -141,7 +145,7 @@ For each failure, produce a finding in this format:
 
 **Severity:**
 - **P0:** Test passes silently when feature is broken (F6, F13)
-- **P1:** Intermittent or misleading failures (F1, F2, F3, F7, F11, F14)
+- **P1:** Intermittent or misleading failures (F1, F2, F3, F7, F11, F14, F15)
 - **P2:** Consistent failures, straightforward fix (F4, F5, F8, F9, F10, F12)
 
 ## Output Format

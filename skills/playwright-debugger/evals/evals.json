@@ -72,6 +72,22 @@
         "Mentions total test count (7 passed)",
         "Does NOT flag any test as flaky or problematic"
       ]
+    },
+    {
+      "id": 5,
+      "prompt": "Debug the Playwright test failures in evals/files/results-hydration-race.json. Classify each failure and suggest fixes.",
+      "expected_output": "Should classify 2 failures: 'newsletter subscribe opens the confirmation dialog' — F15 Hydration Race (the click was reported complete on a server-rendered Next.js page immediately after goto, but React hydration had not attached the handler, so the dialog never opened; passes on retry 1). 'pricing table renders all three tiers' — NOT F15 (no interaction precedes the assertion): consistent client-side render delay after a slow /api/pricing fetch — F14 Animation Race or F1/F3 territory. Fix for F15: gate the first interaction on a hydration marker, or make the click self-verifying with expect(async () => {...}).toPass(); never waitForTimeout after goto.",
+      "files": ["evals/files/results-hydration-race.json"],
+      "assertions": [
+        "Classifies the subscribe-dialog failure as F15 (Hydration Race)",
+        "Cites the F15 signal chain: first interaction after goto on a server-rendered page, click reported successful, failure at the NEXT assertion, passes on retry",
+        "Distinguishes F15 from F14: the Subscribe button was rendered and visible but inert (listeners not attached), not missing from the DOM",
+        "Does NOT classify the pricing-table failure as F15 — no interaction precedes the assertion (render-delay case: F14 or F1/F3)",
+        "Suggests gating the first interaction on a hydration signal (e.g. an app-provided data-hydrated marker) or a self-verifying click via expect(async () => {...}).toPass()",
+        "Does NOT suggest waitForTimeout after goto as the fix",
+        "Severity P1 for the flaky hydration failure",
+        "Summary table included"
+      ]
     }
   ]
 }

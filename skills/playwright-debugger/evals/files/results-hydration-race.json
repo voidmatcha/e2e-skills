@@ -1,0 +1,108 @@
+{
+  "config": {
+    "configFile": "playwright.config.ts",
+    "rootDir": "/app/e2e",
+    "projects": [
+      {
+        "name": "chromium",
+        "retries": 2,
+        "timeout": 30000
+      }
+    ]
+  },
+  "suites": [
+    {
+      "title": "landing.spec.ts",
+      "file": "landing.spec.ts",
+      "specs": [
+        {
+          "title": "newsletter subscribe opens the confirmation dialog",
+          "file": "landing.spec.ts",
+          "line": 9,
+          "ok": true,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "flaky",
+              "results": [
+                {
+                  "status": "failed",
+                  "duration": 5840,
+                  "retry": 0,
+                  "error": {
+                    "message": "Error: expect(locator).toBeVisible()\n\nCall log:\n  - waiting for getByRole('dialog', { name: 'Confirm subscription' })\n  - the preceding click on getByRole('button', { name: 'Subscribe' }) was reported as completed\n  - the page is a server-rendered Next.js route; the click fired immediately after page.goto('/') while React hydration was still in progress\n  - failure screenshot shows the page fully painted with the Subscribe button visible",
+                    "stack": "Error: expect(locator).toBeVisible()\n    at /app/e2e/landing.spec.ts:14:52"
+                  }
+                },
+                {
+                  "status": "passed",
+                  "duration": 6105,
+                  "retry": 1,
+                  "error": null
+                }
+              ]
+            }
+          ],
+          "location": {
+            "file": "landing.spec.ts",
+            "line": 14,
+            "column": 5
+          }
+        },
+        {
+          "title": "pricing table renders all three tiers",
+          "file": "landing.spec.ts",
+          "line": 22,
+          "ok": false,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "unexpected",
+              "results": [
+                {
+                  "status": "failed",
+                  "duration": 5310,
+                  "retry": 0,
+                  "error": {
+                    "message": "Error: expect(locator).toHaveCount(3)\n\nExpected: 3\nReceived: 0\n\nCall log:\n  - waiting for getByTestId('pricing-tier')\n  - the tiers are rendered client-side after a slow /api/pricing fetch; no interaction precedes the assertion",
+                    "stack": "Error: expect(locator).toHaveCount(3)\n    at /app/e2e/landing.spec.ts:24:50"
+                  }
+                },
+                {
+                  "status": "failed",
+                  "duration": 5298,
+                  "retry": 1,
+                  "error": {
+                    "message": "Error: expect(locator).toHaveCount(3)\n\nExpected: 3\nReceived: 0\n\nCall log:\n  - waiting for getByTestId('pricing-tier')\n  - the tiers are rendered client-side after a slow /api/pricing fetch; no interaction precedes the assertion",
+                    "stack": "Error: expect(locator).toHaveCount(3)\n    at /app/e2e/landing.spec.ts:24:50"
+                  }
+                },
+                {
+                  "status": "failed",
+                  "duration": 5402,
+                  "retry": 2,
+                  "error": {
+                    "message": "Error: expect(locator).toHaveCount(3)\n\nExpected: 3\nReceived: 0\n\nCall log:\n  - waiting for getByTestId('pricing-tier')\n  - the tiers are rendered client-side after a slow /api/pricing fetch; no interaction precedes the assertion",
+                    "stack": "Error: expect(locator).toHaveCount(3)\n    at /app/e2e/landing.spec.ts:24:50"
+                  }
+                }
+              ]
+            }
+          ],
+          "location": {
+            "file": "landing.spec.ts",
+            "line": 24,
+            "column": 5
+          }
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "expected": 0,
+    "unexpected": 1,
+    "flaky": 1,
+    "skipped": 0,
+    "duration": 33955
+  }
+}

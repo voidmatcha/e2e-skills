@@ -203,6 +203,7 @@ errors = []
 
 skill_text = pathlib.Path('skills/e2e-reviewer/SKILL.md').read_text(encoding='utf-8')
 grep_text = pathlib.Path('skills/e2e-reviewer/references/grep-patterns.md').read_text(encoding='utf-8')
+patref_text = pathlib.Path('skills/e2e-reviewer/references/pattern-reference.md').read_text(encoding='utf-8')
 scan_text = pathlib.Path('skills/e2e-reviewer/scripts/scan.sh').read_text(encoding='utf-8')
 docs_text = pathlib.Path('docs/e2e-test-smells.md').read_text(encoding='utf-8')
 readme_text = pathlib.Path('README.md').read_text(encoding='utf-8')
@@ -286,16 +287,16 @@ skill_sev_specs = [
 ]
 section_ids = set()
 for sev_name, required, pattern in skill_sev_specs:
-    tm = re.search(pattern, skill_text, re.S)
+    tm = re.search(pattern, patref_text, re.S)
     if not tm:
-        errors.append(f"e2e-reviewer/SKILL.md: missing {sev_name} section")
+        errors.append(f"e2e-reviewer/references/pattern-reference.md: missing {sev_name} section")
         continue
     for pid in re.findall(r'^####\s+(\d+[a-z]?)\.', tm.group(1), re.M):
         section_ids.add(pid)
         qr_sev = qr_severity.get(pid)
         if qr_sev and required not in qr_sev:
             errors.append(
-                f"e2e-reviewer/SKILL.md {sev_name} lists #{pid} but Quick Reference severity is {qr_sev}"
+                f"e2e-reviewer/references/pattern-reference.md {sev_name} lists #{pid} but Quick Reference severity is {qr_sev}"
             )
 
 # Check 3c: Quick Reference row count equals 24 and ID set equals Pattern Reference section IDs
@@ -307,11 +308,11 @@ qr_only = qr_ids - section_ids
 section_only = section_ids - qr_ids
 if qr_only:
     errors.append(
-        f"e2e-reviewer/SKILL.md Quick Reference has IDs missing from Pattern Reference sections: {sorted(qr_only)}"
+        f"e2e-reviewer/SKILL.md Quick Reference has IDs missing from references/pattern-reference.md sections: {sorted(qr_only)}"
     )
 if section_only:
     errors.append(
-        f"e2e-reviewer/SKILL.md Pattern Reference sections have IDs missing from Quick Reference: {sorted(section_only)}"
+        f"e2e-reviewer/references/pattern-reference.md sections have IDs missing from Quick Reference: {sorted(section_only)}"
     )
 
 # Check 4: debugger evals.json may only reference F-codes from SKILL.md F-table

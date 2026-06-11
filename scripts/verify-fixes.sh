@@ -6,12 +6,23 @@
 #   1. Compile errors from regex matching non-Locator subjects
 #   2. AST anti-patterns sed accidentally introduced (double await, empty expect, orphan then)
 #
-# Usage: bash scripts/verify-fixes.sh <repo-path>
+# Usage: bash scripts/verify-fixes.sh <repo-path> [-- <file>...]
+#   <file> paths are relative to <repo-path>; when given, the AST rules run
+#   only on those files (whole-repo scan remains the no-args default).
+# Env: VERIFY_FIXES_SKIP_TSC=1 skips the tsc step (callers that own typechecking,
+#   e.g. scripts/pr-preflight.sh with nearest-tsconfig logic).
 # Exits 0 on clean, non-zero on issues found.
 
 set -uo pipefail
 
 REPO="${1:-.}"
+[[ $# -gt 0 ]] && shift
+
+EXPLICIT_FILES=()
+if [[ "${1:-}" == "--" ]]; then
+  shift
+  EXPLICIT_FILES=("$@")
+fi
 
 if [[ ! -d "$REPO" ]]; then
   echo "error: not a directory: $REPO" >&2
@@ -53,12 +64,17 @@ issues=0
 # --- Step 1: TypeScript / JavaScript static check ---
 echo
 echo "--- Static check ---"
+if [[ "${VERIFY_FIXES_SKIP_TSC:-0}" == "1" ]]; then
+  echo "(VERIFY_FIXES_SKIP_TSC=1 — caller owns typechecking; skipping tsc)"
+fi
 has_tsconfig=false
 if (cd "$REPO" && [[ -f tsconfig.json ]] || [[ -f tsconfig.base.json ]]); then
   has_tsconfig=true
 fi
 
-if [[ "$has_tsconfig" == "true" ]]; then
+if [[ "${VERIFY_FIXES_SKIP_TSC:-0}" == "1" ]]; then
+  : # skipped above
+elif [[ "$has_tsconfig" == "true" ]]; then
   if ! command -v npx >/dev/null 2>&1; then
     echo "(npx not available — skipping tsc check)"
   else
@@ -89,11 +105,21 @@ fi
 echo
 echo "--- AST-aware sed-artifact detection ---"
 
+# Scan targets: explicit file list (relative to $REPO) when given, else whole repo.
+SCAN_TARGETS=("$REPO")
+if [[ ${#EXPLICIT_FILES[@]} -gt 0 ]]; then
+  SCAN_TARGETS=()
+  for _f in "${EXPLICIT_FILES[@]}"; do
+    SCAN_TARGETS+=("$REPO/$_f")
+  done
+  echo "(scanning ${#SCAN_TARGETS[@]} explicit file(s) only)"
+fi
+
 run_postfix_rule() {
   local rule_file="$1"
   local label="$2"
   local output
-  output=$($AST_GREP scan --rule "$RULES_DIR/$rule_file" "$REPO" 2>&1 || true)
+  output=$($AST_GREP scan --rule "$RULES_DIR/$rule_file" "${SCAN_TARGETS[@]}" 2>&1 || true)
   local count
   count=$(printf '%s\n' "$output" | grep -cE '^(error|warning|info)\[' || true)
   count=${count:-0}

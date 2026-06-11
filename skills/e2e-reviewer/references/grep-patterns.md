@@ -1,6 +1,6 @@
-# Phase 1: Grep Patterns Reference
+# Pattern ID Reference
 
-Each batch contains independent grep checks. Call all Grep tools within one batch in a SINGLE assistant message so they execute in parallel — each batch = one assistant turn with multiple Grep tool_use blocks.
+**This file is a lookup table, not a dispatch procedure.** Phase 1 runs `bash <skill-base>/scripts/scan.sh` (the runtime source of truth); use this file to interpret what each pattern ID means when reading scanner output, doing Phase 2 review, or mapping debugger failure categories back to review patterns. Do NOT hand-dispatch these greps.
 
 A hit is intentional and must be **skipped** when `// JUSTIFIED:` appears in any of these positions (exception: #7 Focused Test Leak has no `// JUSTIFIED:` exemption):
 1. The line **immediately preceding** the hit.
@@ -11,7 +11,7 @@ When raw grep output is the only thing you have, always read 1–3 lines of surr
 
 ---
 
-## Batch 1 — send all 5 Grep calls in ONE message
+## Group 1 — error swallowing, focus leaks, sleeps, raw DOM
 
 | Check | Pattern | Glob | What it detects |
 |-------|---------|------|-----------------|
@@ -21,7 +21,7 @@ When raw grep output is the only thing you have, always read 1–3 lines of surr
 | #9b Cypress Sleeps | `cy\.wait\(\d` | `*.{cy.*}` | Cypress numeric waits |
 | #6 Raw DOM Queries | `document\.querySelector` | `*.{ts,js,cy.*}` | Bypasses framework auto-wait (covers `evaluate()` and `waitForFunction()`). Search POM files too. |
 
-## Batch 2 — send all 6 Grep calls in ONE message
+## Group 2 — vacuous and one-shot assertions
 
 | Check | Pattern | Glob | What it detects |
 |-------|---------|------|-----------------|
@@ -32,7 +32,7 @@ When raw grep output is the only thing you have, always read 1–3 lines of surr
 | #4e One-shot content | `expect\(await.*\.(textContent\|innerText\|getAttribute\|inputValue)\(\)\)` | `*.{spec.*,test.*}` | Resolves immediately; use `toHaveText()`, `toHaveAttribute()`, `toHaveValue()` |
 | #4h One-shot URL | `expect\(page\.url\(\)\)` | `*.{spec.*,test.*}` | `page.url()` reads URL at one instant with no retry; use `await expect(page).toHaveURL(...)` |
 
-## Batch 3 — send all 5 Grep calls in ONE message
+## Group 3 — truthiness traps, bypasses, ordering
 
 | Check | Pattern | Glob | What it detects |
 |-------|---------|------|-----------------|
@@ -42,7 +42,7 @@ When raw grep output is the only thing you have, always read 1–3 lines of surr
 | #5b Force true | `force:\s*true` | `*.{ts,js,cy.*}` | Bypasses actionability checks (visibility, enabled state) |
 | #10b Serial ordering | `\.describe\.serial\(` | `*.{spec.*,test.*}` | `[Playwright only]` — order-dependent tests break parallel sharding |
 
-## Batch 4 — send all 4 Grep calls in ONE message
+## Group 4 — no-op statements, positional selectors, credentials
 
 | Check | Pattern | Glob | What it detects |
 |-------|---------|------|-----------------|
@@ -51,9 +51,9 @@ When raw grep output is the only thing you have, always read 1–3 lines of surr
 | #10a Positional selectors | `\.nth\(\|\.first\(\)\|\.last\(\)` | `*.{spec.*,test.*,cy.*}` | Breaks when DOM order changes; needs `// JUSTIFIED:` |
 | #14 Hardcoded credentials | `(login\|fill\|type).*(['"].*password\|['"].*secret\|['"]admin['"])` | `*.{spec.*,test.*,cy.*}` | String literals as credentials; use env vars or fixtures |
 
-## Batch 5 — send all 7 Grep calls in ONE message
+## Group 5 — missing awaits, direct page APIs, suppression
 
-#3b requires two Grep calls for different globs.
+#3b appears twice because spec files and Cypress support files use different globs.
 
 | Check | Pattern | Glob | What it detects |
 |-------|---------|------|-----------------|
@@ -65,7 +65,7 @@ When raw grep output is the only thing you have, always read 1–3 lines of surr
 | #3b Cypress uncaught:exception (specs) | `on\('uncaught:exception'.*false` | `*.{cy.*}` | `[Cypress]` — blanket suppression of app errors. P0 unless scoped with `// JUSTIFIED:`. |
 | #3b Cypress uncaught:exception (support) | `on\('uncaught:exception'.*false` | `cypress/support/**/*.{ts,js}` | Same check in support files where global suppression is often placed. |
 
-## Batch 6 — single Grep call
+## Group 6 — module-level state
 
 | Check | Pattern | Glob | What it detects |
 |-------|---------|------|-----------------|

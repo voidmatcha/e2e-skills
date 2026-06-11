@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.5.0] - 2026-06-11
+
+Progressive-disclosure restructure of the flagship skill, a new failure category, and the PR-preflight harness that gates the upstream-contribution campaign.
+
+### Added
+- **F15 Hydration Race** — new failure category in both debuggers (`playwright-debugger`, `cypress-debugger`): action reported success but had no effect because the first interaction after `goto`/`cy.visit()` landed on a server-rendered page before the framework attached event listeners. Distinguished explicitly from F14 (F14: element not rendered yet; F15: rendered but inert). Classification step, fix guidance (hydration marker gate → self-verifying click; never a blind sleep), README tables, and one new eval per debugger with committed fixtures (`results-hydration-race.json`, `mochawesome-hydration-race.json`) including a false-positive guard case each.
+- **`playwright-test-generator/code-rules.md` — SSR & Hydration section.** Gate the first interaction on hydration for SSR apps (marker first, self-verifying `.toPass()` action second, never `waitForTimeout` after `goto`); Qwik resumability and Astro per-island nuances noted.
+- **`scripts/pr-preflight.sh`** — six-stage preflight for upstream E2E-fix PRs prepared in `testbed/` clones: smell delta (baseline-vs-working-tree scan), sed-artifact AST check, nearest-tsconfig targeted `tsc`, the repo's own lint on changed files, best-effort headless run of changed specs (env failures classified as SKIP, not FAIL), and diff hygiene (stray tracked-file changes, whitespace-only churn). Every SKIP is reported so the PR body can disclose what was not verified locally — adding the previously missing "run the affected specs before submitting upstream" verification step.
+- **`skills/e2e-reviewer/references/pattern-reference.md`** and **`references/applying-fixes.md`** — the 522-line Pattern Reference and the 266-line Phase 4 contract moved out of the SKILL.md body verbatim, read on demand.
+
+### Changed
+- **`e2e-reviewer/SKILL.md` body cut from 1,066 to 291 lines (~22k → ~7k tokens per invocation).** The body now holds the executable workflow (Phases 0–3, output format, Quick Reference, suppression); per-pattern contracts and the Phase 4 fix tables live in `references/` with explicit read-on-demand pointers (the three regression-prone Phase 4 rules stay inline). CI parity Checks 3b/3c and drift-smoke Case 4 now validate `references/pattern-reference.md`.
+- **`scripts/verify-fixes.sh`** — accepts an explicit changed-file list (`verify-fixes.sh <repo> -- <file>...`) so the postfix AST rules no longer fail on pre-existing upstream artifacts outside the diff; `VERIFY_FIXES_SKIP_TSC=1` lets callers that own typechecking (pr-preflight) skip the root-level `tsc`.
+- **`e2e-reviewer/references/grep-patterns.md`** — retitled to "Pattern ID Reference" and stripped of the retired 6-batch Grep dispatch imperatives that contradicted the scanner-based Phase 1 since 1.3.0; ID → regex → meaning tables unchanged.
+
+### Fixed
+- README documented the wrong Codex install location (`~/.codex/skills/` → `~/.agents/skills/`), completing the v1.4.2 correction that had only been applied to AGENTS.md.
+- AGENTS.md drift: nonexistent `scripts/ci/validate-evals.sh` path, "20 pattern phrases" (actual: 24), "10 drift smoke checks" (actual: 14), failure-code range F1–F14 → F1–F15.
+
 ## [1.4.5] - 2026-06-06
 
 Follow-up patch to v1.4.4 from the same production suite (71 tests): the inverse of "prove the call".

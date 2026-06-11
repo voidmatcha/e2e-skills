@@ -4,7 +4,7 @@ description: "Debug failed Cypress tests from mochawesome/JUnit/local/CI reports
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.4.5"
+  version: "1.5.0"
 ---
 
 # Cypress Failed Test Debugger
@@ -86,12 +86,16 @@ Use Phase 1 output (error message + duration) to classify. **Most failures are i
 | F12 | **Selector Drift** | DOM changed, custom command or Page Object selector not updated | #10 |
 | F13 | **Error Swallowing** | `cy.on('uncaught:exception', () => false)` (blanket) hiding failures; `.catch(() => {})` / `.catch(() => false)` on POM wait/assertion helpers. NOT F13: handlers that call `expect(err.message.includes(...)).to.be.false` (scoped negative-regression test, asserts on error properties rather than suppressing them). | #3 |
 | F14 | **Animation Race** | Element visible but content not yet rendered; CSS transition not complete | #9 |
+| F15 | **Hydration Race** | First `.click()` after `cy.visit()` on a server-rendered page succeeds but has no effect; element rendered but framework listeners not yet attached; failure surfaces at the next assertion; passes on retry | #9 |
 
 Classification steps:
 1. Match error message to signals above
 2. `duration` near `defaultCommandTimeout` (4s) → F1 or F2
 3. CI-only failure → F7 or F8
-4. Passes on retry → F1
+4. Passes on retry (and no SSR first-interaction signature — see step 5) → F1
+5. First `.click()` after `cy.visit()` succeeded but the next assertion timed out on an SSR page → F15
+
+**Click landed but nothing happened (F15 hydration race):** server-rendered pages (Next.js, Nuxt, SvelteKit, Astro, Remix) paint interactive-looking elements before the framework attaches event listeners. The element is visible and actionable, so `.click()` succeeds against the inert pre-hydration DOM and the failure surfaces only at the next assertion — and Cypress retries *assertions*, never the click, so the test stays red for the full timeout once the inert click is consumed. Distinguish from F14: in F14 the element isn't rendered yet; in F15 it is rendered but inert. Fix, in order of preference: (1) gate the first interaction on an app-provided hydration signal — `cy.get('html[data-hydrated]')` or `cy.window().its('__APP_READY__')` — and if the app exposes none, propose the one-line marker upstream (set an attribute in a root `useEffect`/`onMounted`); it fixes every spec at once. (2) Make the first interaction self-verifying: re-query and assert the click's effect, re-clicking in a bounded loop if it hasn't landed. Do NOT paper over it with a blind `cy.wait(ms)` after `cy.visit()` — that's the #9 band-aid the reviewer flags, and it still races on slow CI.
 
 ## Phase 3: Screenshot & Video Analysis (only if Phase 2 is unclear)
 
@@ -143,7 +147,7 @@ cat cypress/reports/mochawesome.json | jq '[
 
 **Severity:**
 - **P0:** Test passes silently when feature is broken (F6, F13)
-- **P1:** Intermittent or misleading failures (F1, F2, F3, F7, F11, F14)
+- **P1:** Intermittent or misleading failures (F1, F2, F3, F7, F11, F14, F15)
 - **P2:** Consistent failures, straightforward fix (F4, F5, F8, F9, F10, F12)
 
 ## Output Format

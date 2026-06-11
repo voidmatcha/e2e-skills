@@ -121,11 +121,11 @@ mutate "$file" "| 1 | **Name-assertion mismatch**" "| 11 | **Name-assertion mism
 assert_fails "Check 3 — README P0 row with P2 id" "Quick Reference severity is P2"
 restore "$file"
 
-# Case 4: SKILL.md severity placement — relabel a P2 id under P0 section (Check 3b)
-file="skills/e2e-reviewer/SKILL.md"
+# Case 4: pattern-reference.md severity placement — relabel a P2 id under P0 section (Check 3b)
+file="skills/e2e-reviewer/references/pattern-reference.md"
 backup "$file"
 mutate "$file" "#### 1. Name-Assertion Alignment" "#### 11. Name-Assertion Alignment"
-assert_fails "Check 3b — SKILL.md P0 section with P2 id" "Quick Reference severity is P2"
+assert_fails "Check 3b — pattern-reference.md P0 section with P2 id" "Quick Reference severity is P2"
 restore "$file"
 
 # Case 5: Quick Reference row count drift (Check 3c)

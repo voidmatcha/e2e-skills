@@ -68,9 +68,25 @@
         "Reports clean run status",
         "Does NOT produce false failure diagnoses",
         "Does NOT invent or fabricate issues",
-        "Does NOT classify any test as F1-F14",
+        "Does NOT classify any test as F1-F15",
         "May note good practices (data-testid usage, proper assertions)",
         "Output is concise — no lengthy failure analysis on a clean run"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Debug the Cypress test failures in evals/files/mochawesome-hydration-race.json. Classify each failure and suggest fixes.",
+      "expected_output": "Should classify 2 failures: 'adds an item to the cart from the landing page' — F15 Hydration Race (first click immediately after cy.visit() on a server-rendered Nuxt page; the button was painted by SSR but its handler was not attached, so the click had no effect and the next assertion failed; passes on re-run). 'filters results as the user types' — NOT F15: the typed input registered (the field contains 'kettle'); the failure is a render/debounce delay on the results list — F1 Flaky/Timing or F14 Animation Race. Fix for F15: gate the first interaction on a hydration signal (marker attribute or window readiness flag), proposing the marker upstream if none exists; never a blind cy.wait(ms) after cy.visit().",
+      "files": ["evals/files/mochawesome-hydration-race.json"],
+      "assertions": [
+        "Classifies the add-to-cart failure as F15 (Hydration Race)",
+        "Cites the F15 signals: first interaction after cy.visit() on a server-rendered page, click succeeded but had no effect, failure at the next assertion, passes on re-run",
+        "Notes Cypress retries assertions but never re-runs the click, so the test cannot self-heal once the inert click is consumed",
+        "Does NOT classify the search-filter failure as F15 — the typed input registered (field contains 'kettle'); render/debounce delay is F1 or F14",
+        "Suggests gating the first interaction on a hydration signal (marker attribute / window readiness flag) and proposing the marker upstream if missing",
+        "Does NOT suggest a blind cy.wait(ms) after cy.visit() as the fix",
+        "Severity P1 for the hydration failure",
+        "Summary table included"
       ]
     }
   ]

@@ -185,6 +185,17 @@ await expect(likeToggle).toHaveAttribute('aria-pressed', 'true');
 
 ---
 
+## SSR & Hydration
+
+- **Gate the first interaction on hydration for server-rendered apps** (Next.js, Nuxt, SvelteKit, Astro, Remix). SSR paints interactive-looking elements before the framework attaches event listeners; Playwright's actionability checks pass against that inert DOM, so the first click is reported successful but does nothing and the spec fails at the *next* assertion — intermittently, because hydration sometimes wins the race. Detect SSR from the framework config/`package.json` before generating.
+- Preferred gate, in order:
+  1. An app-provided hydration marker: `await expect(page.locator('html[data-hydrated]')).toBeAttached();` — if the app exposes none, propose the one-line marker upstream (set an attribute in a root `useEffect`/`onMounted`); it fixes every spec at once.
+  2. A self-verifying first action: `await expect(async () => { await button.click(); await expect(dialog).toBeVisible({ timeout: 1000 }); }).toPass();` — retries the click until it lands.
+- Never `page.waitForTimeout()` after `goto` as a hydration guard — it's the #9 band-aid the reviewer flags, and it still races on slow CI.
+- Nuance: Qwik apps are resumable, not hydrated — no page-global gate needed. Island frameworks (Astro) hydrate per-island according to their `client:*` directive — gate on the specific island's readiness (its own marker or a self-verifying action on that island), not a page-global signal.
+
+---
+
 ## Auth & Session
 
 - Authenticate **once**, programmatically (API-login helper or a `setup` project), persist with `storageState`, reuse it in specs that need a session. UI-driven login belongs only in specs that test the login flow itself.

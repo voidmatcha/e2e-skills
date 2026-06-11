@@ -15,3 +15,6 @@ results/
 # Eval run results (benchmarks, grading, timing)
 *-workspace/
 .serena/
+
+# test-parity.sh transient backups (stray after an interrupted run)
+*.parity-backup

@@ -18,7 +18,7 @@ The repo doubles as a Claude Code plugin (`.claude-plugin/`), a Codex plugin (`.
 ## Verification gate (must pass before commit)
 
 ```
-[ ] bash scripts/ci/ci-local.sh          # 10 review checks + 10 drift smoke checks + 0 P0 smell hits
+[ ] bash scripts/ci/ci-local.sh          # 10 review checks + 14 drift smoke checks + 0 P0 smell hits
 [ ] bash scripts/ci/pre-push-security.sh # secrets and credential leak guard
 ```
 
@@ -48,6 +48,7 @@ The repo doubles as a Claude Code plugin (`.claude-plugin/`), a Codex plugin (`.
 │   ├── ci/                 # CI parity, security, eval-metadata checks
 │   ├── dev/                # contributor reinstall + git hook setup
 │   ├── hooks/              # local git hooks
+│   ├── pr-preflight.sh     # six-stage preflight for upstream E2E-fix PRs
 │   ├── verify-fixes.sh     # post-bulk-fix verification (sed-artifact AST detection)
 │   └── validate-evals.sh
 ├── docs/                   # Open-source assets (taxonomy, case studies, scope)
@@ -62,7 +63,7 @@ Each `skills/<name>/SKILL.md` is the contract. Everything in the skill body shou
 - **Skill names**: kebab-case, must match the directory name and the `name:` in SKILL.md frontmatter.
 - **SKILL.md frontmatter**: `name`, `description`, `license`, `metadata: { author, version }`. The description is the trigger surface — pack synonyms and the user's likely phrasing.
 - **Pattern IDs**: 24 stable anti-pattern entries (`#1`–`#23` plus `#3b`) with P0/P1/P2 severity. IDs are stable; do not renumber. Severity rationale: P0 = silent always-pass, P1 = poor diagnostics, P2 = maintenance.
-- **Failure category IDs**: 14 codes (`F1`–`F14`) used by both debuggers. Codes are stable.
+- **Failure category IDs**: 15 codes (`F1`–`F15`) used by both debuggers. Codes are stable.
 - **JUSTIFIED comments**: `// JUSTIFIED: <reason>` on the line above (or above the enclosing block / multi-line chain) suppresses scanner findings. Suppress for documented intent, never to hide a real finding.
 - **Severity-first organization**: tables in SKILL.md, README, and `docs/e2e-test-smells.md` group by P0/P1/P2 in the same order.
 - **English-only public surface**: SKILL.md, README, and `docs/` are English. CI enforces this (`Language` check).
@@ -80,7 +81,7 @@ bash scripts/ci/ci-local.sh
 # Individual stages
 bash scripts/ci/review.sh           # parity, language, links, framework scope, orphans
 bash scripts/ci/test-parity.sh      # drift smoke test (mutate-and-detect)
-bash scripts/ci/validate-evals.sh   # eval JSON schema
+bash scripts/validate-evals.sh      # eval JSON schema
 bash scripts/ci/pre-push-security.sh
 bash skills/e2e-reviewer/scripts/scan.sh path/to/tests   # standalone scanner
 
@@ -110,7 +111,7 @@ The reinstall script runs `npx skills remove` then `npx skills add <repo-root> -
 
 ## When You Edit Skills
 
-1. **Update parity surfaces in lock-step.** Adding or renaming a pattern means touching: the relevant `SKILL.md` (Pattern Reference + Quick Reference), `docs/e2e-test-smells.md`, `README.md` 24 Patterns table, `skills/e2e-reviewer/references/grep-patterns.md`, `skills/e2e-reviewer/scripts/scan.sh`, `.claude-plugin/plugin.json` description, `.claude-plugin/marketplace.json` description, and `.codex-plugin/plugin.json` description. CI fails fast if any one is out of step.
+1. **Update parity surfaces in lock-step.** Adding or renaming a pattern means touching: the relevant `SKILL.md` (Quick Reference), `skills/e2e-reviewer/references/pattern-reference.md` (per-pattern contract — CI Checks 3b/3c validate this file), `docs/e2e-test-smells.md`, `README.md` 24 Patterns table, `skills/e2e-reviewer/references/grep-patterns.md`, `skills/e2e-reviewer/scripts/scan.sh`, `.claude-plugin/plugin.json` description, `.claude-plugin/marketplace.json` description, and `.codex-plugin/plugin.json` description. CI fails fast if any one is out of step.
 2. **Re-run the drift smoke test.** `scripts/ci/test-parity.sh` mutates known-bad versions of the files and asserts the parity check catches each one — keep it green when you add new parity rules.
 3. **Add or update evals when behavior changes.** Each skill has an `evals/evals.json`. Eval IDs must follow the skill's naming convention (CI validates). Each new smell or behavior change should add at least two assertions: one true positive that must be flagged, and one false-positive guard that names the exact line and why it must not be flagged.
 4. **Respect severity contracts.** P0 entries should be silent-always-pass smells; don't downgrade. P1/P2 should not creep into P0 just because they're easier to grep.
@@ -120,7 +121,7 @@ The reinstall script runs `npx skills remove` then `npx skills add <repo-root> -
 Both the Claude Code plugin and the Codex plugin expose the same four public skills from the shared `skills/` directory. The two manifests differ only in schema shape and host-specific display fields — never in skill behavior. CI enforces:
 
 - **Version parity**: `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` (the `e2e-skills` entry), and `.codex-plugin/plugin.json` must share the same `version` string. Bump all three together.
-- **Description parity**: the 20 P0/P1/P2 pattern phrases must appear in order in every manifest description. The phrase order is owned by the `e2e-reviewer/SKILL.md` frontmatter; downstream manifests follow it.
+- **Description parity**: all 24 P0/P1/P2 pattern phrases (the full catalog — count owned by `scripts/ci/review.sh`) must appear in order in every manifest description. The phrase order is owned by the `e2e-reviewer/SKILL.md` frontmatter; downstream manifests follow it.
 - **Public skill surface**: `skills/<name>/SKILL.md` `name` field must match the directory name, and the four directory names must match `.claude-plugin/plugin.json` `skills` paths and the four `agents/openai.yaml` `name` fields.
 - **Framework scope**: the word "Puppeteer" must not appear outside `docs/framework-scope.md`, including in any plugin manifest.
 

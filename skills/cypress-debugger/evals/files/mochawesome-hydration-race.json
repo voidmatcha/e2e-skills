@@ -1,0 +1,112 @@
+{
+  "stats": {
+    "suites": 2,
+    "tests": 2,
+    "passes": 0,
+    "pending": 0,
+    "failures": 2,
+    "start": "2026-06-11T12:00:00.000Z",
+    "end": "2026-06-11T12:00:16.000Z",
+    "duration": 16000,
+    "testsRegistered": 2,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "spec-cart",
+      "title": "",
+      "fullFile": "cypress/e2e/cart.cy.ts",
+      "file": "cypress/e2e/cart.cy.ts",
+      "suites": [
+        {
+          "uuid": "suite-cart",
+          "title": "Cart",
+          "fullFile": "cypress/e2e/cart.cy.ts",
+          "file": "cypress/e2e/cart.cy.ts",
+          "tests": [
+            {
+              "title": "adds an item to the cart from the landing page",
+              "fullTitle": "Cart adds an item to the cart from the landing page",
+              "duration": 6200,
+              "state": "failed",
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "code": "cy.visit('/'); cy.get('[data-testid=\"add-to-cart\"]').first().click(); cy.get('[data-testid=\"cart-count\"]').should('have.text', '1')",
+              "err": {
+                "message": "Timed out retrying after 4000ms: expected '[data-testid=\"cart-count\"]' to have text '1', but the text was '0'. The click was issued immediately after cy.visit() on a server-rendered Nuxt page; the button was painted by SSR and the click command succeeded, but the framework had not attached its click handler yet, so the click had no effect. The same spec passes when re-run.",
+                "estack": "AssertionError: Timed out retrying after 4000ms: expected '[data-testid=\"cart-count\"]' to have text '1', but the text was '0'\n    at cypress/e2e/cart.cy.ts:12:54",
+                "diff": "- '1'\n+ '0'"
+              },
+              "uuid": "test-cart"
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": ["test-cart"],
+          "pending": [],
+          "skipped": []
+        }
+      ],
+      "tests": [],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": []
+    },
+    {
+      "uuid": "spec-search",
+      "title": "",
+      "fullFile": "cypress/e2e/search.cy.ts",
+      "file": "cypress/e2e/search.cy.ts",
+      "suites": [
+        {
+          "uuid": "suite-search",
+          "title": "Search",
+          "fullFile": "cypress/e2e/search.cy.ts",
+          "file": "cypress/e2e/search.cy.ts",
+          "tests": [
+            {
+              "title": "filters results as the user types",
+              "fullTitle": "Search filters results as the user types",
+              "duration": 5400,
+              "state": "failed",
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "code": "cy.get('[data-testid=\"search-input\"]').type('kettle'); cy.get('[data-testid=\"result-row\"]').should('have.length', 5)",
+              "err": {
+                "message": "Timed out retrying after 4000ms: expected to find 5 '[data-testid=\"result-row\"]' elements but got 0. The typed input registered — the failure screenshot shows the search field containing 'kettle' — but the results list mounts only after a debounced /api/search request resolves, and the rows were never painted before the timeout.",
+                "estack": "AssertionError: Timed out retrying after 4000ms: expected to find 5 '[data-testid=\"result-row\"]' elements but got 0\n    at cypress/e2e/search.cy.ts:9:48",
+                "diff": null
+              },
+              "uuid": "test-search"
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": ["test-search"],
+          "pending": [],
+          "skipped": []
+        }
+      ],
+      "tests": [],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": []
+    }
+  ],
+  "meta": {
+    "mocha": { "version": "7.2.0" },
+    "mochawesome": { "version": "7.1.3" },
+    "marge": {
+      "options": { "reportDir": "cypress/reports", "json": true, "html": false }
+    }
+  }
+}
