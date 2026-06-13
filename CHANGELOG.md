@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.3] - 2026-06-13
+
+### Fixed
+- **playwright-debugger Phase 1 extraction was broken.** The documented `jq` selected at result-level, which dropped the flaky-vs-unexpected signal the classification step depends on and returned `title`/`file` as null on a standard Playwright JSON report. Rewritten to select at the spec level (preserving `title`/`file`/`line`, the per-test `outcome`, the `final` result, and `retries`); validated against all five debugger fixtures. Also added `mkdir -p playwright-report` before the reporter redirect (prerequisites case 2), and broadened the F14 ("Animation Race") signal to cover both the not-yet-rendered and removed-before-observed directions, reconciled with the F14-vs-F15 distinguisher and mirrored into cypress-debugger for cross-skill parity.
+- **cypress-debugger JUnit extraction captured the wrong test name.** The regex matched `name="..."` inside `classname="..."`; it now requires an attribute boundary (`\sname=` / `\smessage=`). Eval id 3 relabeled (it leaked the playwright debugger's F11 name "Async Order"; cypress F11 is "Command Queue / Intercept Race", and the postMessage/DOM race is F1 with F14 as the secondary).
+- **`scripts/pr-preflight.sh`** — committed the previously-uncommitted stage-7 authoring-hygiene block (AI-tell punctuation guard, added-comment cap, test-rename guard) and added a `PREFLIGHT_ALLOW_SLOP=1` override so the punctuation check does not false-positive on intended string-literal content.
+
 ## [1.5.2] - 2026-06-13
 
 ### Fixed

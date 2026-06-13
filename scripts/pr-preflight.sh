@@ -20,6 +20,7 @@
 #   PREFLIGHT_RUN_SPECS=0       disable stage 5 (default: attempt with SKIP detection)
 #   PREFLIGHT_ALLOW_INSTALL=1   allow dependency install for stage 3/5 (default: off -> SKIP)
 #   PREFLIGHT_SPEC_TIMEOUT=600  stage-5 watchdog seconds
+#   PREFLIGHT_ALLOW_SLOP=1      allow stage-7 punctuation hits inside intended string literals (default: off -> FAIL)
 # Exit codes: 0 = all PASS/SKIP, 1 = >=1 FAIL, 2 = usage error.
 #
 # bash 3.2 compatible; macOS BSD userland (no timeout(1), no associative arrays).
@@ -324,6 +325,34 @@ for f in "${FILES[@]}"; do
   fi
 done
 [[ $hygiene_fail -eq 0 ]] && verdict diff-hygiene PASS "only intended files, no formatting churn"
+
+# ---- Stage 7: authoring hygiene (added lines must not read as generated) --------
+added=$(git -C "$REPO" diff HEAD -- "${FILES[@]}" | grep '^+' | grep -v '^+++' || true)
+style_fail=0
+slop=$(printf '%s\n' "$added" | LC_ALL=C grep -nE $'\xe2\x80\x94|\xe2\x80\x93|\xe2\x86\x92|\xe2\x80\xa6' || true)
+if [[ -n "$slop" && "${PREFLIGHT_ALLOW_SLOP:-0}" != "1" ]]; then
+  verdict authoring FAIL "AI-tell punctuation (em/en dash, arrow, ellipsis) in added lines (PREFLIGHT_ALLOW_SLOP=1 to override for intentional string-literal content): $(printf '%s\n' "$slop" | head -3 | tr '\n' ' ')"
+  style_fail=1
+fi
+added_comments=$(printf '%s\n' "$added" | grep -cE '^\+[[:space:]]*//' || true)
+if [[ "${added_comments:-0}" -gt "${PREFLIGHT_MAX_COMMENTS:-3}" ]]; then
+  verdict authoring FAIL "$added_comments comment lines added (max ${PREFLIGHT_MAX_COMMENTS:-3}) - only non-obvious WHY comments belong in an upstream fix"
+  style_fail=1
+fi
+# BSD sed BRE has no alternation - filter with grep -E, then extract the quoted title
+removed_titles=$(git -C "$REPO" diff HEAD -- "${FILES[@]}" | grep -E '^-[[:space:]]*(test|it|describe)(\.only)?\("' | sed 's/^[^"]*\("[^"]*"\).*/\1/' || true)
+if [[ -n "$removed_titles" && "${PREFLIGHT_ALLOW_RENAME:-0}" != "1" ]]; then
+  rename_hit=""
+  while IFS= read -r rt; do
+    [[ -z "$rt" ]] && continue
+    printf '%s\n' "$added" | grep -qF "$rt" || rename_hit="$rt"
+  done <<< "$removed_titles"
+  if [[ -n "$rename_hit" ]]; then
+    verdict authoring FAIL "test title changed ($rename_hit) - keep original names unless factually wrong (PREFLIGHT_ALLOW_RENAME=1 to override)"
+    style_fail=1
+  fi
+fi
+[[ $style_fail -eq 0 ]] && verdict authoring PASS "no slop punctuation, ${added_comments:-0} comment line(s), no test renames"
 
 # ---- Report ---------------------------------------------------------------------
 echo
