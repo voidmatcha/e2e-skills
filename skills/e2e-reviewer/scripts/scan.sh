@@ -420,14 +420,14 @@ run_check P0 '#4f' 'Locator-as-truthy assertion' 'expect\(.*(locator|getBy[A-Za-
 run_check P0 '#4g' 'Retry disabled with timeout zero' 'timeout:\s*0' '*.{ts,js,tsx,jsx,cy.ts,cy.js}' e2e
 run_check P0 '#4h' 'One-shot page.url assertion' 'expect\(page\.url\(\)\)' '*.{spec.ts,spec.js,test.ts,test.js}'
 
-run_check P0 '#5a' 'Conditional assertion bypass' 'if.*(isVisible|is\(.*:visible.*\))' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'
+run_check P0 '#5a' 'Conditional assertion bypass' 'if.*(isVisible\(|is\(.*:visible.*\))' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'
 run_check P1 '#5b' 'Forced actionability bypass' 'force:\s*true' '*.{ts,js,tsx,jsx,cy.ts,cy.js}' e2e
-run_check P0 '#8a' 'Dangling Playwright locator statement' '^\s*(await\s+)?page\.(locator|getBy[A-Za-z]+)\(([^()]|\([^()]*\))*\)\s*;?\s*$' '*.{spec.ts,spec.js,test.ts,test.js}' cont
+run_check P0 '#8a' 'Dangling Playwright locator statement' '^\s*(await\s+)?page\.(locator|getBy[A-Za-z]+)\(([^()]|\([^()]*\))*\)\s*;?\s*(//.*)?$' '*.{spec.ts,spec.js,test.ts,test.js}' cont
 run_check P0 '#8b' 'Boolean state result discarded' '^\s*await .*\.(isVisible|isEnabled|isChecked|isDisabled|isEditable|isHidden)\([^)]*\)\s*;?\s*(//.*)?$' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'
 run_check P1 '#10a' 'Positional selector' '\.(nth\(|first\(\)|last\(\))' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'
 run_check P1 '#10b' 'Serial Playwright suite' '\.describe\.serial\(' '*.{spec.ts,spec.js,test.ts,test.js}'
 run_check P1 '#14' 'Hardcoded credentials' '(login|fill|type).*(["'"'"'].*password|["'"'"'].*secret|["'"'"']admin["'"'"'])' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'
-run_check P0 '#15' 'Missing await on Playwright expect' '^\s*expect\(\s*+(?!await\b).*(locator|getBy[A-Za-z]+|page\))' '*.{spec.ts,spec.js,test.ts,test.js}' e2e
+run_check P0 '#15' 'Missing await on Playwright expect' '^\s*expect\(\s*+(?!await\b).*(locator|getBy[A-Z][A-Za-z]*|(?<![.\w])page\))' '*.{spec.ts,spec.js,test.ts,test.js}' e2e
 run_check P0 '#16' 'Missing await on Playwright action' '^\s*page\.(locator|getBy\w+)\(.*\)\.(click|fill|type|press|check|uncheck|selectOption|setInputFiles|hover|focus|blur)\(' '*.{spec.ts,spec.js,test.ts,test.js}'
 run_check P1 '#17' 'Direct page action API' 'page\.(click|fill|type|check|uncheck|selectOption)\(["'"'"'`]' '*.{spec.ts,spec.js,test.ts,test.js}'
 run_check P1 '#9c' 'Network-idle readiness check' '(waitForLoadState\(\s*[\x27\"]networkidle[\x27\"]|waitUntil:\s*[\x27\"]networkidle[\x27\"])' '*.{ts,js,tsx,jsx}' e2e

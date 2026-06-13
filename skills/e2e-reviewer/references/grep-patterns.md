@@ -38,7 +38,7 @@ When raw grep output is the only thing you have, always read 1–3 lines of surr
 |-------|---------|------|-----------------|
 | #4f Locator-as-truthy | `\.toBeTruthy\(\)` | `*.{ts,js,cy.*}` | Flag hits where the subject is a Locator (always truthy JS object regardless of element existence). Non-Locator subjects (e.g., boolean variables) are fine — confirm in Phase 2. |
 | #4g Timeout zero | `timeout:\s*0` | `*.{ts,js,cy.*}` | Disables auto-retry entirely; flag unless `// JUSTIFIED:` on line above |
-| #5a Conditional bypass | `if.*(isVisible\|is\(.*:visible.*\))` | `*.{spec.*,test.*,cy.*}` | `expect()` gated behind runtime `if` — silently skips assertions |
+| #5a Conditional bypass | `if.*(isVisible\(\|is\(.*:visible.*\))` | `*.{spec.*,test.*,cy.*}` | `expect()` gated behind runtime `if` — silently skips assertions. Requires the `.isVisible(` call form, so a bare boolean variable named `isVisible` is not matched. |
 | #5b Force true | `force:\s*true` | `*.{ts,js,cy.*}` | Bypasses actionability checks (visibility, enabled state) |
 | #10b Serial ordering | `\.describe\.serial\(` | `*.{spec.*,test.*}` | `[Playwright only]` — order-dependent tests break parallel sharding |
 
@@ -46,7 +46,7 @@ When raw grep output is the only thing you have, always read 1–3 lines of surr
 
 | Check | Pattern | Glob | What it detects |
 |-------|---------|------|-----------------|
-| #8a Dangling locator | `^\s*(await\s+)?page\.(locator\|getBy*)\(...\)\s*;?\s*$` + previous-line continuation filter (a hit is dropped when the preceding non-blank line ends with `(` or `,`) | `*.{spec.*,test.*}` | `[Playwright only]` — locator created as standalone statement, no `expect()`, no action, no assignment. A complete no-op. |
+| #8a Dangling locator | `^\s*(await\s+)?page\.(locator\|getBy*)\(...\)\s*;?\s*(//.*)?$` + previous-line continuation filter (a hit is dropped when the preceding non-blank line ends with `(` or `,`) | `*.{spec.*,test.*}` | `[Playwright only]` — locator created as standalone statement, no `expect()`, no action, no assignment. A complete no-op. A trailing line comment is tolerated (lock-step with #8b). |
 | #8b Boolean discarded | `^\s*await .*\.(isVisible\|isEnabled\|isChecked\|isDisabled\|isEditable\|isHidden)\([^)]*\)\s*;?\s*(//.*)?$` | `*.{spec.*,test.*,cy.*}` | Boolean result computed and thrown away; selector-arg and no-semicolon forms included, end anchor excludes `.catch()`/chained reads — asserts nothing |
 | #10a Positional selectors | `\.nth\(\|\.first\(\)\|\.last\(\)` | `*.{spec.*,test.*,cy.*}` | Breaks when DOM order changes; needs `// JUSTIFIED:` |
 | #14 Hardcoded credentials | `(login\|fill\|type).*(['"].*password\|['"].*secret\|['"]admin['"])` | `*.{spec.*,test.*,cy.*}` | String literals as credentials; use env vars or fixtures |

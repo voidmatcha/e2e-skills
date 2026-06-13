@@ -208,6 +208,24 @@
         "Structured output with P0/P1/P2",
         "Summary table included"
       ]
+    },
+    {
+      "id": 10,
+      "prompt": "Review the Playwright E2E tests in evals/files/fp-guards.spec.ts. Flag missing-await, dangling-locator, and conditional-bypass anti-patterns, and do not over-flag non-locator expects or bare boolean variables.",
+      "expected_output": "Should detect: missing await on a locator expect (#15 P0), a dangling locator statement that carries a trailing comment (#8a P0), and a conditional that gates an assertion via an isVisible() call (#5a P0). Should NOT flag as #15: expect(body.page) or expect(getByteLength(...)) (non-locator subjects). Should NOT flag as #5a: a bare boolean variable 'if (isVisible)' with no .isVisible() call.",
+      "files": [
+        "evals/files/fp-guards.spec.ts"
+      ],
+      "assertions": [
+        "Detects missing await on expect(page.getByRole('button', { name: 'Save' })).toBeVisible() on line 5 (#15, P0)",
+        "Does NOT flag expect(body.page).toBe(2) on line 8 as #15 — body.page is a non-locator pagination field, not a Playwright Page or Locator (the anchored page) alternative excludes a dotted .page member)",
+        "Does NOT flag expect(getByteLength(body.raw)).toBe(1024) on line 9 as #15 — getByteLength is a byte-length helper, not a getBy* locator (the getBy[A-Z] tightening excludes it)",
+        "Detects dangling locator page.locator('.dangling') on line 10 (#8a, P0) even though it carries a trailing line comment",
+        "Detects conditional bypass: if (await page.locator('.banner').isVisible()) gates the expect on line 12 (#5a, P0)",
+        "Does NOT flag if (isVisible) on line 19 as #5a — isVisible is a bare boolean variable, not an .isVisible() call",
+        "Structured output with P0/P1/P2",
+        "Summary table included"
+      ]
     }
   ]
 }
