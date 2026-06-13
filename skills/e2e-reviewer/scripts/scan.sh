@@ -37,7 +37,9 @@ playwright_lint_done=0
 cypress_lint_done=0
 
 # Coverage map — patterns the eslint plugin's `recommended` config catches reliably.
-# When the plugin runs successfully, Tier 2 (ast-grep) and Tier 3 (regex) skip these to avoid duplicate reports.
+# When the plugin runs successfully, Tier 2 (ast-grep) and Tier 3 (regex) skip the LINT_COVERS patterns to avoid duplicate reports.
+# Patterns OUTSIDE those lists (e.g. #4c-4e, #4f) are intentionally reported by every tier that matches; the Summary total/p0 is Tier-3-only (ast_total is a separate informational count).
+# The ast-grep rules are language:TypeScript (.ts/.mts/.cts) by design; .js/.jsx/.tsx coverage is delegated to the always-on Tier-3 regex net.
 # Conservative: only includes patterns where the eslint rule covers the same surface as our regex
 # (binary patterns or full overlap). Partial-overlap patterns like #4 sub-variants stay in Tier 3 as safety net.
 PLAYWRIGHT_LINT_COVERS='#7 #9 #15 #16'   # no-focused-test, no-wait-for-timeout, missing-playwright-await (covers expect+action)

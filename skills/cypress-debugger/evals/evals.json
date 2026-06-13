@@ -33,7 +33,7 @@
         "Suggests fixing intercept setup for payment test (contradictory 500 + expect success)",
         "Suggests adding login/auth before homepage assertion",
         "Suggests fixing application code for discount TypeError",
-        "Provides severity ratings (P0 for uncaught exception, P1/P2 for others)",
+        "Provides severity ratings consistent with the rubric (flags the uncaught TypeError as a high-priority application bug; P1/P2 for the test-level F3/F4 failures)",
         "Uses structured output format with failure summary",
         "Includes review summary table"
       ]

@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.5.4] - 2026-06-13
+
+### Fixed
+- **Documentation and eval-precision polish (no detection-behavior change).** README F14 "Animation Race" signal cells (both Playwright and Cypress rows) updated to the bidirectional wording shipped in 1.5.3. `sg-4f-locator-as-truthy.yml` drops `getByName` from its method whitelist — it is neither a Playwright Locator method nor an RTL query (it was the documented n8n ~2200-FP culprit). Eval id 2's false-positive-guard line citations corrected (unit-helpers.test.ts 10/15 to 11/16). cypress-debugger eval id 2 severity assertion reworded to match the SKILL.md P0 rubric (P0 is reserved for silent-pass F6/F13, not a loud uncaught TypeError). `scan.sh` dedup comment clarified: the Tier-2/Tier-3 skip is eslint-conditional and LINT_COVERS-scoped, and the ast-grep rules are TypeScript-only by design with `.js`/`.jsx`/`.tsx` delegated to the always-on Tier-3 regex net.
+
 ## [1.5.3] - 2026-06-13
 
 ### Fixed

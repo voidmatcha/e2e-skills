@@ -232,7 +232,7 @@ Tests pass locally but fail in CI
 | F11 | **Async Order Assumption** | `Promise.all` order, parallel race |
 | F12 | **POM / Locator Drift** | DOM structure changed, POM not updated |
 | F13 | **Error Swallowing** | `.catch(() => {})` hiding actual failure |
-| F14 | **Animation Race** | Element visible but content not yet rendered |
+| F14 | **Animation Race** | Content not yet rendered, or a transient element removed before it is observed |
 | F15 | **Hydration Race** | Action succeeds but has no effect — SSR page not yet hydrated; fails at the next assertion |
 
 ### Debug Workflow
@@ -281,7 +281,7 @@ Cypress tests pass locally but fail in CI
 | F11 | **Command Queue / Intercept Race** | `cy.intercept` registered after request fires; `.then()` chain order swap; parallel `cy.request()` race against an unfinished `cy.visit()` |
 | F12 | **Selector Drift** | DOM changed, custom command or POM selector not updated |
 | F13 | **Error Swallowing** | `cy.on('uncaught:exception', () => false)` hiding failures |
-| F14 | **Animation Race** | Element visible but content not yet rendered |
+| F14 | **Animation Race** | Content not yet rendered, a transient element removed before observed, or CSS transition not complete |
 | F15 | **Hydration Race** | First click after `cy.visit()` succeeds but has no effect — SSR page not yet hydrated; fails at the next assertion |
 
 ### Debug Workflow

@@ -26,7 +26,7 @@ rule:
     - pattern: 'expect($X.$METHOD($$$ARGS).$$$CHAIN).toBeTruthy()'
 constraints:
   METHOD:
-    regex: '^(getByText|getByRole|getByTestId|getByLabel|getByLabelText|getByPlaceholderText|getByAltText|getByTitle|getByDisplayValue|findByText|findByRole|findByTestId|findByLabel|findByLabelText|findByPlaceholderText|findByAltText|findByTitle|findByDisplayValue|queryByText|queryByRole|queryByTestId|locator|getByName)$'
+    regex: '^(getByText|getByRole|getByTestId|getByLabel|getByLabelText|getByPlaceholderText|getByAltText|getByTitle|getByDisplayValue|findByText|findByRole|findByTestId|findByLabel|findByLabelText|findByPlaceholderText|findByAltText|findByTitle|findByDisplayValue|queryByText|queryByRole|queryByTestId|locator)$'
 
 # File-level scoping: skip vendored/build artifacts (mirrors Tier 3 rg --glob excludes).
 ignores:

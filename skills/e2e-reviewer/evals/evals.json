@@ -57,7 +57,7 @@
         "Structured output with P0/P1/P2",
         "Summary table included",
         "Top Priorities section included",
-        "Does NOT flag unit-helpers.test.ts line 10 (toBeGreaterThanOrEqual(0)) or line 15 (expect(screen.getByText(...)).toBeTruthy()) — the file is a Vitest/RTL unit test with no Playwright/Cypress marker (no @playwright/test import, no page.* usage, no cy.*), so the Tier 3 regex e2e content scoping filters both (Tier 2 sg-4f may still surface the RTL toBeTruthy line as a jest-dom-fix advisory by design — see the SKILL.md Tier scoping note; it must NOT be reported as a P0)",
+        "Does NOT flag unit-helpers.test.ts line 11 (toBeGreaterThanOrEqual(0)) or line 16 (expect(screen.getByText(...)).toBeTruthy()) — the file is a Vitest/RTL unit test with no Playwright/Cypress marker (no @playwright/test import, no page.* usage, no cy.*), so the Tier 3 regex e2e content scoping filters both (Tier 2 sg-4f may still surface the RTL toBeTruthy line as a jest-dom-fix advisory by design — see the SKILL.md Tier scoping note; it must NOT be reported as a P0)",
         "Still flags toBeGreaterThanOrEqual(0) inside a real Playwright spec file (imports @playwright/test or uses page.*) as #4a (P0) — content scoping must not suppress in-scope hits"
       ]
     },
