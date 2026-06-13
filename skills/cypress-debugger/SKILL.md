@@ -4,7 +4,7 @@ description: "Debug failed Cypress tests from mochawesome/JUnit/local/CI reports
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.5.0"
+  version: "1.5.1"
 ---
 
 # Cypress Failed Test Debugger

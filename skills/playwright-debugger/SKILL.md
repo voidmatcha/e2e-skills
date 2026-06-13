@@ -4,7 +4,7 @@ description: "Debug failed Playwright tests from reports/traces/screenshots/loca
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.5.0"
+  version: "1.5.1"
 ---
 
 # Playwright Failed Test Debugger
