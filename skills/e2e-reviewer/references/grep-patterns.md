@@ -29,7 +29,7 @@ When raw grep output is the only thing you have, always read 1–3 lines of surr
 | #4b Vacuous attached | `toBeAttached\(\)` | `*.{ts,js,cy.*}` | Flag every hit; confirm in Phase 2 whether the element is unconditionally rendered (→ P0 vacuous) or CSS-hidden (`// JUSTIFIED:` → skip) |
 | #4c One-shot isVisible | `expect\(await.*\.isVisible\([^)]*\)\)` (state/text/attribute reads accept arguments, e.g. `getAttribute('src')`) | `*.{spec.*,test.*}` | One-shot boolean, no auto-retry |
 | #4d One-shot state | `expect\(await.*\.(isDisabled\|isEnabled\|isChecked\|isHidden)\(\)\)` | `*.{spec.*,test.*}` | Same one-shot boolean problem |
-| #4e One-shot content | `expect\(await.*\.(textContent\|innerText\|getAttribute\|inputValue)\(\)\)` | `*.{spec.*,test.*}` | Resolves immediately; use `toHaveText()`, `toHaveAttribute()`, `toHaveValue()` |
+| #4e One-shot content | `expect\(await.*\.(textContent\|innerText\|getAttribute\|inputValue\|allTextContents)\([^)]*\)\)` | `*.{spec.*,test.*}` | Resolves immediately; use `toHaveText()`, `toHaveAttribute()`, `toHaveValue()`. (One-shot `.count()` is left to the Tier-2 ast-grep `sg-4ce-count` rule — a bare regex `count` over-flags ORM/array `.count()`.) |
 | #4h One-shot URL | `expect\(page\.url\(\)\)` | `*.{spec.*,test.*}` | `page.url()` reads URL at one instant with no retry; use `await expect(page).toHaveURL(...)` |
 
 ## Group 3 — truthiness traps, bypasses, ordering
@@ -47,7 +47,7 @@ When raw grep output is the only thing you have, always read 1–3 lines of surr
 | Check | Pattern | Glob | What it detects |
 |-------|---------|------|-----------------|
 | #8a Dangling locator | `^\s*(await\s+)?page\.(locator\|getBy*)\(...\)\s*;?\s*$` + previous-line continuation filter (a hit is dropped when the preceding non-blank line ends with `(` or `,`) | `*.{spec.*,test.*}` | `[Playwright only]` — locator created as standalone statement, no `expect()`, no action, no assignment. A complete no-op. |
-| #8b Boolean discarded | `^\s*await .*\.(isVisible\|isEnabled\|isChecked\|isDisabled\|isEditable\|isHidden)\(\)\s*;` | `*.{spec.*,test.*,cy.*}` | Boolean result computed and thrown away — asserts nothing |
+| #8b Boolean discarded | `^\s*await .*\.(isVisible\|isEnabled\|isChecked\|isDisabled\|isEditable\|isHidden)\([^)]*\)\s*;?\s*(//.*)?$` | `*.{spec.*,test.*,cy.*}` | Boolean result computed and thrown away; selector-arg and no-semicolon forms included, end anchor excludes `.catch()`/chained reads — asserts nothing |
 | #10a Positional selectors | `\.nth\(\|\.first\(\)\|\.last\(\)` | `*.{spec.*,test.*,cy.*}` | Breaks when DOM order changes; needs `// JUSTIFIED:` |
 | #14 Hardcoded credentials | `(login\|fill\|type).*(['"].*password\|['"].*secret\|['"]admin['"])` | `*.{spec.*,test.*,cy.*}` | String literals as credentials; use env vars or fixtures |
 

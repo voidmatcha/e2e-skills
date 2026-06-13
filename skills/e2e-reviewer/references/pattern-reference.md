@@ -113,6 +113,7 @@ await expect(page.locator('header')).toBeAttached();
 expect(await el.isVisible()).toBe(true);
 expect(await el.textContent()).toBe('expected text');
 expect(await el.getAttribute('attr')).toBe('value');
+expect(await el.allTextContents()).toContain('expected item');
 
 // BAD — Locator is always a truthy JS object regardless of element existence
 expect(page.locator('.selector')).toBeTruthy();
@@ -129,6 +130,7 @@ await expect(el).toHaveCount(0, { timeout: 0 });
 - `expect(await el.isVisible()).toBe(true)` → `await expect(el).toBeVisible()`
 - `expect(await el.textContent()).toBe(x)` → `await expect(el).toHaveText(x)`
 - `expect(await el.getAttribute('x')).toBe(y)` → `await expect(el).toHaveAttribute('x', y)`
+- `expect(await el.allTextContents()).toContain(x)` → `await expect(el).toContainText(x)`
 - `expect(locator).toBeTruthy()` → `await expect(locator).toBeVisible()`
 - `{ timeout: 0 }` on assertions → remove unless preceded by an explicit wait; add `// JUSTIFIED:` if intentional
 - `expect(page.url()).toContain(x)` → `await expect(page).toHaveURL(x)` (one-shot URL read with no retry)
@@ -198,11 +200,14 @@ page.getByRole('button'); // also bad — not even awaited
 // BAD — boolean computed but never checked; asserts nothing
 await el.isVisible();
 await el.isEnabled();
+await page.isVisible('[data-testid="foo"]'); // page-level shorthand with a selector arg — same discard
 ```
 
 **Rule:** Every locator expression and every boolean state call must either feed into `expect()`, be assigned and used later, or be chained with an action. Standalone expressions are always bugs.
 
 **Fix:** Replace with web-first assertion — `await expect(locator).toBeVisible()` / `toBeEnabled()` etc. These also auto-retry. Or delete the line if it's leftover debug code.
+
+**Detection note:** the scanner flags both the empty-parens form and the page-level selector-argument shorthand (`await page.isVisible('sel')`), with or without a trailing semicolon. The end-of-statement anchor means handled/chained forms are NOT flagged: `await el.isVisible().catch(() => false)` (covered by `#3` error-swallow), `&& ...`, ternaries, and assigned reads (`const v = await el.isVisible()`) all pass.
 
 #### 12. Missing Auth Setup `[LLM-only]`
 

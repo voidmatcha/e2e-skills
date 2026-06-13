@@ -415,7 +415,7 @@ run_check P1 '#6' 'Raw DOM query inside test code' 'document\.querySelector' '*.
 
 run_check P0 '#4a' 'Always-true numeric assertion' 'toBeGreaterThanOrEqual\(0\)' '*.{ts,js,tsx,jsx,cy.ts,cy.js}' e2e
 run_check P0 '#4b' 'Vacuous toBeAttached assertion (positive form only)' '(?<!not\.)toBeAttached\(\)' '*.{ts,js,tsx,jsx,cy.ts,cy.js}' e2e
-run_check P0 '#4c-4e' 'One-shot Playwright state/content assertion' 'expect\(await.*\.(isVisible|isDisabled|isEnabled|isChecked|isHidden|textContent|innerText|getAttribute|inputValue)\([^)]*\)\)' '*.{spec.ts,spec.js,test.ts,test.js}'
+run_check P0 '#4c-4e' 'One-shot Playwright state/content assertion' 'expect\(await.*\.(isVisible|isDisabled|isEnabled|isChecked|isHidden|textContent|innerText|getAttribute|inputValue|allTextContents)\([^)]*\)\)' '*.{spec.ts,spec.js,test.ts,test.js}'
 run_check P0 '#4f' 'Locator-as-truthy assertion' 'expect\(.*(locator|getBy[A-Za-z]+).*\.toBeTruthy\(\)' '*.{ts,js,tsx,jsx}' e2e
 run_check P0 '#4g' 'Retry disabled with timeout zero' 'timeout:\s*0' '*.{ts,js,tsx,jsx,cy.ts,cy.js}' e2e
 run_check P0 '#4h' 'One-shot page.url assertion' 'expect\(page\.url\(\)\)' '*.{spec.ts,spec.js,test.ts,test.js}'
@@ -423,7 +423,7 @@ run_check P0 '#4h' 'One-shot page.url assertion' 'expect\(page\.url\(\)\)' '*.{s
 run_check P0 '#5a' 'Conditional assertion bypass' 'if.*(isVisible|is\(.*:visible.*\))' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'
 run_check P1 '#5b' 'Forced actionability bypass' 'force:\s*true' '*.{ts,js,tsx,jsx,cy.ts,cy.js}' e2e
 run_check P0 '#8a' 'Dangling Playwright locator statement' '^\s*(await\s+)?page\.(locator|getBy[A-Za-z]+)\(([^()]|\([^()]*\))*\)\s*;?\s*$' '*.{spec.ts,spec.js,test.ts,test.js}' cont
-run_check P0 '#8b' 'Boolean state result discarded' '^\s*await .*\.(isVisible|isEnabled|isChecked|isDisabled|isEditable|isHidden)\(\)\s*;' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'
+run_check P0 '#8b' 'Boolean state result discarded' '^\s*await .*\.(isVisible|isEnabled|isChecked|isDisabled|isEditable|isHidden)\([^)]*\)\s*;?\s*(//.*)?$' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'
 run_check P1 '#10a' 'Positional selector' '\.(nth\(|first\(\)|last\(\))' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'
 run_check P1 '#10b' 'Serial Playwright suite' '\.describe\.serial\(' '*.{spec.ts,spec.js,test.ts,test.js}'
 run_check P1 '#14' 'Hardcoded credentials' '(login|fill|type).*(["'"'"'].*password|["'"'"'].*secret|["'"'"']admin["'"'"'])' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'

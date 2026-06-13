@@ -192,6 +192,22 @@
         "Structured output with P0/P1/P2",
         "Summary table included"
       ]
+    },
+    {
+      "id": 9,
+      "prompt": "Review the Playwright E2E tests in evals/files/widened-reads.spec.ts. Identify discarded boolean checks and one-shot reads, and do not over-flag handled or assigned reads.",
+      "expected_output": "Should detect: discarded page-level isVisible() with a selector argument (#8b P0) and one-shot allTextContents() assertion (#4c-4e P0). Should NOT flag as #8b: a .isVisible().catch(...) chain (boolean handled) or an assigned 'const present = await page.isVisible(...)' used in a following condition. The .catch line is separately and correctly flagged by #3 (error swallow), which is expected and out of focus here.",
+      "files": [
+        "evals/files/widened-reads.spec.ts"
+      ],
+      "assertions": [
+        "Detects discarded await page.isVisible('[data-testid=...]') with a selector argument on line 5 (#8b, P0) — widened from the empty-parens-only form",
+        "Detects one-shot expect(await page.locator('h2').allTextContents()).toContain('Home') on line 11 (#4c-4e, P0)",
+        "Does NOT flag const present = await page.isVisible('.banner') on line 16 as #8b — the boolean is assigned and used in the following if",
+        "Does NOT flag await page.locator('.err').isVisible().catch(() => false) on line 20 as #8b — the .catch handles the boolean (it is separately and correctly flagged by #3 error-swallow, which is out of focus for this fixture)",
+        "Structured output with P0/P1/P2",
+        "Summary table included"
+      ]
     }
   ]
 }

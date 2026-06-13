@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+- **`skills/e2e-reviewer/scripts/scan.sh` — widened Tier-3 detection for two existing P0 patterns (IDs and severity unchanged).** `#8b` (discarded boolean) now matches the selector-argument shorthand (`await page.isVisible('sel');`) and the no-semicolon form, with an end-of-statement anchor so handled reads like `await x.isVisible().catch(() => false)` and chained expressions are not flagged. `#4c-4e` (one-shot read) adds `allTextContents` to its method list, so `expect(await locator.allTextContents()).toContain(v)` is caught in the deterministic Tier-3 baseline. (`count` was intentionally NOT added to Tier-3: a bare regex `.count()` over-flags ORM/array idioms such as `expect(await prisma.user.count()).toBe(n)`; one-shot locator `count` detection stays with the Tier-2 ast-grep `sg-4ce-count` rule.) `references/grep-patterns.md` synced to match. New eval `id 9` (`evals/files/widened-reads.spec.ts`) adds true-positive assertions plus two false-positive guards (`.catch()` chain, assigned-and-used read). Out of scope by design: two-statement read-then-assert (`const t = await x.textContent(); expect(t)...`) and `new URL(page.url()).searchParams.get()` reads remain Phase 2 manual findings — unsafe for line-based Tier-3 regex.
+
 ## [1.5.0] - 2026-06-11
 
 Progressive-disclosure restructure of the flagship skill, a new failure category, and the PR-preflight harness that gates the upstream-contribution campaign.

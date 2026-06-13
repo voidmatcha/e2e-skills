@@ -20,6 +20,7 @@ Use these idiomatic fixes. Don't invent alternatives. **The replacements below a
 | `#4c-4e` `expect(await x.innerText()).toContain(v)` | `await expect(x).toContainText(v)` | Auto-retry |
 | `#4c-4e` `expect(await x.inputValue()).toBe(v)` | `await expect(x).toHaveValue(v)` | Verify subject is `<input>`/`<textarea>`/`<select>` |
 | `#4c-4e` / `#15` `expect(await x.count()).toBe(N)` | `await expect(x).toHaveCount(N)` | **Common pattern** — applies to bare locator OR chained (`x.locator(y).count()`, `x.nth(i).count()`). Auto-retry until count settles. |
+| `#4c-4e` `expect(await x.allTextContents()).toContain(v)` | `await expect(x).toContainText(v)` | `allTextContents()` returns `string[]`; on a multi-element locator `toContainText(v)` auto-retries and passes if any matched element contains `v`. For a single element prefer `toHaveText`. |
 | `#15` `expect(await x.all()).toHaveLength(N)` | `await expect(x).toHaveCount(N)` | Same as above; `.all()` form is just verbose |
 | `#4h` `expect(page.url()).toBe(x)` / `.toEqual(x)` | `await expect(page).toHaveURL(x)` | **NOT `expect.poll`** — `toHaveURL` is canonical |
 | `#4h` `expect(page.url()).not.toMatch(re)` | `await expect(page).not.toHaveURL(re)` | Auto-retry |
