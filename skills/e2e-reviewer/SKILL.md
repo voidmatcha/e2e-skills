@@ -4,7 +4,7 @@ description: 'Use for Playwright/Cypress E2E spec/POM static review, not runtime
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.5.1"
+  version: "1.5.2"
 ---
 
 # E2E Test Scenario Quality Review
