@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.5.5] - 2026-06-16
+
+### Added
+- **`playwright-test-generator/code-rules.md` — two harness patterns distilled from production E2E practice (no pattern ID or reviewer change).** `## Network Determinism` gains a "the mock layer is decided by where the call originates" rule: `page.route()` only intercepts browser-issued requests, so server-side traffic (Next.js SSR/RSC, route handlers, a BFF, `getServerSideProps`) silently bypasses it and hits the real backend — mock those at a server-side seam (an E2E-only env var that returns canned payloads) and detect the origin by whether the data appears in the initial SSR HTML. New `## Branch State Seeding` section: for multi-step funnels, seed the user to the branch's starting state through a test-only API instead of re-driving the shared prefix (consent → phone-auth → …) through the UI in every spec — faster, and one prefix change no longer breaks every downstream test; drive the prefix via UI only in the single spec that verifies it, and record seeding endpoints in the conventions doc (Step 5b).
+
 ## [1.5.4] - 2026-06-13
 
 ### Fixed

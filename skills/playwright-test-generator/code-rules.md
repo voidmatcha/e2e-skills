@@ -154,6 +154,8 @@ await page.route('**/api/request?**', route => {
 
 Fall-through (`route.continue()`) keeps reads real, but it means **a misspelled key silently leaks a write to the real backend** — list every write endpoint explicitly, and record that requirement in the project's conventions doc (Step 5b).
 
+**The mock layer is decided by where the call originates, not just the URL.** `page.route()` only intercepts requests the *browser* makes. Calls issued server-side — Next.js SSR/RSC, route handlers, a BFF, `getServerSideProps` — never pass through the browser, so a `page.route()` mock silently misses them and the test hits the real backend (the same root cause as the cookie note under Auth & Session). For server-originated traffic, mock at a server-side seam instead: an E2E-only env var that flips the server's fetch boundary to fixed responses (`process.env.E2E_MOCK` → return canned payloads), or the project's existing test double. Detect the origin before choosing: if the data appears in the initial SSR HTML (view-source), it's a server call and `page.route()` won't help.
+
 **Request-aware rules.** When the same endpoint must answer differently by method or parameters (tab filters, pagination pages, POST toggles), extend the helper with an ordered rule list instead of sprinkling conditional logic in specs:
 
 ```typescript
@@ -202,6 +204,15 @@ await expect(likeToggle).toHaveAttribute('aria-pressed', 'true');
 - Never hard-depend on a **manually captured** session file — a locally generated `auth/*.json` that a fresh clone or CI won't have, and that silently expires. Generated tests must be able to recreate their session from code.
 - Logged-out scenarios use a fresh context (no `storageState`) — don't "log out first" inside a test.
 - **Login-success flows: route mocks can't mint cookies.** Session cookies are usually issued server-side (the app server proxies the login call and sets cookies from the backend response); a browser-layer route mock returns the success body but no `Set-Cookie`, so the post-login SSR still sees an anonymous user. Hybrid pattern: mock the login POST for the form/UX behavior, seed the session cookies through the project's sanctioned test seam (test-auth endpoint, API login helper) right before submit, then assert the full redirect chain. Comment WHY in the spec — it reads like cheating until you know cookie issuance is server-side.
+
+---
+
+## Branch State Seeding
+
+- For multi-step funnels (onboarding, checkout, multi-page applications), do **not** drive the shared prefix (consent → phone-auth → …) through the UI in every spec. Each test re-running the common steps is slow, and one change to the prefix breaks every downstream test at once — the opposite of the independence Playwright recommends.
+- Instead, seed the user to the **branch's starting state** through a test-only API/endpoint, then exercise only the branch under test. This mirrors the `storageState` approach for auth, extended to application state.
+- Use real UI steps for the prefix **only** in the one spec that specifically verifies that prefix. Everywhere else, seed and skip ahead.
+- Record which seeding endpoints/fixtures exist in the project's conventions doc (Step 5b) so later runs reuse them instead of re-driving the funnel.
 
 ---
 
