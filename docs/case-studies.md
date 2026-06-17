@@ -19,3 +19,9 @@ These merged PRs show the patterns in this repository applied to real projects.
 - PR: [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801)
 - Fixed: always-passing assertions, unawaited checks, `toBeAttached()` misuse, and dead code.
 - Lesson: Static review can find tests that pass while proving nothing in large E2E suites.
+
+## code-server: skipped tests and non-asserting checks
+
+- PR: [coder/code-server#7845](https://github.com/coder/code-server/pull/7845)
+- Fixed: a committed `it.only` that silently skipped 8 Heart unit tests for 7 months (one had broken while disabled and was repaired with a microtask drain), 4× matcher-less `expect()`, a dangling `getByText()` locator, and 16× one-shot `page.isVisible()` reads converted to web-first assertions.
+- Lesson: A focused-test leak removes whole suites from CI without failing; the gap is invisible until something inside the skipped block regresses.

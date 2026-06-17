@@ -75,13 +75,14 @@ The `e2e-reviewer` skill adds what no lint can reach: semantic checks (name-asse
 
 ### Proven in Open Source
 
-Three real merged PRs, not synthetic examples:
+Four real merged PRs, not synthetic examples:
 
 | Repository | Merged PR | What it fixed |
 |------------|-----------|---------------|
 | Cal.com | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | False-passing Playwright assertions, no-op state checks, hard-coded waits → web-first assertions + condition waits |
 | Storybook | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Unawaited Playwright actions and discarded `isVisible()` calls that made E2E checks silently weak |
 | Element Web | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Always-passing assertions, unawaited checks, `toBeAttached()` misuse, debugging leftovers |
+| code-server | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | An `it.only` leak that silently skipped 8 Heart unit tests for 7 months (one had since broken), 4× matcher-less `expect()`, a dangling locator, and 16× one-shot `page.isVisible()` reads → web-first assertions |
 
 The skill was further iterated against 13 OSS Playwright/Cypress repos (1k+ stars) in a local testbed — zero GitHub side effects. The 4.4 cycle-count rule, 4.2 PR-culture cross-check, and Phase 2 retry-wrapper skip all came from observed agent behavior in those runs. See [`docs/case-studies.md`](docs/case-studies.md) for before/after lessons.
 
