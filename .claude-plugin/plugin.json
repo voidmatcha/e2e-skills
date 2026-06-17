@@ -1,6 +1,6 @@
 {
   "name": "e2e-skills",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "description": "AI agent testing toolkit to generate, review, and debug Playwright and Cypress E2E tests. Four agent skills: generate tests from scratch with live browser exploration, explicit user approval, and first-run scaffolding of project testing conventions (AGENTS.md E2E section + seed spec) for consistent AI generation across Claude Code, Codex, and Playwright Agents; review existing specs against 24 anti-patterns grouped by P0/P1/P2 severity — P0 must-fix (name-assertion mismatch, missing Then, error swallowing, Cypress uncaught:exception suppression, always-passing assertions, bypass patterns, focused test leak, missing assertions, missing auth setup, missing await on expect, missing await on action), P1 should-fix (raw DOM queries, hard-coded sleeps, flaky test patterns, inconsistent POM usage, hardcoded credentials, direct page action API, expect.soft overuse, module-level mutable state in test utilities, unmocked real-backend writes, optimistic UI without call proof), P2 nice-to-fix (YAGNI + zombie specs, manually-captured session-file dependency, fixture ignores render guards); debug failed Playwright tests from playwright-report/; debug failed Cypress tests from cypress/reports/. Built for E2E test automation, flaky test root-cause analysis, false-positive detection, and test smell scanning.",
   "license": "Apache-2.0",
   "author": {

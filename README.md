@@ -1,5 +1,13 @@
 # e2e-skills — Playwright and Cypress E2E Test Generation, Review, and Debugging
 
+[![Agent Skills: 4](https://img.shields.io/badge/Agent%20Skills-4-6E56CF)](https://github.com/voidmatcha/e2e-skills)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-compatible-D97757)](https://claude.com/product/claude-code)
+[![Codex](https://img.shields.io/badge/Codex-compatible-412991)](https://github.com/openai/codex)
+[![Frameworks: Playwright and Cypress](https://img.shields.io/badge/frameworks-Playwright%20%7C%20Cypress-2EAD33)](https://playwright.dev)
+[![License](https://img.shields.io/github/license/voidmatcha/e2e-skills)](./LICENSE)
+
+**Find Playwright and Cypress E2E tests that pass CI but prove nothing, generate new end-to-end coverage, and turn failing test reports into root-cause fixes — as Agent Skills for Claude Code, Codex, and other [`AGENTS.md`](https://agents.md) coding agents.**
+
 E2E tests that always pass are worse than no tests — they give false confidence while real bugs slip through. `e2e-skills` is an AI agent testing toolkit for Playwright and Cypress: generate end-to-end tests, review existing specs for false positives and test smells, debug flaky E2E failures, and turn noisy CI reports into root-cause fixes. It runs as an Agent Skills bundle for [Claude Code](https://claude.com/product/claude-code) and [Codex](https://github.com/openai/codex) (and other [`AGENTS.md`](https://agents.md)-compatible runtimes via the `skills` CLI) by [@voidmatcha](https://github.com/voidmatcha), catching what CI misses: **tests that pass but prove nothing**, and **failures that are hard to trace**.
 
 Four complementary skills cover the full E2E testing lifecycle, from Playwright test generation to Cypress test review and failure debugging:
@@ -13,26 +21,29 @@ Four complementary skills cover the full E2E testing lifecycle, from Playwright 
 
 - [Install](#install) · [Workflow](#workflow) · [Standalone scanner](#standalone-scanner) · [Proven in OSS](#proven-in-open-source)
 - Skills: [generator](#skill-1-playwright-test-generator--test-generation) · [reviewer](#skill-2-e2e-reviewer--quality-review) · [playwright-debugger](#skill-3-playwright-debugger--playwright-failure-debugger) · [cypress-debugger](#skill-4-cypress-debugger--cypress-failure-debugger)
-- [License](#license)
+- [FAQ](#faq) · [License](#license)
 
 ## Install
 
 ```bash
-# Recommended — install for Claude Code + Codex (most common)
+# Claude Code + Codex (most common)
 npx skills add voidmatcha/e2e-skills --skill '*' -g -a claude-code -a codex
 
-# Install everywhere — every agent the `skills` CLI supports
-npx skills add voidmatcha/e2e-skills --skill '*' -g --agent '*'
+# Codex plugin — via the skills CLI (Codex only)
+npx skills add voidmatcha/e2e-skills --skill '*' -g -a codex
 
-# Claude Code plugin marketplace
+# Claude Code plugin — marketplace
 /plugin marketplace add voidmatcha/e2e-skills
 /plugin install e2e-skills@voidmatcha
 
-# Manual clone (Claude Code)
+# Claude Code plugin — manual clone
 git clone https://github.com/voidmatcha/e2e-skills.git ~/.claude/skills/e2e-skills
+
+# Every agent the skills CLI supports (55+ hosts)
+npx skills add voidmatcha/e2e-skills --skill '*' -g --agent '*'
 ```
 
-Codex users: install via the `npx skills add` route above (`-a codex` drops the bundle into `~/.agents/skills/`, the cross-agent skills dir Codex auto-discovers).
+The Codex command above **is** the Codex plugin install: the `skills` CLI places the bundle in `~/.agents/skills/`, where Codex auto-discovers it and reads `.codex-plugin/plugin.json` (the `interface` block). There is no separate `codex plugin marketplace add` step — a native marketplace entry would require duplicating the shared `skills/` tree into a per-plugin subdirectory (Codex marketplace plugins cannot reference the repo root, [openai/codex#17066](https://github.com/openai/codex/issues/17066)), so the CLI route is the supported Codex path.
 
 ### Quick Example
 
@@ -84,7 +95,7 @@ Four real merged PRs, not synthetic examples:
 | Element Web | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Always-passing assertions, unawaited checks, `toBeAttached()` misuse, debugging leftovers |
 | code-server | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | An `it.only` leak that silently skipped 8 Heart unit tests for 7 months (one had since broken), 4× matcher-less `expect()`, a dangling locator, and 16× one-shot `page.isVisible()` reads → web-first assertions |
 
-The skill was further iterated against 13 OSS Playwright/Cypress repos (1k+ stars) in a local testbed — zero GitHub side effects. The 4.4 cycle-count rule, 4.2 PR-culture cross-check, and Phase 2 retry-wrapper skip all came from observed agent behavior in those runs. See [`docs/case-studies.md`](docs/case-studies.md) for before/after lessons.
+Beyond those merged PRs, the skill was iterated and validated against **100+ open-source Playwright and Cypress test suites** (many 1k+ stars) in a local testbed — zero GitHub side effects, no forks or PRs opened during research. Real findings from those scans drove concrete rule changes: the 4.4 cycle-count rule, the 4.2 PR-culture cross-check, the Phase 2 retry-wrapper skip, the legacy `cypress/integration/**/*.js` glob coverage, and the awaited-locator (`expect(await locator)`) variant of the missing-`await` check all came from observed agent behavior and real anti-patterns surfaced across those runs. See the [contribution roadmap](docs/roadmap.md) for merged, in-review, and queued PRs (with before/after lessons on the merged ones).
 
 ## Skill 1: `playwright-test-generator` — Test Generation
 
@@ -293,6 +304,40 @@ Cypress tests pass locally but fail in CI
 4. **Fix** — concrete code suggestion per failure, P0/P1/P2 priority
 
 ---
+
+## FAQ
+
+### What is e2e-skills?
+
+e2e-skills is an open-source AI agent testing toolkit for Playwright and Cypress. It bundles four Agent Skills that generate end-to-end tests, review existing specs for silent always-pass anti-patterns, and debug flaky failures — running inside Claude Code, Codex, and other `AGENTS.md`-compatible AI coding agents.
+
+### How do I find Playwright or Cypress tests that pass but don't actually test anything?
+
+Run the `e2e-reviewer` skill (or its standalone scanner, `scan.sh`) against your spec directory. It flags 24 anti-patterns grouped by severity (P0/P1/P2) — including missing `await` on assertions, one-shot `isVisible()` reads, matcher-less `expect()`, and committed `.only` leaks — that let a test stay green while the feature it covers is broken.
+
+### How is this different from eslint-plugin-playwright or eslint-plugin-cypress?
+
+The eslint plugins are your every-commit baseline for syntactic rules, and the scanner runs them first (Tier 1). `e2e-reviewer` adds what lint cannot reach: semantic checks (name-assertion mismatch, missing-Then, auth-setup analysis, zombie specs) plus fix guidance that avoids band-aids, layered on top with `ast-grep` and regex coverage.
+
+### Does it work with Cypress as well as Playwright?
+
+Yes. Both are first-class: test generation and the richest review target Playwright, while review and failure debugging fully cover Cypress (mochawesome and JUnit reports).
+
+### Can it debug flaky tests that only fail in CI?
+
+Yes. `playwright-debugger` and `cypress-debugger` read your report files (`playwright-report/`, `cypress/reports/`) and classify each failure into 15 root-cause categories — flaky timing, selector drift, test isolation, environment mismatch, hydration race, and more — with a concrete fix per failure.
+
+### How do I review AI-generated E2E tests?
+
+Point `e2e-reviewer` at the generated specs. AI-written tests frequently contain confident-looking but silent always-pass assertions; the reviewer surfaces them with before/after fixes before they reach your main branch.
+
+### Which AI coding agents are supported?
+
+Claude Code (plugin marketplace or the `skills` CLI), Codex, and any agent the `skills` CLI supports via `AGENTS.md` (55+ hosts). Install once, use everywhere.
+
+### Does it support test frameworks other than Playwright and Cypress?
+
+No — Playwright and Cypress only, by design. See [framework scope](docs/framework-scope.md) for the rationale.
 
 ## License
 

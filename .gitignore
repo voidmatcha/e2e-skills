@@ -7,6 +7,9 @@ __pycache__/
 docs/superpowers/
 testbed/
 results/
+# Scratch dirs that other local campaigns (e.g. ui-clone) drop relative to CWD
+/tmp/
+/$PWD/
 
 # Eval fixtures are committed: assertions cite exact file:line and must be reproducible
 # from a fresh clone. The scanner excludes **/evals/files/** in all three tiers, so the

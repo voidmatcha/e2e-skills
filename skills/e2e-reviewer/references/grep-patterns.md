@@ -16,7 +16,7 @@ When raw grep output is the only thing you have, always read 1–3 lines of surr
 | Check | Pattern | Glob | What it detects |
 |-------|---------|------|-----------------|
 | #3 Error Swallowing | `\.catch\(\s*(async\s*)?\(\)\s*=>` | `*.{ts,js,cy.*}` | `.catch(() => {})` in POM/spec silently hides failures |
-| #7 Focused Test Leak | `\.(only)\(` | `*.{spec.*,test.*,cy.*}` | `test.only` / `it.only` / `describe.only` — zero legitimate committed uses, always P0 |
+| #7 Focused Test Leak | `\.(only)\(` | `*.{spec.*,test.*,cy.*}` + `**/cypress/integration/**/*.{js,ts}` | `test.only` / `it.only` / `describe.only` — zero legitimate committed uses, always P0. Glob also covers the legacy `cypress/integration` layout (plain `.js`, no `.cy.`/`.spec.`/`.test.` suffix). |
 | #9 Hard-coded Sleeps | `waitForTimeout` | `*.{ts,js,cy.*}` | Explicit sleeps cause flakiness |
 | #9b Cypress Sleeps | `cy\.wait\(\d` | `*.{cy.*}` | Cypress numeric waits |
 | #6 Raw DOM Queries | `document\.querySelector` | `*.{ts,js,cy.*}` | Bypasses framework auto-wait (covers `evaluate()` and `waitForFunction()`). Search POM files too. |
@@ -57,7 +57,7 @@ When raw grep output is the only thing you have, always read 1–3 lines of surr
 
 | Check | Pattern | Glob | What it detects |
 |-------|---------|------|-----------------|
-| #15 Missing await on expect | `^\s*expect\(` excluding `expect(await ...)` (one-shot reads belong to #4c-4e) | `*.{spec.*,test.*}` | `[Playwright]` — `expect(locator).toBeVisible()` without `await` silently resolves to a Promise that is never checked. Always P0. |
+| #15 Missing await on expect | `^\s*expect\(` excluding `expect(await ...)`, **plus** the awaited-locator form `expect(await <locator>).<web-first matcher>(` (value-resolving one-shot reads like `expect(await x.isVisible())` still belong to #4c-4e) | `*.{spec.*,test.*}` | `[Playwright]` — `expect(locator).toBeVisible()` without `await`, or `expect(await locator).toBeVisible()` (await on the locator is a no-op), silently resolves to a Promise that is never checked. Always P0. |
 | #16 Missing await on action | `^\s*page\.(locator\|getBy\w+)\(.*\)\.(click\|fill\|type\|press\|check\|uncheck\|selectOption\|setInputFiles\|hover\|focus\|blur)\(` | `*.{spec.*,test.*}` | `[Playwright]` — Action without `await` creates an unresolved Promise. Always P0. Confirm in Phase 2 that the hit line lacks a leading `await`. |
 | #17 Direct page action API | `page\.(click\|fill\|type\|check\|uncheck\|selectOption)\(["'\`]` | `*.{spec.*,test.*}` | `[Playwright]` — prefer locator-based `page.locator(selector).click()` / `.fill()` for composition and clearer failures. P1. |
 | #9c Networkidle | `waitForLoadState('networkidle')` / `waitUntil: 'networkidle'` (API shapes only, e2e-scoped) | `*.{ts,js}` | Playwright docs warn against `networkidle` — unreliable on modern SPAs. P1. |

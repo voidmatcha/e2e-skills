@@ -290,12 +290,21 @@ run_check() {
   fi
 
   local raw_output
-  # NOTE: ripgrep gives precedence to later globs — the include glob MUST come first
+  # Include globs: a `;`-separated list in $glob becomes multiple --glob includes (rg unions
+  # them). This lets one check cover both a basename suffix (e.g. *.cy.js) and a path-based
+  # location (e.g. cypress/integration/**/*.js — the legacy Cypress layout that has no
+  # .cy./.spec./.test. suffix and was previously invisible to the scanner).
+  local -a include_globs=()
+  local _g _ifs_save="$IFS"
+  IFS=';'
+  for _g in $glob; do include_globs+=(--glob "$_g"); done
+  IFS="$_ifs_save"
+  # NOTE: ripgrep gives precedence to later globs — the include glob(s) MUST come first
   # so the negations below always win (a basename include declared last would re-include
   # files inside excluded dirs; this previously let vendored dist/ hits through on repos
   # that don't gitignore their build output).
   raw_output=$(rg -nP --color never --hidden \
-    --glob "$glob" \
+    "${include_globs[@]}" \
     --glob '!node_modules/**' \
     --glob '!.git/**' \
     --glob '!playwright-report/**' \
@@ -409,10 +418,15 @@ run_check() {
   fi
 }
 
-run_check P0 '#3' 'Error swallowing via empty catch (test scope)' '\.catch\(\s*(async\s*)?\(\)\s*=>' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}' e2e
-run_check P0 '#7' 'Focused test committed' '\.(only)\(' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'
+# Legacy Cypress layout: cypress/integration/**/*.js (and .ts) has no .cy./.spec./.test. suffix,
+# so suffix-only globs miss it. Appended (via the `;` multi-glob support) to Cypress-intended
+# checks below so committed .only, error swallowing, etc. are caught in that classic layout too.
+CYI='**/cypress/integration/**/*.{js,ts}'
+
+run_check P0 '#3' 'Error swallowing via empty catch (test scope)' '\.catch\(\s*(async\s*)?\(\)\s*=>' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'";$CYI" e2e
+run_check P0 '#7' 'Focused test committed' '\.(only)\(' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'";$CYI"
 run_check P1 '#9' 'Playwright hard-coded sleep' 'waitForTimeout' '*.{ts,js,tsx,jsx}' e2e
-run_check P1 '#9b' 'Cypress hard-coded sleep' 'cy\.wait\(\d' '*.{cy.ts,cy.js}'
+run_check P1 '#9b' 'Cypress hard-coded sleep' 'cy\.wait\(\d' '*.{cy.ts,cy.js}'";$CYI"
 run_check P1 '#6' 'Raw DOM query inside test code' 'document\.querySelector' '*.{ts,js,tsx,jsx,cy.ts,cy.js}' e2e
 
 run_check P0 '#4a' 'Always-true numeric assertion' 'toBeGreaterThanOrEqual\(0\)' '*.{ts,js,tsx,jsx,cy.ts,cy.js}' e2e
@@ -422,14 +436,20 @@ run_check P0 '#4f' 'Locator-as-truthy assertion' 'expect\(.*(locator|getBy[A-Za-
 run_check P0 '#4g' 'Retry disabled with timeout zero' 'timeout:\s*0' '*.{ts,js,tsx,jsx,cy.ts,cy.js}' e2e
 run_check P0 '#4h' 'One-shot page.url assertion' 'expect\(page\.url\(\)\)' '*.{spec.ts,spec.js,test.ts,test.js}'
 
-run_check P0 '#5a' 'Conditional assertion bypass' 'if.*(isVisible\(|is\(.*:visible.*\))' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'
+run_check P0 '#5a' 'Conditional assertion bypass' 'if.*(isVisible\(|is\(.*:visible.*\))' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'";$CYI"
 run_check P1 '#5b' 'Forced actionability bypass' 'force:\s*true' '*.{ts,js,tsx,jsx,cy.ts,cy.js}' e2e
 run_check P0 '#8a' 'Dangling Playwright locator statement' '^\s*(await\s+)?page\.(locator|getBy[A-Za-z]+)\(([^()]|\([^()]*\))*\)\s*;?\s*(//.*)?$' '*.{spec.ts,spec.js,test.ts,test.js}' cont
-run_check P0 '#8b' 'Boolean state result discarded' '^\s*await .*\.(isVisible|isEnabled|isChecked|isDisabled|isEditable|isHidden)\([^)]*\)\s*;?\s*(//.*)?$' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'
-run_check P1 '#10a' 'Positional selector' '\.(nth\(|first\(\)|last\(\))' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'
+run_check P0 '#8b' 'Boolean state result discarded' '^\s*await .*\.(isVisible|isEnabled|isChecked|isDisabled|isEditable|isHidden)\([^)]*\)\s*;?\s*(//.*)?$' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'";$CYI"
+run_check P1 '#10a' 'Positional selector' '\.(nth\(|first\(\)|last\(\))' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'";$CYI"
 run_check P1 '#10b' 'Serial Playwright suite' '\.describe\.serial\(' '*.{spec.ts,spec.js,test.ts,test.js}'
-run_check P1 '#14' 'Hardcoded credentials' '(login|fill|type).*(["'"'"'].*password|["'"'"'].*secret|["'"'"']admin["'"'"'])' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'
+run_check P1 '#14' 'Hardcoded credentials' '(login|fill|type).*(["'"'"'].*password|["'"'"'].*secret|["'"'"']admin["'"'"'])' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'";$CYI"
 run_check P0 '#15' 'Missing await on Playwright expect' '^\s*expect\(\s*+(?!await\b).*(locator|getBy[A-Z][A-Za-z]*|(?<![.\w])page\))' '*.{spec.ts,spec.js,test.ts,test.js}' e2e
+# #15 variant: the await is misplaced INSIDE expect() onto the locator (a no-op, since a Locator
+# is not thenable) instead of on expect itself, so the web-first matcher promise still floats and
+# the assertion never settles. The base #15 above skips `expect(await ...` by design, so this
+# catches the awaited-locator form. Bounded to web-first matchers so value-resolving reads like
+# `expect(await x.isVisible()).toBe(true)` (that is #4c-4e) are not double-flagged.
+run_check P0 '#15' 'Missing await on Playwright expect (awaited locator)' '^\s*expect\(\s*await\b.*\)\.(toBeVisible|toBeHidden|toHaveText|toContainText|toHaveValue|toHaveValues|toHaveClass|toHaveAttribute|toBeChecked|toBeEnabled|toBeDisabled|toBeEditable|toBeFocused|toBeEmpty|toHaveCount|toHaveCSS|toHaveId|toHaveJSProperty|toHaveScreenshot|toHaveURL|toHaveTitle)\(' '*.{spec.ts,spec.js,test.ts,test.js}' e2e
 run_check P0 '#16' 'Missing await on Playwright action' '^\s*page\.(locator|getBy\w+)\(.*\)\.(click|fill|type|press|check|uncheck|selectOption|setInputFiles|hover|focus|blur)\(' '*.{spec.ts,spec.js,test.ts,test.js}'
 run_check P1 '#17' 'Direct page action API' 'page\.(click|fill|type|check|uncheck|selectOption)\(["'"'"'`]' '*.{spec.ts,spec.js,test.ts,test.js}'
 run_check P1 '#9c' 'Network-idle readiness check' '(waitForLoadState\(\s*[\x27\"]networkidle[\x27\"]|waitUntil:\s*[\x27\"]networkidle[\x27\"])' '*.{ts,js,tsx,jsx}' e2e

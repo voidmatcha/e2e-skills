@@ -146,8 +146,8 @@ restore "$file"
 # Case 7: docs orphan — strip README reference so a docs file is no longer linked
 file="README.md"
 backup "$file"
-mutate "$file" "See [\`docs/case-studies.md\`](docs/case-studies.md) for before/after lessons." ""
-assert_fails "Check 7 — docs orphan detection" "docs/case-studies.md: orphan"
+mutate "$file" "See the [contribution roadmap](docs/roadmap.md) for merged, in-review, and queued PRs (with before/after lessons on the merged ones)." ""
+assert_fails "Check 7 — docs orphan detection" "docs/roadmap.md: orphan"
 restore "$file"
 
 # Case 8: manifest version drift — bump .codex-plugin/plugin.json out of sync with the others

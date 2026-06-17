@@ -225,13 +225,17 @@ await page.isVisible('[data-testid="foo"]'); // page-level shorthand with a sele
 // BAD — Promise returned but never awaited; test always passes
 expect(page.locator('.toast')).toBeVisible();
 
+// BAD — await is on the locator (a no-op; a Locator is not thenable), not on expect;
+//       the web-first matcher promise still floats and never settles
+expect(await page.getByTestId('toast')).toBeVisible();
+
 // GOOD
 await expect(page.locator('.toast')).toBeVisible();
 ```
 
 **Why it matters:** This is a silent P0. The test compiles and runs green, but zero verification happens. Extremely common mistake, especially when converting from non-async test frameworks.
 
-**Rule:** Every `expect()` on a Playwright Locator must be `await`ed. Grep flags lines starting with `expect(` — confirm in Phase 2 that the line lacks `await` and involves a Locator (non-Locator expects like `expect(count).toBe(3)` don't need `await`). Flag P0.
+**Rule:** Every `expect()` on a Playwright Locator must be `await`ed. Grep flags two forms: lines starting with `expect(` without `await`, and the awaited-locator form `expect(await <locator>).<web-first matcher>(` where the `await` sits on the locator instead of on `expect`. Confirm in Phase 2 that the subject is a Locator (non-Locator expects like `expect(count).toBe(3)` don't need `await`, and value-resolving one-shot reads like `expect(await x.isVisible()).toBe(true)` are #4c-4e, not this). Flag P0.
 
 #### 16. Missing `await` on Playwright Actions `[grep-detectable]`
 

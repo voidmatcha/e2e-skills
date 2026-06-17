@@ -226,6 +226,39 @@
         "Structured output with P0/P1/P2",
         "Summary table included"
       ]
+    },
+    {
+      "id": 11,
+      "prompt": "Review the legacy Cypress spec in evals/files/cypress/integration/legacy-awesome-bar.js. This file uses the classic cypress/integration layout with a plain .js name (no .cy./.spec./.test. suffix). Flag any committed focused test.",
+      "expected_output": "Should detect the committed it.only on the 'supports number formats' test (#7 P0), which silently skips the two sibling tests on every CI run. Detection must work even though the file has no .cy./.spec./.test. suffix because it lives under cypress/integration/.",
+      "files": [
+        "evals/files/cypress/integration/legacy-awesome-bar.js"
+      ],
+      "assertions": [
+        "Detects it.only on the 'supports number formats' test (#7, P0)",
+        "Notes that the it.only skips the two sibling it() tests in the same file on every CI run",
+        "Detection is not missed despite the legacy cypress/integration/*.js naming (no .cy./.spec./.test. suffix)",
+        "Structured output with P0/P1/P2",
+        "Summary table included"
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "Review the Playwright E2E tests in evals/files/misplaced-await.spec.ts. Flag the awaited-locator variant of the missing-await anti-pattern and do not over-flag valid awaited expects or value-resolving one-shot reads.",
+      "expected_output": "Should detect the two awaited-locator assertions where await is misplaced inside expect() onto the locator instead of on expect (#15 P0), so the web-first matcher promise floats. Should NOT flag the valid 'await expect(locator).toMatcher()' lines. Should classify the value-resolving 'expect(await locator.isVisible()).toBe(true)' as #4c-4e (one-shot read), not the #15 awaited-locator variant, and must not flag the numeric count() read at all.",
+      "files": [
+        "evals/files/misplaced-await.spec.ts"
+      ],
+      "assertions": [
+        "Detects expect(await page.getByTestId('run-dialog')).toBeVisible() on line 9 as #15 (P0) — await on the locator is a no-op, matcher promise unawaited",
+        "Detects expect(await page.getByText('Saved')).toHaveText('Saved') on line 10 as #15 (P0)",
+        "Does NOT flag await expect(page.getByTestId('run-dialog')).toBeVisible() (line 17) as #15 — await is correctly on expect",
+        "Does NOT flag await expect(page.getByText('Saved')).toHaveText('Saved') (line 18) as #15",
+        "Classifies expect(await page.locator('.row').isVisible()).toBe(true) (line 24) as #4c-4e one-shot read, not the #15 awaited-locator variant",
+        "Does NOT flag expect(await page.locator('.row').count()).toBeGreaterThan(0) (line 26) — non-web-first matcher on a value-resolving read",
+        "Structured output with P0/P1/P2",
+        "Summary table included"
+      ]
     }
   ]
 }

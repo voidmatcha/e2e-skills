@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.5.6] - 2026-06-17
+
+### Docs
+- **README improved for OSS conventions and SEO/GEO discoverability.** Added a status-badge row, a one-line value proposition, and an eight-question FAQ (definitional, answer-shaped entries that AI search engines and LLMs can cite). Updated the "Proven in Open Source" section to reflect validation against 100+ open-source Playwright and Cypress test suites in the local testbed (zero GitHub side effects), and the rule changes those scans drove.
+- **Added `docs/roadmap.md` (contribution roadmap) and removed `docs/case-studies.md`.** The roadmap folds in the merged-PR lessons and adds the live contribution plan: merged, in review, 21 prepared candidates, and 29 backlog candidates (50 total), plus the cadence (about 10 PRs open at a time, replenished as each merges) and the goal of at least 25 merged PRs as real-world validation. README and the drift smoke test (`test-parity.sh` Case 7 orphan check) repointed from case-studies to roadmap.
+
+### Changed
+- **`e2e-reviewer` scanner — two detection-coverage fixes surfaced during an upstream-PR campaign (no pattern ID or severity change).** (1) **Legacy Cypress layout** `cypress/integration/**/*.js` (plain `.js`, no `.cy.`/`.spec.`/`.test.` suffix) was invisible to the suffix-globbed checks, so a committed `it.only` and other smells in that classic layout were silently missed. `run_check` now supports a `;`-separated multi-glob include, and the Cypress-intended checks (#3, #7, #9b, #5a, #8b, #10a, #14) additionally scan `**/cypress/integration/**/*.{js,ts}`. (2) **Misplaced-await variant of #15**: `expect(await locator).toBeVisible()` placed the `await` on the locator (a no-op, since a Locator is not thenable) instead of on `expect`, so the web-first matcher promise still floated and the base #15 check skipped it by design. A second #15 detection now catches the awaited-locator form, bounded to web-first matchers so value-resolving one-shot reads (`expect(await x.isVisible()).toBe(true)`, which is #4c-4e) are not double-flagged. New evals: id 11 (legacy `cypress/integration` `it.only` true positive) and id 12 (awaited-locator true positives plus valid-`await expect` and `#4c-4e` false-positive guards).
+
 ## [1.5.5] - 2026-06-16
 
 ### Added
