@@ -86,7 +86,7 @@ The `e2e-reviewer` skill adds what no lint can reach: semantic checks (name-asse
 
 ### Proven in Open Source
 
-Four real merged PRs, not synthetic examples:
+Six real merged PRs, not synthetic examples:
 
 | Repository | Merged PR | What it fixed |
 |------------|-----------|---------------|
@@ -94,6 +94,8 @@ Four real merged PRs, not synthetic examples:
 | Storybook | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Unawaited Playwright actions and discarded `isVisible()` calls that made E2E checks silently weak |
 | Element Web | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Always-passing assertions, unawaited checks, `toBeAttached()` misuse, debugging leftovers |
 | code-server | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | An `it.only` leak that silently skipped 8 Heart unit tests for 7 months (one had since broken), 4× matcher-less `expect()`, a dangling locator, and 16× one-shot `page.isVisible()` reads → web-first assertions |
+| Ghost | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | `expect(likeButton.isDisabled()).toBeTruthy()` ×3 — an un-awaited `isDisabled()` Promise is always truthy, so the comments-ui like-button debounce guards passed unconditionally → web-first `toBeDisabled()`/`not.toBeDisabled()` |
+| SvelteKit | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Unawaited `expect(page)` web-first assertions in the basics client tests — floating promises that never asserted → awaited |
 
 Beyond those merged PRs, the skill was iterated and validated against **100+ open-source Playwright and Cypress test suites** (many 1k+ stars) in a local testbed — zero GitHub side effects, no forks or PRs opened during research. Real findings from those scans drove concrete rule changes: the 4.4 cycle-count rule, the 4.2 PR-culture cross-check, the Phase 2 retry-wrapper skip, the legacy `cypress/integration/**/*.js` glob coverage, and the awaited-locator (`expect(await locator)`) variant of the missing-`await` check all came from observed agent behavior and real anti-patterns surfaced across those runs. See the [contribution roadmap](docs/roadmap.md) for merged, in-review, and queued PRs (with before/after lessons on the merged ones).
 
