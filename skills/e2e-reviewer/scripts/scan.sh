@@ -303,7 +303,7 @@ run_check() {
   # so the negations below always win (a basename include declared last would re-include
   # files inside excluded dirs; this previously let vendored dist/ hits through on repos
   # that don't gitignore their build output).
-  raw_output=$(rg -nP --color never --hidden \
+  raw_output=$(rg -nP -H --color never --hidden \
     "${include_globs[@]}" \
     --glob '!node_modules/**' \
     --glob '!.git/**' \
@@ -461,7 +461,7 @@ run_check P1 '#18' 'Soft assertion usage' 'expect\.soft\(' '*.{spec.ts,spec.js,t
 run_check P0 '#3b' 'Cypress uncaught exception suppression (Phase 2 confirms blanket vs scoped)' "on\(\s*['\"]uncaught:exception['\"]" '*.{cy.ts,cy.js,ts,js}'
 run_check P1 '#19' 'Module-level mutable state in test code' '^let\s+' '*.{ts,js,tsx,jsx,cy.ts,cy.js}' e2e
 
-printf '\nSummary: %s total hit(s), %s P0, %s P1/P2 heuristic.\n' "$total_hits" "$p0_hits" "$p1_hits"
+printf '\nSummary: %s total hit(s), %s P0, %s P1/P2 heuristic; %s AST hit(s).\n' "$total_hits" "$p0_hits" "$p1_hits" "${ast_total:-0}"
 
 case "$FAIL_ON" in
   none)

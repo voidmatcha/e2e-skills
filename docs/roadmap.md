@@ -32,6 +32,7 @@ These merged PRs show the patterns in this repository applied to real projects.
 | code-server | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | An `it.only` that silently skipped 8 unit tests for 7 months (one had broken), 4x matcher-less `expect()`, a dangling locator, 16x one-shot `isVisible()` reads | A focused-test leak removes whole suites from CI without ever failing; the gap is invisible until something inside the skipped block regresses. |
 | Ghost | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | `expect(likeButton.isDisabled()).toBeTruthy()` x3 plus a one-shot re-enable read in the comments-ui like-button suite | An un-awaited `isDisabled()` returns a Promise that is always truthy, so the debounce-guard tests passed no matter what the button did. |
 | SvelteKit | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Unawaited `expect(page)` web-first assertions in the basics client E2E tests | A floating web-first assertion never runs; the missing `await` is the whole bug, and adding it is what makes the check assert. |
+| Strapi | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | Discarded `isVisible()`/`isHidden()`/`isEnabled()` reads that were the sole assertion of each visibility test, plus one-shot reads and unawaited clicks | A discarded boolean read asserts nothing, so the test's whole visibility contract passed unconditionally. |
 
 ## In review
 
@@ -40,9 +41,9 @@ These merged PRs show the patterns in this repository applied to real projects.
 | expo | [expo/expo#46699](https://github.com/expo/expo/pull/46699) | Unawaited web-first assertions in router E2E |
 | Qwik | [QwikDev/qwik#8727](https://github.com/QwikDev/qwik/pull/8727) | Discarded assertion promises, `toBeDefined()` on locators, bare locators |
 | TanStack Router | [TanStack/router#7616](https://github.com/TanStack/router/pull/7616) | `expect(locator).toBeTruthy()` (always true), masked expected-value typo |
-| Strapi | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | One-shot reads, missing `await`, discarded `isVisible/isHidden/isEnabled`, unawaited clicks |
 | supabase | [supabase/supabase#47053](https://github.com/supabase/supabase/pull/47053) | Grid-cell `textContent()` to web-first `toHaveText` |
 | module-federation/core | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Redundant blanket `uncaught:exception` suppression removed from the memory-router cypress spec |
+| bruno | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | Missing `await` on the sole web-first visibility assertion (silent always-pass, #15) |
 
 ## Queued
 
@@ -58,14 +59,15 @@ before any submission.
 | mui/mui-x | Playwright | `expect(getByText(...)).not.to.equal(null)` is always true (a Locator is never null) and is the sole check of the dateTime-cell edit; a silently broken edit ships green. Runs in CircleCI. |
 | RocketChat/Rocket.Chat | Playwright | Five bare matcher-less `expect(locator)` lines disable every assertion in three CI-gated admin import tests; an import regression passes green. |
 | lightdash | Cypress | A committed `it.only` silently skips nine authorization tests in CI; removing it restores coverage. Prepared. (issue-first + Slack claim) |
-| frappe/frappe | Cypress | A committed `it.only` (a real maintainer mistake) has silently skipped five sibling awesome-bar tests on every PR since 2026-06-03. Same family as the merged code-server fix. |
+| elastic/kibana | Cypress | A committed `context.only` (a [WIP] focus-leftover merged ~19 months ago) silently skips five sibling alert-workflow tests (open / acknowledge / close) on every security CI run; removing it restores coverage. (Elastic CLA) |
 | carbon-design-system/carbon | Playwright | Two ProgressIndicator tests whose only assertion is `expect(page.locator(...)).toBeTruthy()` — always true on a Locator, so the CSS-class check never runs. |
 | redwoodjs/redwood | Playwright | `expect(locator).toBeTruthy()` is the only check of the requireAuth error UI; it always passes, so a broken auth-error screen ships green. |
+| rancher-sandbox/rancher-desktop | Playwright | `expect(getByText('alpha'/'beta'/'gamma')).not.toBeNull()` is always true (a Locator is never null) and is the sole content check of the "should list integrations" test; a dropped or renamed integration ships green. Runs on the Windows CI runner. (DCO) |
 | hcengineering/platform | Playwright | Seven bare matcher-less `expect(...)` in recruiting/inbox are terminal no-ops; the modal-closed and calendar checks silently always pass. |
 | xyflow | Cypress | `addEdge` never throws, so the lone assertion in graph-utils.cy.ts never executes and the test cannot fail. |
 | ag-grid/ag-grid | Playwright | A misplaced `await` leaves `toHaveCount` floating (never asserts); one site is broken-but-green today. Prepared. (CLA) |
-| usebruno/bruno | Playwright | A missing `await` leaves the sole connection-visibility assertion floating — silently always passes. Friendly maintainers, no CLA. |
 | walkframe/gridsheet | Playwright | A one-shot `textContent()` is the sole, non-retrying check fired right after an async store dispatch; a wrong cell value races and can ship green. |
+| grafana/oncall | Playwright | Two floating `expect(incidentTimelineList).toContainText(...)` / `.not.toContainText(...)` are the headline "routed but not escalated" assertions of the active `debug mode` CI test; floating means they never run, so a routing or escalation regression ships green. (Grafana CLA) |
 | direktiv/direktiv | Playwright | Unawaited negative visibility assertions in live CI tests (run.spec.ts); the cancel-closes-dialog check passes unconditionally. (scope to run.spec.ts) |
 | plasmicapp/plasmic | Playwright | A one-shot `page.url()` is the sole check while the arena path is pushed in a later await; it races a correct app and can ship green. |
 | Kong/kong-manager | Playwright | The negative "invalid expression" test's only check is a discarded `isVisible()` on the form error; an invalid route silently accepted passes green. (scope to the form-error line) |

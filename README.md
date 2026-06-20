@@ -84,9 +84,19 @@ Three tiers run in priority order: (1) `eslint-plugin-playwright` / `eslint-plug
 
 The `e2e-reviewer` skill adds what no lint can reach: semantic checks (name-assertion mismatch, missing Then, YAGNI/zombie specs, POM consistency, auth setup analysis) and fix guidance with band-aid awareness. Run [`eslint-plugin-playwright`](https://github.com/playwright-community/eslint-plugin-playwright) / [`eslint-plugin-cypress`](https://github.com/cypress-io/eslint-plugin-cypress) as your every-commit baseline; invoke the skill for PR review, suspected silent-pass bugs, or before bulk fixes.
 
+### Scanner findings are candidates, not verdicts
+
+Static detection (lint, ast-grep, regex) can only flag *candidates*. It cannot tell a real silent-always-pass from a harmless one, and it both over- and under-reports:
+
+- **False positives** — an `expect()` inside an awaited `Promise.all([...])` (the assertion *is* awaited), or a smell inside a `test.fixme`/`describe.skip` block that never runs, both look like bugs to a grep but ship nothing.
+- **Blind spots** — `expect(page.getByRole('alert')).toBeTruthy()` asserts an always-truthy Locator object (the DOM is never queried), yet no off-the-shelf lint rule flags a bare locator-as-truthy.
+- **Beyond any lint** — a test that wraps `addEdge()` in `try/catch` and asserts only inside the `catch` passes forever, because `addEdge` never throws (it calls `onError` and returns the list unchanged), so the `catch` body never runs. No grep or AST rule can know a function doesn't throw — only reading the code does. (Real case: xyflow `graph-utils.cy.ts`.)
+
+That gap is the whole point of the judgment layer. `e2e-reviewer` **verifies each finding** — reading the surrounding code, the CI config, and the test's intent to decide whether a real bug actually ships green and whether retries could mask it — instead of dumping raw hits. Scanner-positive is not the same as merge-worthy: every one of the [merged PRs below](#proven-in-open-source) survived that verification, and several flagged-but-backstopped candidates were correctly *rejected* before they ever became a PR. Detection is cheap and commoditised; the verification and the fix are where the value is.
+
 ### Proven in Open Source
 
-Six real merged PRs, not synthetic examples:
+Seven real merged PRs, not synthetic examples:
 
 | Repository | Merged PR | What it fixed |
 |------------|-----------|---------------|
@@ -96,6 +106,7 @@ Six real merged PRs, not synthetic examples:
 | code-server | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | An `it.only` leak that silently skipped 8 Heart unit tests for 7 months (one had since broken), 4× matcher-less `expect()`, a dangling locator, and 16× one-shot `page.isVisible()` reads → web-first assertions |
 | Ghost | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | `expect(likeButton.isDisabled()).toBeTruthy()` ×3 — an un-awaited `isDisabled()` Promise is always truthy, so the comments-ui like-button debounce guards passed unconditionally → web-first `toBeDisabled()`/`not.toBeDisabled()` |
 | SvelteKit | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Unawaited `expect(page)` web-first assertions in the basics client tests — floating promises that never asserted → awaited |
+| Strapi | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | Discarded `isVisible()`/`isHidden()` reads that were the sole assertion of each visibility test → web-first `toBeVisible()`/`toBeHidden()` |
 
 Beyond those merged PRs, the skill was iterated and validated against **100+ open-source Playwright and Cypress test suites** (many 1k+ stars) in a local testbed — zero GitHub side effects, no forks or PRs opened during research. Real findings from those scans drove concrete rule changes: the 4.4 cycle-count rule, the 4.2 PR-culture cross-check, the Phase 2 retry-wrapper skip, the legacy `cypress/integration/**/*.js` glob coverage, and the awaited-locator (`expect(await locator)`) variant of the missing-`await` check all came from observed agent behavior and real anti-patterns surfaced across those runs. See the [contribution roadmap](docs/roadmap.md) for merged, in-review, and queued PRs (with before/after lessons on the merged ones).
 

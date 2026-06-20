@@ -178,6 +178,7 @@ The highest-leverage artifact for consistent AI-generated tests is not any singl
 1. Generate a project-adapted E2E conventions section from `conventions-template.md` in this directory. Target: the project's root `AGENTS.md` (read by Codex and most agent CLIs), plus a one-line `CLAUDE.md` pointer if the project uses Claude Code. Append to existing files; create only when absent.
 2. Designate the best generated spec as the seed: reference it by path in the conventions doc ("copy the shape of `<path>`"). A seed spec demonstrating the project's real auth, locator, and mocking patterns teaches future agents more than any prose.
 3. Fill the template's project-reality fields from what Step 3 actually observed (label-less inputs, API proxy shape, auth mechanism, protected areas) — not from generic best practices. A conventions doc that parrots generic advice instead of project reality is worse than none, because agents will trust it.
+4. Propose lint hardening from `recommended-lint.md` in this directory. If the project has no E2E lint config, offer to scaffold the recommended Playwright/Cypress preset plus `forbidOnly: !!process.env.CI`; if a config already exists, surface only the missing rules as a diff to opt into. Never overwrite an existing config. These rules prevent the commodity P0/P1 smells (missing `await`, one-shot reads, committed `.only`, matcher-less `expect`) at author time. State plainly that lint is the guardrail and `e2e-reviewer` still covers the silent-always-pass families no rule can express (#4f locator-as-truthy, #3/#3b error swallowing).
 
 ---
 
@@ -251,5 +252,7 @@ Tests: N passed
 
 - Playwright best practices: see `best-practices.md` in this directory
 - Code generation rules: see `code-rules.md` in this directory
+- Recommended lint hardening (propose by default): see `recommended-lint.md` in this directory
+- Contributing a generated or fixed spec to a third-party repo? Re-read that repo's `CONTRIBUTING.md` and PR/issue templates IN FULL first, and honor each gate before opening a PR: issue-first policy and any required PR-issue link, CLA/DCO, commit-message style and signing, target branch, and any AI-disclosure or AI-PR policy. A finding from a scanner is a candidate, not a verdict — verify it is a real silent-pass before submitting.
 - Conventions & seed template (Step 5b): see `conventions-template.md` in this directory
 - Playwright Agents interop (Playwright ≥ 1.56 planner/generator/healer): see `playwright-agents.md` in this directory
