@@ -10,6 +10,7 @@
         "Classifies '#submit-btn' failure as F2 (Selector Broken)",
         "Classifies dialog timeout as F1 (Flaky/Timing)",
         "Identifies checkout.spec.ts:18 as location for selector failure",
+        "Reports the failing call site from errorLocation (line 18), not the test registration line (line 12)",
         "Identifies dialog.spec.ts:15 as location for timeout failure",
         "Notes duration near 30000ms as timeout signal for F1",
         "Suggests fix for F2: update selector or verify element exists in DOM",

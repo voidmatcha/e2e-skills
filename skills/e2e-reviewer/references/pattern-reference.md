@@ -59,6 +59,17 @@ test('should cancel edit on Escape', async ({ page }) => {
 
 **Common patterns:** Cancel/Escape without verifying input is hidden, delete without verifying count decreased, submit without verifying form resets, tab switch without verifying previous tab content is hidden.
 
+**Do NOT flag (Phase 2 accept-criteria) — the verification is often non-obvious; confirm it is *truly* absent before flagging.** A delete/remove test is fine when any of these is present:
+
+- **API / request test:** a `request('DELETE')` / `request.delete()` followed by a GET asserting `status()` is `404` — the 404 *is* the removal assertion (not a missing-then).
+- **Cleanup / teardown:** the delete sits in `afterEach`/`afterAll`/`after()` or a test titled `Cleanup:`/`teardown` — its job is teardown, not user-facing verification (the create test owns that assertion).
+- **Success-confirmation:** a post-delete success toast/snackbar matching `/deleted|removed/i`, or a redirect (`toHaveURL` back to the list/index) — both count as verifying the delete happened.
+- **Helper-embedded assertion:** the delete runs through a shared helper (e.g. `deleteElement(name)`, `deleteRancherResource(...)`) that asserts removal internally — read the helper before flagging.
+- **Non-standard negative assertion:** `toHaveCount(0)`, `toBeEmpty()`, `toBeNull()`, or `isVisible()` captured into a variable then `toBe(false)` are all valid absence checks.
+- **Non-entity "remove":** editor text/image, a CSS class/style, diacritics, or whitespace being "removed" is not entity deletion — judge by the noun in the title, not the verb.
+
+Only flag when the test performs a real entity-delete action (a click/dispatch on a delete/trash/remove control) and **none** of the above verifications follow.
+
 #### 3. Error Swallowing `[grep-detectable + LLM]`
 
 **Symptom (POM — grep):** `.catch(() => {})` or `.catch(() => false)` on awaited operations — caller never sees the failure.
@@ -118,6 +129,11 @@ expect(await el.allTextContents()).toContain('expected item');
 // BAD — Locator is always a truthy JS object regardless of element existence
 expect(page.locator('.selector')).toBeTruthy();
 
+// BAD — a Locator is never null/undefined, so these never fail either (same #4f family)
+expect(page.getByText('1/31/2025')).not.toBeNull();
+expect(page.getByText('1/31/2025')).not.to.equal(null);
+expect(page.locator('.selector')).toBeDefined();
+
 // BAD — disables auto-retry entirely
 await expect(el).toHaveCount(0, { timeout: 0 });
 ```
@@ -132,6 +148,7 @@ await expect(el).toHaveCount(0, { timeout: 0 });
 - `expect(await el.getAttribute('x')).toBe(y)` → `await expect(el).toHaveAttribute('x', y)`
 - `expect(await el.allTextContents()).toContain(x)` → `await expect(el).toContainText(x)`
 - `expect(locator).toBeTruthy()` → `await expect(locator).toBeVisible()`
+- `expect(locator).not.toBeNull()` / `.not.to.equal(null)` / `.toBeDefined()` → `await expect(locator).toBeVisible()` (a Locator is never null/undefined; assert the user-visible state instead)
 - `{ timeout: 0 }` on assertions → remove unless preceded by an explicit wait; add `// JUSTIFIED:` if intentional
 - `expect(page.url()).toContain(x)` → `await expect(page).toHaveURL(x)` (one-shot URL read with no retry)
 - **Multiple `expect(page.url()).toContain(...)` in sequence** → replace each call with its **own** `await expect(page).toHaveURL(/.../) `. Do NOT combine them into a single regex with `.*` (e.g., `toHaveURL(/A.*B/)`) — that adds an ordering constraint not present in the original substring checks.

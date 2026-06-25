@@ -4,7 +4,7 @@ description: "Debug failed Cypress tests from mochawesome/JUnit/local/CI reports
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.5.6"
+  version: "1.6.0"
 ---
 
 # Cypress Failed Test Debugger
@@ -41,28 +41,51 @@ cypress run --reporter junit --reporter-options "mochaFile=cypress/reports/resul
 find . -name "mochawesome.json" -path "*/cypress/*" | head -5
 find . -name "*.xml" -path "*/cypress/*" | head -5
 
-# Extract failed tests from mochawesome (jq)
+# Per-spec runs emit one mochawesome_NNN.json per spec (no single mochawesome.json).
+# Merge them into one report first, then point the queries below at the merged file.
+find . -name "mochawesome_*.json" -path "*/cypress/*" | head -10
+#   npx mochawesome-merge "cypress/reports/mochawesome_*.json" > cypress/reports/mochawesome.json
+
+# Extract failed tests from mochawesome (jq) — carry the spec file from the
+# top-level results[] entry; the test object itself has NO file path, so without
+# this the Output "Files" column and the closing `cypress run --spec <file>` have
+# to be regexed out of the stack string.
 cat cypress/reports/mochawesome.json | jq '[
-  .. | objects |
+  .results[] | .file as $file | .. | objects |
   select(.fail == true) |
-  {title: .title, fullTitle: .fullTitle, duration: .duration, error: .err.message, stack: .err.estack}
+  {file: $file, title: .title, fullTitle: .fullTitle, duration: .duration, error: .err.message, stack: .err.estack}
 ]'
 
-# Extract failed tests (node fallback)
+# Flag retried tests (mochawesome stores per-attempt results in attempts[]).
+# passedOnRetry == true → F1/F15 flaky signal; final "failed" with >1 attempt →
+# consistent failure, NOT flaky. A test with no attempts[] (or length 1) ran once.
+cat cypress/reports/mochawesome.json | jq '[
+  .results[] | .file as $file | .. | objects |
+  select(has("attempts") and (.attempts | length) > 1) |
+  {file: $file, title: .title, attempts: (.attempts | length), final: .state, passedOnRetry: (.fail == false)}
+]'
+
+# Extract failed tests (node fallback) — thread the spec file down from results[].
 node -e "
 const r = require('./cypress/reports/mochawesome.json');
-const flat = (s) => [...(s.tests||[]), ...(s.suites||[]).flatMap(flat)];
-r.results.flatMap(flat)
+const flat = (s, file) => [
+  ...(s.tests||[]).map(t => ({ ...t, file: file || s.file })),
+  ...(s.suites||[]).flatMap(c => flat(c, file || s.file)),
+];
+r.results.flatMap(res => flat(res, res.file))
   .filter(t => t.fail)
-  .forEach(t => console.log('FAIL', t.fullTitle, '\n ', t.err?.message?.slice(0,120)))
+  .forEach(t => console.log('FAIL', t.file, '::', t.fullTitle, '\n ', t.err?.message?.slice(0,120)))
 "
 
-# Extract failed tests from JUnit XML (node)
+# Extract failed tests from JUnit XML (node) — capture the suite file + testcase
+# classname so the Files column is populated without stack regexing.
 node -e "
 const fs = require('fs');
 const xml = fs.readFileSync('./cypress/reports/results.xml', 'utf-8');
+const suiteFile = (xml.match(/<testsuite[^>]*\sfile=\"([^\"]+)\"/) || [])[1] || '(see testsuite name)';
 const failures = [...xml.matchAll(/<testcase[^>]*\sname=\"([^\"]+)\"[^>]*>[\s\S]*?<failure[^>]*\smessage=\"([^\"]+)\"/g)];
-failures.forEach(([,name,msg]) => console.log('FAIL', name, '\n ', msg.slice(0,120)));
+const classnames = [...xml.matchAll(/<testcase[^>]*\sclassname=\"([^\"]+)\"/g)].map(m => m[1]);
+failures.forEach(([,name,msg], i) => console.log('FAIL', suiteFile, '/', classnames[i] || '', '::', name, '\n ', msg.slice(0,120)));
 "
 ```
 
@@ -97,6 +120,29 @@ Classification steps:
 
 **Click landed but nothing happened (F15 hydration race):** server-rendered pages (Next.js, Nuxt, SvelteKit, Astro, Remix) paint interactive-looking elements before the framework attaches event listeners. The element is visible and actionable, so `.click()` succeeds against the inert pre-hydration DOM and the failure surfaces only at the next assertion — and Cypress retries *assertions*, never the click, so the test stays red for the full timeout once the inert click is consumed. Distinguish from F14: in F14 the element/content is racing render or removal (not yet rendered, or already gone); in F15 it is rendered but inert. Fix, in order of preference: (1) gate the first interaction on an app-provided hydration signal — `cy.get('html[data-hydrated]')` or `cy.window().its('__APP_READY__')` — and if the app exposes none, propose the one-line marker upstream (set an attribute in a root `useEffect`/`onMounted`); it fixes every spec at once. (2) Make the first interaction self-verifying: re-query and assert the click's effect, re-clicking in a bounded loop if it hasn't landed. Do NOT paper over it with a blind `cy.wait(ms)` after `cy.visit()` — that's the #9 band-aid the reviewer flags, and it still races on slow CI.
 
+**For F2 / F12 fixes — heal by intent, not by patching strings:** re-query the live DOM for the element the failing command semantically targets (the role/label/text a user sees), then write a new selector at the highest stable tier — `data-testid` or `cy.contains('text')` over a brittle CSS chain. Update the selector at its source (a custom command or Page Object), not inline in the spec, so every caller heals at once. Tweaking the old CSS string usually re-breaks on the next DOM change.
+
+**Read `cypress.config.{js,ts}` before classifying F1 / F7 / F8.** Three config fields decide whether a failure is even a test bug:
+
+- `retries: { runMode, openMode }` — if `runMode` is 0, a "passes on retry" diagnosis is moot (Cypress never retried); recommend enabling run-mode retries to confirm an F1 before patching timing.
+- `e2e.testIsolation` — Cypress 12+ resets the browser state (cookies, localStorage, the page) between tests **by default**. A test that passes alone but fails in-suite (F7) usually relies on state a prior test left behind; with `testIsolation: true` that leak is gone, so the fix is to seed the state explicitly (`cy.session()`, fixtures), not to disable isolation.
+- `defaultCommandTimeout` / `baseUrl` — a CI-only failure (F8) often traces to a `baseUrl` or timeout that differs from local.
+
+**cy.intercept ordering (F3 / F11) — declare the stub before the request fires.** The classic race: the alias is registered *after* `cy.visit()`, so the page's request goes out before the interceptor exists and is never caught; or the spec never `cy.wait('@alias')`s, so the assertion races the response.
+
+```javascript
+// before — intercept registered after visit; request already in flight, alias never matches
+cy.visit('/orders');
+cy.intercept('GET', '/api/orders').as('orders');
+cy.get('[data-testid="order-row"]').should('have.length', 3); // races the XHR
+
+// after — stub first, visit, then gate the assertion on the response
+cy.intercept('GET', '/api/orders').as('orders');
+cy.visit('/orders');
+cy.wait('@orders');
+cy.get('[data-testid="order-row"]').should('have.length', 3);
+```
+
 ## Phase 3: Screenshot & Video Analysis (only if Phase 2 is unclear)
 
 Cypress automatically captures screenshots on failure and optionally records video.
@@ -112,11 +158,16 @@ find cypress/videos -name "*.mp4" | head -10
 Progressive disclosure — stop as soon as root cause is clear:
 
 ```bash
-# 1. Check screenshot path from mochawesome report
+# 1. Check screenshot path from mochawesome report.
+#    mochawesome serializes `context` as a JSON-STRINGIFIED value (a string, not an
+#    object), so a raw `.context | .. | strings` walk returns [] on real reports.
+#    Parse it back with `fromjson` first. `fromjson?` swallows non-JSON context.
 cat cypress/reports/mochawesome.json | jq '[
   .. | objects | select(.fail == true) |
-  {title: .title, screenshots: [.context? // empty | .. | strings | select(endswith(".png"))]}
+  {title: .title, screenshots: [(.context | fromjson? | .. | strings | select(endswith(".png")))]}
 ]'
+# Fallback when context is absent/empty: locate screenshots on disk by spec + test name.
+#   find cypress/screenshots -name "*$(printf '%s' '<test title>')*.png"
 
 # 2. Check for JS errors in report context
 cat cypress/reports/mochawesome.json | jq '[
@@ -130,13 +181,17 @@ cat cypress/reports/mochawesome.json | jq '[
 
 ## Phase 4: Fix Suggestions
 
-```markdown
-## [P0/P1/P2] `test name`
+**Real product bug vs test bug — decide before proposing any fix.** Not every failure is a flaky test. If the assertion that failed was correctly checking a behavior the app no longer delivers, the test caught a **real regression** — report it as a product bug and do NOT weaken the assertion to make it green. Only relax a test when the assertion itself is wrong (over-broad, racing, or asserting an outdated contract). Weakening a real-regression assertion converts a caught bug into a silent one — the exact P0 failure mode this skill exists to prevent.
 
-- **Category:** F2 — Selector Broken
+For each failure, produce a finding in this format:
+
+```markdown
+## [P0/P1/P2] `test name` — Fxx Category
+
+- **Category:** F2 — Selector Broken (#10 Selector Drift)
 - **Error:** `Expected to find element: '.submit-btn', but never found it`
 - **Root Cause:** Button selector too broad after DOM refactor
-- **Fix:**
+- **Fix:** before/after code showing the concrete change
   ```javascript
   // before
   cy.get('.submit-btn').click();

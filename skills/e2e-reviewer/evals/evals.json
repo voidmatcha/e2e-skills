@@ -259,6 +259,38 @@
         "Structured output with P0/P1/P2",
         "Summary table included"
       ]
+    },
+    {
+      "id": 13,
+      "prompt": "Review the Playwright E2E tests in evals/files/always-true-locator.spec.ts. Identify always-passing assertions and any false positives to avoid.",
+      "expected_output": "Should detect the #4f always-true Locator assertions (not.toBeNull / not.to.equal(null) / toBeDefined on a Locator) and must NOT flag a not.toBeNull on a numeric value.",
+      "files": [
+        "evals/files/always-true-locator.spec.ts"
+      ],
+      "assertions": [
+        "Detects expect(page.getByText('1/31/2025, 4:05:00 PM')).not.toBeNull() on line 9 as #4f (P0) — a Locator is never null, so the assertion always passes",
+        "Detects expect(list.getByText('alpha')).not.to.equal(null) on line 15 as #4f (P0) — chai-style null comparison on a Locator is always true",
+        "Detects expect(page.locator('.beta-row')).toBeDefined() on line 16 as #4f (P0) — a Locator is always a defined object",
+        "Does NOT flag expect(rowCount).not.toBeNull() on line 22 as #4f — rowCount is a number resolved from count(), a legitimate non-Locator subject (the regex requires a locator/getBy subject inside expect())",
+        "Does NOT flag await expect(page.getByRole('row')).toHaveCount(rowCount) on line 23 — proper awaited web-first assertion",
+        "Structured output with P0/P1/P2",
+        "Summary table included"
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "Review the Playwright E2E tests in evals/files/delete-verification.spec.ts. Identify delete/remove tests that never verify the entity is gone (#2 Missing Then, P0), and avoid the documented false positives.",
+      "expected_output": "Should detect the 'Delete the workspace' test as #2 Missing Then (P0) and must NOT flag the API-404 delete, the afterEach cleanup delete, the success-toast delete, or the editor text removal.",
+      "files": [
+        "evals/files/delete-verification.spec.ts"
+      ],
+      "assertions": [
+        "Detects the 'Delete the workspace' test (clicks 'Delete workspace' then confirms 'Delete') as #2 Missing Then (P0) — it performs a real entity delete but never asserts the workspace is gone (no not.toBeVisible/toHaveCount(0)/redirect/toast)",
+        "Does NOT flag the 'API delete then 404 confirms removal' test — the GET asserting status() 404 after request.delete() IS the negative-existence assertion",
+        "Does NOT flag the test.afterEach delete — a teardown/cleanup delete is not a user-facing verification path",
+        "Does NOT flag the 'should delete a profile' test — the post-delete success toast getByText(/profile deleted/i) counts as verifying the deletion happened",
+        "Does NOT flag the 'should remove selected text from the editor' test — editor text removal is not an entity deletion (judged by the noun), and it asserts toBeEmpty() anyway"
+      ]
     }
   ]
 }

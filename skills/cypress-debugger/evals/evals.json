@@ -88,6 +88,33 @@
         "Severity P1 for the hydration failure",
         "Summary table included"
       ]
+    },
+    {
+      "id": 6,
+      "prompt": "Debug the Cypress test failures in evals/files/mochawesome-screenshot-context.json. For each failure, surface the failure screenshot path from the report and classify the failure.",
+      "expected_output": "Two failures. 'Checkout flow places an order' carries a mochawesome `context` field that is a JSON-STRINGIFIED array; parsing it back (fromjson) yields the screenshot at cypress/screenshots/checkout.cy.ts/Checkout flow -- places an order (failed).png. 'Profile page saves the display name' has a `context` that is a JSON-stringified plain message ('Submitted display name: Ada') with NO .png — the agent must report no screenshot for it rather than inventing one. This fixture guards the parser bug where a raw `.context | .. | strings` walk returns [] because context is stringified, not a nested object.",
+      "files": ["evals/files/mochawesome-screenshot-context.json"],
+      "assertions": [
+        "Extracts the screenshot path for the checkout failure from the stringified `context` (parses it with fromjson, not a raw object walk)",
+        "Reports the screenshot path ending in 'places an order (failed).png'",
+        "Does NOT report or fabricate a screenshot path for 'Profile page saves the display name' — its context is a plain stringified message with no .png",
+        "Carries the spec file (checkout.cy.ts / profile.cy.ts) for each failure",
+        "Classifies both failures (e.g. F2 Selector Broken or F1 Flaky/Timing) with fix suggestions",
+        "Summary table included"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Analyze retries in the Cypress report at evals/files/mochawesome-retries.json. Identify which tests passed only on retry, which failed every attempt, and which ran cleanly the first time.",
+      "expected_output": "Three tests with attempts[] data. 'Dashboard loads widgets after login' failed attempt 1 and passed attempt 2 (attempts length 2, final passed) — a passes-on-retry F1 flaky signal verifiable from the data, NOT a hard failure. 'Payment charges the card' failed all 3 attempts (attempts length 3, final failed) — a consistent failure, NOT flaky. 'Home page renders the hero heading' passed on the first attempt (attempts length 1) and must NOT be flagged as flaky or failed. This fixture guards the gap where per-attempt data was never extracted, so 'passes on retry' was invisible.",
+      "files": ["evals/files/mochawesome-retries.json"],
+      "assertions": [
+        "Identifies 'Dashboard loads widgets after login' as passed-on-retry (F1 Flaky/Timing) using the attempts[] data (failed then passed)",
+        "Identifies 'Payment charges the card' as a consistent failure across all 3 attempts — NOT flaky",
+        "Does NOT flag 'Home page renders the hero heading' as flaky — it passed on the first attempt (attempts length 1)",
+        "Distinguishes flaky (passes on retry) from consistent failure using attempt count and final state, not just the final pass/fail",
+        "Summary table included"
+      ]
     }
   ]
 }

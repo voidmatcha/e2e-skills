@@ -1,27 +1,47 @@
-# e2e-skills — Playwright and Cypress E2E Test Generation, Review, and Debugging
+<div align="center">
+  <img src="docs/assets/hero.png" alt="e2e-skills — Agent skills for Playwright and Cypress: generate, review, and debug reliable end-to-end tests." width="100%" />
+</div>
 
-[![Agent Skills: 4](https://img.shields.io/badge/Agent%20Skills-4-6E56CF)](https://github.com/voidmatcha/e2e-skills)
-[![Claude Code](https://img.shields.io/badge/Claude%20Code-compatible-D97757)](https://claude.com/product/claude-code)
-[![Codex](https://img.shields.io/badge/Codex-compatible-412991)](https://github.com/openai/codex)
-[![Frameworks: Playwright and Cypress](https://img.shields.io/badge/frameworks-Playwright%20%7C%20Cypress-2EAD33)](https://playwright.dev)
-[![License](https://img.shields.io/github/license/voidmatcha/e2e-skills)](./LICENSE)
+[![Agent Skills](https://img.shields.io/badge/Agent_Skills-4-1FC07C?style=flat-square&labelColor=black)](https://github.com/voidmatcha/e2e-skills)
+[![Claude Code](https://img.shields.io/badge/Claude_Code-compatible-D97757?style=flat-square&labelColor=black&logo=anthropic&logoColor=white)](https://claude.com/product/claude-code)
+[![Codex](https://img.shields.io/badge/Codex-compatible-412991?style=flat-square&labelColor=black&logo=openai&logoColor=white)](https://github.com/openai/codex)
+[![Playwright | Cypress](https://img.shields.io/badge/Playwright_%7C_Cypress-supported-2EAD33?style=flat-square&labelColor=black&logo=playwright&logoColor=white)](https://playwright.dev)
+[![License](https://img.shields.io/github/license/voidmatcha/e2e-skills?style=flat-square&labelColor=black&color=37B0E6)](./LICENSE)
+[![Merged PRs](https://img.shields.io/badge/merged_PRs-8-1FC07C?style=flat-square&labelColor=black&logo=github)](#proven-in-open-source)
+[![Runs in 55+ agents](https://img.shields.io/badge/runs_in-55%2B_agents-37B0E6?style=flat-square&labelColor=black)](https://agents.md)
 
-**Find Playwright and Cypress E2E tests that pass CI but prove nothing, generate new end-to-end coverage, and turn failing test reports into root-cause fixes — as Agent Skills for Claude Code, Codex, and other [`AGENTS.md`](https://agents.md) coding agents.**
+> [!TIP]
+> **8 PRs already merged** into Cal.com, Storybook, SvelteKit, Ghost and more: real-world proof the skill flags bugs that maintainers agree are worth fixing. If that is useful, [star the repo](https://github.com/voidmatcha/e2e-skills) and follow [@voidmatcha](https://github.com/voidmatcha) for more agent skills.
 
-E2E tests that always pass are worse than no tests — they give false confidence while real bugs slip through. `e2e-skills` is an AI agent testing toolkit for Playwright and Cypress: generate end-to-end tests, review existing specs for false positives and test smells, debug flaky E2E failures, and turn noisy CI reports into root-cause fixes. It runs as an Agent Skills bundle for [Claude Code](https://claude.com/product/claude-code) and [Codex](https://github.com/openai/codex) (and other [`AGENTS.md`](https://agents.md)-compatible runtimes via the `skills` CLI) by [@voidmatcha](https://github.com/voidmatcha), catching what CI misses: **tests that pass but prove nothing**, and **failures that are hard to trace**.
+**Find Playwright and Cypress E2E tests that pass CI but prove nothing, generate new end-to-end coverage, and turn failing test reports into root-cause fixes — as Agent Skills for Claude Code, Codex, and 55+ other AI coding agents (any [`AGENTS.md`](https://agents.md)-compatible host, via the `skills` CLI).**
 
-Four complementary skills cover the full E2E testing lifecycle, from Playwright test generation to Cypress test review and failure debugging:
+A green check is not proof. Some E2E tests stay green whether the feature works or not:
+
+```diff
+- expect(page.getByText('SWE')).toBeDefined();        // a Locator is never undefined, so this always passes
++ await expect(page.getByText('SWE')).toBeVisible();  // now the assertion can actually fail
+```
+
+`e2e-skills` is an AI-agent testing toolkit for Playwright and Cypress that catches what CI misses: **tests that pass but prove nothing**, and **failures that are hard to trace**. It runs as an Agent Skills bundle for [Claude Code](https://claude.com/product/claude-code), [Codex](https://github.com/openai/codex), and [55+ other agents](https://agents.md) via the `skills` CLI, by [@voidmatcha](https://github.com/voidmatcha). Four skills cover the full lifecycle:
 
 1. **`playwright-test-generator`** — generates Playwright E2E tests from scratch, from coverage gap analysis to passing, reviewed tests
 2. **`e2e-reviewer`** — static analysis of existing Playwright and Cypress specs; flags 24 anti-patterns (P0 silent always-pass, P1 poor diagnostics, P2 maintenance) that can make tests pass CI while missing real regressions
 3. **`playwright-debugger`** — diagnoses failures from `playwright-report/` and classifies root causes (flaky timing, selector drift, auth, environment mismatch, and more)
 4. **`cypress-debugger`** — same for Cypress report files
 
+## Why I built this
+
+Most of my E2E tests are written by AI agents now, and that is where the trouble started. The agent would hand me a test that passed and proved nothing: an assertion on a locator that is always truthy, a `toBeDefined()` that can never fail, a delete test that never checks the row was actually gone. The suite was green, so I trusted it, and the bug shipped anyway.
+
+The other half was cruft. Ask a model to write a spec and it cheerfully over-builds: a Page Object it never uses, a helper that drifts out of sync with the spec it was meant to serve, an abstraction for a case that never comes. YAGNI and KISS are the first things to go. And once several different agents were writing the tests, it got worse, because each model had its own idea of what a spec should look like.
+
+`e2e-skills` is the thing I wanted while dealing with all of that: a stable, opinionated catalog that flags the tests that lie and the abstractions that rot, whoever or whatever wrote them.
+
 ### Contents
 
 - [Install](#install) · [Workflow](#workflow) · [Standalone scanner](#standalone-scanner) · [Proven in OSS](#proven-in-open-source)
 - Skills: [generator](#skill-1-playwright-test-generator--test-generation) · [reviewer](#skill-2-e2e-reviewer--quality-review) · [playwright-debugger](#skill-3-playwright-debugger--playwright-failure-debugger) · [cypress-debugger](#skill-4-cypress-debugger--cypress-failure-debugger)
-- [FAQ](#faq) · [License](#license)
+- [FAQ](#faq) · [License](#license) · [AI-reviewer benchmark](docs/ai-reviewer-benchmark.md)
 
 ## Install
 
@@ -39,8 +59,8 @@ npx skills add voidmatcha/e2e-skills --skill '*' -g -a codex
 # Claude Code plugin — manual clone
 git clone https://github.com/voidmatcha/e2e-skills.git ~/.claude/skills/e2e-skills
 
-# Every agent the skills CLI supports (55+ hosts)
-npx skills add voidmatcha/e2e-skills --skill '*' -g --agent '*'
+# Every agent the skills CLI supports (55+ hosts) — --all = --skill '*' --agent '*' -y
+npx skills add voidmatcha/e2e-skills -g --all
 ```
 
 The Codex command above **is** the Codex plugin install: the `skills` CLI places the bundle in `~/.agents/skills/`, where Codex auto-discovers it and reads `.codex-plugin/plugin.json` (the `interface` block). There is no separate `codex plugin marketplace add` step — a native marketplace entry would require duplicating the shared `skills/` tree into a per-plugin subdirectory (Codex marketplace plugins cannot reference the repo root, [openai/codex#17066](https://github.com/openai/codex/issues/17066)), so the CLI route is the supported Codex path.
@@ -96,7 +116,9 @@ That gap is the whole point of the judgment layer. `e2e-reviewer` **verifies eac
 
 ### Proven in Open Source
 
-Seven real merged PRs, not synthetic examples:
+The sharpest case: in **code-server**, a committed `it.only` had silently skipped 8 tests for 7 months, and one of them had already broken. CI stayed green the whole time. That is what a silent always-pass costs, and why a passing suite is not the same as a tested one. e2e-reviewer found it; the maintainers merged the fix.
+
+Eight real merged PRs, not synthetic examples:
 
 | Repository | Merged PR | What it fixed |
 |------------|-----------|---------------|
@@ -107,8 +129,25 @@ Seven real merged PRs, not synthetic examples:
 | Ghost | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | `expect(likeButton.isDisabled()).toBeTruthy()` ×3 — an un-awaited `isDisabled()` Promise is always truthy, so the comments-ui like-button debounce guards passed unconditionally → web-first `toBeDisabled()`/`not.toBeDisabled()` |
 | SvelteKit | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Unawaited `expect(page)` web-first assertions in the basics client tests — floating promises that never asserted → awaited |
 | Strapi | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | Discarded `isVisible()`/`isHidden()` reads that were the sole assertion of each visibility test → web-first `toBeVisible()`/`toBeHidden()` |
+| bruno | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | Missing `await` on the sole WebSocket visibility assertion — a floating Promise that never ran → awaited so the check actually executes |
 
-Beyond those merged PRs, the skill was iterated and validated against **100+ open-source Playwright and Cypress test suites** (many 1k+ stars) in a local testbed — zero GitHub side effects, no forks or PRs opened during research. Real findings from those scans drove concrete rule changes: the 4.4 cycle-count rule, the 4.2 PR-culture cross-check, the Phase 2 retry-wrapper skip, the legacy `cypress/integration/**/*.js` glob coverage, and the awaited-locator (`expect(await locator)`) variant of the missing-`await` check all came from observed agent behavior and real anti-patterns surfaced across those runs. See the [contribution roadmap](docs/roadmap.md) for merged, in-review, and queued PRs (with before/after lessons on the merged ones).
+Two more are maintainer-**approved and awaiting merge** ([QwikDev/qwik#8727](https://github.com/QwikDev/qwik/pull/8727), [module-federation/core#4826](https://github.com/module-federation/core/pull/4826)).
+
+> [!NOTE]
+> **Benchmark (secondary evidence).** Across 100 bot-reviewed PRs in 77 repositories, `e2e-reviewer` had the best recall (78/110, 71%) with zero false positives, and uniquely caught **47 silent always-pass issues that the linters and the AI reviewers missed**. The original judge shared a model family with the reviewer (an affinity-bias risk), so the contestable unique catches were re-judged by an independent cross-model judge (OpenAI gpt-5.5 via Codex), which agreed on **13 of 15 (87%)** — the headline holds directionally rather than collapsing under a different judge. Read it as directional, not a leaderboard. Full method and limitations: [AI-reviewer benchmark](docs/ai-reviewer-benchmark.md).
+
+Beyond those merged PRs, the skill was iterated and validated against **100+ open-source Playwright and Cypress test suites** (many 1k+ stars) in a local testbed — zero GitHub side effects, no forks or PRs opened during research. Real findings from those scans drove concrete rule changes: the 4.4 cycle-count rule, the 4.2 PR-culture cross-check, the Phase 2 retry-wrapper skip, the legacy `cypress/integration/**/*.js` glob coverage, and the awaited-locator (`expect(await locator)`) variant of the missing-`await` check all came from observed agent behavior and real anti-patterns surfaced across those runs. See [upstream contributions](docs/roadmap.md) for the full track record and roadmap (merged, in-review, and queued PRs, with before/after lessons on the merged ones).
+
+### Recognized problem, not a niche opinion
+
+The merged PRs are the empirical case: real silent always-pass tests that shipped green until the skill found them and a maintainer agreed the fix was warranted. The class of bug they fix is also well recognized by the frameworks themselves and by the testing literature:
+
+- Playwright's own best-practices doc warns that with an un-awaited assertion "the test **won't wait a single second**, it will just check the locator is there and return immediately." ([playwright.dev/docs/best-practices](https://playwright.dev/docs/best-practices))
+- `eslint-plugin-playwright` ships a `no-conditional-expect` rule precisely because, with an assertion inside conditional code, "tests can end up **passing but not actually test anything**." ([rule docs](https://github.com/playwright-community/eslint-plugin-playwright/blob/main/docs/rules/no-conditional-expect.md))
+- Tests that pass without truly asserting are a named test smell going back to van Deursen et al., *Refactoring Test Code* (2001), and catalogued since as "tests without assertions" and "tautological assertions" that can never fail.
+- Untrusted suites are widespread and corrosive: Google reported "almost **16% of our tests have some level of flakiness**," and that "it is human nature to ignore alarms when there is a history of false signals." ([Google Testing Blog](https://testing.googleblog.com/2016/05/flaky-tests-at-google-and-how-we.html))
+
+Playwright and Cypress together draw tens of millions of weekly npm installs, so the surface for these bugs is large. (We deliberately do not cite the popular "a bug costs 100x more in production" figure — its provenance is disputed; the point stands without it.)
 
 ## Skill 1: `playwright-test-generator` — Test Generation
 
@@ -212,6 +251,25 @@ Weak but not wrong — addressed when refactoring.
 | 11 | **YAGNI + Zombie Specs** | `clickEdit()` never called; empty wrapper class; single-use Util; entire spec duplicated by another | Delete unused members; inline single-use Util methods; delete zombie spec files |
 | 21 | **Manually-captured session-file dependency** | `storageState: 'auth/member.json'` produced only by a manual capture script — absent on CI, silently expires | Regenerate session programmatically (API-login helper or `setup` project); manual files only as a cache with a programmatic fallback |
 | 23 | **Fixture ignores render guards** | Liked-tab fixture seeds `liked: false`; the card component `return null`s every item — empty UI looks like infra flake | Read the item component's early returns/filters before seeding; seed fields to pass every guard for the view under test |
+
+### What a linter structurally cannot catch
+
+**A linter checks that an assertion is well-formed. It cannot check that the test proves what its name claims.** That gap, between a test's stated intent and what it actually verifies, is the core of what `e2e-reviewer` looks for, and it is invisible to any per-file AST or grep rule: `should show an error when the name is duplicate` can pass with an assertion that never touches the error, and the syntax is flawless. Deciding it needs the test's name, the action it performs, and the surrounding code read together, which is a level above where a single-file rule operates.
+
+`e2e-reviewer` runs `eslint-plugin-playwright` / `eslint-plugin-cypress` as its first tier, so the mechanical rules (`#6`, `#7`, `#9`, `#15`, `#16`, `#5a`, `#5b`) are already covered by the de-facto-standard plugins. The reason to add `e2e-reviewer` on top is the smells **no AST or grep rule can reach**, because confirming them requires reading code the rule never sees — other functions, the component, the CI config, the test's own intent:
+
+| Smell | Why lint cannot decide it |
+|-------|---------------------------|
+| `#1` Name-assertion mismatch | Needs to compare the test's *name/intent* against what it actually asserts. Syntactically the assertion is fine. |
+| `#3` / `#3b` Error swallowing & blanket `cy.on('uncaught:exception', () => false)` | Valid syntax; only intent reveals it disables failure. A single-line regex missed **51 multi-line instances** in one suite. |
+| `#4f` Locator-as-truthy (`expect(locator).toBeTruthy()` / `.toBeDefined()` / `.not.toBeNull()`) | Reads as a normal assertion. You must *know* a Locator is never falsy to see it always passes. |
+| `#4` One-shot reads (`expect(await el.isVisible()).toBe(true)`) | A valid `expect`; only knowing it is a non-retrying point-in-time read marks it as an anti-pattern. |
+| `#12` Missing auth setup | Requires cross-file reasoning over config, fixtures, and `storageState` to know the route is unauthenticated. |
+| `#20` / `#22` Unmocked writes / optimistic-UI without call proof | Requires knowing an endpoint mutates, or that the UI updates optimistically with no network assertion behind it. |
+| `#11` / `#23` Zombie specs / fixture ignores render guards | Cross-file: duplicate-spec detection, or reading a component's early `return null` before trusting a seed. |
+| **The hard case** | A `try/catch` wrapping a function that *never throws*, asserting only inside `catch` (real case: `addEdge` in xyflow's `graph-utils.cy.ts`). Confirming it means reading the function body in another file — impossible for grep or any single-file AST rule. |
+
+This is the part that needs judgment, not a pattern match. `e2e-reviewer` reads the surrounding code and CI config to **verify** each candidate before it becomes a finding — the [candidates-not-verdicts](#scanner-findings-are-candidates-not-verdicts) discipline above — which is also why every finding ships with a band-aid-aware fix rather than a raw match.
 
 ### References
 
@@ -330,7 +388,11 @@ Run the `e2e-reviewer` skill (or its standalone scanner, `scan.sh`) against your
 
 ### How is this different from eslint-plugin-playwright or eslint-plugin-cypress?
 
-The eslint plugins are your every-commit baseline for syntactic rules, and the scanner runs them first (Tier 1). `e2e-reviewer` adds what lint cannot reach: semantic checks (name-assertion mismatch, missing-Then, auth-setup analysis, zombie specs) plus fix guidance that avoids band-aids, layered on top with `ast-grep` and regex coverage.
+The eslint plugins are your every-commit baseline for syntactic rules, and the scanner runs them first (Tier 1) — so it does not replace them, it adds a layer on top. The layer is the smells a linter [structurally cannot decide](#what-a-linter-structurally-cannot-catch): a name-assertion mismatch, a `try/catch` around a function that never throws, an `expect(locator).toBeTruthy()` that is always true, a missing-auth route — each needs reading code the AST rule never sees (another function, the component, the CI config, the test's intent). `e2e-reviewer` reads that surrounding code to verify the finding and ships a band-aid-aware fix, where lint can only flag single-file syntax.
+
+### Isn't this just an AI code reviewer like CodeRabbit, Copilot, or Cursor BugBot?
+
+Those are excellent general reviewers — several are free for open source and now run locally (CodeRabbit's CLI reviews staged changes in the terminal). The difference is specialization, not capability: a general reviewer reasons over whatever diff it is handed, while `e2e-reviewer` carries a curated, stable, severity-graded catalog of E2E silent always-pass anti-patterns (24 patterns with fixed IDs, plus 15 failure-debugging categories) and runs on demand against a whole spec directory, not only a PR diff. Use a general reviewer for everything; use this when E2E test trustworthiness is the thing you care about. For a real head-to-head on 100 reviewed PRs (with honest limitations), see the [AI-reviewer benchmark](docs/ai-reviewer-benchmark.md).
 
 ### Does it work with Cypress as well as Playwright?
 
@@ -352,6 +414,13 @@ Claude Code (plugin marketplace or the `skills` CLI), Codex, and any agent the `
 
 No — Playwright and Cypress only, by design. See [framework scope](docs/framework-scope.md) for the rationale.
 
+## Roadmap
+
+Planned, not yet shipped (these describe direction, not current behavior):
+
+- **Cross-model consistency.** Different AI agents each write specs in their own style, so a suite built with several models drifts into a patchwork no single convention holds together. The plan: infer your project's conventions (POM shape, locator strategy, fixture and structure patterns), ask you only where the codebase is genuinely ambiguous, and persist the answers so every model conforms afterward. Crucially, the recorded conventions stay a *default the agent can deviate from with a stated reason*, not a hard rule, so a better approach for a specific test is never blocked — and a justified deviation becomes a prompt to evolve the convention. This is the part a linter structurally cannot do: it enforces fixed rules; it cannot learn and conform to *your* conventions.
+- **Deterministic detection layer.** Move the per-file, type-decidable smells (locator-as-truthy, floating assertions) from prompt-and-heuristic onto a type-aware AST pass, so detection is reproducible and the LLM is reserved for the judgment calls a single-file rule cannot make. The clearly lint-able rules would be contributed upstream to `eslint-plugin-playwright` rather than re-implemented.
+
 ## License
 
-Apache-2.0. See [LICENSE](./LICENSE).
+Apache-2.0 &copy; [voidmatcha](https://github.com/voidmatcha). See [LICENSE](./LICENSE).

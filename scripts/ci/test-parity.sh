@@ -146,7 +146,7 @@ restore "$file"
 # Case 7: docs orphan — strip README reference so a docs file is no longer linked
 file="README.md"
 backup "$file"
-mutate "$file" "See the [contribution roadmap](docs/roadmap.md) for merged, in-review, and queued PRs (with before/after lessons on the merged ones)." ""
+mutate "$file" "](docs/roadmap.md)" ""
 assert_fails "Check 7 — docs orphan detection" "docs/roadmap.md: orphan"
 restore "$file"
 

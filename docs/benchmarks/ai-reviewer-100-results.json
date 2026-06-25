@@ -1,0 +1,1251 @@
+{
+ "benchmark": "e2e-reviewer vs lint vs AI PR reviewers",
+ "corpus": {
+  "prs": 100,
+  "distinct_repos": 77,
+  "ai_reviewers": [
+   "chatgpt-codex-connector",
+   "coderabbitai",
+   "copilot-pull-request-reviewer",
+   "cursor",
+   "ellipsis-dev",
+   "gemini-code-assist",
+   "greptile-apps",
+   "sourcery-ai"
+  ]
+ },
+ "mechanical_100": {
+  "lint_flagged_prs": 75,
+  "our_scanner_prs": 55,
+  "our_scanner_p0_prs": 17,
+  "ai_reviewer_spec_comment_prs": 39,
+  "scanner_netnew_vs_lint": 8,
+  "ai_flagged_scanner_missed": 21
+ },
+ "llm_quality_100": {
+  "real_issues": 110,
+  "recall": {
+   "ours": 78,
+   "lint": 45,
+   "ai_reviewer_inline": 10
+  },
+  "ours_false_positives": 0,
+  "ai_false_or_noise": 72,
+  "ours_unique": 47,
+  "ai_unique": 4,
+  "winners": {
+   "lint_sufficient": 11,
+   "ours": 19,
+   "none_material": 67,
+   "ai": 2,
+   "tie": 1
+  }
+ },
+ "limitations": [
+  "AI reviewer measured by inline spec comments only (capped 6/PR; bots review whole PR with split attention)",
+  "judge and reviewer share a model family (possible bias toward ours)",
+  "ground truth set by an LLM judge over one 100-PR snapshot, not a human panel"
+ ],
+ "per_case": [
+  {
+   "pr": "Solvro/web-testownik#82",
+   "winner": "lint_sufficient",
+   "real_issues": 9,
+   "caught": {
+    "lint": 9,
+    "ai": 0,
+    "ours": 9
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: the file has one dominant real defect class repeated 9 times \u2014 `expect(await locator).toBeVisible()` on lines 69,70,71,72,73,78,84,91,108. Awaiting a Playwright Locator returns the Locator itself (non-thenable), so the constru"
+  },
+  {
+   "pr": "ohcnetwork/care_fe#15970",
+   "winner": "ours",
+   "real_issues": 5,
+   "caught": {
+    "lint": 3,
+    "ai": 0,
+    "ours": 5
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth (independently read from the 4 spec files) = 5 genuine test-trust issues, all P0/P1 silent-always-pass or missing-verification: (1) invoiceCreation test 1 (lines 30-41) wraps its sole toHaveURL assertion in `if(isVisible().catc"
+  },
+  {
+   "pr": "mitodl/ocw-hugo-themes#1811",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: the four in-scope spec files contain ZERO genuine E2E test-quality issues. I read all four and grepped for conditionals/weak assertions (if/try/catch/toBeTruthy/toBeDefined/waitForTimeout/optional-chaining) \u2014 zero matches. Eve"
+  },
+  {
+   "pr": "left-curve/left-curve#1539",
+   "winner": "ours",
+   "real_issues": 13,
+   "caught": {
+    "lint": 9,
+    "ai": 0,
+    "ours": 8
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth (~13 material test-trust issues): convert:207 `expect(true).toBeTruthy()` inside `if(count>1)`; convert:237 `hasLabels || (await amountInput.isVisible())` where the input is always visible after the fill at 218 (always-true OR "
+  },
+  {
+   "pr": "LDFLK/openginxplore#167",
+   "winner": "ours",
+   "real_issues": 2,
+   "caught": {
+    "lint": 1,
+    "ai": 1,
+    "ours": 1
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth = 2 real test-trust issues. (1) homepage.spec.js:8 `await expect(page).toHaveTitle(/.*/)` is a tautological silent-always-pass \u2014 the only assertion in the only test, matches any/empty title, stays green even if the homepage is "
+  },
+  {
+   "pr": "openaxcloud/Vibe-Companion#17",
+   "winner": "ai",
+   "real_issues": 3,
+   "caught": {
+    "lint": 2,
+    "ai": 1,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The spec (yjs-collab.spec.ts) is a high-quality, defensive E2E test with NO P0 silent-always-pass anti-patterns. Every truthy/boolean assertion the case probes (r.ok() line 85, loaded line 110, result.ok line 242, firstFile line 292) operat"
+  },
+  {
+   "pr": "mckaywrigley/chatbot-ui#1806",
+   "winner": "ours",
+   "real_issues": 17,
+   "caught": {
+    "lint": 1,
+    "ai": 0,
+    "ours": 16
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: main.spec.ts is a wall of silent-always-pass tests. The dominant defect (17 real issues) is `expect(locator).toBeTruthy()` / `.not.toBeNull()` on Playwright Locator objects, which are ALWAYS truthy and never null, so the asser"
+  },
+  {
+   "pr": "Solvro/web-planer#254",
+   "winner": "lint_sufficient",
+   "real_issues": 1,
+   "caught": {
+    "lint": 1,
+    "ai": 1,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: I read tests.spec.ts in full. The only material, defensible test-trust issue is the fixed page.waitForTimeout(2000) flakiness at lines 58, 111, 129, 211 \u2014 fixed sleeps can both flake and mask race conditions. I treat this as O"
+  },
+  {
+   "pr": "adobe/alloy#1542",
+   "winner": "lint_sufficient",
+   "real_issues": 1,
+   "caught": {
+    "lint": 1,
+    "ai": 1,
+    "ours": 1
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "GROUND TRUTH: After reading all of consent.spec.js (1007 lines), exactly ONE material test-trust issue exists: the C14410 \"setting consent for unknown purposes produces server 400 error\" test at lines 423-441. It has ZERO expect() calls, ca"
+  },
+  {
+   "pr": "adobe/alloy#1539",
+   "winner": "none_material",
+   "real_issues": 1,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "This is an exceptionally well-engineered Playwright/MSW spec (1355 lines). Independent ground-truth read found NO P0/P1 silent-always-pass or bug-hiding issues. The \"no request must fire\" negatives use a documented fixed NO_REQUEST_WAIT_MS "
+  },
+  {
+   "pr": "meshery/meshery#19509",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Independently read all four specs. No genuine test-trust issue (silent always-pass, weak/permissive assertion, missing verification, or bug-hiding flakiness) exists in this PR.\n\nrelationship_evaluation.spec.ts: expect(designResponse.ok()).t"
+  },
+  {
+   "pr": "windmill-labs/windmill#7520",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Independent read of db-manager.spec.ts (the only file) found NO genuine E2E test-quality issues. The file is almost entirely setup/helper code; the actual test bodies (lines 50-86) delegate verification to out-of-corpus helpers runDbManager"
+  },
+  {
+   "pr": "KooshaPari/heliosApp#495",
+   "winner": "ours",
+   "real_issues": 3,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 3
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth = 3 genuine silent-always-pass / test-trust issues: (1) screen-reader.spec.ts:49 `expect(accessibleTree).toBeGreaterThanOrEqual(0)` is tautological \u2014 a count is always >=0, and the comment admits it's 0 in headless, so the test"
+  },
+  {
+   "pr": "Solvro/web-eventownik-v2#161",
+   "winner": "ours",
+   "real_issues": 1,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 1
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: one genuine silent-always-pass issue in this serial E2E suite \u2014 the delete verification at lines 226-229 uses `const eventStillVisible = await page.locator(`text=${eventName}`).isVisible(); expect(eventStillVisible).toBe(false"
+  },
+  {
+   "pr": "LIDR-academy/AI4Devs-qa-202603#1",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth across all three specs = 0 genuine E2E test-trust issues (no silent always-pass, no weak/permissive assertions, no missing verification, no bug-hiding flakiness). example.spec.ts: two playwright.dev demo tests with real awaited"
+  },
+  {
+   "pr": "Mitesh411/PlaywrightDemo#6",
+   "winner": "ours",
+   "real_issues": 3,
+   "caught": {
+    "lint": 0,
+    "ai": 2,
+    "ours": 3
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth = 3 genuine silent-always-pass / vacuous-assertion issues: (1) get.spec.ts:10 expect([200,404]).toContain(status) accepts a broken 404 endpoint as passing (comment admits the endpoint returns 404); (2) security.spec.ts:29 expec"
+  },
+  {
+   "pr": "histoire-dev/histoire#841",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth across the 4 in-scope spec files = 0 genuine E2E test-quality issues. all-stories.spec.ts uses an awaited toHaveCount(5) after a deterministic reset (clearCookies + localStorage.clear + reload) \u2014 legitimate setup, not a skipped"
+  },
+  {
+   "pr": "dzaffren/ngo-website#3",
+   "winner": "ours",
+   "real_issues": 3,
+   "caught": {
+    "lint": 3,
+    "ai": 0,
+    "ours": 3
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: 3 genuine silent-always-pass issues across the 4 specs. (1) donation-bank-only.spec.ts test 2 (\"bank details visible when bank is configured\"): sole assertion expect(text?.trim()).toBeTruthy() (line 28) is wrapped in `if (awai"
+  },
+  {
+   "pr": "sashakt-platform/sashakt-webapp#244",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "All three specs are well-constructed Playwright tests with no genuine E2E test-trust issues. landing.spec.ts has a single properly-awaited toBeVisible() with a real matcher. submit-test.spec.ts uses awaited toBeVisible/toBeChecked assertion"
+  },
+  {
+   "pr": "uzh-bf/klicker-uzh#5127",
+   "winner": "lint_sufficient",
+   "real_issues": 1,
+   "caught": {
+    "lint": 1,
+    "ai": 0,
+    "ours": 1
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Independent ground truth across the four specs yields exactly one confirmable genuine issue: C-control.spec.ts:97-102, the \"Cleanup (DB): Hard delete soft-deleted live quiz\" test, whose body calls removeSoftDeletedLiveQuiz() then an unrelat"
+  },
+  {
+   "pr": "Listenarrs/Listenarr#611",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: I read all four Cypress specs and found NO material test-trust issues of the type the reviewer targets (silent always-pass, weak/permissive assertions, missing verification that hides bugs, bug-hiding flakiness). The move-flow"
+  },
+  {
+   "pr": "duyet/clickhouse-monitoring#1558",
+   "winner": "ours",
+   "real_issues": 4,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 4
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth = 4 genuine silent-always-pass / weak-assertion issues, all in api-endpoints.cy.ts: (1-3) the three \"rejects unauthenticated\" tests (#46-56 menu-counts, #58-65 data, #67-74 hosts) each accept [200,401,403] as their sole asserti"
+  },
+  {
+   "pr": "container-registry/harbor-next#327",
+   "winner": "lint_sufficient",
+   "real_issues": 2,
+   "caught": {
+    "lint": 2,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth across the three specs: login-logout.spec.ts is clean (line 19 toBeVisible on the reappearing LOG IN button is a proper post-logout verification). The only genuinely material test-trust concern is pervasive hardcoded waitForTim"
+  },
+  {
+   "pr": "algowars/web#34",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Independent ground truth: 0 genuine E2E test-quality issues across both spec files. submission.cy.ts has strong assertions throughout \u2014 each test types code, submits, and asserts submission-overall-status contains the exact expected verdict"
+  },
+  {
+   "pr": "pdfpw/pdfpw.github.io#22",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "All four specs are genuinely clean E2E tests with no test-trust problems. locale-switch.spec.ts compares localStorage reads against concrete expected values (.toBe(\"ja\"/\"en\")) and asserts aria-pressed attributes \u2014 fails when the feature bre"
+  },
+  {
+   "pr": "HereLiesAz/PricePilot#11",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The single file (smoke.spec.ts) is a clean, well-verified Playwright smoke test. Every mutating action (register line 18, Create line 25, Add line 33) is immediately followed by an awaited expect(...).toBeVisible() on the resulting state (l"
+  },
+  {
+   "pr": "duyet/clickhouse-monitoring#1575",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The single spec file (sidebar-navigation.cy.ts, 5 tests) contains no genuine silent-always-pass or weak-assertion-only test-trust problems. Every test pairs its weak/redundant assertions with a real navigation check that goes red if behavio"
+  },
+  {
+   "pr": "block/proto-fleet#483",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "pools.spec.ts is a Page Object Model spec where every assertion is wrapped in validate* helper methods (validateUrlValidationError, validateConnectionFailed, validateSaveButtonDisabled, validatePoolRowCount, validatePoolRowDetails, validate"
+  },
+  {
+   "pr": "duyet/clickhouse-monitoring#1646",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The single file (sidebar-navigation.cy.ts) is a Cypress sidebar-navigation smoke spec with no genuine silent-always-pass or weak-assertion bugs. The two `cy.get('body').should('exist')` lines (61, 77) are no-op/weak, but in BOTH tests they "
+  },
+  {
+   "pr": "ICRAR/EAGLE#1042",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "I read all four spec files independently. None contains a genuine E2E test-trust issue (silent always-pass, weak/permissive assertion that masks failure, or missing verification):\n\n- cloneLogicalGraph.spec.ts: strong test. Pre-checks node/e"
+  },
+  {
+   "pr": "MetaMask/metamask-extension#42945",
+   "winner": "ours",
+   "real_issues": 1,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 1
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth from reading both specs independently: exactly 1 genuine E2E test-quality issue. In terms-of-use.pw.spec.ts the test 'accepts the updated terms of use' asserts the pre-state (modal present via checkPageIsLoaded line 32) then ca"
+  },
+  {
+   "pr": "Solvro/web-eventownik-v2#160",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Independent ground truth: both spec files are well-constructed Playwright tests with no genuine test-trust issues. Candidate weak spots \u2014 the `?? \"\"` fallbacks (emails.spec.ts:62/84/132 region, wysiwyg.spec.ts:287) \u2014 operate on populated fi"
+  },
+  {
+   "pr": "adobe/alloy#1546",
+   "winner": "none_material",
+   "real_issues": 1,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: I read the full 704-line personalization.spec.js. This is a well-structured integration spec. Most assertions are backed by concrete request-shape checks (decisionScopes/schemas/call counts), DOM mutation checks (line 440: tar"
+  },
+  {
+   "pr": "onlyaditya/cypress_starter_repo#2",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "spec.cy.js is a small, clean Cypress Todo suite (46 lines, 5 tests). Every test carries a real, meaningful assertion: be.visible on input/Add button (L7-8), have.value verification after type (L12), cy.contains('li', todoText).should('exist"
+  },
+  {
+   "pr": "swapnil282K/Automation_Testing_Assignment#1",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The single spec (playwright.spec.ts) is a high-quality, defensively-written multi-step form test. Independent ground-truth review found 0 genuine test-trust issues: helpers (getFirstExistingLocator, getStep) throw loudly on no-match rather "
+  },
+  {
+   "pr": "Ferymad/Siteproofv2#1",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The spec (/tmp/corpus/1_Ferymad__Siteproofv2/auth.e2e.ts) is a small, clean 32-line Playwright auth suite with three tests. Ground truth: NO genuine E2E test-trust issues exist. All assertions are properly awaited, use real matchers, and ve"
+  },
+  {
+   "pr": "ministryofjustice/hmpps-manage-people-on-probation-ui#1622",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The spec (manage-appointment.cy.ts, 20 lines, one test) contains no material E2E test-trust issues. All assertions are concrete and meaningful: line 13 asserts an exact href attribute value, line 15 asserts exact text content, and lines 16-"
+  },
+  {
+   "pr": "evorto-app/app#66",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "All four files are vitest unit/meta tests, not E2E specs with trust problems. (1) playwright-skip-inventory.spec.ts is a meta-test asserting the collected skip/fixme inventory exactly equals an allow-list via toEqual, that each allowed entr"
+  },
+  {
+   "pr": "AlaskaAirlines/auro-drawer#134",
+   "winner": "ai",
+   "real_issues": 1,
+   "caught": {
+    "lint": 0,
+    "ai": 1,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "This keyboard-audit spec is unusually well-written: nearly every assertion is genuinely enforced. The optional-chaining patterns (focused?.ariaLabel.toMatch, focused?.hostId ?? focused?.id, etc.) are NOT silent passes \u2014 if the read returns "
+  },
+  {
+   "pr": "youh4ck3dme/growmedica-nextjs-storefront#34",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "All four spec files are high-quality with no material test-trust issues. bundles.spec.ts tests 1-7 are deterministic catalog assertions; tests 8-12 use proper toBeVisible/toContainText/toHaveText/toHaveCount verification after actions. Test"
+  },
+  {
+   "pr": "adobe/alloy#1540",
+   "winner": "ours",
+   "real_issues": 3,
+   "caught": {
+    "lint": 0,
+    "ai": 1,
+    "ours": 1
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth (3 real issues): (1) C6842982 \"existing identity cookie takes precedence over an FPID\" (line 748) is a genuine P0 silent-always-pass \u2014 its sole assertion expect(secondEcid).toBe(firstEcid) compares two values both extracted fro"
+  },
+  {
+   "pr": "thanhhaixn92/QLCV_PQG#23",
+   "winner": "lint_sufficient",
+   "real_issues": 1,
+   "caught": {
+    "lint": 1,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "These are three Vietnamese-app smoke specs (no auth fixture) that branch on login state. Independent ground-truth review: every reachable code path ends in a real `await expect(...).toBeVisible()` assertion, and helper assertions (`runtimeE"
+  },
+  {
+   "pr": "irl-llc/git-spice-code-extension#99",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Both spec files (commentCounts.spec.ts, crStatusBadges.spec.ts) are well-constructed Playwright E2E tests for a VS Code extension driven by the shamhub fake forge. Independent ground-truth review found NO genuine test-trust issues: every ex"
+  },
+  {
+   "pr": "MetaMask/metamask-mobile#32065",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: I independently read all four in-scope spec files (predict-cash-out, predict-claim-positions-market-details, predict-claim-positions-section, predict-geo-restriction). All are Appium/Playwright mobile tests using a custom Asse"
+  },
+  {
+   "pr": "ivanm696/chatbot-ui#42",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The single file (login.spec.ts) is a 2-line fragment: `const baseUrl = process.env.BASE_URL || 'http://localhost:3000/'` followed by `await page.goto(baseUrl)`. There are no test blocks (test/it/describe), no assertions, and no feature veri"
+  },
+  {
+   "pr": "Crossmint/crossmint-sdk#1913",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "These three files are live latency-benchmark tests that make real, awaited SDK calls (createWallet/createDeviceSigner/sendTransaction/approve) against Crossmint preview + Solana devnet + Stellar testnet. Because each network call is awaited"
+  },
+  {
+   "pr": "Morphclue/apollusia#232",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Only two short Cypress spec files are in the corpus; the page object (../support/app.po) referenced by both is NOT extracted. login.cy.ts has genuine visibility assertions (app-navbar, app-dashboard .should('be.visible')) that fail if the d"
+  },
+  {
+   "pr": "jellydn/docklight#76",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "All three spec files are clean. Every test ends in a properly awaited web-first assertion: auth.spec.ts uses toHaveURL/toBeVisible for login redirect, logout redirect, invalid-credentials error, and login heading; app-lifecycle.spec.ts uses"
+  },
+  {
+   "pr": "RedHatInsights/insights-chrome#3565",
+   "winner": "lint_sufficient",
+   "real_issues": 1,
+   "caught": {
+    "lint": 1,
+    "ai": 0,
+    "ours": 1
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: exactly 1 genuine test-quality issue across the 4 specs \u2014 navigation.spec.ts:16 `await expect(await topbar.isServicesMenuOpen()).toBe(true)`, a one-shot boolean read that awaits the value before passing to expect, giving no Pl"
+  },
+  {
+   "pr": "adobe/alloy#1534",
+   "winner": "lint_sufficient",
+   "real_issues": 1,
+   "caught": {
+    "lint": 1,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: context.spec.js is a well-constructed spec. The many toBeTruthy() calls on context objects (lines 33-36, 57-58, 89-90, 117-118, 146-147, 224-225) are presence assertions PAIRED with toBeFalsy() exclusion checks on the other co"
+  },
+  {
+   "pr": "matheusgomessouza/mmj-landing-page#2",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The spec /tmp/corpus/2_matheusgomessouza__mmj-landing-page/home.cy.ts is a clean read-only Cypress landing-page test with zero genuine E2E quality issues. cy.contains and cy.get(...).contains(...) are retrying queries with built-in existenc"
+  },
+  {
+   "pr": "chatwoot/chatwoot#14707",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Both specs are well-constructed and contain no material test-trust issues (no silent always-pass, no weak/permissive assertions, no missing verification, no bug-hiding flakiness).\n\ninbox-creation-flow.spec.ts: Every expect uses a meaningful"
+  },
+  {
+   "pr": "tan-yong-sheng/GrowChat#171",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Only in-scope file is accessibility.spec.ts (two tests). Both tests are clean: page.goto/waitForURL/analyze() are all properly awaited, and each assertion is expect(results.violations).toEqual([]) \u2014 the canonical strong axe-core assertion t"
+  },
+  {
+   "pr": "kairan/onda-volunteer#158",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Both spec files are short, read-only navigation smoke tests. leader-scheduling.spec.ts goes to /scheduling?previewRole=leader and makes three awaited expect(...).toBeVisible() assertions on testid and role/heading locators. scheduling-event"
+  },
+  {
+   "pr": "jellydn/docklight#75",
+   "winner": "ours",
+   "real_issues": 2,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 2
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: two genuine silent-always-pass issues, both in app-config.spec.ts. (1) L79-81 \"should add a new environment variable\" fills Key/Value, clicks Set, then only re-asserts the \"Environment Variables\" heading visible \u2014 the identica"
+  },
+  {
+   "pr": "RoundingWell/app-frontend#1732",
+   "winner": "none_material",
+   "real_issues": 1,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "All four files are Cypress E2E specs (.cy.js, cy.* commands). Ground-truth review: these are high-quality suites. Mutations/writes (POST/PATCH/DELETE) are stubbed but verified via .wait('@...').its('request.body').should(({data}) => expect("
+  },
+  {
+   "pr": "VaultSparkStudios/call-of-doodie#24",
+   "winner": "none_material",
+   "real_issues": 1,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The spec (4 tests, 75 lines) is well-asserted: every test ends in awaited toBeVisible()/not.toBeVisible()/toBe() matchers. No silent always-pass, no matcher-less expect, no discarded boolean reads. The line-43 not.toBeVisible() is a valid n"
+  },
+  {
+   "pr": "liferay-commerce/liferay-portal#7749",
+   "winner": "lint_sufficient",
+   "real_issues": 1,
+   "caught": {
+    "lint": 1,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Two specs reviewed. AddToCart.spec.tsx is a clean Jest/RTL suite \u2014 all assertions are real jest-dom checks, and the .not.toHaveBeenCalled() calls are correct rejection-path verification (no genuine issues). commerceMiniCart.spec.ts is a Pla"
+  },
+  {
+   "pr": "ivanm696/chatbot-ui#40",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The single file login.spec.ts is a 2-line non-runnable fragment: `const baseUrl = process.env.BASE_URL || 'http://localhost:3000/';` followed by `await page.goto(baseUrl);`. It has NO test() block, NO expect()/assertion, and a top-level awa"
+  },
+  {
+   "pr": "adobe/alloy#1544",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Independent read of personalizationRender.spec.js (592 lines, vitest browser-mode test with msw + custom alloy helpers) found NO genuine E2E test-trust issues. Every assertion that superficially looks like a silent-always-pass trap is actua"
+  },
+  {
+   "pr": "Jahia/formidable#132",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Independently read all four Cypress content-integrity specs (60-63). No genuine E2E test-quality issues exist. Every side-effecting action is verified: form submissions assert a success toast (\"Form submitted successfully!\"), a JCR submissi"
+  },
+  {
+   "pr": "Proiafl/carwash-crm#1",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "checkin.spec.ts contains three shallow smoke/render tests (goto + awaited expect(...).toBeVisible() against specific locators). Each assertion is awaited, uses a real matcher, targets a concrete locator, and goes red if the element is absen"
+  },
+  {
+   "pr": "meshery/meshery#17456",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Only models.spec.js is present in the corpus; the ModelsPage page object that holds the actual helper logic (createModel, importModelViaFile/Url/Csv, exportModel, setModelStatus) is NOT included. The spec is a Page Object Model where assert"
+  },
+  {
+   "pr": "janacm/days-since-nextjs#66",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Read all four specs (dashboard, login, mobile-responsiveness, navigation). The suite is genuinely well-written with no silent-always-pass, weak-assertion, missing-verification, or bug-hiding flakiness issues. Every expect() is awaited with "
+  },
+  {
+   "pr": "ivanm696/chatbot-ui#38",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The single file (/tmp/corpus/38_ivanm696__chatbot-ui/login.spec.ts) is a 2-line fragment: `const baseUrl = process.env.BASE_URL || 'http://localhost:3000'` and `await page.goto(baseUrl + '/')`. There is no test() block, no expect, no assert"
+  },
+  {
+   "pr": "hardik2704/RentBasket_Website#6",
+   "winner": "ours",
+   "real_issues": 3,
+   "caught": {
+    "lint": 2,
+    "ai": 0,
+    "ours": 3
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth = 3 genuine test-trust issues, all in cart.spec.ts: (1) line 99 expect(summaryAfter).toBeDefined() is a matcher-less always-pass on a string|null read, so the quantity-update feature is never verified; (2) lines 110-118 click r"
+  },
+  {
+   "pr": "RaspberryPiFoundation/editor-ui#1498",
+   "winner": "none_material",
+   "real_issues": 1,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Spec file: /tmp/corpus/1498_RaspberryPiFoundation__editor-ui/spec-wc-pyodide.cy.js (270 lines, Cypress, Pyodide Python editor). Ground truth: this is a high-quality spec. Every it() block ends in a meaningful auto-retrying Cypress .should()"
+  },
+  {
+   "pr": "raznar/grafana#20",
+   "winner": "none_material",
+   "real_issues": 1,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Spec is a small, well-formed Playwright file (3 tests). Every test ends in `await expect(page).toHaveURL(/viewPanel=41/)` \u2014 a properly awaited, matcher-bearing assertion that fails if the panel-attention feature breaks. No silent always-pas"
+  },
+  {
+   "pr": "FranciscoMoretti/chat-js#87",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "All four spec files are clean under the strict test-trust criteria. The three test files (artifacts/chat/reasoning.e2e.ts) each contain two real, awaited, auto-retrying web-first assertions: `await expect(page).toHaveURL(\"/\")` and `await ex"
+  },
+  {
+   "pr": "adobe/alloy#1535",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "logging.spec.js contains no genuine E2E test-trust issues. The five searchForLogMessage(...).toBe(true/false) assertions (lines 45,57,70-72,82-84,105-107) are real boolean assertions, and the .toBe(false) negatives are meaningful discrimina"
+  },
+  {
+   "pr": "AidanColvin/Queued-1.1#24",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The single spec file (/tmp/corpus/24_AidanColvin__Queued-1.1/app.spec.ts, 64 lines, 3 tests) is genuinely clean. Every assertion is awaited with a proper matcher: toBeVisible() on specific headings/buttons (lines 31, 49, 54-56, 61-62), the "
+  },
+  {
+   "pr": "kouiso/roentgen#79",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The single spec (corrupt-file.spec.ts) is actually well-constructed and contains NO genuine E2E test-quality issues under the strict definition (silent always-pass, weak/permissive assertions, missing verification, or flakiness that hides b"
+  },
+  {
+   "pr": "tzone85/mini-marty#1",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "home.spec.ts contains two simple smoke tests. Both use `await expect(locator).toBeVisible()` \u2014 properly awaited, auto-retrying web-first assertions on real role/text locators (line 6: heading /mini marty/i; line 11: text /visual programming"
+  },
+  {
+   "pr": "LIDR-academy/AI4Devs-qa-202603#7",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: both spec files contain ZERO genuine E2E test-quality issues. position-board.spec.ts uses only awaited strong matchers (toBeVisible, toHaveText('Senior Full-Stack Engineer'), toHaveClass). candidate-move.spec.ts runs its real "
+  },
+  {
+   "pr": "adobe/alloy#1545",
+   "winner": "tie",
+   "real_issues": 1,
+   "caught": {
+    "lint": 0,
+    "ai": 1,
+    "ours": 1
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: exactly one genuine test-trust issue exists \u2014 the weak-scope assertion at line 411-412. The handler always returns three propositions (__view__, products, cart), but `expect(scopes.some((s) => [\"__view__\",\"products\"].includes("
+  },
+  {
+   "pr": "rancher/dashboard#17710",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "All four files are well-constructed Rancher Cypress E2E tests with real terminal assertions; my independent read found no genuine silent-always-pass, weak-assertion, or bug-hiding flakiness issues. shell.spec.ts is an a11y suite where cy.ch"
+  },
+  {
+   "pr": "aeroos/excalidraw#4",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The file smoke.e2e.ts is a single, well-constructed Playwright smoke test that draws a rectangle on an Excalidraw canvas. Independent ground-truth review found NO genuine E2E test-quality issues: line 14 expect(canvas).toBeVisible() is a pr"
+  },
+  {
+   "pr": "ivanm696/chatbot-ui#36",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The only file (/tmp/corpus/36_ivanm696__chatbot-ui/login.spec.ts) is a 2-line fragment: `const baseUrl = process.env.BASE_URL || 'http://localhost:3000/';` followed by `await page.goto(baseUrl);`. There are no test/describe blocks, no expec"
+  },
+  {
+   "pr": "adobe/alloy#1541",
+   "winner": "ours",
+   "real_issues": 2,
+   "caught": {
+    "lint": 0,
+    "ai": 1,
+    "ours": 2
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: the file has one genuine silent-always-pass defect appearing in TWO negative tests. C14400 (lines 194-195) and C14401 (lines 236-237) assert that the legacy ECID is NOT sent when migration is disabled by reading call.request.b"
+  },
+  {
+   "pr": "BenvenutiMateus/kanban-pet#21",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "This is a unit-test file for pure utility functions (uid, esc, initials, createUsername, fmtDate, fmtTs, today, toast) run under the Playwright test runner. Independent read of all 201 lines found NO genuine test-quality issues: every funct"
+  },
+  {
+   "pr": "LIDR-academy/AI4Devs-qa-202602-Seniors#19",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Single spec (position.spec.ts, 3 tests). Independent read found NO genuine E2E test-quality issues. All three tests use awaited web-first matchers with concrete expected values (toBeVisible/toHaveText/toContainText against 'QA Engineer', 'J"
+  },
+  {
+   "pr": "adobe/alloy#1543",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: iab.spec.js is a robust suite. Every test pairs meaningful assertions \u2014 set-consent call count + status, interact call count===1 for opt-in, interact count===0 for opt-out (a genuine negative verification: a broken consent blo"
+  },
+  {
+   "pr": "jhipster/generator-jhipster#33355",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "All four spec files are JHipster generator integration/unit tests (esmocha + JHipster in-memory test runner via runJHipster), not Playwright/Cypress browser E2E tests. Independent read confirms zero genuine test-quality issues: every `it` h"
+  },
+  {
+   "pr": "lovasoa/whitebophir#410",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "I read all 826 lines of interaction.spec.ts independently. The file is exceptionally rigorous: nearly every test pairs a positive control with concrete-value assertions (exact translation matrix values e=40/f=25, concrete scale values, exac"
+  },
+  {
+   "pr": "ohborny/documenso#5",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The single file (signing-accessibility.spec.ts) is a clean, well-constructed accessibility E2E test with no genuine test-quality issues. Every assertion is strong and verified: toEqual([]) on filtered axe violations (lines 16/52/62, results"
+  },
+  {
+   "pr": "VolvoxCommunity/Volvox.Website#153",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "This landmarks-verification spec contains zero genuine E2E test-quality issues. Tests 1-4 (lines 9-129) use properly-awaited web-first assertions (await expect(locator).toBeVisible()) against specific landmark locators \u2014 they fail correctly"
+  },
+  {
+   "pr": "adobe/alloy#1538",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The file (configOverridesPayload.spec.js, 667 lines) is a solid MSW-mocked suite verifying config-override request payloads across sendEvent/getIdentity/appendIdentityToUrl/setConsent. Independent ground-truth review found NO genuine test-t"
+  },
+  {
+   "pr": "Eiji-Akamine/sigfap-cypress#1",
+   "winner": "ours",
+   "real_issues": 1,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 1
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: one genuine P0 issue. In criar-conta.cy.ts the entire account-creation flow ends at line 25 (click finalizar) + line 26 (cy.wait(5000)) with NO assertion of the outcome -- no success toast, redirect, or error check. The inline"
+  },
+  {
+   "pr": "sakibsadmanshajib/RentEase#14",
+   "winner": "ours",
+   "real_issues": 8,
+   "caught": {
+    "lint": 1,
+    "ai": 0,
+    "ours": 8
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: 8 genuine silent-always-pass issues, all the same anti-pattern family (named-behavior verification never performed / vacuous-on-empty). Tests named for a specific state transition or ledger posting only assert HTTP 200/201 plu"
+  },
+  {
+   "pr": "mammalwithashell/digimon-deck-list-builder#653",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "play-flow.spec.ts is a high-quality Playwright spec with no genuine E2E test-trust issues. All six tests drive real click flows and assert concrete end-states: toHaveURL route transitions (valid end-state verification), awaited toBeVisible("
+  },
+  {
+   "pr": "BugMentor/scrumer-frontend#1",
+   "winner": "ours",
+   "real_issues": 1,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 1
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The spec has one genuine test-trust issue: the only feature-verifying assertion on line 16, `toContainText(/Loading users\\.\\.\\.|ID: \\d+.../)`, is a weak disjunctive assertion that accepts EITHER the 'Loading users...' loading placeholder OR"
+  },
+  {
+   "pr": "adobe/alloy#1533",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The single file installSdk.spec.js contains no genuine E2E test-trust issues. The active test C2560 (lines 16-23) has a real strong assertion on line 21 `expect(typeof window.alloy).toBe(\"function\")` that fails if the SDK does not load \u2014 so"
+  },
+  {
+   "pr": "webex/widgets#704",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The single spec file (WebexMeeting.spec.ts) is well-constructed and contains zero genuine E2E test-quality issues. Every action is followed by a real verifying assertion: mute/unmute clicks assert the opposite button becomes visible and the"
+  },
+  {
+   "pr": "ru-aish/PrivacyAI#13",
+   "winner": "lint_sufficient",
+   "real_issues": 4,
+   "caught": {
+    "lint": 3,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: the four specs are uniformly strong. Every expect(locator) uses await + web-first matchers (toBeVisible/toHaveText/toHaveAttribute/toHaveCount); textContent reads are pinned with exact toContain/not.toContain/toBe; getLastApiR"
+  },
+  {
+   "pr": "VolvoxCommunity/Volvox.Website#101",
+   "winner": "ours",
+   "real_issues": 1,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 1
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: the one material test-trust issue is accessibility.spec.ts:96-110 (\"buttons have accessible names\"), whose only expect() sits inside `for (let i=0; i<count; i++)` where count is read once from button.count(). If zero buttons r"
+  },
+  {
+   "pr": "AET-DevOps26/team-3m#145",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth from reading all four in-scope specs: zero genuine test-trust issues. ai-recommendation.spec.ts has real, awaited, specific assertions; the re-instantiated deterministic recommendation() stub is a legitimate expected-value sour"
+  },
+  {
+   "pr": "adobe/alloy#1548",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "The spec (mediaCollection.spec.js) is a high-quality Playwright test file with no genuine test-trust issues. Every assertion is strong: exact-count checks (expect(vaCalls.length).toBe(14), toBe(1), toBe(3)) fail on under/over-emit; the toBe"
+  },
+  {
+   "pr": "tdguchi/buscasofaG04#14",
+   "winner": "ours",
+   "real_issues": 1,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 1
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Ground truth: exactly 1 genuine test-trust issue across both files. In About.cy.jsx line 10, `.contains(/[1-30]/)` is a broken regex \u2014 `/[1-30]/` is a JS character class matching a single char in {0,1,2,3}, not the numeric range 1..30. It p"
+  },
+  {
+   "pr": "tysonthomas9/loomcli#32",
+   "winner": "lint_sufficient",
+   "real_issues": 3,
+   "caught": {
+    "lint": 2,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "I read all four spec files independently. This is a high-quality test suite: it consistently uses awaited web-first assertions (toBeVisible, toHaveAttribute, expect.poll(...).toBe), and the negative assertions (.not.toBeVisible, .not.toBe(\""
+  },
+  {
+   "pr": "MetaMask/metamask-mobile#32161",
+   "winner": "none_material",
+   "real_issues": 0,
+   "caught": {
+    "lint": 0,
+    "ai": 0,
+    "ours": 0
+   },
+   "ours_false_positives": 0,
+   "judge_rationale": "Both files are Appium/mobile E2E specs (MetaMask mobile) that genuinely verify resulting state through a custom Assertions helper wrapper (Assertions.expectElementToBeVisible / expectTextDisplayed), all awaited with retrying matchers. predi"
+  }
+ ]
+}

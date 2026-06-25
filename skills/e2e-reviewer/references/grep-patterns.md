@@ -36,7 +36,7 @@ When raw grep output is the only thing you have, always read 1–3 lines of surr
 
 | Check | Pattern | Glob | What it detects |
 |-------|---------|------|-----------------|
-| #4f Locator-as-truthy | `\.toBeTruthy\(\)` | `*.{ts,js,cy.*}` | Flag hits where the subject is a Locator (always truthy JS object regardless of element existence). Non-Locator subjects (e.g., boolean variables) are fine — confirm in Phase 2. |
+| #4f Locator always-true | `\.toBeTruthy\(\)` / `\.toBeDefined\(\)` / `\.not\.toBeNull\(\)` / `\.not\.to\.equal\(null\)` | `*.{ts,js,cy.*}` | Flag hits where the subject is a Locator: a Locator is always a truthy, non-null, defined JS object regardless of element existence, so `toBeTruthy`/`toBeDefined`/`not.toBeNull`/`not.to.equal(null)` on it never fail. Non-Locator subjects (e.g., boolean variables, a `textContent()` string that can legitimately be null) are fine — confirm in Phase 2. |
 | #4g Timeout zero | `timeout:\s*0` | `*.{ts,js,cy.*}` | Disables auto-retry entirely; flag unless `// JUSTIFIED:` on line above |
 | #5a Conditional bypass | `if.*(isVisible\(\|is\(.*:visible.*\))` | `*.{spec.*,test.*,cy.*}` | `expect()` gated behind runtime `if` — silently skips assertions. Requires the `.isVisible(` call form, so a bare boolean variable named `isVisible` is not matched. |
 | #5b Force true | `force:\s*true` | `*.{ts,js,cy.*}` | Bypasses actionability checks (visibility, enabled state) |

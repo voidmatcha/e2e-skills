@@ -1,0 +1,110 @@
+{
+  "stats": {
+    "suites": 2,
+    "tests": 2,
+    "passes": 0,
+    "pending": 0,
+    "failures": 2,
+    "start": "2026-06-04T13:00:00.000Z",
+    "end": "2026-06-04T13:00:12.000Z",
+    "duration": 12000,
+    "testsRegistered": 2,
+    "passPercent": 0,
+    "skipped": 0
+  },
+  "results": [
+    {
+      "uuid": "spec-checkout",
+      "title": "",
+      "fullFile": "cypress/e2e/checkout.cy.ts",
+      "file": "cypress/e2e/checkout.cy.ts",
+      "suites": [
+        {
+          "uuid": "suite-checkout",
+          "title": "Checkout flow",
+          "fullFile": "cypress/e2e/checkout.cy.ts",
+          "file": "cypress/e2e/checkout.cy.ts",
+          "tests": [
+            {
+              "title": "places an order",
+              "fullTitle": "Checkout flow places an order",
+              "duration": 4000,
+              "state": "failed",
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "code": "cy.get('[data-testid=\"place-order\"]').click(); cy.contains('Order confirmed').should('be.visible')",
+              "err": {
+                "message": "Timed out retrying after 4000ms: Expected to find content: 'Order confirmed' but never did.",
+                "estack": "CypressError: Timed out retrying after 4000ms: Expected to find content: 'Order confirmed' but never did.\n    at cypress/e2e/checkout.cy.ts:24:40",
+                "diff": null
+              },
+              "context": "[{\"title\":\"Screenshots\",\"value\":\"cypress/screenshots/checkout.cy.ts/Checkout flow -- places an order (failed).png\"}]",
+              "uuid": "test-checkout"
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": ["test-checkout"],
+          "pending": [],
+          "skipped": []
+        }
+      ],
+      "tests": [],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": []
+    },
+    {
+      "uuid": "spec-profile",
+      "title": "",
+      "fullFile": "cypress/e2e/profile.cy.ts",
+      "file": "cypress/e2e/profile.cy.ts",
+      "suites": [
+        {
+          "uuid": "suite-profile",
+          "title": "Profile page",
+          "fullFile": "cypress/e2e/profile.cy.ts",
+          "file": "cypress/e2e/profile.cy.ts",
+          "tests": [
+            {
+              "title": "saves the display name",
+              "fullTitle": "Profile page saves the display name",
+              "duration": 4000,
+              "state": "failed",
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "code": "cy.get('[data-testid=\"save\"]').click(); cy.contains('Saved').should('be.visible')",
+              "err": {
+                "message": "Timed out retrying after 4000ms: Expected to find content: 'Saved' but never did.",
+                "estack": "CypressError: Timed out retrying after 4000ms: Expected to find content: 'Saved' but never did.\n    at cypress/e2e/profile.cy.ts:18:40",
+                "diff": null
+              },
+              "context": "\"Submitted display name: Ada\"",
+              "uuid": "test-profile"
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": ["test-profile"],
+          "pending": [],
+          "skipped": []
+        }
+      ],
+      "tests": [],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": []
+    }
+  ],
+  "meta": {
+    "mocha": { "version": "7.2.0" },
+    "mochawesome": { "version": "7.1.3" },
+    "marge": {
+      "options": { "reportDir": "cypress/reports", "json": true, "html": false }
+    }
+  }
+}

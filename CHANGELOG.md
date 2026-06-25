@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.6.0] - 2026-06-26
+
+### Changed
+- **All three generation/debugging skills hardened after a cross-skill audit, then empirically verified on both Claude and Codex (no pattern ID or failure-category change).** A cross-host run confirmed Claude and Codex reach the same diagnosis on the same input, and the cypress parser fix below was confirmed real (the old query returned nothing on a realistic report; the new one returns the screenshot path).
+  - `cypress-debugger`: Phase-3 screenshot extraction now parses mochawesome's JSON-stringified `context` (`fromjson`) instead of treating it as a nested object. Phase-1 now carries the spec `file`/`fullFile` and the retry `attempts[]` so "passes on retry" is verifiable from the data, and the skill gained a `cypress.config` `retries`/`testIsolation` reference, a Cypress "heal by intent" note, a `mochawesome-merge` step for split `mochawesome*.json`, and a `cy.intercept` alias-ordering example. New eval fixtures: `mochawesome-screenshot-context.json`, `mochawesome-retries.json`.
+  - `playwright-debugger`: report handling now detects the reporter in use (HTML report directory vs `results.json` vs `blob-report/`) instead of assuming `results.json`; the Phase-1 projection surfaces `errorLocation` (the failing call's file:line, distinct from the spec line); added first-class signals for fixture/`beforeEach` setup failures and unmerged-shard artifacts, a "real product bug vs test bug" decision gate before any test fix, and `playwright show-trace` as the primary trace path. Output format aligned with `cypress-debugger` for cross-host parity.
+  - `playwright-test-generator`: the live-exploration step now names its tool source and adds a deterministic ARIA-snapshot fallback plus an app-reachability probe (read and await the configured `webServer`) so the pipeline no longer stalls when the dev server is down; the verification run emits `--trace on-first-retry --reporter=html` for the debugger handoff; selector priority raises `getByTestId` when a project standardizes on it; `best-practices.md` and `code-rules.md` were refreshed (storageState/projects/test-id/ARIA snapshot) with a top-of-file hard-rules checklist.
+
+### Added
+- **`e2e-reviewer` #2 (Missing Then) accept-criteria guards.** `pattern-reference.md` documents the contexts that must not be flagged (API-404 negative checks, cleanup/teardown, success-toast-only flows, helper-embedded assertions, non-entity removes). New evals: a delete-verification case (one true positive plus false-positive guards) and an always-true-locator fixture; minor scanner and grep-pattern touch-ups.
+- **AI-reviewer benchmark cross-model re-judge.** The contestable unique catches were re-judged by an independent cross-model judge (OpenAI gpt-5.5 via Codex), which agreed on 13/15 (87%); recorded in `docs/ai-reviewer-benchmark.md` and surfaced in the README.
+- **Hero banner (`docs/assets/hero.png`).** A liquid-glass hero image for the README.
+
+### Docs
+- README: hero banner, flat status badges (with a "merged PRs" and "55+ agents" badge), a "Why I built this" section, an intent-vs-assertion thesis leading "What a linter structurally cannot catch", a top-of-readme before/after impact diff, a "Roadmap" (planned, not shipped) section, and a simpler `--all` install one-liner.
+- `docs/roadmap.md`: retitled to "Upstream Contributions: Track Record and Roadmap"; added a star-count column to every table; added new queued candidates (DefGuard, valor-software/ngx-bootstrap, perses) and three backlog entries; moved voxel51/fiftyone to In review; removed verbose drop notes.
+
 ## [1.5.6] - 2026-06-17
 
 ### Docs

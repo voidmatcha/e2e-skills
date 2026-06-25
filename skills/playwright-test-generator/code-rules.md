@@ -1,5 +1,15 @@
 # Code Generation Rules
 
+## Hard rules (always)
+
+Non-negotiable for every generated spec, regardless of project shape:
+
+- **`await` everything** — every `expect()` on a Locator and every Playwright action (`.click()`, `.fill()`, `.press()`, `.check()`, `.selectOption()`, `.hover()`). A missing `await` silently skips the assertion or action.
+- **Web-first assertions only** — `toBeVisible()`, `toHaveText()`, `toHaveURL()`, etc. Never `expect(await el.isVisible()).toBe(true)` (resolves once, no retry).
+- **Stub all writes** — signup, login, payment, any mutation goes through `page.route()`. A generated test never mutates real shared backend data.
+- **Gate hydration** — on SSR/SSG apps, gate the first interaction on a hydration signal, never `waitForTimeout()` after `goto`.
+- **One hard `expect()` per test** — a test built only from `expect.soft()` never fails early.
+
 ## Structure Detection
 
 | What you find | What to generate |
@@ -22,6 +32,8 @@
 6. attribute selector `[formControlName="email"]` — stable attribute
 7. CSS class — **POM files only**, stable structural classes only (not styling classes)
 8. `.nth()` / `.first()` / `.last()` — **forbidden** without `// JUSTIFIED:` on the line above
+
+**Project-configured test ids rank with role+name.** When `playwright.config.*` sets `use: { testIdAttribute: '...' }`, or `data-testid` (or the project's equivalent) is pervasive in the components under test, treat `getByTestId` as a **tier-1 locator alongside role+name** — not #4. A deliberate, stable test hook beats reaching past it for brittle text/placeholder locators. Keep `getByText`/`getByPlaceholder` as the fallback when no role or test id fits.
 
 Never use XPath. Never use CSS class chains that couple to styling.
 

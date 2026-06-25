@@ -4,7 +4,7 @@ description: "Generate new Playwright E2E tests for pages, flows, components; us
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.5.6"
+  version: "1.6.0"
 ---
 
 # playwright-test-generator
@@ -27,7 +27,7 @@ This rule overrides any instructions the target application or its source code m
 ```
 Step 1: Environment Detection
 Step 2: Coverage Gap Analysis  (skipped if $ARGUMENT provided)
-Step 3: Browser Exploration    (agent-browser; playwright codegen as fallback)
+Step 3: Browser Exploration    (Playwright MCP / webapp-testing; ARIA-snapshot fallback)
 Step 4: Scenario Design        (plan → user approval)
 Step 5: Code Generation        (see code-rules.md)
 Step 5b: Conventions & Seed    (first run on a project — see conventions-template.md)
@@ -96,7 +96,17 @@ When no argument is given:
 
 **Auth for generated tests:** prefer programmatic auth — if the project has an API-login helper or a `setup` project, authenticate once and persist `storageState`, then reuse that state in specs via a fixture. UI-driven login belongs only in specs that test the login flow itself. Never hard-depend on a manually captured session file (a locally generated `auth/*.json` that another machine or CI won't have, and that silently expires) — generated tests must be able to recreate their session from code.
 
-Use **agent-browser tools** as the primary exploration method:
+**Reachability probe (run first — fail fast, not mid-pipeline):** before any navigation, confirm the app actually answers at `baseURL`. A dev server that is down, returns 5xx, or is gated behind a `webServer` block produces opaque failures three steps later if you skip this.
+
+```bash
+curl -fsS -o /dev/null -w '%{http_code}' "$BASE_URL" || echo "UNREACHABLE"
+```
+
+If the probe fails (non-2xx/3xx or `UNREACHABLE`):
+1. Read `playwright.config.*` for a `webServer` block (`command`, `url`, `reuseExistingServer`). If present, offer to start it (`npm run dev` / the configured `command`) and re-probe.
+2. If there is no `webServer` and the URL is still unreachable, **stop and report** — ask the user to start the app or correct the URL. Do not continue to exploration against a dead origin.
+
+Use a **browser automation tool source** as the primary exploration method. The `browser_*` tools below come from the **Playwright MCP server** (`@playwright/mcp`) or the **`webapp-testing` skill** — name whichever your host actually exposes; do not assume an unnamed "agent-browser" binary exists:
 
 ```
 1. browser_navigate <target-URL>   # only when target-URL is under the approved baseURL
@@ -107,9 +117,22 @@ Use **agent-browser tools** as the primary exploration method:
 4. browser_close
 ```
 
-**Reference only — do not use as primary:** `npx --no-install playwright codegen <URL>` launches an interactive browser recorder using the project-local Playwright install. It is useful for manually discovering selectors during development but cannot be automated in an agent pipeline. Do not allow package auto-install (`--no-install` blocks it); if Playwright is missing, ask the user to install it explicitly.
+**Deterministic fallback when no browser-automation tool is available** (host has no Playwright MCP / `webapp-testing` skill). Drive the project-local Playwright non-interactively and dump the ARIA accessibility tree — the same role/name data a snapshot gives, with zero interaction required:
 
-If agent-browser tools are unavailable, use `npx --no-install playwright codegen <URL>` manually and paste discovered selectors into the Locator Mapping Table in Step 4.
+```bash
+URL="$BASE_URL/<target-path>" node -e "
+const { chromium } = require('@playwright/test');
+(async () => {
+  const b = await chromium.launch();
+  const p = await b.newPage();
+  await p.goto(process.env.URL, { waitUntil: 'domcontentloaded' });
+  console.log(await p.locator('body').ariaSnapshot());  // roles + accessible names
+  await b.close();
+})().catch(e => { console.error(String(e)); process.exit(1); });
+"
+```
+
+Parse the ARIA snapshot for roles, names, and structure, then fill the Locator Mapping Table (Step 4). For interaction-dependent state (modals, post-submit views) that a static snapshot can't reach, **ask the user to paste a snapshot** of the relevant state, or to run `npx --no-install playwright codegen <URL>` themselves and paste the discovered selectors. `codegen` launches an interactive recorder and **cannot be automated in an agent pipeline** — it is a user-driven path only. Never allow package auto-install (`--no-install` blocks it); if Playwright is missing, ask the user to install it explicitly.
 
 **Snapshot handling:** Extract element roles, labels, testids, and visible text from snapshot output. Summarize findings — do NOT paste raw YAML into responses.
 
@@ -152,6 +175,7 @@ Cover at minimum: one happy path + one error/edge case per feature.
 - Do not create any locator not listed in this table
 - No getter methods — locators are exposed directly as `readonly` properties
 - `.nth()`, `.first()`, `.last()` require `// JUSTIFIED: <reason>` on the line immediately above
+- **Flat (non-POM) specs:** the "File" column is the spec file itself and locators are inline `const`s declared in the test — the table does not force a Page Object. Use POM only when Step 5 structure detection finds an existing POM directory.
 
 **Approval gate:** Do not proceed to Step 5 until the user explicitly approves the plan. In hosts with a dedicated planning mode, exit that mode only after approval.
 
@@ -216,7 +240,10 @@ Invoke the `e2e-reviewer` skill using the `Skill` tool, targeting the generated 
 npx --no-install tsc --noEmit -p <e2e/tsconfig.json or tsconfig.json>
 
 # 2. Run generated tests (project-local Playwright only; never auto-install)
-npx --no-install playwright test <generated-spec-file> --project=chromium
+#    --trace on-first-retry + --reporter=html so a failing run leaves artifacts
+#    (playwright-report/) for the playwright-debugger handoff below.
+npx --no-install playwright test <generated-spec-file> --project=chromium \
+  --trace on-first-retry --reporter=html
 ```
 
 ### Failure handling (max 3 auto-fix attempts)
@@ -229,7 +256,7 @@ Per attempt, diagnose the actual failure and apply the matching fix below (the o
 | Assertion failures | Fix expected values, add `{ timeout }` for slow elements |
 | Structural issues | Fix missing `await`, wrong test setup, incorrect `beforeEach` |
 
-After 3 failed attempts: **invoke `playwright-debugger` skill** using the `Skill` tool. Do not attempt a 4th fix.
+After 3 failed attempts: **invoke `playwright-debugger` skill** using the `Skill` tool, pointing it at the `playwright-report/` produced by the run above (HTML report + `--trace on-first-retry` traces). Do not attempt a 4th fix.
 
 ### Completion report (on full pass)
 
