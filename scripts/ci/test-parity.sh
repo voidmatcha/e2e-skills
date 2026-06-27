@@ -147,6 +147,7 @@ restore "$file"
 file="README.md"
 backup "$file"
 mutate "$file" "](docs/roadmap.md)" ""
+mutate "$file" "](docs/roadmap.md)" ""
 assert_fails "Check 7 — docs orphan detection" "docs/roadmap.md: orphan"
 restore "$file"
 
@@ -174,8 +175,7 @@ restore "$file"
 # Case 11: SKILL.md frontmatter description unquoted with colon-space — YAML parse regression of v0.7.3
 file="skills/e2e-reviewer/SKILL.md"
 backup "$file"
-mutate "$file" "description: 'Use for" "description: Use for"
-mutate "$file" "name-assertion mismatch, missing Then" "missing Then, name-assertion mismatch"
+mutate "$file" "description: 'Static review" "description: Static review"
 assert_fails "Frontmatter YAML guard — unquoted description with ': '" "colon-space"
 restore "$file"
 

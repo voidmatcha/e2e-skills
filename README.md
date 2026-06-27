@@ -22,6 +22,9 @@ A green check is not proof. Some E2E tests stay green whether the feature works 
 + await expect(page.getByText('SWE')).toBeVisible();  // now the assertion can actually fail
 ```
 
+> [!NOTE]
+> **Stock linters pass this line.** ESLint (`eslint-plugin-playwright`), `tsc`, and CI all give the red line above a clean bill — `toBeDefined()` only fails on `undefined`, and a Locator never is. We shipped a dedicated rule for the mechanical case ([playwright](https://github.com/voidmatcha/eslint-plugin-playwright-silent-pass) · [cypress](https://github.com/voidmatcha/eslint-plugin-cypress-silent-pass)) — but most of the 24-pattern catalog is **semantic** (name↔assertion mismatch, missing post-state checks, missing auth setup) and no AST rule can decide it. That is what `e2e-skills` is for. In a [100-PR benchmark](docs/ai-reviewer-benchmark.md), `e2e-reviewer` caught **47 such always-pass issues that ESLint and the AI PR reviewers both missed** — with zero false positives.
+
 `e2e-skills` is an AI-agent testing toolkit for Playwright and Cypress that catches what CI misses: **tests that pass but prove nothing**, and **failures that are hard to trace**. It runs as an Agent Skills bundle for [Claude Code](https://claude.com/product/claude-code), [Codex](https://github.com/openai/codex), and [55+ other agents](https://agents.md) via the `skills` CLI, by [@voidmatcha](https://github.com/voidmatcha). Four skills cover the full lifecycle:
 
 1. **`playwright-test-generator`** — generates Playwright E2E tests from scratch, from coverage gap analysis to passing, reviewed tests
@@ -131,7 +134,7 @@ Eight real merged PRs, not synthetic examples:
 | Strapi | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | Discarded `isVisible()`/`isHidden()` reads that were the sole assertion of each visibility test → web-first `toBeVisible()`/`toBeHidden()` |
 | bruno | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | Missing `await` on the sole WebSocket visibility assertion — a floating Promise that never ran → awaited so the check actually executes |
 
-Two more are maintainer-**approved and awaiting merge** ([QwikDev/qwik#8727](https://github.com/QwikDev/qwik/pull/8727), [module-federation/core#4826](https://github.com/module-federation/core/pull/4826)).
+More silent-pass fixes are **in review upstream** — including [module-federation/core#4826](https://github.com/module-federation/core/pull/4826), [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777), and open PRs to [mui-x](https://github.com/mui/mui-x/pull/22982), [Supabase](https://github.com/supabase/supabase/pull/47053), [Expo](https://github.com/expo/expo/pull/46699), and [TanStack Router](https://github.com/TanStack/router/pull/7616).
 
 > [!NOTE]
 > **Benchmark (secondary evidence).** Across 100 bot-reviewed PRs in 77 repositories, `e2e-reviewer` had the best recall (78/110, 71%) with zero false positives, and uniquely caught **47 silent always-pass issues that the linters and the AI reviewers missed**. The original judge shared a model family with the reviewer (an affinity-bias risk), so the contestable unique catches were re-judged by an independent cross-model judge (OpenAI gpt-5.5 via Codex), which agreed on **13 of 15 (87%)** — the headline holds directionally rather than collapsing under a different judge. Read it as directional, not a leaderboard. Full method and limitations: [AI-reviewer benchmark](docs/ai-reviewer-benchmark.md).
@@ -146,6 +149,7 @@ The merged PRs are the empirical case: real silent always-pass tests that shippe
 - `eslint-plugin-playwright` ships a `no-conditional-expect` rule precisely because, with an assertion inside conditional code, "tests can end up **passing but not actually test anything**." ([rule docs](https://github.com/playwright-community/eslint-plugin-playwright/blob/main/docs/rules/no-conditional-expect.md))
 - Tests that pass without truly asserting are a named test smell going back to van Deursen et al., *Refactoring Test Code* (2001), and catalogued since as "tests without assertions" and "tautological assertions" that can never fail.
 - Untrusted suites are widespread and corrosive: Google reported "almost **16% of our tests have some level of flakiness**," and that "it is human nature to ignore alarms when there is a history of false signals." ([Google Testing Blog](https://testing.googleblog.com/2016/05/flaky-tests-at-google-and-how-we.html))
+- This gets worse with AI, not better: LLM-generated tests reproduce the same human-written test anti-patterns they were trained on ([arXiv:2410.10628](https://arxiv.org/abs/2410.10628)), and the "iterate until the suite is green" loop that coding agents run is itself documented to push a model toward **weakening assertions to vacuity** instead of fixing the code ([testomat.io](https://testomat.io/blog/playwright-mcp-claude-code/)). An agent's green check is even less proof than a person's.
 
 Playwright and Cypress together draw tens of millions of weekly npm installs, so the surface for these bugs is large. (We deliberately do not cite the popular "a bug costs 100x more in production" figure — its provenance is disputed; the point stands without it.)
 
@@ -420,6 +424,8 @@ Planned, not yet shipped (these describe direction, not current behavior):
 
 - **Cross-model consistency.** Different AI agents each write specs in their own style, so a suite built with several models drifts into a patchwork no single convention holds together. The plan: infer your project's conventions (POM shape, locator strategy, fixture and structure patterns), ask you only where the codebase is genuinely ambiguous, and persist the answers so every model conforms afterward. Crucially, the recorded conventions stay a *default the agent can deviate from with a stated reason*, not a hard rule, so a better approach for a specific test is never blocked — and a justified deviation becomes a prompt to evolve the convention. This is the part a linter structurally cannot do: it enforces fixed rules; it cannot learn and conform to *your* conventions.
 - **Deterministic detection layer.** Move the per-file, type-decidable smells (locator-as-truthy, floating assertions) from prompt-and-heuristic onto a type-aware AST pass, so detection is reproducible and the LLM is reserved for the judgment calls a single-file rule cannot make. The clearly lint-able rules would be contributed upstream to `eslint-plugin-playwright` rather than re-implemented.
+
+Separately, the upstream contribution roadmap — **8 PRs merged**, several more in review (mui-x, Supabase, Expo, TanStack Router, and more), plus vetted candidates queued or backlogged (all 1,000+ stars) — is tracked in [upstream contributions](docs/roadmap.md).
 
 ## License
 

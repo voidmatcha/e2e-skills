@@ -83,7 +83,7 @@ try_eslint() {
     return 1
   else
     mode="auto-downloaded via npx (set E2E_SMELL_NO_ESLINT_DOWNLOAD=1 to skip)"
-    npx_args=(--yes -p 'eslint@^9' -p "eslint-plugin-$plugin" -p '@typescript-eslint/parser')
+    npx_args=(--yes -p 'eslint@^9' -p "eslint-plugin-$plugin" -p '@typescript-eslint/parser' -p "eslint-plugin-$plugin-silent-pass")
     if [[ "$plugin" == "cypress" ]]; then
       npx_args+=(-p eslint-plugin-mocha)
     fi
@@ -131,6 +131,18 @@ EOFRES
     _mocha_abs=$(printf '%s' "$_paths" | awk -F'","' '{print $3}' | sed 's/"\]$//')
   fi
 
+  # Companion silent-pass plugin (dogfood the #4f always-pass rule). Best-effort:
+  # resolved separately so a missing/offline package NEVER breaks Tier 1 — the
+  # official plugin still runs, and Tier 2/3 still cover #4f.
+  local _sp_abs="" _sp_paths _sp_imp="" _sp_plg="" _sp_rul=""
+  _sp_paths=$( (cd "$ROOT" && npx "${_resolve_args[@]}" "$_cfgd/resolve.cjs" "eslint-plugin-$plugin-silent-pass") 2>/dev/null | tail -1 )
+  if [[ "$_sp_paths" == "["* ]]; then
+    _sp_abs=$(printf '%s' "$_sp_paths" | sed 's/^\["//; s/"\]$//')
+    _sp_imp="import spp from '$_sp_abs';"
+    _sp_plg=", '$plugin-silent-pass': spp"
+    _sp_rul=", '$plugin-silent-pass/no-silent-pass': 'error'"
+  fi
+
   # Conditional evals/files ignore mirrors Tier 3's EVAL_FIXTURE_EXCLUDES.
   local _cfg _evalign=""
   _cfg="$_cfgd/eslint.config.mjs"
@@ -140,13 +152,14 @@ EOFRES
     cat > "$_cfg" <<EOFCFG
 import playwright from '$_plugin_abs';
 import tsParser from '$_parser_abs';
+$_sp_imp
 export default [
   { ignores: ['**/node_modules/**','**/dist/**','**/build/**','**/.next/**','**/out/**','**/coverage/**','**/public/**','**/*.min.js',$_evalign] },
   {
     files: ['**/*.ts','**/*.js','**/*.tsx','**/*.jsx'],
-    plugins: { playwright },
+    plugins: { playwright$_sp_plg },
     languageOptions: { parser: tsParser, ecmaVersion: 'latest', sourceType: 'module', parserOptions: { ecmaFeatures: { jsx: true } } },
-    rules: (playwright.configs['flat/recommended'] ?? playwright.configs.recommended).rules,
+    rules: { ...(playwright.configs['flat/recommended'] ?? playwright.configs.recommended).rules$_sp_rul },
   },
 ];
 EOFCFG
@@ -155,14 +168,15 @@ EOFCFG
 import cypress from '$_plugin_abs';
 import mocha from '$_mocha_abs';
 import tsParser from '$_parser_abs';
+$_sp_imp
 const cypressRules = (cypress.configs['flat/recommended'] ?? cypress.configs.recommended).rules;
 export default [
   { ignores: ['**/node_modules/**','**/dist/**','**/build/**','**/coverage/**','**/*.min.js',$_evalign] },
   {
     files: ['**/*.ts','**/*.js','**/*.tsx','**/*.jsx'],
-    plugins: { cypress, mocha },
+    plugins: { cypress, mocha$_sp_plg },
     languageOptions: { parser: tsParser, ecmaVersion: 'latest', sourceType: 'module', parserOptions: { ecmaFeatures: { jsx: true } } },
-    rules: { ...cypressRules, 'mocha/no-exclusive-tests': 'error' },
+    rules: { ...cypressRules, 'mocha/no-exclusive-tests': 'error'$_sp_rul },
   },
 ];
 EOFCFG

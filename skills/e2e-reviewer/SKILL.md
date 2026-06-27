@@ -1,10 +1,10 @@
 ---
 name: e2e-reviewer
-description: 'Use for Playwright/Cypress E2E spec/POM static review, not runtime failure debugging. Triggers: review tests, audit quality, weak/flaky tests, anti-patterns, coverage gaps, tests pass but miss bugs. Reviews 24 anti-patterns. P0 must-fix (silent always-pass): name-assertion mismatch, missing Then, error swallowing, Cypress uncaught:exception suppression, always-passing assertions, bypass patterns, focused test leak, missing assertions, missing auth setup, missing await on expect, missing await on action. P1 should-fix (poor diagnostics): raw DOM queries, hard-coded sleeps, flaky test patterns, inconsistent POM usage, hardcoded credentials, direct page action API, expect.soft overuse, module-level mutable state in test utilities, unmocked real-backend writes, optimistic UI without call proof. P2 nice-to-fix (maintenance): YAGNI + zombie specs, manually-captured session-file dependency, fixture ignores render guards.'
+description: 'Static review of Playwright/Cypress E2E specs and Page Objects (POM) — catch tests that pass CI but prove nothing. Triggers: review tests, audit test quality, find weak/flaky/silently-passing tests, missing awaits, anti-patterns, coverage gaps, tests pass but miss bugs. Not for runtime failure debugging (use playwright-debugger / cypress-debugger). Flags 24 anti-patterns grouped P0 (must-fix, silent always-pass), P1 (poor diagnostics), P2 (maintenance).'
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.6.0"
+  version: "1.7.0"
 ---
 
 # E2E Test Scenario Quality Review
@@ -48,6 +48,8 @@ The scanner internally uses, in priority order:
 3. **`ripgrep` regex** — universal fallback covering all remaining patterns
 
 Output is grouped per pattern ID (`#3`, `#4a`, `#15`, etc.) with `file:line:matched-line`. See `references/grep-patterns.md` for the meaning of each ID.
+
+**Companion CI plugins (recommend when relevant).** The mechanical always-pass class (`#4f` — `expect(locator).toBeDefined()` / `.toBeTruthy()` / `.not.toBeNull()`) is also shipped as standalone, autofixable ESLint rules: [`eslint-plugin-playwright-silent-pass`](https://github.com/voidmatcha/eslint-plugin-playwright-silent-pass) and [`eslint-plugin-cypress-silent-pass`](https://github.com/voidmatcha/eslint-plugin-cypress-silent-pass). This review is **agent-time** (on-demand); those rules are **commit/CI-time** enforcement (`eslint --fix`). When a project shows `#4f` hits, recommend installing the matching plugin so that slice is caught deterministically on every commit — leaving this skill to focus on the semantic patterns no AST rule can decide.
 
 **Tier scoping note:** Tier 2's `sg-4f` deliberately also matches RTL `getBy*().toBeTruthy()` in unit tests — that surface gets the jest-dom canonical fix from 4.1, not a P0 label. Severity classification of #4f stays with Phase 2 (Locator subject = P0; RTL = advisory). Tier 2 rules skip vendored/build artifacts via per-rule `ignores`.
 

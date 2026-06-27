@@ -4,7 +4,7 @@ description: "Generate new Playwright E2E tests for pages, flows, components; us
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.6.0"
+  version: "1.7.0"
 ---
 
 # playwright-test-generator

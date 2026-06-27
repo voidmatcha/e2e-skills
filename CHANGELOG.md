@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.7.0] - 2026-06-27
+
+### Added
+- **Companion ESLint plugins — published and dogfooded.** Shipped [`eslint-plugin-playwright-silent-pass`](https://github.com/voidmatcha/eslint-plugin-playwright-silent-pass) and [`eslint-plugin-cypress-silent-pass`](https://github.com/voidmatcha/eslint-plugin-cypress-silent-pass) (Apache-2.0, on npm): autofixable rules for the mechanical always-pass class (`#4f` — `expect(locator).toBeDefined()` / `.toBeTruthy()` / `.not.toBeNull()`) that the official `eslint-plugin-playwright` / `-cypress` do not cover. The scanner's Tier 1 now runs them via npx when available — best-effort, so a missing/offline package never breaks Tier 1 and Tier 2/3 still cover `#4f`. `e2e-reviewer` SKILL.md (Phase 1) positions them as the commit/CI-time companion to this agent-time review and recommends installing the matching plugin on `#4f` hits.
+
+### Docs
+- README: cross-link the two plugins; add a sourced AI-evidence note (LLM-generated tests reproduce human anti-patterns, and the "iterate until the suite is green" agent loop weakens assertions to vacuity); correct PR-status claims (Qwik#8727 closed → current in-review PRs across module-federation, qwik#8777, mui-x, Supabase, Expo, TanStack Router); remove the demo GIF from the README.
+- `docs/roadmap.md`: synced the In-review table to current PR states (Qwik#8727 closed → #8777 in review; module-federation approved) and restored newline-merged rows; queued candidates gated to ≥1000 stars.
+- `scripts/ci/test-parity.sh`: the Case 7 docs-orphan drift check now strips both README → `docs/roadmap.md` links so the orphan assertion still fires after the README gained a second reference.
+- `e2e-reviewer/SKILL.md`: shortened the trigger `description` (927 → 457 chars) to a lean WHAT + triggers form per Anthropic/Codex skill-description guidance; the 24-pattern P0/P1/P2 catalog now lives in the three manifests and the SKILL body Quick Reference, not the frontmatter. `scripts/ci/review.sh` Check 5 now sources phrase parity from `.claude-plugin/plugin.json` (manifest↔manifest) instead of the SKILL frontmatter; `AGENTS.md` and `test-parity.sh` Case 11 updated to match.
+
 ## [1.6.0] - 2026-06-26
 
 ### Changed

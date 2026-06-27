@@ -121,7 +121,7 @@ The reinstall script runs `npx skills remove` then `npx skills add <repo-root> -
 Both the Claude Code plugin and the Codex plugin expose the same four public skills from the shared `skills/` directory. The two manifests differ only in schema shape and host-specific display fields — never in skill behavior. CI enforces:
 
 - **Version parity**: `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` (the `e2e-skills` entry), and `.codex-plugin/plugin.json` must share the same `version` string. Bump all three together.
-- **Description parity**: all 24 P0/P1/P2 pattern phrases (the full catalog — count owned by `scripts/ci/review.sh`) must appear in order in every manifest description. The phrase order is owned by the `e2e-reviewer/SKILL.md` frontmatter; downstream manifests follow it.
+- **Description parity**: all 24 P0/P1/P2 pattern phrases (the full catalog — count owned by `scripts/ci/review.sh`) must appear in order in every manifest description. The phrase order is owned by the `.claude-plugin/plugin.json` description; `marketplace.json` and `.codex-plugin/plugin.json` follow it. The `e2e-reviewer/SKILL.md` frontmatter uses a lean trigger description and is no longer the phrase-parity source.
 - **Public skill surface**: `skills/<name>/SKILL.md` `name` field must match the directory name, and the four directory names must match `.claude-plugin/plugin.json` `skills` paths and the four `agents/openai.yaml` `name` fields.
 - **Framework scope**: the word "Puppeteer" must not appear outside `docs/framework-scope.md`, including in any plugin manifest.
 

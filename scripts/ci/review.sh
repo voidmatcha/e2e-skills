@@ -339,19 +339,16 @@ for skill in ('playwright-debugger', 'cypress-debugger'):
     if missing:
         errors.append(f"{evals_path}: F-codes not in SKILL.md taxonomy: {sorted(missing)}")
 
-# Check 5: severity-grouped pattern phrase parity (SKILL.md frontmatter -> plugin.json / marketplace.json)
-fm = re.search(r'^---\n(.*?)\n---', skill_text, re.S)
+# Check 5: severity-grouped pattern phrase parity (canonical source: .claude-plugin/plugin.json
+# description -> marketplace.json / .codex-plugin. The e2e-reviewer SKILL.md uses a lean trigger
+# description by design, so the 24-phrase catalog lives in the manifests, not the skill frontmatter.)
+phrase_source = plugin.get('description', '')
 sev_groups = {}
-if fm:
-    for m in re.finditer(
-        r"P([012])\s+[a-z\-]+(?:\s+[a-z\-]+)?\s*\([^)]*\):\s*(.+?)\.(?=[\s']|$)",
-        fm.group(1),
-        re.S,
-    ):
-        sev_groups[m.group(1)] = m.group(2)
+for m in re.finditer(r"P([012])\s+[a-z\-]+\s*\(([^)]*)\)", phrase_source):
+    sev_groups[m.group(1)] = m.group(2)
 
 if set(sev_groups) != {'0', '1', '2'}:
-    errors.append('e2e-reviewer/SKILL.md frontmatter: could not extract P0/P1/P2 pattern groups')
+    errors.append('.claude-plugin/plugin.json description: could not extract P0/P1/P2 pattern groups')
 else:
     def normalize(s):
         s = s.lower()
@@ -368,7 +365,7 @@ else:
 
     if len(ordered_phrases) != 24:
         errors.append(
-            f"e2e-reviewer/SKILL.md frontmatter: expected 24 patterns across P0/P1/P2, got {len(ordered_phrases)}"
+            f".claude-plugin/plugin.json description: expected 24 patterns across P0/P1/P2, got {len(ordered_phrases)}"
         )
 
     plugin_desc_norm = normalize(plugin.get('description', ''))

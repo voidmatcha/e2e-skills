@@ -41,7 +41,7 @@ These merged PRs show the patterns in this repository applied to real projects.
 
 | Repository | ★ | PR | Status | Anti-pattern family |
 |------------|----|----|--------|---------------------|
-| Qwik | ★22k | [QwikDev/qwik#8727](https://github.com/QwikDev/qwik/pull/8727) | Approved | Discarded assertion promises, `toBeDefined()` on locators, bare locators |
+| Qwik | ★22k | [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777) | In review | Non-asserting e2e checks — discarded assertion promises, `toBeDefined()` on locators, bare locators |
 | module-federation/core | ★2.6k | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Approved | Redundant blanket `uncaught:exception` suppression removed from the memory-router cypress spec |
 | hcengineering/platform | ★26.3k | [hcengineering/platform#10922](https://github.com/hcengineering/platform/pull/10922) | In review | `expect(locator).toBeDefined()` always-true checks in the recruiting navigator test (sole verification) replaced with web-first `toBeVisible()` |
 | TanStack Router | ★14.7k | [TanStack/router#7616](https://github.com/TanStack/router/pull/7616) | In review | `expect(locator).toBeTruthy()` (always true), masked expected-value typo |
@@ -60,12 +60,13 @@ candidates whose acceptance was doubtful (solo maintainer with no external-PR pr
 finding a maintainer could reasonably defend as intentional) were dropped rather than padded.
 SUBMIT = clean-enough policy + live finding a maintainer should accept; CAUTION = a real finding
 behind a gate (CLA / issue-first) that must be cleared first. A fresh convention check runs
-before any submission.
+before any submission. Candidates are gated to **>=1000 stars** to match the large-repo bar of
+the track record above; clean but smaller finds (for example trivy-vulnerability-explorer, ★176)
+are parked rather than queued.
 
 | Repository | ★ | Framework | Status | Why a maintainer must accept |
 |------------|----|-----------|--------|------------------------------|
 | mui/mui-x | ★5.8k | Playwright | SUBMIT | `expect(getByText(...)).not.to.equal(null)` is always true (a Locator is never null) and is the sole check of the dateTime-cell edit; a silently broken edit ships green. Finding lives in `test/e2e/` — outside the CLA-required folders. |
-| dbsystel/trivy-vulnerability-explorer | ★176 | Playwright | SUBMIT | The `verifyVulnerabilityDetails` page-object checks the detail row's title and description with `expect(getByTitle(...)).toBeTruthy()` / `expect(getByText(...)).toBeTruthy()` — always true on a Locator, so a wrong or missing title/description ships green. The adjacent `href` check is real, so frame the two truthy lines as the only broken ones. (★176, Apache-2.0, active at HEAD; no CLA found; LLM Phase-2 verified.) |
 | carbon-design-system/carbon | ★9.2k | Playwright | SUBMIT | Two ProgressIndicator tests whose only assertion is `expect(page.locator(...)).toBeTruthy()` — always true on a Locator, so the CSS-class check never runs. Same file has real assertions; frame as the only broken lines. (DCO sign-off.) |
 | rancher-sandbox/rancher-desktop | ★7.2k | Playwright | SUBMIT | `expect(getByText('alpha'/'beta'/'gamma')).not.toBeNull()` is always true (a Locator is never null) and is the sole content check of the "should list integrations" test; a dropped or renamed integration ships green. (DCO sign-off.) |
 | ever-co/ever-gauzy | ★3.7k | Cypress | SUBMIT | The `Should be able to edit payment` test installs a blanket `cy.on('uncaught:exception', () => false)` (#3b) that swallows every app error, so a runtime exception in the edit flow is suppressed and the test passes regardless of whether the feature works. (★3,742; `PaymentsTest.ts:53`; confirm the test still passes after scoping the handler before submitting.) |
@@ -91,7 +92,6 @@ The `Patterns` column lists the anti-pattern IDs the scan surfaced (see
 | penpot/penpot | ★53.6k | Playwright | #8b, #4c, #4h |
 | vercel/ai-chatbot | ★20.5k | Playwright | #2, #3, #10a |
 | surveyjs/survey-library | ★4.8k | Playwright | #4c-4e |
-| coveo/search-ui | ★132 | Playwright | #4c-4e |
 | web-infra-dev/rspack | ★12.8k | Playwright | #4c-4e |
 | saleor/saleor-dashboard | ★1k | Playwright | #4c, #8b |
 | jupyterlab/jupyterlab | ★15.2k | Playwright | #4c-4e, #8b |
@@ -103,7 +103,6 @@ The `Patterns` column lists the anti-pattern IDs the scan surfaced (see
 | Kong/insomnia | ★39.7k | Playwright | #8b |
 | handsontable/handsontable | ★21.9k | Playwright | #4c-4e, #9 |
 | vendure | ★8.2k | Playwright | #3, #5a |
-| CourtHive/TMX | ★25 | Playwright | #4c |
 | nhost/nhost | ★9.2k | Playwright | #15 |
 | astro | ★60.5k | Playwright | #4c-4e |
 | openobserve/openobserve | ★19.4k | Playwright | #4c |
