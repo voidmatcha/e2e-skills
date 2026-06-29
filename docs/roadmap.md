@@ -14,9 +14,9 @@ conventions before submission.
 
 ## Cadence and goal
 
-We keep about **10 PRs open at a time**. Each time one merges (or is declined), we
-top the queue back up to 10 from the prepared and backlog lists below, so there is
-always a steady, reviewable flow rather than a one-time dump.
+We keep about **10+ PRs open at a time**. Each time one merges (or is declined), we
+refresh the queue from the prepared and backlog lists below, so there is always a
+steady, reviewable flow rather than a one-time dump.
 
 **Goal: at least 25 merged PRs.** Each merge is independent, real-world proof that
 the skill flags genuine silent-always-pass anti-patterns that maintainers agree are
@@ -24,24 +24,25 @@ worth fixing — validation no synthetic benchmark can provide.
 
 ## Merged
 
-These merged PRs show the patterns in this repository applied to real projects.
+Selected merged PRs below are sorted by approximate repository recognition, not by chronology.
 
 | Repository | ★ | PR | What it fixed | Lesson |
 |------------|----|----|---------------|--------|
-| Cal.com | ★45.8k | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | Locator truthiness, no-op disabled checks, one-shot assertions, hard-coded waits | Green tests are not trustworthy if assertions do not wait for user-visible state. |
 | Storybook | ★90.4k | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Missing `await` on `fill()`/`blur()`, discarded `isVisible()` checks | Playwright promises must be awaited, and `isVisible()` is a point-in-time query, not a web-first assertion. |
-| Element Web | ★13.2k | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Always-passing assertions, unawaited checks, `toBeAttached()` misuse, dead code | Static review can find tests that pass while proving nothing in large E2E suites. |
 | code-server | ★78.1k | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | An `it.only` that silently skipped 8 unit tests for 7 months (one had broken), 4x matcher-less `expect()`, a dangling locator, 16x one-shot `isVisible()` reads | A focused-test leak removes whole suites from CI without ever failing; the gap is invisible until something inside the skipped block regresses. |
-| Ghost | ★54.1k | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | `expect(likeButton.isDisabled()).toBeTruthy()` x3 plus a one-shot re-enable read in the comments-ui like-button suite | An un-awaited `isDisabled()` returns a Promise that is always truthy, so the debounce-guard tests passed no matter what the button did. |
-| SvelteKit | ★20.6k | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Unawaited `expect(page)` web-first assertions in the basics client E2E tests | A floating web-first assertion never runs; the missing `await` is the whole bug, and adding it is what makes the check assert. |
 | Strapi | ★72.5k | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | Discarded `isVisible()`/`isHidden()`/`isEnabled()` reads that were the sole assertion of each visibility test, plus one-shot reads and unawaited clicks | A discarded boolean read asserts nothing, so the test's whole visibility contract passed unconditionally. |
+| SvelteKit | ★20.6k | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Unawaited `expect(page)` web-first assertions in the basics client E2E tests | A floating web-first assertion never runs; the missing `await` is the whole bug, and adding it is what makes the check assert. |
+| Cal.com | ★45.8k | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | Locator truthiness, no-op disabled checks, one-shot assertions, hard-coded waits | Green tests are not trustworthy if assertions do not wait for user-visible state. |
+| Ghost | ★54.1k | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | `expect(likeButton.isDisabled()).toBeTruthy()` x3 plus a one-shot re-enable read in the comments-ui like-button suite | An un-awaited `isDisabled()` returns a Promise that is always truthy, so the debounce-guard tests passed no matter what the button did. |
 | bruno | ★45.2k | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | A missing `await` on the sole web-first visibility assertion in the WebSocket spec — the floating Promise never ran | An un-awaited web-first `expect()` returns a Promise that is never observed, so the assertion never executes and the test passes no matter what the UI shows. |
+| Qwik | ★22k | [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777) | Non-asserting E2E checks — discarded assertion promises, `toBeDefined()` on locators, and bare locators that asserted nothing | A discarded assertion promise and `toBeDefined()` on a locator both pass unconditionally; only an awaited web-first matcher actually checks the rendered state. |
+| Element Web | ★13.2k | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Always-passing assertions, unawaited checks, `toBeAttached()` misuse, dead code | Static review can find tests that pass while proving nothing in large E2E suites. |
+| mui-x | ★5.8k | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | Always-true Locator null check replaced with a real dateTime-cell edit assertion | Locator objects are never null; the fix makes the edit prove user-visible state. |
 
 ## In review
 
 | Repository | ★ | PR | Status | Anti-pattern family |
 |------------|----|----|--------|---------------------|
-| Qwik | ★22k | [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777) | In review | Non-asserting e2e checks — discarded assertion promises, `toBeDefined()` on locators, bare locators |
 | module-federation/core | ★2.6k | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Approved | Redundant blanket `uncaught:exception` suppression removed from the memory-router cypress spec |
 | hcengineering/platform | ★26.3k | [hcengineering/platform#10922](https://github.com/hcengineering/platform/pull/10922) | In review | `expect(locator).toBeDefined()` always-true checks in the recruiting navigator test (sole verification) replaced with web-first `toBeVisible()` |
 | TanStack Router | ★14.7k | [TanStack/router#7616](https://github.com/TanStack/router/pull/7616) | In review | `expect(locator).toBeTruthy()` (always true), masked expected-value typo |
@@ -66,7 +67,6 @@ are parked rather than queued.
 
 | Repository | ★ | Framework | Status | Why a maintainer must accept |
 |------------|----|-----------|--------|------------------------------|
-| mui/mui-x | ★5.8k | Playwright | SUBMIT | `expect(getByText(...)).not.to.equal(null)` is always true (a Locator is never null) and is the sole check of the dateTime-cell edit; a silently broken edit ships green. Finding lives in `test/e2e/` — outside the CLA-required folders. |
 | carbon-design-system/carbon | ★9.2k | Playwright | SUBMIT | Two ProgressIndicator tests whose only assertion is `expect(page.locator(...)).toBeTruthy()` — always true on a Locator, so the CSS-class check never runs. Same file has real assertions; frame as the only broken lines. (DCO sign-off.) |
 | rancher-sandbox/rancher-desktop | ★7.2k | Playwright | SUBMIT | `expect(getByText('alpha'/'beta'/'gamma')).not.toBeNull()` is always true (a Locator is never null) and is the sole content check of the "should list integrations" test; a dropped or renamed integration ships green. (DCO sign-off.) |
 | ever-co/ever-gauzy | ★3.7k | Cypress | SUBMIT | The `Should be able to edit payment` test installs a blanket `cy.on('uncaught:exception', () => false)` (#3b) that swallows every app error, so a runtime exception in the edit flow is suppressed and the test passes regardless of whether the feature works. (★3,742; `PaymentsTest.ts:53`; confirm the test still passes after scoping the handler before submitting.) |

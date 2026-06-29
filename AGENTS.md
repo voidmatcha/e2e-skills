@@ -139,10 +139,11 @@ When you bump the bundle version, touch all three manifests in one commit. The d
 ## Installation Paths Documented for Users
 
 - **Claude Code marketplace**: `/plugin marketplace add voidmatcha/e2e-skills` → `/plugin install e2e-skills@voidmatcha` (reads `.claude-plugin/plugin.json` + `marketplace.json`).
-- **Cross-agent (55 hosts via the `vercel-labs/skills` npm CLI)**: `npx skills add voidmatcha/e2e-skills --skill '*' -g -a claude-code -a codex` — pick specific agents with repeat `-a` flags or use `--agent '*'` to install everywhere. This is the recommended Codex install path; the bundle lands in `~/.agents/skills/` (the cross-agent skills dir), which Codex/omx discovers — verified empirically by a 10-repo Codex review run loading `~/.agents/skills/e2e-reviewer/SKILL.md`. `.codex-plugin/plugin.json` is parsed at that point for the `interface` block (`displayName`, `defaultPrompt[]`, `brandColor`, capabilities, max 3 prompts × 128 chars per Codex spec). The native `codex plugin marketplace add` flow is intentionally not shipped — see CHANGELOG 1.3.0 for the rationale.
+- **Codex plugin marketplace**: `codex plugin marketplace add voidmatcha/e2e-skills` → `codex plugin add e2e-skills@voidmatcha` (reads `.codex-plugin/plugin.json` for the interface block and installs the shared `skills/` bundle).
+- **Cross-agent (55 hosts via the `vercel-labs/skills` npm CLI)**: `npx skills add voidmatcha/e2e-skills --skill '*' -g -a claude-code -a codex` — pick specific agents with repeat `-a` flags or use `--agent '*'` to install everywhere. The bundle lands in `~/.agents/skills/`, where Codex/omx also auto-discovers it; verified empirically by a 10-repo Codex review run loading `~/.agents/skills/e2e-reviewer/SKILL.md`.
 - **Manual clone for Claude Code**: `git clone https://github.com/voidmatcha/e2e-skills.git ~/.claude/skills/e2e-skills`.
 
-The three install paths above cover every supported host. The cross-agent `skills` CLI route handles Codex and the broader `vercel-labs/skills` ecosystem (55 agents).
+The install paths above cover every supported host. Use the Codex marketplace command for Codex plugin installs, or the cross-agent `skills` CLI route when installing across Codex, Claude Code, and the broader `vercel-labs/skills` ecosystem (55 agents).
 
 ## License
 

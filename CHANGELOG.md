@@ -1,3 +1,10 @@
+## [Unreleased]
+
+### Documentation
+
+- Updated the public install docs to include the Codex plugin marketplace flow alongside the cross-agent `skills` CLI path.
+- Refreshed the OSS proof points to say 10+ merged upstream PRs and keep the representative examples aligned across README, roadmap, and sibling lint-plugin READMEs.
+
 # Changelog
 
 ## [1.7.0] - 2026-06-27

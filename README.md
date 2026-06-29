@@ -7,11 +7,11 @@
 [![Codex](https://img.shields.io/badge/Codex-compatible-412991?style=flat-square&labelColor=black&logo=openai&logoColor=white)](https://github.com/openai/codex)
 [![Playwright | Cypress](https://img.shields.io/badge/Playwright_%7C_Cypress-supported-2EAD33?style=flat-square&labelColor=black&logo=playwright&logoColor=white)](https://playwright.dev)
 [![License](https://img.shields.io/github/license/voidmatcha/e2e-skills?style=flat-square&labelColor=black&color=37B0E6)](./LICENSE)
-[![Merged PRs](https://img.shields.io/badge/merged_PRs-8-1FC07C?style=flat-square&labelColor=black&logo=github)](#proven-in-open-source)
+[![Merged PRs](https://img.shields.io/badge/merged_PRs-10%2B-1FC07C?style=flat-square&labelColor=black&logo=github)](#proven-in-open-source)
 [![Runs in 55+ agents](https://img.shields.io/badge/runs_in-55%2B_agents-37B0E6?style=flat-square&labelColor=black)](https://agents.md)
 
 > [!TIP]
-> **8 PRs already merged** into Cal.com, Storybook, SvelteKit, Ghost and more: real-world proof the skill flags bugs that maintainers agree are worth fixing. If that is useful, [star the repo](https://github.com/voidmatcha/e2e-skills) and follow [@voidmatcha](https://github.com/voidmatcha) for more agent skills.
+> **10+ upstream PRs merged** across Storybook, code-server, Strapi, SvelteKit, Cal.com, and more: real-world proof the skill flags bugs that maintainers agree are worth fixing. If that is useful, [star the repo](https://github.com/voidmatcha/e2e-skills) and follow [@voidmatcha](https://github.com/voidmatcha) for more agent skills.
 
 **Find Playwright and Cypress E2E tests that pass CI but prove nothing, generate new end-to-end coverage, and turn failing test reports into root-cause fixes — as Agent Skills for Claude Code, Codex, and 55+ other AI coding agents (any [`AGENTS.md`](https://agents.md)-compatible host, via the `skills` CLI).**
 
@@ -52,8 +52,9 @@ The other half was cruft. Ask a model to write a spec and it cheerfully over-bui
 # Claude Code + Codex (most common)
 npx skills add voidmatcha/e2e-skills --skill '*' -g -a claude-code -a codex
 
-# Codex plugin — via the skills CLI (Codex only)
-npx skills add voidmatcha/e2e-skills --skill '*' -g -a codex
+# Codex plugin — marketplace
+codex plugin marketplace add voidmatcha/e2e-skills
+codex plugin add e2e-skills@voidmatcha
 
 # Claude Code plugin — marketplace
 /plugin marketplace add voidmatcha/e2e-skills
@@ -66,7 +67,7 @@ git clone https://github.com/voidmatcha/e2e-skills.git ~/.claude/skills/e2e-skil
 npx skills add voidmatcha/e2e-skills -g --all
 ```
 
-The Codex command above **is** the Codex plugin install: the `skills` CLI places the bundle in `~/.agents/skills/`, where Codex auto-discovers it and reads `.codex-plugin/plugin.json` (the `interface` block). There is no separate `codex plugin marketplace add` step — a native marketplace entry would require duplicating the shared `skills/` tree into a per-plugin subdirectory (Codex marketplace plugins cannot reference the repo root, [openai/codex#17066](https://github.com/openai/codex/issues/17066)), so the CLI route is the supported Codex path.
+Codex now supports plugin marketplaces: `codex plugin marketplace add` registers this repo as the `voidmatcha` marketplace, and `codex plugin add e2e-skills@voidmatcha` installs the plugin. The `skills` CLI remains the cross-agent install path; it places the bundle in `~/.agents/skills/`, where Codex also auto-discovers the skills and reads `.codex-plugin/plugin.json` for the interface block.
 
 ### Quick Example
 
@@ -121,20 +122,22 @@ That gap is the whole point of the judgment layer. `e2e-reviewer` **verifies eac
 
 The sharpest case: in **code-server**, a committed `it.only` had silently skipped 8 tests for 7 months, and one of them had already broken. CI stayed green the whole time. That is what a silent always-pass costs, and why a passing suite is not the same as a tested one. e2e-reviewer found it; the maintainers merged the fix.
 
-Eight real merged PRs, not synthetic examples:
+Selected merged PRs (10+ total), sorted by repository recognition rather than chronology:
 
 | Repository | Merged PR | What it fixed |
 |------------|-----------|---------------|
-| Cal.com | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | False-passing Playwright assertions, no-op state checks, hard-coded waits → web-first assertions + condition waits |
 | Storybook | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Unawaited Playwright actions and discarded `isVisible()` calls that made E2E checks silently weak |
-| Element Web | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Always-passing assertions, unawaited checks, `toBeAttached()` misuse, debugging leftovers |
 | code-server | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | An `it.only` leak that silently skipped 8 Heart unit tests for 7 months (one had since broken), 4× matcher-less `expect()`, a dangling locator, and 16× one-shot `page.isVisible()` reads → web-first assertions |
-| Ghost | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | `expect(likeButton.isDisabled()).toBeTruthy()` ×3 — an un-awaited `isDisabled()` Promise is always truthy, so the comments-ui like-button debounce guards passed unconditionally → web-first `toBeDisabled()`/`not.toBeDisabled()` |
-| SvelteKit | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Unawaited `expect(page)` web-first assertions in the basics client tests — floating promises that never asserted → awaited |
 | Strapi | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | Discarded `isVisible()`/`isHidden()` reads that were the sole assertion of each visibility test → web-first `toBeVisible()`/`toBeHidden()` |
+| SvelteKit | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Unawaited `expect(page)` web-first assertions in the basics client tests — floating promises that never asserted → awaited |
+| Cal.com | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | False-passing Playwright assertions, no-op state checks, hard-coded waits → web-first assertions + condition waits |
+| Ghost | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | `expect(likeButton.isDisabled()).toBeTruthy()` ×3 — an un-awaited `isDisabled()` Promise is always truthy, so the comments-ui like-button debounce guards passed unconditionally → web-first `toBeDisabled()`/`not.toBeDisabled()` |
 | bruno | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | Missing `await` on the sole WebSocket visibility assertion — a floating Promise that never ran → awaited so the check actually executes |
+| Qwik | [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777) | Non-asserting E2E checks — discarded assertion promises, `toBeDefined()` on locators, and bare locators that asserted nothing → web-first assertions |
+| Element Web | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Always-passing assertions, unawaited checks, `toBeAttached()` misuse, debugging leftovers |
+| mui-x | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | Always-true Locator null check replaced with a real dateTime-cell edit assertion — Locator objects are never null, so the test now proves user-visible state |
 
-More silent-pass fixes are **in review upstream** — including [module-federation/core#4826](https://github.com/module-federation/core/pull/4826), [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777), and open PRs to [mui-x](https://github.com/mui/mui-x/pull/22982), [Supabase](https://github.com/supabase/supabase/pull/47053), [Expo](https://github.com/expo/expo/pull/46699), and [TanStack Router](https://github.com/TanStack/router/pull/7616).
+More silent-pass fixes are **already in review upstream** — including [module-federation/core#4826](https://github.com/module-federation/core/pull/4826), plus open PRs to [Supabase](https://github.com/supabase/supabase/pull/47053), [Expo](https://github.com/expo/expo/pull/46699), and [TanStack Router](https://github.com/TanStack/router/pull/7616).
 
 > [!NOTE]
 > **Benchmark (secondary evidence).** Across 100 bot-reviewed PRs in 77 repositories, `e2e-reviewer` had the best recall (78/110, 71%) with zero false positives, and uniquely caught **47 silent always-pass issues that the linters and the AI reviewers missed**. The original judge shared a model family with the reviewer (an affinity-bias risk), so the contestable unique catches were re-judged by an independent cross-model judge (OpenAI gpt-5.5 via Codex), which agreed on **13 of 15 (87%)** — the headline holds directionally rather than collapsing under a different judge. Read it as directional, not a leaderboard. Full method and limitations: [AI-reviewer benchmark](docs/ai-reviewer-benchmark.md).
@@ -425,7 +428,7 @@ Planned, not yet shipped (these describe direction, not current behavior):
 - **Cross-model consistency.** Different AI agents each write specs in their own style, so a suite built with several models drifts into a patchwork no single convention holds together. The plan: infer your project's conventions (POM shape, locator strategy, fixture and structure patterns), ask you only where the codebase is genuinely ambiguous, and persist the answers so every model conforms afterward. Crucially, the recorded conventions stay a *default the agent can deviate from with a stated reason*, not a hard rule, so a better approach for a specific test is never blocked — and a justified deviation becomes a prompt to evolve the convention. This is the part a linter structurally cannot do: it enforces fixed rules; it cannot learn and conform to *your* conventions.
 - **Deterministic detection layer.** Move the per-file, type-decidable smells (locator-as-truthy, floating assertions) from prompt-and-heuristic onto a type-aware AST pass, so detection is reproducible and the LLM is reserved for the judgment calls a single-file rule cannot make. The clearly lint-able rules would be contributed upstream to `eslint-plugin-playwright` rather than re-implemented.
 
-Separately, the upstream contribution roadmap — **8 PRs merged**, several more in review (mui-x, Supabase, Expo, TanStack Router, and more), plus vetted candidates queued or backlogged (all 1,000+ stars) — is tracked in [upstream contributions](docs/roadmap.md).
+Separately, the upstream contribution roadmap tracks the broader pipeline: **10+ PRs merged**, more fixes in review (Supabase, Expo, TanStack Router, and more), plus vetted 1,000+ star candidates queued or backlogged in [upstream contributions](docs/roadmap.md).
 
 ## License
 
