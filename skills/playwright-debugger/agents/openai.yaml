@@ -1,5 +1,5 @@
 name: playwright-debugger
-description: Diagnose failed Playwright test runs from playwright-report artifacts, classify root causes, and suggest concrete fixes.
+description: Find the root cause of a Playwright E2E test that has already run and failed, and fix it — a TimeoutError, broken selector, flake, hydration race, or CI-only failure — given a playwright-report/, trace.zip, screenshots, or CI artifacts, deciding whether it is a real regression or a brittle test. Not for writing new Playwright tests (use playwright-test-generator), reviewing a passing suite (use e2e-reviewer), or non-Playwright failures (Cypress, Jest, Vitest).
 metadata:
   short-description: Debug Playwright failures
 allow_implicit_invocation: true

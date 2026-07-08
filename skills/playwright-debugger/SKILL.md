@@ -1,6 +1,6 @@
 ---
 name: playwright-debugger
-description: "Debug failed Playwright tests from reports/traces/screenshots/local/CI output; diagnose runtime failures and flakes."
+description: 'Use this skill to find the root cause of a Playwright end-to-end test that has already run and failed, and fix it. Reach for it whenever someone shares a failing Playwright spec or test and wants to know why — a TimeoutError, a broken or ambiguous selector, a whole spec breaking after a deploy, a flake that only passes on retry, a hydration or timing race, or a passes-locally-but-fails-in-CI split. It applies given any failure evidence: an error message, a playwright-report/ or HTML report, a trace.zip, screenshots, or CI artifacts (including a GitHub run id to download). Use it to determine whether the failure is a real product regression or a brittle test, and to propose the concrete fix. Do not use it for writing new Playwright tests, speeding up or reviewing a passing suite, non-Playwright test failures (Cypress, Jest, Vitest), or debugging the app or backend when no Playwright test is involved.'
 license: Apache-2.0
 metadata:
   author: voidmatcha
@@ -98,7 +98,7 @@ If `jq` is unavailable, read the JSON file directly with the Read tool and extra
 
 Use Phase 1 output (error message + duration + file) to classify each failure. **Most failures are identifiable here — only go to Phase 3 if still unclear.**
 
-**Classifier delegation (delegation-aware):** if the `e2e-failure-classifier` subagent is available (Claude Code plugin install), delegate one failure per call, in parallel — pass the failing test name and report excerpt (error, stack, attempt outcome); it loads this F1–F15 table, reads the spec and config, and returns the F-code with confidence, evidence, and a fix. If the subagent is not available (Codex, `skills` CLI install, or any host without subagents), classify inline with the same table and steps below. The F-code must be identical either way.
+**Classifier delegation (delegation-aware):** if the `e2e-failure-classifier` subagent is available (Claude Code plugin install), delegate one failure per call, in parallel — pass the failing test name, the report excerpt (error, stack, attempt outcome), and the **absolute** path to this skill's `SKILL.md` (the directory shown in the Skill tool's "Base directory" output + `/SKILL.md`) — the subagent's working directory is the project under debug, so it cannot resolve a repo-relative `skills/...` path and must be handed the resolved location. It loads the F1–F15 table from that file, reads the spec and config, and returns the F-code with confidence, evidence, and a fix. If the subagent is not available (Codex, `skills` CLI install, or any host without subagents), classify inline with the same table and steps below. The F-code must be identical either way.
 
 | # | Category | Signals | Review Pattern |
 |---|----------|---------|----------------|

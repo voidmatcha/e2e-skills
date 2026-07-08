@@ -226,6 +226,52 @@ mutate "$file" "## 설치" "###설치-변조"
 assert_fails "README i18n parity — section drift in README.ko.md" "README i18n parity: README.ko.md has"
 restore "$file"
 
+# Case 16: subagent parity SP1 — dropping the absolute-path contract from an
+# agent file (the A1 regression) must fail. CWD is the target project, so a
+# repo-relative read target silently resolves nowhere.
+file="agents/e2e-finding-verifier.md"
+backup "$file"
+mutate "$file" "absolute path" "path"
+assert_fails "Subagent parity SP1 — agent drops absolute-path contract" "must state the caller passes the absolute"
+restore "$file"
+
+# Case 17: subagent parity SP3 — the inline fallback losing a verifier verdict
+# term breaks the "identical verdict either way" contract (AGENTS.md rule 5).
+file="skills/e2e-reviewer/SKILL.md"
+backup "$file"
+mutate "$file" "CONFIRMED / FALSE-POSITIVE / NEEDS-CONTEXT" "CONFIRMED / FALSE-POSITIVE"
+assert_fails "Subagent parity SP3 — inline fallback drops a verdict term" "inline fallback missing verdict term NEEDS-CONTEXT"
+restore "$file"
+
+# Case 18: subagent parity SP4 — a new F16+ code beyond the frozen F1–F15 range
+# must fail. Anchor on the bare `| F15 |` cell, NOT its display title: AGENTS.md
+# freezes the CODES, and F-code titles are framework-adapted, so a title rename
+# must not break this smoke test.
+file="skills/playwright-debugger/SKILL.md"
+backup "$file"
+mutate "$file" "| F15 |" "| F16 |"
+assert_fails "Subagent parity SP4 — new F16 code beyond frozen range" "found a new F16+ code"
+restore "$file"
+
+# Case 19: subagent parity SP4 — an added F17 code must ALSO fail. This guards the
+# strengthening over a bare "F16" substring check: the table-set comparison catches
+# any code outside F1–F15, not just the literal F16.
+file="skills/playwright-debugger/SKILL.md"
+backup "$file"
+mutate "$file" "| F15 |" "| F17 |"
+assert_fails "Subagent parity SP4 — added F17 caught by table-set check" "F-code table must be exactly F1"
+restore "$file"
+
+# Case 20: subagent parity SP2 — dropping the absolute-path requirement from the
+# DELEGATION LINE (the line naming the subagent) must fail, even if the word
+# 'absolute' survives elsewhere in the file. Guards the A1 regression on the
+# caller side.
+file="skills/playwright-debugger/SKILL.md"
+backup "$file"
+mutate "$file" "the **absolute** path to this skill" "the path to this skill"
+assert_fails "Subagent parity SP2 — delegation line drops absolute-path contract" "delegation line must pass the subagent an absolute"
+restore "$file"
+
 # ---------------------------------------------------------------------------
 # Scanner detection smoke — fixture-based and offline: eslint auto-download is
 # disabled via E2E_SMELL_NO_ESLINT_DOWNLOAD=1 (so counts come from the Tier-3
@@ -332,6 +378,24 @@ run_scan s4 none
 assert_scan_absent "Scanner S4 — backend Knex .first() not flagged as #10a" "#10a"
 assert_scan_contains "Scanner S4 — out-of-scope file skip is reported" "1 out-of-scope file(s) skipped"
 assert_scan_contains "Scanner S4 — zero total hits" "Summary: 0 total hit(s)"
+
+# Case S5: Cypress 10+ layout — cypress/e2e/<name>_spec.js with a suffix-less basename
+# (no .cy./.spec./.test. dot-suffix) must still be scanned. Guards the $CYI path-include
+# covering cypress/e2e/ (not just the legacy cypress/integration/); a suffix-only glob
+# would miss cy.wait(ms) here.
+mkdir -p "$SCAN_FIXDIR/s5/cypress/e2e"
+cat > "$SCAN_FIXDIR/s5/cypress/e2e/widget_link_spec.js" <<'EOF'
+describe('widget link', () => {
+  it('waits then asserts', () => {
+    cy.visit('/');
+    cy.wait(300);
+    cy.get('[data-cy=link]').click();
+  });
+});
+EOF
+run_scan s5 none
+assert_scan_contains "Scanner S5 — cypress/e2e _spec.js hard-coded sleep flagged as #9b" "#9b"
+assert_scan_contains "Scanner S5 — #9b hit names the cypress/e2e fixture line" "widget_link_spec.js:4"
 
 rm -rf "$SCAN_FIXDIR"
 

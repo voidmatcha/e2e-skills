@@ -7,6 +7,8 @@
 - `scripts/ci/codex-smoke.sh` — manual, reproducible Codex cross-host smoke with committed fixtures (self-skips when `codex` is absent).
 - Scanner: Phase-0 e2e-file scope filter with skipped-file reporting; `[LLM-TRIAGE]` tagging for positive `toBeAttached` (#4b) outside the P0 exit count.
 - Evals: coverage for #4g, #18, #20–#23, six documented false-positive exclusions, and debugger failure codes F6/F13 in both debuggers.
+- `review.sh` "Subagent parity" check (SP1–SP4) plus three drift-smoke cases: the dual-mode subagents (`e2e-finding-verifier`, `e2e-failure-classifier`) and their inline fallbacks are held to one verdict vocabulary (`CONFIRMED` / `FALSE-POSITIVE` / `NEEDS-CONTEXT`) and one frozen `F1–F15` taxonomy, and each delegating skill must hand the subagent an absolute source-of-truth path.
+- `playwright-test-generator` evals: four new cases (Step 4 approval gate, Step 5b conventions/seed, Step 3 reachability probe, Step 7 debugger handoff), each with a true-positive assertion and a false-positive guard.
 
 ### Changed
 
@@ -16,6 +18,7 @@
 - Plugin manifest descriptions trimmed of the trailing keyword sentence (24-pattern parity catalog unchanged); `marketing/` gitignored.
 - Public proof copy now uses the exact merged-PR count (12, from the roadmap tables) instead of the `10+` floor, and the proven-in-open-source table lists all merged fixes instead of a representative subset; counts are bumped together on every merge.
 - Korean README adopts English developer terminology (assertion, merge, suite, fixture, and the pattern/F-code names) while examples and fixes stay Korean.
+- Richer trigger descriptions for `playwright-test-generator`, `playwright-debugger`, and `cypress-debugger` — a "reach for it when… / do not use it for…" shape (matching `e2e-reviewer`) that names the concrete evidence and disambiguates the adjacent skills, reducing undertriggering and cross-skill misfires. Applied to both the `SKILL.md` frontmatter and the `agents/openai.yaml` surface (the implicit-invocation trigger on OpenAI-manifest hosts) so the disambiguation lands on every host.
 
 ### Fixed
 
@@ -23,6 +26,8 @@
 - Scanner Tier-1 npx invocation pins `typescript@^5` so a target repo's `.npmrc` (`legacy-peer-deps`) cannot poison the shared npx cache.
 - `playwright-test-generator` wrong cross-reference (`4.1` → `#4b`); exploration-time auth/seed-data stop-and-ask gate defined.
 - The debugger note in all four READMEs wrongly claimed automatic CI-artifact fetching is unsupported; both debuggers fetch artifacts via `gh run download` with a user-confirmed run ID, and the note now matches that behavior.
+- Scanner coverage: the suffix-less-Cypress-layout include (`$CYI`) now covers `cypress/e2e/` (Cypress 10+), not only the legacy `cypress/integration/`. Cypress rules that rely on it (`#3`, `#7`, `#5a`, `#8b`, `#9b`, `#10a`) previously missed suites named `*_spec.js` / plain `*.js` under `cypress/e2e/` — e.g. hard-coded `cy.wait(ms)` sleeps went unreported. `#9b`'s basename glob is also widened to the standard spec/test set for parity with sibling Cypress checks. Guarded by a new drift-smoke case (Scanner S5).
+- Dual-mode subagents (`e2e-finding-verifier`, `e2e-failure-classifier`) were told to read their source of truth from a repo-relative `skills/...` path, which does not resolve — a subagent runs with the target project as its working directory, not this repo. Delegating skills now pass the resolved absolute path (`pattern-reference.md` for the verifier, the debugger `SKILL.md` for the classifier), and the agent files document the contract.
 
 ### Documentation
 

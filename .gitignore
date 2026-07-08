@@ -25,3 +25,8 @@ results/
 
 # Marketing collateral (local-only, not part of the public repo)
 marketing/
+
+# Local-only skill verification harness: hardcodes machine-specific testbed/ paths
+# and pairs with the .claude/commands/verify-reviewer slash command. Not portable to
+# a fresh clone, so kept out of the shared tree.
+scripts/dev/smoke-reviewer.sh

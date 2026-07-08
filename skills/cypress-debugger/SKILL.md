@@ -1,6 +1,6 @@
 ---
 name: cypress-debugger
-description: "Debug failed Cypress tests from mochawesome/JUnit/local/CI reports; diagnose runtime errors, flakes, selectors, timing."
+description: 'Use this skill to find the root cause of a Cypress end-to-end test that has already run and failed, and fix it. Reach for it whenever someone shares a failing Cypress spec and wants to know why — a Timed-out-retrying command, a selector that never resolves, a cy.intercept alias that never matches or a request that races the assertion, a hook that skips the rest of the suite, a flake that only passes on retry, a hydration or timing race, or a passes-locally-but-fails-in-CI split. It applies given any failure evidence: a mochawesome or JUnit report, an error message or stack, screenshots or videos, or CI artifacts (a GitHub run id to download). Use it to determine whether the failure is a real product regression or a brittle test, and to propose the concrete fix. Do not use it for writing new Cypress tests, reviewing a passing suite, non-Cypress test failures (Playwright, Jest, Vitest), or debugging the app/backend with no Cypress test involved.'
 license: Apache-2.0
 metadata:
   author: voidmatcha
@@ -150,7 +150,7 @@ failures.forEach(([,name,msg], i) => console.log('FAIL', suiteFile, '/', classna
 
 Use Phase 1 output (error message + duration) to classify. **Most failures are identifiable here — only go to Phase 3 if still unclear.**
 
-**Classifier delegation (delegation-aware):** if the `e2e-failure-classifier` subagent is available (Claude Code plugin install), delegate one failure per call, in parallel — pass the failing test name and report excerpt (error, stack, attempt/screenshot signal); it loads this F1–F15 table, reads the spec and config, and returns the F-code with confidence, evidence, and a fix. If the subagent is not available (Codex, `skills` CLI install, or any host without subagents), classify inline with the same table and steps below. The F-code must be identical either way.
+**Classifier delegation (delegation-aware):** if the `e2e-failure-classifier` subagent is available (Claude Code plugin install), delegate one failure per call, in parallel — pass the failing test name, the report excerpt (error, stack, attempt/screenshot signal), and the **absolute** path to this skill's `SKILL.md` (the directory shown in the Skill tool's "Base directory" output + `/SKILL.md`) — the subagent's working directory is the project under debug, so it cannot resolve a repo-relative `skills/...` path and must be handed the resolved location. It loads the F1–F15 table from that file, reads the spec and config, and returns the F-code with confidence, evidence, and a fix. If the subagent is not available (Codex, `skills` CLI install, or any host without subagents), classify inline with the same table and steps below. The F-code must be identical either way.
 
 | # | Category | Signals | Review Pattern |
 |---|----------|---------|----------------|

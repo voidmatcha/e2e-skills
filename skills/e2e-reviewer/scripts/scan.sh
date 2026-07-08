@@ -586,15 +586,17 @@ run_check() {
   fi
 }
 
-# Legacy Cypress layout: cypress/integration/**/*.js (and .ts) has no .cy./.spec./.test. suffix,
-# so suffix-only globs miss it. Appended (via the `;` multi-glob support) to Cypress-intended
-# checks below so committed .only, error swallowing, etc. are caught in that classic layout too.
-CYI='**/cypress/integration/**/*.{js,ts}'
+# Suffix-less Cypress layouts: files under cypress/integration/ (classic, pre-v10) and
+# cypress/e2e/ (Cypress 10+) commonly have no .cy./.spec./.test. basename suffix — e.g.
+# foo_spec.js or plain foo.js — so suffix-only globs miss them. This path-based include is
+# appended (via the `;` multi-glob support) to Cypress-intended checks below so committed
+# .only, error swallowing, hard-coded cy.wait(ms), etc. are caught in those layouts too.
+CYI='**/cypress/{integration,e2e}/**/*.{js,ts}'
 
 run_check P0 '#3' 'Error swallowing via empty catch (test scope)' '\.catch\(\s*(async\s*)?\(\)\s*=>' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'";$CYI" e2e
 run_check P0 '#7' 'Focused test committed' '\.(only)\(' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'";$CYI"
 run_check P1 '#9' 'Playwright hard-coded sleep' 'waitForTimeout' '*.{ts,js,tsx,jsx}' e2e
-run_check P1 '#9b' 'Cypress hard-coded sleep' 'cy\.wait\(\d' '*.{cy.ts,cy.js}'";$CYI"
+run_check P1 '#9b' 'Cypress hard-coded sleep' 'cy\.wait\(\d' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'";$CYI"
 run_check P1 '#6' 'Raw DOM query inside test code' 'document\.querySelector' '*.{ts,js,tsx,jsx,cy.ts,cy.js}' e2e
 
 run_check P0 '#4a' 'Always-true numeric assertion' 'toBeGreaterThanOrEqual\(0\)' '*.{ts,js,tsx,jsx,cy.ts,cy.js}' e2e

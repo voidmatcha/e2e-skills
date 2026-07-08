@@ -471,6 +471,128 @@ else
   warn "python3 not available; skipped skill trigger boundary check"
 fi
 
+section "Subagent parity"
+# AGENTS.md rule 5: a subagent must never be the ONLY path to a verdict — the
+# inline fallback must reach an identical verdict from the same source of truth.
+# These checks freeze that contract and guard the A1 fix (agents must be handed
+# an absolute source-of-truth path, since their CWD is the project under review,
+# not this repo). A relative `skills/...` read target silently resolves nowhere.
+if command -v python3 >/dev/null 2>&1; then
+  if python3 - <<'PY'
+import pathlib
+import re
+import sys
+
+errors = []
+
+
+def read(rel):
+    p = pathlib.Path(rel)
+    if not p.is_file():
+        errors.append(f"{rel}: expected file is missing")
+        return ""
+    return p.read_text(encoding="utf-8")
+
+
+verifier = read("agents/e2e-finding-verifier.md")
+classifier = read("agents/e2e-failure-classifier.md")
+reviewer = read("skills/e2e-reviewer/SKILL.md")
+pw_dbg = read("skills/playwright-debugger/SKILL.md")
+cy_dbg = read("skills/cypress-debugger/SKILL.md")
+
+# SP1 — A1 regression guard: each agent must document that the caller passes an
+# absolute source-of-truth path (CWD is the target project, not this repo).
+for name, text in (("e2e-finding-verifier", verifier), ("e2e-failure-classifier", classifier)):
+    if "absolute path" not in text or "working directory" not in text:
+        errors.append(
+            f"agents/{name}.md: must state the caller passes the absolute "
+            "source-of-truth path (its working directory is the target project). "
+            "Do not hardcode a repo-relative skills/... read target."
+        )
+
+# SP2 — delegating skills must actually hand the subagent that absolute path.
+# Anchor the check to the delegation line itself (the line naming the agent),
+# NOT the whole file — otherwise an unrelated 'absolute' elsewhere would keep the
+# guard green after the delegation sentence drops the path contract (the A1 bug).
+for rel, text, agent in (
+    ("skills/e2e-reviewer/SKILL.md", reviewer, "e2e-finding-verifier"),
+    ("skills/playwright-debugger/SKILL.md", pw_dbg, "e2e-failure-classifier"),
+    ("skills/cypress-debugger/SKILL.md", cy_dbg, "e2e-failure-classifier"),
+):
+    delegation_lines = [ln for ln in text.splitlines() if agent in ln]
+    if not delegation_lines:
+        errors.append(f"{rel}: lost the {agent} delegation block")
+    elif not any("absolute" in ln for ln in delegation_lines):
+        errors.append(
+            f"{rel}: the {agent} delegation line must pass the subagent an absolute "
+            "source-of-truth path (the word 'absolute' is missing from the line that "
+            "names the agent)."
+        )
+
+# SP3 — verdict vocabulary parity: the verifier's three verdicts must appear in
+# BOTH the subagent and the e2e-reviewer inline fallback, so both paths agree.
+verdicts = ("CONFIRMED", "FALSE-POSITIVE", "NEEDS-CONTEXT")
+for verdict in verdicts:
+    if verdict not in verifier:
+        errors.append(f"agents/e2e-finding-verifier.md: missing verdict term {verdict}")
+    if verdict not in reviewer:
+        errors.append(
+            f"skills/e2e-reviewer/SKILL.md: inline fallback missing verdict term "
+            f"{verdict} (must match the subagent verdict set)"
+        )
+
+# SP4 — F-code taxonomy frozen at F1–F15, shared by both debuggers and the
+# classifier; nobody may invent F16+.
+EXPECTED_FCODES = {f"F{i}" for i in range(1, 16)}
+# A new code beyond F15 (F16–F99), by word boundary so it never matches inside a
+# larger token. The freeze phrase "F16+" is stripped before probing.
+NEW_FCODE = re.compile(r"\bF(?:1[6-9]|[2-9][0-9])\b")
+
+# The two debugger SKILL.md files carry the canonical F1–F15 tables: the set of
+# `| Fn |` table codes must be EXACTLY {F1..F15}. This catches BOTH a dropped code
+# and an added F16+/F17 row — a bare "F16" substring check would miss both.
+for rel, text in (
+    ("skills/playwright-debugger/SKILL.md", pw_dbg),
+    ("skills/cypress-debugger/SKILL.md", cy_dbg),
+):
+    table_codes = set(re.findall(r"\|\s*(F\d+)\s*\|", text))
+    if table_codes != EXPECTED_FCODES:
+        missing = sorted(EXPECTED_FCODES - table_codes, key=lambda c: int(c[1:]))
+        extra = sorted(table_codes - EXPECTED_FCODES, key=lambda c: int(c[1:]))
+        errors.append(
+            f"{rel}: F-code table must be exactly F1–F15 "
+            f"(missing={missing or '-'}, unexpected={extra or '-'})"
+        )
+
+# All three files (incl. the prose classifier that has no table) must reference
+# the range endpoints by WORD BOUNDARY — so "F1" cannot vacuously match inside
+# "F15" — and must contain no F16+ code, allowing only the freeze phrase.
+for rel, text in (
+    ("agents/e2e-failure-classifier.md", classifier),
+    ("skills/playwright-debugger/SKILL.md", pw_dbg),
+    ("skills/cypress-debugger/SKILL.md", cy_dbg),
+):
+    probe = text.replace("F16+", "")
+    for code in ("F1", "F15"):
+        if not re.search(rf"\b{code}\b", probe):
+            errors.append(f"{rel}: F-code taxonomy must reference {code}")
+    if NEW_FCODE.search(probe):
+        errors.append(f"{rel}: F-codes are frozen at F1–F15; found a new F16+ code")
+
+if errors:
+    for error in errors:
+        print(error, file=sys.stderr)
+    sys.exit(1)
+PY
+  then
+    ok "subagents and inline fallbacks share one verdict/taxonomy source of truth"
+  else
+    err "subagent parity check failed"
+  fi
+else
+  warn "python3 not available; skipped subagent parity check"
+fi
+
 section "Markdown links"
 if command -v python3 >/dev/null 2>&1; then
   if python3 - <<'PY'

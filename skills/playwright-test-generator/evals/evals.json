@@ -101,6 +101,81 @@
         "False-positive guard: does NOT stop-and-ask for the public /login route — tests/auth.spec.ts reaches it via loginPage.open() with no prior session, so no credentials are required to explore it",
         "Does not hallucinate auth mechanisms (storageState files, setup projects) not present in the fixture"
       ]
+    },
+    {
+      "id": 5,
+      "title": "Step 4 approval gate: no file writes before user approval",
+      "prompt": "You are at Step 4 (Scenario Design + User Approval) of playwright-test-generator for the /profile route of the project in evals/files/project-pom/. You have finished exploring and are ready to present the scenario plan. The user has NOT yet said anything approving the plan. Describe exactly what you do next.",
+      "expected_output": "Should present the scenario plan (scenarios in Given/When/Then form + a Locator Mapping Table) in the conversation and then STOP, waiting for explicit user approval before writing any file. In a host with a planning mode, should enter planning mode to present and exit only after approval. Must NOT write the ProfilePage POM or the spec file yet. The false-positive guard: presenting the plan is correct and expected — the agent must not refuse to present or ask permission merely to show the plan; only the transition to Step 5 code generation is gated on approval.",
+      "files": [
+        "evals/files/project-pom/playwright.config.ts",
+        "evals/files/project-pom/tests/pages/base-page.ts",
+        "evals/files/project-pom/src/routes.ts"
+      ],
+      "assertions": [
+        "Presents a scenario plan with Given/When/Then scenarios and a Locator Mapping Table",
+        "True positive: does NOT write any spec or POM file before explicit user approval",
+        "Waits for explicit approval before proceeding to Step 5 (code generation)",
+        "Mentions entering/using a planning mode when the host provides one",
+        "False-positive guard: does not refuse to present the plan or block on permission just to display it — presenting the plan without approval is the correct behavior",
+        "Does not hallucinate that the user already approved the plan"
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Step 5b conventions and seed: create when absent, skip when present",
+      "prompt": "You have just generated tests/checkout.spec.ts and tests/pages/checkout-page.ts for the project in evals/files/project-pom/. Step 1 found no testing-conventions doc — the project has no AGENTS.md, CLAUDE.md, or CONTRIBUTING.md with an E2E/testing section (hasConventionsDoc: false). Describe what Step 5b artifacts you produce. Then, separately, describe what you would do at Step 5b if the project ALREADY had an E2E conventions section in its AGENTS.md.",
+      "expected_output": "When hasConventionsDoc is false: generate a project-adapted E2E conventions section (from conventions-template.md) targeting the project root AGENTS.md (created since absent), plus a one-line CLAUDE.md pointer if the project uses Claude Code; designate the best generated spec as the seed and reference it by path ('copy the shape of tests/checkout.spec.ts'); fill the template's project-reality fields from what was actually observed (POM classes extend BasePage, baseURL http://localhost:3000, protected routes) rather than generic advice; and propose lint hardening from recommended-lint.md. When a conventions doc ALREADY exists: SKIP Step 5b entirely — never overwrite or duplicate the existing conventions; at most surface missing lint rules as an opt-in diff.",
+      "files": [
+        "evals/files/project-pom/playwright.config.ts",
+        "evals/files/project-pom/tests/auth.spec.ts",
+        "evals/files/project-pom/tests/pages/base-page.ts",
+        "evals/files/project-pom/src/routes.ts"
+      ],
+      "assertions": [
+        "True positive: because no conventions doc exists, generates a conventions section and targets the project root AGENTS.md (creating it since absent)",
+        "Designates a generated spec as the seed and references it by path in the conventions doc",
+        "Fills project-reality fields from observed structure (POM extends BasePage, baseURL http://localhost:3000) rather than generic best practices",
+        "Proposes lint hardening from recommended-lint.md",
+        "False-positive guard: when an E2E conventions section already exists, SKIPS Step 5b and does not overwrite or duplicate it",
+        "Does not fabricate an existing conventions doc for the fixture (which has none)"
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Step 3 reachability probe: start webServer if configured, else stop",
+      "prompt": "You are at Step 3 (Browser Exploration) of playwright-test-generator, targeting /dashboard of the project in evals/files/project-pom/. Before navigating, the reachability probe (curl to http://localhost:3000) returns UNREACHABLE — the dev server is down. Describe how you proceed. Then, separately, describe how you would proceed if the same probe were UNREACHABLE but playwright.config.ts had NO webServer block.",
+      "expected_output": "With the webServer block present (command 'npm run start', url http://localhost:3000, reuseExistingServer): read the webServer block, offer to start it (npm run start / the configured command) and re-probe before doing any navigation — do not explore against a dead origin. Without a webServer block: STOP and report, asking the user to start the app or correct the URL; do not continue to exploration, and do not invent selectors from source code alone or fabricate exploration results for an origin that never answered.",
+      "files": [
+        "evals/files/project-pom/playwright.config.ts",
+        "evals/files/project-pom/src/routes.ts"
+      ],
+      "assertions": [
+        "Detects the webServer block in playwright.config.ts (command 'npm run start', url http://localhost:3000)",
+        "True positive: OFFERS to start the configured webServer — presents starting it for the user to confirm rather than silently auto-starting the server itself — and re-probes before navigating",
+        "Does not continue exploration while the reachability probe reports UNREACHABLE",
+        "Re-runs the reachability probe after the server is up and gates exploration on a 2xx/3xx response, rather than assuming the app is reachable once the command is issued",
+        "False-positive guard: when there is no webServer block, STOPS and asks the user to start the app or fix the URL instead of inventing a start command",
+        "Does not invent selectors from source code alone or fabricate exploration results for an unreachable origin"
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Step 7 failure handoff: 3 attempts then playwright-debugger, no premature bail",
+      "prompt": "You generated tests/dashboard.spec.ts for the project in evals/files/project-pom/ and ran it under Step 7. It has now failed three consecutive auto-fix attempts (selector mismatch that you re-healed twice, plus an assertion that still times out). Describe how you proceed. Then, separately, describe what you do on the FIRST failed run of a freshly generated spec.",
+      "expected_output": "After the third failed auto-fix attempt: invoke the playwright-debugger skill (via the Skill tool) pointed at the playwright-report/ produced by the run (HTML report + on-first-retry traces); do NOT attempt a fourth fix or loop indefinitely. On the FIRST failure: do not hand off to the debugger yet — diagnose the actual failure and apply the matching heuristic fix (heal the selector by intent via a fresh snapshot at the highest stable tier, fix assertion values, or fix missing await / setup), using up to three attempts before any handoff. Throughout, use npx --no-install (never auto-install Playwright).",
+      "files": [
+        "evals/files/project-pom/playwright.config.ts",
+        "evals/files/project-pom/tests/pages/base-page.ts",
+        "evals/files/project-pom/src/routes.ts"
+      ],
+      "assertions": [
+        "True positive: after 3 failed auto-fix attempts, invokes the playwright-debugger skill pointed at playwright-report/",
+        "Does not attempt a 4th fix or loop indefinitely after the 3rd failure — names the explicit Max-3-attempts cap",
+        "Heals selector failures by intent (fresh snapshot, role/name/label at the highest stable tier) rather than blindly tweaking the old selector string",
+        "False-positive guard: on the FIRST failure, does NOT hand off to the debugger — commits to the bounded 3-attempt auto-fix budget (this is attempt 1 of at most 3) rather than a vague unbounded 'keep trying' or an immediate handoff",
+        "Uses npx --no-install and does not auto-install Playwright"
+      ]
     }
   ]
 }

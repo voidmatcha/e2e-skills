@@ -1,6 +1,6 @@
 ---
 name: playwright-test-generator
-description: "Generate new Playwright E2E tests for pages, flows, components; use for add/write/create test coverage."
+description: 'Use this skill to generate new Playwright end-to-end tests from scratch — for a page, a user flow, a form, or a component — taking them from zero to reviewed, passing specs. Reach for it whenever someone wants to add, write, create, or scaffold Playwright E2E coverage, fill coverage gaps for uncovered routes, or bootstrap the first e2e test for a project and set up its conventions. It explores the live page to discover real selectors, proposes a scenario plan for approval, generates Page Object or flat specs that match the existing project style, then runs an e2e review and the suite before handing back. Do not use it for debugging an existing failing Playwright test (use playwright-debugger), reviewing or auditing tests that already pass (use e2e-reviewer), generating Cypress tests, or writing unit, component, or integration tests with Jest, Vitest, or Testing Library.'
 license: Apache-2.0
 metadata:
   author: voidmatcha
