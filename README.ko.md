@@ -7,7 +7,7 @@
   <a href="https://claude.com/product/claude-code"><img alt="Claude Code" src="https://img.shields.io/badge/Claude_Code-compatible-D97757?style=flat-square&labelColor=black&logo=anthropic&logoColor=white"></a>
   <a href="https://github.com/openai/codex"><img alt="Codex" src="https://img.shields.io/badge/Codex-compatible-412991?style=flat-square&labelColor=black&logo=openai&logoColor=white"></a>
   <a href="https://playwright.dev"><img alt="Playwright | Cypress" src="https://img.shields.io/badge/Playwright_%7C_Cypress-supported-2EAD33?style=flat-square&labelColor=black&logo=playwright&logoColor=white"></a>
-  <a href="#오픈소스에서-검증됨"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-12-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
+  <a href="#오픈소스에서-검증됨"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-13-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
   <a href="https://agents.md"><img alt="Runs in 55+ agents" src="https://img.shields.io/badge/runs_in-55%2B_agents-37B0E6?style=flat-square&labelColor=black"></a>
   <a href="https://www.npmjs.com/package/eslint-plugin-playwright-silent-pass"><img alt="playwright silent-pass npm" src="https://img.shields.io/npm/v/eslint-plugin-playwright-silent-pass?style=flat-square&label=playwright%20lint&labelColor=black&color=1FC07C"></a>
   <a href="https://www.npmjs.com/package/eslint-plugin-cypress-silent-pass"><img alt="cypress silent-pass npm" src="https://img.shields.io/npm/v/eslint-plugin-cypress-silent-pass?style=flat-square&label=cypress%20lint&labelColor=black&color=37B0E6"></a>
@@ -20,7 +20,7 @@
 
 CI는 통과하지만 실제로는 거의 아무것도 증명하지 못하는 Playwright/Cypress E2E 테스트를 찾아냅니다.
 
-**이론에만 머무는 이야기가 아닙니다. `e2e-reviewer`가 찾아낸 문제는 SvelteKit, Storybook, code-server, Strapi, Carbon Design System, Ghost, MUI X 같은 실제 저장소에서 [12건의 merge된 upstream PR](#오픈소스에서-검증됨)로 이어졌습니다.**
+**이론에만 머무는 이야기가 아닙니다. `e2e-reviewer`가 찾아낸 문제는 SvelteKit, Storybook, code-server, Strapi, Carbon Design System, Ghost, MUI X 같은 실제 저장소에서 [13건의 merge된 upstream PR](#오픈소스에서-검증됨)로 이어졌습니다.**
 
 > 그중 하나가 code-server(78k&#9733;)였습니다. `it.only` 하나가 7개월 동안 8개의 테스트를 조용히 비활성화하고 있었고, 그중 하나는 이미 깨져 있었습니다. 그동안 CI는 내내 조용히 통과하고 있었습니다.
 
@@ -168,7 +168,9 @@ Debug the failed Playwright report in playwright-report/.
 
 ## 오픈소스에서 검증됨
 
-일부러 꾸며 낸 증거가 아닙니다. `e2e-reviewer`가 찾아낸 문제를 바탕으로 SvelteKit, Storybook, code-server, Strapi, Carbon Design System, Ghost, Cal.com, Bruno, Qwik, Element Web, MUI X 등 잘 알려진 저장소에서 **12건의 upstream PR**이 merge되었습니다.
+일부러 꾸며 낸 증거가 아닙니다. `e2e-reviewer`가 찾아낸 문제를 바탕으로 SvelteKit, Storybook, code-server, Strapi, Carbon Design System, Ghost, Cal.com, Bruno, Qwik, Element Web, MUI X 등 잘 알려진 저장소에서 **13건의 upstream PR**이 merge되었습니다.
+
+그 실전 기록은 재현 가능한 pilot benchmark와도 연결됩니다. 이미 AI reviewer가 review한 오픈소스 PR 100건, 77개 repository에서 neutral LLM judge가 material한 E2E test-trust issue 110개를 식별했고, `e2e-reviewer`는 그중 78개를 0 false positive로 찾았습니다. lint는 45개, general AI PR reviewer의 inline spec comment는 10개를 찾았습니다. [방법론과 case evidence](docs/ai-reviewer-benchmark.md)를 참고하세요.
 
 merge된 수정 전체:
 
@@ -186,6 +188,7 @@ merge된 수정 전체:
 | Element Web | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Locator null 검사 방식의 assertion |
 | MUI X | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | UI handle 검사를 상태 assertion으로 교체 |
 | module-federation/core | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Cypress spec의 불필요한 블랭킷 `uncaught:exception` 억제 제거 |
+| FiftyOne | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Locator 정의 여부 대신 눈에 보이는 중복 이름 오류를 검증 |
 
 ## workflow
 
@@ -498,7 +501,7 @@ Claude Code(plugin marketplace 또는 `skills` CLI), Codex, 그리고 `skills` C
 - **cross-model 일관성.** AI 에이전트마다 자기 스타일로 spec을 작성하기 때문에, 여러 모델로 구축된 suite는 하나의 컨벤션으로 묶이지 않은 채 제각각으로 흘러갑니다. 계획은 이렇습니다: 프로젝트의 컨벤션(POM 형태, locator 전략, fixture와 구조 패턴)을 추론하고('추상화 없음'도 유효한 답이라, 두 페이지짜리 flow에 불필요한 Page Object 계층을 깔지 않습니다), 코드베이스가 정말로 모호한 지점에서만 질문하며, 답을 기록해 이후 모든 모델이 따르게 합니다. 핵심은, 기록된 컨벤션이 딱딱한 규칙이 아니라 *이유를 밝히면 에이전트가 벗어날 수 있는 기본값*으로 남는다는 점입니다. 그래서 특정 테스트에 더 맞는 접근이 가로막히는 일이 없고, 정당한 이탈은 오히려 컨벤션을 다듬는 계기가 됩니다. 이것이 linter가 구조적으로 할 수 없는 부분입니다: linter는 고정된 규칙을 강제할 뿐, *여러분의* 컨벤션을 학습해 따를 수는 없습니다.
 - **deterministic 감지 계층.** 파일 단위로 타입만 알면 판별 가능한 smell(Locator를 truthy로 검사, 떠 있는 assertion)을 프롬프트와 휴리스틱에서 타입 인지 AST 패스로 옮겨, 감지를 재현 가능하게 만들고 LLM은 단일 파일 규칙이 내릴 수 없는 판단에만 사용합니다. 명확히 lint화할 수 있는 규칙은 다시 구현하는 대신 `eslint-plugin-playwright` upstream에 기여할 예정입니다.
 
-이와 별개로 upstream 기여 로드맵에서는 더 넓은 파이프라인을 추적합니다: **merge 12건, 리뷰·대기 16건**. 대기열에는 검증을 마친 1,000+ 스타 후보만 올립니다 — 실시간 표는 [upstream 기여](docs/roadmap.md)에 있습니다.
+이와 별개로 upstream 기여 로드맵에서는 더 넓은 파이프라인을 추적합니다: **merge 13건, 리뷰·대기 15건**. 대기열에는 검증을 마친 1,000+ 스타 후보만 올립니다 — 실시간 표는 [upstream 기여](docs/roadmap.md)에 있습니다.
 
 ## 기여하기
 

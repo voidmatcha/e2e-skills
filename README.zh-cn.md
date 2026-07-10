@@ -7,7 +7,7 @@
   <a href="https://claude.com/product/claude-code"><img alt="Claude Code" src="https://img.shields.io/badge/Claude_Code-compatible-D97757?style=flat-square&labelColor=black&logo=anthropic&logoColor=white"></a>
   <a href="https://github.com/openai/codex"><img alt="Codex" src="https://img.shields.io/badge/Codex-compatible-412991?style=flat-square&labelColor=black&logo=openai&logoColor=white"></a>
   <a href="https://playwright.dev"><img alt="Playwright | Cypress" src="https://img.shields.io/badge/Playwright_%7C_Cypress-supported-2EAD33?style=flat-square&labelColor=black&logo=playwright&logoColor=white"></a>
-  <a href="#在开源项目中得到验证"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-12-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
+  <a href="#在开源项目中得到验证"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-13-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
   <a href="https://agents.md"><img alt="Runs in 55+ agents" src="https://img.shields.io/badge/runs_in-55%2B_agents-37B0E6?style=flat-square&labelColor=black"></a>
   <a href="https://www.npmjs.com/package/eslint-plugin-playwright-silent-pass"><img alt="playwright silent-pass npm" src="https://img.shields.io/npm/v/eslint-plugin-playwright-silent-pass?style=flat-square&label=playwright%20lint&labelColor=black&color=1FC07C"></a>
   <a href="https://www.npmjs.com/package/eslint-plugin-cypress-silent-pass"><img alt="cypress silent-pass npm" src="https://img.shields.io/npm/v/eslint-plugin-cypress-silent-pass?style=flat-square&label=cypress%20lint&labelColor=black&color=37B0E6"></a>
@@ -20,7 +20,7 @@
 
 找出那些能通过 CI，却几乎证明不了任何东西的 Playwright/Cypress 端到端测试。
 
-**并非纸上谈兵——`e2e-reviewer` 的发现已经促成了 [12 个合入上游的 PR](#在开源项目中得到验证)**，涉及真实仓库，包括 SvelteKit、Storybook、code-server、Strapi、Carbon Design System、Ghost 和 MUI X。
+**并非纸上谈兵——`e2e-reviewer` 的发现已经促成了 [13 个合入上游的 PR](#在开源项目中得到验证)**，涉及真实仓库，包括 SvelteKit、Storybook、code-server、Strapi、Carbon Design System、Ghost 和 MUI X。
 
 > 其中一个仓库是 code-server（78k&#9733;）。一个 `it.only` 在七个月里悄悄禁用了 8 个测试——其中一个早已损坏。而 CI 全程保持绿色。
 
@@ -168,7 +168,9 @@ Debug the failed Playwright report in playwright-report/.
 
 ## 在开源项目中得到验证
 
-这不是凭空捏造的证明。`e2e-reviewer` 的发现已被用于在多个知名仓库中合入 **12 个上游 PR**，包括 SvelteKit、Storybook、code-server、Strapi、Carbon Design System、Ghost、Cal.com、Bruno、Qwik、Element Web 和 MUI X。
+这不是凭空捏造的证明。`e2e-reviewer` 的发现已被用于在多个知名仓库中合入 **13 个上游 PR**，包括 SvelteKit、Storybook、code-server、Strapi、Carbon Design System、Ghost、Cal.com、Bruno、Qwik、Element Web 和 MUI X。
+
+这组实战记录也有可复现的 pilot benchmark 支撑：在 77 个 repository 的 100 个已由 AI reviewer review 过的开源 PR 中，neutral LLM judge 标出 110 个 material E2E test-trust issue；`e2e-reviewer` 找到 78 个且 0 false positive，lint 找到 45 个，general AI PR reviewer 的 inline spec comment 找到 10 个。见 [方法论与 case evidence](docs/ai-reviewer-benchmark.md)。
 
 全部已合并修复：
 
@@ -186,6 +188,7 @@ Debug the failed Playwright report in playwright-report/.
 | Element Web | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Locator 空值检查式断言 |
 | MUI X | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | 用状态断言替换 UI 句柄检查 |
 | module-federation/core | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | 移除 Cypress spec 中多余的一刀切 `uncaught:exception` 抑制 |
+| FiftyOne | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | 将 Locator 是否定义的检查改为可见的重复名称错误断言 |
 
 ## 工作流
 
@@ -498,7 +501,7 @@ Claude Code（插件市场或 `skills` CLI）、Codex，以及任何 `skills` CL
 - **跨模型一致性。** 不同的 AI 智能体各自以自己的风格编写 spec，于是用多个模型搭出来的套件会渐渐散成一块拼布，没有哪一条约定能把它统合起来。计划是：推断你项目的约定（POM 形态、定位器策略、fixture 和结构模式；“不做抽象”也是有效答案，两页的流程不会被套上多余的 Page Object 层），只在代码库确实含糊时才问你，并把这些答案存下来，让此后每个模型都照着走。关键在于，记录下来的约定始终只是*智能体给出理由后就能偏离的默认值*，而不是硬性规则，所以针对某个具体测试更好的做法永远不会被挡住——而一次有理由的偏离，正是这条约定往前演进的契机。这恰恰是静态检查器从结构上做不到的：它只会强制执行固定规则，学不会、也遵循不了*你的*约定。
 - **确定性检测层。** 把逐文件、类型可判定的坏味道（Locator 当作真值、游离断言）从提示和启发式挪到类型感知的 AST 处理上，让检测变得可复现，也把 LLM 留给单文件规则无法做出的判断。那些明显可 lint 的规则会贡献到上游的 `eslint-plugin-playwright`，而不是另起炉灶重新实现。
 
-另外，上游贡献路线图追踪着更广的流水线：**已合并 12、审查与排队合计 16**。队列里只放经过审核的 1,000+ 星候选——实时表格见[上游贡献](docs/roadmap.md)。
+另外，上游贡献路线图追踪着更广的流水线：**已合并 13、审查与排队合计 15**。队列里只放经过审核的 1,000+ 星候选——实时表格见[上游贡献](docs/roadmap.md)。
 
 ## 贡献
 

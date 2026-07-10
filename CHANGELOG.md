@@ -16,7 +16,7 @@
 - e2e-reviewer Phase 2 now executes the LLM-only patterns #20–#23; sync-matcher `expect(await …)` reads rerouted from #15 to #4c-4e; Tier-1 ESLint findings now count into the scanner's exit gates.
 - Cypress debugger retry extraction rewritten to real mochawesome output (with a `mochawesome-merge` step for multi-spec runs); debugger instruction blocks brought to structural parity.
 - Plugin manifest descriptions trimmed of the trailing keyword sentence (24-pattern parity catalog unchanged); `marketing/` gitignored.
-- Public proof copy now uses the exact merged-PR count (12, from the roadmap tables) instead of the `10+` floor, and the proven-in-open-source table lists all merged fixes instead of a representative subset; counts are bumped together on every merge.
+- Public proof copy now uses the exact merged-PR count (13, from the roadmap tables) instead of the `10+` floor, and the proven-in-open-source table lists all merged fixes instead of a representative subset; counts are bumped together on every merge.
 - Korean README adopts English developer terminology (assertion, merge, suite, fixture, and the pattern/F-code names) while examples and fixes stay Korean.
 - Richer trigger descriptions for `playwright-test-generator`, `playwright-debugger`, and `cypress-debugger` — a "reach for it when… / do not use it for…" shape (matching `e2e-reviewer`) that names the concrete evidence and disambiguates the adjacent skills, reducing undertriggering and cross-skill misfires. Applied to both the `SKILL.md` frontmatter and the `agents/openai.yaml` surface (the implicit-invocation trigger on OpenAI-manifest hosts) so the disambiguation lands on every host.
 
@@ -33,6 +33,7 @@
 
 - Updated the public install docs to include the Codex plugin marketplace flow alongside the cross-agent `skills` CLI path.
 - Refreshed the OSS proof points to say 10+ merged upstream PRs and keep the representative examples aligned across README, roadmap, and sibling lint-plugin READMEs.
+- FiftyOne [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) merged (duplicate-name error asserted via locator definition instead of visible UI state): moved In review -> Merged in the roadmap and bumped the coordinated counts (13 merged / 15 in review or queued) across all four READMEs; the pilot benchmark summary paragraph now says "pilot benchmark" to match the linked doc's indicative-numbers status.
 
 # Changelog
 

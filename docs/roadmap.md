@@ -6,8 +6,8 @@
 
 ## Cadence and status
 
-- **Merged:** 12 upstream PRs accepted in real projects.
-- **In review:** 8 active/open upstream PRs.
+- **Merged:** 13 upstream PRs accepted in real projects.
+- **In review:** 7 active/open upstream PRs.
 - **Queue policy:** prefer high-signal P0 silent-pass fixes; avoid padding with subjective P1/P2 style findings.
 - **Submission policy:** one narrow anti-pattern per PR where possible, local verification first, and an `e2e-reviewer` footer only when it is useful context.
 
@@ -26,6 +26,7 @@ Selected merged PRs below are sorted roughly by repository recognition, not chro
 | Qwik | ★22k | [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777) | Discarded assertion promises, `toBeDefined()` on locators, and bare locators | Locators are handles; only awaited web-first matchers prove rendered state. |
 | SvelteKit | ★20.6k | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Floating web-first assertions | Missing `await` can make the assertion never participate in the test outcome. |
 | Element Web | ★13.2k | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Always-passing assertions, unawaited checks, `toBeAttached()` misuse, dead code | Static review can find tests that pass while proving nothing in large E2E suites. |
+| FiftyOne | ★10.8k | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Duplicate-name error asserted via locator definition instead of visible UI state | A defined locator proves nothing; assert the error the user actually sees. |
 | Carbon Design System | ★9.2k | [carbon-design-system/carbon#22564](https://github.com/carbon-design-system/carbon/pull/22564) | `expect(locator).toBeTruthy()` used as CSS-state verification | Locator truthiness never proves an element exists or is visible. |
 | MUI X | ★5.8k | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | Always-true Locator null check replaced with a real date-time cell edit assertion | Locator objects are never `null`; assert user-visible state instead. |
 | module-federation/core | ★2.6k | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Redundant blanket `uncaught:exception` suppression removed from a Cypress spec | Blanket exception handlers swallow real app errors; suppress only the specific expected error, with a comment. |
@@ -38,7 +39,6 @@ Selected merged PRs below are sorted roughly by repository recognition, not chro
 | Expo | ★50.3k | [expo/expo#46699](https://github.com/expo/expo/pull/46699) | Open | Router E2E assertions wait for UI state instead of racing. |
 | hcengineering/platform | ★26.3k | [hcengineering/platform#10922](https://github.com/hcengineering/platform/pull/10922) | Open | `expect(locator).toBeDefined()` checks replaced with `toBeVisible()`. |
 | TanStack Router | ★14.7k | [TanStack/router#7616](https://github.com/TanStack/router/pull/7616) | Open | Always-passing E2E assertions and missing awaits. |
-| FiftyOne | ★10.8k | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Open | Duplicate-name error assertion checks visible UI state instead of locator definition. |
 | Rancher Desktop | ★7.2k | [rancher-sandbox/rancher-desktop#10557](https://github.com/rancher-sandbox/rancher-desktop/pull/10557) | Open | Locator `not.toBeNull()` checks replaced with visible integration-name assertions. |
 | ngx-bootstrap | ★5.5k | [valor-software/ngx-bootstrap#6820](https://github.com/valor-software/ngx-bootstrap/pull/6820) | Open | Guarded / non-executing assertions converted into effective checks. |
 | DefGuard | ★2.7k | [DefGuard/defguard#3146](https://github.com/DefGuard/defguard/pull/3146) | Open | Async `find()` callback selected the wrong row; follow-up `toBeDefined()` was always true. |

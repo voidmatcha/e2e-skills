@@ -10,6 +10,8 @@ always-pass), without crying wolf?**
 It is deliberately honest, including where we lose and three limitations that cut against
 us. The scripts are in the repo so you can re-run it.
 
+> **Status:** This is a neutral-LLM-judged pilot benchmark, not a final human-adjudicated benchmark. Treat exact numbers as indicative.
+
 ## TL;DR
 
 - Corpus: **100 PRs across 77 distinct repositories**, each one already reviewed by one of

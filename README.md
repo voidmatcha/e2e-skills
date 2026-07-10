@@ -7,7 +7,7 @@
   <a href="https://claude.com/product/claude-code"><img alt="Claude Code" src="https://img.shields.io/badge/Claude_Code-compatible-D97757?style=flat-square&labelColor=black&logo=anthropic&logoColor=white"></a>
   <a href="https://github.com/openai/codex"><img alt="Codex" src="https://img.shields.io/badge/Codex-compatible-412991?style=flat-square&labelColor=black&logo=openai&logoColor=white"></a>
   <a href="https://playwright.dev"><img alt="Playwright | Cypress" src="https://img.shields.io/badge/Playwright_%7C_Cypress-supported-2EAD33?style=flat-square&labelColor=black&logo=playwright&logoColor=white"></a>
-  <a href="#proven-in-open-source"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-12-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
+  <a href="#proven-in-open-source"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-13-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
   <a href="https://agents.md"><img alt="Runs in 55+ agents" src="https://img.shields.io/badge/runs_in-55%2B_agents-37B0E6?style=flat-square&labelColor=black"></a>
   <a href="https://www.npmjs.com/package/eslint-plugin-playwright-silent-pass"><img alt="playwright silent-pass npm" src="https://img.shields.io/npm/v/eslint-plugin-playwright-silent-pass?style=flat-square&label=playwright%20lint&labelColor=black&color=1FC07C"></a>
   <a href="https://www.npmjs.com/package/eslint-plugin-cypress-silent-pass"><img alt="cypress silent-pass npm" src="https://img.shields.io/npm/v/eslint-plugin-cypress-silent-pass?style=flat-square&label=cypress%20lint&labelColor=black&color=37B0E6"></a>
@@ -20,7 +20,7 @@
 
 Find Playwright/Cypress E2E tests that pass CI while proving little or nothing.
 
-**Not theoretical — `e2e-reviewer` findings have landed [12 merged upstream PRs](#proven-in-open-source)** in real repositories, including SvelteKit, Storybook, code-server, Strapi, Carbon Design System, Ghost, and MUI X.
+**Not theoretical — `e2e-reviewer` findings have landed [13 merged upstream PRs](#proven-in-open-source)** in real repositories, including SvelteKit, Storybook, code-server, Strapi, Carbon Design System, Ghost, and MUI X.
 
 > One of those repos was code-server (78k&#9733;). An `it.only` had silently disabled 8 tests for seven months — one of them was already broken. CI stayed green the entire time.
 
@@ -168,7 +168,9 @@ Do not use it as:
 
 ## Proven in open source
 
-The proof is not synthetic. `e2e-reviewer` findings have been used to land **12 upstream PRs** across recognizable repositories, including SvelteKit, Storybook, code-server, Strapi, Carbon Design System, Ghost, Cal.com, Bruno, Qwik, Element Web, and MUI X.
+The proof is not synthetic. `e2e-reviewer` findings have been used to land **13 upstream PRs** across recognizable repositories, including SvelteKit, Storybook, code-server, Strapi, Carbon Design System, Ghost, Cal.com, Bruno, Qwik, Element Web, and MUI X.
+
+That track record is paired with a reproducible pilot benchmark: on 100 already-AI-reviewed open-source PRs across 77 repositories, a neutral LLM judge identified 110 material E2E-test trust issues; `e2e-reviewer` found 78 with 0 false positives, lint found 45, and general AI PR reviewers' inline spec comments had found 10. See the [methodology and case evidence](docs/ai-reviewer-benchmark.md).
 
 All merged fixes:
 
@@ -186,6 +188,7 @@ All merged fixes:
 | Element Web | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Locator null-check style assertions |
 | MUI X | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | UI handle checks replaced with state assertions |
 | module-federation/core | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Redundant blanket `uncaught:exception` suppression in a Cypress spec |
+| FiftyOne | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Locator-defined check replaced with a visible duplicate-name error assertion |
 
 ## Workflow
 
@@ -498,7 +501,7 @@ Planned, not yet shipped (these describe direction, not current behavior):
 - **Cross-model consistency.** Different AI agents each write specs in their own style, so a suite built with several models drifts into a patchwork no single convention holds together. The plan: infer your project's conventions (POM shape, locator strategy, fixture and structure patterns) — where "no abstraction" is a valid answer, so a two-page flow does not get a Page Object layer it never needed — ask you only where the codebase is genuinely ambiguous, and persist the answers so every model conforms afterward. Crucially, the recorded conventions stay a *default the agent can deviate from with a stated reason*, not a hard rule, so a better approach for a specific test is never blocked — and a justified deviation becomes a prompt to evolve the convention. This is the part a linter structurally cannot do: it enforces fixed rules; it cannot learn and conform to *your* conventions.
 - **Deterministic detection layer.** Move the per-file, type-decidable smells (locator-as-truthy, floating assertions) from prompt-and-heuristic onto a type-aware AST pass, so detection is reproducible and the LLM is reserved for the judgment calls a single-file rule cannot make. The clearly lint-able rules would be contributed upstream to `eslint-plugin-playwright` rather than re-implemented.
 
-Separately, the upstream contribution roadmap tracks the broader pipeline: **12 PRs merged, 16 in review or queued**. The queue holds only vetted 1,000+ star candidates — live tables in [upstream contributions](docs/roadmap.md).
+Separately, the upstream contribution roadmap tracks the broader pipeline: **13 PRs merged, 15 in review or queued**. The queue holds only vetted 1,000+ star candidates — live tables in [upstream contributions](docs/roadmap.md).
 
 ## Contributing
 
