@@ -272,6 +272,19 @@ mutate "$file" "the **absolute** path to this skill" "the path to this skill"
 assert_fails "Subagent parity SP2 — delegation line drops absolute-path contract" "delegation line must pass the subagent an absolute"
 restore "$file"
 
+# Case 21: subagent parity SP5 — the optional Codex-native TOML port is a third
+# copy of the frozen contract; a new F16+ code in it must fail just like the .md.
+# (Skips cleanly when the port is absent; guards it only when shipped.)
+file=".codex/agents/e2e-failure-classifier.toml"
+if [ -f "$file" ]; then
+  backup "$file"
+  mutate "$file" "F1-F15 root-cause taxonomy" "F1-F17 root-cause taxonomy"
+  assert_fails "Subagent parity SP5 — Codex TOML port new F16+ code caught" "found a new F16+ code"
+  restore "$file"
+else
+  echo "  [SKIP] Case 21 — .codex/agents/e2e-failure-classifier.toml not present"
+fi
+
 # ---------------------------------------------------------------------------
 # Scanner detection smoke — fixture-based and offline: eslint auto-download is
 # disabled via E2E_SMELL_NO_ESLINT_DOWNLOAD=1 (so counts come from the Tier-3

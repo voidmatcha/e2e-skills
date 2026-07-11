@@ -40,7 +40,7 @@ Run the bundled scanner against the test directory:
 bash <skill-base>/scripts/scan.sh <test-dir>
 ```
 
-`<skill-base>` is the directory shown in the Skill tool's "Base directory" output (e.g., `~/.claude/skills/e2e-reviewer/`). Auto-detect `<test-dir>` from project structure (common: `e2e/`, `tests/`, `__tests__/`, `spec/`, `cypress/e2e/`).
+`<skill-base>` is the directory that contains this SKILL.md — on Claude Code the Skill tool's "Base directory" output (`~/.claude/skills/e2e-reviewer/`), on Codex or the `skills` CLI `~/.agents/skills/e2e-reviewer/`. Auto-detect `<test-dir>` from project structure (common: `e2e/`, `tests/`, `__tests__/`, `spec/`, `cypress/e2e/`).
 
 The scanner internally uses, in priority order:
 1. **`eslint-plugin-playwright` / `eslint-plugin-cypress`** — when locally installed in the target project (AST-based, most accurate, lowest FP rate)
@@ -150,7 +150,7 @@ This is much faster than grepping each member individually. Classify results: US
 
 ### Verifying findings (delegation-aware)
 
-Before a Phase 2 finding is reported, verify it survives its real context — refute first. If the `e2e-finding-verifier` subagent is available (Claude Code plugin install), delegate one finding per call, in parallel: pass the pattern ID, `file:line`, the flagged snippet, and the **absolute** path to `<skill-base>/references/pattern-reference.md` — the subagent's working directory is the project under review, so it cannot resolve a repo-relative `skills/...` path and must be handed the resolved location. It reads the surrounding spec, project config, and that pattern contract, then returns CONFIRMED / FALSE-POSITIVE / NEEDS-CONTEXT. Drop every finding it refutes. If the subagent is not available (Codex, `skills` CLI install, or any host without subagents), run the same refute-first procedure inline against the same `references/pattern-reference.md` contract. The verdict must be identical either way — never report a finding a refutation attempt would eliminate.
+Before a Phase 2 finding is reported, verify it survives its real context — refute first. If the `e2e-finding-verifier` subagent is available (registered by a Claude Code plugin install, or — on Codex — a native `.codex/agents/` agent when those TOMLs are on the host such as `~/.codex/agents/` and the host can spawn named agents), delegate one finding per call, in parallel: pass the pattern ID, `file:line`, the flagged snippet, and the **absolute** path to `<skill-base>/references/pattern-reference.md` — the subagent's working directory is the project under review, so it cannot resolve a repo-relative `skills/...` path and must be handed the resolved location. It reads the surrounding spec, project config, and that pattern contract, then returns CONFIRMED / FALSE-POSITIVE / NEEDS-CONTEXT. Drop every finding it refutes. If the subagent is not available (a `skills` CLI copy install, or any host or session with no registered delegated worker), run the same refute-first procedure inline against the same `references/pattern-reference.md` contract. The verdict must be identical either way — never report a finding a refutation attempt would eliminate.
 
 ---
 

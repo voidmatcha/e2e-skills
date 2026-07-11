@@ -9,6 +9,7 @@
 - Evals: coverage for #4g, #18, #20–#23, six documented false-positive exclusions, and debugger failure codes F6/F13 in both debuggers.
 - `review.sh` "Subagent parity" check (SP1–SP4) plus three drift-smoke cases: the dual-mode subagents (`e2e-finding-verifier`, `e2e-failure-classifier`) and their inline fallbacks are held to one verdict vocabulary (`CONFIRMED` / `FALSE-POSITIVE` / `NEEDS-CONTEXT`) and one frozen `F1–F15` taxonomy, and each delegating skill must hand the subagent an absolute source-of-truth path.
 - `playwright-test-generator` evals: four new cases (Step 4 approval gate, Step 5b conventions/seed, Step 3 reachability probe, Step 7 debugger handoff), each with a true-positive assertion and a false-positive guard.
+- Codex-native subagent ports under `.codex/agents/` (`e2e-finding-verifier.toml`, `e2e-failure-classifier.toml`) — optional TOML equivalents of the Claude `agents/*.md`, discovered by Codex only from `~/.codex/agents/` or a repo checkout (never via `codex plugin add` / the `skills` CLI), so the inline fallback stays load-bearing. A new `review.sh` **SP5** parity check plus drift-smoke Case 21 hold these ports to the same absolute-path contract, verdict vocabulary, and frozen `F1–F15` taxonomy as the `.md` agents and inline fallback.
 
 ### Changed
 
@@ -19,6 +20,7 @@
 - Public proof copy now uses the exact merged-PR count (13, from the roadmap tables) instead of the `10+` floor, and the proven-in-open-source table lists all merged fixes instead of a representative subset; counts are bumped together on every merge.
 - Korean README adopts English developer terminology (assertion, merge, suite, fixture, and the pattern/F-code names) while examples and fixes stay Korean.
 - Richer trigger descriptions for `playwright-test-generator`, `playwright-debugger`, and `cypress-debugger` — a "reach for it when… / do not use it for…" shape (matching `e2e-reviewer`) that names the concrete evidence and disambiguates the adjacent skills, reducing undertriggering and cross-skill misfires. Applied to both the `SKILL.md` frontmatter and the `agents/openai.yaml` surface (the implicit-invocation trigger on OpenAI-manifest hosts) so the disambiguation lands on every host.
+- Cross-host portability polish: `<skill-base>` and subagent-delegation paths are now host-agnostic (naming both `~/.claude/skills/` and `~/.agents/skills/` instead of a Claude-only example); the three delegating skills carry a host-neutral dispatch clause (Claude plugin subagent, Codex-native `.codex/agents/`, or inline fallback — identical verdict). `playwright-test-generator` now recommends setting up a browser tool (Playwright MCP, with the official getting-started link) and states plainly that the no-MCP ARIA-snapshot fallback only sees the initial static state; the four READMEs replace the vague "agent-browser tools" wording with "browser automation tools (Playwright MCP / webapp-testing)" and add an MCP-recommended note.
 
 ### Fixed
 

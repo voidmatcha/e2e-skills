@@ -579,6 +579,34 @@ for rel, text in (
     if NEW_FCODE.search(probe):
         errors.append(f"{rel}: F-codes are frozen at F1–F15; found a new F16+ code")
 
+# SP5 — Codex/OMX-native TOML ports (optional third copy of each subagent
+# contract). If present under .codex/agents/, they must NOT drift from the .md
+# agents / inline fallback: same A1 absolute-path contract, same verdict set, same
+# frozen F1–F15 taxonomy. Skipped silently when a port is absent (they are not
+# required — but a shipped port that drifts is exactly what this guards).
+for rel in (".codex/agents/e2e-finding-verifier.toml", ".codex/agents/e2e-failure-classifier.toml"):
+    p = pathlib.Path(rel)
+    if not p.is_file():
+        continue
+    text = p.read_text(encoding="utf-8")
+    if "absolute" not in text.lower() or "working directory" not in text:
+        errors.append(
+            f"{rel}: must state the caller passes the absolute source-of-truth path "
+            "(its working directory is the target project, not this repo)."
+        )
+    if rel.endswith("e2e-finding-verifier.toml"):
+        for verdict in verdicts:
+            if verdict not in text:
+                errors.append(f"{rel}: missing verdict term {verdict} (must match the subagent verdict set)")
+    if rel.endswith("e2e-failure-classifier.toml"):
+        # allow both freeze phrasings ("F16+" and "F16 or higher")
+        probe = text.replace("F16+", "").replace("F16 or higher", "")
+        for code in ("F1", "F15"):
+            if not re.search(rf"\b{code}\b", probe):
+                errors.append(f"{rel}: F-code taxonomy must reference {code}")
+        if NEW_FCODE.search(probe):
+            errors.append(f"{rel}: F-codes are frozen at F1–F15; found a new F16+ code")
+
 if errors:
     for error in errors:
         print(error, file=sys.stderr)

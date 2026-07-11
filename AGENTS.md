@@ -37,6 +37,9 @@ The repo doubles as a Claude Code plugin (`.claude-plugin/`), a Codex plugin (`.
 ├── agents/                 # Claude Code subagents (plugin-install only): read-only
 │   ├── e2e-finding-verifier.md    # adversarially verify ONE reviewer finding
 │   └── e2e-failure-classifier.md  # classify ONE failure into F1–F15
+├── .codex/agents/          # Codex-native TOML ports of the two subagents (optional)
+│   ├── e2e-finding-verifier.toml   # behavior-synced with agents/*.md; guarded by SP5
+│   └── e2e-failure-classifier.toml
 ├── skills/                 # Four Agent Skills (the public surface)
 │   ├── playwright-test-generator/
 │   │   ├── SKILL.md        # Required: skill frontmatter + body
@@ -119,7 +122,7 @@ The reinstall script runs `npx skills remove` then `npx skills add <repo-root> -
 2. **Re-run the drift smoke test.** `scripts/ci/test-parity.sh` mutates known-bad versions of the files and asserts the parity check catches each one — keep it green when you add new parity rules.
 3. **Add or update evals when behavior changes.** Each skill has an `evals/evals.json`. Eval IDs must follow the skill's naming convention (CI validates). Each new smell or behavior change should add at least two assertions: one true positive that must be flagged, and one false-positive guard that names the exact line and why it must not be flagged.
 4. **Respect severity contracts.** P0 entries should be silent-always-pass smells; don't downgrade. P1/P2 should not creep into P0 just because they're easier to grep.
-5. **Keep subagent wiring delegation-aware.** The `agents/` subagents (`e2e-finding-verifier`, `e2e-failure-classifier`) are discovered only on a Claude Code plugin install — the `skills` CLI copy and Codex never see them. So any skill that delegates to a subagent MUST also carry an inline fallback that reaches an **identical** verdict from the same source of truth (`skills/e2e-reviewer/references/pattern-reference.md` for reviewer findings; the debugger `SKILL.md` F1–F15 tables for failures). Never make a subagent the only path to a verdict.
+5. **Keep subagent wiring delegation-aware.** The `agents/` subagents (`e2e-finding-verifier`, `e2e-failure-classifier`) are discovered only on a Claude Code plugin install — the `skills` CLI copy and Codex never see them. So any skill that delegates to a subagent MUST also carry an inline fallback that reaches an **identical** verdict from the same source of truth (`skills/e2e-reviewer/references/pattern-reference.md` for reviewer findings; the debugger `SKILL.md` F1–F15 tables for failures). Never make a subagent the only path to a verdict. The Codex-native `.codex/agents/*.toml` ports are an optional **third** copy of the same contract — kept from drifting by the `Subagent parity` **SP5** check in `scripts/ci/review.sh` (A1 absolute-path contract, verdict vocabulary, frozen F1–F15) — but Codex only registers them when the TOMLs sit in `~/.codex/agents/` (or a Codex checkout of this repo), never via `codex plugin add` or the `skills` CLI, so the inline fallback stays load-bearing on every host.
 
 ## Cross-host parity rules
 

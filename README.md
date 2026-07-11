@@ -229,7 +229,9 @@ The scanner is intentionally deterministic. It catches the high-confidence subse
 
 ## Skill 1: `playwright-test-generator` — Test Generation
 
-Generates Playwright E2E tests from scratch for any project. Starts from coverage gap analysis, explores the live app via agent-browser tools, designs scenarios with your approval, and auto-reviews generated tests with `e2e-reviewer`.
+Generates Playwright E2E tests from scratch for any project. Starts from coverage gap analysis, explores the live app via browser automation tools (Playwright MCP / webapp-testing), designs scenarios with your approval, and auto-reviews generated tests with `e2e-reviewer`.
+
+> **Recommended:** set up a browser tool first — [Playwright MCP](https://github.com/microsoft/playwright-mcp#getting-started) or the `webapp-testing` skill. Without one, generation falls back to a static ARIA snapshot that sees only the page's initial state (no interactions) — fine for a simple page, limited for real flows (modals, post-submit, error states, multi-step).
 
 ### When to Use
 
@@ -250,7 +252,7 @@ Add playwright coverage for checkout flow
 
 1. **Detect environment** — config, baseURL, test dir, POM structure, existing conventions doc
 2. **Coverage gap analysis** — user picks target (skipped when target given as argument)
-3. **Live browser exploration** — via agent-browser tools (no hallucinated selectors); accessible-name reality check for label-less inputs
+3. **Live browser exploration** — via browser automation tools ([Playwright MCP](https://github.com/microsoft/playwright-mcp#getting-started) / webapp-testing; no hallucinated selectors); accessible-name reality check for label-less inputs
 4. **Scenario design + approval gate** — shows plan and locator table before any code
 5. **Code generation** — POM + spec or flat spec, auto-detected from project conventions; writes must be route-stubbed (see Network Determinism in `code-rules.md`)
 6. **Conventions & seed scaffolding** (first run on a project) — appends a project-adapted E2E section to `AGENTS.md` and designates a seed spec, so future AI-generated tests (Claude Code, Codex, Playwright Agents) stay consistent

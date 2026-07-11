@@ -229,7 +229,9 @@ Total: 3 P0, 0 P1, 0 P2 in 24 spec files.
 
 ## Skill 1: `playwright-test-generator` — 테스트 생성
 
-어떤 프로젝트에서든 Playwright E2E 테스트를 처음부터 생성합니다. coverage gap 분석에서 시작해 agent-browser 도구로 실제 앱을 탐색하고, 사용자의 승인을 받아 시나리오를 설계합니다. 생성된 테스트는 `e2e-reviewer`가 자동으로 리뷰합니다.
+어떤 프로젝트에서든 Playwright E2E 테스트를 처음부터 생성합니다. coverage gap 분석에서 시작해 브라우저 자동화 도구(Playwright MCP / webapp-testing)로 실제 앱을 탐색하고, 사용자의 승인을 받아 시나리오를 설계합니다. 생성된 테스트는 `e2e-reviewer`가 자동으로 리뷰합니다.
+
+> **권장:** 먼저 브라우저 도구를 설정하세요 — [Playwright MCP](https://github.com/microsoft/playwright-mcp#getting-started) 또는 `webapp-testing` 스킬. 없으면 페이지 초기 상태만 보는 정적 ARIA 스냅샷으로 fallback되며(상호작용 불가), 단순 페이지엔 괜찮지만 실제 플로우(모달·제출 후·에러 상태·다단계)엔 제한적입니다.
 
 ### 사용 시점
 
@@ -250,7 +252,7 @@ Add playwright coverage for checkout flow
 
 1. **환경 감지** — 설정, baseURL, 테스트 디렉터리, POM 구조, 기존 컨벤션 문서
 2. **coverage gap 분석** — 사용자가 대상을 선택합니다(대상이 인수로 주어지면 생략)
-3. **라이브 브라우저 탐색** — agent-browser 도구 사용(환각으로 지어낸 셀렉터 없음); 레이블 없는 입력에 대한 접근 가능한 이름(accessible-name) 실사
+3. **라이브 브라우저 탐색** — 브라우저 자동화 도구 사용([Playwright MCP](https://github.com/microsoft/playwright-mcp#getting-started) / webapp-testing; 환각으로 지어낸 셀렉터 없음); 레이블 없는 입력에 대한 접근 가능한 이름(accessible-name) 실사
 4. **시나리오 설계 + 승인 게이트** — 코드를 작성하기 전에 계획과 locator 표를 보여 줍니다
 5. **코드 생성** — 프로젝트 컨벤션에서 자동 감지한 POM + spec 또는 플랫 spec; 쓰기 작업은 반드시 route 스텁 처리(`code-rules.md`의 Network Determinism 참고)
 6. **컨벤션 및 시드 스캐폴딩**(프로젝트 첫 실행 시) — 프로젝트에 맞춘 E2E 섹션을 `AGENTS.md`에 추가하고 시드 spec을 지정해, 이후 AI가 생성하는 테스트(Claude Code, Codex, Playwright Agents)가 일관성을 유지하게 합니다

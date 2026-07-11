@@ -229,7 +229,9 @@ Total: 3 P0, 0 P1, 0 P2 in 24 spec files.
 
 ## Skill 1: `playwright-test-generator` — 测试生成
 
-从零为任意项目生成 Playwright 端到端测试。它从覆盖缺口分析开始，通过 agent-browser 工具探索实时应用，在你批准下设计场景，并用 `e2e-reviewer` 自动审查生成的测试。
+从零为任意项目生成 Playwright 端到端测试。它从覆盖缺口分析开始，通过浏览器自动化工具（Playwright MCP / webapp-testing）探索实时应用，在你批准下设计场景，并用 `e2e-reviewer` 自动审查生成的测试。
+
+> **建议：** 先配置浏览器工具——[Playwright MCP](https://github.com/microsoft/playwright-mcp#getting-started) 或 `webapp-testing` 技能。若没有，则回退到只看页面初始状态的静态 ARIA 快照（无法交互），对简单页面够用，但对真实流程（弹窗、提交后、错误态、多步骤）受限。
 
 ### 何时使用
 
@@ -250,7 +252,7 @@ Add playwright coverage for checkout flow
 
 1. **检测环境**——配置、baseURL、测试目录、POM 结构、现有约定文档
 2. **覆盖缺口分析**——由用户选定目标（当目标作为参数给出时跳过）
-3. **实时浏览器探索**——通过 agent-browser 工具（不臆造选择器）；对无标签输入做可访问名称的真实性校验
+3. **实时浏览器探索**——通过浏览器自动化工具（[Playwright MCP](https://github.com/microsoft/playwright-mcp#getting-started) / webapp-testing；不臆造选择器）；对无标签输入做可访问名称的真实性校验
 4. **场景设计 + 批准关卡**——在编写任何代码前展示计划和定位器表格
 5. **代码生成**——POM + spec 或扁平 spec，根据项目约定自动检测；写操作必须做路由打桩（见 `code-rules.md` 中的 Network Determinism）
 6. **约定与种子脚手架**（在项目上首次运行时）——向 `AGENTS.md` 追加一节针对项目适配的端到端内容，并指定一个种子 spec，从而让未来 AI 生成的测试（Claude Code、Codex、Playwright Agents）保持一致

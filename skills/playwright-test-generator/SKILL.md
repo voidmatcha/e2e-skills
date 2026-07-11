@@ -112,7 +112,11 @@ If the probe fails (non-2xx/3xx or `UNREACHABLE`):
 1. Read `playwright.config.*` for a `webServer` block (`command`, `url`, `reuseExistingServer`). If present, offer to start it (`npm run dev` / the configured `command`) and re-probe.
 2. If there is no `webServer` and the URL is still unreachable, **stop and report** — ask the user to start the app or correct the URL. Do not continue to exploration against a dead origin.
 
-Use a **browser automation tool source** as the primary exploration method. The `browser_*` tools below come from the **Playwright MCP server** (`@playwright/mcp`) or the **`webapp-testing` skill** — name whichever your host actually exposes; do not assume an unnamed "agent-browser" binary exists:
+Use a **browser automation tool source** as the primary exploration method. The `browser_*` tools below come from the **Playwright MCP server** (`@playwright/mcp`) or the **`webapp-testing` skill** — name whichever your host actually exposes; do not assume an unnamed "agent-browser" binary exists.
+
+If your host exposes **neither**, live exploration is richer once Playwright MCP is enabled — register the `@playwright/mcp` server in your host's own MCP config (Claude Code: `claude mcp add` / `.mcp.json`; Codex: `[mcp_servers]` in `~/.codex/config.toml`; Cursor and others: their MCP settings — see the [Playwright MCP getting-started](https://github.com/microsoft/playwright-mcp#getting-started) for the exact per-host block). **Setting up a browser tool is the recommended default** — treat it as a prerequisite for generating anything beyond a single static page. The ARIA-snapshot fallback below needs no MCP but is materially weaker (see its limits); reach for it only when a browser tool genuinely cannot run in your environment.
+
+Exploration steps once a `browser_*` source is available:
 
 ```
 1. browser_navigate <target-URL>   # only when target-URL is under the approved baseURL
@@ -123,7 +127,7 @@ Use a **browser automation tool source** as the primary exploration method. The 
 4. browser_close
 ```
 
-**Deterministic fallback when no browser-automation tool is available** (host has no Playwright MCP / `webapp-testing` skill). Drive the project-local Playwright non-interactively and dump the ARIA accessibility tree — the same role/name data a snapshot gives, with zero interaction required:
+**Deterministic fallback when no browser-automation tool is available** (host has no Playwright MCP / `webapp-testing` skill) — a **degraded last resort, not the intended path**. It sees only the **initial static state** (it cannot drive interactions), so modal / post-submit / error / multi-step-flow coverage is out of reach, and it exposes role/name only (no testids; weak on role-less custom components). Good enough for a first happy-path skeleton on a simple static page; for anything with real flows, set up a browser tool (MCP) or ask the user to paste snapshots of the interaction states. Drive the project-local Playwright non-interactively and dump the ARIA accessibility tree:
 
 ```bash
 URL="$BASE_URL/<target-path>" node -e "

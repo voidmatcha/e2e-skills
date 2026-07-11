@@ -229,7 +229,9 @@ Total: 3 P0, 0 P1, 0 P2 in 24 spec files.
 
 ## スキル 1: `playwright-test-generator` — テスト生成
 
-あらゆるプロジェクトで Playwright の E2E テストをゼロから生成します。カバレッジギャップの分析から始め、agent-browser ツールで実際に動いているアプリを探索し、承認を得ながらシナリオを設計し、生成したテストを `e2e-reviewer` で自動レビューします。
+あらゆるプロジェクトで Playwright の E2E テストをゼロから生成します。カバレッジギャップの分析から始め、ブラウザ自動化ツール（Playwright MCP / webapp-testing）で実際に動いているアプリを探索し、承認を得ながらシナリオを設計し、生成したテストを `e2e-reviewer` で自動レビューします。
+
+> **推奨:** まずブラウザツールを設定してください — [Playwright MCP](https://github.com/microsoft/playwright-mcp#getting-started) または `webapp-testing` スキル。ない場合はページの初期状態のみを見る静的 ARIA スナップショットにフォールバックし（操作不可）、単純なページには十分ですが実際のフロー（モーダル・送信後・エラー状態・多段階）には限定的です。
 
 ### 使いどころ
 
@@ -250,7 +252,7 @@ Add playwright coverage for checkout flow
 
 1. **環境検出** — 設定、baseURL、テストディレクトリ、POM 構造、既存の規約ドキュメント
 2. **カバレッジギャップ分析** — 対象はユーザーが選択（引数で対象が指定された場合はスキップ）
-3. **ライブブラウザ探索** — agent-browser ツール経由（でっち上げたセレクターは使わない）。ラベルのない入力にはアクセシブルネームの実地確認を行う
+3. **ライブブラウザ探索** — ブラウザ自動化ツール経由（[Playwright MCP](https://github.com/microsoft/playwright-mcp#getting-started) / webapp-testing。でっち上げたセレクターは使わない）。ラベルのない入力にはアクセシブルネームの実地確認を行う
 4. **シナリオ設計 + 承認ゲート** — コードを書く前に計画とロケーターテーブルを提示
 5. **コード生成** — POM + spec かフラットな spec かをプロジェクトの規約から自動判別。書き込み系はルートスタブ必須（`code-rules.md` の Network Determinism を参照）
 6. **規約とシードのスキャフォールディング**（プロジェクト初回のみ）— プロジェクトに合わせた E2E セクションを `AGENTS.md` に追記し、シード spec を指定。以降の AI 生成テスト（Claude Code、Codex、Playwright Agents）の一貫性を保つ
