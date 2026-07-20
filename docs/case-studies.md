@@ -74,3 +74,4 @@ Why it matters: replacing hard waits with web-first assertions makes tests fail 
 - [`QwikDev/qwik#8777`](https://github.com/QwikDev/qwik/pull/8777) — replaced discarded assertion promises, locator `toBeDefined()`, and bare locator checks.
 - [`element-hq/element-web#32801`](https://github.com/element-hq/element-web/pull/32801) — fixed always-passing assertions, unawaited checks, `toBeAttached()` misuse, and dead code.
 - [`mui/mui-x#22982`](https://github.com/mui/mui-x/pull/22982) — replaced an always-true Locator null check with a user-visible edit assertion.
+- [`rancher-sandbox/rancher-desktop#10557`](https://github.com/rancher-sandbox/rancher-desktop/pull/10557) — replaced `getByText(...).not.toBeNull()` (always true) with web-first visibility assertions for each WSL integration name.

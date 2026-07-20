@@ -4,7 +4,7 @@ description: 'Static review of Playwright/Cypress E2E specs and Page Objects (PO
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.7.0"
+  version: "1.8.0"
 ---
 
 # E2E Test Scenario Quality Review
@@ -61,7 +61,7 @@ E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 bash <skill-base
 
 (Tier 3 regex always runs and is the deterministic baseline; Tier 1/2 add precision when locally installed but never subtract findings — the exit-code gate guarantees a crashed tier cannot suppress Tier 3.) The report MUST state which tiers actually ran ("Tier coverage: 3 only" / "1+2+3").
 
-**E2E content scoping:** for the FP-prone patterns (P0: `#3`, `#4a`, `#4b`, `#4f`, `#4g`, `#15`; P1: `#9`, `#6`, `#5b`, `#19`) the Tier 3 regex keeps a hit only when its file carries a real Playwright/Cypress marker (`@playwright/test` import, `async ({ page` fixture destructure, direct `page.<api>` usage, or `cy.<cmd>(`). This filters Vitest/Jest/RTL unit-test bleed-through at Phase 1 — the dominant false-positive source observed across a 110-repo OSS validation corpus.
+**E2E content scoping:** for the FP-prone patterns (P0: `#3`, `#4a`, `#4b`, `#4f`, `#4g`, `#15`; P1: `#9`, `#6`, `#5b`, `#19`) the Tier 3 regex keeps a hit only when its file carries a real Playwright/Cypress marker (`@playwright/test` import, `async ({ page` fixture destructure, direct `page.<api>` usage, or `cy.<cmd>(`). This filters Vitest/Jest/RTL unit-test bleed-through at Phase 1 — the dominant false-positive source observed across a large multi-repo OSS validation corpus.
 
 **Evidence rule:** scanner hits are mechanical review signals. Report exact matches, then use Phase 2 where the rule requires intent or project context.
 
@@ -99,7 +99,7 @@ The LLM performs only these checks:
 | 4c-4e | One-shot state — Locator-subject confirmation | Phase 1 flags `expect(await x.isVisible()/isDisabled()/textContent()/inputValue()/...)`. LLM confirms `x` is a Playwright `Locator`/`Page`, NOT a custom service or helper method. False positive examples: `expect(await myService.isEnabled()).toBe(true)` (custom service), `expect(await checkSessionValid(page)).toBe(true)` (helper returning Promise<boolean>). Flag P0 only when subject is a Locator/Page. |
 | 8 | Missing Assertion — Cypress dangling selectors | `cy.get(...)` standalone requires manual check |
 | 8a | Multi-line continuation skip | Phase 1 applies a previous-line continuation filter at scan time: a hit is dropped when the preceding non-blank line ends with `(` or `,` (an argument inside a multi-line `await expect(\n  page.locator(...)\n)…`, not a dangling statement). Semicolonless dangling locators are still detected. As a backstop, LLM SKIPS any residual hit with that same previous-line shape. |
-| 4b | `toBeAttached()` static-shell confirmation | Phase 1 flags positive `toBeAttached()`. P0 (vacuous) ONLY when the element is part of the static page shell that is always present. SKIP when the element is **dynamically injected / conditionally rendered** for the scenario under test (e.g. an expired-license banner, a just-registered block, a `<link rel=prefetch>` added at runtime) — then the assertion can genuinely fail and is meaningful. Scanner `#4b` hits arrive tagged `[LLM-TRIAGE]`: confirm a hit is a persistence assertion after a destructive action before reporting it P0 — generic render-gates on client-rendered elements are FPs (field data from one client-rendered-canvas OSS repo: 22/25 raw hits were FPs). |
+| 4b | `toBeAttached()` static-shell confirmation | Phase 1 flags positive `toBeAttached()`. P0 (vacuous) ONLY when the element is part of the static page shell that is always present. SKIP when the element is **dynamically injected / conditionally rendered** for the scenario under test (e.g. an expired-license banner, a just-registered block, a `<link rel=prefetch>` added at runtime) — then the assertion can genuinely fail and is meaningful. Scanner `#4b` hits arrive tagged `[LLM-TRIAGE]`: confirm a hit is a persistence assertion after a destructive action before reporting it P0 — generic render-gates on client-rendered elements are FPs (the dominant false-positive shape observed on client-rendered-canvas apps). |
 | 5a | Conditional gates action vs assertion | Phase 1 flags `if (await x.isVisible())`. SKIP when the `if`-body contains **no `expect()`** — it gates a setup/navigation action (open a menu, dismiss a drawer, dual-mode UI handler) and the test still has unconditional assertions afterward. Flag P0 only when an `expect()` lives inside the conditional, so the assertion runs zero times when the branch is false (silent pass). `test.skip(reason)` is always intentional — never flag. |
 | 10 | Flaky Test Patterns | For each grep hit that has `// JUSTIFIED:`, verify the rationale is concrete (e.g. "server returns in fixed order") rather than vague ("needed for now"); flag if the comment doesn't actually justify the position-coupling or serial dependency. Skip if no JUSTIFIED comment — Phase 1 already flagged. |
 | 11 | YAGNI in POM + Zombie Specs | Requires usage grep then judgment |
@@ -295,11 +295,7 @@ This table is a **numerical index for scanning** — pattern # → severity, pha
 
 ## Suppression
 
-When a grep-detected pattern is intentional, add `// JUSTIFIED: [reason]`. The final report skips a hit when `// JUSTIFIED:` appears in any of these three positions:
-
-1. The line **immediately preceding** the hit
-2. The line immediately preceding the **enclosing call/block** when the hit sits inside a body (e.g., `// JUSTIFIED:` above `page.evaluate(() => { … document.querySelector(…) … })` covers every qualifying pattern inside that callback)
-3. For chained calls split across lines, the line immediately preceding the chain's **starting expression** covers `.nth()` / `.first()` / `.last()` further down the chain
+`// JUSTIFIED: [reason]` marks a grep-detected pattern as intentional. The three accepted comment positions (immediately-preceding line, enclosing call/block, multi-line-chain start) are defined once above under **Suppression — `// JUSTIFIED:`** in the Phase 1 section; the same rules apply here and are not repeated.
 
 **Phase 1 vs Phase 2 suppression.** The mechanical scan (`scripts/scan.sh`) only pre-suppresses **position 1** — a contiguous `//`-comment block directly above the hit *line* (it walks up to 5 comment lines for wrapped rationales). Positions **2 and 3** (enclosing block / multi-line-chain start) require knowing the surrounding structure and are applied in **Phase 2 (LLM review)** only. So a hit JUSTIFIED via position 2 or 3 — e.g. `// JUSTIFIED:` above `await expect(` with `.first()` two lines down — **still appears in the Phase 1 mechanical output** and must be skipped during Phase 2, not counted in the final report. This is by design (Phase 1 over-flags; Phase 2 triages with full context), not a missed suppression.
 

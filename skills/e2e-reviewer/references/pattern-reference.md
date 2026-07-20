@@ -12,6 +12,17 @@ Detailed specification for the 24 anti-patterns that Phase 1, Phase 2, and Phase
 
 ---
 
+<!-- Manual index: keep in sync with the SKILL.md Quick Reference table. CI 3b/3c does not validate this block. -->
+## Pattern index
+
+Navigation aid only — the SKILL.md Quick Reference table and the per-pattern sections below are authoritative for severity; if this table ever disagrees, they win. Find a pattern here, then read its section below. Sub-IDs are documented inside their base block: `#4a–#4h` in `#### 4.`, `#5a`/`#5b` in `#### 5.`, `#8a`/`#8b` in `#### 8.`, `#9b`/`#9c` in `#### 9.`, `#10a`/`#10b` in `#### 10.` (`#5` and `#10` span two severities — the base section carries both).
+
+| Severity | Pattern IDs |
+|----------|-------------|
+| **P0 — Must Fix** (silent always-pass) | #1 name-assertion mismatch, #2 missing Then, #3 error swallowing, #3b Cypress uncaught:exception, #4 always-passing (#4a–#4h), #5a conditional bypass (in #5), #7 focused-test leak, #8 missing assertion (#8a/#8b), #12 missing auth, #15 missing await on expect, #16 missing await on action |
+| **P1 — Should Fix** (poor diagnostics) | #5b force:true (in #5), #6 raw DOM query, #9 hard-coded sleep (#9b/#9c), #10 flaky patterns (#10a/#10b), #13 inconsistent POM, #14 hardcoded creds, #17 direct page action, #18 expect.soft overuse, #19 module-level state, #20 unmocked writes, #22 optimistic UI |
+| **P2 — Nice to Fix** (maintenance) | #11 YAGNI + zombie specs, #21 manual session file, #23 fixture render guards |
+
 ### P0 — Must Fix (silent always-pass)
 
 Tests pass when the feature is broken. No real verification is happening. Always check these.

@@ -7,7 +7,7 @@
   <a href="https://claude.com/product/claude-code"><img alt="Claude Code" src="https://img.shields.io/badge/Claude_Code-compatible-D97757?style=flat-square&labelColor=black&logo=anthropic&logoColor=white"></a>
   <a href="https://github.com/openai/codex"><img alt="Codex" src="https://img.shields.io/badge/Codex-compatible-412991?style=flat-square&labelColor=black&logo=openai&logoColor=white"></a>
   <a href="https://playwright.dev"><img alt="Playwright | Cypress" src="https://img.shields.io/badge/Playwright_%7C_Cypress-supported-2EAD33?style=flat-square&labelColor=black&logo=playwright&logoColor=white"></a>
-  <a href="#オープンソースでの実績"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-13-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
+  <a href="#オープンソースでの実績"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-14-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
   <a href="https://agents.md"><img alt="Runs in 55+ agents" src="https://img.shields.io/badge/runs_in-55%2B_agents-37B0E6?style=flat-square&labelColor=black"></a>
   <a href="https://www.npmjs.com/package/eslint-plugin-playwright-silent-pass"><img alt="playwright silent-pass npm" src="https://img.shields.io/npm/v/eslint-plugin-playwright-silent-pass?style=flat-square&label=playwright%20lint&labelColor=black&color=1FC07C"></a>
   <a href="https://www.npmjs.com/package/eslint-plugin-cypress-silent-pass"><img alt="cypress silent-pass npm" src="https://img.shields.io/npm/v/eslint-plugin-cypress-silent-pass?style=flat-square&label=cypress%20lint&labelColor=black&color=37B0E6"></a>
@@ -20,7 +20,7 @@
 
 CI は通るのに、ほとんど何も証明していない Playwright/Cypress の E2E テストを見つけ出します。
 
-**机上の空論ではありません。`e2e-reviewer` の指摘は [13 件のマージ済みアップストリーム PR](#オープンソースでの実績) につながっています。** 対象には SvelteKit、Storybook、code-server、Strapi、Carbon Design System、Ghost、MUI X といった実在のリポジトリが含まれます。
+**机上の空論ではありません。`e2e-reviewer` の指摘は [14 件のマージ済みアップストリーム PR](#オープンソースでの実績) につながっています。** 対象には SvelteKit、Storybook、code-server、Strapi、Carbon Design System、Ghost、MUI X といった実在のリポジトリが含まれます。
 
 > そのうちの 1 つが code-server（78k&#9733;）でした。`it.only` が 7 か月にわたって 8 件のテストを黙って無効化しており、そのうち 1 件はすでに壊れていました。その間、CI はずっとグリーンのままでした。
 
@@ -168,7 +168,7 @@ Debug the failed Playwright report in playwright-report/.
 
 ## オープンソースでの実績
 
-作り物の実績ではありません。`e2e-reviewer` の指摘をもとに、SvelteKit、Storybook、code-server、Strapi、Carbon Design System、Ghost、Cal.com、Bruno、Qwik、Element Web、MUI X など、よく知られたリポジトリで **13 件のアップストリーム PR** がマージされています。
+作り物の実績ではありません。`e2e-reviewer` の指摘をもとに、SvelteKit、Storybook、code-server、Strapi、Carbon Design System、Ghost、Cal.com、Bruno、Qwik、Element Web、MUI X、Rancher Desktop など、よく知られたリポジトリで **14 件のアップストリーム PR** がマージされています。
 
 この実績は再現可能な pilot benchmark とも対応しています。AI reviewer が review 済みの OSS PR 100 件（77 repository）で、neutral LLM judge が material な E2E test-trust issue 110 件を特定し、`e2e-reviewer` はそのうち 78 件を 0 false positive で検出しました。lint は 45 件、general AI PR reviewer の inline spec comment は 10 件を検出しました。[方法論と case evidence](docs/ai-reviewer-benchmark.md) を参照してください。
 
@@ -189,6 +189,7 @@ Debug the failed Playwright report in playwright-report/.
 | MUI X | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | UI ハンドルチェックを状態アサーションに置き換え |
 | module-federation/core | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Cypress spec から冗長な一括 `uncaught:exception` 抑制を削除 |
 | FiftyOne | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Locator 定義の確認を可視の重複名エラーアサーションに置き換え |
+| Rancher Desktop | [rancher-sandbox/rancher-desktop#10557](https://github.com/rancher-sandbox/rancher-desktop/pull/10557) | `not.toBeNull()` の Locator チェックを可視の WSL 統合名アサーションに置き換え |
 
 ## ワークフロー
 
@@ -503,7 +504,7 @@ Claude Code（プラグインマーケットプレイスまたは `skills` CLI�
 - **モデル横断の一貫性。** AI エージェントはそれぞれ独自のスタイルで spec を書くため、複数のモデルで構築されたスイートは、どの規約にも収まらないパッチワークになっていきます。計画はこうです。プロジェクトの規約（POM の形、ロケーター戦略、フィクスチャや構造のパターン。「抽象化しない」も有効な答えで、2 ページのフローに不要な Page Object 層は作りません）を推論し、コードベースが本当に曖昧な箇所だけを質問し、回答を永続化して、以降はすべてのモデルをそれに従わせます。ただし、記録された規約は硬いルールではなく、*理由を明示すればエージェントが逸脱できるデフォルト*にとどめます。特定のテストにもっと良いアプローチがあるなら妨げませんし、筋の通った逸脱はむしろ規約を育てるきっかけになります。この部分はリンターには構造的にできません。固定ルールを強制するだけで、そのプロジェクト*固有の*規約を学んで従うことはないからです。
 - **決定論的検出レイヤー。** ファイル単位で型情報から判定できるスメル（Locator の truthy 扱い、待たれないアサーション）を、プロンプトとヒューリスティックから型認識の AST パスに移して検出を再現可能にし、単一ファイルのルールでは下せない判断にだけ LLM を使うようにします。明確に lint 化できるルールは再実装せず、`eslint-plugin-playwright` にアップストリームで貢献する予定です。
 
-これとは別に、アップストリーム貢献のロードマップではより広いパイプラインを管理しています: **マージ済み 13 件、レビュー中・キュー合わせて 15 件**。キューに載るのは審査済みの 1,000 スター超の候補だけです。最新の表は[アップストリーム貢献](docs/roadmap.md)にあります。
+これとは別に、アップストリーム貢献のロードマップではより広いパイプラインを管理しています: **マージ済み 14 件、レビュー中・キュー合わせて 14 件**。キューに載るのは審査済みの 1,000 スター超の候補だけです。最新の表は[アップストリーム貢献](docs/roadmap.md)にあります。
 
 ## コントリビューション
 

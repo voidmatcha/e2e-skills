@@ -4,7 +4,7 @@ description: 'Use this skill to find the root cause of a Cypress end-to-end test
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.7.0"
+  version: "1.8.0"
 ---
 
 # Cypress Failed Test Debugger

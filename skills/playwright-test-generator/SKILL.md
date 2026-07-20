@@ -4,7 +4,7 @@ description: 'Use this skill to generate new Playwright end-to-end tests from sc
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.7.0"
+  version: "1.8.0"
 ---
 
 # playwright-test-generator
@@ -234,7 +234,7 @@ The highest-leverage artifact for consistent AI-generated tests is not any singl
 
 ### e2e-reviewer (automatic quality gate)
 
-Invoke the `e2e-reviewer` skill using the `Skill` tool, targeting the generated spec and POM files.
+Invoke the `e2e-reviewer` skill using the `Skill` tool, targeting the generated spec and POM files. (`e2e-reviewer` ships in this same bundle, so it is normally present. If the `Skill` tool cannot invoke it but the bundle files exist on the host — e.g. a Codex install — do **not** downgrade to scanner-only: read `<e2e-reviewer skill-base>/SKILL.md` and run its full Phase 1–2 procedure inline against the generated spec **and** POM paths, preserving the Phase 2 LLM review and the zero-P0 gate. Fall back to a manual P0 pass (always-true/weak assertions, missing `await`, focused tests) **only** when the e2e-reviewer files are absent entirely, and then state the review ran in reduced form. Never silently skip it.)
 
 - **P0 issues found:** fix immediately, re-invoke `e2e-reviewer`. **Max 3 attempts** — if any P0 remains after 3 fix passes (e.g. intentional `test.only` left for development, an unavoidable bypass with no `// JUSTIFIED:` rationale), list the remaining P0s in the final report and proceed to Step 7 with a warning. Do not loop indefinitely.
 - **P1/P2 issues found:** output in the final report, do not block Step 7

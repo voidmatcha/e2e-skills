@@ -1,4 +1,6 @@
-## [Unreleased]
+# Changelog
+
+## [1.8.0] - 2026-07-21
 
 ### Added
 
@@ -10,6 +12,7 @@
 - `review.sh` "Subagent parity" check (SP1–SP4) plus three drift-smoke cases: the dual-mode subagents (`e2e-finding-verifier`, `e2e-failure-classifier`) and their inline fallbacks are held to one verdict vocabulary (`CONFIRMED` / `FALSE-POSITIVE` / `NEEDS-CONTEXT`) and one frozen `F1–F15` taxonomy, and each delegating skill must hand the subagent an absolute source-of-truth path.
 - `playwright-test-generator` evals: four new cases (Step 4 approval gate, Step 5b conventions/seed, Step 3 reachability probe, Step 7 debugger handoff), each with a true-positive assertion and a false-positive guard.
 - Codex-native subagent ports under `.codex/agents/` (`e2e-finding-verifier.toml`, `e2e-failure-classifier.toml`) — optional TOML equivalents of the Claude `agents/*.md`, discovered by Codex only from `~/.codex/agents/` or a repo checkout (never via `codex plugin add` / the `skills` CLI), so the inline fallback stays load-bearing. A new `review.sh` **SP5** parity check plus drift-smoke Case 21 hold these ports to the same absolute-path contract, verdict vocabulary, and frozen `F1–F15` taxonomy as the `.md` agents and inline fallback.
+- `pattern-reference.md` gains a **Pattern index** navigation table (P0/P1/P2 → pattern IDs) as a reading aid; the SKILL.md Quick Reference table and the per-pattern sections stay authoritative for severity (CI 3b/3c does not validate the index block).
 
 ### Changed
 
@@ -17,10 +20,13 @@
 - e2e-reviewer Phase 2 now executes the LLM-only patterns #20–#23; sync-matcher `expect(await …)` reads rerouted from #15 to #4c-4e; Tier-1 ESLint findings now count into the scanner's exit gates.
 - Cypress debugger retry extraction rewritten to real mochawesome output (with a `mochawesome-merge` step for multi-spec runs); debugger instruction blocks brought to structural parity.
 - Plugin manifest descriptions trimmed of the trailing keyword sentence (24-pattern parity catalog unchanged); `marketing/` gitignored.
-- Public proof copy now uses the exact merged-PR count (13, from the roadmap tables) instead of the `10+` floor, and the proven-in-open-source table lists all merged fixes instead of a representative subset; counts are bumped together on every merge.
+- Public proof copy now uses the exact merged-PR count (14, from the roadmap tables) instead of the `10+` floor, and the proven-in-open-source table lists all merged fixes instead of a representative subset; counts are bumped together on every merge.
 - Korean README adopts English developer terminology (assertion, merge, suite, fixture, and the pattern/F-code names) while examples and fixes stay Korean.
 - Richer trigger descriptions for `playwright-test-generator`, `playwright-debugger`, and `cypress-debugger` — a "reach for it when… / do not use it for…" shape (matching `e2e-reviewer`) that names the concrete evidence and disambiguates the adjacent skills, reducing undertriggering and cross-skill misfires. Applied to both the `SKILL.md` frontmatter and the `agents/openai.yaml` surface (the implicit-invocation trigger on OpenAI-manifest hosts) so the disambiguation lands on every host.
 - Cross-host portability polish: `<skill-base>` and subagent-delegation paths are now host-agnostic (naming both `~/.claude/skills/` and `~/.agents/skills/` instead of a Claude-only example); the three delegating skills carry a host-neutral dispatch clause (Claude plugin subagent, Codex-native `.codex/agents/`, or inline fallback — identical verdict). `playwright-test-generator` now recommends setting up a browser tool (Playwright MCP, with the official getting-started link) and states plainly that the no-MCP ARIA-snapshot fallback only sees the initial static state; the four READMEs replace the vague "agent-browser tools" wording with "browser automation tools (Playwright MCP / webapp-testing)" and add an MCP-recommended note.
+- `e2e-reviewer` SKILL.md: the `// JUSTIFIED:` suppression rules are now defined once (in the Phase 1 section) and referenced from the reference-table section instead of being restated, removing a duplicated spec that could drift.
+- `playwright-test-generator` Step 6: when the `Skill` tool cannot invoke `e2e-reviewer` but the bundle files are present on the host (e.g. a Codex install), the generator now reads `<e2e-reviewer skill-base>/SKILL.md` and runs the full Phase 1–2 review inline against the spec and POM instead of silently downgrading to a scanner-only pass; the manual-P0 fallback is reserved for when the e2e-reviewer files are absent entirely.
+- README.ko readability pass: naturalized machine-translated phrasing (e.g. bare "deterministic" now reads as "항상 같은 방식으로"/"재현 가능한") while keeping the adopted English developer terminology, code identifiers, and pattern/F-code names unchanged.
 
 ### Fixed
 
@@ -36,8 +42,7 @@
 - Updated the public install docs to include the Codex plugin marketplace flow alongside the cross-agent `skills` CLI path.
 - Refreshed the OSS proof points to say 10+ merged upstream PRs and keep the representative examples aligned across README, roadmap, and sibling lint-plugin READMEs.
 - FiftyOne [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) merged (duplicate-name error asserted via locator definition instead of visible UI state): moved In review -> Merged in the roadmap and bumped the coordinated counts (13 merged / 15 in review or queued) across all four READMEs; the pilot benchmark summary paragraph now says "pilot benchmark" to match the linked doc's indicative-numbers status.
-
-# Changelog
+- Rancher Desktop [rancher-sandbox/rancher-desktop#10557](https://github.com/rancher-sandbox/rancher-desktop/pull/10557) merged (WSL integration-name `getByText(...).not.toBeNull()` checks replaced with web-first visibility assertions): moved In review -> Merged in the roadmap and bumped the coordinated counts (14 merged / 14 in review or queued) across all four READMEs, and added it to the proven-in-open-source tables and `docs/case-studies.md`.
 
 ## [1.7.0] - 2026-06-27
 

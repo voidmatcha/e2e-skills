@@ -7,7 +7,7 @@
   <a href="https://claude.com/product/claude-code"><img alt="Claude Code" src="https://img.shields.io/badge/Claude_Code-compatible-D97757?style=flat-square&labelColor=black&logo=anthropic&logoColor=white"></a>
   <a href="https://github.com/openai/codex"><img alt="Codex" src="https://img.shields.io/badge/Codex-compatible-412991?style=flat-square&labelColor=black&logo=openai&logoColor=white"></a>
   <a href="https://playwright.dev"><img alt="Playwright | Cypress" src="https://img.shields.io/badge/Playwright_%7C_Cypress-supported-2EAD33?style=flat-square&labelColor=black&logo=playwright&logoColor=white"></a>
-  <a href="#오픈소스에서-검증됨"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-13-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
+  <a href="#오픈소스에서-검증됨"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-14-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
   <a href="https://agents.md"><img alt="Runs in 55+ agents" src="https://img.shields.io/badge/runs_in-55%2B_agents-37B0E6?style=flat-square&labelColor=black"></a>
   <a href="https://www.npmjs.com/package/eslint-plugin-playwright-silent-pass"><img alt="playwright silent-pass npm" src="https://img.shields.io/npm/v/eslint-plugin-playwright-silent-pass?style=flat-square&label=playwright%20lint&labelColor=black&color=1FC07C"></a>
   <a href="https://www.npmjs.com/package/eslint-plugin-cypress-silent-pass"><img alt="cypress silent-pass npm" src="https://img.shields.io/npm/v/eslint-plugin-cypress-silent-pass?style=flat-square&label=cypress%20lint&labelColor=black&color=37B0E6"></a>
@@ -20,13 +20,13 @@
 
 CI는 통과하지만 실제로는 거의 아무것도 증명하지 못하는 Playwright/Cypress E2E 테스트를 찾아냅니다.
 
-**이론에만 머무는 이야기가 아닙니다. `e2e-reviewer`가 찾아낸 문제는 SvelteKit, Storybook, code-server, Strapi, Carbon Design System, Ghost, MUI X 같은 실제 저장소에서 [13건의 merge된 upstream PR](#오픈소스에서-검증됨)로 이어졌습니다.**
+**이론에만 머무는 이야기가 아닙니다. `e2e-reviewer`가 찾아낸 문제는 SvelteKit, Storybook, code-server, Strapi, Carbon Design System, Ghost, MUI X 같은 실제 저장소에서 [14건의 merge된 upstream PR](#오픈소스에서-검증됨)로 이어졌습니다.**
 
 > 그중 하나가 code-server(78k&#9733;)였습니다. `it.only` 하나가 7개월 동안 8개의 테스트를 조용히 비활성화하고 있었고, 그중 하나는 이미 깨져 있었습니다. 그동안 CI는 내내 조용히 통과하고 있었습니다.
 
-`e2e-skills`는 E2E 테스트를 조용히 통과하게 만드는 실패 유형 — 약한 assertion, 누락된 `await`, 버려진 대기/읽기, 조건문으로 감싼 assertion, focused test, 광범위한 오류 억제 — 을 겨냥한 Agent Skill 묶음과 deterministic 스캐너입니다.
+`e2e-skills`는 실패해야 할 E2E 테스트가 조용히 통과하는 유형을 잡기 위한 Agent Skill 묶음과 재현 가능한 스캐너입니다. 약한 assertion, 누락된 `await`, 버려진 대기/읽기, 조건문으로 감싼 assertion, focused test, 광범위한 오류 억제 같은 문제를 다룹니다.
 
-테스트 runner도, 광범위한 lint preset도, 범용 브라우저 자동화 toolkit도 아닙니다. 오직 한 가지 질문에 집중합니다:
+테스트 runner도, 광범위한 lint preset도, 범용 브라우저 자동화 도구도 아닙니다. 초점은 한 가지 질문입니다:
 
 > 사용자에게 보이는 동작이 실제로 깨졌을 때 이 E2E 테스트가 실패하는가?
 
@@ -39,20 +39,20 @@ AI 에이전트는 E2E 테스트를 금방 만들어 냅니다. 문제는 그렇
 + await expect(page.getByText('SWE')).toBeVisible()
 ```
 
-첫 줄이 증명하는 것은 Playwright `Locator` 객체가 존재한다는 사실뿐입니다. 두 번째 줄이 되어야 비로소 사용자가 그 텍스트를 실제로 본다는 것까지 증명합니다.
+첫 줄은 Playwright `Locator` 객체가 있다는 사실만 증명합니다. 두 번째 줄이어야 사용자가 그 텍스트를 실제로 본다는 점까지 검증합니다.
 
-생성형 테스트의 문제가 silent-pass만은 아닙니다. 모델은 YAGNI·KISS 같은 원칙을 무시하고 아무 데서도 쓰지 않는 코드를 만들어 냅니다 — 어떤 테스트도 호출하지 않는 메서드로 가득한 Page Object처럼요. 여러 모델이 한 suite에 테스트를 쓰면 각자 스타일이 달라지는 문제도 있습니다. 이 묶음은 그 일을 나눠 맡습니다: 쓰이지 않는 추상화는 리뷰어가 #11(YAGNI + 좀비 spec)로 잡아내고, generator는 첫 실행에서 프로젝트 컨벤션(`AGENTS.md` E2E 섹션 + seed spec)을 스캐폴딩해 이후 어떤 모델이 와도 같은 스타일로 쓰게 합니다. 더 깊은 자동 추론 버전은 [로드맵](#로드맵)에 있습니다.
+생성형 테스트의 문제가 silent-pass만은 아닙니다. 모델은 YAGNI, KISS 같은 원칙을 무시하고 아무 데서도 쓰지 않는 코드를 만들어 내기도 합니다. 어떤 테스트도 호출하지 않는 메서드로 가득한 Page Object가 대표적입니다. 여러 모델이 한 suite에 테스트를 쓰면 스타일이 제각각이 되는 문제도 있습니다. 이 묶음은 그 일을 나눠 맡습니다: 쓰이지 않는 추상화는 리뷰어가 #11(YAGNI + 좀비 spec)로 잡아내고, generator는 첫 실행에서 프로젝트 컨벤션(`AGENTS.md` E2E 섹션 + seed spec)을 읽어 들여, 이후 어떤 모델이 와도 같은 스타일로 쓰게 합니다. 더 깊은 자동 추론 버전은 [로드맵](#로드맵)에 있습니다.
 
-`e2e-skills`는 이 문제를 반복 가능한 리뷰 workflow로 바꿉니다:
+`e2e-skills`는 이 문제를 반복 가능한 리뷰 흐름으로 바꿉니다:
 
-1. deterministic한 silent-pass smell을 스캔하고,
+1. silent-pass smell을 항상 같은 방식으로 스캔하고,
 2. 모호한 E2E 의도를 Agent Skill로 리뷰하고,
 3. 빠진 flow가 있으면 더 나은 Playwright coverage를 생성하고,
 4. 실패한 Playwright/Cypress 리포트를 디버깅해 근본 원인부터 고칩니다.
 
 ## 실제 동작 예시
 
-CI는 통과하지만 아무것도 검사하지 않는 Playwright 테스트입니다 — `Locator`는 절대 undefined가 되지 않고, `.not.toBeNull()`은 요소가 렌더링되었든 아니든 성립합니다:
+CI는 통과하지만 실제로는 아무것도 검사하지 않는 Playwright 테스트입니다. `Locator`는 절대 undefined가 되지 않으므로, 요소가 렌더링되지 않아도 `.not.toBeNull()`은 통과합니다:
 
 ```ts
 test('shows the welcome message', async ({ page }) => {
@@ -62,7 +62,7 @@ test('shows the welcome message', async ({ page }) => {
 });
 ```
 
-스캐너는 설정 없이 두 건 모두 deterministic하게 잡아냅니다:
+스캐너는 별도 설정 없이 두 건 모두 항상 같은 방식으로 잡아냅니다:
 
 ```console
 $ bash skills/e2e-reviewer/scripts/scan.sh tests/
@@ -107,13 +107,13 @@ npx skills add voidmatcha/e2e-skills --skill '*' -g -a claude-code
 
 ### Codex
 
-Codex에는 `skills` CLI가 권장 설치 경로입니다. 이 명령은 번들을 `~/.agents/skills/`에 설치합니다. Codex는 거기서 skill을 찾아 쓰고, 인터페이스 블록은 `.codex-plugin/plugin.json`에서 읽습니다:
+Codex에서는 `skills` CLI 설치를 권장합니다. 이 명령은 번들을 `~/.agents/skills/`에 설치합니다. Codex는 거기서 skill을 찾아 쓰고, 인터페이스 블록은 `.codex-plugin/plugin.json`에서 읽습니다:
 
 ```bash
 npx skills add voidmatcha/e2e-skills --skill '*' -g -a claude-code -a codex
 ```
 
-대안 — Codex plugin marketplace:
+Codex plugin marketplace를 써도 됩니다:
 
 ```text
 codex plugin marketplace add voidmatcha/e2e-skills
@@ -128,7 +128,7 @@ codex plugin add e2e-skills@voidmatcha
 npx skills add voidmatcha/e2e-skills -g --all
 ```
 
-특정 에이전트만 겨냥하려면 `--all` 대신 `-a <agent>`를 쓰세요(예: `-a cursor`, `-a opencode`, `-a gemini-cli`) — [지원 에이전트 목록](https://github.com/vercel-labs/skills#supported-agents) 참고.
+특정 에이전트만 대상으로 하려면 `--all` 대신 `-a <agent>`를 쓰세요. 예를 들어 `-a cursor`, `-a opencode`, `-a gemini-cli`처럼 지정할 수 있습니다. [지원 에이전트 목록](https://github.com/vercel-labs/skills#supported-agents)을 참고하세요.
 
 ### 수동 clone (Claude Code)
 
@@ -156,7 +156,7 @@ Debug the failed Playwright report in playwright-report/.
 
 - Playwright/Cypress 테스트가 통과하고는 있지만, 실제 사용자에게 보이는 상태를 검증하는지 확신이 없을 때.
 - AI가 생성한 E2E 테스트에 merge 전 품질 게이트가 필요할 때.
-- suite에 `locator().toBeTruthy()`, `not.toBeNull()`, `await` 없는 `expect(...)`, 버려진 `isVisible()`, `waitForTimeout()`, `it.only`, 전역 `uncaught:exception` 억제 같은 의심스러운 패턴이 들어 있을 때.
+- 테스트 suite에 `locator().toBeTruthy()`, `not.toBeNull()`, `await` 없는 `expect(...)`, 버려진 `isVisible()`, `waitForTimeout()`, `it.only`, 전역 `uncaught:exception` 억제 같은 의심스러운 패턴이 들어 있을 때.
 - 문법만이 아니라 테스트의 의도까지 에이전트가 리뷰해 주기를 원할 때.
 
 다음 용도로는 사용하지 마세요:
@@ -168,9 +168,9 @@ Debug the failed Playwright report in playwright-report/.
 
 ## 오픈소스에서 검증됨
 
-일부러 꾸며 낸 증거가 아닙니다. `e2e-reviewer`가 찾아낸 문제를 바탕으로 SvelteKit, Storybook, code-server, Strapi, Carbon Design System, Ghost, Cal.com, Bruno, Qwik, Element Web, MUI X 등 잘 알려진 저장소에서 **13건의 upstream PR**이 merge되었습니다.
+일부러 꾸며 낸 증거가 아닙니다. `e2e-reviewer`가 찾아낸 문제를 바탕으로 SvelteKit, Storybook, code-server, Strapi, Carbon Design System, Ghost, Cal.com, Bruno, Qwik, Element Web, MUI X, Rancher Desktop 같은 잘 알려진 저장소에서 **14건의 upstream PR**이 merge됐습니다.
 
-그 실전 기록은 재현 가능한 pilot benchmark와도 연결됩니다. 이미 AI reviewer가 review한 오픈소스 PR 100건, 77개 repository에서 neutral LLM judge가 material한 E2E test-trust issue 110개를 식별했고, `e2e-reviewer`는 그중 78개를 0 false positive로 찾았습니다. lint는 45개, general AI PR reviewer의 inline spec comment는 10개를 찾았습니다. [방법론과 case evidence](docs/ai-reviewer-benchmark.md)를 참고하세요.
+그 실전 기록은 재현 가능한 pilot benchmark와도 연결됩니다. 이미 AI reviewer가 검토한 오픈소스 PR 100건, 77개 저장소에서 neutral LLM judge가 실질적인 E2E test-trust issue 110개를 식별했고, `e2e-reviewer`는 그중 78개를 false positive 없이 찾았습니다. lint는 45개, general AI PR reviewer의 inline spec comment는 10개를 찾았습니다. [방법론과 사례 근거](docs/ai-reviewer-benchmark.md)를 참고하세요.
 
 merge된 수정 전체:
 
@@ -189,6 +189,7 @@ merge된 수정 전체:
 | MUI X | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | UI handle 검사를 상태 assertion으로 교체 |
 | module-federation/core | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Cypress spec의 불필요한 블랭킷 `uncaught:exception` 억제 제거 |
 | FiftyOne | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Locator 정의 여부 대신 눈에 보이는 중복 이름 오류를 검증 |
+| Rancher Desktop | [rancher-sandbox/rancher-desktop#10557](https://github.com/rancher-sandbox/rancher-desktop/pull/10557) | `not.toBeNull()` locator 검사를 눈에 보이는 WSL 통합 이름 assertion으로 교체 |
 
 ## workflow
 
@@ -229,9 +230,9 @@ Total: 3 P0, 0 P1, 0 P2 in 24 spec files.
 
 ## Skill 1: `playwright-test-generator` — 테스트 생성
 
-어떤 프로젝트에서든 Playwright E2E 테스트를 처음부터 생성합니다. coverage gap 분석에서 시작해 브라우저 자동화 도구(Playwright MCP / webapp-testing)로 실제 앱을 탐색하고, 사용자의 승인을 받아 시나리오를 설계합니다. 생성된 테스트는 `e2e-reviewer`가 자동으로 리뷰합니다.
+어떤 프로젝트에서든 Playwright E2E 테스트를 처음부터 만듭니다. 먼저 coverage gap을 분석한 뒤 브라우저 자동화 도구(Playwright MCP / webapp-testing)로 실제 앱을 탐색하고, 사용자의 승인을 받아 시나리오를 설계합니다. 생성된 테스트는 `e2e-reviewer`가 자동으로 리뷰합니다.
 
-> **권장:** 먼저 브라우저 도구를 설정하세요 — [Playwright MCP](https://github.com/microsoft/playwright-mcp#getting-started) 또는 `webapp-testing` 스킬. 없으면 페이지 초기 상태만 보는 정적 ARIA 스냅샷으로 fallback되며(상호작용 불가), 단순 페이지엔 괜찮지만 실제 플로우(모달·제출 후·에러 상태·다단계)엔 제한적입니다.
+> **권장:** 먼저 브라우저 도구를 설정하세요: [Playwright MCP](https://github.com/microsoft/playwright-mcp#getting-started) 또는 `webapp-testing` 스킬. 없으면 페이지 초기 상태만 보는 정적 ARIA 스냅샷으로 대체합니다(상호작용 불가). 단순 페이지에는 괜찮지만 실제 흐름(모달, 제출 후, 에러 상태, 다단계)에는 제한적입니다.
 
 ### 사용 시점
 
@@ -252,7 +253,7 @@ Add playwright coverage for checkout flow
 
 1. **환경 감지** — 설정, baseURL, 테스트 디렉터리, POM 구조, 기존 컨벤션 문서
 2. **coverage gap 분석** — 사용자가 대상을 선택합니다(대상이 인수로 주어지면 생략)
-3. **라이브 브라우저 탐색** — 브라우저 자동화 도구 사용([Playwright MCP](https://github.com/microsoft/playwright-mcp#getting-started) / webapp-testing; 환각으로 지어낸 셀렉터 없음); 레이블 없는 입력에 대한 접근 가능한 이름(accessible-name) 실사
+3. **라이브 브라우저 탐색** — 브라우저 자동화 도구([Playwright MCP](https://github.com/microsoft/playwright-mcp#getting-started) / webapp-testing)로 실제 화면을 확인합니다. 환각으로 셀렉터를 지어내지 않고, 레이블 없는 입력은 accessible name까지 직접 확인합니다.
 4. **시나리오 설계 + 승인 게이트** — 코드를 작성하기 전에 계획과 locator 표를 보여 줍니다
 5. **코드 생성** — 프로젝트 컨벤션에서 자동 감지한 POM + spec 또는 플랫 spec; 쓰기 작업은 반드시 route 스텁 처리(`code-rules.md`의 Network Determinism 참고)
 6. **컨벤션 및 시드 스캐폴딩**(프로젝트 첫 실행 시) — 프로젝트에 맞춘 E2E 섹션을 `AGENTS.md`에 추가하고 시드 spec을 지정해, 이후 AI가 생성하는 테스트(Claude Code, Codex, Playwright Agents)가 일관성을 유지하게 합니다
@@ -263,9 +264,9 @@ Add playwright coverage for checkout flow
 
 ## Skill 2: `e2e-reviewer` — 품질 리뷰
 
-CI는 통과하지만 실제 회귀를 잡아내지 못하는 E2E 테스트의 문제를 찾아냅니다.
+CI는 통과하지만 실제 회귀를 잡지 못하는 E2E 테스트를 찾아냅니다.
 
-모든 finding은 보고 전에 refute-first로 adversarial 검증을 거칩니다 — Claude Code 플러그인 설치에서는 read-only 서브에이전트로, 그 외 호스트에서는 inline으로. 이 별도 검증 패스가 벤치마크에서 false positive를 0으로 유지한 방식입니다.
+모든 발견 항목은 보고 전에 refute-first 방식으로 반증 검증을 거칩니다. Claude Code 플러그인 설치에서는 read-only 서브에이전트가 검증하고, 그 외 호스트에서는 inline으로 검증합니다. 이 별도 검증 단계 덕분에 벤치마크에서 false positive를 0으로 유지했습니다.
 
 ### 사용 시점
 
@@ -326,7 +327,7 @@ We have coverage but bugs still slip through
 
 #### P2 — 고치면 좋음 (유지보수 / 견고성)
 
-약하지만 틀린 것은 아닙니다 — 리팩터링할 때 처리합니다.
+약한 assertion이지만 틀린 assertion은 아닙니다. 리팩터링할 때 처리하면 됩니다.
 
 | # | 패턴 | 수정 전 | 수정 후 |
 |---|---------|--------|-------|
@@ -336,9 +337,9 @@ We have coverage but bugs still slip through
 
 ### linter가 구조적으로 잡을 수 없는 것
 
-**linter는 assertion이 형식적으로 올바른지 검사합니다. 테스트가 그 이름이 주장하는 바를 증명하는지는 검사할 수 없습니다.** 테스트의 명시된 의도와 실제로 검증하는 내용 사이의 이 간극이 `e2e-reviewer`가 찾는 것의 핵심이며, 파일 단위의 어떤 AST나 grep 규칙에도 보이지 않습니다: `should show an error when the name is duplicate`는 오류를 전혀 건드리지 않는 assertion으로도 통과할 수 있고, 문법은 흠잡을 데 없습니다. 이를 판별하려면 테스트의 이름, 수행하는 동작, 주변 코드를 함께 읽어야 하는데, 이는 단일 파일 규칙이 동작하는 수준보다 한 단계 위입니다.
+**linter는 assertion이 형식적으로 올바른지 검사합니다. 테스트가 그 이름이 주장하는 바를 증명하는지는 검사할 수 없습니다.** `e2e-reviewer`가 보는 핵심은 테스트의 명시된 의도와 실제 검증 내용 사이의 간극입니다. 이 간극은 파일 단위 AST나 grep 규칙에는 보이지 않습니다. 예를 들어 `should show an error when the name is duplicate`는 오류를 전혀 확인하지 않는 assertion으로도 통과할 수 있고, 문법에도 문제는 없습니다. 이를 판별하려면 테스트 이름, 수행 동작, 주변 코드를 함께 읽어야 합니다. 단일 파일 규칙보다 한 단계 위의 판단입니다.
 
-`e2e-reviewer`는 첫 번째 계층으로 `eslint-plugin-playwright` / `eslint-plugin-cypress`를 실행하므로, 기계적인 규칙(`#6`, `#7`, `#9`, `#15`, `#16`, `#5a`, `#5b`)은 사실상 표준인 이 plugin들이 이미 담당합니다. 그 위에 `e2e-reviewer`를 얹는 이유는 **어떤 AST나 grep 규칙도 닿을 수 없는** smell 때문입니다. 이런 smell을 확정하려면 규칙이 결코 보지 못하는 코드, 즉 다른 함수, 컴포넌트, CI 설정, 테스트 자체의 의도까지 읽어야 합니다:
+`e2e-reviewer`는 첫 번째 계층으로 `eslint-plugin-playwright` / `eslint-plugin-cypress`를 실행합니다. 따라서 기계적인 규칙(`#6`, `#7`, `#9`, `#15`, `#16`, `#5a`, `#5b`)은 사실상 표준인 이 plugin들이 이미 담당합니다. 그 위에 `e2e-reviewer`를 얹는 이유는 **어떤 AST나 grep 규칙도 닿을 수 없는** smell 때문입니다. 이런 smell을 확정하려면 규칙이 보지 못하는 코드, 즉 다른 함수, 컴포넌트, CI 설정, 테스트 자체의 의도까지 읽어야 합니다:
 
 | smell | lint가 판별할 수 없는 이유 |
 |-------|---------------------------|
@@ -351,7 +352,7 @@ We have coverage but bugs still slip through
 | `#11` / `#23` 좀비 spec / 렌더 가드를 무시하는 fixture | 파일 간 문제입니다: 중복 spec 탐지, 또는 시드를 신뢰하기 전에 컴포넌트의 조기 `return null`을 읽는 일. |
 | **어려운 사례** | *결코 throw하지 않는* 함수를 감싼 `try/catch`가 `catch` 안에서만 assertion을 수행하는 경우(실제 사례: xyflow의 `graph-utils.cy.ts`에 있는 `addEdge`). 확정하려면 다른 파일에 있는 함수 본문을 읽어야 하는데, 이는 grep이나 어떤 단일 파일 AST 규칙으로도 불가능합니다. |
 
-이 부분은 패턴 매칭이 아니라 판단이 필요한 영역입니다. `e2e-reviewer`는 각 후보가 발견(finding)이 되기 전에 주변 코드와 CI 설정을 읽어 **검증**합니다. 위에서 말한 [후보이지 판결이 아니라는](#scanner-findings-are-candidates-not-verdicts) 원칙 그대로입니다. 모든 발견에 단순 매치 결과가 아니라 임시방편을 경계한 수정 제안이 딸려 나오는 것도 이 검증 덕분입니다.
+이 부분은 패턴 매칭이 아니라 판단이 필요한 영역입니다. `e2e-reviewer`는 후보를 발견 항목으로 보고하기 전에 주변 코드와 CI 설정을 읽어 **검증**합니다. 위에서 말한 [후보이지 판결이 아니라는](#scanner-findings-are-candidates-not-verdicts) 원칙 그대로입니다. 모든 발견 항목에 단순 매치 결과가 아니라 임시방편을 경계한 수정 제안이 딸려 나오는 것도 이 검증 덕분입니다.
 
 ### 참고 자료
 
@@ -361,7 +362,7 @@ We have coverage but bugs still slip through
 
 ## Skill 3: `playwright-debugger` — Playwright 실패 debugger
 
-`playwright-report/` 디렉터리를 바탕으로 Playwright 테스트 실패를 진단합니다 — 실패가 로컬에서 났든 CI에서 났든 상관없습니다. 근본 원인을 분류하고 구체적인 수정을 제시합니다.
+`playwright-report/` 디렉터리를 읽어 Playwright 테스트 실패를 진단합니다. 실패가 로컬에서 났든 CI에서 났든 상관없습니다. 근본 원인을 분류하고 구체적인 수정안을 제시합니다.
 
 ### 사용 시점
 
@@ -378,7 +379,7 @@ Why did these tests fail?
 Tests pass locally but fail in CI
 ```
 
-> **참고:** 리포트는 로컬 경로로 넘겨도 되고, GitHub Actions run을 그대로 줘도 됩니다 — 스킬이 사용자 확인을 받은 run ID로 `gh run download`를 실행해 아티팩트를 직접 내려받습니다(forked-PR run은 제외).
+> **참고:** 리포트는 로컬 경로로 넘겨도 되고, GitHub Actions run을 그대로 줘도 됩니다. 스킬은 사용자가 확인한 run ID로 `gh run download`를 실행해 아티팩트를 직접 내려받습니다. forked PR run은 제외합니다.
 
 ### 15개 근본 원인 카테고리
 
@@ -462,19 +463,19 @@ Cypress tests pass locally but fail in CI
 
 ### e2e-skills란 무엇인가요?
 
-e2e-skills는 Playwright와 Cypress를 위한 오픈소스 AI 에이전트 테스트 toolkit입니다. E2E 테스트를 생성하고, 기존 spec에서 조용한 상시 통과 안티패턴을 리뷰하고, flaky한 실패를 디버깅하는 네 개의 Agent Skill을 한데 묶은 것으로, Claude Code, Codex를 비롯한 `AGENTS.md` 호환 AI 코딩 에이전트 안에서 실행됩니다.
+e2e-skills는 Playwright와 Cypress를 위한 오픈소스 AI 에이전트 테스트 도구 묶음입니다. E2E 테스트를 생성하고, 기존 spec에서 조용한 상시 통과 안티패턴을 리뷰하고, flaky 실패를 디버깅하는 네 개의 Agent Skill을 한데 묶었습니다. Claude Code, Codex를 비롯한 `AGENTS.md` 호환 AI 코딩 에이전트 안에서 실행됩니다.
 
 ### 통과는 하지만 실제로는 아무것도 테스트하지 않는 Playwright/Cypress 테스트는 어떻게 찾나요?
 
-spec 디렉터리를 대상으로 `e2e-reviewer` skill(또는 독립 실행형 스캐너 `scan.sh`)을 실행하세요. assertion의 `await` 누락, 일회성 `isVisible()` 읽기, matcher 없는 `expect()`, 커밋된 `.only` 유출처럼 담당 기능이 깨져도 테스트를 초록불로 남겨 두는 안티패턴 24개를 심각도(P0/P1/P2)별로 표시합니다.
+spec 디렉터리를 대상으로 `e2e-reviewer` 스킬 또는 독립 실행형 스캐너 `scan.sh`를 실행하세요. assertion의 `await` 누락, 일회성 `isVisible()` 읽기, matcher 없는 `expect()`, 커밋된 `.only` 유출처럼 담당 기능이 깨져도 테스트를 통과 상태로 남겨 두는 안티패턴 24개를 심각도(P0/P1/P2)별로 표시합니다.
 
 ### eslint-plugin-playwright나 eslint-plugin-cypress와는 무엇이 다른가요?
 
-eslint plugin은 문법 규칙을 위한 매 커밋 기준선이며, 스캐너는 이를 가장 먼저(Tier 1) 실행합니다 — 즉 이를 대체하는 것이 아니라 그 위에 계층을 더합니다. 그 계층은 linter가 [구조적으로 판별할 수 없는](#linter가-구조적으로-잡을-수-없는-것) smell입니다: 이름-assertion 불일치, 결코 throw하지 않는 함수를 감싼 `try/catch`, 항상 참인 `expect(locator).toBeTruthy()`, 인증이 빠진 route — 각각 AST 규칙이 결코 보지 못하는 코드(다른 함수, 컴포넌트, CI 설정, 테스트의 의도)를 읽어야 합니다. `e2e-reviewer`는 그 주변 코드를 읽어 발견을 검증하고 임시방편을 경계한 수정을 제공하는 반면, lint는 단일 파일의 문법만 표시할 수 있습니다.
+eslint plugin은 커밋마다 문법 규칙을 걸러 주는 기본 방어선이며, 스캐너는 이를 가장 먼저(Tier 1) 실행합니다. `e2e-skills`는 이를 대체하지 않고 그 위에 한 계층을 더합니다. 그 계층은 linter가 [구조적으로 판별할 수 없는](#linter가-구조적으로-잡을-수-없는-것) smell입니다: 이름-assertion 불일치, 결코 throw하지 않는 함수를 감싼 `try/catch`, 항상 참인 `expect(locator).toBeTruthy()`, 인증이 빠진 route. 이런 문제를 확정하려면 AST 규칙이 보지 못하는 코드, 즉 다른 함수, 컴포넌트, CI 설정, 테스트의 의도까지 읽어야 합니다. `e2e-reviewer`는 그 주변 코드를 읽어 발견을 검증하고 임시방편을 피하는 수정안을 제시하지만, lint는 단일 파일의 문법만 표시할 수 있습니다.
 
 ### CodeRabbit, Copilot, Cursor BugBot 같은 AI 코드 리뷰어와 다를 게 없지 않나요?
 
-그것들은 훌륭한 범용 리뷰어입니다 — 상당수가 오픈소스 프로젝트에는 무료이고 이제 로컬에서도 실행됩니다(CodeRabbit의 CLI는 터미널에서 스테이징된 변경을 리뷰합니다). 차이는 능력이 아니라 전문화입니다: 범용 리뷰어는 건네받은 diff가 무엇이든 그 위에서 추론하지만, `e2e-reviewer`는 엄선되고 안정적이며 심각도가 매겨진 E2E 조용한 상시 통과 안티패턴 카탈로그(고정 ID의 24개 패턴에 15개 실패 디버깅 카테고리까지)를 갖추고, PR diff만이 아니라 전체 spec 디렉터리를 대상으로 필요할 때마다 실행됩니다. 모든 것에는 범용 리뷰어를 쓰고, E2E 테스트의 신뢰성이 정말 중요한 문제일 때 이것을 쓰세요. 리뷰된 PR 100건에 대한 실제 비교(솔직한 한계 포함)는 [AI reviewer benchmark](docs/ai-reviewer-benchmark.md)를 참고하세요.
+그것들은 훌륭한 범용 리뷰어입니다. 상당수가 오픈소스 프로젝트에는 무료이고, 이제 로컬에서도 실행됩니다(CodeRabbit의 CLI는 터미널에서 스테이징된 변경을 리뷰합니다). 차이는 능력이 아니라 전문화입니다: 범용 리뷰어는 건네받은 diff가 무엇이든 그 위에서 추론하지만, `e2e-reviewer`는 엄선되고 안정적이며 심각도가 매겨진 E2E 조용한 상시 통과 안티패턴 카탈로그를 갖추고 있습니다. 고정 ID의 24개 패턴과 15개 실패 디버깅 카테고리를 함께 봅니다. 또한 PR diff만이 아니라 전체 spec 디렉터리를 대상으로 필요할 때마다 실행됩니다. 모든 것에는 범용 리뷰어를 쓰고, E2E 테스트의 신뢰성이 정말 중요한 문제일 때 이것을 쓰세요. 리뷰된 PR 100건에 대한 실제 비교(솔직한 한계 포함)는 [AI reviewer benchmark](docs/ai-reviewer-benchmark.md)를 참고하세요.
 
 ### Playwright뿐 아니라 Cypress에서도 동작하나요?
 
@@ -482,7 +483,7 @@ eslint plugin은 문법 규칙을 위한 매 커밋 기준선이며, 스캐너�
 
 ### CI에서만 실패하는 flaky 테스트도 디버깅할 수 있나요?
 
-네. `playwright-debugger`와 `cypress-debugger`가 리포트 파일(`playwright-report/`, `cypress/reports/`)을 읽고 각 실패를 15개 근본 원인 카테고리 — flaky 타이밍, 셀렉터 드리프트, 테스트 격리, 환경 불일치, 하이드레이션 경쟁 등 — 로 분류하며, 실패별로 구체적인 수정을 제시합니다.
+네. `playwright-debugger`와 `cypress-debugger`가 리포트 파일(`playwright-report/`, `cypress/reports/`)을 읽고 각 실패를 15개 근본 원인 카테고리(flaky 타이밍, 셀렉터 드리프트, 테스트 격리, 환경 불일치, 하이드레이션 경쟁 등)로 분류하며, 실패별로 구체적인 수정안을 제시합니다.
 
 ### AI가 생성한 E2E 테스트는 어떻게 리뷰하나요?
 
@@ -490,20 +491,20 @@ eslint plugin은 문법 규칙을 위한 매 커밋 기준선이며, 스캐너�
 
 ### 어떤 AI 코딩 에이전트를 지원하나요?
 
-Claude Code(plugin marketplace 또는 `skills` CLI), Codex, 그리고 `skills` CLI가 `AGENTS.md`를 통해 지원하는 모든 에이전트(55개 이상 호스트)입니다. 한 번 설치하면 어디서나 사용할 수 있습니다.
+Claude Code(plugin marketplace 또는 `skills` CLI), Codex, 그리고 `skills` CLI가 `AGENTS.md`를 통해 지원하는 모든 에이전트입니다. 55개 이상의 호스트에서 한 번 설치해 사용할 수 있습니다.
 
 ### Playwright와 Cypress 외의 테스트 프레임워크도 지원하나요?
 
-아니요 — 의도적으로 Playwright와 Cypress만 지원합니다. 근거는 [프레임워크 범위](docs/framework-scope.md)를 참고하세요.
+아니요. 의도적으로 Playwright와 Cypress만 지원합니다. 자세한 이유는 [프레임워크 범위](docs/framework-scope.md)를 참고하세요.
 
 ## 로드맵
 
 아래는 계획이지 아직 출시된 기능이 아닙니다. 현재 동작이 아니라 앞으로의 방향을 설명합니다:
 
-- **cross-model 일관성.** AI 에이전트마다 자기 스타일로 spec을 작성하기 때문에, 여러 모델로 구축된 suite는 하나의 컨벤션으로 묶이지 않은 채 제각각으로 흘러갑니다. 계획은 이렇습니다: 프로젝트의 컨벤션(POM 형태, locator 전략, fixture와 구조 패턴)을 추론하고('추상화 없음'도 유효한 답이라, 두 페이지짜리 flow에 불필요한 Page Object 계층을 깔지 않습니다), 코드베이스가 정말로 모호한 지점에서만 질문하며, 답을 기록해 이후 모든 모델이 따르게 합니다. 핵심은, 기록된 컨벤션이 딱딱한 규칙이 아니라 *이유를 밝히면 에이전트가 벗어날 수 있는 기본값*으로 남는다는 점입니다. 그래서 특정 테스트에 더 맞는 접근이 가로막히는 일이 없고, 정당한 이탈은 오히려 컨벤션을 다듬는 계기가 됩니다. 이것이 linter가 구조적으로 할 수 없는 부분입니다: linter는 고정된 규칙을 강제할 뿐, *여러분의* 컨벤션을 학습해 따를 수는 없습니다.
+- **모델 간 일관성.** AI 에이전트마다 자기 스타일로 spec을 작성하기 때문에, 여러 모델이 함께 만든 suite는 하나의 컨벤션으로 묶이지 않은 채 제각각으로 흘러갑니다. 계획은 프로젝트의 컨벤션(POM 형태, locator 전략, fixture와 구조 패턴)을 추론하고, 코드베이스가 정말로 모호한 지점에서만 질문하며, 답을 기록해 이후 모든 모델이 따르게 하는 것입니다. '추상화 없음'도 유효한 답입니다. 두 페이지짜리 flow에 불필요한 Page Object 계층을 깔지 않습니다. 핵심은 기록된 컨벤션이 딱딱한 규칙이 아니라, *이유를 밝히면 에이전트가 벗어날 수 있는 기본값*으로 남는다는 점입니다. 그래서 특정 테스트에 더 맞는 접근을 가로막지 않고, 정당한 이탈은 오히려 컨벤션을 다듬는 계기가 됩니다. 이것이 linter가 구조적으로 할 수 없는 부분입니다: linter는 고정된 규칙을 강제할 뿐, *여러분의* 컨벤션을 학습해 따를 수는 없습니다.
 - **deterministic 감지 계층.** 파일 단위로 타입만 알면 판별 가능한 smell(Locator를 truthy로 검사, 떠 있는 assertion)을 프롬프트와 휴리스틱에서 타입 인지 AST 패스로 옮겨, 감지를 재현 가능하게 만들고 LLM은 단일 파일 규칙이 내릴 수 없는 판단에만 사용합니다. 명확히 lint화할 수 있는 규칙은 다시 구현하는 대신 `eslint-plugin-playwright` upstream에 기여할 예정입니다.
 
-이와 별개로 upstream 기여 로드맵에서는 더 넓은 파이프라인을 추적합니다: **merge 13건, 리뷰·대기 15건**. 대기열에는 검증을 마친 1,000+ 스타 후보만 올립니다 — 실시간 표는 [upstream 기여](docs/roadmap.md)에 있습니다.
+이와 별개로 upstream 기여 로드맵에서는 더 넓은 파이프라인을 추적합니다: **merge 14건, 리뷰/대기 14건**. 대기열에는 검증을 마친 1,000+ 스타 후보만 올립니다. 최신 표는 [upstream 기여](docs/roadmap.md)에 있습니다.
 
 ## 기여하기
 
