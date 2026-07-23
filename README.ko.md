@@ -339,7 +339,7 @@ We have coverage but bugs still slip through
 
 **linter는 assertion이 형식적으로 올바른지 검사합니다. 테스트가 그 이름이 주장하는 바를 증명하는지는 검사할 수 없습니다.** `e2e-reviewer`가 보는 핵심은 테스트의 명시된 의도와 실제 검증 내용 사이의 간극입니다. 이 간극은 파일 단위 AST나 grep 규칙에는 보이지 않습니다. 예를 들어 `should show an error when the name is duplicate`는 오류를 전혀 확인하지 않는 assertion으로도 통과할 수 있고, 문법에도 문제는 없습니다. 이를 판별하려면 테스트 이름, 수행 동작, 주변 코드를 함께 읽어야 합니다. 단일 파일 규칙보다 한 단계 위의 판단입니다.
 
-`e2e-reviewer`는 첫 번째 계층으로 `eslint-plugin-playwright` / `eslint-plugin-cypress`를 실행합니다. 따라서 기계적인 규칙(`#6`, `#7`, `#9`, `#15`, `#16`, `#5a`, `#5b`)은 사실상 표준인 이 plugin들이 이미 담당합니다. 그 위에 `e2e-reviewer`를 얹는 이유는 **어떤 AST나 grep 규칙도 닿을 수 없는** smell 때문입니다. 이런 smell을 확정하려면 규칙이 보지 못하는 코드, 즉 다른 함수, 컴포넌트, CI 설정, 테스트 자체의 의도까지 읽어야 합니다:
+`e2e-reviewer`는 첫 번째 계층으로 `eslint-plugin-playwright` / `eslint-plugin-cypress`를 실행합니다. 따라서 기계적인 규칙(`#6`, `#7`, `#9`, `#15`, `#16`, `#5a`, `#5b`)은 사실상 표준인 이 plugin들이 이미 담당합니다. 항상 통과하는 Locator assertion smell(`#4f`)도 이제 담당됩니다 — 이 프로젝트에서 공식 `eslint-plugin-playwright`에 [`no-unnecessary-assertions`](https://github.com/mskelton/eslint-plugin-playwright/pull/470) 규칙으로 기여해 merge됐고(다음 릴리스에 포함), Cypress 쪽은 [`eslint-plugin-cypress-silent-pass`](https://github.com/voidmatcha/eslint-plugin-cypress-silent-pass)가 담당합니다. 그 위에 `e2e-reviewer`를 얹는 이유는 **어떤 AST나 grep 규칙도 닿을 수 없는** smell 때문입니다. 이런 smell을 확정하려면 규칙이 보지 못하는 코드, 즉 다른 함수, 컴포넌트, CI 설정, 테스트 자체의 의도까지 읽어야 합니다:
 
 | smell | lint가 판별할 수 없는 이유 |
 |-------|---------------------------|
@@ -502,7 +502,7 @@ Claude Code(plugin marketplace 또는 `skills` CLI), Codex, 그리고 `skills` C
 아래는 계획이지 아직 출시된 기능이 아닙니다. 현재 동작이 아니라 앞으로의 방향을 설명합니다:
 
 - **모델 간 일관성.** AI 에이전트마다 자기 스타일로 spec을 작성하기 때문에, 여러 모델이 함께 만든 suite는 하나의 컨벤션으로 묶이지 않은 채 제각각으로 흘러갑니다. 계획은 프로젝트의 컨벤션(POM 형태, locator 전략, fixture와 구조 패턴)을 추론하고, 코드베이스가 정말로 모호한 지점에서만 질문하며, 답을 기록해 이후 모든 모델이 따르게 하는 것입니다. '추상화 없음'도 유효한 답입니다. 두 페이지짜리 flow에 불필요한 Page Object 계층을 깔지 않습니다. 핵심은 기록된 컨벤션이 딱딱한 규칙이 아니라, *이유를 밝히면 에이전트가 벗어날 수 있는 기본값*으로 남는다는 점입니다. 그래서 특정 테스트에 더 맞는 접근을 가로막지 않고, 정당한 이탈은 오히려 컨벤션을 다듬는 계기가 됩니다. 이것이 linter가 구조적으로 할 수 없는 부분입니다: linter는 고정된 규칙을 강제할 뿐, *여러분의* 컨벤션을 학습해 따를 수는 없습니다.
-- **deterministic 감지 계층.** 파일 단위로 타입만 알면 판별 가능한 smell(Locator를 truthy로 검사, 떠 있는 assertion)을 프롬프트와 휴리스틱에서 타입 인지 AST 패스로 옮겨, 감지를 재현 가능하게 만들고 LLM은 단일 파일 규칙이 내릴 수 없는 판단에만 사용합니다. 명확히 lint화할 수 있는 규칙은 다시 구현하는 대신 `eslint-plugin-playwright` upstream에 기여할 예정입니다.
+- **deterministic 감지 계층.** 파일 단위로 타입만 알면 판별 가능한 smell(Locator를 truthy로 검사, 떠 있는 assertion)을 프롬프트와 휴리스틱에서 타입 인지 AST 패스로 옮겨, 감지를 재현 가능하게 만들고 LLM은 단일 파일 규칙이 내릴 수 없는 판단에만 사용합니다. 명확히 lint화할 수 있는 규칙은 다시 구현하는 대신 `eslint-plugin-playwright` upstream에 기여합니다 — 그 첫 번째로 항상 통과하는 Locator assertion을 잡는 `no-unnecessary-assertions` 규칙이 [merge됐습니다](https://github.com/mskelton/eslint-plugin-playwright/pull/470).
 
 이와 별개로 upstream 기여 로드맵에서는 더 넓은 파이프라인을 추적합니다: **merge 14건, 리뷰/대기 14건**. 대기열에는 검증을 마친 1,000+ 스타 후보만 올립니다. 최신 표는 [upstream 기여](docs/roadmap.md)에 있습니다.
 

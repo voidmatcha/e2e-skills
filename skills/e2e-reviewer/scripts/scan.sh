@@ -166,6 +166,11 @@ EOFRES
   # Companion silent-pass plugin (dogfood the #4f always-pass rule). Best-effort:
   # resolved separately so a missing/offline package NEVER breaks Tier 1 — the
   # official plugin still runs, and Tier 2/3 still cover #4f.
+  # NOTE: #4f was upstreamed to eslint-plugin-playwright as `no-unnecessary-assertions`
+  # (mskelton/eslint-plugin-playwright#470, merged). Once released and in its recommended
+  # config, the Playwright `flat/recommended` spread below covers #4f natively and this
+  # companion dogfood becomes redundant for Playwright (Cypress silent-pass still applies).
+  # Not hardcoding the rule name here — an unreleased rule id would error "rule not found".
   local _sp_abs="" _sp_paths _sp_imp="" _sp_plg="" _sp_rul=""
   _sp_paths=$( (cd "$ROOT" && npx "${_resolve_args[@]}" "$_cfgd/resolve.cjs" "eslint-plugin-$plugin-silent-pass") 2>/dev/null | tail -1 )
   if [[ "$_sp_paths" == "["* ]]; then

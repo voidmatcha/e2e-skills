@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- **Upstream tooling contribution: `#4f` landed in the official ESLint plugin.** The always-passing-Locator-assertion smell (`expect(locator).toBeDefined()` / `.toBeTruthy()` / `.not.toBeNull()`) was contributed to the official [`eslint-plugin-playwright`](https://github.com/mskelton/eslint-plugin-playwright) as the `no-unnecessary-assertions` rule ([#470](https://github.com/mskelton/eslint-plugin-playwright/pull/470), merged; ships in the next `eslint-plugin-playwright` release). Repositioned the docs accordingly: for Playwright, `#4f` is now recommended via the official rule rather than the standalone `eslint-plugin-playwright-silent-pass`; `eslint-plugin-cypress-silent-pass` still covers the Cypress side. Updated `e2e-reviewer/SKILL.md` companion-plugin guidance, README ×4 (the "what a linter cannot catch" section, the eslint-plugins FAQ example, and the roadmap deterministic-detection item), and `docs/roadmap.md` (new "Upstream tooling" line, tracked separately from the merged test-fix count, which stays 14). Follow-up (separate repo): archive `voidmatcha/eslint-plugin-playwright-silent-pass` and deprecate its npm package now that the official rule supersedes it.
+
 ## [1.8.0] - 2026-07-21
 
 ### Added

@@ -339,7 +339,7 @@ We have coverage but bugs still slip through
 
 **静态检查器能查出一个断言写得规不规范，却查不出这个测试到底有没有证明它名字里声称的东西。** 测试声称的意图和它实际验证的内容，中间这道缝正是 `e2e-reviewer` 要找的核心，而任何逐文件的 AST 或 grep 规则都看不见它：`should show an error when the name is duplicate` 可以在一个从不触及错误的断言下通过，语法却毫无瑕疵。要判定它，得把测试的名称、它执行的动作以及周围的代码放在一起读，这比单文件规则的运作层级高出一层。
 
-`e2e-reviewer` 把 `eslint-plugin-playwright` / `eslint-plugin-cypress` 作为它的第一层，因此机械性的规则（`#6`、`#7`、`#9`、`#15`、`#16`、`#5a`、`#5b`）已经被这些事实标准的插件覆盖。在其之上再加 `e2e-reviewer` 的理由，是那些**任何 AST 或 grep 规则都触及不到**的坏味道，因为确认它们需要读取规则永远看不到的代码——其他函数、组件、CI 配置、测试自身的意图：
+`e2e-reviewer` 把 `eslint-plugin-playwright` / `eslint-plugin-cypress` 作为它的第一层，因此机械性的规则（`#6`、`#7`、`#9`、`#15`、`#16`、`#5a`、`#5b`）已经被这些事实标准的插件覆盖。永远通过的 Locator 断言坏味道（`#4f`）现在也被覆盖了——它由本项目贡献到官方 `eslint-plugin-playwright`，作为 [`no-unnecessary-assertions`](https://github.com/mskelton/eslint-plugin-playwright/pull/470) 规则已合并（将随下一个版本发布），Cypress 一侧则由 [`eslint-plugin-cypress-silent-pass`](https://github.com/voidmatcha/eslint-plugin-cypress-silent-pass) 覆盖。在其之上再加 `e2e-reviewer` 的理由，是那些**任何 AST 或 grep 规则都触及不到**的坏味道，因为确认它们需要读取规则永远看不到的代码——其他函数、组件、CI 配置、测试自身的意图：
 
 | 坏味道 | 为什么 lint 无法判定 |
 |-------|---------------------------|
@@ -502,7 +502,7 @@ Claude Code（插件市场或 `skills` CLI）、Codex，以及任何 `skills` CL
 已规划、尚未发布（这些描述的是方向，而非当前行为）：
 
 - **跨模型一致性。** 不同的 AI 智能体各自以自己的风格编写 spec，于是用多个模型搭出来的套件会渐渐散成一块拼布，没有哪一条约定能把它统合起来。计划是：推断你项目的约定（POM 形态、定位器策略、fixture 和结构模式；“不做抽象”也是有效答案，两页的流程不会被套上多余的 Page Object 层），只在代码库确实含糊时才问你，并把这些答案存下来，让此后每个模型都照着走。关键在于，记录下来的约定始终只是*智能体给出理由后就能偏离的默认值*，而不是硬性规则，所以针对某个具体测试更好的做法永远不会被挡住——而一次有理由的偏离，正是这条约定往前演进的契机。这恰恰是静态检查器从结构上做不到的：它只会强制执行固定规则，学不会、也遵循不了*你的*约定。
-- **确定性检测层。** 把逐文件、类型可判定的坏味道（Locator 当作真值、游离断言）从提示和启发式挪到类型感知的 AST 处理上，让检测变得可复现，也把 LLM 留给单文件规则无法做出的判断。那些明显可 lint 的规则会贡献到上游的 `eslint-plugin-playwright`，而不是另起炉灶重新实现。
+- **确定性检测层。** 把逐文件、类型可判定的坏味道（Locator 当作真值、游离断言）从提示和启发式挪到类型感知的 AST 处理上，让检测变得可复现，也把 LLM 留给单文件规则无法做出的判断。那些明显可 lint 的规则会贡献到上游的 `eslint-plugin-playwright`，而不是另起炉灶重新实现——其中第一个、用于检测永远通过的 Locator 断言的 `no-unnecessary-assertions` 规则已[合并](https://github.com/mskelton/eslint-plugin-playwright/pull/470)。
 
 另外，上游贡献路线图追踪着更广的流水线：**已合并 14、审查与排队合计 14**。队列里只放经过审核的 1,000+ 星候选——实时表格见[上游贡献](docs/roadmap.md)。
 

@@ -8,6 +8,7 @@
 
 - **Merged:** 14 upstream PRs accepted in real projects.
 - **In review:** 6 active/open upstream PRs.
+- **Upstream tooling:** the always-passing-Locator-assertion smell (`#4f`) was contributed to the official [`eslint-plugin-playwright`](https://github.com/mskelton/eslint-plugin-playwright) as the `no-unnecessary-assertions` rule ([#470](https://github.com/mskelton/eslint-plugin-playwright/pull/470), merged) — tracked separately from the test-fix count below.
 - **Queue policy:** prefer high-signal P0 silent-pass fixes; avoid padding with subjective P1/P2 style findings.
 - **Submission policy:** one narrow anti-pattern per PR where possible, local verification first, and an `e2e-reviewer` footer only when it is useful context.
 
