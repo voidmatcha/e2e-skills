@@ -191,6 +191,76 @@ else
   warn "python3 not available; skipped public skill surface check"
 fi
 
+# Frontmatter `description` is the cross-host trigger surface and is pre-loaded for EVERY
+# installed skill, so it is budgeted, not free:
+#   - Claude Code: hard cap of 1,024 characters (validation error above it).
+#   - Codex: no per-skill cap, but the whole skill list is capped at 2% of the context window
+#     (8,000 chars when unknown). Over budget, Codex SHORTENS descriptions first and may drop
+#     skills entirely — so a long description silently loses its tail, and with it any trigger
+#     phrases parked at the end. Front-load the use case and trigger words.
+# WARN threshold leaves headroom to add triggers later without hitting the hard cap by surprise.
+section "Skill description budget"
+if command -v python3 >/dev/null 2>&1; then
+  desc_out=$(python3 - "$REPO_ROOT" <<'PY'
+import pathlib, re, sys
+HARD, SOFT = 1024, 900
+root = pathlib.Path(sys.argv[1])
+bad, warned = [], []
+skills_seen = 0
+for skill in sorted((root / "skills").iterdir()):
+    md = skill / "SKILL.md"
+    if not md.is_file():
+        continue
+    skills_seen += 1
+    text = md.read_text(encoding="utf-8")
+    m = re.match(r"^---\n(.*?)\n---", text, re.S)
+    if not m:
+        bad.append(f"{skill.name}: missing YAML frontmatter")
+        continue
+    d = re.search(r"^description:[ \t]*(.*(?:\n[ \t]+.*)*)", m.group(1), re.M)
+    if not d:
+        bad.append(f"{skill.name}: no description field")
+        continue
+    val = " ".join(part.strip() for part in d.group(1).splitlines()).strip()
+    if len(val) >= 2 and val[0] == val[-1] and val[0] in "'\"":
+        val = val[1:-1]
+    n = len(val)
+    if n > HARD:
+        bad.append(f"{skill.name}: description {n} chars exceeds the {HARD}-char cap")
+    elif n > SOFT:
+        warned.append(f"{skill.name}: description {n} chars (cap {HARD}) — little headroom; Codex truncates long descriptions first")
+if not skills_seen:
+    print("BAD:no SKILL.md found under skills/ — the check scanned nothing")
+    raise SystemExit(0)
+print("BAD:" + "|".join(bad))
+print("WARN:" + "|".join(warned))
+PY
+  )
+  # Fail closed. This block parses stdout instead of relying on the exit code alone (it needs to
+  # tell FAIL from WARN), so a crashed interpreter would otherwise yield empty output and print
+  # [OK] — the same false-pass shape as the earlier undefined-$ROOT bug. Require both a zero exit
+  # and the expected BAD:/WARN: envelope before trusting the result.
+  desc_rc=$?
+  if [ "$desc_rc" -ne 0 ] || [ "${desc_out#BAD:}" = "$desc_out" ]; then
+    err "skill description budget check did not run (python exit $desc_rc); output: ${desc_out:-<empty>}"
+    desc_bad=""; desc_warn=""
+  else
+    desc_bad=${desc_out#BAD:}; desc_bad=${desc_bad%%$'\n'*}
+    desc_warn=${desc_out##*WARN:}
+    if [ -n "$desc_bad" ]; then
+      IFS='|' read -ra _dbad <<< "$desc_bad"
+      for _m in "${_dbad[@]}"; do [ -n "$_m" ] && err "$_m"; done
+    elif [ -n "$desc_warn" ]; then
+      IFS='|' read -ra _dwarn <<< "$desc_warn"
+      for _m in "${_dwarn[@]}"; do [ -n "$_m" ] && warn "$_m"; done
+    else
+      ok "all skill descriptions within the 1024-char cap with headroom"
+    fi
+  fi
+else
+  warn "python3 not available; skipped skill description budget check"
+fi
+
 section "Pattern and description parity"
 if command -v python3 >/dev/null 2>&1; then
   if python3 - <<'PY'

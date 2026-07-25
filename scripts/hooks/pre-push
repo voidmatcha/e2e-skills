@@ -23,5 +23,22 @@ done
 
 echo "==> pre-push: running local security/manifest gate"
 "$REPO_ROOT/scripts/ci/pre-push-security.sh" --quiet
+
+# Catch what CI would reject, before the push instead of after: version/surface parity,
+# pattern-severity parity, subagent parity, link integrity, docs orphans, language, and the
+# skill-description budget. review.sh is the fast subset of ci-local (no eval/drift-smoke run),
+# so it stays in the seconds range and does not make pushing painful.
+# WARNINGS are informational and never block; only errors do. Set E2E_SKILLS_SKIP_REVIEW=1 to
+# bypass in an emergency (CI still enforces it).
+if [ "${E2E_SKILLS_SKIP_REVIEW:-}" = "1" ]; then
+  echo "==> pre-push: review gate skipped by E2E_SKILLS_SKIP_REVIEW=1"
+else
+  echo "==> pre-push: running review gate (parity, links, language, description budget)"
+  if ! "$REPO_ROOT/scripts/ci/review.sh" --quiet; then
+    echo "pre-push: review.sh reported errors — fix them or re-run with E2E_SKILLS_SKIP_REVIEW=1." >&2
+    exit 1
+  fi
+fi
+
 echo "==> pre-push: refreshing local e2e-skills install"
 "$REPO_ROOT/scripts/dev/reinstall-skills.sh"

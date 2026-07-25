@@ -15,12 +15,12 @@ Detailed specification for the 24 anti-patterns that Phase 1, Phase 2, and Phase
 <!-- Manual index: keep in sync with the SKILL.md Quick Reference table. CI 3b/3c does not validate this block. -->
 ## Pattern index
 
-Navigation aid only — the SKILL.md Quick Reference table and the per-pattern sections below are authoritative for severity; if this table ever disagrees, they win. Find a pattern here, then read its section below. Sub-IDs are documented inside their base block: `#4a–#4h` in `#### 4.`, `#5a`/`#5b` in `#### 5.`, `#8a`/`#8b` in `#### 8.`, `#9b`/`#9c` in `#### 9.`, `#10a`/`#10b` in `#### 10.` (`#5` and `#10` span two severities — the base section carries both).
+Navigation aid only — the SKILL.md Quick Reference table and the per-pattern sections below are authoritative for severity; if this table ever disagrees, they win. Find a pattern here, then read its section below. Sub-IDs are documented inside their base block: `#4a–#4i` in `#### 4.`, `#5a`/`#5b` in `#### 5.`, `#8a`/`#8b` in `#### 8.`, `#9b`/`#9c` in `#### 9.`, `#10a`/`#10b`/`#10c` in `#### 10.` (`#4`, `#5`, and `#10` span two severities — the base section carries both).
 
 | Severity | Pattern IDs |
 |----------|-------------|
 | **P0 — Must Fix** (silent always-pass) | #1 name-assertion mismatch, #2 missing Then, #3 error swallowing, #3b Cypress uncaught:exception, #4 always-passing (#4a–#4h), #5a conditional bypass (in #5), #7 focused-test leak, #8 missing assertion (#8a/#8b), #12 missing auth, #15 missing await on expect, #16 missing await on action |
-| **P1 — Should Fix** (poor diagnostics) | #5b force:true (in #5), #6 raw DOM query, #9 hard-coded sleep (#9b/#9c), #10 flaky patterns (#10a/#10b), #13 inconsistent POM, #14 hardcoded creds, #17 direct page action, #18 expect.soft overuse, #19 module-level state, #20 unmocked writes, #22 optimistic UI |
+| **P1 — Should Fix** (poor diagnostics) | #4i absence assertion never proven able to match (in #4), #5b force:true (in #5), #6 raw DOM query, #9 hard-coded sleep (#9b/#9c), #10 flaky patterns (#10a/#10b/#10c), #13 inconsistent POM, #14 hardcoded creds, #17 direct page action, #18 expect.soft overuse, #19 module-level state, #20 unmocked writes, #22 optimistic UI |
 | **P2 — Nice to Fix** (maintenance) | #11 YAGNI + zombie specs, #21 manual session file, #23 fixture render guards |
 
 ### P0 — Must Fix (silent always-pass)
@@ -76,7 +76,7 @@ test('should cancel edit on Escape', async ({ page }) => {
 - **Cleanup / teardown:** the delete sits in `afterEach`/`afterAll`/`after()` or a test titled `Cleanup:`/`teardown` — its job is teardown, not user-facing verification (the create test owns that assertion).
 - **Success-confirmation:** a post-delete success toast/snackbar matching `/deleted|removed/i`, or a redirect (`toHaveURL` back to the list/index) — both count as verifying the delete happened.
 - **Helper-embedded assertion:** the delete runs through a shared helper (e.g. `deleteElement(name)`, `deleteRancherResource(...)`) that asserts removal internally — read the helper before flagging.
-- **Non-standard negative assertion:** `toHaveCount(0)`, `toBeEmpty()`, `toBeNull()`, or `isVisible()` captured into a variable then `toBe(false)` are all valid absence checks.
+- **Non-standard negative assertion:** `toHaveCount(0)`, `toBeEmpty()`, `toBeNull()`, or `isVisible()` captured into a variable then `toBe(false)` are all valid absence checks — **provided the locator was proven able to match** (it was asserted present or acted on earlier in the test). An absence assertion on a locator that never matched anything satisfies #2 while proving nothing; that is #4i, not an accept-criterion.
 - **Non-entity "remove":** editor text/image, a CSS class/style, diacritics, or whitespace being "removed" is not entity deletion — judge by the noun in the title, not the verb.
 
 Only flag when the test performs a real entity-delete action (a click/dispatch on a delete/trash/remove control) and **none** of the above verifications follow.
@@ -148,7 +148,7 @@ expect(page.getByText('1/31/2025')).not.to.be.null;
 expect(page.locator('.selector')).toBeDefined();
 ```
 
-**Sub-IDs reported by the scanner:** `#4a` always-true math, `#4b` vacuous `toBeAttached()` (LLM-TRIAGE — see below), `#4c-4e` one-shot state/content reads (one combined check), `#4f` Locator truthiness/nullness, `#4g` `timeout: 0` (dedicated block below), `#4h` one-shot `page.url()`.
+**Sub-IDs reported by the scanner:** `#4a` always-true math, `#4b` vacuous `toBeAttached()` (LLM-TRIAGE — see below), `#4c-4e` one-shot state/content reads (one combined check), `#4f` Locator truthiness/nullness, `#4g` `timeout: 0` (dedicated block below), `#4h` one-shot `page.url()`, `#4i` absence assertion on a locator never proven able to match (LLM-TRIAGE — dedicated block below).
 
 **Rule:** `toBeAttached()` on an unconditionally rendered element (always in the static HTML shell) is vacuous → P0. The only legitimate use is asserting that an element exists in the DOM but is CSS-hidden (`visibility:hidden`, not `display:none`) — add `// JUSTIFIED: visibility:hidden` in that case.
 
@@ -181,6 +181,37 @@ await expect(el).toHaveCount(0, { timeout: 0 });
 ```
 
 **Rule:** flag every `timeout: 0` in e2e code (P0). Remove it unless an explicit wait for the same condition immediately precedes. If intentional — asserting the *current* state where no settling is expected — add `// JUSTIFIED:` on the line above; the scanner suppresses justified hits.
+
+<!-- 4i is a bold sub-block, NOT a "#### 4i." header — see the 4g note above (CI Check 3c). -->
+**4i. Absence assertion never proven able to match** `[grep-detectable + LLM-TRIAGE]` `[P1]` — an absence assertion is satisfied by a locator that matches *nothing*, so a selector that rotted keeps the test green forever while proving nothing.
+
+This is framework semantics, not a codebase quirk. Playwright defines `toBeHidden` as "either **does not resolve to any DOM node**, or resolves to a non-visible one", and `not.toBeVisible()` is the inverse of `toBeVisible` ("attached **and** visible"). Both are satisfied by zero matches. `toHaveCount(0)` and Cypress `.should('not.exist')` behave the same way.
+
+```typescript
+// BAD — .spinner is a class the app stopped rendering three refactors ago.
+// The selector matches nothing, so this passes without observing the cancel at all.
+await cancelButton.click();
+await expect(page.locator('.job-controls .spinner')).not.toBeVisible();
+
+// GOOD — the same locator is proven able to match before absence is asserted
+const spinner = page.locator('[data-testid="run-spinner"]');
+await expect(spinner).toBeVisible();
+await cancelButton.click();
+await expect(spinner).toBeHidden();
+```
+
+**Why it matters:** this is the failure mode that survives longest. A rotted *positive* assertion fails on the next run and gets fixed; a rotted *negative* assertion is indistinguishable from a passing test. It accumulates silently across framework migrations (AngularJS→Angular, class renames, design-system swaps), and the suite reports coverage it does not have.
+
+**Rule:** an absence assertion is only meaningful if the same locator is proven capable of matching somewhere in that test's execution path — asserted present, or used as the target of an action.
+
+**Detection (grep + LLM):** the scanner flags every `.not.toBeVisible()` / `.not.toBeAttached()` / `.toBeHidden()` / `.toHaveCount(0)` / `.should('not.exist'|'not.be.visible')` as `[P1?][LLM-TRIAGE]` — outside the exit gate, because grep cannot see the rest of the test. Phase 2 resolves each hit:
+
+- **SKIP** — the same locator (or an alias of it) is asserted present, or is clicked/filled/hovered, earlier in the test or its `beforeEach`.
+- **SKIP** — the test is an empty-state / no-results case that also asserts a positive counterpart (empty-state message visible, "0 results" text). This is the dominant legitimate shape; expect it to account for most raw hits.
+- **SKIP** — `// JUSTIFIED:` on the preceding line.
+- **FLAG P1** — the locator appears nowhere else and nothing positive is asserted alongside. Report it as an assertion that cannot fail, and propose either proving the locator first or deleting the assertion.
+
+**Fix:** assert the positive state before the action that removes it, then assert absence on the *same* locator object — binding it to a variable makes the pairing checkable at a glance.
 
 #### 5. Bypass Patterns `[grep-detectable]` (5a P0, 5b P1)
 
@@ -261,6 +292,8 @@ await page.isVisible('[data-testid="foo"]'); // page-level shorthand with a sele
 **Why it matters:** Tests hit a login redirect instead of the intended page, making all assertions vacuous — they verify the login page, not the feature under test.
 
 **Rule:** Every spec that navigates to a route requiring authentication must either: (a) perform login in `beforeEach`, (b) use `storageState` from Playwright config, or (c) use a custom auth fixture. Flag P0 if no auth mechanism is visible.
+
+**Config read is mandatory, not optional (severity-stability rule).** Path (b) is invisible from the spec file: a `setup` / `global.setup` project plus a project-level `storageState` in `playwright.config.*` authenticates every spec in that project with nothing in the spec itself. Cypress equivalents are `cy.session()` in a support file and `cypress.config.*` `setupNodeEvents` login tasks. **Open the config and read the `projects` array before deciding severity.** Reviewers who skip this step flag every protected-route spec P0 while reviewers who read it flag none — the same suite then scores 0, 1, or 2 Real P0s across runs, which breaks the counting contract. If the config cannot be located, say so in the finding rather than assuming either way.
 
 #### 15. Missing `await` on `expect()` `[grep-detectable]`
 
@@ -377,6 +410,29 @@ await expect(items.nth(2)).toContainText('expected text');
 **10b. Serial test ordering** `[Playwright only]` — `test.describe.serial()` makes tests order-dependent: a single failure cascades to all subsequent tests, and the suite can't be sharded.
 
 **Rule:** Replace serial suites with self-contained tests using `beforeEach` for shared setup. If sequential flow is genuinely required, use a single test with `test.step()` blocks. If serial is unavoidable, add `// JUSTIFIED:` on the line above `test.describe.serial(`.
+
+**10c. Unscoped accessible-name substring match** `[grep + LLM]` — a page-scoped `getByRole` / `getByLabel` / `getByPlaceholder` with a `name` and **no `exact: true`**. Per [Playwright docs](https://playwright.dev/docs/locators#locate-by-role), the `name` option matches the accessible name as a **case-insensitive substring** by default. When the page also renders user- or data-controlled text (note names, search results, list rows, folder titles), that text can contain the same word, so the locator resolves to 2+ elements and Playwright throws a **strict-mode violation** — thrown immediately, no timeout, so it reads as a hard failure or (when the dynamic content only sometimes collides) an intermittent flake.
+
+```typescript
+// BAD — 'Job' is a substring of a note named "Nightly Job Report", so this
+//       resolves to the header link AND the note-list link → strict-mode violation
+await page.getByRole('link', { name: 'Job' }).click();
+
+// GOOD — exact accessible name, scoped to the container it lives in
+await page.getByRole('navigation').getByRole('link', { name: 'Job', exact: true }).click();
+```
+
+**Rule:** A `getByRole`/`getByLabel`/`getByPlaceholder` with a `name` should either be **scoped to a container locator** (`page.locator('.header').getByRole(...)`) or use **`exact: true`** — ideally both — whenever the surrounding page can render dynamic text that might contain the name as a substring. This is the official disambiguation guidance for strict-mode collisions.
+
+**Fix:** Add `exact: true` to the `name` option, and/or chain the accessor off a stable container locator that bounds the search subtree.
+
+**Exemptions (skip in Phase 2 — no `// JUSTIFIED:` needed):**
+- **Already scoped:** the accessor is chained off a non-`page` locator (`someContainer.getByRole(...)`) — the subtree already bounds the match.
+- **Already exact:** the call includes `exact: true`.
+- **Regex name:** `name: /^Job$/` — an anchored regex is as precise as `exact`.
+- **Static-only surface:** the suite under test renders no user- or data-controlled text that could contain the name (e.g. a fixed marketing page). Judge by whether the app paints dynamic list/entity text, not by the word alone — a distinctive multi-word name like `"Switch to Classic UI"` is low-risk; a short common word (`"Job"`, `"Run"`, `"Save"`, `"New"`) on a page with dynamic content is the real hit.
+
+**Cypress equivalent:** `cy.findByRole('link', { name: 'Job' })` (cypress-testing-library) has the same substring default — prefer `{ name: 'Job', exact: true }` or scope with `.within()`.
 
 #### 13. Inconsistent POM Usage `[LLM-only]`
 
@@ -584,7 +640,9 @@ Two sub-patterns: unused code in Page Objects, and zombie spec files.
 
 **Rule:** Before seeding a list fixture, read the item component's early returns and filters; seed fields so the item passes every guard for the view under test. Document each discovered guard next to the fixture (e.g. "Like-tab items must seed `liked: true`") so the next generated test doesn't rediscover it.
 
-**Detection (LLM):** For each fixture consumed by a list/card component, open the component and collect conditions that suppress rendering (early `return null`, `.filter()`, `.slice()`). Cross-check fixture field values against them. Flag mismatches, and flag negative assertions whose truth could come from a guard-suppressed render rather than the intended state.
+**Detection (LLM):** For each fixture consumed by a conditionally-rendered component, open the component and collect conditions that suppress rendering (early `return null`, `.filter()`, `.slice()`, a template guard such as `@if`/`v-if`/`{cond && …}` around the whole subtree). Cross-check the seeded values against them. Flag mismatches, and flag negative assertions whose truth could come from a guard-suppressed render rather than the intended state.
+
+**Scope note:** the guard need not sit on a list/card item — the same failure appears whenever a *container* is gated on a value the test controls indirectly. A results panel wrapped in `@if (result.type === TABLE)` suppresses every control inside it when the fixture produces a different result type, so a test targeting a toolbar button inside that panel fails with "element not found" and looks like infra flake. When a control the test needs is missing, walk up the template to the nearest guard before suspecting the selector.
 
 ---
 

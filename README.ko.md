@@ -300,7 +300,7 @@ We have coverage but bugs still slip through
 | 2 | **Missing Then** | 취소 동작 후 텍스트 복원을 검증 — 그런데 입력창이 여전히 보인다면? | 복원된 상태와 닫힌 상태를 모두 검증 |
 | 3 | **Error swallowing** | spec 안의 `try/catch`, POM 안의 `.catch(() => {})` | 오류가 실패로 이어지게 두고, POM 메서드에서 조용한 catch 제거 |
 | 3b | **Cypress `uncaught:exception` suppression** | `cy.on('uncaught:exception', () => false)`가 앱 오류를 통째로 삼킴 | 핸들러를 특정 알려진 오류로 한정하고, 알 수 없는 오류는 다시 던지기 |
-| 4 | **Always-passing assertion** | `toBeGreaterThanOrEqual(0)`; 주석 없는 `toBeAttached()`; `expect(await el.isVisible()).toBe(true)` (일회성); `expect(await el.textContent()).toBe(x)` (일회성); `expect(locator).toBeTruthy()` (Locator는 항상 truthy); assertion의 `{ timeout: 0 }` (재시도 비활성화) | `toBeGreaterThan(0)`; `toBeVisible()`; 자동 재시도가 있는 web-first assertion |
+| 4 | **Always-passing assertion** | `toBeGreaterThanOrEqual(0)`; 주석 없는 `toBeAttached()`; `expect(await el.isVisible()).toBe(true)` (일회성); `expect(await el.textContent()).toBe(x)` (일회성); `expect(locator).toBeTruthy()` (Locator는 항상 truthy); assertion의 `{ timeout: 0 }` (재시도 비활성화); 매치될 수 있음이 한 번도 증명되지 않은 locator에 대한 부재 assertion (4i, P1) | `toBeGreaterThan(0)`; `toBeVisible()`; 자동 재시도가 있는 web-first assertion; 사라짐을 검증하기 전에 먼저 존재를 한 번 검증 |
 | 5 | **우회 패턴** (5a P0, 5b P1) | `if (await el.isVisible()) { expect(...) }`; 주석 없는 `{ force: true }` | 항상 assertion 수행; 환경 검사는 `beforeEach`로 이동; force:true에는 `// JUSTIFIED:` 추가 |
 | 7 | **Focused test leak** | `test.only(...)`가 커밋됨 — CI가 테스트 하나만 실행하고 나머지를 조용히 건너뜀 | `.only` 삭제; 로컬 포커스에는 `--grep`이나 `--spec` 사용 |
 | 8 | **Missing assertion** | `await page.locator('.x');` (버려짐); `await el.isVisible();` (boolean을 버림) | `await expect(locator).toBeVisible()` 추가 또는 해당 줄 삭제 |
@@ -316,7 +316,7 @@ We have coverage but bugs still slip through
 |---|---------|--------|-------|
 | 6 | **Raw DOM queries** | `evaluate()` 안의 `document.querySelector` | 프레임워크의 locator/쿼리 API 사용 (`locator` / `cy.get`) |
 | 9 | **Hard-coded sleep** | `waitForTimeout(2000)` / `cy.wait(2000)` / `waitForLoadState('networkidle')` | 프레임워크의 자동 대기에 의존; 조건 기반 대기 사용 |
-| 10 | **Flaky test patterns** | 주석 없는 `items.nth(2)`; `test.describe.serial()` | `data-testid`나 role 셀렉터 사용; serial을 자기 완결적 테스트로 교체 |
+| 10 | **Flaky test patterns** | 주석 없는 `items.nth(2)`; `test.describe.serial()`; `exact: true` 없이 scope되지 않은 `getByRole`/`getByLabel`/`getByPlaceholder` name (10c) | `data-testid`나 role 셀렉터 사용; serial을 자기 완결적 테스트로 교체; accessor를 컨테이너로 scope하거나 `exact: true` 지정 |
 | 13 | **Inconsistent POM usage** | POM을 임포트해 놓고 POM 소관 동작에 원시 `page.fill`/`page.click` 사용 | 모든 상호작용을 POM으로 거치게 해 UI 변경이 한 곳에서 반영되게 함 |
 | 14 | **Hardcoded credentials** | 테스트 코드 안의 `loginPage.login('demo-admin', '<literal-password>')` | `process.env.TEST_USER`, Playwright 설정의 secret, 또는 테스트 데이터 fixture 사용 |
 | 17 | **Direct `page.click(selector)` API** | `page.click('#submit')` / `page.fill('#input', 'text')`는 Locator 계층을 건너뜀 | 자동 대기와 더 나은 오류 메시지를 위해 `page.locator(selector).click()` 사용 |
@@ -471,7 +471,7 @@ spec 디렉터리를 대상으로 `e2e-reviewer` 스킬 또는 독립 실행형 
 
 ### eslint-plugin-playwright나 eslint-plugin-cypress와는 무엇이 다른가요?
 
-eslint plugin은 커밋마다 문법 규칙을 걸러 주는 기본 방어선이며, 스캐너는 이를 가장 먼저(Tier 1) 실행합니다. `e2e-skills`는 이를 대체하지 않고 그 위에 한 계층을 더합니다. 그 계층은 linter가 [구조적으로 판별할 수 없는](#linter가-구조적으로-잡을-수-없는-것) smell입니다: 이름-assertion 불일치, 결코 throw하지 않는 함수를 감싼 `try/catch`, 항상 참인 `expect(locator).toBeTruthy()`, 인증이 빠진 route. 이런 문제를 확정하려면 AST 규칙이 보지 못하는 코드, 즉 다른 함수, 컴포넌트, CI 설정, 테스트의 의도까지 읽어야 합니다. `e2e-reviewer`는 그 주변 코드를 읽어 발견을 검증하고 임시방편을 피하는 수정안을 제시하지만, lint는 단일 파일의 문법만 표시할 수 있습니다.
+eslint plugin은 커밋마다 문법 규칙을 걸러 주는 기본 방어선이며, 스캐너는 이를 가장 먼저(Tier 1) 실행합니다. `e2e-skills`는 이를 대체하지 않고 그 위에 한 계층을 더합니다. 그 계층은 linter가 [구조적으로 판별할 수 없는](#linter가-구조적으로-잡을-수-없는-것) smell입니다: 이름-assertion 불일치, 결코 throw하지 않는 함수를 감싼 `try/catch`, 삭제 테스트인데 행이 사라졌는지 확인하지 않는 경우, 인증이 빠진 route. 이런 문제를 확정하려면 AST 규칙이 보지 못하는 코드, 즉 다른 함수, 컴포넌트, CI 설정, 테스트의 의도까지 읽어야 합니다. (기계적으로 항상 참인 경우 — `expect(locator).toBeTruthy()` — 는 단일 파일 lint로 판별 가능하며, 그래서 공식 `eslint-plugin-playwright` 규칙 `no-unnecessary-assertions`로 업스트림 기여됐습니다. 스캐너의 첫 번째 계층이 이를 실행합니다.) `e2e-reviewer`는 그 주변 코드를 읽어 발견을 검증하고 임시방편을 피하는 수정안을 제시하지만, lint는 단일 파일의 문법만 표시할 수 있습니다.
 
 ### CodeRabbit, Copilot, Cursor BugBot 같은 AI 코드 리뷰어와 다를 게 없지 않나요?
 

@@ -300,7 +300,7 @@ We have coverage but bugs still slip through
 | 2 | **缺失 Then** | 取消操作，验证文本已恢复——但输入框仍然可见？ | 同时验证已恢复状态和已消失状态 |
 | 3 | **吞掉错误** | spec 中的 `try/catch`，POM 中的 `.catch(() => {})` | 让错误导致失败；从 POM 方法中移除静默的 catch |
 | 3b | **Cypress `uncaught:exception` 抑制** | `cy.on('uncaught:exception', () => false)` 一刀切地吞掉应用错误 | 将处理器限定到特定的已知错误；对未知错误重新抛出 |
-| 4 | **永远通过的断言** | `toBeGreaterThanOrEqual(0)`；无注释的 `toBeAttached()`；`expect(await el.isVisible()).toBe(true)`（一次性）；`expect(await el.textContent()).toBe(x)`（一次性）；`expect(locator).toBeTruthy()`（Locator 永远为真值）；断言上的 `{ timeout: 0 }`（禁用重试） | `toBeGreaterThan(0)`；`toBeVisible()`；带自动重试的 web-first 断言 |
+| 4 | **永远通过的断言** | `toBeGreaterThanOrEqual(0)`；无注释的 `toBeAttached()`；`expect(await el.isVisible()).toBe(true)`（一次性）；`expect(await el.textContent()).toBe(x)`（一次性）；`expect(locator).toBeTruthy()`（Locator 永远为真值）；断言上的 `{ timeout: 0 }`（禁用重试）；对从未被证明能够匹配的 locator 做缺失断言（4i，P1） | `toBeGreaterThan(0)`；`toBeVisible()`；带自动重试的 web-first 断言；先断言元素存在一次，再断言它消失 |
 | 5 | **绕过模式**（5a P0，5b P1） | `if (await el.isVisible()) { expect(...) }`；无注释的 `{ force: true }` | 始终进行断言；把环境检查移到 `beforeEach`；给 force:true 添加 `// JUSTIFIED:` |
 | 7 | **聚焦测试泄漏** | 提交了 `test.only(...)`——CI 只运行一个测试，静默跳过其余 | 删除 `.only`；用 `--grep` 或 `--spec` 做本地聚焦 |
 | 8 | **缺失断言** | `await page.locator('.x');`（被丢弃）；`await el.isVisible();`（布尔值被丢弃） | 添加 `await expect(locator).toBeVisible()` 或删除该行 |
@@ -316,7 +316,7 @@ We have coverage but bugs still slip through
 |---|---------|--------|-------|
 | 6 | **原生 DOM 查询** | `evaluate()` 中的 `document.querySelector` | 使用框架的定位器/查询 API（`locator` / `cy.get`） |
 | 9 | **硬编码 sleep** | `waitForTimeout(2000)` / `cy.wait(2000)` / `waitForLoadState('networkidle')` | 依赖框架的自动等待；使用基于条件的等待 |
-| 10 | **不稳定测试模式** | 无注释的 `items.nth(2)`；`test.describe.serial()` | 使用 `data-testid` 或角色选择器；用自包含测试替换 serial |
+| 10 | **不稳定测试模式** | 无注释的 `items.nth(2)`；`test.describe.serial()`；未加 `exact: true` 且未限定范围的 `getByRole`/`getByLabel`/`getByPlaceholder` name（10c） | 使用 `data-testid` 或角色选择器；用自包含测试替换 serial；把访问器限定到容器，或传入 `exact: true` |
 | 13 | **POM 使用不一致** | 导入了 POM，但 spec 对 POM 所属动作使用原生 `page.fill`/`page.click` | 让所有交互都经过 POM，这样 UI 变更只需在一处更新 |
 | 14 | **硬编码凭据** | 测试代码中的 `loginPage.login('demo-admin', '<literal-password>')` | 使用 `process.env.TEST_USER`、Playwright 配置密钥或测试数据 fixture |
 | 17 | **直接使用 `page.click(selector)` API** | `page.click('#submit')` / `page.fill('#input', 'text')` 跳过了 Locator 层 | 使用 `page.locator(selector).click()` 以获得自动等待和更好的错误信息 |
@@ -471,7 +471,7 @@ e2e-skills 是一个面向 Playwright 和 Cypress 的开源 AI 智能体测试�
 
 ### 它与 eslint-plugin-playwright 或 eslint-plugin-cypress 有何不同？
 
-eslint 插件是你每次提交时针对语法规则的基线，扫描器会先运行它们（第 1 层）——所以它并不取代它们，而是在其之上再加一层。这一层就是静态检查器[从结构上无法判定](#静态检查器从结构上无法捕捉的内容)的坏味道：名称与断言不匹配、包裹着一个从不抛出的函数的 `try/catch`、一个永远为真的 `expect(locator).toBeTruthy()`、一条缺失鉴权的路由——每一个都需要读取 AST 规则永远看不到的代码（另一个函数、组件、CI 配置、测试的意图）。`e2e-reviewer` 会读取这些周围代码以验证发现，并给出一个避免治标不治本的修复，而 lint 只能标记单文件语法。
+eslint 插件是你每次提交时针对语法规则的基线，扫描器会先运行它们（第 1 层）——所以它并不取代它们，而是在其之上再加一层。这一层就是静态检查器[从结构上无法判定](#静态检查器从结构上无法捕捉的内容)的坏味道：名称与断言不匹配、包裹着一个从不抛出的函数的 `try/catch`、一个删除测试却从不检查该行是否已消失、一条缺失鉴权的路由——每一个都需要读取 AST 规则永远看不到的代码（另一个函数、组件、CI 配置、测试的意图）。（机械的、永远为真的情况——`expect(locator).toBeTruthy()`——是可以用单文件 lint 判定的，因此它作为官方 `eslint-plugin-playwright` 规则 `no-unnecessary-assertions` 贡献到了上游；扫描器的第一层会运行它。）`e2e-reviewer` 会读取这些周围代码以验证发现，并给出一个避免治标不治本的修复，而 lint 只能标记单文件语法。
 
 ### 这不就是又一个像 CodeRabbit、Copilot 或 Cursor BugBot 那样的 AI 代码审查器吗？
 

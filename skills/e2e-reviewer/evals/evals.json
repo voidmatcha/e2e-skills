@@ -388,6 +388,35 @@
         "Structured output with P0/P1/P2",
         "Summary table included"
       ]
+    },
+    {
+      "id": 21,
+      "prompt": "Review the Playwright E2E tests in evals/files/accessible-name.spec.ts. Find any anti-patterns, weak assertions, or quality issues.",
+      "expected_output": "Should detect one #10c unscoped accessible-name substring match (P1): the page-scoped getByRole with name 'Job' and no exact:true, on a jobs dashboard that renders dynamic row titles containing the word 'Job'. Should NOT flag the container-scoped variant, the exact:true variant, or the distinctive multi-word name 'Download Annual Report 2025' (Phase 2 suppresses that grep hit as non-colliding).",
+      "files": [
+        "evals/files/accessible-name.spec.ts"
+      ],
+      "assertions": [
+        "Detects the unscoped page.getByRole with name 'Job' and no exact:true on line 10 as #10c (P1) — the substring match collides with dynamic row titles",
+        "Does NOT flag the container-scoped page.locator(...).getByRole with name 'Job' on line 17 — the container locator bounds the match subtree",
+        "Does NOT flag the exact:true getByRole on line 19 — an exact accessible name cannot substring-collide",
+        "Does NOT flag the distinctive multi-word name 'Download Annual Report 2025' on line 21 — Phase 2 suppresses this grep hit as unlikely to collide with dynamic text"
+      ]
+    },
+    {
+      "id": 22,
+      "prompt": "Review the Playwright E2E tests in evals/files/absence-assertion.spec.ts. Find any anti-patterns, weak assertions, or quality issues.",
+      "expected_output": "Should detect exactly one #4i absence assertion never proven able to match (P1): line 9, where '.job-controls .spinner' appears nowhere else in the test and no positive state is asserted alongside, so a rotted selector keeps the test green. The scanner tags all four absence assertions [LLM-TRIAGE]; Phase 2 must skip the other three — the proven-present locator (line 18), the empty-state case with a positive counterpart (line 25), and the locator used as an action target (line 34). Reporting any of those three is a false positive.",
+      "files": [
+        "evals/files/absence-assertion.spec.ts"
+      ],
+      "assertions": [
+        "Detects the unproven absence assertion on line 9 as #4i (P1) — the '.job-controls .spinner' locator is never asserted present nor acted on, so the assertion cannot fail",
+        "Does NOT flag line 18 toBeHidden() — the same 'spinner' locator is asserted visible on line 16 before absence is asserted",
+        "Does NOT flag line 25 toHaveCount(0) — empty-state case that asserts a positive counterpart ('No jobs match your search') on line 24",
+        "Does NOT flag line 34 toHaveCount(0) — the 'row' locator is the target of a click on line 31, proving it can match",
+        "Reports #4i outside the P0 exit gate (P1, LLM-TRIAGE) rather than as a must-fix silent pass"
+      ]
     }
   ]
 }

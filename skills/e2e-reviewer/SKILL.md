@@ -1,10 +1,10 @@
 ---
 name: e2e-reviewer
-description: 'Static review of Playwright/Cypress E2E specs and Page Objects (POM) — catch tests that pass CI but prove nothing. Triggers: review tests, audit test quality, find weak/flaky/silently-passing tests, missing awaits, anti-patterns, coverage gaps, tests pass but miss bugs. Not for runtime failure debugging (use playwright-debugger / cypress-debugger). Flags 24 anti-patterns grouped P0 (must-fix, silent always-pass), P1 (poor diagnostics), P2 (maintenance).'
+description: 'Use when reviewing Playwright or Cypress E2E specs or Page Objects (POM) — asked to review tests, audit test quality, or find weak, flaky, or silently-passing tests; when tests pass CI but prove nothing or miss bugs; when auditing missing awaits, vacuous or always-passing assertions, anti-patterns, or coverage gaps. Not for debugging a test that is currently failing at runtime (use playwright-debugger / cypress-debugger).'
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.8.0"
+  version: "1.9.0"
 ---
 
 # E2E Test Scenario Quality Review
@@ -49,7 +49,7 @@ The scanner internally uses, in priority order:
 
 Output is grouped per pattern ID (`#3`, `#4a`, `#15`, etc.) with `file:line:matched-line`. See `references/grep-patterns.md` for the meaning of each ID.
 
-**Companion CI enforcement (recommend when relevant).** The mechanical always-pass class (`#4f` — `expect(locator).toBeDefined()` / `.toBeTruthy()` / `.not.toBeNull()`) is decidable by a single-file AST rule, so it belongs at commit/CI-time, not only agent-time. For **Playwright**, this smell is now covered by the official [`eslint-plugin-playwright`](https://github.com/mskelton/eslint-plugin-playwright) rule [`no-unnecessary-assertions`](https://github.com/mskelton/eslint-plugin-playwright/pull/470) (contributed upstream from this project; merged, ships in the next release) — recommend enabling that rule. For **Cypress**, [`eslint-plugin-cypress-silent-pass`](https://github.com/voidmatcha/eslint-plugin-cypress-silent-pass) still provides the equivalent autofixable rule. When a project shows `#4f` hits, recommend the matching plugin/rule so that slice is caught deterministically on every commit — leaving this skill to focus on the semantic patterns no AST rule can decide.
+**Companion CI enforcement (recommend when relevant).** The mechanical always-pass class (`#4f` — `expect(locator).toBeDefined()` / `.toBeTruthy()` / `.not.toBeNull()`) is decidable by a single-file AST rule, so it belongs at commit/CI-time, not only agent-time. For **Playwright**, this smell is now covered by the official [`eslint-plugin-playwright`](https://github.com/mskelton/eslint-plugin-playwright) rule [`no-unnecessary-assertions`](https://github.com/mskelton/eslint-plugin-playwright/pull/470) (contributed upstream from this project; merged, ships in the next release) — recommend enabling that rule once it ships. For **Cypress**, [`eslint-plugin-cypress-silent-pass`](https://github.com/voidmatcha/eslint-plugin-cypress-silent-pass) still provides the equivalent autofixable rule. When a project shows `#4f` hits, recommend the matching plugin/rule so that slice is caught deterministically on every commit — leaving this skill to focus on the semantic patterns no AST rule can decide.
 
 **Tier scoping note:** Tier 2's `sg-4f` deliberately also matches RTL `getBy*().toBeTruthy()` in unit tests — that surface gets the jest-dom canonical fix from 4.1, not a P0 label. Severity classification of #4f stays with Phase 2 (Locator subject = P0; RTL = advisory). Tier 2 rules skip vendored/build artifacts via per-rule `ignores`.
 
@@ -100,10 +100,11 @@ The LLM performs only these checks:
 | 8 | Missing Assertion — Cypress dangling selectors | `cy.get(...)` standalone requires manual check |
 | 8a | Multi-line continuation skip | Phase 1 applies a previous-line continuation filter at scan time: a hit is dropped when the preceding non-blank line ends with `(` or `,` (an argument inside a multi-line `await expect(\n  page.locator(...)\n)…`, not a dangling statement). Semicolonless dangling locators are still detected. As a backstop, LLM SKIPS any residual hit with that same previous-line shape. |
 | 4b | `toBeAttached()` static-shell confirmation | Phase 1 flags positive `toBeAttached()`. P0 (vacuous) ONLY when the element is part of the static page shell that is always present. SKIP when the element is **dynamically injected / conditionally rendered** for the scenario under test (e.g. an expired-license banner, a just-registered block, a `<link rel=prefetch>` added at runtime) — then the assertion can genuinely fail and is meaningful. Scanner `#4b` hits arrive tagged `[LLM-TRIAGE]`: confirm a hit is a persistence assertion after a destructive action before reporting it P0 — generic render-gates on client-rendered elements are FPs (the dominant false-positive shape observed on client-rendered-canvas apps). |
+| 4i | Absence assertion — locator-provenance confirmation | Phase 1 flags every `.not.toBeVisible()` / `.not.toBeAttached()` / `.toBeHidden()` / `.toHaveCount(0)` / `.should('not.exist'\|'not.be.visible')` as `[LLM-TRIAGE]` (outside the exit gate). An absence assertion is satisfied by ZERO matches, so a rotted selector passes forever. SKIP when the same locator is asserted present or acted on earlier in the test or its `beforeEach`, or when an empty-state test asserts a positive counterpart (empty-state message, "0 results"). Flag P1 only when the locator appears nowhere else in the file and nothing positive is asserted alongside. Empty-state tests dominate raw hits — expect a high skip rate. |
 | 5a | Conditional gates action vs assertion | Phase 1 flags `if (await x.isVisible())`. SKIP when the `if`-body contains **no `expect()`** — it gates a setup/navigation action (open a menu, dismiss a drawer, dual-mode UI handler) and the test still has unconditional assertions afterward. Flag P0 only when an `expect()` lives inside the conditional, so the assertion runs zero times when the branch is false (silent pass). `test.skip(reason)` is always intentional — never flag. |
-| 10 | Flaky Test Patterns | For each grep hit that has `// JUSTIFIED:`, verify the rationale is concrete (e.g. "server returns in fixed order") rather than vague ("needed for now"); flag if the comment doesn't actually justify the position-coupling or serial dependency. Skip if no JUSTIFIED comment — Phase 1 already flagged. |
+| 10 | Flaky Test Patterns | For each grep hit that has `// JUSTIFIED:`, verify the rationale is concrete (e.g. "server returns in fixed order") rather than vague ("needed for now"); flag if the comment doesn't actually justify the position-coupling or serial dependency. Skip if no JUSTIFIED comment — Phase 1 already flagged. For #10c (unscoped `getByRole`/`getByLabel`/`getByPlaceholder` name without `exact: true`), confirm the accessor is page-scoped (not chained off a container locator) AND the suite renders user/data-controlled text that could contain the name as a substring; flag P1 only then. Skip distinctive multi-word names and static-only surfaces. |
 | 11 | YAGNI in POM + Zombie Specs | Requires usage grep then judgment |
-| 12 | Missing Auth Setup | Spec navigates to protected routes (`/dashboard`, `/settings`, `/admin`, etc.) without preceding login, `storageState`, or auth `beforeEach`. Flag P0 — tests will hit login redirects. |
+| 12 | Missing Auth Setup | Spec navigates to protected routes (`/dashboard`, `/settings`, `/admin`, etc.) without preceding login, `storageState`, or auth `beforeEach`. **Before flagging, open `playwright.config.*` / `cypress.config.*` and read the `projects` array**: a `setup`/`global.setup` project plus a project-level `storageState` authenticates every spec in that project without a line in the spec itself. Flag P0 only when neither the spec nor the config supplies auth — an unread config is the difference between reporting 0 and 2 P0s on the same suite. |
 | 13 | Inconsistent POM Usage | POM is imported but spec bypasses it with raw `page.fill`/`page.click` for operations the POM should encapsulate. Flag P1. |
 | 15 | Missing `await` on `expect()` confirmation | Phase 1 flags lines that start with `expect(` (no leading `await`). LLM confirms the subject is a Playwright `Locator` / `Page` — non-Locator expects like `expect(count).toBe(3)` don't need `await`. Flag P0 only when the subject is a Locator/Page. |
 | 16 | Missing `await` on action confirmation | Phase 1 flags lines that start with `page.locator(...).action(` or `page.getBy...(...).action(` (no leading `await`). LLM confirms the line lacks `await` and the action is a real Playwright action (not a synchronous chain). LLM also SKIPS the hit if the line is inside a `Promise.all([` or `Promise.race([` array — array elements don't need explicit `await` because the `Promise.all` awaits them. Flag P0 only for true standalone statements. |
@@ -209,6 +210,8 @@ After completing Phase 1 + 2 + 2.5, identify scenarios the test suite does NOT c
 
 The full Phase 4 contract lives in `references/applying-fixes.md` — **read that file before writing any fix**. It contains: §4.1 the canonical replacement table (Playwright/Cypress/RTL variants + the AVOID column), §4.2 band-aid awareness with the mandatory pre-removal grep procedures and the PR-worthiness/counting rules 9–10, §4.3 cascade cleanups, §4.4 cycle-count policy (default 2; STOP when iter-N == iter-N-1), §4.5 scope discipline, and the jest-dom prerequisite check. All §4.x references elsewhere in this skill resolve to that file.
 
+Reading it is enforced structurally, not by this reminder: every finding that carries a `**Code:**` block must also carry the `**§4.1 row:**` field defined in Output Format below, and that field cannot be filled without opening the file.
+
 Three rules repeated inline because skipping them has caused real regressions:
 - Use the canonical replacement for each pattern — never `new RegExp(x)` for `#4h .toContain` conversions.
 - HIGH band-aid-likelihood hits (`force:true`, `waitForTimeout`, conditional bypass): SUGGEST, don't auto-fix, until the §4.2 pre-removal procedure has been followed.
@@ -228,11 +231,14 @@ Present findings grouped by severity:
 ### `[test name or POM method]`
 - **Issue:** [description]
 - **Fix:** [name change / assertion addition / merge / deletion]
+- **§4.1 row:** [REQUIRED whenever **Code:** is present — quote the AVOID → USE row for this pattern verbatim from `references/applying-fixes.md`, or write `no row (judgement call)` if the table has none]
 - **Code:**
   ```typescript
   // concrete code to add or change
   ```
 ```
+
+The **§4.1 row** field is a slot, not a reminder: it cannot be filled without opening `references/applying-fixes.md`, which is the point. A fix emitted with that field blank or paraphrased was written without the canonical replacement table and must be redone against it.
 
 **After all findings, append a summary table and top priorities:**
 
@@ -269,13 +275,13 @@ This table is a **numerical index for scanning** — pattern # → severity, pha
 | 1 | Name-Assertion | P0 | LLM | Noun in name with no matching `expect()` |
 | 2 | Missing Then | P0 | LLM | Action without final state verification |
 | 3 | Error Swallowing | P0 | grep+LLM | `.catch(() => {})` in POM (grep); `try/catch` around assertions in spec (LLM) |
-| 4 | Always-Passing | P0 | grep+LLM | `>=0`; `toBeAttached()`; one-shot booleans (`isVisible/textContent/getAttribute`); `locator.toBeTruthy()`; `{ timeout: 0 }` on assertions |
+| 4 | Always-Passing | P0 | grep+LLM | `>=0`; `toBeAttached()`; one-shot booleans (`isVisible/textContent/getAttribute`); `locator.toBeTruthy()`; `{ timeout: 0 }` on assertions; absence assertion on a locator never proven able to match (4i, P1) |
 | 5 | Bypass Patterns | P0/P1 | grep | `expect()` inside `if`; `force: true` without `// JUSTIFIED:` |
 | 6 | Raw DOM Queries | P1 | grep | `document.querySelector` in `evaluate` |
 | 7 | Focused Test Leak | P0 | grep | `test.only(`, `it.only(`, `describe.only(` — no `// JUSTIFIED:` exemption |
 | 8 | Missing Assertion | P0 | grep | 8a: `page.locator(...)` standalone; 8b: `await el.isVisible();` standalone — nothing ever asserts |
 | 9 | Hard-coded Sleeps | P1 | grep | `waitForTimeout()`, `cy.wait(ms)`, `waitForLoadState('networkidle')` (#9c) |
-| 10 | Flaky Test Patterns | P1 | LLM+grep | `nth()` without comment; `test.describe.serial()` |
+| 10 | Flaky Test Patterns | P1 | LLM+grep | `nth()` without comment; `test.describe.serial()`; unscoped `getByRole`/`getByLabel`/`getByPlaceholder` name without `exact: true` (#10c) |
 | 11 | YAGNI + Zombie Specs | P2 | LLM | Unused POM member; empty wrapper; single-use Util; zombie spec file |
 | 12 | Missing Auth Setup | P0 | LLM | Spec navigates to protected route without login/storageState/auth beforeEach |
 | 13 | Inconsistent POM Usage | P1 | LLM | POM imported but spec uses raw `page.fill`/`page.click` for POM-encapsulated actions |

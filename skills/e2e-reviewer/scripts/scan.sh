@@ -619,6 +619,15 @@ run_check P0 '#4c-4e' 'One-shot Playwright state/content assertion' 'expect\((?:
 run_check P0 '#4f' 'Locator always-true assertion (truthy/defined/not-null)' 'expect\(.*(locator|getBy[A-Za-z]+).*(\.toBeTruthy\(\)|\.toBeDefined\(\)|\.not\.toBeNull\(\)|\.not\.toBeUndefined\(\)|\.not\.to\.equal\(null\)|\.not\.to\.be\.null)' '*.{ts,js,tsx,jsx}' e2e
 run_check P0 '#4g' 'Retry disabled with timeout zero' 'timeout:\s*0' '*.{ts,js,tsx,jsx,cy.ts,cy.js}' e2e
 run_check P0 '#4h' 'One-shot page.url assertion' 'expect\(page\.url\(\)\)' '*.{spec.ts,spec.js,test.ts,test.js}'
+# #4i: an absence assertion is satisfied by a locator that matches NOTHING. Playwright defines
+# toBeHidden as "either does not resolve to any DOM node, or resolves to a non-visible one",
+# and not.toBeVisible() is the inverse of "attached AND visible" — so a selector that rotted
+# (renamed class, framework migration, component rewrite) keeps passing forever while proving
+# nothing. Grep finds the assertion but cannot tell whether the same locator is ever proven
+# able to match, so this is LLM-TRIAGE: Phase 2 looks for a positive assertion or an action on
+# that locator earlier in the test (or its beforeEach) before reporting. Empty-state tests are
+# the main legitimate shape and are expected to dominate raw hits.
+run_check P1 '#4i' 'Absence assertion never proven able to match' '\.not\.toBeVisible\(|\.not\.toBeAttached\(|(?<!\.not)\.toBeHidden\(|(?<!\.not)\.toHaveCount\(\s*0\s*\)|\.should\(.[^)]*not\.(exist|be\.visible)' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'";$CYI" 'triage'
 
 run_check P0 '#5a' 'Conditional assertion bypass' 'if.*(isVisible\(|is\(.*:visible.*\))' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'";$CYI"
 run_check P1 '#5b' 'Forced actionability bypass' 'force:\s*true' '*.{ts,js,tsx,jsx,cy.ts,cy.js}' e2e
@@ -626,6 +635,11 @@ run_check P0 '#8a' 'Dangling Playwright locator statement' '^\s*(await\s+)?page\
 run_check P0 '#8b' 'Boolean state result discarded' '^\s*await .*\.(isVisible|isEnabled|isChecked|isDisabled|isEditable|isHidden)\([^)]*\)\s*;?\s*(//.*)?$' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'";$CYI"
 run_check P1 '#10a' 'Positional selector' '\.(nth\(|first\(\)|last\(\))' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'";$CYI"
 run_check P1 '#10b' 'Serial Playwright suite' '\.describe\.serial\(' '*.{spec.ts,spec.js,test.ts,test.js}'
+# #10c matches ONLY page-scoped getByRole/getByLabel/getByPlaceholder calls that carry a name:
+# and no exact: — the negative lookahead skips exact-qualified calls, and requiring `page.`
+# directly excludes container-scoped forms (`x.getByRole(...)`, `page.locator(...).getByRole(...)`).
+# Phase 2 LLM confirms the suite renders dynamic text that could substring-collide before flagging.
+run_check P1 '#10c' 'Unscoped accessible-name substring match' '(?<![.\w])page\.(getByRole|getByLabel|getByPlaceholder)\((?:(?!exact:)[^)])*name:(?:(?!exact:)[^)])*\)' '*.{spec.ts,spec.js,test.ts,test.js}' e2e
 run_check P1 '#14' 'Hardcoded credentials' '(login|fill|type).*(["'"'"'].*password|["'"'"'].*secret|["'"'"']admin["'"'"'])' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'";$CYI"
 # #15 keeps ONLY unawaited web-first matchers: the trailing matcher whitelist stops the old
 # conflation where sync-matcher one-shot reads (e.g. `expect(Number(await getRowCount(page)))

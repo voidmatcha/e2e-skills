@@ -300,7 +300,7 @@ We have coverage but bugs still slip through
 | 2 | **Then の欠落** | キャンセル操作後にテキストの復元は検証 — しかし入力欄はまだ表示されたまま？ | 復元された状態と閉じられた状態の両方を検証する |
 | 3 | **エラーの握りつぶし** | spec 内の `try/catch`、POM 内の `.catch(() => {})` | エラーで失敗させる。POM メソッドから silent catch を取り除く |
 | 3b | **Cypress の `uncaught:exception` 抑制** | `cy.on('uncaught:exception', () => false)` がアプリのエラーを一括で握りつぶす | ハンドラーを既知の特定エラーに限定し、未知のエラーは再スローする |
-| 4 | **常にパスするアサーション** | `toBeGreaterThanOrEqual(0)`; コメントなしの `toBeAttached()`; `expect(await el.isVisible()).toBe(true)`（ワンショット）; `expect(await el.textContent()).toBe(x)`（ワンショット）; `expect(locator).toBeTruthy()`（Locator は常に truthy）; アサーションでの `{ timeout: 0 }`（リトライ無効化） | `toBeGreaterThan(0)`; `toBeVisible()`; 自動リトライ付きの web-first アサーション |
+| 4 | **常にパスするアサーション** | `toBeGreaterThanOrEqual(0)`; コメントなしの `toBeAttached()`; `expect(await el.isVisible()).toBe(true)`（ワンショット）; `expect(await el.textContent()).toBe(x)`（ワンショット）; `expect(locator).toBeTruthy()`（Locator は常に truthy）; アサーションでの `{ timeout: 0 }`（リトライ無効化）; マッチしうることが一度も証明されていない locator への不在アサーション（4i, P1） | `toBeGreaterThan(0)`; `toBeVisible()`; 自動リトライ付きの web-first アサーション; 消えたことを検証する前に、まず存在を一度検証する |
 | 5 | **バイパスパターン**（5a P0、5b P1） | `if (await el.isVisible()) { expect(...) }`; コメントなしの `{ force: true }` | 常にアサートする。環境チェックは `beforeEach` に移し、force:true には `// JUSTIFIED:` を添える |
 | 7 | **フォーカステストの残留** | `test.only(...)` がコミットされ、CI は 1 件だけ実行して残りを黙ってスキップ | `.only` を削除し、ローカルでの絞り込みには `--grep` や `--spec` を使う |
 | 8 | **アサーションの欠落** | `await page.locator('.x');`（破棄）; `await el.isVisible();`（真偽値が捨てられている） | `await expect(locator).toBeVisible()` を追加するか、その行を削除する |
@@ -316,7 +316,7 @@ We have coverage but bugs still slip through
 |---|---------|--------|-------|
 | 6 | **生の DOM クエリ** | `evaluate()` 内の `document.querySelector` | フレームワークのロケーター/クエリ API（`locator` / `cy.get`）を使う |
 | 9 | **ハードコードされたスリープ** | `waitForTimeout(2000)` / `cy.wait(2000)` / `waitForLoadState('networkidle')` | フレームワークの自動待機に任せ、条件ベースの待機を使う |
-| 10 | **フレーキーテストのパターン** | コメントなしの `items.nth(2)`; `test.describe.serial()` | `data-testid` やロールセレクターを使い、serial は自己完結型のテストに置き換える |
+| 10 | **フレーキーテストのパターン** | コメントなしの `items.nth(2)`; `test.describe.serial()`; `exact: true` のないスコープ未指定の `getByRole`/`getByLabel`/`getByPlaceholder` の name（10c） | `data-testid` やロールセレクターを使い、serial は自己完結型のテストに置き換える; アクセサーをコンテナにスコープするか `exact: true` を渡す |
 | 13 | **一貫しない POM 利用** | POM をインポートしているのに、POM が担うべき操作を生の `page.fill`/`page.click` で行っている | すべての操作を POM 経由にし、UI 変更時の修正箇所を一箇所にまとめる |
 | 14 | **ハードコードされた認証情報** | テストコード内の `loginPage.login('demo-admin', '<literal-password>')` | `process.env.TEST_USER`、Playwright config のシークレット、またはテストデータフィクスチャを使う |
 | 17 | **直接の `page.click(selector)` API** | `page.click('#submit')` / `page.fill('#input', 'text')` は Locator 層を素通りする | 自動待機とわかりやすいエラーメッセージのために `page.locator(selector).click()` を使う |
@@ -471,7 +471,7 @@ e2e-skills は、Playwright と Cypress のためのオープンソースの AI 
 
 ### eslint-plugin-playwright や eslint-plugin-cypress と何が違いますか？
 
-eslint プラグインは構文ルールのための毎コミットのベースラインで、スキャナーもまずそれらを実行します（Tier 1）。置き換えではなく、その上に足す一段です。足しているのは、リンターには[構造的に判定できない](#リンターが構造的に検出できないもの)スメルの検出です。テスト名とアサーションの不一致、決して throw しない関数を包む `try/catch`、常に真になる `expect(locator).toBeTruthy()`、認証のないルート — いずれも AST ルールが決して見ないコード（別の関数、コンポーネント、CI 設定、テストの意図）を読む必要があります。`e2e-reviewer` はその周辺コードを読んで指摘を検証し、その場しのぎを避けた修正案を提示します。lint にできるのは単一ファイルの構文をフラグすることだけです。
+eslint プラグインは構文ルールのための毎コミットのベースラインで、スキャナーもまずそれらを実行します（Tier 1）。置き換えではなく、その上に足す一段です。足しているのは、リンターには[構造的に判定できない](#リンターが構造的に検出できないもの)スメルの検出です。テスト名とアサーションの不一致、決して throw しない関数を包む `try/catch`、削除テストなのに行が消えたかを確認しないケース、認証のないルート — いずれも AST ルールが決して見ないコード（別の関数、コンポーネント、CI 設定、テストの意図）を読む必要があります。（機械的に常に真になるケース — `expect(locator).toBeTruthy()` — は単一ファイルで lint 可能で、だからこそ公式 `eslint-plugin-playwright` ルール `no-unnecessary-assertions` としてアップストリームに貢献されました。スキャナーの第 1 ティアがこれを実行します。）`e2e-reviewer` はその周辺コードを読んで指摘を検証し、その場しのぎを避けた修正案を提示します。lint にできるのは単一ファイルの構文をフラグすることだけです。
 
 ### CodeRabbit、Copilot、Cursor BugBot のような AI コードレビュアーと同じではありませんか？
 

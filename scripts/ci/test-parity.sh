@@ -176,7 +176,13 @@ restore "$file"
 # Case 11: SKILL.md frontmatter description unquoted with colon-space — YAML parse regression of v0.7.3
 file="skills/e2e-reviewer/SKILL.md"
 backup "$file"
-mutate "$file" "description: 'Static review" "description: Static review"
+# Inject the whole bad shape instead of anchoring on the real description's wording. The
+# previous anchor ("description: 'Static review") hard-coded the opening words, so the 1.9.0
+# description rewrite silently broke this case; anchoring on the opening quote alone is not
+# enough either, because the guard only fires when the unquoted value also contains ": ",
+# which the current text no longer has. Replacing the line outright keeps the case testing
+# the guard (unquoted plain scalar + colon-space) rather than the prose that happens to be there.
+mutate "$file" "description: '" "description: Static review: unquoted with colon-space '"
 assert_fails "Frontmatter YAML guard — unquoted description with ': '" "colon-space"
 restore "$file"
 
