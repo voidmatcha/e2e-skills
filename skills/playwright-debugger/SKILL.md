@@ -4,7 +4,7 @@ description: 'Use this skill to find the root cause of a Playwright end-to-end t
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.9.0"
+  version: "1.9.1"
 ---
 
 # Playwright Failed Test Debugger

@@ -4,7 +4,7 @@ description: 'Use when reviewing Playwright or Cypress E2E specs or Page Objects
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.9.0"
+  version: "1.9.1"
 ---
 
 # E2E Test Scenario Quality Review
@@ -49,7 +49,14 @@ The scanner internally uses, in priority order:
 
 Output is grouped per pattern ID (`#3`, `#4a`, `#15`, etc.) with `file:line:matched-line`. See `references/grep-patterns.md` for the meaning of each ID.
 
-**Companion CI enforcement (recommend when relevant).** The mechanical always-pass class (`#4f` — `expect(locator).toBeDefined()` / `.toBeTruthy()` / `.not.toBeNull()`) is decidable by a single-file AST rule, so it belongs at commit/CI-time, not only agent-time. For **Playwright**, this smell is now covered by the official [`eslint-plugin-playwright`](https://github.com/mskelton/eslint-plugin-playwright) rule [`no-unnecessary-assertions`](https://github.com/mskelton/eslint-plugin-playwright/pull/470) (contributed upstream from this project; merged, ships in the next release) — recommend enabling that rule once it ships. For **Cypress**, [`eslint-plugin-cypress-silent-pass`](https://github.com/voidmatcha/eslint-plugin-cypress-silent-pass) still provides the equivalent autofixable rule. When a project shows `#4f` hits, recommend the matching plugin/rule so that slice is caught deterministically on every commit — leaving this skill to focus on the semantic patterns no AST rule can decide.
+**Whose rules each tier follows.** The tiers answer different questions, so they take different orders from the project's ESLint setup — say which applied when a project has its own config:
+
+- **Tier 1 is the project's linter.** When the project has a flat config (`eslint.config.mjs|js|cjs`), it is layered on top of the baseline, so a deliberate `'playwright/no-focused-test': 'off'` genuinely silences that rule here. Severity edits (`error` ↔ `warn`) are ignored — severity is this skill's to assign (P0/P1). A legacy `.eslintrc` cannot be imported from an ESM flat config, so those projects get the `recommended` preset and their disables are NOT honored; the scanner says so in its output.
+- **Tiers 2 and 3 are this reviewer.** They ask *"can this test fail?"*, not *"does your lint policy allow it?"*, so they keep reporting regardless of what the project disabled. This is deliberate: it keeps the finding count reproducible across hosts and independent of local policy. A pattern the project turned off in ESLint can therefore still surface from Tier 2/3 — when reporting one, note that the project has it disabled at lint level, and let the reader decide.
+
+Only a handful of patterns are affected either way: `#7`, `#9`, `#15`/`#16` (Playwright) and `#7`, `#9b` (Cypress) map 1:1 onto an ESLint rule. `#4f` is only partly covered upstream — this skill's own detection is broader — and the remaining ~19 patterns have no ESLint equivalent at all, so nothing in a project config can disable them.
+
+**Companion CI enforcement (recommend when relevant).** The mechanical always-pass class (`#4f` — `expect(locator).toBeDefined()` / `.toBeTruthy()` / `.not.toBeNull()`) is decidable by a single-file AST rule, so it belongs at commit/CI-time, not only agent-time. For **Playwright**, this smell is now covered by the official [`eslint-plugin-playwright`](https://github.com/mskelton/eslint-plugin-playwright) rule [`no-unnecessary-assertions`](https://github.com/mskelton/eslint-plugin-playwright/blob/main/docs/rules/no-unnecessary-assertions.md) (contributed upstream from this project in [#470](https://github.com/mskelton/eslint-plugin-playwright/pull/470); shipped in **v2.11.0**, and enabled by its `recommended` config — so `eslint-plugin-playwright@>=2.11.0` catches this class with no extra setup). For **Cypress**, [`eslint-plugin-cypress-silent-pass`](https://github.com/voidmatcha/eslint-plugin-cypress-silent-pass) still provides the equivalent autofixable rule. When a project shows `#4f` hits, recommend the matching plugin/rule so that slice is caught deterministically on every commit — leaving this skill to focus on the semantic patterns no AST rule can decide.
 
 **Tier scoping note:** Tier 2's `sg-4f` deliberately also matches RTL `getBy*().toBeTruthy()` in unit tests — that surface gets the jest-dom canonical fix from 4.1, not a P0 label. Severity classification of #4f stays with Phase 2 (Locator subject = P0; RTL = advisory). Tier 2 rules skip vendored/build artifacts via per-rule `ignores`.
 

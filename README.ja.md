@@ -9,7 +9,6 @@
   <a href="https://playwright.dev"><img alt="Playwright | Cypress" src="https://img.shields.io/badge/Playwright_%7C_Cypress-supported-2EAD33?style=flat-square&labelColor=black&logo=playwright&logoColor=white"></a>
   <a href="#オープンソースでの実績"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-14-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
   <a href="https://agents.md"><img alt="Runs in 55+ agents" src="https://img.shields.io/badge/runs_in-55%2B_agents-37B0E6?style=flat-square&labelColor=black"></a>
-  <a href="https://www.npmjs.com/package/eslint-plugin-playwright-silent-pass"><img alt="playwright silent-pass npm" src="https://img.shields.io/npm/v/eslint-plugin-playwright-silent-pass?style=flat-square&label=playwright%20lint&labelColor=black&color=1FC07C"></a>
   <a href="https://www.npmjs.com/package/eslint-plugin-cypress-silent-pass"><img alt="cypress silent-pass npm" src="https://img.shields.io/npm/v/eslint-plugin-cypress-silent-pass?style=flat-square&label=cypress%20lint&labelColor=black&color=37B0E6"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/voidmatcha/e2e-skills?style=flat-square&labelColor=black&color=37B0E6"></a>
 </p>
@@ -339,7 +338,7 @@ We have coverage but bugs still slip through
 
 **リンターが確認できるのはアサーションの形式までで、テストがその名前の主張どおりのことを証明しているかは判定できません。** テストの宣言された意図と実際に検証している内容のあいだのギャップこそ、`e2e-reviewer` が探すものの核心であり、ファイル単位の AST ルールや grep ルールからは見えません。`should show an error when the name is duplicate` というテストは、エラーに一切触れないアサーションでも通ってしまい、構文は完璧です。それを判定するにはテストの名前、実行するアクション、周囲のコードを合わせて読む必要があり、単一ファイルのルールが動くレベルより一段上の作業になります。
 
-`e2e-reviewer` は第 1 ティアとして `eslint-plugin-playwright` / `eslint-plugin-cypress` を実行するため、機械的なルール（`#6`、`#7`、`#9`、`#15`、`#16`、`#5a`、`#5b`）はデファクトスタンダードのプラグインで既にカバーされています。常にパスする Locator アサーションのスメル（`#4f`）も今やカバーされます — 本プロジェクトから公式 `eslint-plugin-playwright` に [`no-unnecessary-assertions`](https://github.com/mskelton/eslint-plugin-playwright/pull/470) ルールとして貢献してマージされ（次のリリースに同梱）、Cypress 側は [`eslint-plugin-cypress-silent-pass`](https://github.com/voidmatcha/eslint-plugin-cypress-silent-pass) がカバーします。その上に `e2e-reviewer` を重ねる理由は、**どんな AST ルールや grep ルールも届かない**スメルにあります。それらを確認するには、他の関数、コンポーネント、CI 設定、テスト自身の意図といった、ルールが決して見ないコードまで読む必要があるからです。
+`e2e-reviewer` は第 1 ティアとして `eslint-plugin-playwright` / `eslint-plugin-cypress` を実行するため、機械的なルール（`#6`、`#7`、`#9`、`#15`、`#16`、`#5a`、`#5b`）はデファクトスタンダードのプラグインで既にカバーされています。常にパスする Locator アサーションのスメル（`#4f`）も今やカバーされます — 本プロジェクトから公式 `eslint-plugin-playwright` に [`no-unnecessary-assertions`](https://github.com/mskelton/eslint-plugin-playwright/pull/470) ルールとして貢献してv2.11.0 でリリースされ、`recommended` 設定で既定で有効です、Cypress 側は [`eslint-plugin-cypress-silent-pass`](https://github.com/voidmatcha/eslint-plugin-cypress-silent-pass) がカバーします。その上に `e2e-reviewer` を重ねる理由は、**どんな AST ルールや grep ルールも届かない**スメルにあります。それらを確認するには、他の関数、コンポーネント、CI 設定、テスト自身の意図といった、ルールが決して見ないコードまで読む必要があるからです。
 
 | スメル | lint が判定できない理由 |
 |-------|---------------------------|
@@ -471,7 +470,7 @@ e2e-skills は、Playwright と Cypress のためのオープンソースの AI 
 
 ### eslint-plugin-playwright や eslint-plugin-cypress と何が違いますか？
 
-eslint プラグインは構文ルールのための毎コミットのベースラインで、スキャナーもまずそれらを実行します（Tier 1）。置き換えではなく、その上に足す一段です。足しているのは、リンターには[構造的に判定できない](#リンターが構造的に検出できないもの)スメルの検出です。テスト名とアサーションの不一致、決して throw しない関数を包む `try/catch`、削除テストなのに行が消えたかを確認しないケース、認証のないルート — いずれも AST ルールが決して見ないコード（別の関数、コンポーネント、CI 設定、テストの意図）を読む必要があります。（機械的に常に真になるケース — `expect(locator).toBeTruthy()` — は単一ファイルで lint 可能で、だからこそ公式 `eslint-plugin-playwright` ルール `no-unnecessary-assertions` としてアップストリームに貢献されました。スキャナーの第 1 ティアがこれを実行します。）`e2e-reviewer` はその周辺コードを読んで指摘を検証し、その場しのぎを避けた修正案を提示します。lint にできるのは単一ファイルの構文をフラグすることだけです。
+eslint プラグインは構文ルールのための毎コミットのベースラインで、スキャナーもまずそれらを実行します（Tier 1）。その際、プロジェクトの flat config をプラグインの `recommended` の上に重ねるため、意図的に無効化したルールは Tier 1 でも無効のままです。既存の lint 設定を置き換えるのではなく、その上に足す一段です。足しているのは、リンターには[構造的に判定できない](#リンターが構造的に検出できないもの)スメルの検出です。テスト名とアサーションの不一致、決して throw しない関数を包む `try/catch`、削除テストなのに行が消えたかを確認しないケース、認証のないルート — いずれも AST ルールが決して見ないコード（別の関数、コンポーネント、CI 設定、テストの意図）を読む必要があります。（機械的に常に真になるケース — `expect(locator).toBeTruthy()` — は単一ファイルで lint 可能で、だからこそ公式 `eslint-plugin-playwright` ルール `no-unnecessary-assertions` としてアップストリームに貢献されました。スキャナーの第 1 ティアがこれを実行します。）`e2e-reviewer` はその周辺コードを読んで指摘を検証し、その場しのぎを避けた修正案を提示します。lint にできるのは単一ファイルの構文をフラグすることだけです。
 
 ### CodeRabbit、Copilot、Cursor BugBot のような AI コードレビュアーと同じではありませんか？
 

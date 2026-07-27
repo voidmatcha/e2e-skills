@@ -9,7 +9,6 @@
   <a href="https://playwright.dev"><img alt="Playwright | Cypress" src="https://img.shields.io/badge/Playwright_%7C_Cypress-supported-2EAD33?style=flat-square&labelColor=black&logo=playwright&logoColor=white"></a>
   <a href="#在开源项目中得到验证"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-14-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
   <a href="https://agents.md"><img alt="Runs in 55+ agents" src="https://img.shields.io/badge/runs_in-55%2B_agents-37B0E6?style=flat-square&labelColor=black"></a>
-  <a href="https://www.npmjs.com/package/eslint-plugin-playwright-silent-pass"><img alt="playwright silent-pass npm" src="https://img.shields.io/npm/v/eslint-plugin-playwright-silent-pass?style=flat-square&label=playwright%20lint&labelColor=black&color=1FC07C"></a>
   <a href="https://www.npmjs.com/package/eslint-plugin-cypress-silent-pass"><img alt="cypress silent-pass npm" src="https://img.shields.io/npm/v/eslint-plugin-cypress-silent-pass?style=flat-square&label=cypress%20lint&labelColor=black&color=37B0E6"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/voidmatcha/e2e-skills?style=flat-square&labelColor=black&color=37B0E6"></a>
 </p>
@@ -339,7 +338,7 @@ We have coverage but bugs still slip through
 
 **静态检查器能查出一个断言写得规不规范，却查不出这个测试到底有没有证明它名字里声称的东西。** 测试声称的意图和它实际验证的内容，中间这道缝正是 `e2e-reviewer` 要找的核心，而任何逐文件的 AST 或 grep 规则都看不见它：`should show an error when the name is duplicate` 可以在一个从不触及错误的断言下通过，语法却毫无瑕疵。要判定它，得把测试的名称、它执行的动作以及周围的代码放在一起读，这比单文件规则的运作层级高出一层。
 
-`e2e-reviewer` 把 `eslint-plugin-playwright` / `eslint-plugin-cypress` 作为它的第一层，因此机械性的规则（`#6`、`#7`、`#9`、`#15`、`#16`、`#5a`、`#5b`）已经被这些事实标准的插件覆盖。永远通过的 Locator 断言坏味道（`#4f`）现在也被覆盖了——它由本项目贡献到官方 `eslint-plugin-playwright`，作为 [`no-unnecessary-assertions`](https://github.com/mskelton/eslint-plugin-playwright/pull/470) 规则已合并（将随下一个版本发布），Cypress 一侧则由 [`eslint-plugin-cypress-silent-pass`](https://github.com/voidmatcha/eslint-plugin-cypress-silent-pass) 覆盖。在其之上再加 `e2e-reviewer` 的理由，是那些**任何 AST 或 grep 规则都触及不到**的坏味道，因为确认它们需要读取规则永远看不到的代码——其他函数、组件、CI 配置、测试自身的意图：
+`e2e-reviewer` 把 `eslint-plugin-playwright` / `eslint-plugin-cypress` 作为它的第一层，因此机械性的规则（`#6`、`#7`、`#9`、`#15`、`#16`、`#5a`、`#5b`）已经被这些事实标准的插件覆盖。永远通过的 Locator 断言坏味道（`#4f`）现在也被覆盖了——它由本项目贡献到官方 `eslint-plugin-playwright`，作为 [`no-unnecessary-assertions`](https://github.com/mskelton/eslint-plugin-playwright/pull/470) 规则已在 v2.11.0 发布，并由其 `recommended` 配置默认启用，Cypress 一侧则由 [`eslint-plugin-cypress-silent-pass`](https://github.com/voidmatcha/eslint-plugin-cypress-silent-pass) 覆盖。在其之上再加 `e2e-reviewer` 的理由，是那些**任何 AST 或 grep 规则都触及不到**的坏味道，因为确认它们需要读取规则永远看不到的代码——其他函数、组件、CI 配置、测试自身的意图：
 
 | 坏味道 | 为什么 lint 无法判定 |
 |-------|---------------------------|
@@ -471,7 +470,7 @@ e2e-skills 是一个面向 Playwright 和 Cypress 的开源 AI 智能体测试�
 
 ### 它与 eslint-plugin-playwright 或 eslint-plugin-cypress 有何不同？
 
-eslint 插件是你每次提交时针对语法规则的基线，扫描器会先运行它们（第 1 层）——所以它并不取代它们，而是在其之上再加一层。这一层就是静态检查器[从结构上无法判定](#静态检查器从结构上无法捕捉的内容)的坏味道：名称与断言不匹配、包裹着一个从不抛出的函数的 `try/catch`、一个删除测试却从不检查该行是否已消失、一条缺失鉴权的路由——每一个都需要读取 AST 规则永远看不到的代码（另一个函数、组件、CI 配置、测试的意图）。（机械的、永远为真的情况——`expect(locator).toBeTruthy()`——是可以用单文件 lint 判定的，因此它作为官方 `eslint-plugin-playwright` 规则 `no-unnecessary-assertions` 贡献到了上游；扫描器的第一层会运行它。）`e2e-reviewer` 会读取这些周围代码以验证发现，并给出一个避免治标不治本的修复，而 lint 只能标记单文件语法。
+eslint 插件是你每次提交时针对语法规则的基线，扫描器会先运行它们（第 1 层）——并把你自己的 flat config 叠加在插件的 `recommended` 之上，因此你有意关闭的规则在第 1 层同样保持关闭。它并不取代你的 lint 配置，而是在其之上再加一层。这一层就是静态检查器[从结构上无法判定](#静态检查器从结构上无法捕捉的内容)的坏味道：名称与断言不匹配、包裹着一个从不抛出的函数的 `try/catch`、一个删除测试却从不检查该行是否已消失、一条缺失鉴权的路由——每一个都需要读取 AST 规则永远看不到的代码（另一个函数、组件、CI 配置、测试的意图）。（机械的、永远为真的情况——`expect(locator).toBeTruthy()`——是可以用单文件 lint 判定的，因此它作为官方 `eslint-plugin-playwright` 规则 `no-unnecessary-assertions` 贡献到了上游；扫描器的第一层会运行它。）`e2e-reviewer` 会读取这些周围代码以验证发现，并给出一个避免治标不治本的修复，而 lint 只能标记单文件语法。
 
 ### 这不就是又一个像 CodeRabbit、Copilot 或 Cursor BugBot 那样的 AI 代码审查器吗？
 

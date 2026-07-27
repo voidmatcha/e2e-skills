@@ -9,7 +9,6 @@
   <a href="https://playwright.dev"><img alt="Playwright | Cypress" src="https://img.shields.io/badge/Playwright_%7C_Cypress-supported-2EAD33?style=flat-square&labelColor=black&logo=playwright&logoColor=white"></a>
   <a href="#오픈소스에서-검증됨"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-14-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
   <a href="https://agents.md"><img alt="Runs in 55+ agents" src="https://img.shields.io/badge/runs_in-55%2B_agents-37B0E6?style=flat-square&labelColor=black"></a>
-  <a href="https://www.npmjs.com/package/eslint-plugin-playwright-silent-pass"><img alt="playwright silent-pass npm" src="https://img.shields.io/npm/v/eslint-plugin-playwright-silent-pass?style=flat-square&label=playwright%20lint&labelColor=black&color=1FC07C"></a>
   <a href="https://www.npmjs.com/package/eslint-plugin-cypress-silent-pass"><img alt="cypress silent-pass npm" src="https://img.shields.io/npm/v/eslint-plugin-cypress-silent-pass?style=flat-square&label=cypress%20lint&labelColor=black&color=37B0E6"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/voidmatcha/e2e-skills?style=flat-square&labelColor=black&color=37B0E6"></a>
 </p>
@@ -339,7 +338,7 @@ We have coverage but bugs still slip through
 
 **linter는 assertion이 형식적으로 올바른지 검사합니다. 테스트가 그 이름이 주장하는 바를 증명하는지는 검사할 수 없습니다.** `e2e-reviewer`가 보는 핵심은 테스트의 명시된 의도와 실제 검증 내용 사이의 간극입니다. 이 간극은 파일 단위 AST나 grep 규칙에는 보이지 않습니다. 예를 들어 `should show an error when the name is duplicate`는 오류를 전혀 확인하지 않는 assertion으로도 통과할 수 있고, 문법에도 문제는 없습니다. 이를 판별하려면 테스트 이름, 수행 동작, 주변 코드를 함께 읽어야 합니다. 단일 파일 규칙보다 한 단계 위의 판단입니다.
 
-`e2e-reviewer`는 첫 번째 계층으로 `eslint-plugin-playwright` / `eslint-plugin-cypress`를 실행합니다. 따라서 기계적인 규칙(`#6`, `#7`, `#9`, `#15`, `#16`, `#5a`, `#5b`)은 사실상 표준인 이 plugin들이 이미 담당합니다. 항상 통과하는 Locator assertion smell(`#4f`)도 이제 담당됩니다 — 이 프로젝트에서 공식 `eslint-plugin-playwright`에 [`no-unnecessary-assertions`](https://github.com/mskelton/eslint-plugin-playwright/pull/470) 규칙으로 기여해 merge됐고(다음 릴리스에 포함), Cypress 쪽은 [`eslint-plugin-cypress-silent-pass`](https://github.com/voidmatcha/eslint-plugin-cypress-silent-pass)가 담당합니다. 그 위에 `e2e-reviewer`를 얹는 이유는 **어떤 AST나 grep 규칙도 닿을 수 없는** smell 때문입니다. 이런 smell을 확정하려면 규칙이 보지 못하는 코드, 즉 다른 함수, 컴포넌트, CI 설정, 테스트 자체의 의도까지 읽어야 합니다:
+`e2e-reviewer`는 첫 번째 계층으로 `eslint-plugin-playwright` / `eslint-plugin-cypress`를 실행합니다. 따라서 기계적인 규칙(`#6`, `#7`, `#9`, `#15`, `#16`, `#5a`, `#5b`)은 사실상 표준인 이 plugin들이 이미 담당합니다. 항상 통과하는 Locator assertion smell(`#4f`)도 이제 담당됩니다 — 이 프로젝트에서 공식 `eslint-plugin-playwright`에 [`no-unnecessary-assertions`](https://github.com/mskelton/eslint-plugin-playwright/pull/470) 규칙으로 기여해 v2.11.0으로 배포됐으며 `recommended` 설정에서 기본 활성화됩니다, Cypress 쪽은 [`eslint-plugin-cypress-silent-pass`](https://github.com/voidmatcha/eslint-plugin-cypress-silent-pass)가 담당합니다. 그 위에 `e2e-reviewer`를 얹는 이유는 **어떤 AST나 grep 규칙도 닿을 수 없는** smell 때문입니다. 이런 smell을 확정하려면 규칙이 보지 못하는 코드, 즉 다른 함수, 컴포넌트, CI 설정, 테스트 자체의 의도까지 읽어야 합니다:
 
 | smell | lint가 판별할 수 없는 이유 |
 |-------|---------------------------|
@@ -471,7 +470,7 @@ spec 디렉터리를 대상으로 `e2e-reviewer` 스킬 또는 독립 실행형 
 
 ### eslint-plugin-playwright나 eslint-plugin-cypress와는 무엇이 다른가요?
 
-eslint plugin은 커밋마다 문법 규칙을 걸러 주는 기본 방어선이며, 스캐너는 이를 가장 먼저(Tier 1) 실행합니다. `e2e-skills`는 이를 대체하지 않고 그 위에 한 계층을 더합니다. 그 계층은 linter가 [구조적으로 판별할 수 없는](#linter가-구조적으로-잡을-수-없는-것) smell입니다: 이름-assertion 불일치, 결코 throw하지 않는 함수를 감싼 `try/catch`, 삭제 테스트인데 행이 사라졌는지 확인하지 않는 경우, 인증이 빠진 route. 이런 문제를 확정하려면 AST 규칙이 보지 못하는 코드, 즉 다른 함수, 컴포넌트, CI 설정, 테스트의 의도까지 읽어야 합니다. (기계적으로 항상 참인 경우 — `expect(locator).toBeTruthy()` — 는 단일 파일 lint로 판별 가능하며, 그래서 공식 `eslint-plugin-playwright` 규칙 `no-unnecessary-assertions`로 업스트림 기여됐습니다. 스캐너의 첫 번째 계층이 이를 실행합니다.) `e2e-reviewer`는 그 주변 코드를 읽어 발견을 검증하고 임시방편을 피하는 수정안을 제시하지만, lint는 단일 파일의 문법만 표시할 수 있습니다.
+eslint plugin은 커밋마다 문법 규칙을 걸러 주는 기본 방어선이며, 스캐너는 이를 가장 먼저(Tier 1) 실행합니다. 이때 프로젝트의 flat config를 plugin의 `recommended` 위에 얹으므로, 의도적으로 끈 규칙은 Tier 1에서도 꺼진 채로 유지됩니다. `e2e-skills`는 기존 lint 설정을 대체하지 않고 그 위에 한 계층을 더합니다. 그 계층은 linter가 [구조적으로 판별할 수 없는](#linter가-구조적으로-잡을-수-없는-것) smell입니다: 이름-assertion 불일치, 결코 throw하지 않는 함수를 감싼 `try/catch`, 삭제 테스트인데 행이 사라졌는지 확인하지 않는 경우, 인증이 빠진 route. 이런 문제를 확정하려면 AST 규칙이 보지 못하는 코드, 즉 다른 함수, 컴포넌트, CI 설정, 테스트의 의도까지 읽어야 합니다. (기계적으로 항상 참인 경우 — `expect(locator).toBeTruthy()` — 는 단일 파일 lint로 판별 가능하며, 그래서 공식 `eslint-plugin-playwright` 규칙 `no-unnecessary-assertions`로 업스트림 기여됐습니다. 스캐너의 첫 번째 계층이 이를 실행합니다.) `e2e-reviewer`는 그 주변 코드를 읽어 발견을 검증하고 임시방편을 피하는 수정안을 제시하지만, lint는 단일 파일의 문법만 표시할 수 있습니다.
 
 ### CodeRabbit, Copilot, Cursor BugBot 같은 AI 코드 리뷰어와 다를 게 없지 않나요?
 

@@ -58,6 +58,7 @@ total_hits=0
 p0_hits=0
 p1_hits=0
 llm_triage_hits=0
+hit_pattern_ids=""
 eslint_ran=0
 playwright_lint_done=0
 cypress_lint_done=0
@@ -115,9 +116,14 @@ try_eslint() {
     # installs the env WITHOUT peer deps, so the parser dies with "Cannot find module 'typescript'"
     # (eslint rc=2) and Tier 1 silently never fires — for that repo AND for every later scan that
     # reuses the poisoned cache env. A direct dep is installed under every peer-deps policy.
-    npx_args=(--yes -p 'eslint@^9' -p "eslint-plugin-$plugin" -p '@typescript-eslint/parser' -p 'typescript@^5' -p "eslint-plugin-$plugin-silent-pass")
+    npx_args=(--yes -p 'eslint@^9' -p "eslint-plugin-$plugin" -p '@typescript-eslint/parser' -p 'typescript@^5')
+    # The companion silent-pass plugin is Cypress-only now. Its Playwright counterpart was
+    # upstreamed as `no-unnecessary-assertions`, shipped in eslint-plugin-playwright v2.11.0 and
+    # enabled by that plugin's `recommended` config — so #4f is covered by Tier 1 with no extra
+    # package, and eslint-plugin-playwright-silent-pass is deprecated on npm. Downloading it here
+    # would pull a deprecated package and double-report the same finding.
     if [[ "$plugin" == "cypress" ]]; then
-      npx_args+=(-p eslint-plugin-mocha)
+      npx_args+=(-p "eslint-plugin-$plugin-silent-pass" -p eslint-plugin-mocha)
     fi
     npx_args+=(eslint)
   fi
@@ -163,21 +169,43 @@ EOFRES
     _mocha_abs=$(printf '%s' "$_paths" | awk -F'","' '{print $3}' | sed 's/"\]$//')
   fi
 
-  # Companion silent-pass plugin (dogfood the #4f always-pass rule). Best-effort:
-  # resolved separately so a missing/offline package NEVER breaks Tier 1 — the
-  # official plugin still runs, and Tier 2/3 still cover #4f.
-  # NOTE: #4f was upstreamed to eslint-plugin-playwright as `no-unnecessary-assertions`
-  # (mskelton/eslint-plugin-playwright#470, merged). Once released and in its recommended
-  # config, the Playwright `flat/recommended` spread below covers #4f natively and this
-  # companion dogfood becomes redundant for Playwright (Cypress silent-pass still applies).
-  # Not hardcoding the rule name here — an unreleased rule id would error "rule not found".
+  # Companion silent-pass plugin — Cypress only. Best-effort: resolved separately so a
+  # missing/offline package NEVER breaks Tier 1, and Tier 2/3 still cover #4f regardless.
+  # Playwright is deliberately excluded: #4f was upstreamed as `no-unnecessary-assertions`
+  # (mskelton/eslint-plugin-playwright#470), shipped in v2.11.0, and enabled by that plugin's
+  # `recommended` config — which the flat/recommended spread below already pulls in. Resolving
+  # the companion here too would load a package now deprecated on npm and double-report #4f.
+  # The rule id still is not hardcoded: it arrives through recommended, so an older
+  # eslint-plugin-playwright simply does not enable it instead of erroring "rule not found".
   local _sp_abs="" _sp_paths _sp_imp="" _sp_plg="" _sp_rul=""
-  _sp_paths=$( (cd "$ROOT" && npx "${_resolve_args[@]}" "$_cfgd/resolve.cjs" "eslint-plugin-$plugin-silent-pass") 2>/dev/null | tail -1 )
+  if [[ "$plugin" == "cypress" ]]; then
+    _sp_paths=$( (cd "$ROOT" && npx "${_resolve_args[@]}" "$_cfgd/resolve.cjs" "eslint-plugin-$plugin-silent-pass") 2>/dev/null | tail -1 )
+  fi
   if [[ "$_sp_paths" == "["* ]]; then
     _sp_abs=$(printf '%s' "$_sp_paths" | sed 's/^\["//; s/"\]$//')
     _sp_imp="import spp from '$_sp_abs';"
     _sp_plg=", '$plugin-silent-pass': spp"
     _sp_rul=", '$plugin-silent-pass/no-silent-pass': 'error'"
+  fi
+
+  # Respect the project's own flat config when it has one. ESLint flat config is an array
+  # and later entries win, so appending the project's config after ours lets a deliberate
+  # `'playwright/no-force': 'off'` actually take effect instead of being overridden by our
+  # `recommended` spread. Severity edits (error<->warn) are ignored on purpose: severity here
+  # is ours to assign (P0/P1), not the project's.
+  # Only flat configs are honored — legacy .eslintrc cannot be imported from an ESM config,
+  # and those projects fall through to the recommended-only behavior with the note below.
+  local _localcfg="" _localimport="" _localspread=""
+  for _c in eslint.config.mjs eslint.config.js eslint.config.cjs; do
+    if [[ -f "$ROOT/$_c" ]]; then
+      _localcfg=$(cd "$ROOT" && pwd)/"$_c"
+      break
+    fi
+  done
+  if [[ -n "$_localcfg" ]]; then
+    _localimport="import projectConfig from '$_localcfg';"
+    # The project's default export may be a single object or an array; normalize before spreading.
+    _localspread='  ...(Array.isArray(projectConfig) ? projectConfig : [projectConfig]),'
   fi
 
   # Conditional evals/files ignore mirrors Tier 3's EVAL_FIXTURE_EXCLUDES.
@@ -189,7 +217,7 @@ EOFRES
     cat > "$_cfg" <<EOFCFG
 import playwright from '$_plugin_abs';
 import tsParser from '$_parser_abs';
-$_sp_imp
+$_sp_imp$_localimport
 export default [
   { ignores: ['**/node_modules/**','**/dist/**','**/build/**','**/.next/**','**/out/**','**/coverage/**','**/public/**','**/*.min.js',$_evalign] },
   {
@@ -198,6 +226,7 @@ export default [
     languageOptions: { parser: tsParser, ecmaVersion: 'latest', sourceType: 'module', parserOptions: { ecmaFeatures: { jsx: true } } },
     rules: { ...(playwright.configs['flat/recommended'] ?? playwright.configs.recommended).rules$_sp_rul },
   },
+$_localspread
 ];
 EOFCFG
   else
@@ -205,7 +234,7 @@ EOFCFG
 import cypress from '$_plugin_abs';
 import mocha from '$_mocha_abs';
 import tsParser from '$_parser_abs';
-$_sp_imp
+$_sp_imp$_localimport
 const cypressRules = (cypress.configs['flat/recommended'] ?? cypress.configs.recommended).rules;
 export default [
   { ignores: ['**/node_modules/**','**/dist/**','**/build/**','**/coverage/**','**/*.min.js',$_evalign] },
@@ -215,6 +244,7 @@ export default [
     languageOptions: { parser: tsParser, ecmaVersion: 'latest', sourceType: 'module', parserOptions: { ecmaFeatures: { jsx: true } } },
     rules: { ...cypressRules, 'mocha/no-exclusive-tests': 'error'$_sp_rul },
   },
+$_localspread
 ];
 EOFCFG
   fi
@@ -310,11 +340,23 @@ EOFCFG
   [[ "$plugin" == "cypress" ]] && cypress_lint_done=1
 }
 
-# If the project already has its own eslint config, warn that our scanner uses
-# `recommended` (not the user's custom rules) — they may want to opt out and rely
-# on their own pipeline instead.
-if [[ -f "$ROOT/.eslintrc" || -f "$ROOT/.eslintrc.json" || -f "$ROOT/.eslintrc.js" || -f "$ROOT/.eslintrc.cjs" || -f "$ROOT/.eslintrc.yml" || -f "$ROOT/.eslintrc.yaml" || -f "$ROOT/eslint.config.js" || -f "$ROOT/eslint.config.mjs" || -f "$ROOT/eslint.config.ts" ]]; then
-  printf '\n[note] Project has its own ESLint config — our Tier 1 uses `recommended` preset (not your config) for predictable output. If you already lint with eslint-plugin-{playwright,cypress} in CI/IDE, set E2E_SMELL_NO_ESLINT_DOWNLOAD=1 to skip Tier 1 here and let your pipeline own it (Tier 2 ast-grep + Tier 3 regex still run for the gaps your lint may not cover).\n'
+# Tell the user which tier obeys their config and which does not. The tiers answer different
+# questions, so they take different orders from the project's ESLint setup:
+#   Tier 1 is THEIR linter. A flat config is layered on top of our baseline, so a deliberate
+#          `'playwright/no-focused-test': 'off'` genuinely silences that rule here.
+#   Tier 2/3 are OUR reviewer. They ask "can this test fail?", not "does your lint policy
+#          allow it?", so they keep reporting regardless — that is what makes the finding
+#          count reproducible across hosts and independent of local policy.
+# Legacy .eslintrc cannot be imported from an ESM flat config, so those projects keep the old
+# recommended-only behavior and are told so explicitly rather than left to assume otherwise.
+_flatcfg=""
+for _c in eslint.config.mjs eslint.config.js eslint.config.cjs; do
+  [[ -f "$ROOT/$_c" ]] && { _flatcfg="$_c"; break; }
+done
+if [[ -n "$_flatcfg" ]]; then
+  printf '\n[note] Layering your %s over our Tier 1 baseline — rules you set to `off` there are not reported by Tier 1. Tier 2 (ast-grep) and Tier 3 (regex) still evaluate independently: they ask whether a test can fail, not whether your lint policy allows it, so a pattern you disabled can still surface there. To hand Tier 1 entirely to your own pipeline, set E2E_SMELL_NO_ESLINT_DOWNLOAD=1.\n' "$_flatcfg"
+elif [[ -f "$ROOT/.eslintrc" || -f "$ROOT/.eslintrc.json" || -f "$ROOT/.eslintrc.js" || -f "$ROOT/.eslintrc.cjs" || -f "$ROOT/.eslintrc.yml" || -f "$ROOT/.eslintrc.yaml" ]]; then
+  printf '\n[note] Project uses a legacy .eslintrc, which an ESM flat config cannot import — Tier 1 runs the `recommended` preset instead, so rules you disabled there are NOT honored here. If you already lint with eslint-plugin-{playwright,cypress} in CI/IDE, set E2E_SMELL_NO_ESLINT_DOWNLOAD=1 to skip Tier 1 and let your pipeline own it (Tier 2 + Tier 3 still run).\n'
 fi
 
 # Detect each framework via actual imports, then opt into eslint-plugin-* if installed.
@@ -572,6 +614,9 @@ run_check() {
     local count sev_label
     count=$(printf '%s\n' "$output" | wc -l | tr -d ' ')
     total_hits=$((total_hits + count))
+    # Remember which pattern IDs actually fired, so the closing summary can separate the
+    # findings a lint rule could enforce on every commit from the ones only a reviewer catches.
+    hit_pattern_ids="$hit_pattern_ids $check_id"
     sev_label="[$severity]"
     if [[ "$flags" == *",triage,"* ]]; then
       # Documented severity is unchanged, but grep alone cannot confirm the context that
@@ -669,6 +714,37 @@ printf '\nScope filter: %s out-of-scope file(s) skipped (pattern hits in files w
 rm -rf "$SCOPE_STATE_DIR"
 
 printf '\nSummary: %s total hit(s), %s P0, %s P1/P2 heuristic, %s LLM-triage; %s AST hit(s).\n' "$total_hits" "$p0_hits" "$p1_hits" "$llm_triage_hits" "${ast_total:-0}"
+
+# Separate what a lint rule could enforce from what only a review can catch. Most of this
+# catalog has no ESLint equivalent at all — saying so turns the report into a decision:
+# enable a rule once for the mechanical slice, keep reviewing for the rest.
+if [[ -n "$hit_pattern_ids" ]]; then
+  _lintable="" _reviewonly=""
+  for _id in $(printf '%s\n' $hit_pattern_ids | sort -u); do
+    case "$_id" in
+      '#7')  _lintable="$_lintable $_id(playwright/no-focused-test, mocha/no-exclusive-tests)" ;;
+      '#9')  _lintable="$_lintable $_id(playwright/no-wait-for-timeout)" ;;
+      '#9b') _lintable="$_lintable $_id(cypress/no-unnecessary-waiting)" ;;
+      '#9c') _lintable="$_lintable $_id(playwright/no-networkidle)" ;;
+      '#15'|'#16') _lintable="$_lintable $_id(playwright/missing-playwright-await)" ;;
+      '#8a') _lintable="$_lintable $_id(playwright/no-unused-locators)" ;;
+      '#4f') _lintable="$_lintable $_id(playwright/no-unnecessary-assertions, partial)" ;;
+      # Rules that exist upstream but are NOT in the recommended preset — naming them is the
+      # actionable part, since the project has to opt in explicitly for lint to catch these.
+      '#5a') _lintable="$_lintable $_id(playwright/no-conditional-expect, opt-in)" ;;
+      '#5b') _lintable="$_lintable $_id(playwright/no-force-option or cypress/no-force, opt-in)" ;;
+      '#6')  _lintable="$_lintable $_id(playwright/no-eval, opt-in, partial)" ;;
+      '#17') _lintable="$_lintable $_id(playwright/no-element-handle, opt-in, partial)" ;;
+      *) _reviewonly="$_reviewonly $_id" ;;
+    esac
+  done
+  if [[ -n "$_lintable" ]]; then
+    printf '\nEnforceable by a lint rule (fix once in your ESLint config, caught on every commit):\n %s\n' "$_lintable"
+  fi
+  if [[ -n "$_reviewonly" ]]; then
+    printf '\nNo ESLint rule expresses these — they need this review (or a human) every time:\n %s\n' "$_reviewonly"
+  fi
+fi
 
 case "$FAIL_ON" in
   none)
