@@ -49,6 +49,31 @@ Silent passes are not the only way generated tests go wrong. Models also ignore 
 3. generate better Playwright coverage when a flow is missing,
 4. debug failed Playwright/Cypress reports into root-cause fixes.
 
+## Methodology
+
+Generating a test is easy. Generating a test that **fails when the product is wrong** is the harder problem. An LLM can produce valid syntax, execute the intended flow, and still finish green because the assertion is always truthy, checks the wrong state, or never verifies the outcome.
+
+This is not only a hypothetical failure mode. [Test Smells in LLM-Generated Unit Tests](https://arxiv.org/abs/2410.10628) analyzed 20,505 generated tests across several model families. Research on [strong LLM-generated test oracles](https://arxiv.org/abs/2405.03786) treats assertion quality—not mere execution—as the core of bug detection. An [industrial Cypress case study](https://doi.org/10.1109/AST66626.2025.00007) likewise found generated acceptance tests that needed regeneration or had to be discarded for major issues.
+
+That evidence motivates a review-first method rather than trust in a green run:
+
+1. Name the behavior the test is supposed to prove before writing or accepting the assertion.
+2. Prefer framework-native, retry-aware assertions that can fail for the right reason.
+3. Reject always-truthy assertions, missing post-state checks, and name↔assertion mismatches even when CI is green.
+4. Use deterministic checks for mechanical smells and LLM review only for semantic judgment calls.
+
+### Further evidence and practice
+
+- **Production methodology:** Meta's [LLM-based test improvement work](https://arxiv.org/abs/2402.09171) filters generated tests for measurable improvement instead of accepting them as-is.
+- **Assertion reliability:** [ChatGPT vs SBST](https://doi.org/10.1109/TSE.2024.3382365) evaluates assertion correctness separately from coverage and reports unreliable generated expected values.
+- **Practical falsification:** [Your green tests are lying](https://dev.to/dubcrab/your-green-tests-are-lying-5h5m) demonstrates assertion inversion: if reversing an assertion still leaves the test green, the test is not proving its claim.
+- **Practitioner reports:** Playwright practitioners independently describe the same weak-green-test problem ([David Kirwan](https://www.linkedin.com/posts/davidjkirwan_most-ai-generated-playwright-tests-are-not-activity-7436406467827527680-vy32), [Michal Jarczewski](https://www.linkedin.com/posts/michal-jarczewski_your-ai-generated-test-is-green-that-does-activity-7475305026672885760-qKF8), [Aston Cook](https://www.linkedin.com/posts/aston-cook_save-this-if-your-playwright-tests-pass-when-activity-7473185238395797504-_ag4)). These are practitioner signals, not academic evidence.
+- **Broader interest:** [Gen AI Promised Perfect Tests. Here's What Actually Happened](https://www.youtube.com/watch?v=TjTygGqP5JQ) had 74,797 views as of 2026-07-28. The count is a volatile interest signal, not evidence of correctness.
+- **Framework basis:** [Playwright assertions](https://playwright.dev/docs/test-assertions) and [Cypress retry-ability](https://docs.cypress.io/app/core-concepts/retry-ability) provide the native contracts behind the checks.
+- **Runtime precedents:** [`playwright-mutation-gate`](https://github.com/VladyslavDmitriiev/playwright-mutation-gate) demonstrates assertion/behavior mutation, while [`ai-qa-pipeline`](https://github.com/VladyslavDmitriiev/ai-qa-pipeline) demonstrates independent writer/judge roles, bounded repair, scratch candidates, and post-debug review.
+- **Skill-effect measurement:** `scripts/evals/run-behavioral-evals.py` compares repeated `with_skill` and `without_skill` runs, reports per-case lift, and marks saturated baselines. Live model runs are opt-in; the harness is not a claim of general precision/recall or cross-model superiority.
+- **Dependency-free adoption:** e2e-skills reimplements the applicable semantics as local Playwright/Cypress rules and V1–V6 verification contracts. It does not require those projects, ESLint plugins, package installation, or `npx`; existing project-native runners and rules are reused when present.
+
 ## See it run
 
 A Playwright test that passes CI but checks nothing — a `Locator` is never undefined, and `.not.toBeNull()` holds whether the element rendered or not:
@@ -118,6 +143,8 @@ Alternative — Codex plugin marketplace:
 codex plugin marketplace add voidmatcha/e2e-skills
 codex plugin add e2e-skills@voidmatcha
 ```
+
+When a Codex host exposes native role routing, the skills can use its built-in `verifier`/`debugger` subagent roles without installing custom agents; the skills preserve the same inline verdict when native delegation is unavailable. A source checkout also includes stricter named agents under `.codex/agents/`. Contributors who want those names available while reviewing other repositories can install them globally with `bash scripts/dev/install-codex-agents.sh`, then restart Codex.
 
 ### All other agents (Cursor, OpenCode, Gemini CLI, and more)
 
@@ -225,7 +252,7 @@ Total: 3 P0, 0 P1, 0 P2 in 24 spec files.
 
 The scanner is intentionally deterministic. It catches the high-confidence subset first; the Agent Skill handles intent-aware review around the scanner findings.
 
-> **Network behavior.** The scanner reads only the files you point it at and uploads nothing. For its precision tier it prefers project-local lint tools and, when absent, auto-downloads pinned public packages (`eslint`, `eslint-plugin-playwright`/`-cypress`, `ast-grep`) via `npx`. Set `E2E_SMELL_NO_ESLINT_DOWNLOAD=1` and `E2E_SMELL_NO_AST_GREP_DOWNLOAD=1` to run fully offline. Full disclosure: [SECURITY.md](./SECURITY.md).
+> **Network behavior.** The scanner reads only the files you point it at and uploads nothing. When present, it invokes the project's local ESLint and Playwright/Cypress plugins directly; it does not auto-download packages by default. The dependency-free regex/AST fallback remains available offline. Legacy `npx` downloads can be explicitly enabled by clearing `E2E_SMELL_NO_ESLINT_DOWNLOAD` and `E2E_SMELL_NO_AST_GREP_DOWNLOAD`. Full disclosure: [SECURITY.md](./SECURITY.md).
 
 ## Skill 1: `playwright-test-generator` — Test Generation
 
@@ -315,7 +342,7 @@ Tests work but mislead developers, waste CI time, or set up future regressions.
 |---|---------|--------|-------|
 | 6 | **Raw DOM queries** | `document.querySelector` in `evaluate()` | Use framework locator/query APIs (`locator` / `cy.get`) |
 | 9 | **Hard-coded sleep** | `waitForTimeout(2000)` / `cy.wait(2000)` / `waitForLoadState('networkidle')` | Rely on framework auto-wait; use condition-based waits |
-| 10 | **Flaky test patterns** | `items.nth(2)` without comment; `test.describe.serial()`; unscoped `getByRole`/`getByLabel`/`getByPlaceholder` name without `exact: true` (10c) | Use `data-testid` or role selectors; replace serial with self-contained tests; scope the accessor to a container or pass `exact: true` |
+| 10 | **Flaky test patterns** | `items.nth(2)` without comment; `test.describe.serial()`; unscoped accessible-name substring (10c); Cypress async callbacks, assigned `cy` commands, or continued action chains (10d–10f) | Use stable/scoped locators and self-contained tests; keep Cypress work in its command chain, do not assign Chainables as values, and re-query after actions |
 | 13 | **Inconsistent POM usage** | POM imported but spec uses raw `page.fill`/`page.click` for POM-owned actions | Route all interactions through the POM so UI changes update in one place |
 | 14 | **Hardcoded credentials** | `loginPage.login('demo-admin', '<literal-password>')` in test code | Use `process.env.TEST_USER`, Playwright config secrets, or test data fixtures |
 | 17 | **Direct `page.click(selector)` API** | `page.click('#submit')` / `page.fill('#input', 'text')` skips the Locator layer | Use `page.locator(selector).click()` for auto-wait and better error messages |

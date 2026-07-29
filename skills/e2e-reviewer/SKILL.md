@@ -4,7 +4,7 @@ description: 'Use when reviewing Playwright or Cypress E2E specs or Page Objects
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.9.1"
+  version: "1.10.0"
 ---
 
 # E2E Test Scenario Quality Review
@@ -28,6 +28,10 @@ Before running checks, determine the framework by grepping for **actual import s
 
 When `.spec.ts` files exist without `@playwright/test` or `cy.` imports, inspect 1-2 of them: presence of `TestBed`/`describe()` + `it()` without `page.goto`/`cy.visit` indicates Jest unit tests → **out of e2e-reviewer scope**.
 
+Also inventory existing E2E rules before scanning: testing sections in `AGENTS.md`/`CLAUDE.md`/`CONTRIBUTING.md`, package scripts, ESLint config, framework config, CI workflows, fixtures/POMs/custom commands, and existing mutation/coverage/a11y/visual/fault-injection tooling. Read `references/verification-rules.md` for merge precedence and V1–V6. Existing project tooling is evidence to reuse, never a package-install requirement.
+
+For upstream methodology provenance and the include/exclude boundary, read `references/upstream-rule-sources.md`. Reimplement semantics under the local taxonomy; never copy or require plugin code.
+
 **Skip framework-irrelevant checks:** If Playwright, skip Cypress-specific greps (`#9b cy.wait(ms)`, `#3b Cypress uncaught:exception`). If Cypress, skip Playwright-specific greps (`#8a dangling page.locator`, `#10b describe.serial`, `#15 missing await on expect`, `#16 missing await on action`, `#17 direct page action API`, `#18 expect.soft overuse`). This eliminates noise in Phase 1 output.
 
 ---
@@ -42,10 +46,7 @@ bash <skill-base>/scripts/scan.sh <test-dir>
 
 `<skill-base>` is the directory that contains this SKILL.md — on Claude Code the Skill tool's "Base directory" output (`~/.claude/skills/e2e-reviewer/`), on Codex or the `skills` CLI `~/.agents/skills/e2e-reviewer/`. Auto-detect `<test-dir>` from project structure (common: `e2e/`, `tests/`, `__tests__/`, `spec/`, `cypress/e2e/`).
 
-The scanner internally uses, in priority order:
-1. **`eslint-plugin-playwright` / `eslint-plugin-cypress`** — when locally installed in the target project (AST-based, most accurate, lowest FP rate)
-2. **`ast-grep`** — Tree-sitter-backed for the FP-prone assertion patterns (`#15` missing-await, `#4c-4e` one-shot state/text/count, `#4f` Locator-as-truthy)
-3. **`ripgrep` regex** — universal fallback covering all remaining patterns
+The scanner's bundled checks are the dependency-free baseline. Locally installed ESLint/ast-grep tooling may add precision, but the scanner must not auto-download it. If the project documents its own E2E lint command, run that command separately and merge equivalent results rather than reporting duplicates.
 
 Output is grouped per pattern ID (`#3`, `#4a`, `#15`, etc.) with `file:line:matched-line`. See `references/grep-patterns.md` for the meaning of each ID.
 
@@ -54,16 +55,18 @@ Output is grouped per pattern ID (`#3`, `#4a`, `#15`, etc.) with `file:line:matc
 - **Tier 1 is the project's linter.** When the project has a flat config (`eslint.config.mjs|js|cjs`), it is layered on top of the baseline, so a deliberate `'playwright/no-focused-test': 'off'` genuinely silences that rule here. Severity edits (`error` ↔ `warn`) are ignored — severity is this skill's to assign (P0/P1). A legacy `.eslintrc` cannot be imported from an ESM flat config, so those projects get the `recommended` preset and their disables are NOT honored; the scanner says so in its output.
 - **Tiers 2 and 3 are this reviewer.** They ask *"can this test fail?"*, not *"does your lint policy allow it?"*, so they keep reporting regardless of what the project disabled. This is deliberate: it keeps the finding count reproducible across hosts and independent of local policy. A pattern the project turned off in ESLint can therefore still surface from Tier 2/3 — when reporting one, note that the project has it disabled at lint level, and let the reader decide.
 
+Deduplicate equivalent results into one finding with both provenance sources. Project rules may strengthen generation/style conventions, but cannot downgrade a P0 silent-pass rule. P1 needs a concrete local justification to suppress; P2/style follows the project's documented convention. A project-lint clean result never suppresses semantic checks with no rule equivalent.
+
 Only a handful of patterns are affected either way: `#7`, `#9`, `#15`/`#16` (Playwright) and `#7`, `#9b` (Cypress) map 1:1 onto an ESLint rule. `#4f` is only partly covered upstream — this skill's own detection is broader — and the remaining ~19 patterns have no ESLint equivalent at all, so nothing in a project config can disable them.
 
-**Companion CI enforcement (recommend when relevant).** The mechanical always-pass class (`#4f` — `expect(locator).toBeDefined()` / `.toBeTruthy()` / `.not.toBeNull()`) is decidable by a single-file AST rule, so it belongs at commit/CI-time, not only agent-time. For **Playwright**, this smell is now covered by the official [`eslint-plugin-playwright`](https://github.com/mskelton/eslint-plugin-playwright) rule [`no-unnecessary-assertions`](https://github.com/mskelton/eslint-plugin-playwright/blob/main/docs/rules/no-unnecessary-assertions.md) (contributed upstream from this project in [#470](https://github.com/mskelton/eslint-plugin-playwright/pull/470); shipped in **v2.11.0**, and enabled by its `recommended` config — so `eslint-plugin-playwright@>=2.11.0` catches this class with no extra setup). For **Cypress**, [`eslint-plugin-cypress-silent-pass`](https://github.com/voidmatcha/eslint-plugin-cypress-silent-pass) still provides the equivalent autofixable rule. When a project shows `#4f` hits, recommend the matching plugin/rule so that slice is caught deterministically on every commit — leaving this skill to focus on the semantic patterns no AST rule can decide.
+**Companion CI enforcement (only when already present or explicitly requested).** The mechanical always-pass class (`#4f`) is also covered for Playwright by [`eslint-plugin-playwright/no-unnecessary-assertions`](https://github.com/mskelton/eslint-plugin-playwright/blob/main/docs/rules/no-unnecessary-assertions.md) and for Cypress by [`eslint-plugin-cypress-silent-pass`](https://github.com/voidmatcha/eslint-plugin-cypress-silent-pass). Reuse those rules when the project already owns them; do not make installation a review prerequisite. The bundled scanner and semantic review remain load-bearing on every host.
 
 **Tier scoping note:** Tier 2's `sg-4f` deliberately also matches RTL `getBy*().toBeTruthy()` in unit tests — that surface gets the jest-dom canonical fix from 4.1, not a P0 label. Severity classification of #4f stays with Phase 2 (Locator subject = P0; RTL = advisory). Tier 2 rules skip vendored/build artifacts via per-rule `ignores`.
 
-**Deterministic mode (cross-host convergence contract):** different hosts (Claude Code, Codex, etc.) must produce comparable findings on the same repo. Tier 1/2 availability varies with the environment (local plugin installs, npx download policy, watchdog), which changes the raw hit set. For a comparable review, invoke the scanner in the canonical form and SAY SO in the report:
+**Deterministic mode (cross-host convergence contract):** different hosts (Claude Code, Codex, etc.) must produce comparable findings on the same repo. Downloads are disabled by default; locally installed Tier 1/2 tools may add precision, while bundled Tier 3 remains the canonical finding baseline. Invoke the scanner normally and say which tiers ran:
 
 ```bash
-E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 bash <skill-base>/scripts/scan.sh <test-dir>
+bash <skill-base>/scripts/scan.sh <test-dir>
 ```
 
 (Tier 3 regex always runs and is the deterministic baseline; Tier 1/2 add precision when locally installed but never subtract findings — the exit-code gate guarantees a crashed tier cannot suppress Tier 3.) The report MUST state which tiers actually ran ("Tier coverage: 3 only" / "1+2+3").
@@ -158,7 +161,7 @@ This is much faster than grepping each member individually. Classify results: US
 
 ### Verifying findings (delegation-aware)
 
-Before a Phase 2 finding is reported, verify it survives its real context — refute first. If the `e2e-finding-verifier` subagent is available (registered by a Claude Code plugin install, or — on Codex — a native `.codex/agents/` agent when those TOMLs are on the host such as `~/.codex/agents/` and the host can spawn named agents), delegate one finding per call, in parallel: pass the pattern ID, `file:line`, the flagged snippet, and the **absolute** path to `<skill-base>/references/pattern-reference.md` — the subagent's working directory is the project under review, so it cannot resolve a repo-relative `skills/...` path and must be handed the resolved location. It reads the surrounding spec, project config, and that pattern contract, then returns CONFIRMED / FALSE-POSITIVE / NEEDS-CONTEXT. Drop every finding it refutes. If the subagent is not available (a `skills` CLI copy install, or any host or session with no registered delegated worker), run the same refute-first procedure inline against the same `references/pattern-reference.md` contract. The verdict must be identical either way — never report a finding a refutation attempt would eliminate.
+Before a Phase 2 finding is reported, verify it survives its real context — refute first. Prefer the named `e2e-finding-verifier` when registered by a Claude Code plugin or by a Codex `.codex/agents/` / `~/.codex/agents/` TOML. If that custom agent is absent but Codex exposes native role routing, delegate the same single-finding payload to the native `verifier` role; named registration is an optimization, not a correctness dependency. Pass the pattern ID, `file:line`, flagged snippet, repo root, and the **absolute** path to `<skill-base>/references/pattern-reference.md` — every delegated working directory is the project under review, so a repo-relative `skills/...` path is invalid. Require CONFIRMED / FALSE-POSITIVE / NEEDS-CONTEXT with evidence. If neither named nor native delegation is available, run the identical refute-first procedure inline against that same contract. Drop refuted findings; the verdict must be identical on all three paths.
 
 ---
 
@@ -238,6 +241,7 @@ Present findings grouped by severity:
 ### `[test name or POM method]`
 - **Issue:** [description]
 - **Fix:** [name change / assertion addition / merge / deletion]
+- **Verification:** [smallest applicable V1–V6 proof from `references/verification-rules.md`, or `N/A`; state `recommended` unless an actual command/result proves it ran]
 - **§4.1 row:** [REQUIRED whenever **Code:** is present — quote the AVOID → USE row for this pattern verbatim from `references/applying-fixes.md`, or write `no row (judgement call)` if the table has none]
 - **Code:**
   ```typescript
@@ -288,7 +292,7 @@ This table is a **numerical index for scanning** — pattern # → severity, pha
 | 7 | Focused Test Leak | P0 | grep | `test.only(`, `it.only(`, `describe.only(` — no `// JUSTIFIED:` exemption |
 | 8 | Missing Assertion | P0 | grep | 8a: `page.locator(...)` standalone; 8b: `await el.isVisible();` standalone — nothing ever asserts |
 | 9 | Hard-coded Sleeps | P1 | grep | `waitForTimeout()`, `cy.wait(ms)`, `waitForLoadState('networkidle')` (#9c) |
-| 10 | Flaky Test Patterns | P1 | LLM+grep | `nth()` without comment; `test.describe.serial()`; unscoped `getByRole`/`getByLabel`/`getByPlaceholder` name without `exact: true` (#10c) |
+| 10 | Flaky Test Patterns | P1 | LLM+grep | `nth()` without comment; `test.describe.serial()`; unscoped accessible-name substring (#10c); Cypress async callback/assigned command/unsafe action chain (#10d–#10f) |
 | 11 | YAGNI + Zombie Specs | P2 | LLM | Unused POM member; empty wrapper; single-use Util; zombie spec file |
 | 12 | Missing Auth Setup | P0 | LLM | Spec navigates to protected route without login/storageState/auth beforeEach |
 | 13 | Inconsistent POM Usage | P1 | LLM | POM imported but spec uses raw `page.fill`/`page.click` for POM-encapsulated actions |

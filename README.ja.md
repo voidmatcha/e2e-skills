@@ -49,6 +49,31 @@ AI エージェントは E2E テストを素早く生成してくれます。た
 3. フローのカバレッジが欠けていれば、より良い Playwright テストを生成する
 4. 失敗した Playwright/Cypress のレポートをデバッグし、根本原因の修正につなげる
 
+## 方法論
+
+テストを生成するのは簡単です。製品が間違っているときに**正しく失敗するテスト**を作ることの方が困難です。LLM は構文的に正しく意図したフローを実行していても、常に真になる assertion、誤った状態の検証、結果検証の欠落によって green で終わるテストを生成できます。
+
+これは仮説上のリスクだけではありません。[Test Smells in LLM-Generated Unit Tests](https://arxiv.org/abs/2410.10628) は複数のモデル群が生成した 20,505 件のテストを分析しています。[強い LLM-generated test oracle の研究](https://arxiv.org/abs/2405.03786) は、単なる実行ではなく assertion の品質を bug detection の中核として扱います。[Cypress の産業事例研究](https://doi.org/10.1109/AST66626.2025.00007) でも、生成された acceptance test の一部は再生成が必要、または重大な問題により破棄されました。
+
+そのため、このスキル群は green run をそのまま信頼せず、review-first の方法を採ります。
+
+1. テストを書く、または受け入れる前に、そのテストが証明すべき behavior を名付けます。
+2. 正しい理由で失敗できる framework-native、retry-aware な assertion を優先します。
+3. CI が green でも、always-truthy assertion、欠落した post-state check、name↔assertion mismatch は拒否します。
+4. 機械的に判定できる smell は deterministic check で検出し、semantic judgment が必要な箇所だけ LLM review を使います。
+
+### 追加の根拠と実務資料
+
+- **本番環境の方法論:** Meta の [LLM-based test improvement 研究](https://arxiv.org/abs/2402.09171) は、生成テストをそのまま採用せず、測定可能な改善でフィルタします。
+- **Assertion の信頼性:** [ChatGPT vs SBST](https://doi.org/10.1109/TSE.2024.3382365) は coverage と assertion correctness を別々に評価し、誤って生成された expected value の事例を報告しています。
+- **実践的な反証:** [Your green tests are lying](https://dev.to/dubcrab/your-green-tests-are-lying-5h5m) は、assertion を反転しても green のままなら、そのテストは主張を証明していないという方法を示します。
+- **実務家からの報告:** Playwright の実務家も同じ weak-green-test 問題を独立して指摘しています（[David Kirwan](https://www.linkedin.com/posts/davidjkirwan_most-ai-generated-playwright-tests-are-not-activity-7436406467827527680-vy32)、[Michal Jarczewski](https://www.linkedin.com/posts/michal-jarczewski_your-ai-generated-test-is-green-that-does-activity-7475305026672885760-qKF8)、[Aston Cook](https://www.linkedin.com/posts/aston-cook_save-this-if-your-playwright-tests-pass-when-activity-7473185238395797504-_ag4)）。これらは学術的証拠ではなく practitioner signal です。
+- **関心度のシグナル:** [Gen AI Promised Perfect Tests. Here's What Actually Happened](https://www.youtube.com/watch?v=TjTygGqP5JQ) は 2026-07-28 時点で 74,797 views でした。変動する view count は正しさの証拠ではなく、関心度のシグナルにすぎません。
+- **フレームワーク上の根拠:** [Playwright assertions](https://playwright.dev/docs/test-assertions) と [Cypress retry-ability](https://docs.cypress.io/app/core-concepts/retry-ability) が検査基準の native contract を提供します。
+- **Runtime の先行事例:** [`playwright-mutation-gate`](https://github.com/VladyslavDmitriiev/playwright-mutation-gate) は assertion/behavior mutation を、[`ai-qa-pipeline`](https://github.com/VladyslavDmitriiev/ai-qa-pipeline) は独立した writer/judge、制限付き repair、scratch candidate、post-debug review を示しています。
+- **スキル効果の測定:** `scripts/evals/run-behavioral-evals.py` は `with_skill` と `without_skill` を繰り返し比較し、ケースごとの lift と baseline の飽和を報告します。実モデルの実行は opt-in であり、一般的な precision/recall やモデル間の優位性を主張するものではありません。
+- **依存関係なしの採用:** e2e-skills は適用可能な意味をローカルの Playwright/Cypress ルールと V1–V6 検証契約として独立実装します。これらのプロジェクト、ESLint plugin、package install、`npx` は必須ではなく、既存の project-native runner とルールがあれば再利用します。
+
 ## 動作を見る
 
 CI は通るのに何も検証していない Playwright テストの例です。`Locator` は決して undefined にならず、`.not.toBeNull()` は要素が描画されていてもいなくても成立します。
@@ -118,6 +143,8 @@ npx skills add voidmatcha/e2e-skills --skill '*' -g -a claude-code -a codex
 codex plugin marketplace add voidmatcha/e2e-skills
 codex plugin add e2e-skills@voidmatcha
 ```
+
+Codex ホストが native role routing を提供する場合、custom agent を追加インストールせずに組み込みの `verifier` / `debugger` サブエージェント役割を利用でき、native delegation がない環境でもスキルの inline fallback が同じ判定を維持します。ソース checkout には `.codex/agents/` のより厳格な named agent も含まれます。他のリポジトリでもその名前を使うコントリビューターは、`bash scripts/dev/install-codex-agents.sh` でグローバルに登録してから Codex を再起動してください。
 
 ### その他のエージェント (Cursor, OpenCode, Gemini CLI など)
 
@@ -225,7 +252,7 @@ Total: 3 P0, 0 P1, 0 P2 in 24 spec files.
 
 このスキャナーはあえて決定論的に作ってあります。確度の高いサブセットはスキャナーが拾い、その結果を踏まえた意図面のレビューは Agent Skill が引き受けます。
 
-> **ネットワーク動作について。** スキャナーは指定されたファイルだけを読み取り、何もアップロードしません。精度ティアではプロジェクトローカルの lint ツールを優先し、存在しない場合はバージョン固定された公開パッケージ（`eslint`、`eslint-plugin-playwright`/`-cypress`、`ast-grep`）を `npx` 経由で自動ダウンロードします。`E2E_SMELL_NO_ESLINT_DOWNLOAD=1` と `E2E_SMELL_NO_AST_GREP_DOWNLOAD=1` を設定すれば完全にオフラインで動作します。詳細な開示は [SECURITY.md](./SECURITY.md) を参照してください。
+> **ネットワーク動作について。** スキャナーは指定されたファイルだけを読み取り、何もアップロードしません。プロジェクトに存在する場合はローカルの ESLint と Playwright/Cypress plugin を直接実行し、デフォルトではパッケージを自動ダウンロードしません。依存関係のない regex/AST fallback でオフライン実行できます。従来の `npx` ダウンロードは `E2E_SMELL_NO_ESLINT_DOWNLOAD` と `E2E_SMELL_NO_AST_GREP_DOWNLOAD` を空にして明示的に有効化できます。詳細な開示は [SECURITY.md](./SECURITY.md) を参照してください。
 
 ## スキル 1: `playwright-test-generator` — テスト生成
 
@@ -315,7 +342,7 @@ We have coverage but bugs still slip through
 |---|---------|--------|-------|
 | 6 | **生の DOM クエリ** | `evaluate()` 内の `document.querySelector` | フレームワークのロケーター/クエリ API（`locator` / `cy.get`）を使う |
 | 9 | **ハードコードされたスリープ** | `waitForTimeout(2000)` / `cy.wait(2000)` / `waitForLoadState('networkidle')` | フレームワークの自動待機に任せ、条件ベースの待機を使う |
-| 10 | **フレーキーテストのパターン** | コメントなしの `items.nth(2)`; `test.describe.serial()`; `exact: true` のないスコープ未指定の `getByRole`/`getByLabel`/`getByPlaceholder` の name（10c） | `data-testid` やロールセレクターを使い、serial は自己完結型のテストに置き換える; アクセサーをコンテナにスコープするか `exact: true` を渡す |
+| 10 | **フレーキーテストのパターン** | コメントなしの `items.nth(2)`; `test.describe.serial()`; scope されていない accessible-name substring（10c）; Cypress の async callback、代入された `cy` command、action 後に続く chain（10d–10f） | 安定して scope された locator と自己完結型テストを使い、Cypress 処理は command chain 内に置き、Chainable を値として代入せず、action 後は再 query する |
 | 13 | **一貫しない POM 利用** | POM をインポートしているのに、POM が担うべき操作を生の `page.fill`/`page.click` で行っている | すべての操作を POM 経由にし、UI 変更時の修正箇所を一箇所にまとめる |
 | 14 | **ハードコードされた認証情報** | テストコード内の `loginPage.login('demo-admin', '<literal-password>')` | `process.env.TEST_USER`、Playwright config のシークレット、またはテストデータフィクスチャを使う |
 | 17 | **直接の `page.click(selector)` API** | `page.click('#submit')` / `page.fill('#input', 'text')` は Locator 層を素通りする | 自動待機とわかりやすいエラーメッセージのために `page.locator(selector).click()` を使う |

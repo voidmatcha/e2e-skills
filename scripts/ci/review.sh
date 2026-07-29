@@ -677,6 +677,24 @@ for rel in (".codex/agents/e2e-finding-verifier.toml", ".codex/agents/e2e-failur
         if NEW_FCODE.search(probe):
             errors.append(f"{rel}: F-codes are frozen at F1–F15; found a new F16+ code")
 
+# SP6 — a skills-CLI install does not register custom TOMLs. Latest Codex can
+# still preserve independent review through standard native roles, so named
+# agents must be an optimization rather than the only delegation path.
+if "native `verifier` role" not in reviewer or "named registration is an optimization" not in reviewer:
+    errors.append(
+        "skills/e2e-reviewer/SKILL.md: must fall back from the named agent to "
+        "the native verifier role before the inline fallback"
+    )
+for rel, text in (
+    ("skills/playwright-debugger/SKILL.md", pw_dbg),
+    ("skills/cypress-debugger/SKILL.md", cy_dbg),
+):
+    if "native `debugger` role" not in text or "named registration is an optimization" not in text:
+        errors.append(
+            f"{rel}: must fall back from the named classifier to the native "
+            "debugger role before the inline fallback"
+        )
+
 if errors:
     for error in errors:
         print(error, file=sys.stderr)

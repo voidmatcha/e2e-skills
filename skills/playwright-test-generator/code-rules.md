@@ -1,5 +1,7 @@
 # Code Generation Rules
 
+Generated code remains a candidate until it passes `verification-rules.md`. The writer must not approve its own candidate, and a repair may not change the approved primary outcome, expected value, request proof, scenario count, or test enablement. Reuse repository-native commands and existing E2E rules; never add a dependency merely to verify generated code.
+
 ## Hard rules (always)
 
 Non-negotiable for every generated spec, regardless of project shape:

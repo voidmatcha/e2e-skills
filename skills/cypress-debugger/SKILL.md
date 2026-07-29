@@ -4,7 +4,7 @@ description: 'Use this skill to find the root cause of a Cypress end-to-end test
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.9.1"
+  version: "1.10.0"
 ---
 
 # Cypress Failed Test Debugger
@@ -150,7 +150,7 @@ failures.forEach(([,name,msg], i) => console.log('FAIL', suiteFile, '/', classna
 
 Use Phase 1 output (error message + duration) to classify. **Most failures are identifiable here — only go to Phase 3 if still unclear.**
 
-**Classifier delegation (delegation-aware):** if the `e2e-failure-classifier` subagent is available (registered by a Claude Code plugin install, or — on Codex — a native `.codex/agents/` agent when those TOMLs are on the host such as `~/.codex/agents/` and the host can spawn named agents), delegate one failure per call, in parallel — pass the failing test name, the report excerpt (error, stack, attempt/screenshot signal), and the **absolute** path to this skill's `SKILL.md` (the directory containing this SKILL.md + `/SKILL.md`; on Claude Code that is the Skill tool's "Base directory" output, on Codex/`skills` CLI it is under `~/.agents/skills/`) — the subagent's working directory is the project under debug, so it cannot resolve a repo-relative `skills/...` path and must be handed the resolved location. It loads the F1–F15 table from that file, reads the spec and config, and returns the F-code with confidence, evidence, and a fix. If the subagent is not available (a `skills` CLI copy install, or any host or session with no registered delegated worker), classify inline with the same table and steps below. The F-code must be identical either way.
+**Classifier delegation (delegation-aware):** prefer the named `e2e-failure-classifier` when registered by a Claude Code plugin or by a Codex `.codex/agents/` / `~/.codex/agents/` TOML. If that custom agent is absent but Codex exposes native role routing, delegate the same single-failure payload to the native `debugger` role; named registration is an optimization, not a correctness dependency. Pass the failing test name, report excerpt (error, stack, attempt/screenshot signal), repo root, and the **absolute** path to this skill's `SKILL.md` (the directory containing this SKILL.md + `/SKILL.md`; on Codex/`skills` CLI it is under `~/.agents/skills/`). Every delegated working directory is the project under debug, so a repo-relative `skills/...` path is invalid. Require the F-code with confidence, evidence, and a fix. If neither named nor native delegation is available, classify inline with the same F1–F15 table and steps below. The F-code must be identical on all three paths.
 
 | # | Category | Signals | Review Pattern |
 |---|----------|---------|----------------|
@@ -249,6 +249,20 @@ cat cypress/reports/mochawesome.json | jq '[
 
 **Real product bug vs test bug — decide before proposing any fix.** Not every failure is a flaky test. If the assertion that failed was correctly checking a behavior the app no longer delivers, the test caught a **real regression** — report it as a product bug and do NOT weaken the assertion to make it green. Only relax a test when the assertion itself is wrong (over-broad, racing, or asserting an outdated contract). Weakening a real-regression assertion converts a caught bug into a silent one — the exact P0 failure mode this skill exists to prevent.
 
+**Generated-test repair boundary:** when the failure came from a generated candidate or a verification probe, expected values, the approved primary outcome, assertion target, scenario count, request proof, and test enablement are immutable. Repair only evidence-backed mechanics (selector, retryable command/query strategy, navigation, fixture, setup order, or test data). Never delete/skip the test, remove intercept/alias proof, or accept an optimistic toast in place of a write contract. Return `NOFIX: <evidence>` when the approved contract and observed product behavior disagree. Any repaired candidate requires an independent `e2e-reviewer` pass before completion (V6).
+
+### Verification-rule handoff
+
+Preserve the F1–F15 classification and add the smallest relevant proof recommendation; V-rules do not replace F-codes:
+
+- V2 temporary inversion for supported `.should()`/`expect` assertion shapes.
+- V3 `cy.intercept()` fault injection for response/data dependency questions.
+- V4 intercept alias plus `cy.wait()` request method/URL/body/cardinality proof for writes and optimistic UI.
+- V5 repository-native solo/repeat/suite-context runs for timing, isolation, or retry evidence.
+- V6 independent re-review after any generated-test repair.
+
+Do not install a verifier or require `npx`. Reuse the repository's existing targeted Cypress command and tooling. Label a proof `recommended` unless an actual command/result shows it ran; use `CANNOT_VERIFY` with the exact missing evidence when no safe probe exists.
+
 For each failure, produce a finding in this format:
 
 ```markdown
@@ -257,6 +271,7 @@ For each failure, produce a finding in this format:
 - **Category:** F2 — Selector Broken (#10 Selector Drift)
 - **Error:** `Expected to find element: '.submit-btn', but never found it`
 - **Root Cause:** Button selector too broad after DOM refactor
+- **Verification:** smallest applicable V2–V6 proof (`recommended` unless an actual command/result proves it ran)
 - **Fix:** before/after code showing the concrete change
   ```javascript
   // before

@@ -36,7 +36,7 @@ The standalone scanner only fails CI on P0 findings by default. P1/P2 findings a
 |----|-------|----------------|----------------|
 | #6 | Raw DOM query | `document.querySelector` inside browser evaluation bypasses framework retry and actionability. | Use Playwright locators or Cypress queries. |
 | #9 | Hard-coded sleep (incl. `cy.wait(ms)` #9b, `waitForLoadState('networkidle')` #9c) | Fixed waits are both slow and still racy. | Wait for UI state, URL state, or a specific network response. |
-| #10 | Flaky selector/order pattern | `.nth()`, `.first()`, `.last()`, and serial suites couple tests to DOM/order. | Use role, label, test ID, or self-contained setup. |
+| #10 | Flaky selector/order pattern | `.nth()`, serial suites, unscoped accessible-name substrings, and Cypress async/assigned/continued action chains couple tests to unstable DOM, order, or command-queue state. | Use scoped semantic locators and self-contained setup; keep Cypress work in its command chain and re-query after actions. |
 | #13 | Inconsistent POM usage | Specs bypass a POM that already owns the page, causing duplicate selector maintenance. | Put page interactions behind the existing POM. |
 | #14 | Hardcoded credentials | Public repos leak secrets and private repos become tied to one environment. | Use environment variables, fixtures, or test accounts. |
 | #17 | Direct page action API | `page.click(selector)` and friends give weaker locator semantics and poorer errors. | Use `page.locator(selector).click()` or user-facing locators. |

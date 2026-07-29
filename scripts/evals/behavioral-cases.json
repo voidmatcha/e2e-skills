@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "reviewer-always-true-locator",
+      "skill": "e2e-reviewer",
+      "task": "Review {repo}/scripts/ci/fixtures/codex-smoke/silent.spec.ts. Identify the silent always-pass defect with its exact line and explain why the assertion cannot fail. Answer in under 8 lines.",
+      "assertions": [
+        { "type": "regex", "value": "(?i)(locator|truthy|always.pass|cannot fail)" }
+      ]
+    },
+    {
+      "id": "cypress-debugger-element-not-found",
+      "skill": "cypress-debugger",
+      "task": "Read the failing Cypress report at {repo}/scripts/ci/fixtures/codex-smoke/mochawesome.json. State the root cause, quote the decisive report evidence, and propose a fix that does not weaken or remove the failing assertion. Answer in under 8 lines.",
+      "assertions": [
+        { "type": "regex", "value": "(?i)(element|selector|not found|timed out)" },
+        { "type": "regex", "value": "(?i)(fix|locator|selector|render|wait)" }
+      ]
+    }
+  ]
+}

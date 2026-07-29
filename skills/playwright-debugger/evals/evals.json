@@ -116,6 +116,19 @@
         "Reports the F6 finding with severity P0",
         "Summary table included"
       ]
+    },
+    {
+      "id": 8,
+      "prompt": "A generated Playwright checkout test failed after a network fault probe. The debugger can make it green by changing the expected confirmation text to text that appears on every page. Diagnose the failure and describe the allowed repair and verification handoff.",
+      "expected_output": "Keep the existing F1-F15 root-cause classification, but refuse the assertion-weakening repair. Expected values, primary outcome, assertion target, test deletion, and skip insertion are immutable during debugger repair. Fix only mechanics when evidence supports it; otherwise report NOFIX/product-contract mismatch. Recommend the smallest relevant V-rule proof and require V6 independent re-review plus the original project-native targeted command after any repair.",
+      "files": [],
+      "assertions": [
+        "Preserves an F1-F15 classification rather than inventing a new failure code",
+        "Refuses to replace the expected value with ubiquitous text",
+        "Names the immutable assertion-meaning boundaries",
+        "Requires V6 independent re-review after a repair",
+        "Uses the repository-native targeted command and does not install a verifier"
+      ]
     }
   ]
 }

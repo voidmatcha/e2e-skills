@@ -15,7 +15,7 @@ Detailed specification for the 24 anti-patterns that Phase 1, Phase 2, and Phase
 <!-- Manual index: keep in sync with the SKILL.md Quick Reference table. CI 3b/3c does not validate this block. -->
 ## Pattern index
 
-Navigation aid only — the SKILL.md Quick Reference table and the per-pattern sections below are authoritative for severity; if this table ever disagrees, they win. Find a pattern here, then read its section below. Sub-IDs are documented inside their base block: `#4a–#4i` in `#### 4.`, `#5a`/`#5b` in `#### 5.`, `#8a`/`#8b` in `#### 8.`, `#9b`/`#9c` in `#### 9.`, `#10a`/`#10b`/`#10c` in `#### 10.` (`#4`, `#5`, and `#10` span two severities — the base section carries both).
+Navigation aid only — the SKILL.md Quick Reference table and the per-pattern sections below are authoritative for severity; if this table ever disagrees, they win. Find a pattern here, then read its section below. Sub-IDs are documented inside their base block: `#4a–#4i` in `#### 4.`, `#5a`/`#5b` in `#### 5.`, `#8a`/`#8b` in `#### 8.`, `#9b`/`#9c` in `#### 9.`, `#10a`–`#10f` in `#### 10.` (`#4`, `#5`, and `#10` span two severities — the base section carries both).
 
 | Severity | Pattern IDs |
 |----------|-------------|
@@ -434,6 +434,12 @@ await page.getByRole('navigation').getByRole('link', { name: 'Job', exact: true 
 
 **Cypress equivalent:** `cy.findByRole('link', { name: 'Job' })` (cypress-testing-library) has the same substring default — prefer `{ name: 'Job', exact: true }` or scope with `.within()`.
 
+**10d. Cypress async callback** `[Cypress only]` `[grep + LLM-TRIAGE]` — an `async` test or hook callback that also queues `cy` commands mixes a returned Promise with Cypress's command queue. The bundled scanner recognizes common arrow/function callback starts and confirms `cy.*` in a bounded body window; Phase 2 confirms nested/multi-line callback boundaries. Remove `async`/`await` and keep Cypress work in the command chain; use `cy.then()` for a real Promise boundary. Do not flag a native-Promise-only async callback as this command-queue smell.
+
+**10e. Assigned Cypress command return** `[Cypress only]` — `const value = cy.get(...)` stores a Chainable, not the yielded DOM/application value. The bundled scanner covers same-line declarations, including TypeScript annotations; Phase 2 checks split declarations. Keep dependent assertions in `.then()`/`.should()` or use an alias. Do not flag ordinary application-value assignment or Cypress's synchronous Sinon utilities `cy.spy()`/`cy.stub()`, which intentionally return the created test double.
+
+**10f. Unsafe continued Cypress action chain** `[Cypress only]` `[grep + LLM-TRIAGE]` — an action such as `.click()` or `.type()` is followed by another assertion/action in the same chain. The bundled grep emits high-confidence same-line candidates; Phase 2 must also inspect multi-line chains. Cypress retries queries and assertions but not the action, so the continued chain can retain a detached/stale subject. End the chain and re-query the intended post-action state. Skip when project evidence proves the subject remains stable and the chain is intentionally atomic.
+
 #### 13. Inconsistent POM Usage `[LLM-only]`
 
 **Symptom:** A POM class is imported and used for some actions, but the spec also uses raw `page.fill()` / `page.click()` for operations the POM should encapsulate.
@@ -645,4 +651,3 @@ Two sub-patterns: unused code in Page Objects, and zombie spec files.
 **Scope note:** the guard need not sit on a list/card item — the same failure appears whenever a *container* is gated on a value the test controls indirectly. A results panel wrapped in `@if (result.type === TABLE)` suppresses every control inside it when the fixture produces a different result type, so a test targeting a toolbar button inside that panel fails with "element not found" and looks like infra flake. When a control the test needs is missing, walk up the template to the nearest guard before suspecting the selector.
 
 ---
-

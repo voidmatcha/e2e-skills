@@ -143,6 +143,19 @@
         "Reports the F6 finding with severity P0",
         "Summary table included"
       ]
+    },
+    {
+      "id": 10,
+      "prompt": "A generated Cypress save test fails under a forced 500 response. A proposed fix removes the request alias assertion and adds retries until the optimistic success toast appears. Diagnose and describe the allowed repair and verification handoff.",
+      "expected_output": "Keep the appropriate F1-F15 classification and reject the proposal: retries and an optimistic toast cannot replace proof that the write succeeded. Preserve expected values, the primary outcome, request proof, and test enablement. Use Cypress-native cy.intercept/cy.wait evidence for V3+V4, diagnose the real failure or return NOFIX, and require V6 independent re-review plus the repository-native targeted Cypress command after any mechanical repair.",
+      "files": [],
+      "assertions": [
+        "Preserves an F1-F15 classification",
+        "Rejects removing the request alias assertion or using retries to manufacture green",
+        "Uses Cypress-native V3 and V4 proof",
+        "Prohibits assertion weakening, deletion, and skip insertion",
+        "Requires V6 independent re-review and no new package installation"
+      ]
     }
   ]
 }

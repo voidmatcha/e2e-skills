@@ -10,6 +10,12 @@ set -uo pipefail
 
 ROOT="${1:-.}"
 FAIL_ON="${E2E_SMELL_FAIL_ON:-p0}"
+# The bundled scanner is the load-bearing path. Never download project tooling by
+# default; callers may explicitly opt into the legacy download path by setting either
+# variable to 0. Locally installed tools remain optional precision tiers.
+E2E_SMELL_NO_ESLINT_DOWNLOAD="${E2E_SMELL_NO_ESLINT_DOWNLOAD:-1}"
+E2E_SMELL_NO_AST_GREP_DOWNLOAD="${E2E_SMELL_NO_AST_GREP_DOWNLOAD:-1}"
+export E2E_SMELL_NO_ESLINT_DOWNLOAD E2E_SMELL_NO_AST_GREP_DOWNLOAD
 
 # Eval fixtures contain intentional anti-patterns and are excluded from normal scans,
 # EXCEPT when the scan root itself is inside an evals/files tree (self-testing the fixtures).
@@ -90,23 +96,31 @@ should_skip_pattern() {
 }
 
 # Try the framework's official ESLint plugin (better than our regex for mechanical patterns).
-# Prefers locally installed; falls back to `npx --yes` auto-download when missing (mirrors ast-grep tier).
-# Skip entirely if no Playwright/Cypress import exists in $ROOT or npx isn't on PATH.
+# Prefers locally installed; the bundled regex/semantic rules remain sufficient when missing.
+# Auto-download is disabled by default and exists only as an explicit legacy opt-in.
+# Skip entirely if no Playwright/Cypress import exists in $ROOT. A local ESLint
+# installation is invoked directly; npx is needed only for the explicit legacy
+# download path.
 # Uses a generated FLAT config file (eslint.config.mjs): ESLint v9+ removed --no-eslintrc/--ext and
 # inline-JSON -c. ESLINT_USE_FLAT_CONFIG=true opts v8.21+ local installs into the same path; anything
 # older fails with rc>=2 and we fall through WITHOUT claiming coverage (see exit-code gate below).
 try_eslint() {
   local plugin="$1"; local label="$2"
-  command -v npx >/dev/null 2>&1 || return 1
 
   local plugin_path="$ROOT/node_modules/eslint-plugin-$plugin"
+  local local_eslint="$ROOT/node_modules/.bin/eslint"
   local mode
+  local eslint_bin
   local -a npx_args
-  if [[ -d "$plugin_path" ]]; then
+  if [[ -d "$plugin_path" && -x "$local_eslint" ]]; then
     mode="locally installed"
-    npx_args=(--no-install eslint)
+    eslint_bin="$local_eslint"
+    npx_args=()
   elif [[ "${E2E_SMELL_NO_ESLINT_DOWNLOAD:-}" == "1" ]]; then
     printf '\n[ESLint] %s — eslint-plugin-%s not installed and E2E_SMELL_NO_ESLINT_DOWNLOAD=1 — skipping\n' "$label" "$plugin"
+    return 1
+  elif ! command -v npx >/dev/null 2>&1; then
+    printf '\n[ESLint] %s — local eslint/plugin unavailable and npx is not on PATH — skipping Tier 1; Tier 2/3 cover\n' "$label"
     return 1
   else
     mode="auto-downloaded via npx (set E2E_SMELL_NO_ESLINT_DOWNLOAD=1 to skip)"
@@ -126,6 +140,7 @@ try_eslint() {
       npx_args+=(-p "eslint-plugin-$plugin-silent-pass" -p eslint-plugin-mocha)
     fi
     npx_args+=(eslint)
+    eslint_bin=""
   fi
 
   # Generate the flat config. ESLint v9 loads eslint.config.mjs via ESM import whose module
@@ -153,11 +168,15 @@ EOFRES
   [[ "$plugin" == "cypress" ]] && _want+=("eslint-plugin-mocha")
   local -a _resolve_args
   if [[ "$mode" == "locally installed" ]]; then
-    _resolve_args=(--no-install node)
+    _resolve_args=(node)
   else
     _resolve_args=("${npx_args[@]:0:${#npx_args[@]}-1}" node)   # same -p set, run node instead of eslint
   fi
-  _paths=$( (cd "$ROOT" && npx "${_resolve_args[@]}" "$_cfgd/resolve.cjs" "${_want[@]}") 2>/dev/null | tail -1 )
+  if [[ "$mode" == "locally installed" ]]; then
+    _paths=$( (cd "$ROOT" && node "$_cfgd/resolve.cjs" "${_want[@]}") 2>/dev/null | tail -1 )
+  else
+    _paths=$( (cd "$ROOT" && npx "${_resolve_args[@]}" "$_cfgd/resolve.cjs" "${_want[@]}") 2>/dev/null | tail -1 )
+  fi
   if [[ -z "$_paths" || "$_paths" != "["* ]]; then
     printf '\n[ESLint] %s — could not resolve eslint-plugin-%s (or @typescript-eslint/parser) — skipping Tier 1; Tier 2/3 cover\n' "$label" "$plugin"
     rm -rf "$_cfgd"
@@ -179,7 +198,11 @@ EOFRES
   # eslint-plugin-playwright simply does not enable it instead of erroring "rule not found".
   local _sp_abs="" _sp_paths _sp_imp="" _sp_plg="" _sp_rul=""
   if [[ "$plugin" == "cypress" ]]; then
-    _sp_paths=$( (cd "$ROOT" && npx "${_resolve_args[@]}" "$_cfgd/resolve.cjs" "eslint-plugin-$plugin-silent-pass") 2>/dev/null | tail -1 )
+    if [[ "$mode" == "locally installed" ]]; then
+      _sp_paths=$( (cd "$ROOT" && node "$_cfgd/resolve.cjs" "eslint-plugin-$plugin-silent-pass") 2>/dev/null | tail -1 )
+    else
+      _sp_paths=$( (cd "$ROOT" && npx "${_resolve_args[@]}" "$_cfgd/resolve.cjs" "eslint-plugin-$plugin-silent-pass") 2>/dev/null | tail -1 )
+    fi
   fi
   if [[ "$_sp_paths" == "["* ]]; then
     _sp_abs=$(printf '%s' "$_sp_paths" | sed 's/^\["//; s/"\]$//')
@@ -255,8 +278,13 @@ EOFCFG
   # Run in background and kill after ESLINT_TIMEOUT_SECS (default 300) — macOS has no timeout(1).
   local _outf _pid _waited=0 _cap="${E2E_SMELL_ESLINT_TIMEOUT_SECS:-300}"
   _outf=$(mktemp)
-  ( cd "$ROOT" && ESLINT_USE_FLAT_CONFIG=true npx "${npx_args[@]}" --no-error-on-unmatched-pattern \
-        -c "$_cfg" . ) > "$_outf" 2>&1 &
+  if [[ "$mode" == "locally installed" ]]; then
+    ( cd "$ROOT" && ESLINT_USE_FLAT_CONFIG=true "$eslint_bin" --no-error-on-unmatched-pattern \
+          -c "$_cfg" . ) > "$_outf" 2>&1 &
+  else
+    ( cd "$ROOT" && ESLINT_USE_FLAT_CONFIG=true npx "${npx_args[@]}" --no-error-on-unmatched-pattern \
+          -c "$_cfg" . ) > "$_outf" 2>&1 &
+  fi
   _pid=$!
   while kill -0 "$_pid" 2>/dev/null; do
     sleep 5; _waited=$((_waited + 5))
@@ -451,7 +479,18 @@ file_in_e2e_scope() {
   case "/$f/" in
     */cypress/*) return 0 ;;
   esac
-  rg -q "@playwright/test|from\s+['\"]cypress['\"]|require\(\s*['\"]cypress['\"]|(^|[^A-Za-z0-9_])cy\.[a-z]+\(" "$f" 2>/dev/null
+  rg -q "@playwright/test|from\s+['\"]cypress['\"]|require\(\s*['\"]cypress['\"]|(^|[^A-Za-z0-9_])cy\.[A-Za-z_$][A-Za-z0-9_$]*\(" "$f" 2>/dev/null
+}
+
+file_in_cypress_scope() {
+  local f="$1"
+  case "$(basename "$f")" in
+    *.cy.*) return 0 ;;
+  esac
+  case "/$f/" in
+    */cypress/*) return 0 ;;
+  esac
+  rg -q "from\s+['\"]cypress['\"]|require\(\s*['\"]cypress['\"]|(^|[^A-Za-z0-9_])cy\.[A-Za-z_$][A-Za-z0-9_$]*\(" "$f" 2>/dev/null
 }
 
 # Cached IN/OUT lookup (exact-line grep — space-safe filenames; file appends survive the
@@ -539,6 +578,49 @@ run_check() {
     done <<< "$(printf '%s\n' "$output" | awk -F: '{print $1}' | sort -u)"
     output=$(printf '%s\n' "$output" | awk -F: 'NR==FNR { if ($0 != "") k[$0] = 1; next } k[$1] { print }' "$_scopekeep" -)
     rm -f "$_scopekeep"
+  fi
+
+  # Cypress command-model sub-rules must never classify Playwright's normal async
+  # test callbacks. #10e/#10f include `cy` on the hit line, but keep one shared
+  # file-level guard for all three sub-rules and mixed naming conventions.
+  case "$check_id" in
+    '#10d'|'#10e'|'#10f')
+      if [[ -n "$output" ]]; then
+        local _cf _cypresskeep
+        _cypresskeep=$(mktemp)
+        while IFS= read -r _cf; do
+          [[ -z "$_cf" ]] && continue
+          if file_in_cypress_scope "$_cf"; then printf '%s\n' "$_cf" >> "$_cypresskeep"; fi
+        done <<< "$(printf '%s\n' "$output" | awk -F: '{print $1}' | sort -u)"
+        output=$(printf '%s\n' "$output" | awk -F: 'NR==FNR { if ($0 != "") k[$0] = 1; next } k[$1] { print }' "$_cypresskeep" -)
+        rm -f "$_cypresskeep"
+      fi
+      ;;
+  esac
+
+  # #10d is only a real command-model candidate when the async callback also
+  # queues Cypress commands. The signature grep supplies the callback start;
+  # inspect a bounded body window to drop native-Promise-only async tests.
+  # Phase 2 still confirms callback boundaries for deeply nested bodies.
+  if [[ "$check_id" == '#10d' && -n "$output" ]]; then
+    output=$(printf '%s\n' "$output" | while IFS= read -r _hit; do
+      _hf=${_hit%%:*}
+      _rest=${_hit#*:}
+      _hl=${_rest%%:*}
+      _end=$((_hl + 20))
+      _start=$(sed -n "${_hl}p" "$_hf" 2>/dev/null)
+      # Expression-bodied or fully one-line callbacks end on the hit line. Do
+      # not let a later sibling test's cy.* command leak into this candidate.
+      if ! printf '%s\n' "$_start" | rg -q '(^|[^A-Za-z0-9_])cy\.[A-Za-z_$][A-Za-z0-9_$]*\(' &&
+        printf '%s\n' "$_start" | rg -q '(}\)|=>[^{}]*\))[[:space:]]*;?[[:space:]]*$'; then
+        continue
+      fi
+      if sed -n "${_hl},${_end}p" "$_hf" 2>/dev/null |
+        awk 'NR > 1 && /^[[:space:]]*}\);?[[:space:]]*$/ { print; exit } { print }' |
+        rg -q '(^|[^A-Za-z0-9_])cy\.[A-Za-z_$][A-Za-z0-9_$]*\('; then
+        printf '%s\n' "$_hit"
+      fi
+    done)
   fi
 
   # `// JUSTIFIED: <reason>` suppression (mechanical part): drop a hit when the marker is on
@@ -685,6 +767,11 @@ run_check P1 '#10b' 'Serial Playwright suite' '\.describe\.serial\(' '*.{spec.ts
 # directly excludes container-scoped forms (`x.getByRole(...)`, `page.locator(...).getByRole(...)`).
 # Phase 2 LLM confirms the suite renders dynamic text that could substring-collide before flagging.
 run_check P1 '#10c' 'Unscoped accessible-name substring match' '(?<![.\w])page\.(getByRole|getByLabel|getByPlaceholder)\((?:(?!exact:)[^)])*name:(?:(?!exact:)[^)])*\)' '*.{spec.ts,spec.js,test.ts,test.js}' e2e
+run_check P1 '#10d' 'Cypress async callback mixes promises with queued commands' '(?:(?:it|test|specify)\s*\([^;\n]*,\s*async\s*(?:function\b\s*(?:[A-Za-z_$][\w$]*)?\s*\([^)]*\)|(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>)|(?:before|beforeEach|after|afterEach)\s*\(\s*(?:[^,;\n]+,\s*)?async\s*(?:function\b\s*(?:[A-Za-z_$][\w$]*)?\s*\([^)]*\)|(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>))' '*.{cy.ts,cy.js,spec.ts,spec.js,test.ts,test.js}'";$CYI" 'triage'
+run_check P1 '#10e' 'Cypress return value assigned outside the command chain' '\b(const|let|var)\s+[A-Za-z_$][\w$]*(?:\s*:[^=;\n]+)?\s*=\s*cy\.(?!spy\(|stub\()' '*.{cy.ts,cy.js,spec.ts,spec.js,test.ts,test.js}'";$CYI"
+# Actions are one-shot; assertions chained after them do not retry the action. Phase 2 confirms
+# whether the chain can observe stale/detached state before reporting.
+run_check P1 '#10f' 'Cypress action followed by an unsafe continued chain' '\.(click|type|check|uncheck|select|selectFile|trigger|scrollIntoView)\([^;\n]*\)\.(should|and|click|type|check|uncheck|select|trigger)\(' '*.{cy.ts,cy.js,spec.ts,spec.js,test.ts,test.js}'";$CYI" 'triage'
 run_check P1 '#14' 'Hardcoded credentials' '(login|fill|type).*(["'"'"'].*password|["'"'"'].*secret|["'"'"']admin["'"'"'])' '*.{spec.ts,spec.js,test.ts,test.js,cy.ts,cy.js}'";$CYI"
 # #15 keeps ONLY unawaited web-first matchers: the trailing matcher whitelist stops the old
 # conflation where sync-matcher one-shot reads (e.g. `expect(Number(await getRowCount(page)))

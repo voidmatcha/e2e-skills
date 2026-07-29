@@ -4,7 +4,7 @@ description: 'Use this skill to generate new Playwright end-to-end tests from sc
 license: Apache-2.0
 metadata:
   author: voidmatcha
-  version: "1.9.1"
+  version: "1.10.0"
 ---
 
 # playwright-test-generator
@@ -32,7 +32,7 @@ Step 4: Scenario Design        (plan → user approval)
 Step 5: Code Generation        (see code-rules.md)
 Step 5b: Conventions & Seed    (first run on a project — see conventions-template.md)
 Step 6: YAGNI Audit + e2e-reviewer
-Step 7: TS Compile + Test Run  (playwright-debugger on failure)
+Step 7: V1–V6 Verification     (project-native runner; constrained debugging)
 ```
 
 ---
@@ -49,6 +49,8 @@ Read project files to build a project profile before doing anything else.
 | POM pattern | Check for `models/`, `pages/`, `page-objects/` directories |
 | Existing specs | All `*.spec.ts` / `*.test.ts` files in test dir |
 | Conventions doc | E2E/testing section in `AGENTS.md`, `CLAUDE.md`, or `CONTRIBUTING.md`; a designated seed spec (`seed.spec.ts` or a spec referenced as the example to copy) |
+| Existing E2E rules | `package.json` scripts, ESLint config, CI workflows, project-local test docs, custom fixtures/reporters, mutation/coverage/a11y/visual tooling |
+| Package runner | Lockfile + existing scripts; reuse the repository-native command and never install a verifier |
 
 **Output (project profile):**
 ```
@@ -57,6 +59,8 @@ testDir: <detected path>
 hasPOM: true | false
 existingSpecs: [list of file paths]
 hasConventionsDoc: true | false
+e2eCommands: { lint: <existing command or none>, test: <existing command> }
+existingVerification: [mutation | coverage | a11y | visual | fault-injection | none]
 ```
 
 **If `baseURL` cannot be determined:** stop and ask the user to provide the target URL before proceeding.
@@ -171,6 +175,15 @@ Write a plan containing:
 
 Cover at minimum: one happy path + one error/edge case per feature.
 
+For every scenario, add a **verification contract**:
+
+```
+- Primary outcome (V1): <one observable behavior>
+- Falsification (V2): <safe matcher inverse, or CANNOT_VERIFY reason>
+- Fault probe (V3): <evidenced response/input mutation that must turn the test red>
+- Write proof (V4): <request evidence, or N/A for read-only behavior>
+```
+
 ### Locator Mapping Table
 
 ```
@@ -201,6 +214,8 @@ Follow `code-rules.md` in this directory for:
 
 Key principle: detect project structure first, match existing patterns when extending.
 
+Treat the written spec as a **candidate**, not a trusted baseline, until Step 7 completes. Do not add package-specific mutation markers unless the project already uses them. Read `verification-rules.md` before writing so the candidate has one V1 primary outcome and can be falsified without changing product intent.
+
 ---
 
 ## Step 5b: Conventions & Seed Artifacts (first run on a project)
@@ -212,7 +227,7 @@ The highest-leverage artifact for consistent AI-generated tests is not any singl
 1. Generate a project-adapted E2E conventions section from `conventions-template.md` in this directory. Target: the project's root `AGENTS.md` (read by Codex and most agent CLIs), plus a one-line `CLAUDE.md` pointer if the project uses Claude Code. Append to existing files; create only when absent.
 2. Designate the best generated spec as the seed: reference it by path in the conventions doc ("copy the shape of `<path>`"). A seed spec demonstrating the project's real auth, locator, and mocking patterns teaches future agents more than any prose.
 3. Fill the template's project-reality fields from what Step 3 actually observed (label-less inputs, API proxy shape, auth mechanism, protected areas) — not from generic best practices. A conventions doc that parrots generic advice instead of project reality is worse than none, because agents will trust it.
-4. Propose lint hardening from `recommended-lint.md` in this directory. If the project has no E2E lint config, offer to scaffold the recommended Playwright/Cypress preset plus `forbidOnly: !!process.env.CI`; if a config already exists, surface only the missing rules as a diff to opt into. Never overwrite an existing config. These rules prevent the commodity P0/P1 smells (missing `await`, one-shot reads, committed `.only`, matcher-less `expect`) at author time. State plainly that lint is the guardrail and `e2e-reviewer` still covers the silent-always-pass families no rule can express (#4f locator-as-truthy, #3/#3b error swallowing).
+4. Apply the local rule bridge in `recommended-lint.md`. Reuse a documented project lint command when present and deduplicate equivalent findings, but do not install/scaffold ESLint or rewrite its config. The bundled scanner/reviewer remains the cross-host gate; project lint is optional additional evidence.
 
 ---
 
@@ -241,20 +256,21 @@ Invoke the `e2e-reviewer` skill using the `Skill` tool, targeting the generated 
 
 ---
 
-## Step 7: Verification + Failure Handling
+## Step 7: V1–V6 Verification + Failure Handling
 
-```bash
-# 1. Type check — must pass with 0 errors
-# Use e2e-specific tsconfig if present (e.g. e2e/tsconfig.json), otherwise root tsconfig
-# --no-install: never auto-install typescript via npx; rely on the project's pinned version
-npx --no-install tsc --noEmit -p <e2e/tsconfig.json or tsconfig.json>
+Read `verification-rules.md` and apply every applicable rule. Use the commands discovered in Step 1; do not install packages, edit package scripts, or require `npx`. Run the repository's existing typecheck/lint command when present, then its narrowest existing Playwright command for the candidate. Preserve the project's configured project/browser/reporter unless a repository script explicitly provides a safe targeted override.
 
-# 2. Run generated tests (project-local Playwright only; never auto-install)
-#    --trace on-first-retry + --reporter=html so a failing run leaves artifacts
-#    (playwright-report/) for the playwright-debugger handoff below.
-npx --no-install playwright test <generated-spec-file> --project=chromium \
-  --trace on-first-retry --reporter=html
-```
+Verification order:
+
+1. Confirm the candidate implements the approved V1 primary outcome.
+2. Run the normal candidate and require a clean green exit.
+3. Run V2 in a temporary/scratch copy; the safe inverse must turn red.
+4. Run evidenced V3 behavior fault injection; the unchanged primary assertion must turn red.
+5. Apply V4 to write scenarios, including failed-write behavior.
+6. Run bounded V5 solo, repeat, suite-context, and supported parallel checks.
+7. Run V6 independent `e2e-reviewer` after generation and again after any repair.
+
+Report `CANNOT_VERIFY` with a concrete reason when a safe probe is impossible. Never convert verifier `ERROR` into a product/test finding. Before completion, prove the source candidate is unchanged and no temporary verifier spec remains.
 
 ### Failure handling (max 3 auto-fix attempts)
 
@@ -263,10 +279,10 @@ Per attempt, diagnose the actual failure and apply the matching fix below (the o
 | Likely cause | Fix |
 |--------------|-----|
 | Selector mismatches | Heal by intent, not by patching strings: re-snapshot the live page, find the element the step semantically targets (the role/name/label a user would see), and write a fresh locator for it at the highest stable tier (role+name > placeholder > testid). Tweaking the old selector string usually re-breaks on the next DOM change. |
-| Assertion failures | Fix expected values, add `{ timeout }` for slow elements |
+| Assertion failures | Decide whether the approved behavior is a product regression, stale requirement, or mechanical timing issue. Never change the approved expected value or primary assertion merely to make the run green. |
 | Structural issues | Fix missing `await`, wrong test setup, incorrect `beforeEach` |
 
-After 3 failed attempts: **invoke `playwright-debugger` skill** using the `Skill` tool, pointing it at the `playwright-report/` produced by the run above (HTML report + `--trace on-first-retry` traces). Do not attempt a 4th fix.
+After 3 failed attempts: **invoke `playwright-debugger` skill** using the `Skill` tool, pointing it at the artifacts produced by the repository-native run. Do not attempt a 4th fix. The debugger may repair mechanics only; it must return `NOFIX` rather than alter the primary outcome, expected value, request proof, scenario count, or test enablement. After any repair, repeat V6 independent review before the test can complete.
 
 ### Completion report (on full pass)
 
@@ -281,6 +297,9 @@ Coverage added: <route path>
 
 e2e-reviewer: N P0 (fixed), N P1 (listed below)
 Tests: N passed
+Verification: V1 PASS; V2 <verdict>; V3 <verdict>; V4 <verdict|N/A>; V5 <verdict>; V6 PASS
+Runner: <repository-native commands used>
+Source cleanup: candidate unchanged; no temporary mutation files
 ```
 
 ---

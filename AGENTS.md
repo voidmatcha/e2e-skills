@@ -110,6 +110,9 @@ bash skills/e2e-reviewer/scripts/scan.sh testbed/cal.diy
 # Install the four skills from this repo as real copies (one-time setup; also cleans up any prior symlink install)
 bash scripts/dev/reinstall-skills.sh
 
+# Optional: register the two named Codex-native e2e agents globally
+bash scripts/dev/install-codex-agents.sh
+
 # Wire `git push` to refresh the installed copies via `skills update` (one-time, opt-in)
 bash scripts/dev/install-hooks.sh
 ```

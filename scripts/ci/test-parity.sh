@@ -86,6 +86,21 @@ assert_security_fails() {
   fi
 }
 
+assert_verification_parity_fails() {
+  local name="$1"
+  local expected="$2"
+  local output
+  output=$(bash scripts/ci/check-verification-parity.sh 2>&1 || true)
+  if echo "$output" | grep -qF "$expected"; then
+    echo "  [PASS] $name"
+    PASS=$((PASS + 1))
+  else
+    echo "  [FAIL] $name — expected substring not found: '$expected'" >&2
+    echo "$output" | sed 's/^/         /' >&2
+    FAIL=$((FAIL + 1))
+  fi
+}
+
 mutate() {
   python3 - "$1" "$2" "$3" <<'PY'
 import pathlib, sys
@@ -291,6 +306,39 @@ else
   echo "  [SKIP] Case 21 — .codex/agents/e2e-failure-classifier.toml not present"
 fi
 
+# Case 22: independently installable V-rule copies must not drift.
+file="skills/e2e-reviewer/references/verification-rules.md"
+backup "$file"
+mutate "$file" "V4=write-contract-proof" "V4=optimistic-ui-only"
+assert_verification_parity_fails "Verification parity — reviewer V4 contract drift" "generator/reviewer V-rule contracts differ"
+restore "$file"
+
+file="skills/e2e-reviewer/references/verification-rules.md"
+backup "$file"
+mutate "$file" "verification.V6" "verification.selfApproved"
+assert_verification_parity_fails "Verification parity — reviewer result schema drift" "result schemas differ or are missing"
+restore "$file"
+
+# Case 23: named custom agents are optional; standard Codex native roles must
+# remain the delegation bridge before the inline fallback.
+file="skills/e2e-reviewer/SKILL.md"
+backup "$file"
+mutate "$file" 'native `verifier` role' 'native review role'
+assert_fails "Subagent parity SP6 — reviewer drops standard native verifier fallback" "must fall back from the named agent"
+restore "$file"
+
+file="skills/playwright-debugger/SKILL.md"
+backup "$file"
+mutate "$file" 'native `debugger` role' 'native diagnosis role'
+assert_fails "Subagent parity SP6 — Playwright debugger drops standard native fallback" "must fall back from the named classifier"
+restore "$file"
+
+file="skills/cypress-debugger/SKILL.md"
+backup "$file"
+mutate "$file" 'native `debugger` role' 'native diagnosis role'
+assert_fails "Subagent parity SP6 — Cypress debugger drops standard native fallback" "must fall back from the named classifier"
+restore "$file"
+
 # ---------------------------------------------------------------------------
 # Scanner detection smoke — fixture-based and offline: eslint auto-download is
 # disabled via E2E_SMELL_NO_ESLINT_DOWNLOAD=1 (so counts come from the Tier-3
@@ -415,6 +463,80 @@ EOF
 run_scan s5 none
 assert_scan_contains "Scanner S5 — cypress/e2e _spec.js hard-coded sleep flagged as #9b" "#9b"
 assert_scan_contains "Scanner S5 — #9b hit names the cypress/e2e fixture line" "widget_link_spec.js:4"
+
+# Case S6: local Cypress command-model rules run without eslint/plugin downloads and keep
+# ordinary values plus assert-before-action chains out of the raw hit set.
+mkdir -p "$SCAN_FIXDIR/s6"
+cat > "$SCAN_FIXDIR/s6/commands.cy.ts" <<'EOF'
+it('bad command model', async () => {
+  const button = cy.get('[data-cy=save]');
+  await button.type('Ada').should('have.value', 'Ada');
+});
+
+it('safe command model', () => {
+  const expected = 'Saved';
+  cy.get('[data-cy=save]').should('be.enabled').click();
+  cy.get('[role=status]').should('have.text', expected);
+});
+EOF
+run_scan s6 none
+assert_scan_contains "Scanner S6 — Cypress async callback flagged as #10d" "#10d"
+assert_scan_contains "Scanner S6 — assigned Cypress command flagged as #10e" "#10e"
+assert_scan_contains "Scanner S6 — unsafe continued action chain triaged as #10f" "#10f"
+assert_scan_absent "Scanner S6 — ordinary expected value is not a second #10e hit" "#10e Cypress return value assigned outside the command chain (2 hits)"
+
+# Case S7: Playwright requires async test callbacks; the Cypress-only #10d rule must
+# filter by framework evidence rather than classify every async test callback.
+mkdir -p "$SCAN_FIXDIR/s7"
+cat > "$SCAN_FIXDIR/s7/normal.spec.ts" <<'EOF'
+import { test, expect } from '@playwright/test';
+
+test('normal Playwright callback', async ({ page }) => {
+  await page.goto('/');
+  await expect(page).toHaveURL('/');
+});
+EOF
+run_scan s7 none
+assert_scan_absent "Scanner S7 — normal Playwright async callback not flagged as Cypress #10d" "#10d"
+
+# Case S8: Cypress command-model syntax boundaries. Confirm function/hook callback
+# variants and typed assignments while excluding native-Promise-only async callbacks.
+mkdir -p "$SCAN_FIXDIR/s8"
+cat > "$SCAN_FIXDIR/s8/boundaries.cy.ts" <<'EOF'
+it('native promise only', async () => {
+  await Promise.resolve('ready');
+});
+
+it('one-line native promise only', async () => await Promise.resolve('ready'));
+
+it('async function with Cypress queue', async function () {
+  await cy.visit('/settings');
+});
+
+afterEach(async () => {
+  await cy.clearCookies();
+});
+
+it('typed Chainable assignment', () => {
+  const button: Cypress.Chainable<JQuery<HTMLElement>> = cy.get('[data-cy=save]');
+  button.click();
+});
+
+it('uses synchronous Cypress Sinon utilities', () => {
+  const spy = cy.spy(console, 'log');
+  const stub = cy.stub(window, 'open');
+  expect(spy).to.exist;
+  expect(stub).to.exist;
+});
+EOF
+run_scan s8 none
+assert_scan_contains "Scanner S8 — async function callback with cy queue flagged as #10d" "boundaries.cy.ts:7"
+assert_scan_contains "Scanner S8 — async afterEach callback with cy queue flagged as #10d" "boundaries.cy.ts:11"
+assert_scan_absent "Scanner S8 — native-Promise-only async callback excluded from #10d" "boundaries.cy.ts:1:"
+assert_scan_absent "Scanner S8 — one-line native-Promise callback excluded from #10d" "boundaries.cy.ts:5:"
+assert_scan_contains "Scanner S8 — typed Cypress Chainable assignment flagged as #10e" "boundaries.cy.ts:16"
+assert_scan_absent "Scanner S8 — synchronous cy.spy assignment excluded from #10e" "boundaries.cy.ts:21:"
+assert_scan_absent "Scanner S8 — synchronous cy.stub assignment excluded from #10e" "boundaries.cy.ts:22:"
 
 rm -rf "$SCAN_FIXDIR"
 

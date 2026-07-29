@@ -417,6 +417,34 @@
         "Does NOT flag line 34 toHaveCount(0) — the 'row' locator is the target of a click on line 31, proving it can match",
         "Reports #4i outside the P0 exit gate (P1, LLM-TRIAGE) rather than as a must-fix silent pass"
       ]
+    },
+    {
+      "id": 23,
+      "prompt": "A project lint report already flags a Playwright missing-await assertion. Review the same spec and also notice that a checkout test only asserts optimistic UI while never proving the POST request occurred. Explain how project E2E rules and e2e-reviewer findings are merged, and recommend runtime proof without installing tools.",
+      "expected_output": "Deduplicate the missing-await issue into one taxonomy finding carrying both project-lint and e2e-skills provenance. Keep the semantic #22 optimistic-UI finding because lint has no equivalent. Existing project style may strengthen P2 conventions but cannot suppress P0 silent-pass findings. Recommend repository-native V2 for the missing await/assertion load-bearing check and V3+V4 using Playwright page.route/waitForRequest or Cypress cy.intercept/alias according to the actual framework. Do not install or invoke external lint/mutation packages.",
+      "files": [],
+      "assertions": [
+        "Deduplicates equivalent project lint and e2e-skills findings instead of double-reporting",
+        "Preserves the semantic #22 finding even when project lint passes",
+        "States that project style cannot downgrade a P0 safety rule without concrete justification",
+        "Maps findings to V-rules with Playwright and Cypress framework-native examples",
+        "Does not install or require external ESLint or mutation packages"
+      ]
+    },
+    {
+      "id": 24,
+      "prompt": "Review the Cypress E2E tests in evals/files/cypress-command-model.cy.ts. Identify command-model and chaining problems, but do not flag ordinary values or a query/assert-before-action chain.",
+      "expected_output": "Report #10d for the async test callback on line 2 and async beforeEach on line 6, #10e for assigning cy.get() to button on line 11, and #10f as an LLM-triage candidate for type().should() on line 16 because the action is one-shot and the continued chain can retain stale state. Do not flag expected on line 25 because it is an ordinary string. Do not flag line 20: the query assertion precedes click and the post-action status is freshly queried on line 21.",
+      "files": [
+        "evals/files/cypress-command-model.cy.ts"
+      ],
+      "assertions": [
+        "Detects both async Cypress callbacks as #10d P1",
+        "Detects assignment of cy.get() as #10e P1",
+        "Triages type().should() as #10f P1 rather than a deterministic P0",
+        "Does not flag the ordinary expected string assignment",
+        "Does not flag the assert-before-click chain or the fresh post-action query"
+      ]
     }
   ]
 }

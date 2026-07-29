@@ -176,6 +176,23 @@
         "False-positive guard: on the FIRST failure, does NOT hand off to the debugger — commits to the bounded 3-attempt auto-fix budget (this is attempt 1 of at most 3) rather than a vague unbounded 'keep trying' or an immediate handoff",
         "Uses npx --no-install and does not auto-install Playwright"
       ]
+    },
+    {
+      "id": 9,
+      "title": "Dependency-free falsification pipeline with project-native runners",
+      "prompt": "Generate a Playwright checkout test in a pnpm project that already has scripts test:e2e and lint:e2e but has no mutation-testing, coverage, or axe packages. Explain the verification and repair pipeline after scenario approval. The generated test becomes green, then its network fault probe stays green. Do not install anything.",
+      "expected_output": "Use the repository scripts and existing fixtures without npx or package installation. Name one primary observable outcome (V1), review the candidate independently, run the normal test, then use a temporary/scratch copy for safe assertion falsification (V2) and framework-native page.route fault injection (V3). Because the test remains green when the success response is corrupted, reject it as a weak test, strengthen the assertion without changing product intent, and re-run. Prove writes at request level (V4), run bounded repeat/isolation checks (V5), and independently re-review any debugger repair (V6). Never modify the trusted source spec during mutation and verify cleanup/git status.",
+      "files": [
+        "evals/files/project-pom/playwright.config.ts",
+        "evals/files/project-pom/src/routes.ts"
+      ],
+      "assertions": [
+        "Uses pnpm test:e2e and pnpm lint:e2e (repository-native commands) rather than npx or installing a package",
+        "Covers V1 through V6 with concrete Playwright-native proof",
+        "Treats the green fault-injected run as a weak-test rejection, not a successful result",
+        "Uses only a temporary/scratch mutation and verifies source cleanup",
+        "Prohibits debugger repairs from weakening or changing the primary expected outcome"
+      ]
     }
   ]
 }

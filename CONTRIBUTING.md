@@ -68,6 +68,26 @@ bash scripts/validate-evals.sh       # eval JSON schema
 bash scripts/ci/codex-smoke.sh       # manual Codex cross-host smoke (skips if codex absent)
 ```
 
+### Behavioral skill evaluation
+
+`evals/evals.json` defines expected behavior, while the ordinary CI gate checks
+that those contracts and fixtures remain structurally valid. To measure whether
+the skill itself improves an agent's answer, run the paired behavioral harness:
+
+```bash
+python3 scripts/evals/run-behavioral-evals.py --runner codex --allow-live
+# or: --runner claude --allow-live
+# bounded pilot: add --case reviewer-always-true-locator --repetitions 1
+```
+
+Each case runs three times both with and without the skill. Reports are written
+under the gitignored `results/behavioral-evals/` directory and include pass
+rates, absolute lift, per-case results, timing, and saturated cases where the
+baseline already scores 100%. Live execution is deliberately opt-in: normal CI
+only tests the deterministic harness because model runs are variable and consume
+time or tokens. A positive result on this small smoke set is evidence for those
+cases only, not a general precision/recall or cross-model claim.
+
 ## Conventions
 
 These are enforced by CI. Breaking one fails the build.

@@ -49,6 +49,31 @@ AI 智能体能很快生成端到端测试，但这些测试往往乍看很有�
 3. 在缺失某个流程时生成更好的 Playwright 覆盖，
 4. 把失败的 Playwright/Cypress 报告调试成根因修复。
 
+## 方法论
+
+生成测试很容易。更难的是生成一个在产品出错时**能够正确失败的测试**。LLM 可以写出语法有效、能够执行预期流程的测试，却因为恒真 assertion、错误的状态检查或缺失的结果验证而一直保持 green。
+
+这并非只有理论上的风险。[Test Smells in LLM-Generated Unit Tests](https://arxiv.org/abs/2410.10628) 分析了多个模型系列生成的 20,505 个测试。[强 LLM-generated test oracle 研究](https://arxiv.org/abs/2405.03786) 将 assertion 质量而非单纯执行视为 bug detection 的核心。[Cypress 工业案例研究](https://doi.org/10.1109/AST66626.2025.00007) 同样发现，一部分生成的 acceptance test 需要重新生成，或因重大问题被丢弃。
+
+因此，这组 skills 采用 review-first 方法，而不是直接相信 green run：
+
+1. 在编写或接受 assertion 之前，先明确测试应该证明的 behavior。
+2. 优先使用 framework-native、retry-aware、能够因为正确原因失败的 assertions。
+3. 即使 CI 是 green，也拒绝 always-truthy assertions、缺失的 post-state checks，以及 name↔assertion mismatches。
+4. 对机械性 smells 使用 deterministic checks，只把 semantic judgment 交给 LLM review。
+
+### 更多证据与实践资料
+
+- **生产方法论：** Meta 的 [LLM-based test improvement 研究](https://arxiv.org/abs/2402.09171) 不会原样接受生成测试，而是按可衡量的改进进行筛选。
+- **Assertion 可靠性：** [ChatGPT vs SBST](https://doi.org/10.1109/TSE.2024.3382365) 将 coverage 与 assertion correctness 分开评估，并报告了错误生成 expected value 的案例。
+- **实用反证法：** [Your green tests are lying](https://dev.to/dubcrab/your-green-tests-are-lying-5h5m) 展示了 assertion inversion：如果反转 assertion 后测试仍然 green，它就没有证明自己的主张。
+- **从业者报告：** Playwright 从业者也独立描述了相同的 weak-green-test 问题（[David Kirwan](https://www.linkedin.com/posts/davidjkirwan_most-ai-generated-playwright-tests-are-not-activity-7436406467827527680-vy32)、[Michal Jarczewski](https://www.linkedin.com/posts/michal-jarczewski_your-ai-generated-test-is-green-that-does-activity-7475305026672885760-qKF8)、[Aston Cook](https://www.linkedin.com/posts/aston-cook_save-this-if-your-playwright-tests-pass-when-activity-7473185238395797504-_ag4)）。这些是 practitioner signals，而不是学术证据。
+- **关注度信号：** [Gen AI Promised Perfect Tests. Here's What Actually Happened](https://www.youtube.com/watch?v=TjTygGqP5JQ) 截至 2026-07-28 有 74,797 views。会变化的 view count 只是关注度信号，不是正确性证据。
+- **框架依据：** [Playwright assertions](https://playwright.dev/docs/test-assertions) 和 [Cypress retry-ability](https://docs.cypress.io/app/core-concepts/retry-ability) 提供了这些检查背后的 native contract。
+- **Runtime 先例：** [`playwright-mutation-gate`](https://github.com/VladyslavDmitriiev/playwright-mutation-gate) 展示 assertion/behavior mutation， [`ai-qa-pipeline`](https://github.com/VladyslavDmitriiev/ai-qa-pipeline) 展示独立 writer/judge、有限 repair、scratch candidate 和 post-debug review。
+- **技能效果测量：** `scripts/evals/run-behavioral-evals.py` 重复比较 `with_skill` 和 `without_skill`，报告每个案例的 lift，并标记已经被 baseline 饱和的案例。真实模型运行需要显式 opt-in；该 harness 不代表通用 precision/recall 或跨模型优越性。
+- **无依赖采用：** e2e-skills 将适用语义独立实现为本地 Playwright/Cypress 规则和 V1–V6 验证契约。它不要求这些项目、ESLint plugin、package 安装或 `npx`；如果项目已有原生 runner 和规则，则直接复用。
+
 ## 看它运行
 
 一个能通过 CI 却什么都没检查的 Playwright 测试——`Locator` 永远不会是 undefined，而 `.not.toBeNull()` 无论元素是否渲染都成立：
@@ -118,6 +143,8 @@ npx skills add voidmatcha/e2e-skills --skill '*' -g -a claude-code -a codex
 codex plugin marketplace add voidmatcha/e2e-skills
 codex plugin add e2e-skills@voidmatcha
 ```
+
+当 Codex 宿主提供 native role routing 时，无需额外安装 custom agent 即可使用内置的 `verifier` / `debugger` 子智能体角色；当 native delegation 不可用时，技能的 inline fallback 仍保持相同判定。源码 checkout 还包含 `.codex/agents/` 下更严格的 named agent。希望在其他仓库中使用这些名称的贡献者，可运行 `bash scripts/dev/install-codex-agents.sh` 全局注册，然后重启 Codex。
 
 ### 其他所有智能体 (Cursor, OpenCode, Gemini CLI 等)
 
@@ -225,7 +252,7 @@ Total: 3 P0, 0 P1, 0 P2 in 24 spec files.
 
 该扫描器有意保持确定性，优先捕捉其中高置信度的那部分；Agent Skill 再在扫描结果之上做读懂意图的审查。
 
-> **网络行为。** 扫描器只读取你指定的文件，不上传任何内容。为达到其精度层级，它优先使用项目本地的 lint 工具；在缺失时，会通过 `npx` 自动下载固定版本的公开包（`eslint`、`eslint-plugin-playwright`/`-cypress`、`ast-grep`）。设置 `E2E_SMELL_NO_ESLINT_DOWNLOAD=1` 和 `E2E_SMELL_NO_AST_GREP_DOWNLOAD=1` 可完全离线运行。完整说明见：[SECURITY.md](./SECURITY.md)。
+> **网络行为。** 扫描器只读取你指定的文件，不上传任何内容。项目中存在时，它会直接调用本地 ESLint 和 Playwright/Cypress plugin，默认不会自动下载包；无依赖的 regex/AST fallback 支持离线运行。如需启用旧版 `npx` 下载，可清空 `E2E_SMELL_NO_ESLINT_DOWNLOAD` 和 `E2E_SMELL_NO_AST_GREP_DOWNLOAD` 后显式运行。完整说明见：[SECURITY.md](./SECURITY.md)。
 
 ## Skill 1: `playwright-test-generator` — 测试生成
 
@@ -315,7 +342,7 @@ We have coverage but bugs still slip through
 |---|---------|--------|-------|
 | 6 | **原生 DOM 查询** | `evaluate()` 中的 `document.querySelector` | 使用框架的定位器/查询 API（`locator` / `cy.get`） |
 | 9 | **硬编码 sleep** | `waitForTimeout(2000)` / `cy.wait(2000)` / `waitForLoadState('networkidle')` | 依赖框架的自动等待；使用基于条件的等待 |
-| 10 | **不稳定测试模式** | 无注释的 `items.nth(2)`；`test.describe.serial()`；未加 `exact: true` 且未限定范围的 `getByRole`/`getByLabel`/`getByPlaceholder` name（10c） | 使用 `data-testid` 或角色选择器；用自包含测试替换 serial；把访问器限定到容器，或传入 `exact: true` |
+| 10 | **不稳定测试模式** | 无注释的 `items.nth(2)`；`test.describe.serial()`；未限定范围的 accessible-name substring（10c）；Cypress async callback、被赋值的 `cy` command、action 后继续 chaining（10d–10f） | 使用稳定且有 scope 的 locator 和自包含测试；把 Cypress 工作保留在 command chain 中，不把 Chainable 当值赋给变量，并在 action 后重新 query |
 | 13 | **POM 使用不一致** | 导入了 POM，但 spec 对 POM 所属动作使用原生 `page.fill`/`page.click` | 让所有交互都经过 POM，这样 UI 变更只需在一处更新 |
 | 14 | **硬编码凭据** | 测试代码中的 `loginPage.login('demo-admin', '<literal-password>')` | 使用 `process.env.TEST_USER`、Playwright 配置密钥或测试数据 fixture |
 | 17 | **直接使用 `page.click(selector)` API** | `page.click('#submit')` / `page.fill('#input', 'text')` 跳过了 Locator 层 | 使用 `page.locator(selector).click()` 以获得自动等待和更好的错误信息 |

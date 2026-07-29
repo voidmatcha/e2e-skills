@@ -37,6 +37,18 @@ else
   bash scripts/ci/review.sh || fail "review.sh"
 fi
 
+step "Verification-rule parity"
+bash scripts/ci/check-verification-parity.sh || fail "check-verification-parity.sh"
+
+step "Codex agent packaging"
+bash scripts/ci/test-codex-agents.sh || fail "test-codex-agents.sh"
+
+step "Behavioral eval harness"
+bash scripts/ci/test-behavioral-evals.sh || fail "test-behavioral-evals.sh"
+
+step "Local ESLint path"
+bash scripts/ci/test-local-eslint-path.sh || fail "test-local-eslint-path.sh"
+
 if [ "${E2E_SKILLS_SKIP_PARITY_SMOKE:-}" != "1" ]; then
   step "Pattern parity drift smoke test"
   if [ "$QUIET" = "1" ]; then

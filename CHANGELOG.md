@@ -1,5 +1,54 @@
 # Changelog
 
+## [1.10.0] - 2026-07-29
+
+### Added
+
+- **V1–V6 verification doctrine for generated and reviewed E2E tests.** The
+  skills now require outcome-first assertions, falsification, behavior fault
+  injection, write-contract checks, repeat/isolation evidence, and independent
+  re-review rather than treating a green run as proof of correctness.
+- **Cypress-specific reliability checks.** The reviewer now triages async
+  callbacks containing queued commands (`#10d`), assigned Cypress commands
+  (`#10e`), and unsafe continued action chains (`#10f`) alongside the existing
+  Playwright coverage.
+- **Cross-host subagent fallback and packaging.** Claude named agents, Codex
+  native verifier/debugger roles, and identical inline fallbacks now share one
+  taxonomy and verdict contract. Optional Codex agent installation includes a
+  conflict guard and parity test without requiring Python 3.11 or a package
+  install.
+- **Paired behavioral evaluation harness.**
+  `scripts/evals/run-behavioral-evals.py` compares repeated `with_skill` and
+  `without_skill` runs, records runner/version and repository provenance, and
+  reports per-case lift and saturated baselines. The live runner is opt-in;
+  ordinary CI uses a deterministic fake runner.
+
+### Changed
+
+- **Lint and AST tooling are no longer auto-downloaded by default.** The
+  reviewer reuses project-native tools and keeps the dependency-free fallback;
+  offline execution no longer requires `npx`, ESLint, or ast-grep downloads.
+- **Local ESLint plugins are invoked directly.** When a target project already
+  has ESLint and `eslint-plugin-playwright`/`eslint-plugin-cypress`, the scanner
+  runs the project's `node_modules/.bin/eslint` and resolves its local rules
+  without using `npx` as a wrapper. The legacy npx path is limited to explicit
+  opt-in downloads when local tooling is absent.
+- **Eval and contract parity are now CI-checked.** Verification-rule parity,
+  result-schema parity, subagent fallback parity, and behavioral-harness
+  regression checks run from `ci-local.sh`.
+- **Contributor documentation now distinguishes deterministic CI evidence from
+  optional live model evidence.** A passing smoke case is not presented as a
+  general precision/recall or cross-model claim.
+
+### Verification
+
+- `bash scripts/ci/ci-local.sh` — passed; drift smoke **49/49**.
+- `bash scripts/ci/pre-push-security.sh` — passed; **10 checks, 0 warnings,
+  0 blockers**.
+- Codex behavioral pilot — `with_skill` and `without_skill` both passed the
+  easy reviewer case, producing **0% measured lift** and correctly marking the
+  case as saturated rather than overstating the result.
+
 ## [1.9.1] - 2026-07-27
 
 ### Changed

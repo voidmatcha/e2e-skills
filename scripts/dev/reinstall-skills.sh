@@ -27,3 +27,9 @@ npx -y skills remove "${SKILLS[@]}" -g "${AGENTS_FLAGS[@]}" -y || true
 
 echo "reinstall-skills: adding from $REPO_ROOT as real copies (--copy)"
 npx -y skills add "$REPO_ROOT" "${SKILLS[@]}" -g "${AGENTS_FLAGS[@]}" --copy -y
+
+# The skills CLI installs SKILL.md bundles, not Codex-native agent TOMLs. Keep
+# the two optional named e2e agents current for local contributor validation.
+if [ "${E2E_SKILLS_INSTALL_CODEX_AGENTS:-1}" = "1" ] && printf '%s\n' "${AGENTS_FLAGS[@]}" | grep -q '^codex$'; then
+  bash "$REPO_ROOT/scripts/dev/install-codex-agents.sh"
+fi
