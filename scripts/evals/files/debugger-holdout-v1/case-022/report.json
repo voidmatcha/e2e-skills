@@ -1,0 +1,1 @@
+{"framework":"cypress","test":"starts with an empty cart","runs":[{"scope":"alone","state":"passed"},{"scope":"suite_after_add_item","state":"failed","error":"expected cart count 0, received 1"}],"session_cache":{"cart_items":1}}

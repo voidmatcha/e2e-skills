@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "benchmark_id": "generator-faultkill-v1",
+  "scope": "deterministic-scorer-inputs-only",
+  "artifacts": [
+    {
+      "path": "scripts/evals/generator-faultkill-v1.json",
+      "role": "public-labeled-corpus",
+      "sha256": "9b9c319ee2f31eba9de5a6ab9c91b2480becaf80ba66247c23578c14988d0fb2"
+    },
+    {
+      "path": "scripts/evals/generator-faultkill-v1.schema.json",
+      "role": "closed-dsl-schema",
+      "sha256": "4663393a1a91bb77c8c9f649ac7ef47babd4dfa96f2f4ca19cea141686e8a7b4"
+    },
+    {
+      "path": "scripts/evals/generator-faultkill-v1.py",
+      "role": "deterministic-compiler-and-scorer",
+      "sha256": "2479d5a78edeeceddee6958a82c2a0b2d361cc225280adb61af734c70248c6ff"
+    },
+    {
+      "path": "scripts/evals/files/generator-faultkill-v1/reference-predictions.json",
+      "role": "positive-validator-control",
+      "sha256": "219b903237605bcd369c9d4377d341d04d7270b56b7a73f6e45d8399094bc2d3"
+    },
+    {
+      "path": "scripts/ci/lib/strict_json.py",
+      "role": "strict-json-decoder",
+      "sha256": "17815e94ea3f1b82ce0497448cb3df10cd0667520266df557e8a0762d29819df"
+    },
+    {
+      "path": "scripts/evals/run-fixture-faults.py",
+      "role": "fixture-operator-source",
+      "sha256": "374273b29ac89c33a55cc56b3ed3d017404049a46921abf1a8c7baaa1ee083fa"
+    },
+    {
+      "path": "benchmarks/fixture-faults/2026-07-31-current.json",
+      "role": "canonical-runtime-triad-evidence",
+      "sha256": "932a3d6c9912edae97519ea1f48ee83b5e514d387d3acb50954cd9cc4f734213"
+    }
+  ]
+}

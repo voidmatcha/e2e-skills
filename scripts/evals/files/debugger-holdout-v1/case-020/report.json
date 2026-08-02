@@ -1,0 +1,1 @@
+{"framework":"cypress","test":"saves delivery address","attempts":[{"state":"failed","error":"Timed out retrying: Expected to find content: 'Saved'"}],"commands":["click Save completed"],"requests":[{"method":"PUT","url":"/api/address","status":200}],"ui_excerpt":"Save changes"}

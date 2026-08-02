@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "ledger_id": "independent-product-review-v8-v7-medium-remediations",
+  "predecessor": {
+    "archive_id": "independent-product-review-v7-remediation",
+    "derived_archive_state": "COMPLETE",
+    "derived_gate": "FAIL",
+    "protocol_sha256": "1718432d87b3ba2e8e9cc5165f62d6a0cfda125be16fb2be2e5fa629298a3b29",
+    "freeze_file_sha256": "68e134d9a649122046ead364631c043d075de7677bf39c2b72eddc5240ec54fa",
+    "evidence_validator_sha256": "3dfd9ba490f8640f5a49ad847b48c4df9940e26ecb88af62e9fa9f123d34c645",
+    "attempts": [
+      {
+        "attempt_id": "codex-budget-corrected-v7-r1",
+        "status": "PASS",
+        "overall_score": 91.83,
+        "report_sha256": "d52267a0f77ae3f53df80f8dc1050e86b854f023ae312664f5af7a82c29d43b9",
+        "raw_sha256": "cd28c1eb837a2ae8e13209e8b9d5c1fa0250c55082eb388863400e550e1fdd55"
+      },
+      {
+        "attempt_id": "codex-budget-corrected-v7-r2",
+        "status": "PASS",
+        "overall_score": 92.83,
+        "report_sha256": "fa644be623156ab2dcc4f9ad3c49537b6d9a002d2e7a15359499514af1fc6d1c",
+        "raw_sha256": "622a9452668f682de358d7a22181435b91a298692740a5f2adb31082b90e77b4"
+      },
+      {
+        "attempt_id": "codex-budget-corrected-v7-r3",
+        "status": "FAIL",
+        "overall_score": 93.33,
+        "report_sha256": "56cdf8914dff95c3359fb9c68d1fd7dc61138e6e8af60278abf38bf269785fd9",
+        "raw_sha256": "db77a7f32e9b85d2f72c85b08930fccc7e564ebae3633fc2ccf5a1cb103f70e7"
+      }
+    ]
+  },
+  "claim_boundary": "This ledger preregisters a Codex-only post-hoc confirmation of eight Medium findings from the completed v7 run. It does not rewrite v7, establish unbiased discovery, prove the remediations before the v8 calls, provide cross-model evidence, or enter the model packet or prompt.",
+  "source_binding_policy": "The eight target identities and immutable v7 evidence are fixed here. Product source bytes and verification receipts are captured by the one canonical v8 source snapshot and freeze immediately before calls, after parallel repairs finish; this ledger intentionally does not pin intermediate source hashes.",
+  "targets": [
+    {
+      "target_id": "V7-T1",
+      "historical_severity": "M",
+      "category": "false_positive_control",
+      "affected_files": ["skills/e2e-reviewer/SKILL.md"],
+      "observed_attempt_ids": ["codex-budget-corrected-v7-r1"],
+      "historical_title": "Suppression phase contract contradicts scanner behavior",
+      "required_remediation": "Make the documented JUSTIFIED enclosing callback/block suppression contract match the bounded mechanical scanner behavior.",
+      "disposition": "pending_canonical_v8_freeze"
+    },
+    {
+      "target_id": "V7-T2",
+      "historical_severity": "M",
+      "category": "semantic_correctness",
+      "affected_files": ["skills/playwright-test-generator/code-rules.md"],
+      "observed_attempt_ids": ["codex-budget-corrected-v7-r1"],
+      "historical_title": "Blanket count prohibition exceeds reviewer semantics",
+      "required_remediation": "Restrict the count prohibition to one-shot outcome assertions while preserving legitimate evidenced data and control uses.",
+      "disposition": "pending_canonical_v8_freeze"
+    },
+    {
+      "target_id": "V7-T3",
+      "historical_severity": "M",
+      "category": "security_trust_boundaries",
+      "affected_files": ["skills/cypress-debugger/SKILL.md"],
+      "observed_attempt_ids": ["codex-budget-corrected-v7-r1"],
+      "historical_title": "Cypress output contract lacks sanitized-error provenance",
+      "required_remediation": "Require bounded redacted error excerpts with reader provenance or a safe unavailable placeholder.",
+      "disposition": "pending_canonical_v8_freeze"
+    },
+    {
+      "target_id": "V7-T4",
+      "historical_severity": "M",
+      "category": "verification_design",
+      "affected_files": ["skills/e2e-reviewer/scripts/scan.sh"],
+      "observed_attempt_ids": ["codex-budget-corrected-v7-r2"],
+      "historical_title": "Parameterized toBeAttached assertions evade #4b scanning",
+      "required_remediation": "Detect positive toBeAttached calls with bounded arguments while retaining the negative-form exclusion and semantic confirmation.",
+      "disposition": "pending_canonical_v8_freeze"
+    },
+    {
+      "target_id": "V7-T5",
+      "historical_severity": "M",
+      "category": "semantic_correctness",
+      "affected_files": ["skills/playwright-test-generator/code-rules.md"],
+      "observed_attempt_ids": ["codex-budget-corrected-v7-r2"],
+      "historical_title": "Generation rule rejects a documented legitimate attachment contract",
+      "required_remediation": "Permit toBeAttached when DOM attachment is the approved outcome, including CSS-hidden persistence.",
+      "disposition": "pending_canonical_v8_freeze"
+    },
+    {
+      "target_id": "V7-T6",
+      "historical_severity": "M",
+      "category": "scope_contract_consistency",
+      "affected_files": ["skills/e2e-reviewer/references/verification-rules.md"],
+      "observed_attempt_ids": ["codex-budget-corrected-v7-r2"],
+      "historical_title": "Condensed V6 proof omits fresh-context separation",
+      "required_remediation": "Require a distinct fresh-context read-only reviewer that did not write or repair the candidate.",
+      "disposition": "pending_canonical_v8_freeze"
+    },
+    {
+      "target_id": "V7-T7",
+      "historical_severity": "M",
+      "category": "semantic_correctness",
+      "affected_files": ["skills/playwright-test-generator/best-practices.md"],
+      "observed_attempt_ids": ["codex-budget-corrected-v7-r3"],
+      "historical_title": "Retry guidance omits idempotence boundary",
+      "required_remediation": "Limit action-and-assert retries to proven-idempotent actions and use readiness gates for non-idempotent writes.",
+      "reopened_v5_target_ids": ["V5-T3"],
+      "disposition": "pending_canonical_v8_freeze"
+    },
+    {
+      "target_id": "V7-T8",
+      "historical_severity": "M",
+      "category": "docs_usability",
+      "affected_files": ["skills/playwright-test-generator/code-rules.md"],
+      "observed_attempt_ids": ["codex-budget-corrected-v7-r3"],
+      "historical_title": "Forbidden count replacement suggests unqualified first()",
+      "required_remediation": "Remove the unqualified first() replacement or include the required concrete JUSTIFIED evidence.",
+      "reopened_v5_target_ids": ["V5-T3"],
+      "disposition": "pending_canonical_v8_freeze"
+    }
+  ]
+}

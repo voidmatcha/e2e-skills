@@ -1,0 +1,1 @@
+{"framework":"playwright","test":"loads order history","attempts":[{"status":"failed","error":"Error: api response was 503 for GET /api/orders"}],"network":[{"method":"GET","url":"/api/orders","status":503,"body":"service unavailable"}]}

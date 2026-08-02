@@ -1,0 +1,216 @@
+{
+  "schema_version": 2,
+  "report_kind": "playwright-floating-promise-semantic-probe",
+  "mode": "run",
+  "complete": true,
+  "contracts_valid": true,
+  "runtime_complete": true,
+  "process_output_limit_bytes": 1048576,
+  "subprocess_timeout_seconds": 120,
+  "provenance": {
+    "semantic_input_sha256": "a938988a9164a343b1d38f822ec5684b1813d75e8ef1cf737307b51689ca34c1",
+    "operators_sha256": "f4c6a3238539387cbc9c81b2d2e71dc57b75973bee5c6c542f9072dc40ba1b5e",
+    "evaluator_runner_sha256": "4b5967f3434178a9fd6ae3d6dcfd077845ee5e31eed6c4d383b73cfb5d06ddb1",
+    "imported_fixture_helper_sha256": "374273b29ac89c33a55cc56b3ed3d017404049a46921abf1a8c7baaa1ee083fa",
+    "capture_helper_sha256": "fc90f95c0e572e7e0256746ae0911bd64f1d56cb124134c7530642da8377ed49",
+    "package_lock_sha256": "6195ecb1ddb09930325a82192fe059d732ecba09f57cdf3bbf77fd8de41aa872"
+  },
+  "versions": {
+    "python": "3.14.6",
+    "node": "v26.5.0",
+    "playwright": "Version 1.62.0",
+    "platform": "macOS-15.3.1-arm64-arm-64bit-Mach-O",
+    "machine": "arm64"
+  },
+  "summary": {
+    "probes": 2,
+    "expected_cases": 6,
+    "cases": 6,
+    "matched": 6,
+    "fault_unawaited_nonzero": 2,
+    "errors": 0
+  },
+  "results": [
+    {
+      "probe": "playwright-floating-assertion",
+      "pattern_id": "#15",
+      "case": "clean-awaited",
+      "fault_mode": "none",
+      "mutation_applied": false,
+      "baseline_source_sha256": "a938988a9164a343b1d38f822ec5684b1813d75e8ef1cf737307b51689ca34c1",
+      "executed_source_sha256": "a938988a9164a343b1d38f822ec5684b1813d75e8ef1cf737307b51689ca34c1",
+      "mutation_sha256": null,
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "evidence": [
+        "1 passed"
+      ],
+      "matched": true,
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/playwright",
+        "test",
+        "$FIXTURE_COPY/playwright/tests/floating-promises.spec.mjs",
+        "--config",
+        "$FIXTURE_COPY/playwright/playwright.config.mjs",
+        "--grep",
+        "#15 floating assertion promise"
+      ],
+      "output": "\nRunning 1 test using 1 worker\n\n[1/1] playwright/tests/floating-promises.spec.mjs:3:1 \u203a #15 floating assertion promise\n  1 passed (1.5s)\n",
+      "output_sha256": "d45924df6109b0a27e6a105f35dba3ad69b4b9ac91af3ec5c44179b36f176bc0",
+      "output_truncated": false,
+      "output_original_bytes": 139,
+      "duration_ms": 1752
+    },
+    {
+      "probe": "playwright-floating-assertion",
+      "pattern_id": "#15",
+      "case": "fault-awaited",
+      "fault_mode": "behavior",
+      "mutation_applied": false,
+      "baseline_source_sha256": "a938988a9164a343b1d38f822ec5684b1813d75e8ef1cf737307b51689ca34c1",
+      "executed_source_sha256": "a938988a9164a343b1d38f822ec5684b1813d75e8ef1cf737307b51689ca34c1",
+      "mutation_sha256": null,
+      "expected_exit_code": 1,
+      "exit_code": 1,
+      "evidence": [
+        "toHaveText"
+      ],
+      "matched": true,
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/playwright",
+        "test",
+        "$FIXTURE_COPY/playwright/tests/floating-promises.spec.mjs",
+        "--config",
+        "$FIXTURE_COPY/playwright/playwright.config.mjs",
+        "--grep",
+        "#15 floating assertion promise"
+      ],
+      "output": "\nRunning 1 test using 1 worker\n\n[1/1] playwright/tests/floating-promises.spec.mjs:3:1 \u203a #15 floating assertion promise\n  1) playwright/tests/floating-promises.spec.mjs:3:1 \u203a #15 floating assertion promise \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n    Error: expect(locator).toHaveText(expected) failed\n\n    Locator:  getByRole('status')\n    Expected: \"Count: 1\"\n    Received: \"Count: 0\"\n    Timeout:  1000ms\n\n    Call log:\n      - Expect \"toHaveText\" with timeout 1000ms\n      - waiting for getByRole('status')\n        11 \u00d7 locator resolved to <p role=\"status\">Count: 0</p>\n           - unexpected value \"Count: 0\"\n\n\n       8 |\n       9 |   const status = page.getByRole(\"status\");\n    > 10 |   await expect(status).toHaveText(\"Count: 1\", { timeout: 1000 });\n         |                        ^\n      11 | });\n      12 |\n      13 | test(\"#16 floating locator action promise\", async ({ page }) => {\n        at $FIXTURE_COPY/playwright/tests/floating-promises.spec.mjs:10:24\n\n    Error Context: $FIXTURE_COPY/test-results/floating-promises--15-floating-assertion-promise/error-context.md\n\n\n  1 failed\n    playwright/tests/floating-promises.spec.mjs:3:1 \u203a #15 floating assertion promise \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n",
+      "output_sha256": "2297a930214a2397762d6d3da0b583dc60c131ece31a6b94efe1274e3bd357b6",
+      "output_truncated": false,
+      "output_original_bytes": 1239,
+      "duration_ms": 1968
+    },
+    {
+      "probe": "playwright-floating-assertion",
+      "pattern_id": "#15",
+      "case": "fault-unawaited",
+      "fault_mode": "behavior",
+      "mutation_applied": true,
+      "baseline_source_sha256": "a938988a9164a343b1d38f822ec5684b1813d75e8ef1cf737307b51689ca34c1",
+      "executed_source_sha256": "c400b7d2cacc0903d01be22e7054c2fb0f439e8c7e02e09fb3fe6622e0ec9736",
+      "mutation_sha256": "0a111e75c2a188623928f9d9554ca9aee0630a4d56afa4254f144a34bb40eff4",
+      "expected_exit_code": 1,
+      "exit_code": 1,
+      "evidence": [
+        "toHaveText"
+      ],
+      "matched": true,
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/playwright",
+        "test",
+        "$FIXTURE_COPY/playwright/tests/floating-promises.spec.mjs",
+        "--config",
+        "$FIXTURE_COPY/playwright/playwright.config.mjs",
+        "--grep",
+        "#15 floating assertion promise"
+      ],
+      "output": "\nRunning 1 test using 1 worker\n\n[1/1] playwright/tests/floating-promises.spec.mjs:3:1 \u203a #15 floating assertion promise\n  1) playwright/tests/floating-promises.spec.mjs:3:1 \u203a #15 floating assertion promise \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n    Error: expect(locator).toHaveText(expected) failed\n\n    Locator:  getByRole('status')\n    Expected: \"Count: 1\"\n    Received: \"Count: 0\"\n\n    Call log:\n      - Expect \"toHaveText\" with timeout 1000ms\n      - waiting for getByRole('status')\n      - Protocol error (Runtime.callFunctionOn): Internal server error, session closed.\n\n\n       8 |\n       9 |   const status = page.getByRole(\"status\");\n    > 10 |   expect(status).toHaveText(\"Count: 1\", { timeout: 1000 });\n         |                  ^\n      11 | });\n      12 |\n      13 | test(\"#16 floating locator action promise\", async ({ page }) => {\n        at $FIXTURE_COPY/playwright/tests/floating-promises.spec.mjs:10:18\n\n    Error Context: $FIXTURE_COPY/test-results/floating-promises--15-floating-assertion-promise/error-context.md\n\n\n  1 failed\n    playwright/tests/floating-promises.spec.mjs:3:1 \u203a #15 floating assertion promise \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n",
+      "output_sha256": "736138d4797620ec4dae63709aca77fcc31c6c488379ef8114a7af35b664613a",
+      "output_truncated": false,
+      "output_original_bytes": 1189,
+      "duration_ms": 691
+    },
+    {
+      "probe": "playwright-floating-locator-action",
+      "pattern_id": "#16",
+      "case": "clean-awaited",
+      "fault_mode": "none",
+      "mutation_applied": false,
+      "baseline_source_sha256": "a938988a9164a343b1d38f822ec5684b1813d75e8ef1cf737307b51689ca34c1",
+      "executed_source_sha256": "a938988a9164a343b1d38f822ec5684b1813d75e8ef1cf737307b51689ca34c1",
+      "mutation_sha256": null,
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "evidence": [
+        "1 passed"
+      ],
+      "matched": true,
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/playwright",
+        "test",
+        "$FIXTURE_COPY/playwright/tests/floating-promises.spec.mjs",
+        "--config",
+        "$FIXTURE_COPY/playwright/playwright.config.mjs",
+        "--grep",
+        "#16 floating locator action promise"
+      ],
+      "output": "\nRunning 1 test using 1 worker\n\n[1/1] playwright/tests/floating-promises.spec.mjs:13:1 \u203a #16 floating locator action promise\n  1 passed (439ms)\n",
+      "output_sha256": "a58e334c23bd06b560a62de1c9b9e8951edc5bb0a975e24d969e7f715d88bf22",
+      "output_truncated": false,
+      "output_original_bytes": 146,
+      "duration_ms": 707
+    },
+    {
+      "probe": "playwright-floating-locator-action",
+      "pattern_id": "#16",
+      "case": "fault-awaited",
+      "fault_mode": "auth",
+      "mutation_applied": false,
+      "baseline_source_sha256": "a938988a9164a343b1d38f822ec5684b1813d75e8ef1cf737307b51689ca34c1",
+      "executed_source_sha256": "a938988a9164a343b1d38f822ec5684b1813d75e8ef1cf737307b51689ca34c1",
+      "mutation_sha256": null,
+      "expected_exit_code": 1,
+      "exit_code": 1,
+      "evidence": [
+        "locator.click"
+      ],
+      "matched": true,
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/playwright",
+        "test",
+        "$FIXTURE_COPY/playwright/tests/floating-promises.spec.mjs",
+        "--config",
+        "$FIXTURE_COPY/playwright/playwright.config.mjs",
+        "--grep",
+        "#16 floating locator action promise"
+      ],
+      "output": "\nRunning 1 test using 1 worker\n\n[1/1] playwright/tests/floating-promises.spec.mjs:13:1 \u203a #16 floating locator action promise\n  1) playwright/tests/floating-promises.spec.mjs:13:1 \u203a #16 floating locator action promise \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n    TimeoutError: locator.click: Timeout 1000ms exceeded.\n    Call log:\n      - waiting for getByTestId('account-name')\n\n\n      21 |   await page.goto(`/${query}`);\n      22 |\n    > 23 |   await page.getByTestId(\"account-name\").click({ timeout: 1000 });\n         |                                          ^\n      24 | });\n      25 |\n        at $FIXTURE_COPY/playwright/tests/floating-promises.spec.mjs:23:42\n\n    Error Context: $FIXTURE_COPY/test-results/floating-promises--16-floating-locator-action-promise/error-context.md\n\n\n  1 failed\n    playwright/tests/floating-promises.spec.mjs:13:1 \u203a #16 floating locator action promise \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n",
+      "output_sha256": "0d11a1bdb63a9623ce07715024ac58130913d4627a720441826318e1f3ff06f1",
+      "output_truncated": false,
+      "output_original_bytes": 908,
+      "duration_ms": 1651
+    },
+    {
+      "probe": "playwright-floating-locator-action",
+      "pattern_id": "#16",
+      "case": "fault-unawaited",
+      "fault_mode": "auth",
+      "mutation_applied": true,
+      "baseline_source_sha256": "a938988a9164a343b1d38f822ec5684b1813d75e8ef1cf737307b51689ca34c1",
+      "executed_source_sha256": "81d80188218ac57f78c6fb8f868dfb661602bf7fe37b3ba76716dded3e128b03",
+      "mutation_sha256": "a71b2063c55c9911f30a7433c3b703db054756df6bfaa80f9c92330665cfd8c1",
+      "expected_exit_code": 1,
+      "exit_code": 1,
+      "evidence": [
+        "locator.click"
+      ],
+      "matched": true,
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/playwright",
+        "test",
+        "$FIXTURE_COPY/playwright/tests/floating-promises.spec.mjs",
+        "--config",
+        "$FIXTURE_COPY/playwright/playwright.config.mjs",
+        "--grep",
+        "#16 floating locator action promise"
+      ],
+      "output": "\nRunning 1 test using 1 worker\n\n[1/1] playwright/tests/floating-promises.spec.mjs:13:1 \u203a #16 floating locator action promise\n  1) playwright/tests/floating-promises.spec.mjs:13:1 \u203a #16 floating locator action promise \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n    Error: locator.click: Test ended.\n    Call log:\n      - waiting for getByTestId('account-name')\n\n\n      21 |   await page.goto(`/${query}`);\n      22 |\n    > 23 |   page.getByTestId(\"account-name\").click({ timeout: 1000 });\n         |                                    ^\n      24 | });\n      25 |\n        at $FIXTURE_COPY/playwright/tests/floating-promises.spec.mjs:23:36\n\n    Error Context: $FIXTURE_COPY/test-results/floating-promises--16-floating-locator-action-promise/error-context.md\n\n\n  1 failed\n    playwright/tests/floating-promises.spec.mjs:13:1 \u203a #16 floating locator action promise \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n",
+      "output_sha256": "33532b360b4d04daa7365377b7d0bf704c1c4c7c621e55073d8e9cd1ff1ebaa1",
+      "output_truncated": false,
+      "output_original_bytes": 876,
+      "duration_ms": 620
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "corpus_id": "debugger-holdout-v1",
+  "status": "public-development-holdout",
+  "description": "Neutral sanitized report excerpts for F1-F15 classification across Playwright and Cypress. Expected labels are author-created synthetic labels, are not independently adjudicated, and are evaluator-only values never included in model prompts.",
+  "cases": [
+    {
+      "id": "case-001",
+      "framework": "playwright",
+      "artifact": {"source": "files/debugger-holdout-v1/case-001/report.json", "sha256": "000c98201cfe5e41245fe557c70cf05c4e19f36efeaaab906ec5d828ba7398cf"},
+      "expected": {"f_code": "F1", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "high", "test_quality_severity": "P1"}
+    },
+    {
+      "id": "case-002",
+      "framework": "playwright",
+      "artifact": {"source": "files/debugger-holdout-v1/case-002/report.json", "sha256": "d91befac3d4299943a842ddb9a2e6b0890da00de4fd957177ebb60806b112567"},
+      "expected": {"f_code": "F2", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "medium", "test_quality_severity": "P2"}
+    },
+    {
+      "id": "case-003",
+      "framework": "playwright",
+      "artifact": {"source": "files/debugger-holdout-v1/case-003/report.json", "sha256": "cc95a950d44325141ffdde1813f6a8af0f22f254bf860c1341519e81085203cf"},
+      "expected": {"f_code": "F3", "confidence": "high", "diagnosis": "product_regression", "product_impact": "high", "test_reliability_urgency": "high", "test_quality_severity": "N/A"}
+    },
+    {
+      "id": "case-004",
+      "framework": "playwright",
+      "artifact": {"source": "files/debugger-holdout-v1/case-004/report.json", "sha256": "d94185dd0f61c9a2f4b762d15e035a5eb7661e24bdd3ff367278a457d2b8b2f8"},
+      "expected": {"f_code": "F4", "confidence": "high", "diagnosis": "product_regression", "product_impact": "high", "test_reliability_urgency": "high", "test_quality_severity": "N/A"}
+    },
+    {
+      "id": "case-005",
+      "framework": "playwright",
+      "artifact": {"source": "files/debugger-holdout-v1/case-005/report.json", "sha256": "54b449c7aa1eb7e78126a170a2bfee6871d8115b3935979763e2507e14c3c804"},
+      "expected": {"f_code": "F5", "confidence": "high", "diagnosis": "product_regression", "product_impact": "high", "test_reliability_urgency": "high", "test_quality_severity": "N/A"}
+    },
+    {
+      "id": "case-006",
+      "framework": "playwright",
+      "artifact": {"source": "files/debugger-holdout-v1/case-006/report.json", "sha256": "0297a0bc33613a8e713b0a02469592473003810cf81b0604465545e3d46e549a"},
+      "expected": {"f_code": "F6", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "medium", "test_quality_severity": "P1"}
+    },
+    {
+      "id": "case-007",
+      "framework": "playwright",
+      "artifact": {"source": "files/debugger-holdout-v1/case-007/report.json", "sha256": "ef2af261d1e79dbc0c05c823e43fcddd97de1e3f1a2c66820c1afc3116f12c13"},
+      "expected": {"f_code": "F7", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "high", "test_quality_severity": "P1"}
+    },
+    {
+      "id": "case-008",
+      "framework": "playwright",
+      "artifact": {"source": "files/debugger-holdout-v1/case-008/report.json", "sha256": "ba171b1bb5dca49a1813875d882a9f291c0fc3501388e598cb4cd439afa79484"},
+      "expected": {"f_code": "F8", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "medium", "test_quality_severity": "P1"}
+    },
+    {
+      "id": "case-009",
+      "framework": "playwright",
+      "artifact": {"source": "files/debugger-holdout-v1/case-009/report.json", "sha256": "9dc7f50d87a1a2fef0dd159037b49ccad0dd5a54e7dd59afd251a6e1863e99ee"},
+      "expected": {"f_code": "F9", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "medium", "test_quality_severity": "P1"}
+    },
+    {
+      "id": "case-010",
+      "framework": "playwright",
+      "artifact": {"source": "files/debugger-holdout-v1/case-010/report.json", "sha256": "3a72708346ffa5b6069659f07ca247ddc1cc548c5c1616aeb2df2539893755ad"},
+      "expected": {"f_code": "F10", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "high", "test_quality_severity": "P1"}
+    },
+    {
+      "id": "case-011",
+      "framework": "playwright",
+      "artifact": {"source": "files/debugger-holdout-v1/case-011/report.json", "sha256": "efe4aa9dbd24ab606a706ce5a85774d8ebfbd0e0f43c199c050af13e486d7a2d"},
+      "expected": {"f_code": "F11", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "high", "test_quality_severity": "P1"}
+    },
+    {
+      "id": "case-012",
+      "framework": "playwright",
+      "artifact": {"source": "files/debugger-holdout-v1/case-012/report.json", "sha256": "b33658b01a461eabcfd0eb873628b34a89221919eb55cd30952a381a65d7a725"},
+      "expected": {"f_code": "F12", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "medium", "test_quality_severity": "P2"}
+    },
+    {
+      "id": "case-013",
+      "framework": "playwright",
+      "artifact": {"source": "files/debugger-holdout-v1/case-013/report.json", "sha256": "09f4c47ae59e80eb79251bf74d389f3b08bad20fe386a65519e659b82e714cb3"},
+      "expected": {"f_code": "F13", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "critical", "test_quality_severity": "P0"}
+    },
+    {
+      "id": "case-014",
+      "framework": "playwright",
+      "artifact": {"source": "files/debugger-holdout-v1/case-014/report.json", "sha256": "d8c1361f948f8b4be8e821b3991143dcc08e250002a4aca78bbdf13d0b2d41dc"},
+      "expected": {"f_code": "F14", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "high", "test_quality_severity": "P1"}
+    },
+    {
+      "id": "case-015",
+      "framework": "playwright",
+      "artifact": {"source": "files/debugger-holdout-v1/case-015/report.json", "sha256": "2e0386a79f4da12d0b73690e4d0848c6c77b3410100bb5114f110eb63cd41aaf"},
+      "expected": {"f_code": "F15", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "high", "test_quality_severity": "P1"}
+    },
+    {
+      "id": "case-016",
+      "framework": "cypress",
+      "artifact": {"source": "files/debugger-holdout-v1/case-016/report.json", "sha256": "af23158df315868fcbbdc2943f87adb94f8be77c3d32dc94177f568aea3c3c2b"},
+      "expected": {"f_code": "F1", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "high", "test_quality_severity": "P1"}
+    },
+    {
+      "id": "case-017",
+      "framework": "cypress",
+      "artifact": {"source": "files/debugger-holdout-v1/case-017/report.json", "sha256": "4254b697ea2ccbc7e9f27e850117fd92000d3a3faf9c9ab7c1b00523009b57ca"},
+      "expected": {"f_code": "F2", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "medium", "test_quality_severity": "P2"}
+    },
+    {
+      "id": "case-018",
+      "framework": "cypress",
+      "artifact": {"source": "files/debugger-holdout-v1/case-018/report.json", "sha256": "1674552aef414a51aaa9f31589322e60e287791dfb492586da622f743e23d6fa"},
+      "expected": {"f_code": "F3", "confidence": "high", "diagnosis": "product_regression", "product_impact": "high", "test_reliability_urgency": "high", "test_quality_severity": "N/A"}
+    },
+    {
+      "id": "case-019",
+      "framework": "cypress",
+      "artifact": {"source": "files/debugger-holdout-v1/case-019/report.json", "sha256": "f319305f726d1c0bcb0c64c987035e433c2093c7e2f2fdc057653ae525e552f9"},
+      "expected": {"f_code": "F4", "confidence": "high", "diagnosis": "product_regression", "product_impact": "high", "test_reliability_urgency": "high", "test_quality_severity": "N/A"}
+    },
+    {
+      "id": "case-020",
+      "framework": "cypress",
+      "artifact": {"source": "files/debugger-holdout-v1/case-020/report.json", "sha256": "ad3cf9d1c4c24145356eccfdcae62585ffc7d6c2f4be276c8ad914608aaa92c6"},
+      "expected": {"f_code": "F5", "confidence": "high", "diagnosis": "product_regression", "product_impact": "high", "test_reliability_urgency": "high", "test_quality_severity": "N/A"}
+    },
+    {
+      "id": "case-021",
+      "framework": "cypress",
+      "artifact": {"source": "files/debugger-holdout-v1/case-021/report.json", "sha256": "9ca784ef6487f126b8a78e0b912c85058c7f97426057e28dbcf6a639cdc093dc"},
+      "expected": {"f_code": "F6", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "medium", "test_quality_severity": "P1"}
+    },
+    {
+      "id": "case-022",
+      "framework": "cypress",
+      "artifact": {"source": "files/debugger-holdout-v1/case-022/report.json", "sha256": "de243525fb456b72a7d8f3223180617c98d878bebbcd966e2e2ecdaa643dfbb1"},
+      "expected": {"f_code": "F7", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "high", "test_quality_severity": "P1"}
+    },
+    {
+      "id": "case-023",
+      "framework": "cypress",
+      "artifact": {"source": "files/debugger-holdout-v1/case-023/report.json", "sha256": "bdc6b849bad349b494b591a4bb0dc05d88f143001e66eb0f5b9b2ccb02904f74"},
+      "expected": {"f_code": "F8", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "medium", "test_quality_severity": "P1"}
+    },
+    {
+      "id": "case-024",
+      "framework": "cypress",
+      "artifact": {"source": "files/debugger-holdout-v1/case-024/report.json", "sha256": "e1745f1bdb02bdf49e8ae2fb0806be4d167283bcc05bb08aecdb7ba5094ae1dc"},
+      "expected": {"f_code": "F9", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "medium", "test_quality_severity": "P1"}
+    },
+    {
+      "id": "case-025",
+      "framework": "cypress",
+      "artifact": {"source": "files/debugger-holdout-v1/case-025/report.json", "sha256": "7dc9d9665e331779b6f6b375b20b52ce478c9c6bb38c36ac9d6c01e6e0daa276"},
+      "expected": {"f_code": "F10", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "high", "test_quality_severity": "P1"}
+    },
+    {
+      "id": "case-026",
+      "framework": "cypress",
+      "artifact": {"source": "files/debugger-holdout-v1/case-026/report.json", "sha256": "c7442f197d8b62e9ce54eeb8bd1bcfcbc989fc1979bdcabfb9699dc4c8a0bd9c"},
+      "expected": {"f_code": "F11", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "high", "test_quality_severity": "P1"}
+    },
+    {
+      "id": "case-027",
+      "framework": "cypress",
+      "artifact": {"source": "files/debugger-holdout-v1/case-027/report.json", "sha256": "c8bf927f746034b9051dcecfebafb732517caa8645cfae6d7d1094ebfb45473b"},
+      "expected": {"f_code": "F12", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "medium", "test_quality_severity": "P2"}
+    },
+    {
+      "id": "case-028",
+      "framework": "cypress",
+      "artifact": {"source": "files/debugger-holdout-v1/case-028/report.json", "sha256": "b977a4c483ea990045ade17fd0462ece8266fa6a0328af2f48620b2aeff4dbdd"},
+      "expected": {"f_code": "F13", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "critical", "test_quality_severity": "P0"}
+    },
+    {
+      "id": "case-029",
+      "framework": "cypress",
+      "artifact": {"source": "files/debugger-holdout-v1/case-029/report.json", "sha256": "e8eaaaae1df764fde495e1710d3c86a7cc5cb9d4f1e46aa055e25ea024d8aff5"},
+      "expected": {"f_code": "F14", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "high", "test_quality_severity": "P1"}
+    },
+    {
+      "id": "case-030",
+      "framework": "cypress",
+      "artifact": {"source": "files/debugger-holdout-v1/case-030/report.json", "sha256": "ee8055df49dce80a9ec5deea4a845a6c9ef8ff73bf07b711abf4da838e88caa3"},
+      "expected": {"f_code": "F15", "confidence": "high", "diagnosis": "test_defect", "product_impact": "none", "test_reliability_urgency": "high", "test_quality_severity": "P1"}
+    }
+  ]
+}

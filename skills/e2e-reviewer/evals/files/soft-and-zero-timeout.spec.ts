@@ -14,24 +14,28 @@ test.describe('notification banner', () => {
   });
 
   test('flash error must never appear on the safe path', async ({ page }) => {
+    test.setTimeout(1500);
     await page.goto('/inbox?safe=1');
-    // JUSTIFIED: snapshot-of-absence — the flash error must not exist at this exact moment
+    // JUSTIFIED: deliberately share the bounded 1500ms test deadline during shutdown
     await expect(page.locator('.flash-error')).toHaveCount(0, { timeout: 0 });
   });
 });
 
 test.describe('profile panel', () => {
-  test('shows all profile fields', async ({ page }) => {
+  test('edits a profile through a soft-gated form', async ({ page }) => {
     await page.goto('/profile');
-    await expect.soft(page.locator('.name')).toBeVisible();
-    await expect.soft(page.locator('.email')).toBeVisible();
-    await expect.soft(page.locator('.avatar')).toBeVisible();
+    const profileForm = page.getByTestId('profile-form');
+    await expect.soft(profileForm).toBeVisible();
+    await profileForm.getByLabel('Display name').fill('Mina');
+    await profileForm.getByRole('button', { name: 'Save' }).click();
+    await expect(page.getByRole('status')).toHaveText('Saved');
   });
 
   test('shows plan details', async ({ page }) => {
     await page.goto('/profile');
     await expect(page.locator('.plan-panel')).toBeVisible();
-    await expect(page.locator('.plan-name')).toHaveText('Pro');
+    await expect.soft(page.locator('.plan-name')).toHaveText('Pro');
     await expect.soft(page.locator('.renewal-hint')).toContainText('renews');
+    await expect.soft(page.locator('.billing-cycle')).toHaveText('Monthly');
   });
 });

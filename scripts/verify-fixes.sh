@@ -9,8 +9,15 @@
 # Usage: bash scripts/verify-fixes.sh <repo-path> [-- <file>...]
 #   <file> paths are relative to <repo-path>; when given, the AST rules run
 #   only on those files (whole-repo scan remains the no-args default).
-# Env: VERIFY_FIXES_SKIP_TSC=1 skips the tsc step (callers that own typechecking,
-#   e.g. scripts/pr-preflight.sh with nearest-tsconfig logic).
+# Env: Typechecking is disabled by default because a repository-local tsc is
+#   project-controlled code. To opt in, all three values are required:
+#     VERIFY_FIXES_RUN_TSC=1
+#     VERIFY_FIXES_TRUST_REPO=1
+#     VERIFY_FIXES_APPROVE_TSC_COMMAND='node_modules/.bin/tsc --noEmit'
+#   The approved command runs with a minimized environment and is NOT sandboxed.
+#   VERIFY_FIXES_SKIP_TSC=1 remains a compatibility override for callers that
+#   own typechecking (for example scripts/pr-preflight.sh).
+#   VERIFY_FIXES_AST_GREP=/absolute/path selects an explicit trusted executable.
 # Exits 0 on clean, non-zero on issues found.
 
 set -uo pipefail
@@ -19,7 +26,9 @@ REPO="${1:-.}"
 [[ $# -gt 0 ]] && shift
 
 EXPLICIT_FILES=()
+EXPLICIT_MODE=false
 if [[ "${1:-}" == "--" ]]; then
+  EXPLICIT_MODE=true
   shift
   EXPLICIT_FILES=("$@")
 fi
@@ -29,21 +38,175 @@ if [[ ! -d "$REPO" ]]; then
   exit 2
 fi
 
-# Resolve ast-grep (same fallback chain as scan.sh's Tier 2 block).
-if command -v ast-grep >/dev/null 2>&1; then
-  AST_GREP="ast-grep"
-elif command -v sg >/dev/null 2>&1; then
-  AST_GREP="sg"
-elif command -v npx >/dev/null 2>&1; then
-  AST_GREP="npx --yes @ast-grep/cli"
-else
-  echo "error: ast-grep required for postfix verification — install via 'brew install ast-grep' or 'npm i -g @ast-grep/cli'" >&2
+# AST rules live with the verifier. Resolve only already-installed executables;
+# postfix verification must never download and execute an unpinned package.
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+RULES_DIR="$SCRIPT_DIR/../skills/e2e-reviewer/scripts/ast-grep-rules"
+REPO_CANONICAL="$(cd "$REPO" && pwd -P)"
+VALIDATED_EXPLICIT_FILES=()
+
+if [[ "$EXPLICIT_MODE" == "true" && ${#EXPLICIT_FILES[@]} -eq 0 ]]; then
+  echo "error: unsafe explicit target list: at least one file is required after --" >&2
   exit 2
 fi
 
-# AST rules now live with the skill they support.
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-RULES_DIR="$SCRIPT_DIR/../skills/e2e-reviewer/scripts/ast-grep-rules"
+validate_explicit_target() {
+  local target="$1" part remaining current parent resolved
+  case "$target" in
+    "") echo "empty target"; return 1 ;;
+    /*) echo "absolute target"; return 1 ;;
+    -*) echo "option-like target"; return 1 ;;
+  esac
+  if printf '%s' "$target" | LC_ALL=C grep -q '[[:cntrl:]]'; then
+    echo "control character in target"
+    return 1
+  fi
+  case "/$target/" in
+    */../*) echo "parent traversal"; return 1 ;;
+    */./*) echo "dot path component"; return 1 ;;
+    *//*) echo "empty path component"; return 1 ;;
+  esac
+  current="$REPO_CANONICAL"
+  remaining="$target"
+  while :; do
+    case "$remaining" in
+      */*)
+        part="${remaining%%/*}"
+        remaining="${remaining#*/}"
+        ;;
+      *)
+        part="$remaining"
+        remaining=""
+        ;;
+    esac
+    current="$current/$part"
+    if [[ -L "$current" ]]; then
+      echo "symlink component"
+      return 1
+    fi
+    [[ -n "$remaining" ]] || break
+  done
+  parent="$(cd -P "$(dirname "$REPO_CANONICAL/$target")" 2>/dev/null && pwd)" || {
+    echo "unresolvable target parent"
+    return 1
+  }
+  resolved="$parent/$(basename "$target")"
+  case "$resolved" in
+    "$REPO_CANONICAL"/*) ;;
+    *) echo "target escapes repository"; return 1 ;;
+  esac
+  if [[ -L "$resolved" ]]; then
+    echo "final target is a symlink"
+    return 1
+  fi
+  if [[ ! -f "$resolved" ]]; then
+    echo "target is not a regular file"
+    return 1
+  fi
+  printf '%s\n' "$resolved"
+}
+
+for _f in "${EXPLICIT_FILES[@]}"; do
+  if ! validated_target="$(validate_explicit_target "$_f")"; then
+    echo "error: unsafe explicit target ($_f): $validated_target" >&2
+    exit 2
+  fi
+  VALIDATED_EXPLICIT_FILES+=("$validated_target")
+done
+
+AST_GREP_CMD=()
+EXEC_TMP="$(mktemp -d)"
+mkdir -p "$EXEC_TMP/home"
+trap 'rm -rf "$EXEC_TMP"' EXIT
+SAFE_EXEC_PATH="/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/usr/local/bin"
+
+canonical_executable() {
+  local candidate="$1"
+  local link_target
+  local candidate_dir
+  local candidate_base
+  local symlink_hops=0
+
+  [[ "$candidate" == /* ]] || return 1
+  while [[ -L "$candidate" ]]; do
+    symlink_hops=$((symlink_hops + 1))
+    [[ "$symlink_hops" -le 40 ]] || return 1
+    link_target="$(readlink "$candidate")" || return 1
+    if [[ "$link_target" == /* ]]; then
+      candidate="$link_target"
+    else
+      candidate="$(dirname "$candidate")/$link_target"
+    fi
+  done
+
+  candidate_dir="$(cd -P "$(dirname "$candidate")" 2>/dev/null && pwd)" || return 1
+  candidate_base="$(basename "$candidate")"
+  printf '%s/%s\n' "$candidate_dir" "$candidate_base"
+}
+
+is_target_controlled() {
+  if [[ "$REPO_CANONICAL" == "/" ]]; then
+    return 0
+  fi
+  case "$1" in
+    "$REPO_CANONICAL"|"$REPO_CANONICAL"/*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+accept_ast_grep() {
+  local candidate="$1"
+  local resolved
+
+  [[ -x "$candidate" ]] || return 1
+  resolved="$(canonical_executable "$candidate")" || return 1
+  [[ -x "$resolved" ]] || return 1
+  if is_target_controlled "$resolved"; then
+    return 2
+  fi
+  AST_GREP_CMD=("$resolved")
+  return 0
+}
+
+if [[ -n "${VERIFY_FIXES_AST_GREP:-}" ]]; then
+  if [[ "$VERIFY_FIXES_AST_GREP" != /* ]]; then
+    echo "error: VERIFY_FIXES_AST_GREP must be an absolute path: $VERIFY_FIXES_AST_GREP" >&2
+    exit 2
+  fi
+  accept_ast_grep "$VERIFY_FIXES_AST_GREP"
+  ast_accept_status=$?
+  if [[ "$ast_accept_status" -eq 2 ]]; then
+    echo "error: VERIFY_FIXES_AST_GREP resolves inside the target repository: $VERIFY_FIXES_AST_GREP" >&2
+    exit 2
+  elif [[ "$ast_accept_status" -ne 0 ]]; then
+    echo "error: VERIFY_FIXES_AST_GREP is not a trusted executable: $VERIFY_FIXES_AST_GREP" >&2
+    exit 2
+  fi
+else
+  for ast_candidate in \
+    "$SCRIPT_DIR/../node_modules/.bin/ast-grep" \
+    "$SCRIPT_DIR/../node_modules/.bin/sg"
+  do
+    if accept_ast_grep "$ast_candidate"; then
+      break
+    fi
+  done
+
+  if [[ ${#AST_GREP_CMD[@]} -eq 0 ]]; then
+    for ast_name in ast-grep sg; do
+      ast_candidate="$(command -v "$ast_name" 2>/dev/null || true)"
+      [[ "$ast_candidate" == /* ]] || continue
+      if accept_ast_grep "$ast_candidate"; then
+        break
+      fi
+    done
+  fi
+fi
+
+if [[ ${#AST_GREP_CMD[@]} -eq 0 ]]; then
+  echo "error: ast-grep required for postfix verification; install it locally or system-wide, or set VERIFY_FIXES_AST_GREP to a trusted executable" >&2
+  exit 2
+fi
 
 # Collect changed files since HEAD if inside a git repo.
 CHANGED_FILES=""
@@ -66,6 +229,8 @@ echo
 echo "--- Static check ---"
 if [[ "${VERIFY_FIXES_SKIP_TSC:-0}" == "1" ]]; then
   echo "(VERIFY_FIXES_SKIP_TSC=1 — caller owns typechecking; skipping tsc)"
+elif [[ "${VERIFY_FIXES_RUN_TSC:-0}" != "1" ]]; then
+  echo "(AST-only default — repository-local tsc is not executed; set VERIFY_FIXES_RUN_TSC=1 with trust and exact-command approval to opt in)"
 fi
 has_tsconfig=false
 if (cd "$REPO" && [[ -f tsconfig.json ]] || [[ -f tsconfig.base.json ]]); then
@@ -74,25 +239,36 @@ fi
 
 if [[ "${VERIFY_FIXES_SKIP_TSC:-0}" == "1" ]]; then
   : # skipped above
+elif [[ "${VERIFY_FIXES_RUN_TSC:-0}" != "1" ]]; then
+  : # safe default reported above
 elif [[ "$has_tsconfig" == "true" ]]; then
-  if ! command -v npx >/dev/null 2>&1; then
-    echo "(npx not available — skipping tsc check)"
+  tsc_bin="$REPO_CANONICAL/node_modules/.bin/tsc"
+  approved_tsc="node_modules/.bin/tsc --noEmit"
+  if [[ "${VERIFY_FIXES_TRUST_REPO:-0}" != "1" ]]; then
+    echo "(tsc skipped — repository trust not declared; set VERIFY_FIXES_TRUST_REPO=1)"
+  elif [[ "${VERIFY_FIXES_APPROVE_TSC_COMMAND:-}" != "$approved_tsc" ]]; then
+    echo "(tsc skipped — exact command approval required (VERIFY_FIXES_APPROVE_TSC_COMMAND): $approved_tsc)"
+  elif [[ ! -x "$tsc_bin" ]]; then
+    echo "(tsc skipped — $tsc_bin is not executable)"
   else
-    # First, probe whether tsc is installed (separate from running it).
-    # `npx --no-install --quiet tsc --version` exits 0 if installed, non-0 if not.
-    if (cd "$REPO" && npx --no-install --quiet tsc --version >/dev/null 2>&1); then
-      # tsc IS installed locally — now run the actual check.
-      tsc_output=$(cd "$REPO" && npx --no-install tsc --noEmit 2>&1)
-      tsc_exit=$?
-      if [[ "$tsc_exit" -eq 0 ]]; then
-        echo "✓ tsc --noEmit clean"
-      else
-        echo "✗ tsc --noEmit reported errors (exit $tsc_exit):"
-        printf '%s\n' "$tsc_output" | tail -10 | sed 's/^/  /'
-        issues=$((issues + 1))
-      fi
+    echo "NOTICE: executing approved repository-local tsc with a minimized environment; this is NOT SANDBOXED"
+    tsc_output=$(
+      cd "$REPO_CANONICAL" &&
+        env -i \
+          HOME="$EXEC_TMP/home" \
+          TMPDIR="$EXEC_TMP" \
+          PATH="$SAFE_EXEC_PATH" \
+          LANG=C \
+          LC_ALL=C \
+          "$tsc_bin" --noEmit 2>&1
+    )
+    tsc_exit=$?
+    if [[ "$tsc_exit" -eq 0 ]]; then
+      echo "✓ tsc --noEmit clean"
     else
-      echo "(tsc not installed locally in $REPO — skipping; run 'npm install' first to enable)"
+      echo "✗ tsc --noEmit reported errors (exit $tsc_exit):"
+      printf '%s\n' "$tsc_output" | tail -10 | sed 's/^/  /'
+      issues=$((issues + 1))
     fi
   fi
 elif (cd "$REPO" && [[ -f package.json ]]); then
@@ -108,10 +284,7 @@ echo "--- AST-aware sed-artifact detection ---"
 # Scan targets: explicit file list (relative to $REPO) when given, else whole repo.
 SCAN_TARGETS=("$REPO")
 if [[ ${#EXPLICIT_FILES[@]} -gt 0 ]]; then
-  SCAN_TARGETS=()
-  for _f in "${EXPLICIT_FILES[@]}"; do
-    SCAN_TARGETS+=("$REPO/$_f")
-  done
+  SCAN_TARGETS=("${VALIDATED_EXPLICIT_FILES[@]}")
   echo "(scanning ${#SCAN_TARGETS[@]} explicit file(s) only)"
 fi
 
@@ -119,11 +292,22 @@ run_postfix_rule() {
   local rule_file="$1"
   local label="$2"
   local output
-  output=$($AST_GREP scan --rule "$RULES_DIR/$rule_file" "${SCAN_TARGETS[@]}" 2>&1 || true)
+  local ast_status
+  if [[ ! -f "$RULES_DIR/$rule_file" ]]; then
+    echo "✗ $label — missing rule: $RULES_DIR/$rule_file"
+    issues=$((issues + 1))
+    return
+  fi
+  output=$("${AST_GREP_CMD[@]}" scan --rule "$RULES_DIR/$rule_file" "${SCAN_TARGETS[@]}" 2>&1)
+  ast_status=$?
   local count
   count=$(printf '%s\n' "$output" | grep -cE '^(error|warning|info)\[' || true)
   count=${count:-0}
-  if [[ "$count" -gt 0 ]]; then
+  if [[ "$ast_status" -gt 1 || ( "$ast_status" -ne 0 && "$count" -eq 0 ) ]]; then
+    echo "✗ $label — ast-grep failed (exit $ast_status)"
+    printf '%s\n' "$output" | head -20 | sed 's/^/  /'
+    issues=$((issues + 1))
+  elif [[ "$count" -gt 0 ]]; then
     echo "✗ $label ($count hit(s))"
     printf '%s\n' "$output" | head -20 | sed 's/^/  /'
     issues=$((issues + count))

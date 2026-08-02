@@ -1,0 +1,349 @@
+{
+  "included_source_bytes": 729289,
+  "omissions": {
+    "allowlist": [],
+    "excluded_surfaces": [
+      ".git/**",
+      ".omx/**",
+      "benchmarks/**",
+      "results/**",
+      "**/evals/**",
+      "**/*holdout*",
+      "**/*scorecard*",
+      "**/*review*",
+      "chat transcripts and conclusions"
+    ],
+    "readme_sections": [
+      "Isn't this just an AI code reviewer like CodeRabbit, Copilot, or Cursor BugBot?",
+      "Methodology",
+      "Open-source adoption and case evidence"
+    ]
+  },
+  "packet_bytes": 878878,
+  "packet_id": "independent-product-review-v1",
+  "packet_sha256": "51cfd3b67af9b1b6b1eb82b1747c49a8b6b641d5d9a481235d5f4fdb109a3a44",
+  "remaining_source_bytes": 20711,
+  "schema_version": 1,
+  "selected_files": [
+    {
+      "line_count": 650,
+      "path": "README.md",
+      "representation_bytes": 44665,
+      "representation_sha256": "11aea821804c88da6a0ea6f33a4df36ff420e87204051e363efc45a43788a67f",
+      "required": true,
+      "source_bytes": 53327,
+      "source_sha256": "7186987d4f5cfdcb48123625a4121c091dc6ae1e4bd5abd0e8a5c4e393cea5f3",
+      "transform": {
+        "excluded_headings": [
+          "Methodology",
+          "Open-source adoption and case evidence",
+          "Isn't this just an AI code reviewer like CodeRabbit, Copilot, or Cursor BugBot?"
+        ],
+        "kind": "exclude-markdown-sections-v1"
+      }
+    },
+    {
+      "line_count": 99,
+      "path": "SECURITY.md",
+      "representation_bytes": 7081,
+      "representation_sha256": "102770910f5eaa615c83a5326e6e747f96096294e71430ad35c24a658ffec7e2",
+      "required": true,
+      "source_bytes": 6190,
+      "source_sha256": "b65345d08793b963a3837b573ec0c597192ad675cebfb8157ffc01e2020ec182",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 15,
+      "path": ".claude-plugin/plugin.json",
+      "representation_bytes": 1642,
+      "representation_sha256": "42244475fff439838412312a161a25b53a16fe26a4b345ed0c2c368cf8816f9b",
+      "required": true,
+      "source_bytes": 1507,
+      "source_sha256": "63a37edb76db4b652b15806f866a2cd335a400acf8455cbc91b3e47430098525",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 71,
+      "path": ".claude-plugin/marketplace.json",
+      "representation_bytes": 3209,
+      "representation_sha256": "7d5d1714e01d56bf1ea343ce1ba93b03c9520a5f1098ad71dab064555748f5af",
+      "required": true,
+      "source_bytes": 2570,
+      "source_sha256": "89006ac66d5d4eb779dcb07d0f82a18cd9b62c8636bd1b914d99122c0c00831a",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 89,
+      "path": ".codex-plugin/plugin.json",
+      "representation_bytes": 4797,
+      "representation_sha256": "7669273008b64cf08e61e23eed308a15d75c84f3333ddf3be5d610424022e4dd",
+      "required": true,
+      "source_bytes": 3996,
+      "source_sha256": "a54a828f5b74f8665ff2c7384aac02accfe50643db6e0a9b84031e8dea43fa43",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 604,
+      "path": "skills/playwright-test-generator/SKILL.md",
+      "representation_bytes": 43333,
+      "representation_sha256": "21d08934508e35b7a8aab0f313b56d60d7358f23e1dde6d7454e5a481254374e",
+      "required": true,
+      "source_bytes": 37897,
+      "source_sha256": "f7a29ac29549c4d156caec531111251f3410a0a6a9af06a33c7e2b6622dfd4b0",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 443,
+      "path": "skills/e2e-reviewer/SKILL.md",
+      "representation_bytes": 51764,
+      "representation_sha256": "e2ce0862305ca60b62095a971059ab1cd302a8afcf730f2aa170e92a656a54cd",
+      "required": true,
+      "source_bytes": 47777,
+      "source_sha256": "0bd81dcab9e66a425b23a411feab3841d9a049ef9f3c90461263f8f3577f505b",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 401,
+      "path": "skills/playwright-debugger/SKILL.md",
+      "representation_bytes": 32298,
+      "representation_sha256": "35e7bd625efa25650ba855df5559a74893ef118f9fcd8d2991ad609bb51e40f1",
+      "required": true,
+      "source_bytes": 28689,
+      "source_sha256": "55e4863745727595ac00f386026c6758e86c451c31b391a584a0688bb4aa0dd6",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 436,
+      "path": "skills/cypress-debugger/SKILL.md",
+      "representation_bytes": 34524,
+      "representation_sha256": "d8cdc693c0bb65f46694351867e5b2578bf3c7ac8d92150b60c5c47272a4077b",
+      "required": true,
+      "source_bytes": 30600,
+      "source_sha256": "188eb49ffaacd6ad24f058b9fe0709cae767a091449428d4e1316546f49018c0",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 890,
+      "path": "skills/e2e-reviewer/references/pattern-reference.md",
+      "representation_bytes": 75646,
+      "representation_sha256": "cb36f5532d8855ec0eaf8fe4da864f04493defd58f88b40741ed735a45b8833e",
+      "required": true,
+      "source_bytes": 67636,
+      "source_sha256": "4dc1763090cf6738c5166a336e4f4123915efcb5f3f521397e33baa621b83d7e",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 50,
+      "path": "skills/e2e-reviewer/references/verification-rules.md",
+      "representation_bytes": 4827,
+      "representation_sha256": "533a6d73057974a33edc82b4474b6a376464f5286525a5f1e2ebad7da4b28324",
+      "required": true,
+      "source_bytes": 4377,
+      "source_sha256": "09f5998f1262d33affcfb44ce417bd52c9a53909336d505fc085526581361559",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 4894,
+      "path": "skills/e2e-reviewer/scripts/scan.sh",
+      "representation_bytes": 260282,
+      "representation_sha256": "0689194f5d10a494a08756e57d48752291633770ad3881255d3e270f88536553",
+      "required": true,
+      "source_bytes": 216236,
+      "source_sha256": "173952437f2f291ff8969dbc1c86de83e715a110b71a5498ffaa9ee4d0d1d8a5",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 572,
+      "path": "skills/playwright-test-generator/scripts/preflight_target.py",
+      "representation_bytes": 24638,
+      "representation_sha256": "2d2b380129db7850ba2e63b782c6e9ca9ae346c59a904322e731d90f071ffa98",
+      "required": true,
+      "source_bytes": 19490,
+      "source_sha256": "91b277a46fb885b3f6c2b90d31ac72a61fc10a6bd150abbc03eecbe358e9e822",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 1054,
+      "path": "skills/playwright-debugger/scripts/read-playwright-artifact.py",
+      "representation_bytes": 48194,
+      "representation_sha256": "50a92919c2706e1b89760af6b7c9774c61f72257bbd3daa0d6b1285aa4dd949e",
+      "required": true,
+      "source_bytes": 38708,
+      "source_sha256": "bf16a2c15a5bd4b9710477fd91b4489f02f3aff55d6f98e25568b88d1b7128f6",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 283,
+      "path": "skills/playwright-debugger/scripts/publish-json-report.py",
+      "representation_bytes": 11810,
+      "representation_sha256": "49ecaa4931002d3bb1094325c5c44ecc513db2f2a28357ddd70ed739a2fe4c30",
+      "required": true,
+      "source_bytes": 9263,
+      "source_sha256": "048e5759d1956e70e4c4ca16bb8543f9edfa0c3861d13ef11e63c24d7fe96ed6",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 930,
+      "path": "skills/cypress-debugger/scripts/read-cypress-artifact.py",
+      "representation_bytes": 41241,
+      "representation_sha256": "69d535c7f0bcebd9be24363460356eb26f4e3d9860ddee380819a7765fc5eeea",
+      "required": true,
+      "source_bytes": 32871,
+      "source_sha256": "baca00a68a81a092b7d19a4d0e0535e6aa273c7fd55caa06c721ecc7c638d0ee",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 481,
+      "path": "skills/cypress-debugger/scripts/extract-junit-failures.py",
+      "representation_bytes": 22077,
+      "representation_sha256": "0ca964e904ab5ac3fad6e82d3b36579f77ce16148be9f49eacfbfa0cbdbd8812",
+      "required": true,
+      "source_bytes": 17748,
+      "source_sha256": "9265496da44f17f5e2416f38eb7ff93a30fc7d24c7e6afcc93daf031463dbaa4",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 129,
+      "path": "skills/cypress-debugger/scripts/redact_artifact.py",
+      "representation_bytes": 4985,
+      "representation_sha256": "6b824ca699ad322506e0bccac79fbc7e469d21a323f8a82f6eefc18e5b3e4582",
+      "required": true,
+      "source_bytes": 3824,
+      "source_sha256": "2e2c85d6219114817f9a0983c3eaf9bde971c589b043fb1997f45d72e08bad67",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 67,
+      "path": "skills/playwright-test-generator/best-practices.md",
+      "representation_bytes": 6547,
+      "representation_sha256": "db8c758e52f9c6c3e69cc13745e14d30ad821cdb3cfca487d2b693e3a955fbdf",
+      "required": false,
+      "source_bytes": 5944,
+      "source_sha256": "b8472249b1f2406e35775eadfe0e973114436844b1117ec804fb5a09817850db",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 265,
+      "path": "skills/playwright-test-generator/code-rules.md",
+      "representation_bytes": 22359,
+      "representation_sha256": "69764a0c1444459bff7590a5967058f762395c315cb5f433bee82a4d2c87d658",
+      "required": false,
+      "source_bytes": 19974,
+      "source_sha256": "7795e6f4cdaa41546c8b5386ce312a9cf67d942cd519d40dd6a7678f03ce5636",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 147,
+      "path": "skills/playwright-test-generator/verification-rules.md",
+      "representation_bytes": 11174,
+      "representation_sha256": "ad8cedb92e7dff2c58d5a52c85a22a51cfbca322a32ae467a43d034df0aad7f6",
+      "required": false,
+      "source_bytes": 9851,
+      "source_sha256": "8564baf915821979263cef7b6e588917f33274d9d8bf7826842f192186378216",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 287,
+      "path": "skills/e2e-reviewer/references/applying-fixes.md",
+      "representation_bytes": 31980,
+      "representation_sha256": "b405f3eee56a3b4d1b004a5a47eccdd3bef0c82bfcb50b87e4ccbdc8136e1049",
+      "required": false,
+      "source_bytes": 29397,
+      "source_sha256": "93faf674d4faf82749c2ca5b63701de5296826a66d0d4028dcfb7f3981c0495e",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 107,
+      "path": "skills/e2e-reviewer/references/grep-patterns.md",
+      "representation_bytes": 18396,
+      "representation_sha256": "53015b5ba277827860a56e4ea3f30d7bdbc50d2158bb6eb0792bf486b9cf8dfd",
+      "required": false,
+      "source_bytes": 17433,
+      "source_sha256": "decc4fb417f40ea0807eef45d5a5977ce15d49b4b8f896a0ee6114a664dc0e71",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 112,
+      "path": "skills/e2e-reviewer/scripts/parse-ast-grep-json.py",
+      "representation_bytes": 4548,
+      "representation_sha256": "60e3a435f99c91484594994840ec481d81ccf4e29e052fbb5c389ce137e1a0c8",
+      "required": false,
+      "source_bytes": 3540,
+      "source_sha256": "2c1e2fa2c18a3810495b69491ed0ab74163515fa9936dfae0aaaf73018d37f07",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 201,
+      "path": "scripts/ci/ci-local.sh",
+      "representation_bytes": 9928,
+      "representation_sha256": "26e52aff0f8ca6065ca37e95e094c9cd33895ae938d965f4026e002bdb075677",
+      "required": false,
+      "source_bytes": 8119,
+      "source_sha256": "8368be1cf129cf1c52e5c121f84468815b1b03e0a42f5a1e65a0a87f0cefa459",
+      "transform": {
+        "kind": "none"
+      }
+    },
+    {
+      "line_count": 302,
+      "path": "scripts/ci/pre-push-security.sh",
+      "representation_bytes": 15043,
+      "representation_sha256": "2ced7c927ad2a545cae0d109e638da8e2cc74f7e7bed666bfd19a937cbf3b09b",
+      "required": false,
+      "source_bytes": 12325,
+      "source_sha256": "e3a1703524711461d876a5149185e8654990043eb8897a54dac90cfd97733559",
+      "transform": {
+        "kind": "none"
+      }
+    }
+  ],
+  "selected_surface_sha256": "11b810ca44af737642c3186475673287de52c906437bdbc08a50517978b50014",
+  "selection_policy": "ordered-explicit-allowlist-v1",
+  "source_byte_budget": 750000
+}

@@ -1,0 +1,135 @@
+{
+  "canonical_packet_utf8_bytes_max": 472000,
+  "included_line_annotated_content_utf8_bytes": 433862,
+  "included_original_source_bytes": 428753,
+  "included_transformed_source_utf8_bytes": 428753,
+  "line_annotated_content_utf8_bytes_max": 447000,
+  "omissions": {
+    "allowlist": [],
+    "excluded_surfaces": [
+      ".git/**",
+      ".omx/**",
+      "benchmarks/**",
+      "results/**",
+      "**/evals/**",
+      "**/*holdout*",
+      "**/*scorecard*",
+      "**/*review*",
+      "chat transcripts and conclusions"
+    ],
+    "readme_sections": [
+      "Isn't this just an AI code reviewer like CodeRabbit, Copilot, or Cursor BugBot?",
+      "Methodology",
+      "Open-source adoption and case evidence"
+    ]
+  },
+  "packet_bytes": 458197,
+  "packet_id": "independent-product-review-v10",
+  "packet_sha256": "35bb3b2623c8cf3fdefddcb5a8aee0ebbb56c1f4885167f38ca252c254a38e5e",
+  "remaining_line_annotated_content_utf8_bytes": 13138,
+  "remaining_transformed_source_utf8_bytes": 13247,
+  "schema_version": 1,
+  "selected_files": [
+    {
+      "line_annotated_content_bytes": 38778,
+      "line_count": 561,
+      "original_source_bytes": 38498,
+      "path": "skills/playwright-debugger/SKILL.md",
+      "representation_sha256": "09a298774824533006becafb0c4ae88f277c1bb8b3004688fe4dabecb7b15e45",
+      "required": true,
+      "source_sha256": "7386daf7f2addcd3057131cf3dafc3740658bd8bfff1ddec47ddfff42074ede5",
+      "transform": {
+        "kind": "none",
+        "transformed_source_bytes": 38498
+      },
+      "transformed_source_bytes": 38498
+    },
+    {
+      "line_annotated_content_bytes": 50369,
+      "line_count": 1368,
+      "original_source_bytes": 49666,
+      "path": "skills/playwright-debugger/scripts/read-playwright-artifact.py",
+      "representation_sha256": "684501fba0e9e6abdbc342350dd1c88fc1d5b223c91f5f76c1d88f547625e13b",
+      "required": true,
+      "source_sha256": "e1c443e04e9e91cad3cac9b8db369481e539a7da362180bc7128cce1df39817a",
+      "transform": {
+        "kind": "none",
+        "transformed_source_bytes": 49666
+      },
+      "transformed_source_bytes": 49666
+    },
+    {
+      "line_annotated_content_bytes": 6760,
+      "line_count": 195,
+      "original_source_bytes": 6664,
+      "path": "skills/playwright-debugger/scripts/run-artifact-reader.sh",
+      "representation_sha256": "c471e49f41855dbddb33ad4737914442467e6c09ef2f2831bf955eda3abd6ec3",
+      "required": true,
+      "source_sha256": "9584c2a35f956646630143f245eeb9c7f48c44b65ad155d2496e62c61bd415d8",
+      "transform": {
+        "kind": "none",
+        "transformed_source_bytes": 6664
+      },
+      "transformed_source_bytes": 6664
+    },
+    {
+      "line_annotated_content_bytes": 42072,
+      "line_count": 643,
+      "original_source_bytes": 41752,
+      "path": "skills/playwright-test-generator/SKILL.md",
+      "representation_sha256": "9611b364f27809f7778aae7c8a1c222adcdaeb60dbd900895ecb73472bc6da91",
+      "required": true,
+      "source_sha256": "63b49e9d52925df14200abdccdbf1e7a4f3af52e116d61101330dd7578c5fde1",
+      "transform": {
+        "kind": "none",
+        "transformed_source_bytes": 41752
+      },
+      "transformed_source_bytes": 41752
+    },
+    {
+      "line_annotated_content_bytes": 254855,
+      "line_count": 5710,
+      "original_source_bytes": 251713,
+      "path": "skills/e2e-reviewer/scripts/scan.sh",
+      "representation_sha256": "358a96e9487cd3b4b593fb4d6b58bbcb7eef67d6aa529cb9c1c811e2377bfd39",
+      "required": true,
+      "source_sha256": "3414512d0168bf6913655dab50ae2f16d351e841034c1a394e567f34a96c6c2f",
+      "transform": {
+        "kind": "none",
+        "transformed_source_bytes": 251713
+      },
+      "transformed_source_bytes": 251713
+    },
+    {
+      "line_annotated_content_bytes": 34243,
+      "line_count": 945,
+      "original_source_bytes": 33771,
+      "path": "skills/cypress-debugger/scripts/read-cypress-artifact.py",
+      "representation_sha256": "608706309ab887fb7f4b5d3e2630670a21441be90708280e6f195136ea50de00",
+      "required": true,
+      "source_sha256": "b6a3533ae2a78b5ded30d76b8a37d83ad0385d2733900b4752c544bda731e7c6",
+      "transform": {
+        "kind": "none",
+        "transformed_source_bytes": 33771
+      },
+      "transformed_source_bytes": 33771
+    },
+    {
+      "line_annotated_content_bytes": 6785,
+      "line_count": 195,
+      "original_source_bytes": 6689,
+      "path": "skills/cypress-debugger/scripts/run-artifact-reader.sh",
+      "representation_sha256": "8288b34e393162f1c800473ae2ee5809e64708b4a9517c386d4f5559cc77bad2",
+      "required": true,
+      "source_sha256": "428ca6fbbf6f0daa9818fa27de0d92c15deb9ce8e4b80793aacabc2739890950",
+      "transform": {
+        "kind": "none",
+        "transformed_source_bytes": 6689
+      },
+      "transformed_source_bytes": 6689
+    }
+  ],
+  "selected_surface_sha256": "e6e47119ffe293ad9ea34b4e05c009ca56b7efea9a45f20cb2846c7c5bdd1f24",
+  "selection_policy": "ordered-explicit-allowlist-v1",
+  "transformed_source_utf8_bytes_max": 442000
+}

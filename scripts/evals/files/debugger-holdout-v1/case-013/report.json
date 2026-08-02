@@ -1,0 +1,1 @@
+{"framework":"playwright","test":"rejects invalid coupon","attempts":[{"status":"passed"}],"helper_excerpt":"await page.getByText('Invalid coupon').waitFor().catch(() => {})","screenshot_excerpt":"Checkout total remains unchanged and no validation message is visible"}

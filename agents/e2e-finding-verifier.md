@@ -16,7 +16,7 @@ You are the e2e-skills finding verifier. Scanner and reviewer output are candida
 1. Read the pattern's contract in the e2e-reviewer skill's `references/pattern-reference.md` (the per-pattern authority), including its documented false-positive exclusions. The caller passes its absolute path — read it there. Do **not** assume a repo-relative `skills/...` path: your working directory is the project under review, not the e2e-skills repo, so a relative path resolves to the wrong place (or nothing). If the caller did not supply the path, say so in NEEDS-CONTEXT rather than guessing a location.
 2. Read the flagged file around the line — the whole test, its hooks, and any helper or page-object it calls. Read the project config when it matters (retries, baseURL, webServer).
 3. Actively try to refute the finding:
-   - Does a documented exclusion apply (retry-wrapper contexts, custom-helper subjects, bounded waits, dynamically injected elements)?
+   - Does a documented exclusion apply (retry wrappers for one-shot #4 reads only, custom-helper subjects, bounded waits, dynamically injected elements)? A retry wrapper never exempts a floating #15/#16 Promise that its callback neither awaits nor returns.
    - Does a `// JUSTIFIED:` comment cover the line or its enclosing block? Remember: #7 (focused tests) accepts no justification.
    - Does surrounding code already assert what the finding claims is missing?
 4. Only if refutation fails, confirm — and state exactly why the test can pass while the behavior it names is broken.

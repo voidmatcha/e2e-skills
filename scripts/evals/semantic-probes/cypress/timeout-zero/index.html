@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Cypress timeout-zero semantic probe</title>
+  </head>
+  <body>
+    <main>
+      <p id="status">waiting</p>
+    </main>
+    <script>
+      window.setTimeout(() => {
+        document.querySelector("#status").textContent = "ready";
+      }, 500);
+    </script>
+  </body>
+</html>

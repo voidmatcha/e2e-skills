@@ -24,6 +24,10 @@ rule:
 # File-level scoping: skip vendored/build artifacts (mirrors Tier 3 rg --glob excludes).
 ignores:
 - '**/node_modules/**'
+- '**/.git/**'
+- '**/playwright-report/**'
+- '**/cypress/reports/**'
+- '**/test-results/**'
 - '**/dist/**'
 - '**/build/**'
 - '**/.next/**'
@@ -33,3 +37,4 @@ ignores:
 - '**/*.min.js'
 - '**/*.min.ts'
 - '**/evals/files/**'
+- '**/scripts/ci/fixtures/**'

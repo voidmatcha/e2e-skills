@@ -1,0 +1,66 @@
+{
+  "archive_id": "independent-product-review-v5-remediation",
+  "files": [
+    {
+      "bytes": 1271,
+      "path": "README.md",
+      "sha256": "0baba713a4cd481f6560dc969f253c528fcdacee02b19dcc11b3597002296fb9"
+    },
+    {
+      "bytes": 2721,
+      "path": "attempts/codex-high-fix-r1/raw.json",
+      "sha256": "d83e2315a8db9b213db8e59b6cff281df0fd80271746e6c164b551e3b76924f2"
+    },
+    {
+      "bytes": 14501,
+      "path": "attempts/codex-high-fix-r1/report.json",
+      "sha256": "a84d303cdb2df50707d3b865c4f39c39c2dc8615f272c0976c7db17cc50bcfd8"
+    },
+    {
+      "bytes": 3061,
+      "path": "attempts/codex-high-fix-r2/raw.json",
+      "sha256": "e1a1e922da7a07b08aed212e5352a7e3c7e0f265fb7ca12e689b57084bfda7d7"
+    },
+    {
+      "bytes": 14917,
+      "path": "attempts/codex-high-fix-r2/report.json",
+      "sha256": "5b32f59a21865bd0fc6fd5940c9a58105a471bbe313a10d245ff07c1d44d324e"
+    },
+    {
+      "bytes": 2939,
+      "path": "attempts/codex-high-fix-r3/raw.json",
+      "sha256": "f46c452e4c3d461694bbe8fc14f270d9e4000c478ff0936ffe51b2502429300a"
+    },
+    {
+      "bytes": 14795,
+      "path": "attempts/codex-high-fix-r3/report.json",
+      "sha256": "023a15cceb6838e278ae4d958f017c6cdb8e5c1bc7cddf02e68bbb5883d35ac2"
+    },
+    {
+      "bytes": 16975,
+      "path": "packet-manifests/defd1f0a9c7bd4ef594ec110a70bbfd4eb0cfd649645457aad4c2dca29a16c52.json",
+      "sha256": "9e489770c1fb7848212d2378dfeee1ee2a419a04326f9712a3c9725fe748a835"
+    },
+    {
+      "bytes": 998239,
+      "path": "packets/defd1f0a9c7bd4ef594ec110a70bbfd4eb0cfd649645457aad4c2dca29a16c52.json",
+      "sha256": "defd1f0a9c7bd4ef594ec110a70bbfd4eb0cfd649645457aad4c2dca29a16c52"
+    },
+    {
+      "bytes": 7598,
+      "path": "protocol.json",
+      "sha256": "1f7aedb7ebd18334880c3ed8ce6b6c81ec665bd8618ef7983d04d809c4d1867f"
+    },
+    {
+      "bytes": 851687,
+      "path": "source-snapshots/1eed1e4e0b1a657de9482522e119d8fb82e80e87e59f78717caa69078492b04b.json",
+      "sha256": "1eed1e4e0b1a657de9482522e119d8fb82e80e87e59f78717caa69078492b04b"
+    },
+    {
+      "bytes": 1826,
+      "path": "status.json",
+      "sha256": "438d92011bd51f35843840453bf51edcf0fcfdae35492162d341af45c4274f9f"
+    }
+  ],
+  "schema_version": 1
+}

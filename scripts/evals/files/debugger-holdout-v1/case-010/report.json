@@ -1,0 +1,1 @@
+{"framework":"playwright","test":"shows administrator controls","attempts":[{"status":"failed","error":"getByRole('button', { name: 'Delete user' }) not found"}],"session":{"role":"viewer","expires_at":"2026-07-30T00:00:00Z"},"run_started_at":"2026-07-31T01:00:00Z"}

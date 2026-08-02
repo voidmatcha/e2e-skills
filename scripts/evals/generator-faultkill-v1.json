@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "corpus_visibility": "public-development",
+  "evaluation_scope": "Measures faithful encoding of acceptance criteria already stated in each user story into a strict declarative Playwright scenario/oracle DSL. It does not measure autonomous oracle discovery, unrestricted source generation, syntax quality, maintainability, browser exploration, or generalization to private applications.",
+  "claims_excluded": [
+    "unrestricted model-generated JavaScript execution",
+    "sealed or hidden holdout performance",
+    "Cypress test generation quality",
+    "production application correctness"
+  ],
+  "cases": [
+    {
+      "id": "pw-counter-transition",
+      "framework": "playwright",
+      "scored": true,
+      "fault_mode": "behavior",
+      "task": "Plan a browser test for a counter page. Start at Count: 0, activate the Increment button, and verify that the observable status becomes Count: 1.",
+      "expected_disposition": "generate",
+      "required_actions": [
+        "navigate-counter",
+        "click-increment"
+      ],
+      "required_oracles": [
+        "status-count-zero",
+        "status-count-one"
+      ],
+      "linked_operators": [
+        "playwright-error-swallow",
+        "playwright-locator-truthiness",
+        "playwright-conditional-assertion",
+        "playwright-discarded-boolean"
+      ],
+      "compiled_templates": [
+        "scripts/evals/fixtures/playwright/tests/error-swallow.spec.mjs",
+        "scripts/evals/fixtures/playwright/tests/locator-truthiness.spec.mjs",
+        "scripts/evals/fixtures/playwright/tests/conditional-assertion.spec.mjs",
+        "scripts/evals/fixtures/playwright/tests/discarded-boolean.spec.mjs"
+      ]
+    },
+    {
+      "id": "pw-increment-accessible-name",
+      "framework": "playwright",
+      "scored": true,
+      "fault_mode": "label",
+      "task": "Plan a browser test for the counter page's primary action. Verify that the button exposed to assistive technology is named Increment.",
+      "expected_disposition": "generate",
+      "required_actions": [
+        "navigate-counter"
+      ],
+      "required_oracles": [
+        "button-name-increment"
+      ],
+      "linked_operators": [
+        "playwright-aria-snapshot-name"
+      ],
+      "compiled_templates": [
+        "scripts/evals/fixtures/playwright/tests/aria-snapshot-name.spec.mjs"
+      ]
+    },
+    {
+      "id": "pw-authenticated-account",
+      "framework": "playwright",
+      "scored": true,
+      "fault_mode": "auth",
+      "task": "Plan a browser test for the authenticated account view. Establish the fixture's valid member session before navigation and verify that the account name is Ada Lovelace.",
+      "expected_disposition": "generate",
+      "required_actions": [
+        "set-auth-valid",
+        "navigate-account"
+      ],
+      "required_oracles": [
+        "account-name-ada-lovelace"
+      ],
+      "linked_operators": [
+        "playwright-missing-auth"
+      ],
+      "compiled_templates": [
+        "scripts/evals/fixtures/playwright/tests/missing-auth.spec.mjs"
+      ]
+    },
+    {
+      "id": "pw-increment-request",
+      "framework": "playwright",
+      "scored": true,
+      "fault_mode": "write",
+      "task": "Plan a browser test proving that Increment performs its server write. Observe the POST request before the click and also verify the resulting Count: 1 status.",
+      "expected_disposition": "generate",
+      "required_actions": [
+        "navigate-counter",
+        "arm-increment-post-request",
+        "click-increment"
+      ],
+      "required_oracles": [
+        "increment-post-request-observed",
+        "status-count-one"
+      ],
+      "linked_operators": [
+        "playwright-optimistic-call-proof"
+      ],
+      "compiled_templates": [
+        "scripts/evals/fixtures/playwright/tests/optimistic-call-proof.spec.mjs"
+      ]
+    },
+    {
+      "id": "cy-command-queue-control",
+      "framework": "cypress",
+      "scored": false,
+      "fault_mode": "control",
+      "task": "Generate a Cypress test plan for a counter update using Cypress command-queue semantics.",
+      "expected_disposition": "out_of_scope",
+      "required_actions": [],
+      "required_oracles": [],
+      "linked_operators": [
+        "cypress-missing-then"
+      ],
+      "compiled_templates": []
+    },
+    {
+      "id": "cy-chainable-control",
+      "framework": "cypress",
+      "scored": false,
+      "fault_mode": "control",
+      "task": "Generate a Cypress test plan that reads and verifies the updated counter text.",
+      "expected_disposition": "out_of_scope",
+      "required_actions": [],
+      "required_oracles": [],
+      "linked_operators": [
+        "cypress-assigned-chainable"
+      ],
+      "compiled_templates": []
+    },
+    {
+      "id": "cy-browser-error-control",
+      "framework": "cypress",
+      "scored": false,
+      "fault_mode": "control",
+      "task": "Generate a Cypress test plan for a page that may raise an unexpected browser exception.",
+      "expected_disposition": "out_of_scope",
+      "required_actions": [],
+      "required_oracles": [],
+      "linked_operators": [
+        "cypress-uncaught-exception"
+      ],
+      "compiled_templates": []
+    },
+    {
+      "id": "cy-suite-selection-control",
+      "framework": "cypress",
+      "scored": false,
+      "fault_mode": "control",
+      "task": "Generate a Cypress test plan for both rendering and updating the counter in one suite.",
+      "expected_disposition": "out_of_scope",
+      "required_actions": [],
+      "required_oracles": [],
+      "linked_operators": [
+        "cypress-focused-test-leak"
+      ],
+      "compiled_templates": []
+    },
+    {
+      "id": "cy-fixture-render-control",
+      "framework": "cypress",
+      "scored": false,
+      "fault_mode": "control",
+      "task": "Generate a Cypress test plan that loads saved lesson fixture data and verifies the rendered card.",
+      "expected_disposition": "out_of_scope",
+      "required_actions": [],
+      "required_oracles": [],
+      "linked_operators": [
+        "cypress-fixture-render-guard"
+      ],
+      "compiled_templates": []
+    }
+  ]
+}

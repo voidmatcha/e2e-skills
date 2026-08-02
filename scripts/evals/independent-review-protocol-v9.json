@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "protocol_id": "independent-product-review-v9",
+  "purpose": "Fresh-context, prompt-complete, zero-tool Codex-only confirmation of the five findings from the completed v8 FAIL. This post-hoc protocol is preregistered before any v9 model call. It is not unbiased defect discovery, cross-model evidence, full product coverage, skill accuracy, human or sealed review, independent ground truth, or remote model attestation.",
+  "phase_binding": {
+    "phase": "selected-v8-finding-remediation-confirmation-codex-preregistration",
+    "predecessor_archive_id": "independent-product-review-v8-remediation",
+    "predecessor_archive_state": "COMPLETE",
+    "predecessor_gate": "FAIL",
+    "predecessor_protocol_sha256": "3e8d2fcdaef315b87407a3af637eb2c834352d589a2606405cb118464de03387",
+    "predecessor_freeze_file_sha256": "1f8fbab4fa2763b297717ee744dfc96a7f57d7deb92e48e97d6b4941fa9beeae",
+    "predecessor_evidence_validator_sha256": "f453718a80366219be65069045226f3c4451425f4fddc28c78aeea1aea171995",
+    "predecessor_attempts": [
+      {
+        "attempt_id": "codex-v7-remediation-confirmation-v8-r1",
+        "status": "INCONCLUSIVE",
+        "report_sha256": "d5836522138a45e4187d90b0fb225bb094ce2aae5d5c36135fefdbf2d9736414",
+        "raw_sha256": "3c227f201a02d69856c1b8233cc0a24e3f059c7b52eb9ce7dd6a903545ec9cc1"
+      },
+      {
+        "attempt_id": "codex-v7-remediation-confirmation-v8-r2",
+        "status": "FAIL",
+        "report_sha256": "f2ca91e215bc60d24b618b70296f178d46ab84651e9094fdd350351dbe63bf20",
+        "raw_sha256": "38f38dbe5e2b188618e6eae402446a59e103dfce451f912f727a5fad107bdfc8"
+      },
+      {
+        "attempt_id": "codex-v7-remediation-confirmation-v8-r3",
+        "status": "PASS",
+        "report_sha256": "706b8198b94b4909b6aa09ab11bfe521002633290550f7089e21eb8823b0c144",
+        "raw_sha256": "6774e25b5877e24b68d6f784b60e500bc383fc9194295a4e6b0fe1334bd47d67"
+      }
+    ],
+    "remediation_ledger_path": "scripts/evals/independent-review-remediation-ledger-v9.json",
+    "remediation_ledger_sha256": "860e85e83ebf4b30e79f6f26ab4275a19c508c90ce4acc5e133af6823ca82720",
+    "claim_boundary": "This Codex-only phase was designed after observing v8 COMPLETE/FAIL and all five findings. It can only report whether three newly frozen fresh-context reviews satisfy the unchanged rubric and do not reopen any of those five exact category/file targets. It does not retroactively change v8 and is not unbiased discovery, cross-model evidence, full-product coverage, skill accuracy, human or sealed review, independent ground truth, or remote model attestation."
+  },
+  "model_catalog": {
+    "path": "scripts/evals/independent-review-v9-model-catalog.json",
+    "sha256": "e13a2395cd3ffa5a80439b7aa163854f75bbe4fd124a18553f97b20d42efbf6b",
+    "model": {
+      "slug": "gpt-5.6-sol",
+      "context_window_tokens": 272000,
+      "max_context_window_tokens": 272000,
+      "effective_context_window_percent": 95
+    },
+    "provenance_boundary": "Sanitized local Codex cache snapshot only; no base instructions and no remote model attestation."
+  },
+  "local_runner": {
+    "runner": "codex",
+    "sha256": "ae1d3ffe6d48aec6a4dc3f50e7eb8e0d11962485a6a9406c5a7012139383da02",
+    "version": "codex-cli 0.146.0",
+    "provenance_boundary": "Exact local native CLI hash/version; absolute path is recorded only as local run provenance, with caller-declared model/provider provenance and no remote model attestation."
+  },
+  "packet": {
+    "transformed_source_utf8_bytes_max": 840000,
+    "line_annotated_content_utf8_bytes_max": 845000,
+    "canonical_packet_utf8_bytes_max": 885000,
+    "rendered_prompt_utf8_bytes_max": 860000,
+    "prompt_input_tokens_max": 228000,
+    "context_window_tokens_min": 272000,
+    "effective_context_window_percent_min": 95,
+    "effective_context_tokens_min": 258400,
+    "reserved_tokens_min": 30000,
+    "selection_policy": "ordered-explicit-allowlist-v1",
+    "line_numbering": "sparse-original-one-based-lines-every-16-v1",
+    "prompt_rendering": {
+      "version": "plain-utf8-length-hash-framed-sources-v1",
+      "encoding": "utf-8",
+      "packet_binding": "sha256-canonical-packet-json-v1",
+      "source_order": "packet-files-order",
+      "path_encoding": "canonical-json-string",
+      "content_delimitation": "declared-utf8-byte-length-v1",
+      "content_integrity": "sha256-utf8-bytes-v1",
+      "contract_sha256": "5f0e0af3cb00fdf9df2965d9a2bcba7c7ace137577f73dd7ff5e228d7eebc0c7"
+    },
+    "tokenizer": {
+      "package": "tiktoken",
+      "version": "0.11.0",
+      "encoding": "o200k_base",
+      "name": "o200k_base",
+      "n_vocab": 200019,
+      "encoding_contract_sha256": "170a798bd4d0917feae9c78c8deb17f88e0b8d32676d7fc6f9116d8122928eb9",
+      "bpe_source_sha256": "446a9538cb6c348e3516120d7c08b09f57c36495e2acfffe59a5bf8b0cfb1a2d"
+    },
+    "freeze_policy": "After all five selected remediations have local verification, build one canonical packet before any v9 model call. Preserve every one of v8's 30 required product surfaces, source content, and order, add the three new load-bearing remediation helpers as required full-source surfaces, and compact sparse original-line annotations from every 8 lines to every 16 lines. Keep canonical packet JSON unchanged, but render its 33 full source contents into the model prompt as deterministic UTF-8 byte-length/hash frames so JSON escaping does not duplicate the source representation; the canonical rubric and output contract remain JSON and the prompt binds the canonical packet digest. The final 33-surface exact replay must remain at or below 228000 prompt tokens with at least 30000 effective-context tokens reserved; omissions fail closed. The v8 archive, reports, raw outputs, freeze, ledger, and prior conclusions remain outside the model packet and prompt. Bind and replay their exact digests before freezing; any later drift makes the run INCONCLUSIVE.",
+    "excluded_surfaces": [
+      ".git/**",
+      ".omx/**",
+      "benchmarks/**",
+      "results/**",
+      "**/evals/**",
+      "**/*holdout*",
+      "**/*scorecard*",
+      "**/*review*",
+      "chat transcripts and conclusions"
+    ]
+  },
+  "schedule": {
+    "version": "codex-v8-remediation-confirmation-v1",
+    "seed": "independent-product-review-v9-v8-remediation-codex-3",
+    "digest_derivation": "sha256-canonical-json-version-seed-attempts-v1",
+    "digest": "8242f23805c86be357f4d665c0e1f91785f6c1ac46c2b2d140f39e1181de329a",
+    "aggregate_rule": {
+      "completion": "Every v8-finding-remediation confirmation attempt ID must appear exactly once in order with one shared frozen packet, protocol, source snapshot, remediation ledger, and schedule digest; historical, replacement, retry, or ad-hoc attempts do not count. Every present reservation and terminal report must bind one globally unique UUIDv4 invocation_id; duplicates make partial or complete evidence invalid. invocation_id values must round-trip as lowercase canonical RFC 4122 UUIDv4 values. Each attempt must finish at or after it starts, and each later attempt must start at or after its predecessor finishes.",
+      "passage": "All three attempts must have an individual PASS verdict, and no finding may reopen any of the five bound v8 targets at or above its historical severity in the same category and exact affected file set. Aggregate evaluation is FAIL-first: any valid FAIL makes a completed aggregate FAIL even if another attempt is INCONCLUSIVE."
+    },
+    "attempts": [
+      {
+        "attempt_id": "codex-v8-remediation-confirmation-v9-r1",
+        "schedule_index": 0,
+        "repetition": 1,
+        "runner": "codex",
+        "model": "gpt-5.6-sol",
+        "provider_family": "openai"
+      },
+      {
+        "attempt_id": "codex-v8-remediation-confirmation-v9-r2",
+        "schedule_index": 1,
+        "repetition": 2,
+        "runner": "codex",
+        "model": "gpt-5.6-sol",
+        "provider_family": "openai"
+      },
+      {
+        "attempt_id": "codex-v8-remediation-confirmation-v9-r3",
+        "schedule_index": 2,
+        "repetition": 3,
+        "runner": "codex",
+        "model": "gpt-5.6-sol",
+        "provider_family": "openai"
+      }
+    ]
+  },
+  "host_matrix": [
+    {
+      "runner": "codex",
+      "model": "gpt-5.6-sol",
+      "provider_family": "openai"
+    }
+  ],
+  "rubric": {
+    "dimensions": [
+      {
+        "id": "semantic_correctness",
+        "label": "Semantic correctness",
+        "review_question": "Do the included public contracts and implementations agree on behavior, failure modes, and framework semantics?",
+        "weight": 1
+      },
+      {
+        "id": "false_positive_control",
+        "label": "False-positive control",
+        "review_question": "Do the included reviewer rules, suppressions, and scanner boundaries avoid unsupported findings while remaining fail-closed?",
+        "weight": 1
+      },
+      {
+        "id": "security_trust_boundaries",
+        "label": "Security and trust boundaries",
+        "review_question": "Do the included interfaces and scripts define safe input, artifact, credential, and execution boundaries?",
+        "weight": 1
+      },
+      {
+        "id": "verification_design",
+        "label": "Verification design",
+        "review_question": "Do the included files define executable, fail-closed checks that could verify the documented behavior? Score the design only; do not infer that omitted runs passed.",
+        "weight": 1
+      },
+      {
+        "id": "scope_contract_consistency",
+        "label": "Scope and contract consistency",
+        "review_question": "Are supported frameworks, hosts, capabilities, limitations, and fallback paths consistent across the included public surfaces? Do not infer quality from omitted benchmarks or holdouts.",
+        "weight": 1
+      },
+      {
+        "id": "docs_usability",
+        "label": "Documentation and usability",
+        "review_question": "Can a user act on the included installation, invocation, diagnosis, review, and verification guidance without relying on omitted context?",
+        "weight": 1
+      }
+    ],
+    "finding_severities": {
+      "C": "Critical: a trust, safety, or correctness failure that can invalidate the product or its evidence.",
+      "H": "High: a material product or evidence defect that should block a strong-quality claim.",
+      "M": "Medium: a bounded weakness or usability problem with concrete impact."
+    },
+    "decision": {
+      "overall_score_min": 90,
+      "dimension_score_min": 85,
+      "critical_findings_max": 0,
+      "high_findings_max": 0
+    }
+  },
+  "output_contract": {
+    "strict_json": true,
+    "top_level_keys": [
+      "summary",
+      "scores",
+      "findings",
+      "limitations",
+      "verdict"
+    ],
+    "finding_keys": [
+      "severity",
+      "category",
+      "file",
+      "line",
+      "title",
+      "evidence",
+      "recommendation"
+    ],
+    "verdicts": [
+      "PASS",
+      "FAIL"
+    ]
+  },
+  "status_policy": {
+    "PASS": "The strict payload and all evidence are complete, every fixed threshold passes, and none of the five v8 remediation targets is reopened.",
+    "FAIL": "The strict payload and provenance are intact, but a threshold fails or one of the five v8 remediation targets is reopened. Aggregate evaluation is FAIL-first.",
+    "INCONCLUSIVE": "The call, strict payload, canonical evidence, exact token replay, predecessor binding, or causal producer evidence is missing or invalid. A consumed RESERVED or RAW attempt may be terminalized without another model call: pre-raw recovery commits a terminal_error raw, while post-raw recovery preserves and hashes the existing canonical raw."
+  }
+}

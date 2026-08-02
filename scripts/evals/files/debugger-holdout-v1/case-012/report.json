@@ -1,0 +1,1 @@
+{"framework":"playwright","test":"submits profile form","attempts":[{"status":"failed","error":"locator('[data-testid=\"profile-submit\"]') not found"}],"page_object_excerpt":"submit = page.locator('[data-testid=\"profile-submit\"]')","dom_excerpt":"<button data-testid=\"save-profile\">Save</button>","change_record":"data-testid renamed in profile template"}

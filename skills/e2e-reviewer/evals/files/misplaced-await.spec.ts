@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 // Fixture for the #15 "awaited locator" variant: the await is misplaced INSIDE expect()
 // onto the locator (a no-op) instead of on expect itself, so the web-first matcher promise
-// floats and the assertion never settles. Includes false-positive guards.
+// floats outside the test's intended sequence. Includes false-positive guards.
 
 test('opens the dialog', async ({ page }) => {
   await page.goto('/');

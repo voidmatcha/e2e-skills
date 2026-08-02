@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Playwright counter fixture</title>
+  </head>
+  <body>
+    <main>
+      <h1>Counter</h1>
+      <p role="status">Count: 0</p>
+      <button type="button">Increment</button>
+    </main>
+    <script>
+      const params = new URLSearchParams(location.search);
+      const accountView = params.has("account-view");
+      const behaviorFault = params.has("behavior-fault");
+      const labelFault = params.has("label-fault");
+      const writeFault = params.has("write-fault");
+      const authFault = params.has("auth-fault");
+      const main = document.querySelector("main");
+
+      if (accountView) {
+        const authenticated =
+          localStorage.getItem("fixture-auth") === "valid" && !authFault;
+        main.innerHTML = authenticated
+          ? '<h1>Account</h1><p data-testid="account-name">Ada Lovelace</p>'
+          : '<h1>Account</h1><form aria-label="Sign in"><button>Sign in</button></form>';
+      } else {
+        const status = document.querySelector('[role="status"]');
+        const button = document.querySelector("button");
+        if (labelFault) button.textContent = "Delete";
+        button.addEventListener("click", () => {
+          if (!writeFault) void fetch("/api/increment", { method: "POST" });
+          if (!behaviorFault) status.textContent = "Count: 1";
+        });
+      }
+    </script>
+  </body>
+</html>

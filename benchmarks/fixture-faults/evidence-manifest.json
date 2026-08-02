@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "artifacts": [
+    {
+      "path": "2026-07-29-current.json",
+      "classification": "historical-complete",
+      "sha256": "5f56e5cbade58916c84e79ffdb68dfca178ea7ce55ffb76c6c6af5bbdce9e04a",
+      "expected_complete": true,
+      "expected_runtime_complete": true
+    },
+    {
+      "path": "2026-07-29-v3-cypress-retry.json",
+      "classification": "historical-complete",
+      "sha256": "74f56adf2672432325dfc72c70b6ef8fbb96ee99339818a9a4918a29756250b3",
+      "expected_complete": true,
+      "expected_runtime_complete": true
+    },
+    {
+      "path": "2026-07-29-v3-rerun.json",
+      "classification": "historical-incomplete",
+      "sha256": "56b7579a53c8ff1536646bd76abd7ad8f5b3b6d145d86359c1a09e725e8ad7d6",
+      "expected_complete": false,
+      "expected_runtime_complete": false
+    },
+    {
+      "path": "2026-07-30-aria-expanded.json",
+      "classification": "historical-complete",
+      "sha256": "646450087f83e5c54c71212522c030ca54dd25fbd881bf90306cb2ef49e437ba",
+      "expected_complete": true,
+      "expected_runtime_complete": true
+    },
+    {
+      "path": "2026-07-30-current.json",
+      "classification": "historical-complete",
+      "sha256": "e91eb3f43d8b9b469775dca8d4ab0ace8fceaecf21d34b8326f3b5a5216a5973",
+      "expected_complete": true,
+      "expected_runtime_complete": true
+    },
+    {
+      "path": "2026-07-30-cypress-15.19-timeout-zero.json",
+      "classification": "canonical",
+      "sha256": "024273a0b7bdf60a518a941f82deb44f43e43f9e7bbde42b1f157b97ef200c01",
+      "expected_complete": true,
+      "expected_runtime_complete": true
+    },
+    {
+      "path": "2026-07-30-expanded.json",
+      "classification": "historical-complete",
+      "sha256": "71f998b1902bf3d4260ca604b807d02c05a6bb777c8c905727adc385f1a67d25",
+      "expected_complete": true,
+      "expected_runtime_complete": true
+    },
+    {
+      "path": "2026-07-30-operator-design-incomplete.json",
+      "classification": "historical-incomplete",
+      "sha256": "29ce37f25cd143d7b8d195e2534f0d362a052838ddf1df528ba7040c4a5ebc21",
+      "expected_complete": false,
+      "expected_runtime_complete": false
+    },
+    {
+      "path": "2026-07-30-playwright-1.62-floating-promises.json",
+      "classification": "historical-complete",
+      "sha256": "fa892ceb51e8e033edc97dd6046586dc97ee5e44c30f6e290da7fca77a1dd719",
+      "expected_complete": true,
+      "expected_runtime_complete": true
+    },
+    {
+      "path": "2026-07-30-playwright-1.62-timeout-zero.json",
+      "classification": "canonical",
+      "sha256": "e772c0e4110a8aa6a2f809a4081fbaec24afa7d2e5a7ddda92ac469470e59782",
+      "expected_complete": true,
+      "expected_runtime_complete": true
+    },
+    {
+      "path": "2026-07-31-current.json",
+      "classification": "canonical",
+      "sha256": "932a3d6c9912edae97519ea1f48ee83b5e514d387d3acb50954cd9cc4f734213",
+      "expected_complete": true,
+      "expected_runtime_complete": true
+    },
+    {
+      "path": "2026-07-31-playwright-1.62-floating-promises.json",
+      "classification": "canonical",
+      "sha256": "86860345c3f0be479c04eaf7ad2594feddff58793eae01ef591ae7e67f35e49c",
+      "expected_complete": true,
+      "expected_runtime_complete": true
+    }
+  ]
+}

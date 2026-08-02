@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "corpus_visibility": "public",
+  "intended_use": "Public exact-artifact causal reviewer benchmark. Twelve finding cases use byte-identical fixture mutants mechanically derived from the 12 run-fixture-faults.py operators; twelve separate clean cases hold false-positive guards. This is development evidence only, not sealed generalization or test-generation-quality evidence.",
+  "contamination_risk": "Public and answer-hint-contaminable once committed. Two exact operator replacements contain explicit Mutant comments; the linkage manifest marks them as answer-hint-contaminated and records separate neutral ablations that are not benchmark inputs. Do not represent this corpus as sealed, hidden, or unbiased release evidence.",
+  "cases": [
+    {
+      "id": "playwright-error-swallow-mutant",
+      "split": "public-fault-causal-v2-mutant",
+      "framework": "playwright",
+      "source_files": [{"source": "files/reviewer-fault-causal-v2/playwright-error-swallow/mutant.spec.mjs", "path": "tests/error-swallow.spec.mjs"}],
+      "labels": [{"finding_id": "FCV2-01-F", "kind": "finding", "pattern_id": "#3", "severity": "P0", "file": "tests/error-swallow.spec.mjs", "line": 11, "source_line": "try { await expect(status).toHaveText(\"Count: 1\"); } catch {}"}]
+    },
+    {
+      "id": "playwright-error-swallow-clean-guard",
+      "split": "public-fault-causal-v2-clean-guard",
+      "framework": "playwright",
+      "source_files": [{"source": "fixtures/playwright/tests/error-swallow.spec.mjs", "path": "tests/error-swallow.spec.mjs"}],
+      "labels": [{"finding_id": "FCV2-01-G", "kind": "fp_guard", "pattern_id": "#3", "severity": "P0", "file": "tests/error-swallow.spec.mjs", "line": 11, "source_line": "await expect(status).toHaveText(\"Count: 1\");"}]
+    },
+    {
+      "id": "playwright-locator-truthiness-mutant",
+      "split": "public-fault-causal-v2-mutant",
+      "framework": "playwright",
+      "source_files": [{"source": "files/reviewer-fault-causal-v2/playwright-locator-truthiness/mutant.spec.mjs", "path": "tests/locator-truthiness.spec.mjs"}],
+      "labels": [{"finding_id": "FCV2-02-F", "kind": "finding", "pattern_id": "#4f", "severity": "P0", "file": "tests/locator-truthiness.spec.mjs", "line": 11, "source_line": "expect(status).toBeTruthy();"}]
+    },
+    {
+      "id": "playwright-locator-truthiness-clean-guard",
+      "split": "public-fault-causal-v2-clean-guard",
+      "framework": "playwright",
+      "source_files": [{"source": "fixtures/playwright/tests/locator-truthiness.spec.mjs", "path": "tests/locator-truthiness.spec.mjs"}],
+      "labels": [{"finding_id": "FCV2-02-G", "kind": "fp_guard", "pattern_id": "#4f", "severity": "P0", "file": "tests/locator-truthiness.spec.mjs", "line": 11, "source_line": "await expect(status).toHaveText(\"Count: 1\");"}]
+    },
+    {
+      "id": "playwright-conditional-assertion-mutant",
+      "split": "public-fault-causal-v2-mutant",
+      "framework": "playwright",
+      "source_files": [{"source": "files/reviewer-fault-causal-v2/playwright-conditional-assertion/mutant.spec.mjs", "path": "tests/conditional-assertion.spec.mjs"}],
+      "labels": [{"finding_id": "FCV2-03-F", "kind": "finding", "pattern_id": "#5a", "severity": "P0", "file": "tests/conditional-assertion.spec.mjs", "line": 11, "source_line": "if (await status.getByText(\"Count: 1\").isVisible()) {"}]
+    },
+    {
+      "id": "playwright-conditional-assertion-clean-guard",
+      "split": "public-fault-causal-v2-clean-guard",
+      "framework": "playwright",
+      "source_files": [{"source": "fixtures/playwright/tests/conditional-assertion.spec.mjs", "path": "tests/conditional-assertion.spec.mjs"}],
+      "labels": [{"finding_id": "FCV2-03-G", "kind": "fp_guard", "pattern_id": "#5a", "severity": "P0", "file": "tests/conditional-assertion.spec.mjs", "line": 11, "source_line": "await expect(status).toHaveText(\"Count: 1\");"}]
+    },
+    {
+      "id": "playwright-discarded-boolean-mutant",
+      "split": "public-fault-causal-v2-mutant",
+      "framework": "playwright",
+      "source_files": [{"source": "files/reviewer-fault-causal-v2/playwright-discarded-boolean/mutant.spec.mjs", "path": "tests/discarded-boolean.spec.mjs"}],
+      "labels": [{"finding_id": "FCV2-04-F", "kind": "finding", "pattern_id": "#8b", "severity": "P0", "file": "tests/discarded-boolean.spec.mjs", "line": 11, "source_line": "await status.isVisible();"}]
+    },
+    {
+      "id": "playwright-discarded-boolean-clean-guard",
+      "split": "public-fault-causal-v2-clean-guard",
+      "framework": "playwright",
+      "source_files": [{"source": "fixtures/playwright/tests/discarded-boolean.spec.mjs", "path": "tests/discarded-boolean.spec.mjs"}],
+      "labels": [{"finding_id": "FCV2-04-G", "kind": "fp_guard", "pattern_id": "#8b", "severity": "P0", "file": "tests/discarded-boolean.spec.mjs", "line": 11, "source_line": "await expect(status).toHaveText(\"Count: 1\");"}]
+    },
+    {
+      "id": "playwright-aria-snapshot-name-mutant",
+      "split": "public-fault-causal-v2-mutant",
+      "framework": "playwright",
+      "source_files": [{"source": "files/reviewer-fault-causal-v2/playwright-aria-snapshot-name/mutant.spec.mjs", "path": "tests/aria-snapshot-name.spec.mjs"}],
+      "labels": [{"finding_id": "FCV2-05-F", "kind": "finding", "pattern_id": "#4j", "severity": "P1", "file": "tests/aria-snapshot-name.spec.mjs", "line": 8, "source_line": "await expect(page.getByRole(\"button\")).toMatchAriaSnapshot("}]
+    },
+    {
+      "id": "playwright-aria-snapshot-name-clean-guard",
+      "split": "public-fault-causal-v2-clean-guard",
+      "framework": "playwright",
+      "source_files": [{"source": "fixtures/playwright/tests/aria-snapshot-name.spec.mjs", "path": "tests/aria-snapshot-name.spec.mjs"}],
+      "labels": [{"finding_id": "FCV2-05-G", "kind": "fp_guard", "pattern_id": "#4j", "severity": "P1", "file": "tests/aria-snapshot-name.spec.mjs", "line": 8, "source_line": "await expect(page.getByRole(\"button\")).toMatchAriaSnapshot("}]
+    },
+    {
+      "id": "playwright-missing-auth-mutant",
+      "split": "public-fault-causal-v2-mutant",
+      "framework": "playwright",
+      "source_files": [{"source": "files/reviewer-fault-causal-v2/playwright-missing-auth/mutant.spec.mjs", "path": "tests/missing-auth.spec.mjs"}],
+      "labels": [{"finding_id": "FCV2-06-F", "kind": "finding", "pattern_id": "#12", "severity": "P0", "file": "tests/missing-auth.spec.mjs", "line": 8, "source_line": "await page.goto(`/${query}`);"}]
+    },
+    {
+      "id": "playwright-missing-auth-clean-guard",
+      "split": "public-fault-causal-v2-clean-guard",
+      "framework": "playwright",
+      "source_files": [{"source": "fixtures/playwright/tests/missing-auth.spec.mjs", "path": "tests/missing-auth.spec.mjs"}],
+      "labels": [{"finding_id": "FCV2-06-G", "kind": "fp_guard", "pattern_id": "#12", "severity": "P0", "file": "tests/missing-auth.spec.mjs", "line": 11, "source_line": "await page.goto(`/${query}`);"}]
+    },
+    {
+      "id": "playwright-optimistic-call-proof-mutant",
+      "split": "public-fault-causal-v2-mutant",
+      "framework": "playwright",
+      "source_files": [{"source": "files/reviewer-fault-causal-v2/playwright-optimistic-call-proof/mutant.spec.mjs", "path": "tests/optimistic-call-proof.spec.mjs"}],
+      "labels": [{"finding_id": "FCV2-07-F", "kind": "finding", "pattern_id": "#22", "severity": "P1", "file": "tests/optimistic-call-proof.spec.mjs", "line": 9, "source_line": "await page.getByRole(\"button\", { name: \"Increment\" }).click();"}]
+    },
+    {
+      "id": "playwright-optimistic-call-proof-clean-guard",
+      "split": "public-fault-causal-v2-clean-guard",
+      "framework": "playwright",
+      "source_files": [{"source": "fixtures/playwright/tests/optimistic-call-proof.spec.mjs", "path": "tests/optimistic-call-proof.spec.mjs"}],
+      "labels": [{"finding_id": "FCV2-07-G", "kind": "fp_guard", "pattern_id": "#22", "severity": "P1", "file": "tests/optimistic-call-proof.spec.mjs", "line": 14, "source_line": "await page.getByRole(\"button\", { name: \"Increment\" }).click();"}]
+    },
+    {
+      "id": "cypress-missing-then-mutant",
+      "split": "public-fault-causal-v2-mutant",
+      "framework": "cypress",
+      "source_files": [{"source": "files/reviewer-fault-causal-v2/cypress-missing-then/mutant.cy.mjs", "path": "cypress/e2e/missing-then.cy.mjs"}],
+      "labels": [{"finding_id": "FCV2-08-F", "kind": "finding", "pattern_id": "#2", "severity": "P0", "file": "cypress/e2e/missing-then.cy.mjs", "line": 7, "source_line": "cy.contains(\"button\", \"Increment\").click();"}]
+    },
+    {
+      "id": "cypress-missing-then-clean-guard",
+      "split": "public-fault-causal-v2-clean-guard",
+      "framework": "cypress",
+      "source_files": [{"source": "fixtures/cypress/cypress/e2e/missing-then.cy.mjs", "path": "cypress/e2e/missing-then.cy.mjs"}],
+      "labels": [{"finding_id": "FCV2-08-G", "kind": "fp_guard", "pattern_id": "#2", "severity": "P0", "file": "cypress/e2e/missing-then.cy.mjs", "line": 7, "source_line": "cy.contains(\"button\", \"Increment\").click();"}]
+    },
+    {
+      "id": "cypress-assigned-chainable-mutant",
+      "split": "public-fault-causal-v2-mutant",
+      "framework": "cypress",
+      "source_files": [{"source": "files/reviewer-fault-causal-v2/cypress-assigned-chainable/mutant.cy.mjs", "path": "cypress/e2e/assigned-chainable.cy.mjs"}],
+      "labels": [{"finding_id": "FCV2-09-F", "kind": "finding", "pattern_id": "#10e", "severity": "P1", "file": "cypress/e2e/assigned-chainable.cy.mjs", "line": 7, "source_line": "const statusText = cy.get('[role=\"status\"]').invoke(\"text\");"}]
+    },
+    {
+      "id": "cypress-assigned-chainable-clean-guard",
+      "split": "public-fault-causal-v2-clean-guard",
+      "framework": "cypress",
+      "source_files": [{"source": "fixtures/cypress/cypress/e2e/assigned-chainable.cy.mjs", "path": "cypress/e2e/assigned-chainable.cy.mjs"}],
+      "labels": [{"finding_id": "FCV2-09-G", "kind": "fp_guard", "pattern_id": "#10e", "severity": "P1", "file": "cypress/e2e/assigned-chainable.cy.mjs", "line": 7, "source_line": "cy.get('[role=\"status\"]').should(\"have.text\", \"Count: 1\");"}]
+    },
+    {
+      "id": "cypress-uncaught-exception-mutant",
+      "split": "public-fault-causal-v2-mutant",
+      "framework": "cypress",
+      "source_files": [{"source": "files/reviewer-fault-causal-v2/cypress-uncaught-exception/mutant.cy.mjs", "path": "cypress/e2e/uncaught-exception.cy.mjs"}],
+      "labels": [{"finding_id": "FCV2-10-F", "kind": "finding", "pattern_id": "#3b", "severity": "P0", "file": "cypress/e2e/uncaught-exception.cy.mjs", "line": 1, "source_line": "Cypress.on(\"uncaught:exception\", () => false);"}]
+    },
+    {
+      "id": "cypress-uncaught-exception-clean-guard",
+      "split": "public-fault-causal-v2-clean-guard",
+      "framework": "cypress",
+      "source_files": [{"source": "fixtures/cypress/cypress/e2e/uncaught-exception.cy.mjs", "path": "cypress/e2e/uncaught-exception.cy.mjs"}],
+      "labels": [{"finding_id": "FCV2-10-G", "kind": "fp_guard", "pattern_id": "#3b", "severity": "P0", "file": "cypress/e2e/uncaught-exception.cy.mjs", "line": 1, "source_line": "describe(\"browser exception handling\", () => {"}]
+    },
+    {
+      "id": "cypress-focused-test-leak-mutant",
+      "split": "public-fault-causal-v2-mutant",
+      "framework": "cypress",
+      "source_files": [{"source": "files/reviewer-fault-causal-v2/cypress-focused-test-leak/mutant.cy.mjs", "path": "cypress/e2e/focused-leak.cy.mjs"}],
+      "labels": [{"finding_id": "FCV2-11-F", "kind": "finding", "pattern_id": "#7", "severity": "P0", "file": "cypress/e2e/focused-leak.cy.mjs", "line": 2, "source_line": "it.only(\"renders the counter\", () => {"}]
+    },
+    {
+      "id": "cypress-focused-test-leak-clean-guard",
+      "split": "public-fault-causal-v2-clean-guard",
+      "framework": "cypress",
+      "source_files": [{"source": "fixtures/cypress/cypress/e2e/focused-leak.cy.mjs", "path": "cypress/e2e/focused-leak.cy.mjs"}],
+      "labels": [{"finding_id": "FCV2-11-G", "kind": "fp_guard", "pattern_id": "#7", "severity": "P0", "file": "cypress/e2e/focused-leak.cy.mjs", "line": 2, "source_line": "it(\"renders the counter\", () => {"}]
+    },
+    {
+      "id": "cypress-fixture-render-guard-mutant",
+      "split": "public-fault-causal-v2-mutant",
+      "framework": "cypress",
+      "source_files": [{"source": "files/reviewer-fault-causal-v2/cypress-fixture-render-guard/mutant.cy.mjs", "path": "cypress/e2e/fixture-render-guard.cy.mjs"}],
+      "labels": [{"finding_id": "FCV2-12-F", "kind": "finding", "pattern_id": "#23", "severity": "P2", "file": "cypress/e2e/fixture-render-guard.cy.mjs", "line": 8, "source_line": "cy.get('[data-testid=\"liked-card\"]').should(\"not.exist\");"}]
+    },
+    {
+      "id": "cypress-fixture-render-guard-clean-guard",
+      "split": "public-fault-causal-v2-clean-guard",
+      "framework": "cypress",
+      "source_files": [{"source": "fixtures/cypress/cypress/e2e/fixture-render-guard.cy.mjs", "path": "cypress/e2e/fixture-render-guard.cy.mjs"}],
+      "labels": [{"finding_id": "FCV2-12-G", "kind": "fp_guard", "pattern_id": "#23", "severity": "P2", "file": "cypress/e2e/fixture-render-guard.cy.mjs", "line": 8, "source_line": "cy.get('[data-testid=\"liked-card\"]')"}]
+    }
+  ]
+}

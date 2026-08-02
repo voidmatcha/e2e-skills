@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "protocol_id": "independent-product-review-v1",
+  "invocation_id": "a530059b-b3ea-4607-a840-03c0e58380db",
+  "attempt_id": "codex-r1",
+  "schedule_index": 0,
+  "repetition": 1,
+  "declared_schedule_digest": "3a5ecf3981b287ef518793a69b7c1119f71a16cd333923433f3c30192100c967",
+  "started_at_utc": "2026-07-31T02:45:48.809Z",
+  "finished_at_utc": "2026-07-31T02:47:30.810Z",
+  "status": "FAIL",
+  "status_reason": null,
+  "host": {
+    "runner": "codex",
+    "model": "gpt-5.6-sol",
+    "provider_family": "openai"
+  },
+  "runner_identity": {
+    "mode": "live",
+    "path": "/opt/homebrew/lib/node_modules/@openai/codex/bin/codex.js",
+    "sha256": "134063e133f0b4244fa3b251acf973d4fe4b4aeeacbdc135211bf480f59f1477",
+    "version": "codex-cli 0.144.1"
+  },
+  "model_tool_surface": "none",
+  "source_read_isolation": "prompt-complete-zero-tools",
+  "credential_environment": "parent-auth-staged-model-tools-disabled",
+  "execution_mode": "live",
+  "local_artifact_integrity_passed": true,
+  "artifact_integrity_eligible": true,
+  "caller_declared_runner_model_provenance": true,
+  "remote_model_attestation": false,
+  "runner_exit_code": 0,
+  "elapsed_ms": 101505,
+  "packet_path": "/private/tmp/e2e-independent-review-20260731-final/codex-r1/packet.json",
+  "packet_manifest_path": "/private/tmp/e2e-independent-review-20260731-final/codex-r1/packet-manifest.json",
+  "raw_output_path": "/private/tmp/e2e-independent-review-20260731-final/codex-r1/raw-codex-r1.json",
+  "raw_output_sha256": "45b02627e591717826cefba27c32b1ecd020f1de956929a180070d8450b1856b",
+  "raw_output_original_sha256": "45b02627e591717826cefba27c32b1ecd020f1de956929a180070d8450b1856b",
+  "raw_output_exact": true,
+  "integrity_before": {
+    "protocol_sha256": "6eba5bec52997da20ae621e50281ff7a3856afbc9dd9b08d9917e5ced3f6950d",
+    "packet_sha256": "da4b317623ed9cd460fc4decdbfcb55fe6ed0af3dd67ce8b189fa67c739aa41d",
+    "packet_manifest_sha256": "08081a20edffc2236697075a1c6e0d3ff317f6b1ce54037b137ed6d923b92b41",
+    "independent_runner_sha256": "139c40c09eac0908b46eed6990ead9060185a10f5bcd93c3d7be02fe7711fb6a",
+    "shared_zero_tool_runner_sha256": "f2c66cd60585fcb91291559a2007213e4f4e8cea3f4979b0eb34c82a1bf3d5c0",
+    "selected_sources_sha256": "a041bf3cb888c0c37e8eff75e0c15b54e1df9166d89fca5ffd3ed50071e987da",
+    "selected_sources": {
+      "README.md": "c71e0704adb5d15dde0f54e0830cab654cf53b1412e5127a8b61bc390964f0d8",
+      "SECURITY.md": "d2f29245e3b67aa6e570b269c6121424ebd1a71b1ebb01e69db4415df47038ec",
+      ".claude-plugin/plugin.json": "63a37edb76db4b652b15806f866a2cd335a400acf8455cbc91b3e47430098525",
+      ".claude-plugin/marketplace.json": "89006ac66d5d4eb779dcb07d0f82a18cd9b62c8636bd1b914d99122c0c00831a",
+      ".codex-plugin/plugin.json": "a54a828f5b74f8665ff2c7384aac02accfe50643db6e0a9b84031e8dea43fa43",
+      "skills/playwright-test-generator/SKILL.md": "f7a29ac29549c4d156caec531111251f3410a0a6a9af06a33c7e2b6622dfd4b0",
+      "skills/e2e-reviewer/SKILL.md": "e4e1d489c3cc6c54c3a74b825e4e27a9c7ba371c8d9add79ade0f0ec10dbdc2c",
+      "skills/playwright-debugger/SKILL.md": "e652dabf2b81c1f4e7cbab0ad05d6613a16e3bc6830479781d7f6b6551873476",
+      "skills/cypress-debugger/SKILL.md": "f32f38cd2f8b568b35827e4fad99e152067feba1b31fb1403ec16bb78a69cf70",
+      "skills/e2e-reviewer/references/pattern-reference.md": "104c08fb111e9c430074c5024102e4d7db41050bc19293d8ac6473b3b561a0fd",
+      "skills/e2e-reviewer/references/verification-rules.md": "09f5998f1262d33affcfb44ce417bd52c9a53909336d505fc085526581361559",
+      "skills/e2e-reviewer/scripts/scan.sh": "e6e266f291333d5cf6ddc259767db1e3a644963c4657a61762b90f225a60391b",
+      "skills/playwright-test-generator/scripts/preflight_target.py": "91b277a46fb885b3f6c2b90d31ac72a61fc10a6bd150abbc03eecbe358e9e822",
+      "skills/playwright-debugger/scripts/read-playwright-artifact.py": "291e4404ceea6601da58bc1f390401ae5ce777806aa313bb24116be0aff7174f",
+      "skills/playwright-debugger/scripts/publish-json-report.py": "048e5759d1956e70e4c4ca16bb8543f9edfa0c3861d13ef11e63c24d7fe96ed6",
+      "skills/playwright-debugger/scripts/download-playwright-report.py": "2570d38939f6a63d0c68d4985861ac4c4710879e13ecb1c19a50a391901d2a61",
+      "skills/cypress-debugger/scripts/read-cypress-artifact.py": "baca00a68a81a092b7d19a4d0e0535e6aa273c7fd55caa06c721ecc7c638d0ee",
+      "skills/cypress-debugger/scripts/extract-junit-failures.py": "892a8cb04a84eed8f2c18821623f95e7bd7f1d9e6075cdac05e9f23320556124",
+      "skills/cypress-debugger/scripts/download-cypress-reports.py": "7b4fc86eb35c3973dc77bb5f71f654faffcfcdfbf1216b7ca749e001258fe091",
+      "skills/cypress-debugger/scripts/redact_artifact.py": "2e2c85d6219114817f9a0983c3eaf9bde971c589b043fb1997f45d72e08bad67",
+      "skills/playwright-test-generator/best-practices.md": "b8472249b1f2406e35775eadfe0e973114436844b1117ec804fb5a09817850db",
+      "skills/playwright-test-generator/code-rules.md": "f1e2567f2938166c6bee7b374ec49f4398c89a32a9143f3d8b8660f0879d3bfe",
+      "skills/playwright-test-generator/verification-rules.md": "8564baf915821979263cef7b6e588917f33274d9d8bf7826842f192186378216",
+      "skills/e2e-reviewer/references/upstream-rule-sources.md": "101730ae407160a72bff2327c9d4c72a97d187bb7cefcff08cf8c5555018481f",
+      "scripts/ci/ci-local.sh": "eb4cd09b6f8b7a98dca1cf8ca0aa25bbbbdd16672926dcce54e6c244904f144a",
+      "scripts/ci/pre-push-security.sh": "e3a1703524711461d876a5149185e8654990043eb8897a54dac90cfd97733559"
+    }
+  },
+  "integrity_after": {
+    "protocol_sha256": "6eba5bec52997da20ae621e50281ff7a3856afbc9dd9b08d9917e5ced3f6950d",
+    "packet_sha256": "da4b317623ed9cd460fc4decdbfcb55fe6ed0af3dd67ce8b189fa67c739aa41d",
+    "packet_manifest_sha256": "08081a20edffc2236697075a1c6e0d3ff317f6b1ce54037b137ed6d923b92b41",
+    "independent_runner_sha256": "139c40c09eac0908b46eed6990ead9060185a10f5bcd93c3d7be02fe7711fb6a",
+    "shared_zero_tool_runner_sha256": "f2c66cd60585fcb91291559a2007213e4f4e8cea3f4979b0eb34c82a1bf3d5c0",
+    "selected_sources_sha256": "a041bf3cb888c0c37e8eff75e0c15b54e1df9166d89fca5ffd3ed50071e987da",
+    "selected_sources": {
+      "README.md": "c71e0704adb5d15dde0f54e0830cab654cf53b1412e5127a8b61bc390964f0d8",
+      "SECURITY.md": "d2f29245e3b67aa6e570b269c6121424ebd1a71b1ebb01e69db4415df47038ec",
+      ".claude-plugin/plugin.json": "63a37edb76db4b652b15806f866a2cd335a400acf8455cbc91b3e47430098525",
+      ".claude-plugin/marketplace.json": "89006ac66d5d4eb779dcb07d0f82a18cd9b62c8636bd1b914d99122c0c00831a",
+      ".codex-plugin/plugin.json": "a54a828f5b74f8665ff2c7384aac02accfe50643db6e0a9b84031e8dea43fa43",
+      "skills/playwright-test-generator/SKILL.md": "f7a29ac29549c4d156caec531111251f3410a0a6a9af06a33c7e2b6622dfd4b0",
+      "skills/e2e-reviewer/SKILL.md": "e4e1d489c3cc6c54c3a74b825e4e27a9c7ba371c8d9add79ade0f0ec10dbdc2c",
+      "skills/playwright-debugger/SKILL.md": "e652dabf2b81c1f4e7cbab0ad05d6613a16e3bc6830479781d7f6b6551873476",
+      "skills/cypress-debugger/SKILL.md": "f32f38cd2f8b568b35827e4fad99e152067feba1b31fb1403ec16bb78a69cf70",
+      "skills/e2e-reviewer/references/pattern-reference.md": "104c08fb111e9c430074c5024102e4d7db41050bc19293d8ac6473b3b561a0fd",
+      "skills/e2e-reviewer/references/verification-rules.md": "09f5998f1262d33affcfb44ce417bd52c9a53909336d505fc085526581361559",
+      "skills/e2e-reviewer/scripts/scan.sh": "e6e266f291333d5cf6ddc259767db1e3a644963c4657a61762b90f225a60391b",
+      "skills/playwright-test-generator/scripts/preflight_target.py": "91b277a46fb885b3f6c2b90d31ac72a61fc10a6bd150abbc03eecbe358e9e822",
+      "skills/playwright-debugger/scripts/read-playwright-artifact.py": "291e4404ceea6601da58bc1f390401ae5ce777806aa313bb24116be0aff7174f",
+      "skills/playwright-debugger/scripts/publish-json-report.py": "048e5759d1956e70e4c4ca16bb8543f9edfa0c3861d13ef11e63c24d7fe96ed6",
+      "skills/playwright-debugger/scripts/download-playwright-report.py": "2570d38939f6a63d0c68d4985861ac4c4710879e13ecb1c19a50a391901d2a61",
+      "skills/cypress-debugger/scripts/read-cypress-artifact.py": "baca00a68a81a092b7d19a4d0e0535e6aa273c7fd55caa06c721ecc7c638d0ee",
+      "skills/cypress-debugger/scripts/extract-junit-failures.py": "892a8cb04a84eed8f2c18821623f95e7bd7f1d9e6075cdac05e9f23320556124",
+      "skills/cypress-debugger/scripts/download-cypress-reports.py": "7b4fc86eb35c3973dc77bb5f71f654faffcfcdfbf1216b7ca749e001258fe091",
+      "skills/cypress-debugger/scripts/redact_artifact.py": "2e2c85d6219114817f9a0983c3eaf9bde971c589b043fb1997f45d72e08bad67",
+      "skills/playwright-test-generator/best-practices.md": "b8472249b1f2406e35775eadfe0e973114436844b1117ec804fb5a09817850db",
+      "skills/playwright-test-generator/code-rules.md": "f1e2567f2938166c6bee7b374ec49f4398c89a32a9143f3d8b8660f0879d3bfe",
+      "skills/playwright-test-generator/verification-rules.md": "8564baf915821979263cef7b6e588917f33274d9d8bf7826842f192186378216",
+      "skills/e2e-reviewer/references/upstream-rule-sources.md": "101730ae407160a72bff2327c9d4c72a97d187bb7cefcff08cf8c5555018481f",
+      "scripts/ci/ci-local.sh": "eb4cd09b6f8b7a98dca1cf8ca0aa25bbbbdd16672926dcce54e6c244904f144a",
+      "scripts/ci/pre-push-security.sh": "e3a1703524711461d876a5149185e8654990043eb8897a54dac90cfd97733559"
+    }
+  },
+  "review": {
+    "summary": "The packet defines strong fail-closed review, artifact, and verification contracts, but two executable trust-boundary defects materially weaken them: project-local explicit tool symlinks can evade scanner rejection, and the Cypress downloader inherits caller HOME without pinning gh to github.com. Additional validation and command-guidance gaps remain.",
+    "scores": {
+      "semantic_correctness": 91,
+      "false_positive_control": 94,
+      "security_trust_boundaries": 74,
+      "verification_design": 86,
+      "scope_contract_consistency": 92,
+      "docs_usability": 85
+    },
+    "findings": [
+      {
+        "severity": "H",
+        "category": "security_trust_boundaries",
+        "file": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 185,
+        "title": "Project-local tool symlink bypasses lexical-path rejection",
+        "evidence": "The case expression tests the combined string \"$candidate|$resolved\", but its candidate-path alternatives match only a string equal to or beginning with the project root, without accounting for the appended pipe and resolved path. An explicit executable path inside the project that resolves outside it can therefore avoid rejection, while the function returns and later executes the original project-controlled path.",
+        "recommendation": "Check candidate and resolved paths separately against PROJECT_ROOT_REAL, reject either when contained, and execute the validated resolved path rather than the original alias."
+      },
+      {
+        "severity": "H",
+        "category": "security_trust_boundaries",
+        "file": "skills/cypress-debugger/scripts/download-cypress-reports.py",
+        "line": 184,
+        "title": "Cypress downloader trusts ambient gh home and host configuration",
+        "evidence": "The helper forwards caller HOME unchanged. In context, its gh api invocations omit an explicit --hostname, unlike the Playwright downloader, so gh may load host selection and credentials from ambient configuration rather than a pinned github.com boundary; HOME is also not rejected when project-controlled.",
+        "recommendation": "Canonicalize HOME, reject it when contained by the workspace, and pass --hostname github.com on every gh api invocation."
+      },
+      {
+        "severity": "M",
+        "category": "verification_design",
+        "file": "skills/playwright-debugger/scripts/publish-json-report.py",
+        "line": 113,
+        "title": "Publisher validates JSON syntax but not report schema",
+        "evidence": "Publication validation consists of json.load with duplicate-key and finite-number hooks. Any syntactically valid JSON, including an object that the bundled report reader will reject as incomplete, can replace the destination after a successful command.",
+        "recommendation": "Before publication, apply the same bounded Playwright report schema and counter validation used by read-playwright-artifact.py."
+      },
+      {
+        "severity": "M",
+        "category": "docs_usability",
+        "file": "skills/cypress-debugger/SKILL.md",
+        "line": 107,
+        "title": "Merge example bypasses documented safe-write procedure",
+        "evidence": "The actionable merge command redirects output directly to cypress/reports/merged.json. The same document requires symlink-safe destination validation immediately before shell redirection, but the example supplies no such validation and shell redirection can follow an existing symlink before the merger starts.",
+        "recommendation": "Provide a bundled descriptor-relative atomic publisher for merged Cypress JSON and use it in the example instead of shell redirection."
+      }
+    ],
+    "limitations": [
+      "Packet-only static review with no shell, filesystem, network, execution, tests, benchmarks, holdouts, prior reviews, or repository history.",
+      "The curated packet omits substantial product and verification surfaces, so this is not full product coverage, observed runtime success, skill accuracy, independent ground truth, or remote model attestation.",
+      "README sections were transformed or excluded according to the packet manifest; omitted claims and evidence were not assessed."
+    ],
+    "verdict": "FAIL"
+  },
+  "decision": {
+    "overall_score": 87.0,
+    "finding_counts": {
+      "C": 0,
+      "H": 2,
+      "M": 2
+    },
+    "checks": {
+      "overall_score": false,
+      "dimension_floor": false,
+      "critical_findings": true,
+      "high_findings": false,
+      "model_verdict_matches": true
+    }
+  },
+  "limitations": [
+    "This is a fresh-context review of a curated contract/implementation subset, not full product coverage or skill accuracy.",
+    "The public packet is not human or sealed review, independent ground truth, or remote model attestation.",
+    "The local UUIDv4 invocation ID separates runner invocations but cannot attest that a distinct remote model call occurred.",
+    "The Anthropic entries are two models in one provider family, not two independent providers.",
+    "Excluded scorecards, holdouts, reports, prior reviews, chat conclusions, and git history reduce but cannot prove absence of training-data contamination."
+  ]
+}

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cypress counter fixture</title>
+  </head>
+  <body>
+    <main>
+      <h1>Counter</h1>
+      <p role="status">Count: 0</p>
+      <button type="button">Increment</button>
+    </main>
+    <script>
+      const params = new URLSearchParams(location.search);
+      const likedView = params.has("liked-view");
+      const behaviorFault = params.has("behavior-fault");
+      const uncaughtFault = params.has("uncaught-fault");
+      const renderGuardFault = params.has("render-guard-fault");
+      const main = document.querySelector("main");
+
+      if (likedView) {
+        const item = { title: "Saved lesson", liked: !renderGuardFault };
+        main.innerHTML = "<h1>Liked lessons</h1><section></section>";
+        if (item.liked) {
+          main.querySelector("section").innerHTML =
+            `<article data-testid="liked-card">${item.title}</article>`;
+        }
+      } else {
+        const status = document.querySelector('[role="status"]');
+        document.querySelector("button").addEventListener("click", () => {
+          if (uncaughtFault) throw new Error("fixture-uncaught-exception");
+          if (!behaviorFault) status.textContent = "Count: 1";
+        });
+      }
+    </script>
+  </body>
+</html>

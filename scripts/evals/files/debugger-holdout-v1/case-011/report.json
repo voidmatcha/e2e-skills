@@ -1,0 +1,1 @@
+{"framework":"playwright","test":"records both exports","attempts":[{"status":"failed","error":"Expected first download to be accounts.csv, received audit.csv"}],"spec_excerpt":"const [accounts, audit] = await Promise.all([page.waitForEvent('download'), page.waitForEvent('download'), page.click('text=Export all')])","events":["audit.csv","accounts.csv"]}

@@ -1,19 +1,33 @@
-#!/usr/bin/env bash
+#!/bin/bash -p
 # Automated convention review for e2e-skills.
 
-set -uo pipefail
+builtin set -uo pipefail
+
+# Pin command lookup and discard functions imported from the caller before
+# repository resolution or any external command can be influenced by them.
+PATH="/usr/bin:/bin:/usr/sbin:/sbin"
+builtin export PATH
+builtin unset CDPATH ENV BASH_ENV GLOBIGNORE
+while IFS= builtin read -r imported_function; do
+  builtin unset -f "$imported_function"
+done < <(builtin compgen -A function)
+builtin shopt -u expand_aliases
+builtin unalias -a 2>/dev/null || true
 
 QUIET=0
 [ "${1:-}" = "--quiet" ] && QUIET=1
 
-REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)" || {
+SCRIPT_DIR="${BASH_SOURCE[0]%/*}"
+[ "$SCRIPT_DIR" = "${BASH_SOURCE[0]}" ] && SCRIPT_DIR="."
+REPO_ROOT="$(builtin cd -- "$SCRIPT_DIR/../.." && builtin pwd -P)" || {
   echo "review.sh: cannot resolve repo root" >&2
   exit 1
 }
-cd "$REPO_ROOT" || {
+builtin cd -- "$REPO_ROOT" || {
   echo "review.sh: cannot cd to $REPO_ROOT" >&2
   exit 1
 }
+source "$REPO_ROOT/scripts/ci/lib/init-python-isolation.sh" || exit 2
 
 ERRORS=0
 WARNINGS=0
@@ -23,11 +37,11 @@ err() { echo "  [FAIL] $*" >&2; ERRORS=$((ERRORS + 1)); }
 warn() { echo "  [WARN] $*" >&2; WARNINGS=$((WARNINGS + 1)); }
 ok() { [ "$QUIET" = "1" ] || echo "  [OK] $*"; PASSED=$((PASSED + 1)); }
 section() { [ "$QUIET" = "1" ] || { echo ""; echo "-- $* --"; }; }
-repo_files() { git ls-files -co --exclude-standard -- "$@" 2>/dev/null; }
+repo_files() { /usr/bin/git ls-files -co --exclude-standard -- "$@" 2>/dev/null; }
 
 section "Eval metadata"
 eval_log=$(mktemp "${TMPDIR:-/tmp}/e2e-skills-evals.XXXXXX")
-if ./scripts/validate-evals.sh >"$eval_log" 2>&1; then
+if /bin/bash ./scripts/validate-evals.sh >"$eval_log" 2>&1; then
   total=$(grep -oE 'total: [0-9]+ eval\(s\)' "$eval_log" | tail -1 || true)
   ok "validate-evals.sh ${total:-passed}"
 else
@@ -36,21 +50,61 @@ else
 fi
 rm -f "$eval_log"
 
+if run_python scripts/ci/test-eval-schema.py >/dev/null; then
+  ok "strict eval schema regression cases"
+else
+  err "strict eval schema regression cases failed"
+fi
+
 if command -v python3 >/dev/null 2>&1; then
   if python3 - <<'PY'
-import json
 import pathlib
 import sys
 
+sys.path.insert(0, 'scripts/ci/lib')
+from strict_json import load_strict, require_exact_keys
+
 errors = []
 seen = set()
+allowed_entry_keys = {
+    'id',
+    'title',
+    'prompt',
+    'expected_output',
+    'files',
+    'assertions',
+}
 for path in sorted(pathlib.Path('skills').glob('*/evals/evals.json')):
-    data = json.loads(path.read_text(encoding='utf-8'))
+    data = load_strict(path)
+    require_exact_keys(
+        data,
+        {'skill_name', 'evals'},
+        context=str(path),
+    )
     skill = path.parts[1]
     if data.get('skill_name') != skill:
         errors.append(f"{path}: skill_name must be {skill!r}")
+    if not isinstance(data['evals'], list):
+        errors.append(f"{path}: evals must be a list")
+        continue
     ids = []
-    for entry in data.get('evals', []):
+    for index, entry in enumerate(data['evals']):
+        if not isinstance(entry, dict):
+            errors.append(f"{path}: evals[{index}] must be an object")
+            continue
+        unknown = sorted(set(entry) - allowed_entry_keys)
+        if unknown:
+            errors.append(
+                f"{path}: evals[{index}] has unknown keys {unknown!r}"
+            )
+        missing = sorted(
+            {'id', 'prompt', 'expected_output', 'assertions'} - set(entry)
+        )
+        if missing:
+            errors.append(
+                f"{path}: evals[{index}] is missing keys {missing!r}"
+            )
+            continue
         eval_id = entry.get('id')
         key = (skill, eval_id)
         if key in seen:
@@ -78,16 +132,26 @@ fi
 
 section "Security"
 if [ "${E2E_SKILLS_SKIP_SECURITY:-}" = "1" ]; then
-  ok "pre-push-security.sh skipped by E2E_SKILLS_SKIP_SECURITY=1"
+  err "refusing E2E_SKILLS_SKIP_SECURITY=1; standalone review requires security"
 else
   security_log=$(mktemp "${TMPDIR:-/tmp}/e2e-skills-security.XXXXXX")
-  if bash scripts/ci/pre-push-security.sh --quiet >"$security_log" 2>&1; then
+  if /bin/bash -p scripts/ci/pre-push-security.sh --quiet >"$security_log" 2>&1; then
     ok "pre-push-security.sh clean"
   else
     err "pre-push-security.sh blockers found"
     [ "$QUIET" = "0" ] && cat "$security_log" >&2
   fi
   rm -f "$security_log"
+fi
+
+ast_grep_workflow=".github/workflows/e2e-smell-scan.yml"
+if [ ! -f "$ast_grep_workflow" ]; then
+  err "missing ast-grep workflow: $ast_grep_workflow"
+elif grep -qF "npm i -g '@ast-grep/cli@0.39.7'" "$ast_grep_workflow" &&
+     [ "$(grep -cF "@ast-grep/cli@" "$ast_grep_workflow")" -eq 1 ]; then
+  ok "workflow pins @ast-grep/cli exactly to 0.39.7"
+else
+  err "workflow ast-grep install must use exact @ast-grep/cli@0.39.7"
 fi
 
 section "Public skill surface"
@@ -99,14 +163,66 @@ import re
 import sys
 
 sys.path.insert(0, 'scripts/ci/lib')
+from strict_json import load_manifest_json
 from validate_codex import collect_codex_errors
+from version_contract import canonical_semver_error
 
 errors = []
 skill_dirs = sorted(path for path in pathlib.Path('skills').iterdir() if path.is_dir())
 expected = {path.name for path in skill_dirs}
 
-plugin = json.loads(pathlib.Path('.claude-plugin/plugin.json').read_text())
-codex_plugin = json.loads(pathlib.Path('.codex-plugin/plugin.json').read_text())
+def parse_openai_manifest(path):
+    """Parse the deliberately small agents/openai.yaml schema, fail closed."""
+    text = path.read_text(encoding='utf-8')
+    if text.startswith('\ufeff'):
+        raise ValueError("UTF-8 BOM is not supported")
+    if '\t' in text:
+        raise ValueError("tabs are not allowed")
+    top = {}
+    metadata = {}
+    current = None
+    for number, line in enumerate(text.splitlines(), 1):
+        if not line.strip() or line.lstrip().startswith('#'):
+            continue
+        if line.startswith(' '):
+            match = re.fullmatch(r"  ([A-Za-z_][A-Za-z0-9_-]*):[ ]+(.+)", line)
+            if current != 'metadata' or not match:
+                raise ValueError(f"line {number}: unsupported indentation or nested value")
+            key, value = match.groups()
+            if key in metadata:
+                raise ValueError(f"line {number}: duplicate metadata key {key!r}")
+            metadata[key] = value
+            continue
+        match = re.fullmatch(r"([A-Za-z_][A-Za-z0-9_-]*):(?:[ ]+(.*))?", line)
+        if not match:
+            raise ValueError(f"line {number}: unsupported YAML syntax")
+        key, value = match.groups()
+        if key in top:
+            raise ValueError(f"line {number}: duplicate top-level key {key!r}")
+        if key == 'metadata':
+            if value is not None:
+                raise ValueError(f"line {number}: metadata must be a mapping")
+            top[key] = metadata
+        else:
+            if value is None or not value.strip():
+                raise ValueError(f"line {number}: {key} must have a scalar value")
+            if re.search(r":\s|(?:^|\s)#", value):
+                raise ValueError(f"line {number}: unsupported ambiguous plain scalar")
+            top[key] = value
+        current = key
+    expected_top = {'name', 'description', 'metadata', 'allow_implicit_invocation'}
+    if set(top) != expected_top:
+        raise ValueError(
+            f"top-level keys must be exactly {sorted(expected_top)!r}, got {sorted(top)!r}"
+        )
+    if set(metadata) != {'short-description'}:
+        raise ValueError("metadata must contain exactly short-description")
+    if top['allow_implicit_invocation'] not in {'true', 'false'}:
+        raise ValueError("allow_implicit_invocation must be true or false")
+    return top
+
+plugin = load_manifest_json(pathlib.Path('.claude-plugin/plugin.json'))
+codex_plugin = load_manifest_json(pathlib.Path('.codex-plugin/plugin.json'))
 expected_paths = {f'./skills/{skill}' for skill in expected}
 plugin_paths = plugin.get('skills')
 if (
@@ -159,11 +275,18 @@ for skill_dir in skill_dirs:
     version_match = re.search(r"^  version:\s*['\"]?([^'\"\n]+)['\"]?\s*$", match.group(1), re.M)
     if not version_match:
         errors.append(f"{skill_file}: missing metadata.version in frontmatter")
-    elif plugin_version and version_match.group(1).strip() != plugin_version:
-        errors.append(
-            f"{skill_file}: metadata.version {version_match.group(1).strip()!r} "
-            f"does not match plugin version {plugin_version!r}"
+    else:
+        skill_version = version_match.group(1).strip()
+        version_error = canonical_semver_error(
+            skill_version, f"{skill_file}: metadata.version"
         )
+        if version_error:
+            errors.append(version_error)
+        elif plugin_version and skill_version != plugin_version:
+            errors.append(
+                f"{skill_file}: metadata.version {skill_version!r} "
+                f"does not match plugin version {plugin_version!r}"
+            )
 
 if frontmatter_names != expected:
     errors.append(f"skills/*/SKILL.md names mismatch: {sorted(frontmatter_names)} != {sorted(expected)}")
@@ -173,8 +296,12 @@ for skill_dir in skill_dirs:
     if not manifest.exists():
         errors.append(f"{manifest}: missing")
         continue
-    text = manifest.read_text(encoding='utf-8')
-    if not re.search(rf"^name:\s*{re.escape(skill_dir.name)}\s*$", text, re.M):
+    try:
+        parsed = parse_openai_manifest(manifest)
+    except (OSError, UnicodeError, ValueError) as exc:
+        errors.append(f"{manifest}: invalid OpenAI agent YAML: {exc}")
+        continue
+    if parsed['name'] != skill_dir.name:
         errors.append(f"{manifest}: name must match {skill_dir.name}")
 
 if errors:
@@ -188,7 +315,7 @@ PY
     err "public skill surface parity failed"
   fi
 else
-  warn "python3 not available; skipped public skill surface check"
+  err "python3 unavailable; public skill/OpenAI YAML checks did not run"
 fi
 
 # Frontmatter `description` is the cross-host trigger surface and is pre-loaded for EVERY
@@ -269,6 +396,10 @@ import pathlib
 import re
 import sys
 
+sys.path.insert(0, 'scripts/ci/lib')
+from strict_json import load_manifest_json
+from manifest_phrase_contract import MANIFEST_PATTERN_PHRASES
+
 errors = []
 
 skill_text = pathlib.Path('skills/e2e-reviewer/SKILL.md').read_text(encoding='utf-8')
@@ -277,9 +408,9 @@ patref_text = pathlib.Path('skills/e2e-reviewer/references/pattern-reference.md'
 scan_text = pathlib.Path('skills/e2e-reviewer/scripts/scan.sh').read_text(encoding='utf-8')
 docs_text = pathlib.Path('docs/e2e-test-smells.md').read_text(encoding='utf-8')
 readme_text = pathlib.Path('README.md').read_text(encoding='utf-8')
-plugin = json.loads(pathlib.Path('.claude-plugin/plugin.json').read_text(encoding='utf-8'))
-market = json.loads(pathlib.Path('.claude-plugin/marketplace.json').read_text(encoding='utf-8'))
-codex_plugin = json.loads(pathlib.Path('.codex-plugin/plugin.json').read_text(encoding='utf-8'))
+plugin = load_manifest_json(pathlib.Path('.claude-plugin/plugin.json'))
+market = load_manifest_json(pathlib.Path('.claude-plugin/marketplace.json'))
+codex_plugin = load_manifest_json(pathlib.Path('.codex-plugin/plugin.json'))
 
 qr_match = re.search(r'## Quick Reference\s*\n(?:.*\n)*?((?:\|.*\n)+)', skill_text)
 if not qr_match:
@@ -287,10 +418,15 @@ if not qr_match:
     sys.exit(1)
 
 qr_severity = {}
+qr_titles = {}
 for row in qr_match.group(1).splitlines():
-    m = re.match(r'\|\s*(\d+[a-z]?)\s*\|\s*[^|]+\|\s*(P[012](?:/P[012])?)\s*\|', row)
+    m = re.match(
+        r'\|\s*(\d+[a-z]?)\s*\|\s*([^|]+?)\s*\|\s*(P[012](?:/P[012])?)\s*\|',
+        row,
+    )
     if m:
-        qr_severity[m.group(1)] = m.group(2)
+        qr_titles[m.group(1)] = m.group(2).strip()
+        qr_severity[m.group(1)] = m.group(3)
 qr_ids = set(qr_severity)
 
 def base_id(s):
@@ -409,55 +545,56 @@ for skill in ('playwright-debugger', 'cypress-debugger'):
     if missing:
         errors.append(f"{evals_path}: F-codes not in SKILL.md taxonomy: {sorted(missing)}")
 
-# Check 5: severity-grouped pattern phrase parity (canonical source: .claude-plugin/plugin.json
-# description -> marketplace.json / .codex-plugin. The e2e-reviewer SKILL.md uses a lean trigger
-# description by design, so the 24-phrase catalog lives in the manifests, not the skill frontmatter.)
-phrase_source = plugin.get('description', '')
-sev_groups = {}
-for m in re.finditer(r"P([012])\s+[a-z\-]+\s*\(([^)]*)\)", phrase_source):
-    sev_groups[m.group(1)] = m.group(2)
+# Check 5: severity-grouped manifest phrase parity. The source is the checked
+# ID/title contract above, never one of the three manifests being compared.
+def normalize(s):
+    s = s.lower()
+    s = re.sub(r'[^a-z0-9+]+', ' ', s)
+    return re.sub(r'\s+', ' ', s).strip()
 
-if set(sev_groups) != {'0', '1', '2'}:
-    errors.append('.claude-plugin/plugin.json description: could not extract P0/P1/P2 pattern groups')
-else:
-    def normalize(s):
-        s = s.lower()
-        s = re.sub(r'[^a-z0-9+]+', ' ', s)
-        return re.sub(r'\s+', ' ', s).strip()
+contract_ids = {pid for pid, _, _, _ in MANIFEST_PATTERN_PHRASES}
+if len(MANIFEST_PATTERN_PHRASES) != 24 or contract_ids != qr_ids:
+    errors.append(
+        "manifest phrase contract must contain exactly the 24 Quick Reference IDs"
+    )
 
-    ordered_phrases = []
-    for sev in ('0', '1', '2'):
-        clean = re.sub(r'\([^)]*\)', '', sev_groups[sev])
-        for phrase in clean.split(','):
-            phrase = phrase.strip()
-            if phrase:
-                ordered_phrases.append(normalize(phrase))
-
-    if len(ordered_phrases) != 24:
+for pid, expected_title, severity, _ in MANIFEST_PATTERN_PHRASES:
+    actual_title = qr_titles.get(pid)
+    if actual_title != expected_title:
         errors.append(
-            f".claude-plugin/plugin.json description: expected 24 patterns across P0/P1/P2, got {len(ordered_phrases)}"
+            f"manifest phrase contract #{pid} title {expected_title!r} "
+            f"does not match Quick Reference {actual_title!r}"
+        )
+    actual_severity = qr_severity.get(pid, "")
+    if severity not in actual_severity.split("/"):
+        errors.append(
+            f"manifest phrase contract #{pid} severity {severity} "
+            f"does not match Quick Reference {actual_severity!r}"
         )
 
-    plugin_desc_norm = normalize(plugin.get('description', ''))
-    market_desc_norm = ''
-    for entry in market.get('plugins', []):
-        if entry.get('name') == 'e2e-skills':
-            market_desc_norm = normalize(entry.get('description', ''))
-            break
-    codex_desc_norm = normalize(codex_plugin.get('description', ''))
+ordered_phrases = [
+    normalize(phrase) for _, _, _, phrase in MANIFEST_PATTERN_PHRASES
+]
+plugin_desc_norm = normalize(plugin.get('description', ''))
+market_desc_norm = ''
+for entry in market.get('plugins', []):
+    if entry.get('name') == 'e2e-skills':
+        market_desc_norm = normalize(entry.get('description', ''))
+        break
+codex_desc_norm = normalize(codex_plugin.get('description', ''))
 
-    for label, desc in (
-        ('.claude-plugin/plugin.json', plugin_desc_norm),
-        ('.claude-plugin/marketplace.json', market_desc_norm),
-        ('.codex-plugin/plugin.json', codex_desc_norm),
-    ):
-        pos = 0
-        for phrase in ordered_phrases:
-            idx = desc.find(phrase, pos)
-            if idx < 0:
-                errors.append(f"{label}: missing or out-of-order pattern '{phrase}'")
-                break
-            pos = idx + len(phrase)
+for label, desc in (
+    ('.claude-plugin/plugin.json', plugin_desc_norm),
+    ('.claude-plugin/marketplace.json', market_desc_norm),
+    ('.codex-plugin/plugin.json', codex_desc_norm),
+):
+    pos = 0
+    for phrase in ordered_phrases:
+        idx = desc.find(phrase, pos)
+        if idx < 0:
+            errors.append(f"{label}: missing or out-of-order pattern '{phrase}'")
+            break
+        pos = idx + len(phrase)
 
 # Check 6: version parity across all three manifest files
 plugin_version = plugin.get('version')
@@ -491,18 +628,192 @@ else
 fi
 
 section "Framework scope"
-unsupported=$(
-  while IFS= read -r path; do
-    [ -f "$path" ] || continue
-    grep -En 'Puppeteer|puppeteer' "$path" 2>/dev/null | sed "s|^|$path:|" || true
-  done < <(repo_files README.md skills docs .claude-plugin .codex-plugin scripts) | \
-    grep -vE '^docs/framework-scope\.md:|^scripts/ci/review\.sh:' || true
+if command -v python3 >/dev/null 2>&1; then
+  if python3 - "$REPO_ROOT" <<'PY'
+import pathlib
+import re
+import subprocess
+import sys
+
+root = pathlib.Path(sys.argv[1])
+frameworks = ("Puppeteer", "Selenium", "WebdriverIO", "TestCafe", "Nightwatch")
+framework_re = re.compile(
+    r"\b(" + "|".join(re.escape(name) for name in frameworks) + r")\b",
+    re.I,
 )
-if [ -z "$unsupported" ]; then
-  ok "no accidental Puppeteer support claims outside framework-scope.md"
+negative_scope_re = re.compile(
+    r"(?:"
+    r"\bout[- ]of[- ]scope\b|"
+    r"\bnot in scope\b|"
+    r"\bdoes not (?:accept|produce|ship|support)\b|"
+    r"\bdo not introduce\b|"
+    r"\bmust not appear\b|"
+    r"\bintentionally not listed as supported\b"
+    r")",
+    re.I,
+)
+evidence_document_sections = {
+    pathlib.Path("docs/llm-generated-e2e-test-evidence.md"): None,
+    pathlib.Path("README.md"): "Further evidence and practice",
+}
+evidence_attribution_re = re.compile(
+    r"(?:"
+    r"\b(?:study|paper|preprint|proceedings|evaluation|implementation|"
+    r"evidence|reports?|evaluates?|measures?|results?)\b|"
+    r"\bdoi\b|arxiv\.org|doi\.org"
+    r")",
+    re.I,
+)
+product_subject_re = (
+    r"(?:\be2e[- ]skills\b|\bthis (?:bundle|product|repository|skill)\b|"
+    r"\bour (?:bundle|product|repository|skill)s?\b)"
+)
+positive_capability_re = (
+    r"(?:fully support(?:s|ed)?|support(?:s|ed)?|generat(?:e|es|ed|ing)|"
+    r"produc(?:e|es|ed|ing)|review(?:s|ed|ing)?|debug(?:s|ged|ging)?)"
+)
+control_files = {
+    pathlib.Path("scripts/ci/review.sh"),
+    pathlib.Path("scripts/ci/test-parity.sh"),
+}
+scope_document = pathlib.Path("docs/framework-scope.md")
+
+listed = subprocess.run(
+    ["git", "ls-files", "-co", "--exclude-standard", "--"],
+    cwd=str(root),
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+    text=True,
+    check=False,
+)
+if listed.returncode != 0:
+    print(
+        "framework scope: git file enumeration failed: {}".format(
+            listed.stderr.strip() or "unknown error"
+        ),
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+
+paths = []
+for raw in listed.stdout.splitlines():
+    path = pathlib.Path(raw)
+    if (
+        path in {pathlib.Path("README.md"), pathlib.Path("CONTRIBUTING.md"), pathlib.Path("AGENTS.md")}
+        or path.parts[:1] in {
+            ("skills",),
+            ("docs",),
+            (".claude-plugin",),
+            (".codex-plugin",),
+            ("scripts",),
+        }
+    ):
+        paths.append(path)
+if not paths:
+    print("framework scope: file enumeration returned zero scoped files", file=sys.stderr)
+    raise SystemExit(1)
+
+errors = []
+for relative in sorted(set(paths)):
+    absolute = root / relative
+    if not absolute.is_file() or relative in control_files or relative == scope_document:
+        continue
+    text = absolute.read_text(encoding="utf-8", errors="replace")
+    evidence_region = None
+    evidence_heading = evidence_document_sections.get(relative)
+    if relative in evidence_document_sections:
+        if evidence_heading is None:
+            evidence_region = (0, len(text))
+        else:
+            heading_re = re.compile(
+                rf"^(?P<marks>#{{1,6}})[ \t]+{re.escape(evidence_heading)}[ \t]*$",
+                re.M,
+            )
+            heading_match = heading_re.search(text)
+            if heading_match:
+                heading_level = len(heading_match.group("marks"))
+                next_heading = re.search(
+                    rf"^#{{1,{heading_level}}}[ \t]+",
+                    text[heading_match.end():],
+                    re.M,
+                )
+                region_end = (
+                    heading_match.end() + next_heading.start()
+                    if next_heading
+                    else len(text)
+                )
+                evidence_region = (heading_match.start(), region_end)
+    for match in framework_re.finditer(text):
+        # Exempt only when the negative scope wording governs this framework in
+        # the same sentence/clause. A separate negative sentence elsewhere in
+        # the paragraph must not launder a positive support claim.
+        sentence_start_matches = list(re.finditer(r"[.!?](?:\s|$)", text[:match.start()]))
+        sentence_start = sentence_start_matches[-1].end() if sentence_start_matches else 0
+        sentence_end_match = re.search(r"[.!?](?:\s|$)", text[match.end():])
+        sentence_end = (
+            match.end() + sentence_end_match.start()
+            if sentence_end_match
+            else len(text)
+        )
+        sentence = text[sentence_start:sentence_end]
+        match_in_sentence = match.start() - sentence_start
+        clause_start_matches = list(re.finditer(r"[;|]", sentence[:match_in_sentence]))
+        clause_start = clause_start_matches[-1].end() if clause_start_matches else 0
+        clause_end_match = re.search(r"[;|]", sentence[match_in_sentence:])
+        clause_end = (
+            match_in_sentence + clause_end_match.start()
+            if clause_end_match
+            else len(sentence)
+        )
+        clause = sentence[clause_start:clause_end]
+        if negative_scope_re.search(clause):
+            continue
+        if (
+            evidence_region is not None
+            and evidence_region[0] <= match.start() < evidence_region[1]
+        ):
+            block_start = text.rfind("\n\n", 0, match.start())
+            block_start = 0 if block_start < 0 else block_start + 2
+            block_end = text.find("\n\n", match.end())
+            block_end = len(text) if block_end < 0 else block_end
+            block = text[block_start:block_end]
+            framework = re.escape(match.group(1))
+            product_claim_re = re.compile(
+                rf"(?:"
+                rf"{product_subject_re}.{{0,180}}{positive_capability_re}.{{0,80}}\b{framework}\b|"
+                rf"\b{framework}\b.{{0,80}}{positive_capability_re}.{{0,180}}{product_subject_re}"
+                rf")",
+                re.I | re.S,
+            )
+            # Evidence documents are not blanket-whitelisted. Each reference
+            # must remain inside an attributed research/evidence block, and a
+            # positive e2e-skills capability claim invalidates that exemption.
+            if evidence_attribution_re.search(block) and not product_claim_re.search(block):
+                continue
+        line = text.count("\n", 0, match.start()) + 1
+        canonical = next(
+            name for name in frameworks if name.lower() == match.group(1).lower()
+        )
+        errors.append(
+            "{}:{}: unsupported framework reference: {}".format(
+                relative,
+                line,
+                canonical,
+            )
+        )
+
+if errors:
+    for error in errors:
+        print(error, file=sys.stderr)
+    raise SystemExit(1)
+PY
+  then
+    ok "no accidental support claims for the five declared out-of-scope frameworks"
+  else
+    err "unsupported framework references found outside narrow negative/scope documentation"
+  fi
 else
-  err "unsupported Puppeteer references found outside framework-scope.md"
-  printf '%s\n' "$unsupported" | sed 's/^/      /' >&2
+  err "python3 unavailable; framework scope check did not run"
 fi
 
 if command -v python3 >/dev/null 2>&1; then
@@ -778,8 +1089,8 @@ def repo_files():
             text=True,
         )
         return [pathlib.Path(line) for line in out.splitlines() if line]
-    except Exception:
-        return [p for p in pathlib.Path('.').rglob('*') if p.is_file()]
+    except Exception as exc:
+        raise RuntimeError(f"git file enumeration failed: {exc}") from exc
 
 docs_dir = pathlib.Path('docs')
 if not docs_dir.is_dir():
@@ -802,7 +1113,7 @@ for path in all_repo_files:
     if path.as_posix() in excluded_paths:
         continue
     if len(path.parts) > 1 and path.parts[0] == 'scripts' and path.suffix in {'.sh', '.py'}:
-        ci_text_parts.append(path.read_text(encoding='utf-8', errors='ignore'))
+        ci_text_parts.append(path.read_text(encoding='utf-8'))
 ci_text = '\n'.join(ci_text_parts)
 
 errors = []
@@ -830,40 +1141,339 @@ else
 fi
 
 section "README i18n parity"
-i18n_ok=1
-en_sec=$(grep -c '^## ' README.md || true)
-en_fence=$(grep -c '^```' README.md || true)
-for f in README.ko.md README.ja.md README.zh-cn.md; do
-  if [ ! -f "$f" ]; then
-    err "README i18n parity: translation missing: $f"
-    i18n_ok=0
-    continue
+if command -v python3 >/dev/null 2>&1; then
+  if python3 - <<'PY'
+import collections
+import hashlib
+import pathlib
+import re
+import sys
+
+canonical_path = pathlib.Path("README.md")
+translations = tuple(map(pathlib.Path, ("README.ko.md", "README.ja.md", "README.zh-cn.md")))
+try:
+    canonical_bytes = canonical_path.read_bytes()
+    canonical = canonical_bytes.decode("utf-8")
+except (OSError, UnicodeError) as exc:
+    print(f"README i18n parity: cannot read README.md: {exc}", file=sys.stderr)
+    raise SystemExit(1)
+canonical_digest = hashlib.sha256(canonical_bytes).hexdigest()
+canonical_ack_re = re.compile(
+    r"<!-- README-CANONICAL-REVISION: "
+    r"sha256=([0-9a-f]{64}); "
+    r"bytes=exact-README\.md-UTF-8; "
+    r"translation-quality=not-attested -->"
+)
+
+command_re = re.compile(
+    r"^(?:/plugin (?:marketplace add|install) |"
+    r"codex plugin (?:marketplace add|add) |"
+    r"npx --yes skills@[0-9]+\.[0-9]+\.[0-9]+ add |"
+    r"git clone ).+$"
+)
+repo_url_re = re.compile(
+    r"https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+"
+    r"(?:/[A-Za-z0-9_.#?=&/-]+)?"
+)
+
+
+def install_contract(text):
+    commands = collections.Counter(
+        line.strip()
+        for line in text.splitlines()
+        if command_re.fullmatch(line.strip())
+    )
+    repo_urls = collections.Counter(repo_url_re.findall(text))
+    return commands, repo_urls
+
+
+def check_manual_clone_contract(path, text, errors):
+    required = (
+        'git clone https://github.com/voidmatcha/e2e-skills.git '
+        '"$HOME/.claude/e2e-skills"',
+        'mkdir -p "$HOME/.claude/skills"',
+        "for skill in playwright-test-generator e2e-reviewer "
+        "playwright-debugger cypress-debugger; do",
+        'ln -s "$HOME/.claude/e2e-skills/skills/$skill" '
+        '"$HOME/.claude/skills/$skill"',
+        "/skills",
+    )
+    if any(token not in text for token in required):
+        errors.append(
+            f"README i18n parity: {path} manual Claude Code clone must expose "
+            "four direct per-skill roots and document /skills verification"
+        )
+    if "~/.claude/skills/e2e-skills" in text:
+        errors.append(
+            f"README i18n parity: {path} manual Claude Code clone uses an "
+            "unsupported nested bundle path"
+        )
+
+
+def check_codex_install_and_delegation_contract(path, text, errors):
+    codex_heading = "\n### Codex\n"
+    start = text.find(codex_heading)
+    if start < 0:
+        errors.append(f"README i18n parity: {path} missing Codex install section")
+        return
+    end = text.find("\n### ", start + len(codex_heading))
+    section = text[start:end if end >= 0 else len(text)]
+    codex_only = (
+        "npx --yes skills@1.5.21 add voidmatcha/e2e-skills "
+        "--skill '*' -g -a codex"
+    )
+    combined = (
+        "npx --yes skills@1.5.21 add voidmatcha/e2e-skills "
+        "--skill '*' -g -a claude-code -a codex"
+    )
+    if codex_only not in section or combined in section:
+        errors.append(
+            f"README i18n parity: {path} Codex install must target only "
+            "-a codex and disclose Claude Code separately"
+        )
+    delegation_tokens = (
+        "`e2e-reviewer`",
+        "`playwright-debugger`",
+        "`cypress-debugger`",
+        "`playwright-test-generator`",
+        "V6",
+        "`CANNOT_VERIFY`",
+        "`PARTIAL/BLOCKED`",
+    )
+    missing = [token for token in delegation_tokens if token not in section]
+    if missing:
+        errors.append(
+            f"README i18n parity: {path} Codex delegation limits missing "
+            f"tokens {missing!r}"
+        )
+
+
+def taxonomy_contract(text):
+    headings = list(re.finditer(r"^#### P([012])\b.*$", text, re.M))
+    pattern_severity = {}
+    duplicates = []
+    for index, heading in enumerate(headings):
+        end = headings[index + 1].start() if index + 1 < len(headings) else len(text)
+        section = text[heading.end():end]
+        for pattern_id in re.findall(r"^\| (3b|\d+) \|", section, re.M):
+            if pattern_id in pattern_severity:
+                duplicates.append(pattern_id)
+            pattern_severity[pattern_id] = f"P{heading.group(1)}"
+    f_codes = collections.Counter(
+        int(code) for code in re.findall(r"^\| F(\d+) \|", text, re.M)
+    )
+    return pattern_severity, duplicates, f_codes
+
+
+canonical_commands, canonical_urls = install_contract(canonical)
+if not canonical_commands or not canonical_urls:
+    print("README i18n parity: canonical install command/URL contract is empty", file=sys.stderr)
+    raise SystemExit(1)
+canonical_patterns, canonical_duplicates, canonical_f_codes = taxonomy_contract(canonical)
+expected_pattern_ids = {
+    "1", "2", "3", "3b", "4", "5", "6", "7", "8", "9", "10", "11",
+    "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23",
+}
+expected_f_codes = collections.Counter({number: 2 for number in range(1, 16)})
+if (
+    set(canonical_patterns) != expected_pattern_ids
+    or canonical_duplicates
+    or canonical_f_codes != expected_f_codes
+):
+    print(
+        "README i18n parity: canonical taxonomy contract is incomplete or duplicated",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+
+errors = []
+check_manual_clone_contract(canonical_path, canonical, errors)
+check_codex_install_and_delegation_contract(canonical_path, canonical, errors)
+contract_start = "<!-- README-I18N-CONTRACT:CORE-SAFETY:START -->"
+contract_end = "<!-- README-I18N-CONTRACT:CORE-SAFETY:END -->"
+contract_re = re.compile(
+    re.escape(contract_start) + r"\n(.*?)\n" + re.escape(contract_end),
+    re.S,
+)
+contract_hashes = {
+    "README.md": "ac9a9be1d95d6519bb06901a8c29c997dfad01a03909fe890c28cc629ffd15da",
+    "README.ko.md": "b91e07e605330650f15ca407b509a8cd585cd645710fab3dfccfa84f5120620b",
+    "README.ja.md": "1366e790c40ee80fedddf7c7c4490e278e422df72d22d1dcdbdce3ced3584fcb",
+    "README.zh-cn.md": "17ef21151e49eaf6617ada286deb38df57fdb78e08e6fce5adfca99d1b0313c9",
+}
+contract_tokens = (
+    "24",
+    "P0/P1/P2",
+    "scan.sh",
+    "F1–F15",
+    "--isolation-wrapper",
+)
+read_scope_start = "<!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:START -->"
+read_scope_end = "<!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:END -->"
+read_scope_re = re.compile(
+    r"^> " + re.escape(read_scope_start) + r"\n"
+    r"(.*?)"
+    r"^> " + re.escape(read_scope_end),
+    re.M | re.S,
+)
+read_scope_hashes = {
+    "README.md": "6492450d68238d4f6ba073d98740af2015f72613c8ec1fd8d9048eb58649e9a1",
+    "README.ko.md": "30c12cf60137bb00aaa0fde376814cf1ad2f423feec5c3e6a27e54f5b0d9c6bb",
+    "README.ja.md": "38f8adafc2eb9242203388faa2b3623659cedae68c8bc579d1d4554a53eb03f4",
+    "README.zh-cn.md": "62d018011a595283128b25f9bb1b0600b1fc182e628a4cb795ce8fbdb8be3c65",
+}
+
+
+def check_protected_contract(path, text):
+    matches = contract_re.findall(text)
+    if len(matches) != 1:
+        errors.append(
+            f"README i18n parity: {path} missing or duplicated protected semantic contract"
+        )
+        return
+    contract = matches[0].strip()
+    missing = [token for token in contract_tokens if token not in contract]
+    if missing:
+        errors.append(
+            f"README i18n parity: {path} protected semantic contract missing "
+            f"tokens {missing!r}"
+        )
+        return
+    digest = hashlib.sha256(contract.encode("utf-8")).hexdigest()
+    if digest != contract_hashes[path.name]:
+        errors.append(
+            f"README i18n parity: {path} protected semantic contract changed; "
+            "review the scope/safety claims and update its accepted digest"
+        )
+
+
+def check_scanner_read_scope_contract(path, text):
+    matches = read_scope_re.findall(text)
+    if len(matches) != 1:
+        errors.append(
+            f"README i18n parity: {path} missing or duplicated protected "
+            "scanner read-scope contract"
+        )
+        return
+    contract = "\n".join(
+        re.sub(r"^> ?", "", line)
+        for line in matches[0].strip().splitlines()
+    ).strip()
+    if "fixture/support" not in contract:
+        errors.append(
+            f"README i18n parity: {path} protected scanner read-scope contract "
+            "missing fixture/support exception"
+        )
+        return
+    digest = hashlib.sha256(contract.encode("utf-8")).hexdigest()
+    if digest != read_scope_hashes[path.name]:
+        errors.append(
+            f"README i18n parity: {path} protected scanner read-scope contract "
+            "changed; review the requested-path/containing-project exception "
+            "and update its accepted digest"
+        )
+
+
+check_protected_contract(canonical_path, canonical)
+check_scanner_read_scope_contract(canonical_path, canonical)
+en_sections = len(re.findall(r"^## ", canonical, re.M))
+en_fences = len(re.findall(r"^```", canonical, re.M))
+for path in translations:
+    if not path.is_file():
+        errors.append(f"README i18n parity: translation missing: {path}")
+        continue
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as exc:
+        errors.append(f"README i18n parity: cannot read {path}: {exc}")
+        continue
+    check_manual_clone_contract(path, text, errors)
+    check_codex_install_and_delegation_contract(path, text, errors)
+    acknowledgements = canonical_ack_re.findall(text)
+    if len(acknowledgements) != 1:
+        errors.append(
+            f"README i18n parity: {path} missing or duplicated canonical "
+            "revision acknowledgement"
+        )
+    elif acknowledgements[0] != canonical_digest:
+        errors.append(
+            f"README i18n parity: {path} canonical revision acknowledgement is "
+            "stale; review the translation against exact README.md bytes and "
+            "update the digest (translation quality is not attested)"
+        )
+    sections = len(re.findall(r"^## ", text, re.M))
+    fences = len(re.findall(r"^```", text, re.M))
+    if sections != en_sections:
+        errors.append(
+            f"README i18n parity: {path} has {sections} '## ' sections, "
+            f"README.md has {en_sections}"
+        )
+    if fences != en_fences:
+        errors.append(
+            f"README i18n parity: {path} has {fences} code fences, "
+            f"README.md has {en_fences}"
+        )
+    if "docs/assets/hero.png" not in text:
+        errors.append(f"README i18n parity: {path} missing hero image")
+    if 'README.md">🇺🇸 English' not in text:
+        errors.append(f"README i18n parity: {path} missing language switcher")
+    commands, urls = install_contract(text)
+    if commands != canonical_commands:
+        errors.append(
+            f"README i18n parity: {path} canonical install commands differ from README.md"
+        )
+    if urls != canonical_urls:
+        errors.append(
+            f"README i18n parity: {path} canonical repository URLs differ from README.md"
+        )
+    patterns, duplicates, f_codes = taxonomy_contract(text)
+    if patterns != canonical_patterns or duplicates:
+        errors.append(
+            f"README i18n parity: {path} pattern ID/severity contract differs from README.md"
+        )
+    if f_codes != canonical_f_codes:
+        errors.append(
+            f"README i18n parity: {path} F1-F15 taxonomy contract differs from README.md"
+        )
+    check_protected_contract(path, text)
+    check_scanner_read_scope_contract(path, text)
+
+if errors:
+    for error in errors:
+        print(error, file=sys.stderr)
+    raise SystemExit(1)
+PY
+  then
+    ok "README contracts and exact canonical-revision acknowledgements (translation quality not attested)"
+  else
+    err "README i18n parity failed"
   fi
-  s=$(grep -c '^## ' "$f" || true)
-  c=$(grep -c '^```' "$f" || true)
-  [ "$s" = "$en_sec" ] || { err "README i18n parity: $f has $s '## ' sections, README.md has $en_sec"; i18n_ok=0; }
-  [ "$c" = "$en_fence" ] || { err "README i18n parity: $f has $c code fences, README.md has $en_fence"; i18n_ok=0; }
-  grep -q 'docs/assets/hero.png' "$f" || { err "README i18n parity: $f missing hero image"; i18n_ok=0; }
-  grep -q 'README.md">🇺🇸 English' "$f" || { err "README i18n parity: $f missing language switcher"; i18n_ok=0; }
-done
-[ "$i18n_ok" = "1" ] && ok "README.md / ko / ja / zh-cn structural parity (sections, fences, hero, switcher)"
+else
+  err "python3 unavailable; README i18n parity check did not run"
+fi
 
 section "Language"
 if command -v python3 >/dev/null 2>&1; then
-  hangul_hits=$(python3 - <<'PY' 2>/dev/null || true
+  language_hits=$(mktemp "${TMPDIR:-/tmp}/e2e-skills-language-hits.XXXXXX")
+  language_errors=$(mktemp "${TMPDIR:-/tmp}/e2e-skills-language-errors.XXXXXX")
+  if python3 - >"$language_hits" 2>"$language_errors" <<'PY'
 import pathlib
 import re
 import subprocess
+import sys
 
 def repo_files():
-    try:
-        out = subprocess.check_output(
-            ['git', 'ls-files', '-co', '--exclude-standard', '--'],
-            text=True,
-        )
-        return [pathlib.Path(line) for line in out.splitlines() if line]
-    except Exception:
-        return [p for p in pathlib.Path('.').rglob('*') if p.is_file()]
+    result = subprocess.run(
+        ['git', 'ls-files', '-co', '--exclude-standard', '--'],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        detail = result.stderr.strip() or f"exit {result.returncode}"
+        raise RuntimeError(f"git file enumeration failed: {detail}")
+    return [pathlib.Path(line) for line in result.stdout.splitlines() if line]
 
 hangul = re.compile(r'[\uAC00-\uD7AF]')
 # Sanctioned exception: language-switcher lines that link to README.<lang>.md
@@ -877,22 +1487,30 @@ for path in sorted(p for p in repo_files() if p.suffix == '.md'):
         continue
     if '/evals/' in str(path):
         continue
-    if not path.exists():
-        continue
-    for line in path.read_text(encoding='utf-8', errors='ignore').splitlines():
+    try:
+        text = path.read_text(encoding='utf-8')
+    except (OSError, UnicodeError) as exc:
+        raise RuntimeError(f"cannot read {path}: {exc}") from exc
+    for line in text.splitlines():
         if hangul.search(line) and not switcher.search(line):
             hits.append(str(path))
             break
 print('\n'.join(hits))
 PY
-)
-  if [ -z "$hangul_hits" ]; then
-    ok "public docs and skill docs are English-only"
+  then
+    hangul_hits=$(cat "$language_hits")
+    if [ -z "$hangul_hits" ]; then
+      ok "public docs and skill docs are English-only"
+    else
+      err "Korean text found in public docs: $hangul_hits"
+    fi
   else
-    err "Korean text found in public docs: $hangul_hits"
+    err "Language checker failed closed"
+    [ "$QUIET" = "0" ] && sed 's/^/      /' "$language_errors" >&2
   fi
+  rm -f "$language_hits" "$language_errors"
 else
-  warn "python3 not available; skipped language check"
+  err "python3 unavailable; language check did not run"
 fi
 
 echo ""

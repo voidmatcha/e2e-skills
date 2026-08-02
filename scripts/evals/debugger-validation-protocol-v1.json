@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "protocol_id": "debugger-holdout-v1",
+  "evidence_scope": "public-pre-publication-development",
+  "default_repetitions": 3,
+  "seed": 20260731,
+  "host_matrix": [
+    {"runner": "codex", "model": "gpt-5.6-sol", "provider_family": "openai"},
+    {"runner": "claude", "model": "claude-opus-5", "provider_family": "anthropic"},
+    {"runner": "claude", "model": "claude-fable-5", "provider_family": "anthropic"}
+  ],
+  "stability": {
+    "rule": "strict-majority",
+    "repetitions": 3,
+    "classification_fields": [
+      "confidence",
+      "diagnosis",
+      "f_code",
+      "product_impact",
+      "test_quality_severity",
+      "test_reliability_urgency"
+    ]
+  },
+  "confidence_intervals": {
+    "method": "wilson",
+    "confidence": 0.95,
+    "unit": "unique_case"
+  },
+  "cross_host_comparison": {
+    "matrix_required": true,
+    "provider_family_balance_required": true,
+    "aggregation": "equal-provider-family-weight"
+  },
+  "execution_identity": {
+    "require_explicit_runner_path": true,
+    "expected_cli_versions": {
+      "codex": "codex-cli 0.146.0",
+      "claude": "Claude Code 2.1.220"
+    },
+    "attestation_limit": "The explicit canonical path, binary digest, and version output are provenance evidence, not cryptographic attestation."
+  },
+  "thresholds": {
+    "unique_f_code_accuracy_min": 0.9,
+    "unique_f_code_wilson_lower_min": 0.8,
+    "unique_stable_case_rate_min": 0.9,
+    "unique_diagnosis_accuracy_min": 0.9,
+    "unique_axis_exact_match_min": 0.8,
+    "repeated_f_code_accuracy_min": 0.9,
+    "repeated_macro_precision_min": 0.85,
+    "worst_framework_unique_accuracy_min": 0.85,
+    "worst_category_unique_accuracy_min": 0.5,
+    "invalid_output_rate_max": 0.0
+  },
+  "limitations": [
+    "The corpus is public and must not be described as hidden or sealed.",
+    "The artifacts are short sanitized synthetic reconstructions, not full browser reports or independently captured traces.",
+    "Expected labels are author-created synthetic judgments and have not yet been independently adjudicated.",
+    "TODO: commission a blinded independent oracle audit before using this corpus for release-grade quality claims.",
+    "Three repeated calls measure within-prompt stability but are not independent samples; Wilson intervals therefore use only the 30 unique cases.",
+    "The fixed three-model matrix contains two provider families and does not establish performance for other hosts, models, versions, or settings.",
+    "F-code classification measures diagnosis triage, not whether a proposed fix repairs a live application.",
+    "Host and model strings are provenance claims, not cryptographic attestation."
+  ]
+}

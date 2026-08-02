@@ -1,0 +1,12 @@
+{
+  "attempt_id": "codex-budget-corrected-v7-r2",
+  "declared_schedule_digest": "2fc51ac267c72790506ced6aa21d142f1338cf08268df5343238e11aabfbac9b",
+  "execution_class": "live-release",
+  "invocation_id": "7f03a836-4605-4a38-ab44-bcb24affe71b",
+  "model_catalog_sha256": "431e9f940b6ca358c59a86895a4299f08f198c82899b0f6d92b74f71688795a9",
+  "schedule_index": 1,
+  "schema_version": 1,
+  "started_at_utc": "2026-07-31T14:03:05.060Z",
+  "state": "CONSUMED",
+  "token_attestation_sha256": "56c75980e9ed2f5c659c1f39eeb32fd4c290783a93c0d9e8c415e0c350b6b6e2"
+}

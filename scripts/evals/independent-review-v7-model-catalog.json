@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "catalog_id": "independent-product-review-v7-sanitized-codex-model-catalog",
+  "source_provenance": {
+    "raw_cache_sha256": "9faf7d40dc14464452ad91db3e348d16f4f6a100bfeffb5b2a9327f02fd7f7c4",
+    "client_version": "0.146.0",
+    "fetched_at": "2026-07-31T12:22:01.279093Z",
+    "etag": "W/\"132ec5f01055e3cd3f58918be7d1aa7b\"",
+    "local_provenance_only": true,
+    "remote_model_attestation": false
+  },
+  "models": [
+    {
+      "slug": "gpt-5.6-sol",
+      "context_window_tokens": 272000,
+      "max_context_window_tokens": 272000,
+      "effective_context_window_percent": 95
+    }
+  ]
+}

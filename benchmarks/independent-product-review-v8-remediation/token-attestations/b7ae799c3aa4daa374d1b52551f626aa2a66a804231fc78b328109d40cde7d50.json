@@ -1,0 +1,31 @@
+{
+  "attestation_id": "independent-product-review-v8-token-count-v1",
+  "context_window_tokens": 272000,
+  "counter_sha256": "9d59628d7b167ea8597f889528b9240ad4bbd30ab5ef935a0f39dc1a3573ae19",
+  "effective_context_tokens": 258400,
+  "effective_context_window_percent": 95,
+  "max_context_window_tokens": 272000,
+  "model_catalog_sha256": "5c361039bf91c6a9bbc7e5e8adfc4e60445506d9a768fdd4d63fd00394973508",
+  "model_slug": "gpt-5.6-sol",
+  "prompt_input_tokens": 232939,
+  "prompt_sha256": "85c2dd0765ce3480eba6ae8e06ab1281792c25151a98de3683bde9c43892185a",
+  "prompt_utf8_bytes": 872566,
+  "protocol_sha256": "3e8d2fcdaef315b87407a3af637eb2c834352d589a2606405cb118464de03387",
+  "provenance": {
+    "kind": "local-token-count",
+    "remote_model_attestation": false,
+    "statement": "Local tokenizer and caller-provided catalog evidence only; not remote model attestation."
+  },
+  "reserved_tokens": 25461,
+  "schema_version": 1,
+  "token_ids_sha256": "6f218eef0d03eea10b7c67c5243c4b538ce8a7f8dc3a09a3a80f0535f60007a6",
+  "tokenizer": {
+    "bpe_source_sha256": "446a9538cb6c348e3516120d7c08b09f57c36495e2acfffe59a5bf8b0cfb1a2d",
+    "encoding": "o200k_base",
+    "encoding_contract_sha256": "170a798bd4d0917feae9c78c8deb17f88e0b8d32676d7fc6f9116d8122928eb9",
+    "n_vocab": 200019,
+    "name": "o200k_base",
+    "package": "tiktoken",
+    "version": "0.11.0"
+  }
+}

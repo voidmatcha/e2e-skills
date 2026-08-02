@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<testsuites>
+  <testsuite name="checkout" file="cypress/e2e/checkout.cy.ts" tests="2" failures="1">
+    <testcase classname="Checkout flow" name="renders the cart" />
+    <testcase classname="Checkout flow" name="places the order">
+      <failure message="expected receipt to be visible">Timed out retrying</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="profile" file="cypress/e2e/profile.cy.ts" tests="1" failures="1">
+    <testcase classname="Profile settings" name="saves the display name">
+      <failure message="expected Ada but found Grace">AssertionError</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,1 @@
+{"framework":"cypress","test":"shows renewal price","attempts":[{"state":"failed","error":"AssertionError: expected '$29.00' to equal '$19.00'"}],"contract_excerpt":"Renewal price for the selected plan is $19.00","ui_excerpt":"Renewal price $29.00"}

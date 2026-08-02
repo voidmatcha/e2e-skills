@@ -1,0 +1,1 @@
+{"framework":"cypress","test":"rejects invalid coupon","attempts":[{"state":"passed"}],"support_excerpt":"Cypress.on('uncaught:exception', () => false)","browser_console":"TypeError: cannot read properties of undefined","screenshot_excerpt":"No validation message is visible"}

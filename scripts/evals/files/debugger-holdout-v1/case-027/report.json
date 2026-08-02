@@ -1,0 +1,1 @@
+{"framework":"cypress","test":"submits profile form","attempts":[{"state":"failed","error":"Expected to find element: '[data-cy=profile-submit]', but never found it"}],"page_object_excerpt":"submit: () => cy.get('[data-cy=profile-submit]')","dom_excerpt":"<button data-cy=\"save-profile\">Save</button>","change_record":"data-cy renamed in profile template"}

@@ -1,0 +1,31 @@
+{
+  "archive_id": "independent-product-review-v6-remediation",
+  "files": [
+    {
+      "bytes": 1837,
+      "path": "README.md",
+      "sha256": "a2ab28db4ca77840045159cf3e54ec13872446e4b671ce068463adba87b4e59d"
+    },
+    {
+      "bytes": 9245,
+      "path": "protocol.json",
+      "sha256": "7fcdc8b098c58ec773350b1491e57f0a3e3d5761c1ce44595f5989999d1881ef"
+    },
+    {
+      "bytes": 10179,
+      "path": "remediation-ledger.json",
+      "sha256": "5c257517ef18ed3f3f489c6c08811a6716d1c03208f15d6f21dd3f6f4ab158bf"
+    },
+    {
+      "bytes": 1239,
+      "path": "status.json",
+      "sha256": "469a6d8a1b0aa40796e2e70af71150325366bf46ff264eba7814241d04abe4ec"
+    },
+    {
+      "bytes": 2010,
+      "path": "supersession.json",
+      "sha256": "b39552cd5dc0a9e31fe35662888ff198bdb80daaf78ae450db0b51429263492f"
+    }
+  ],
+  "schema_version": 1
+}

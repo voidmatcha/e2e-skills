@@ -1,0 +1,1 @@
+{"framework":"playwright","test":"starts with an empty cart","runs":[{"scope":"alone","status":"passed"},{"scope":"suite_after_add_item","status":"failed","error":"Expected cart count 0, received 1"}],"storage_excerpt":{"cart_items":1}}

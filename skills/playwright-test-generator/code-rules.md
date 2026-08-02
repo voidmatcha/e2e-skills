@@ -6,9 +6,31 @@ Generated code remains a candidate until it passes `verification-rules.md`. The 
 
 Non-negotiable for every generated spec, regardless of project shape:
 
-- **`await` everything** — every `expect()` on a Locator and every Playwright action (`.click()`, `.fill()`, `.press()`, `.check()`, `.selectOption()`, `.hover()`). A missing `await` silently skips the assertion or action.
+- **`await` everything** — every `expect()` on a Locator and every Playwright action (`.click()`, `.fill()`, `.press()`, `.check()`, `.selectOption()`, `.hover()`). Missing `await` breaks test sequencing: the promise may still start, but its result is no longer ordered with the next step and a rejection may surface late as an unhandled rejection or after the test has ended.
 - **Web-first assertions only** — `toBeVisible()`, `toHaveText()`, `toHaveURL()`, etc. Never `expect(await el.isVisible()).toBe(true)` (resolves once, no retry).
-- **Stub all writes** — signup, login, payment, any mutation goes through `page.route()`. A generated test never mutates real shared backend data.
+- **Control writes at their actual seam** — signup, login, payment, and other mutations must use the project's deterministic browser- or server-side test seam. A generated test never mutates real shared backend data.
+- **Freeze network identity before exploration** — use one approved DNS address
+  snapshot, pin every preflight peer, reject drift or mixed unsafe answers, and
+  use the bundled executable preflight helper for special-address
+  classification. The helper binds a root-owned absolute curl executable
+  instead of ambient `PATH`, records its hash, and rejects credential-bearing
+  or ambiguous queries before subprocess launch; ordinary non-secret route
+  parameters may remain. A protected local route may prove reachability with matching
+  peer-wide `401`/`403` or one non-followed same-origin redirect to a validated
+  login URL; authenticate only afterward under the same guards. Live remote
+  exploration is limited to an explicitly approved non-production target in an
+  externally isolated controlled browser harness with enforceable egress.
+  Shared, production, or unknown remote targets are snapshot-only.
+  Sanitize user-provided snapshots from those targets by removing credentials,
+  cookies, authentication/session tokens, sensitive query values, PII,
+  customer data, secrets, and internal hostnames as appropriate; use stable
+  placeholders and preserve only non-sensitive roles, names, labels, testids,
+  and structure.
+  Application-layer URL checks alone are not DNS-rebinding protection.
+- **Credential values stay outside the agent context** — the user sets
+  specifically named environment variables locally; the agent checks only
+  presence and non-empty status and never requests, reads, prints, echoes, logs,
+  or asks the user to paste a value.
 - **Gate hydration** — on SSR/SSG apps, gate the first interaction on a hydration signal, never `waitForTimeout()` after `goto`.
 - **One hard `expect()` per test** — a test built only from `expect.soft()` never fails early.
 
@@ -28,14 +50,15 @@ Non-negotiable for every generated spec, regardless of project shape:
 
 1. `getByRole('button', { name: 'Submit' })` — role + accessible name
 2. `getByLabel('Email')` — form label — **only when the label/aria-label actually exists**; verify in the Step 3 snapshot before using
-3. `getByPlaceholder('Email')` — for label-less inputs (placeholder/title only). Common in real-world apps; `getByLabel` on these matches nothing and the test dies in `beforeEach`
-4. `getByTestId('submit-btn')` / `[data-testid="submit-btn"]` — explicit test hook
-5. `getByText('Save')` / `.filter({ hasText: 'text' })` — visible text
-6. attribute selector `[formControlName="email"]` — stable attribute
-7. CSS class — **POM files only**, stable structural classes only (not styling classes)
-8. `.nth()` / `.first()` / `.last()` — **forbidden** without `// JUSTIFIED:` on the line above
+3. `getByPlaceholder('Email')` — only for an actual `placeholder` attribute
+4. `getByTitle('Email')` — only for an actual `title` attribute; do not treat `title` as a placeholder
+5. `getByTestId('submit-btn')` / `[data-testid="submit-btn"]` — explicit test hook
+6. `getByText('Save')` / `.filter({ hasText: 'text' })` — visible text
+7. attribute selector `[formControlName="email"]` — stable attribute
+8. CSS class — **POM files only**, stable structural classes only (not styling classes)
+9. `.nth()` / `.first()` / `.last()` — **forbidden** without `// JUSTIFIED:` on the line above
 
-**Project-configured test ids rank with role+name.** When `playwright.config.*` sets `use: { testIdAttribute: '...' }`, or `data-testid` (or the project's equivalent) is pervasive in the components under test, treat `getByTestId` as a **tier-1 locator alongside role+name** — not #4. A deliberate, stable test hook beats reaching past it for brittle text/placeholder locators. Keep `getByText`/`getByPlaceholder` as the fallback when no role or test id fits.
+**Project-configured test ids rank with role+name.** When `playwright.config.*` sets `use: { testIdAttribute: '...' }`, or `data-testid` (or the project's equivalent) is pervasive in the components under test, treat `getByTestId` as a **tier-1 locator alongside role+name** — not a fixed lower-tier fallback. A deliberate, stable test hook beats reaching past it for brittle text/placeholder locators. Keep `getByText`/`getByPlaceholder` as the fallback when no role or test id fits.
 
 Never use XPath. Never use CSS class chains that couple to styling.
 
@@ -119,7 +142,7 @@ test.describe('Login', () => {
 - Each test fully independent — own storage, session, cookies
 - `beforeEach` for shared navigation setup only — never for shared state
 - Mock external APIs with Playwright Network API; do not call real third-party services
-- **Auto-waiting assertions only:** `toBeVisible()`, `toBeHidden()`, `toHaveText()`, `toContainText()`, `toHaveCount()`, `toHaveURL()`
+- **Use a web-first assertion that matches the approved product contract:** `toBeVisible()`, `toBeHidden()`, `toBeAttached()`, `toHaveText()`, `toContainText()`, `toHaveCount()`, `toHaveURL()`, and equivalent retrying matchers.
 - Use `expect.soft()` for independent, non-critical checks — but ensure at least one hard `expect()` gates on the primary condition per test. A test with only `expect.soft()` assertions never fails early.
 
 **Forbidden:**
@@ -130,17 +153,17 @@ test.describe('Login', () => {
 |-----------|-------------|
 | `waitForTimeout(N)` | `await expect(el).toBeVisible({ timeout: N })` |
 | `expect(await el.isVisible()).toBe(true)` | `await expect(el).toBeVisible()` |
-| `const n = await el.count()` | `await expect(el).toHaveCount(N)` or `.first()` + `toBeVisible()` |
-| `toBeAttached()` | `toBeVisible()` — `toBeAttached` is vacuous on always-rendered elements. Negative `not.toBeAttached()` and checks on dynamically-injected elements are acceptable (matches e2e-reviewer #4b). |
+| `const n = await el.count()` as the sole outcome assertion or readiness gate | `await expect(el).toHaveCount(N)` when cardinality is the contract, or another web-first assertion for the promised user-visible postcondition. Raw `count()` remains valid for evidenced data collection or bounded iteration after readiness when a separate web-first assertion proves the outcome. |
+| `toBeAttached()` when the approved contract promises visibility or removal | Match the promise: use `toBeVisible()` for visibility and `not.toBeAttached()` for removal. Positive `toBeAttached()` is valid when DOM attachment itself is the approved contract, including a CSS-hidden element that must persist or an app-provided hydration marker. |
 | `expect(locator).toBeTruthy()` | `await expect(locator).toBeVisible()` — Locator is always a truthy JS object |
 | `page.click(selector)` / `page.fill(selector, v)` | `page.locator(selector).click()` / `.fill(v)` — locator-first actions are easier to compose and review |
 | `{ force: true }` | Fix the root cause (element not actionable); if unavoidable, add `// JUSTIFIED:` |
 | `waitUntil: 'networkidle'` | `waitUntil: 'domcontentloaded'` or condition-based wait — unreliable on SPAs |
-| `expect(page.url()).toContain(x)` | `await expect(page).toHaveURL(x)` — one-shot, no retry |
+| `expect(page.url()).toContain(x)` | `await expect.poll(() => page.url()).toContain(x)` — preserves substring semantics and retries |
 | Framework component selectors in spec (`app-button`, `my-component`) | POM only |
 | XPath selectors | `getByRole` / `getByLabel` / `getByTestId` |
 
-**Await rule:** Every `expect()` on a Locator and every Playwright action (`.click()`, `.fill()`, `.type()`, `.press()`, `.check()`, `.selectOption()`, `.hover()`) **must** be `await`ed. Missing `await` silently skips the assertion or action.
+**Await rule:** Every `expect()` on a Locator and every Playwright action (`.click()`, `.fill()`, `.type()`, `.press()`, `.check()`, `.selectOption()`, `.hover()`) **must** be `await`ed. Missing `await` breaks test sequencing; the operation can still run, but its rejection may be unhandled, reported after the test ends, or race the following step.
 
 ---
 
@@ -150,7 +173,7 @@ Decide per endpoint, not per suite:
 
 | Traffic | Strategy |
 |---------|----------|
-| **Writes / credential paths** (signup, login, payment, any mutation) | **Always stub** with `page.route()`. A generated test must never create real accounts, hit real payment providers, or mutate shared backend data — data pollution, rate-limit flakiness, and PII exposure in third-party logs are all silent until they aren't. |
+| **Writes / credential paths** (signup, login, payment, any mutation) | Control each write at the seam where it originates. Use `page.route()` for browser-originated requests and the project's server-side test double, test API, or E2E-only boundary for SSR/RSC/BFF traffic. Never create real accounts, hit real payment providers, or mutate shared backend data. |
 | Stable first-party reads | Real backend acceptable when responses are deterministic enough to assert on |
 | Third-party services | Always stub (also covered by Spec Rules above) |
 | Real-backend smoke | At most one small, clearly named smoke spec may exercise the real backend end-to-end (e.g. a throwaway guest session) — keep it isolated |
@@ -208,7 +231,8 @@ await expect(likeToggle).toHaveAttribute('aria-pressed', 'true');
 - **Gate the first interaction on hydration for server-rendered apps** (Next.js, Nuxt, SvelteKit, Astro, Remix). SSR paints interactive-looking elements before the framework attaches event listeners; Playwright's actionability checks pass against that inert DOM, so the first click is reported successful but does nothing and the spec fails at the *next* assertion — intermittently, because hydration sometimes wins the race. Detect SSR from the framework config/`package.json` before generating.
 - Preferred gate, in order:
   1. An app-provided hydration marker: `await expect(page.locator('html[data-hydrated]')).toBeAttached();` — if the app exposes none, propose the one-line marker upstream (set an attribute in a root `useEffect`/`onMounted`); it fixes every spec at once.
-  2. A self-verifying first action: `await expect(async () => { await button.click(); await expect(dialog).toBeVisible({ timeout: 1000 }); }).toPass();` — retries the click until it lands.
+  2. A self-verifying first action only when every retry is proven idempotent: `await expect(async () => { await openButton.click(); await expect(dialog).toBeVisible({ timeout: 1000 }); }).toPass();`. Record the idempotence evidence; the example is not permission to retry an arbitrary click.
+- **Never retry a non-idempotent action** such as submit, delete, payment, purchase, or message send as hydration recovery unless idempotence is proven at the system boundary (for example, a verified idempotency key or a disposable backend reset between attempts). If the first action's outcome is uncertain, establish a clean state and a hydration marker before one fresh attempt; otherwise stop rather than risk a duplicate write.
 - Never `page.waitForTimeout()` after `goto` as a hydration guard — it's the #9 band-aid the reviewer flags, and it still races on slow CI.
 - Nuance: Qwik apps are resumable, not hydrated — no page-global gate needed. Island frameworks (Astro) hydrate per-island according to their `client:*` directive — gate on the specific island's readiness (its own marker or a self-verifying action on that island), not a page-global signal.
 
@@ -239,7 +263,8 @@ When a forbidden pattern is genuinely unavoidable, add `// JUSTIFIED: <reason>` 
 Patterns that accept `// JUSTIFIED:`:
 - `.nth()` / `.first()` / `.last()` — explain why positional selection is required
 - `{ force: true }` — explain why the element is not normally actionable
-- `{ timeout: 0 }` — explain why auto-retry must be disabled
+- `{ timeout: 0 }` — explain why the assertion should share the enclosing test
+  deadline instead of having a finite local bound
 - `evaluate()` / `waitForFunction()` with raw DOM — explain why the framework API can't express the condition
 
 **No suppression exists for:** `test.only` / `it.only` (always remove before commit).

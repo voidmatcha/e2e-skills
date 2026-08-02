@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "report_kind": "cypress-timeout-zero-semantic-probe",
+  "pattern_id": "#4g",
+  "mode": "run",
+  "complete": true,
+  "contracts_valid": true,
+  "runtime_complete": true,
+  "output_limit_bytes": 32768,
+  "process_output_limit_bytes": 1048576,
+  "subprocess_timeout_seconds": 30,
+  "provenance": {
+    "probe_spec_sha256": "f5c3d8f9e9ce59c303b700a6273171fcf95816e8da3142c0d877f7951bec93ca",
+    "probe_app_sha256": "c860b5091e6b60b52d7634fb5997917cb7a04a6684195d2f8b4b1ddb53a4cfae",
+    "evaluator_runner_sha256": "8a21d7469d18545ec4f4f7781773b7e33d35687f8e83cd44975c30d32b5bc04b",
+    "capture_helper_sha256": "fc90f95c0e572e7e0256746ae0911bd64f1d56cb124134c7530642da8377ed49",
+    "server_source_sha256": "91456c34eb40addf655dc17fc41b06fb72dac7f4e6baf7b302f188496eeb24aa",
+    "package_lock_sha256": "6195ecb1ddb09930325a82192fe059d732ecba09f57cdf3bbf77fd8de41aa872",
+    "cypress_version_record_sha256": "5e88bfc4fe7b663116a63cd7c0c84f832da8b376bec2f2637aab94f4c125efbb",
+    "versions_sha256": "6eea95748c09fc09a9406637e4c25eb39f9fbac95a723b7c8169aee60cb25852",
+    "case_contract_sha256": "ee8dd58e513f28263bb5e413c31c3d45b118e816bc3334d8f43c96bf489df3a0",
+    "generated_config_sha256": "df4f8d8ea6f145468d885defec5d89e939cc6f2cf058f072161cb6af98e0356c",
+    "selected_executable_sha256": "c6436eff6106dcf7f83cc61f12ac071bf83cd0e40ed8ce574a304339ea8977f5",
+    "selected_package_json_sha256": "51a6707fa60a79d4d55c901ee3c3c2a021b344837ce46d61eb67b1e1d5120ce6",
+    "selected_package_lock_sha256": "6195ecb1ddb09930325a82192fe059d732ecba09f57cdf3bbf77fd8de41aa872",
+    "selected_version_record_sha256": "5e88bfc4fe7b663116a63cd7c0c84f832da8b376bec2f2637aab94f4c125efbb"
+  },
+  "versions": {
+    "python": "3.14.6",
+    "node": "v24.18.0",
+    "cypress_cli": "Cypress package version: 15.19.0\nCypress binary version: 15.19.0\nElectron version: 37.6.0\nBundled Node version: 22.19.0",
+    "cypress_package": "15.19.0",
+    "platform": "macOS-15.3.1-arm64-arm-64bit-Mach-O",
+    "machine": "arm64"
+  },
+  "summary": {
+    "expected_cases": 3,
+    "cases": 3,
+    "matched": 3,
+    "expected_exit_codes": [
+      0,
+      1,
+      1
+    ],
+    "actual_exit_codes": [
+      0,
+      1,
+      1
+    ],
+    "total_duration_ms": 10522,
+    "errors": 0
+  },
+  "results": [
+    {
+      "case": "default-retries",
+      "title": "#4g Cypress default command timeout retries until delayed DOM change",
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "required_markers": [
+        "PROBE_DEFAULT_RETRY_STARTED",
+        "PROBE_DEFAULT_RETRY_PASSED elapsed_ms=",
+        "status=ready",
+        "1 passing"
+      ],
+      "forbidden_markers": [
+        "Timed out retrying after 0ms",
+        "PROBE_RUNNER_INFRASTRUCTURE_TIMEOUT",
+        "1 failing"
+      ],
+      "missing_markers": [],
+      "present_forbidden_markers": [],
+      "infrastructure_timeout": false,
+      "infrastructure_output_overflow": false,
+      "matched": true,
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$PROBE_WORKSPACE",
+        "--spec",
+        "$PROBE_WORKSPACE/timeout-zero-retry.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "duration_ms": 4241,
+      "output": "Warning: The allowCypressEnv configuration option is enabled. This allows any browser code to read values from Cypress.env(). This is insecure and will be removed in a future major version.\n\n1. Replace Cypress.env() calls with cy.env() (for sensitive values) or Cypress.expose() (for public configuration)\n2. Set allowCypressEnv: false in your Cypress configuration to disable Cypress.env()\n\nLearn more: https://on.cypress.io/cypress-env-migration\n\n\n====================================================================================================\n\n  (Run Starting)\n\n  \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n  \u2502 Cypress:        15.19.0                                                                        \u2502\n  \u2502 Browser:        Electron 138 (headless)                                                        \u2502\n  \u2502 Node Version:   v24.18.0 ($NODE_EXECUTABLE)                    \u2502\n  \u2502 Specs:          1 found (timeout-zero-retry.cy.mjs)                                            \u2502\n  \u2502 Searched:       timeout-zero-retry.cy.mjs                                                      \u2502\n  \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n                                                                                                    \n  Running:  timeout-zero-retry.cy.mjs                                                       (1 of 1)\n\n\nPROBE_DEFAULT_RETRY_STARTED\nPROBE_DEFAULT_RETRY_PASSED elapsed_ms=521 status=ready\n  \u2713 #4g Cypress default command timeout retries until delayed DOM change (573ms)\n  - #4g Cypress timeout zero checks delayed state immediately\n  - #4g Cypress timeout zero checks a missing selector immediately\n\n  1 passing (586ms)\n  2 pending\n\n\n  (Results)\n\n  \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n  \u2502 Tests:        3                                                                                \u2502\n  \u2502 Passing:      1                                                                                \u2502\n  \u2502 Failing:      0                                                                                \u2502\n  \u2502 Pending:      2                                                                                \u2502\n  \u2502 Skipped:      0                                                                                \u2502\n  \u2502 Screenshots:  0                                                                                \u2502\n  \u2502 Video:        false                                                                            \u2502\n  \u2502 Duration:     0 seconds                                                                        \u2502\n  \u2502 Spec Ran:     timeout-zero-retry.cy.mjs                                                        \u2502\n  \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\n\n====================================================================================================\n\n  (Run Finished)\n\n\n       Spec                                              Tests  Passing  Failing  Pending  Skipped  \n  \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n  \u2502 \u2714  timeout-zero-retry.cy.mjs                587ms        3        1        -        2        - \u2502\n  \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n    \u2714  All specs passed!                        587ms        3        1        -        2        -  \n\n",
+      "output_sha256": "e7f8def5fe482f9aba38264e6a6ad73254fe007c333ffc6bc717c58dbf806f41",
+      "output_original_bytes": 5075,
+      "output_truncated": false
+    },
+    {
+      "case": "timeout-zero-delayed",
+      "title": "#4g Cypress timeout zero checks delayed state immediately",
+      "expected_exit_code": 1,
+      "exit_code": 1,
+      "required_markers": [
+        "PROBE_TIMEOUT_ZERO_DELAYED_STARTED",
+        "PROBE_ZERO_OBSERVED elapsed_ms=",
+        "status=waiting",
+        "Timed out retrying after 0ms",
+        "-'waiting'",
+        "+'ready'",
+        "1 failing"
+      ],
+      "forbidden_markers": [
+        "PROBE_DEFAULT_RETRY_PASSED",
+        "PROBE_RUNNER_INFRASTRUCTURE_TIMEOUT"
+      ],
+      "missing_markers": [],
+      "present_forbidden_markers": [],
+      "infrastructure_timeout": false,
+      "infrastructure_output_overflow": false,
+      "matched": true,
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$PROBE_WORKSPACE",
+        "--spec",
+        "$PROBE_WORKSPACE/timeout-zero-retry.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "duration_ms": 3202,
+      "output": "Warning: The allowCypressEnv configuration option is enabled. This allows any browser code to read values from Cypress.env(). This is insecure and will be removed in a future major version.\n\n1. Replace Cypress.env() calls with cy.env() (for sensitive values) or Cypress.expose() (for public configuration)\n2. Set allowCypressEnv: false in your Cypress configuration to disable Cypress.env()\n\nLearn more: https://on.cypress.io/cypress-env-migration\n\n\n====================================================================================================\n\n  (Run Starting)\n\n  \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n  \u2502 Cypress:        15.19.0                                                                        \u2502\n  \u2502 Browser:        Electron 138 (headless)                                                        \u2502\n  \u2502 Node Version:   v24.18.0 ($NODE_EXECUTABLE)                    \u2502\n  \u2502 Specs:          1 found (timeout-zero-retry.cy.mjs)                                            \u2502\n  \u2502 Searched:       timeout-zero-retry.cy.mjs                                                      \u2502\n  \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n                                                                                                    \n  Running:  timeout-zero-retry.cy.mjs                                                       (1 of 1)\n\n\n  - #4g Cypress default command timeout retries until delayed DOM change\nPROBE_TIMEOUT_ZERO_DELAYED_STARTED\n  1) #4g Cypress timeout zero checks delayed state immediately\nPROBE_ZERO_OBSERVED elapsed_ms=9 status=waiting\n  - #4g Cypress timeout zero checks a missing selector immediately\n\n  0 passing (85ms)\n  2 pending\n  1 failing\n\n  1) #4g Cypress timeout zero checks delayed state immediately:\n\n      Timed out retrying after 0ms\n      + expected - actual\n\n      -'waiting'\n      +'ready'\n      \n      at Context.eval (webpack:///./timeout-zero-retry.cy.mjs:53:38)\n\n\n\n\n  (Results)\n\n  \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n  \u2502 Tests:        3                                                                                \u2502\n  \u2502 Passing:      0                                                                                \u2502\n  \u2502 Failing:      1                                                                                \u2502\n  \u2502 Pending:      2                                                                                \u2502\n  \u2502 Skipped:      0                                                                                \u2502\n  \u2502 Screenshots:  0                                                                                \u2502\n  \u2502 Video:        false                                                                            \u2502\n  \u2502 Duration:     0 seconds                                                                        \u2502\n  \u2502 Spec Ran:     timeout-zero-retry.cy.mjs                                                        \u2502\n  \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\n\n====================================================================================================\n\n  (Run Finished)\n\n\n       Spec                                              Tests  Passing  Failing  Pending  Skipped  \n  \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n  \u2502 \u2716  timeout-zero-retry.cy.mjs                 87ms        3        -        1        2        - \u2502\n  \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n    \u2716  1 of 1 failed (100%)                      87ms        3        -        1        2        -  \n\n----------------------------------------------------------------------------------------------------\n\n  Debug faster with full visibility.\n\n  Record to Cypress Cloud and get instant access to full test details and replays.\n  Inspect the DOM, network events, and console logs exactly as they ran in CI.\n\n  >> https://on.cypress.io/cloud-get-started\n\n----------------------------------------------------------------------------------------------------\n",
+      "output_sha256": "6431c6d785e70cf1137153ba535d3a3d7a64fe99083456feefa1b7fbc7ffdfbe",
+      "output_original_bytes": 5765,
+      "output_truncated": false
+    },
+    {
+      "case": "timeout-zero-missing",
+      "title": "#4g Cypress timeout zero checks a missing selector immediately",
+      "expected_exit_code": 1,
+      "exit_code": 1,
+      "required_markers": [
+        "PROBE_TIMEOUT_ZERO_MISSING_STARTED",
+        "PROBE_ZERO_OBSERVED elapsed_ms=",
+        "status=waiting",
+        "Timed out retrying after 0ms",
+        "Expected to find element: `#missing-status`, but never found it.",
+        "1 failing"
+      ],
+      "forbidden_markers": [
+        "PROBE_DEFAULT_RETRY_PASSED",
+        "PROBE_RUNNER_INFRASTRUCTURE_TIMEOUT"
+      ],
+      "missing_markers": [],
+      "present_forbidden_markers": [],
+      "infrastructure_timeout": false,
+      "infrastructure_output_overflow": false,
+      "matched": true,
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$PROBE_WORKSPACE",
+        "--spec",
+        "$PROBE_WORKSPACE/timeout-zero-retry.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "duration_ms": 3079,
+      "output": "Warning: The allowCypressEnv configuration option is enabled. This allows any browser code to read values from Cypress.env(). This is insecure and will be removed in a future major version.\n\n1. Replace Cypress.env() calls with cy.env() (for sensitive values) or Cypress.expose() (for public configuration)\n2. Set allowCypressEnv: false in your Cypress configuration to disable Cypress.env()\n\nLearn more: https://on.cypress.io/cypress-env-migration\n\n\n====================================================================================================\n\n  (Run Starting)\n\n  \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n  \u2502 Cypress:        15.19.0                                                                        \u2502\n  \u2502 Browser:        Electron 138 (headless)                                                        \u2502\n  \u2502 Node Version:   v24.18.0 ($NODE_EXECUTABLE)                    \u2502\n  \u2502 Specs:          1 found (timeout-zero-retry.cy.mjs)                                            \u2502\n  \u2502 Searched:       timeout-zero-retry.cy.mjs                                                      \u2502\n  \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n                                                                                                    \n  Running:  timeout-zero-retry.cy.mjs                                                       (1 of 1)\n\n\n  - #4g Cypress default command timeout retries until delayed DOM change\n  - #4g Cypress timeout zero checks delayed state immediately\nPROBE_TIMEOUT_ZERO_MISSING_STARTED\n  1) #4g Cypress timeout zero checks a missing selector immediately\nPROBE_ZERO_OBSERVED elapsed_ms=8 status=waiting\n\n  0 passing (70ms)\n  2 pending\n  1 failing\n\n  1) #4g Cypress timeout zero checks a missing selector immediately:\n     AssertionError: Timed out retrying after 0ms: Expected to find element: `#missing-status`, but never found it.\n      at Context.eval (webpack:///./timeout-zero-retry.cy.mjs:63:46)\n\n\n\n\n  (Results)\n\n  \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n  \u2502 Tests:        3                                                                                \u2502\n  \u2502 Passing:      0                                                                                \u2502\n  \u2502 Failing:      1                                                                                \u2502\n  \u2502 Pending:      2                                                                                \u2502\n  \u2502 Skipped:      0                                                                                \u2502\n  \u2502 Screenshots:  0                                                                                \u2502\n  \u2502 Video:        false                                                                            \u2502\n  \u2502 Duration:     0 seconds                                                                        \u2502\n  \u2502 Spec Ran:     timeout-zero-retry.cy.mjs                                                        \u2502\n  \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\n\n====================================================================================================\n\n  (Run Finished)\n\n\n       Spec                                              Tests  Passing  Failing  Pending  Skipped  \n  \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n  \u2502 \u2716  timeout-zero-retry.cy.mjs                 73ms        3        -        1        2        - \u2502\n  \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n    \u2716  1 of 1 failed (100%)                      73ms        3        -        1        2        -  \n\n----------------------------------------------------------------------------------------------------\n\n  Debug faster with full visibility.\n\n  Record to Cypress Cloud and get instant access to full test details and replays.\n  Inspect the DOM, network events, and console logs exactly as they ran in CI.\n\n  >> https://on.cypress.io/cloud-get-started\n\n----------------------------------------------------------------------------------------------------\n",
+      "output_sha256": "50fff48ca5bc834832c2c32e206134a76e1f118f3a6d163de52d990a71934675",
+      "output_original_bytes": 5784,
+      "output_truncated": false
+    }
+  ],
+  "errors": []
+}

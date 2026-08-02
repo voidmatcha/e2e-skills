@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "current_revision": "r4",
+  "revisions": [
+    {
+      "id": "r1",
+      "positive_labels": 25,
+      "false_positive_guards": 28,
+      "aggregate_corpus_sha256": "1c43ca37e3eaebbaee3fdf7c1167f4026dba3944e88decba6f8ae800e59c501d",
+      "source": "oracles/initial-oracle-25.json",
+      "output_conditioned": false,
+      "note": "Frozen before the first complete two-host run. Later adjudication found five omitted positives."
+    },
+    {
+      "id": "r2",
+      "positive_labels": 28,
+      "false_positive_guards": 30,
+      "aggregate_corpus_sha256": "23338acab6d7556fa29405bb9bf0abddce0d746c2cbcc8ee138ce22a0d39123d",
+      "source": null,
+      "output_conditioned": true,
+      "added_labels": [
+        "PW-POM-005",
+        "PW-POM-006",
+        "PW-POM-007",
+        "PW-POM-FP-005",
+        "PW-POM-FP-006"
+      ],
+      "note": "Adversarial review of unexpected model predictions added two #4a positives, one #11 positive, and two near-miss guards."
+    },
+    {
+      "id": "r3",
+      "positive_labels": 30,
+      "false_positive_guards": 31,
+      "aggregate_corpus_sha256": "633effa36118a54c4e9c6e224d8c103409dd984e65f9f371feb5550b4a05345f",
+      "source": null,
+      "output_conditioned": true,
+      "added_labels": [
+        "PW-CONTRACT-005",
+        "PW-CONTRACT-FP-006",
+        "PW-SESSION-003"
+      ],
+      "note": "A second adjudication added two #1 positives at their declaration anchors and one wrong-anchor guard."
+    },
+    {
+      "id": "r4",
+      "positive_labels": 30,
+      "false_positive_guards": 31,
+      "aggregate_corpus_sha256": "3a15963bf2425e3b08c892137937dd0c405768afad93ccb8e7d74c23bc55c0dd",
+      "source": "oracles/current-oracle-r4-30.json",
+      "output_conditioned": true,
+      "added_labels": [],
+      "changed_labels": [
+        "PW-FP-002"
+      ],
+      "note": "Independent taxonomy review and official framework semantics corrected the #4c-e false-positive guard severity from P0 to P1. Counts and historical reports are unchanged."
+    }
+  ],
+  "interpretation": "Only r1 was frozen before the recorded host outputs. r2-r4 are development oracle corrections, not blind or sealed evidence."
+}

@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/voidmatcha/e2e-skills/schemas/generator-faultkill-v1.schema.json",
+  "title": "Generator fault-kill planning prediction",
+  "description": "A non-executable, allowlisted scenario/oracle plan. The benchmark never evaluates or executes model-provided source code.",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "case_id",
+        "disposition",
+        "framework",
+        "actions",
+        "oracles"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "case_id": {
+          "type": "string",
+          "pattern": "^pw-[a-z0-9-]+$"
+        },
+        "disposition": {
+          "const": "generate"
+        },
+        "framework": {
+          "const": "playwright"
+        },
+        "actions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "navigate-counter",
+              "click-increment",
+              "set-auth-valid",
+              "navigate-account",
+              "arm-increment-post-request"
+            ]
+          }
+        },
+        "oracles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "status-count-zero",
+              "status-count-one",
+              "button-name-increment",
+              "account-name-ada-lovelace",
+              "increment-post-request-observed"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "case_id",
+        "disposition",
+        "framework",
+        "reason_code"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "case_id": {
+          "type": "string",
+          "pattern": "^cy-[a-z0-9-]+$"
+        },
+        "disposition": {
+          "const": "out_of_scope"
+        },
+        "framework": {
+          "const": "cypress"
+        },
+        "reason_code": {
+          "const": "generator-playwright-only"
+        }
+      }
+    }
+  ]
+}

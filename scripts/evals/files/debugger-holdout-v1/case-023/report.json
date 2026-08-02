@@ -1,0 +1,1 @@
+{"framework":"cypress","test":"renders billing date","runs":[{"environment":"local macOS viewport 1280x720 timezone UTC","state":"passed"},{"environment":"CI Linux viewport 1000x660 timezone America/Los_Angeles","state":"failed","error":"expected 'Jul 31' but found 'Jul 30'"}]}

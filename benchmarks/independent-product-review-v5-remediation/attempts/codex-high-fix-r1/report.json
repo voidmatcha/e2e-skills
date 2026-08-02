@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "protocol_id": "independent-product-review-v5",
+  "invocation_id": "5599f3a5-90d1-44a8-bbbb-8707ea40eea9",
+  "attempt_id": "codex-high-fix-r1",
+  "schedule_index": 0,
+  "repetition": 1,
+  "declared_schedule_digest": "ba5b42a51c42789bcf93b7485d0146862d806435f681bb5e1043c45859f1bfcf",
+  "started_at_utc": "2026-07-31T11:15:22.948Z",
+  "finished_at_utc": "2026-07-31T11:17:15.939Z",
+  "status": "FAIL",
+  "status_reason": null,
+  "host": {
+    "runner": "codex",
+    "model": "gpt-5.6-sol",
+    "provider_family": "openai"
+  },
+  "runner_identity": {
+    "mode": "live",
+    "path": "/Users/user/.nvm/versions/node/v24.18.0/lib/node_modules/@openai/codex/bin/codex.js",
+    "sha256": "134063e133f0b4244fa3b251acf973d4fe4b4aeeacbdc135211bf480f59f1477",
+    "version": "codex-cli 0.146.0"
+  },
+  "model_tool_surface": "none",
+  "source_read_isolation": "prompt-complete-zero-tools",
+  "credential_environment": "parent-auth-staged-model-tools-disabled",
+  "execution_mode": "live",
+  "local_artifact_integrity_passed": true,
+  "artifact_integrity_eligible": true,
+  "caller_declared_runner_model_provenance": true,
+  "remote_model_attestation": false,
+  "runner_exit_code": 0,
+  "elapsed_ms": 112841,
+  "packet_path": "/private/tmp/e2e-v5-live.cAkzib/packet.json",
+  "packet_manifest_path": "/private/tmp/e2e-v5-live.cAkzib/packet-manifest.json",
+  "raw_output_path": "/private/tmp/e2e-v5-live.cAkzib/raw-codex-high-fix-r1.json",
+  "raw_output_sha256": "d83e2315a8db9b213db8e59b6cff281df0fd80271746e6c164b551e3b76924f2",
+  "raw_output_original_sha256": "d83e2315a8db9b213db8e59b6cff281df0fd80271746e6c164b551e3b76924f2",
+  "raw_output_exact": true,
+  "integrity_before": {
+    "protocol_sha256": "1f7aedb7ebd18334880c3ed8ce6b6c81ec665bd8618ef7983d04d809c4d1867f",
+    "packet_sha256": "defd1f0a9c7bd4ef594ec110a70bbfd4eb0cfd649645457aad4c2dca29a16c52",
+    "packet_manifest_sha256": "9e489770c1fb7848212d2378dfeee1ee2a419a04326f9712a3c9725fe748a835",
+    "independent_runner_sha256": "8eaa72ecdb8f7b2f883eae85aa267cf60e6ac4f9eae76fa909468e64c19e4970",
+    "shared_zero_tool_runner_sha256": "f2c66cd60585fcb91291559a2007213e4f4e8cea3f4979b0eb34c82a1bf3d5c0",
+    "selected_sources_sha256": "7e3e807563358b6e67376b767adabe811ea0328b83ded7532e7d52bc2ca589ab",
+    "selected_sources": {
+      "README.md": "0773e076d9b6dadd5b4be00e8ad270deae0ea337f6a7db01c2cd1ee1b0a1ae9f",
+      "SECURITY.md": "3913c4b02224c9696108c7fe8d621b8330322cabdc069431277357bcc6bcc166",
+      ".claude-plugin/plugin.json": "63a37edb76db4b652b15806f866a2cd335a400acf8455cbc91b3e47430098525",
+      ".claude-plugin/marketplace.json": "89006ac66d5d4eb779dcb07d0f82a18cd9b62c8636bd1b914d99122c0c00831a",
+      ".codex-plugin/plugin.json": "a54a828f5b74f8665ff2c7384aac02accfe50643db6e0a9b84031e8dea43fa43",
+      "skills/playwright-test-generator/SKILL.md": "dae7bdd52d1224c82c705d6348df9847919573f75de1442f8c6d17fee83e972a",
+      "skills/e2e-reviewer/SKILL.md": "a6869d2f22ba5d647a530628f44d9a5023a6270cfe82b4f257c39dad2586d59d",
+      "skills/playwright-debugger/SKILL.md": "2c6f06acb16420a7aaf301aff0b939cfb0a8ee582191775eac0f7b16540d7b07",
+      "skills/cypress-debugger/SKILL.md": "de45932e9d8d54dab19ff73d02367196917c0c1504ffd31d5126c57e88378f8f",
+      "skills/e2e-reviewer/references/pattern-reference.md": "104c08fb111e9c430074c5024102e4d7db41050bc19293d8ac6473b3b561a0fd",
+      "skills/e2e-reviewer/references/verification-rules.md": "09f5998f1262d33affcfb44ce417bd52c9a53909336d505fc085526581361559",
+      "skills/e2e-reviewer/scripts/scan.sh": "ce255f48acf88ae7c3a088c53953d1ae4acf9269e09d9d341065f4f0afc47934",
+      "skills/playwright-test-generator/scripts/preflight_target.py": "3d9aef90459e23f3fc34c2a6427db5bb75fefb85a76fa2a252ce0ace6b320cc4",
+      "skills/playwright-test-generator/scripts/run-preflight-target.sh": "37a0876e74cd35ecbd2dc3bedfaf497c834b7f8c820bf3bba4d26c37452efd2f",
+      "skills/playwright-test-generator/scripts/run-raw-aria-snapshot.sh": "2951e8c72e1b98cdb428bfa5d1c734a6e18402d1ac09d27a0d0e6cf871f6c9d0",
+      "skills/playwright-test-generator/scripts/raw-aria-snapshot.cjs": "c29db8fea54564e397eec07a7b04e15f4d3c99706ecaccba57a65527d024a478",
+      "skills/playwright-debugger/scripts/read-playwright-artifact.py": "fd8cd86e69ec83b6b9d67ebd7685bba87e79050d1c5644399a522552b5613f62",
+      "skills/playwright-debugger/scripts/publish-json-report.py": "294c40a56da5f4c9d8f86e9f28ea1559a2a2293b5ade71c0d0624ad3dd288520",
+      "skills/playwright-debugger/scripts/download-playwright-report.py": "37a8350085c492c18ce0174201ad8545293af6b5481460fe97a219ea72305f4e",
+      "skills/cypress-debugger/scripts/read-cypress-artifact.py": "baca00a68a81a092b7d19a4d0e0535e6aa273c7fd55caa06c721ecc7c638d0ee",
+      "skills/cypress-debugger/scripts/extract-junit-failures.py": "892a8cb04a84eed8f2c18821623f95e7bd7f1d9e6075cdac05e9f23320556124",
+      "skills/cypress-debugger/scripts/download-cypress-reports.py": "10898c15e82cec5d7bb01f3abecb20c9e16477dc67431b05870e31eef2ea330c",
+      "skills/cypress-debugger/scripts/publish-mochawesome-report.py": "8aff41bf7b55c5b7449959b19fc38af3522c92ab15a68ccb2b5ce84c5d08bc33",
+      "skills/cypress-debugger/scripts/redact_artifact.py": "2e2c85d6219114817f9a0983c3eaf9bde971c589b043fb1997f45d72e08bad67",
+      "skills/playwright-test-generator/best-practices.md": "ed31b866fe403570a230be047949dbe3a1c485d00e69af4e0e3834d7f9f7049b",
+      "skills/playwright-test-generator/code-rules.md": "f1e2567f2938166c6bee7b374ec49f4398c89a32a9143f3d8b8660f0879d3bfe",
+      "skills/playwright-test-generator/verification-rules.md": "117ee5c5dee564daca42439a2828c54032cb76f28c6928c5f6256edde789d5dc",
+      "skills/e2e-reviewer/references/upstream-rule-sources.md": "101730ae407160a72bff2327c9d4c72a97d187bb7cefcff08cf8c5555018481f",
+      "scripts/ci/ci-local.sh": "0dc538b778ba5aae9d18a328e3e6a5406df27d302ab51d3ad8e190c65a1fb9e4",
+      "scripts/ci/pre-push-security.sh": "5529ab1cf0a29ab69b5948f6465ea3e5c69031f582805e746941bd45bf76d0ba"
+    }
+  },
+  "integrity_after": {
+    "protocol_sha256": "1f7aedb7ebd18334880c3ed8ce6b6c81ec665bd8618ef7983d04d809c4d1867f",
+    "packet_sha256": "defd1f0a9c7bd4ef594ec110a70bbfd4eb0cfd649645457aad4c2dca29a16c52",
+    "packet_manifest_sha256": "9e489770c1fb7848212d2378dfeee1ee2a419a04326f9712a3c9725fe748a835",
+    "independent_runner_sha256": "8eaa72ecdb8f7b2f883eae85aa267cf60e6ac4f9eae76fa909468e64c19e4970",
+    "shared_zero_tool_runner_sha256": "f2c66cd60585fcb91291559a2007213e4f4e8cea3f4979b0eb34c82a1bf3d5c0",
+    "selected_sources_sha256": "7e3e807563358b6e67376b767adabe811ea0328b83ded7532e7d52bc2ca589ab",
+    "selected_sources": {
+      "README.md": "0773e076d9b6dadd5b4be00e8ad270deae0ea337f6a7db01c2cd1ee1b0a1ae9f",
+      "SECURITY.md": "3913c4b02224c9696108c7fe8d621b8330322cabdc069431277357bcc6bcc166",
+      ".claude-plugin/plugin.json": "63a37edb76db4b652b15806f866a2cd335a400acf8455cbc91b3e47430098525",
+      ".claude-plugin/marketplace.json": "89006ac66d5d4eb779dcb07d0f82a18cd9b62c8636bd1b914d99122c0c00831a",
+      ".codex-plugin/plugin.json": "a54a828f5b74f8665ff2c7384aac02accfe50643db6e0a9b84031e8dea43fa43",
+      "skills/playwright-test-generator/SKILL.md": "dae7bdd52d1224c82c705d6348df9847919573f75de1442f8c6d17fee83e972a",
+      "skills/e2e-reviewer/SKILL.md": "a6869d2f22ba5d647a530628f44d9a5023a6270cfe82b4f257c39dad2586d59d",
+      "skills/playwright-debugger/SKILL.md": "2c6f06acb16420a7aaf301aff0b939cfb0a8ee582191775eac0f7b16540d7b07",
+      "skills/cypress-debugger/SKILL.md": "de45932e9d8d54dab19ff73d02367196917c0c1504ffd31d5126c57e88378f8f",
+      "skills/e2e-reviewer/references/pattern-reference.md": "104c08fb111e9c430074c5024102e4d7db41050bc19293d8ac6473b3b561a0fd",
+      "skills/e2e-reviewer/references/verification-rules.md": "09f5998f1262d33affcfb44ce417bd52c9a53909336d505fc085526581361559",
+      "skills/e2e-reviewer/scripts/scan.sh": "ce255f48acf88ae7c3a088c53953d1ae4acf9269e09d9d341065f4f0afc47934",
+      "skills/playwright-test-generator/scripts/preflight_target.py": "3d9aef90459e23f3fc34c2a6427db5bb75fefb85a76fa2a252ce0ace6b320cc4",
+      "skills/playwright-test-generator/scripts/run-preflight-target.sh": "37a0876e74cd35ecbd2dc3bedfaf497c834b7f8c820bf3bba4d26c37452efd2f",
+      "skills/playwright-test-generator/scripts/run-raw-aria-snapshot.sh": "2951e8c72e1b98cdb428bfa5d1c734a6e18402d1ac09d27a0d0e6cf871f6c9d0",
+      "skills/playwright-test-generator/scripts/raw-aria-snapshot.cjs": "c29db8fea54564e397eec07a7b04e15f4d3c99706ecaccba57a65527d024a478",
+      "skills/playwright-debugger/scripts/read-playwright-artifact.py": "fd8cd86e69ec83b6b9d67ebd7685bba87e79050d1c5644399a522552b5613f62",
+      "skills/playwright-debugger/scripts/publish-json-report.py": "294c40a56da5f4c9d8f86e9f28ea1559a2a2293b5ade71c0d0624ad3dd288520",
+      "skills/playwright-debugger/scripts/download-playwright-report.py": "37a8350085c492c18ce0174201ad8545293af6b5481460fe97a219ea72305f4e",
+      "skills/cypress-debugger/scripts/read-cypress-artifact.py": "baca00a68a81a092b7d19a4d0e0535e6aa273c7fd55caa06c721ecc7c638d0ee",
+      "skills/cypress-debugger/scripts/extract-junit-failures.py": "892a8cb04a84eed8f2c18821623f95e7bd7f1d9e6075cdac05e9f23320556124",
+      "skills/cypress-debugger/scripts/download-cypress-reports.py": "10898c15e82cec5d7bb01f3abecb20c9e16477dc67431b05870e31eef2ea330c",
+      "skills/cypress-debugger/scripts/publish-mochawesome-report.py": "8aff41bf7b55c5b7449959b19fc38af3522c92ab15a68ccb2b5ce84c5d08bc33",
+      "skills/cypress-debugger/scripts/redact_artifact.py": "2e2c85d6219114817f9a0983c3eaf9bde971c589b043fb1997f45d72e08bad67",
+      "skills/playwright-test-generator/best-practices.md": "ed31b866fe403570a230be047949dbe3a1c485d00e69af4e0e3834d7f9f7049b",
+      "skills/playwright-test-generator/code-rules.md": "f1e2567f2938166c6bee7b374ec49f4398c89a32a9143f3d8b8660f0879d3bfe",
+      "skills/playwright-test-generator/verification-rules.md": "117ee5c5dee564daca42439a2828c54032cb76f28c6928c5f6256edde789d5dc",
+      "skills/e2e-reviewer/references/upstream-rule-sources.md": "101730ae407160a72bff2327c9d4c72a97d187bb7cefcff08cf8c5555018481f",
+      "scripts/ci/ci-local.sh": "0dc538b778ba5aae9d18a328e3e6a5406df27d302ab51d3ad8e190c65a1fb9e4",
+      "scripts/ci/pre-push-security.sh": "5529ab1cf0a29ab69b5948f6465ea3e5c69031f582805e746941bd45bf76d0ba"
+    }
+  },
+  "review": {
+    "summary": "The subset defines strong fail-closed artifact, command, credential, and verification boundaries, but two material implementation gaps remain: the raw-ARIA fallback does not enforce its documented DNS snapshot boundary, and unresolved imported test bindings can become unsuppressible P0 findings in Cypress-proven files.",
+    "scores": {
+      "semantic_correctness": 89,
+      "false_positive_control": 81,
+      "security_trust_boundaries": 79,
+      "verification_design": 93,
+      "scope_contract_consistency": 92,
+      "docs_usability": 90
+    },
+    "findings": [
+      {
+        "severity": "H",
+        "category": "security_trust_boundaries",
+        "file": "skills/playwright-test-generator/scripts/raw-aria-snapshot.cjs",
+        "line": 92,
+        "title": "Raw-ARIA routing does not enforce approved DNS peers",
+        "evidence": "The request guard checks only the request URL against the approved textual origin before continuing it. The helper receives no approved-peer snapshot and performs no address pinning or drift check, despite the public contract requiring snapshot drift to fail closed. A later localhost resolution can therefore escape the peer identity established by preflight.",
+        "recommendation": "Restrict this fallback to canonical numeric loopback literals and reject localhost, or run it behind a transport boundary that pins every browser connection to the preflight peer set and verifies drift before navigation."
+      },
+      {
+        "severity": "H",
+        "category": "false_positive_control",
+        "file": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 3232,
+        "title": "Unresolved imported test receiver is accepted as focused-test evidence",
+        "evidence": "focused_test_hit_matches returns success when the receiver is imported from an unresolved package. In a file already considered Cypress-proven by path or basename, the later file-level provenance gate can promote this binding-unresolved match to a final, unsuppressible #7 P0 rather than LLM triage, allowing an unrelated imported API named test.only to fail the scan.",
+        "recommendation": "Keep unresolved imported receivers in the non-gating P0-candidate ledger until their binding resolves to Playwright test; accept Cypress test/it/describe only when they are unimported, unshadowed Cypress globals."
+      }
+    ],
+    "limitations": [
+      "Static packet-only review; no commands, tests, scanners, parsers, or framework runtimes were executed.",
+      "The packet omits holdouts, benchmarks, scorecards, prior reviews, repository history, and observed CI results, so no runtime success or detection accuracy is inferred.",
+      "Referenced but omitted supporting files, AST rules, fixtures, and CI test implementations could not be reviewed for parity or completeness.",
+      "This subset review is not full product coverage, independent ground truth, human or sealed review, or remote model attestation."
+    ],
+    "verdict": "FAIL"
+  },
+  "decision": {
+    "overall_score": 87.33,
+    "finding_counts": {
+      "C": 0,
+      "H": 2,
+      "M": 0
+    },
+    "checks": {
+      "overall_score": false,
+      "dimension_floor": false,
+      "critical_findings": true,
+      "high_findings": false,
+      "model_verdict_matches": true
+    }
+  },
+  "limitations": [
+    "This is a fresh-context review of a curated contract/implementation subset for a Codex-only post-hoc confirmation phase designed after observing the r16 High finding and implementing its targeted fix, not unbiased defect discovery, completion of the original cross-model schedule, full product coverage, or skill accuracy.",
+    "The public packet is not human or sealed review, independent ground truth, or remote model attestation.",
+    "The local UUIDv4 invocation ID separates runner invocations but cannot attest that a distinct remote model call occurred.",
+    "This phase has one fixed Codex model and makes no cross-model claim.",
+    "Excluded scorecards, holdouts, reports, prior reviews, chat conclusions, and git history reduce but cannot prove absence of training-data contamination."
+  ]
+}

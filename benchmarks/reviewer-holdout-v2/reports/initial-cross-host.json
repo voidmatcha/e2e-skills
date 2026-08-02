@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "protocol_id": "reviewer-holdout-v2",
+  "protocol_sha256": "868e25206e75ab8274b7b16e117267ef276551c63cc2b5e8734fd3b5efe09416",
+  "reports": [
+    "/private/tmp/e2e-reviewer-live-v2.a47q7H/codex-v2.json",
+    "/private/tmp/e2e-reviewer-live-v2.a47q7H/claude-v2.json"
+  ],
+  "status": "FAIL",
+  "status_reasons": [
+    {
+      "code": "input_status_not_met",
+      "runner": "claude",
+      "actual": "FAIL",
+      "required": "PASS",
+      "message": "claude status was FAIL; required PASS"
+    }
+  ],
+  "metrics": {
+    "stable_recall_gap": 0.040000000000000036,
+    "stable_prediction_jaccard": 0.8888888888888888,
+    "stable_prediction_intersection": 24,
+    "stable_prediction_union": 27,
+    "hosts": [
+      {
+        "runner": "codex",
+        "model": "gpt-5.6-sol",
+        "status": "PASS",
+        "stable_precision": 1.0,
+        "stable_recall": 1.0,
+        "stable_predictions": 25
+      },
+      {
+        "runner": "claude",
+        "model": "claude-opus-5",
+        "status": "FAIL",
+        "stable_precision": 0.9230769230769231,
+        "stable_recall": 0.96,
+        "stable_predictions": 26
+      }
+    ]
+  }
+}

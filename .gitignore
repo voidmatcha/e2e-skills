@@ -30,3 +30,17 @@ marketing/
 # and pairs with the .claude/commands/verify-reviewer slash command. Not portable to
 # a fresh clone, so kept out of the shared tree.
 scripts/dev/smoke-reviewer.sh
+
+# Local tokensave tool state (carries a multi-megabyte SQLite database)
+.tokensave/
+
+# Dependency trees and virtualenvs. scripts/evals/fixtures has its own rule, but
+# a tree created anywhere else would otherwise be committed. The pinned
+# scripts/evals/tokenizer-cache/ is deliberately NOT covered here: the review
+# harnesses bind it by digest, so it has to stay in the tree.
+node_modules/
+.venv/
+venv/
+
+# Runtime state locks the independent-review runner creates beside an archive
+benchmarks/.*.state.lock

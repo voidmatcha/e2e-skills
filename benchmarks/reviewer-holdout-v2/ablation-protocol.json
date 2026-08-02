@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "protocol_id": "reviewer-catalog-ablation-v1",
+  "frozen_before_treatment_results": true,
+  "treatment": "full e2e-reviewer skill",
+  "control": {
+    "name": "catalog-only",
+    "kept_constant": [
+      "pattern-reference.md",
+      "grep-patterns.md",
+      "verification-rules.md",
+      "scanner runtime",
+      "corpus",
+      "schedule",
+      "runner",
+      "model",
+      "repetitions"
+    ],
+    "removed": [
+      "full SKILL.md phase workflow",
+      "quick-reference duplication",
+      "named-agent delegation",
+      "explicit adversarial verification procedure",
+      "fix workflow"
+    ]
+  },
+  "primary_unit": "unique majority-stable prediction",
+  "requires": {
+    "both_reports_complete": true,
+    "treatment_status": "PASS",
+    "matching_corpus_schedule_runner_model_repetitions": true,
+    "different_skill_digest": true
+  },
+  "thresholds": {
+    "stable_f1_lift_min": 0.05,
+    "stable_precision_delta_min": 0.0,
+    "stable_recall_delta_min": 0.0
+  },
+  "interpretation": {
+    "pass": "The full workflow adds measurable value beyond the same catalog and scanner.",
+    "fail": "Accuracy may still be high, but workflow-level incremental value is not demonstrated by this public corpus.",
+    "scope": "Public synthetic development corpus; not a sealed generalization claim."
+  }
+}

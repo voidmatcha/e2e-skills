@@ -1,0 +1,545 @@
+{
+  "schema_version": 2,
+  "runner": "claude",
+  "runner_identity": "2.1.220 (Claude Code)",
+  "model": "claude-opus-5",
+  "git_revision": "dc385b0d3977e2d4e1527641f1c73fc63448a5ac",
+  "git_dirty": true,
+  "git_dirty_sha256": "daa38f68939a815ad1075358638a97c691ed3135d726bd050abe567d0381d33a",
+  "evaluator_sha256": "fb58cf0868e78c91a40b29fe9bf204fb511bdf6815be270147a59e572aab9266",
+  "prompt_set_sha256": "f2fe0189a9d51a3a4a1b396b6fe8dee377d6c4fcd6a4d8e2206cb0dd0b585494",
+  "skill_sha256": "3f5fc1f21b45b8785a243b124184ad4d78d88f5753cc0569b5f558371a932178",
+  "snapshot_skill_sha256": "3f5fc1f21b45b8785a243b124184ad4d78d88f5753cc0569b5f558371a932178",
+  "skill_source_path": "/private/tmp/e2e-test-reviewer/skills/e2e-reviewer",
+  "corpus_sha256": "1a595869188dda31baad2c52ef044edd1f39478a771f0951c47c809b9cf3962b",
+  "snapshot_corpus_sha256": "1a595869188dda31baad2c52ef044edd1f39478a771f0951c47c809b9cf3962b",
+  "corpus_visibility": "public",
+  "corpus_intended_use": "Frozen public development holdout for bias-reduced three-host regression evidence; not a sealed generalization benchmark.",
+  "corpus_contamination_risk": "Becomes public and contaminable once committed. Sources and oracle were frozen before tested-host execution.",
+  "protocol_id": "reviewer-holdout-v3",
+  "protocol_path": "/private/tmp/e2e-test-reviewer/scripts/evals/reviewer-validation-protocol-v3.json",
+  "protocol_sha256": "860c1207bcfe441e411609cecc1fd0aa287304e192563a737bdb2536a43d7731",
+  "protocol": {
+    "schema_version": 1,
+    "protocol_id": "reviewer-holdout-v3",
+    "schedule": {
+      "algorithm": "sha256-seeded-sort-v1",
+      "seed": 20260730,
+      "default_repetitions": 1,
+      "release_repetitions": 3
+    },
+    "stability": {
+      "rule": "strict-majority"
+    },
+    "host_matrix": [
+      {
+        "runner": "codex",
+        "model": "gpt-5.6-sol"
+      },
+      {
+        "runner": "claude",
+        "model": "claude-opus-5"
+      },
+      {
+        "runner": "claude",
+        "model": "claude-fable-5"
+      }
+    ],
+    "confidence_intervals": {
+      "method": "wilson",
+      "confidence": 0.95,
+      "unit": "unique-label-or-prediction"
+    },
+    "decision": {
+      "threshold_basis": "point-estimate",
+      "thresholds": {
+        "stable_precision_min": 0.95,
+        "stable_recall_min": 0.85,
+        "repeated_precision_min": 0.9,
+        "pattern_macro_recall_min": 0.8,
+        "case_macro_recall_min": 0.8,
+        "framework_macro_recall_min": 0.8,
+        "p0_stable_label_recall_min": 0.9,
+        "stable_guard_hit_rate_max": 0.05
+      }
+    },
+    "cross_host_decision": {
+      "threshold_basis": "point-estimate",
+      "requires_each_report_status": "PASS",
+      "thresholds": {
+        "stable_recall_gap_max": 0.1,
+        "stable_prediction_jaccard_min": 0.8
+      }
+    }
+  },
+  "schedule_seed": 20260730,
+  "schedule_algorithm": "sha256-seeded-sort-v1",
+  "release_repetitions": 3,
+  "schedule_sha256": "47ea8b20426a5f8812bb296fbf4e8ad2dc7cca85ee0296380e242c970390505e",
+  "schedule": [
+    {
+      "ordinal": 1,
+      "case": "cy-write-credentials",
+      "repetition": 3
+    },
+    {
+      "ordinal": 2,
+      "case": "cy-command-timing",
+      "repetition": 1
+    },
+    {
+      "ordinal": 3,
+      "case": "pw-rejection-state",
+      "repetition": 3
+    },
+    {
+      "ordinal": 4,
+      "case": "cy-command-timing",
+      "repetition": 3
+    },
+    {
+      "ordinal": 5,
+      "case": "pw-pom-async",
+      "repetition": 3
+    },
+    {
+      "ordinal": 6,
+      "case": "pw-context-boundaries",
+      "repetition": 1
+    },
+    {
+      "ordinal": 7,
+      "case": "pw-pom-async",
+      "repetition": 1
+    },
+    {
+      "ordinal": 8,
+      "case": "pw-pom-async",
+      "repetition": 2
+    },
+    {
+      "ordinal": 9,
+      "case": "pw-context-boundaries",
+      "repetition": 2
+    },
+    {
+      "ordinal": 10,
+      "case": "cy-structure-fixture",
+      "repetition": 3
+    },
+    {
+      "ordinal": 11,
+      "case": "pw-maintenance-provenance",
+      "repetition": 3
+    },
+    {
+      "ordinal": 12,
+      "case": "pw-rejection-state",
+      "repetition": 2
+    },
+    {
+      "ordinal": 13,
+      "case": "pw-context-boundaries",
+      "repetition": 3
+    },
+    {
+      "ordinal": 14,
+      "case": "cy-write-credentials",
+      "repetition": 2
+    },
+    {
+      "ordinal": 15,
+      "case": "cy-contract-runtime",
+      "repetition": 1
+    },
+    {
+      "ordinal": 16,
+      "case": "cy-contract-runtime",
+      "repetition": 3
+    },
+    {
+      "ordinal": 17,
+      "case": "cy-structure-fixture",
+      "repetition": 1
+    },
+    {
+      "ordinal": 18,
+      "case": "pw-maintenance-provenance",
+      "repetition": 2
+    },
+    {
+      "ordinal": 19,
+      "case": "cy-write-credentials",
+      "repetition": 1
+    },
+    {
+      "ordinal": 20,
+      "case": "cy-structure-fixture",
+      "repetition": 2
+    },
+    {
+      "ordinal": 21,
+      "case": "pw-rejection-state",
+      "repetition": 1
+    },
+    {
+      "ordinal": 22,
+      "case": "cy-command-timing",
+      "repetition": 2
+    },
+    {
+      "ordinal": 23,
+      "case": "pw-maintenance-provenance",
+      "repetition": 1
+    },
+    {
+      "ordinal": 24,
+      "case": "cy-contract-runtime",
+      "repetition": 2
+    }
+  ],
+  "source_read_isolation": "not-required-public-corpus",
+  "external_wrapper": null,
+  "input_snapshot": "copy-once-temp",
+  "workspace_integrity": "pre-post-sha256",
+  "repetitions": 3,
+  "complete": false,
+  "status": "INCONCLUSIVE",
+  "status_reasons": [
+    {
+      "code": "incomplete_schedule",
+      "message": "executed 10 of 24 scheduled runs"
+    }
+  ],
+  "runs": [
+    {
+      "schedule_ordinal": 1,
+      "case": "cy-write-credentials",
+      "framework": "cypress",
+      "split": "public-development-holdout-v3",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 49800,
+      "workspace_sha256_before": "c03172614dce9c727f79dc87a1c4dd2906ecd9375c80b1a78a27839796e36fc9",
+      "workspace_sha256_after": "c03172614dce9c727f79dc87a1c4dd2906ecd9375c80b1a78a27839796e36fc9",
+      "findings": [
+        {
+          "pattern_id": "#14",
+          "severity": "P1",
+          "file": "cypress/e2e/profile.cy.ts",
+          "line": 5
+        },
+        {
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "cypress/e2e/profile.cy.ts",
+          "line": 20
+        },
+        {
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "cypress/e2e/board.cy.ts",
+          "line": 6
+        }
+      ],
+      "score": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-CY-WRITE-001",
+          "V3-CY-WRITE-002",
+          "V3-CY-WRITE-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#14\",\"severity\":\"P1\",\"file\":\"cypress/e2e/profile.cy.ts\",\"line\":5},{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"cypress/e2e/profile.cy.ts\",\"line\":20},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/board.cy.ts\",\"line\":6}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 2,
+      "case": "cy-command-timing",
+      "framework": "cypress",
+      "split": "public-development-holdout-v3",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 46374,
+      "workspace_sha256_before": "f71769281f41fbf07a7fd44a77e011007bf69ba8da324190176b5a0ddb5bb693",
+      "workspace_sha256_after": "f71769281f41fbf07a7fd44a77e011007bf69ba8da324190176b5a0ddb5bb693",
+      "findings": [
+        {
+          "pattern_id": "#9b",
+          "severity": "P1",
+          "file": "cypress/e2e/search.cy.ts",
+          "line": 10
+        },
+        {
+          "pattern_id": "#10f",
+          "severity": "P1",
+          "file": "cypress/e2e/search.cy.ts",
+          "line": 16
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-CY-COMMAND-002",
+          "V3-CY-COMMAND-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#9b\",\"severity\":\"P1\",\"file\":\"cypress/e2e/search.cy.ts\",\"line\":10},{\"pattern_id\":\"#10f\",\"severity\":\"P1\",\"file\":\"cypress/e2e/search.cy.ts\",\"line\":16}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 3,
+      "case": "pw-rejection-state",
+      "framework": "playwright",
+      "split": "public-development-holdout-v3",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 54179,
+      "workspace_sha256_before": "1ed6b2ac9e1ba215ba30fb2d0400c0ac9a82e012f87910e8d864b58b4e51506f",
+      "workspace_sha256_after": "1ed6b2ac9e1ba215ba30fb2d0400c0ac9a82e012f87910e8d864b58b4e51506f",
+      "findings": [
+        {
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "pages/report-page.ts",
+          "line": 11
+        },
+        {
+          "pattern_id": "#5b",
+          "severity": "P1",
+          "file": "pages/report-page.ts",
+          "line": 16
+        },
+        {
+          "pattern_id": "#4h",
+          "severity": "P1",
+          "file": "tests/report.spec.ts",
+          "line": 9
+        }
+      ],
+      "score": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-PW-REJECT-001",
+          "V3-PW-REJECT-002",
+          "V3-PW-REJECT-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"pages/report-page.ts\",\"line\":11},{\"pattern_id\":\"#5b\",\"severity\":\"P1\",\"file\":\"pages/report-page.ts\",\"line\":16},{\"pattern_id\":\"#4h\",\"severity\":\"P1\",\"file\":\"tests/report.spec.ts\",\"line\":9}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 4,
+      "case": "cy-command-timing",
+      "framework": "cypress",
+      "split": "public-development-holdout-v3",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 57929,
+      "workspace_sha256_before": "f71769281f41fbf07a7fd44a77e011007bf69ba8da324190176b5a0ddb5bb693",
+      "workspace_sha256_after": "f71769281f41fbf07a7fd44a77e011007bf69ba8da324190176b5a0ddb5bb693",
+      "findings": [
+        {
+          "pattern_id": "#9b",
+          "severity": "P1",
+          "file": "cypress/e2e/search.cy.ts",
+          "line": 10
+        },
+        {
+          "pattern_id": "#10f",
+          "severity": "P1",
+          "file": "cypress/e2e/search.cy.ts",
+          "line": 16
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-CY-COMMAND-002",
+          "V3-CY-COMMAND-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#9b\",\"severity\":\"P1\",\"file\":\"cypress/e2e/search.cy.ts\",\"line\":10},{\"pattern_id\":\"#10f\",\"severity\":\"P1\",\"file\":\"cypress/e2e/search.cy.ts\",\"line\":16}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 5,
+      "case": "pw-pom-async",
+      "framework": "playwright",
+      "split": "public-development-holdout-v3",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 92547,
+      "workspace_sha256_before": "5b1a61f4edc6bf7f8dbedba7e8a3dccca3aa366bdd8ebe5589131745099050ee",
+      "workspace_sha256_after": "5b1a61f4edc6bf7f8dbedba7e8a3dccca3aa366bdd8ebe5589131745099050ee",
+      "findings": [
+        {
+          "pattern_id": "#15",
+          "severity": "P0",
+          "file": "tests/settings.spec.ts",
+          "line": 10
+        },
+        {
+          "pattern_id": "#16",
+          "severity": "P0",
+          "file": "tests/settings.spec.ts",
+          "line": 12
+        },
+        {
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "tests/settings.spec.ts",
+          "line": 7
+        }
+      ],
+      "score": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-PW-ASYNC-001",
+          "V3-PW-ASYNC-002",
+          "V3-PW-ASYNC-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#15\",\"severity\":\"P0\",\"file\":\"tests/settings.spec.ts\",\"line\":10},{\"pattern_id\":\"#16\",\"severity\":\"P0\",\"file\":\"tests/settings.spec.ts\",\"line\":12},{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/settings.spec.ts\",\"line\":7}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 6,
+      "case": "pw-context-boundaries",
+      "framework": "playwright",
+      "split": "public-development-holdout-v3",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 88160,
+      "workspace_sha256_before": "aefa371db8f23b810414e1606a48e85f40c2d893b217f75fd041f58fd0736785",
+      "workspace_sha256_after": "aefa371db8f23b810414e1606a48e85f40c2d893b217f75fd041f58fd0736785",
+      "findings": [
+        {
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "auth.setup.ts",
+          "line": 3
+        },
+        {
+          "pattern_id": "#7",
+          "severity": "P0",
+          "file": "tests/admin-unprotected.spec.ts",
+          "line": 3
+        },
+        {
+          "pattern_id": "#12",
+          "severity": "P0",
+          "file": "tests/admin-unprotected.spec.ts",
+          "line": 5
+        },
+        {
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "tests/admin-unprotected.spec.ts",
+          "line": 12
+        },
+        {
+          "pattern_id": "#8a",
+          "severity": "P0",
+          "file": "tests/locator-discard.spec.ts",
+          "line": 5
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 1,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-PW-CONTEXT-001",
+          "V3-PW-CONTEXT-002",
+          "V3-PW-CONTEXT-003",
+          "V3-PW-CONTEXT-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#1\",\"severity\":\"P0\",\"file\":\"auth.setup.ts\",\"line\":3},{\"pattern_id\":\"#7\",\"severity\":\"P0\",\"file\":\"tests/admin-unprotected.spec.ts\",\"line\":3},{\"pattern_id\":\"#12\",\"severity\":\"P0\",\"file\":\"tests/admin-unprotected.spec.ts\",\"line\":5},{\"pattern_id\":\"#6\",\"severity\":\"P1\",\"file\":\"tests/admin-unprotected.spec.ts\",\"line\":12},{\"pattern_id\":\"#8a\",\"severity\":\"P0\",\"file\":\"tests/locator-discard.spec.ts\",\"line\":5}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 7,
+      "case": "pw-pom-async",
+      "framework": "playwright",
+      "split": "public-development-holdout-v3",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 57236,
+      "workspace_sha256_before": "5b1a61f4edc6bf7f8dbedba7e8a3dccca3aa366bdd8ebe5589131745099050ee",
+      "workspace_sha256_after": "5b1a61f4edc6bf7f8dbedba7e8a3dccca3aa366bdd8ebe5589131745099050ee",
+      "findings": [],
+      "score": null,
+      "output": "API Error: Server error mid-response. The response above may be incomplete.\n",
+      "error": "runner exited 1"
+    },
+    {
+      "schedule_ordinal": 8,
+      "case": "pw-pom-async",
+      "framework": "playwright",
+      "split": "public-development-holdout-v3",
+      "repetition": 2,
+      "exit_code": 124,
+      "duration_ms": 300000,
+      "workspace_sha256_before": "5b1a61f4edc6bf7f8dbedba7e8a3dccca3aa366bdd8ebe5589131745099050ee",
+      "workspace_sha256_after": "5b1a61f4edc6bf7f8dbedba7e8a3dccca3aa366bdd8ebe5589131745099050ee",
+      "findings": [],
+      "score": null,
+      "output": "Execution error",
+      "error": "timeout"
+    },
+    {
+      "schedule_ordinal": 9,
+      "case": "pw-context-boundaries",
+      "framework": "playwright",
+      "split": "public-development-holdout-v3",
+      "repetition": 2,
+      "exit_code": 124,
+      "duration_ms": 300000,
+      "workspace_sha256_before": "aefa371db8f23b810414e1606a48e85f40c2d893b217f75fd041f58fd0736785",
+      "workspace_sha256_after": "aefa371db8f23b810414e1606a48e85f40c2d893b217f75fd041f58fd0736785",
+      "findings": [],
+      "score": null,
+      "output": "Execution error",
+      "error": "timeout"
+    },
+    {
+      "schedule_ordinal": 10,
+      "case": "cy-structure-fixture",
+      "framework": "cypress",
+      "split": "public-development-holdout-v3",
+      "repetition": 3,
+      "exit_code": 124,
+      "duration_ms": 300000,
+      "workspace_sha256_before": "21b14894157d0cbd11087c448b6188f387fb7dc17ca4cd0e9537f2d850727817",
+      "workspace_sha256_after": "21b14894157d0cbd11087c448b6188f387fb7dc17ca4cd0e9537f2d850727817",
+      "findings": [],
+      "score": null,
+      "output": "Execution error",
+      "error": "timeout"
+    }
+  ]
+}

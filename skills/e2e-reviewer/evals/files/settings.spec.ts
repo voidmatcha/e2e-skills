@@ -42,7 +42,7 @@ test.describe('Settings', () => {
     expect(page.url()).toContain('/settings');
   });
 
-  test('verify avatar present', async ({ page }) => {
+  test('verify avatar visible', async ({ page }) => {
     const settings = new SettingsPage(page);
     await settings.goto();
     await expect(page.locator('.avatar-preview')).toBeAttached();

@@ -1,0 +1,1 @@
+{"framework":"playwright","test":"shows renewal price","attempts":[{"status":"failed","error":"Error: expect(received).toBe(expected) Expected: \"$19.00\" Received: \"$29.00\""}],"contract_excerpt":"Renewal price for the selected plan is $19.00","ui_excerpt":"Renewal price $29.00"}

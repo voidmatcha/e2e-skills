@@ -1,0 +1,1 @@
+{"framework":"playwright","test":"opens customer record","attempts":[{"status":"failed","error":"GET /api/customers/cus_demo_104 returned 404"}],"seed_summary":{"customer_ids":["cus_demo_105","cus_demo_106"]},"spec_excerpt":"page.goto('/customers/cus_demo_104')"}

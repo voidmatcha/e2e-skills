@@ -1,0 +1,210 @@
+#!/usr/bin/env python3
+"""Measure the exact rendered v10 prompt and write its size attestation.
+
+The measurement is deliberately narrow. Exact quantities are the prompt's UTF-8
+byte length and its SHA-256. The o200k_base count alongside them is OpenAI's
+BPE, pinned only so that any machine derives the same number from the same
+bytes. It is not the tokenization of claude-opus-5 or claude-fable-5, it is not
+the model's input token count, and it is not evidence that the prompt fits any
+model's context window.
+"""
+
+from __future__ import annotations
+
+import argparse
+import base64
+import fcntl
+import hashlib
+import importlib.util
+import json
+import os
+from pathlib import Path
+import re
+import stat
+import sys
+import uuid
+from typing import Any
+
+
+ROOT = Path(__file__).resolve().parents[2]
+RUNNER_PATH = ROOT / "scripts/evals/run-independent-review-v10.py"
+EXPECTED_TIKTOKEN_VERSION = "0.11.0"
+REFERENCE_TOKENIZER_BOUNDARY = (
+    "o200k_base is OpenAI's BPE. It is pinned here only as a deterministic, "
+    "replayable size proxy over the rendered prompt bytes so that two machines "
+    "derive the same number. It is not the tokenizer of claude-opus-5 or "
+    "claude-fable-5, the count is not the model's input token count, and no "
+    "context-window fit is claimed. The exactly measured quantities are the "
+    "UTF-8 byte sizes and their SHA-256 digests."
+)
+EXPECTED_ENCODING = "o200k_base"
+EXPECTED_ENCODING_CONTRACT_SHA256 = "170a798bd4d0917feae9c78c8deb17f88e0b8d32676d7fc6f9116d8122928eb9"
+EXPECTED_BPE_SOURCE_SHA256 = "446a9538cb6c348e3516120d7c08b09f57c36495e2acfffe59a5bf8b0cfb1a2d"
+REFERENCE_TOKENIZER_LOCK_PATH = ROOT / "scripts/evals/requirements-independent-review-v10-reference-tokenizer.txt"
+REFERENCE_TOKENIZER_LOCK_SHA256 = "6fbd61316c7988c72ec6023ffa1a0ac38b36ebc0bb9bfd35b89cec3f20f1a536"
+REFERENCE_TOKENIZER_CACHE_PATH = ROOT / "scripts/evals/tokenizer-cache/fb374d419588a4632f3f557e76b4b70aebbca790"
+
+sys.path.insert(0, str(ROOT / "scripts/ci/lib"))
+from strict_json import StrictJsonError, loads_strict, require_exact_keys
+
+
+def sha256(payload: bytes) -> str:
+    return hashlib.sha256(payload).hexdigest()
+
+
+def load_runner():
+    spec = importlib.util.spec_from_file_location("independent_review_v10_runner", RUNNER_PATH)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("cannot import v10 runner")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def load_encoding():
+    if sha256(REFERENCE_TOKENIZER_LOCK_PATH.read_bytes()) != REFERENCE_TOKENIZER_LOCK_SHA256:
+        raise ValueError("pinned tokenizer dependency lock changed")
+    if sha256(REFERENCE_TOKENIZER_CACHE_PATH.read_bytes()) != EXPECTED_BPE_SOURCE_SHA256:
+        raise ValueError("checked-in o200k_base source changed")
+    os.environ["TIKTOKEN_CACHE_DIR"] = str(REFERENCE_TOKENIZER_CACHE_PATH.parent)
+    try:
+        import tiktoken
+    except ImportError as exc:
+        raise ValueError("v10 reference-tokenizer replay requires tiktoken exactly 0.11.0") from exc
+    if getattr(tiktoken, "__version__", None) != EXPECTED_TIKTOKEN_VERSION:
+        raise ValueError("v10 reference-tokenizer replay requires tiktoken exactly 0.11.0")
+    encoding = tiktoken.get_encoding(EXPECTED_ENCODING)
+    if encoding.name != EXPECTED_ENCODING or encoding.n_vocab != 200019:
+        raise ValueError("o200k_base encoding identity changed")
+    ranks = sorted(encoding._mergeable_ranks.items(), key=lambda item: item[1])
+    bpe_source = b"".join(
+        base64.b64encode(token) + b" " + str(rank).encode("ascii") + b"\n"
+        for token, rank in ranks
+    )
+    if sha256(bpe_source) != EXPECTED_BPE_SOURCE_SHA256:
+        raise ValueError("o200k_base mergeable-rank contract changed")
+    # The preregistered fingerprint names the verified package/version/encoding
+    # contract above; it is recorded verbatim so validators need not import BPE code.
+    return encoding
+
+
+def create_only(path: Path, payload: bytes) -> None:
+    parent = path.parent.expanduser().absolute()
+    directory_flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
+    destination_directory = os.open(parent.anchor, directory_flags)
+    try:
+        for component in parent.parts[1:]:
+            next_directory = os.open(component, directory_flags, dir_fd=destination_directory)
+            os.close(destination_directory); destination_directory = next_directory
+    except Exception:
+        os.close(destination_directory); raise
+    # Cleanup scans the shared staging directory, so every writer using that
+    # directory must hold the same lock even when destination filenames differ.
+    lock_name = ".independent-review-v10-prompt-size-staging.state.lock"
+    lock_flags = os.O_RDWR | os.O_CREAT | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    lock_descriptor = os.open(lock_name, lock_flags, 0o600, dir_fd=destination_directory)
+    opened_lock = os.fstat(lock_descriptor)
+    named_lock = os.stat(lock_name, dir_fd=destination_directory, follow_symlinks=False)
+    if not stat.S_ISREG(opened_lock.st_mode) or (opened_lock.st_dev, opened_lock.st_ino) != (named_lock.st_dev, named_lock.st_ino):
+        os.close(lock_descriptor); os.close(destination_directory); raise ValueError("token output state lock identity changed")
+    fcntl.flock(lock_descriptor, fcntl.LOCK_EX)
+    staging_name_root = ".independent-review-v10-prompt-size-staging"
+    try: os.mkdir(staging_name_root, 0o700, dir_fd=destination_directory)
+    except FileExistsError: pass
+    try:
+        stage_directory = os.open(staging_name_root, directory_flags, dir_fd=destination_directory)
+        for child_name in os.listdir(stage_directory):
+            metadata = os.stat(child_name, dir_fd=stage_directory, follow_symlinks=False)
+            if not stat.S_ISREG(metadata.st_mode) or not re.fullmatch(r"prompt-size-attestation\.[0-9a-f]{32}\.staging", child_name):
+                raise ValueError("unsafe token staging inventory")
+            os.unlink(child_name, dir_fd=stage_directory)
+    except Exception:
+        try: os.close(stage_directory)
+        except UnboundLocalError: pass
+        fcntl.flock(lock_descriptor, fcntl.LOCK_UN); os.close(lock_descriptor); os.close(destination_directory); raise
+    staging_name = f"prompt-size-attestation.{uuid.uuid4().hex}.staging"
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0)
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    try:
+        descriptor = os.open(staging_name, flags, 0o600, dir_fd=stage_directory)
+        try:
+            view = memoryview(payload)
+            while view:
+                written = os.write(descriptor, view)
+                if written <= 0: raise OSError("token attestation write made no progress")
+                view = view[written:]
+            os.fsync(descriptor)
+            created = os.fstat(descriptor)
+            if not stat.S_ISREG(created.st_mode) or created.st_size != len(payload): raise OSError("token attestation staged identity changed")
+        finally: os.close(descriptor)
+        os.link(staging_name, path.name, src_dir_fd=stage_directory, dst_dir_fd=destination_directory, follow_symlinks=False)
+        os.fsync(destination_directory)
+    finally:
+        try: os.unlink(staging_name, dir_fd=stage_directory)
+        except FileNotFoundError: pass
+        os.fsync(stage_directory); os.close(stage_directory)
+        fcntl.flock(lock_descriptor, fcntl.LOCK_UN); os.close(lock_descriptor); os.close(destination_directory)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    runner = load_runner()
+    protocol = runner.load_protocol(runner.PROTOCOL_PATH)
+    packet, _ = runner.build_packet(ROOT, protocol)
+    prompt = runner.build_rendered_prompt(packet, protocol)
+    catalog, catalog_bytes = runner.load_pinned_model_catalog()
+    # One prompt serves every declared host: the packet does not vary by model,
+    # so the attestation binds the whole declared slug set rather than pretending
+    # to be a per-model measurement.
+    model_slugs = [entry["slug"] for entry in catalog["models"]]
+    encoding = load_encoding()
+    token_ids = encoding.encode(prompt, disallowed_special=())
+    attestation = {
+        "schema_version": 1,
+        "attestation_id": "independent-product-review-v10-prompt-size-attestation-v1",
+        "protocol_sha256": runner.V10_PROTOCOL_HASH,
+        "prompt_rendering_contract_sha256": protocol["packet"]["prompt_rendering"]["contract_sha256"],
+        "prompt_sha256": sha256(prompt.encode("utf-8")),
+        "prompt_utf8_bytes": len(prompt.encode("utf-8")),
+        "reference_tokenizer_prompt_tokens": len(token_ids),
+        "reference_tokenizer_token_ids_sha256": sha256(json.dumps(token_ids, separators=(",", ":")).encode("utf-8")),
+        "reference_tokenizer": {
+            "package": "tiktoken",
+            "version": EXPECTED_TIKTOKEN_VERSION,
+            "encoding": EXPECTED_ENCODING,
+            "name": encoding.name,
+            "n_vocab": encoding.n_vocab,
+            "encoding_contract_sha256": EXPECTED_ENCODING_CONTRACT_SHA256,
+            "bpe_source_sha256": EXPECTED_BPE_SOURCE_SHA256,
+            "measurement_role": "deterministic-prompt-size-proxy-only",
+            "measurement_boundary": REFERENCE_TOKENIZER_BOUNDARY,
+        },
+        "measurer_sha256": sha256(Path(__file__).resolve().read_bytes()),
+        "model_slugs": model_slugs,
+        "model_catalog_sha256": sha256(catalog_bytes),
+        "provenance": runner.ATTESTATION_PROVENANCE,
+    }
+    if attestation["reference_tokenizer"] != protocol["packet"]["reference_tokenizer"]:
+        parser.error("reference-tokenizer contract differs from the preregistered protocol")
+    caps = protocol["packet"]
+    if (attestation["prompt_utf8_bytes"] > caps["rendered_prompt_utf8_bytes_max"]
+            or attestation["reference_tokenizer_prompt_tokens"] > caps["reference_tokenizer_prompt_tokens_max"]):
+        parser.error("measured prompt exceeds a preregistered v10 size cap")
+    payload = json.dumps(attestation, indent=2, sort_keys=True).encode("utf-8") + b"\n"
+    try:
+        create_only(args.output.expanduser().absolute(), payload)
+    except FileExistsError:
+        parser.error("prompt-size attestation output already exists")
+    print(json.dumps(attestation, indent=2, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except (OSError, ValueError, UnicodeError) as exc:
+        raise SystemExit(f"error: {exc}")

@@ -34,7 +34,7 @@ Expect the caller to provide:
 2. Read the flagged file around the line, including the whole test, hooks, and any helper or page object it calls.
    Read project config when retries, baseURL, webServer, or test projects affect the verdict.
 3. Actively try to refute the finding before confirming it:
-   - Does a documented exclusion apply, such as retry-wrapper context, custom-helper subject, bounded wait, or dynamically injected element?
+   - Does a documented exclusion apply, such as retry wrappers for one-shot #4 reads, a custom-helper subject, a bounded wait, or a dynamically injected element? A retry wrapper never exempts a floating #15/#16 Promise that its callback neither awaits nor returns.
    - Does a // JUSTIFIED: comment cover the line or enclosing block? Remember: #7 focused test leak accepts no justification.
    - Does surrounding code already assert what the finding claims is missing?
 4. Confirm only if refutation fails. State exactly why the test can pass while the named behavior is broken.

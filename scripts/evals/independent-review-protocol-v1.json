@@ -1,0 +1,202 @@
+{
+  "schema_version": 1,
+  "protocol_id": "independent-product-review-v1",
+  "purpose": "Fresh-context, prompt-complete, zero-tool review of a curated contract/implementation subset. This is not full product coverage, skill accuracy, human or sealed review, independent ground truth, or remote model attestation.",
+  "packet": {
+    "representation_byte_budget": 750000,
+    "selection_policy": "ordered-explicit-allowlist-v1",
+    "line_numbering": "original-one-based-lines",
+    "freeze_policy": "Build one canonical packet before any model call. Record packet, manifest, protocol, and selected-source digests before and after every call; any drift makes the run INCONCLUSIVE.",
+    "excluded_surfaces": [
+      ".git/**",
+      ".omx/**",
+      "benchmarks/**",
+      "results/**",
+      "**/evals/**",
+      "**/*holdout*",
+      "**/*scorecard*",
+      "**/*review*",
+      "chat transcripts and conclusions"
+    ]
+  },
+  "schedule": {
+    "version": "round-robin-v1",
+    "seed": "independent-product-review-v1-final-9",
+    "digest_derivation": "sha256-canonical-json-version-seed-attempts-v1",
+    "digest": "3a5ecf3981b287ef518793a69b7c1119f71a16cd333923433f3c30192100c967",
+    "aggregate_rule": {
+      "completion": "Every scheduled attempt ID must appear exactly once with the same packet and protocol digests; historical or ad-hoc attempts do not count.",
+      "passage": "All nine scheduled attempts must have an individual PASS verdict."
+    },
+    "attempts": [
+      {
+        "attempt_id": "codex-r1",
+        "schedule_index": 0,
+        "repetition": 1,
+        "runner": "codex",
+        "model": "gpt-5.6-sol",
+        "provider_family": "openai"
+      },
+      {
+        "attempt_id": "opus-r1",
+        "schedule_index": 1,
+        "repetition": 1,
+        "runner": "claude",
+        "model": "claude-opus-5",
+        "provider_family": "anthropic"
+      },
+      {
+        "attempt_id": "fable-r1",
+        "schedule_index": 2,
+        "repetition": 1,
+        "runner": "claude",
+        "model": "claude-fable-5",
+        "provider_family": "anthropic"
+      },
+      {
+        "attempt_id": "codex-r2",
+        "schedule_index": 3,
+        "repetition": 2,
+        "runner": "codex",
+        "model": "gpt-5.6-sol",
+        "provider_family": "openai"
+      },
+      {
+        "attempt_id": "opus-r2",
+        "schedule_index": 4,
+        "repetition": 2,
+        "runner": "claude",
+        "model": "claude-opus-5",
+        "provider_family": "anthropic"
+      },
+      {
+        "attempt_id": "fable-r2",
+        "schedule_index": 5,
+        "repetition": 2,
+        "runner": "claude",
+        "model": "claude-fable-5",
+        "provider_family": "anthropic"
+      },
+      {
+        "attempt_id": "codex-r3",
+        "schedule_index": 6,
+        "repetition": 3,
+        "runner": "codex",
+        "model": "gpt-5.6-sol",
+        "provider_family": "openai"
+      },
+      {
+        "attempt_id": "opus-r3",
+        "schedule_index": 7,
+        "repetition": 3,
+        "runner": "claude",
+        "model": "claude-opus-5",
+        "provider_family": "anthropic"
+      },
+      {
+        "attempt_id": "fable-r3",
+        "schedule_index": 8,
+        "repetition": 3,
+        "runner": "claude",
+        "model": "claude-fable-5",
+        "provider_family": "anthropic"
+      }
+    ]
+  },
+  "host_matrix": [
+    {
+      "runner": "codex",
+      "model": "gpt-5.6-sol",
+      "provider_family": "openai"
+    },
+    {
+      "runner": "claude",
+      "model": "claude-opus-5",
+      "provider_family": "anthropic"
+    },
+    {
+      "runner": "claude",
+      "model": "claude-fable-5",
+      "provider_family": "anthropic"
+    }
+  ],
+  "rubric": {
+    "dimensions": [
+      {
+        "id": "semantic_correctness",
+        "label": "Semantic correctness",
+        "review_question": "Do the included public contracts and implementations agree on behavior, failure modes, and framework semantics?",
+        "weight": 1
+      },
+      {
+        "id": "false_positive_control",
+        "label": "False-positive control",
+        "review_question": "Do the included reviewer rules, suppressions, and scanner boundaries avoid unsupported findings while remaining fail-closed?",
+        "weight": 1
+      },
+      {
+        "id": "security_trust_boundaries",
+        "label": "Security and trust boundaries",
+        "review_question": "Do the included interfaces and scripts define safe input, artifact, credential, and execution boundaries?",
+        "weight": 1
+      },
+      {
+        "id": "verification_design",
+        "label": "Verification design",
+        "review_question": "Do the included files define executable, fail-closed checks that could verify the documented behavior? Score the design only; do not infer that omitted runs passed.",
+        "weight": 1
+      },
+      {
+        "id": "scope_contract_consistency",
+        "label": "Scope and contract consistency",
+        "review_question": "Are supported frameworks, hosts, capabilities, limitations, and fallback paths consistent across the included public surfaces? Do not infer quality from omitted benchmarks or holdouts.",
+        "weight": 1
+      },
+      {
+        "id": "docs_usability",
+        "label": "Documentation and usability",
+        "review_question": "Can a user act on the included installation, invocation, diagnosis, review, and verification guidance without relying on omitted context?",
+        "weight": 1
+      }
+    ],
+    "finding_severities": {
+      "C": "Critical: a trust, safety, or correctness failure that can invalidate the product or its evidence.",
+      "H": "High: a material product or evidence defect that should block a strong-quality claim.",
+      "M": "Medium: a bounded weakness or usability problem with concrete impact."
+    },
+    "decision": {
+      "overall_score_min": 90,
+      "dimension_score_min": 85,
+      "critical_findings_max": 0,
+      "high_findings_max": 0
+    }
+  },
+  "output_contract": {
+    "strict_json": true,
+    "top_level_keys": [
+      "summary",
+      "scores",
+      "findings",
+      "limitations",
+      "verdict"
+    ],
+    "finding_keys": [
+      "severity",
+      "category",
+      "file",
+      "line",
+      "title",
+      "evidence",
+      "recommendation"
+    ],
+    "verdicts": [
+      "PASS",
+      "FAIL"
+    ]
+  },
+  "status_policy": {
+    "PASS": "The strict review payload is complete, every finding cites an included file and valid original line, packet/protocol/source digests are unchanged, and all fixed thresholds pass.",
+    "FAIL": "The strict review payload is complete and provenance is intact, but one or more fixed thresholds fail.",
+    "INCONCLUSIVE": "The call, strict payload, evidence locations, CLI identity, or pre/post integrity evidence is missing or invalid."
+  }
+}

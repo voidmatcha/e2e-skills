@@ -1,0 +1,1821 @@
+{
+  "schema_version": 2,
+  "runner": "codex",
+  "runner_identity": "codex-cli 0.144.1",
+  "model": "gpt-5.6-sol",
+  "git_revision": null,
+  "git_dirty": null,
+  "skill_sha256": "cb082316001bdd1844ce0ce0d752e491f516eece5aacc192b2594d3e87521436",
+  "skill_source_path": "/private/tmp/e2e-reviewer-live-v2.a47q7H/skills/e2e-reviewer",
+  "corpus_sha256": "1c43ca37e3eaebbaee3fdf7c1167f4026dba3944e88decba6f8ae800e59c501d",
+  "corpus_visibility": "public",
+  "corpus_intended_use": "hard development holdout",
+  "corpus_contamination_risk": "The committed source and labels are public. Use an external sealed corpus via --cases for contamination-resistant measurement.",
+  "protocol_id": "reviewer-holdout-v2",
+  "protocol_path": "/private/tmp/e2e-reviewer-live-v2.a47q7H/scripts/evals/reviewer-validation-protocol.json",
+  "protocol_sha256": "868e25206e75ab8274b7b16e117267ef276551c63cc2b5e8734fd3b5efe09416",
+  "protocol": {
+    "schema_version": 1,
+    "protocol_id": "reviewer-holdout-v2",
+    "schedule": {
+      "algorithm": "sha256-seeded-sort-v1",
+      "seed": 20260729,
+      "default_repetitions": 1,
+      "release_repetitions": 3
+    },
+    "stability": {
+      "rule": "at-least-ceil-half"
+    },
+    "confidence_intervals": {
+      "method": "wilson",
+      "confidence": 0.95,
+      "unit": "unique-label-or-prediction"
+    },
+    "decision": {
+      "threshold_basis": "point-estimate",
+      "thresholds": {
+        "stable_precision_min": 0.95,
+        "stable_recall_min": 0.85,
+        "pattern_macro_recall_min": 0.8,
+        "case_macro_recall_min": 0.8,
+        "framework_macro_recall_min": 0.8,
+        "p0_stable_label_recall_min": 0.9,
+        "stable_guard_hit_rate_max": 0.05
+      }
+    },
+    "cross_host_decision": {
+      "threshold_basis": "point-estimate",
+      "requires_each_report_status": "PASS",
+      "thresholds": {
+        "stable_recall_gap_max": 0.1,
+        "stable_prediction_jaccard_min": 0.8
+      }
+    }
+  },
+  "schedule_seed": 20260729,
+  "schedule_algorithm": "sha256-seeded-sort-v1",
+  "release_repetitions": 3,
+  "schedule_sha256": "b9179c6e2b77bc304db5fe24d8d54f80c4d0af0c1f773dcba7e4dcf73e81603b",
+  "schedule": [
+    {
+      "ordinal": 1,
+      "case": "cy-runtime-control",
+      "repetition": 3
+    },
+    {
+      "ordinal": 2,
+      "case": "pw-session-provenance",
+      "repetition": 1
+    },
+    {
+      "ordinal": 3,
+      "case": "playwright-split-context",
+      "repetition": 3
+    },
+    {
+      "ordinal": 4,
+      "case": "cy-write-and-render-contract",
+      "repetition": 2
+    },
+    {
+      "ordinal": 5,
+      "case": "cy-runtime-control",
+      "repetition": 1
+    },
+    {
+      "ordinal": 6,
+      "case": "cy-command-semantics",
+      "repetition": 2
+    },
+    {
+      "ordinal": 7,
+      "case": "cy-command-semantics",
+      "repetition": 1
+    },
+    {
+      "ordinal": 8,
+      "case": "playwright-split-context",
+      "repetition": 2
+    },
+    {
+      "ordinal": 9,
+      "case": "cy-write-and-render-contract",
+      "repetition": 3
+    },
+    {
+      "ordinal": 10,
+      "case": "cy-runtime-control",
+      "repetition": 2
+    },
+    {
+      "ordinal": 11,
+      "case": "pw-pom-runtime-context",
+      "repetition": 3
+    },
+    {
+      "ordinal": 12,
+      "case": "cy-command-semantics",
+      "repetition": 3
+    },
+    {
+      "ordinal": 13,
+      "case": "pw-pom-runtime-context",
+      "repetition": 2
+    },
+    {
+      "ordinal": 14,
+      "case": "cy-write-and-render-contract",
+      "repetition": 1
+    },
+    {
+      "ordinal": 15,
+      "case": "pw-pom-runtime-context",
+      "repetition": 1
+    },
+    {
+      "ordinal": 16,
+      "case": "cypress-split-context",
+      "repetition": 2
+    },
+    {
+      "ordinal": 17,
+      "case": "pw-contract-boundaries",
+      "repetition": 3
+    },
+    {
+      "ordinal": 18,
+      "case": "pw-session-provenance",
+      "repetition": 2
+    },
+    {
+      "ordinal": 19,
+      "case": "pw-contract-boundaries",
+      "repetition": 2
+    },
+    {
+      "ordinal": 20,
+      "case": "pw-session-provenance",
+      "repetition": 3
+    },
+    {
+      "ordinal": 21,
+      "case": "cypress-split-context",
+      "repetition": 3
+    },
+    {
+      "ordinal": 22,
+      "case": "playwright-split-context",
+      "repetition": 1
+    },
+    {
+      "ordinal": 23,
+      "case": "pw-contract-boundaries",
+      "repetition": 1
+    },
+    {
+      "ordinal": 24,
+      "case": "cypress-split-context",
+      "repetition": 1
+    }
+  ],
+  "source_read_isolation": "not-required-public-corpus",
+  "external_wrapper": null,
+  "workspace_integrity": "pre-post-sha256",
+  "repetitions": 3,
+  "complete": true,
+  "status": "PASS",
+  "status_reasons": [
+    {
+      "code": "all_thresholds_met",
+      "message": "all preregistered primary thresholds were met"
+    }
+  ],
+  "protocol_sha256_after": "868e25206e75ab8274b7b16e117267ef276551c63cc2b5e8734fd3b5efe09416",
+  "created_at": "2026-07-29T06:20:08.787550+00:00",
+  "summary": {
+    "tp": 75,
+    "fp": 8,
+    "fn": 0,
+    "precision": 0.9036144578313253,
+    "recall": 1.0,
+    "f1": 0.9493670886075949,
+    "runs": 24,
+    "successful_runs": 24,
+    "infrastructure_errors": 0
+  },
+  "primary_metrics": {
+    "aggregation_unit": "unique-case-label-or-prediction",
+    "stability": {
+      "rule": "hits >= ceil(repetitions / 2)",
+      "repetitions": 3,
+      "required_hits": 2
+    },
+    "unique": {
+      "tp": 25,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "precision_ci95": {
+        "method": "wilson",
+        "confidence": 0.95,
+        "successes": 25,
+        "total": 25,
+        "lower": 0.8668077490609515,
+        "upper": 0.9999999999999999
+      },
+      "recall_ci95": {
+        "method": "wilson",
+        "confidence": 0.95,
+        "successes": 25,
+        "total": 25,
+        "lower": 0.8668077490609515,
+        "upper": 0.9999999999999999
+      },
+      "guard_labels": 28,
+      "stable_guard_hits": 0,
+      "stable_guard_hit_rate": 0.0,
+      "stable_guard_hit_rate_ci95": {
+        "method": "wilson",
+        "confidence": 0.95,
+        "successes": 0,
+        "total": 28,
+        "lower": 1.3877787807814457e-17,
+        "upper": 0.12064330476584563
+      }
+    },
+    "macro_recall": {
+      "pattern": {
+        "value": 1.0,
+        "groups": {
+          "#10d": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#10e": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#10f": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#11": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#15": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#16": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#17": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#19": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#2": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#20": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#21": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#22": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#23": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#3": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#3b": {
+            "detected": 2,
+            "expected": 2,
+            "recall": 1.0
+          },
+          "#4f": {
+            "detected": 2,
+            "expected": 2,
+            "recall": 1.0
+          },
+          "#4i": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#5a": {
+            "detected": 2,
+            "expected": 2,
+            "recall": 1.0
+          },
+          "#6": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#7": {
+            "detected": 2,
+            "expected": 2,
+            "recall": 1.0
+          },
+          "#9b": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          }
+        }
+      },
+      "case": {
+        "value": 1.0,
+        "groups": {
+          "cy-command-semantics": {
+            "detected": 4,
+            "expected": 4,
+            "recall": 1.0
+          },
+          "cy-runtime-control": {
+            "detected": 4,
+            "expected": 4,
+            "recall": 1.0
+          },
+          "cy-write-and-render-contract": {
+            "detected": 3,
+            "expected": 3,
+            "recall": 1.0
+          },
+          "cypress-split-context": {
+            "detected": 2,
+            "expected": 2,
+            "recall": 1.0
+          },
+          "playwright-split-context": {
+            "detected": 2,
+            "expected": 2,
+            "recall": 1.0
+          },
+          "pw-contract-boundaries": {
+            "detected": 4,
+            "expected": 4,
+            "recall": 1.0
+          },
+          "pw-pom-runtime-context": {
+            "detected": 4,
+            "expected": 4,
+            "recall": 1.0
+          },
+          "pw-session-provenance": {
+            "detected": 2,
+            "expected": 2,
+            "recall": 1.0
+          }
+        }
+      },
+      "framework": {
+        "value": 1.0,
+        "groups": {
+          "cypress": {
+            "detected": 13,
+            "expected": 13,
+            "recall": 1.0
+          },
+          "playwright": {
+            "detected": 12,
+            "expected": 12,
+            "recall": 1.0
+          }
+        }
+      }
+    },
+    "p0_per_label_stability": {
+      "labels": [
+        {
+          "case": "cy-command-semantics",
+          "framework": "cypress",
+          "finding_id": "CY-COMMAND-003",
+          "pattern_id": "#2",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        },
+        {
+          "case": "cy-runtime-control",
+          "framework": "cypress",
+          "finding_id": "CY-RUNTIME-001",
+          "pattern_id": "#3b",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        },
+        {
+          "case": "cy-runtime-control",
+          "framework": "cypress",
+          "finding_id": "CY-RUNTIME-002",
+          "pattern_id": "#7",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        },
+        {
+          "case": "cypress-split-context",
+          "framework": "cypress",
+          "finding_id": "CY-SPLIT-001",
+          "pattern_id": "#3b",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        },
+        {
+          "case": "cypress-split-context",
+          "framework": "cypress",
+          "finding_id": "CY-SPLIT-002",
+          "pattern_id": "#7",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        },
+        {
+          "case": "playwright-split-context",
+          "framework": "playwright",
+          "finding_id": "PW-SPLIT-001",
+          "pattern_id": "#5a",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        },
+        {
+          "case": "playwright-split-context",
+          "framework": "playwright",
+          "finding_id": "PW-SPLIT-002",
+          "pattern_id": "#4f",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        },
+        {
+          "case": "pw-contract-boundaries",
+          "framework": "playwright",
+          "finding_id": "PW-CONTRACT-001",
+          "pattern_id": "#5a",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        },
+        {
+          "case": "pw-contract-boundaries",
+          "framework": "playwright",
+          "finding_id": "PW-CONTRACT-002",
+          "pattern_id": "#16",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        },
+        {
+          "case": "pw-contract-boundaries",
+          "framework": "playwright",
+          "finding_id": "PW-CONTRACT-003",
+          "pattern_id": "#15",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        },
+        {
+          "case": "pw-contract-boundaries",
+          "framework": "playwright",
+          "finding_id": "PW-CONTRACT-004",
+          "pattern_id": "#4f",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        },
+        {
+          "case": "pw-pom-runtime-context",
+          "framework": "playwright",
+          "finding_id": "PW-POM-001",
+          "pattern_id": "#3",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        }
+      ],
+      "stable_labels": 12,
+      "labels_total": 12,
+      "stable_label_recall": 1.0,
+      "stable_label_recall_ci95": {
+        "method": "wilson",
+        "confidence": 0.95,
+        "successes": 12,
+        "total": 12,
+        "lower": 0.7575059933447592,
+        "upper": 1.0
+      }
+    }
+  },
+  "secondary_metrics": {
+    "aggregation_unit": "repeated-run",
+    "tp": 75,
+    "fp": 8,
+    "fn": 0,
+    "precision": 0.9036144578313253,
+    "recall": 1.0,
+    "f1": 0.9493670886075949,
+    "runs": 24,
+    "successful_runs": 24,
+    "infrastructure_errors": 0
+  },
+  "by_case": {
+    "playwright-split-context": {
+      "tp": 6,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "runs": 3,
+      "successful_runs": 3,
+      "infrastructure_errors": 0
+    },
+    "cypress-split-context": {
+      "tp": 6,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "runs": 3,
+      "successful_runs": 3,
+      "infrastructure_errors": 0
+    },
+    "pw-contract-boundaries": {
+      "tp": 12,
+      "fp": 2,
+      "fn": 0,
+      "precision": 0.8571428571428571,
+      "recall": 1.0,
+      "f1": 0.923076923076923,
+      "runs": 3,
+      "successful_runs": 3,
+      "infrastructure_errors": 0
+    },
+    "pw-pom-runtime-context": {
+      "tp": 12,
+      "fp": 4,
+      "fn": 0,
+      "precision": 0.75,
+      "recall": 1.0,
+      "f1": 0.8571428571428571,
+      "runs": 3,
+      "successful_runs": 3,
+      "infrastructure_errors": 0
+    },
+    "pw-session-provenance": {
+      "tp": 6,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "runs": 3,
+      "successful_runs": 3,
+      "infrastructure_errors": 0
+    },
+    "cy-runtime-control": {
+      "tp": 12,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "runs": 3,
+      "successful_runs": 3,
+      "infrastructure_errors": 0
+    },
+    "cy-command-semantics": {
+      "tp": 12,
+      "fp": 1,
+      "fn": 0,
+      "precision": 0.9230769230769231,
+      "recall": 1.0,
+      "f1": 0.9600000000000001,
+      "runs": 3,
+      "successful_runs": 3,
+      "infrastructure_errors": 0
+    },
+    "cy-write-and-render-contract": {
+      "tp": 9,
+      "fp": 1,
+      "fn": 0,
+      "precision": 0.9,
+      "recall": 1.0,
+      "f1": 0.9473684210526316,
+      "runs": 3,
+      "successful_runs": 3,
+      "infrastructure_errors": 0
+    }
+  },
+  "runs": [
+    {
+      "schedule_ordinal": 1,
+      "case": "cy-runtime-control",
+      "framework": "cypress",
+      "split": "public-frozen-regression",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 72691,
+      "workspace_sha256_before": "16f5d6022d94f139c2e9582ad3c2a20506a62e18ecef6f1660cf5595347e69e4",
+      "workspace_sha256_after": "16f5d6022d94f139c2e9582ad3c2a20506a62e18ecef6f1660cf5595347e69e4",
+      "findings": [
+        {
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/blanket-errors.ts",
+          "line": 1
+        },
+        {
+          "pattern_id": "#7",
+          "severity": "P0",
+          "file": "cypress/e2e/runtime.cy.ts",
+          "line": 9
+        },
+        {
+          "pattern_id": "#9b",
+          "severity": "P1",
+          "file": "cypress/e2e/runtime.cy.ts",
+          "line": 11
+        },
+        {
+          "pattern_id": "#10d",
+          "severity": "P1",
+          "file": "cypress/e2e/runtime.cy.ts",
+          "line": 21
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "CY-RUNTIME-001",
+          "CY-RUNTIME-002",
+          "CY-RUNTIME-003",
+          "CY-RUNTIME-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/blanket-errors.ts\",\"line\":1},{\"pattern_id\":\"#7\",\"severity\":\"P0\",\"file\":\"cypress/e2e/runtime.cy.ts\",\"line\":9},{\"pattern_id\":\"#9b\",\"severity\":\"P1\",\"file\":\"cypress/e2e/runtime.cy.ts\",\"line\":11},{\"pattern_id\":\"#10d\",\"severity\":\"P1\",\"file\":\"cypress/e2e/runtime.cy.ts\",\"line\":21}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 2,
+      "case": "pw-session-provenance",
+      "framework": "playwright",
+      "split": "public-frozen-regression",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 39694,
+      "workspace_sha256_before": "58dde980dc0859a9c02b01f5a994bc6413f2dfa72ac74784a3906ac552a76dc2",
+      "workspace_sha256_after": "58dde980dc0859a9c02b01f5a994bc6413f2dfa72ac74784a3906ac552a76dc2",
+      "findings": [
+        {
+          "pattern_id": "#21",
+          "severity": "P2",
+          "file": "playwright.config.ts",
+          "line": 21
+        },
+        {
+          "pattern_id": "#11",
+          "severity": "P2",
+          "file": "pages/session-page.ts",
+          "line": 13
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "PW-SESSION-001",
+          "PW-SESSION-002"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#21\",\"severity\":\"P2\",\"file\":\"playwright.config.ts\",\"line\":21},{\"pattern_id\":\"#11\",\"severity\":\"P2\",\"file\":\"pages/session-page.ts\",\"line\":13}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 3,
+      "case": "playwright-split-context",
+      "framework": "playwright",
+      "split": "public-development-holdout",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 156796,
+      "workspace_sha256_before": "731f4848459d015bdb8acf4fa65389729f1cb01800ceb2552af34a2d93d894fc",
+      "workspace_sha256_after": "731f4848459d015bdb8acf4fa65389729f1cb01800ceb2552af34a2d93d894fc",
+      "findings": [
+        {
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "tests/profile.spec.ts",
+          "line": 10
+        },
+        {
+          "pattern_id": "#4f",
+          "severity": "P0",
+          "file": "tests/profile.spec.ts",
+          "line": 18
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "PW-SPLIT-001",
+          "PW-SPLIT-002"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#5a\",\"severity\":\"P0\",\"file\":\"tests/profile.spec.ts\",\"line\":10},{\"pattern_id\":\"#4f\",\"severity\":\"P0\",\"file\":\"tests/profile.spec.ts\",\"line\":18}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 4,
+      "case": "cy-write-and-render-contract",
+      "framework": "cypress",
+      "split": "public-frozen-regression",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 65968,
+      "workspace_sha256_before": "357ab507086d40ad70fc2eb2f2613f926ef383b59e3f1bfa105ed3b77090096a",
+      "workspace_sha256_after": "357ab507086d40ad70fc2eb2f2613f926ef383b59e3f1bfa105ed3b77090096a",
+      "findings": [
+        {
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/signup.cy.ts",
+          "line": 2
+        },
+        {
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "cypress/e2e/signup.cy.ts",
+          "line": 6
+        },
+        {
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "cypress/e2e/likes.cy.ts",
+          "line": 4
+        },
+        {
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "cypress/fixtures/liked.json",
+          "line": 4
+        }
+      ],
+      "score": {
+        "tp": 3,
+        "fp": 1,
+        "fn": 0,
+        "matched_finding_ids": [
+          "CY-WRITE-001",
+          "CY-WRITE-002",
+          "CY-WRITE-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#1\",\"severity\":\"P0\",\"file\":\"cypress/e2e/signup.cy.ts\",\"line\":2},{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"cypress/e2e/signup.cy.ts\",\"line\":6},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/likes.cy.ts\",\"line\":4},{\"pattern_id\":\"#23\",\"severity\":\"P2\",\"file\":\"cypress/fixtures/liked.json\",\"line\":4}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 5,
+      "case": "cy-runtime-control",
+      "framework": "cypress",
+      "split": "public-frozen-regression",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 53764,
+      "workspace_sha256_before": "16f5d6022d94f139c2e9582ad3c2a20506a62e18ecef6f1660cf5595347e69e4",
+      "workspace_sha256_after": "16f5d6022d94f139c2e9582ad3c2a20506a62e18ecef6f1660cf5595347e69e4",
+      "findings": [
+        {
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/blanket-errors.ts",
+          "line": 1
+        },
+        {
+          "pattern_id": "#7",
+          "severity": "P0",
+          "file": "cypress/e2e/runtime.cy.ts",
+          "line": 9
+        },
+        {
+          "pattern_id": "#9b",
+          "severity": "P1",
+          "file": "cypress/e2e/runtime.cy.ts",
+          "line": 11
+        },
+        {
+          "pattern_id": "#10d",
+          "severity": "P1",
+          "file": "cypress/e2e/runtime.cy.ts",
+          "line": 21
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "CY-RUNTIME-001",
+          "CY-RUNTIME-002",
+          "CY-RUNTIME-003",
+          "CY-RUNTIME-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/blanket-errors.ts\",\"line\":1},{\"pattern_id\":\"#7\",\"severity\":\"P0\",\"file\":\"cypress/e2e/runtime.cy.ts\",\"line\":9},{\"pattern_id\":\"#9b\",\"severity\":\"P1\",\"file\":\"cypress/e2e/runtime.cy.ts\",\"line\":11},{\"pattern_id\":\"#10d\",\"severity\":\"P1\",\"file\":\"cypress/e2e/runtime.cy.ts\",\"line\":21}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 6,
+      "case": "cy-command-semantics",
+      "framework": "cypress",
+      "split": "public-frozen-regression",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 60157,
+      "workspace_sha256_before": "9f33a12ed714b29d0d2f86ba32e27eb78b870db4cae0fbdc0311c5282aa5dba3",
+      "workspace_sha256_after": "9f33a12ed714b29d0d2f86ba32e27eb78b870db4cae0fbdc0311c5282aa5dba3",
+      "findings": [
+        {
+          "pattern_id": "#10e",
+          "severity": "P1",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 3
+        },
+        {
+          "pattern_id": "#10f",
+          "severity": "P1",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 8
+        },
+        {
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 12
+        },
+        {
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 16
+        },
+        {
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 30
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 1,
+        "fn": 0,
+        "matched_finding_ids": [
+          "CY-COMMAND-001",
+          "CY-COMMAND-002",
+          "CY-COMMAND-003",
+          "CY-COMMAND-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#10e\",\"severity\":\"P1\",\"file\":\"cypress/e2e/rows.cy.ts\",\"line\":3},{\"pattern_id\":\"#10f\",\"severity\":\"P1\",\"file\":\"cypress/e2e/rows.cy.ts\",\"line\":8},{\"pattern_id\":\"#2\",\"severity\":\"P0\",\"file\":\"cypress/e2e/rows.cy.ts\",\"line\":12},{\"pattern_id\":\"#4i\",\"severity\":\"P1\",\"file\":\"cypress/e2e/rows.cy.ts\",\"line\":16},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/rows.cy.ts\",\"line\":30}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 7,
+      "case": "cy-command-semantics",
+      "framework": "cypress",
+      "split": "public-frozen-regression",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 74992,
+      "workspace_sha256_before": "9f33a12ed714b29d0d2f86ba32e27eb78b870db4cae0fbdc0311c5282aa5dba3",
+      "workspace_sha256_after": "9f33a12ed714b29d0d2f86ba32e27eb78b870db4cae0fbdc0311c5282aa5dba3",
+      "findings": [
+        {
+          "pattern_id": "#10e",
+          "severity": "P1",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 3
+        },
+        {
+          "pattern_id": "#10f",
+          "severity": "P1",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 8
+        },
+        {
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 12
+        },
+        {
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 16
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "CY-COMMAND-001",
+          "CY-COMMAND-002",
+          "CY-COMMAND-003",
+          "CY-COMMAND-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#10e\",\"severity\":\"P1\",\"file\":\"cypress/e2e/rows.cy.ts\",\"line\":3},{\"pattern_id\":\"#10f\",\"severity\":\"P1\",\"file\":\"cypress/e2e/rows.cy.ts\",\"line\":8},{\"pattern_id\":\"#2\",\"severity\":\"P0\",\"file\":\"cypress/e2e/rows.cy.ts\",\"line\":12},{\"pattern_id\":\"#4i\",\"severity\":\"P1\",\"file\":\"cypress/e2e/rows.cy.ts\",\"line\":16}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 8,
+      "case": "playwright-split-context",
+      "framework": "playwright",
+      "split": "public-development-holdout",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 73255,
+      "workspace_sha256_before": "731f4848459d015bdb8acf4fa65389729f1cb01800ceb2552af34a2d93d894fc",
+      "workspace_sha256_after": "731f4848459d015bdb8acf4fa65389729f1cb01800ceb2552af34a2d93d894fc",
+      "findings": [
+        {
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "tests/profile.spec.ts",
+          "line": 10
+        },
+        {
+          "pattern_id": "#4f",
+          "severity": "P0",
+          "file": "tests/profile.spec.ts",
+          "line": 18
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "PW-SPLIT-001",
+          "PW-SPLIT-002"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#5a\",\"severity\":\"P0\",\"file\":\"tests/profile.spec.ts\",\"line\":10},{\"pattern_id\":\"#4f\",\"severity\":\"P0\",\"file\":\"tests/profile.spec.ts\",\"line\":18}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 9,
+      "case": "cy-write-and-render-contract",
+      "framework": "cypress",
+      "split": "public-frozen-regression",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 70955,
+      "workspace_sha256_before": "357ab507086d40ad70fc2eb2f2613f926ef383b59e3f1bfa105ed3b77090096a",
+      "workspace_sha256_after": "357ab507086d40ad70fc2eb2f2613f926ef383b59e3f1bfa105ed3b77090096a",
+      "findings": [
+        {
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "cypress/e2e/signup.cy.ts",
+          "line": 6
+        },
+        {
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "cypress/e2e/likes.cy.ts",
+          "line": 4
+        },
+        {
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "cypress/fixtures/liked.json",
+          "line": 4
+        }
+      ],
+      "score": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "CY-WRITE-001",
+          "CY-WRITE-002",
+          "CY-WRITE-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"cypress/e2e/signup.cy.ts\",\"line\":6},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/likes.cy.ts\",\"line\":4},{\"pattern_id\":\"#23\",\"severity\":\"P2\",\"file\":\"cypress/fixtures/liked.json\",\"line\":4}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 10,
+      "case": "cy-runtime-control",
+      "framework": "cypress",
+      "split": "public-frozen-regression",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 49701,
+      "workspace_sha256_before": "16f5d6022d94f139c2e9582ad3c2a20506a62e18ecef6f1660cf5595347e69e4",
+      "workspace_sha256_after": "16f5d6022d94f139c2e9582ad3c2a20506a62e18ecef6f1660cf5595347e69e4",
+      "findings": [
+        {
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/blanket-errors.ts",
+          "line": 1
+        },
+        {
+          "pattern_id": "#7",
+          "severity": "P0",
+          "file": "cypress/e2e/runtime.cy.ts",
+          "line": 9
+        },
+        {
+          "pattern_id": "#9b",
+          "severity": "P1",
+          "file": "cypress/e2e/runtime.cy.ts",
+          "line": 11
+        },
+        {
+          "pattern_id": "#10d",
+          "severity": "P1",
+          "file": "cypress/e2e/runtime.cy.ts",
+          "line": 21
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "CY-RUNTIME-001",
+          "CY-RUNTIME-002",
+          "CY-RUNTIME-003",
+          "CY-RUNTIME-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/blanket-errors.ts\",\"line\":1},{\"pattern_id\":\"#7\",\"severity\":\"P0\",\"file\":\"cypress/e2e/runtime.cy.ts\",\"line\":9},{\"pattern_id\":\"#9b\",\"severity\":\"P1\",\"file\":\"cypress/e2e/runtime.cy.ts\",\"line\":11},{\"pattern_id\":\"#10d\",\"severity\":\"P1\",\"file\":\"cypress/e2e/runtime.cy.ts\",\"line\":21}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 11,
+      "case": "pw-pom-runtime-context",
+      "framework": "playwright",
+      "split": "public-frozen-regression",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 100669,
+      "workspace_sha256_before": "35f9e2c1ddcd8955079573e924ba6807a18f87f6404568725f7b75af6747d2cb",
+      "workspace_sha256_after": "35f9e2c1ddcd8955079573e924ba6807a18f87f6404568725f7b75af6747d2cb",
+      "findings": [
+        {
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "pages/catalog-page.ts",
+          "line": 21
+        },
+        {
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "pages/catalog-page.ts",
+          "line": 26
+        },
+        {
+          "pattern_id": "#17",
+          "severity": "P1",
+          "file": "pages/catalog-page.ts",
+          "line": 13
+        },
+        {
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "support/sequence.ts",
+          "line": 1
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "PW-POM-001",
+          "PW-POM-002",
+          "PW-POM-003",
+          "PW-POM-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"pages/catalog-page.ts\",\"line\":21},{\"pattern_id\":\"#6\",\"severity\":\"P1\",\"file\":\"pages/catalog-page.ts\",\"line\":26},{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"pages/catalog-page.ts\",\"line\":13},{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"support/sequence.ts\",\"line\":1}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 12,
+      "case": "cy-command-semantics",
+      "framework": "cypress",
+      "split": "public-frozen-regression",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 42085,
+      "workspace_sha256_before": "9f33a12ed714b29d0d2f86ba32e27eb78b870db4cae0fbdc0311c5282aa5dba3",
+      "workspace_sha256_after": "9f33a12ed714b29d0d2f86ba32e27eb78b870db4cae0fbdc0311c5282aa5dba3",
+      "findings": [
+        {
+          "pattern_id": "#10e",
+          "severity": "P1",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 3
+        },
+        {
+          "pattern_id": "#10f",
+          "severity": "P1",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 8
+        },
+        {
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 12
+        },
+        {
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 16
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "CY-COMMAND-001",
+          "CY-COMMAND-002",
+          "CY-COMMAND-003",
+          "CY-COMMAND-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#10e\",\"severity\":\"P1\",\"file\":\"cypress/e2e/rows.cy.ts\",\"line\":3},{\"pattern_id\":\"#10f\",\"severity\":\"P1\",\"file\":\"cypress/e2e/rows.cy.ts\",\"line\":8},{\"pattern_id\":\"#2\",\"severity\":\"P0\",\"file\":\"cypress/e2e/rows.cy.ts\",\"line\":12},{\"pattern_id\":\"#4i\",\"severity\":\"P1\",\"file\":\"cypress/e2e/rows.cy.ts\",\"line\":16}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 13,
+      "case": "pw-pom-runtime-context",
+      "framework": "playwright",
+      "split": "public-frozen-regression",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 130923,
+      "workspace_sha256_before": "35f9e2c1ddcd8955079573e924ba6807a18f87f6404568725f7b75af6747d2cb",
+      "workspace_sha256_after": "35f9e2c1ddcd8955079573e924ba6807a18f87f6404568725f7b75af6747d2cb",
+      "findings": [
+        {
+          "pattern_id": "#4a",
+          "severity": "P0",
+          "file": "tests/catalog.spec.ts",
+          "line": 27
+        },
+        {
+          "pattern_id": "#4a",
+          "severity": "P0",
+          "file": "tests/catalog.spec.ts",
+          "line": 42
+        },
+        {
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "pages/catalog-page.ts",
+          "line": 21
+        },
+        {
+          "pattern_id": "#17",
+          "severity": "P1",
+          "file": "pages/catalog-page.ts",
+          "line": 13
+        },
+        {
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "pages/catalog-page.ts",
+          "line": 26
+        },
+        {
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "support/sequence.ts",
+          "line": 1
+        },
+        {
+          "pattern_id": "#11",
+          "severity": "P2",
+          "file": "pages/catalog-page.ts",
+          "line": 16
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 3,
+        "fn": 0,
+        "matched_finding_ids": [
+          "PW-POM-001",
+          "PW-POM-002",
+          "PW-POM-003",
+          "PW-POM-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#4a\",\"severity\":\"P0\",\"file\":\"tests/catalog.spec.ts\",\"line\":27},{\"pattern_id\":\"#4a\",\"severity\":\"P0\",\"file\":\"tests/catalog.spec.ts\",\"line\":42},{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"pages/catalog-page.ts\",\"line\":21},{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"pages/catalog-page.ts\",\"line\":13},{\"pattern_id\":\"#6\",\"severity\":\"P1\",\"file\":\"pages/catalog-page.ts\",\"line\":26},{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"support/sequence.ts\",\"line\":1},{\"pattern_id\":\"#11\",\"severity\":\"P2\",\"file\":\"pages/catalog-page.ts\",\"line\":16}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 14,
+      "case": "cy-write-and-render-contract",
+      "framework": "cypress",
+      "split": "public-frozen-regression",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 61024,
+      "workspace_sha256_before": "357ab507086d40ad70fc2eb2f2613f926ef383b59e3f1bfa105ed3b77090096a",
+      "workspace_sha256_after": "357ab507086d40ad70fc2eb2f2613f926ef383b59e3f1bfa105ed3b77090096a",
+      "findings": [
+        {
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "cypress/e2e/signup.cy.ts",
+          "line": 6
+        },
+        {
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "cypress/e2e/likes.cy.ts",
+          "line": 4
+        },
+        {
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "cypress/fixtures/liked.json",
+          "line": 4
+        }
+      ],
+      "score": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "CY-WRITE-001",
+          "CY-WRITE-002",
+          "CY-WRITE-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"cypress/e2e/signup.cy.ts\",\"line\":6},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/likes.cy.ts\",\"line\":4},{\"pattern_id\":\"#23\",\"severity\":\"P2\",\"file\":\"cypress/fixtures/liked.json\",\"line\":4}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 15,
+      "case": "pw-pom-runtime-context",
+      "framework": "playwright",
+      "split": "public-frozen-regression",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 113773,
+      "workspace_sha256_before": "35f9e2c1ddcd8955079573e924ba6807a18f87f6404568725f7b75af6747d2cb",
+      "workspace_sha256_after": "35f9e2c1ddcd8955079573e924ba6807a18f87f6404568725f7b75af6747d2cb",
+      "findings": [
+        {
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/catalog.spec.ts",
+          "line": 38
+        },
+        {
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "pages/catalog-page.ts",
+          "line": 21
+        },
+        {
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "pages/catalog-page.ts",
+          "line": 26
+        },
+        {
+          "pattern_id": "#17",
+          "severity": "P1",
+          "file": "pages/catalog-page.ts",
+          "line": 13
+        },
+        {
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "support/sequence.ts",
+          "line": 1
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 1,
+        "fn": 0,
+        "matched_finding_ids": [
+          "PW-POM-001",
+          "PW-POM-002",
+          "PW-POM-003",
+          "PW-POM-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#2\",\"severity\":\"P0\",\"file\":\"tests/catalog.spec.ts\",\"line\":38},{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"pages/catalog-page.ts\",\"line\":21},{\"pattern_id\":\"#6\",\"severity\":\"P1\",\"file\":\"pages/catalog-page.ts\",\"line\":26},{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"pages/catalog-page.ts\",\"line\":13},{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"support/sequence.ts\",\"line\":1}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 16,
+      "case": "cypress-split-context",
+      "framework": "cypress",
+      "split": "public-development-holdout",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 33378,
+      "workspace_sha256_before": "59bdab9cb7080b05267c8f6227bd70bb42bdfe91ac3f961d02f33221f8c37b8e",
+      "workspace_sha256_after": "59bdab9cb7080b05267c8f6227bd70bb42bdfe91ac3f961d02f33221f8c37b8e",
+      "findings": [
+        {
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/e2e.ts",
+          "line": 1
+        },
+        {
+          "pattern_id": "#7",
+          "severity": "P0",
+          "file": "cypress/e2e/preferences.cy.ts",
+          "line": 2
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "CY-SPLIT-001",
+          "CY-SPLIT-002"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/e2e.ts\",\"line\":1},{\"pattern_id\":\"#7\",\"severity\":\"P0\",\"file\":\"cypress/e2e/preferences.cy.ts\",\"line\":2}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 17,
+      "case": "pw-contract-boundaries",
+      "framework": "playwright",
+      "split": "public-frozen-regression",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 95591,
+      "workspace_sha256_before": "791a087b5a12c22aac76d513f17ef9b1226af31192a39f1f964002b4c5ab1a6a",
+      "workspace_sha256_after": "791a087b5a12c22aac76d513f17ef9b1226af31192a39f1f964002b4c5ab1a6a",
+      "findings": [
+        {
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 9
+        },
+        {
+          "pattern_id": "#16",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 21
+        },
+        {
+          "pattern_id": "#15",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 22
+        },
+        {
+          "pattern_id": "#4f",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 23
+        },
+        {
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 35
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 1,
+        "fn": 0,
+        "matched_finding_ids": [
+          "PW-CONTRACT-001",
+          "PW-CONTRACT-002",
+          "PW-CONTRACT-003",
+          "PW-CONTRACT-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#5a\",\"severity\":\"P0\",\"file\":\"tests/account.spec.ts\",\"line\":9},{\"pattern_id\":\"#16\",\"severity\":\"P0\",\"file\":\"tests/account.spec.ts\",\"line\":21},{\"pattern_id\":\"#15\",\"severity\":\"P0\",\"file\":\"tests/account.spec.ts\",\"line\":22},{\"pattern_id\":\"#4f\",\"severity\":\"P0\",\"file\":\"tests/account.spec.ts\",\"line\":23},{\"pattern_id\":\"#1\",\"severity\":\"P0\",\"file\":\"tests/account.spec.ts\",\"line\":35}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 18,
+      "case": "pw-session-provenance",
+      "framework": "playwright",
+      "split": "public-frozen-regression",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 115044,
+      "workspace_sha256_before": "58dde980dc0859a9c02b01f5a994bc6413f2dfa72ac74784a3906ac552a76dc2",
+      "workspace_sha256_after": "58dde980dc0859a9c02b01f5a994bc6413f2dfa72ac74784a3906ac552a76dc2",
+      "findings": [
+        {
+          "pattern_id": "#21",
+          "severity": "P2",
+          "file": "playwright.config.ts",
+          "line": 21
+        },
+        {
+          "pattern_id": "#11",
+          "severity": "P2",
+          "file": "pages/session-page.ts",
+          "line": 13
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "PW-SESSION-001",
+          "PW-SESSION-002"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#21\",\"severity\":\"P2\",\"file\":\"playwright.config.ts\",\"line\":21},{\"pattern_id\":\"#11\",\"severity\":\"P2\",\"file\":\"pages/session-page.ts\",\"line\":13}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 19,
+      "case": "pw-contract-boundaries",
+      "framework": "playwright",
+      "split": "public-frozen-regression",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 127576,
+      "workspace_sha256_before": "791a087b5a12c22aac76d513f17ef9b1226af31192a39f1f964002b4c5ab1a6a",
+      "workspace_sha256_after": "791a087b5a12c22aac76d513f17ef9b1226af31192a39f1f964002b4c5ab1a6a",
+      "findings": [
+        {
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 9
+        },
+        {
+          "pattern_id": "#16",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 21
+        },
+        {
+          "pattern_id": "#15",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 22
+        },
+        {
+          "pattern_id": "#4f",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 23
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "PW-CONTRACT-001",
+          "PW-CONTRACT-002",
+          "PW-CONTRACT-003",
+          "PW-CONTRACT-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#5a\",\"severity\":\"P0\",\"file\":\"tests/account.spec.ts\",\"line\":9},{\"pattern_id\":\"#16\",\"severity\":\"P0\",\"file\":\"tests/account.spec.ts\",\"line\":21},{\"pattern_id\":\"#15\",\"severity\":\"P0\",\"file\":\"tests/account.spec.ts\",\"line\":22},{\"pattern_id\":\"#4f\",\"severity\":\"P0\",\"file\":\"tests/account.spec.ts\",\"line\":23}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 20,
+      "case": "pw-session-provenance",
+      "framework": "playwright",
+      "split": "public-frozen-regression",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 67110,
+      "workspace_sha256_before": "58dde980dc0859a9c02b01f5a994bc6413f2dfa72ac74784a3906ac552a76dc2",
+      "workspace_sha256_after": "58dde980dc0859a9c02b01f5a994bc6413f2dfa72ac74784a3906ac552a76dc2",
+      "findings": [
+        {
+          "pattern_id": "#21",
+          "severity": "P2",
+          "file": "playwright.config.ts",
+          "line": 21
+        },
+        {
+          "pattern_id": "#11",
+          "severity": "P2",
+          "file": "pages/session-page.ts",
+          "line": 13
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "PW-SESSION-001",
+          "PW-SESSION-002"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#21\",\"severity\":\"P2\",\"file\":\"playwright.config.ts\",\"line\":21},{\"pattern_id\":\"#11\",\"severity\":\"P2\",\"file\":\"pages/session-page.ts\",\"line\":13}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 21,
+      "case": "cypress-split-context",
+      "framework": "cypress",
+      "split": "public-development-holdout",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 43190,
+      "workspace_sha256_before": "59bdab9cb7080b05267c8f6227bd70bb42bdfe91ac3f961d02f33221f8c37b8e",
+      "workspace_sha256_after": "59bdab9cb7080b05267c8f6227bd70bb42bdfe91ac3f961d02f33221f8c37b8e",
+      "findings": [
+        {
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/e2e.ts",
+          "line": 1
+        },
+        {
+          "pattern_id": "#7",
+          "severity": "P0",
+          "file": "cypress/e2e/preferences.cy.ts",
+          "line": 2
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "CY-SPLIT-001",
+          "CY-SPLIT-002"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/e2e.ts\",\"line\":1},{\"pattern_id\":\"#7\",\"severity\":\"P0\",\"file\":\"cypress/e2e/preferences.cy.ts\",\"line\":2}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 22,
+      "case": "playwright-split-context",
+      "framework": "playwright",
+      "split": "public-development-holdout",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 124561,
+      "workspace_sha256_before": "731f4848459d015bdb8acf4fa65389729f1cb01800ceb2552af34a2d93d894fc",
+      "workspace_sha256_after": "731f4848459d015bdb8acf4fa65389729f1cb01800ceb2552af34a2d93d894fc",
+      "findings": [
+        {
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "tests/profile.spec.ts",
+          "line": 10
+        },
+        {
+          "pattern_id": "#4f",
+          "severity": "P0",
+          "file": "tests/profile.spec.ts",
+          "line": 18
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "PW-SPLIT-001",
+          "PW-SPLIT-002"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#5a\",\"severity\":\"P0\",\"file\":\"tests/profile.spec.ts\",\"line\":10},{\"pattern_id\":\"#4f\",\"severity\":\"P0\",\"file\":\"tests/profile.spec.ts\",\"line\":18}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 23,
+      "case": "pw-contract-boundaries",
+      "framework": "playwright",
+      "split": "public-frozen-regression",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 83707,
+      "workspace_sha256_before": "791a087b5a12c22aac76d513f17ef9b1226af31192a39f1f964002b4c5ab1a6a",
+      "workspace_sha256_after": "791a087b5a12c22aac76d513f17ef9b1226af31192a39f1f964002b4c5ab1a6a",
+      "findings": [
+        {
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 9
+        },
+        {
+          "pattern_id": "#16",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 21
+        },
+        {
+          "pattern_id": "#15",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 22
+        },
+        {
+          "pattern_id": "#4f",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 23
+        },
+        {
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 30
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 1,
+        "fn": 0,
+        "matched_finding_ids": [
+          "PW-CONTRACT-001",
+          "PW-CONTRACT-002",
+          "PW-CONTRACT-003",
+          "PW-CONTRACT-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#5a\",\"severity\":\"P0\",\"file\":\"tests/account.spec.ts\",\"line\":9},{\"pattern_id\":\"#16\",\"severity\":\"P0\",\"file\":\"tests/account.spec.ts\",\"line\":21},{\"pattern_id\":\"#15\",\"severity\":\"P0\",\"file\":\"tests/account.spec.ts\",\"line\":22},{\"pattern_id\":\"#4f\",\"severity\":\"P0\",\"file\":\"tests/account.spec.ts\",\"line\":23},{\"pattern_id\":\"#1\",\"severity\":\"P0\",\"file\":\"tests/account.spec.ts\",\"line\":30}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 24,
+      "case": "cypress-split-context",
+      "framework": "cypress",
+      "split": "public-development-holdout",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 29205,
+      "workspace_sha256_before": "59bdab9cb7080b05267c8f6227bd70bb42bdfe91ac3f961d02f33221f8c37b8e",
+      "workspace_sha256_after": "59bdab9cb7080b05267c8f6227bd70bb42bdfe91ac3f961d02f33221f8c37b8e",
+      "findings": [
+        {
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/e2e.ts",
+          "line": 1
+        },
+        {
+          "pattern_id": "#7",
+          "severity": "P0",
+          "file": "cypress/e2e/preferences.cy.ts",
+          "line": 2
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "CY-SPLIT-001",
+          "CY-SPLIT-002"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/e2e.ts\",\"line\":1},{\"pattern_id\":\"#7\",\"severity\":\"P0\",\"file\":\"cypress/e2e/preferences.cy.ts\",\"line\":2}]}\n",
+      "error": null
+    }
+  ]
+}

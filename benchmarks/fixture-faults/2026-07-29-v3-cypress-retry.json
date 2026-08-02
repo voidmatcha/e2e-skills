@@ -1,0 +1,284 @@
+{
+  "schema_version": 2,
+  "mode": "run",
+  "complete": true,
+  "contracts_valid": true,
+  "runtime_complete": true,
+  "frameworks": [
+    "cypress"
+  ],
+  "provenance": {
+    "fixture_tree_sha256": "ca26d53c9a5253fc25637657eae305d910ffaf70fd903bda81b67a15a4932459",
+    "operators_sha256": "cad9ca054f6e3d527403a5862b622527bc6e23b70a0535a6ca2844f080b71862",
+    "package_lock_sha256": "6195ecb1ddb09930325a82192fe059d732ecba09f57cdf3bbf77fd8de41aa872",
+    "python": "3.14.6",
+    "node": "v26.5.0",
+    "playwright": "Version 1.62.0",
+    "cypress": "Cypress package version: 15.19.0\nCypress binary version: 15.19.0\nElectron version: 37.6.0\nBundled Node version: 22.19.0",
+    "platform": "macOS-15.3.1-arm64-arm-64bit-Mach-O",
+    "machine": "arm64"
+  },
+  "summary": {
+    "operators": 3,
+    "unique_pattern_ids": 3,
+    "expected_matrix_cases": 9,
+    "matrix_cases": 9,
+    "matched": 9,
+    "errors": 0
+  },
+  "results": [
+    {
+      "operator": "cypress-missing-then",
+      "pattern_id": "#2",
+      "framework": "cypress",
+      "case": "clean-strong",
+      "fault_mode": "none",
+      "mutation_applied": false,
+      "mutation_sha256": null,
+      "expected": "pass",
+      "actual": "pass",
+      "matched": true,
+      "exit_code": 0,
+      "evidence": [
+        "1 passing"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$FIXTURE_COPY/cypress",
+        "--spec",
+        "$FIXTURE_COPY/cypress/cypress/e2e/missing-then.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "output_sha256": "40b4a876805dbf3c75d85170fe855007466ab622f277d4ccf05161978d6d44af",
+      "duration_ms": 4068
+    },
+    {
+      "operator": "cypress-missing-then",
+      "pattern_id": "#2",
+      "framework": "cypress",
+      "case": "fault-strong",
+      "fault_mode": "behavior",
+      "mutation_applied": false,
+      "mutation_sha256": null,
+      "expected": "fail",
+      "actual": "fail",
+      "matched": true,
+      "exit_code": 1,
+      "evidence": [
+        "Count: 1"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$FIXTURE_COPY/cypress",
+        "--spec",
+        "$FIXTURE_COPY/cypress/cypress/e2e/missing-then.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "output_sha256": "6cb3d8ddfef3c8c9c9c77812cb1a0229011bc1decabb246e95ba74e4466eaba5",
+      "duration_ms": 6599
+    },
+    {
+      "operator": "cypress-missing-then",
+      "pattern_id": "#2",
+      "framework": "cypress",
+      "case": "fault-mutant",
+      "fault_mode": "behavior",
+      "mutation_applied": true,
+      "mutation_sha256": "862d3e58821705828f6c9a0ec1b5ebecbf92afa73a01bc9adb89621fa8957778",
+      "expected": "pass",
+      "actual": "pass",
+      "matched": true,
+      "exit_code": 0,
+      "evidence": [
+        "1 passing"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$FIXTURE_COPY/cypress",
+        "--spec",
+        "$FIXTURE_COPY/cypress/cypress/e2e/missing-then.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "output_sha256": "1a58d5a14f9d488872e83431eba3b320e3fb33e874f313b22d90e88dae9511c3",
+      "duration_ms": 2946
+    },
+    {
+      "operator": "cypress-uncaught-exception",
+      "pattern_id": "#3b",
+      "framework": "cypress",
+      "case": "clean-strong",
+      "fault_mode": "none",
+      "mutation_applied": false,
+      "mutation_sha256": null,
+      "expected": "pass",
+      "actual": "pass",
+      "matched": true,
+      "exit_code": 0,
+      "evidence": [
+        "1 passing"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$FIXTURE_COPY/cypress",
+        "--spec",
+        "$FIXTURE_COPY/cypress/cypress/e2e/uncaught-exception.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "output_sha256": "e1160c3ba7eb27f218a0291faf0644d0f3d81a4880b524029779c3f3c9088218",
+      "duration_ms": 2909
+    },
+    {
+      "operator": "cypress-uncaught-exception",
+      "pattern_id": "#3b",
+      "framework": "cypress",
+      "case": "fault-strong",
+      "fault_mode": "uncaught",
+      "mutation_applied": false,
+      "mutation_sha256": null,
+      "expected": "fail",
+      "actual": "fail",
+      "matched": true,
+      "exit_code": 1,
+      "evidence": [
+        "fixture-uncaught-exception"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$FIXTURE_COPY/cypress",
+        "--spec",
+        "$FIXTURE_COPY/cypress/cypress/e2e/uncaught-exception.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "output_sha256": "02305a473c21574186f1ddd0126cfefeb592a9aec8351210e8cf48de795bd7e4",
+      "duration_ms": 3006
+    },
+    {
+      "operator": "cypress-uncaught-exception",
+      "pattern_id": "#3b",
+      "framework": "cypress",
+      "case": "fault-mutant",
+      "fault_mode": "uncaught",
+      "mutation_applied": true,
+      "mutation_sha256": "8aba46a8de408165a8a7d4c97ca49de16f954ed417109ae6ddfb5db99cb3fa99",
+      "expected": "pass",
+      "actual": "pass",
+      "matched": true,
+      "exit_code": 0,
+      "evidence": [
+        "1 passing"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$FIXTURE_COPY/cypress",
+        "--spec",
+        "$FIXTURE_COPY/cypress/cypress/e2e/uncaught-exception.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "output_sha256": "9d093b1c6bceb40261681a3b3f1362462a931d5137b5d6aa143544ed6e5ef695",
+      "duration_ms": 3027
+    },
+    {
+      "operator": "cypress-focused-test-leak",
+      "pattern_id": "#7",
+      "framework": "cypress",
+      "case": "clean-strong",
+      "fault_mode": "none",
+      "mutation_applied": false,
+      "mutation_sha256": null,
+      "expected": "pass",
+      "actual": "pass",
+      "matched": true,
+      "exit_code": 0,
+      "evidence": [
+        "2 passing"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$FIXTURE_COPY/cypress",
+        "--spec",
+        "$FIXTURE_COPY/cypress/cypress/e2e/focused-leak.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "output_sha256": "0496265d4eeb145a7295014f29a033cfcf4ce3252c1a160592a47dbcf6056722",
+      "duration_ms": 3263
+    },
+    {
+      "operator": "cypress-focused-test-leak",
+      "pattern_id": "#7",
+      "framework": "cypress",
+      "case": "fault-strong",
+      "fault_mode": "behavior",
+      "mutation_applied": false,
+      "mutation_sha256": null,
+      "expected": "fail",
+      "actual": "fail",
+      "matched": true,
+      "exit_code": 1,
+      "evidence": [
+        "Count: 1"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$FIXTURE_COPY/cypress",
+        "--spec",
+        "$FIXTURE_COPY/cypress/cypress/e2e/focused-leak.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "output_sha256": "ebc6fd007e825f77cf6b2d69beca61064994aab751cc0513860525987d243136",
+      "duration_ms": 6748
+    },
+    {
+      "operator": "cypress-focused-test-leak",
+      "pattern_id": "#7",
+      "framework": "cypress",
+      "case": "fault-mutant",
+      "fault_mode": "behavior",
+      "mutation_applied": true,
+      "mutation_sha256": "edb602fb958df7345776197bbb164b62aff04686015438c3e930a51ca7972e3a",
+      "expected": "pass",
+      "actual": "pass",
+      "matched": true,
+      "exit_code": 0,
+      "evidence": [
+        "1 passing"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$FIXTURE_COPY/cypress",
+        "--spec",
+        "$FIXTURE_COPY/cypress/cypress/e2e/focused-leak.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "output_sha256": "7cdb942ec9addb09ed002e314c74699b046f15abc6e110608a45153c1a16115e",
+      "duration_ms": 3264
+    }
+  ],
+  "errors": []
+}

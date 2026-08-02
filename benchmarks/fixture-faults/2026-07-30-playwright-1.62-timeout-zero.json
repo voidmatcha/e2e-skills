@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "report_kind": "playwright-timeout-zero-semantic-probe",
+  "pattern_id": "#4g",
+  "mode": "run",
+  "complete": true,
+  "contracts_valid": true,
+  "runtime_complete": true,
+  "output_limit_bytes": 16384,
+  "process_output_limit_bytes": 524288,
+  "subprocess_timeout_seconds": 15,
+  "provenance": {
+    "probe_source_sha256": "fa6de6ac01a1e8f360630d89db04fecaf86d7622749bbbb7a4eaecb5784a8503",
+    "evaluator_runner_sha256": "8a310be8cf65078c15938c47a8aaed2620c5e5c9986d190248ba9f231e92010d",
+    "capture_helper_sha256": "fc90f95c0e572e7e0256746ae0911bd64f1d56cb124134c7530642da8377ed49",
+    "package_lock_sha256": "6195ecb1ddb09930325a82192fe059d732ecba09f57cdf3bbf77fd8de41aa872",
+    "playwright_version_record_sha256": "8a35aa418bc2865954e2dd906b933b8d504ac5df6568be9d987b5e76362e2a59",
+    "versions_sha256": "ff80c47d19f6e9e013ff0ee50f90d14a6f6ed0b007babd5d2ffe7a72c8f7a761",
+    "case_contract_sha256": "5740112ed7e5b13990d5dc603e1f7fe41c158720610906c66b1aa667ffc04a0c",
+    "generated_config_sha256": "7cf27f5d2cd20dc7fcaca83604b5792c8c934d3d0b2aae1ec17884cdcf6a8856",
+    "selected_executable_sha256": "79e23e6a249176295b8490567daa7717448a75866d6ea6f6b296ff3d23305c69",
+    "selected_package_json_sha256": "351697e1ef6a68a63557ffedf1992955a2d8979b11e0bf9f175820956951c65b",
+    "selected_package_lock_sha256": "6195ecb1ddb09930325a82192fe059d732ecba09f57cdf3bbf77fd8de41aa872",
+    "selected_version_record_sha256": "8a35aa418bc2865954e2dd906b933b8d504ac5df6568be9d987b5e76362e2a59"
+  },
+  "versions": {
+    "python": "3.14.6",
+    "node": "v24.18.0",
+    "playwright_cli": "Version 1.62.0",
+    "playwright_package": "1.62.0",
+    "platform": "macOS-15.3.1-arm64-arm-64bit-Mach-O",
+    "machine": "arm64"
+  },
+  "summary": {
+    "expected_cases": 3,
+    "cases": 3,
+    "matched": 3,
+    "expected_exit_codes": [
+      1,
+      0,
+      1
+    ],
+    "actual_exit_codes": [
+      1,
+      0,
+      1
+    ],
+    "total_duration_ms": 8156,
+    "errors": 0
+  },
+  "results": [
+    {
+      "case": "finite-short-before-change",
+      "title": "#4g finite short timeout fails before delayed DOM change",
+      "expected_exit_code": 1,
+      "exit_code": 1,
+      "required_markers": [
+        "PROBE_FINITE_SHORT_STARTED",
+        "Timeout:  100ms",
+        "1 failed"
+      ],
+      "forbidden_markers": [
+        "PROBE_DOM_CHANGE_APPLIED",
+        "Test timeout of"
+      ],
+      "missing_markers": [],
+      "present_forbidden_markers": [],
+      "infrastructure_timeout": false,
+      "infrastructure_output_overflow": false,
+      "matched": true,
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/playwright",
+        "test",
+        "timeout-zero-retry.spec.mjs",
+        "--config",
+        "$PROBE_WORKSPACE/playwright.config.mjs",
+        "--grep",
+        "#4g finite short timeout fails before delayed DOM change"
+      ],
+      "duration_ms": 3066,
+      "output": "\nRunning 1 test using 1 worker\n\n(node:59116) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n\n[1/1] timeout-zero-retry.spec.mjs:20:1 \u203a #4g finite short timeout fails before delayed DOM change\ntimeout-zero-retry.spec.mjs:20:1 \u203a #4g finite short timeout fails before delayed DOM change\nPROBE_FINITE_SHORT_STARTED\n\n  1) timeout-zero-retry.spec.mjs:20:1 \u203a #4g finite short timeout fails before delayed DOM change \u2500\u2500\u2500\n\n    Error: expect(locator).toHaveText(expected) failed\n\n    Locator:  locator('#status')\n    Expected: \"ready\"\n    Received: \"waiting\"\n    Timeout:  100ms\n\n    Call log:\n      - Expect \"toHaveText\" with timeout 100ms\n      - waiting for locator('#status')\n        4 \u00d7 locator resolved to <p id=\"status\">waiting</p>\n          - unexpected value \"waiting\"\n\n\n      25 |   console.log(\"PROBE_FINITE_SHORT_STARTED\");\n      26 |\n    > 27 |   await expect(page.locator(\"#status\")).toHaveText(\"ready\", { timeout: 100 });\n         |                                         ^\n      28 | });\n      29 |\n      30 | test(\"#4g timeout zero retries until delayed DOM change\", async ({ page }) => {\n        at $PROBE_WORKSPACE/timeout-zero-retry.spec.mjs:27:41\n\n    Error Context: test-results/timeout-zero-retry--4g-fin-25a88-s-before-delayed-DOM-change/error-context.md\n\n\n  1 failed\n    timeout-zero-retry.spec.mjs:20:1 \u203a #4g finite short timeout fails before delayed DOM change \u2500\u2500\u2500\u2500\n",
+      "output_sha256": "3bfe849db68c45662137f55b4f5dad3d6a0f8a4473f58ed71d84bfab137be3a7",
+      "output_original_bytes": 1511,
+      "output_truncated": false
+    },
+    {
+      "case": "timeout-zero-retries",
+      "title": "#4g timeout zero retries until delayed DOM change",
+      "expected_exit_code": 0,
+      "exit_code": 0,
+      "required_markers": [
+        "PROBE_TIMEOUT_ZERO_STARTED",
+        "PROBE_DOM_CHANGE_APPLIED",
+        "PROBE_TIMEOUT_ZERO_PASSED elapsed_ms=",
+        "1 passed"
+      ],
+      "forbidden_markers": [
+        "Test timeout of",
+        "1 failed"
+      ],
+      "missing_markers": [],
+      "present_forbidden_markers": [],
+      "infrastructure_timeout": false,
+      "infrastructure_output_overflow": false,
+      "matched": true,
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/playwright",
+        "test",
+        "timeout-zero-retry.spec.mjs",
+        "--config",
+        "$PROBE_WORKSPACE/playwright.config.mjs",
+        "--grep",
+        "#4g timeout zero retries until delayed DOM change"
+      ],
+      "duration_ms": 2424,
+      "output": "\nRunning 1 test using 1 worker\n\n(node:61352) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n\n[1/1] timeout-zero-retry.spec.mjs:30:1 \u203a #4g timeout zero retries until delayed DOM change\ntimeout-zero-retry.spec.mjs:30:1 \u203a #4g timeout zero retries until delayed DOM change\nPROBE_TIMEOUT_ZERO_STARTED\n\nPROBE_DOM_CHANGE_APPLIED\n\nPROBE_TIMEOUT_ZERO_PASSED elapsed_ms=973\n\n  1 passed (1.7s)\n",
+      "output_sha256": "4b5873f195edd1892ac45613b0675ee17a39b8249d6a0d43cb472fb9896685f9",
+      "output_original_bytes": 492,
+      "output_truncated": false
+    },
+    {
+      "case": "timeout-zero-test-timeout-control",
+      "title": "#4g timeout zero missing target is bounded by test timeout",
+      "expected_exit_code": 1,
+      "exit_code": 1,
+      "required_markers": [
+        "PROBE_TIMEOUT_ZERO_CONTROL_STARTED",
+        "Test timeout of 1200ms exceeded.",
+        "toHaveText(\"never\", { timeout: 0 });",
+        "1 failed"
+      ],
+      "forbidden_markers": [
+        "PROBE_DOM_CHANGE_APPLIED",
+        "PROBE_RUNNER_INFRASTRUCTURE_TIMEOUT"
+      ],
+      "missing_markers": [],
+      "present_forbidden_markers": [],
+      "infrastructure_timeout": false,
+      "infrastructure_output_overflow": false,
+      "matched": true,
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/playwright",
+        "test",
+        "timeout-zero-retry.spec.mjs",
+        "--config",
+        "$PROBE_WORKSPACE/playwright.config.mjs",
+        "--grep",
+        "#4g timeout zero missing target is bounded by test timeout"
+      ],
+      "duration_ms": 2666,
+      "output": "\nRunning 1 test using 1 worker\n\n(node:61892) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n\n[1/1] timeout-zero-retry.spec.mjs:44:1 \u203a #4g timeout zero missing target is bounded by test timeout\ntimeout-zero-retry.spec.mjs:44:1 \u203a #4g timeout zero missing target is bounded by test timeout\nPROBE_TIMEOUT_ZERO_CONTROL_STARTED\n\n  1) timeout-zero-retry.spec.mjs:44:1 \u203a #4g timeout zero missing target is bounded by test timeout \u2500\n\n    Test timeout of 1200ms exceeded.\n\n    Error: expect(locator).toHaveText(expected) failed\n\n    Locator:  locator('#status')\n    Expected: \"never\"\n    Received: \"waiting\"\n\n    Call log:\n      - Expect \"toHaveText\"\n      - waiting for locator('#status')\n        6 \u00d7 locator resolved to <p id=\"status\">waiting</p>\n          - unexpected value \"waiting\"\n      - Test timeout of 1200ms exceeded.\n\n\n      49 |   console.log(\"PROBE_TIMEOUT_ZERO_CONTROL_STARTED\");\n      50 |\n    > 51 |   await expect(page.locator(\"#status\")).toHaveText(\"never\", { timeout: 0 });\n         |                                         ^\n      52 | });\n      53 |\n        at $PROBE_WORKSPACE/timeout-zero-retry.spec.mjs:51:41\n\n    Error Context: test-results/timeout-zero-retry--4g-tim-16d90--is-bounded-by-test-timeout/error-context.md\n\n\n  1 failed\n    timeout-zero-retry.spec.mjs:44:1 \u203a #4g timeout zero missing target is bounded by test timeout \u2500\u2500\n",
+      "output_sha256": "bce967c762f55cf4e37895d56b001dfc378c5f1f2fd465a7965bce8c75b67739",
+      "output_original_bytes": 1470,
+      "output_truncated": false
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,34 @@
+{
+  "attestation_id": "independent-product-review-v10-prompt-size-attestation-v1",
+  "measurer_sha256": "05a3dd836d4a3a14707c808c97c0e8d201b607a8fc2b252b8a8d782e7c118e66",
+  "model_catalog_sha256": "d6e6f3274cd54a776f323b4762863940082f0e0c6805bc125760f74b67f563e9",
+  "model_slugs": [
+    "claude-opus-5",
+    "claude-fable-5"
+  ],
+  "prompt_rendering_contract_sha256": "5f0e0af3cb00fdf9df2965d9a2bcba7c7ace137577f73dd7ff5e228d7eebc0c7",
+  "prompt_sha256": "6273d25fad0dd6c7afbfd72b3c77bae3eae40b8df49a4ff9916f5e4d1e9b794c",
+  "prompt_utf8_bytes": 440800,
+  "protocol_sha256": "8f4bb107001a83d4d72dc6a8e9c1d008d847f1065490308fed279cb51f4221be",
+  "provenance": {
+    "asserts_context_window_fit": false,
+    "kind": "local-prompt-size-measurement",
+    "measures_model_tokenization": false,
+    "remote_model_attestation": false,
+    "statement": "Deterministic local measurement of the rendered prompt only: its exact UTF-8 byte size and SHA-256, plus a pinned OpenAI o200k_base BPE count used solely as a replayable size proxy so two machines derive the same number. That count is not the tokenization of claude-opus-5 or claude-fable-5, not the model's input token count, not evidence that the prompt fits any context window, and not remote model attestation."
+  },
+  "reference_tokenizer": {
+    "bpe_source_sha256": "446a9538cb6c348e3516120d7c08b09f57c36495e2acfffe59a5bf8b0cfb1a2d",
+    "encoding": "o200k_base",
+    "encoding_contract_sha256": "170a798bd4d0917feae9c78c8deb17f88e0b8d32676d7fc6f9116d8122928eb9",
+    "measurement_boundary": "o200k_base is OpenAI's BPE. It is pinned here only as a deterministic, replayable size proxy over the rendered prompt bytes so that two machines derive the same number. It is not the tokenizer of claude-opus-5 or claude-fable-5, the count is not the model's input token count, and no context-window fit is claimed. The exactly measured quantities are the UTF-8 byte sizes and their SHA-256 digests.",
+    "measurement_role": "deterministic-prompt-size-proxy-only",
+    "n_vocab": 200019,
+    "name": "o200k_base",
+    "package": "tiktoken",
+    "version": "0.11.0"
+  },
+  "reference_tokenizer_prompt_tokens": 119584,
+  "reference_tokenizer_token_ids_sha256": "da31cd034202fd99c59647037e7b5e8360bac12f43a1bf773ae8691676d19455",
+  "schema_version": 1
+}

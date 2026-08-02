@@ -1,0 +1,1 @@
+{"framework":"playwright","test":"opens account menu","attempts":[{"status":"failed","error":"Error: strict mode violation: getByRole('button', { name: 'Account' }) resolved to 2 elements"}],"dom_excerpt":"<button>Account</button><button>Account</button>"}

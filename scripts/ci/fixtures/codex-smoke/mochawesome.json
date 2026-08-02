@@ -5,6 +5,7 @@
     "passes": 0,
     "pending": 0,
     "failures": 1,
+    "skipped": 0,
     "start": "2026-06-26T10:00:00.000Z",
     "end": "2026-06-26T10:00:12.000Z",
     "duration": 12000
@@ -29,6 +30,8 @@
               "pass": false,
               "fail": true,
               "pending": false,
+              "skipped": false,
+              "uuid": "c17d2e3f-1111-2222-3333-444455556666",
               "code": "cy.visit('/checkout');\ncy.get('[data-testid=\"submit-order\"]').click();",
               "err": {
                 "message": "Timed out retrying after 4000ms: Expected to find element: `[data-testid=\"submit-order\"]`, but never found it.",
@@ -36,12 +39,18 @@
               }
             }
           ],
+          "suites": [],
           "passes": [],
-          "failures": ["Checkout flow submits the order"],
+          "failures": ["c17d2e3f-1111-2222-3333-444455556666"],
           "pending": [],
           "skipped": []
         }
-      ]
+      ],
+      "tests": [],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": []
     }
   ]
 }

@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "predictions": [
+    {
+      "schema_version": 1,
+      "case_id": "pw-counter-transition",
+      "disposition": "generate",
+      "framework": "playwright",
+      "actions": [
+        "navigate-counter",
+        "click-increment"
+      ],
+      "oracles": [
+        "status-count-zero",
+        "status-count-one"
+      ]
+    },
+    {
+      "schema_version": 1,
+      "case_id": "pw-increment-accessible-name",
+      "disposition": "generate",
+      "framework": "playwright",
+      "actions": [
+        "navigate-counter"
+      ],
+      "oracles": [
+        "button-name-increment"
+      ]
+    },
+    {
+      "schema_version": 1,
+      "case_id": "pw-authenticated-account",
+      "disposition": "generate",
+      "framework": "playwright",
+      "actions": [
+        "set-auth-valid",
+        "navigate-account"
+      ],
+      "oracles": [
+        "account-name-ada-lovelace"
+      ]
+    },
+    {
+      "schema_version": 1,
+      "case_id": "pw-increment-request",
+      "disposition": "generate",
+      "framework": "playwright",
+      "actions": [
+        "navigate-counter",
+        "arm-increment-post-request",
+        "click-increment"
+      ],
+      "oracles": [
+        "increment-post-request-observed",
+        "status-count-one"
+      ]
+    },
+    {
+      "schema_version": 1,
+      "case_id": "cy-command-queue-control",
+      "disposition": "out_of_scope",
+      "framework": "cypress",
+      "reason_code": "generator-playwright-only"
+    },
+    {
+      "schema_version": 1,
+      "case_id": "cy-chainable-control",
+      "disposition": "out_of_scope",
+      "framework": "cypress",
+      "reason_code": "generator-playwright-only"
+    },
+    {
+      "schema_version": 1,
+      "case_id": "cy-browser-error-control",
+      "disposition": "out_of_scope",
+      "framework": "cypress",
+      "reason_code": "generator-playwright-only"
+    },
+    {
+      "schema_version": 1,
+      "case_id": "cy-suite-selection-control",
+      "disposition": "out_of_scope",
+      "framework": "cypress",
+      "reason_code": "generator-playwright-only"
+    },
+    {
+      "schema_version": 1,
+      "case_id": "cy-fixture-render-control",
+      "disposition": "out_of_scope",
+      "framework": "cypress",
+      "reason_code": "generator-playwright-only"
+    }
+  ]
+}

@@ -1,0 +1,184 @@
+{
+  "schema_version": 1,
+  "protocol_id": "independent-product-review-v4",
+  "invocation_id": "88505f8a-ee5d-4413-8afe-1704d3d190b1",
+  "attempt_id": "codex-closure-r3",
+  "schedule_index": 2,
+  "repetition": 3,
+  "declared_schedule_digest": "a083e664b62c180c3c002970aa1d290ad30e7a4bb89a20ddeaf52ab06bd70b21",
+  "started_at_utc": "2026-07-31T08:20:13.859Z",
+  "finished_at_utc": "2026-07-31T08:22:16.825Z",
+  "status": "PASS",
+  "status_reason": null,
+  "host": {
+    "runner": "codex",
+    "model": "gpt-5.6-sol",
+    "provider_family": "openai"
+  },
+  "runner_identity": {
+    "mode": "live",
+    "path": "/opt/homebrew/lib/node_modules/@openai/codex/bin/codex.js",
+    "sha256": "134063e133f0b4244fa3b251acf973d4fe4b4aeeacbdc135211bf480f59f1477",
+    "version": "codex-cli 0.144.1"
+  },
+  "model_tool_surface": "none",
+  "source_read_isolation": "prompt-complete-zero-tools",
+  "credential_environment": "parent-auth-staged-model-tools-disabled",
+  "execution_mode": "live",
+  "local_artifact_integrity_passed": true,
+  "artifact_integrity_eligible": true,
+  "caller_declared_runner_model_provenance": true,
+  "remote_model_attestation": false,
+  "runner_exit_code": 0,
+  "elapsed_ms": 122805,
+  "packet_path": "/private/tmp/e2e-v4-review.Go44m8/r18/packet.json",
+  "packet_manifest_path": "/private/tmp/e2e-v4-review.Go44m8/r18/packet-manifest.json",
+  "raw_output_path": "/private/tmp/e2e-v4-review.Go44m8/r18/raw-codex-closure-r3.json",
+  "raw_output_sha256": "42c8f5936ecb3524ba27fbe309dbfe2460d54ad6dd3a3162b19c41560317187b",
+  "raw_output_original_sha256": "42c8f5936ecb3524ba27fbe309dbfe2460d54ad6dd3a3162b19c41560317187b",
+  "raw_output_exact": true,
+  "integrity_before": {
+    "protocol_sha256": "93bd84b4a33da03abb81e718068691846901a3beacadb439cf8762b040eeae42",
+    "packet_sha256": "fb19f5846a7bd5a8cb7e5bb3c49287f136761b91e12481025e1f3040245c03b3",
+    "packet_manifest_sha256": "e0398d6160584e1fc4799ac6a3f817b7d9ac4e4cf88e7043384feae8ae96e6fd",
+    "independent_runner_sha256": "9804541c4248f1ba0aacd597e4e0cc04039917945d808afe3bf1580cad7c6180",
+    "shared_zero_tool_runner_sha256": "f2c66cd60585fcb91291559a2007213e4f4e8cea3f4979b0eb34c82a1bf3d5c0",
+    "selected_sources_sha256": "09adc687b8f3bb1df60628fa698d4919f643011459b1f68217a7b04fc110452f",
+    "selected_sources": {
+      "README.md": "4544d27fae4b0398580e1cbbf223ef7ea3e15e4ca1b8646347f7da21562e6a8d",
+      "SECURITY.md": "3913c4b02224c9696108c7fe8d621b8330322cabdc069431277357bcc6bcc166",
+      ".claude-plugin/plugin.json": "63a37edb76db4b652b15806f866a2cd335a400acf8455cbc91b3e47430098525",
+      ".claude-plugin/marketplace.json": "89006ac66d5d4eb779dcb07d0f82a18cd9b62c8636bd1b914d99122c0c00831a",
+      ".codex-plugin/plugin.json": "a54a828f5b74f8665ff2c7384aac02accfe50643db6e0a9b84031e8dea43fa43",
+      "skills/playwright-test-generator/SKILL.md": "8d15218f8ed7ee259a84aee44dcd1ab2460c4685e2a785c4636ccb3757fb29e8",
+      "skills/e2e-reviewer/SKILL.md": "a6869d2f22ba5d647a530628f44d9a5023a6270cfe82b4f257c39dad2586d59d",
+      "skills/playwright-debugger/SKILL.md": "2c6f06acb16420a7aaf301aff0b939cfb0a8ee582191775eac0f7b16540d7b07",
+      "skills/cypress-debugger/SKILL.md": "de45932e9d8d54dab19ff73d02367196917c0c1504ffd31d5126c57e88378f8f",
+      "skills/e2e-reviewer/references/pattern-reference.md": "104c08fb111e9c430074c5024102e4d7db41050bc19293d8ac6473b3b561a0fd",
+      "skills/e2e-reviewer/references/verification-rules.md": "09f5998f1262d33affcfb44ce417bd52c9a53909336d505fc085526581361559",
+      "skills/e2e-reviewer/scripts/scan.sh": "ce255f48acf88ae7c3a088c53953d1ae4acf9269e09d9d341065f4f0afc47934",
+      "skills/playwright-test-generator/scripts/preflight_target.py": "3d9aef90459e23f3fc34c2a6427db5bb75fefb85a76fa2a252ce0ace6b320cc4",
+      "skills/playwright-test-generator/scripts/run-preflight-target.sh": "37a0876e74cd35ecbd2dc3bedfaf497c834b7f8c820bf3bba4d26c37452efd2f",
+      "skills/playwright-debugger/scripts/read-playwright-artifact.py": "fd8cd86e69ec83b6b9d67ebd7685bba87e79050d1c5644399a522552b5613f62",
+      "skills/playwright-debugger/scripts/publish-json-report.py": "294c40a56da5f4c9d8f86e9f28ea1559a2a2293b5ade71c0d0624ad3dd288520",
+      "skills/playwright-debugger/scripts/download-playwright-report.py": "37a8350085c492c18ce0174201ad8545293af6b5481460fe97a219ea72305f4e",
+      "skills/cypress-debugger/scripts/read-cypress-artifact.py": "baca00a68a81a092b7d19a4d0e0535e6aa273c7fd55caa06c721ecc7c638d0ee",
+      "skills/cypress-debugger/scripts/extract-junit-failures.py": "892a8cb04a84eed8f2c18821623f95e7bd7f1d9e6075cdac05e9f23320556124",
+      "skills/cypress-debugger/scripts/download-cypress-reports.py": "10898c15e82cec5d7bb01f3abecb20c9e16477dc67431b05870e31eef2ea330c",
+      "skills/cypress-debugger/scripts/publish-mochawesome-report.py": "8aff41bf7b55c5b7449959b19fc38af3522c92ab15a68ccb2b5ce84c5d08bc33",
+      "skills/cypress-debugger/scripts/redact_artifact.py": "2e2c85d6219114817f9a0983c3eaf9bde971c589b043fb1997f45d72e08bad67",
+      "skills/playwright-test-generator/best-practices.md": "ed31b866fe403570a230be047949dbe3a1c485d00e69af4e0e3834d7f9f7049b",
+      "skills/playwright-test-generator/code-rules.md": "f1e2567f2938166c6bee7b374ec49f4398c89a32a9143f3d8b8660f0879d3bfe",
+      "skills/playwright-test-generator/verification-rules.md": "117ee5c5dee564daca42439a2828c54032cb76f28c6928c5f6256edde789d5dc",
+      "skills/e2e-reviewer/references/upstream-rule-sources.md": "101730ae407160a72bff2327c9d4c72a97d187bb7cefcff08cf8c5555018481f",
+      "scripts/ci/ci-local.sh": "5af776d843480fcda2df1d5773e9a1ee0066425413a2384370558fe7e065a2ea",
+      "scripts/ci/pre-push-security.sh": "5529ab1cf0a29ab69b5948f6465ea3e5c69031f582805e746941bd45bf76d0ba"
+    }
+  },
+  "integrity_after": {
+    "protocol_sha256": "93bd84b4a33da03abb81e718068691846901a3beacadb439cf8762b040eeae42",
+    "packet_sha256": "fb19f5846a7bd5a8cb7e5bb3c49287f136761b91e12481025e1f3040245c03b3",
+    "packet_manifest_sha256": "e0398d6160584e1fc4799ac6a3f817b7d9ac4e4cf88e7043384feae8ae96e6fd",
+    "independent_runner_sha256": "9804541c4248f1ba0aacd597e4e0cc04039917945d808afe3bf1580cad7c6180",
+    "shared_zero_tool_runner_sha256": "f2c66cd60585fcb91291559a2007213e4f4e8cea3f4979b0eb34c82a1bf3d5c0",
+    "selected_sources_sha256": "09adc687b8f3bb1df60628fa698d4919f643011459b1f68217a7b04fc110452f",
+    "selected_sources": {
+      "README.md": "4544d27fae4b0398580e1cbbf223ef7ea3e15e4ca1b8646347f7da21562e6a8d",
+      "SECURITY.md": "3913c4b02224c9696108c7fe8d621b8330322cabdc069431277357bcc6bcc166",
+      ".claude-plugin/plugin.json": "63a37edb76db4b652b15806f866a2cd335a400acf8455cbc91b3e47430098525",
+      ".claude-plugin/marketplace.json": "89006ac66d5d4eb779dcb07d0f82a18cd9b62c8636bd1b914d99122c0c00831a",
+      ".codex-plugin/plugin.json": "a54a828f5b74f8665ff2c7384aac02accfe50643db6e0a9b84031e8dea43fa43",
+      "skills/playwright-test-generator/SKILL.md": "8d15218f8ed7ee259a84aee44dcd1ab2460c4685e2a785c4636ccb3757fb29e8",
+      "skills/e2e-reviewer/SKILL.md": "a6869d2f22ba5d647a530628f44d9a5023a6270cfe82b4f257c39dad2586d59d",
+      "skills/playwright-debugger/SKILL.md": "2c6f06acb16420a7aaf301aff0b939cfb0a8ee582191775eac0f7b16540d7b07",
+      "skills/cypress-debugger/SKILL.md": "de45932e9d8d54dab19ff73d02367196917c0c1504ffd31d5126c57e88378f8f",
+      "skills/e2e-reviewer/references/pattern-reference.md": "104c08fb111e9c430074c5024102e4d7db41050bc19293d8ac6473b3b561a0fd",
+      "skills/e2e-reviewer/references/verification-rules.md": "09f5998f1262d33affcfb44ce417bd52c9a53909336d505fc085526581361559",
+      "skills/e2e-reviewer/scripts/scan.sh": "ce255f48acf88ae7c3a088c53953d1ae4acf9269e09d9d341065f4f0afc47934",
+      "skills/playwright-test-generator/scripts/preflight_target.py": "3d9aef90459e23f3fc34c2a6427db5bb75fefb85a76fa2a252ce0ace6b320cc4",
+      "skills/playwright-test-generator/scripts/run-preflight-target.sh": "37a0876e74cd35ecbd2dc3bedfaf497c834b7f8c820bf3bba4d26c37452efd2f",
+      "skills/playwright-debugger/scripts/read-playwright-artifact.py": "fd8cd86e69ec83b6b9d67ebd7685bba87e79050d1c5644399a522552b5613f62",
+      "skills/playwright-debugger/scripts/publish-json-report.py": "294c40a56da5f4c9d8f86e9f28ea1559a2a2293b5ade71c0d0624ad3dd288520",
+      "skills/playwright-debugger/scripts/download-playwright-report.py": "37a8350085c492c18ce0174201ad8545293af6b5481460fe97a219ea72305f4e",
+      "skills/cypress-debugger/scripts/read-cypress-artifact.py": "baca00a68a81a092b7d19a4d0e0535e6aa273c7fd55caa06c721ecc7c638d0ee",
+      "skills/cypress-debugger/scripts/extract-junit-failures.py": "892a8cb04a84eed8f2c18821623f95e7bd7f1d9e6075cdac05e9f23320556124",
+      "skills/cypress-debugger/scripts/download-cypress-reports.py": "10898c15e82cec5d7bb01f3abecb20c9e16477dc67431b05870e31eef2ea330c",
+      "skills/cypress-debugger/scripts/publish-mochawesome-report.py": "8aff41bf7b55c5b7449959b19fc38af3522c92ab15a68ccb2b5ce84c5d08bc33",
+      "skills/cypress-debugger/scripts/redact_artifact.py": "2e2c85d6219114817f9a0983c3eaf9bde971c589b043fb1997f45d72e08bad67",
+      "skills/playwright-test-generator/best-practices.md": "ed31b866fe403570a230be047949dbe3a1c485d00e69af4e0e3834d7f9f7049b",
+      "skills/playwright-test-generator/code-rules.md": "f1e2567f2938166c6bee7b374ec49f4398c89a32a9143f3d8b8660f0879d3bfe",
+      "skills/playwright-test-generator/verification-rules.md": "117ee5c5dee564daca42439a2828c54032cb76f28c6928c5f6256edde789d5dc",
+      "skills/e2e-reviewer/references/upstream-rule-sources.md": "101730ae407160a72bff2327c9d4c72a97d187bb7cefcff08cf8c5555018481f",
+      "scripts/ci/ci-local.sh": "5af776d843480fcda2df1d5773e9a1ee0066425413a2384370558fe7e065a2ea",
+      "scripts/ci/pre-push-security.sh": "5529ab1cf0a29ab69b5948f6465ea3e5c69031f582805e746941bd45bf76d0ba"
+    }
+  },
+  "review": {
+    "summary": "The curated subset is internally strong and fail-closed overall, with bounded inconsistencies in config discovery and untrusted diagnostic handling. No critical or high-severity defect is established by the packet.",
+    "scores": {
+      "semantic_correctness": 93,
+      "false_positive_control": 94,
+      "security_trust_boundaries": 89,
+      "verification_design": 94,
+      "scope_contract_consistency": 88,
+      "docs_usability": 91
+    },
+    "findings": [
+      {
+        "severity": "M",
+        "category": "scope_contract_consistency",
+        "file": "skills/playwright-test-generator/SKILL.md",
+        "line": 51,
+        "title": "Config discovery conflates config and source extensions",
+        "evidence": "This line applies the same eight-extension set, including .jsx and .tsx, to Playwright config and spec discovery. The included playwright-debugger contract instead identifies six default config filenames at line 289, so environment detection can select a file the documented default runner would not discover.",
+        "recommendation": "Define separate extension sets: the six documented default Playwright config extensions and the eight supported source/spec extensions; consider other config paths only when an approved command explicitly selects them."
+      },
+      {
+        "severity": "M",
+        "category": "security_trust_boundaries",
+        "file": "skills/playwright-debugger/SKILL.md",
+        "line": 438,
+        "title": "Output template requests a raw artifact error",
+        "evidence": "The finding template labels the Error field as a raw error message, conflicting with the same skill's untrusted-artifact boundary and its bundled reader's redact-before-output contract. Directly supplied or bypassed error text could therefore be echoed with credentials or hostile terminal content intact.",
+        "recommendation": "Require a quoted, bounded, sanitized error excerpt and prohibit raw artifact-derived output regardless of how the error was supplied."
+      },
+      {
+        "severity": "M",
+        "category": "security_trust_boundaries",
+        "file": "skills/cypress-debugger/SKILL.md",
+        "line": 375,
+        "title": "Untrusted title is used as a glob pattern",
+        "evidence": "The guidance interpolates a report-derived test title into find -path. Shell quoting prevents command substitution but does not neutralize glob metacharacters in the title, so an attacker-controlled title can broaden or redirect artifact selection within the media root.",
+        "recommendation": "Enumerate validated regular media files and correlate them through structured report metadata or exact component comparison; never treat a test title as a find glob."
+      }
+    ],
+    "limitations": [
+      "This packet-only review did not execute scripts or verify runtime behavior.",
+      "Omitted tests, holdouts, benchmarks, reports, repository history, and non-selected files were not used or assessed.",
+      "The result is not full product coverage, skill-accuracy evidence, independent ground truth, sealed human review, or remote model attestation."
+    ],
+    "verdict": "PASS"
+  },
+  "decision": {
+    "overall_score": 91.5,
+    "finding_counts": {
+      "C": 0,
+      "H": 0,
+      "M": 3
+    },
+    "checks": {
+      "overall_score": true,
+      "dimension_floor": true,
+      "critical_findings": true,
+      "high_findings": true,
+      "model_verdict_matches": true
+    }
+  },
+  "limitations": [
+    "This is a fresh-context review of a curated contract/implementation subset for a Codex-only closure-remediation phase preregistered before product fixes for all seven confirmed v3 findings, not completion of the original cross-model schedule, full product coverage, or skill accuracy.",
+    "The public packet is not human or sealed review, independent ground truth, or remote model attestation.",
+    "The local UUIDv4 invocation ID separates runner invocations but cannot attest that a distinct remote model call occurred.",
+    "This phase has one fixed Codex model and makes no cross-model claim.",
+    "Excluded scorecards, holdouts, reports, prior reviews, chat conclusions, and git history reduce but cannot prove absence of training-data contamination."
+  ]
+}

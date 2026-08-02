@@ -1,0 +1,1 @@
+{"framework":"cypress","test":"shows administrator controls","attempts":[{"state":"failed","error":"Expected to find content: 'Delete user', but never did"}],"session":{"role":"viewer","expires_at":"2026-07-30T00:00:00Z"},"run_started_at":"2026-07-31T01:00:00Z"}

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "record_id": "independent-product-review-v7-precall-hardening",
+  "predecessor_protocol_sha256": "62290a43d58cd33b5ee05342a5e510fec89b62f19e9e5013fb08ea7107e6a525",
+  "successor_protocol_sha256": "1718432d87b3ba2e8e9cc5165f62d6a0cfda125be16fb2be2e5fa629298a3b29",
+  "disposition": "HARDENED_BEFORE_FREEZE",
+  "model_calls_before_transition": 0,
+  "canonical_archive_existed_at_transition": false,
+  "reasons": [
+    "Independent evidence validation now reconstructs the complete terminal report, strict raw review, score decision, finding citations, and selected-remediation reopening decision.",
+    "The canonical archive now has a strict inventory and crash-atomic create-only persistence.",
+    "The local runner is pinned by SHA-256 and version while its absolute executable path is supplied explicitly and recorded only as local provenance.",
+    "Marker-shaped unmarked source lines are rejected to keep original-line citations unambiguous.",
+    "Completed aggregate evaluation is explicitly FAIL-first, with INCONCLUSIVE used only when no valid FAIL attempt exists.",
+    "Frozen evidence requires exact token replay from a checked-in o200k_base source and hash-locked macOS arm64 or Linux x86_64 CPython 3.12 dependencies.",
+    "Production evidence validation has one canonical archive authority and rejects symlinked or malformed partial archive roots."
+  ],
+  "claim_boundary": "This record documents a pre-call protocol hardening transition. It is excluded from the model packet and prompt, does not claim remote attestation, and does not rewrite historical v4, v5, or v6 evidence."
+}

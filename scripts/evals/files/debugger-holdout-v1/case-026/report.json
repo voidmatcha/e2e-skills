@@ -1,0 +1,1 @@
+{"framework":"cypress","test":"captures order request","attempts":[{"state":"failed","error":"cy.wait('@orders') timed out waiting 5000ms for the 1st request"}],"command_log":["visit /orders","GET /api/orders completed 200","intercept GET /api/orders as orders","wait @orders"]}

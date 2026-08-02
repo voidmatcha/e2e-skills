@@ -1,0 +1,215 @@
+{
+  "schema_version": 2,
+  "runner": "claude",
+  "runner_identity": "2.1.220 (Claude Code)",
+  "model": "claude-fable-5",
+  "git_revision": "dc385b0d3977e2d4e1527641f1c73fc63448a5ac",
+  "git_dirty": true,
+  "git_dirty_sha256": "7d177ea7672e08115b86d871d988155296c8272f3eee216d9ae3fdd7d4414c3c",
+  "evaluator_sha256": "da20df81569ea037d291a1f8342f72b550063c9b76035a54749a755be5483856",
+  "prompt_set_sha256": "f2fe0189a9d51a3a4a1b396b6fe8dee377d6c4fcd6a4d8e2206cb0dd0b585494",
+  "skill_sha256": "3f5fc1f21b45b8785a243b124184ad4d78d88f5753cc0569b5f558371a932178",
+  "snapshot_skill_sha256": "3f5fc1f21b45b8785a243b124184ad4d78d88f5753cc0569b5f558371a932178",
+  "skill_source_path": "/private/tmp/e2e-test-reviewer/skills/e2e-reviewer",
+  "corpus_sha256": "1a595869188dda31baad2c52ef044edd1f39478a771f0951c47c809b9cf3962b",
+  "snapshot_corpus_sha256": "1a595869188dda31baad2c52ef044edd1f39478a771f0951c47c809b9cf3962b",
+  "corpus_visibility": "public",
+  "corpus_intended_use": "Frozen public development holdout for bias-reduced three-host regression evidence; not a sealed generalization benchmark.",
+  "corpus_contamination_risk": "Becomes public and contaminable once committed. Sources and oracle were frozen before tested-host execution.",
+  "protocol_id": "reviewer-holdout-v3",
+  "protocol_path": "/private/tmp/e2e-test-reviewer/scripts/evals/reviewer-validation-protocol-v3.json",
+  "protocol_sha256": "860c1207bcfe441e411609cecc1fd0aa287304e192563a737bdb2536a43d7731",
+  "protocol": {
+    "schema_version": 1,
+    "protocol_id": "reviewer-holdout-v3",
+    "schedule": {
+      "algorithm": "sha256-seeded-sort-v1",
+      "seed": 20260730,
+      "default_repetitions": 1,
+      "release_repetitions": 3
+    },
+    "stability": {
+      "rule": "strict-majority"
+    },
+    "host_matrix": [
+      {
+        "runner": "codex",
+        "model": "gpt-5.6-sol"
+      },
+      {
+        "runner": "claude",
+        "model": "claude-opus-5"
+      },
+      {
+        "runner": "claude",
+        "model": "claude-fable-5"
+      }
+    ],
+    "confidence_intervals": {
+      "method": "wilson",
+      "confidence": 0.95,
+      "unit": "unique-label-or-prediction"
+    },
+    "decision": {
+      "threshold_basis": "point-estimate",
+      "thresholds": {
+        "stable_precision_min": 0.95,
+        "stable_recall_min": 0.85,
+        "repeated_precision_min": 0.9,
+        "pattern_macro_recall_min": 0.8,
+        "case_macro_recall_min": 0.8,
+        "framework_macro_recall_min": 0.8,
+        "p0_stable_label_recall_min": 0.9,
+        "stable_guard_hit_rate_max": 0.05
+      }
+    },
+    "cross_host_decision": {
+      "threshold_basis": "point-estimate",
+      "requires_each_report_status": "PASS",
+      "thresholds": {
+        "stable_recall_gap_max": 0.1,
+        "stable_prediction_jaccard_min": 0.8
+      }
+    }
+  },
+  "schedule_seed": 20260730,
+  "schedule_algorithm": "sha256-seeded-sort-v1",
+  "release_repetitions": 3,
+  "schedule_sha256": "47ea8b20426a5f8812bb296fbf4e8ad2dc7cca85ee0296380e242c970390505e",
+  "schedule": [
+    {
+      "ordinal": 1,
+      "case": "cy-write-credentials",
+      "repetition": 3
+    },
+    {
+      "ordinal": 2,
+      "case": "cy-command-timing",
+      "repetition": 1
+    },
+    {
+      "ordinal": 3,
+      "case": "pw-rejection-state",
+      "repetition": 3
+    },
+    {
+      "ordinal": 4,
+      "case": "cy-command-timing",
+      "repetition": 3
+    },
+    {
+      "ordinal": 5,
+      "case": "pw-pom-async",
+      "repetition": 3
+    },
+    {
+      "ordinal": 6,
+      "case": "pw-context-boundaries",
+      "repetition": 1
+    },
+    {
+      "ordinal": 7,
+      "case": "pw-pom-async",
+      "repetition": 1
+    },
+    {
+      "ordinal": 8,
+      "case": "pw-pom-async",
+      "repetition": 2
+    },
+    {
+      "ordinal": 9,
+      "case": "pw-context-boundaries",
+      "repetition": 2
+    },
+    {
+      "ordinal": 10,
+      "case": "cy-structure-fixture",
+      "repetition": 3
+    },
+    {
+      "ordinal": 11,
+      "case": "pw-maintenance-provenance",
+      "repetition": 3
+    },
+    {
+      "ordinal": 12,
+      "case": "pw-rejection-state",
+      "repetition": 2
+    },
+    {
+      "ordinal": 13,
+      "case": "pw-context-boundaries",
+      "repetition": 3
+    },
+    {
+      "ordinal": 14,
+      "case": "cy-write-credentials",
+      "repetition": 2
+    },
+    {
+      "ordinal": 15,
+      "case": "cy-contract-runtime",
+      "repetition": 1
+    },
+    {
+      "ordinal": 16,
+      "case": "cy-contract-runtime",
+      "repetition": 3
+    },
+    {
+      "ordinal": 17,
+      "case": "cy-structure-fixture",
+      "repetition": 1
+    },
+    {
+      "ordinal": 18,
+      "case": "pw-maintenance-provenance",
+      "repetition": 2
+    },
+    {
+      "ordinal": 19,
+      "case": "cy-write-credentials",
+      "repetition": 1
+    },
+    {
+      "ordinal": 20,
+      "case": "cy-structure-fixture",
+      "repetition": 2
+    },
+    {
+      "ordinal": 21,
+      "case": "pw-rejection-state",
+      "repetition": 1
+    },
+    {
+      "ordinal": 22,
+      "case": "cy-command-timing",
+      "repetition": 2
+    },
+    {
+      "ordinal": 23,
+      "case": "pw-maintenance-provenance",
+      "repetition": 1
+    },
+    {
+      "ordinal": 24,
+      "case": "cy-contract-runtime",
+      "repetition": 2
+    }
+  ],
+  "source_read_isolation": "not-required-public-corpus",
+  "external_wrapper": null,
+  "input_snapshot": "copy-once-temp",
+  "workspace_integrity": "pre-post-sha256",
+  "repetitions": 3,
+  "complete": false,
+  "status": "INCONCLUSIVE",
+  "status_reasons": [
+    {
+      "code": "incomplete_schedule",
+      "message": "executed 0 of 24 scheduled runs"
+    }
+  ],
+  "runs": []
+}

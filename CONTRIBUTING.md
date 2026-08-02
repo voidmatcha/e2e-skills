@@ -43,7 +43,7 @@ cd e2e-skills
 
 # Exercise the scanner against any real Playwright/Cypress repo (testbed/ is gitignored)
 git clone --depth 1 https://github.com/calcom/cal.diy testbed/cal.diy
-bash skills/e2e-reviewer/scripts/scan.sh testbed/cal.diy
+/bin/bash -p skills/e2e-reviewer/scripts/scan.sh testbed/cal.diy
 
 # Install the four skills as real copies for local agent testing (one-time)
 bash scripts/dev/reinstall-skills.sh
@@ -55,8 +55,8 @@ bash scripts/dev/reinstall-skills.sh
 and confirm they are green before opening a pull request:
 
 ```bash
-bash scripts/ci/ci-local.sh          # review checks + drift smoke + 0 P0 smell hits
-bash scripts/ci/pre-push-security.sh # secrets and credential-leak guard
+/bin/bash -p scripts/ci/ci-local.sh          # review checks + drift smoke + 0 P0 smell hits
+/bin/bash -p scripts/ci/pre-push-security.sh # secrets and credential-leak guard
 ```
 
 Useful individual stages while iterating:
@@ -64,15 +64,104 @@ Useful individual stages while iterating:
 ```bash
 bash scripts/ci/review.sh            # parity, language, links, framework scope, orphans
 bash scripts/ci/test-parity.sh       # drift smoke test (mutate-and-detect) + scanner detection smoke
+bash scripts/ci/check-verification-parity.sh # V1-V6 contract parity
+bash scripts/ci/test-codex-agents.sh # optional Codex agent packaging contract
+bash scripts/ci/test-local-eslint-path.sh # local lint + disabled-rule fail-closed path
 bash scripts/validate-evals.sh       # eval JSON schema
+bash scripts/ci/test-reviewer-holdout.sh # labeled TP/FP/FN scorer + isolation
+python3 scripts/ci/test-reviewer-holdout-v3.py # all-family corpus + N-configuration contracts
+/bin/bash -p scripts/ci/run-reference-tokenizer-suites.sh \
+  scripts/ci/test-independent-review-v7.py \
+  scripts/ci/test-independent-review-v10.py # v7/v10 preregistration + runner fail-closed contracts
+                                     # (needs the pinned tokenizer venv; the suites fail closed without it)
+/bin/bash -p scripts/ci/run-independent-review-v10-evidence.sh # v10 archive state + prompt-size replay
+python3 scripts/ci/test-reviewer-scanner.py # P0 gate + missing-await context regression
+python3 scripts/ci/test-debugger-contracts.py # debugger extraction + dedupe contracts
+python3 scripts/ci/test-residual-redos-budget.py # credential-regex linearity budget
+python3 scripts/ci/test-reviewer-evidence-v3.py # reparse and rescore v3 raw reports
+python3 scripts/ci/test-reviewer-evidence.py # immutable reports + aggregate replay
+python3 scripts/ci/test-fixture-faults.py # browser-free 36-cell classifier regression
+python3 scripts/evals/run-fixture-faults.py --validate-only # browser-free fixture contract
 bash scripts/ci/codex-smoke.sh       # manual Codex cross-host smoke (skips if codex absent)
 ```
 
-### Behavioral skill evaluation
+### Reviewer accuracy and behavior validation
 
 `evals/evals.json` defines expected behavior, while the ordinary CI gate checks
-that those contracts and fixtures remain structurally valid. To measure whether
-the skill itself improves an agent's answer, run the paired behavioral harness:
+that those contracts and fixtures remain structurally valid. The labeled
+development holdout adds exact TP/FP/FN scoring over isolated multi-file
+Playwright/Cypress cases:
+
+```bash
+python3 scripts/evals/run-reviewer-holdout.py \
+  --cases scripts/evals/reviewer-holdout-v3.json \
+  --protocol scripts/evals/reviewer-validation-protocol-v3.json \
+  --runner codex --model gpt-5.6-sol --repetitions 3 --allow-live
+# Repeat with:
+#   --runner claude --model claude-opus-5
+#   --runner claude --model claude-fable-5
+```
+
+The current v3 corpus has eight multi-file cases, 24 findings covering all 24
+base pattern families, and 24 explicit false-positive guards. It is public, so
+it is a reproducible development holdout, not a secret release oracle. The
+historical v2/r3 corpus has 30 findings and 31 guards, but its performance
+estimate was oracle-invalidated after post-run adjudication. Pass an external
+corpus with `--cases` for a sealed run, inside an independently isolated
+environment supplied through `--isolation-wrapper <executable>`.
+Reports under `benchmarks/reviewer-holdout-v3/reports/` include corpus/model/CLI/Git provenance,
+the evaluated-skill and protocol digests, seeded schedule, raw outputs, per-case
+TP/FP/FN, unique majority-stable precision/recall, repeated-run metrics, and
+Wilson intervals. Public runs use one immutable skill/corpus input snapshot,
+fresh temporary workspaces, Codex/Claude read-only controls, and pre/post
+digests of every staged path and original input. A changed digest is an
+infrastructure error and is not scored. The release gate also enforces repeated
+precision so rotating one-off false positives cannot disappear under majority
+aggregation. The runner does not provide a built-in sealed sandbox; non-public
+corpora fail closed without the external wrapper.
+
+After all three live reports complete, enforce the declared
+cross-configuration gate:
+
+```bash
+python3 scripts/evals/compare-reviewer-holdouts.py \
+  <codex-report.json> <opus-report.json> <fable-report.json> \
+  --cases scripts/evals/reviewer-holdout-v3.json \
+  --protocol scripts/evals/reviewer-validation-protocol-v3.json
+```
+
+The comparator requires the exact declared runner/model configuration matrix and identical
+skill, corpus, protocol, schedule, and repetition provenance. It re-parses raw
+outputs and re-derives every run score, metric, and status before checking that
+all three declared model configurations pass individually, the maximum
+pairwise stable-recall gap is at
+most 10 percentage points, and the minimum pairwise stable-prediction Jaccard
+agreement is at least 0.80. Runner/model/CLI fields are declared local
+provenance, not signed or remotely attested identity; a release claim needs an
+externally controlled runner if host authenticity matters.
+
+Historical v2 public-development reports and oracle corrections are frozen
+under `benchmarks/reviewer-holdout-v2/`. The v3 source-only oracle audit,
+completed Codex report, and preserved incomplete Claude attempts live under
+`benchmarks/reviewer-holdout-v3/`. CI accepts the v3 evidence manifest only
+after all three declared reports exist and re-derives the documented
+aggregates from raw model output. Never rewrite an old report after post-run
+adjudication; add an explicit revision or adjudication record instead.
+
+To prove the smell has a real behavioral consequence, install the fixture-only
+dependencies and run the fault matrix:
+
+```bash
+npm ci --prefix scripts/evals/fixtures
+python3 scripts/evals/run-fixture-faults.py
+```
+
+Across twelve fault operators and 36 browser cells, the strong test must pass on
+the correct app and fail after behavior fault injection; the assertion-mutated
+or call-proof-mutated weak test must remain green against the same fault.
+
+The older paired behavioral harness still measures whether loading a skill
+improves a bounded answer:
 
 ```bash
 python3 scripts/evals/run-behavioral-evals.py --runner codex --allow-live
@@ -84,9 +173,10 @@ Each case runs three times both with and without the skill. Reports are written
 under the gitignored `results/behavioral-evals/` directory and include pass
 rates, absolute lift, per-case results, timing, and saturated cases where the
 baseline already scores 100%. Live execution is deliberately opt-in: normal CI
-only tests the deterministic harness because model runs are variable and consume
-time or tokens. A positive result on this small smoke set is evidence for those
-cases only, not a general precision/recall or cross-model claim.
+only tests deterministic harnesses because model and browser runs are variable
+and consume time, tokens, or downloads. A positive result on either small public
+set is evidence for those cases only, not a general cross-model superiority
+claim.
 
 ## Conventions
 

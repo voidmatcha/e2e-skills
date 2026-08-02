@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "purpose": "Immutable checksums for the historical public-development evidence bundle.",
+  "artifacts": [
+    {
+      "path": "ablation-protocol.json",
+      "sha256": "7a347c99469768aba880a84efdad3c10d435b643f456a56d10442182a7ddbc87"
+    },
+    {
+      "path": "catalog-control/SKILL.md",
+      "sha256": "31d58947723628159e74f78a63346f687e3066a35192652871fa04a809fdbe9b"
+    },
+    {
+      "path": "oracle-revisions.json",
+      "sha256": "bb66926058c0c72d1201ef6bdd8ac1f6fb57c66ae4cb0972ab8c45378ff07960"
+    },
+    {
+      "path": "oracles/initial-oracle-25.json",
+      "sha256": "dcb1c772c506bb4744a1ddae7226b8793e6dc6da43ed261e096717b6aa3a01ff"
+    },
+    {
+      "path": "post-run-adjudications.json",
+      "sha256": "b979e6f2f9744ff37929728dd60c53541de7c7e881ef5d1a1c5262edde237890"
+    },
+    {
+      "path": "oracles/current-oracle-r4-30.json",
+      "sha256": "0e38fa6d4e0c8e46ceec6d106036b0fb931b576b7d5a3803889aaf606807f148"
+    },
+    {
+      "path": "reports/ablation-claude.json",
+      "sha256": "0001210dd7f3b493b3486756c44739cafa67985e9107d16fc76423c555fd0cc2"
+    },
+    {
+      "path": "reports/ablation-codex.json",
+      "sha256": "922b5f882b23fb517c55ecea519235c7d8cb00b3cafd398453131b6a5ec3370e"
+    },
+    {
+      "path": "reports/catalog-control-claude.json",
+      "sha256": "37d176ced31ffd91cffae633e5885fb384fadbd0a5bfbbe5217f9a0a24810fe8"
+    },
+    {
+      "path": "reports/catalog-control-codex.json",
+      "sha256": "97a685f37e36f2be4aa30365a9a55b6552b67f55597fe793d4bbd2766e9fde3a"
+    },
+    {
+      "path": "reports/current-public-codex.json",
+      "sha256": "d6a454b615742ab73f13e4093571cbb07a8e56ebdd40381608291400d2902178"
+    },
+    {
+      "path": "reports/initial-cross-host.json",
+      "sha256": "64e2c5c1e24d1996d712bcb076a1a49ecc9e8882db82fc4e62154441a2000b9d"
+    },
+    {
+      "path": "reports/initial-full-claude.json",
+      "sha256": "c65f98aa4e02ad7d38b4ef573c2d02d309f92266fa40770b3574f3efda62cd84"
+    },
+    {
+      "path": "reports/initial-full-codex.json",
+      "sha256": "4be2cce1d0fa77844aa779ba898c6e6213207f1b229d63f9226a9e338bf2a724"
+    },
+    {
+      "path": "reports/output-conditioned-postfix-claude.json",
+      "sha256": "9e15149c1203c6fb4988f9bc98f36527535a1811ac62a1f30d5dbca76837d0b0"
+    },
+    {
+      "path": "reports/output-conditioned-postfix-codex.json",
+      "sha256": "7e96a09bfd9f5f9a4ac964140ec711a465a3ff7960791414162ead7111acafe0"
+    },
+    {
+      "path": "reports/output-conditioned-targeted-codex.json",
+      "sha256": "259c45dbc21d76bed67de746ca531d53670f209b34894cd958d017d6669cfb93"
+    }
+  ]
+}

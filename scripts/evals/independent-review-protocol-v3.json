@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "protocol_id": "independent-product-review-v3",
+  "purpose": "Fresh-context, prompt-complete, zero-tool final-remediation review of the same curated contract/implementation subset with Codex only, preregistered before product fixes. This second Codex-only phase does not complete the original cross-model schedule and is not full product coverage, skill accuracy, human or sealed review, independent ground truth, or remote model attestation.",
+  "phase_binding": {
+    "phase": "final-remediation-codex-preregistration",
+    "predecessor_protocol_sha256": "018729aedd61c8013884fb803e5632cdb50f5130c46f6cd2074daca31d494abe",
+    "predecessor_packet_sha256": "278fed9d19efa7d16bbea241bac956824cda2c7699b5b88756157f3c52212a04",
+    "predecessor_attempts": [
+      {
+        "round": "r10",
+        "attempt_id": "codex-postremediation-r1",
+        "report_sha256": "a2e221eee4987978b7c0b5143586834b31427699a288b164e3141c87831dc03c",
+        "raw_sha256": "0acc257f6a0dcac2e5e6c328494476bb99927ee066b015c9a7f83b54421e3c41"
+      },
+      {
+        "round": "r11",
+        "attempt_id": "codex-postremediation-r2",
+        "report_sha256": "e28d86e22a2ca054a30bfd9a3693699b194e534eb183be59752edaf99b68e10a",
+        "raw_sha256": "a9f7c7077a573d388fe4704e55171070d628c13b62492392fad38b6a499024d4"
+      },
+      {
+        "round": "r12",
+        "attempt_id": "codex-postremediation-r3",
+        "report_sha256": "641c97b833b3aad762cc7035447c92fa91715ffc778157a1ea8cba9ad6e3b940",
+        "raw_sha256": "6bef05660aaf0525b6068719ce4c8b69f3f30d3862e56c4f164d7e3e9c9e0a51"
+      }
+    ],
+    "claim_boundary": "This second Codex-only phase is preregistered before product fixes and measures final-remediation robustness on three predeclared repetitions. It cannot complete or pass the original cross-model schedule, does not estimate skill accuracy, and permits only descriptive comparison with the preceding v2 phase."
+  },
+  "packet": {
+    "representation_byte_budget": 800000,
+    "selection_policy": "ordered-explicit-allowlist-v1",
+    "line_numbering": "original-one-based-lines",
+    "freeze_policy": "After this v3 protocol is preregistered, complete the declared final remediation and its local verification, then build one canonical packet before any final-remediation model call. The predeclared 800000-byte cap preserves all 28 required surfaces and omissions fail closed. Record packet, manifest, protocol, and selected-source digests before and after every call; any drift makes the run INCONCLUSIVE.",
+    "excluded_surfaces": [
+      ".git/**",
+      ".omx/**",
+      "benchmarks/**",
+      "results/**",
+      "**/evals/**",
+      "**/*holdout*",
+      "**/*scorecard*",
+      "**/*review*",
+      "chat transcripts and conclusions"
+    ]
+  },
+  "schedule": {
+    "version": "codex-final-remediation-v1",
+    "seed": "independent-product-review-v3-final-remediation-codex-3",
+    "digest_derivation": "sha256-canonical-json-version-seed-attempts-v1",
+    "digest": "6d151b94e1f8413ac60b5486f8486249f732aaa349ba023d38868d9863abcfb7",
+    "aggregate_rule": {
+      "completion": "Every final-remediation Codex attempt ID must appear exactly once with one shared final-remediation packet and this protocol digest; preceding, historical, cross-model, or ad-hoc attempts do not count.",
+      "passage": "All three final-remediation Codex attempts must have an individual PASS verdict."
+    },
+    "attempts": [
+      {
+        "attempt_id": "codex-final-r1",
+        "schedule_index": 0,
+        "repetition": 1,
+        "runner": "codex",
+        "model": "gpt-5.6-sol",
+        "provider_family": "openai"
+      },
+      {
+        "attempt_id": "codex-final-r2",
+        "schedule_index": 1,
+        "repetition": 2,
+        "runner": "codex",
+        "model": "gpt-5.6-sol",
+        "provider_family": "openai"
+      },
+      {
+        "attempt_id": "codex-final-r3",
+        "schedule_index": 2,
+        "repetition": 3,
+        "runner": "codex",
+        "model": "gpt-5.6-sol",
+        "provider_family": "openai"
+      }
+    ]
+  },
+  "host_matrix": [
+    {
+      "runner": "codex",
+      "model": "gpt-5.6-sol",
+      "provider_family": "openai"
+    }
+  ],
+  "rubric": {
+    "dimensions": [
+      {
+        "id": "semantic_correctness",
+        "label": "Semantic correctness",
+        "review_question": "Do the included public contracts and implementations agree on behavior, failure modes, and framework semantics?",
+        "weight": 1
+      },
+      {
+        "id": "false_positive_control",
+        "label": "False-positive control",
+        "review_question": "Do the included reviewer rules, suppressions, and scanner boundaries avoid unsupported findings while remaining fail-closed?",
+        "weight": 1
+      },
+      {
+        "id": "security_trust_boundaries",
+        "label": "Security and trust boundaries",
+        "review_question": "Do the included interfaces and scripts define safe input, artifact, credential, and execution boundaries?",
+        "weight": 1
+      },
+      {
+        "id": "verification_design",
+        "label": "Verification design",
+        "review_question": "Do the included files define executable, fail-closed checks that could verify the documented behavior? Score the design only; do not infer that omitted runs passed.",
+        "weight": 1
+      },
+      {
+        "id": "scope_contract_consistency",
+        "label": "Scope and contract consistency",
+        "review_question": "Are supported frameworks, hosts, capabilities, limitations, and fallback paths consistent across the included public surfaces? Do not infer quality from omitted benchmarks or holdouts.",
+        "weight": 1
+      },
+      {
+        "id": "docs_usability",
+        "label": "Documentation and usability",
+        "review_question": "Can a user act on the included installation, invocation, diagnosis, review, and verification guidance without relying on omitted context?",
+        "weight": 1
+      }
+    ],
+    "finding_severities": {
+      "C": "Critical: a trust, safety, or correctness failure that can invalidate the product or its evidence.",
+      "H": "High: a material product or evidence defect that should block a strong-quality claim.",
+      "M": "Medium: a bounded weakness or usability problem with concrete impact."
+    },
+    "decision": {
+      "overall_score_min": 90,
+      "dimension_score_min": 85,
+      "critical_findings_max": 0,
+      "high_findings_max": 0
+    }
+  },
+  "output_contract": {
+    "strict_json": true,
+    "top_level_keys": [
+      "summary",
+      "scores",
+      "findings",
+      "limitations",
+      "verdict"
+    ],
+    "finding_keys": [
+      "severity",
+      "category",
+      "file",
+      "line",
+      "title",
+      "evidence",
+      "recommendation"
+    ],
+    "verdicts": [
+      "PASS",
+      "FAIL"
+    ]
+  },
+  "status_policy": {
+    "PASS": "The strict review payload is complete, every finding cites an included file and valid original line, packet/protocol/source digests are unchanged, and all fixed thresholds pass.",
+    "FAIL": "The strict review payload is complete and provenance is intact, but one or more fixed thresholds fail.",
+    "INCONCLUSIVE": "The call, strict payload, evidence locations, CLI identity, or pre/post integrity evidence is missing or invalid."
+  }
+}

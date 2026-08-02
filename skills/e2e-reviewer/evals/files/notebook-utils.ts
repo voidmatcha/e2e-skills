@@ -1,7 +1,7 @@
 import { Page, BrowserContext } from '@playwright/test';
 
-// Module-level mutable counter — collides across parallel workers and survives
-// retries within a worker. Anti-pattern #19.
+// Module-level mutable counter — persists across tests in a long-lived worker
+// and collides across parallel workers. Anti-pattern #19.
 let testNotebookSequence = 0;
 
 // Module-level mutable cache without a worker-scoping justification.

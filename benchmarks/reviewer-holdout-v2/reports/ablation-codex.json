@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "status_reasons": [
+    {
+      "code": "all_ablation_thresholds_met",
+      "message": "full workflow adds preregistered lift over catalog-only control"
+    }
+  ],
+  "ablation_protocol_sha256": "7a347c99469768aba880a84efdad3c10d435b643f456a56d10442182a7ddbc87",
+  "runner": "codex",
+  "model": "gpt-5.6-sol",
+  "treatment": {
+    "skill_sha256": "cb082316001bdd1844ce0ce0d752e491f516eece5aacc192b2594d3e87521436",
+    "status": "PASS",
+    "stable_precision": 1.0,
+    "stable_recall": 1.0,
+    "stable_f1": 1.0
+  },
+  "control": {
+    "skill_sha256": "fa82c10b1cae00ef07627878564efc6bc0c373c92d8474ee7fcdbfbe0f2fff11",
+    "status": "FAIL",
+    "stable_precision": 0.6486486486486487,
+    "stable_recall": 0.96,
+    "stable_f1": 0.7741935483870968
+  },
+  "deltas": {
+    "stable_f1_lift": 0.22580645161290325,
+    "stable_precision_delta": 0.3513513513513513,
+    "stable_recall_delta": 0.040000000000000036
+  },
+  "thresholds": {
+    "stable_f1_lift_min": 0.05,
+    "stable_precision_delta_min": 0.0,
+    "stable_recall_delta_min": 0.0
+  }
+}

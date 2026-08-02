@@ -1,0 +1,1 @@
+{"framework":"playwright","test":"opens mobile navigation","attempts":[{"status":"failed","error":"expect(getByRole('navigation')).toBeVisible() timed out"},{"status":"passed"}],"timeline":["goto resolved","menu button visible","first click dispatched","navigation remained closed"],"server_rendered":true}

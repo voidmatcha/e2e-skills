@@ -1,0 +1,94 @@
+{
+  "schema_version": 2,
+  "protocol_id": "generator-faultkill-v2",
+  "visibility": "public-development",
+  "repetitions": 3,
+  "prompt_arms": {
+    "treatment": "full-skill",
+    "controls": [
+      "rules-only",
+      "no-skill"
+    ],
+    "shared_material": [
+      "all nine task statements",
+      "closed DSL schema and token legend",
+      "strict JSON output contract",
+      "Cypress out-of-scope reason code"
+    ],
+    "no_skill_disclosure": "The no-skill control is not token-free: it receives the same task bundle, DSL schema, token legend, and output contract as every other arm."
+  },
+  "skill_material": {
+    "full-skill": [
+      "SKILL.md",
+      "code-rules.md",
+      "verification-rules.md",
+      "best-practices.md"
+    ],
+    "rules-only": [
+      "code-rules.md",
+      "verification-rules.md",
+      "best-practices.md"
+    ],
+    "no-skill": []
+  },
+  "matrix": [
+    {
+      "configuration_id": "codex-gpt-5.6-sol",
+      "provider_family": "openai",
+      "runner": "codex",
+      "model": "gpt-5.6-sol",
+      "expected_cli_version": "codex-cli 0.146.0"
+    },
+    {
+      "configuration_id": "claude-opus",
+      "provider_family": "anthropic",
+      "runner": "claude",
+      "model": "claude-opus-5",
+      "expected_cli_version": "2.1.220 (Claude Code)"
+    },
+    {
+      "configuration_id": "claude-fable",
+      "provider_family": "anthropic",
+      "runner": "claude",
+      "model": "claude-fable-5",
+      "expected_cli_version": "2.1.220 (Claude Code)"
+    }
+  ],
+  "aggregation": {
+    "method": "mean-within-provider-family-then-equal-weight-families",
+    "provider_families": [
+      "openai",
+      "anthropic"
+    ]
+  },
+  "schedule": {
+    "method": "seeded-counterbalanced-blocks-v1",
+    "seed": 20260731,
+    "sha256": "e8a8781c017453ff4ca9d429e68b0eff9ddea9bbd2831d8aabe1ee8fc028d451"
+  },
+  "thresholds": {
+    "full_skill_planning_accuracy_min": 0.75,
+    "full_skill_fault_mode_macro_accuracy_min": 0.75,
+    "full_skill_worst_case_fault_mode_accuracy_min": 0.5,
+    "full_skill_cypress_control_accuracy_min": 1.0,
+    "descriptive_difference_full_minus_rules_only_min": 0.1,
+    "descriptive_difference_full_minus_no_skill_min": 0.2
+  },
+  "status_contract": {
+    "PASS": 0,
+    "FAIL": 1,
+    "INCONCLUSIVE": 2
+  },
+  "claims": {
+    "measured": "Descriptive arm accuracy and fixed-public-prompt arm differences for prompt-complete zero-tool encoding of explicitly stated acceptance criteria into the frozen generator DSL.",
+    "excluded": [
+      "causal skill-effect or general skill-lift claims",
+      "independent-sample inference from repeated calls on the same four public scored cases",
+      "autonomous oracle discovery",
+      "unrestricted source generation",
+      "fault detection from application source",
+      "Cypress generation quality",
+      "sealed or hidden holdout performance"
+    ]
+  }
+}

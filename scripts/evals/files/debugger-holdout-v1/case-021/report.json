@@ -1,0 +1,1 @@
+{"framework":"cypress","test":"uses optional company field","attempts":[{"state":"failed","error":"Expected to find element: '#company', but never found it"}],"fixture":{"account_type":"personal"},"dom_excerpt":"<form><input id=\"name\"></form>","spec_excerpt":"cy.get('#company').should('be.visible')"}

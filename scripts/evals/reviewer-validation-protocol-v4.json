@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "protocol_id": "reviewer-holdout-v4",
+  "schedule": {
+    "algorithm": "sha256-seeded-sort-v1",
+    "seed": 20260731,
+    "default_repetitions": 3,
+    "release_repetitions": 3,
+    "evidence_scope": "public-pre-publication-development",
+    "freeze_policy": "Freeze sources, labels, and protocol before the first measured run. Any later edit creates a new version."
+  },
+  "stability": {
+    "rule": "strict-majority",
+    "minimum_repetitions": 3
+  },
+  "prompt_arms": {
+    "treatment": "full",
+    "controls": [
+      "catalog-only",
+      "no-skill"
+    ],
+    "shared_output_legend": true,
+    "no_skill_is_taxonomy_free": false,
+    "comparison_unit": "separate-complete-host-matrix"
+  },
+  "host_matrix": [
+    {
+      "runner": "codex",
+      "model": "gpt-5.6-sol"
+    },
+    {
+      "runner": "claude",
+      "model": "claude-opus-5"
+    },
+    {
+      "runner": "claude",
+      "model": "claude-fable-5"
+    }
+  ],
+  "confidence_intervals": {
+    "method": "wilson",
+    "confidence": 0.95,
+    "unit": "unique-label-or-prediction"
+  },
+  "decision": {
+    "threshold_basis": "point-estimate",
+    "point_estimate_limits": "Threshold crossings on this small fixed public development corpus are descriptive signals. Confidence intervals and per-provider-family denominators accompany point estimates; sealing, a human oracle, and population-level generalization are not established.",
+    "thresholds": {
+      "stable_precision_min": 0.95,
+      "stable_recall_min": 0.85,
+      "repeated_precision_min": 0.9,
+      "pattern_macro_recall_min": 0.8,
+      "case_macro_recall_min": 0.8,
+      "framework_macro_recall_min": 0.8,
+      "p0_stable_label_recall_min": 0.9,
+      "stable_guard_hit_rate_max": 0.05,
+      "clean_case_specificity_min": 0.95
+    }
+  },
+  "cross_host_decision": {
+    "threshold_basis": "point-estimate",
+    "requires_each_report_status": "PASS",
+    "aggregation_intent": "Compute within-provider-family results first, then give OpenAI and Anthropic equal top-level weight.",
+    "provider_family_balance_required": true,
+    "thresholds": {
+      "stable_recall_gap_max": 0.1,
+      "stable_prediction_jaccard_min": 0.8
+    }
+  }
+}

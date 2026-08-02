@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "status": "FAIL",
+  "status_reasons": [
+    {
+      "code": "treatment_status_not_met",
+      "actual": "FAIL",
+      "required": "PASS"
+    },
+    {
+      "code": "ablation_threshold_not_met",
+      "metric": "stable_f1_lift_min",
+      "actual": 0.035516093229744916,
+      "required": 0.05
+    }
+  ],
+  "ablation_protocol_sha256": "7a347c99469768aba880a84efdad3c10d435b643f456a56d10442182a7ddbc87",
+  "runner": "claude",
+  "model": "claude-opus-5",
+  "treatment": {
+    "skill_sha256": "cb082316001bdd1844ce0ce0d752e491f516eece5aacc192b2594d3e87521436",
+    "status": "FAIL",
+    "stable_precision": 0.9230769230769231,
+    "stable_recall": 0.96,
+    "stable_f1": 0.9411764705882353
+  },
+  "control": {
+    "skill_sha256": "fa82c10b1cae00ef07627878564efc6bc0c373c92d8474ee7fcdbfbe0f2fff11",
+    "status": "FAIL",
+    "stable_precision": 0.8571428571428571,
+    "stable_recall": 0.96,
+    "stable_f1": 0.9056603773584904
+  },
+  "deltas": {
+    "stable_f1_lift": 0.035516093229744916,
+    "stable_precision_delta": 0.06593406593406603,
+    "stable_recall_delta": 0.0
+  },
+  "thresholds": {
+    "stable_f1_lift_min": 0.05,
+    "stable_precision_delta_min": 0.0,
+    "stable_recall_delta_min": 0.0
+  }
+}

@@ -1,0 +1,1 @@
+{"framework":"cypress","test":"invoice total updates","attempts":[{"state":"failed","duration_ms":39970,"error":"Timed out retrying after 40000ms: expected '<span.total>' to have text '$42.00'"},{"state":"passed","duration_ms":1910}]}

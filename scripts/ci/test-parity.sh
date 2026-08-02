@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)" || {
+REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd -P)" || {
   echo "test-parity.sh: cannot resolve repo root" >&2
   exit 1
 }
@@ -13,6 +13,19 @@ cd "$REPO_ROOT" || {
   echo "test-parity.sh: cannot cd to $REPO_ROOT" >&2
   exit 1
 }
+source "$REPO_ROOT/scripts/ci/lib/init-python-isolation.sh" || exit 2
+
+if [ -z "${E2E_PARITY_DISPOSABLE_ROOT:-}" ]; then
+  exec python3 \
+    "$REPO_ROOT/scripts/ci/lib/run_disposable_parity.py" \
+    "$REPO_ROOT"
+fi
+
+if [ "$REPO_ROOT" != "$E2E_PARITY_DISPOSABLE_ROOT" ] ||
+   [ ! -f "$REPO_ROOT/.e2e-parity-disposable-root" ]; then
+  echo "test-parity.sh: refusing mutations outside the marked disposable copy" >&2
+  exit 2
+fi
 
 PLUGIN_VERSION=$(python3 - <<'PY'
 import json
@@ -35,6 +48,7 @@ cleanup() {
     fi
   done
   [ -n "${SCAN_FIXDIR:-}" ] && rm -rf "$SCAN_FIXDIR" || true
+  [ -n "${LANGUAGE_BAD_FILE:-}" ] && rm -f "$LANGUAGE_BAD_FILE" || true
 }
 trap cleanup EXIT INT TERM
 
@@ -61,7 +75,7 @@ assert_fails() {
   local expected="$2"
   local output
   output=$(bash scripts/ci/review.sh --quiet 2>&1 || true)
-  if echo "$output" | grep -qF "$expected"; then
+  if grep -qF "$expected" <<<"$output"; then
     echo "  [PASS] $name"
     PASS=$((PASS + 1))
   else
@@ -75,8 +89,8 @@ assert_security_fails() {
   local name="$1"
   local expected="$2"
   local output
-  output=$(bash scripts/ci/pre-push-security.sh --quiet 2>&1 || true)
-  if echo "$output" | grep -qF "$expected"; then
+  output=$(/bin/bash -p scripts/ci/pre-push-security.sh --quiet 2>&1 || true)
+  if grep -qF "$expected" <<<"$output"; then
     echo "  [PASS] $name"
     PASS=$((PASS + 1))
   else
@@ -91,7 +105,7 @@ assert_verification_parity_fails() {
   local expected="$2"
   local output
   output=$(bash scripts/ci/check-verification-parity.sh 2>&1 || true)
-  if echo "$output" | grep -qF "$expected"; then
+  if grep -qF "$expected" <<<"$output"; then
     echo "  [PASS] $name"
     PASS=$((PASS + 1))
   else
@@ -181,6 +195,25 @@ mutate "$file" "name-assertion mismatch, missing Then" "missing Then, name-asser
 assert_fails "Check 5 — codex-plugin out-of-order pattern phrase" "missing or out-of-order pattern"
 restore "$file"
 
+# Case 9b: coordinated drift in all manifests must still fail. The phrase
+# source is the checked ID/title contract, not whichever manifest is treated as
+# the leader, so changing all three copies together cannot redefine truth.
+coordinated_manifests=(
+  ".claude-plugin/plugin.json"
+  ".claude-plugin/marketplace.json"
+  ".codex-plugin/plugin.json"
+)
+for file in "${coordinated_manifests[@]}"; do
+  backup "$file"
+  mutate "$file" "name-assertion mismatch" "renamed coordinated pattern"
+done
+assert_fails \
+  "Check 5 — coordinated manifest phrase drift rejected" \
+  "missing or out-of-order pattern 'name assertion mismatch'"
+for file in "${coordinated_manifests[@]}"; do
+  restore "$file"
+done
+
 # Case 10: Codex plugin interface prompt limit — Codex displays at most 3 prompts
 file=".codex-plugin/plugin.json"
 backup "$file"
@@ -232,6 +265,19 @@ assert_fails "SKILL.md description length guard" "frontmatter description exceed
 assert_security_fails "Pre-push SKILL.md description length guard" "frontmatter description exceeds 1024 characters"
 restore "$file"
 
+# Case 13b: OpenAI YAML must be structurally parsed. A duplicate key with the
+# same value defeats token/regex checks but is invalid under the supported
+# fail-closed manifest subset.
+file="skills/e2e-reviewer/agents/openai.yaml"
+backup "$file"
+mutate \
+  "$file" \
+  "allow_implicit_invocation: true" \
+  $'allow_implicit_invocation: true\nname: e2e-reviewer'
+assert_fails "OpenAI YAML parser — duplicate top-level key rejected" "invalid OpenAI agent YAML"
+assert_security_fails "Pre-push OpenAI YAML parser — duplicate top-level key rejected" "invalid OpenAI agent YAML"
+restore "$file"
+
 # Case 14: Language guard — Hangul on a non-switcher README.md line must still fail.
 # The switcher exemption only covers lines linking to README.<lang>.md translations.
 file="README.md"
@@ -239,6 +285,28 @@ backup "$file"
 mutate "$file" "Find Playwright/Cypress E2E tests that pass CI" "Find Playwright/Cypress E2E tests 한국어 that pass CI"
 assert_fails "Language guard — Hangul outside switcher line in README.md" "Korean text found in public docs: README.md"
 restore "$file"
+
+# A checker exception must fail closed. This guards against command
+# substitutions that append `|| true` and accidentally convert crashes or read
+# failures into an empty, successful result.
+file="scripts/ci/review.sh"
+backup "$file"
+mutate \
+  "$file" \
+  "hangul = re.compile(r'[\\uAC00-\\uD7AF]')" \
+  $'raise RuntimeError(\"language checker sentinel crash\")\nhangul = re.compile(r\\'[\\\\uAC00-\\\\uD7AF]\\')'
+assert_fails \
+  "Language guard — checker crash fails closed" \
+  "Language checker failed closed"
+restore "$file"
+
+LANGUAGE_BAD_FILE="docs/.language-read-failure.md"
+printf '\377' >"$LANGUAGE_BAD_FILE"
+assert_fails \
+  "Language guard — UTF-8 read failure fails closed" \
+  "Language checker failed closed"
+rm -f "$LANGUAGE_BAD_FILE"
+unset LANGUAGE_BAD_FILE
 
 # Case 15: README i18n structural parity — a translation losing a section must fail.
 file="README.ko.md"
@@ -306,16 +374,39 @@ else
   echo "  [SKIP] Case 21 — .codex/agents/e2e-failure-classifier.toml not present"
 fi
 
-# Case 22: independently installable V-rule copies must not drift.
+# Case 22: independently installable V-rule copies must not drift. Mutate the
+# actionable behavior while leaving marker comments untouched; marker-only
+# parity would miss every one of these regressions.
 file="skills/e2e-reviewer/references/verification-rules.md"
-backup "$file"
-mutate "$file" "V4=write-contract-proof" "V4=optimistic-ui-only"
-assert_verification_parity_fails "Verification parity — reviewer V4 contract drift" "generator/reviewer V-rule contracts differ"
-restore "$file"
+v_rule_anchors=(
+  "One primary observable outcome"
+  "Safely invert the primary assertion"
+  "Corrupt an evidenced dependency"
+  "Prove write method/endpoint/payload/cardinality and failed-write behavior"
+  "Pass bounded solo, repeat, suite-context, and supported parallel checks"
+  "A writer/debugger cannot approve its own output"
+)
+v_rule_mutations=(
+  "One implementation detail"
+  "Leave the primary assertion unchanged"
+  "Observe a dependency"
+  "Prove visible confirmation"
+  "Pass one normal run"
+  "A writer/debugger may approve its own output"
+)
+for index in "${!v_rule_anchors[@]}"; do
+  rule_id="V$((index + 1))"
+  backup "$file"
+  mutate "$file" "${v_rule_anchors[$index]}" "${v_rule_mutations[$index]}"
+  assert_verification_parity_fails \
+    "Verification parity — reviewer $rule_id behavior drift" \
+    "reviewer $rule_id behavior differs"
+  restore "$file"
+done
 
 file="skills/e2e-reviewer/references/verification-rules.md"
 backup "$file"
-mutate "$file" "verification.V6" "verification.selfApproved"
+mutate "$file" '`sourceUnchanged`' '`sourceMayChange`'
 assert_verification_parity_fails "Verification parity — reviewer result schema drift" "result schemas differ or are missing"
 restore "$file"
 
@@ -337,6 +428,211 @@ file="skills/cypress-debugger/SKILL.md"
 backup "$file"
 mutate "$file" 'native `debugger` role' 'native diagnosis role'
 assert_fails "Subagent parity SP6 — Cypress debugger drops standard native fallback" "must fall back from the named classifier"
+restore "$file"
+
+# Case 24: every framework rejected by the contributor scope contract must be
+# detected independently. Mutate the same positive README support sentence for
+# each name so a missing alternation cannot hide behind another framework hit.
+for framework in Puppeteer Selenium WebdriverIO TestCafe Nightwatch; do
+  file="README.md"
+  backup "$file"
+  mutate \
+    "$file" \
+    "Find Playwright/Cypress E2E tests that pass CI" \
+    "Find Playwright/Cypress/$framework E2E tests that pass CI"
+  assert_fails \
+    "Framework scope — $framework support claim rejected" \
+    "unsupported framework reference: $framework"
+  restore "$file"
+done
+
+# A negative framework sentence must not exempt a positive sentence elsewhere
+# in the same paragraph.
+file="AGENTS.md"
+backup "$file"
+mutate \
+  "$file" \
+  "or Nightwatch. See \`docs/framework-scope.md\`" \
+  "or Nightwatch. Puppeteer is fully supported. See \`docs/framework-scope.md\`"
+assert_fails \
+  "Framework scope — paragraph-level negative wording cannot launder support" \
+  "unsupported framework reference: Puppeteer"
+restore "$file"
+
+# The attributed evidence document may discuss out-of-scope frameworks, but it
+# must not become a blanket escape hatch for an e2e-skills capability claim.
+file="docs/llm-generated-e2e-test-evidence.md"
+backup "$file"
+mutate \
+  "$file" \
+  "The implementation is Selenium-based; feature coverage is not semantic fault detection." \
+  "The implementation is Selenium-based; feature coverage is not semantic fault detection. e2e-skills fully supports Selenium test generation."
+assert_fails \
+  "Framework scope — evidence document cannot claim e2e-skills Selenium support" \
+  "unsupported framework reference: Selenium"
+restore "$file"
+
+# Translation parity protects the exact canonical installation commands and
+# repository URLs in every language, not just section/fence counts.
+for file in README.ko.md README.ja.md README.zh-cn.md; do
+  backup "$file"
+  mutate \
+    "$file" \
+    "npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all" \
+    "npx --yes skills@1.5.21 add voidmatcha/e2e-skillz -g --all"
+  assert_fails \
+    "README i18n parity — $file install command drift" \
+    "$file canonical install commands differ from README.md"
+  restore "$file"
+
+  backup "$file"
+  mutate \
+    "$file" \
+    "https://github.com/voidmatcha/e2e-skills.git" \
+    "https://github.com/voidmatcha/e2e-skillz.git"
+  assert_fails \
+    "README i18n parity — $file repository URL drift" \
+    "$file canonical repository URLs differ from README.md"
+  restore "$file"
+done
+
+# A manual Claude Code source install must expose each skill directly under
+# ~/.claude/skills; Claude Code does not document recursive personal-skill
+# discovery through a bundle directory.
+file="README.md"
+backup "$file"
+mutate \
+  "$file" \
+  'git clone https://github.com/voidmatcha/e2e-skills.git "$HOME/.claude/e2e-skills"' \
+  'git clone https://github.com/voidmatcha/e2e-skills.git ~/.claude/skills/e2e-skills'
+assert_fails \
+  "README manual clone — nested bundle path rejected" \
+  "README.md manual Claude Code clone must expose four direct per-skill roots"
+restore "$file"
+
+# Codex installation is host-specific, and generator V6 needs independent
+# context rather than the equivalent inline-fallback contract used elsewhere.
+file="README.md"
+backup "$file"
+mutate \
+  "$file" \
+  "--skill '*' -g -a codex" \
+  "--skill '*' -g -a claude-code -a codex"
+assert_fails \
+  "README Codex install — host-specific command rejects hidden Claude install" \
+  "README.md Codex install must target only -a codex"
+restore "$file"
+
+file="README.md"
+backup "$file"
+mutate "$file" '`CANNOT_VERIFY` and' '`UNVERIFIED` and'
+assert_fails \
+  "README Codex delegation — generator independent-context limit is required" \
+  "README.md Codex delegation limits missing tokens"
+restore "$file"
+
+# The translated taxonomy tables must retain the canonical pattern IDs,
+# severities, and two complete F1-F15 debugger tables.
+for file in README.ko.md README.ja.md README.zh-cn.md; do
+  backup "$file"
+  mutate "$file" "| 12 |" "| 12x |"
+  assert_fails \
+    "README i18n taxonomy — $file pattern ID drift" \
+    "$file pattern ID/severity contract differs from README.md"
+  restore "$file"
+done
+
+file="README.ko.md"
+backup "$file"
+mutate "$file" "#### P1 " "#### P0 "
+assert_fails \
+  "README i18n taxonomy — severity drift" \
+  "README.ko.md pattern ID/severity contract differs from README.md"
+restore "$file"
+
+file="README.ja.md"
+backup "$file"
+mutate "$file" "| F15 |" "| F16 |"
+assert_fails \
+  "README i18n taxonomy — F1-F15 drift" \
+  "README.ja.md F1-F15 taxonomy contract differs from README.md"
+restore "$file"
+
+# Translation contract snapshots protect a small set of safety and scope claims.
+# They do not assess translation quality. Changing the visible protected prose
+# requires an explicit review.sh snapshot update.
+for file in README.ko.md README.ja.md README.zh-cn.md; do
+  backup "$file"
+  mutate \
+    "$file" \
+    "\`--isolation-wrapper\`" \
+    "\`--isolation-hook\`"
+  assert_fails \
+    "README i18n semantic contract — $file isolation claim drift" \
+    "$file protected semantic contract"
+  restore "$file"
+done
+
+file="README.ko.md"
+backup "$file"
+mutate \
+  "$file" \
+  "<!-- README-I18N-CONTRACT:CORE-SAFETY:START -->" \
+  "<!-- README-I18N-CONTRACT:CORE-SAFETY:REMOVED -->"
+assert_fails \
+  "README i18n semantic contract — missing protected block fails" \
+  "README.ko.md missing or duplicated protected semantic contract"
+restore "$file"
+
+# The scanner trust disclosure must preserve the narrow read-scope exception:
+# findings stay under the requested path, while provenance resolution may read
+# relative fixture/support imports elsewhere in the same containing project.
+for file in README.ko.md README.ja.md README.zh-cn.md; do
+  backup "$file"
+  mutate "$file" "fixture/support" "fixture/helper"
+  assert_fails \
+    "README i18n scanner read scope — $file provenance exception drift" \
+    "$file protected scanner read-scope contract"
+  restore "$file"
+done
+
+file="README.zh-cn.md"
+backup "$file"
+mutate \
+  "$file" \
+  "<!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:START -->" \
+  "<!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:REMOVED -->"
+assert_fails \
+  "README i18n scanner read scope — missing protected block fails" \
+  "README.zh-cn.md missing or duplicated protected scanner read-scope contract"
+restore "$file"
+
+# Each translation acknowledges the exact byte revision of canonical README.md.
+# This is a review checkpoint, not a translation-quality attestation.
+readme_digest=$(env LC_ALL=C LC_CTYPE=C LANG=C python3 - <<'PY'
+import hashlib
+import pathlib
+
+print(hashlib.sha256(pathlib.Path("README.md").read_bytes()).hexdigest())
+PY
+)
+file="README.ko.md"
+backup "$file"
+mutate "$file" "$readme_digest" "$(printf '0%.0s' {1..64})"
+assert_fails \
+  "README i18n canonical revision — translated acknowledgement drift" \
+  "README.ko.md canonical revision acknowledgement is stale"
+restore "$file"
+
+file="README.md"
+backup "$file"
+mutate \
+  "$file" \
+  "Find Playwright/Cypress E2E tests that pass CI while proving little or nothing." \
+  "Find Playwright/Cypress E2E tests that pass CI while proving too little."
+assert_fails \
+  "README i18n canonical revision — canonical byte change requires review" \
+  "canonical revision acknowledgement is stale"
 restore "$file"
 
 # ---------------------------------------------------------------------------
@@ -415,7 +711,7 @@ assert_scan_contains "Scanner S1 — #7 hit names the fixture line" "focused.spe
 run_scan s1 p0
 assert_scan_rc "Scanner S2 — test.only fixture exits 1 under FAIL_ON=p0" 1
 
-# Case S3: sync-matcher one-shot read is #4c-4e (one-shot read, P0), never #15
+# Case S3: sync-matcher one-shot read is #4c-4e (non-retrying read, P1), never #15
 mkdir -p "$SCAN_FIXDIR/s3"
 cat > "$SCAN_FIXDIR/s3/oneshot.spec.ts" <<'EOF'
 import { test, expect } from '@playwright/test';

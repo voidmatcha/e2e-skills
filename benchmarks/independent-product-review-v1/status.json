@@ -1,0 +1,738 @@
+{
+  "accuracy_claim_allowed": false,
+  "archive_id": "independent-product-review-v1",
+  "attempts": [
+    {
+      "attempt_id": null,
+      "citations": [
+        "skills/e2e-reviewer/references/applying-fixes.md:29",
+        "skills/e2e-reviewer/scripts/scan.sh:1438",
+        "skills/playwright-debugger/SKILL.md:86"
+      ],
+      "finding_counts": {
+        "C": 0,
+        "H": 3,
+        "M": 0
+      },
+      "invocation_id": null,
+      "label": "codex",
+      "local_invocation_id_remote_attestation": false,
+      "model": "gpt-5.6-sol",
+      "packet_sha256": "86e95c845a72c020fee66b654045c104db62967d6d30edb5656e4e1e33ed7f26",
+      "protocol_sha256": "ff5b33d26103c2a21cec91f91a086ad6420188e99f005cef90f77e3932cfd340",
+      "reason": null,
+      "repetition": null,
+      "round": "r1",
+      "runner": "codex",
+      "schedule_index": null,
+      "score": 83.17,
+      "status": "FAIL"
+    },
+    {
+      "attempt_id": null,
+      "citations": [],
+      "finding_counts": null,
+      "invocation_id": null,
+      "label": "fable",
+      "local_invocation_id_remote_attestation": false,
+      "model": "claude-fable-5",
+      "packet_sha256": "86e95c845a72c020fee66b654045c104db62967d6d30edb5656e4e1e33ed7f26",
+      "protocol_sha256": "ff5b33d26103c2a21cec91f91a086ad6420188e99f005cef90f77e3932cfd340",
+      "reason": {
+        "code": "runner_nonzero_exit",
+        "message": "runner exited with status 1"
+      },
+      "repetition": null,
+      "round": "r1",
+      "runner": "claude",
+      "schedule_index": null,
+      "score": null,
+      "status": "INCONCLUSIVE"
+    },
+    {
+      "attempt_id": null,
+      "citations": [],
+      "finding_counts": null,
+      "invocation_id": null,
+      "label": "opus",
+      "local_invocation_id_remote_attestation": false,
+      "model": "claude-opus-5",
+      "packet_sha256": "86e95c845a72c020fee66b654045c104db62967d6d30edb5656e4e1e33ed7f26",
+      "protocol_sha256": "ff5b33d26103c2a21cec91f91a086ad6420188e99f005cef90f77e3932cfd340",
+      "reason": {
+        "code": "runner_nonzero_exit",
+        "message": "runner exited with status 1"
+      },
+      "repetition": null,
+      "round": "r1",
+      "runner": "claude",
+      "schedule_index": null,
+      "score": null,
+      "status": "INCONCLUSIVE"
+    },
+    {
+      "attempt_id": null,
+      "citations": [
+        "skills/e2e-reviewer/references/pattern-reference.md:235",
+        "skills/e2e-reviewer/scripts/scan.sh:4491",
+        "skills/e2e-reviewer/SKILL.md:199",
+        "skills/playwright-debugger/scripts/publish-json-report.py:82",
+        "skills/playwright-debugger/scripts/publish-json-report.py:99",
+        "skills/e2e-reviewer/references/applying-fixes.md:52",
+        "README.md:183"
+      ],
+      "finding_counts": {
+        "C": 0,
+        "H": 2,
+        "M": 5
+      },
+      "invocation_id": null,
+      "label": "codex",
+      "local_invocation_id_remote_attestation": false,
+      "model": "gpt-5.6-sol",
+      "packet_sha256": "5dfd5cd7e37898c7e123a0094766d83521e561ca1e5965a20b3d5b9909da61f3",
+      "protocol_sha256": "ff5b33d26103c2a21cec91f91a086ad6420188e99f005cef90f77e3932cfd340",
+      "reason": null,
+      "repetition": null,
+      "round": "r2",
+      "runner": "codex",
+      "schedule_index": null,
+      "score": 85.5,
+      "status": "FAIL"
+    },
+    {
+      "attempt_id": null,
+      "citations": [],
+      "finding_counts": null,
+      "invocation_id": null,
+      "label": "fable",
+      "local_invocation_id_remote_attestation": false,
+      "model": "claude-fable-5",
+      "packet_sha256": "5dfd5cd7e37898c7e123a0094766d83521e561ca1e5965a20b3d5b9909da61f3",
+      "protocol_sha256": "ff5b33d26103c2a21cec91f91a086ad6420188e99f005cef90f77e3932cfd340",
+      "reason": {
+        "code": "runner_nonzero_exit",
+        "message": "runner exited with status 1"
+      },
+      "repetition": null,
+      "round": "r2",
+      "runner": "claude",
+      "schedule_index": null,
+      "score": null,
+      "status": "INCONCLUSIVE"
+    },
+    {
+      "attempt_id": null,
+      "citations": [],
+      "finding_counts": null,
+      "invocation_id": null,
+      "label": "opus",
+      "local_invocation_id_remote_attestation": false,
+      "model": "claude-opus-5",
+      "packet_sha256": "5dfd5cd7e37898c7e123a0094766d83521e561ca1e5965a20b3d5b9909da61f3",
+      "protocol_sha256": "ff5b33d26103c2a21cec91f91a086ad6420188e99f005cef90f77e3932cfd340",
+      "reason": {
+        "code": "runner_nonzero_exit",
+        "message": "runner exited with status 1"
+      },
+      "repetition": null,
+      "round": "r2",
+      "runner": "claude",
+      "schedule_index": null,
+      "score": null,
+      "status": "INCONCLUSIVE"
+    },
+    {
+      "attempt_id": null,
+      "citations": [
+        "skills/e2e-reviewer/scripts/scan.sh:593",
+        "skills/cypress-debugger/scripts/extract-junit-failures.py:168",
+        "SECURITY.md:32",
+        "skills/e2e-reviewer/references/applying-fixes.md:22"
+      ],
+      "finding_counts": {
+        "C": 0,
+        "H": 1,
+        "M": 3
+      },
+      "invocation_id": null,
+      "label": "codex",
+      "local_invocation_id_remote_attestation": false,
+      "model": "gpt-5.6-sol",
+      "packet_sha256": "51cfd3b67af9b1b6b1eb82b1747c49a8b6b641d5d9a481235d5f4fdb109a3a44",
+      "protocol_sha256": "ff5b33d26103c2a21cec91f91a086ad6420188e99f005cef90f77e3932cfd340",
+      "reason": null,
+      "repetition": null,
+      "round": "r3",
+      "runner": "codex",
+      "schedule_index": null,
+      "score": 89.17,
+      "status": "FAIL"
+    },
+    {
+      "attempt_id": null,
+      "citations": [
+        "skills/e2e-reviewer/scripts/scan.sh:1839",
+        "skills/playwright-debugger/SKILL.md:115",
+        "skills/playwright-test-generator/code-rules.md:157"
+      ],
+      "finding_counts": {
+        "C": 0,
+        "H": 2,
+        "M": 1
+      },
+      "invocation_id": null,
+      "label": "codex",
+      "local_invocation_id_remote_attestation": false,
+      "model": "gpt-5.6-sol",
+      "packet_sha256": "51cfd3b67af9b1b6b1eb82b1747c49a8b6b641d5d9a481235d5f4fdb109a3a44",
+      "protocol_sha256": "ff5b33d26103c2a21cec91f91a086ad6420188e99f005cef90f77e3932cfd340",
+      "reason": null,
+      "repetition": null,
+      "round": "r3b",
+      "runner": "codex",
+      "schedule_index": null,
+      "score": 83.67,
+      "status": "FAIL"
+    },
+    {
+      "attempt_id": null,
+      "citations": [
+        "skills/cypress-debugger/SKILL.md:119",
+        "skills/playwright-debugger/scripts/download-playwright-report.py:181",
+        "skills/e2e-reviewer/SKILL.md:152",
+        "README.md:164",
+        "README.md:154"
+      ],
+      "finding_counts": {
+        "C": 0,
+        "H": 2,
+        "M": 3
+      },
+      "invocation_id": null,
+      "label": "codex",
+      "local_invocation_id_remote_attestation": false,
+      "model": "gpt-5.6-sol",
+      "packet_sha256": "bccc53c93a59aa1cd463db91ac740962aca7c89a1db65bb8368b7f81bf3f5a10",
+      "protocol_sha256": "ff5b33d26103c2a21cec91f91a086ad6420188e99f005cef90f77e3932cfd340",
+      "reason": null,
+      "repetition": null,
+      "round": "r4",
+      "runner": "codex",
+      "schedule_index": null,
+      "score": 82.83,
+      "status": "FAIL"
+    },
+    {
+      "attempt_id": null,
+      "citations": [
+        "skills/e2e-reviewer/scripts/scan.sh:4836",
+        "README.md:509"
+      ],
+      "finding_counts": {
+        "C": 0,
+        "H": 0,
+        "M": 2
+      },
+      "invocation_id": null,
+      "label": "codex",
+      "local_invocation_id_remote_attestation": false,
+      "model": "gpt-5.6-sol",
+      "packet_sha256": "cbd0ab13d8faf539f1e6e0610a302270478a04a61ee867f27371e469b4b835a6",
+      "protocol_sha256": "ff5b33d26103c2a21cec91f91a086ad6420188e99f005cef90f77e3932cfd340",
+      "reason": null,
+      "repetition": null,
+      "round": "r5",
+      "runner": "codex",
+      "schedule_index": null,
+      "score": 93.17,
+      "status": "PASS"
+    },
+    {
+      "attempt_id": null,
+      "citations": [
+        "skills/playwright-debugger/scripts/read-playwright-artifact.py:998",
+        "skills/e2e-reviewer/references/pattern-reference.md:297"
+      ],
+      "finding_counts": {
+        "C": 0,
+        "H": 1,
+        "M": 1
+      },
+      "invocation_id": null,
+      "label": "codex",
+      "local_invocation_id_remote_attestation": false,
+      "model": "gpt-5.6-sol",
+      "packet_sha256": "5b349530c3153c11c7abe0d30dc2073b16091bc82c7d071a6518b4bc4ef53a72",
+      "protocol_sha256": "ff5b33d26103c2a21cec91f91a086ad6420188e99f005cef90f77e3932cfd340",
+      "reason": null,
+      "repetition": null,
+      "round": "r6",
+      "runner": "codex",
+      "schedule_index": null,
+      "score": 88.0,
+      "status": "FAIL"
+    },
+    {
+      "attempt_id": "codex-r1",
+      "citations": [
+        "skills/e2e-reviewer/scripts/scan.sh:185",
+        "skills/cypress-debugger/scripts/download-cypress-reports.py:184",
+        "skills/playwright-debugger/scripts/publish-json-report.py:113",
+        "skills/cypress-debugger/SKILL.md:107"
+      ],
+      "finding_counts": {
+        "C": 0,
+        "H": 2,
+        "M": 2
+      },
+      "invocation_id": "a530059b-b3ea-4607-a840-03c0e58380db",
+      "label": "codex",
+      "local_invocation_id_remote_attestation": false,
+      "model": "gpt-5.6-sol",
+      "packet_sha256": "da4b317623ed9cd460fc4decdbfcb55fe6ed0af3dd67ce8b189fa67c739aa41d",
+      "protocol_sha256": "6eba5bec52997da20ae621e50281ff7a3856afbc9dd9b08d9917e5ced3f6950d",
+      "reason": null,
+      "repetition": 1,
+      "round": "r7",
+      "runner": "codex",
+      "schedule_index": 0,
+      "score": 87.0,
+      "status": "FAIL"
+    },
+    {
+      "attempt_id": "codex-r2",
+      "citations": [
+        "skills/e2e-reviewer/scripts/scan.sh:318",
+        "skills/playwright-test-generator/SKILL.md:159",
+        "skills/playwright-debugger/scripts/download-playwright-report.py:399"
+      ],
+      "finding_counts": {
+        "C": 0,
+        "H": 3,
+        "M": 0
+      },
+      "invocation_id": "1191ea1d-46a2-4fcc-a500-0b6700e53aa5",
+      "label": "codex",
+      "local_invocation_id_remote_attestation": false,
+      "model": "gpt-5.6-sol",
+      "packet_sha256": "da4b317623ed9cd460fc4decdbfcb55fe6ed0af3dd67ce8b189fa67c739aa41d",
+      "protocol_sha256": "6eba5bec52997da20ae621e50281ff7a3856afbc9dd9b08d9917e5ced3f6950d",
+      "reason": null,
+      "repetition": 2,
+      "round": "r8",
+      "runner": "codex",
+      "schedule_index": 3,
+      "score": 86.33,
+      "status": "FAIL"
+    },
+    {
+      "attempt_id": "codex-r3",
+      "citations": [
+        "scripts/ci/ci-local.sh:1",
+        "skills/cypress-debugger/scripts/download-cypress-reports.py:179",
+        "skills/cypress-debugger/scripts/download-cypress-reports.py:334",
+        "skills/cypress-debugger/SKILL.md:115"
+      ],
+      "finding_counts": {
+        "C": 0,
+        "H": 1,
+        "M": 3
+      },
+      "invocation_id": "b76d045f-6225-4c52-9388-ccab5ba21d99",
+      "label": "codex",
+      "local_invocation_id_remote_attestation": false,
+      "model": "gpt-5.6-sol",
+      "packet_sha256": "da4b317623ed9cd460fc4decdbfcb55fe6ed0af3dd67ce8b189fa67c739aa41d",
+      "protocol_sha256": "6eba5bec52997da20ae621e50281ff7a3856afbc9dd9b08d9917e5ced3f6950d",
+      "reason": null,
+      "repetition": 3,
+      "round": "r9",
+      "runner": "codex",
+      "schedule_index": 6,
+      "score": 87.0,
+      "status": "FAIL"
+    },
+    {
+      "attempt_id": "codex-postremediation-r1",
+      "citations": [
+        "skills/e2e-reviewer/SKILL.md:20",
+        "skills/e2e-reviewer/scripts/scan.sh:325"
+      ],
+      "finding_counts": {
+        "C": 0,
+        "H": 0,
+        "M": 2
+      },
+      "invocation_id": "84cb11cd-7c32-415c-a054-c74fe29fd2aa",
+      "label": "codex",
+      "local_invocation_id_remote_attestation": false,
+      "model": "gpt-5.6-sol",
+      "packet_sha256": "278fed9d19efa7d16bbea241bac956824cda2c7699b5b88756157f3c52212a04",
+      "protocol_sha256": "018729aedd61c8013884fb803e5632cdb50f5130c46f6cd2074daca31d494abe",
+      "reason": null,
+      "repetition": 1,
+      "round": "r10",
+      "runner": "codex",
+      "schedule_index": 0,
+      "score": 93.0,
+      "status": "PASS"
+    },
+    {
+      "attempt_id": "codex-postremediation-r2",
+      "citations": [
+        "skills/e2e-reviewer/scripts/scan.sh:1843",
+        "skills/e2e-reviewer/SKILL.md:20",
+        "skills/playwright-debugger/SKILL.md:266",
+        "skills/cypress-debugger/SKILL.md:323",
+        "skills/playwright-test-generator/SKILL.md:323"
+      ],
+      "finding_counts": {
+        "C": 0,
+        "H": 0,
+        "M": 5
+      },
+      "invocation_id": "ad7e0e85-778e-4e19-99c7-fd9f532ca189",
+      "label": "codex",
+      "local_invocation_id_remote_attestation": false,
+      "model": "gpt-5.6-sol",
+      "packet_sha256": "278fed9d19efa7d16bbea241bac956824cda2c7699b5b88756157f3c52212a04",
+      "protocol_sha256": "018729aedd61c8013884fb803e5632cdb50f5130c46f6cd2074daca31d494abe",
+      "reason": null,
+      "repetition": 2,
+      "round": "r11",
+      "runner": "codex",
+      "schedule_index": 1,
+      "score": 91.17,
+      "status": "PASS"
+    },
+    {
+      "attempt_id": "codex-postremediation-r3",
+      "citations": [
+        "skills/e2e-reviewer/scripts/scan.sh:1916",
+        "skills/e2e-reviewer/scripts/scan.sh:3045",
+        "skills/e2e-reviewer/scripts/scan.sh:1843"
+      ],
+      "finding_counts": {
+        "C": 0,
+        "H": 2,
+        "M": 1
+      },
+      "invocation_id": "a04b0fb8-2cb3-4e7e-924b-7bc71b3b4e79",
+      "label": "codex",
+      "local_invocation_id_remote_attestation": false,
+      "model": "gpt-5.6-sol",
+      "packet_sha256": "278fed9d19efa7d16bbea241bac956824cda2c7699b5b88756157f3c52212a04",
+      "protocol_sha256": "018729aedd61c8013884fb803e5632cdb50f5130c46f6cd2074daca31d494abe",
+      "reason": null,
+      "repetition": 3,
+      "round": "r12",
+      "runner": "codex",
+      "schedule_index": 2,
+      "score": 87.67,
+      "status": "FAIL"
+    },
+    {
+      "attempt_id": "codex-final-r1",
+      "citations": [
+        "skills/e2e-reviewer/scripts/scan.sh:205",
+        "skills/playwright-test-generator/verification-rules.md:44"
+      ],
+      "finding_counts": {
+        "C": 0,
+        "H": 1,
+        "M": 1
+      },
+      "invocation_id": "b9eb64a9-2525-4859-8f63-b49b20fbf63b",
+      "label": "codex",
+      "local_invocation_id_remote_attestation": false,
+      "model": "gpt-5.6-sol",
+      "packet_sha256": "68f130d7b4a3e4a33956e2bc47c417bba9d8d46ee8a7501a8317772e3bbdb334",
+      "protocol_sha256": "7d1223452a9df28c1daed5aeb419949b7dffead281a454a5990dd3cb6532e186",
+      "reason": null,
+      "repetition": 1,
+      "round": "r13",
+      "runner": "codex",
+      "schedule_index": 0,
+      "score": 89.67,
+      "status": "FAIL"
+    },
+    {
+      "attempt_id": "codex-final-r2",
+      "citations": [
+        "skills/playwright-test-generator/scripts/run-preflight-target.sh:173",
+        "skills/e2e-reviewer/scripts/scan.sh:2659",
+        "skills/e2e-reviewer/SKILL.md:32"
+      ],
+      "finding_counts": {
+        "C": 0,
+        "H": 1,
+        "M": 2
+      },
+      "invocation_id": "44cf4e73-db0f-42d7-a9d0-57620bf4d593",
+      "label": "codex",
+      "local_invocation_id_remote_attestation": false,
+      "model": "gpt-5.6-sol",
+      "packet_sha256": "68f130d7b4a3e4a33956e2bc47c417bba9d8d46ee8a7501a8317772e3bbdb334",
+      "protocol_sha256": "7d1223452a9df28c1daed5aeb419949b7dffead281a454a5990dd3cb6532e186",
+      "reason": null,
+      "repetition": 2,
+      "round": "r14",
+      "runner": "codex",
+      "schedule_index": 1,
+      "score": 89.0,
+      "status": "FAIL"
+    },
+    {
+      "attempt_id": "codex-final-r3",
+      "citations": [
+        "skills/playwright-debugger/scripts/publish-json-report.py:152",
+        "skills/e2e-reviewer/scripts/scan.sh:2629"
+      ],
+      "finding_counts": {
+        "C": 0,
+        "H": 2,
+        "M": 0
+      },
+      "invocation_id": "30a9d3dd-34aa-44bd-a507-45acdb63d9f1",
+      "label": "codex",
+      "local_invocation_id_remote_attestation": false,
+      "model": "gpt-5.6-sol",
+      "packet_sha256": "68f130d7b4a3e4a33956e2bc47c417bba9d8d46ee8a7501a8317772e3bbdb334",
+      "protocol_sha256": "7d1223452a9df28c1daed5aeb419949b7dffead281a454a5990dd3cb6532e186",
+      "reason": null,
+      "repetition": 3,
+      "round": "r15",
+      "runner": "codex",
+      "schedule_index": 2,
+      "score": 87.67,
+      "status": "FAIL"
+    },
+    {
+      "attempt_id": "codex-closure-r1",
+      "citations": [
+        "skills/playwright-test-generator/SKILL.md:331",
+        "skills/playwright-test-generator/SKILL.md:583",
+        "README.md:203"
+      ],
+      "finding_counts": {
+        "C": 0,
+        "H": 1,
+        "M": 2
+      },
+      "invocation_id": "94acb7a6-062a-4dc3-88b9-2e88e3ac21e2",
+      "label": "codex",
+      "local_invocation_id_remote_attestation": false,
+      "model": "gpt-5.6-sol",
+      "packet_sha256": "fb19f5846a7bd5a8cb7e5bb3c49287f136761b91e12481025e1f3040245c03b3",
+      "protocol_sha256": "93bd84b4a33da03abb81e718068691846901a3beacadb439cf8762b040eeae42",
+      "reason": null,
+      "repetition": 1,
+      "round": "r16",
+      "runner": "codex",
+      "schedule_index": 0,
+      "score": 90.5,
+      "status": "FAIL"
+    },
+    {
+      "attempt_id": "codex-closure-r2",
+      "citations": [
+        "skills/playwright-test-generator/scripts/run-preflight-target.sh:160",
+        "skills/playwright-debugger/scripts/publish-json-report.py:45",
+        "skills/playwright-test-generator/code-rules.md:151"
+      ],
+      "finding_counts": {
+        "C": 0,
+        "H": 0,
+        "M": 3
+      },
+      "invocation_id": "9dd12194-b67f-4707-af5f-9f01033e6673",
+      "label": "codex",
+      "local_invocation_id_remote_attestation": false,
+      "model": "gpt-5.6-sol",
+      "packet_sha256": "fb19f5846a7bd5a8cb7e5bb3c49287f136761b91e12481025e1f3040245c03b3",
+      "protocol_sha256": "93bd84b4a33da03abb81e718068691846901a3beacadb439cf8762b040eeae42",
+      "reason": null,
+      "repetition": 2,
+      "round": "r17",
+      "runner": "codex",
+      "schedule_index": 1,
+      "score": 92.5,
+      "status": "PASS"
+    },
+    {
+      "attempt_id": "codex-closure-r3",
+      "citations": [
+        "skills/playwright-test-generator/SKILL.md:51",
+        "skills/playwright-debugger/SKILL.md:438",
+        "skills/cypress-debugger/SKILL.md:375"
+      ],
+      "finding_counts": {
+        "C": 0,
+        "H": 0,
+        "M": 3
+      },
+      "invocation_id": "88505f8a-ee5d-4413-8afe-1704d3d190b1",
+      "label": "codex",
+      "local_invocation_id_remote_attestation": false,
+      "model": "gpt-5.6-sol",
+      "packet_sha256": "fb19f5846a7bd5a8cb7e5bb3c49287f136761b91e12481025e1f3040245c03b3",
+      "protocol_sha256": "93bd84b4a33da03abb81e718068691846901a3beacadb439cf8762b040eeae42",
+      "reason": null,
+      "repetition": 3,
+      "round": "r18",
+      "runner": "codex",
+      "schedule_index": 2,
+      "score": 91.5,
+      "status": "PASS"
+    }
+  ],
+  "attestation_claim_allowed": false,
+  "baseline_packet_sha256": "da4b317623ed9cd460fc4decdbfcb55fe6ed0af3dd67ce8b189fa67c739aa41d",
+  "closure_remediation_codex": {
+    "attempt_statuses": {
+      "codex-closure-r1": "FAIL",
+      "codex-closure-r2": "PASS",
+      "codex-closure-r3": "PASS"
+    },
+    "attempts_missing": [],
+    "attempts_present": [
+      "codex-closure-r1",
+      "codex-closure-r2",
+      "codex-closure-r3"
+    ],
+    "complete": true,
+    "packet_sha256": "fb19f5846a7bd5a8cb7e5bb3c49287f136761b91e12481025e1f3040245c03b3",
+    "pass": false,
+    "protocol_sha256": "93bd84b4a33da03abb81e718068691846901a3beacadb439cf8762b040eeae42",
+    "scheduled_attempt_ids": [
+      "codex-closure-r1",
+      "codex-closure-r2",
+      "codex-closure-r3"
+    ]
+  },
+  "closure_remediation_declared_schedule_digest": "a083e664b62c180c3c002970aa1d290ad30e7a4bb89a20ddeaf52ab06bd70b21",
+  "evidence_kind": "fresh-context-curated-subset-post-remediation-robustness",
+  "final_remediation_codex": {
+    "attempt_statuses": {
+      "codex-final-r1": "FAIL",
+      "codex-final-r2": "FAIL",
+      "codex-final-r3": "FAIL"
+    },
+    "attempts_missing": [],
+    "attempts_present": [
+      "codex-final-r1",
+      "codex-final-r2",
+      "codex-final-r3"
+    ],
+    "complete": true,
+    "packet_sha256": "68f130d7b4a3e4a33956e2bc47c417bba9d8d46ee8a7501a8317772e3bbdb334",
+    "pass": false,
+    "protocol_sha256": "7d1223452a9df28c1daed5aeb419949b7dffead281a454a5990dd3cb6532e186",
+    "scheduled_attempt_ids": [
+      "codex-final-r1",
+      "codex-final-r2",
+      "codex-final-r3"
+    ]
+  },
+  "final_remediation_declared_schedule_digest": "6d151b94e1f8413ac60b5486f8486249f732aaa349ba023d38868d9863abcfb7",
+  "full_product_claim_allowed": false,
+  "human_review_claim_allowed": false,
+  "independent_ground_truth_claim_allowed": false,
+  "invocation_ids_are_local_provenance_only": true,
+  "latest_round": "r18",
+  "original_cross_model": {
+    "attempt_statuses": {
+      "codex-r1": "FAIL",
+      "codex-r2": "FAIL",
+      "codex-r3": "FAIL"
+    },
+    "attempts_missing": [
+      "opus-r1",
+      "fable-r1",
+      "opus-r2",
+      "fable-r2",
+      "opus-r3",
+      "fable-r3"
+    ],
+    "attempts_present": [
+      "codex-r1",
+      "codex-r2",
+      "codex-r3"
+    ],
+    "complete": false,
+    "gate_pass": false,
+    "packet_sha256": "da4b317623ed9cd460fc4decdbfcb55fe6ed0af3dd67ce8b189fa67c739aa41d",
+    "protocol_sha256": "6eba5bec52997da20ae621e50281ff7a3856afbc9dd9b08d9917e5ced3f6950d",
+    "scheduled_attempt_ids": [
+      "codex-r1",
+      "opus-r1",
+      "fable-r1",
+      "codex-r2",
+      "opus-r2",
+      "fable-r2",
+      "codex-r3",
+      "opus-r3",
+      "fable-r3"
+    ]
+  },
+  "pending": [
+    "original cross-model calls remain missing: opus-r1, fable-r1, opus-r2, fable-r2, opus-r3, fable-r3"
+  ],
+  "post_remediation_codex": {
+    "attempt_statuses": {
+      "codex-postremediation-r1": "PASS",
+      "codex-postremediation-r2": "PASS",
+      "codex-postremediation-r3": "FAIL"
+    },
+    "attempts_missing": [],
+    "attempts_present": [
+      "codex-postremediation-r1",
+      "codex-postremediation-r2",
+      "codex-postremediation-r3"
+    ],
+    "complete": true,
+    "packet_sha256": "278fed9d19efa7d16bbea241bac956824cda2c7699b5b88756157f3c52212a04",
+    "pass": false,
+    "protocol_sha256": "018729aedd61c8013884fb803e5632cdb50f5130c46f6cd2074daca31d494abe",
+    "scheduled_attempt_ids": [
+      "codex-postremediation-r1",
+      "codex-postremediation-r2",
+      "codex-postremediation-r3"
+    ]
+  },
+  "post_remediation_declared_schedule_digest": "d7ce3fd184f23a4b14ae5c9ed1c56ac5b190adedf942ded1219de0b7bcc35f9a",
+  "protocol_revisions": {
+    "closure_remediation_codex": "93bd84b4a33da03abb81e718068691846901a3beacadb439cf8762b040eeae42",
+    "final_remediation_codex": "7d1223452a9df28c1daed5aeb419949b7dffead281a454a5990dd3cb6532e186",
+    "historical_r1_r6": "ff5b33d26103c2a21cec91f91a086ad6420188e99f005cef90f77e3932cfd340",
+    "original_v1_fixed_schedule": "6eba5bec52997da20ae621e50281ff7a3856afbc9dd9b08d9917e5ced3f6950d",
+    "post_remediation_codex": "018729aedd61c8013884fb803e5632cdb50f5130c46f6cd2074daca31d494abe"
+  },
+  "remote_model_attestation_claim_allowed": false,
+  "schema_version": 1,
+  "sealed_review_claim_allowed": false,
+  "skill_accuracy_claim_allowed": false,
+  "v1_codex": {
+    "attempt_statuses": {
+      "codex-r1": "FAIL",
+      "codex-r2": "FAIL",
+      "codex-r3": "FAIL"
+    },
+    "attempts_missing": [],
+    "attempts_present": [
+      "codex-r1",
+      "codex-r2",
+      "codex-r3"
+    ],
+    "complete": true,
+    "gate_pass": false,
+    "packet_sha256": "da4b317623ed9cd460fc4decdbfcb55fe6ed0af3dd67ce8b189fa67c739aa41d",
+    "protocol_sha256": "6eba5bec52997da20ae621e50281ff7a3856afbc9dd9b08d9917e5ced3f6950d",
+    "scheduled_attempt_ids": [
+      "codex-r1",
+      "codex-r2",
+      "codex-r3"
+    ]
+  }
+}

@@ -4,6 +4,7 @@ on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   e2e-skills-ci:
@@ -17,45 +18,108 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y ripgrep
 
       - name: Install ast-grep
-        run: npm i -g '@ast-grep/cli@^0.39'
+        run: npm i -g '@ast-grep/cli@0.39.7'
+
+      # scan.sh binds ast-grep only from a fixed absolute candidate list, on
+      # purpose: PATH is attacker-controllable for a tool that runs over a
+      # reviewed repository. npm -g installs outside that list on hosted
+      # runners, so point the documented override at the binary we just pinned
+      # rather than widening the search.
+      - name: Export the pinned ast-grep path
+        run: echo "E2E_SMELL_AST_GREP_BIN=$(command -v ast-grep)" >> "$GITHUB_ENV"
 
       - name: Run convention and security checks
-        shell: bash
-        env:
-          E2E_SKILLS_SKIP_SECURITY: "1"
-          E2E_SKILLS_SKIP_SMELL_SCAN: "1"
-        run: bash scripts/ci/ci-local.sh
-
-      - name: Run E2E smell scanner (auto-uses eslint plugins, ast-grep, regex)
-        shell: bash
-        env:
-          E2E_SMELL_FAIL_ON: p0
+        shell: /bin/bash --noprofile --norc -p -e -o pipefail {0}
         run: |
-          set -o pipefail
-          ./skills/e2e-reviewer/scripts/scan.sh . | tee e2e-smell-report.txt
+          /bin/bash -p scripts/ci/ci-local.sh | tee ci-local-report.txt
 
-      - name: Upload scan report
+      - name: Upload CI report
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: e2e-smell-report
-          path: e2e-smell-report.txt
+          name: ci-local-report
+          path: ci-local-report.txt
 
       - name: Add job summary
         if: always()
         shell: bash
         run: |
           {
-            echo '## E2E Smell Scan'
+            echo '## E2E Skills CI'
             echo
-            if [ -f e2e-smell-report.txt ]; then
-              echo '```text'
-              cat e2e-smell-report.txt
-              echo '```'
+            if [ -f ci-local-report.txt ]; then
+              echo 'The complete plain-text report is also available as the `ci-local-report` artifact.'
+              echo
+              echo '<details>'
+              echo '<summary>Sanitized CI output</summary>'
+              echo
+              # Indented Markdown is literal code. Prefix every physical line
+              # after removing terminal controls so source-controlled backticks,
+              # HTML tags, or ANSI escapes cannot break out of the summary block.
+              LC_ALL=C tr '\000-\010\013\014\016-\037\177' '?' \
+                < ci-local-report.txt | sed 's/^/    /'
+              echo
+              echo '</details>'
             else
-              echo 'Scan report was not generated because an earlier CI step failed.'
+              echo 'CI report was not generated because an earlier step failed.'
             fi
           } >> "$GITHUB_STEP_SUMMARY"
+
+  portable-contracts:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install ripgrep on Ubuntu
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
+
+      - name: Install ripgrep on macOS
+        if: runner.os == 'macOS'
+        run: brew install ripgrep
+
+      - name: Verify archived fixture evidence without node_modules
+        run: python3 scripts/ci/test-fixture-faults.py
+
+      - name: Verify scanner no-follow preflight
+        # This job deliberately has no ast-grep. Without this the scanner falls
+        # through to the opt-in npx download path, whose progress output is not
+        # JSON, and Tier 2 reports an infrastructure failure.
+        env:
+          E2E_SMELL_NO_AST_GREP_DOWNLOAD: "1"
+        run: python3 scripts/ci/test-reviewer-scanner.py --preflight-only
+
+  live-fixture-reproduction:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install pinned fixture dependencies
+        run: npm ci --prefix scripts/evals/fixtures
+
+      - name: Install Chromium and Linux browser dependencies
+        run: scripts/evals/fixtures/node_modules/.bin/playwright install --with-deps chromium
+
+      - name: Reproduce the executable fault matrix
+        run: |
+          python3 scripts/evals/run-fixture-faults.py \
+            --output "$RUNNER_TEMP/fixture-faults-live.json"
+
+      - name: Upload live reproduction
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: fixture-faults-live
+          path: ${{ runner.temp }}/fixture-faults-live.json
 
   security:
     runs-on: ubuntu-latest
@@ -65,5 +129,5 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Pre-push security gate
-        shell: bash
-        run: bash scripts/ci/pre-push-security.sh
+        shell: /bin/bash --noprofile --norc -p -e -o pipefail {0}
+        run: /bin/bash -p scripts/ci/pre-push-security.sh

@@ -1,0 +1,1 @@
+{"framework":"cypress","test":"loads order history","attempts":[{"state":"failed","error":"cy.wait('@orders') failed because the response status was 502"}],"requests":[{"alias":"orders","method":"GET","url":"/api/orders","status":502}]}

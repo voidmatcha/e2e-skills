@@ -1,6 +1,6 @@
 # E2E Silent-Pass Case Studies
 
-These are real merged upstream PRs found while reviewing Playwright/Cypress suites with `e2e-skills/e2e-reviewer`. The common pattern: CI was green, but the test either asserted nothing, skipped the assertion, or checked a value that could never fail.
+These are self-selected, real merged upstream PRs found while reviewing Playwright/Cypress suites with `e2e-skills/e2e-reviewer`. They provide adoption and concrete case evidence, not a representative validation sample or an accuracy estimate. The common pattern: CI was green, but the test either asserted nothing, skipped the assertion, or checked a value that could never fail.
 
 ## Carbon Design System: locator truthiness did not prove progress state
 
@@ -42,7 +42,9 @@ Why it matters: focused-test leaks silently remove coverage from CI, while match
 + await expect(page).toHaveURL(expectedUrl);
 ```
 
-Why it matters: a missing `await` can make a Playwright assertion float without participating in the test result.
+Why it matters: a missing `await` leaves the assertion Promise unsequenced.
+Current Playwright workers normally surface a rejection, but attribution is
+degraded and a resolving assertion can race later work.
 
 ## Strapi: discarded boolean reads
 
@@ -58,7 +60,9 @@ Why it matters: reading a boolean is not a test assertion. The fixed tests asser
 - PR: [`TryGhost/Ghost#28712`](https://github.com/TryGhost/Ghost/pull/28712) — merged
 - Pattern: `expect(likeButton.isDisabled()).toBeTruthy()` checked a promise-like value instead of the button state.
 
-Why it matters: async checks need `await` or a web-first assertion; otherwise the test can pass without proving the disabled state.
+Why it matters: Promise-valued state checks need `await` or a web-first
+assertion; otherwise a truthy Promise object can be asserted instead of the
+disabled state.
 
 ## Cal.com: weak assertions and hard waits
 

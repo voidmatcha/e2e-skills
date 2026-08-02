@@ -1,0 +1,12 @@
+{
+  "attempt_id": "codex-v7-remediation-confirmation-v8-r2",
+  "declared_schedule_digest": "ef1c7665a7ea2a4b3816eaabdc629f216e92a445133fc2589ac86c6ba1dcd320",
+  "execution_class": "live-release",
+  "invocation_id": "4e4febd0-f9fd-4fff-b85a-fae6326dbaf3",
+  "model_catalog_sha256": "5c361039bf91c6a9bbc7e5e8adfc4e60445506d9a768fdd4d63fd00394973508",
+  "schedule_index": 1,
+  "schema_version": 1,
+  "started_at_utc": "2026-07-31T14:41:07.550Z",
+  "state": "CONSUMED",
+  "token_attestation_sha256": "b7ae799c3aa4daa374d1b52551f626aa2a66a804231fc78b328109d40cde7d50"
+}

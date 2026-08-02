@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "record_id": "independent-product-review-v6-superseded-before-freeze",
+  "protocol_sha256": "7fcdc8b098c58ec773350b1491e57f0a3e3d5761c1ce44595f5989999d1881ef",
+  "remediation_ledger_sha256": "5c257517ef18ed3f3f489c6c08811a6716d1c03208f15d6f21dd3f6f4ab158bf",
+  "disposition": "SUPERSEDED_BEFORE_FREEZE",
+  "state_at_disposition": {
+    "archive_state": "PREREGISTERED",
+    "packet_frozen": false,
+    "attempt_reservations": 0,
+    "model_calls": 0,
+    "reports": 0
+  },
+  "reason": "An independent pre-call review found that the 850000 representation-byte budget was enforced against transformed source bytes rather than the line-annotated representation actually embedded in the prompt. No packet or model result existed, so the phase was superseded instead of amending its pinned protocol.",
+  "measured_invalid_v6_representation": {
+    "selected_product_paths": 30,
+    "transformed_source_utf8_bytes": 801331,
+    "line_annotated_content_utf8_bytes": 951172,
+    "canonical_packet_utf8_bytes": 1001534,
+    "rendered_prompt_utf8_bytes": 1004676,
+    "rendered_prompt_sha256": "c991f82b1eeb9a3093997d2bf7560d65363f8e4f8bb7bc288da2296b2ffbeeef",
+    "tokenizer": {
+      "package": "tiktoken",
+      "version": "0.11.0",
+      "encoding": "o200k_base",
+      "encoding_contract_sha256": "170a798bd4d0917feae9c78c8deb17f88e0b8d32676d7fc6f9116d8122928eb9"
+    },
+    "prompt_input_tokens": 278605
+  },
+  "successor": {
+    "protocol_id": "independent-product-review-v7",
+    "schedule_version": "codex-selected-v5-remediation-confirmation-v2",
+    "schedule_seed": "independent-product-review-v7-selected-v5-remediation-budget-corrected-codex-3",
+    "schedule_sha256": "2fc51ac267c72790506ced6aa21d142f1338cf08268df5343238e11aabfbac9b"
+  },
+  "claim_boundary": "V6 produced no benchmark result and cannot be described as PASS, FAIL, or INCONCLUSIVE model evidence. This record preserves a pre-call protocol-design defect and prevents later calls from being counted under v6."
+}

@@ -1,0 +1,1 @@
+{"framework":"playwright","test":"saves delivery address","attempts":[{"status":"failed","error":"Error: expect(getByText('Saved')).toBeVisible() timed out"}],"actions":["click Save returned without error"],"network":[{"method":"PUT","url":"/api/address","status":200}],"ui_excerpt":"Save changes"}

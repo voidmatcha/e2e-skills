@@ -1,0 +1,1 @@
+{"framework":"cypress","test":"opens customer record","attempts":[{"state":"failed","error":"cy.request() failed on GET /api/customers/cus_demo_204 with 404"}],"fixture_summary":{"customer_ids":["cus_demo_205","cus_demo_206"]},"spec_excerpt":"cy.visit('/customers/cus_demo_204')"}

@@ -1,0 +1,10 @@
+{
+  "name": "e2e-skills-fixture-faults",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Minimal Playwright and Cypress apps for behavior and assertion fault evaluation.",
+  "devDependencies": {
+    "@playwright/test": "1.62.0",
+    "cypress": "15.19.0"
+  }
+}

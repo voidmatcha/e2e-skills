@@ -1,0 +1,59 @@
+{
+  "accuracy_claim_allowed": false,
+  "archive_id": "independent-product-review-v5-remediation",
+  "archive_state": "COMPLETE",
+  "attempts": [
+    {
+      "attempt_id": "codex-high-fix-r1",
+      "finding_counts": {
+        "C": 0,
+        "H": 2,
+        "M": 0
+      },
+      "invocation_id": "5599f3a5-90d1-44a8-bbbb-8707ea40eea9",
+      "model": "gpt-5.6-sol",
+      "overall_score": 87.33,
+      "status": "FAIL"
+    },
+    {
+      "attempt_id": "codex-high-fix-r2",
+      "finding_counts": {
+        "C": 0,
+        "H": 1,
+        "M": 2
+      },
+      "invocation_id": "f519b2bd-a415-4c90-8051-c98ee814f174",
+      "model": "gpt-5.6-sol",
+      "overall_score": 88.0,
+      "status": "FAIL"
+    },
+    {
+      "attempt_id": "codex-high-fix-r3",
+      "finding_counts": {
+        "C": 0,
+        "H": 1,
+        "M": 2
+      },
+      "invocation_id": "62263e7f-8809-46f7-8935-7aebbe394fc3",
+      "model": "gpt-5.6-sol",
+      "overall_score": 88.0,
+      "status": "FAIL"
+    }
+  ],
+  "completion_status": "COMPLETE",
+  "cross_model_claim_allowed": false,
+  "full_product_coverage_claim_allowed": false,
+  "gate": "FAIL",
+  "human_review_claim_allowed": false,
+  "independent_ground_truth_claim_allowed": false,
+  "packet_sha256": "defd1f0a9c7bd4ef594ec110a70bbfd4eb0cfd649645457aad4c2dca29a16c52",
+  "predecessor_v4_status": "FAIL",
+  "protocol_sha256": "1f7aedb7ebd18334880c3ed8ce6b6c81ec665bd8618ef7983d04d809c4d1867f",
+  "remote_model_attestation_claim_allowed": false,
+  "schedule_sha256": "ba5b42a51c42789bcf93b7485d0146862d806435f681bb5e1043c45859f1bfcf",
+  "schema_version": 1,
+  "sealed_review_claim_allowed": false,
+  "skill_accuracy_claim_allowed": false,
+  "source_snapshot_sha256": "1eed1e4e0b1a657de9482522e119d8fb82e80e87e59f78717caa69078492b04b",
+  "unbiased_defect_discovery_claim_allowed": false
+}

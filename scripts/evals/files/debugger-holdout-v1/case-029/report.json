@@ -1,0 +1,1 @@
+{"framework":"cypress","test":"shows upload completion banner","attempts":[{"state":"failed","error":"Expected to find content: 'Upload complete', but never did"}],"video_timeline":[{"ms":820,"text":"Upload complete"},{"ms":1010,"text":null}],"assertion_started_ms":1090}

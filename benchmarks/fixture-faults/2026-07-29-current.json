@@ -1,0 +1,511 @@
+{
+  "schema_version": 2,
+  "evidence_note": "Authoritative local Playwright/Cypress behavior and assertion mutation run.",
+  "mode": "run",
+  "complete": true,
+  "contracts_valid": true,
+  "runtime_complete": true,
+  "frameworks": [
+    "playwright",
+    "cypress"
+  ],
+  "provenance": {
+    "fixture_tree_sha256": "ca26d53c9a5253fc25637657eae305d910ffaf70fd903bda81b67a15a4932459",
+    "operators_sha256": "cad9ca054f6e3d527403a5862b622527bc6e23b70a0535a6ca2844f080b71862",
+    "package_lock_sha256": "6195ecb1ddb09930325a82192fe059d732ecba09f57cdf3bbf77fd8de41aa872",
+    "python": "3.14.6",
+    "node": "v26.5.0",
+    "playwright": "Version 1.62.0",
+    "cypress": "Cypress package version: 15.19.0\nCypress binary version: 15.19.0\nElectron version: 37.6.0\nBundled Node version: 22.19.0",
+    "platform": "macOS-15.3.1-arm64-arm-64bit-Mach-O",
+    "machine": "arm64"
+  },
+  "summary": {
+    "operators": 6,
+    "unique_pattern_ids": 6,
+    "expected_matrix_cases": 18,
+    "matrix_cases": 18,
+    "matched": 18,
+    "errors": 0
+  },
+  "results": [
+    {
+      "operator": "playwright-error-swallow",
+      "pattern_id": "#3",
+      "framework": "playwright",
+      "case": "clean-strong",
+      "fault_mode": "none",
+      "mutation_applied": false,
+      "mutation_sha256": null,
+      "expected": "pass",
+      "actual": "pass",
+      "matched": true,
+      "exit_code": 0,
+      "evidence": [
+        "1 passed"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/playwright",
+        "test",
+        "$FIXTURE_COPY/playwright/tests/error-swallow.spec.mjs",
+        "--config",
+        "$FIXTURE_COPY/playwright/playwright.config.mjs"
+      ],
+      "output_sha256": "95a67c8323ff3e507069541f2774cde161912cbfdfe7da784677a94c1eb3f332",
+      "duration_ms": 1823
+    },
+    {
+      "operator": "playwright-error-swallow",
+      "pattern_id": "#3",
+      "framework": "playwright",
+      "case": "fault-strong",
+      "fault_mode": "behavior",
+      "mutation_applied": false,
+      "mutation_sha256": null,
+      "expected": "fail",
+      "actual": "fail",
+      "matched": true,
+      "exit_code": 1,
+      "evidence": [
+        "toHaveText"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/playwright",
+        "test",
+        "$FIXTURE_COPY/playwright/tests/error-swallow.spec.mjs",
+        "--config",
+        "$FIXTURE_COPY/playwright/playwright.config.mjs"
+      ],
+      "output_sha256": "9f061c80a10043c9fdf082890877aeeebc872204e9b7f89e378a21af91582876",
+      "duration_ms": 5916
+    },
+    {
+      "operator": "playwright-error-swallow",
+      "pattern_id": "#3",
+      "framework": "playwright",
+      "case": "fault-mutant",
+      "fault_mode": "behavior",
+      "mutation_applied": true,
+      "mutation_sha256": "5b6f1671017a22d0f51756dc05e5d21373846f457a56baf87174ea36817c9642",
+      "expected": "pass",
+      "actual": "pass",
+      "matched": true,
+      "exit_code": 0,
+      "evidence": [
+        "1 passed"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/playwright",
+        "test",
+        "$FIXTURE_COPY/playwright/tests/error-swallow.spec.mjs",
+        "--config",
+        "$FIXTURE_COPY/playwright/playwright.config.mjs"
+      ],
+      "output_sha256": "ab00aab615b8a59f5eeb0af01f45385a94b2d878a19087936f652e786f577909",
+      "duration_ms": 5695
+    },
+    {
+      "operator": "playwright-locator-truthiness",
+      "pattern_id": "#4f",
+      "framework": "playwright",
+      "case": "clean-strong",
+      "fault_mode": "none",
+      "mutation_applied": false,
+      "mutation_sha256": null,
+      "expected": "pass",
+      "actual": "pass",
+      "matched": true,
+      "exit_code": 0,
+      "evidence": [
+        "1 passed"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/playwright",
+        "test",
+        "$FIXTURE_COPY/playwright/tests/locator-truthiness.spec.mjs",
+        "--config",
+        "$FIXTURE_COPY/playwright/playwright.config.mjs"
+      ],
+      "output_sha256": "e5038e89b0fc95350aacc988d6ffd23c1fa5a32a1b64c40422afc42e40e2f351",
+      "duration_ms": 1721
+    },
+    {
+      "operator": "playwright-locator-truthiness",
+      "pattern_id": "#4f",
+      "framework": "playwright",
+      "case": "fault-strong",
+      "fault_mode": "behavior",
+      "mutation_applied": false,
+      "mutation_sha256": null,
+      "expected": "fail",
+      "actual": "fail",
+      "matched": true,
+      "exit_code": 1,
+      "evidence": [
+        "toHaveText"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/playwright",
+        "test",
+        "$FIXTURE_COPY/playwright/tests/locator-truthiness.spec.mjs",
+        "--config",
+        "$FIXTURE_COPY/playwright/playwright.config.mjs"
+      ],
+      "output_sha256": "a2a1efc386346398361cc18b128a8bf6a74c27cdf5c8bd013b6ae2237d13fba5",
+      "duration_ms": 5727
+    },
+    {
+      "operator": "playwright-locator-truthiness",
+      "pattern_id": "#4f",
+      "framework": "playwright",
+      "case": "fault-mutant",
+      "fault_mode": "behavior",
+      "mutation_applied": true,
+      "mutation_sha256": "ad2aec31942edb1d286aa4be012c183b8dbe19c1d1ec91c4aad06d7fb841bed2",
+      "expected": "pass",
+      "actual": "pass",
+      "matched": true,
+      "exit_code": 0,
+      "evidence": [
+        "1 passed"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/playwright",
+        "test",
+        "$FIXTURE_COPY/playwright/tests/locator-truthiness.spec.mjs",
+        "--config",
+        "$FIXTURE_COPY/playwright/playwright.config.mjs"
+      ],
+      "output_sha256": "6d7fbfc1f8f7dbeebc1db1244d77f4f0d5572ec1fb032d17fac7025e344485be",
+      "duration_ms": 710
+    },
+    {
+      "operator": "playwright-conditional-assertion",
+      "pattern_id": "#5a",
+      "framework": "playwright",
+      "case": "clean-strong",
+      "fault_mode": "none",
+      "mutation_applied": false,
+      "mutation_sha256": null,
+      "expected": "pass",
+      "actual": "pass",
+      "matched": true,
+      "exit_code": 0,
+      "evidence": [
+        "1 passed"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/playwright",
+        "test",
+        "$FIXTURE_COPY/playwright/tests/conditional-assertion.spec.mjs",
+        "--config",
+        "$FIXTURE_COPY/playwright/playwright.config.mjs"
+      ],
+      "output_sha256": "af604ef0420e615348653c48a9e74cc2b6f2bace0b0e69b29dd5c140a0e20710",
+      "duration_ms": 1190
+    },
+    {
+      "operator": "playwright-conditional-assertion",
+      "pattern_id": "#5a",
+      "framework": "playwright",
+      "case": "fault-strong",
+      "fault_mode": "behavior",
+      "mutation_applied": false,
+      "mutation_sha256": null,
+      "expected": "fail",
+      "actual": "fail",
+      "matched": true,
+      "exit_code": 1,
+      "evidence": [
+        "toHaveText"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/playwright",
+        "test",
+        "$FIXTURE_COPY/playwright/tests/conditional-assertion.spec.mjs",
+        "--config",
+        "$FIXTURE_COPY/playwright/playwright.config.mjs"
+      ],
+      "output_sha256": "8f1877ad081cfa338ec5091785123b3e82500dceb7263fa4f7cf82d77bbca783",
+      "duration_ms": 5713
+    },
+    {
+      "operator": "playwright-conditional-assertion",
+      "pattern_id": "#5a",
+      "framework": "playwright",
+      "case": "fault-mutant",
+      "fault_mode": "behavior",
+      "mutation_applied": true,
+      "mutation_sha256": "dc2f2a5cc33a2464a12926895dbd26207e1bea07ffb87a1902c18e6289685b95",
+      "expected": "pass",
+      "actual": "pass",
+      "matched": true,
+      "exit_code": 0,
+      "evidence": [
+        "1 passed"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/playwright",
+        "test",
+        "$FIXTURE_COPY/playwright/tests/conditional-assertion.spec.mjs",
+        "--config",
+        "$FIXTURE_COPY/playwright/playwright.config.mjs"
+      ],
+      "output_sha256": "0237b0f6ec31627caca647d85102f418f4e78afea4344818499add83de36d3de",
+      "duration_ms": 748
+    },
+    {
+      "operator": "cypress-missing-then",
+      "pattern_id": "#2",
+      "framework": "cypress",
+      "case": "clean-strong",
+      "fault_mode": "none",
+      "mutation_applied": false,
+      "mutation_sha256": null,
+      "expected": "pass",
+      "actual": "pass",
+      "matched": true,
+      "exit_code": 0,
+      "evidence": [
+        "1 passing"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$FIXTURE_COPY/cypress",
+        "--spec",
+        "$FIXTURE_COPY/cypress/cypress/e2e/missing-then.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "output_sha256": "9f32bad89817daa4c2da2c4d59a9ac439054363bbf8a9186e8c68f245cb8a5fe",
+      "duration_ms": 4583
+    },
+    {
+      "operator": "cypress-missing-then",
+      "pattern_id": "#2",
+      "framework": "cypress",
+      "case": "fault-strong",
+      "fault_mode": "behavior",
+      "mutation_applied": false,
+      "mutation_sha256": null,
+      "expected": "fail",
+      "actual": "fail",
+      "matched": true,
+      "exit_code": 1,
+      "evidence": [
+        "Count: 1"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$FIXTURE_COPY/cypress",
+        "--spec",
+        "$FIXTURE_COPY/cypress/cypress/e2e/missing-then.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "output_sha256": "6cb3d8ddfef3c8c9c9c77812cb1a0229011bc1decabb246e95ba74e4466eaba5",
+      "duration_ms": 6347
+    },
+    {
+      "operator": "cypress-missing-then",
+      "pattern_id": "#2",
+      "framework": "cypress",
+      "case": "fault-mutant",
+      "fault_mode": "behavior",
+      "mutation_applied": true,
+      "mutation_sha256": "862d3e58821705828f6c9a0ec1b5ebecbf92afa73a01bc9adb89621fa8957778",
+      "expected": "pass",
+      "actual": "pass",
+      "matched": true,
+      "exit_code": 0,
+      "evidence": [
+        "1 passing"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$FIXTURE_COPY/cypress",
+        "--spec",
+        "$FIXTURE_COPY/cypress/cypress/e2e/missing-then.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "output_sha256": "e39f0d778f090de0df17199422268546737e7a265894482a94a061d94106f5ff",
+      "duration_ms": 2874
+    },
+    {
+      "operator": "cypress-uncaught-exception",
+      "pattern_id": "#3b",
+      "framework": "cypress",
+      "case": "clean-strong",
+      "fault_mode": "none",
+      "mutation_applied": false,
+      "mutation_sha256": null,
+      "expected": "pass",
+      "actual": "pass",
+      "matched": true,
+      "exit_code": 0,
+      "evidence": [
+        "1 passing"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$FIXTURE_COPY/cypress",
+        "--spec",
+        "$FIXTURE_COPY/cypress/cypress/e2e/uncaught-exception.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "output_sha256": "e614d846856697da4aaff40b8644bbe90b10ed323073f1655eba24771cef06b7",
+      "duration_ms": 3068
+    },
+    {
+      "operator": "cypress-uncaught-exception",
+      "pattern_id": "#3b",
+      "framework": "cypress",
+      "case": "fault-strong",
+      "fault_mode": "uncaught",
+      "mutation_applied": false,
+      "mutation_sha256": null,
+      "expected": "fail",
+      "actual": "fail",
+      "matched": true,
+      "exit_code": 1,
+      "evidence": [
+        "fixture-uncaught-exception"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$FIXTURE_COPY/cypress",
+        "--spec",
+        "$FIXTURE_COPY/cypress/cypress/e2e/uncaught-exception.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "output_sha256": "8965260eb3dc5c46f527e6e63697a7b14132259222430b2fcbe7050ae40ab728",
+      "duration_ms": 3016
+    },
+    {
+      "operator": "cypress-uncaught-exception",
+      "pattern_id": "#3b",
+      "framework": "cypress",
+      "case": "fault-mutant",
+      "fault_mode": "uncaught",
+      "mutation_applied": true,
+      "mutation_sha256": "8aba46a8de408165a8a7d4c97ca49de16f954ed417109ae6ddfb5db99cb3fa99",
+      "expected": "pass",
+      "actual": "pass",
+      "matched": true,
+      "exit_code": 0,
+      "evidence": [
+        "1 passing"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$FIXTURE_COPY/cypress",
+        "--spec",
+        "$FIXTURE_COPY/cypress/cypress/e2e/uncaught-exception.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "output_sha256": "b75ca07f4c814ea57c1cc30fb87ebf2747bebc0887285893029c435659863bb3",
+      "duration_ms": 2811
+    },
+    {
+      "operator": "cypress-focused-test-leak",
+      "pattern_id": "#7",
+      "framework": "cypress",
+      "case": "clean-strong",
+      "fault_mode": "none",
+      "mutation_applied": false,
+      "mutation_sha256": null,
+      "expected": "pass",
+      "actual": "pass",
+      "matched": true,
+      "exit_code": 0,
+      "evidence": [
+        "2 passing"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$FIXTURE_COPY/cypress",
+        "--spec",
+        "$FIXTURE_COPY/cypress/cypress/e2e/focused-leak.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "output_sha256": "95e344bbf99db2ca233eb862170d150032c222b4d8bf4dbc56f304258d1eb485",
+      "duration_ms": 2965
+    },
+    {
+      "operator": "cypress-focused-test-leak",
+      "pattern_id": "#7",
+      "framework": "cypress",
+      "case": "fault-strong",
+      "fault_mode": "behavior",
+      "mutation_applied": false,
+      "mutation_sha256": null,
+      "expected": "fail",
+      "actual": "fail",
+      "matched": true,
+      "exit_code": 1,
+      "evidence": [
+        "Count: 1"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$FIXTURE_COPY/cypress",
+        "--spec",
+        "$FIXTURE_COPY/cypress/cypress/e2e/focused-leak.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "output_sha256": "04828ff38ff7e97514a5be74a1ceb89bbb81a03dcc5aa3c28d57f1aad3763ce3",
+      "duration_ms": 6420
+    },
+    {
+      "operator": "cypress-focused-test-leak",
+      "pattern_id": "#7",
+      "framework": "cypress",
+      "case": "fault-mutant",
+      "fault_mode": "behavior",
+      "mutation_applied": true,
+      "mutation_sha256": "edb602fb958df7345776197bbb164b62aff04686015438c3e930a51ca7972e3a",
+      "expected": "pass",
+      "actual": "pass",
+      "matched": true,
+      "exit_code": 0,
+      "evidence": [
+        "1 passing"
+      ],
+      "command": [
+        "$DEPENDENCY_ROOT/node_modules/.bin/cypress",
+        "run",
+        "--project",
+        "$FIXTURE_COPY/cypress",
+        "--spec",
+        "$FIXTURE_COPY/cypress/cypress/e2e/focused-leak.cy.mjs",
+        "--browser",
+        "electron"
+      ],
+      "output_sha256": "620e36f5a631a9d9e655ddf5209807adae3fc8adf8106ce74dcd5ab88dc0c221",
+      "duration_ms": 2825
+    }
+  ],
+  "errors": []
+}

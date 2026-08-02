@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "protocol_id": "independent-product-review-v2",
+  "invocation_id": "84cb11cd-7c32-415c-a054-c74fe29fd2aa",
+  "attempt_id": "codex-postremediation-r1",
+  "schedule_index": 0,
+  "repetition": 1,
+  "declared_schedule_digest": "d7ce3fd184f23a4b14ae5c9ed1c56ac5b190adedf942ded1219de0b7bcc35f9a",
+  "started_at_utc": "2026-07-31T05:05:26.119Z",
+  "finished_at_utc": "2026-07-31T05:06:55.540Z",
+  "status": "PASS",
+  "status_reason": null,
+  "host": {
+    "runner": "codex",
+    "model": "gpt-5.6-sol",
+    "provider_family": "openai"
+  },
+  "runner_identity": {
+    "mode": "live",
+    "path": "/opt/homebrew/lib/node_modules/@openai/codex/bin/codex.js",
+    "sha256": "134063e133f0b4244fa3b251acf973d4fe4b4aeeacbdc135211bf480f59f1477",
+    "version": "codex-cli 0.144.1"
+  },
+  "model_tool_surface": "none",
+  "source_read_isolation": "prompt-complete-zero-tools",
+  "credential_environment": "parent-auth-staged-model-tools-disabled",
+  "execution_mode": "live",
+  "local_artifact_integrity_passed": true,
+  "artifact_integrity_eligible": true,
+  "caller_declared_runner_model_provenance": true,
+  "remote_model_attestation": false,
+  "runner_exit_code": 0,
+  "elapsed_ms": 88940,
+  "packet_path": "/private/tmp/e2e-independent-review-20260731-postremediation-final2/codex-postremediation-r1/packet.json",
+  "packet_manifest_path": "/private/tmp/e2e-independent-review-20260731-postremediation-final2/codex-postremediation-r1/packet-manifest.json",
+  "raw_output_path": "/private/tmp/e2e-independent-review-20260731-postremediation-final2/codex-postremediation-r1/raw-codex-postremediation-r1.json",
+  "raw_output_sha256": "0acc257f6a0dcac2e5e6c328494476bb99927ee066b015c9a7f83b54421e3c41",
+  "raw_output_original_sha256": "0acc257f6a0dcac2e5e6c328494476bb99927ee066b015c9a7f83b54421e3c41",
+  "raw_output_exact": true,
+  "integrity_before": {
+    "protocol_sha256": "018729aedd61c8013884fb803e5632cdb50f5130c46f6cd2074daca31d494abe",
+    "packet_sha256": "278fed9d19efa7d16bbea241bac956824cda2c7699b5b88756157f3c52212a04",
+    "packet_manifest_sha256": "2611aac881209a81a43be8252ed481def9611f3cc50e8b71ab6409f7fcad0e7c",
+    "independent_runner_sha256": "b5ec0d63b9d395ab25ee9d1c1e75c16ec8420317907fa208282bde3227fe620b",
+    "shared_zero_tool_runner_sha256": "f2c66cd60585fcb91291559a2007213e4f4e8cea3f4979b0eb34c82a1bf3d5c0",
+    "selected_sources_sha256": "63fa1d12c170184235dcf61796b0cac4dafb236593bbf3243d46e464af5f51a4",
+    "selected_sources": {
+      "README.md": "5016c26e6adba01dbbadd10f6bd3f739590b3b0391067b34f27ccc2f8f23b59a",
+      "SECURITY.md": "d2f29245e3b67aa6e570b269c6121424ebd1a71b1ebb01e69db4415df47038ec",
+      ".claude-plugin/plugin.json": "63a37edb76db4b652b15806f866a2cd335a400acf8455cbc91b3e47430098525",
+      ".claude-plugin/marketplace.json": "89006ac66d5d4eb779dcb07d0f82a18cd9b62c8636bd1b914d99122c0c00831a",
+      ".codex-plugin/plugin.json": "a54a828f5b74f8665ff2c7384aac02accfe50643db6e0a9b84031e8dea43fa43",
+      "skills/playwright-test-generator/SKILL.md": "92b9a5741224f83319c9ab1108960f65eea4f47220248d960aae8778acf83412",
+      "skills/e2e-reviewer/SKILL.md": "4db5118a043d794b7e8239c159b5a4315dd5f3d04b4d47173429491c99f872b4",
+      "skills/playwright-debugger/SKILL.md": "612b6b53620aeecc074feeaefccff497466a3becfba6848b2f765f0ba6932155",
+      "skills/cypress-debugger/SKILL.md": "f4d06d3f6d4ad80ca1a785f856b1432f5ce08d929c5ed891fe41af66348e1795",
+      "skills/e2e-reviewer/references/pattern-reference.md": "104c08fb111e9c430074c5024102e4d7db41050bc19293d8ac6473b3b561a0fd",
+      "skills/e2e-reviewer/references/verification-rules.md": "09f5998f1262d33affcfb44ce417bd52c9a53909336d505fc085526581361559",
+      "skills/e2e-reviewer/scripts/scan.sh": "eb783eede6c3f36581903fae5b34ced410cce1e067795b5b216b37899f77ee0b",
+      "skills/playwright-test-generator/scripts/preflight_target.py": "91b277a46fb885b3f6c2b90d31ac72a61fc10a6bd150abbc03eecbe358e9e822",
+      "skills/playwright-test-generator/scripts/run-preflight-target.sh": "4a18507ecc0914e754c5ee364a41f511bc3ec87bf7455b85e6607b70cf27f893",
+      "skills/playwright-debugger/scripts/read-playwright-artifact.py": "fd8cd86e69ec83b6b9d67ebd7685bba87e79050d1c5644399a522552b5613f62",
+      "skills/playwright-debugger/scripts/publish-json-report.py": "ee1b50c79717a7711b0f1d88d3caf0b29c0b304efa9df4c00c359c414d2850e9",
+      "skills/playwright-debugger/scripts/download-playwright-report.py": "37a8350085c492c18ce0174201ad8545293af6b5481460fe97a219ea72305f4e",
+      "skills/cypress-debugger/scripts/read-cypress-artifact.py": "baca00a68a81a092b7d19a4d0e0535e6aa273c7fd55caa06c721ecc7c638d0ee",
+      "skills/cypress-debugger/scripts/extract-junit-failures.py": "892a8cb04a84eed8f2c18821623f95e7bd7f1d9e6075cdac05e9f23320556124",
+      "skills/cypress-debugger/scripts/download-cypress-reports.py": "10898c15e82cec5d7bb01f3abecb20c9e16477dc67431b05870e31eef2ea330c",
+      "skills/cypress-debugger/scripts/publish-mochawesome-report.py": "2acdb7b945a22ef78905edaa95b24594d7fe91848f6dc520362e70d01f3de05c",
+      "skills/cypress-debugger/scripts/redact_artifact.py": "2e2c85d6219114817f9a0983c3eaf9bde971c589b043fb1997f45d72e08bad67",
+      "skills/playwright-test-generator/best-practices.md": "ed31b866fe403570a230be047949dbe3a1c485d00e69af4e0e3834d7f9f7049b",
+      "skills/playwright-test-generator/code-rules.md": "f1e2567f2938166c6bee7b374ec49f4398c89a32a9143f3d8b8660f0879d3bfe",
+      "skills/playwright-test-generator/verification-rules.md": "8564baf915821979263cef7b6e588917f33274d9d8bf7826842f192186378216",
+      "skills/e2e-reviewer/references/upstream-rule-sources.md": "101730ae407160a72bff2327c9d4c72a97d187bb7cefcff08cf8c5555018481f",
+      "scripts/ci/ci-local.sh": "5af776d843480fcda2df1d5773e9a1ee0066425413a2384370558fe7e065a2ea",
+      "scripts/ci/pre-push-security.sh": "5529ab1cf0a29ab69b5948f6465ea3e5c69031f582805e746941bd45bf76d0ba"
+    }
+  },
+  "integrity_after": {
+    "protocol_sha256": "018729aedd61c8013884fb803e5632cdb50f5130c46f6cd2074daca31d494abe",
+    "packet_sha256": "278fed9d19efa7d16bbea241bac956824cda2c7699b5b88756157f3c52212a04",
+    "packet_manifest_sha256": "2611aac881209a81a43be8252ed481def9611f3cc50e8b71ab6409f7fcad0e7c",
+    "independent_runner_sha256": "b5ec0d63b9d395ab25ee9d1c1e75c16ec8420317907fa208282bde3227fe620b",
+    "shared_zero_tool_runner_sha256": "f2c66cd60585fcb91291559a2007213e4f4e8cea3f4979b0eb34c82a1bf3d5c0",
+    "selected_sources_sha256": "63fa1d12c170184235dcf61796b0cac4dafb236593bbf3243d46e464af5f51a4",
+    "selected_sources": {
+      "README.md": "5016c26e6adba01dbbadd10f6bd3f739590b3b0391067b34f27ccc2f8f23b59a",
+      "SECURITY.md": "d2f29245e3b67aa6e570b269c6121424ebd1a71b1ebb01e69db4415df47038ec",
+      ".claude-plugin/plugin.json": "63a37edb76db4b652b15806f866a2cd335a400acf8455cbc91b3e47430098525",
+      ".claude-plugin/marketplace.json": "89006ac66d5d4eb779dcb07d0f82a18cd9b62c8636bd1b914d99122c0c00831a",
+      ".codex-plugin/plugin.json": "a54a828f5b74f8665ff2c7384aac02accfe50643db6e0a9b84031e8dea43fa43",
+      "skills/playwright-test-generator/SKILL.md": "92b9a5741224f83319c9ab1108960f65eea4f47220248d960aae8778acf83412",
+      "skills/e2e-reviewer/SKILL.md": "4db5118a043d794b7e8239c159b5a4315dd5f3d04b4d47173429491c99f872b4",
+      "skills/playwright-debugger/SKILL.md": "612b6b53620aeecc074feeaefccff497466a3becfba6848b2f765f0ba6932155",
+      "skills/cypress-debugger/SKILL.md": "f4d06d3f6d4ad80ca1a785f856b1432f5ce08d929c5ed891fe41af66348e1795",
+      "skills/e2e-reviewer/references/pattern-reference.md": "104c08fb111e9c430074c5024102e4d7db41050bc19293d8ac6473b3b561a0fd",
+      "skills/e2e-reviewer/references/verification-rules.md": "09f5998f1262d33affcfb44ce417bd52c9a53909336d505fc085526581361559",
+      "skills/e2e-reviewer/scripts/scan.sh": "eb783eede6c3f36581903fae5b34ced410cce1e067795b5b216b37899f77ee0b",
+      "skills/playwright-test-generator/scripts/preflight_target.py": "91b277a46fb885b3f6c2b90d31ac72a61fc10a6bd150abbc03eecbe358e9e822",
+      "skills/playwright-test-generator/scripts/run-preflight-target.sh": "4a18507ecc0914e754c5ee364a41f511bc3ec87bf7455b85e6607b70cf27f893",
+      "skills/playwright-debugger/scripts/read-playwright-artifact.py": "fd8cd86e69ec83b6b9d67ebd7685bba87e79050d1c5644399a522552b5613f62",
+      "skills/playwright-debugger/scripts/publish-json-report.py": "ee1b50c79717a7711b0f1d88d3caf0b29c0b304efa9df4c00c359c414d2850e9",
+      "skills/playwright-debugger/scripts/download-playwright-report.py": "37a8350085c492c18ce0174201ad8545293af6b5481460fe97a219ea72305f4e",
+      "skills/cypress-debugger/scripts/read-cypress-artifact.py": "baca00a68a81a092b7d19a4d0e0535e6aa273c7fd55caa06c721ecc7c638d0ee",
+      "skills/cypress-debugger/scripts/extract-junit-failures.py": "892a8cb04a84eed8f2c18821623f95e7bd7f1d9e6075cdac05e9f23320556124",
+      "skills/cypress-debugger/scripts/download-cypress-reports.py": "10898c15e82cec5d7bb01f3abecb20c9e16477dc67431b05870e31eef2ea330c",
+      "skills/cypress-debugger/scripts/publish-mochawesome-report.py": "2acdb7b945a22ef78905edaa95b24594d7fe91848f6dc520362e70d01f3de05c",
+      "skills/cypress-debugger/scripts/redact_artifact.py": "2e2c85d6219114817f9a0983c3eaf9bde971c589b043fb1997f45d72e08bad67",
+      "skills/playwright-test-generator/best-practices.md": "ed31b866fe403570a230be047949dbe3a1c485d00e69af4e0e3834d7f9f7049b",
+      "skills/playwright-test-generator/code-rules.md": "f1e2567f2938166c6bee7b374ec49f4398c89a32a9143f3d8b8660f0879d3bfe",
+      "skills/playwright-test-generator/verification-rules.md": "8564baf915821979263cef7b6e588917f33274d9d8bf7826842f192186378216",
+      "skills/e2e-reviewer/references/upstream-rule-sources.md": "101730ae407160a72bff2327c9d4c72a97d187bb7cefcff08cf8c5555018481f",
+      "scripts/ci/ci-local.sh": "5af776d843480fcda2df1d5773e9a1ee0066425413a2384370558fe7e065a2ea",
+      "scripts/ci/pre-push-security.sh": "5529ab1cf0a29ab69b5948f6465ea3e5c69031f582805e746941bd45bf76d0ba"
+    }
+  },
+  "review": {
+    "summary": "The curated contracts and implementations are strongly aligned and fail-closed overall. Two bounded weaknesses remain: framework detection documentation narrows imports to two extensions despite the shared eight-extension contract, and scanner temporary storage trusts an inherited writable TMPDIR instead of creating a private trusted workspace.",
+    "scores": {
+      "semantic_correctness": 95,
+      "false_positive_control": 93,
+      "security_trust_boundaries": 91,
+      "verification_design": 95,
+      "scope_contract_consistency": 91,
+      "docs_usability": 93
+    },
+    "findings": [
+      {
+        "severity": "M",
+        "category": "scope_contract_consistency",
+        "file": "skills/e2e-reviewer/SKILL.md",
+        "line": 20,
+        "title": "Framework detection omits six supported extensions",
+        "evidence": "Phase 0 directs framework-import detection only in `.ts`/`.js` files, while the scanner and generator publicly support `.tsx`, `.jsx`, `.mts`, `.mjs`, `.cts`, and `.cjs` as well. Following this instruction can misclassify supported E2E files and skip framework-specific review checks.",
+        "recommendation": "Replace the `.ts`/`.js` restriction with the shared eight-extension set used by the scanner and generator."
+      },
+      {
+        "severity": "M",
+        "category": "security_trust_boundaries",
+        "file": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 325,
+        "title": "Scanner trusts inherited TMPDIR for security-sensitive state",
+        "evidence": "Temporary allocation accepts any inherited writable TMPDIR and subsequently stores candidate manifests, findings, and suppression state there. A project-controlled or shared TMPDIR weakens the scanner's otherwise careful path and identity boundary and permits observation or interference by a concurrent process.",
+        "recommendation": "Create one private mode-0700 scanner workspace beneath a trusted system temporary root, reject project-contained roots, and allocate all temporary files descriptor-relatively within it."
+      }
+    ],
+    "limitations": [
+      "This packet-only review did not execute scripts, tests, scanners, publishers, downloaders, or verification probes.",
+      "Referenced CI helpers, fixtures, manifests, benchmarks, holdouts, reports, and several supporting files were omitted and were not inferred to pass.",
+      "This subset review is not full product coverage, skill-accuracy validation, human or sealed review, independent ground truth, or remote model attestation."
+    ],
+    "verdict": "PASS"
+  },
+  "decision": {
+    "overall_score": 93.0,
+    "finding_counts": {
+      "C": 0,
+      "H": 0,
+      "M": 2
+    },
+    "checks": {
+      "overall_score": true,
+      "dimension_floor": true,
+      "critical_findings": true,
+      "high_findings": true,
+      "model_verdict_matches": true
+    }
+  },
+  "limitations": [
+    "This is a fresh-context review of a curated contract/implementation subset for Codex-only post-remediation robustness, not completion of the original cross-model schedule, full product coverage, or skill accuracy.",
+    "The public packet is not human or sealed review, independent ground truth, or remote model attestation.",
+    "The local UUIDv4 invocation ID separates runner invocations but cannot attest that a distinct remote model call occurred.",
+    "This phase has one fixed Codex model and makes no cross-model claim.",
+    "Excluded scorecards, holdouts, reports, prior reviews, chat conclusions, and git history reduce but cannot prove absence of training-data contamination."
+  ]
+}

@@ -19,18 +19,18 @@ Use these idiomatic fixes. Don't invent alternatives. **The replacements below a
 | `#4c-4e` `expect(await x.textContent()).toBe(v)` | `await expect(x).toHaveText(v)` | Auto-retry until text settles |
 | `#4c-4e` `expect(await x.innerText()).toContain(v)` | `await expect(x).toContainText(v)` | Auto-retry |
 | `#4c-4e` `expect(await x.inputValue()).toBe(v)` | `await expect(x).toHaveValue(v)` | Verify subject is `<input>`/`<textarea>`/`<select>` |
-| `#4c-4e` / `#15` `expect(await x.count()).toBe(N)` | `await expect(x).toHaveCount(N)` | **Common pattern** — applies to bare locator OR chained (`x.locator(y).count()`, `x.nth(i).count()`). Auto-retry until count settles. |
+| `#4c-4e` `expect(await x.count()).toBe(N)` | `await expect(x).toHaveCount(N)` | **Common pattern** — applies to bare locator OR chained (`x.locator(y).count()`, `x.nth(i).count()`). Auto-retry until count settles. |
 | `#4c-4e` `expect(await x.allTextContents()).toContain(v)` | `await expect(x).toContainText(v)` | `allTextContents()` returns `string[]`; on a multi-element locator `toContainText(v)` auto-retries and passes if any matched element contains `v`. For a single element prefer `toHaveText`. |
-| `#15` `expect(await x.all()).toHaveLength(N)` | `await expect(x).toHaveCount(N)` | Same as above; `.all()` form is just verbose |
+| `#4c-4e` `expect(await x.all()).toHaveLength(N)` | `await expect(x).toHaveCount(N)` | Same as above; `.all()` form is just verbose |
 | `#4h` `expect(page.url()).toBe(x)` / `.toEqual(x)` | `await expect(page).toHaveURL(x)` | **NOT `expect.poll`** — `toHaveURL` is canonical |
 | `#4h` `expect(page.url()).not.toMatch(re)` | `await expect(page).not.toHaveURL(re)` | Auto-retry |
 | `#4h` `expect(page.url()).toContain(x)` (substring) | `await expect.poll(() => page.url()).toContain(x)` | **CANONICAL — use this form**. **❌ AVOID `await expect(page).toHaveURL(new RegExp(x))`** — `x` may contain regex metacharacters (`.`, `+`, `?`, `(`, `)`, `[`, `]`, `\`, `^`, `$`, `*`, `{`, `}`, `|`) that need escaping. Without escaping, the match silently broadens (`.` matches any char) or breaks (`(` opens a group). **❌ AVOID `await expect(page).toHaveURL((url) => url.toString().includes(x))`** — functionally correct but creates idiom drift; the `expect.poll().toContain()` form above is the canonical web-first substring assertion. `await page.waitForURL(url => url.toString().includes(x))` is acceptable ONLY when you need to wait BEFORE the next action runs (i.e., as a navigation gate) rather than to assert. |
-| `#4b` (positive) `await x.click(); await expect(x).toBeAttached()` | Remove the assertion | Vacuous after action |
-| `#4f` `expect(getByText(...)).toBeTruthy()` | `expect(getByText(...)).toBeInTheDocument()` | **REQUIRES jest-dom — see prereq check below** |
+| `#4b` (positive) `await x.click(); await expect(x).toBeAttached()` | Remove it only when the action already proves attachment, or replace it with the promised visible/result-state assertion | Keep `toBeAttached()` when DOM attachment itself is the contract |
+| `#4f` `expect(page.getByText(...)).toBeTruthy()` | `await expect(page.getByText(...)).toBeVisible()` | Playwright Locator assertion; auto-retries. If hidden-but-attached is the intended contract, use `await expect(...).toBeAttached()` instead. **Do not use jest-dom matchers in Playwright tests.** |
 | `#15` `expect(locator).toBeVisible()` (no await) | `await expect(locator).toBeVisible()` | Adding `await` makes it auto-retry |
 | `#16` `page.locator(...).click()` (statement, no await) | `await page.locator(...).click()` | |
-| `#8b` `await x.isVisible();` (boolean discarded) | `await expect(x).toBeVisible();` | Silent always-pass case — the `await x.isVisible()` returned a Promise<boolean> nobody read |
-| `#7` `test.describe.only(...)` / `it.only(...)` | `test.describe(...)` / `it(...)` | **Severity tier**: in a file with N≥2 tests, `.only` SILENT-SKIPS them all (CRITICAL). In a single-test file, removing `.only` is just debug-leak cleanup (smell only). |
+| `#8b` `await x.isVisible();` (boolean discarded) | `await expect(x).toBeVisible();` | P0 only after confirming the discarded boolean was the scenario's sole verification; otherwise delete the dead read or address a separate #2 outcome gap |
+| `#7` `test.describe.only(...)` / `it.only(...)` | `test.describe(...)` / `it(...)` | Every committed focus modifier is P0. Even a current singleton silently narrows future discovery and turns the next sibling test into skipped coverage; no `JUSTIFIED` exemption exists. |
 
 #### Cypress
 
@@ -49,13 +49,28 @@ Use these idiomatic fixes. Don't invent alternatives. **The replacements below a
 |------------------|---------------|-------|
 | `#4f` `expect(screen.getBy*(...)).toBeTruthy()` | `expect(screen.getBy*(...)).toBeInTheDocument()` | jest-dom matcher — see prereq check below |
 
-**Scope note (Phase 0 + 4.1 reconciliation):** Phase 0 puts pure Jest/Vitest **unit-test** files (`.test.tsx`/`.test.ts` with no Playwright/Cypress import, no `page.goto`/`cy.visit`) out of e2e-reviewer scope — **do NOT auto-apply** this RTL row to those files. The row applies when (a) RTL/Testing-Library helpers appear inside an in-scope Playwright/Cypress spec (rare), or (b) Storybook interaction tests (`.stories.ts*`) that use `storybook/test`'s `within()` + Testing-Library `getBy*` — those exercise rendered UI and are treated as in-scope component E2E. For pure Jest/Vitest unit tests, REPORT the smell but defer to a unit-test reviewer; do not bulk-fix. (Observed divergence in 13-repo OSS trial: same row was applied to Storybook stories in one repo and refused in `.test.tsx` Jest files in another — the rule above resolves both.)
+**Scope note (Phase 0 + 4.1 reconciliation):** e2e-reviewer covers
+Playwright and Cypress only. Pure Jest/Vitest unit tests and Storybook
+interaction tests are out of scope, even when they use Testing Library helpers;
+do not report or auto-fix them through this skill. The RTL row applies only when
+RTL/Testing-Library helpers appear inside an otherwise in-scope
+Playwright/Cypress spec (rare).
 
-**Note:** `not.toBeAttached()` is NOT vacuous — it's the canonical assertion for "element is not in DOM". Only the positive `.toBeAttached()` (after an action that already required attachment) is vacuous.
+**Note:** `not.toBeAttached()` is the canonical assertion for "element is not
+in DOM." A positive `.toBeAttached()` is also meaningful when DOM attachment
+itself is the promised state. Report #4b only when attachment adds no evidence
+for the action's promised outcome.
 
-#### `#4f` jest-dom prerequisite check (MANDATORY before bulk replacement)
+#### `#4f` RTL / Jest / Vitest jest-dom prerequisite check (MANDATORY before bulk replacement)
 
-`.toBeInTheDocument()` is a `jest-dom` matcher — without it, the assertion throws `TypeError: expect(...).toBeInTheDocument is not a function`. Verify presence before replacing:
+This prerequisite applies only to the React Testing Library / Jest / Vitest row
+above. Playwright Locators use awaited Playwright assertions such as
+`await expect(locator).toBeVisible()` or `await expect(locator).toBeAttached()`
+and must not be converted to jest-dom matchers.
+
+`.toBeInTheDocument()` is a `jest-dom` matcher — without it, the assertion throws
+`TypeError: expect(...).toBeInTheDocument is not a function`. Verify presence
+before replacing an RTL assertion:
 
 1. **Search for global setup**:
    ```bash
@@ -76,11 +91,16 @@ Use these idiomatic fixes. Don't invent alternatives. **The replacements below a
 Most replacements above are **flake-protective**: the new form auto-retries where the old read once. Examples:
 - `expect(await x.isVisible()).toBe(true)` reads ONCE → races against async render
 - `await expect(x).toBeVisible()` retries until visible OR timeout → handles async render gracefully
+- Playwright `expect(page.getByText(...)).toBeTruthy()` always passes on the
+  Locator object; `await expect(page.getByText(...)).toBeVisible()` retries and
+  verifies rendered UI
 
 A few replacements are **flake-neutral** (semantic improvement only, not flake-fixing):
-- `#4f` toBeTruthy → toBeInTheDocument (RTL `getByText` already throws on miss; both pass on success)
+- RTL / Jest / Vitest `#4f` toBeTruthy → toBeInTheDocument (`screen.getByText`
+  already throws on miss; both pass on success)
 - `#7` `.only` removal (no flake change; just removes debug leak)
-- `#4b` positive `toBeAttached()` removal (vacuous either way)
+- `#4b` weak positive `toBeAttached()` replacement/removal when attachment adds
+  no outcome proof
 
 When the user says "test was already flaky and I added the band-aid for that reason" — see 4.2 below.
 
@@ -98,7 +118,7 @@ Some anti-patterns may have been added DELIBERATELY by a test author trying to s
 | `expect.soft(...)` (#18) overuse | MEDIUM | Author wanted to see all failures at once. Consider whether each soft assertion should be a separate test. |
 | `expect(await x.isVisible()).toBe(true)` (#4c-4e) | LOW | Usually just unawareness of `toBeVisible()`. Direct mechanical replacement. |
 | `not.toBeAttached()` (#4b negative) | LOW | Both forms work. Functional equivalence. (Actually NOT vacuous — see 4.1.) |
-| `expect(getByText(...)).toBeTruthy()` (#4f) | LOW | Just verbose. Direct replacement. |
+| `expect(getByText(...)).toBeTruthy()` (#4f) | LOW | Direct replacement, selected by runner: awaited `toBeVisible()` / `toBeAttached()` for a Playwright Locator; `toBeInTheDocument()` only for RTL with jest-dom configured. |
 
 **Rule for batch-fix scenarios** (e.g., applying skill to someone else's repo where you can't run tests):
 
@@ -135,7 +155,7 @@ When reviewing a public repo, `gh pr list/view/diff` (read-only) on the repo's r
 7. **PR scope: one mental migration per PR, not one anti-pattern ID.** Group fixes by the umbrella concept reviewers will see, not by the skill's pattern numbers:
 
 - **OK as one PR**: 18 fixes spanning `#4` (`.all().toHaveLength` → `.toHaveCount`) + `#15` (missing await) + `#8b` (discarded boolean → web-first) + `#16` (missing await on action). All under the umbrella "migrate this file family to web-first matchers" — reviewers see ONE coherent move.
-- **SPLIT into separate PRs**: `#4h` URL migration + `#4b` `toBeAttached` cleanup + `#4a` vacuous `>=0` removal + Vitest unit-test `>=0` fix. These are 4 DIFFERENT mental migrations that happen to all be valid P0; bundling them risks partial reverts where each reviewer disagrees with one umbrella.
+- **SPLIT into separate PRs**: `#4h` URL migration + `#4b` `toBeAttached` cleanup + `#4a` vacuous `>=0` removal + Vitest unit-test `>=0` fix. These are 4 DIFFERENT mental migrations across P0/P1; bundling them risks partial reverts where each reviewer disagrees with one umbrella.
 
 Heuristic: if you can describe the PR in one phrase that captures all changes ("migrate to web-first matchers", "remove vacuous toBeAttached"), one PR is fine. If you need "and also" / "plus" / "while we're at it" to describe the scope, split it.
 
@@ -265,4 +285,3 @@ Examples:
 - ❌ Over-fix: cluster of 200+ `#4c-4e textContent → toHaveText` across an entire repo when the budget is 5. That's a codemod scope, not a surgical pass — flag in the report and request codemod authority before bulk applying.
 
 ---
-

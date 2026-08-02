@@ -1,0 +1,1 @@
+{"framework":"cypress","test":"opens mobile navigation","attempts":[{"state":"failed","error":"Timed out retrying: expected '<nav>' to be visible"},{"state":"passed"}],"timeline":["visit load event","menu button visible","first click completed","navigation remained closed"],"server_rendered":true}

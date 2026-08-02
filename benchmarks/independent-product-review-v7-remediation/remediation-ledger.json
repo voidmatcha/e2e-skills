@@ -1,0 +1,236 @@
+{
+  "schema_version": 1,
+  "ledger_id": "independent-product-review-v6-selected-v5-remediations",
+  "predecessor": {
+    "archive_id": "independent-product-review-v5-remediation",
+    "archive_state": "COMPLETE",
+    "gate": "FAIL",
+    "protocol_sha256": "1f7aedb7ebd18334880c3ed8ce6b6c81ec665bd8618ef7983d04d809c4d1867f",
+    "packet_sha256": "defd1f0a9c7bd4ef594ec110a70bbfd4eb0cfd649645457aad4c2dca29a16c52",
+    "packet_manifest_sha256": "9e489770c1fb7848212d2378dfeee1ee2a419a04326f9712a3c9725fe748a835",
+    "source_snapshot_sha256": "1eed1e4e0b1a657de9482522e119d8fb82e80e87e59f78717caa69078492b04b",
+    "status_sha256": "438d92011bd51f35843840453bf51edcf0fcfdae35492162d341af45c4274f9f",
+    "evidence_manifest_sha256": "db166fe0cba693209a22755d12c0d7f2a45ff84299a3d27c144aab49906f3865",
+    "attempts": [
+      {
+        "attempt_id": "codex-high-fix-r1",
+        "report_sha256": "a84d303cdb2df50707d3b865c4f39c39c2dc8615f272c0976c7db17cc50bcfd8",
+        "raw_sha256": "d83e2315a8db9b213db8e59b6cff281df0fd80271746e6c164b551e3b76924f2"
+      },
+      {
+        "attempt_id": "codex-high-fix-r2",
+        "report_sha256": "5b32f59a21865bd0fc6fd5940c9a58105a471bbe313a10d245ff07c1d44d324e",
+        "raw_sha256": "e1a1e922da7a07b08aed212e5352a7e3c7e0f265fb7ca12e689b57084bfda7d7"
+      },
+      {
+        "attempt_id": "codex-high-fix-r3",
+        "report_sha256": "023a15cceb6838e278ae4d958f017c6cdb8e5c1bc7cddf02e68bbb5883d35ac2",
+        "raw_sha256": "f46c452e4c3d461694bbe8fc14f270d9e4000c478ff0936ffe51b2502429300a"
+      }
+    ]
+  },
+  "claim_boundary": "This ledger records selected post-hoc remediations after the completed v5 failure. It does not rewrite v4 or v5, establish unbiased discovery, prove all findings fixed, or enter the v6 model prompt.",
+  "targets": [
+    {
+      "target_id": "V5-T1",
+      "historical_severity": "H",
+      "category": "security_trust_boundaries",
+      "affected_files": [
+        "skills/playwright-test-generator/scripts/raw-aria-snapshot.cjs"
+      ],
+      "observed_attempt_ids": [
+        "codex-high-fix-r1",
+        "codex-high-fix-r2",
+        "codex-high-fix-r3"
+      ],
+      "disposition": "remediated",
+      "remediation": "The raw-ARIA fallback now accepts only canonical numeric loopback authorities 127.0.0.1 and [::1]. It rejects localhost and alternate numeric forms before importing project Playwright and makes no DNS-drift claim.",
+      "source_sha256_after": {
+        "skills/playwright-test-generator/scripts/raw-aria-snapshot.cjs": "a937df0effcd27fd3ceb37e8f26bee12dd477ea5056f68ada02fcbec56f83065",
+        "scripts/ci/test-generator-contracts.py": "ae79133bee65bbeaf8ebbc5b2f7bf16f81f83d61d6a35820a08d991915cb793f"
+      },
+      "verification_ids": [
+        "generator-contracts"
+      ]
+    },
+    {
+      "target_id": "V5-T2",
+      "historical_severity": "M",
+      "category": "scope_contract_consistency",
+      "affected_files": [
+        ".claude-plugin/plugin.json",
+        ".claude-plugin/marketplace.json",
+        ".codex-plugin/plugin.json",
+        "skills/playwright-test-generator/SKILL.md",
+        "skills/playwright-test-generator/agents/openai.yaml"
+      ],
+      "observed_attempt_ids": [
+        "codex-high-fix-r2"
+      ],
+      "disposition": "remediated",
+      "remediation": "Every public trigger and manifest now limits live exploration to local or disposable targets, or explicitly approved non-production targets inside externally isolated controlled browser infrastructure.",
+      "source_sha256_after": {
+        ".claude-plugin/plugin.json": "a59db6a433daa53510005d226148b5c0544fc4df5f9dad6d7933860c8cdeb0ba",
+        ".claude-plugin/marketplace.json": "908c2cdc1b4c01053108fcedaea537542d40c759ef03f10936109abc005130bb",
+        ".codex-plugin/plugin.json": "a3aa917b0fae44cb28d434890b1fc3853a8c5743862095fc80416457563a1bec",
+        "skills/playwright-test-generator/SKILL.md": "b72aed0c126ced92b957f27ad3752a901a124bff41323ec28b386095264d749a",
+        "skills/playwright-test-generator/agents/openai.yaml": "55aa3c117e4b0edd846d59d7903d035189d0053f4425c358d7898044126dc7cb"
+      },
+      "verification_ids": [
+        "generator-contracts",
+        "eval-validation"
+      ]
+    },
+    {
+      "target_id": "V5-T3",
+      "historical_severity": "M",
+      "category": "docs_usability",
+      "affected_files": [
+        "skills/playwright-test-generator/SKILL.md",
+        "skills/playwright-test-generator/best-practices.md",
+        "skills/playwright-test-generator/code-rules.md"
+      ],
+      "observed_attempt_ids": [
+        "codex-high-fix-r2"
+      ],
+      "disposition": "remediated",
+      "remediation": "The snapshot-only path now gives an actionable redaction checklist, stable-placeholder rule, minimal retained locator structure, and an untrusted-data warning.",
+      "source_sha256_after": {
+        "skills/playwright-test-generator/SKILL.md": "b72aed0c126ced92b957f27ad3752a901a124bff41323ec28b386095264d749a",
+        "skills/playwright-test-generator/best-practices.md": "a748f82049d80560739ef67ffec195d05e761d2090171f2af03949352166cb1c",
+        "skills/playwright-test-generator/code-rules.md": "72d73d038488eb97a0130562bf03ffc29b14294be92bcdee937b87e1b1c023c5"
+      },
+      "verification_ids": [
+        "generator-contracts",
+        "eval-validation"
+      ]
+    },
+    {
+      "target_id": "V5-T4",
+      "historical_severity": "M",
+      "category": "security_trust_boundaries",
+      "affected_files": [
+        "skills/playwright-test-generator/scripts/run-preflight-target.sh"
+      ],
+      "observed_attempt_ids": [
+        "codex-high-fix-r3"
+      ],
+      "disposition": "remediated",
+      "remediation": "Interpreter containment now derives the target-project boundary from the caller's physical working directory rather than from skill-bundle ancestry.",
+      "source_sha256_after": {
+        "skills/playwright-test-generator/scripts/run-preflight-target.sh": "5608363aee83ba91db6ccba1b5c48367676ac3d52fc997239222864f398cec92",
+        "scripts/ci/test-generator-contracts.py": "ae79133bee65bbeaf8ebbc5b2f7bf16f81f83d61d6a35820a08d991915cb793f"
+      },
+      "verification_ids": [
+        "generator-contracts"
+      ]
+    },
+    {
+      "target_id": "V5-T5",
+      "historical_severity": "M",
+      "category": "semantic_correctness",
+      "affected_files": [
+        "skills/playwright-debugger/SKILL.md"
+      ],
+      "observed_attempt_ids": [
+        "codex-high-fix-r3"
+      ],
+      "disposition": "remediated",
+      "remediation": "The debugger output contract now permits only a double-quoted sanitized bounded excerpt emitted by the bundled artifact reader and forbids direct raw artifact text.",
+      "source_sha256_after": {
+        "skills/playwright-debugger/SKILL.md": "81091a44ad169bf4621be2d0db3703c765e3800f2e99c45cb1e34e59ec8212e1",
+        "scripts/ci/test-debugger-contracts.py": "15ee5ec63c74f8f5a426373d47720f2a5c2065c3e4d6f314f0573ad679ce99ca"
+      },
+      "verification_ids": [
+        "debugger-contracts",
+        "eval-validation"
+      ]
+    }
+  ],
+  "dispositions": [
+    {
+      "finding_id": "V5-R1-F2",
+      "historical_severity": "H",
+      "category": "false_positive_control",
+      "affected_files": [
+        "skills/e2e-reviewer/scripts/scan.sh"
+      ],
+      "observed_attempt_ids": [
+        "codex-high-fix-r1"
+      ],
+      "disposition": "false_positive",
+      "rationale": "The scanner keeps an unresolved imported test receiver in the non-gating [P0?][LLM-TRIAGE] path. The focused-test regression asserts that the unresolved aliased source is absent from the final [P0] section.",
+      "source_sha256": {
+        "skills/e2e-reviewer/scripts/scan.sh": "ce255f48acf88ae7c3a088c53953d1ae4acf9269e09d9d341065f4f0afc47934",
+        "scripts/ci/test-reviewer-scanner.py": "c36b1bb06d1e247aa6ced7fa656f2b340af5acb9a355ff8708797974a0b6de71"
+      },
+      "verification_ids": [
+        "unresolved-import-scanner-regression"
+      ]
+    }
+  ],
+  "verification": [
+    {
+      "verification_id": "generator-contracts",
+      "argv": [
+        "python3",
+        "scripts/ci/test-generator-contracts.py"
+      ],
+      "environment": {
+        "LANG": "C",
+        "LC_ALL": "C",
+        "LC_CTYPE": "C"
+      },
+      "exit_code": 0,
+      "stdout_sha256": "c835963faf95a1e3174438e2aafa1cdb2812cbb2ed27afcdf70c30cda1081544",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "verification_id": "debugger-contracts",
+      "argv": [
+        "python3",
+        "scripts/ci/test-debugger-contracts.py"
+      ],
+      "environment": {
+        "LANG": "C",
+        "LC_ALL": "C",
+        "LC_CTYPE": "C"
+      },
+      "exit_code": 0,
+      "stdout_sha256": "c1857e1fc0d233c0499f1ee010776f49c4065e5f4eebb0063a85c15b601f955e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "verification_id": "eval-validation",
+      "argv": [
+        "/bin/bash",
+        "-p",
+        "scripts/validate-evals.sh"
+      ],
+      "environment": {
+        "LANG": "C",
+        "LC_ALL": "C",
+        "LC_CTYPE": "C"
+      },
+      "exit_code": 0,
+      "stdout_sha256": "fb88741d10be05ac24751b9e857edeb5cc402fba2194381ee5b4be0cacb9d461",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "verification_id": "unresolved-import-scanner-regression",
+      "argv": [
+        "python3",
+        "-c",
+        "import importlib.util; from pathlib import Path; p=Path('scripts/ci/test-reviewer-scanner.py').resolve(); spec=importlib.util.spec_from_file_location('targeted_scanner_regression', p); mod=importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); mod.assert_nested_generic_import_resolution(); print('targeted unresolved-import scanner regression: pass')"
+      ],
+      "environment": {
+        "LANG": "C",
+        "LC_ALL": "C",
+        "LC_CTYPE": "C"
+      },
+      "exit_code": 0,
+      "stdout_sha256": "02aadc8c9168f57ff284339920683e051d8e22652455314030c12ef92b09c3d1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

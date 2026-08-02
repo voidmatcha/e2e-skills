@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "protocol_id": "reviewer-holdout-v5",
+  "schedule": {
+    "algorithm": "sha256-seeded-sort-v1",
+    "seed": 20260801,
+    "default_repetitions": 3,
+    "release_repetitions": 3,
+    "evidence_scope": "public-development",
+    "freeze_policy": "Freeze sources, labels, and protocol before the first measured run. Any later edit creates a new version."
+  },
+  "stability": {
+    "rule": "strict-majority",
+    "minimum_repetitions": 3
+  },
+  "execution_identity": {
+    "require_explicit_runner_path": true,
+    "expected_cli_versions": {
+      "codex": "codex-cli 0.146.0",
+      "claude": "Claude Code 2.1.220"
+    },
+    "run_identity_capture": "Capture the resolved runner path and CLI version in each report. Do not pin user-specific absolute paths or binary digests in this public protocol.",
+    "attestation_limit": "Reported execution identity is provenance, not cryptographic attestation."
+  },
+  "prompt_arms": {
+    "treatment": "full",
+    "controls": [
+      "catalog-only",
+      "no-skill"
+    ],
+    "shared_output_legend": true,
+    "no_skill_is_taxonomy_free": false,
+    "comparison_unit": "separate-complete-host-matrix",
+    "matrix_requirement": "Run a separate complete host matrix for full, catalog-only, and no-skill."
+  },
+  "arm_comparison": {
+    "treatment": "full",
+    "controls": [
+      "catalog-only",
+      "no-skill"
+    ],
+    "required_matrix": "exact-three-profiles-by-three-hosts",
+    "requires_all_reports_execution_complete": true,
+    "requires_treatment_report_status": "PASS",
+    "requires_each_control_comparison_pass": true,
+    "provider_aggregation": "mean-within-provider-family-then-equal-weight-families",
+    "stability_basis": "strict-majority-stable-predictions",
+    "execution_order_design": "three-sequence-cyclic-latin-square-interleaved-by-round",
+    "execution_order": [
+      {
+        "ordinal": 1,
+        "prompt_profile": "full",
+        "runner": "codex",
+        "model": "gpt-5.6-sol"
+      },
+      {
+        "ordinal": 2,
+        "prompt_profile": "catalog-only",
+        "runner": "claude",
+        "model": "claude-opus-5"
+      },
+      {
+        "ordinal": 3,
+        "prompt_profile": "no-skill",
+        "runner": "claude",
+        "model": "claude-fable-5"
+      },
+      {
+        "ordinal": 4,
+        "prompt_profile": "catalog-only",
+        "runner": "codex",
+        "model": "gpt-5.6-sol"
+      },
+      {
+        "ordinal": 5,
+        "prompt_profile": "no-skill",
+        "runner": "claude",
+        "model": "claude-opus-5"
+      },
+      {
+        "ordinal": 6,
+        "prompt_profile": "full",
+        "runner": "claude",
+        "model": "claude-fable-5"
+      },
+      {
+        "ordinal": 7,
+        "prompt_profile": "no-skill",
+        "runner": "codex",
+        "model": "gpt-5.6-sol"
+      },
+      {
+        "ordinal": 8,
+        "prompt_profile": "full",
+        "runner": "claude",
+        "model": "claude-opus-5"
+      },
+      {
+        "ordinal": 9,
+        "prompt_profile": "catalog-only",
+        "runner": "claude",
+        "model": "claude-fable-5"
+      }
+    ],
+    "requires_sequential_non_overlapping_execution": true,
+    "matrix_elapsed_basis": "first-start-to-last-completion",
+    "maximum_matrix_elapsed_seconds": 43200,
+    "temporal_validity_limit": "Reported start/completion timestamps, cyclic order, non-overlap, and a 12-hour first-start-to-last-completion window reduce arm-position and time-drift confounding but do not cryptographically attest time or identify or freeze provider backend revisions.",
+    "uncertainty": {
+      "method": "paired-stratified-case-bootstrap",
+      "seed": 20260801,
+      "iterations": 10000,
+      "confidence": 0.95,
+      "strata": [
+        "finding-cases",
+        "clean-cases"
+      ],
+      "percentile_method": "nearest-rank",
+      "metrics": [
+        "stable_precision",
+        "stable_recall",
+        "stable_f1",
+        "clean_case_specificity"
+      ],
+      "interpretation_limit": "Bootstrap intervals describe case-resampling sensitivity on this fixed public case set. They do not quantify model-run stochasticity and are not population confidence intervals, independent replications, or release-grade causal inference."
+    },
+    "decision": {
+      "thresholds": {
+        "stable_f1_delta_min": 0.05,
+        "stable_f1_delta_ci95_lower_min": 0.01,
+        "stable_precision_delta_min": -0.02,
+        "stable_recall_delta_min": -0.02,
+        "clean_case_specificity_delta_min": 0,
+        "repeated_precision_delta_min": 0
+      },
+      "failure_semantics": "Every threshold must pass against each control. A complete matrix that misses any threshold is FAIL, not partial evidence."
+    },
+    "claim_policy": {
+      "pass": "Development skill-lift evidence is limited to this fixed public corpus, declared model identifiers, captured CLI versions, prompts, and schedule; provider backend snapshots are not attested.",
+      "fail": "No skill-lift claim is allowed.",
+      "inconclusive": "No skill-lift claim is allowed.",
+      "partial_results": "Descriptive arm metrics may be published, but never as a causal or partial skill-lift claim."
+    }
+  },
+  "host_matrix": [
+    {
+      "runner": "codex",
+      "model": "gpt-5.6-sol"
+    },
+    {
+      "runner": "claude",
+      "model": "claude-opus-5"
+    },
+    {
+      "runner": "claude",
+      "model": "claude-fable-5"
+    }
+  ],
+  "confidence_intervals": {
+    "method": "wilson",
+    "confidence": 0.95,
+    "unit": "unique-label-or-prediction"
+  },
+  "decision": {
+    "threshold_basis": "point-estimate",
+    "point_estimate_limits": "Threshold crossings on this small fixed public development corpus are descriptive signals. The corpus is public and inspectable. Confidence intervals and per-provider-family denominators accompany point estimates; sealing, independent blind evaluation after publication, cryptographic runner attestation, and population-level generalization are not established.",
+    "thresholds": {
+      "stable_precision_min": 0.95,
+      "stable_recall_min": 0.85,
+      "repeated_precision_min": 0.9,
+      "pattern_macro_recall_min": 0.8,
+      "case_macro_recall_min": 0.8,
+      "framework_macro_recall_min": 0.8,
+      "p0_stable_label_recall_min": 0.9,
+      "stable_guard_hit_rate_max": 0.05,
+      "clean_case_specificity_min": 0.95
+    }
+  },
+  "cross_host_decision": {
+    "threshold_basis": "point-estimate",
+    "requires_each_report_status": "PASS",
+    "aggregation_intent": "Compute within-provider-family results first, then give OpenAI and Anthropic equal top-level weight.",
+    "provider_family_balance_required": true,
+    "thresholds": {
+      "stable_recall_gap_max": 0.1,
+      "stable_prediction_jaccard_min": 0.8
+    }
+  }
+}

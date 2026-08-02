@@ -1,0 +1,1 @@
+{"framework":"playwright","test":"uses optional company field","attempts":[{"status":"failed","error":"Error: locator('#company').toBeVisible() timed out"}],"fixture":{"account_type":"personal"},"dom_excerpt":"<form><input id=\"name\"></form>","spec_excerpt":"await expect(page.locator('#company')).toBeVisible()"}

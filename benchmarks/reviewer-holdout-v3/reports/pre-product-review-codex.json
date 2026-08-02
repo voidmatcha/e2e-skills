@@ -1,0 +1,1798 @@
+{
+  "schema_version": 2,
+  "runner": "codex",
+  "runner_identity": "codex-cli 0.144.1",
+  "model": "gpt-5.6-sol",
+  "git_revision": "dc385b0d3977e2d4e1527641f1c73fc63448a5ac",
+  "git_dirty": true,
+  "git_dirty_sha256": "8e997156180907bcee4ad25779db628312188d7faccf6aa752221d17be43375a",
+  "evaluator_sha256": "da20df81569ea037d291a1f8342f72b550063c9b76035a54749a755be5483856",
+  "prompt_set_sha256": "f2fe0189a9d51a3a4a1b396b6fe8dee377d6c4fcd6a4d8e2206cb0dd0b585494",
+  "skill_sha256": "a282b3cc9740d76cc32fdd77245a7330f725406378f45e89933d7fadd70f43d9",
+  "snapshot_skill_sha256": "a282b3cc9740d76cc32fdd77245a7330f725406378f45e89933d7fadd70f43d9",
+  "skill_source_path": "/private/tmp/e2e-test-reviewer/skills/e2e-reviewer",
+  "corpus_sha256": "ee57b615cc63e7ce8716d9d419d09b48226b81194e3bce3965d9053ffd9f8daa",
+  "snapshot_corpus_sha256": "ee57b615cc63e7ce8716d9d419d09b48226b81194e3bce3965d9053ffd9f8daa",
+  "corpus_visibility": "public",
+  "corpus_intended_use": "Frozen public development holdout for bias-reduced three-host regression evidence; not a sealed generalization benchmark.",
+  "corpus_contamination_risk": "Becomes public and contaminable once committed. Sources and oracle were frozen before tested-host execution.",
+  "protocol_id": "reviewer-holdout-v3",
+  "protocol_path": "/private/tmp/e2e-test-reviewer/scripts/evals/reviewer-validation-protocol-v3.json",
+  "protocol_sha256": "860c1207bcfe441e411609cecc1fd0aa287304e192563a737bdb2536a43d7731",
+  "protocol": {
+    "schema_version": 1,
+    "protocol_id": "reviewer-holdout-v3",
+    "schedule": {
+      "algorithm": "sha256-seeded-sort-v1",
+      "seed": 20260730,
+      "default_repetitions": 1,
+      "release_repetitions": 3
+    },
+    "stability": {
+      "rule": "strict-majority"
+    },
+    "host_matrix": [
+      {
+        "runner": "codex",
+        "model": "gpt-5.6-sol"
+      },
+      {
+        "runner": "claude",
+        "model": "claude-opus-5"
+      },
+      {
+        "runner": "claude",
+        "model": "claude-fable-5"
+      }
+    ],
+    "confidence_intervals": {
+      "method": "wilson",
+      "confidence": 0.95,
+      "unit": "unique-label-or-prediction"
+    },
+    "decision": {
+      "threshold_basis": "point-estimate",
+      "thresholds": {
+        "stable_precision_min": 0.95,
+        "stable_recall_min": 0.85,
+        "repeated_precision_min": 0.9,
+        "pattern_macro_recall_min": 0.8,
+        "case_macro_recall_min": 0.8,
+        "framework_macro_recall_min": 0.8,
+        "p0_stable_label_recall_min": 0.9,
+        "stable_guard_hit_rate_max": 0.05
+      }
+    },
+    "cross_host_decision": {
+      "threshold_basis": "point-estimate",
+      "requires_each_report_status": "PASS",
+      "thresholds": {
+        "stable_recall_gap_max": 0.1,
+        "stable_prediction_jaccard_min": 0.8
+      }
+    }
+  },
+  "schedule_seed": 20260730,
+  "schedule_algorithm": "sha256-seeded-sort-v1",
+  "release_repetitions": 3,
+  "schedule_sha256": "47ea8b20426a5f8812bb296fbf4e8ad2dc7cca85ee0296380e242c970390505e",
+  "schedule": [
+    {
+      "ordinal": 1,
+      "case": "cy-write-credentials",
+      "repetition": 3
+    },
+    {
+      "ordinal": 2,
+      "case": "cy-command-timing",
+      "repetition": 1
+    },
+    {
+      "ordinal": 3,
+      "case": "pw-rejection-state",
+      "repetition": 3
+    },
+    {
+      "ordinal": 4,
+      "case": "cy-command-timing",
+      "repetition": 3
+    },
+    {
+      "ordinal": 5,
+      "case": "pw-pom-async",
+      "repetition": 3
+    },
+    {
+      "ordinal": 6,
+      "case": "pw-context-boundaries",
+      "repetition": 1
+    },
+    {
+      "ordinal": 7,
+      "case": "pw-pom-async",
+      "repetition": 1
+    },
+    {
+      "ordinal": 8,
+      "case": "pw-pom-async",
+      "repetition": 2
+    },
+    {
+      "ordinal": 9,
+      "case": "pw-context-boundaries",
+      "repetition": 2
+    },
+    {
+      "ordinal": 10,
+      "case": "cy-structure-fixture",
+      "repetition": 3
+    },
+    {
+      "ordinal": 11,
+      "case": "pw-maintenance-provenance",
+      "repetition": 3
+    },
+    {
+      "ordinal": 12,
+      "case": "pw-rejection-state",
+      "repetition": 2
+    },
+    {
+      "ordinal": 13,
+      "case": "pw-context-boundaries",
+      "repetition": 3
+    },
+    {
+      "ordinal": 14,
+      "case": "cy-write-credentials",
+      "repetition": 2
+    },
+    {
+      "ordinal": 15,
+      "case": "cy-contract-runtime",
+      "repetition": 1
+    },
+    {
+      "ordinal": 16,
+      "case": "cy-contract-runtime",
+      "repetition": 3
+    },
+    {
+      "ordinal": 17,
+      "case": "cy-structure-fixture",
+      "repetition": 1
+    },
+    {
+      "ordinal": 18,
+      "case": "pw-maintenance-provenance",
+      "repetition": 2
+    },
+    {
+      "ordinal": 19,
+      "case": "cy-write-credentials",
+      "repetition": 1
+    },
+    {
+      "ordinal": 20,
+      "case": "cy-structure-fixture",
+      "repetition": 2
+    },
+    {
+      "ordinal": 21,
+      "case": "pw-rejection-state",
+      "repetition": 1
+    },
+    {
+      "ordinal": 22,
+      "case": "cy-command-timing",
+      "repetition": 2
+    },
+    {
+      "ordinal": 23,
+      "case": "pw-maintenance-provenance",
+      "repetition": 1
+    },
+    {
+      "ordinal": 24,
+      "case": "cy-contract-runtime",
+      "repetition": 2
+    }
+  ],
+  "source_read_isolation": "not-required-public-corpus",
+  "external_wrapper": null,
+  "input_snapshot": "copy-once-temp",
+  "workspace_integrity": "pre-post-sha256",
+  "repetitions": 3,
+  "complete": true,
+  "status": "FAIL",
+  "status_reasons": [
+    {
+      "code": "threshold_not_met",
+      "metric": "stable_precision_min",
+      "actual": 0.92,
+      "required": 0.95,
+      "comparator": ">=",
+      "message": "stable_precision_min was 0.920000; required >= 0.950000"
+    },
+    {
+      "code": "threshold_not_met",
+      "metric": "p0_stable_label_recall_min",
+      "actual": 0.8888888888888888,
+      "required": 0.9,
+      "comparator": ">=",
+      "message": "p0_stable_label_recall_min was 0.888889; required >= 0.900000"
+    }
+  ],
+  "protocol_sha256_after": "860c1207bcfe441e411609cecc1fd0aa287304e192563a737bdb2536a43d7731",
+  "skill_sha256_after": "a282b3cc9740d76cc32fdd77245a7330f725406378f45e89933d7fadd70f43d9",
+  "corpus_sha256_after": "ee57b615cc63e7ce8716d9d419d09b48226b81194e3bce3965d9053ffd9f8daa",
+  "snapshot_skill_sha256_after": "a282b3cc9740d76cc32fdd77245a7330f725406378f45e89933d7fadd70f43d9",
+  "snapshot_corpus_sha256_after": "ee57b615cc63e7ce8716d9d419d09b48226b81194e3bce3965d9053ffd9f8daa",
+  "created_at": "2026-07-29T17:11:50.483345+00:00",
+  "summary": {
+    "tp": 69,
+    "fp": 7,
+    "fn": 3,
+    "precision": 0.9078947368421053,
+    "recall": 0.9583333333333334,
+    "f1": 0.9324324324324325,
+    "runs": 24,
+    "successful_runs": 24,
+    "infrastructure_errors": 0
+  },
+  "primary_metrics": {
+    "aggregation_unit": "unique-case-label-or-prediction",
+    "stability": {
+      "rule": "hits >= floor(repetitions / 2) + 1",
+      "repetitions": 3,
+      "required_hits": 2
+    },
+    "unique": {
+      "tp": 23,
+      "fp": 2,
+      "fn": 1,
+      "precision": 0.92,
+      "recall": 0.9583333333333334,
+      "f1": 0.9387755102040817,
+      "precision_ci95": {
+        "method": "wilson",
+        "confidence": 0.95,
+        "successes": 23,
+        "total": 25,
+        "lower": 0.7503389104960468,
+        "upper": 0.9777795987151524
+      },
+      "recall_ci95": {
+        "method": "wilson",
+        "confidence": 0.95,
+        "successes": 23,
+        "total": 24,
+        "lower": 0.7975819352134406,
+        "upper": 0.9926065438344942
+      },
+      "guard_labels": 24,
+      "stable_guard_hits": 0,
+      "stable_guard_hit_rate": 0.0,
+      "stable_guard_hit_rate_ci95": {
+        "method": "wilson",
+        "confidence": 0.95,
+        "successes": 0,
+        "total": 24,
+        "lower": 1.3877787807814457e-17,
+        "upper": 0.13797620467498017
+      }
+    },
+    "macro_recall": {
+      "pattern": {
+        "value": 0.9583333333333334,
+        "groups": {
+          "#1": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#10f": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#11": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#12": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#13": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#14": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#15": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#16": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#17": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#18": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#19": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#2": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#20": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#21": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#22": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#23": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#3": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#3b": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#4h": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#5b": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#6": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#7": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#8a": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#9b": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          }
+        }
+      },
+      "case": {
+        "value": 0.9583333333333333,
+        "groups": {
+          "cy-command-timing": {
+            "detected": 2,
+            "expected": 2,
+            "recall": 1.0
+          },
+          "cy-contract-runtime": {
+            "detected": 2,
+            "expected": 3,
+            "recall": 0.6666666666666666
+          },
+          "cy-structure-fixture": {
+            "detected": 2,
+            "expected": 2,
+            "recall": 1.0
+          },
+          "cy-write-credentials": {
+            "detected": 3,
+            "expected": 3,
+            "recall": 1.0
+          },
+          "pw-context-boundaries": {
+            "detected": 4,
+            "expected": 4,
+            "recall": 1.0
+          },
+          "pw-maintenance-provenance": {
+            "detected": 4,
+            "expected": 4,
+            "recall": 1.0
+          },
+          "pw-pom-async": {
+            "detected": 3,
+            "expected": 3,
+            "recall": 1.0
+          },
+          "pw-rejection-state": {
+            "detected": 3,
+            "expected": 3,
+            "recall": 1.0
+          }
+        }
+      },
+      "framework": {
+        "value": 0.95,
+        "groups": {
+          "cypress": {
+            "detected": 9,
+            "expected": 10,
+            "recall": 0.9
+          },
+          "playwright": {
+            "detected": 14,
+            "expected": 14,
+            "recall": 1.0
+          }
+        }
+      }
+    },
+    "p0_per_label_stability": {
+      "labels": [
+        {
+          "case": "cy-contract-runtime",
+          "framework": "cypress",
+          "finding_id": "V3-CY-CONTRACT-001",
+          "pattern_id": "#1",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        },
+        {
+          "case": "cy-contract-runtime",
+          "framework": "cypress",
+          "finding_id": "V3-CY-CONTRACT-002",
+          "pattern_id": "#2",
+          "hits": 0,
+          "repetitions": 3,
+          "detection_rate": 0.0,
+          "required_hits": 2,
+          "stable": false
+        },
+        {
+          "case": "cy-contract-runtime",
+          "framework": "cypress",
+          "finding_id": "V3-CY-CONTRACT-003",
+          "pattern_id": "#3b",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        },
+        {
+          "case": "pw-context-boundaries",
+          "framework": "playwright",
+          "finding_id": "V3-PW-CONTEXT-002",
+          "pattern_id": "#7",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        },
+        {
+          "case": "pw-context-boundaries",
+          "framework": "playwright",
+          "finding_id": "V3-PW-CONTEXT-003",
+          "pattern_id": "#12",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        },
+        {
+          "case": "pw-context-boundaries",
+          "framework": "playwright",
+          "finding_id": "V3-PW-CONTEXT-004",
+          "pattern_id": "#8a",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        },
+        {
+          "case": "pw-pom-async",
+          "framework": "playwright",
+          "finding_id": "V3-PW-ASYNC-002",
+          "pattern_id": "#15",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        },
+        {
+          "case": "pw-pom-async",
+          "framework": "playwright",
+          "finding_id": "V3-PW-ASYNC-003",
+          "pattern_id": "#16",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        },
+        {
+          "case": "pw-rejection-state",
+          "framework": "playwright",
+          "finding_id": "V3-PW-REJECT-001",
+          "pattern_id": "#3",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        }
+      ],
+      "stable_labels": 8,
+      "labels_total": 9,
+      "stable_label_recall": 0.8888888888888888,
+      "stable_label_recall_ci95": {
+        "method": "wilson",
+        "confidence": 0.95,
+        "successes": 8,
+        "total": 9,
+        "lower": 0.5650002944233439,
+        "upper": 0.9801091123614551
+      }
+    }
+  },
+  "secondary_metrics": {
+    "aggregation_unit": "repeated-run",
+    "tp": 69,
+    "fp": 7,
+    "fn": 3,
+    "precision": 0.9078947368421053,
+    "recall": 0.9583333333333334,
+    "f1": 0.9324324324324325,
+    "runs": 24,
+    "successful_runs": 24,
+    "infrastructure_errors": 0
+  },
+  "by_case": {
+    "pw-rejection-state": {
+      "tp": 9,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "runs": 3,
+      "successful_runs": 3,
+      "infrastructure_errors": 0
+    },
+    "pw-context-boundaries": {
+      "tp": 12,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "runs": 3,
+      "successful_runs": 3,
+      "infrastructure_errors": 0
+    },
+    "pw-pom-async": {
+      "tp": 9,
+      "fp": 5,
+      "fn": 0,
+      "precision": 0.6428571428571429,
+      "recall": 1.0,
+      "f1": 0.782608695652174,
+      "runs": 3,
+      "successful_runs": 3,
+      "infrastructure_errors": 0
+    },
+    "pw-maintenance-provenance": {
+      "tp": 12,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "runs": 3,
+      "successful_runs": 3,
+      "infrastructure_errors": 0
+    },
+    "cy-contract-runtime": {
+      "tp": 6,
+      "fp": 0,
+      "fn": 3,
+      "precision": 1.0,
+      "recall": 0.6666666666666666,
+      "f1": 0.8,
+      "runs": 3,
+      "successful_runs": 3,
+      "infrastructure_errors": 0
+    },
+    "cy-command-timing": {
+      "tp": 6,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "runs": 3,
+      "successful_runs": 3,
+      "infrastructure_errors": 0
+    },
+    "cy-write-credentials": {
+      "tp": 9,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "runs": 3,
+      "successful_runs": 3,
+      "infrastructure_errors": 0
+    },
+    "cy-structure-fixture": {
+      "tp": 6,
+      "fp": 2,
+      "fn": 0,
+      "precision": 0.75,
+      "recall": 1.0,
+      "f1": 0.8571428571428571,
+      "runs": 3,
+      "successful_runs": 3,
+      "infrastructure_errors": 0
+    }
+  },
+  "runs": [
+    {
+      "schedule_ordinal": 1,
+      "case": "cy-write-credentials",
+      "framework": "cypress",
+      "split": "public-development-holdout-v3",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 56837,
+      "workspace_sha256_before": "e7fedd86f3d23c6af6071b7860a2116364801c089c2d1205ae6c1e3ccbb5b4b5",
+      "workspace_sha256_after": "e7fedd86f3d23c6af6071b7860a2116364801c089c2d1205ae6c1e3ccbb5b4b5",
+      "findings": [
+        {
+          "pattern_id": "#14",
+          "severity": "P1",
+          "file": "cypress/e2e/profile.cy.ts",
+          "line": 5
+        },
+        {
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "cypress/e2e/profile.cy.ts",
+          "line": 20
+        },
+        {
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "cypress/e2e/board.cy.ts",
+          "line": 6
+        }
+      ],
+      "score": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-CY-WRITE-001",
+          "V3-CY-WRITE-002",
+          "V3-CY-WRITE-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#14\",\"severity\":\"P1\",\"file\":\"cypress/e2e/profile.cy.ts\",\"line\":5},{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"cypress/e2e/profile.cy.ts\",\"line\":20},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/board.cy.ts\",\"line\":6}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 2,
+      "case": "cy-command-timing",
+      "framework": "cypress",
+      "split": "public-development-holdout-v3",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 45769,
+      "workspace_sha256_before": "3e467471d800490ff821ae5b270080f665e2d400f6fdd77ab609573b694eebfc",
+      "workspace_sha256_after": "3e467471d800490ff821ae5b270080f665e2d400f6fdd77ab609573b694eebfc",
+      "findings": [
+        {
+          "pattern_id": "#9b",
+          "severity": "P1",
+          "file": "cypress/e2e/search.cy.ts",
+          "line": 10
+        },
+        {
+          "pattern_id": "#10f",
+          "severity": "P1",
+          "file": "cypress/e2e/search.cy.ts",
+          "line": 16
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-CY-COMMAND-002",
+          "V3-CY-COMMAND-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#9b\",\"severity\":\"P1\",\"file\":\"cypress/e2e/search.cy.ts\",\"line\":10},{\"pattern_id\":\"#10f\",\"severity\":\"P1\",\"file\":\"cypress/e2e/search.cy.ts\",\"line\":16}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 3,
+      "case": "pw-rejection-state",
+      "framework": "playwright",
+      "split": "public-development-holdout-v3",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 56171,
+      "workspace_sha256_before": "c9a92c257c742324dc4db9b41367e5180a036d7b6c14e14193b8eff9c92154eb",
+      "workspace_sha256_after": "c9a92c257c742324dc4db9b41367e5180a036d7b6c14e14193b8eff9c92154eb",
+      "findings": [
+        {
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "pages/report-page.ts",
+          "line": 11
+        },
+        {
+          "pattern_id": "#5b",
+          "severity": "P1",
+          "file": "pages/report-page.ts",
+          "line": 16
+        },
+        {
+          "pattern_id": "#4h",
+          "severity": "P1",
+          "file": "tests/report.spec.ts",
+          "line": 9
+        }
+      ],
+      "score": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-PW-REJECT-001",
+          "V3-PW-REJECT-002",
+          "V3-PW-REJECT-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"pages/report-page.ts\",\"line\":11},{\"pattern_id\":\"#5b\",\"severity\":\"P1\",\"file\":\"pages/report-page.ts\",\"line\":16},{\"pattern_id\":\"#4h\",\"severity\":\"P1\",\"file\":\"tests/report.spec.ts\",\"line\":9}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 4,
+      "case": "cy-command-timing",
+      "framework": "cypress",
+      "split": "public-development-holdout-v3",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 44101,
+      "workspace_sha256_before": "3e467471d800490ff821ae5b270080f665e2d400f6fdd77ab609573b694eebfc",
+      "workspace_sha256_after": "3e467471d800490ff821ae5b270080f665e2d400f6fdd77ab609573b694eebfc",
+      "findings": [
+        {
+          "pattern_id": "#9b",
+          "severity": "P1",
+          "file": "cypress/e2e/search.cy.ts",
+          "line": 10
+        },
+        {
+          "pattern_id": "#10f",
+          "severity": "P1",
+          "file": "cypress/e2e/search.cy.ts",
+          "line": 16
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-CY-COMMAND-002",
+          "V3-CY-COMMAND-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#9b\",\"severity\":\"P1\",\"file\":\"cypress/e2e/search.cy.ts\",\"line\":10},{\"pattern_id\":\"#10f\",\"severity\":\"P1\",\"file\":\"cypress/e2e/search.cy.ts\",\"line\":16}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 5,
+      "case": "pw-pom-async",
+      "framework": "playwright",
+      "split": "public-development-holdout-v3",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 61746,
+      "workspace_sha256_before": "09c7fcc0838e0de661808183828a86e65e831fc6f6bd9da4c7301e88baa12f53",
+      "workspace_sha256_after": "09c7fcc0838e0de661808183828a86e65e831fc6f6bd9da4c7301e88baa12f53",
+      "findings": [
+        {
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "tests/settings.spec.ts",
+          "line": 7
+        },
+        {
+          "pattern_id": "#15",
+          "severity": "P0",
+          "file": "tests/settings.spec.ts",
+          "line": 10
+        },
+        {
+          "pattern_id": "#16",
+          "severity": "P0",
+          "file": "tests/settings.spec.ts",
+          "line": 12
+        },
+        {
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "tests/settings.spec.ts",
+          "line": 25
+        },
+        {
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "tests/settings.spec.ts",
+          "line": 31
+        },
+        {
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "tests/settings.spec.ts",
+          "line": 33
+        }
+      ],
+      "score": {
+        "tp": 3,
+        "fp": 3,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-PW-ASYNC-001",
+          "V3-PW-ASYNC-002",
+          "V3-PW-ASYNC-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/settings.spec.ts\",\"line\":7},{\"pattern_id\":\"#15\",\"severity\":\"P0\",\"file\":\"tests/settings.spec.ts\",\"line\":10},{\"pattern_id\":\"#16\",\"severity\":\"P0\",\"file\":\"tests/settings.spec.ts\",\"line\":12},{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/settings.spec.ts\",\"line\":25},{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/settings.spec.ts\",\"line\":31},{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/settings.spec.ts\",\"line\":33}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 6,
+      "case": "pw-context-boundaries",
+      "framework": "playwright",
+      "split": "public-development-holdout-v3",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 30492,
+      "workspace_sha256_before": "6e12a608e43e1635062b41dcd83eed2ebb011722d60a9bd9bac07e0ed635d939",
+      "workspace_sha256_after": "6e12a608e43e1635062b41dcd83eed2ebb011722d60a9bd9bac07e0ed635d939",
+      "findings": [
+        {
+          "pattern_id": "#7",
+          "severity": "P0",
+          "file": "tests/admin-unprotected.spec.ts",
+          "line": 3
+        },
+        {
+          "pattern_id": "#12",
+          "severity": "P0",
+          "file": "tests/admin-unprotected.spec.ts",
+          "line": 5
+        },
+        {
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "tests/admin-unprotected.spec.ts",
+          "line": 12
+        },
+        {
+          "pattern_id": "#8a",
+          "severity": "P0",
+          "file": "tests/locator-discard.spec.ts",
+          "line": 5
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-PW-CONTEXT-001",
+          "V3-PW-CONTEXT-002",
+          "V3-PW-CONTEXT-003",
+          "V3-PW-CONTEXT-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#7\",\"severity\":\"P0\",\"file\":\"tests/admin-unprotected.spec.ts\",\"line\":3},{\"pattern_id\":\"#12\",\"severity\":\"P0\",\"file\":\"tests/admin-unprotected.spec.ts\",\"line\":5},{\"pattern_id\":\"#6\",\"severity\":\"P1\",\"file\":\"tests/admin-unprotected.spec.ts\",\"line\":12},{\"pattern_id\":\"#8a\",\"severity\":\"P0\",\"file\":\"tests/locator-discard.spec.ts\",\"line\":5}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 7,
+      "case": "pw-pom-async",
+      "framework": "playwright",
+      "split": "public-development-holdout-v3",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 62367,
+      "workspace_sha256_before": "09c7fcc0838e0de661808183828a86e65e831fc6f6bd9da4c7301e88baa12f53",
+      "workspace_sha256_after": "09c7fcc0838e0de661808183828a86e65e831fc6f6bd9da4c7301e88baa12f53",
+      "findings": [
+        {
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "tests/settings.spec.ts",
+          "line": 7
+        },
+        {
+          "pattern_id": "#15",
+          "severity": "P0",
+          "file": "tests/settings.spec.ts",
+          "line": 10
+        },
+        {
+          "pattern_id": "#16",
+          "severity": "P0",
+          "file": "tests/settings.spec.ts",
+          "line": 12
+        }
+      ],
+      "score": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-PW-ASYNC-001",
+          "V3-PW-ASYNC-002",
+          "V3-PW-ASYNC-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/settings.spec.ts\",\"line\":7},{\"pattern_id\":\"#15\",\"severity\":\"P0\",\"file\":\"tests/settings.spec.ts\",\"line\":10},{\"pattern_id\":\"#16\",\"severity\":\"P0\",\"file\":\"tests/settings.spec.ts\",\"line\":12}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 8,
+      "case": "pw-pom-async",
+      "framework": "playwright",
+      "split": "public-development-holdout-v3",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 58952,
+      "workspace_sha256_before": "09c7fcc0838e0de661808183828a86e65e831fc6f6bd9da4c7301e88baa12f53",
+      "workspace_sha256_after": "09c7fcc0838e0de661808183828a86e65e831fc6f6bd9da4c7301e88baa12f53",
+      "findings": [
+        {
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "tests/settings.spec.ts",
+          "line": 7
+        },
+        {
+          "pattern_id": "#15",
+          "severity": "P0",
+          "file": "tests/settings.spec.ts",
+          "line": 10
+        },
+        {
+          "pattern_id": "#16",
+          "severity": "P0",
+          "file": "tests/settings.spec.ts",
+          "line": 12
+        },
+        {
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "tests/settings.spec.ts",
+          "line": 25
+        },
+        {
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "tests/settings.spec.ts",
+          "line": 31
+        }
+      ],
+      "score": {
+        "tp": 3,
+        "fp": 2,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-PW-ASYNC-001",
+          "V3-PW-ASYNC-002",
+          "V3-PW-ASYNC-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/settings.spec.ts\",\"line\":7},{\"pattern_id\":\"#15\",\"severity\":\"P0\",\"file\":\"tests/settings.spec.ts\",\"line\":10},{\"pattern_id\":\"#16\",\"severity\":\"P0\",\"file\":\"tests/settings.spec.ts\",\"line\":12},{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/settings.spec.ts\",\"line\":25},{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/settings.spec.ts\",\"line\":31}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 9,
+      "case": "pw-context-boundaries",
+      "framework": "playwright",
+      "split": "public-development-holdout-v3",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 57435,
+      "workspace_sha256_before": "6e12a608e43e1635062b41dcd83eed2ebb011722d60a9bd9bac07e0ed635d939",
+      "workspace_sha256_after": "6e12a608e43e1635062b41dcd83eed2ebb011722d60a9bd9bac07e0ed635d939",
+      "findings": [
+        {
+          "pattern_id": "#7",
+          "severity": "P0",
+          "file": "tests/admin-unprotected.spec.ts",
+          "line": 3
+        },
+        {
+          "pattern_id": "#12",
+          "severity": "P0",
+          "file": "tests/admin-unprotected.spec.ts",
+          "line": 5
+        },
+        {
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "tests/admin-unprotected.spec.ts",
+          "line": 12
+        },
+        {
+          "pattern_id": "#8a",
+          "severity": "P0",
+          "file": "tests/locator-discard.spec.ts",
+          "line": 5
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-PW-CONTEXT-001",
+          "V3-PW-CONTEXT-002",
+          "V3-PW-CONTEXT-003",
+          "V3-PW-CONTEXT-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#7\",\"severity\":\"P0\",\"file\":\"tests/admin-unprotected.spec.ts\",\"line\":3},{\"pattern_id\":\"#12\",\"severity\":\"P0\",\"file\":\"tests/admin-unprotected.spec.ts\",\"line\":5},{\"pattern_id\":\"#6\",\"severity\":\"P1\",\"file\":\"tests/admin-unprotected.spec.ts\",\"line\":12},{\"pattern_id\":\"#8a\",\"severity\":\"P0\",\"file\":\"tests/locator-discard.spec.ts\",\"line\":5}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 10,
+      "case": "cy-structure-fixture",
+      "framework": "cypress",
+      "split": "public-development-holdout-v3",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 57093,
+      "workspace_sha256_before": "2b397a955fc43dd78962c3fc82fe70475eafc070410eab234458e024dfc5763d",
+      "workspace_sha256_after": "2b397a955fc43dd78962c3fc82fe70475eafc070410eab234458e024dfc5763d",
+      "findings": [
+        {
+          "pattern_id": "#11",
+          "severity": "P2",
+          "file": "cypress/pages/catalog-page.ts",
+          "line": 10
+        },
+        {
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "cypress/fixtures/guarded-product.json",
+          "line": 3
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-CY-STRUCTURE-001",
+          "V3-CY-STRUCTURE-002"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#11\",\"severity\":\"P2\",\"file\":\"cypress/pages/catalog-page.ts\",\"line\":10},{\"pattern_id\":\"#23\",\"severity\":\"P2\",\"file\":\"cypress/fixtures/guarded-product.json\",\"line\":3}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 11,
+      "case": "pw-maintenance-provenance",
+      "framework": "playwright",
+      "split": "public-development-holdout-v3",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 55384,
+      "workspace_sha256_before": "40bab2b0a994cbec5ae0eb3acab3222491898317efe8c5495021744967d6b6c6",
+      "workspace_sha256_after": "40bab2b0a994cbec5ae0eb3acab3222491898317efe8c5495021744967d6b6c6",
+      "findings": [
+        {
+          "pattern_id": "#21",
+          "severity": "P2",
+          "file": "playwright.config.ts",
+          "line": 7
+        },
+        {
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "support/recent-users.ts",
+          "line": 3
+        },
+        {
+          "pattern_id": "#17",
+          "severity": "P1",
+          "file": "tests/preferences.spec.ts",
+          "line": 5
+        },
+        {
+          "pattern_id": "#18",
+          "severity": "P1",
+          "file": "tests/preferences.spec.ts",
+          "line": 17
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-PW-MAINT-001",
+          "V3-PW-MAINT-002",
+          "V3-PW-MAINT-003",
+          "V3-PW-MAINT-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#21\",\"severity\":\"P2\",\"file\":\"playwright.config.ts\",\"line\":7},{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"support/recent-users.ts\",\"line\":3},{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":5},{\"pattern_id\":\"#18\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":17}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 12,
+      "case": "pw-rejection-state",
+      "framework": "playwright",
+      "split": "public-development-holdout-v3",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 37466,
+      "workspace_sha256_before": "c9a92c257c742324dc4db9b41367e5180a036d7b6c14e14193b8eff9c92154eb",
+      "workspace_sha256_after": "c9a92c257c742324dc4db9b41367e5180a036d7b6c14e14193b8eff9c92154eb",
+      "findings": [
+        {
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "pages/report-page.ts",
+          "line": 11
+        },
+        {
+          "pattern_id": "#5b",
+          "severity": "P1",
+          "file": "pages/report-page.ts",
+          "line": 16
+        },
+        {
+          "pattern_id": "#4h",
+          "severity": "P1",
+          "file": "tests/report.spec.ts",
+          "line": 9
+        }
+      ],
+      "score": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-PW-REJECT-001",
+          "V3-PW-REJECT-002",
+          "V3-PW-REJECT-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"pages/report-page.ts\",\"line\":11},{\"pattern_id\":\"#5b\",\"severity\":\"P1\",\"file\":\"pages/report-page.ts\",\"line\":16},{\"pattern_id\":\"#4h\",\"severity\":\"P1\",\"file\":\"tests/report.spec.ts\",\"line\":9}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 13,
+      "case": "pw-context-boundaries",
+      "framework": "playwright",
+      "split": "public-development-holdout-v3",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 49392,
+      "workspace_sha256_before": "6e12a608e43e1635062b41dcd83eed2ebb011722d60a9bd9bac07e0ed635d939",
+      "workspace_sha256_after": "6e12a608e43e1635062b41dcd83eed2ebb011722d60a9bd9bac07e0ed635d939",
+      "findings": [
+        {
+          "pattern_id": "#7",
+          "severity": "P0",
+          "file": "tests/admin-unprotected.spec.ts",
+          "line": 3
+        },
+        {
+          "pattern_id": "#12",
+          "severity": "P0",
+          "file": "tests/admin-unprotected.spec.ts",
+          "line": 5
+        },
+        {
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "tests/admin-unprotected.spec.ts",
+          "line": 12
+        },
+        {
+          "pattern_id": "#8a",
+          "severity": "P0",
+          "file": "tests/locator-discard.spec.ts",
+          "line": 5
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-PW-CONTEXT-001",
+          "V3-PW-CONTEXT-002",
+          "V3-PW-CONTEXT-003",
+          "V3-PW-CONTEXT-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#7\",\"severity\":\"P0\",\"file\":\"tests/admin-unprotected.spec.ts\",\"line\":3},{\"pattern_id\":\"#12\",\"severity\":\"P0\",\"file\":\"tests/admin-unprotected.spec.ts\",\"line\":5},{\"pattern_id\":\"#6\",\"severity\":\"P1\",\"file\":\"tests/admin-unprotected.spec.ts\",\"line\":12},{\"pattern_id\":\"#8a\",\"severity\":\"P0\",\"file\":\"tests/locator-discard.spec.ts\",\"line\":5}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 14,
+      "case": "cy-write-credentials",
+      "framework": "cypress",
+      "split": "public-development-holdout-v3",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 52203,
+      "workspace_sha256_before": "e7fedd86f3d23c6af6071b7860a2116364801c089c2d1205ae6c1e3ccbb5b4b5",
+      "workspace_sha256_after": "e7fedd86f3d23c6af6071b7860a2116364801c089c2d1205ae6c1e3ccbb5b4b5",
+      "findings": [
+        {
+          "pattern_id": "#14",
+          "severity": "P1",
+          "file": "cypress/e2e/profile.cy.ts",
+          "line": 5
+        },
+        {
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "cypress/e2e/profile.cy.ts",
+          "line": 20
+        },
+        {
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "cypress/e2e/board.cy.ts",
+          "line": 6
+        }
+      ],
+      "score": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-CY-WRITE-001",
+          "V3-CY-WRITE-002",
+          "V3-CY-WRITE-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#14\",\"severity\":\"P1\",\"file\":\"cypress/e2e/profile.cy.ts\",\"line\":5},{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"cypress/e2e/profile.cy.ts\",\"line\":20},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/board.cy.ts\",\"line\":6}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 15,
+      "case": "cy-contract-runtime",
+      "framework": "cypress",
+      "split": "public-development-holdout-v3",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 45940,
+      "workspace_sha256_before": "63a07bd6b01b4a6f50a3b0bfea70dff4985b42a59ac8a24039b064a05e7d4a8a",
+      "workspace_sha256_after": "63a07bd6b01b4a6f50a3b0bfea70dff4985b42a59ac8a24039b064a05e7d4a8a",
+      "findings": [
+        {
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/e2e.ts",
+          "line": 1
+        },
+        {
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/invoices.cy.ts",
+          "line": 2
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 1,
+        "matched_finding_ids": [
+          "V3-CY-CONTRACT-001",
+          "V3-CY-CONTRACT-003"
+        ],
+        "missed_finding_ids": [
+          "V3-CY-CONTRACT-002"
+        ],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/e2e.ts\",\"line\":1},{\"pattern_id\":\"#1\",\"severity\":\"P0\",\"file\":\"cypress/e2e/invoices.cy.ts\",\"line\":2}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 16,
+      "case": "cy-contract-runtime",
+      "framework": "cypress",
+      "split": "public-development-holdout-v3",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 41277,
+      "workspace_sha256_before": "63a07bd6b01b4a6f50a3b0bfea70dff4985b42a59ac8a24039b064a05e7d4a8a",
+      "workspace_sha256_after": "63a07bd6b01b4a6f50a3b0bfea70dff4985b42a59ac8a24039b064a05e7d4a8a",
+      "findings": [
+        {
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/e2e.ts",
+          "line": 1
+        },
+        {
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/invoices.cy.ts",
+          "line": 2
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 1,
+        "matched_finding_ids": [
+          "V3-CY-CONTRACT-001",
+          "V3-CY-CONTRACT-003"
+        ],
+        "missed_finding_ids": [
+          "V3-CY-CONTRACT-002"
+        ],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/e2e.ts\",\"line\":1},{\"pattern_id\":\"#1\",\"severity\":\"P0\",\"file\":\"cypress/e2e/invoices.cy.ts\",\"line\":2}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 17,
+      "case": "cy-structure-fixture",
+      "framework": "cypress",
+      "split": "public-development-holdout-v3",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 59769,
+      "workspace_sha256_before": "2b397a955fc43dd78962c3fc82fe70475eafc070410eab234458e024dfc5763d",
+      "workspace_sha256_after": "2b397a955fc43dd78962c3fc82fe70475eafc070410eab234458e024dfc5763d",
+      "findings": [
+        {
+          "pattern_id": "#11",
+          "severity": "P2",
+          "file": "cypress/pages/catalog-page.ts",
+          "line": 10
+        },
+        {
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "cypress/fixtures/guarded-product.json",
+          "line": 3
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-CY-STRUCTURE-001",
+          "V3-CY-STRUCTURE-002"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#11\",\"severity\":\"P2\",\"file\":\"cypress/pages/catalog-page.ts\",\"line\":10},{\"pattern_id\":\"#23\",\"severity\":\"P2\",\"file\":\"cypress/fixtures/guarded-product.json\",\"line\":3}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 18,
+      "case": "pw-maintenance-provenance",
+      "framework": "playwright",
+      "split": "public-development-holdout-v3",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 49956,
+      "workspace_sha256_before": "40bab2b0a994cbec5ae0eb3acab3222491898317efe8c5495021744967d6b6c6",
+      "workspace_sha256_after": "40bab2b0a994cbec5ae0eb3acab3222491898317efe8c5495021744967d6b6c6",
+      "findings": [
+        {
+          "pattern_id": "#21",
+          "severity": "P2",
+          "file": "playwright.config.ts",
+          "line": 7
+        },
+        {
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "support/recent-users.ts",
+          "line": 3
+        },
+        {
+          "pattern_id": "#17",
+          "severity": "P1",
+          "file": "tests/preferences.spec.ts",
+          "line": 5
+        },
+        {
+          "pattern_id": "#18",
+          "severity": "P1",
+          "file": "tests/preferences.spec.ts",
+          "line": 17
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-PW-MAINT-001",
+          "V3-PW-MAINT-002",
+          "V3-PW-MAINT-003",
+          "V3-PW-MAINT-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#21\",\"severity\":\"P2\",\"file\":\"playwright.config.ts\",\"line\":7},{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"support/recent-users.ts\",\"line\":3},{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":5},{\"pattern_id\":\"#18\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":17}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 19,
+      "case": "cy-write-credentials",
+      "framework": "cypress",
+      "split": "public-development-holdout-v3",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 45712,
+      "workspace_sha256_before": "e7fedd86f3d23c6af6071b7860a2116364801c089c2d1205ae6c1e3ccbb5b4b5",
+      "workspace_sha256_after": "e7fedd86f3d23c6af6071b7860a2116364801c089c2d1205ae6c1e3ccbb5b4b5",
+      "findings": [
+        {
+          "pattern_id": "#14",
+          "severity": "P1",
+          "file": "cypress/e2e/profile.cy.ts",
+          "line": 5
+        },
+        {
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "cypress/e2e/profile.cy.ts",
+          "line": 20
+        },
+        {
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "cypress/e2e/board.cy.ts",
+          "line": 6
+        }
+      ],
+      "score": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-CY-WRITE-001",
+          "V3-CY-WRITE-002",
+          "V3-CY-WRITE-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#14\",\"severity\":\"P1\",\"file\":\"cypress/e2e/profile.cy.ts\",\"line\":5},{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"cypress/e2e/profile.cy.ts\",\"line\":20},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/board.cy.ts\",\"line\":6}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 20,
+      "case": "cy-structure-fixture",
+      "framework": "cypress",
+      "split": "public-development-holdout-v3",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 92245,
+      "workspace_sha256_before": "2b397a955fc43dd78962c3fc82fe70475eafc070410eab234458e024dfc5763d",
+      "workspace_sha256_after": "2b397a955fc43dd78962c3fc82fe70475eafc070410eab234458e024dfc5763d",
+      "findings": [
+        {
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/catalog.cy.ts",
+          "line": 6
+        },
+        {
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/catalog.cy.ts",
+          "line": 12
+        },
+        {
+          "pattern_id": "#11",
+          "severity": "P2",
+          "file": "cypress/pages/catalog-page.ts",
+          "line": 10
+        },
+        {
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "cypress/fixtures/guarded-product.json",
+          "line": 3
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 2,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-CY-STRUCTURE-001",
+          "V3-CY-STRUCTURE-002"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#1\",\"severity\":\"P0\",\"file\":\"cypress/e2e/catalog.cy.ts\",\"line\":6},{\"pattern_id\":\"#1\",\"severity\":\"P0\",\"file\":\"cypress/e2e/catalog.cy.ts\",\"line\":12},{\"pattern_id\":\"#11\",\"severity\":\"P2\",\"file\":\"cypress/pages/catalog-page.ts\",\"line\":10},{\"pattern_id\":\"#23\",\"severity\":\"P2\",\"file\":\"cypress/fixtures/guarded-product.json\",\"line\":3}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 21,
+      "case": "pw-rejection-state",
+      "framework": "playwright",
+      "split": "public-development-holdout-v3",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 68174,
+      "workspace_sha256_before": "c9a92c257c742324dc4db9b41367e5180a036d7b6c14e14193b8eff9c92154eb",
+      "workspace_sha256_after": "c9a92c257c742324dc4db9b41367e5180a036d7b6c14e14193b8eff9c92154eb",
+      "findings": [
+        {
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "pages/report-page.ts",
+          "line": 11
+        },
+        {
+          "pattern_id": "#5b",
+          "severity": "P1",
+          "file": "pages/report-page.ts",
+          "line": 16
+        },
+        {
+          "pattern_id": "#4h",
+          "severity": "P1",
+          "file": "tests/report.spec.ts",
+          "line": 9
+        }
+      ],
+      "score": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-PW-REJECT-001",
+          "V3-PW-REJECT-002",
+          "V3-PW-REJECT-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"pages/report-page.ts\",\"line\":11},{\"pattern_id\":\"#5b\",\"severity\":\"P1\",\"file\":\"pages/report-page.ts\",\"line\":16},{\"pattern_id\":\"#4h\",\"severity\":\"P1\",\"file\":\"tests/report.spec.ts\",\"line\":9}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 22,
+      "case": "cy-command-timing",
+      "framework": "cypress",
+      "split": "public-development-holdout-v3",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 46159,
+      "workspace_sha256_before": "3e467471d800490ff821ae5b270080f665e2d400f6fdd77ab609573b694eebfc",
+      "workspace_sha256_after": "3e467471d800490ff821ae5b270080f665e2d400f6fdd77ab609573b694eebfc",
+      "findings": [
+        {
+          "pattern_id": "#9b",
+          "severity": "P1",
+          "file": "cypress/e2e/search.cy.ts",
+          "line": 10
+        },
+        {
+          "pattern_id": "#10f",
+          "severity": "P1",
+          "file": "cypress/e2e/search.cy.ts",
+          "line": 16
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-CY-COMMAND-002",
+          "V3-CY-COMMAND-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#9b\",\"severity\":\"P1\",\"file\":\"cypress/e2e/search.cy.ts\",\"line\":10},{\"pattern_id\":\"#10f\",\"severity\":\"P1\",\"file\":\"cypress/e2e/search.cy.ts\",\"line\":16}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 23,
+      "case": "pw-maintenance-provenance",
+      "framework": "playwright",
+      "split": "public-development-holdout-v3",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 76858,
+      "workspace_sha256_before": "40bab2b0a994cbec5ae0eb3acab3222491898317efe8c5495021744967d6b6c6",
+      "workspace_sha256_after": "40bab2b0a994cbec5ae0eb3acab3222491898317efe8c5495021744967d6b6c6",
+      "findings": [
+        {
+          "pattern_id": "#21",
+          "severity": "P2",
+          "file": "playwright.config.ts",
+          "line": 7
+        },
+        {
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "support/recent-users.ts",
+          "line": 3
+        },
+        {
+          "pattern_id": "#17",
+          "severity": "P1",
+          "file": "tests/preferences.spec.ts",
+          "line": 5
+        },
+        {
+          "pattern_id": "#18",
+          "severity": "P1",
+          "file": "tests/preferences.spec.ts",
+          "line": 17
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V3-PW-MAINT-001",
+          "V3-PW-MAINT-002",
+          "V3-PW-MAINT-003",
+          "V3-PW-MAINT-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#21\",\"severity\":\"P2\",\"file\":\"playwright.config.ts\",\"line\":7},{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"support/recent-users.ts\",\"line\":3},{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":5},{\"pattern_id\":\"#18\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":17}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 24,
+      "case": "cy-contract-runtime",
+      "framework": "cypress",
+      "split": "public-development-holdout-v3",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 41720,
+      "workspace_sha256_before": "63a07bd6b01b4a6f50a3b0bfea70dff4985b42a59ac8a24039b064a05e7d4a8a",
+      "workspace_sha256_after": "63a07bd6b01b4a6f50a3b0bfea70dff4985b42a59ac8a24039b064a05e7d4a8a",
+      "findings": [
+        {
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/e2e.ts",
+          "line": 1
+        },
+        {
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/invoices.cy.ts",
+          "line": 2
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 1,
+        "matched_finding_ids": [
+          "V3-CY-CONTRACT-001",
+          "V3-CY-CONTRACT-003"
+        ],
+        "missed_finding_ids": [
+          "V3-CY-CONTRACT-002"
+        ],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/e2e.ts\",\"line\":1},{\"pattern_id\":\"#1\",\"severity\":\"P0\",\"file\":\"cypress/e2e/invoices.cy.ts\",\"line\":2}]}\n",
+      "error": null
+    }
+  ]
+}

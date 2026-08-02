@@ -1,12 +1,22 @@
-#!/usr/bin/env bash
-# pre-push: refresh the local e2e-skills install so it matches HEAD being pushed.
+#!/bin/bash -p
+# pre-push: refresh the local e2e-skills install from the current working tree,
+# including any uncommitted edits present when the hook runs.
 # Delegates to scripts/dev/reinstall-skills.sh, which runs:
 #   `skills remove` (no-op if not installed) + `skills add --copy` (idempotent).
 # This handles both initial install (first push) and refresh (subsequent pushes).
 # Wired in by scripts/dev/install-hooks.sh (sets core.hooksPath=scripts/hooks).
-set -euo pipefail
+builtin set -euo pipefail
 
-REPO_ROOT="$(git rev-parse --show-toplevel)"
+PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+builtin export PATH
+builtin unset CDPATH ENV BASH_ENV GLOBIGNORE
+while IFS= builtin read -r imported_function; do
+  builtin unset -f "$imported_function"
+done < <(builtin compgen -A function)
+builtin shopt -u expand_aliases
+builtin unalias -a 2>/dev/null || true
+
+REPO_ROOT="$(/usr/bin/git rev-parse --show-toplevel)"
 
 echo "==> pre-push: README i18n parity guard"
 en_sec=$(grep -c '^## ' "$REPO_ROOT/README.md" || true)
@@ -22,7 +32,7 @@ for f in README.ko.md README.ja.md README.zh-cn.md; do
 done
 
 echo "==> pre-push: running local security/manifest gate"
-"$REPO_ROOT/scripts/ci/pre-push-security.sh" --quiet
+/bin/bash -p "$REPO_ROOT/scripts/ci/pre-push-security.sh" --quiet
 
 # Catch what CI would reject, before the push instead of after: version/surface parity,
 # pattern-severity parity, subagent parity, link integrity, docs orphans, language, and the

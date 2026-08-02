@@ -26,17 +26,25 @@ severity: error
 message: "Missing await on Playwright expect — web-first matcher needs `await` for auto-retry"
 
 rule:
-  pattern: 'expect($X).$M($$$ARGS)'
-  not:
-    inside:
-      kind: await_expression
+  all:
+    - pattern: 'expect($X).$M($$$ARGS)'
+    - not:
+        inside:
+          kind: await_expression
+    - not:
+        inside:
+          kind: return_statement
 constraints:
   M:
-    regex: '^(toBeVisible|toBeHidden|toBeEnabled|toBeDisabled|toBeChecked|toBeEmpty|toBeFocused|toBeAttached|toBeInViewport|toBeEditable|toHaveText|toContainText|toHaveValue|toHaveValues|toHaveCount|toHaveURL|toHaveTitle|toHaveAttribute|toHaveClass|toHaveCSS|toHaveScreenshot|toHaveJSProperty|toHaveAccessibleName|toHaveAccessibleDescription|toHaveRole)$'
+    regex: '^(toBeAttached|toBeChecked|toBeDisabled|toBeEditable|toBeEmpty|toBeEnabled|toBeFocused|toBeHidden|toBeInViewport|toBeOK|toBeVisible|toContainClass|toContainText|toHaveAccessibleDescription|toHaveAccessibleErrorMessage|toHaveAccessibleName|toHaveAttribute|toHaveCSS|toHaveClass|toHaveCount|toHaveId|toHaveJSProperty|toHaveRole|toHaveScreenshot|toHaveText|toHaveTitle|toHaveURL|toHaveValue|toHaveValues|toMatchAriaSnapshot)$'
 
 # File-level scoping: skip vendored/build artifacts (mirrors Tier 3 rg --glob excludes).
 ignores:
 - '**/node_modules/**'
+- '**/.git/**'
+- '**/playwright-report/**'
+- '**/cypress/reports/**'
+- '**/test-results/**'
 - '**/dist/**'
 - '**/build/**'
 - '**/.next/**'
@@ -46,3 +54,4 @@ ignores:
 - '**/*.min.js'
 - '**/*.min.ts'
 - '**/evals/files/**'
+- '**/scripts/ci/fixtures/**'

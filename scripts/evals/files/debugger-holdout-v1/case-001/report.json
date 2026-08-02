@@ -1,0 +1,1 @@
+{"framework":"playwright","test":"invoice total updates","attempts":[{"status":"failed","duration_ms":29982,"error":"TimeoutError: expect(locator).toHaveText() exceeded 30000ms"},{"status":"passed","duration_ms":1840}]}

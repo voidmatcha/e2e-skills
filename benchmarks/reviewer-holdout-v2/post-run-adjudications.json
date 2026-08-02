@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "source_report": "reports/current-public-codex.json",
+  "source_report_sha256": "d6a454b615742ab73f13e4093571cbb07a8e56ebdd40381608291400d2902178",
+  "adjudication_mode": "four isolated Codex-native e2e-finding-verifier contexts",
+  "human_adjudicated": false,
+  "cross_model": false,
+  "output_conditioned": true,
+  "score_rewritten": false,
+  "performance_claim_status": "oracle-invalidated",
+  "findings": [
+    {
+      "case": "playwright-split-context",
+      "pattern_id": "#4a",
+      "severity": "P0",
+      "file": "tests/profile.spec.ts",
+      "line": 19,
+      "verdict": "CONFIRMED",
+      "evidence": "FeatureFlags.isEnabled() ignores its argument and always returns true, so the assertion is independent of product behavior."
+    },
+    {
+      "case": "pw-contract-boundaries",
+      "pattern_id": "#4a",
+      "severity": "P0",
+      "file": "tests/account.spec.ts",
+      "line": 24,
+      "verdict": "CONFIRMED",
+      "evidence": "isEnabled('account-v2') is guaranteed true by the supplied startsWith('account-') helper."
+    },
+    {
+      "case": "pw-contract-boundaries",
+      "pattern_id": "#4a",
+      "severity": "P0",
+      "file": "tests/account.spec.ts",
+      "line": 35,
+      "verdict": "CONFIRMED",
+      "evidence": "resultCount is assigned the local constant 1 and compared with the same literal. The existing #1 wrong-anchor guard is pattern-specific and does not exempt a distinct #4a."
+    },
+    {
+      "case": "pw-contract-boundaries",
+      "pattern_id": "#4a",
+      "severity": "P0",
+      "file": "tests/account.spec.ts",
+      "line": 36,
+      "verdict": "CONFIRMED",
+      "evidence": "isEnabled('account-summary') is guaranteed true by the supplied startsWith('account-') helper."
+    }
+  ],
+  "interpretation": "All four majority-stable predictions scored as false positives by r3 were independently confirmed as real findings. The historical report remains unmodified. Do not use its nominal precision as a skill-performance estimate; design and blind-adjudicate a new corpus instead."
+}

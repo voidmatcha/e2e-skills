@@ -1,0 +1,737 @@
+{
+  "schema_version": 1,
+  "corpus_visibility": "public",
+  "intended_use": "hard development holdout",
+  "contamination_risk": "The committed source and labels are public. Use an external sealed corpus via --cases for contamination-resistant measurement.",
+  "cases": [
+    {
+      "id": "playwright-split-context",
+      "split": "public-development-holdout",
+      "framework": "playwright",
+      "source_files": [
+        {
+          "source": "files/holdout/playwright-split-context/tests/profile.spec.ts",
+          "path": "tests/profile.spec.ts"
+        },
+        {
+          "source": "files/holdout/playwright-split-context/pages/profile-page.ts",
+          "path": "pages/profile-page.ts"
+        },
+        {
+          "source": "files/holdout/playwright-split-context/support/feature-flags.ts",
+          "path": "support/feature-flags.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "PW-SPLIT-001",
+          "kind": "finding",
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "tests/profile.spec.ts",
+          "line": 10,
+          "source_line": "if (await profile.savedToast.isVisible()) {"
+        },
+        {
+          "finding_id": "PW-SPLIT-002",
+          "kind": "finding",
+          "pattern_id": "#4f",
+          "severity": "P0",
+          "file": "tests/profile.spec.ts",
+          "line": 18,
+          "source_line": "expect(profile.nameInput).toBeTruthy();"
+        },
+        {
+          "finding_id": "PW-FP-001",
+          "kind": "fp_guard",
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "tests/profile.spec.ts",
+          "line": 14,
+          "source_line": "if (await profile.advancedToggle.isVisible()) {"
+        },
+        {
+          "finding_id": "PW-FP-002",
+          "kind": "fp_guard",
+          "pattern_id": "#4c-4e",
+          "severity": "P1",
+          "file": "tests/profile.spec.ts",
+          "line": 19,
+          "source_line": "expect(await flags.isEnabled('profile-v2')).toBe(true);"
+        }
+      ]
+    },
+    {
+      "id": "cypress-split-context",
+      "split": "public-development-holdout",
+      "framework": "cypress",
+      "source_files": [
+        {
+          "source": "files/holdout/cypress-split-context/cypress/support/e2e.ts",
+          "path": "cypress/support/e2e.ts"
+        },
+        {
+          "source": "files/holdout/cypress-split-context/cypress/e2e/preferences.cy.ts",
+          "path": "cypress/e2e/preferences.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "CY-SPLIT-001",
+          "kind": "finding",
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/e2e.ts",
+          "line": 1,
+          "source_line": "Cypress.on('uncaught:exception', () => false);"
+        },
+        {
+          "finding_id": "CY-SPLIT-002",
+          "kind": "finding",
+          "pattern_id": "#7",
+          "severity": "P0",
+          "file": "cypress/e2e/preferences.cy.ts",
+          "line": 2,
+          "source_line": "it.only('shows save confirmation', () => {"
+        },
+        {
+          "finding_id": "CY-FP-001",
+          "kind": "fp_guard",
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "cypress/e2e/preferences.cy.ts",
+          "line": 5,
+          "source_line": "cy.get('button').contains('Save').click();"
+        },
+        {
+          "finding_id": "CY-FP-002",
+          "kind": "fp_guard",
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "cypress/e2e/preferences.cy.ts",
+          "line": 13,
+          "source_line": "cy.get('[data-testid=\"preference-row\"]').should('not.exist');"
+        }
+      ]
+    },
+    {
+      "id": "pw-contract-boundaries",
+      "split": "public-frozen-regression",
+      "framework": "playwright",
+      "source_files": [
+        {
+          "source": "files/holdout/pw-contract-boundaries/tests/account.spec.ts",
+          "path": "tests/account.spec.ts"
+        },
+        {
+          "source": "files/holdout/pw-contract-boundaries/support/feature-flags.ts",
+          "path": "support/feature-flags.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "PW-CONTRACT-001",
+          "kind": "finding",
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 9,
+          "source_line": "if (await savedToast.isVisible()) {"
+        },
+        {
+          "finding_id": "PW-CONTRACT-002",
+          "kind": "finding",
+          "pattern_id": "#16",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 21,
+          "source_line": "page.getByRole('button', { name: 'Open panel', exact: true }).click();"
+        },
+        {
+          "finding_id": "PW-CONTRACT-003",
+          "kind": "finding",
+          "pattern_id": "#15",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 22,
+          "source_line": "expect(page.getByRole('status', { name: 'Panel ready', exact: true })).toBeVisible();"
+        },
+      {
+        "finding_id": "PW-CONTRACT-004",
+        "kind": "finding",
+        "pattern_id": "#4f",
+        "severity": "P0",
+        "file": "tests/account.spec.ts",
+        "line": 23,
+        "source_line": "expect(page.getByLabel('Display name', { exact: true })).toBeTruthy();"
+      },
+      {
+        "finding_id": "PW-CONTRACT-005",
+        "kind": "finding",
+        "pattern_id": "#1",
+        "severity": "P0",
+        "file": "tests/account.spec.ts",
+        "line": 30,
+        "source_line": "test('reports the account section count and optional hint', async ({ page }) => {"
+      },
+        {
+          "finding_id": "PW-CONTRACT-FP-001",
+          "kind": "fp_guard",
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 17,
+          "source_line": "if (await advancedToggle.isVisible()) {"
+        },
+        {
+          "finding_id": "PW-CONTRACT-FP-002",
+          "kind": "fp_guard",
+          "pattern_id": "#15",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 35,
+          "source_line": "expect(resultCount).toBe(1);"
+        },
+        {
+          "finding_id": "PW-CONTRACT-FP-003",
+          "kind": "fp_guard",
+          "pattern_id": "#16",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 49,
+          "source_line": "page.getByRole('button', { name: 'Load preview', exact: true }).click(),"
+        },
+        {
+          "finding_id": "PW-CONTRACT-FP-004",
+          "kind": "fp_guard",
+          "pattern_id": "#4f",
+          "severity": "P0",
+          "file": "tests/account.spec.ts",
+          "line": 24,
+          "source_line": "expect(Boolean(flags.isEnabled('account-v2'))).toBeTruthy();"
+        },
+      {
+        "finding_id": "PW-CONTRACT-FP-005",
+        "kind": "fp_guard",
+        "pattern_id": "#18",
+        "severity": "P1",
+        "file": "tests/account.spec.ts",
+        "line": 37,
+        "source_line": "await expect.soft(page.getByTestId('optional-hint')).toContainText('Optional');"
+      },
+      {
+        "finding_id": "PW-CONTRACT-FP-006",
+        "kind": "fp_guard",
+        "pattern_id": "#1",
+        "severity": "P0",
+        "file": "tests/account.spec.ts",
+        "line": 35,
+        "source_line": "expect(resultCount).toBe(1);"
+      }
+      ]
+    },
+    {
+      "id": "pw-pom-runtime-context",
+      "split": "public-frozen-regression",
+      "framework": "playwright",
+      "source_files": [
+        {
+          "source": "files/holdout/pw-pom-runtime-context/tests/catalog.spec.ts",
+          "path": "tests/catalog.spec.ts"
+        },
+        {
+          "source": "files/holdout/pw-pom-runtime-context/pages/catalog-page.ts",
+          "path": "pages/catalog-page.ts"
+        },
+        {
+          "source": "files/holdout/pw-pom-runtime-context/support/sequence.ts",
+          "path": "support/sequence.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "PW-POM-001",
+          "kind": "finding",
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "pages/catalog-page.ts",
+          "line": 21,
+          "source_line": "await this.loading.waitFor({ state: 'hidden' }).catch(() => {});"
+        },
+        {
+          "finding_id": "PW-POM-002",
+          "kind": "finding",
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "pages/catalog-page.ts",
+          "line": 26,
+          "source_line": "() => document.querySelector('.catalog-root') !== null,"
+        },
+        {
+          "finding_id": "PW-POM-003",
+          "kind": "finding",
+          "pattern_id": "#17",
+          "severity": "P1",
+          "file": "pages/catalog-page.ts",
+          "line": 13,
+          "source_line": "await this.page.click('#open-browser-help');"
+        },
+      {
+        "finding_id": "PW-POM-004",
+        "kind": "finding",
+        "pattern_id": "#19",
+        "severity": "P1",
+        "file": "support/sequence.ts",
+        "line": 1,
+        "source_line": "let sequence = 0;"
+      },
+      {
+        "finding_id": "PW-POM-005",
+        "kind": "finding",
+        "pattern_id": "#4a",
+        "severity": "P0",
+        "file": "tests/catalog.spec.ts",
+        "line": 27,
+        "source_line": "expect(nextSequence()).toBeGreaterThan(0);"
+      },
+      {
+        "finding_id": "PW-POM-006",
+        "kind": "finding",
+        "pattern_id": "#4a",
+        "severity": "P0",
+        "file": "tests/catalog.spec.ts",
+        "line": 42,
+        "source_line": "expect(nextSequence()).toBeGreaterThan(0);"
+      },
+      {
+        "finding_id": "PW-POM-007",
+        "kind": "finding",
+        "pattern_id": "#11",
+        "severity": "P2",
+        "file": "pages/catalog-page.ts",
+        "line": 16,
+        "source_line": "async closeBrowserHelp(): Promise<void> {"
+      },
+      {
+        "finding_id": "PW-POM-FP-001",
+        "kind": "fp_guard",
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "tests/catalog.spec.ts",
+          "line": 13,
+          "source_line": "try {"
+        },
+        {
+          "finding_id": "PW-POM-FP-002",
+          "kind": "fp_guard",
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "pages/catalog-page.ts",
+          "line": 33,
+          "source_line": "() => getComputedStyle(document.body).direction,"
+        },
+        {
+          "finding_id": "PW-POM-FP-003",
+          "kind": "fp_guard",
+          "pattern_id": "#17",
+          "severity": "P1",
+          "file": "pages/catalog-page.ts",
+          "line": 17,
+          "source_line": "await this.page.locator('#close-browser-help').click();"
+        },
+        {
+          "finding_id": "PW-POM-FP-004",
+          "kind": "fp_guard",
+          "pattern_id": "#19",
+          "severity": "P1",
+        "file": "tests/catalog.spec.ts",
+        "line": 5,
+        "source_line": "let page: Page;"
+      },
+      {
+        "finding_id": "PW-POM-FP-005",
+        "kind": "fp_guard",
+        "pattern_id": "#2",
+        "severity": "P0",
+        "file": "tests/catalog.spec.ts",
+        "line": 38,
+        "source_line": "await catalog.closeBrowserHelp();"
+      },
+      {
+        "finding_id": "PW-POM-FP-006",
+        "kind": "fp_guard",
+        "pattern_id": "#11",
+        "severity": "P2",
+        "file": "pages/catalog-page.ts",
+        "line": 12,
+        "source_line": "async openBrowserHelp(): Promise<void> {"
+      }
+    ]
+    },
+    {
+      "id": "pw-session-provenance",
+      "split": "public-frozen-regression",
+      "framework": "playwright",
+      "source_files": [
+        {
+          "source": "files/holdout/pw-session-provenance/playwright.config.ts",
+          "path": "playwright.config.ts"
+        },
+        {
+          "source": "files/holdout/pw-session-provenance/auth.setup.ts",
+          "path": "auth.setup.ts"
+        },
+        {
+          "source": "files/holdout/pw-session-provenance/tests/session.spec.ts",
+          "path": "tests/session.spec.ts"
+        },
+        {
+          "source": "files/holdout/pw-session-provenance/pages/session-page.ts",
+          "path": "pages/session-page.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "PW-SESSION-001",
+          "kind": "finding",
+          "pattern_id": "#21",
+          "severity": "P2",
+          "file": "playwright.config.ts",
+          "line": 21,
+          "source_line": "storageState: 'playwright/.auth/manual.json',"
+        },
+      {
+        "finding_id": "PW-SESSION-002",
+        "kind": "finding",
+        "pattern_id": "#11",
+        "severity": "P2",
+        "file": "pages/session-page.ts",
+        "line": 13,
+        "source_line": "async exportSessionReport(): Promise<string | null> {"
+      },
+      {
+        "finding_id": "PW-SESSION-003",
+        "kind": "finding",
+        "pattern_id": "#1",
+        "severity": "P0",
+        "file": "auth.setup.ts",
+        "line": 3,
+        "source_line": "setup('creates a generated authenticated session', async ({ context, page }) => {"
+      },
+        {
+          "finding_id": "PW-SESSION-FP-001",
+          "kind": "fp_guard",
+          "pattern_id": "#21",
+          "severity": "P2",
+          "file": "playwright.config.ts",
+          "line": 14,
+          "source_line": "storageState: 'playwright/.auth/generated.json',"
+        },
+        {
+          "finding_id": "PW-SESSION-FP-002",
+          "kind": "fp_guard",
+          "pattern_id": "#11",
+          "severity": "P2",
+          "file": "pages/session-page.ts",
+          "line": 4,
+          "source_line": "readonly heading: Locator;"
+        },
+        {
+          "finding_id": "PW-SESSION-FP-003",
+          "kind": "fp_guard",
+          "pattern_id": "#12",
+          "severity": "P0",
+          "file": "tests/session.spec.ts",
+          "line": 6,
+          "source_line": "await page.goto('/account');"
+        }
+      ]
+    },
+    {
+      "id": "cy-runtime-control",
+      "split": "public-frozen-regression",
+      "framework": "cypress",
+      "source_files": [
+        {
+          "source": "files/holdout/cy-runtime-control/cypress/support/blanket-errors.ts",
+          "path": "cypress/support/blanket-errors.ts"
+        },
+        {
+          "source": "files/holdout/cy-runtime-control/cypress/support/scoped-errors.ts",
+          "path": "cypress/support/scoped-errors.ts"
+        },
+        {
+          "source": "files/holdout/cy-runtime-control/cypress/e2e/runtime.cy.ts",
+          "path": "cypress/e2e/runtime.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "CY-RUNTIME-001",
+          "kind": "finding",
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/blanket-errors.ts",
+          "line": 1,
+          "source_line": "Cypress.on('uncaught:exception', () => false);"
+        },
+        {
+          "finding_id": "CY-RUNTIME-002",
+          "kind": "finding",
+          "pattern_id": "#7",
+          "severity": "P0",
+          "file": "cypress/e2e/runtime.cy.ts",
+          "line": 9,
+          "source_line": "it.only('shows the runtime dashboard', () => {"
+        },
+        {
+          "finding_id": "CY-RUNTIME-003",
+          "kind": "finding",
+          "pattern_id": "#9b",
+          "severity": "P1",
+          "file": "cypress/e2e/runtime.cy.ts",
+          "line": 11,
+          "source_line": "cy.wait(750);"
+        },
+        {
+          "finding_id": "CY-RUNTIME-004",
+          "kind": "finding",
+          "pattern_id": "#10d",
+          "severity": "P1",
+          "file": "cypress/e2e/runtime.cy.ts",
+          "line": 21,
+          "source_line": "it('loads queued runtime data', async () => {"
+        },
+        {
+          "finding_id": "CY-RUNTIME-FP-001",
+          "kind": "fp_guard",
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/scoped-errors.ts",
+          "line": 1,
+          "source_line": "Cypress.on('uncaught:exception', (error) => {"
+        },
+        {
+          "finding_id": "CY-RUNTIME-FP-002",
+          "kind": "fp_guard",
+          "pattern_id": "#7",
+          "severity": "P0",
+          "file": "cypress/e2e/runtime.cy.ts",
+          "line": 33,
+          "source_line": "expect(\"it.only('debug')\").to.include('.only');"
+        },
+        {
+          "finding_id": "CY-RUNTIME-FP-003",
+          "kind": "fp_guard",
+          "pattern_id": "#9b",
+          "severity": "P1",
+          "file": "cypress/e2e/runtime.cy.ts",
+          "line": 17,
+          "source_line": "cy.wait('@plans');"
+        },
+        {
+          "finding_id": "CY-RUNTIME-FP-004",
+          "kind": "fp_guard",
+          "pattern_id": "#10d",
+          "severity": "P1",
+          "file": "cypress/e2e/runtime.cy.ts",
+          "line": 27,
+          "source_line": "it('builds a native runtime fixture', async () => {"
+        }
+      ]
+    },
+    {
+      "id": "cy-command-semantics",
+      "split": "public-frozen-regression",
+      "framework": "cypress",
+      "source_files": [
+        {
+          "source": "files/holdout/cy-command-semantics/cypress/support/e2e.ts",
+          "path": "cypress/support/e2e.ts"
+        },
+        {
+          "source": "files/holdout/cy-command-semantics/cypress/e2e/rows.cy.ts",
+          "path": "cypress/e2e/rows.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "CY-COMMAND-001",
+          "kind": "finding",
+          "pattern_id": "#10e",
+          "severity": "P1",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 3,
+          "source_line": "const row = cy.get('[data-cy=\"row\"]');"
+        },
+        {
+          "finding_id": "CY-COMMAND-002",
+          "kind": "finding",
+          "pattern_id": "#10f",
+          "severity": "P1",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 8,
+          "source_line": "cy.get('[data-cy=\"details\"]').click().should('have.attr', 'aria-expanded', 'true');"
+        },
+        {
+          "finding_id": "CY-COMMAND-003",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 12,
+          "source_line": "cy.get('[data-cy=\"delete\"]').click();"
+        },
+        {
+          "finding_id": "CY-COMMAND-004",
+          "kind": "finding",
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 16,
+          "source_line": "cy.get('[data-cy=\"legacy-row\"]').should('not.exist');"
+        },
+        {
+          "finding_id": "CY-COMMAND-FP-001",
+          "kind": "fp_guard",
+          "pattern_id": "#10e",
+          "severity": "P1",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 20,
+          "source_line": "const clock = cy.stub(Date, 'now').returns(42);"
+        },
+        {
+          "finding_id": "CY-COMMAND-FP-002",
+          "kind": "fp_guard",
+          "pattern_id": "#10f",
+          "severity": "P1",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 25,
+          "source_line": "cy.get('[data-cy=\"details\"]').click();"
+        },
+        {
+          "finding_id": "CY-COMMAND-FP-003",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 30,
+          "source_line": "cy.get('[data-cy=\"delete\"]').click();"
+        },
+        {
+          "finding_id": "CY-COMMAND-FP-004",
+          "kind": "fp_guard",
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "cypress/e2e/rows.cy.ts",
+          "line": 37,
+          "source_line": "cy.get('[data-cy=\"temporary-row\"]').should('not.exist');"
+        }
+      ]
+    },
+    {
+      "id": "cy-write-and-render-contract",
+      "split": "public-frozen-regression",
+      "framework": "cypress",
+      "source_files": [
+        {
+          "source": "files/holdout/cy-write-and-render-contract/cypress/support/e2e.ts",
+          "path": "cypress/support/e2e.ts"
+        },
+        {
+          "source": "files/holdout/cy-write-and-render-contract/cypress/e2e/signup.cy.ts",
+          "path": "cypress/e2e/signup.cy.ts"
+        },
+        {
+          "source": "files/holdout/cy-write-and-render-contract/cypress/e2e/likes.cy.ts",
+          "path": "cypress/e2e/likes.cy.ts"
+        },
+        {
+          "source": "files/holdout/cy-write-and-render-contract/cypress/fixtures/liked.json",
+          "path": "cypress/fixtures/liked.json"
+        },
+        {
+          "source": "files/holdout/cy-write-and-render-contract/cypress/fixtures/visible-liked.json",
+          "path": "cypress/fixtures/visible-liked.json"
+        },
+        {
+          "source": "files/holdout/cy-write-and-render-contract/src/LikeButton.tsx",
+          "path": "src/LikeButton.tsx"
+        },
+        {
+          "source": "files/holdout/cy-write-and-render-contract/src/LikedCard.tsx",
+          "path": "src/LikedCard.tsx"
+        },
+        {
+          "source": "files/holdout/cy-write-and-render-contract/src/SignupForm.tsx",
+          "path": "src/SignupForm.tsx"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "CY-WRITE-001",
+          "kind": "finding",
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "cypress/e2e/signup.cy.ts",
+          "line": 6,
+          "source_line": "cy.get('[data-cy=\"signup-submit\"]').click();"
+        },
+        {
+          "finding_id": "CY-WRITE-002",
+          "kind": "finding",
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "cypress/e2e/likes.cy.ts",
+          "line": 4,
+          "source_line": "cy.get('[data-cy=\"like-toggle\"]').click();"
+        },
+        {
+          "finding_id": "CY-WRITE-003",
+          "kind": "finding",
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "cypress/fixtures/liked.json",
+          "line": 4,
+          "source_line": "\"liked\": false"
+        },
+        {
+          "finding_id": "CY-WRITE-FP-001",
+          "kind": "fp_guard",
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "cypress/e2e/signup.cy.ts",
+          "line": 13,
+          "source_line": "cy.get('[data-cy=\"preference-save\"]').click();"
+        },
+        {
+          "finding_id": "CY-WRITE-FP-002",
+          "kind": "fp_guard",
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "cypress/e2e/likes.cy.ts",
+          "line": 10,
+          "source_line": "cy.get('[data-cy=\"like-toggle\"]').click();"
+        },
+        {
+          "finding_id": "CY-WRITE-FP-003",
+          "kind": "fp_guard",
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "cypress/fixtures/visible-liked.json",
+          "line": 4,
+          "source_line": "\"liked\": true"
+        },
+        {
+          "finding_id": "CY-WRITE-FP-004",
+          "kind": "fp_guard",
+          "pattern_id": "#14",
+          "severity": "P1",
+          "file": "cypress/e2e/signup.cy.ts",
+          "line": 5,
+          "source_line": "cy.get('[data-cy=\"signup-password\"]').type(Cypress.env('E2E_SIGNUP_PASSWORD'));"
+        }
+      ]
+    }
+  ]
+}

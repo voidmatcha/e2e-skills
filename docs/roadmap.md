@@ -1,6 +1,6 @@
 # Upstream Contributions: Track Record and Roadmap
 
-`e2e-skills` is validated by contributing real E2E test fixes upstream. This page is both a track record and a contribution roadmap: merged PRs prove maintainers accepted the findings, while open PRs show the next verification queue.
+This page tracks self-selected upstream contributions and future candidates. Merged PRs are adoption and case evidence: they show that maintainers accepted specific fixes, but they are not a representative validation set or a product-accuracy estimate. Open PRs show the next contribution queue.
 
 **Goal:** at least 25 merged upstream PRs. Each merge should be a small, reviewable fix for a Playwright/Cypress test that previously passed while proving too little.
 
@@ -23,9 +23,9 @@ Selected merged PRs below are sorted roughly by repository recognition, not chro
 | Strapi | ★72.5k | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | Discarded `isVisible()` / `isHidden()` / `isEnabled()` reads and unawaited clicks | Discarded boolean reads assert nothing, even when they look like the test's main contract. |
 | Ghost | ★54.1k | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | Promise-valued disabled-state checks passed without proving button state | Async state checks need awaited web-first assertions. |
 | Cal.com | ★45.8k | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | Weak assertions and hard waits in E2E tests | Replacing timing sleeps with web-first checks makes the test fail on real regressions. |
-| Bruno | ★45.2k | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | WebSocket visibility assertion was not awaited | Floating assertions can be skipped entirely. |
+| Bruno | ★45.2k | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | WebSocket visibility assertion was not awaited | Floating assertions race later work and normally surface rejection with degraded attribution. |
 | Qwik | ★22k | [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777) | Discarded assertion promises, `toBeDefined()` on locators, and bare locators | Locators are handles; only awaited web-first matchers prove rendered state. |
-| SvelteKit | ★20.6k | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Floating web-first assertions | Missing `await` can make the assertion never participate in the test outcome. |
+| SvelteKit | ★20.6k | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Floating web-first assertions | Missing `await` leaves the assertion Promise outside the test's intended sequence and can degrade failure attribution. |
 | Element Web | ★13.2k | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Always-passing assertions, unawaited checks, `toBeAttached()` misuse, dead code | Static review can find tests that pass while proving nothing in large E2E suites. |
 | FiftyOne | ★10.8k | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Duplicate-name error asserted via locator definition instead of visible UI state | A defined locator proves nothing; assert the error the user actually sees. |
 | Carbon Design System | ★9.2k | [carbon-design-system/carbon#22564](https://github.com/carbon-design-system/carbon/pull/22564) | `expect(locator).toBeTruthy()` used as CSS-state verification | Locator truthiness never proves an element exists or is visible. |
@@ -61,7 +61,7 @@ Queue entries must be re-verified against upstream `main` before submission.
 
 ## Operating rules
 
-- Prefer merged-proof quality over volume: one clear P0 fix is better than several subjective cleanups.
+- Prefer high-signal merged case evidence over volume: one clear P0 fix is better than several subjective cleanups.
 - Keep PRs small enough for maintainers to review in one pass.
 - Run the target repo's local test or the narrowest available verification before submission.
 - Mention `e2e-skills/e2e-reviewer` only as transparent provenance, not as a sales pitch.

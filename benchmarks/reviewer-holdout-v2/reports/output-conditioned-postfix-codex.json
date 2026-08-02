@@ -1,0 +1,586 @@
+{
+  "schema_version": 2,
+  "runner": "codex",
+  "runner_identity": "codex-cli 0.144.1",
+  "model": "gpt-5.6-sol",
+  "git_revision": null,
+  "git_dirty": null,
+  "skill_sha256": "99cd10f0db45251cd42354e822292bb891365c5bb7502446d4d5fa94231581cb",
+  "skill_source_path": "/private/tmp/e2e-reviewer-live-v2.a47q7H/improved-skill",
+  "corpus_sha256": "1c43ca37e3eaebbaee3fdf7c1167f4026dba3944e88decba6f8ae800e59c501d",
+  "corpus_visibility": "public",
+  "corpus_intended_use": "hard development holdout",
+  "corpus_contamination_risk": "The committed source and labels are public. Use an external sealed corpus via --cases for contamination-resistant measurement.",
+  "protocol_id": "reviewer-holdout-v2",
+  "protocol_path": "/private/tmp/e2e-reviewer-live-v2.a47q7H/scripts/evals/reviewer-validation-protocol.json",
+  "protocol_sha256": "868e25206e75ab8274b7b16e117267ef276551c63cc2b5e8734fd3b5efe09416",
+  "protocol": {
+    "schema_version": 1,
+    "protocol_id": "reviewer-holdout-v2",
+    "schedule": {
+      "algorithm": "sha256-seeded-sort-v1",
+      "seed": 20260729,
+      "default_repetitions": 1,
+      "release_repetitions": 3
+    },
+    "stability": {
+      "rule": "at-least-ceil-half"
+    },
+    "confidence_intervals": {
+      "method": "wilson",
+      "confidence": 0.95,
+      "unit": "unique-label-or-prediction"
+    },
+    "decision": {
+      "threshold_basis": "point-estimate",
+      "thresholds": {
+        "stable_precision_min": 0.95,
+        "stable_recall_min": 0.85,
+        "pattern_macro_recall_min": 0.8,
+        "case_macro_recall_min": 0.8,
+        "framework_macro_recall_min": 0.8,
+        "p0_stable_label_recall_min": 0.9,
+        "stable_guard_hit_rate_max": 0.05
+      }
+    },
+    "cross_host_decision": {
+      "threshold_basis": "point-estimate",
+      "requires_each_report_status": "PASS",
+      "thresholds": {
+        "stable_recall_gap_max": 0.1,
+        "stable_prediction_jaccard_min": 0.8
+      }
+    }
+  },
+  "schedule_seed": 20260729,
+  "schedule_algorithm": "sha256-seeded-sort-v1",
+  "release_repetitions": 3,
+  "schedule_sha256": "14bb37ef670fcd9236f5f2f889e964bf37c0c893a7026f8c61dceaa56f66a950",
+  "schedule": [
+    {
+      "ordinal": 1,
+      "case": "cy-write-and-render-contract",
+      "repetition": 2
+    },
+    {
+      "ordinal": 2,
+      "case": "cy-write-and-render-contract",
+      "repetition": 3
+    },
+    {
+      "ordinal": 3,
+      "case": "pw-pom-runtime-context",
+      "repetition": 3
+    },
+    {
+      "ordinal": 4,
+      "case": "pw-pom-runtime-context",
+      "repetition": 2
+    },
+    {
+      "ordinal": 5,
+      "case": "cy-write-and-render-contract",
+      "repetition": 1
+    },
+    {
+      "ordinal": 6,
+      "case": "pw-pom-runtime-context",
+      "repetition": 1
+    }
+  ],
+  "source_read_isolation": "not-required-public-corpus",
+  "external_wrapper": null,
+  "workspace_integrity": "pre-post-sha256",
+  "repetitions": 3,
+  "complete": true,
+  "status": "PASS",
+  "status_reasons": [
+    {
+      "code": "all_thresholds_met",
+      "message": "all preregistered primary thresholds were met"
+    }
+  ],
+  "protocol_sha256_after": "868e25206e75ab8274b7b16e117267ef276551c63cc2b5e8734fd3b5efe09416",
+  "created_at": "2026-07-29T06:19:17.395312+00:00",
+  "summary": {
+    "tp": 21,
+    "fp": 0,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "runs": 6,
+    "successful_runs": 6,
+    "infrastructure_errors": 0
+  },
+  "primary_metrics": {
+    "aggregation_unit": "unique-case-label-or-prediction",
+    "stability": {
+      "rule": "hits >= ceil(repetitions / 2)",
+      "repetitions": 3,
+      "required_hits": 2
+    },
+    "unique": {
+      "tp": 7,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "precision_ci95": {
+        "method": "wilson",
+        "confidence": 0.95,
+        "successes": 7,
+        "total": 7,
+        "lower": 0.6456695649333126,
+        "upper": 1.0
+      },
+      "recall_ci95": {
+        "method": "wilson",
+        "confidence": 0.95,
+        "successes": 7,
+        "total": 7,
+        "lower": 0.6456695649333126,
+        "upper": 1.0
+      },
+      "guard_labels": 8,
+      "stable_guard_hits": 0,
+      "stable_guard_hit_rate": 0.0,
+      "stable_guard_hit_rate_ci95": {
+        "method": "wilson",
+        "confidence": 0.95,
+        "successes": 0,
+        "total": 8,
+        "lower": 0.0,
+        "upper": 0.32440756488388023
+      }
+    },
+    "macro_recall": {
+      "pattern": {
+        "value": 1.0,
+        "groups": {
+          "#17": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#19": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#20": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#22": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#23": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#3": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          },
+          "#6": {
+            "detected": 1,
+            "expected": 1,
+            "recall": 1.0
+          }
+        }
+      },
+      "case": {
+        "value": 1.0,
+        "groups": {
+          "cy-write-and-render-contract": {
+            "detected": 3,
+            "expected": 3,
+            "recall": 1.0
+          },
+          "pw-pom-runtime-context": {
+            "detected": 4,
+            "expected": 4,
+            "recall": 1.0
+          }
+        }
+      },
+      "framework": {
+        "value": 1.0,
+        "groups": {
+          "cypress": {
+            "detected": 3,
+            "expected": 3,
+            "recall": 1.0
+          },
+          "playwright": {
+            "detected": 4,
+            "expected": 4,
+            "recall": 1.0
+          }
+        }
+      }
+    },
+    "p0_per_label_stability": {
+      "labels": [
+        {
+          "case": "pw-pom-runtime-context",
+          "framework": "playwright",
+          "finding_id": "PW-POM-001",
+          "pattern_id": "#3",
+          "hits": 3,
+          "repetitions": 3,
+          "detection_rate": 1.0,
+          "required_hits": 2,
+          "stable": true
+        }
+      ],
+      "stable_labels": 1,
+      "labels_total": 1,
+      "stable_label_recall": 1.0,
+      "stable_label_recall_ci95": {
+        "method": "wilson",
+        "confidence": 0.95,
+        "successes": 1,
+        "total": 1,
+        "lower": 0.20654931437723745,
+        "upper": 1.0
+      }
+    }
+  },
+  "secondary_metrics": {
+    "aggregation_unit": "repeated-run",
+    "tp": 21,
+    "fp": 0,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "runs": 6,
+    "successful_runs": 6,
+    "infrastructure_errors": 0
+  },
+  "by_case": {
+    "pw-pom-runtime-context": {
+      "tp": 12,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "runs": 3,
+      "successful_runs": 3,
+      "infrastructure_errors": 0
+    },
+    "cy-write-and-render-contract": {
+      "tp": 9,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "runs": 3,
+      "successful_runs": 3,
+      "infrastructure_errors": 0
+    }
+  },
+  "runs": [
+    {
+      "schedule_ordinal": 1,
+      "case": "cy-write-and-render-contract",
+      "framework": "cypress",
+      "split": "public-frozen-regression",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 89824,
+      "workspace_sha256_before": "9bd721ee6e198153d535c9f1f27a1e5ae0ace5bd6056f6cd3bef9d72950a19f0",
+      "workspace_sha256_after": "9bd721ee6e198153d535c9f1f27a1e5ae0ace5bd6056f6cd3bef9d72950a19f0",
+      "findings": [
+        {
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "cypress/e2e/signup.cy.ts",
+          "line": 6
+        },
+        {
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "cypress/e2e/likes.cy.ts",
+          "line": 4
+        },
+        {
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "cypress/fixtures/liked.json",
+          "line": 4
+        }
+      ],
+      "score": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "CY-WRITE-001",
+          "CY-WRITE-002",
+          "CY-WRITE-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"cypress/e2e/signup.cy.ts\",\"line\":6},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/likes.cy.ts\",\"line\":4},{\"pattern_id\":\"#23\",\"severity\":\"P2\",\"file\":\"cypress/fixtures/liked.json\",\"line\":4}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 2,
+      "case": "cy-write-and-render-contract",
+      "framework": "cypress",
+      "split": "public-frozen-regression",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 74386,
+      "workspace_sha256_before": "9bd721ee6e198153d535c9f1f27a1e5ae0ace5bd6056f6cd3bef9d72950a19f0",
+      "workspace_sha256_after": "9bd721ee6e198153d535c9f1f27a1e5ae0ace5bd6056f6cd3bef9d72950a19f0",
+      "findings": [
+        {
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "cypress/e2e/signup.cy.ts",
+          "line": 6
+        },
+        {
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "cypress/e2e/likes.cy.ts",
+          "line": 4
+        },
+        {
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "cypress/fixtures/liked.json",
+          "line": 4
+        }
+      ],
+      "score": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "CY-WRITE-001",
+          "CY-WRITE-002",
+          "CY-WRITE-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"cypress/e2e/signup.cy.ts\",\"line\":6},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/likes.cy.ts\",\"line\":4},{\"pattern_id\":\"#23\",\"severity\":\"P2\",\"file\":\"cypress/fixtures/liked.json\",\"line\":4}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 3,
+      "case": "pw-pom-runtime-context",
+      "framework": "playwright",
+      "split": "public-frozen-regression",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 64440,
+      "workspace_sha256_before": "0b7c440e8116c6baf9fdbf8142e312b6b08aa940d73f7b470e3a37ea7d53e45a",
+      "workspace_sha256_after": "0b7c440e8116c6baf9fdbf8142e312b6b08aa940d73f7b470e3a37ea7d53e45a",
+      "findings": [
+        {
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "pages/catalog-page.ts",
+          "line": 21
+        },
+        {
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "pages/catalog-page.ts",
+          "line": 26
+        },
+        {
+          "pattern_id": "#17",
+          "severity": "P1",
+          "file": "pages/catalog-page.ts",
+          "line": 13
+        },
+        {
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "support/sequence.ts",
+          "line": 1
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "PW-POM-001",
+          "PW-POM-002",
+          "PW-POM-003",
+          "PW-POM-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"pages/catalog-page.ts\",\"line\":21},{\"pattern_id\":\"#6\",\"severity\":\"P1\",\"file\":\"pages/catalog-page.ts\",\"line\":26},{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"pages/catalog-page.ts\",\"line\":13},{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"support/sequence.ts\",\"line\":1}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 4,
+      "case": "pw-pom-runtime-context",
+      "framework": "playwright",
+      "split": "public-frozen-regression",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 94141,
+      "workspace_sha256_before": "0b7c440e8116c6baf9fdbf8142e312b6b08aa940d73f7b470e3a37ea7d53e45a",
+      "workspace_sha256_after": "0b7c440e8116c6baf9fdbf8142e312b6b08aa940d73f7b470e3a37ea7d53e45a",
+      "findings": [
+        {
+          "pattern_id": "#17",
+          "severity": "P1",
+          "file": "pages/catalog-page.ts",
+          "line": 13
+        },
+        {
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "pages/catalog-page.ts",
+          "line": 21
+        },
+        {
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "pages/catalog-page.ts",
+          "line": 26
+        },
+        {
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "support/sequence.ts",
+          "line": 1
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "PW-POM-001",
+          "PW-POM-002",
+          "PW-POM-003",
+          "PW-POM-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"pages/catalog-page.ts\",\"line\":13},{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"pages/catalog-page.ts\",\"line\":21},{\"pattern_id\":\"#6\",\"severity\":\"P1\",\"file\":\"pages/catalog-page.ts\",\"line\":26},{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"support/sequence.ts\",\"line\":1}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 5,
+      "case": "cy-write-and-render-contract",
+      "framework": "cypress",
+      "split": "public-frozen-regression",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 74286,
+      "workspace_sha256_before": "9bd721ee6e198153d535c9f1f27a1e5ae0ace5bd6056f6cd3bef9d72950a19f0",
+      "workspace_sha256_after": "9bd721ee6e198153d535c9f1f27a1e5ae0ace5bd6056f6cd3bef9d72950a19f0",
+      "findings": [
+        {
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "cypress/e2e/signup.cy.ts",
+          "line": 6
+        },
+        {
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "cypress/e2e/likes.cy.ts",
+          "line": 4
+        },
+        {
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "cypress/fixtures/liked.json",
+          "line": 4
+        }
+      ],
+      "score": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "CY-WRITE-001",
+          "CY-WRITE-002",
+          "CY-WRITE-003"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"cypress/e2e/signup.cy.ts\",\"line\":6},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/likes.cy.ts\",\"line\":4},{\"pattern_id\":\"#23\",\"severity\":\"P2\",\"file\":\"cypress/fixtures/liked.json\",\"line\":4}]}\n",
+      "error": null
+    },
+    {
+      "schedule_ordinal": 6,
+      "case": "pw-pom-runtime-context",
+      "framework": "playwright",
+      "split": "public-frozen-regression",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 109570,
+      "workspace_sha256_before": "0b7c440e8116c6baf9fdbf8142e312b6b08aa940d73f7b470e3a37ea7d53e45a",
+      "workspace_sha256_after": "0b7c440e8116c6baf9fdbf8142e312b6b08aa940d73f7b470e3a37ea7d53e45a",
+      "findings": [
+        {
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "pages/catalog-page.ts",
+          "line": 21
+        },
+        {
+          "pattern_id": "#17",
+          "severity": "P1",
+          "file": "pages/catalog-page.ts",
+          "line": 13
+        },
+        {
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "pages/catalog-page.ts",
+          "line": 26
+        },
+        {
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "support/sequence.ts",
+          "line": 1
+        }
+      ],
+      "score": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "PW-POM-001",
+          "PW-POM-002",
+          "PW-POM-003",
+          "PW-POM-004"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"pages/catalog-page.ts\",\"line\":21},{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"pages/catalog-page.ts\",\"line\":13},{\"pattern_id\":\"#6\",\"severity\":\"P1\",\"file\":\"pages/catalog-page.ts\",\"line\":26},{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"support/sequence.ts\",\"line\":1}]}\n",
+      "error": null
+    }
+  ]
+}

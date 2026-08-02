@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "protocol_id": "independent-product-review-v6",
+  "purpose": "Fresh-context, prompt-complete, zero-tool Codex-only confirmation of selected remediations made after the completed v5 failure. This protocol is preregistered after the targeted product fixes, local contract verification, and independent code review but before any v6 model call. It is a post-hoc selected-remediation confirmation, not unbiased defect discovery, completion of the original cross-model schedule, confirmation of every v5 finding, full product coverage, skill accuracy, human or sealed review, independent ground truth, or remote model attestation.",
+  "phase_binding": {
+    "phase": "selected-v5-remediation-confirmation-codex-preregistration",
+    "predecessor_archive_id": "independent-product-review-v5-remediation",
+    "predecessor_archive_state": "COMPLETE",
+    "predecessor_gate": "FAIL",
+    "predecessor_protocol_sha256": "1f7aedb7ebd18334880c3ed8ce6b6c81ec665bd8618ef7983d04d809c4d1867f",
+    "predecessor_packet_sha256": "defd1f0a9c7bd4ef594ec110a70bbfd4eb0cfd649645457aad4c2dca29a16c52",
+    "predecessor_packet_manifest_sha256": "9e489770c1fb7848212d2378dfeee1ee2a419a04326f9712a3c9725fe748a835",
+    "predecessor_source_snapshot_sha256": "1eed1e4e0b1a657de9482522e119d8fb82e80e87e59f78717caa69078492b04b",
+    "predecessor_status_sha256": "438d92011bd51f35843840453bf51edcf0fcfdae35492162d341af45c4274f9f",
+    "predecessor_evidence_manifest_sha256": "db166fe0cba693209a22755d12c0d7f2a45ff84299a3d27c144aab49906f3865",
+    "remediation_ledger_sha256": "5c257517ef18ed3f3f489c6c08811a6716d1c03208f15d6f21dd3f6f4ab158bf",
+    "predecessor_attempts": [
+      {
+        "attempt_id": "codex-high-fix-r1",
+        "report_sha256": "a84d303cdb2df50707d3b865c4f39c39c2dc8615f272c0976c7db17cc50bcfd8",
+        "raw_sha256": "d83e2315a8db9b213db8e59b6cff281df0fd80271746e6c164b551e3b76924f2"
+      },
+      {
+        "attempt_id": "codex-high-fix-r2",
+        "report_sha256": "5b32f59a21865bd0fc6fd5940c9a58105a471bbe313a10d245ff07c1d44d324e",
+        "raw_sha256": "e1a1e922da7a07b08aed212e5352a7e3c7e0f265fb7ca12e689b57084bfda7d7"
+      },
+      {
+        "attempt_id": "codex-high-fix-r3",
+        "report_sha256": "023a15cceb6838e278ae4d958f017c6cdb8e5c1bc7cddf02e68bbb5883d35ac2",
+        "raw_sha256": "f46c452e4c3d461694bbe8fc14f270d9e4000c478ff0936ffe51b2502429300a"
+      }
+    ],
+    "claim_boundary": "This Codex-only phase was designed after observing the completed and failed v5 reports and after implementing selected targeted remediations. It can only report whether three newly frozen, fresh-context reviews of the remediated curated subset satisfy the unchanged six-dimension score and zero-Critical and zero-High thresholds, and whether those reviews reopen any of the five explicitly bound remediation targets. It does not retroactively change the historical v4 FAIL or v5 COMPLETE and FAIL, does not confirm every v5 finding unless separately dispositioned, and is not unbiased defect discovery, cross-model evidence, full-product coverage, an accuracy or skill-lift measurement, human or sealed review, independent ground truth, or remote model attestation. Claude Opus and Claude Fable are intentionally excluded."
+  },
+  "packet": {
+    "representation_byte_budget": 850000,
+    "selection_policy": "ordered-explicit-allowlist-v1",
+    "line_numbering": "original-one-based-lines",
+    "freeze_policy": "After this v6 protocol and its bound remediation ledger are archived, and all selected remediations have independent code-review approval plus local verification, build one canonical packet before any v6 model call. The predeclared 850000-byte cap preserves the exact same 30 required product surfaces as v5, including the raw-ARIA launcher and helper, and omissions fail closed. The remediation ledger remains outside the model packet and prompt. Record packet, manifest, protocol, ledger, runner, and selected-source digests before and after every call; any drift makes the run INCONCLUSIVE.",
+    "excluded_surfaces": [
+      ".git/**",
+      ".omx/**",
+      "benchmarks/**",
+      "results/**",
+      "**/evals/**",
+      "**/*holdout*",
+      "**/*scorecard*",
+      "**/*review*",
+      "chat transcripts and conclusions"
+    ]
+  },
+  "schedule": {
+    "version": "codex-selected-v5-remediation-confirmation-v1",
+    "seed": "independent-product-review-v6-selected-v5-high-four-medium-remediation-codex-3",
+    "digest_derivation": "sha256-canonical-json-version-seed-attempts-v1",
+    "digest": "d4d4c384ca261185d569c50c443a023c0fd73db78abf62bc3d70fd4f74803279",
+    "aggregate_rule": {
+      "completion": "Every selected-v5-remediation confirmation Codex attempt ID must appear exactly once with one shared frozen packet, protocol, source snapshot, remediation ledger, and schedule digest; preceding, historical, cross-model, replacement, or ad-hoc attempts do not count.",
+      "passage": "All three selected-v5-remediation confirmation Codex attempts must have an individual PASS verdict, and no finding may reopen any of the five bound remediation targets at or above its historical severity in the same category and affected file set."
+    },
+    "attempts": [
+      {
+        "attempt_id": "codex-selected-v5-fixes-r1",
+        "schedule_index": 0,
+        "repetition": 1,
+        "runner": "codex",
+        "model": "gpt-5.6-sol",
+        "provider_family": "openai"
+      },
+      {
+        "attempt_id": "codex-selected-v5-fixes-r2",
+        "schedule_index": 1,
+        "repetition": 2,
+        "runner": "codex",
+        "model": "gpt-5.6-sol",
+        "provider_family": "openai"
+      },
+      {
+        "attempt_id": "codex-selected-v5-fixes-r3",
+        "schedule_index": 2,
+        "repetition": 3,
+        "runner": "codex",
+        "model": "gpt-5.6-sol",
+        "provider_family": "openai"
+      }
+    ]
+  },
+  "host_matrix": [
+    {
+      "runner": "codex",
+      "model": "gpt-5.6-sol",
+      "provider_family": "openai"
+    }
+  ],
+  "rubric": {
+    "dimensions": [
+      {
+        "id": "semantic_correctness",
+        "label": "Semantic correctness",
+        "review_question": "Do the included public contracts and implementations agree on behavior, failure modes, and framework semantics?",
+        "weight": 1
+      },
+      {
+        "id": "false_positive_control",
+        "label": "False-positive control",
+        "review_question": "Do the included reviewer rules, suppressions, and scanner boundaries avoid unsupported findings while remaining fail-closed?",
+        "weight": 1
+      },
+      {
+        "id": "security_trust_boundaries",
+        "label": "Security and trust boundaries",
+        "review_question": "Do the included interfaces and scripts define safe input, artifact, credential, and execution boundaries?",
+        "weight": 1
+      },
+      {
+        "id": "verification_design",
+        "label": "Verification design",
+        "review_question": "Do the included files define executable, fail-closed checks that could verify the documented behavior? Score the design only; do not infer that omitted runs passed.",
+        "weight": 1
+      },
+      {
+        "id": "scope_contract_consistency",
+        "label": "Scope and contract consistency",
+        "review_question": "Are supported frameworks, hosts, capabilities, limitations, and fallback paths consistent across the included public surfaces? Do not infer quality from omitted benchmarks or holdouts.",
+        "weight": 1
+      },
+      {
+        "id": "docs_usability",
+        "label": "Documentation and usability",
+        "review_question": "Can a user act on the included installation, invocation, diagnosis, review, and verification guidance without relying on omitted context?",
+        "weight": 1
+      }
+    ],
+    "finding_severities": {
+      "C": "Critical: a trust, safety, or correctness failure that can invalidate the product or its evidence.",
+      "H": "High: a material product or evidence defect that should block a strong-quality claim.",
+      "M": "Medium: a bounded weakness or usability problem with concrete impact."
+    },
+    "decision": {
+      "overall_score_min": 90,
+      "dimension_score_min": 85,
+      "critical_findings_max": 0,
+      "high_findings_max": 0
+    }
+  },
+  "output_contract": {
+    "strict_json": true,
+    "top_level_keys": [
+      "summary",
+      "scores",
+      "findings",
+      "limitations",
+      "verdict"
+    ],
+    "finding_keys": [
+      "severity",
+      "category",
+      "file",
+      "line",
+      "title",
+      "evidence",
+      "recommendation"
+    ],
+    "verdicts": [
+      "PASS",
+      "FAIL"
+    ]
+  },
+  "status_policy": {
+    "PASS": "The strict review payload is complete, every finding cites an included file and valid original line, packet, protocol, ledger, runner, and source digests are unchanged, all fixed thresholds pass, and no selected remediation target is reopened.",
+    "FAIL": "The strict review payload is complete and provenance is intact, but one or more fixed thresholds fail or a selected remediation target is reopened.",
+    "INCONCLUSIVE": "The call, strict payload, evidence locations, CLI identity, ledger binding, or pre/post integrity evidence is missing or invalid."
+  }
+}

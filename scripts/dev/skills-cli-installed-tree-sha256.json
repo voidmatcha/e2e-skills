@@ -1,0 +1,10 @@
+{
+  "node_modules/@isaacs/fs-minipass": "0e57e5d9aaf3c52ae8cebaf11e1c7419d7a188bb967e612cb7cf3a1d00f48b7a",
+  "node_modules/chownr": "8955f852a6ab2b16d735ed21bf66be3836328e5e30413d273bb994ae1a52b90d",
+  "node_modules/minipass": "bdf9b932c416df5f8ff533470deaf1c9121872866dc14ee293c4a9a0b00ecfac",
+  "node_modules/minizlib": "9903111fe9b214959014d2e13c3338ca77b9daed8d2dcdda5ec421fff1e432b4",
+  "node_modules/skills": "89d4d8d9e923db6c69139a9443c2a50fc5fecbbf472f4bc0882ad850988eb2fe",
+  "node_modules/tar": "28b0eb5e0a808ce61fad252d164fc99e549ef7e338b112d72f08d69de91e99c7",
+  "node_modules/yallist": "e60fd664329a742dc40c4801777ad9998a6f69abfe018c855b20358b5946e5c9",
+  "node_modules/yaml": "391128d48d7ad617c5f791bdd58fed6e8451989137c7c8d4dddf497c5319091c"
+}
