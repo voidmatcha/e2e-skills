@@ -146,6 +146,10 @@ Debug the failed Cypress report in cypress/reports/.
 
 Use this bundle when AI-generated or inherited E2E tests may pass without proving the intended result. Do not use it as a replacement for running the application and its real E2E suite, a general lint preset, or a framework-agnostic test tool. Playwright and Cypress are the supported scope; generation currently targets Playwright only.
 
+A green generated test is not enough: it may assert a `Locator` or `Promise`, observe state unrelated to the behavior named by the test, or leave its primary assertion non-load-bearing. The generator therefore treats every new spec as a candidate until all applicable [V1–V6 verification](skills/playwright-test-generator/verification-rules.md) passes.
+
+On a project-approved scratch copy, V2 can invert the primary assertion and V3 can inject an evidenced product fault. A red run counts only when the predeclared primary assertion fails at the expected location with the expected mismatch; setup, timeout, browser, or infrastructure failures do not kill the mutant. The source candidate remains byte-identical, and a probe that cannot run safely is reported as `CANNOT_VERIFY` rather than guessed.
+
 ## How the review works
 
 Generating valid test code is not the same as generating a test that fails when the product is wrong. The workflow separates mechanical detection from semantic judgment:

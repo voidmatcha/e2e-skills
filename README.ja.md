@@ -19,7 +19,7 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <strong>🇯🇵 日本語</strong> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=f5317938a16fda8b59854508c845b707b92073db1b24a6781f06d9564e0cdf94; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=f28eddbc01529552f114e51e8f3abe5bd626a5b9c83fde20eee5cf2019f2530b; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 CI は通るのに、ユーザーに見える挙動を検証できていない Playwright/Cypress の E2E テストを見つけます。
 
@@ -147,6 +147,10 @@ Debug the failed Cypress report in cypress/reports/.
 | 決定論的なローカル scan を実行する | `skills/e2e-reviewer/scripts/scan.sh` | 対象プロジェクトの package に依存しない機械的候補 |
 
 AI が生成した、または引き継いだ E2E テストが、意図した結果を証明しないまま通ってしまう可能性があるときに、このバンドルを使ってください。アプリケーションや実際の E2E suite の実行、汎用 lint preset、framework-agnostic なテストツールの代替としては使わないでください。サポート範囲は Playwright と Cypress です。新規生成は現在 Playwright のみを対象にしています。
+
+生成したテストが通るだけでは不十分です。`Locator` や `Promise` 自体を検証していたり、テスト名に記した動作と無関係な状態を見ていたり、主要な assertion がテストの成否に影響していないことがあります。そのため generator は、適用可能な [V1–V6 verification](skills/playwright-test-generator/verification-rules.md) をすべて通過するまで、新しい spec を候補として扱います。
+
+プロジェクトが承認した一時コピー上で、V2 は主要な assertion を反転させ、V3 は根拠の確認できたプロダクト障害を注入します。事前に定めた主要な assertion が、想定した場所で想定した不一致を示して失敗した場合のみ、障害を検出したと判定します。setup、timeout、browser、infrastructure のエラーによる失敗は mutant の kill として扱いません。元の候補は byte-identical のまま保ち、安全に実行できない検証は推測せず `CANNOT_VERIFY` と報告します。
 
 ## レビューの仕組み
 

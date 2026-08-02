@@ -18,7 +18,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=f5317938a16fda8b59854508c845b707b92073db1b24a6781f06d9564e0cdf94; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=f28eddbc01529552f114e51e8f3abe5bd626a5b9c83fde20eee5cf2019f2530b; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 找出那些能通过 CI、却没有验证用户可见行为的 Playwright 和 Cypress E2E 测试。
 
@@ -146,6 +146,10 @@ Debug the failed Cypress report in cypress/reports/.
 | 运行确定性的本地扫描 | `skills/e2e-reviewer/scripts/scan.sh` | 不依赖目标项目 package 的机械候选项 |
 
 当 AI 生成或继承来的 E2E 测试可能在没有证明预期结果的情况下通过时，请使用这套 bundle。不要把它当作运行应用及其真实 E2E suite 的替代品，也不要把它当作通用 lint preset 或框架无关的测试工具。Playwright 和 Cypress 在支持范围内；生成目前只面向 Playwright。
+
+生成的测试仅仅通过还不够：它可能断言的是 `Locator` 或 `Promise` 本身，观察的状态与测试名称所描述的行为无关，或者主要断言根本不影响测试结果。因此，在所有适用的 [V1–V6 验证](skills/playwright-test-generator/verification-rules.md) 通过之前，生成器始终把新 spec 视为候选项。
+
+在项目批准的临时副本上，V2 可以反转主要断言，V3 可以注入有证据支持的产品故障。只有预先指定的主要断言在预期位置因预期不匹配而失败，才算成功杀死 mutant；由 setup、timeout、browser 或 infrastructure 错误导致的失败不作数。源候选文件保持 byte-identical，无法安全运行的探针会报告为 `CANNOT_VERIFY`，而不是靠猜测得出结论。
 
 ## 审查如何工作
 
