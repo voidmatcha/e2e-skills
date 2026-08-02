@@ -645,6 +645,33 @@ def assert_ast_scope() -> None:
         )
 
 
+def assert_ast_grep_can_be_disabled_even_when_installed() -> None:
+    """Portable jobs must ignore ambient deterministic ast-grep binaries."""
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-ast-disabled-") as temp:
+        root = Path(temp) / "project"
+        root.mkdir()
+        fake = Path(temp) / "ast-grep"
+        fake.write_text("#!/usr/bin/env bash\nprintf \"ambient binary must not run\\n\" >&2\nexit 99\n", encoding="utf-8")
+        fake.chmod(0o755)
+        (root / "safe.spec.ts").write_text(
+            "import { test } from '@playwright/test';\n"
+            "test('safe', async ({ page }) => { await page.goto('/'); });\n",
+            encoding="utf-8",
+        )
+        result = scan_path(
+            root,
+            {
+                "E2E_SMELL_AST_GREP_BIN": str(fake),
+                "E2E_SMELL_DISABLE_AST_GREP": "1",
+                "E2E_SMELL_NO_AST_GREP_DOWNLOAD": "1",
+            },
+        )
+        assert result.returncode == 0, result.stdout
+        assert "Tier 2 ast-grep" not in result.stdout
+        assert "ambient binary must not run" not in result.stdout
+        assert "Summary:" in result.stdout
+
+
 def assert_ast_grep_fail_closed() -> None:
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-ast-failure-") as temp:
         root = Path(temp) / "project"
@@ -5601,6 +5628,7 @@ def main() -> None:
     assert_eslint_download_path_is_supply_chain_pinned()
     assert_eslint_download_failure_falls_through_loudly()
     assert_foreign_cy_basename_requires_executable_cypress_provenance()
+    assert_ast_grep_can_be_disabled_even_when_installed()
     assert_ast_grep_fail_closed()
     assert_explicit_tool_binds_canonical_resolved_path()
     assert_default_versioned_tool_symlink_executes()

@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Portable scanner contracts can explicitly disable Tier 2 so preinstalled
+  host `ast-grep` binaries cannot make no-tool checks nondeterministic.
+- Artifact-reader launchers now select GNU `stat` formats before BSD formats,
+  preserving the root-owned system-Python boundary on Linux as well as macOS.
+
 ## [1.11.0] - 2026-08-02
 
 ### Changed

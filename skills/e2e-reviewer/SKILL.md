@@ -97,7 +97,9 @@ or unconsumed output; a human renderer change cannot become a false clean result
 Scanner utilities come from the fixed system path. `rg`, `node`/`npx`, and
 `ast-grep` are selected only from documented deterministic install locations or
 explicit absolute `E2E_SMELL_*_BIN` overrides, never from arbitrary inherited
-`PATH` entries. Relative scan roots are canonicalized after clearing `CDPATH`.
+`PATH` entries. Set `E2E_SMELL_DISABLE_AST_GREP=1` to disable Tier 2 entirely
+when a host's preinstalled binary must not affect a portability check. Relative
+scan roots are canonicalized after clearing `CDPATH`.
 
 Tier 3 has a fail-closed workload ceiling: a single rule may produce at most
 1,000 raw candidates by default. `E2E_SMELL_MAX_RULE_HITS` can set a value from

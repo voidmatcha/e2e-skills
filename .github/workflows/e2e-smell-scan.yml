@@ -88,10 +88,12 @@ jobs:
         run: python3 scripts/ci/test-fixture-faults.py
 
       - name: Verify scanner no-follow preflight
-        # This job deliberately has no ast-grep. Without this the scanner falls
-        # through to the opt-in npx download path, whose progress output is not
-        # JSON, and Tier 2 reports an infrastructure failure.
+        # This job deliberately does not exercise ambient ast-grep binaries.
+        # Hosted images may contain an unpinned binary even though this job does
+        # not install one, so disable Tier 2 explicitly rather than relying on
+        # the download switch alone.
         env:
+          E2E_SMELL_DISABLE_AST_GREP: "1"
           E2E_SMELL_NO_AST_GREP_DOWNLOAD: "1"
         run: python3 scripts/ci/test-reviewer-scanner.py --preflight-only
 

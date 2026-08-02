@@ -305,7 +305,9 @@ The scanner has three tiers with different guarantees. Tier 1 runs the target
 project's ESLint stack only after
 `E2E_SMELL_ALLOW_PROJECT_ESLINT=1`. Tier 2 runs `ast-grep` only when a trusted
 `ast-grep`/`sg` executable is available or its pinned `npx` fallback is
-explicitly enabled. The output prints a Tier 2 heading only when that tier ran;
+explicitly enabled. Set `E2E_SMELL_DISABLE_AST_GREP=1` when a portable or
+offline contract must ignore even preinstalled host binaries. The output prints
+a Tier 2 heading only when that tier ran;
 no heading means it was unavailable or disabled. On a successful scan, Tier 3
 runs the bundled PCRE2 checks as the fallback for grep-detectable patterns, but
 it does not reproduce every AST-only Tier 2 match. The Agent Skill handles

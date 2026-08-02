@@ -278,7 +278,8 @@ FIND_BIN=$(bind_deterministic_tool E2E_SMELL_FIND_BIN "" \
 # variable to 0. Locally installed tools remain optional precision tiers.
 E2E_SMELL_NO_ESLINT_DOWNLOAD="${E2E_SMELL_NO_ESLINT_DOWNLOAD:-1}"
 E2E_SMELL_NO_AST_GREP_DOWNLOAD="${E2E_SMELL_NO_AST_GREP_DOWNLOAD:-1}"
-export E2E_SMELL_NO_ESLINT_DOWNLOAD E2E_SMELL_NO_AST_GREP_DOWNLOAD
+E2E_SMELL_DISABLE_AST_GREP="${E2E_SMELL_DISABLE_AST_GREP:-0}"
+export E2E_SMELL_NO_ESLINT_DOWNLOAD E2E_SMELL_NO_AST_GREP_DOWNLOAD E2E_SMELL_DISABLE_AST_GREP
 E2E_SMELL_ALLOW_PROJECT_ESLINT="${E2E_SMELL_ALLOW_PROJECT_ESLINT:-0}"
 E2E_SMELL_ESLINT_TIMEOUT_SECS="${E2E_SMELL_ESLINT_TIMEOUT_SECS:-300}"
 E2E_SMELL_MAX_RULE_HITS="${E2E_SMELL_MAX_RULE_HITS:-1000}"
@@ -296,6 +297,7 @@ validate_boolean_flag() {
 }
 validate_boolean_flag E2E_SMELL_NO_ESLINT_DOWNLOAD "$E2E_SMELL_NO_ESLINT_DOWNLOAD"
 validate_boolean_flag E2E_SMELL_NO_AST_GREP_DOWNLOAD "$E2E_SMELL_NO_AST_GREP_DOWNLOAD"
+validate_boolean_flag E2E_SMELL_DISABLE_AST_GREP "$E2E_SMELL_DISABLE_AST_GREP"
 validate_boolean_flag E2E_SMELL_ALLOW_PROJECT_ESLINT "$E2E_SMELL_ALLOW_PROJECT_ESLINT"
 case "$E2E_SMELL_ESLINT_TIMEOUT_SECS" in
   ''|*[!0-9]*|0)
@@ -2877,6 +2879,9 @@ fi
 # select it: use a deterministic install location, E2E_SMELL_AST_GREP_BIN, or
 # the explicitly enabled trusted npx fallback.
 # Set E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 to disable the npx fallback (matches eslint tier's escape hatch).
+# Set E2E_SMELL_DISABLE_AST_GREP=1 to disable Tier 2 entirely, including any
+# deterministic binary already present on the host. This is for portability
+# contracts that deliberately must not depend on ambient ast-grep installs.
 ASTGREP_RULES_DIR="$(cd "$(dirname "$0")" && pwd)/ast-grep-rules"
 ASTGREP_JSON_PARSER="$(cd "$(dirname "$0")" && pwd)/parse-ast-grep-json.py"
 AST_GREP=""
@@ -2884,6 +2889,8 @@ AST_GREP_CMD=()
 TIER2_INFRA_FAILURE=0
 TIER2_INFRA_DETAIL=""
 validate_candidate_manifest
+_ast_candidate=""
+if [[ "$E2E_SMELL_DISABLE_AST_GREP" != "1" ]]; then
 _ast_candidate=$(bind_optional_tool E2E_SMELL_AST_GREP_BIN "${E2E_SMELL_AST_GREP_BIN:-}" \
   /opt/homebrew/bin/ast-grep /usr/local/bin/ast-grep /usr/bin/ast-grep \
   /opt/homebrew/bin/sg /usr/local/bin/sg /usr/bin/sg)
@@ -2906,6 +2913,7 @@ elif [[ -n "$NPX_BIN" && -n "$NODE_BIN" ]]; then
   fi
   AST_GREP_CMD=(run_ast_grep_npx)
 else AST_GREP=""; fi
+fi
 
 run_ast_grep_npx() {
   # Supply-chain posture identical to the ESLint download step: exact reviewed

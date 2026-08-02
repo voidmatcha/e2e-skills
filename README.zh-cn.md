@@ -17,7 +17,7 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=d43f04103606ac031358ffc49d8212f8d3699598bb43a7eccf442b6bd0bc41c6; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=f8dc2d4d93ef64695c8097bc0ecd63406cc4350b25b35ba2f2a05decb045d735; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 找出那些能通过 CI，却几乎证明不了任何东西的 Playwright/Cypress 端到端测试。
 

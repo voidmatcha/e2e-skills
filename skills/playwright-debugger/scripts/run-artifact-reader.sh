@@ -33,13 +33,13 @@ resolve_path() {
 }
 
 file_owner_uid() {
-  /usr/bin/stat -f '%u' "$1" 2>/dev/null ||
-    /usr/bin/stat -c '%u' "$1" 2>/dev/null
+  /usr/bin/stat -c '%u' "$1" 2>/dev/null ||
+    /usr/bin/stat -f '%u' "$1" 2>/dev/null
 }
 
 file_mode() {
-  /usr/bin/stat -f '%Lp' "$1" 2>/dev/null ||
-    /usr/bin/stat -c '%a' "$1" 2>/dev/null
+  /usr/bin/stat -c '%a' "$1" 2>/dev/null ||
+    /usr/bin/stat -f '%Lp' "$1" 2>/dev/null
 }
 
 is_root_owned_system_path() {

@@ -17,7 +17,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=d43f04103606ac031358ffc49d8212f8d3699598bb43a7eccf442b6bd0bc41c6; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=f8dc2d4d93ef64695c8097bc0ecd63406cc4350b25b35ba2f2a05decb045d735; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 CI는 통과하지만 실제로는 거의 아무것도 증명하지 못하는 Playwright/Cypress E2E 테스트를 찾아냅니다.
 
