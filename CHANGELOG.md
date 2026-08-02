@@ -6,6 +6,8 @@
 
 ### Changed
 
+- **README now leads with the user decision instead of the evidence chronology.** The English and localized READMEs move from a concrete false-green example to installation and first prompts, keep the complete 24-pattern catalog and 14 merged-PR table behind a shorter narrative, consolidate the shared F1–F15 taxonomy, and send benchmark audit detail to `benchmarks/STATUS.md`.
+
 - **Benchmark conclusions now come before the audit trail.** The README keeps
   only the current result and limits; `benchmarks/STATUS.md` preserves detailed
   scores, failed gates, superseded runs, and evidence boundaries.
@@ -243,6 +245,7 @@
 
 ### Fixed
 
+- Playwright and Cypress media readers now verify that the requested path still names the descriptor they opened, so a same-read rename or symlink replacement fails closed instead of returning a snapshot from a path that changed underneath the read.
 - Portable scanner contracts can explicitly disable Tier 2 so preinstalled
   host `ast-grep` binaries cannot make no-tool checks nondeterministic.
 - Artifact-reader launchers now select GNU `stat` formats before BSD formats,

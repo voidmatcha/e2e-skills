@@ -177,7 +177,6 @@ restore "$file"
 file="README.md"
 backup "$file"
 mutate "$file" "](docs/roadmap.md)" ""
-mutate "$file" "](docs/roadmap.md)" ""
 assert_fails "Check 7 — docs orphan detection" "docs/roadmap.md: orphan"
 restore "$file"
 
@@ -282,7 +281,7 @@ restore "$file"
 # The switcher exemption only covers lines linking to README.<lang>.md translations.
 file="README.md"
 backup "$file"
-mutate "$file" "Find Playwright/Cypress E2E tests that pass CI" "Find Playwright/Cypress E2E tests 한국어 that pass CI"
+mutate "$file" "Find Playwright and Cypress E2E tests that pass CI" "Find Playwright and Cypress E2E tests 한국어 that pass CI"
 assert_fails "Language guard — Hangul outside switcher line in README.md" "Korean text found in public docs: README.md"
 restore "$file"
 
@@ -438,8 +437,8 @@ for framework in Puppeteer Selenium WebdriverIO TestCafe Nightwatch; do
   backup "$file"
   mutate \
     "$file" \
-    "Find Playwright/Cypress E2E tests that pass CI" \
-    "Find Playwright/Cypress/$framework E2E tests that pass CI"
+    "Find Playwright and Cypress E2E tests that pass CI" \
+    "Find Playwright, Cypress, and $framework E2E tests that pass CI"
   assert_fails \
     "Framework scope — $framework support claim rejected" \
     "unsupported framework reference: $framework"
@@ -628,8 +627,8 @@ file="README.md"
 backup "$file"
 mutate \
   "$file" \
-  "Find Playwright/Cypress E2E tests that pass CI while proving little or nothing." \
-  "Find Playwright/Cypress E2E tests that pass CI while proving too little."
+  "Find Playwright and Cypress E2E tests that pass CI but fail to verify user-visible behavior." \
+  "Find Playwright and Cypress E2E tests that pass CI but verify too little."
 assert_fails \
   "README i18n canonical revision — canonical byte change requires review" \
   "canonical revision acknowledgement is stale"

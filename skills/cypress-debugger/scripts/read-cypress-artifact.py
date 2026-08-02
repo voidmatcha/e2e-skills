@@ -162,6 +162,28 @@ def require_unchanged_descriptor(
     return current_metadata
 
 
+def require_path_still_matches_descriptor(
+    directory_fd: int,
+    name: str,
+    original_metadata: os.stat_result,
+    artifact: Path,
+) -> None:
+    try:
+        path_metadata = os.stat(
+            name,
+            dir_fd=directory_fd,
+            follow_symlinks=False,
+        )
+    except OSError as exc:
+        raise ValueError(
+            f"artifact changed while being read: {artifact}"
+        ) from exc
+    if descriptor_fingerprint(path_metadata) != descriptor_fingerprint(
+        original_metadata
+    ):
+        raise ValueError(f"artifact changed while being read: {artifact}")
+
+
 @contextmanager
 def open_artifact_descriptor(
     artifact_root: Path,
@@ -200,6 +222,12 @@ def open_artifact_descriptor(
                 f"artifact exceeds the {max_bytes}-byte limit: {artifact}"
             )
         yield artifact_fd, metadata
+        require_path_still_matches_descriptor(
+            current_fd,
+            lexical_relative.parts[-1],
+            metadata,
+            artifact,
+        )
     except OSError as exc:
         raise ValueError(
             f"unsafe, symlinked, or unreadable artifact path: {artifact}: {exc}"

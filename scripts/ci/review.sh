@@ -1274,7 +1274,7 @@ expected_pattern_ids = {
     "1", "2", "3", "3b", "4", "5", "6", "7", "8", "9", "10", "11",
     "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23",
 }
-expected_f_codes = collections.Counter({number: 2 for number in range(1, 16)})
+expected_f_codes = collections.Counter({number: 1 for number in range(1, 16)})
 if (
     set(canonical_patterns) != expected_pattern_ids
     or canonical_duplicates
@@ -1297,9 +1297,9 @@ contract_re = re.compile(
 )
 contract_hashes = {
     "README.md": "ac9a9be1d95d6519bb06901a8c29c997dfad01a03909fe890c28cc629ffd15da",
-    "README.ko.md": "b91e07e605330650f15ca407b509a8cd585cd645710fab3dfccfa84f5120620b",
-    "README.ja.md": "1366e790c40ee80fedddf7c7c4490e278e422df72d22d1dcdbdce3ced3584fcb",
-    "README.zh-cn.md": "17ef21151e49eaf6617ada286deb38df57fdb78e08e6fce5adfca99d1b0313c9",
+    "README.ko.md": "ab75ae3a16567155ae894b40ebcdc10fa55cfa2531238d6c1c54481b85fa0798",
+    "README.ja.md": "53ba87e9d0211ebbd56d8ab6c86a587f5003be4167ca171e7fdfde9c37c4857f",
+    "README.zh-cn.md": "5f1646eeff6d91174af04e396eabf2a4eb954bbe16b373f43c1fb6e70e89efb0",
 }
 contract_tokens = (
     "24",
@@ -1317,10 +1317,10 @@ read_scope_re = re.compile(
     re.M | re.S,
 )
 read_scope_hashes = {
-    "README.md": "6492450d68238d4f6ba073d98740af2015f72613c8ec1fd8d9048eb58649e9a1",
-    "README.ko.md": "30c12cf60137bb00aaa0fde376814cf1ad2f423feec5c3e6a27e54f5b0d9c6bb",
-    "README.ja.md": "38f8adafc2eb9242203388faa2b3623659cedae68c8bc579d1d4554a53eb03f4",
-    "README.zh-cn.md": "62d018011a595283128b25f9bb1b0600b1fc182e628a4cb795ce8fbdb8be3c65",
+    "README.md": "9209cac05d579471fd256711cef1dbf6f76d65b8b562cf04ca187471a82d100c",
+    "README.ko.md": "5afdc0fd243b7c36ff4bc4266e452918568e6c954257a910bfb73bff4db91290",
+    "README.ja.md": "e3ff750d899a3d4d63f3df80c25330b1528e71c297c793ba05ecc22f0aefb55e",
+    "README.zh-cn.md": "845d90bae16c9b33eba5de39b18c20a088c65fd8643cde55f1fa175b59c87c8f",
 }
 
 
