@@ -2,16 +2,13 @@
 
 ## [Unreleased]
 
-### Fixed
-
-- Portable scanner contracts can explicitly disable Tier 2 so preinstalled
-  host `ast-grep` binaries cannot make no-tool checks nondeterministic.
-- Artifact-reader launchers now select GNU `stat` formats before BSD formats,
-  preserving the root-owned system-Python boundary on Linux as well as macOS.
-
 ## [1.11.0] - 2026-08-02
 
 ### Changed
+
+- **Benchmark conclusions now come before the audit trail.** The README keeps
+  only the current result and limits; `benchmarks/STATUS.md` preserves detailed
+  scores, failed gates, superseded runs, and evidence boundaries.
 
 - **Closure remediation and preregistered Codex robustness evidence.** Seven
   independently confirmed v3 defects now have executable regressions: canonical
@@ -243,6 +240,13 @@
   Opus, and Claude Fable provider-family matrix. The limitation remains explicit:
   the corpus is 30 short public author-created synthetic excerpts, not full
   reports/traces, and it has no independent oracle audit or live result claim.
+
+### Fixed
+
+- Portable scanner contracts can explicitly disable Tier 2 so preinstalled
+  host `ast-grep` binaries cannot make no-tool checks nondeterministic.
+- Artifact-reader launchers now select GNU `stat` formats before BSD formats,
+  preserving the root-owned system-Python boundary on Linux as well as macOS.
 
 ## [1.10.0] - 2026-07-30
 
