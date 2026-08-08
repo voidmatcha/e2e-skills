@@ -28,6 +28,8 @@ Find Playwright and Cypress E2E tests that pass CI but fail to verify user-visib
 
 ## See a false-green test
 
+A **false-green** test passes whether or not the behavior it names works. It is not a flaky test: a flaky test fails sometimes, so retry dashboards and flake analytics eventually see it. A false-green test never fails — including when the product is broken — so nothing that watches for tests flipping will ever surface it.
+
 This Playwright test looks reasonable but proves only that `Locator` objects were created:
 
 ```typescript

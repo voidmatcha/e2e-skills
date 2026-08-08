@@ -18,7 +18,7 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <strong>🇯🇵 日本語</strong> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=16ad30a4e3fc744dacb0d44749f8ec58cbc8ba04cb359bcf23b8c17073791542; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=03ecf4339e9d1ba4dae90dee5d8faa35866f1d4fa9813da1cb42aaab39800efc; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 CI は通るのに、ユーザーに見える挙動を検証できていない Playwright/Cypress の E2E テストを見つけます。
 
@@ -29,6 +29,8 @@ CI は通るのに、ユーザーに見える挙動を検証できていない P
 > code-server では、コミット済みの `it.only` が 7 か月にわたって 8 件のテストを静かに無効化していました。そのうち 1 件の skip されたテストはすでに壊れていたにもかかわらず、CI は green のままでした。
 
 ## false-green テストを見る
+
+**false-green** なテストは、名前に書かれた挙動が動いていようといまいと通ります。flaky なテストとは違います。flaky なテストは時々失敗するので、リトライダッシュボードや flake 分析がいずれ検知します。false-green なテストは**製品が壊れていても失敗しない**ため、テストが red/green を行き来するのを監視する仕組みには決して現れません。
 
 この Playwright テストはもっともらしく見えますが、証明しているのは `Locator` オブジェクトが作られたことだけです。
 

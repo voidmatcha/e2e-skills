@@ -18,7 +18,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=16ad30a4e3fc744dacb0d44749f8ec58cbc8ba04cb359bcf23b8c17073791542; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=03ecf4339e9d1ba4dae90dee5d8faa35866f1d4fa9813da1cb42aaab39800efc; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 CI는 통과하지만 사용자가 실제로 겪는 동작은 검증하지 못하는 Playwright와 Cypress E2E 테스트를 찾아냅니다.
 
@@ -29,6 +29,8 @@ CI는 통과하지만 사용자가 실제로 겪는 동작은 검증하지 못�
 > code-server에서는 저장소에 들어간 `it.only` 하나가 7개월 동안 테스트 8개를 조용히 비활성화했습니다. 건너뛴 테스트 중 하나는 이미 깨져 있었지만 CI는 계속 통과했습니다.
 
 ## 기능이 깨져도 통과하는 테스트
+
+**false-green** 테스트는 이름에 적힌 동작이 되든 안 되든 통과합니다. 불안정한(flaky) 테스트와는 다릅니다. 불안정한 테스트는 가끔 실패하므로 재시도 대시보드나 flake 분석이 결국 잡아냅니다. false-green 테스트는 **제품이 깨졌을 때조차 실패하지 않으므로**, 테스트가 뒤집히는지 감시하는 어떤 도구에도 절대 잡히지 않습니다.
 
 이 Playwright 테스트는 그럴듯해 보이지만 `Locator` 객체가 생성됐다는 사실만 증명합니다.
 

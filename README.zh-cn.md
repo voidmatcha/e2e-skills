@@ -17,7 +17,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=16ad30a4e3fc744dacb0d44749f8ec58cbc8ba04cb359bcf23b8c17073791542; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=03ecf4339e9d1ba4dae90dee5d8faa35866f1d4fa9813da1cb42aaab39800efc; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 找出那些能通过 CI、却没有验证用户可见行为的 Playwright 和 Cypress E2E 测试。
 
@@ -28,6 +28,8 @@
 > 在 code-server 中，一个提交进仓库的 `it.only` 曾默默禁用 8 个测试长达 7 个月。其中一个被跳过的测试早已损坏，而 CI 仍然保持绿色。
 
 ## 看一个 false-green 测试
+
+**false-green**（假绿）测试无论它所声称的行为是否正常都会通过。它不是 flaky 测试：flaky 测试偶尔会失败，因此重试面板和 flake 分析最终能发现它。false-green 测试**即使产品已经损坏也从不失败**，所以任何监视测试状态翻转的工具都永远不会暴露它。
 
 这个 Playwright 测试看起来合理，但它只证明 `Locator` 对象被创建了：
 
