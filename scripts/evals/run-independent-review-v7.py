@@ -66,11 +66,39 @@ FORBIDDEN_PATH_PARTS = {
     "evals",
 }
 FORBIDDEN_NAME_FRAGMENTS = ("holdout", "scorecard", "review")
-README_EXCLUDED_HEADINGS = {
-    "Methodology",
-    "Open-source adoption and case evidence",
-    "Isn't this just an AI code reviewer like CodeRabbit, Copilot, or Cursor BugBot?",
-}
+# The packet blanks the README sections that argue the project's own case, so an
+# independent reviewer never reads our conclusions back to us. This runner sees two
+# different READMEs — the working tree now, and the archived snapshot taken before
+# the README was rewritten — so the heading names are versioned. A single hardcoded
+# set matches nothing on one of them, and a set that matches nothing removes
+# nothing: the exclusion disappears without ever failing. Newest generation first.
+README_EXCLUDED_HEADING_GENERATIONS = (
+    (
+        "Evidence and limits",
+        "Open-source adoption",
+        "How this differs from ESLint plugins",
+    ),
+    (
+        "Methodology",
+        "Open-source adoption and case evidence",
+        "Isn't this just an AI code reviewer like CodeRabbit, Copilot, or Cursor BugBot?",
+    ),
+)
+
+
+def select_readme_exclusions(text: str) -> set[str]:
+    present = set()
+    for line in text.splitlines():
+        match = re.match(r"^(#{1,6})[ \t]+(.+?)[ \t]*$", line.rstrip("\r\n"))
+        if match:
+            present.add(match.group(2).strip())
+    for generation in README_EXCLUDED_HEADING_GENERATIONS:
+        if present.issuperset(generation):
+            return set(generation)
+    raise ValueError(
+        "no README_EXCLUDED_HEADING_GENERATIONS match README.md, so the packet would ship "
+        f"the project's own case to an independent reviewer; headings present: {sorted(present)}"
+    )
 DIMENSION_IDS = (
     "semantic_correctness",
     "false_positive_control",
@@ -466,7 +494,14 @@ def source_representation(relative: Path, payload: bytes) -> tuple[str, dict[str
     text = payload.decode("utf-8")
     transform: dict[str, Any] = {"kind": "none"}
     if relative.as_posix() == "README.md":
-        text, headings = strip_markdown_sections(text, README_EXCLUDED_HEADINGS)
+        excluded_headings = select_readme_exclusions(text)
+        text, headings = strip_markdown_sections(text, excluded_headings)
+        missing = sorted(excluded_headings - set(headings))
+        if missing:
+            raise ValueError(
+                "selected README exclusions did not apply, so the packet would ship the "
+                f"project's own case to an independent reviewer: {missing}"
+            )
         transform = {
             "kind": "exclude-markdown-sections-v1",
             "excluded_headings": headings,
@@ -751,7 +786,16 @@ def build_packet(root: Path, protocol: dict) -> tuple[dict, dict]:
         "omissions": {
             "allowlist": omissions,
             "excluded_surfaces": protocol["packet"]["excluded_surfaces"],
-            "readme_sections": sorted(README_EXCLUDED_HEADINGS),
+            "readme_sections": sorted(
+                next(
+                    (
+                        item["transform"]["excluded_headings"]
+                        for item in manifest_files
+                        if item["path"] == "README.md"
+                    ),
+                    [],
+                )
+            ),
         },
     }
     manifest_core["selected_surface_sha256"] = sha256_bytes(

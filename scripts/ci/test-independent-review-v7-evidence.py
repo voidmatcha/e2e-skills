@@ -48,10 +48,27 @@ DIMENSIONS = (
     "semantic_correctness", "false_positive_control", "security_trust_boundaries",
     "verification_design", "scope_contract_consistency", "docs_usability",
 )
-README_EXCLUDED_HEADINGS = {
-    "Methodology", "Open-source adoption and case evidence",
-    "Isn't this just an AI code reviewer like CodeRabbit, Copilot, or Cursor BugBot?",
-}
+# Versioned because this file reproduces packets from two different READMEs: the
+# working tree now, and the archived snapshot taken before the README was rewritten.
+# Newest generation first. Must stay identical to the runner's copy — this is the
+# independent reimplementation the runner is checked against.
+README_EXCLUDED_HEADING_GENERATIONS = (
+    ("Evidence and limits", "Open-source adoption", "How this differs from ESLint plugins"),
+    (
+        "Methodology", "Open-source adoption and case evidence",
+        "Isn't this just an AI code reviewer like CodeRabbit, Copilot, or Cursor BugBot?",
+    ),
+)
+
+
+def select_readme_exclusions(text: str) -> set[str]:
+    present = set()
+    for line in text.splitlines():
+        match = re.match(r"^(#{1,6})[ \t]+(.+?)[ \t]*$", line.rstrip("\r\n"))
+        if match: present.add(match.group(2).strip())
+    for generation in README_EXCLUDED_HEADING_GENERATIONS:
+        if present.issuperset(generation): return set(generation)
+    fail(f"no README exclusion generation matches README.md; headings present: {sorted(present)}")
 REQUIRED_PATHS = (
     "README.md", "SECURITY.md", ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json",
     ".codex-plugin/plugin.json", "skills/playwright-test-generator/SKILL.md",
@@ -161,13 +178,14 @@ def validate_protocol(*, archived: bool = False) -> dict[str, Any]:
 
 
 def strip_readme(text: str) -> tuple[str, list[str]]:
+    selected_headings = select_readme_exclusions(text)
     output: list[str] = []; excluded: list[str] = []; skip: int | None = None
     for line in text.splitlines(keepends=True):
         match = re.match(r"^(#{1,6})[ \t]+(.+?)[ \t]*$", line.rstrip("\r\n"))
         if match:
             level, title = len(match.group(1)), match.group(2).strip()
             if skip is not None and level <= skip: skip = None
-            if skip is None and title in README_EXCLUDED_HEADINGS: skip = level; excluded.append(title)
+            if skip is None and title in selected_headings: skip = level; excluded.append(title)
         if skip is None: output.append(line)
         else: output.append("\r\n" if line.endswith("\r\n") else "\n" if line.endswith("\n") else "\r" if line.endswith("\r") else "")
     return "".join(output), excluded
@@ -226,7 +244,8 @@ def reproduce_packet(snapshot: dict[str, Any], protocol: dict[str, Any]) -> tupl
             "remaining_line_annotated_content_utf8_bytes": 830000 - annotated,
             "included_original_source_bytes": sum(x["original_source_bytes"] for x in selected),
             "selected_files": selected, "omissions": {"allowlist": [],
-                "excluded_surfaces": protocol["packet"]["excluded_surfaces"], "readme_sections": sorted(README_EXCLUDED_HEADINGS)}}
+                "excluded_surfaces": protocol["packet"]["excluded_surfaces"],
+                "readme_sections": sorted(next((x["transform"]["excluded_headings"] for x in selected if x["path"] == "README.md"), []))}}
     core["selected_surface_sha256"] = sha256(canonical(selected))
     packet = {"schema_version": 1, "packet_id": "independent-product-review-v7",
               "independence_notice": "Review only this frozen curated contract/implementation subset. It deliberately omits labeled holdouts, raw benchmark reports, scorecards, prior reviews, chat conclusions, and git history to reduce anchoring. This fresh-context subset review is not full product coverage, skill accuracy, human or sealed review, independent ground truth, or remote model attestation.",
