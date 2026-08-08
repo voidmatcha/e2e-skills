@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import json
+import concurrent.futures
+from collections.abc import Callable
 import os
 from pathlib import Path
 import shutil
@@ -5522,6 +5524,32 @@ def assert_escaped_module_specifiers_resolve_to_their_evaluated_value() -> None:
         assert "2 out-of-scope file(s) skipped" in result.stdout, result.stdout
 
 
+def run_checks_in_parallel(*checks: Callable[[], None]) -> None:
+    """Run independent no-argument checks concurrently, reporting every failure.
+
+    A thread pool rather than processes: the work is `subprocess.run` on scan.sh, which releases
+    the GIL, and threads keep the checks importable plain functions. Failures are collected instead
+    of short-circuiting so one broken check does not hide the rest — the sequential version stopped
+    at the first assert and hid four real failures behind an earlier one.
+    """
+    workers = min(len(checks), (os.cpu_count() or 2))
+    failures: list[tuple[str, BaseException]] = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
+        futures = {pool.submit(check): check.__name__ for check in checks}
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                future.result()
+            except BaseException as error:  # noqa: BLE001 - re-raised below with its name
+                failures.append((futures[future], error))
+    if failures:
+        for name, error in sorted(failures):
+            print(f"reviewer scanner: FAILED {name}: {error!r}", file=sys.stderr)
+        raise AssertionError(
+            f"{len(failures)} scanner check(s) failed: "
+            + ", ".join(sorted(name for name, _ in failures))
+        )
+
+
 def main() -> None:
     exclusions = scan("documented-exclusions.spec.ts")
     assert exclusions.returncode == 0, exclusions.stdout
@@ -5641,99 +5669,106 @@ def main() -> None:
         assert page_action in scanner_source
     assert "playwright/no-element-handle" not in scanner_source
 
-    assert_ast_scope()
-    assert_eslint_registry_fallback_uses_reviewed_exact_pins()
-    assert_eslint_download_path_delegates_every_npx_call()
-    assert_eslint_download_path_is_supply_chain_pinned()
-    assert_eslint_download_failure_falls_through_loudly()
-    assert_foreign_cy_basename_requires_executable_cypress_provenance()
-    assert_ast_grep_can_be_disabled_even_when_installed()
-    assert_ast_grep_fail_closed()
-    assert_explicit_tool_binds_canonical_resolved_path()
-    assert_default_versioned_tool_symlink_executes()
-    assert_ast_grep_npx_fallback_is_sanitized()
-    assert_ast_grep_download_path_delegates_every_npx_call()
-    assert_ast_grep_pinned_npm_config_loads_under_real_npm()
-    assert_ast_grep_launcher_failure_falls_through_loudly()
-    assert_ast_awaited_value_read_is_triage_only()
-    assert_ast_generic_getby_is_triage_only()
-    assert_project_ast_grep_rejected()
-    assert_project_ripgrep_rejected()
-    assert_invalid_inherited_locale_preserves_evidence()
-    assert_parent_project_ast_grep_rejected()
-    assert_module_extension_scope()
-    assert_focused_test_lexical_filter()
-    assert_expression_wrapped_expect_and_serial_configure()
-    assert_playwright_test_aliases_cannot_bypass_focus_check()
-    assert_playwright_namespace_bindings_and_current_matchers()
-    assert_transitive_commonjs_destructured_aliases()
-    assert_executable_wait_timeout_and_shadowed_test_boundaries()
-    assert_e2e_suffix_is_non_gating_without_framework_provenance()
-    assert_framework_markers_in_comments_and_strings_do_not_create_scope()
-    assert_generic_page_callback_is_non_gating_without_framework_lineage()
-    assert_function_expression_catch_boundaries()
-    assert_multiline_auth_helper_literals()
-    assert_playwright_rules_skip_cypress_only_files_but_allow_mixed_files()
-    assert_initialized_module_state_only()
-    assert_positional_selector_is_always_triage()
-    assert_expect_aliases_and_page_receiver_provenance()
-    assert_whitespace_comments_and_shadowed_page_boundaries()
-    assert_multiline_tsx_and_aliased_expect()
-    assert_playwright_text_does_not_create_e2e_scope()
-    assert_justified_lexical_filter()
-    assert_justified_p0_remains_candidate_gating()
-    assert_positive_to_be_attached_arguments_and_negation()
-    assert_ripgrep_fail_closed()
-    assert_filename_transport_boundaries()
-    assert_private_temp_storage_ignores_ambient_tmpdir()
-    assert_python3_prerequisite_binding()
-    assert_multiline_locator_assertions()
-    assert_locator_identifier_requires_provenance()
-    assert_pom_member_truthiness_is_triage_only()
-    assert_arbitrary_conditional_assertions_are_triage()
-    assert_awaited_locator_value_reads_are_triage_only()
-    assert_static_accessible_name_is_triage_only()
-    assert_semantic_triage_boundaries()
-    assert_pom_scope()
-    assert_multiline_boolean_consumers()
-    assert_discarded_locator_with_real_assertion_is_triage_only()
-    assert_pom_catch_scope()
-    assert_catch_parameter_and_cleanup_boundaries()
-    assert_empty_catch_final_gate_requires_load_bearing_test_outcome()
-    assert_promise_and_control_flow_triage()
-    assert_swallowed_assertion_triage()
-    assert_nested_nonregular_entries_fail_closed()
-    assert_tree_preflight_diagnostics_are_bounded()
-    assert_excluded_trees_are_pruned_before_preflight()
-    assert_candidate_type_race_fails_closed()
-    assert_candidate_regular_file_identity_race_fails_closed()
-    assert_late_candidate_addition_fails_closed()
-    assert_parent_component_symlink_swap_fails_closed()
-    assert_explicit_symlink_roots_rejected()
-    assert_option_like_root_rejected()
-    assert_project_path_utility_hijack_rejected_before_execution()
-    assert_nested_generic_import_resolution()
-    assert_v10_semantic_boundaries()
-    assert_v11_final_boundaries()
-    assert_v12_final_boundaries()
-    assert_v14_product_boundaries()
-    assert_v15_blind_audit_boundaries()
-    assert_binding_specific_playwright_expect_lineage()
-    assert_binding_specific_focused_test_lineage()
-    assert_foreign_focused_binding_is_not_attributed_to_playwright()
-    assert_semicolonless_barrel_binding_lineage()
-    assert_scanner_workload_ceiling_fails_closed()
-    assert_ignore_files_cannot_hide_p0()
-    assert_public_tree_uses_framework_scope_instead_of_path_exclusion()
-    assert_public_asset_symlink_is_benign_but_source_entries_fail_closed()
-    assert_cdpath_cannot_redirect_relative_root()
-    assert_ast_tier_honors_hard_exclusions_without_excluding_public_tests()
-    assert_inherited_path_and_output_are_untrusted()
-    assert_v16_unresolved_scope_boundaries()
-    assert_v25_scanner_security_boundaries()
-    assert_multiline_cypress_chain_proves_provenance()
-    assert_type_only_foreign_imports_do_not_leave_e2e_scope()
-    assert_escaped_module_specifiers_resolve_to_their_evaluated_value()
+    # Each check owns a temporary directory and shells out to scan.sh, so the wall clock here
+    # is subprocess wait, not Python. Threads release the GIL across subprocess.run and need no
+    # pickling, which keeps the checks ordinary functions. The suite was 630s of ci-local's
+    # 1027s of Python stages; nothing else came close.
+    run_checks_in_parallel(
+        assert_ast_scope,
+        assert_eslint_registry_fallback_uses_reviewed_exact_pins,
+        assert_eslint_download_path_delegates_every_npx_call,
+        assert_eslint_download_path_is_supply_chain_pinned,
+        assert_eslint_download_failure_falls_through_loudly,
+        assert_foreign_cy_basename_requires_executable_cypress_provenance,
+        assert_ast_grep_can_be_disabled_even_when_installed,
+        assert_ast_grep_fail_closed,
+        assert_explicit_tool_binds_canonical_resolved_path,
+        assert_default_versioned_tool_symlink_executes,
+        assert_ast_grep_npx_fallback_is_sanitized,
+        assert_ast_grep_download_path_delegates_every_npx_call,
+        assert_ast_grep_pinned_npm_config_loads_under_real_npm,
+        assert_ast_grep_launcher_failure_falls_through_loudly,
+        assert_ast_awaited_value_read_is_triage_only,
+        assert_ast_generic_getby_is_triage_only,
+        assert_project_ast_grep_rejected,
+        assert_project_ripgrep_rejected,
+        assert_invalid_inherited_locale_preserves_evidence,
+        assert_parent_project_ast_grep_rejected,
+        assert_module_extension_scope,
+        assert_focused_test_lexical_filter,
+        assert_expression_wrapped_expect_and_serial_configure,
+        assert_playwright_test_aliases_cannot_bypass_focus_check,
+        assert_playwright_namespace_bindings_and_current_matchers,
+        assert_transitive_commonjs_destructured_aliases,
+        assert_executable_wait_timeout_and_shadowed_test_boundaries,
+        assert_e2e_suffix_is_non_gating_without_framework_provenance,
+        assert_framework_markers_in_comments_and_strings_do_not_create_scope,
+        assert_generic_page_callback_is_non_gating_without_framework_lineage,
+        assert_function_expression_catch_boundaries,
+        assert_multiline_auth_helper_literals,
+        assert_playwright_rules_skip_cypress_only_files_but_allow_mixed_files,
+        assert_initialized_module_state_only,
+        assert_positional_selector_is_always_triage,
+        assert_expect_aliases_and_page_receiver_provenance,
+        assert_whitespace_comments_and_shadowed_page_boundaries,
+        assert_multiline_tsx_and_aliased_expect,
+        assert_playwright_text_does_not_create_e2e_scope,
+        assert_justified_lexical_filter,
+        assert_justified_p0_remains_candidate_gating,
+        assert_positive_to_be_attached_arguments_and_negation,
+        assert_ripgrep_fail_closed,
+        assert_filename_transport_boundaries,
+        assert_private_temp_storage_ignores_ambient_tmpdir,
+        assert_python3_prerequisite_binding,
+        assert_multiline_locator_assertions,
+        assert_locator_identifier_requires_provenance,
+        assert_pom_member_truthiness_is_triage_only,
+        assert_arbitrary_conditional_assertions_are_triage,
+        assert_awaited_locator_value_reads_are_triage_only,
+        assert_static_accessible_name_is_triage_only,
+        assert_semantic_triage_boundaries,
+        assert_pom_scope,
+        assert_multiline_boolean_consumers,
+        assert_discarded_locator_with_real_assertion_is_triage_only,
+        assert_pom_catch_scope,
+        assert_catch_parameter_and_cleanup_boundaries,
+        assert_empty_catch_final_gate_requires_load_bearing_test_outcome,
+        assert_promise_and_control_flow_triage,
+        assert_swallowed_assertion_triage,
+        assert_nested_nonregular_entries_fail_closed,
+        assert_tree_preflight_diagnostics_are_bounded,
+        assert_excluded_trees_are_pruned_before_preflight,
+        assert_candidate_type_race_fails_closed,
+        assert_candidate_regular_file_identity_race_fails_closed,
+        assert_late_candidate_addition_fails_closed,
+        assert_parent_component_symlink_swap_fails_closed,
+        assert_explicit_symlink_roots_rejected,
+        assert_option_like_root_rejected,
+        assert_project_path_utility_hijack_rejected_before_execution,
+        assert_nested_generic_import_resolution,
+        assert_v10_semantic_boundaries,
+        assert_v11_final_boundaries,
+        assert_v12_final_boundaries,
+        assert_v14_product_boundaries,
+        assert_v15_blind_audit_boundaries,
+        assert_binding_specific_playwright_expect_lineage,
+        assert_binding_specific_focused_test_lineage,
+        assert_foreign_focused_binding_is_not_attributed_to_playwright,
+        assert_semicolonless_barrel_binding_lineage,
+        assert_scanner_workload_ceiling_fails_closed,
+        assert_ignore_files_cannot_hide_p0,
+        assert_public_tree_uses_framework_scope_instead_of_path_exclusion,
+        assert_public_asset_symlink_is_benign_but_source_entries_fail_closed,
+        assert_cdpath_cannot_redirect_relative_root,
+        assert_ast_tier_honors_hard_exclusions_without_excluding_public_tests,
+        assert_inherited_path_and_output_are_untrusted,
+        assert_v16_unresolved_scope_boundaries,
+        assert_v25_scanner_security_boundaries,
+        assert_multiline_cypress_chain_proves_provenance,
+        assert_type_only_foreign_imports_do_not_leave_e2e_scope,
+        assert_escaped_module_specifiers_resolve_to_their_evaluated_value,
+    )
+    # Timed last and alone: a saturated pool would distort its own budget measurement.
     assert_representative_suite_completes_within_budget()
 
     print(
