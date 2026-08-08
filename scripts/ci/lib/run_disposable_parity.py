@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import concurrent.futures
 from dataclasses import dataclass
 import hashlib
 import os
@@ -116,8 +117,13 @@ def run_disposable_copy(
     *,
     inner_script: Path = Path("scripts/ci/test-parity.sh"),
     temp_parent: Path | None = None,
+    shard: tuple[int, int] | None = None,
 ) -> DisposableParityResult:
-    """Copy source, run the inner mutation suite, prove source unchanged, clean."""
+    """Copy source, run the inner mutation suite, prove source unchanged, clean.
+
+    `shard` is an (index, count) pair handed to the inner script so several copies can split the
+    case list between them. Each worker gets its own copy, so mutate/restore cycles never meet.
+    """
     source_root = source_root.resolve(strict=True)
     before = source_digest(source_root)
     parent = (temp_parent or Path(tempfile.gettempdir())).resolve()
@@ -146,6 +152,10 @@ def run_disposable_copy(
             raise RuntimeError(f"inner parity script is missing: {inner_script}")
         environment = os.environ.copy()
         environment["E2E_PARITY_DISPOSABLE_ROOT"] = str(copied_root)
+        if shard is not None:
+            shard_index, shard_count = shard
+            environment["E2E_PARITY_SHARD_INDEX"] = str(shard_index)
+            environment["E2E_PARITY_SHARD_COUNT"] = str(shard_count)
         completed = subprocess.run(
             ["/bin/bash", str(command)],
             cwd=copied_root,
@@ -174,10 +184,66 @@ def run_disposable_copy(
     return DisposableParityResult(inner_returncode, before, after, cleaned)
 
 
+def run_sharded(source_root: Path, workers: int) -> int:
+    """Run the suite across `workers` disposable copies concurrently.
+
+    Every case still executes exactly once: the inner script walks the whole case list and asserts
+    only the indices congruent to its shard, so the union over shards is the unsharded suite. The
+    source digest is proven once around the whole fan-out, so a worker that wrote outside its own
+    copy still trips it.
+    """
+    source_root = source_root.resolve(strict=True)
+    before = source_digest(source_root)
+    codes: list[int] = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
+        futures = [
+            pool.submit(run_disposable_copy, source_root, shard=(index, workers))
+            for index in range(workers)
+        ]
+        for future in concurrent.futures.as_completed(futures):
+            result = future.result()
+            codes.append(result.returncode)
+            if not result.cleaned:
+                print("disposable parity cleanup was not proven", file=sys.stderr)
+                codes.append(75)
+    after = source_digest(source_root)
+    if before != after:
+        print(
+            f"disposable parity source digest changed: {before} -> {after}",
+            file=sys.stderr,
+        )
+        return 74
+    failed = [code for code in codes if code != 0]
+    if failed:
+        return failed[0]
+    print(
+        "disposable parity proof: source digest unchanged "
+        f"{after}; {workers} temporary copies removed"
+    )
+    return 0
+
+
 def main() -> int:
-    if len(sys.argv) != 2:
-        print("usage: run_disposable_parity.py <source-root>", file=sys.stderr)
+    if len(sys.argv) not in (2, 3):
+        print(
+            "usage: run_disposable_parity.py <source-root> [workers]", file=sys.stderr
+        )
         return 2
+    if len(sys.argv) == 3:
+        try:
+            workers = int(sys.argv[2])
+        except ValueError:
+            print("workers must be a positive integer", file=sys.stderr)
+            return 2
+        if workers < 1:
+            print("workers must be a positive integer", file=sys.stderr)
+            return 2
+        if workers > 1:
+            try:
+                return run_sharded(Path(sys.argv[1]), workers)
+            except (OSError, RuntimeError, subprocess.SubprocessError) as exc:
+                print(f"disposable parity runner failed closed: {exc}", file=sys.stderr)
+                return 75
     try:
         result = run_disposable_copy(Path(sys.argv[1]))
     except (OSError, RuntimeError, subprocess.SubprocessError) as exc:

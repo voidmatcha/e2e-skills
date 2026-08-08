@@ -16,9 +16,20 @@ cd "$REPO_ROOT" || {
 source "$REPO_ROOT/scripts/ci/lib/init-python-isolation.sh" || exit 2
 
 if [ -z "${E2E_PARITY_DISPOSABLE_ROOT:-}" ]; then
+  # Fan the case list out over several disposable copies. Each worker walks every case and asserts
+  # only its own shard, so the union is the unsharded suite; the runner still proves the source
+  # digest once around the whole fan-out. Default 1 keeps the historical single-copy behavior;
+  # E2E_PARITY_WORKERS=0 means "pick from the core count".
+  parity_workers="${E2E_PARITY_WORKERS:-6}"
+  case "$parity_workers" in ''|*[!0-9]*) parity_workers=1 ;; esac
+  if [ "$parity_workers" -eq 0 ]; then
+    parity_workers=$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1)
+    [ "$parity_workers" -gt 6 ] && parity_workers=6
+  fi
   exec python3 \
     "$REPO_ROOT/scripts/ci/lib/run_disposable_parity.py" \
-    "$REPO_ROOT"
+    "$REPO_ROOT" \
+    "$parity_workers"
 fi
 
 if [ "$REPO_ROOT" != "$E2E_PARITY_DISPOSABLE_ROOT" ] ||
@@ -70,10 +81,31 @@ restore() {
   fi
 }
 
+# Shard selector. run_disposable_parity.py may fan the suite out across several disposable
+# copies; each worker runs every case but only asserts the ones whose index is its own. The
+# counter increments for every case on every worker, so an index is stable no matter how the
+# fan-out is sized, and running unsharded (the default) executes all of them.
+CASE_INDEX=0
+PARITY_SHARD_INDEX="${E2E_PARITY_SHARD_INDEX:-0}"
+PARITY_SHARD_COUNT="${E2E_PARITY_SHARD_COUNT:-1}"
+case "$PARITY_SHARD_COUNT" in ''|*[!0-9]*|0) echo "test-parity: E2E_PARITY_SHARD_COUNT must be a positive integer" >&2; exit 2 ;; esac
+case "$PARITY_SHARD_INDEX" in ''|*[!0-9]*) echo "test-parity: E2E_PARITY_SHARD_INDEX must be a non-negative integer" >&2; exit 2 ;; esac
+if [ "$PARITY_SHARD_INDEX" -ge "$PARITY_SHARD_COUNT" ]; then
+  echo "test-parity: shard index $PARITY_SHARD_INDEX is out of range for count $PARITY_SHARD_COUNT" >&2
+  exit 2
+fi
+
+# Returns 0 when the case that is about to run belongs to this shard.
+claim_case() {
+  CASE_INDEX=$((CASE_INDEX + 1))
+  [ $(( (CASE_INDEX - 1) % PARITY_SHARD_COUNT )) -eq "$PARITY_SHARD_INDEX" ]
+}
+
 assert_fails() {
   local name="$1"
   local expected="$2"
   local output
+  claim_case || return 0
   output=$(bash scripts/ci/review.sh --quiet 2>&1 || true)
   if grep -qF "$expected" <<<"$output"; then
     echo "  [PASS] $name"
@@ -89,6 +121,7 @@ assert_security_fails() {
   local name="$1"
   local expected="$2"
   local output
+  claim_case || return 0
   output=$(/bin/bash -p scripts/ci/pre-push-security.sh --quiet 2>&1 || true)
   if grep -qF "$expected" <<<"$output"; then
     echo "  [PASS] $name"
@@ -104,6 +137,7 @@ assert_verification_parity_fails() {
   local name="$1"
   local expected="$2"
   local output
+  claim_case || return 0
   output=$(bash scripts/ci/check-verification-parity.sh 2>&1 || true)
   if grep -qF "$expected" <<<"$output"; then
     echo "  [PASS] $name"
