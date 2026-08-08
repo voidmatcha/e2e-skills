@@ -4,6 +4,9 @@ description: 'Use when a Cypress end-to-end test has already run and failed and 
 license: Apache-2.0
 metadata:
   author: voidmatcha
+  frameworks: cypress
+  testing-types: e2e
+  languages: typescript,javascript
   version: "1.11.0"
 ---
 

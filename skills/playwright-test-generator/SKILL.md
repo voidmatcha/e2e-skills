@@ -4,6 +4,9 @@ description: 'Use this skill to generate new Playwright end-to-end tests from sc
 license: Apache-2.0
 metadata:
   author: voidmatcha
+  frameworks: playwright
+  testing-types: e2e
+  languages: typescript,javascript
   version: "1.11.0"
 ---
 

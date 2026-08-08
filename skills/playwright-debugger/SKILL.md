@@ -4,6 +4,9 @@ description: 'Use when a Playwright end-to-end test has already run and failed a
 license: Apache-2.0
 metadata:
   author: voidmatcha
+  frameworks: playwright
+  testing-types: e2e
+  languages: typescript,javascript
   version: "1.11.0"
 ---
 

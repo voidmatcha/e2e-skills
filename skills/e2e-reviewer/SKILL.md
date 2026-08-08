@@ -4,6 +4,9 @@ description: 'Use when reviewing Playwright or Cypress E2E specs or Page Objects
 license: Apache-2.0
 metadata:
   author: voidmatcha
+  frameworks: playwright,cypress
+  testing-types: e2e
+  languages: typescript,javascript
   version: "1.11.0"
 ---
 

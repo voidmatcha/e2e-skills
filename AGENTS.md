@@ -74,7 +74,7 @@ Each `skills/<name>/SKILL.md` is the contract. Everything in the skill body shou
 ## Conventions
 
 - **Skill names**: kebab-case, must match the directory name and the `name:` in SKILL.md frontmatter.
-- **SKILL.md frontmatter**: `name`, `description`, `license`, `metadata: { author, version }`. The description is the trigger surface — pack synonyms and the user's likely phrasing.
+- **SKILL.md frontmatter**: `name`, `description`, `license`, `metadata: { author, version, frameworks, testing-types, languages }`. The description is the trigger surface — pack synonyms and the user's likely phrasing. The Agent Skills spec fixes the set of top-level keys and any other one is a validation error, so classification fields live under `metadata`, which the spec defines as a string-to-string map — comma-joined values, never YAML lists. `frameworks` must match the skill's real scope (`docs/framework-scope.md`); a skill that names a framework it does not support is a scope claim, not a hint.
 - **Pattern IDs**: 24 stable anti-pattern entries (`#1`–`#23` plus `#3b`) with P0/P1/P2 severity. IDs are stable; do not renumber. Severity rationale: P0 = silent always-pass, P1 = poor diagnostics, P2 = maintenance.
 - **Failure category IDs**: 15 codes (`F1`–`F15`) used by both debuggers. Codes are stable.
 - **JUSTIFIED comments**: `// JUSTIFIED: <reason>` on the line above (or above the enclosing block / multi-line chain) suppresses scanner findings. Suppress for documented intent, never to hide a real finding.
