@@ -171,14 +171,18 @@ def assert_packet_is_deterministic_and_unanchored() -> tuple[dict, dict, dict]:
     assert "Do not infer results from" in prompt
     for item in packet_a["rubric"]["dimensions"]:
         assert item["review_question"] in prompt
-    at_a_glance_line = next(
-        index
+    # Line-numbering integrity: a retained heading must appear in the packet at its real README
+    # line. The anchor is derived rather than hard-coded — the previous literal ("## At a glance")
+    # outlived the heading and turned this check into a StopIteration.
+    anchor_number, anchor_text = next(
+        (index, line)
         for index, line in enumerate(
             (ROOT / "README.md").read_text(encoding="utf-8").splitlines(), start=1
         )
-        if line == "## At a glance"
+        if line.startswith("## ")
+        and line.removeprefix("## ").strip() not in RUNNER.README_EXCLUDED_HEADINGS
     )
-    assert f"{at_a_glance_line:06d} | ## At a glance" in readme
+    assert f"{anchor_number:06d} | {anchor_text}" in readme
     return protocol, packet_a, manifest_a
 
 

@@ -35,6 +35,8 @@ This directory preserves the benchmark inputs, protocols, raw reports, and negat
 
 The archives intentionally retain failed and superseded rounds instead of rewriting the score after defects or oracle problems are discovered.
 
+**Packet discontinuity.** The README section exclusions that keep a reviewer from being pre-fed this project's own case (`README_EXCLUDED_HEADINGS` in `scripts/evals/run-independent-review.py`) named headings that a later README rewrite had renamed or deleted, so the exclusion silently became a no-op and those sections shipped inside the packet. The names have been repaired and the runner now refuses to build a packet when a configured heading no longer resolves. Rounds built before and after that repair used different README content and are not directly comparable.
+
 ## External research
 
 The [LLM-generated test evidence review](../docs/llm-generated-e2e-test-evidence.md) tracks 59 named sources: 21 verified, 14 qualified, and 24 not cleared. External studies motivate the methodology, but results from unit testing, custom browser agents, or vendor tools are not presented as measurements of this project.
