@@ -869,7 +869,7 @@ when no documented convention explains them.
 
 **Symptom:** A spec, fixture, or project config loads a `storageState` JSON (e.g. `auth/member.json`) that only a manual capture script or a developer's one-off login produces — nothing in the automated test setup can regenerate it.
 
-**Why it matters:** The file is absent on fresh clones and CI, and silently expires. The suite then fails — or worse, soft-skips — for reasons unrelated to the code under test, and nobody trusts the signal.
+**Why it matters:** The file is absent on fresh clones and CI, and silently expires. The suite then fails — or worse, soft-skips — for reasons unrelated to the code under test, and nobody trusts the signal. A committed `storageState` file is also a credential leak, not just an unreproducible fixture: it holds live session cookies — and any bearer tokens the app keeps in origin storage — for whatever account captured it. #14 does not reach this — its scope is string literals in test code.
 
 **Rule:** Session state must be reproducible from code: an API-login helper or a `setup` project that writes `storageState` before dependent specs run. A committed or manually captured file may serve only as a cache with a programmatic fallback.
 
