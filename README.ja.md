@@ -18,7 +18,7 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <strong>🇯🇵 日本語</strong> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=03ecf4339e9d1ba4dae90dee5d8faa35866f1d4fa9813da1cb42aaab39800efc; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=68d321dec112133d2e7def83d60536ef5f1048ba6dd5f0036efe59b66a601726; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 CI は通るのに、ユーザーに見える挙動を検証できていない Playwright/Cypress の E2E テストを見つけます。
 
@@ -277,12 +277,16 @@ debugger は product regression と brittle test を分けて分類し、evidenc
 /bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests
 ```
 
-スキャナーには Python 3 と PCRE2-capable `rg` が必要です。デフォルトでは、target-controlled な ESLint binaries、plugins、parsers、configuration を実行せず、tools も download しません。`E2E_SMELL_ALLOW_PROJECT_ESLINT=1` は trusted checkout で project ESLint execution を opt in します。`E2E_SMELL_NO_ESLINT_DOWNLOAD=0` と `E2E_SMELL_NO_AST_GREP_DOWNLOAD=0` は、それぞれ pinned downloads を opt in します。portability check で preinstalled host binaries を無視する必要がある場合は、`E2E_SMELL_DISABLE_AST_GREP=1` を設定してください。
+スキャナーには PCRE2-capable `rg` と Python 3 が必要です。Python が NUL-safe な candidate identity records を作成・検証するため、candidate drift や不正な record は fail closed になります。この必須の bookkeeping は optional な Tier 2 AST tooling とは別です。デフォルトでは、target-controlled な ESLint binaries、plugins、parsers、configuration を実行せず、tools も download しません。`E2E_SMELL_ALLOW_PROJECT_ESLINT=1` は trusted checkout で project ESLint execution を opt in します。`E2E_SMELL_NO_ESLINT_DOWNLOAD=0` と `E2E_SMELL_NO_AST_GREP_DOWNLOAD=0` は、それぞれ pinned downloads を opt in します。portability check で preinstalled host binaries を無視する必要がある場合は、`E2E_SMELL_DISABLE_AST_GREP=1` を設定してください。
 
 > **Read boundary.**
 > <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:START -->
 > 同梱 checks は、requested path 配下の source を report します。Framework provenance resolution は、containing project 内の別の場所にある relative fixture/support imports も読む場合があります。
 > <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:END -->
+
+<!-- README-CONTRACT:SCANNER-EXTENSIONS:START -->
+同梱 checks は `.ts`, `.js`, `.tsx`, `.jsx`, `.mts`, `.mjs`, `.cts`, `.cjs` の source を読み取ります。
+<!-- README-CONTRACT:SCANNER-EXTENSIONS:END -->
 
 Tier 3 は同梱 fallback です。optional ESLint と ast-grep tiers は precision を高めますが、semantic review を置き換えるものではありません。scanner は infrastructure または filesystem errors では false clean result を報告せず、exit 2 で終了します。trust と network boundary については [SECURITY.md](SECURITY.md) を参照してください。
 

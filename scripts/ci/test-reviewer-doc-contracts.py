@@ -46,6 +46,13 @@ def scanner_extensions(scanner_source: str) -> tuple[str, ...]:
     return tuple(f".{extension}" for extension in match.group(1).split(","))
 
 
+# Anchor on markers, not on prose. The previous anchors were sentences from the
+# README body, and a README rewrite deleted them along with the extension list
+# they bracketed — the contract broke because the text it quoted was editable.
+SCANNER_EXTENSIONS_START = "<!-- README-CONTRACT:SCANNER-EXTENSIONS:START -->"
+SCANNER_EXTENSIONS_END = "<!-- README-CONTRACT:SCANNER-EXTENSIONS:END -->"
+
+
 def documented_extensions(text: str, start: str, end: str) -> tuple[str, ...]:
     start_index = text.index(start)
     end_index = text.index(end, start_index)
@@ -212,8 +219,8 @@ def main() -> None:
     )
     readme_extensions = documented_extensions(
         readme,
-        "Its shared source boundary covers",
-        "Bundled lexical filters",
+        SCANNER_EXTENSIONS_START,
+        SCANNER_EXTENSIONS_END,
     )
     assert phase_zero_extensions == expected_extensions
     assert readme_extensions == expected_extensions
@@ -300,15 +307,14 @@ def main() -> None:
     ):
         assert contract in " ".join(readme.split())
 
-    translation_extension_boundaries = {
-        "README.ko.md": ("공통 소스 범위는", "번들 lexical filter"),
-        "README.ja.md": ("共通の source 境界は", "同梱 lexical filter"),
-        "README.zh-cn.md": ("统一 source 边界覆盖", "内置 lexical filter"),
-    }
     for path in TRANSLATED_READMES:
         translated = path.read_text(encoding="utf-8")
-        start, end = translation_extension_boundaries[path.name]
-        assert documented_extensions(translated, start, end) == expected_extensions
+        assert (
+            documented_extensions(
+                translated, SCANNER_EXTENSIONS_START, SCANNER_EXTENSIONS_END
+            )
+            == expected_extensions
+        )
         for prerequisite in ("PCRE2", "Python 3", "NUL-safe", "Tier 2 AST"):
             assert prerequisite in translated
 

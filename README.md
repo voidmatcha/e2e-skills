@@ -275,12 +275,16 @@ Run the deterministic mechanical layer directly:
 /bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests
 ```
 
-The scanner requires Python 3 and PCRE2-capable `rg`. It does not execute target-controlled ESLint binaries, plugins, parsers, or configuration by default, and it does not download tools by default. `E2E_SMELL_ALLOW_PROJECT_ESLINT=1` opts a trusted checkout into project ESLint execution; `E2E_SMELL_NO_ESLINT_DOWNLOAD=0` and `E2E_SMELL_NO_AST_GREP_DOWNLOAD=0` separately opt into pinned downloads. Set `E2E_SMELL_DISABLE_AST_GREP=1` when a portability check must ignore preinstalled host binaries.
+The scanner requires a PCRE2-capable `rg` and Python 3. Python creates and validates NUL-safe candidate identity records so candidate drift or malformed records fail closed; this mandatory bookkeeping is separate from optional Tier 2 AST tooling. It does not execute target-controlled ESLint binaries, plugins, parsers, or configuration by default, and it does not download tools by default. `E2E_SMELL_ALLOW_PROJECT_ESLINT=1` opts a trusted checkout into project ESLint execution; `E2E_SMELL_NO_ESLINT_DOWNLOAD=0` and `E2E_SMELL_NO_AST_GREP_DOWNLOAD=0` separately opt into pinned downloads. Set `E2E_SMELL_DISABLE_AST_GREP=1` when a portability check must ignore preinstalled host binaries.
 
 > **Read boundary.**
 > <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:START -->
 > Bundled checks report source beneath the requested path. Framework provenance resolution may also read relative fixture/support imports elsewhere in the containing project.
 > <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:END -->
+
+<!-- README-CONTRACT:SCANNER-EXTENSIONS:START -->
+Bundled checks read `.ts`, `.js`, `.tsx`, `.jsx`, `.mts`, `.mjs`, `.cts`, and `.cjs` sources.
+<!-- README-CONTRACT:SCANNER-EXTENSIONS:END -->
 
 Tier 3 is the bundled fallback. Optional ESLint and ast-grep tiers add precision but do not replace semantic review. The scanner exits 2 on infrastructure or filesystem errors rather than reporting a false clean result. See [SECURITY.md](SECURITY.md) for the trust and network boundary.
 

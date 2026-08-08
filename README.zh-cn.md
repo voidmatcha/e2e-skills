@@ -17,7 +17,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=03ecf4339e9d1ba4dae90dee5d8faa35866f1d4fa9813da1cb42aaab39800efc; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=68d321dec112133d2e7def83d60536ef5f1048ba6dd5f0036efe59b66a601726; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 找出那些能通过 CI、却没有验证用户可见行为的 Playwright 和 Cypress E2E 测试。
 
@@ -276,12 +276,16 @@ debuggers 会把产品回归与脆弱测试分开分类，并返回证据和具�
 /bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests
 ```
 
-扫描器需要 Python 3 和支持 PCRE2 的 `rg`。默认情况下，它不会执行目标项目控制的 ESLint binaries、plugins、parsers 或 configuration，也不会下载工具。`E2E_SMELL_ALLOW_PROJECT_ESLINT=1` 会让可信 checkout 进入项目 ESLint 执行；`E2E_SMELL_NO_ESLINT_DOWNLOAD=0` 和 `E2E_SMELL_NO_AST_GREP_DOWNLOAD=0` 会分别选择启用 pinned downloads。当 portability check 必须忽略 host 预装 binaries 时，设置 `E2E_SMELL_DISABLE_AST_GREP=1`。
+扫描器需要支持 PCRE2 的 `rg` 和 Python 3。Python 会创建并校验 NUL-safe 候选标识记录，因此候选漂移或损坏的记录会 fail closed；这项必需的记录工作与可选的 Tier 2 AST 工具无关。默认情况下，它不会执行目标项目控制的 ESLint binaries、plugins、parsers 或 configuration，也不会下载工具。`E2E_SMELL_ALLOW_PROJECT_ESLINT=1` 会让可信 checkout 进入项目 ESLint 执行；`E2E_SMELL_NO_ESLINT_DOWNLOAD=0` 和 `E2E_SMELL_NO_AST_GREP_DOWNLOAD=0` 会分别选择启用 pinned downloads。当 portability check 必须忽略 host 预装 binaries 时，设置 `E2E_SMELL_DISABLE_AST_GREP=1`。
 
 > **读取边界。**
 > <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:START -->
 > Bundled checks 会报告请求路径下的 source。Framework provenance resolution 也可能读取同一项目其他位置的相对 fixture/support imports。
 > <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:END -->
+
+<!-- README-CONTRACT:SCANNER-EXTENSIONS:START -->
+内置检查读取 `.ts`、`.js`、`.tsx`、`.jsx`、`.mts`、`.mjs`、`.cts`、`.cjs` 源文件。
+<!-- README-CONTRACT:SCANNER-EXTENSIONS:END -->
 
 Tier 3 是内置 fallback。可选的 ESLint 和 ast-grep tiers 会提高精度，但不会替代语义审查。扫描器遇到基础设施或文件系统错误时会以 2 退出，而不是报告虚假的 clean 结果。参见 [SECURITY.md](SECURITY.md) 了解 trust 和 network boundary。
 

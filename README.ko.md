@@ -18,7 +18,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=03ecf4339e9d1ba4dae90dee5d8faa35866f1d4fa9813da1cb42aaab39800efc; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=68d321dec112133d2e7def83d60536ef5f1048ba6dd5f0036efe59b66a601726; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 CI는 통과하지만 사용자가 실제로 겪는 동작은 검증하지 못하는 Playwright와 Cypress E2E 테스트를 찾아냅니다.
 
@@ -277,12 +277,16 @@ AI가 만들었거나 기존에 물려받은 E2E 테스트가 의도한 결과�
 /bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests
 ```
 
-스캐너에는 Python 3와 PCRE2를 지원하는 `rg`가 필요합니다. 기본적으로 대상 프로젝트가 제어하는 ESLint 실행 파일, 플러그인, 파서, 설정을 실행하지 않으며 도구도 내려받지 않습니다. `E2E_SMELL_ALLOW_PROJECT_ESLINT=1`은 신뢰하는 체크아웃에서 프로젝트 ESLint 실행을 명시적으로 켭니다. `E2E_SMELL_NO_ESLINT_DOWNLOAD=0`과 `E2E_SMELL_NO_AST_GREP_DOWNLOAD=0`은 각각 고정 버전 다운로드를 명시적으로 켭니다. 이식성 확인에서 미리 설치된 호스트 실행 파일을 무시해야 할 때는 `E2E_SMELL_DISABLE_AST_GREP=1`을 설정합니다.
+스캐너에는 PCRE2를 지원하는 `rg`와 Python 3가 필요합니다. Python이 NUL-safe 후보 식별 레코드를 생성하고 검증하므로 후보 드리프트나 손상된 레코드는 fail-closed로 처리됩니다. 이 필수 기록 작업은 선택적인 Tier 2 AST 도구와 별개입니다. 기본적으로 대상 프로젝트가 제어하는 ESLint 실행 파일, 플러그인, 파서, 설정을 실행하지 않으며 도구도 내려받지 않습니다. `E2E_SMELL_ALLOW_PROJECT_ESLINT=1`은 신뢰하는 체크아웃에서 프로젝트 ESLint 실행을 명시적으로 켭니다. `E2E_SMELL_NO_ESLINT_DOWNLOAD=0`과 `E2E_SMELL_NO_AST_GREP_DOWNLOAD=0`은 각각 고정 버전 다운로드를 명시적으로 켭니다. 이식성 확인에서 미리 설치된 호스트 실행 파일을 무시해야 할 때는 `E2E_SMELL_DISABLE_AST_GREP=1`을 설정합니다.
 
 > **Read boundary.**
 > <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:START -->
 > 공통 소스 범위는 요청한 path 아래입니다. 번들 lexical filter를 포함한 포함 검사는 그 소스를 보고합니다. 프레임워크 출처 확인은 포함 프로젝트의 다른 위치에 있는 relative fixture/support import도 읽을 수 있습니다.
 > <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:END -->
+
+<!-- README-CONTRACT:SCANNER-EXTENSIONS:START -->
+번들 검사는 `.ts`, `.js`, `.tsx`, `.jsx`, `.mts`, `.mjs`, `.cts`, `.cjs` 소스를 읽습니다.
+<!-- README-CONTRACT:SCANNER-EXTENSIONS:END -->
 
 Tier 3는 기본으로 제공되는 대체 경로입니다. 선택적으로 사용하는 ESLint와 ast-grep 계층은 정밀도를 높이지만 문맥 검토를 대신하지 않습니다. 인프라 또는 파일시스템 오류가 발생하면 스캐너는 문제가 없다고 잘못 보고하지 않고 종료 코드 2로 끝납니다. 신뢰와 네트워크 경계는 [SECURITY.md](SECURITY.md)를 참고하세요.
 
