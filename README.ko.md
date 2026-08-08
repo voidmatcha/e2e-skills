@@ -11,7 +11,6 @@
   <a href="https://playwright.dev"><img alt="Playwright | Cypress" src="https://img.shields.io/badge/Playwright_%7C_Cypress-supported-2EAD33?style=flat-square&labelColor=black&logo=playwright&logoColor=white"></a>
   <a href="#open-source-adoption"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-14-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
   <a href="https://agents.md"><img alt="Runs in 55+ agents" src="https://img.shields.io/badge/runs_in-55%2B_agents-37B0E6?style=flat-square&labelColor=black"></a>
-  <a href="https://www.npmjs.com/package/eslint-plugin-cypress-silent-pass"><img alt="cypress silent-pass npm" src="https://img.shields.io/npm/v/eslint-plugin-cypress-silent-pass?style=flat-square&label=cypress%20lint&labelColor=black&color=37B0E6"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/voidmatcha/e2e-skills?style=flat-square&labelColor=black&color=37B0E6"></a>
 </p>
 
@@ -19,7 +18,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=f28eddbc01529552f114e51e8f3abe5bd626a5b9c83fde20eee5cf2019f2530b; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=16ad30a4e3fc744dacb0d44749f8ec58cbc8ba04cb359bcf23b8c17073791542; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 CI는 통과하지만 사용자가 실제로 겪는 동작은 검증하지 못하는 Playwright와 Cypress E2E 테스트를 찾아냅니다.
 
@@ -61,6 +60,16 @@ $ /bin/bash -p skills/e2e-reviewer/scripts/scan.sh tests/
 
 Summary: 2 total hit(s), 2 P0
 ```
+
+`eslint-plugin-playwright`도 `no-unnecessary-assertions`로 이 형태를 잡습니다. 그 규칙을 켜세요 — 매 커밋마다 도는 규칙이, 기억해서 돌려야 하는 검토보다 낫습니다. 스캐너는 실행할 때마다 어떤 지적이 이미 여러분의 lint 설정이 맡아야 할 몫인지 함께 출력하므로, 둘은 경쟁하지 않고 서로를 보완합니다.
+
+## 테스트가 실패할 수 있음을 증명하기
+
+검증문이 잘 생겼다고 통과하는 테스트는 아닙니다. 린트는 `toBeVisible()`이 올바른 matcher라는 건 알려주지만, 기능이 깨졌을 때 그 테스트가 빨개지는지는 알려주지 못합니다.
+
+`playwright-test-generator`가 이 질문에 직접 답합니다. 프로젝트가 승인한 임시 복사본에서 핵심 검증문을 반전하고(V2), 근거가 확인된 제품 결함을 주입한 뒤(V3), 미리 지정한 위치에서 예상한 불일치로 실패할 것을 요구합니다. 제한 시간, 브라우저 충돌, 설정 오류로 실패한 실행은 인정하지 않습니다. 안전하게 증명할 수 없는 것은 추측하지 않고 `CANNOT_VERIFY`로 보고합니다.
+
+이것은 후보 spec 하나로 범위를 좁힌 뮤테이션 테스팅입니다. 그 좁힘이 비용을 감당 가능하게 만듭니다 — E2E에서 스위트 전체를 뮤테이션하는 것은 그렇지 않기 때문입니다.
 
 ## 설치하고 사용해 보기
 

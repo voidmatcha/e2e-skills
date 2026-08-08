@@ -11,14 +11,13 @@
   <a href="https://playwright.dev"><img alt="Playwright | Cypress" src="https://img.shields.io/badge/Playwright_%7C_Cypress-supported-2EAD33?style=flat-square&labelColor=black&logo=playwright&logoColor=white"></a>
   <a href="#open-source-adoption"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-14-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
   <a href="https://agents.md"><img alt="Runs in 55+ agents" src="https://img.shields.io/badge/runs_in-55%2B_agents-37B0E6?style=flat-square&labelColor=black"></a>
-  <a href="https://www.npmjs.com/package/eslint-plugin-cypress-silent-pass"><img alt="cypress silent-pass npm" src="https://img.shields.io/npm/v/eslint-plugin-cypress-silent-pass?style=flat-square&label=cypress%20lint&labelColor=black&color=37B0E6"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/voidmatcha/e2e-skills?style=flat-square&labelColor=black&color=37B0E6"></a>
 </p>
 
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=f28eddbc01529552f114e51e8f3abe5bd626a5b9c83fde20eee5cf2019f2530b; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=16ad30a4e3fc744dacb0d44749f8ec58cbc8ba04cb359bcf23b8c17073791542; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 找出那些能通过 CI、却没有验证用户可见行为的 Playwright 和 Cypress E2E 测试。
 
@@ -60,6 +59,16 @@ $ /bin/bash -p skills/e2e-reviewer/scripts/scan.sh tests/
 
 Summary: 2 total hit(s), 2 P0
 ```
+
+`eslint-plugin-playwright` 也会通过 `no-unnecessary-assertions` 标记这种写法。请启用该规则——每次提交都运行的规则，胜过需要你记得执行的评审。扫描器每次运行都会输出哪些发现本应由你的 lint 配置负责，因此两者是互补而非竞争。
+
+## 证明测试会失败
+
+写法规范的断言不等于有效的测试。lint 能告诉你 `toBeVisible()` 是正确的 matcher，却无法告诉你功能损坏时这个测试会不会变红。
+
+`playwright-test-generator` 直接回答这个问题。在项目批准的临时副本上，它反转主断言（V2）并注入有据可查的产品缺陷（V3），然后要求测试在预定位置以预定的不匹配失败。因超时、浏览器崩溃或配置错误导致的失败不算数。无法安全证明的内容会报告为 `CANNOT_VERIFY`，而不是猜测。
+
+这是把范围收窄到单个候选 spec 的变异测试。正是这种收窄让成本可以承受——因为在 E2E 上对整个套件做变异测试并不可行。
 
 ## 安装并试用
 

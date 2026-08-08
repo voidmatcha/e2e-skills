@@ -11,7 +11,6 @@
   <a href="https://playwright.dev"><img alt="Playwright | Cypress" src="https://img.shields.io/badge/Playwright_%7C_Cypress-supported-2EAD33?style=flat-square&labelColor=black&logo=playwright&logoColor=white"></a>
   <a href="#open-source-adoption"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-14-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
   <a href="https://agents.md"><img alt="Runs in 55+ agents" src="https://img.shields.io/badge/runs_in-55%2B_agents-37B0E6?style=flat-square&labelColor=black"></a>
-  <a href="https://www.npmjs.com/package/eslint-plugin-cypress-silent-pass"><img alt="cypress silent-pass npm" src="https://img.shields.io/npm/v/eslint-plugin-cypress-silent-pass?style=flat-square&label=cypress%20lint&labelColor=black&color=37B0E6"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/voidmatcha/e2e-skills?style=flat-square&labelColor=black&color=37B0E6"></a>
 </p>
 
@@ -59,6 +58,16 @@ $ /bin/bash -p skills/e2e-reviewer/scripts/scan.sh tests/
 
 Summary: 2 total hit(s), 2 P0
 ```
+
+`eslint-plugin-playwright` flags this exact shape too, through `no-unnecessary-assertions`. Enable it — a rule that runs on every commit beats a review you have to remember. Every run of the scanner prints which of its findings your lint config should already own, so the two compose instead of competing.
+
+## Prove the test can fail
+
+A well-formed assertion is not a passing test. Lint can tell you `toBeVisible()` is the right matcher; it cannot tell you the test goes red when the feature breaks.
+
+`playwright-test-generator` answers that directly. On a scratch copy the project approves, it inverts the primary assertion (V2) and injects an evidenced product fault (V3), then requires the test to fail at the predicted line with the predicted mismatch. A run that fails for a timeout, a browser crash, or a config error does not count. Anything that cannot be proven safely is reported `CANNOT_VERIFY` rather than guessed.
+
+That is mutation testing scoped to one candidate spec — which is what makes it affordable, because whole-suite mutation on E2E is not.
 
 ## Install and try it
 
