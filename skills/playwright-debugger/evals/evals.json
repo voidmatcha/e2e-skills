@@ -5,7 +5,9 @@
       "id": 1,
       "prompt": "Debug the Playwright test failures in evals/files/results-selector-timeout.json. Classify each failure and suggest fixes.",
       "expected_output": "Should classify 2 failures: F2 Selector Broken (selector '#submit-btn' not found in checkout.spec.ts) and F1 Flaky/Timing (timeout 30000ms exceeded waiting for getByRole('dialog') in dialog.spec.ts). Should provide concrete fix suggestions for each — e.g., update selector to match current DOM for F2, increase timeout or verify dialog trigger for F1. Should note the 2 passing tests are unaffected.",
-      "files": ["evals/files/results-selector-timeout.json"],
+      "files": [
+        "evals/files/results-selector-timeout.json"
+      ],
       "assertions": [
         "Classifies '#submit-btn' failure as F2 (Selector Broken)",
         "Classifies dialog timeout as F1 (Flaky/Timing)",
@@ -26,7 +28,9 @@
       "id": 2,
       "prompt": "Debug the Playwright test failures in evals/files/results-mixed-failures.json. Classify each failure, identify any cascading patterns, and suggest fixes.",
       "expected_output": "Should classify 3 failures: F3 Network Dependency (API returns 500 in api-integration.spec.ts), F10 Auth/Session (session cookie expired causing redirect to /login in auth-session.spec.ts), F4 Assertion Mismatch ('Welcome' vs 'Login' in welcome.spec.ts). Should detect potential cascade: F10 auth/session expiry could be the root cause of F4 assertion mismatch (user sees 'Login' instead of 'Welcome' because session expired).",
-      "files": ["evals/files/results-mixed-failures.json"],
+      "files": [
+        "evals/files/results-mixed-failures.json"
+      ],
       "assertions": [
         "Classifies API 500 error as F3 (Network Dependency)",
         "Classifies session_expired redirect as F10 (Auth/Session)",
@@ -47,7 +51,9 @@
       "id": 3,
       "prompt": "Debug the Playwright test failures in evals/files/results-flaky.json. Identify flaky tests, race conditions, and suggest stabilization strategies.",
       "expected_output": "Use the bundled bounded report reader and preserve each attempt as one coherent record: status, duration, error, and errorLocation must come from the same attempt. Keep both failed and passing attempts. 'notification count' fails retry 0, passes retry 1 — F1 Flaky/Timing (value arrives late). 'revenue chart' fails retries 0-1, passes retry 2 — F1 Flaky/Timing with rendering delay (or F14 Animation Race). 'loading spinner' fails all 3 retries — NOT flaky, this is a consistent F14 Animation Race (spinner disappears before assertion can observe it). Should distinguish true flaky from consistent failures.",
-      "files": ["evals/files/results-flaky.json"],
+      "files": [
+        "evals/files/results-flaky.json"
+      ],
       "assertions": [
         "Identifies 'notification count' as flaky (fails then passes on retry)",
         "Preserves the failed and passing attempts separately without combining a passing status/duration with the failed attempt's error/location",
@@ -68,7 +74,9 @@
       "id": 4,
       "prompt": "Debug the Playwright test results in evals/files/results-clean.json. Report any failures found.",
       "expected_output": "Should report all tests passed with no failures. Clean run across login.spec.ts, navigation.spec.ts, and search.spec.ts. No failure classifications needed. Should not produce false diagnoses or fabricated issues.",
-      "files": ["evals/files/results-clean.json"],
+      "files": [
+        "evals/files/results-clean.json"
+      ],
       "assertions": [
         "Reports all tests passed (0 failures)",
         "Reports clean run status",
@@ -83,7 +91,9 @@
       "id": 5,
       "prompt": "Debug the Playwright test failures in evals/files/results-hydration-race.json. Classify each failure and suggest fixes.",
       "expected_output": "Should classify 2 failures: 'newsletter subscribe opens the confirmation dialog' — F15 Hydration Race (the click was reported complete on a server-rendered Next.js page immediately after goto, but React hydration had not attached the handler, so the dialog never opened; passes on retry 1). 'pricing table renders all three tiers' — NOT F15 (no interaction precedes the assertion): consistent client-side render delay after a slow /api/pricing fetch — F14 Animation Race or F1/F3 territory. Fix for F15: gate the first interaction on a hydration marker, or make the click self-verifying with expect(async () => {...}).toPass(); never waitForTimeout after goto.",
-      "files": ["evals/files/results-hydration-race.json"],
+      "files": [
+        "evals/files/results-hydration-race.json"
+      ],
       "assertions": [
         "Classifies the subscribe-dialog failure as F15 (Hydration Race)",
         "Cites the F15 signal chain: first interaction after goto on a server-rendered page, click reported successful, failure at the NEXT assertion, passes on retry",
@@ -99,7 +109,10 @@
       "id": 6,
       "prompt": "Debug the Playwright test failures in evals/files/results-error-swallowing.json. The spec source is provided at evals/files/error-swallowing.spec.ts — audit the passing tests' source for P0 silent-pass patterns before reporting.",
       "expected_output": "One failure, one P0 silent pass, one clean pass. 'banner shows the unread count' timed out waiting for the unread badge while GET /api/notifications returned 500 — F3 Network Dependency or a real product regression (the notifications API is down). 'mark-all-read clears the badge' PASSED in 340ms but is the P0: in the source (lines 13-14) both the waitForResponse and the final expect are silenced with .catch(() => {}), so a failing notifications API can never fail this test — F13 Error Swallowing. 'rejects an oversized attachment upload' also passes and must NOT be flagged: expect(...).rejects.toThrow('413') is a legitimate expected-rejection assertion, not suppression.",
-      "files": ["evals/files/results-error-swallowing.json", "evals/files/error-swallowing.spec.ts"],
+      "files": [
+        "evals/files/results-error-swallowing.json",
+        "evals/files/error-swallowing.spec.ts"
+      ],
       "assertions": [
         "Flags the PASSING test 'mark-all-read clears the badge' (340ms) as P0 F13 (Error Swallowing) — .catch(() => {}) on both the waitForResponse and the expect at error-swallowing.spec.ts lines 13-14 means the broken notifications API cannot fail it",
         "Classifies 'banner shows the unread count' as F3 (Network Dependency) or a real product regression, citing the GET /api/notifications 500 in the error message",
@@ -112,7 +125,10 @@
       "id": 7,
       "prompt": "Debug the Playwright test failures in evals/files/results-condition-branch.json. The spec source is provided at evals/files/condition-branch.spec.ts — audit the passing tests' source for P0 silent-pass patterns before reporting.",
       "expected_output": "One failure, one P0 silent pass, one clean conditional. 'cookie banner links to the privacy policy' timed out — the cookie banner never rendered (locator resolved to 0 elements): product regression or F2 territory. 'dismisses the cookie banner when shown' PASSED in 480ms but is the P0: its only assertions live inside if (await ...isVisible()) (lines 6-9), so with the banner missing — which the failing sibling proves — the test asserted nothing: F6 Condition Branch Missing. 'shows account menu when logged in and sign-in button otherwise' must NOT be flagged: both branches of its conditional (lines 19-23) end in an assertion.",
-      "files": ["evals/files/results-condition-branch.json", "evals/files/condition-branch.spec.ts"],
+      "files": [
+        "evals/files/results-condition-branch.json",
+        "evals/files/condition-branch.spec.ts"
+      ],
       "assertions": [
         "Flags the PASSING test 'dismisses the cookie banner when shown' (480ms) as P0 F6 (Condition Branch Missing) — all assertions sit inside the isVisible() conditional at condition-branch.spec.ts lines 6-9, so the test passes silently when the banner never renders",
         "Connects the failing sibling to the F6 finding: 'locator resolved to 0 elements' proves the passing test's condition was false, i.e. its silent pass hid the same missing banner",
@@ -207,6 +223,31 @@
         "Preserves bounded error message and location and validates the errors schema",
         "Rejects duplicate keys, NaN, Infinity, -Infinity, BOM, and trailing JSON",
         "Uses the bundled bounded reader with required --report-root"
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "A test intermittently fails with a timeout. Classify it as F1 or F7 and say how you decided.",
+      "expected_output": "Must not classify from the error text alone. Must run the isolation probe: the failing test alone and repeated (npx playwright test ... --retries=0 --repeat-each=10 --workers=1), then the suite at its real parallelism. Maps mixed-alone to F1, passes-alone-but-fails-in-suite to F7, and fails-alone-every-time to a non-flaky F-code. If the suite cannot be run, reports CANNOT_VERIFY between F1 and F7 instead of guessing.",
+      "files": [],
+      "assertions": [
+        "Runs the failing test in isolation with --repeat-each=10 --workers=1 before deciding",
+        "Runs the suite at its real parallelism as the second half of the probe",
+        "Maps 'passes alone, fails in suite' to F7 rather than F1",
+        "Maps 'mixed results alone' to F1",
+        "Does NOT assign F1 purely because the error message is a timeout",
+        "Reports CANNOT_VERIFY between F1 and F7 when the suite cannot be executed"
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "A test fails with a selector-not-found error on every single run. Classify it.",
+      "expected_output": "Must classify against the F-table (F2 selector broken, or F12 if the POM drifted) and must NOT run the F1/F7 isolation probe or reach for a flakiness code: a deterministic every-run failure is not a flake, and the probe is expensive.",
+      "files": [],
+      "assertions": [
+        "Classifies as F2 or F12, not F1 or F7",
+        "Does NOT run the repeat/isolation probe for a deterministic failure",
+        "Explains that a failure reproducing on every run is not a flake"
       ]
     }
   ]

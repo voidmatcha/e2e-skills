@@ -5,7 +5,9 @@
       "id": 1,
       "prompt": "Debug the Cypress test failures in evals/files/mochawesome-selector-timeout.json. Classify each failure and suggest fixes.",
       "expected_output": "Should classify 2 failures: (1) '#submit-btn' not found as F2 Selector Broken — element ID changed or never existed, suggest using data-testid selector. (2) '.modal' visibility timeout as F1 Flaky/Timing or F2 Selector Broken — generic CSS selector '.modal' is fragile, duration hit 10s timeout suggesting element never rendered. Should suggest data-testid for modal, check if delete action triggers modal correctly.",
-      "files": ["evals/files/mochawesome-selector-timeout.json"],
+      "files": [
+        "evals/files/mochawesome-selector-timeout.json"
+      ],
       "assertions": [
         "Classifies '#submit-btn' failure as F2 (Selector Broken)",
         "Classifies '.modal' timeout as F1 (Flaky/Timing) or F2 (Selector Broken)",
@@ -24,7 +26,9 @@
       "id": 2,
       "prompt": "Analyze the Cypress test report at evals/files/mochawesome-mixed.json. Identify root causes for each failure and detect any cascade patterns.",
       "expected_output": "Should classify 3 failures: (1) Payment API returning 500 as F3 Network Dependency — cy.intercept returns 500 but test expects success, test setup is contradictory. (2) 'Welcome' vs 'Login' text mismatch as F4 Assertion Mismatch — user not logged in, seeing Login page instead of Welcome. (3) Uncaught TypeError on discount click as application bug (not test issue) — 'Cannot read properties of undefined' indicates missing discount data. Should detect potential cascade: test 2 may indicate missing auth which also affects test 1 expectations.",
-      "files": ["evals/files/mochawesome-mixed.json"],
+      "files": [
+        "evals/files/mochawesome-mixed.json"
+      ],
       "assertions": [
         "Classifies payment failure as F3 (Network Dependency)",
         "Classifies 'Welcome' vs 'Login' as F4 (Assertion Mismatch)",
@@ -45,7 +49,9 @@
       "id": 3,
       "prompt": "Debug the flaky Cypress test failures in evals/files/mochawesome-flaky.json. Identify flaky patterns, race conditions, and suggest stabilization strategies.",
       "expected_output": "Should classify 3 failures as flaky/timing related: (1) Notification badge not appearing after postMessage — race condition between postMessage and DOM update, F1 Flaky/Timing (or F14 Animation Race). (2) Infinite scroll not loading more items — cy.wait(2000) is a fixed sleep, race condition with async data loading, F1 Flaky/Timing. (3) Toast not found after click — animation/render race, element may appear and disappear before assertion, F14 Animation Race or F1. Should detect pattern: all 3 failures involve timing-dependent UI with fixed waits or missing waits.",
-      "files": ["evals/files/mochawesome-flaky.json"],
+      "files": [
+        "evals/files/mochawesome-flaky.json"
+      ],
       "assertions": [
         "Classifies notification badge failure as F1 (Flaky/Timing) or F14 (Animation Race)",
         "Classifies infinite scroll failure as F1 (Flaky/Timing)",
@@ -65,7 +71,9 @@
       "id": 4,
       "prompt": "Analyze the Cypress test report at evals/files/mochawesome-clean.json. Report the test run status.",
       "expected_output": "Should report all 4 tests passing with 0 failures. Clean run with no issues to diagnose. Should not produce false diagnoses or invent problems. May note good practices observed in the test code (data-testid usage, proper assertions).",
-      "files": ["evals/files/mochawesome-clean.json"],
+      "files": [
+        "evals/files/mochawesome-clean.json"
+      ],
       "assertions": [
         "Reports 0 failures / 4 passes",
         "Reports clean run status",
@@ -80,7 +88,9 @@
       "id": 5,
       "prompt": "Debug the Cypress test failures in evals/files/mochawesome-hydration-race.json. Classify each failure and suggest fixes.",
       "expected_output": "Should classify 2 failures: 'adds an item to the cart from the landing page' — F15 Hydration Race (first click immediately after cy.visit() on a server-rendered Nuxt page; the button was painted by SSR but its handler was not attached, so the click had no effect and the next assertion failed; passes on re-run). 'filters results as the user types' — NOT F15: the typed input registered (the field contains 'kettle'); the failure is a render/debounce delay on the results list — F1 Flaky/Timing or F14 Animation Race. Fix for F15: gate the first interaction on a hydration signal (marker attribute or window readiness flag), proposing the marker upstream if none exists; never a blind cy.wait(ms) after cy.visit().",
-      "files": ["evals/files/mochawesome-hydration-race.json"],
+      "files": [
+        "evals/files/mochawesome-hydration-race.json"
+      ],
       "assertions": [
         "Classifies the add-to-cart failure as F15 (Hydration Race)",
         "Cites the F15 signals: first interaction after cy.visit() on a server-rendered page, click succeeded but had no effect, failure at the next assertion, passes on re-run",
@@ -96,7 +106,9 @@
       "id": 6,
       "prompt": "Debug the Cypress test failures in evals/files/mochawesome-screenshot-context.json. For each failure, surface the failure screenshot path from the report and classify the failure.",
       "expected_output": "Use the bundled bounded mochawesome reader. Two failures. 'Checkout flow places an order' carries a mochawesome `context` field that is a JSON-STRINGIFIED array; the reader parses it and yields the screenshot at cypress/screenshots/checkout.cy.ts/Checkout flow -- places an order (failed).png. 'Profile page saves the display name' has a `context` that is a JSON-stringified plain message ('Submitted display name: Ada') with NO .png — report no screenshot for it rather than inventing one.",
-      "files": ["evals/files/mochawesome-screenshot-context.json"],
+      "files": [
+        "evals/files/mochawesome-screenshot-context.json"
+      ],
       "assertions": [
         "Uses the bundled bounded mochawesome reader and extracts the screenshot path from stringified context",
         "Reports the screenshot path ending in 'places an order (failed).png'",
@@ -110,7 +122,10 @@
       "id": 7,
       "prompt": "Analyze retries for the Cypress run reported in evals/files/mochawesome-retries.json. The project also saves Cypress's own run results via an after:run hook to evals/files/cypress-run-results-retries.json. Identify which tests passed only on retry, which failed every attempt, and which ran cleanly the first time.",
       "expected_output": "Use the bundled bounded mochawesome and run-results readers. Stock mochawesome carries NO per-attempt data — 'Dashboard loads widgets after login' appears as a plain pass in mochawesome-retries.json. The retry evidence lives in the after:run results (runs[].tests[].attempts[]) and in validated screenshot filenames. Dashboard: attempts [failed, passed] plus a '(failed).png' screenshot despite the passing final state → passed on retry, an F1 flaky signal, NOT a hard failure. 'Payment charges the card': attempts [failed, failed, failed] with '(attempt 2)'/'(attempt 3)' screenshots → consistent failure across every retry, NOT flaky. 'Home page renders the hero heading': a single passed attempt and no failure screenshots → ran cleanly, must not be flagged.",
-      "files": ["evals/files/mochawesome-retries.json", "evals/files/cypress-run-results-retries.json"],
+      "files": [
+        "evals/files/mochawesome-retries.json",
+        "evals/files/cypress-run-results-retries.json"
+      ],
       "assertions": [
         "Identifies 'Dashboard loads widgets after login' as passed-on-retry (F1 Flaky/Timing) using the after:run attempts[] data (failed then passed) and/or the '(failed).png' screenshot recorded for a test the mochawesome report marks passed",
         "Does NOT claim mochawesome JSON contains attempts[] or currentRetry fields — sources per-attempt data from the after:run/module-API results or the '(failed)'/'(attempt N)' screenshot filenames instead",
@@ -124,7 +139,9 @@
       "id": 8,
       "prompt": "Debug the Cypress test failures in evals/files/mochawesome-error-swallowing.json. One test fails; also audit the passing tests' code fields for P0 silent-pass patterns before reporting.",
       "expected_output": "One failure, one P0 silent pass, one clean pass. 'Checkout shows the order total' failed with Cypress's uncaught:exception error (TypeError: Cannot read properties of undefined (reading 'total') from application code) — a real product regression in the checkout flow, not a test to weaken. 'Checkout completes the order' PASSED but is the P0: its code registers a blanket cy.on('uncaught:exception', () => false) and has no assertion after the click, so the exact TypeError that failed the sibling test is silently suppressed — F13 Error Swallowing. 'Checkout surfaces checkout crashes containing undefined as failures (regression guard)' also passes but must NOT be flagged: its handler asserts on the error message (expect(err.message.includes('undefined')).to.be.false), the scoped negative-regression form the F13 row explicitly excludes.",
-      "files": ["evals/files/mochawesome-error-swallowing.json"],
+      "files": [
+        "evals/files/mochawesome-error-swallowing.json"
+      ],
       "assertions": [
         "Flags the PASSING test 'Checkout completes the order' as P0 F13 (Error Swallowing) — blanket cy.on('uncaught:exception', () => false) plus no post-click assertion suppresses the same TypeError that failed the sibling test",
         "Classifies 'Checkout shows the order total' as an application code bug surfaced via Cypress's uncaught:exception failure — a real product regression, and does NOT suggest weakening its assertion",
@@ -137,7 +154,9 @@
       "id": 9,
       "prompt": "Debug the Cypress test failures in evals/files/mochawesome-condition-branch.json. One test fails; also audit the passing tests' code fields for P0 silent-pass patterns before reporting.",
       "expected_output": "One failure, one P0 silent pass, one clean conditional. 'Promo banner shows the discount code in the banner' failed — '[data-testid=\"promo-banner\"]' never found — the banner never rendered (product regression or F2 territory). 'Promo banner dismisses the promo banner when shown' PASSED in 450ms but is the P0: every command and assertion sits inside if ($body.find('[data-testid=\"promo-banner\"]').length), so with the banner missing (which the failing sibling proves) the test asserted nothing — F6 Condition Branch Missing. 'shows the user menu when logged in and the login button otherwise' must NOT be flagged: both branches of its conditional end in an assertion, so no input silently skips verification.",
-      "files": ["evals/files/mochawesome-condition-branch.json"],
+      "files": [
+        "evals/files/mochawesome-condition-branch.json"
+      ],
       "assertions": [
         "Flags the PASSING test 'Promo banner dismisses the promo banner when shown' as P0 F6 (Condition Branch Missing) — all assertions are inside the $body.find('[data-testid=\"promo-banner\"]') conditional, so the test passes silently when the banner never renders",
         "Connects the failing sibling to the F6 finding: the 'never found it' failure proves the passing test's condition was false, i.e. its silent pass hid the same missing banner",
@@ -237,6 +256,31 @@
         "Labels the excerpt source as safely redacted direct input when redaction succeeds, or unavailable placeholder when it cannot be verified; never claims bundled reader provenance",
         "Never truncates before redaction and does not pass raw directly supplied error or stack text to a classifier subagent",
         "Classifies the non-sensitive 200-versus-500 mismatch without weakening the expected response contract"
+      ]
+    },
+    {
+      "id": 16,
+      "prompt": "A test intermittently fails with a timeout. Classify it as F1 or F7 and say how you decided.",
+      "expected_output": "Must not classify from the error text alone. Must run the isolation probe: the failing test alone and repeated (npx cypress run --spec ... repeated), then the suite at its real parallelism. Maps mixed-alone to F1, passes-alone-but-fails-in-suite to F7, and fails-alone-every-time to a non-flaky F-code. If the suite cannot be run, reports CANNOT_VERIFY between F1 and F7 instead of guessing.",
+      "files": [],
+      "assertions": [
+        "Runs the failing test in isolation with a repeated single-spec run before deciding",
+        "Runs the suite at its real parallelism as the second half of the probe",
+        "Maps 'passes alone, fails in suite' to F7 rather than F1",
+        "Maps 'mixed results alone' to F1",
+        "Does NOT assign F1 purely because the error message is a timeout",
+        "Reports CANNOT_VERIFY between F1 and F7 when the suite cannot be executed"
+      ]
+    },
+    {
+      "id": 17,
+      "prompt": "A test fails with a selector-not-found error on every single run. Classify it.",
+      "expected_output": "Must classify against the F-table (F2 selector broken, or F12 if the POM drifted) and must NOT run the F1/F7 isolation probe or reach for a flakiness code: a deterministic every-run failure is not a flake, and the probe is expensive.",
+      "files": [],
+      "assertions": [
+        "Classifies as F2 or F12, not F1 or F7",
+        "Does NOT run the repeat/isolation probe for a deterministic failure",
+        "Explains that a failure reproducing on every run is not a flake"
       ]
     }
   ]

@@ -344,6 +344,29 @@ Classification steps:
 3. CI-only failure → F7 or F8
 4. Passes on retry — spec `outcome` is `flaky` (a trailing `passed` result; cross-check `stats.flaky`) and no SSR first-interaction signature (see step 5) → F1. A flaky outcome is an F1 candidate, not a hard failure.
 5. Action succeeded but the *next* assertion timed out, SSR app, first interaction after `goto` → F15
+6. **F1 vs F7 is decided by an isolation probe, not by the error text.** Both surface as
+   `TimeoutError` and both "pass sometimes", so classifying from the message alone assigns the
+   wrong code roughly half the time. Run the approved command twice on the failing test:
+
+   ```bash
+   # (a) alone, repeated — is the test non-deterministic by itself?
+   npx --no-install playwright test path/to/spec.spec.ts --grep '^exact failing test title$' \
+     --retries=0 --repeat-each=10 --workers=1
+
+   # (b) at the suite's real parallelism — does it only break with neighbours?
+   npx --no-install playwright test --retries=0
+   ```
+
+   | (a) alone ×10 | (b) full suite | Code |
+   | --- | --- | --- |
+   | mixed pass/fail | fails | **F1** — the test is non-deterministic on its own |
+   | 10/10 pass | fails | **F7** — shared state or ordering; the test is fine in isolation |
+   | 10/10 fail | fails | not flaky at all — re-classify against the F-table (F2/F4/F5/F9/F10/F12) |
+
+   Both commands need the same approval as any other target-controlled run (see Prerequisites);
+   `--repeat-each` multiplies runtime, so scope it to the single failing test, never the suite.
+   If the suite cannot be run, say the probe was not performed and report the F-code as
+   `CANNOT_VERIFY` between F1 and F7 rather than guessing.
 
 **Setup-level signals (check before classifying individual tests):**
 

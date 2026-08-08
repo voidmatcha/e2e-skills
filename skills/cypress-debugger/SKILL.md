@@ -398,6 +398,29 @@ Classification steps:
 3. CI-only failure → F7 or F8
 4. Passes on retry (and no SSR first-interaction signature — see step 5) → F1
 5. First `.click()` after `cy.visit()` succeeded but the next assertion timed out on an SSR page → F15
+6. **F1 vs F7 is decided by an isolation probe, not by the error text.** Both surface as
+   `Timed out retrying` and both "pass sometimes", so classifying from the message alone assigns
+   the wrong code roughly half the time. Cypress has no `--repeat-each`, so repeat the spec run:
+
+   ```bash
+   # (a) the spec alone, repeated — is it non-deterministic by itself?
+   for i in 1 2 3 4 5; do npx --no-install cypress run --spec 'cypress/e2e/path/to.cy.ts'; done
+
+   # (b) the whole suite in its real order — does it only break with neighbours?
+   npx --no-install cypress run
+   ```
+
+   | (a) alone ×5 | (b) full suite | Code |
+   | --- | --- | --- |
+   | mixed pass/fail | fails | **F1** — the spec is non-deterministic on its own |
+   | 5/5 pass | fails | **F7** — leaked state or ordering; suspect `cy.session`, cookies, `localStorage`, or seeded data left by an earlier spec |
+   | 5/5 fail | fails | not flaky at all — re-classify against the F-table (F2/F4/F5/F9/F10/F12) |
+
+   Cypress clears cookies and `localStorage` between *tests* but not always between *specs*, and
+   `cy.session` caches across a run, so a 5/5-pass-alone result points at cross-spec leakage more
+   often than at ordering inside one file. Both commands need the same approval as any other
+   target-controlled run (see Prerequisites). If the suite cannot be run, say the probe was not
+   performed and report `CANNOT_VERIFY` between F1 and F7 rather than guessing.
 
 **Setup-level signals (check before classifying individual tests):**
 
