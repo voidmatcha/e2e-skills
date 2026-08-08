@@ -285,7 +285,7 @@ await cancelButton.click();
 await expect(spinner).toBeHidden();
 ```
 
-**Why it matters:** this is the failure mode that survives longest. A rotted *positive* assertion fails on the next run and gets fixed; a rotted *negative* assertion is indistinguishable from a passing test. It accumulates silently across framework migrations (AngularJS→Angular, class renames, design-system swaps), and the suite reports coverage it does not have.
+**Why it matters:** this is the failure mode that survives longest. A rotted *positive* assertion fails on the next run and gets fixed; a rotted *negative* assertion is indistinguishable from a passing test. It accumulates silently across framework migrations (AngularJS→Angular, class renames, design-system swaps), and the suite reports coverage it does not have. A generated spec can arrive in this state on day one: an invented `data-testid` that never matched anything is indistinguishable from a selector that rotted, and an absence assertion keeps both green forever. Cause does not change the resolution — do not narrow this to authorship.
 
 **Rule:** an absence assertion is only meaningful if the same locator is proven capable of matching somewhere in that test's execution path — asserted present, or used as the target of an action.
 
