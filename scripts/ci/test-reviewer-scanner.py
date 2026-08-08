@@ -86,6 +86,19 @@ def scan_path(
     )
     if environment_overrides:
         environment.update(environment_overrides)
+    # Tier 2 is off unless a test asks for it. Without this the outcome of every fixture assertion
+    # depends on whether the developer happens to have ast-grep installed at a deterministic path:
+    # green on CI (no binary) and red locally, which inverts the "must pass before commit" gate.
+    # A test that exercises Tier 2 already names a policy (a pinned binary, the npx tier, or an
+    # explicit disable), so only the tests that never mention one are pinned here.
+    ast_grep_policy_keys = {
+        "E2E_SMELL_AST_GREP_BIN",
+        "E2E_SMELL_DISABLE_AST_GREP",
+        "E2E_SMELL_IGNORE_HOST_AST_GREP",
+        "E2E_SMELL_NO_AST_GREP_DOWNLOAD",
+    }
+    if not (environment_overrides or {}).keys() & ast_grep_policy_keys:
+        environment["E2E_SMELL_DISABLE_AST_GREP"] = "1"
     command = ["/bin/bash"]
     if privileged:
         command.append("-p")
@@ -931,6 +944,10 @@ def assert_ast_grep_npx_fallback_is_sanitized() -> None:
             {
                 "E2E_SMELL_NPX_BIN": str(fake_npx),
                 "E2E_SMELL_NODE_BIN": str(selected_node),
+                # Without this the deterministic lookup binds a host ast-grep (Homebrew installs
+                # one at /opt/homebrew/bin) and the npx tier under test is never reached, so this
+                # assertion silently passes only on machines that lack the binary.
+                "E2E_SMELL_IGNORE_HOST_AST_GREP": "1",
                 "E2E_SMELL_NO_AST_GREP_DOWNLOAD": "0",
                 "E2E_SMELL_NO_ESLINT_DOWNLOAD": "1",
                 "E2E_SMELL_FAIL_ON": "none",
@@ -1134,6 +1151,8 @@ def assert_ast_grep_launcher_failure_falls_through_loudly() -> None:
             {
                 "E2E_SMELL_NPX_BIN": str(fake_npx),
                 "E2E_SMELL_NODE_BIN": str(TRUSTED_NODE),
+                # A host ast-grep would bind first and this launcher would never run.
+                "E2E_SMELL_IGNORE_HOST_AST_GREP": "1",
                 "E2E_SMELL_NO_AST_GREP_DOWNLOAD": "0",
                 "E2E_SMELL_NO_ESLINT_DOWNLOAD": "1",
                 "E2E_SMELL_FAIL_ON": "p0",

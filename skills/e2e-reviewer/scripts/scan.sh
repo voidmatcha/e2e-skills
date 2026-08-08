@@ -279,7 +279,9 @@ FIND_BIN=$(bind_deterministic_tool E2E_SMELL_FIND_BIN "" \
 E2E_SMELL_NO_ESLINT_DOWNLOAD="${E2E_SMELL_NO_ESLINT_DOWNLOAD:-1}"
 E2E_SMELL_NO_AST_GREP_DOWNLOAD="${E2E_SMELL_NO_AST_GREP_DOWNLOAD:-1}"
 E2E_SMELL_DISABLE_AST_GREP="${E2E_SMELL_DISABLE_AST_GREP:-0}"
+E2E_SMELL_IGNORE_HOST_AST_GREP="${E2E_SMELL_IGNORE_HOST_AST_GREP:-0}"
 export E2E_SMELL_NO_ESLINT_DOWNLOAD E2E_SMELL_NO_AST_GREP_DOWNLOAD E2E_SMELL_DISABLE_AST_GREP
+export E2E_SMELL_IGNORE_HOST_AST_GREP
 E2E_SMELL_ALLOW_PROJECT_ESLINT="${E2E_SMELL_ALLOW_PROJECT_ESLINT:-0}"
 E2E_SMELL_ESLINT_TIMEOUT_SECS="${E2E_SMELL_ESLINT_TIMEOUT_SECS:-300}"
 E2E_SMELL_MAX_RULE_HITS="${E2E_SMELL_MAX_RULE_HITS:-1000}"
@@ -298,6 +300,7 @@ validate_boolean_flag() {
 validate_boolean_flag E2E_SMELL_NO_ESLINT_DOWNLOAD "$E2E_SMELL_NO_ESLINT_DOWNLOAD"
 validate_boolean_flag E2E_SMELL_NO_AST_GREP_DOWNLOAD "$E2E_SMELL_NO_AST_GREP_DOWNLOAD"
 validate_boolean_flag E2E_SMELL_DISABLE_AST_GREP "$E2E_SMELL_DISABLE_AST_GREP"
+validate_boolean_flag E2E_SMELL_IGNORE_HOST_AST_GREP "$E2E_SMELL_IGNORE_HOST_AST_GREP"
 validate_boolean_flag E2E_SMELL_ALLOW_PROJECT_ESLINT "$E2E_SMELL_ALLOW_PROJECT_ESLINT"
 case "$E2E_SMELL_ESLINT_TIMEOUT_SECS" in
   ''|*[!0-9]*|0)
@@ -422,13 +425,36 @@ allocate_temp() {
 # receive SIGPIPE (141) only after a confirmed limiter trip. Any other producer
 # failure remains an infrastructure error owned by the caller.
 capture_bounded_command() {
-  local output_file="$1" error_file="$2" marker_file="$3"
-  shift 3
+  # $4 is the stderr sink. Empty keeps the historical 2>&1 merge for callers that read the
+  # combined text as human diagnostics; a path keeps stderr out of a strictly parsed stream.
+  # Passed positionally rather than through the environment: a `VAR=x func` prefix persists
+  # after the call under an inherited POSIXLY_CORRECT, which would silently divert a later
+  # caller's stderr.
+  local output_file="$1" error_file="$2" marker_file="$3" stderr_file="$4"
+  shift 4
   local byte_window=$((E2E_SMELL_MAX_RULE_BYTES + 1))
   local -a _capture_status=()
   : > "$output_file"
   : > "$error_file"
   : > "$marker_file"
+  # Callers that parse the capture as a strict machine format pass a stderr sink, so the
+  # tool's diagnostics cannot land mid-stream. ast-grep >= 0.40 prints "Error: N error(s)
+  # found in code." to stderr on a findings run; merged in, that became a non-JSON record and
+  # collapsed Tier 2 into INCOMPLETE on any host carrying such a build. Callers that read the
+  # merged text for human diagnostics (the ESLint tier) leave it unset and keep 2>&1.
+  if [[ -n "$stderr_file" ]]; then
+    : > "$stderr_file"
+    "$@" 2>"$stderr_file" |
+      head -c "$byte_window" |
+      awk -v max_lines="$E2E_SMELL_MAX_RULE_HITS" -v marker="$marker_file" '
+        NR > max_lines {
+          print "lines" > marker
+          exit 42
+        }
+        { print }
+      ' > "$output_file"
+    _capture_status=("${PIPESTATUS[@]}")
+  else
   "$@" 2>&1 |
     head -c "$byte_window" |
     awk -v max_lines="$E2E_SMELL_MAX_RULE_HITS" -v marker="$marker_file" '
@@ -439,6 +465,7 @@ capture_bounded_command() {
       { print }
     ' > "$output_file"
   _capture_status=("${PIPESTATUS[@]}")
+  fi
   BOUNDED_COMMAND_RC="${_capture_status[0]:-2}"
   BOUNDED_HEAD_RC="${_capture_status[1]:-2}"
   BOUNDED_FILTER_RC="${_capture_status[2]:-2}"
@@ -1573,6 +1600,63 @@ expect_promise_nonfloating_at() {
     scanner_rg -q '^[[:space:]]*(return[[:space:]]+|(?:export[[:space:]]+)?(?:const|let|var)[[:space:]]+[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*=|void[[:space:]]+)expect[[:space:]]*\('
 }
 
+# Tier 2 runs before the later semantic helpers are declared, so this mirrors Tier 3's
+# source_binding_shadowed_at as a self-contained check. A binding proven to be redeclared in the
+# file is NOT an unproven Playwright expect — it is proven not to be one, so the hit is dropped
+# rather than demoted to triage. Destructuring is included because `const { expect } = helpers`
+# is the common shape and a `const[[:space:]]+expect` pattern never sees it.
+# Self-contained #4f confirmation, declared above Tier 2 for the same reason as
+# ast_playwright_expect_proven_at. The catalogue's locator_assertion_hit_matches lives ~1400 lines
+# below its Tier 2 call site, so bash reported `command not found`, `|| continue` swallowed the
+# rc 127, and every AST #4f hit was dropped without a word — a silent coverage loss in exactly the
+# class this scanner exists to catch. This confirms the two things Tier 2 can check on its own:
+# the asserted argument is a locator/query call, and the expect binding is provably Playwright's.
+ast_locator_truthiness_confirmed_at() {
+  local file="$1" line="$2" code
+  code=$(source_executable_code "$file" | sed -n "${line}p")
+  [[ -n "$code" ]] || return 1
+  # `expect(await locator.textContent())` asserts on a resolved value, not on the Locator: that is
+  # a one-shot read (#4c-4e), not an always-true locator assertion.
+  printf '%s\n' "$code" | scanner_rg -q 'expect[[:space:]]*\([[:space:]]*await\b' && return 1
+  # Only a literal `page.` receiver is confirmable here. `app.getByRole(...)`, `screen.getBy*`, or a
+  # bare `getBy*` may be a Testing-Library wrapper rather than a Playwright Locator, and deciding
+  # that needs the binding dataflow Tier 2 cannot reach — those stay triage rather than firm P0.
+  printf '%s\n' "$code" |
+    scanner_rg -q '\([[:space:]]*page[[:space:]]*\.[[:space:]]*(locator|getBy[A-Z][A-Za-z]*)[[:space:]]*\(' ||
+    return 1
+  ast_playwright_expect_proven_at "$file" "$line"
+}
+
+ast_expect_binding_shadowed_at() {
+  local file="$1" line="$2" target_code binding prefix
+  target_code=$(source_executable_code "$file" | sed -n "${line}p")
+  binding=$(printf '%s\n' "$target_code" |
+    scanner_rg -oP '^[[:space:]]*\(?[[:space:]]*\K[A-Za-z_$][A-Za-z0-9_$]*(?=[[:space:]]*[(])' |
+    head -1 |
+    sed -E 's/[[:space:]]//g')
+  [[ -n "$binding" ]] || return 1
+  case "$binding" in *[!A-Za-z0-9_$]*) return 1 ;; esac
+  # Only a name the file actually imports from Playwright can be *shadowed*. Without this, a purely
+  # custom `const expect = makeCustomExpect()` would be dropped, but the contract for an unknown
+  # expect is triage, not silence — only a provably-not-the-imported binding is dropped.
+  source_imports_playwright_expect_binding "$file" "$binding" || return 1
+  # Retain the specifier string, then drop every line mentioning it: importing a name is not
+  # shadowing it, and neither is `const expect = require('@playwright/test').expect`. Without the
+  # retained argument the specifier is blanked out and that CJS binding reads as a shadow.
+  prefix=$(source_executable_code "$file" @playwright/test |
+    sed -n "1,${line}p" |
+    grep -v '@playwright/test')
+  printf '%s\n' "$prefix" |
+    scanner_rg -qP "(?:const|let|var)[[:space:]]*\\{[^}]*\\b$binding\\b[^}]*\\}[[:space:]]*=" && return 0
+  printf '%s\n' "$prefix" |
+    scanner_rg -qP "(?:^|[;{}[:space:]])(?:const|let|var|class|function)[[:space:]]+$binding\\b" && return 0
+  printf '%s\n' "$prefix" |
+    scanner_rg -qP "catch[[:space:]]*\\([^)]*\\b$binding\\b" && return 0
+  printf '%s\n' "$prefix" |
+    scanner_rg -qP "(?:function[[:space:]]*[A-Za-z_$]*[[:space:]]*\\([^)]*\\b$binding\\b|\\([^)]*\\b$binding\\b[^)]*\\)[[:space:]]*=>)" && return 0
+  return 1
+}
+
 # Tier 2 runs before the later semantic helpers are declared. Keep this
 # provenance check self-contained so AST #15 is final only for a proven
 # Playwright expect binding; ambiguous custom expect calls remain triage.
@@ -2693,7 +2777,7 @@ EOFCFG
     _eslint_cmd=("$NODE_BIN" "$_eslint_js")
   fi
   ( cd "$PROJECT_ROOT_REAL" &&
-    capture_bounded_command "$_outf" "$_statusf" "$_limitf" \
+    capture_bounded_command "$_outf" "$_statusf" "$_limitf" "" \
       "${_eslint_env[@]}" ESLINT_USE_FLAT_CONFIG=true \
       "${_eslint_cmd[@]}" --no-error-on-unmatched-pattern -c "$_cfg" \
       "${_eslint_targets[@]}" ) &
@@ -2891,9 +2975,22 @@ TIER2_INFRA_DETAIL=""
 validate_candidate_manifest
 _ast_candidate=""
 if [[ "$E2E_SMELL_DISABLE_AST_GREP" != "1" ]]; then
+# E2E_SMELL_IGNORE_HOST_AST_GREP=1 skips the deterministic host lookup while leaving the pinned
+# npx fallback available. Harness-internal on purpose and deliberately absent from the README
+# knobs: its only job is to let the test suite exercise the npx tier on a machine that happens
+# to have ast-grep installed. Users wanting no ambient binary want E2E_SMELL_DISABLE_AST_GREP. E2E_SMELL_DISABLE_AST_GREP=1 kills the whole tier and cannot express
+# this, which left the npx tier exercised only on machines that happen to lack ast-grep.
+if [[ "$E2E_SMELL_IGNORE_HOST_AST_GREP" == "1" ]]; then
+  if [[ -n "${E2E_SMELL_AST_GREP_BIN:-}" ]]; then
+    printf 'error: E2E_SMELL_IGNORE_HOST_AST_GREP=1 conflicts with E2E_SMELL_AST_GREP_BIN; unset one\n' >&2
+    exit 2
+  fi
+  _ast_candidate=""
+else
 _ast_candidate=$(bind_optional_tool E2E_SMELL_AST_GREP_BIN "${E2E_SMELL_AST_GREP_BIN:-}" \
   /opt/homebrew/bin/ast-grep /usr/local/bin/ast-grep /usr/bin/ast-grep \
   /opt/homebrew/bin/sg /usr/local/bin/sg /usr/bin/sg)
+fi
 if [[ -n "$_ast_candidate" ]]; then
   AST_GREP="$_ast_candidate"
   AST_GREP_CMD=("$_ast_candidate")
@@ -2941,7 +3038,8 @@ if [[ "${#AST_GREP_CMD[@]}" -gt 0 && -d "$ASTGREP_RULES_DIR" &&
     allocate_temp _ast_capture
     allocate_temp _ast_error
     allocate_temp _ast_limit
-    capture_bounded_command "$_ast_capture" "$_ast_error" "$_ast_limit" \
+    allocate_temp _ast_stream_err
+    capture_bounded_command "$_ast_capture" "$_ast_error" "$_ast_limit" "$_ast_stream_err" \
       "${AST_GREP_CMD[@]}" scan \
       --rule "$rule" \
       --json=stream \
@@ -2974,20 +3072,25 @@ if [[ "${#AST_GREP_CMD[@]}" -gt 0 && -d "$ASTGREP_RULES_DIR" &&
     # never started — npm config abort, missing binary, sandbox denial. Without
     # this check that case parses as zero locations and Tier 2 prints a clean
     # "0 hit(s)" for a tier that never ran, which is a silent always-pass.
+    # Checked before the empty-capture guard: a crash reports on stderr, and stderr is no longer
+    # merged into the capture, so an empty capture no longer distinguishes "never started" from
+    # "started and crashed loudly". The exit code does.
+    if [[ "$_ast_rc" -gt 1 && "$_ast_rc" -ne 141 ]]; then
+      printf 'error: Tier 2 ast-grep failed for %s (exit %s)\n' "$rule_name" "$_ast_rc" >&2
+      sed -n '1,80p' "$_ast_stream_err" | sanitize_evidence >&2
+      sed -n '1,80p' "$_ast_capture" | sanitize_evidence >&2
+      rm -f "$_ast_capture" "$_ast_error" "$_ast_limit" "$_ast_stream_err"
+      record_tier2_infrastructure_failure \
+        "ast-grep failed for $rule_name (exit $_ast_rc)"
+      break
+    fi
     if [[ "$_ast_rc" -ne 0 && ! -s "$_ast_capture" ]]; then
       printf 'error: Tier 2 ast-grep produced no output for %s and exited %s; the tier did not run\n' \
         "$rule_name" "$_ast_rc" >&2
-      rm -f "$_ast_capture" "$_ast_error" "$_ast_limit"
+      sed -n '1,20p' "$_ast_stream_err" | sanitize_evidence >&2
+      rm -f "$_ast_capture" "$_ast_error" "$_ast_limit" "$_ast_stream_err"
       record_tier2_infrastructure_failure \
         "ast-grep produced no output for $rule_name (exit $_ast_rc)"
-      break
-    fi
-    if [[ "$_ast_rc" -gt 1 && "$_ast_rc" -ne 141 ]]; then
-      printf 'error: Tier 2 ast-grep failed for %s (exit %s)\n' "$rule_name" "$_ast_rc" >&2
-      sed -n '1,80p' "$_ast_capture" | sanitize_evidence >&2
-      rm -f "$_ast_capture" "$_ast_error" "$_ast_limit"
-      record_tier2_infrastructure_failure \
-        "ast-grep failed for $rule_name (exit $_ast_rc)"
       break
     fi
     if [[ -n "$BOUNDED_LIMIT_KIND" ]]; then
@@ -2995,7 +3098,7 @@ if [[ "${#AST_GREP_CMD[@]}" -gt 0 && -d "$ASTGREP_RULES_DIR" &&
         "$rule_name" \
         "$([[ "$BOUNDED_LIMIT_KIND" == hits ]] && printf HITS || printf BYTES)" \
         "$([[ "$BOUNDED_LIMIT_KIND" == hits ]] && printf '%s' "$E2E_SMELL_MAX_RULE_HITS" || printf '%s' "$E2E_SMELL_MAX_RULE_BYTES")" >&2
-      rm -f "$_ast_capture" "$_ast_error" "$_ast_limit"
+      rm -f "$_ast_capture" "$_ast_error" "$_ast_limit" "$_ast_stream_err"
       record_tier2_infrastructure_failure \
         "$rule_name exceeded the configured $BOUNDED_LIMIT_KIND limit"
       break
@@ -3003,7 +3106,7 @@ if [[ "${#AST_GREP_CMD[@]}" -gt 0 && -d "$ASTGREP_RULES_DIR" &&
     if [[ "$_ast_rc" -eq 141 || "$BOUNDED_HEAD_RC" -ne 0 || "$BOUNDED_FILTER_RC" -ne 0 ]]; then
       printf 'error: Tier 2 output limiter failed for %s (ast-grep %s, head %s, filter %s)\n' \
         "$rule_name" "$_ast_rc" "$BOUNDED_HEAD_RC" "$BOUNDED_FILTER_RC" >&2
-      rm -f "$_ast_capture" "$_ast_error" "$_ast_limit"
+      rm -f "$_ast_capture" "$_ast_error" "$_ast_limit" "$_ast_stream_err"
       record_tier2_infrastructure_failure \
         "output limiter failed for $rule_name"
       break
@@ -3015,13 +3118,22 @@ if [[ "${#AST_GREP_CMD[@]}" -gt 0 && -d "$ASTGREP_RULES_DIR" &&
       printf 'error: Tier 2 ast-grep emitted an invalid JSON stream for %s\n' \
         "$rule_name" >&2
       sed -n '1,20p' "$_ast_parse_error" | sanitize_evidence >&2
-      rm -f "$_ast_capture" "$_ast_error" "$_ast_limit" \
+      sed -n '1,20p' "$_ast_stream_err" | sanitize_evidence >&2
+      rm -f "$_ast_capture" "$_ast_error" "$_ast_limit" "$_ast_stream_err" \
         "$_ast_locations" "$_ast_parse_error"
       record_tier2_infrastructure_failure \
         "invalid JSON stream for $rule_name"
       break
     fi
-    rm -f "$_ast_capture" "$_ast_error" "$_ast_limit" "$_ast_parse_error"
+    # Exit 0 with diagnostics still means reduced coverage (an unreadable file, a partially
+    # ignored rule). Merged stderr used to collapse the tier loudly; now that it is separated,
+    # report it rather than counting hits over a silently narrowed scan.
+    if [[ -s "$_ast_stream_err" ]]; then
+      printf 'note: Tier 2 ast-grep wrote diagnostics for %s while exiting %s\n' \
+        "$rule_name" "$_ast_rc" >&2
+      sed -n '1,20p' "$_ast_stream_err" | sanitize_evidence >&2
+    fi
+    rm -f "$_ast_capture" "$_ast_error" "$_ast_limit" "$_ast_stream_err" "$_ast_parse_error"
     # Honor `// JUSTIFIED:` — suppress P1/P2 hits and retain P0 as external-review
     # candidates (parity with Tier 1/3). The bundled parser validates ast-grep's JSON-stream
     # schema and emits tab-separated file, one-based line, and one-based column.
@@ -3043,10 +3155,21 @@ if [[ "${#AST_GREP_CMD[@]}" -gt 0 && -d "$ASTGREP_RULES_DIR" &&
       file_is_scanner_excluded "$_resolved" && continue
       file_in_e2e_scope "$_resolved" || continue
       if [[ "$pattern_id" == '#4f' ]]; then
-        locator_assertion_hit_matches "$_resolved:$_aln:$_acol" || continue
+        if ast_expect_binding_shadowed_at "$_resolved" "$_aln"; then
+          continue
+        fi
+        if ! ast_locator_truthiness_confirmed_at "$_resolved" "$_aln"; then
+          ast_triage_count=$((ast_triage_count + 1))
+          printf '%s:%s:%s\n' "$_resolved" "$_aln" "$_acol" >> "$_ast_triage_keep"
+          continue
+        fi
       fi
       if [[ "$pattern_id" == '#15' ]] &&
         expect_promise_nonfloating_at "$_resolved" "$_aln"; then
+        continue
+      fi
+      if [[ "$pattern_id" == '#15' ]] &&
+        ast_expect_binding_shadowed_at "$_resolved" "$_aln"; then
         continue
       fi
       if [[ "$pattern_id" == '#15' ]] &&
@@ -4845,7 +4968,7 @@ run_check() {
   allocate_temp _rg_capture
   allocate_temp _rg_error
   allocate_temp _rg_limit
-  capture_bounded_command "$_rg_capture" "$_rg_error" "$_rg_limit" \
+  capture_bounded_command "$_rg_capture" "$_rg_error" "$_rg_limit" "" \
     "$RG_BIN" -nP -H --color never --hidden --no-ignore \
     "${include_globs[@]}" \
     --glob '!**/node_modules/**' \
@@ -5668,9 +5791,11 @@ unique_p1_hits=$((p1_hits + ast_p1_hits))
 confirmed_mechanical_hits=$((unique_mechanical_hits - llm_triage_hits))
 printf '\nSummary: %s total hit(s), %s P0, %s P1/P2 heuristic, %s LLM-triage, %s P0 candidate; %s AST-origin hit(s), exact cross-tier dedupe applied.\n' "$unique_mechanical_hits" "$unique_p0_hits" "$unique_p1_hits" "$llm_triage_hits" "$p0_candidate_hits" "${ast_total:-0}"
 
-# Separate what a lint rule could enforce from what only a review can catch. Most of this
-# catalog has no ESLint equivalent at all — saying so turns the report into a decision:
-# enable a rule once for the mechanical slice, keep reviewing for the rest.
+# Separate what a lint rule could enforce from what only a review can catch. Roughly half of the
+# mechanical catalog IS already covered by eslint-plugin-playwright's recommended preset — saying
+# so turns the report into a decision: enable the rule once for that slice, keep reviewing for the
+# cross-file and intent-versus-assertion patterns no rule can reach. Claiming lint covers less
+# than it does would be a credibility problem, so this map is checked against the published preset.
 if [[ -n "$hit_pattern_ids" ]]; then
   _lintable="" _reviewonly=""
   for _id in $(printf '%s\n' $hit_pattern_ids | sort -u); do
@@ -5679,14 +5804,21 @@ if [[ -n "$hit_pattern_ids" ]]; then
       '#9')  _lintable="$_lintable $_id(playwright/no-wait-for-timeout)" ;;
       '#9b') _lintable="$_lintable $_id(cypress/no-unnecessary-waiting)" ;;
       '#9c') _lintable="$_lintable $_id(playwright/no-networkidle)" ;;
-      '#15'|'#16') _lintable="$_lintable $_id(playwright/missing-playwright-await)" ;;
+      '#15') _lintable="$_lintable $_id(playwright/missing-playwright-await)" ;;
+      # missing-playwright-await is scoped to matchers, expect.poll, test.step and waitFor* — it
+      # does NOT see a floating locator action. Type-aware no-floating-promises is what catches #16.
+      '#16') _lintable="$_lintable $_id(@typescript-eslint/no-floating-promises, type-aware)" ;;
       '#8a') _lintable="$_lintable $_id(playwright/no-unused-locators)" ;;
       '#4f') _lintable="$_lintable $_id(playwright/no-unnecessary-assertions, partial)" ;;
-      # Rules that exist upstream but are NOT in the recommended preset — naming them is the
-      # actionable part, since the project has to opt in explicitly for lint to catch these.
-      '#5a') _lintable="$_lintable $_id(playwright/no-conditional-expect, opt-in)" ;;
-      '#5b') _lintable="$_lintable $_id(playwright/no-force-option or cypress/no-force, opt-in)" ;;
-      '#6')  _lintable="$_lintable $_id(playwright/no-eval, opt-in, partial)" ;;
+      '#4c'|'#4d'|'#4e'|'#4c-4e') _lintable="$_lintable $_id(playwright/prefer-web-first-assertions)" ;;
+      '#17') _lintable="$_lintable $_id(playwright/prefer-locator)" ;;
+      # Verified against eslint-plugin-playwright@2.11.0 flat/recommended: these are ON by
+      # default (warn), not opt-in. Overstating what lint misses is worse than understating it.
+      '#5a') _lintable="$_lintable $_id(playwright/no-conditional-expect, playwright/no-conditional-in-test)" ;;
+      '#5b') _lintable="$_lintable $_id(playwright/no-force-option; cypress/no-force is opt-in)" ;;
+      '#6')  _lintable="$_lintable $_id(playwright/no-eval, partial — misses evaluate()+querySelector)" ;;
+      # Genuinely opt-in upstream: naming it is the actionable part.
+      '#10a') _lintable="$_lintable $_id(playwright/no-nth-methods, opt-in)" ;;
       *) _reviewonly="$_reviewonly $_id" ;;
     esac
   done
