@@ -176,14 +176,23 @@ def assert_packet_is_deterministic_and_unanchored() -> tuple[dict, dict, dict]:
     assert "Do not infer results from" in prompt
     for item in packet_a["rubric"]["dimensions"]:
         assert item["review_question"] in prompt
-    at_a_glance_line = next(
-        index
+    # Blanking a section must not shift the lines after it: a reviewer citing
+    # "README.md:185" has to land where the packet says. Check every surviving
+    # top-level heading rather than one named line, so a README rewrite cannot
+    # quietly retire the only case being proved.
+    surviving_headings = [
+        (index, line.removeprefix("## ").strip())
         for index, line in enumerate(
             (ROOT / "README.md").read_text(encoding="utf-8").splitlines(), start=1
         )
-        if line == "## At a glance"
-    )
-    assert f"{at_a_glance_line:06d} | ## At a glance" in readme
+        if line.startswith("## ")
+        and line.removeprefix("## ").strip() not in RUNNER.README_EXCLUDED_HEADINGS
+    ]
+    assert surviving_headings
+    for line_number, title in surviving_headings:
+        assert f"{line_number:06d} | ## {title}" in readme
+    for excluded in RUNNER.README_EXCLUDED_HEADINGS:
+        assert f"| ## {excluded}" not in readme
     return protocol, packet_a, manifest_a
 
 

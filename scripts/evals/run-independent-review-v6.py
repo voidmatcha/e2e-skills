@@ -57,9 +57,9 @@ FORBIDDEN_PATH_PARTS = {
 }
 FORBIDDEN_NAME_FRAGMENTS = ("holdout", "scorecard", "review")
 README_EXCLUDED_HEADINGS = {
-    "Methodology",
-    "Open-source adoption and case evidence",
-    "Isn't this just an AI code reviewer like CodeRabbit, Copilot, or Cursor BugBot?",
+    "Evidence and limits",
+    "Open-source adoption",
+    "How this differs from ESLint plugins",
 }
 DIMENSION_IDS = (
     "semantic_correctness",
@@ -401,6 +401,12 @@ def source_representation(relative: Path, payload: bytes) -> tuple[str, dict[str
     transform: dict[str, Any] = {"kind": "none"}
     if relative.as_posix() == "README.md":
         text, headings = strip_markdown_sections(text, README_EXCLUDED_HEADINGS)
+        missing = sorted(README_EXCLUDED_HEADINGS - set(headings))
+        if missing:
+            raise ValueError(
+                "README_EXCLUDED_HEADINGS no longer match README.md, so the packet would ship the "
+                f"project's own case to an independent reviewer: {missing}"
+            )
         transform = {
             "kind": "exclude-markdown-sections-v1",
             "excluded_headings": headings,
