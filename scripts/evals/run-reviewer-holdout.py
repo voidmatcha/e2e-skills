@@ -21,6 +21,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import functools
 import unicodedata
 
 
@@ -973,6 +974,10 @@ def prompt_skill_digest(
     return digest.hexdigest()
 
 
+# Memoized: validate_skill_dir re-normalizes the same file content once per label, which made a
+# pure str->str function 5s of every holdout invocation and ~7.6s of its 8.8s runtime. The output is
+# a deterministic function of the input, so caching cannot change a leak verdict.
+@functools.lru_cache(maxsize=4096)
 def normalize_oracle_text(value: str) -> str:
     normalized = unicodedata.normalize("NFKC", value).casefold().replace("\\", "/")
     normalized = re.sub(r"\s*([/._-])\s*", r"\1", normalized)
