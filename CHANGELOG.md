@@ -2,6 +2,71 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- **Tier 2 no longer collapses on hosts carrying ast-grep 0.40 or newer.**
+  `capture_bounded_command` merged stderr into the stream the strict NDJSON
+  parser reads. Newer ast-grep writes `Error: N error(s) found in code.` to
+  stderr on a findings run, so the stream stopped parsing and the whole tier
+  reported `INCOMPLETE`. The stderr sink is now a separate positional argument;
+  callers that read the merged text as human diagnostics keep the old behavior.
+  The crash branch moved ahead of the empty-capture guard, because with stderr
+  separated an empty capture no longer distinguishes "never started" from
+  "started and crashed loudly".
+
+- **AST `#4f` findings were being dropped without a word.** The Tier 2 post
+  filter called `locator_assertion_hit_matches`, which is defined about 1,400
+  lines below the call site, so bash exited 127 and `|| continue` swallowed it.
+  Every AST `#4f` hit disappeared silently — the failure class this scanner
+  exists to catch. A self-contained confirmation now runs above Tier 2, and an
+  unconfirmed hit becomes LLM triage instead of vanishing.
+
+- **Tier 2 `#15` no longer fires on a shadowed `expect`.** `const { expect } =
+  helpers` and `catch (expect)` were reported as firm findings because the
+  provenance check only recognised a direct `const expect` redeclaration. A
+  binding the file imports from Playwright and then redeclares is now dropped;
+  an unknown custom `expect` still goes to triage, unchanged.
+
+### Changed
+
+- **The lint-overlap map in the scanner report was wrong, and wrong in the
+  direction that flattered this project.** `#17`, `#4c`-`#4e` and `#10a` were
+  printed as having no ESLint equivalent while `prefer-locator` and
+  `prefer-web-first-assertions` ship enabled in
+  `eslint-plugin-playwright@2.11.0`, and `#5a`, `#5b`, `#6` were labelled
+  opt-in while all three are in the recommended preset. `#16` pointed at
+  `missing-playwright-await`, which only sees matchers. The map is corrected
+  against the published preset and `SKILL.md`'s "~19 patterns" claim is now
+  ~11.
+
+- **Both debuggers decide F1 versus F7 with an isolation probe.** A timeout
+  message alone cannot separate a non-deterministic test from one that only
+  breaks beside its neighbours. The failing test now runs alone and repeated,
+  then at the suite's real parallelism, and the pair of outcomes selects the
+  code. When the suite cannot be run the finding is `CANNOT_VERIFY` between the
+  two rather than a guess.
+
+- **README states the ESLint boundary and leads with the fault-injection
+  proof.** The hero example is a shape `no-unnecessary-assertions` now flags for
+  free, so the README says so and points readers at the rule. A new section
+  covers what no lint rule can do: V2 assertion inversion and V3 fault
+  injection on an approved scratch copy, requiring the test to fail at the
+  predicted line.
+
+- **`#21` names the credential leak.** A committed `storageState` file was
+  described only as unreproducible; it also carries live session cookies for
+  whatever account captured it, and `#14` does not reach it.
+
+### Security
+
+- **The independent-review packet stopped excluding this project's own case.**
+  `README_EXCLUDED_HEADINGS` named headings a later README rewrite had renamed
+  or deleted, so the exclusion silently became a no-op and the adoption,
+  benchmark and competitor sections shipped to reviewers who are supposed to
+  judge without them. The names are repaired and the runner now refuses to
+  build a packet when a configured heading no longer resolves. See
+  `benchmarks/STATUS.md` for the resulting packet discontinuity.
+
 ## [1.11.0] - 2026-08-02
 
 ### Changed
