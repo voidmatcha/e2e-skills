@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+import signal
 import subprocess
 import tempfile
 
@@ -13,6 +14,20 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[2]
 INSTALLER = ROOT / "scripts/dev/install-codex-agents.sh"
 AGENT_NAMES = ("e2e-finding-verifier", "e2e-failure-classifier")
+
+
+def _restore_default_signal_dispositions() -> None:
+    """Undo SIG_IGN inherited from the launching shell.
+
+    A shell sets SIGINT and SIGQUIT to ignore for background jobs, and `nohup` does the same for
+    SIGHUP; children inherit that disposition. `test_commit_signals_roll_back_and_are_re_raised`
+    asserts the installer dies *from* the signal it re-raises, which an inherited ignore makes
+    impossible — the run then exits 143 and the assertion fails for a reason that has nothing to
+    do with the installer. Resetting in the child makes the result independent of how CI was
+    launched, instead of passing only in a foreground terminal.
+    """
+    for number in (signal.SIGHUP, signal.SIGINT, signal.SIGQUIT, signal.SIGTERM):
+        signal.signal(number, signal.SIG_DFL)
 
 
 def run_installer(
@@ -36,6 +51,7 @@ def run_installer(
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         check=False,
+        preexec_fn=_restore_default_signal_dispositions,
     )
 
 
