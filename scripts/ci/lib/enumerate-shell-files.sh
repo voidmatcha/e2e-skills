@@ -46,7 +46,10 @@ while IFS= read -r -d '' file; do
       exit 4
       ;;
   esac
-  if printf '%s' "$file" | LC_ALL=C grep -q '[[:cntrl:]]'; then
+  # Bash-native rather than `printf | grep`: this ran once per discovered file, and with the
+  # opt-in evals fixtures installed that is ~4600 forks and 15s of every gate run. Verified
+  # identical on bash 3.2 for tab, bell, and clean names.
+  if [[ "$file" =~ [[:cntrl:]] ]]; then
     echo "shell-enumerator: unsafe control character in discovered file name" >&2
     exit 4
   fi
