@@ -5274,7 +5274,10 @@ def main() -> None:
     assert "explicitly trusted this repository" in playwright_text
     assert "approved the exact command line" in playwright_flat
     assert "General approval to diagnose, reproduce" in playwright_flat
-    assert "--grep '^exact failing test title$' --retries=0" in playwright_flat
+    assert "--grep '^exact failing test title$'" not in playwright_text
+    assert "--list --grep 'escaped unique title fragment'" in playwright_flat
+    assert "--grep 'escaped unique title fragment' --retries=0" in playwright_flat
+    assert "Continue only if the list contains exactly one test" in playwright_flat
     assert "system-boundary effects are idempotent" in playwright_text
     playwright_config_match = re.search(
         r"`playwright\.config\.\{([^}]+)\}`",

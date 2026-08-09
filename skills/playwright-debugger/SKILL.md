@@ -132,6 +132,17 @@ payment, delete, registration, message send, or toggle actions. Reset to a
 known disposable state first and run the narrowest spec once; never use retries
 to replay those writes unless system-boundary idempotence is proven.
 
+Playwright applies `--grep` to the full title path, not only the test title.
+Resolve the filter before every targeted run:
+
+```bash
+node_modules/.bin/playwright test path/to/spec.spec.ts \
+  --list --grep 'escaped unique title fragment'
+```
+
+Continue only if the list contains exactly one test; otherwise refine and
+escape the regex fragment, then reuse that same fragment below.
+
 **1. A report already exists locally → detect which reporter produced it.** The reporter decides whether a machine-readable `results.json` even exists:
 
 ```bash
@@ -155,7 +166,7 @@ PROJECT_ROOT=$(/bin/pwd -P)
   --pass-env PATH \
   playwright-report/results.json -- \
   node_modules/.bin/playwright test \
-  path/to/spec.spec.ts --grep '^exact failing test title$' --retries=0 \
+  path/to/spec.spec.ts --grep 'escaped unique title fragment' --retries=0 \
   --reporter=json
 ```
 
@@ -229,15 +240,15 @@ active. Stop such concurrent untrusted processes before downloading.
 Then reproduce the specific failing test locally with the same environment:
 
 ```bash
-# Default: one exact test, one attempt. Escape the anchored title as required.
+# Default: one verified test filter, one attempt.
 /usr/bin/env -i PATH="$PATH" node_modules/.bin/playwright test path/to/spec.spec.ts \
-  --grep '^exact failing test title$' --project=chromium --retries=0 \
+  --grep 'escaped unique title fragment' --project=chromium --retries=0 \
   --trace=retain-on-failure --video=retain-on-failure
 
 # If CI uses a non-default baseURL or env, mirror it
 /usr/bin/env -i PATH="$PATH" PLAYWRIGHT_BASE_URL=<ci-base-url> \
   node_modules/.bin/playwright test \
-  path/to/spec.spec.ts --grep '^exact failing test title$' --retries=0
+  path/to/spec.spec.ts --grep 'escaped unique title fragment' --retries=0
 ```
 
 Only add a retry probe after repository evidence proves every action and its
@@ -353,7 +364,7 @@ Classification steps:
 
    ```bash
    # (a) alone, repeated — is the test non-deterministic by itself?
-   npx --no-install playwright test path/to/spec.spec.ts --grep '^exact failing test title$' \
+   npx --no-install playwright test path/to/spec.spec.ts --grep 'escaped unique title fragment' \
      --retries=0 --repeat-each=10 --workers=1
 
    # (b) at the suite's real parallelism — does it only break with neighbours?
