@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "comparator_sha256": "10bd2ed2b7d6c754dbb75fc8cee9b4773df17137e13914461f5e3a3524b345ae",
+  "evaluator_sha256": "7c8b730641d2f6d5316648c6e8ee7140dfde56dffd9ee8de6e6c44ded5ff76b7",
+  "comparison_mode": "cross-host",
+  "skill_lift_claim_eligible": false,
+  "evidence_scope": "development",
+  "release_eligible": false,
+  "protocol_id": "reviewer-holdout-v3",
+  "protocol_sha256": "860c1207bcfe441e411609cecc1fd0aa287304e192563a737bdb2536a43d7731",
+  "corpus_sha256": "4dc569b6d583e2cebca3fa71f7cf59eb1f8948f7cff0d7882f3f2efefcbd597c",
+  "reports": [
+    "/Users/user/Documents/e2e-skills/benchmarks/reviewer-holdout-v3/reports/full-codex.json",
+    "/Users/user/Documents/e2e-skills/benchmarks/reviewer-holdout-v3/reports/full-opus.json",
+    "/Users/user/Documents/e2e-skills/benchmarks/reviewer-holdout-v3/reports/full-fable.json"
+  ],
+  "report_inputs": [
+    {
+      "path": "/Users/user/Documents/e2e-skills/benchmarks/reviewer-holdout-v3/reports/full-codex.json",
+      "sha256": "b62e5f8786551d141c951c80abd567b25a74d1c0c3fe46607b06a6209ba3d0bf"
+    },
+    {
+      "path": "/Users/user/Documents/e2e-skills/benchmarks/reviewer-holdout-v3/reports/full-opus.json",
+      "sha256": "e3c75427d945ffafe037ddf3d403d69f8b8527cc07f0a11076f63fc29f77e719"
+    },
+    {
+      "path": "/Users/user/Documents/e2e-skills/benchmarks/reviewer-holdout-v3/reports/full-fable.json",
+      "sha256": "5492b4b7f4d31659b092d5b7a7dafc28a37d774047b90f930169e1eb3a895259"
+    }
+  ],
+  "prompt_profiles": [
+    "full"
+  ],
+  "status": "INCONCLUSIVE",
+  "status_reasons": [
+    {
+      "code": "input_inconclusive",
+      "runner": "claude",
+      "model": "claude-fable-5",
+      "message": "claude:claude-fable-5 report is incomplete or inconclusive"
+    }
+  ],
+  "metrics": null
+}

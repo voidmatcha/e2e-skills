@@ -13,32 +13,27 @@
     "reports/cross-host.json"
   ],
   "missing_required_artifacts": [
-    "evidence-manifest.json",
-    "reports/full-opus.json",
-    "reports/full-fable.json",
-    "reports/cross-host.json"
+    "evidence-manifest.json"
   ],
-  "stale_required_artifacts": [
-    "reports/full-codex.json"
-  ],
+  "stale_required_artifacts": [],
   "verified_artifacts": [
     {
       "path": "reports/full-codex.json",
-      "sha256": "f5ac5af8831e8dd2ca80fa4f0e3691aea2e89d14c13a1a6dec306c2e85395a31",
-      "evaluated_skill_sha256": "0ef4839b6bde078a4599e6354dcd60bb522c01a91534086d6f292d5217018214",
-      "current_snapshot_match": false
+      "sha256": "b62e5f8786551d141c951c80abd567b25a74d1c0c3fe46607b06a6209ba3d0bf",
+      "evaluated_skill_sha256": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
+      "current_snapshot_match": true
     },
     {
-      "path": "reports/incomplete-limit-final-opus.json",
-      "sha256": "da52a831cce9e14af62fd52f8a8956a36c538caf3260dcbc23c89db225d937aa",
-      "evaluated_skill_sha256": "a282b3cc9740d76cc32fdd77245a7330f725406378f45e89933d7fadd70f43d9",
-      "current_snapshot_match": false
+      "path": "reports/full-opus.json",
+      "sha256": "e3c75427d945ffafe037ddf3d403d69f8b8527cc07f0a11076f63fc29f77e719",
+      "evaluated_skill_sha256": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
+      "current_snapshot_match": true
     },
     {
-      "path": "reports/incomplete-limit-final-fable.json",
-      "sha256": "658db8051df3bd0828069bf89c22b183e94c140aeb17dd9b8bc85b5dcdc5a2ed",
-      "evaluated_skill_sha256": "a282b3cc9740d76cc32fdd77245a7330f725406378f45e89933d7fadd70f43d9",
-      "current_snapshot_match": false
+      "path": "reports/full-fable.json",
+      "sha256": "5492b4b7f4d31659b092d5b7a7dafc28a37d774047b90f930169e1eb3a895259",
+      "evaluated_skill_sha256": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
+      "current_snapshot_match": true
     }
   ],
   "claim_policy": {

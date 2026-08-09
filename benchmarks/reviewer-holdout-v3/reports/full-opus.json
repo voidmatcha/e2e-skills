@@ -1,12 +1,12 @@
 {
   "schema_version": 2,
-  "runner": "codex",
-  "runner_identity": "codex-cli 0.147.0",
-  "runner_executable": "/Users/user/.codex/packages/standalone/releases/0.147.0-aarch64-apple-darwin/bin/codex",
-  "model": "gpt-5.6-sol",
+  "runner": "claude",
+  "runner_identity": "2.1.226 (Claude Code)",
+  "runner_executable": "/Users/user/.local/share/claude/versions/2.1.226",
+  "model": "claude-opus-5",
   "git_revision": "272cfe47d679eb8332139cd0d37f1383379e9bea",
-  "git_dirty": false,
-  "git_dirty_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "git_dirty": true,
+  "git_dirty_sha256": "6a3cc1f62e2a5797cdb1a0360e3ece8e02aa146456f02d6d5f217d40d2b730a6",
   "evaluator_sha256": "7c8b730641d2f6d5316648c6e8ee7140dfde56dffd9ee8de6e6c44ded5ff76b7",
   "prompt_set_sha256": "1ae4b930bb546ac68d01625e758a0e47a333115b0bf168c7e2f29ef1c067a46d",
   "prompt_profile": "full",
@@ -201,7 +201,7 @@
     }
   ],
   "source_read_isolation": "prompt-complete-zero-tools",
-  "credential_environment": "parent-auth-staged-model-tools-disabled",
+  "credential_environment": "not-inherited-by-model-tools",
   "model_tool_surface": "none",
   "evidence_scope": "development",
   "release_eligible": false,
@@ -240,18 +240,14 @@
     "repetitions": 3,
     "release_repetitions": 3
   },
-  "started_at": "2026-08-09T12:00:24.828146+00:00",
+  "started_at": "2026-08-09T12:07:46.573674+00:00",
   "complete": true,
   "execution_complete": true,
-  "status": "FAIL",
+  "status": "PASS",
   "status_reasons": [
     {
-      "code": "threshold_not_met",
-      "metric": "repeated_precision_min",
-      "actual": 0.7916666666666666,
-      "required": 0.9,
-      "comparator": ">=",
-      "message": "repeated_precision_min was 0.791667; required >= 0.900000"
+      "code": "all_thresholds_met",
+      "message": "all preregistered primary thresholds were met"
     }
   ],
   "protocol_sha256_after": "860c1207bcfe441e411609cecc1fd0aa287304e192563a737bdb2536a43d7731",
@@ -259,14 +255,14 @@
   "corpus_sha256_after": "4dc569b6d583e2cebca3fa71f7cf59eb1f8948f7cff0d7882f3f2efefcbd597c",
   "snapshot_skill_sha256_after": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
   "snapshot_corpus_sha256_after": "4dc569b6d583e2cebca3fa71f7cf59eb1f8948f7cff0d7882f3f2efefcbd597c",
-  "created_at": "2026-08-09T12:07:06.642099+00:00",
+  "created_at": "2026-08-09T12:23:45.440640+00:00",
   "summary": {
-    "tp": 57,
-    "fp": 15,
-    "fn": 15,
-    "precision": 0.7916666666666666,
-    "recall": 0.7916666666666666,
-    "f1": 0.7916666666666666,
+    "tp": 70,
+    "fp": 1,
+    "fn": 2,
+    "precision": 0.9859154929577465,
+    "recall": 0.9722222222222222,
+    "f1": 0.979020979020979,
     "runs": 24,
     "successful_runs": 24,
     "infrastructure_errors": 0
@@ -279,27 +275,27 @@
       "required_hits": 2
     },
     "unique": {
-      "tp": 21,
-      "fp": 1,
-      "fn": 3,
-      "precision": 0.9545454545454546,
-      "recall": 0.875,
-      "f1": 0.9130434782608695,
+      "tp": 23,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1.0,
+      "recall": 0.9583333333333334,
+      "f1": 0.9787234042553191,
       "precision_ci95": {
         "method": "wilson",
         "confidence": 0.95,
-        "successes": 21,
-        "total": 22,
-        "lower": 0.7820195416134267,
-        "upper": 0.991930572378736
+        "successes": 23,
+        "total": 23,
+        "lower": 0.8568833815495731,
+        "upper": 1.0
       },
       "recall_ci95": {
         "method": "wilson",
         "confidence": 0.95,
-        "successes": 21,
+        "successes": 23,
         "total": 24,
-        "lower": 0.6899611872949993,
-        "upper": 0.9565566591987655
+        "lower": 0.7975819352134406,
+        "upper": 0.9926065438344942
       },
       "guard_labels": 24,
       "stable_guard_hits": 0,
@@ -315,7 +311,7 @@
     },
     "macro_recall": {
       "pattern": {
-        "value": 0.875,
+        "value": 0.9583333333333334,
         "groups": {
           "#1": {
             "detected": 1,
@@ -328,9 +324,9 @@
             "recall": 1.0
           },
           "#11": {
-            "detected": 1,
+            "detected": 0,
             "expected": 1,
-            "recall": 1.0
+            "recall": 0.0
           },
           "#12": {
             "detected": 1,
@@ -348,14 +344,14 @@
             "recall": 1.0
           },
           "#15": {
-            "detected": 0,
+            "detected": 1,
             "expected": 1,
-            "recall": 0.0
+            "recall": 1.0
           },
           "#16": {
-            "detected": 0,
+            "detected": 1,
             "expected": 1,
-            "recall": 0.0
+            "recall": 1.0
           },
           "#17": {
             "detected": 1,
@@ -383,9 +379,9 @@
             "recall": 1.0
           },
           "#21": {
-            "detected": 0,
+            "detected": 1,
             "expected": 1,
-            "recall": 0.0
+            "recall": 1.0
           },
           "#22": {
             "detected": 1,
@@ -440,7 +436,7 @@
         }
       },
       "case": {
-        "value": 0.8854166666666666,
+        "value": 0.9375,
         "groups": {
           "cy-command-timing": {
             "detected": 2,
@@ -453,9 +449,9 @@
             "recall": 1.0
           },
           "cy-structure-fixture": {
-            "detected": 2,
+            "detected": 1,
             "expected": 2,
-            "recall": 1.0
+            "recall": 0.5
           },
           "cy-write-credentials": {
             "detected": 3,
@@ -468,14 +464,14 @@
             "recall": 1.0
           },
           "pw-maintenance-provenance": {
-            "detected": 3,
+            "detected": 4,
             "expected": 4,
-            "recall": 0.75
+            "recall": 1.0
           },
           "pw-pom-async": {
-            "detected": 1,
+            "detected": 3,
             "expected": 3,
-            "recall": 0.3333333333333333
+            "recall": 1.0
           },
           "pw-rejection-state": {
             "detected": 3,
@@ -485,17 +481,17 @@
         }
       },
       "framework": {
-        "value": 0.8928571428571428,
+        "value": 0.95,
         "groups": {
           "cypress": {
-            "detected": 10,
+            "detected": 9,
             "expected": 10,
-            "recall": 1.0
+            "recall": 0.9
           },
           "playwright": {
-            "detected": 11,
+            "detected": 14,
             "expected": 14,
-            "recall": 0.7857142857142857
+            "recall": 1.0
           }
         }
       }
@@ -573,9 +569,9 @@
           "framework": "playwright",
           "finding_id": "V3-PW-REJECT-001",
           "pattern_id": "#3",
-          "hits": 2,
+          "hits": 3,
           "repetitions": 3,
-          "detection_rate": 0.6666666666666666,
+          "detection_rate": 1.0,
           "required_hits": 2,
           "stable": true
         }
@@ -601,24 +597,24 @@
   },
   "secondary_metrics": {
     "aggregation_unit": "repeated-run",
-    "tp": 57,
-    "fp": 15,
-    "fn": 15,
-    "precision": 0.7916666666666666,
-    "recall": 0.7916666666666666,
-    "f1": 0.7916666666666666,
+    "tp": 70,
+    "fp": 1,
+    "fn": 2,
+    "precision": 0.9859154929577465,
+    "recall": 0.9722222222222222,
+    "f1": 0.979020979020979,
     "runs": 24,
     "successful_runs": 24,
     "infrastructure_errors": 0
   },
   "by_case": {
     "pw-rejection-state": {
-      "tp": 7,
-      "fp": 2,
-      "fn": 2,
-      "precision": 0.7777777777777778,
-      "recall": 0.7777777777777778,
-      "f1": 0.7777777777777778,
+      "tp": 9,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
       "runs": 3,
       "successful_runs": 3,
       "infrastructure_errors": 0
@@ -635,23 +631,23 @@
       "infrastructure_errors": 0
     },
     "pw-pom-async": {
-      "tp": 4,
-      "fp": 5,
-      "fn": 5,
-      "precision": 0.4444444444444444,
-      "recall": 0.4444444444444444,
-      "f1": 0.4444444444444444,
+      "tp": 9,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
       "runs": 3,
       "successful_runs": 3,
       "infrastructure_errors": 0
     },
     "pw-maintenance-provenance": {
-      "tp": 8,
-      "fp": 4,
-      "fn": 4,
-      "precision": 0.6666666666666666,
-      "recall": 0.6666666666666666,
-      "f1": 0.6666666666666666,
+      "tp": 12,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
       "runs": 3,
       "successful_runs": 3,
       "infrastructure_errors": 0
@@ -668,34 +664,34 @@
       "infrastructure_errors": 0
     },
     "cy-command-timing": {
-      "tp": 4,
-      "fp": 2,
-      "fn": 2,
-      "precision": 0.6666666666666666,
-      "recall": 0.6666666666666666,
-      "f1": 0.6666666666666666,
+      "tp": 6,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
       "runs": 3,
       "successful_runs": 3,
       "infrastructure_errors": 0
     },
     "cy-write-credentials": {
-      "tp": 8,
-      "fp": 1,
-      "fn": 1,
-      "precision": 0.8888888888888888,
-      "recall": 0.8888888888888888,
-      "f1": 0.8888888888888888,
+      "tp": 9,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
       "runs": 3,
       "successful_runs": 3,
       "infrastructure_errors": 0
     },
     "cy-structure-fixture": {
-      "tp": 5,
+      "tp": 4,
       "fp": 0,
-      "fn": 1,
+      "fn": 2,
       "precision": 1.0,
-      "recall": 0.8333333333333334,
-      "f1": 0.9090909090909091,
+      "recall": 0.6666666666666666,
+      "f1": 0.8,
       "runs": 3,
       "successful_runs": 3,
       "infrastructure_errors": 0
@@ -709,7 +705,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 3,
       "exit_code": 0,
-      "duration_ms": 17883,
+      "duration_ms": 32321,
       "workspace_sha256_before": "cffbcf4bcffb7c289759671a866debf07e66e54dfff2808ab9060cbba501f6e6",
       "workspace_sha256_after": "cffbcf4bcffb7c289759671a866debf07e66e54dfff2808ab9060cbba501f6e6",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -725,7 +721,7 @@
           "pattern_id": "#20",
           "severity": "P1",
           "file": "cypress/e2e/profile.cy.ts",
-          "line": 19
+          "line": 20
         },
         {
           "pattern_id": "#22",
@@ -735,19 +731,18 @@
         }
       ],
       "score": {
-        "tp": 2,
-        "fp": 1,
-        "fn": 1,
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
         "matched_finding_ids": [
           "V3-CY-WRITE-001",
+          "V3-CY-WRITE-002",
           "V3-CY-WRITE-003"
         ],
-        "missed_finding_ids": [
-          "V3-CY-WRITE-002"
-        ],
+        "missed_finding_ids": [],
         "hit_fp_guard_ids": []
       },
-      "output": "{\"findings\":[{\"pattern_id\":\"#14\",\"severity\":\"P1\",\"file\":\"cypress/e2e/profile.cy.ts\",\"line\":5},{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"cypress/e2e/profile.cy.ts\",\"line\":19},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/board.cy.ts\",\"line\":6}]}\n",
+      "output": "{\"findings\":[{\"pattern_id\":\"#14\",\"severity\":\"P1\",\"file\":\"cypress/e2e/profile.cy.ts\",\"line\":5},{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"cypress/e2e/profile.cy.ts\",\"line\":20},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/board.cy.ts\",\"line\":6}]}\n",
       "error": null,
       "cleanup_failures": []
     },
@@ -758,7 +753,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 1,
       "exit_code": 0,
-      "duration_ms": 10348,
+      "duration_ms": 37349,
       "workspace_sha256_before": "6384111d2565579a09e9493fd584f0dd3463826d913ac942e23294d2103971c0",
       "workspace_sha256_after": "6384111d2565579a09e9493fd584f0dd3463826d913ac942e23294d2103971c0",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -768,27 +763,27 @@
           "pattern_id": "#9b",
           "severity": "P1",
           "file": "cypress/e2e/search.cy.ts",
-          "line": 9
+          "line": 10
         },
         {
           "pattern_id": "#10f",
           "severity": "P1",
           "file": "cypress/e2e/search.cy.ts",
-          "line": 15
+          "line": 16
         }
       ],
       "score": {
-        "tp": 0,
-        "fp": 2,
-        "fn": 2,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
           "V3-CY-COMMAND-002",
           "V3-CY-COMMAND-003"
         ],
+        "missed_finding_ids": [],
         "hit_fp_guard_ids": []
       },
-      "output": "{\"findings\":[{\"pattern_id\":\"#9b\",\"severity\":\"P1\",\"file\":\"cypress/e2e/search.cy.ts\",\"line\":9},{\"pattern_id\":\"#10f\",\"severity\":\"P1\",\"file\":\"cypress/e2e/search.cy.ts\",\"line\":15}]}\n",
+      "output": "{\"findings\":[{\"pattern_id\":\"#9b\",\"severity\":\"P1\",\"file\":\"cypress/e2e/search.cy.ts\",\"line\":10},{\"pattern_id\":\"#10f\",\"severity\":\"P1\",\"file\":\"cypress/e2e/search.cy.ts\",\"line\":16}]}\n",
       "error": null,
       "cleanup_failures": []
     },
@@ -799,7 +794,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 3,
       "exit_code": 0,
-      "duration_ms": 15479,
+      "duration_ms": 26380,
       "workspace_sha256_before": "9bf368328dd0ba56652cea2d2e4916b018b263df348e780fe4cb2bc9ca6996c1",
       "workspace_sha256_after": "9bf368328dd0ba56652cea2d2e4916b018b263df348e780fe4cb2bc9ca6996c1",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -847,7 +842,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 3,
       "exit_code": 0,
-      "duration_ms": 10953,
+      "duration_ms": 39541,
       "workspace_sha256_before": "6384111d2565579a09e9493fd584f0dd3463826d913ac942e23294d2103971c0",
       "workspace_sha256_after": "6384111d2565579a09e9493fd584f0dd3463826d913ac942e23294d2103971c0",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -888,7 +883,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 3,
       "exit_code": 0,
-      "duration_ms": 24535,
+      "duration_ms": 39178,
       "workspace_sha256_before": "376e9ed78b85a639f7eead6a90f9685b20ef9e2e52e1750321e4d57978dfc81e",
       "workspace_sha256_after": "376e9ed78b85a639f7eead6a90f9685b20ef9e2e52e1750321e4d57978dfc81e",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -904,29 +899,28 @@
           "pattern_id": "#15",
           "severity": "P1",
           "file": "tests/settings.spec.ts",
-          "line": 9
+          "line": 10
         },
         {
-          "pattern_id": "#2",
-          "severity": "P0",
+          "pattern_id": "#16",
+          "severity": "P1",
           "file": "tests/settings.spec.ts",
-          "line": 11
+          "line": 12
         }
       ],
       "score": {
-        "tp": 1,
-        "fp": 2,
-        "fn": 2,
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
         "matched_finding_ids": [
-          "V3-PW-ASYNC-001"
-        ],
-        "missed_finding_ids": [
+          "V3-PW-ASYNC-001",
           "V3-PW-ASYNC-002",
           "V3-PW-ASYNC-003"
         ],
+        "missed_finding_ids": [],
         "hit_fp_guard_ids": []
       },
-      "output": "{\"findings\":[{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/settings.spec.ts\",\"line\":7},{\"pattern_id\":\"#15\",\"severity\":\"P1\",\"file\":\"tests/settings.spec.ts\",\"line\":9},{\"pattern_id\":\"#2\",\"severity\":\"P0\",\"file\":\"tests/settings.spec.ts\",\"line\":11}]}\n",
+      "output": "{\"findings\":[{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/settings.spec.ts\",\"line\":7},{\"pattern_id\":\"#15\",\"severity\":\"P1\",\"file\":\"tests/settings.spec.ts\",\"line\":10},{\"pattern_id\":\"#16\",\"severity\":\"P1\",\"file\":\"tests/settings.spec.ts\",\"line\":12}]}\n",
       "error": null,
       "cleanup_failures": []
     },
@@ -937,7 +931,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 1,
       "exit_code": 0,
-      "duration_ms": 26636,
+      "duration_ms": 45757,
       "workspace_sha256_before": "2de6757affce01d76fd0f8ed43fde3ff08d8f036b73dc42c59180faedcaf2f48",
       "workspace_sha256_after": "2de6757affce01d76fd0f8ed43fde3ff08d8f036b73dc42c59180faedcaf2f48",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -998,7 +992,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 1,
       "exit_code": 0,
-      "duration_ms": 16477,
+      "duration_ms": 62273,
       "workspace_sha256_before": "376e9ed78b85a639f7eead6a90f9685b20ef9e2e52e1750321e4d57978dfc81e",
       "workspace_sha256_after": "376e9ed78b85a639f7eead6a90f9685b20ef9e2e52e1750321e4d57978dfc81e",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -1008,34 +1002,34 @@
           "pattern_id": "#13",
           "severity": "P1",
           "file": "tests/settings.spec.ts",
-          "line": 6
+          "line": 7
         },
         {
           "pattern_id": "#15",
           "severity": "P1",
           "file": "tests/settings.spec.ts",
-          "line": 8
+          "line": 10
         },
         {
           "pattern_id": "#16",
           "severity": "P1",
           "file": "tests/settings.spec.ts",
-          "line": 10
+          "line": 12
         }
       ],
       "score": {
-        "tp": 0,
-        "fp": 3,
-        "fn": 3,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
           "V3-PW-ASYNC-001",
           "V3-PW-ASYNC-002",
           "V3-PW-ASYNC-003"
         ],
+        "missed_finding_ids": [],
         "hit_fp_guard_ids": []
       },
-      "output": "{\"findings\":[{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/settings.spec.ts\",\"line\":6},{\"pattern_id\":\"#15\",\"severity\":\"P1\",\"file\":\"tests/settings.spec.ts\",\"line\":8},{\"pattern_id\":\"#16\",\"severity\":\"P1\",\"file\":\"tests/settings.spec.ts\",\"line\":10}]}\n",
+      "output": "{\"findings\":[{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/settings.spec.ts\",\"line\":7},{\"pattern_id\":\"#15\",\"severity\":\"P1\",\"file\":\"tests/settings.spec.ts\",\"line\":10},{\"pattern_id\":\"#16\",\"severity\":\"P1\",\"file\":\"tests/settings.spec.ts\",\"line\":12}]}\n",
       "error": null,
       "cleanup_failures": []
     },
@@ -1046,7 +1040,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 2,
       "exit_code": 0,
-      "duration_ms": 11506,
+      "duration_ms": 45341,
       "workspace_sha256_before": "376e9ed78b85a639f7eead6a90f9685b20ef9e2e52e1750321e4d57978dfc81e",
       "workspace_sha256_after": "376e9ed78b85a639f7eead6a90f9685b20ef9e2e52e1750321e4d57978dfc81e",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -1094,7 +1088,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 2,
       "exit_code": 0,
-      "duration_ms": 17143,
+      "duration_ms": 73392,
       "workspace_sha256_before": "2de6757affce01d76fd0f8ed43fde3ff08d8f036b73dc42c59180faedcaf2f48",
       "workspace_sha256_after": "2de6757affce01d76fd0f8ed43fde3ff08d8f036b73dc42c59180faedcaf2f48",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -1149,18 +1143,12 @@
       "split": "public-development-holdout-v3",
       "repetition": 3,
       "exit_code": 0,
-      "duration_ms": 10880,
+      "duration_ms": 25054,
       "workspace_sha256_before": "43c5fe8bf6d04143396f8f3cad4c49fdaef37ae616358aa2ea87bf0d0633e02b",
       "workspace_sha256_after": "43c5fe8bf6d04143396f8f3cad4c49fdaef37ae616358aa2ea87bf0d0633e02b",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
       "staged_skill_sha256_after": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
       "findings": [
-        {
-          "pattern_id": "#11",
-          "severity": "P2",
-          "file": "cypress/pages/catalog-page.ts",
-          "line": 10
-        },
         {
           "pattern_id": "#23",
           "severity": "P2",
@@ -1169,17 +1157,18 @@
         }
       ],
       "score": {
-        "tp": 2,
+        "tp": 1,
         "fp": 0,
-        "fn": 0,
+        "fn": 1,
         "matched_finding_ids": [
-          "V3-CY-STRUCTURE-001",
           "V3-CY-STRUCTURE-002"
         ],
-        "missed_finding_ids": [],
+        "missed_finding_ids": [
+          "V3-CY-STRUCTURE-001"
+        ],
         "hit_fp_guard_ids": []
       },
-      "output": "{\"findings\":[{\"pattern_id\":\"#11\",\"severity\":\"P2\",\"file\":\"cypress/pages/catalog-page.ts\",\"line\":10},{\"pattern_id\":\"#23\",\"severity\":\"P2\",\"file\":\"cypress/fixtures/guarded-product.json\",\"line\":3}]}\n",
+      "output": "{\"findings\":[{\"pattern_id\":\"#23\",\"severity\":\"P2\",\"file\":\"cypress/fixtures/guarded-product.json\",\"line\":3}]}\n",
       "error": null,
       "cleanup_failures": []
     },
@@ -1190,7 +1179,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 3,
       "exit_code": 0,
-      "duration_ms": 22887,
+      "duration_ms": 26819,
       "workspace_sha256_before": "6e60f315dded802dba17af5662508f93641794abefa8a428c942ebbca18aa4c2",
       "workspace_sha256_after": "6e60f315dded802dba17af5662508f93641794abefa8a428c942ebbca18aa4c2",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -1200,7 +1189,7 @@
           "pattern_id": "#21",
           "severity": "P2",
           "file": "playwright.config.ts",
-          "line": 6
+          "line": 7
         },
         {
           "pattern_id": "#19",
@@ -1222,20 +1211,19 @@
         }
       ],
       "score": {
-        "tp": 3,
-        "fp": 1,
-        "fn": 1,
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
         "matched_finding_ids": [
           "V3-PW-MAINT-001",
           "V3-PW-MAINT-002",
-          "V3-PW-MAINT-003"
-        ],
-        "missed_finding_ids": [
+          "V3-PW-MAINT-003",
           "V3-PW-MAINT-004"
         ],
+        "missed_finding_ids": [],
         "hit_fp_guard_ids": []
       },
-      "output": "{\"findings\":[{\"pattern_id\":\"#21\",\"severity\":\"P2\",\"file\":\"playwright.config.ts\",\"line\":6},{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"support/recent-users.ts\",\"line\":3},{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":5},{\"pattern_id\":\"#18\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":18}]}\n",
+      "output": "{\"findings\":[{\"pattern_id\":\"#21\",\"severity\":\"P2\",\"file\":\"playwright.config.ts\",\"line\":7},{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"support/recent-users.ts\",\"line\":3},{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":5},{\"pattern_id\":\"#18\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":18}]}\n",
       "error": null,
       "cleanup_failures": []
     },
@@ -1246,7 +1234,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 2,
       "exit_code": 0,
-      "duration_ms": 12034,
+      "duration_ms": 35018,
       "workspace_sha256_before": "9bf368328dd0ba56652cea2d2e4916b018b263df348e780fe4cb2bc9ca6996c1",
       "workspace_sha256_after": "9bf368328dd0ba56652cea2d2e4916b018b263df348e780fe4cb2bc9ca6996c1",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -1256,13 +1244,13 @@
           "pattern_id": "#3",
           "severity": "P0",
           "file": "pages/report-page.ts",
-          "line": 10
+          "line": 11
         },
         {
           "pattern_id": "#5b",
           "severity": "P1",
           "file": "pages/report-page.ts",
-          "line": 15
+          "line": 16
         },
         {
           "pattern_id": "#4h",
@@ -1272,19 +1260,18 @@
         }
       ],
       "score": {
-        "tp": 1,
-        "fp": 2,
-        "fn": 2,
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
         "matched_finding_ids": [
-          "V3-PW-REJECT-002"
-        ],
-        "missed_finding_ids": [
           "V3-PW-REJECT-001",
+          "V3-PW-REJECT-002",
           "V3-PW-REJECT-003"
         ],
+        "missed_finding_ids": [],
         "hit_fp_guard_ids": []
       },
-      "output": "{\"findings\":[{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"pages/report-page.ts\",\"line\":10},{\"pattern_id\":\"#5b\",\"severity\":\"P1\",\"file\":\"pages/report-page.ts\",\"line\":15},{\"pattern_id\":\"#4h\",\"severity\":\"P1\",\"file\":\"tests/report.spec.ts\",\"line\":9}]}\n",
+      "output": "{\"findings\":[{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"pages/report-page.ts\",\"line\":11},{\"pattern_id\":\"#5b\",\"severity\":\"P1\",\"file\":\"pages/report-page.ts\",\"line\":16},{\"pattern_id\":\"#4h\",\"severity\":\"P1\",\"file\":\"tests/report.spec.ts\",\"line\":9}]}\n",
       "error": null,
       "cleanup_failures": []
     },
@@ -1295,7 +1282,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 3,
       "exit_code": 0,
-      "duration_ms": 23166,
+      "duration_ms": 54351,
       "workspace_sha256_before": "2de6757affce01d76fd0f8ed43fde3ff08d8f036b73dc42c59180faedcaf2f48",
       "workspace_sha256_after": "2de6757affce01d76fd0f8ed43fde3ff08d8f036b73dc42c59180faedcaf2f48",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -1350,7 +1337,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 2,
       "exit_code": 0,
-      "duration_ms": 14606,
+      "duration_ms": 41185,
       "workspace_sha256_before": "cffbcf4bcffb7c289759671a866debf07e66e54dfff2808ab9060cbba501f6e6",
       "workspace_sha256_after": "cffbcf4bcffb7c289759671a866debf07e66e54dfff2808ab9060cbba501f6e6",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -1398,7 +1385,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 1,
       "exit_code": 0,
-      "duration_ms": 13848,
+      "duration_ms": 33945,
       "workspace_sha256_before": "8b4a21cec86afd389676f8dc15d67f229928d61800ddf9277b5ce6e0361ed4e3",
       "workspace_sha256_after": "8b4a21cec86afd389676f8dc15d67f229928d61800ddf9277b5ce6e0361ed4e3",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -1446,7 +1433,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 3,
       "exit_code": 0,
-      "duration_ms": 21052,
+      "duration_ms": 51212,
       "workspace_sha256_before": "8b4a21cec86afd389676f8dc15d67f229928d61800ddf9277b5ce6e0361ed4e3",
       "workspace_sha256_after": "8b4a21cec86afd389676f8dc15d67f229928d61800ddf9277b5ce6e0361ed4e3",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -1494,7 +1481,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 1,
       "exit_code": 0,
-      "duration_ms": 12608,
+      "duration_ms": 45600,
       "workspace_sha256_before": "43c5fe8bf6d04143396f8f3cad4c49fdaef37ae616358aa2ea87bf0d0633e02b",
       "workspace_sha256_after": "43c5fe8bf6d04143396f8f3cad4c49fdaef37ae616358aa2ea87bf0d0633e02b",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -1530,7 +1517,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 2,
       "exit_code": 0,
-      "duration_ms": 29795,
+      "duration_ms": 29886,
       "workspace_sha256_before": "6e60f315dded802dba17af5662508f93641794abefa8a428c942ebbca18aa4c2",
       "workspace_sha256_after": "6e60f315dded802dba17af5662508f93641794abefa8a428c942ebbca18aa4c2",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -1552,30 +1539,29 @@
           "pattern_id": "#17",
           "severity": "P1",
           "file": "tests/preferences.spec.ts",
-          "line": 6
+          "line": 5
         },
         {
           "pattern_id": "#18",
           "severity": "P1",
           "file": "tests/preferences.spec.ts",
-          "line": 19
+          "line": 18
         }
       ],
       "score": {
-        "tp": 2,
-        "fp": 2,
-        "fn": 2,
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
         "matched_finding_ids": [
+          "V3-PW-MAINT-001",
+          "V3-PW-MAINT-002",
           "V3-PW-MAINT-003",
           "V3-PW-MAINT-004"
         ],
-        "missed_finding_ids": [
-          "V3-PW-MAINT-001",
-          "V3-PW-MAINT-002"
-        ],
+        "missed_finding_ids": [],
         "hit_fp_guard_ids": []
       },
-      "output": "{\"findings\":[{\"pattern_id\":\"#21\",\"severity\":\"P2\",\"file\":\"playwright.config.ts\",\"line\":7},{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"support/recent-users.ts\",\"line\":3},{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":6},{\"pattern_id\":\"#18\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":19}]}\n",
+      "output": "{\"findings\":[{\"pattern_id\":\"#21\",\"severity\":\"P2\",\"file\":\"playwright.config.ts\",\"line\":7},{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"support/recent-users.ts\",\"line\":3},{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":5},{\"pattern_id\":\"#18\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":18}]}\n",
       "error": null,
       "cleanup_failures": []
     },
@@ -1586,7 +1572,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 1,
       "exit_code": 0,
-      "duration_ms": 13893,
+      "duration_ms": 38561,
       "workspace_sha256_before": "cffbcf4bcffb7c289759671a866debf07e66e54dfff2808ab9060cbba501f6e6",
       "workspace_sha256_after": "cffbcf4bcffb7c289759671a866debf07e66e54dfff2808ab9060cbba501f6e6",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -1634,23 +1620,23 @@
       "split": "public-development-holdout-v3",
       "repetition": 2,
       "exit_code": 0,
-      "duration_ms": 12331,
+      "duration_ms": 27845,
       "workspace_sha256_before": "43c5fe8bf6d04143396f8f3cad4c49fdaef37ae616358aa2ea87bf0d0633e02b",
       "workspace_sha256_after": "43c5fe8bf6d04143396f8f3cad4c49fdaef37ae616358aa2ea87bf0d0633e02b",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
       "staged_skill_sha256_after": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
       "findings": [
         {
-          "pattern_id": "#11",
-          "severity": "P2",
-          "file": "cypress/pages/catalog-page.ts",
-          "line": 10
-        },
-        {
           "pattern_id": "#23",
           "severity": "P2",
           "file": "cypress/fixtures/guarded-product.json",
           "line": 3
+        },
+        {
+          "pattern_id": "#11",
+          "severity": "P2",
+          "file": "cypress/pages/catalog-page.ts",
+          "line": 10
         }
       ],
       "score": {
@@ -1664,7 +1650,7 @@
         "missed_finding_ids": [],
         "hit_fp_guard_ids": []
       },
-      "output": "{\"findings\":[{\"pattern_id\":\"#11\",\"severity\":\"P2\",\"file\":\"cypress/pages/catalog-page.ts\",\"line\":10},{\"pattern_id\":\"#23\",\"severity\":\"P2\",\"file\":\"cypress/fixtures/guarded-product.json\",\"line\":3}]}\n",
+      "output": "{\"findings\":[{\"pattern_id\":\"#23\",\"severity\":\"P2\",\"file\":\"cypress/fixtures/guarded-product.json\",\"line\":3},{\"pattern_id\":\"#11\",\"severity\":\"P2\",\"file\":\"cypress/pages/catalog-page.ts\",\"line\":10}]}\n",
       "error": null,
       "cleanup_failures": []
     },
@@ -1675,7 +1661,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 1,
       "exit_code": 0,
-      "duration_ms": 18312,
+      "duration_ms": 34604,
       "workspace_sha256_before": "9bf368328dd0ba56652cea2d2e4916b018b263df348e780fe4cb2bc9ca6996c1",
       "workspace_sha256_after": "9bf368328dd0ba56652cea2d2e4916b018b263df348e780fe4cb2bc9ca6996c1",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -1723,7 +1709,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 2,
       "exit_code": 0,
-      "duration_ms": 14278,
+      "duration_ms": 28463,
       "workspace_sha256_before": "6384111d2565579a09e9493fd584f0dd3463826d913ac942e23294d2103971c0",
       "workspace_sha256_after": "6384111d2565579a09e9493fd584f0dd3463826d913ac942e23294d2103971c0",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -1764,7 +1750,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 1,
       "exit_code": 0,
-      "duration_ms": 15535,
+      "duration_ms": 38091,
       "workspace_sha256_before": "6e60f315dded802dba17af5662508f93641794abefa8a428c942ebbca18aa4c2",
       "workspace_sha256_after": "6e60f315dded802dba17af5662508f93641794abefa8a428c942ebbca18aa4c2",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
@@ -1774,7 +1760,7 @@
           "pattern_id": "#21",
           "severity": "P2",
           "file": "playwright.config.ts",
-          "line": 6
+          "line": 7
         },
         {
           "pattern_id": "#19",
@@ -1796,20 +1782,19 @@
         }
       ],
       "score": {
-        "tp": 3,
-        "fp": 1,
-        "fn": 1,
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
         "matched_finding_ids": [
           "V3-PW-MAINT-001",
           "V3-PW-MAINT-002",
-          "V3-PW-MAINT-003"
-        ],
-        "missed_finding_ids": [
+          "V3-PW-MAINT-003",
           "V3-PW-MAINT-004"
         ],
+        "missed_finding_ids": [],
         "hit_fp_guard_ids": []
       },
-      "output": "{\"findings\":[{\"pattern_id\":\"#21\",\"severity\":\"P2\",\"file\":\"playwright.config.ts\",\"line\":6},{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"support/recent-users.ts\",\"line\":3},{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":5},{\"pattern_id\":\"#18\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":18}]}\n",
+      "output": "{\"findings\":[{\"pattern_id\":\"#21\",\"severity\":\"P2\",\"file\":\"playwright.config.ts\",\"line\":7},{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"support/recent-users.ts\",\"line\":3},{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":5},{\"pattern_id\":\"#18\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":18}]}\n",
       "error": null,
       "cleanup_failures": []
     },
@@ -1820,7 +1805,7 @@
       "split": "public-development-holdout-v3",
       "repetition": 2,
       "exit_code": 0,
-      "duration_ms": 14173,
+      "duration_ms": 44689,
       "workspace_sha256_before": "8b4a21cec86afd389676f8dc15d67f229928d61800ddf9277b5ce6e0361ed4e3",
       "workspace_sha256_after": "8b4a21cec86afd389676f8dc15d67f229928d61800ddf9277b5ce6e0361ed4e3",
       "staged_skill_sha256_before": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",

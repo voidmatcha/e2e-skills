@@ -30,10 +30,16 @@ REQUIRED_COMPLETE_ARTIFACTS = (
     "reports/full-fable.json",
     "reports/cross-host.json",
 )
-INCOMPLETE_VERIFIED_ARTIFACTS = (
-    "reports/full-codex.json",
-    "reports/incomplete-limit-final-opus.json",
-    "reports/incomplete-limit-final-fable.json",
+INCOMPLETE_VERIFIED_ARTIFACT_CANDIDATES = (
+    ("reports/full-codex.json",),
+    (
+        "reports/full-opus.json",
+        "reports/incomplete-limit-final-opus.json",
+    ),
+    (
+        "reports/full-fable.json",
+        "reports/incomplete-limit-final-fable.json",
+    ),
 )
 STATUS_KEYS = {
     "schema_version",
@@ -247,6 +253,36 @@ def stale_complete_artifacts(
     return stale
 
 
+def derive_verified_artifacts(
+    current_skill_sha256: str,
+    evidence: Path = EVIDENCE,
+) -> list[dict]:
+    artifacts = []
+    for candidates in INCOMPLETE_VERIFIED_ARTIFACT_CANDIDATES:
+        relative = next(
+            (candidate for candidate in candidates if (evidence / candidate).is_file()),
+            None,
+        )
+        if relative is None:
+            raise ValueError(
+                "incomplete evidence is missing every verified artifact candidate: "
+                f"{', '.join(candidates)}"
+            )
+        path = evidence / relative
+        evaluated_skill_sha256 = read_json(path).get("skill_sha256")
+        artifacts.append(
+            {
+                "path": relative,
+                "sha256": sha256(path),
+                "evaluated_skill_sha256": evaluated_skill_sha256,
+                "current_snapshot_match": (
+                    evaluated_skill_sha256 == current_skill_sha256
+                ),
+            }
+        )
+    return artifacts
+
+
 def validate_verified_artifacts(
     artifacts: object,
     current_skill_sha256: str,
@@ -254,7 +290,13 @@ def validate_verified_artifacts(
 ) -> None:
     if not isinstance(artifacts, list):
         raise ValueError("evidence status verified_artifacts must be a list")
-    expected_paths = list(INCOMPLETE_VERIFIED_ARTIFACTS)
+    expected_paths = [
+        artifact["path"]
+        for artifact in derive_verified_artifacts(
+            current_skill_sha256,
+            evidence,
+        )
+    ]
     actual_paths = [
         artifact.get("path") if isinstance(artifact, dict) else None
         for artifact in artifacts
@@ -427,7 +469,11 @@ def run_incomplete_status_regressions(status: dict) -> None:
     assert_rejected(hidden_missing, "missing_required_artifacts mismatch")
 
     hidden_stale = mutated()
-    hidden_stale["stale_required_artifacts"] = []
+    hidden_stale["stale_required_artifacts"] = (
+        []
+        if hidden_stale["stale_required_artifacts"]
+        else ["reports/full-codex.json"]
+    )
     assert_rejected(hidden_stale, "stale_required_artifacts mismatch")
 
     forged_current_skill = mutated()
@@ -441,7 +487,9 @@ def run_incomplete_status_regressions(status: dict) -> None:
     false_snapshot_claim = mutated()
     false_snapshot_claim["verified_artifacts"][0][
         "current_snapshot_match"
-    ] = True
+    ] = not false_snapshot_claim["verified_artifacts"][0][
+        "current_snapshot_match"
+    ]
     assert_rejected(false_snapshot_claim, "current snapshot flag mismatch")
 
     fabricated_complete = mutated()
