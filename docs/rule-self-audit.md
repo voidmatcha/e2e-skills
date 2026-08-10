@@ -12,10 +12,24 @@ Six subject axes, each audited independently by two model families. Reviewers
 were told to refute first, to cite `file:line` for every claim, to label each
 finding CONFIRMED or SUSPECTED, and to report nothing about wording or style.
 
-The two families disagreed usefully. Seven rules that one family cleared as
-sound were shown defective by the other: `#3b`, `#4f`, `#7`, `#9b`, `#9c`,
-`#10b`, `#10d`. Two of those are P0. A single-reviewer audit would have passed
-all seven.
+The two families disagreed usefully. `#4f` and `#7` — both P0 — were cleared as
+sound by one family and shown defective by the other, and both defects are
+documented below. A single-reviewer audit would have passed them.
+
+Five more rules were reported defective by only one family, and reproducing
+them kept all five: `#3b` misses the bracket form of the Cypress handler registration, `#9b` misses
+`cy.wait(delays.render)`, `#9c` misses a `networkidle` constant reached through
+a variable, `#10d` misses a formatter-wrapped `async` callback, and `#10b`
+misses a serial policy supplied as a variable.
+
+`#10b` is worth the detail, because it was briefly written up here as refuted
+and it was not. The fixture put the variable form one line above the inline
+form; the filter windows twelve lines forward from a hit, so the variable line
+matched the *next* line's literal and both were reported. That read as "the
+filter resolves variables". Isolated, the variable form scores zero and the
+inline form scores one. A fixture artifact was mistaken for a behaviour, and no
+sweep row was added on the strength of it — the third time in this audit that a
+claim survived until someone re-ran it alone.
 
 ## Two causes account for most of it
 
@@ -67,7 +81,6 @@ lives in the commit message. See "What the fix budget allows" below for why
 | `#10c` | `exact: false` is treated as if it were `exact: true`. The regex keys on the presence of the token `exact:`, and `exact: false` explicitly requests the substring behaviour the rule exists to catch. Multi-line `getByRole` calls are also missed. |
 | `#14` | Any `.fill(` or `.type(` with a string literal becomes a candidate, with no credential evidence required. On the project's own labelled corpus this is a 75% false-positive rate; `fill('Mina')` is reported as a credential candidate. Credentials passed through other methods are missed. |
 | `#21` | Detection keys on `storageState:`, a Playwright-only token. A Cypress suite restoring a manually captured session has the named defect and is never examined. The block never mentions Cypress, and unlike `#3b` its heading carries no framework tag. |
-| `F13` | Both debuggers' readers discard non-failing tests before classification (`status in {expected, skipped}` / `classification != failed`). `F13`'s criterion is a test that passes. It is the only P0 label in the debugger holdout and the pipeline cannot produce it. |
 
 ## Refuted
 
@@ -75,6 +88,24 @@ lives in the commit message. See "What the fix budget allows" below for why
 `SKILL.md` and `pattern-reference.md`. The `SKILL.md` row ends with "Flag only
 shared, persistent, or otherwise uncontrolled writes", matching
 `pattern-reference.md` exactly. The reviewer had read a truncated line.
+
+**`F13` unreachable.** Reported, and written into an earlier version of this
+document, as the taxonomy's worst defect: the readers drop passing tests
+(`read-playwright-artifact.py:929-931`, `read-cypress-artifact.py:575-576`) and
+`F13`'s criterion is a test that passes, so the only P0 label in the debugger
+holdout looked unproducible. Both halves are true and the conclusion does not
+follow. The debugger is entered on a failing suite; the reader drop removes
+passing tests from the Phase 1 *records*, not from the review. Phase 2 reads the
+spec source, and both eval suites pin exactly that: "Flags the PASSING test
+'mark-all-read clears the badge' (340ms) as P0 F13"
+(`skills/playwright-debugger/evals/evals.json`), with a matching Cypress case and
+false-positive guards on both. The holdout is answerable for a further reason —
+its runner is prompt-complete and zero-tool, so the artifact text reaches the
+model directly and never passes through a reader at all.
+
+This one is on the audit's method, not on a reviewer. Two verified premises were
+carried to an unverified conclusion, and no one checked whether `F13` was
+reachable by another route before the finding was written down.
 
 ## What the fix budget allows
 
@@ -91,24 +122,59 @@ family rather than one spelling.
 
 So `#4a`, `#4f`, `#4i`, `#10c`, and `#18` now have rows in the mandatory sweep,
 each naming the scanner's specific blind spot so Phase 2 knows what it is
-covering for. `#7` already had a row listing the destructured alias forms — its
-gap was scanner-only and the fallback already reached it. `#21` now sweeps the
+covering for. `#7` already had a row listing the destructured alias forms, but only as
+one-line literals, and its opening token `\.only\(` appears nowhere in the
+formatter-wrapped spelling — so the row now carries a token for that shape too. `#21` now sweeps the
 Cypress session-file equivalents its `storageState:` key could never see.
 
 The scanner keeps its narrow regexes. They remain correct where they fire; they
 are simply no longer the only place a family can be found.
 
-## Not pursued here
+Evals 32 and 33 pin the two rows most likely to rot. 32 gives the sweep a spec
+where Phase 1 finds only a false positive, and asserts the guard-return,
+`exact: false`, and awaited soft assertion are recovered while an intentional
+`test.skip` is not. 33 gives `#11` a POM whose member is called only from
+another POM, plus a genuinely dead one, so neither the spec-only glob nor the
+self-hitting wide glob can pass it. Writing these first would have caught four
+of the defects a later review found in this work.
 
-Still open: `#5a` guard-return bodies, `#5b` and `#10f` Cypress action
-coverage, `#4g` Cypress query commands, `#19` `var` and mutated `const`, `#17`
-renamed `page` fixtures, `#11` excluding POM files from its own usage grep
-(which can recommend deleting live code), and the F1/F7 isolation probe being
-unexecutable on the read-only verifier path.
+## Fixed the same way, and what is left
 
-`F13` is open and harder than the rest. Its fix belongs in the artifact readers
-or the debugger `SKILL.md`, and all three of those files are inside the v10
-packet, so the nineteen-token budget applies to them as well.
+`#5a` guard-return bodies, `#5b` and `#10f` Cypress action coverage, `#4g`
+Cypress query commands, and `#17` renamed `page` fixtures now have sweep rows
+for the same reason as the five above: the scanner cannot grow, and the
+reviewer can.
+
+`#19` deliberately does not. A row for `var` and mutated `const` module state
+was written and then removed: `pattern-reference.md` defines `#19` as an
+initialised top-level `let`, so a sweep row covering the other binding forms
+would produce findings the finding-verifier — which resolves against
+pattern-reference — is obliged to refute. The hazard is real and now has no
+home on any path. Widening it is a taxonomy change to the contract itself, not
+something the sweep can paper over, and it is recorded here as an open gap
+rather than as covered. `#11` was a live-code hazard rather
+than a coverage gap — its documented grep says "specs, POMs, and other utility
+modules" while the glob beside it matched specs only, so a member called from
+another POM returned zero hits and was classified UNUSED. The glob now covers
+the E2E root.
+
+The F1/F7 isolation probe is unexecutable on the read-only classifier path, so
+that path could never reach the same verdict as one that ran the probe. The
+repair was smaller than it looked: both debugger `SKILL.md` files already define
+`CANNOT_VERIFY` between F1 and F7 for exactly the case where the probe was not
+performed, and neither classifier copy carried it. Both now do, and both apply
+the probe table when the caller's payload includes the probe outcomes — so the
+three paths agree on a code given evidence, and agree on the same failure token
+without it. `SP3b` in `review.sh` requires the term in both the procedure and
+the output contract of every classifier copy, with mutation cases in
+`test-parity.sh` for each.
+
+Still open: nothing from the confirmed list. The remaining item is the packet
+budget itself — `scan.sh`, both artifact readers, and
+`playwright-debugger/SKILL.md` have nineteen tokens between them, and the next
+defect found in any of those has nowhere to go.
+
+
 
 One finding stays SUSPECTED: under disk exhaustion the scanner appeared to emit
 a clean zero-hit summary without printing `INCOMPLETE`. The condition was real —
@@ -151,14 +217,25 @@ have hidden that. The scanner suite had just been parallelised at one worker per
 core, but each worker spawns `scan.sh`, so a worker costs more than a core and
 filling every core oversubscribes the box. At ten workers the check that builds
 1500 files lost the CPU long enough to fail; at five it passes in 362 seconds,
-at four in 286. The default is now half the cores with an `E2E_SCANNER_WORKERS`
-override, which keeps the speedup — serial is over ten minutes — without the
-oversubscription. Only measuring across worker counts separated our own
+at four in 286. The default is now half the cores, capped below the core count so a
+two-core runner gets one worker rather than the whole box, with an
+`E2E_SCANNER_WORKERS` override. That keeps the speedup — serial is over ten
+minutes — without the oversubscription. The parity suite still defaults to a
+flat six workers, each running `review.sh` over its own full-tree copy, so a
+host with fewer cores than that should set `E2E_PARITY_WORKERS` down. Only measuring across worker counts separated our own
 regression from the ambient load that was also real.
 
-The fix is to stop asserting on elapsed time where a result would do: whether
-the reporter terminated, not whether it terminated within twenty seconds;
-whether the regex is linear in shape, not whether one timing sample stayed under
-4x. A deadline that is 50x the real cost still fails when the scheduler takes
-the process away, and raising it to 100x only makes a genuine hang take longer
-to surface.
+Two of the four assert on elapsed time where a result would do: whether the
+reporter terminated, not whether it terminated within twenty seconds; whether
+the regex is linear in shape, not whether one timing sample stayed under 4x.
+Those need the assertion rewritten.
+
+The debugger-contract timeouts are a different case and were fixed here. They
+never claimed a runtime — they bound a hang around work that finishes in under a
+second — so a twenty-second wall clock was only ever an arbitrary guard, and an
+arbitrary guard should be generous. All fourteen now go through one helper at
+six times their old value, raisable with `E2E_CONTRACT_TIMEOUT_SCALE`, and so do
+the three elapsed-time assertions that guard against exponential blowup on
+deeply nested XML — those were left unscaled at first, which would have kept the
+suite flaky through a different door. A real hang still surfaces; a scheduler
+delay no longer reads as one.

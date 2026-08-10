@@ -254,6 +254,7 @@ The LLM performs only these checks:
 | #7 | `\.only\(`, then immutable one-hop aliases: `const focused = test.only`, `const focused = test.only.bind(test)`, `const { only } = test`, or `const { only: focused } = test` — and the same destructure wrapped by a formatter, which needs its own `^\s*only\s*[,:]` sweep because neither `.only(` nor the one-line spellings appear in it; inspect alias calls, accept Playwright-proven receivers plus `it`/`test`/`describe` in Cypress-proven spec context, and reject reassigned, shadowed, foreign-framework, or non-test receivers |
 | #9b | `cy\.wait\(` with a non-literal argument — `cy.wait(delays.render)`, `cy.wait(TIMEOUT)` — which is the same fixed sleep. The scanner needs a digit right after the paren, or a single bare identifier |
 | #9c | `waitForLoadState\(` and `waitUntil:` whose value arrives through a constant (`const READY = 'networkidle'`). The scanner only recognises the quoted literal inline |
+| #10b | `describe\.configure\(` whose argument is a variable — `const policy = { mode: 'serial' }; test.describe.configure(policy)`. The scanner's filter searches forward from the call for an inline `mode: 'serial'` literal, so no variable-supplied policy can satisfy it in either direction |
 | #10d | Cypress `it(`/`describe(`/hook calls whose `async` callback starts on a later line — a formatter-wrapped `it(\n  'name',\n  async () => {` mixes promises with the command queue and matches no single-line pattern |
 | #4a | `toBeGreaterThan\|toBeGreaterThanOrEqual\|toBeLessThan\|toBeLessThanOrEqual`, including negated forms. The scanner matches one literal spelling, so sweep for the bound instead: report when no product state can violate it (`>= 0` on a count, `> -1`, `<= Number.MAX_SAFE_INTEGER`). A bound the product can fail is not a hit |
 | #4f | `toBeTruthy\|toBeDefined\|not\.toBeNull`, then resolve the subject by its declaration or declared type. The scanner recognises POM members only when the name ends in a UI suffix, so `expect(this.submit)` needs this sweep while `expect(this.submitButton)` does not |
@@ -317,9 +318,10 @@ Glob: "*.{ts,tsx,js,jsx,mts,mjs,cts,cjs}"
 ```
 The glob must cover the whole E2E root, not just specs: a member called only
 from another POM or a helper returns zero hits under a spec-only glob and is
-then classified UNUSED, so the review recommends deleting live code. Discount
-the hits inside the file that declares the member — the widened glob matches
-that file too, and counting its own declaration makes every member look used.
+then classified UNUSED, so the review recommends deleting live code. Discount only the
+member's own declaration line — the widened glob matches the declaring file too,
+and counting that line makes every member look used. Other hits in that file are
+real usage: a member used only inside its own POM is INTERNAL-ONLY, not UNUSED.
 This is much faster than grepping each member individually. Classify results:
 USED / INTERNAL-ONLY (make `private`) / UNUSED (delete) / SINGLE-USE (inline).
 A public POM method, standalone exported helper, or wrapper called from only one

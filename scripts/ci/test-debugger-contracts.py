@@ -2503,7 +2503,7 @@ def main() -> None:
         )
         started = time.monotonic()
         rejected = run_extractor(extractor, reports, deeply_nested)
-        assert time.monotonic() - started < 15
+        assert time.monotonic() - started < _hang_guard(15)
         assert rejected.returncode != 0
         assert "depth limit" in rejected.stderr.lower(), rejected.stderr
 
@@ -2516,7 +2516,7 @@ def main() -> None:
         )
         started = time.monotonic()
         rejected = run_extractor(extractor, reports, too_many_nodes)
-        assert time.monotonic() - started < 15
+        assert time.monotonic() - started < _hang_guard(15)
         assert rejected.returncode != 0
         assert "node limit" in rejected.stderr.lower(), rejected.stderr
 
@@ -2539,7 +2539,7 @@ def main() -> None:
         )
         started = time.monotonic()
         accepted = run_extractor(extractor, reports, near_node_limit)
-        assert time.monotonic() - started < 15
+        assert time.monotonic() - started < _hang_guard(15)
         assert accepted.returncode == 0, accepted.stderr
 
         contradictory_junit_reports = {

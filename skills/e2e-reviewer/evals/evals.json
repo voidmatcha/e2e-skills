@@ -568,11 +568,11 @@
         "evals/files/sweep-recovery.spec.ts"
       ],
       "assertions": [
-        "Flags the early return on lines 7-9 — the branch leaves the test before the promised toHaveCount assertion, and the scanner drops it because it looks for an assertion inside the branch (#5a)",
-        "Flags getByRole('link', { name: 'Job', exact: false }) on line 21 — exact: false asks for the substring match the pattern exists to catch, and the scanner's regex exempts any call containing the exact: token (#10c)",
-        "Flags await expect.soft(form) on line 26 as a soft prerequisite for the fill on line 27 — the scanner's candidate regex cannot match the awaited spelling at all (#18)",
-        "Does NOT flag test.skip(true, 'the settings panel does not exist on mobile') on line 15 — a skip with a reason is intentional, is the documented fix for #5a, and produces a visible skipped result rather than a silent pass",
-        "Does NOT report fill('Mina') on line 27 as a hardcoded credential — a display name is not a credential, and the scanner emits it only as an unconfirmed candidate (#14)"
+        "Flags the early return on lines 6-8 — the branch leaves the test before the promised toHaveCount assertion, and the scanner drops it because it looks for an assertion inside the branch (#5a)",
+        "Flags getByRole('link', { name: 'Job', exact: false }) on line 20 — exact: false asks for the substring match the pattern exists to catch, and the scanner's regex exempts any call containing the exact: token (#10c)",
+        "Flags await expect.soft(form) on line 25 as a soft prerequisite for the fill on line 26 — the scanner's candidate regex cannot match the awaited spelling at all (#18)",
+        "Does NOT flag test.skip(true, 'the settings panel does not exist on mobile') on line 14 — a skip with a reason is intentional, is the documented fix for #5a, and produces a visible skipped result rather than a silent pass",
+        "Does NOT report fill('Mina') on line 26 as a hardcoded credential — a display name is not a credential, and the scanner emits it only as an unconfirmed candidate (#14)"
       ]
     },
     {
@@ -588,7 +588,7 @@
         "Reports legacyBanner as UNUSED — no file other than its own declaration in checkout-page.ts references it (#11)",
         "Does NOT report promoCode as UNUSED — cart-page.ts calls checkout.promoCode.fill(code), so a spec-only usage glob is what would make it look dead",
         "Does NOT report submit as UNUSED — placeOrder() uses it inside the same POM",
-        "Does not count a member's own declaration line in checkout-page.ts as usage; the usage glob covers that file too, so every member would otherwise look used"
+        "Discounts only a member's own declaration line in checkout-page.ts; other hits in that file are real usage, so submit — used by placeOrder() in the same file — is INTERNAL-ONLY, not UNUSED"
       ]
     }
   ]
