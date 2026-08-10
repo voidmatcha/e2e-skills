@@ -1878,7 +1878,7 @@ _line_is_justified() {
         opened = 0
         valid = 1
         for (j = start; j <= target; j++) {
-          header = header " " code_line[j]
+          if (opened == 0) header = header " " code_line[j]
           opens = gsub(/\{/, "{", code_line[j])
           closes = gsub(/\}/, "}", code_line[j])
           depth += opens - closes

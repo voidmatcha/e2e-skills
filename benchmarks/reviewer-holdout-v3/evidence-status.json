@@ -4,7 +4,7 @@
   "release_eligible": false,
   "cross_host_comparison_available": false,
   "development_evidence_score_available": false,
-  "current_skill_sha256": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
+  "current_skill_sha256": "31ad7ffd50b03300685c3c6eaf8ab13ec09f263725861acd9d03b0334dc1c87d",
   "required_complete_artifacts": [
     "evidence-manifest.json",
     "reports/full-codex.json",
@@ -15,25 +15,29 @@
   "missing_required_artifacts": [
     "evidence-manifest.json"
   ],
-  "stale_required_artifacts": [],
+  "stale_required_artifacts": [
+    "reports/full-codex.json",
+    "reports/full-opus.json",
+    "reports/full-fable.json"
+  ],
   "verified_artifacts": [
     {
       "path": "reports/full-codex.json",
       "sha256": "b62e5f8786551d141c951c80abd567b25a74d1c0c3fe46607b06a6209ba3d0bf",
       "evaluated_skill_sha256": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
-      "current_snapshot_match": true
+      "current_snapshot_match": false
     },
     {
       "path": "reports/full-opus.json",
       "sha256": "e3c75427d945ffafe037ddf3d403d69f8b8527cc07f0a11076f63fc29f77e719",
       "evaluated_skill_sha256": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
-      "current_snapshot_match": true
+      "current_snapshot_match": false
     },
     {
       "path": "reports/full-fable.json",
       "sha256": "5492b4b7f4d31659b092d5b7a7dafc28a37d774047b90f930169e1eb3a895259",
       "evaluated_skill_sha256": "400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc",
-      "current_snapshot_match": true
+      "current_snapshot_match": false
     }
   ],
   "claim_policy": {

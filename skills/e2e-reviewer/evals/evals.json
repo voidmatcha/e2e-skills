@@ -545,6 +545,20 @@
         "Reports test.only on phase0-transitive-review.spec.ts line 3 as #7 P0",
         "Does not apply Playwright findings to phase0-transitive-unit.spec.ts"
       ]
+    },
+    {
+      "id": 31,
+      "prompt": "Review the Playwright E2E tests in evals/files/justified-sibling-scope.spec.ts. Check for anti-patterns and respect JUSTIFIED suppression markers.",
+      "expected_output": "A JUSTIFIED comment above a describe block must not suppress findings in the tests inside it. Only the marker placed directly above the page.evaluate callback suppresses that callback's raw DOM read.",
+      "files": [
+        "evals/files/justified-sibling-scope.spec.ts"
+      ],
+      "assertions": [
+        "Skips the raw DOM read inside page.evaluate on line 8: the JUSTIFIED comment on line 6 sits directly above that callback (#6)",
+        "Flags expect(page.locator('.saved-banner')).toBeTruthy() on line 14 as P0 — a Locator is always truthy, and the describe-level JUSTIFIED comment describes a canvas read in a different test (#4f, P0)",
+        "Flags waitForTimeout(3000) on line 15 — a hard-coded sleep in a sibling test the describe-level JUSTIFIED comment does not describe (#9, P1)",
+        "Does not skip line 14 or 15 on the basis of the line 3 comment: a marker above a describe covers no test body below it"
+      ]
     }
   ]
 }
