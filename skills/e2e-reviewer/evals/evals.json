@@ -559,6 +559,37 @@
         "Flags waitForTimeout(3000) on line 15 — a hard-coded sleep in a sibling test the describe-level JUSTIFIED comment does not describe (#9, P1)",
         "Does not skip line 14 or 15 on the basis of the line 3 comment: a marker above a describe covers no test body below it"
       ]
+    },
+    {
+      "id": 32,
+      "prompt": "Review the Playwright E2E tests in evals/files/sweep-recovery.spec.ts. Run the mandatory bounded opening-token sweep, not only the scanner output.",
+      "expected_output": "Phase 1 reports nothing here except one credential candidate. The sweep rows are what must recover the guard-return, the exact:false accessible name, and the awaited soft assertion — and must not turn the intentional test.skip into a finding.",
+      "files": [
+        "evals/files/sweep-recovery.spec.ts"
+      ],
+      "assertions": [
+        "Flags the early return on lines 7-9 — the branch leaves the test before the promised toHaveCount assertion, and the scanner drops it because it looks for an assertion inside the branch (#5a)",
+        "Flags getByRole('link', { name: 'Job', exact: false }) on line 21 — exact: false asks for the substring match the pattern exists to catch, and the scanner's regex exempts any call containing the exact: token (#10c)",
+        "Flags await expect.soft(form) on line 26 as a soft prerequisite for the fill on line 27 — the scanner's candidate regex cannot match the awaited spelling at all (#18)",
+        "Does NOT flag test.skip(true, 'the settings panel does not exist on mobile') on line 15 — a skip with a reason is intentional, is the documented fix for #5a, and produces a visible skipped result rather than a silent pass",
+        "Does NOT report fill('Mina') on line 27 as a hardcoded credential — a display name is not a credential, and the scanner emits it only as an unconfirmed candidate (#14)"
+      ]
+    },
+    {
+      "id": 33,
+      "prompt": "Review the Playwright Page Objects in evals/files/yagni-pom/ for unused members with e2e-reviewer.",
+      "expected_output": "Only legacyBanner is unused. promoCode is called from another POM, not from a spec, and submit is used through placeOrder — neither may be reported as unused.",
+      "files": [
+        "evals/files/yagni-pom/checkout-page.ts",
+        "evals/files/yagni-pom/cart-page.ts",
+        "evals/files/yagni-pom/order.spec.ts"
+      ],
+      "assertions": [
+        "Reports legacyBanner as UNUSED — no file other than its own declaration in checkout-page.ts references it (#11)",
+        "Does NOT report promoCode as UNUSED — cart-page.ts calls checkout.promoCode.fill(code), so a spec-only usage glob is what would make it look dead",
+        "Does NOT report submit as UNUSED — placeOrder() uses it inside the same POM",
+        "Does not count a member's own declaration line in checkout-page.ts as usage; the usage glob covers that file too, so every member would otherwise look used"
+      ]
     }
   ]
 }

@@ -248,15 +248,23 @@ The LLM performs only these checks:
 
 | Family | Opening token grep |
 |--------|--------------------|
-| #3b | `(?:cy|Cypress)\.on\(`, then read the handler event/body |
+| #3b | `(?:cy|Cypress)\.on\(`, then read the handler event/body. Also sweep bracket access — `(?:cy|Cypress)\[['"]on['"]\]\(` — which registers the same handler and matches no dot-call pattern |
 | #3 | `catch\s*[({]` in spec files (bodies that swallow without rethrow/assert) |
-| #5a | Arbitrary `if\s*\(` branches, then read the bounded branch body for `expect`, `assert`, or `.should`; report only when the condition skips a load-bearing promised-outcome assertion and no independent unconditional meaningful postcondition or failure-producing action remains |
-| #7 | `\.only\(`, then immutable one-hop aliases: `const focused = test.only`, `const focused = test.only.bind(test)`, `const { only } = test`, or `const { only: focused } = test`; inspect alias calls, accept Playwright-proven receivers plus `it`/`test`/`describe` in Cypress-proven spec context, and reject reassigned, shadowed, foreign-framework, or non-test receivers |
+| #5a | Arbitrary `if\s*\(` branches, then read the bounded branch body for `expect`, `assert`, or `.should`; report only when the condition skips a load-bearing promised-outcome assertion and no independent unconditional meaningful postcondition or failure-producing action remains. A branch body of bare `return` skips the same assertion by leaving the test early and is the same finding; the scanner drops it because it looks for an assertion inside the branch. A `test.skip()` body is not — it is the documented fix for this pattern and produces a visible skipped result |
+| #7 | `\.only\(`, then immutable one-hop aliases: `const focused = test.only`, `const focused = test.only.bind(test)`, `const { only } = test`, or `const { only: focused } = test` — and the same destructure wrapped by a formatter, which needs its own `^\s*only\s*[,:]` sweep because neither `.only(` nor the one-line spellings appear in it; inspect alias calls, accept Playwright-proven receivers plus `it`/`test`/`describe` in Cypress-proven spec context, and reject reassigned, shadowed, foreign-framework, or non-test receivers |
+| #9b | `cy\.wait\(` with a non-literal argument — `cy.wait(delays.render)`, `cy.wait(TIMEOUT)` — which is the same fixed sleep. The scanner needs a digit right after the paren, or a single bare identifier |
+| #9c | `waitForLoadState\(` and `waitUntil:` whose value arrives through a constant (`const READY = 'networkidle'`). The scanner only recognises the quoted literal inline |
+| #10d | Cypress `it(`/`describe(`/hook calls whose `async` callback starts on a later line — a formatter-wrapped `it(\n  'name',\n  async () => {` mixes promises with the command queue and matches no single-line pattern |
 | #4a | `toBeGreaterThan\|toBeGreaterThanOrEqual\|toBeLessThan\|toBeLessThanOrEqual`, including negated forms. The scanner matches one literal spelling, so sweep for the bound instead: report when no product state can violate it (`>= 0` on a count, `> -1`, `<= Number.MAX_SAFE_INTEGER`). A bound the product can fail is not a hit |
 | #4f | `toBeTruthy\|toBeDefined\|not\.toBeNull`, then resolve the subject by its declaration or declared type. The scanner recognises POM members only when the name ends in a UI suffix, so `expect(this.submit)` needs this sweep while `expect(this.submitButton)` does not |
 | #4i | `toHaveCount\(\s*0\|not\.toBeVisible\|toBeHidden\|not\.toBeAttached\|should\(\s*['"]not\.exist`, including calls that pass matcher options (`toHaveCount(0, { timeout })`) or split the argument across lines — the scanner requires `0` to be the sole argument on one line |
 | #10c | `getByRole\(`, including calls split across lines. `exact: false` asks for the substring match this pattern exists to catch and is a hit; only `exact: true` exempts |
 | #18 | `expect\.soft\(`, awaited or not. The scanner can only match the unawaited spelling, which is already `#15`, so every correctly awaited soft assertion reaches Phase 2 only through this row |
+| #4g | `timeout:\s*0` on Cypress query commands (`cy.get`, `cy.contains`, `cy.find`, `cy.visit`, `cy.request`, `cy.intercept`). The scanner's anchor list holds Playwright matchers and actions only, so the two Cypress shapes the contract is actually about — a query with its retry window removed — never reach it |
+| #5b | `force:\s*true` on the Cypress actions absent from the scanner's Playwright-flavoured list — `.select`, `.rightclick`, `.trigger`, `.blur`, `.submit` — and on options passed by variable, which the scanner's backward window cannot reach. `.dblclick`, `.check`, `.clear` and `.focus` are already covered by Phase 1 |
+| #9 | Framework sleeps on any receiver, not just a proven `Page`: `.waitForTimeout(` on a Frame/POM/aliased receiver, and `new Promise(r => setTimeout(r, N))` sleep helpers. The scanner discards a `waitForTimeout` whose receiver it cannot prove is a `Page` |
+| #10f | Cypress actions beyond the scanner's list: `.dblclick`, `.rightclick`, `.clear`, `.submit`, `.focus`, `.blur` followed by `.should(` on the same chain |
+| #17 | Selector-based Page APIs (`.fill`, `.click`, `.type`, `.check`, `.selectOption` taking a selector string) on a fixture renamed at destructuring — `async ({ page: pw }) => { await pw.fill(...) }`. The scanner admits a receiver only when it can prove a `Page` or the name ends in `page`/`Page`, so a rename produces no candidate at all |
 | #8b | `^\s*await .*\.is[A-Z][a-zA-Z]*\(` standalone statements |
 | #15 | `^\s*expect\(`, including matcher calls split across lines |
 | #16 | Action-line sweep for Locator actions plus `page.goto\|reload\|waitForURL\|waitForNavigation\|goBack\|goForward`, with a bounded backward walk to the direct `page.locator/getBy*` or variable/POM receiver; then trace non-`page` receivers to Locator/POM declarations |
@@ -305,8 +313,13 @@ An adjacent explanatory or assertion line is evidence, not a second finding.
 **#11 YAGNI — grep-assisted procedure:** For each POM file in scope, list all public members (locators + methods). Then grep each member name across all spec files and other POMs in a single parallel batch:
 ```
 Grep pattern: "memberName1|memberName2|memberName3|..."
-Glob: "*.{spec.*,test.*,cy.*}"
+Glob: "*.{ts,tsx,js,jsx,mts,mjs,cts,cjs}"
 ```
+The glob must cover the whole E2E root, not just specs: a member called only
+from another POM or a helper returns zero hits under a spec-only glob and is
+then classified UNUSED, so the review recommends deleting live code. Discount
+the hits inside the file that declares the member — the widened glob matches
+that file too, and counting its own declaration makes every member look used.
 This is much faster than grepping each member individually. Classify results:
 USED / INTERNAL-ONLY (make `private`) / UNUSED (delete) / SINGLE-USE (inline).
 A public POM method, standalone exported helper, or wrapper called from only one
