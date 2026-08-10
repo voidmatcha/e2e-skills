@@ -873,7 +873,7 @@ when no documented convention explains them.
 
 **Rule:** Session state must be reproducible from code: an API-login helper or a `setup` project that writes `storageState` before dependent specs run. A committed or manually captured file may serve only as a cache with a programmatic fallback.
 
-**Detection (LLM):** For each `storageState:` reference (spec, fixture, or `playwright.config` project), trace what writes that path. If only a manual script — or nothing in-repo — produces it, flag.
+**Detection (LLM):** For each `storageState:` reference (spec, fixture, or `playwright.config` project), trace what writes that path. If only a manual script — or nothing in-repo — produces it, flag. `storageState:` is Playwright-only, so sweep the Cypress equivalents too: a session JSON loaded through `cy.fixture(` and replayed with `cy.setCookie`/`cy.setAllCookies`/`localStorage` restore, or a `cy.session()` setup whose callback reads a committed file instead of logging in. The defect is the same — the file is absent on a fresh clone and expires silently — and the rule is not framework-scoped.
 
 #### 23. Fixture Ignores Conditional Render Guards `[LLM-only]`
 

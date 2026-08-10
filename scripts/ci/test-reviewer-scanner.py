@@ -5532,7 +5532,16 @@ def run_checks_in_parallel(*checks: Callable[[], None]) -> None:
     of short-circuiting so one broken check does not hide the rest — the sequential version stopped
     at the first assert and hid four real failures behind an earlier one.
     """
-    workers = min(len(checks), (os.cpu_count() or 2))
+    # Each check spawns scan.sh, so a worker costs more than one core. Filling every
+    # core oversubscribes, and the checks that build large trees then lose the CPU long
+    # enough to trip their own deadlines. Half the cores, overridable for constrained hosts.
+    requested = os.environ.get("E2E_SCANNER_WORKERS", "").strip()
+    ceiling = (
+        int(requested)
+        if requested.isdigit() and int(requested) > 0
+        else max(2, (os.cpu_count() or 2) // 2)
+    )
+    workers = min(len(checks), ceiling)
     failures: list[tuple[str, BaseException]] = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
         futures = {pool.submit(check): check.__name__ for check in checks}
