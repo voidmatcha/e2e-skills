@@ -18,8 +18,10 @@ source "$REPO_ROOT/scripts/ci/lib/init-python-isolation.sh" || exit 2
 if [ -z "${E2E_PARITY_DISPOSABLE_ROOT:-}" ]; then
   # Fan the case list out over several disposable copies. Each worker walks every case and asserts
   # only its own shard, so the union is the unsharded suite; the runner still proves the source
-  # digest once around the whole fan-out. Default 1 keeps the historical single-copy behavior;
-  # E2E_PARITY_WORKERS=0 means "pick from the core count".
+  # digest once around the whole fan-out. Default 6; E2E_PARITY_WORKERS=1 restores the
+  # historical single-copy run, and 0 derives the count from the core count. A worker
+  # costs more than a core here — it runs review.sh over its own full-tree copy — so a
+  # host with fewer than ~6 cores should set this down rather than take the default.
   parity_workers="${E2E_PARITY_WORKERS:-6}"
   case "$parity_workers" in ''|*[!0-9]*) parity_workers=1 ;; esac
   if [ "$parity_workers" -eq 0 ]; then
@@ -405,6 +407,34 @@ if [ -f "$file" ]; then
   restore "$file"
 else
   echo "  [SKIP] Case 21 — .codex/agents/e2e-failure-classifier.toml not present"
+fi
+
+# Case 21b: subagent parity SP3b — F1-vs-F7 is decided by an isolation probe the
+# read-only classifier can never run, so the no-probe verdict term has to exist on
+# every path that can return one. Drop it from a path and the delegated classifier
+# silently guesses F1 from the error text instead.
+file="agents/e2e-failure-classifier.md"
+backup "$file"
+mutate "$file" "CANNOT_VERIFY" "CANNOTVERIFY"
+assert_fails "Subagent parity SP3b — classifier missing CANNOT_VERIFY caught" "in both the procedure and"
+restore "$file"
+
+# The debugger leg has to fail on the rule, not the token: both skills use
+# CANNOT_VERIFY elsewhere, so a token-only check would stay green here.
+file="skills/playwright-debugger/SKILL.md"
+backup "$file"
+mutate "$file" "between F1 and F7" "between F1 and F2"
+assert_fails "Subagent parity SP3b — debugger losing the F1/F7 rule caught" "CANNOT_VERIFY rule for F1 versus F7"
+restore "$file"
+
+file=".codex/agents/e2e-failure-classifier.toml"
+if [ -f "$file" ]; then
+  backup "$file"
+  mutate "$file" "CANNOT_VERIFY" "CANNOTVERIFY"
+  assert_fails "Subagent parity SP3b — Codex TOML port missing CANNOT_VERIFY caught" "in both the procedure and"
+  restore "$file"
+else
+  echo "  [SKIP] Case 21b — .codex/agents/e2e-failure-classifier.toml not present"
 fi
 
 # Case 22: independently installable V-rule copies must not drift. Mutate the

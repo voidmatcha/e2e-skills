@@ -922,6 +922,38 @@ for verdict in verdicts:
             f"{verdict} (must match the subagent verdict set)"
         )
 
+# SP3b — F1-vs-F7 is decided by the isolation probe, and a read-only classifier
+# can never run it. The no-probe verdict term must therefore exist on every path
+# that can return one, or the delegated path silently guesses F1 from the error
+# text — which the debugger skills say is wrong about half the time.
+# The bare token is not enough: both debugger skills use CANNOT_VERIFY elsewhere
+# for proof labelling, so a token check stays green even if the F1/F7 rule itself
+# is deleted. Require the rule, by the pair it names.
+for label, text in (
+    ("skills/playwright-debugger/SKILL.md", pw_dbg),
+    ("skills/cypress-debugger/SKILL.md", cy_dbg),
+):
+    if "CANNOT_VERIFY" not in text or "between F1 and F7" not in text:
+        errors.append(
+            f"{label}: missing the CANNOT_VERIFY rule for F1 versus F7 when the "
+            "isolation probe was not performed"
+        )
+# A delegated classifier needs the term twice: in the procedure, so it knows when
+# the verdict applies, and in the output contract, so the verdict is legal to
+# return. Either one alone lets the path fall back to guessing.
+classifier_copies = [("agents/e2e-failure-classifier.md", classifier)]
+codex_classifier = pathlib.Path(".codex/agents/e2e-failure-classifier.toml")
+if codex_classifier.is_file():
+    classifier_copies.append(
+        (str(codex_classifier), codex_classifier.read_text(encoding="utf-8"))
+    )
+for label, text in classifier_copies:
+    if text.count("CANNOT_VERIFY") < 2:
+        errors.append(
+            f"{label}: missing the CANNOT_VERIFY term in both the procedure and "
+            "the output contract (F1/F7 has no probe on a read-only path)"
+        )
+
 # SP4 — F-code taxonomy frozen at F1–F15, shared by both debuggers and the
 # classifier; nobody may invent F16+.
 EXPECTED_FCODES = {f"F{i}" for i in range(1, 16)}

@@ -35,13 +35,15 @@ Expect the caller to provide:
    - flaky timing F1 vs environment mismatch
    - selector drift vs application regression
    - error swallowing F13 hiding the real failure
+   - flaky timing F1 vs test isolation F7, decided only by the debugger skill's isolation probe, never by the error text
    - a hook failure that fails every test in a file as shared setup, not N separate bugs
 4. If the excerpt is insufficient to separate two codes, say which two codes remain possible and what artifact would decide it. Do not guess.
+5. For F1 vs F7 specifically: you are read-only and cannot run the probe. If the caller's payload carries the probe outcomes, the failing test repeated alone and the full-suite run, apply the skill's probe table and return the F-code it yields. If it does not, report the F-code as CANNOT_VERIFY between F1 and F7, which is the debugger skill's own rule when the probe was not performed, and name those two runs as the artifact that decides it.
 </procedure>
 
 <output_contract>
 Return this compact shape:
-- Code: F-number and name, with confidence high | medium | low.
+- Code: F-number and name, with confidence high | medium | low, or CANNOT_VERIFY between exactly two named codes when the evidence that decides them is absent from the payload.
 - Evidence: 2-4 bullets citing the report excerpt and file:line from the spec/config.
 - Fix: the smallest concrete change consistent with the debugger skill's fix guidance.
 </output_contract>

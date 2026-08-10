@@ -5536,10 +5536,14 @@ def run_checks_in_parallel(*checks: Callable[[], None]) -> None:
     # core oversubscribes, and the checks that build large trees then lose the CPU long
     # enough to trip their own deadlines. Half the cores, overridable for constrained hosts.
     requested = os.environ.get("E2E_SCANNER_WORKERS", "").strip()
+    cores = os.cpu_count() or 2
+    # Half the cores, but never more than the machine has: on a 2-core runner a
+    # floor of 2 would be the whole box, which is the oversubscription this is
+    # meant to avoid. One worker is a valid answer there.
     ceiling = (
         int(requested)
         if requested.isdigit() and int(requested) > 0
-        else max(2, (os.cpu_count() or 2) // 2)
+        else max(1, min(cores - 1, cores // 2))
     )
     workers = min(len(checks), ceiling)
     failures: list[tuple[str, BaseException]] = []

@@ -25,6 +25,17 @@ import zipfile
 tempfile.tempdir = str(Path(tempfile.gettempdir()).resolve())
 
 
+# These bound a hang, not a runtime: the readers they wrap finish the largest
+# fixture here in under a second. A wall-clock deadline still fires when CI
+# contention takes the CPU away, which failed this suite repeatedly on a loaded
+# machine while the work itself never slowed down. Generous by default, and
+# raisable on a host that is busier still.
+def _hang_guard(seconds: int) -> int:
+    override = os.environ.get("E2E_CONTRACT_TIMEOUT_SCALE", "").strip()
+    scale = int(override) if override.isdigit() and int(override) > 0 else 6
+    return seconds * scale
+
+
 ROOT = Path(__file__).resolve().parents[2]
 CYPRESS_SKILL = ROOT / "skills/cypress-debugger"
 PLAYWRIGHT_SKILL = ROOT / "skills/playwright-debugger/SKILL.md"
@@ -45,7 +56,7 @@ def run_extractor(
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        timeout=20,
+        timeout=_hang_guard(20),
         check=False,
     )
 
@@ -68,7 +79,7 @@ def run_playwright_reader(
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        timeout=20,
+        timeout=_hang_guard(20),
         check=False,
     )
 
@@ -89,7 +100,7 @@ def run_cypress_reader(
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        timeout=20,
+        timeout=_hang_guard(20),
         check=False,
     )
 
@@ -210,7 +221,7 @@ def assert_artifact_reader_launcher_boundary() -> None:
                 text=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                timeout=20,
+                timeout=_hang_guard(20),
                 check=False,
             )
             assert result.returncode == 0, result.stderr
@@ -234,7 +245,7 @@ def assert_artifact_reader_launcher_boundary() -> None:
                 text=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                timeout=20,
+                timeout=_hang_guard(20),
                 check=False,
             )
             assert rejected.returncode != 0
@@ -275,7 +286,7 @@ def assert_artifact_reader_launcher_boundary() -> None:
                     text=True,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
-                    timeout=20,
+                    timeout=_hang_guard(20),
                     check=False,
                 )
                 assert inside_project.returncode != 0
@@ -1819,7 +1830,7 @@ def assert_bundled_helpers_never_resolve_python_through_path() -> None:
             text=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=60,
+            timeout=_hang_guard(60),
             check=False,
         )
         assert publisher.returncode == 0, publisher.stderr
@@ -1860,7 +1871,7 @@ def assert_bundled_helpers_never_resolve_python_through_path() -> None:
             text=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=60,
+            timeout=_hang_guard(60),
             check=False,
         )
         assert rejected.returncode != 0
@@ -1896,7 +1907,7 @@ def assert_bundled_helpers_never_resolve_python_through_path() -> None:
                 text=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                timeout=60,
+                timeout=_hang_guard(60),
                 check=False,
             )
             assert not path_marker.exists(), (
@@ -1941,7 +1952,7 @@ def assert_bundled_helpers_never_resolve_python_through_path() -> None:
                 text=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                timeout=30,
+                timeout=_hang_guard(30),
                 check=False,
             )
             assert refused.returncode != 0, (reader_name, variable)
@@ -1972,7 +1983,7 @@ def assert_bundled_helpers_never_resolve_python_through_path() -> None:
             text=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=30,
+            timeout=_hang_guard(30),
             check=False,
         )
         assert duplicated.returncode != 0
@@ -2031,7 +2042,7 @@ def assert_bundled_scripts_match_the_launcher_minimum_python() -> None:
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        timeout=30,
+        timeout=_hang_guard(30),
         check=False,
     )
     assert selected.returncode == 0, "no launcher interpreter candidate exists"
@@ -2041,7 +2052,7 @@ def assert_bundled_scripts_match_the_launcher_minimum_python() -> None:
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        timeout=30,
+        timeout=_hang_guard(30),
         check=True,
     ).stdout.strip()
     major, minor = (int(part) for part in version.split("."))
@@ -2061,7 +2072,7 @@ def assert_bundled_scripts_match_the_launcher_minimum_python() -> None:
             text=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=30,
+            timeout=_hang_guard(30),
             check=False,
         )
         assert compiled.returncode == 0, (
