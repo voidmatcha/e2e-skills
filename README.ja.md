@@ -18,7 +18,7 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <strong>🇯🇵 日本語</strong> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=68d321dec112133d2e7def83d60536ef5f1048ba6dd5f0036efe59b66a601726; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=ccdd5be58c599b15a7c911a1923c758831ac091d08d25a1f1835a69e2f551911; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 CI は通るのに、ユーザーに見える挙動を検証できていない Playwright/Cypress の E2E テストを見つけます。
 
@@ -359,6 +359,7 @@ Claude Code、Codex、そして `skills` CLI がサポートする 55+ hosts は
 ## 詳細ドキュメント
 
 - [24 Playwright and Cypress E2E test smells](docs/e2e-test-smells.md)
+- [Self-audit of the rules](docs/rule-self-audit.md)
 - [Open-source case studies](docs/case-studies.md)
 - [Benchmark status and negative results](benchmarks/STATUS.md)
 - [External evidence ledger](docs/llm-generated-e2e-test-evidence.md)

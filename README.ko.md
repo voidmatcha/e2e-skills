@@ -18,7 +18,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=68d321dec112133d2e7def83d60536ef5f1048ba6dd5f0036efe59b66a601726; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=ccdd5be58c599b15a7c911a1923c758831ac091d08d25a1f1835a69e2f551911; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 CI는 통과하지만 사용자가 실제로 겪는 동작은 검증하지 못하는 Playwright와 Cypress E2E 테스트를 찾아냅니다.
 
@@ -359,6 +359,7 @@ Claude Code, Codex와 `skills` CLI가 지원하는 55개 이상의 실행 환경
 ## 상세 문서
 
 - [Playwright와 Cypress E2E 테스트 냄새 24개](docs/e2e-test-smells.md)
+- [규칙 자체 감사](docs/rule-self-audit.md)
 - [오픈소스 사례 연구](docs/case-studies.md)
 - [벤치마크 현황과 실패 결과](benchmarks/STATUS.md)
 - [외부 연구 근거 원장](docs/llm-generated-e2e-test-evidence.md)

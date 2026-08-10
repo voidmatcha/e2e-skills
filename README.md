@@ -357,6 +357,7 @@ Claude Code, Codex, and the 55+ hosts supported by the `skills` CLI can load the
 ## Detailed documentation
 
 - [24 Playwright and Cypress E2E test smells](docs/e2e-test-smells.md)
+- [Self-audit of the rules](docs/rule-self-audit.md)
 - [Open-source case studies](docs/case-studies.md)
 - [Benchmark status and negative results](benchmarks/STATUS.md)
 - [External evidence ledger](docs/llm-generated-e2e-test-evidence.md)

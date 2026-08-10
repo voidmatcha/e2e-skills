@@ -17,7 +17,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=68d321dec112133d2e7def83d60536ef5f1048ba6dd5f0036efe59b66a601726; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=ccdd5be58c599b15a7c911a1923c758831ac091d08d25a1f1835a69e2f551911; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 找出那些能通过 CI、却没有验证用户可见行为的 Playwright 和 Cypress E2E 测试。
 
@@ -358,6 +358,7 @@ Claude Code、Codex，以及 `skills` CLI 支持的 55+ 宿主都可以加载公
 ## 详细文档
 
 - [24 Playwright and Cypress E2E test smells](docs/e2e-test-smells.md)
+- [Self-audit of the rules](docs/rule-self-audit.md)
 - [Open-source case studies](docs/case-studies.md)
 - [Benchmark status and negative results](benchmarks/STATUS.md)
 - [External evidence ledger](docs/llm-generated-e2e-test-evidence.md)
