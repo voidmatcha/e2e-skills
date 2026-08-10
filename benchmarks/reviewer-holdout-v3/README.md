@@ -38,7 +38,9 @@ The fixed release matrix is:
 - strict-majority stability
 
 `oracle-audit.md` records two source-only model audits performed before the
-live model run. When the matrix is complete, `reports/` contains raw per-run
+live model run. `anchor-convention-audit.md` explains why the Codex arm's misses
+are line-anchor disagreements rather than detection failures, and records two
+prompt-level fixes that were measured and reverted. When the matrix is complete, `reports/` contains raw per-run
 model output, parsed predictions, metrics, and a cross-model comparison. Files prefixed
 `incomplete-` preserve infrastructure-failed attempts and are never scored as
 complete results. `reviews/` contains a frozen review protocol and separate
