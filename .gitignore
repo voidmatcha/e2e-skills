@@ -5,6 +5,7 @@ __pycache__/
 .agents/
 .claude/
 .sisyphus/
+.handover/
 docs/superpowers/
 testbed/
 results/

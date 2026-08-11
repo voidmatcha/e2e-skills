@@ -110,4 +110,4 @@ failure as a P0 count.
 
 | Check | Pattern | Glob | What it detects |
 |-------|---------|------|-----------------|
-| #19 Module-Level Mutable State | top-level `let` with an initializer | `*.{ts,js,tsx,jsx,cy.ts,cy.js}` | The scanner emits only initialized top-level state such as `let counter = 0;`; declaration-only bindings such as `let page: Page;` are excluded mechanically. Initialized state persists across tests within a long-lived worker and can collide across parallel workers. Playwright retries in a fresh worker after failure, so retry survival is not part of the rule. P1. |
+| #19 Module-Level Mutable State | top-level `let` with an initializer (the contract also covers `var` and mutated `const` containers, which reach Phase 2 through the sweep) | `*.{ts,js,tsx,jsx,cy.ts,cy.js}` | The scanner emits only initialized top-level state such as `let counter = 0;`; declaration-only bindings such as `let page: Page;` are excluded mechanically. Initialized state persists across tests within a long-lived worker and can collide across parallel workers. Playwright retries in a fresh worker after failure, so retry survival is not part of the rule. P1. |

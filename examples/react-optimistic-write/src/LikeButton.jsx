@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 
-const faultMode = new URLSearchParams(window.location.search).get("fault");
+const faultMode =
+  new URLSearchParams(window.location.search).get("fault") ??
+  import.meta.env.VITE_DEMO_DEFAULT_FAULT ??
+  null;
 
 export function LikeButton() {
   const [liked, setLiked] = useState(false);

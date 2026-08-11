@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "name": "react-optimistic-write-b-lite",
+  "frozenAt": "2026-08-11T13:36:51Z",
+  "repositoryHeadBeforeExperiment": "da5421140e07a847a49d5648652c3ac12d4d0849",
+  "design": {
+    "arms": ["baseline", "skill-guided"],
+    "generationsPerArm": 1,
+    "model": "gpt-5.6-sol",
+    "reasoningEffort": "xhigh",
+    "runner": "codex-cli 0.147.0",
+    "sessionPersistence": "ephemeral",
+    "candidateRepairs": 0,
+    "cherryPicking": false,
+    "claimBoundary": "Two development observations, n=1 per arm; no comparative accuracy or framework-wide claim."
+  },
+  "isolation": {
+    "workspace": "fresh temporary git repository per arm",
+    "baselineInputs": ["app-contract.md", "prompts/baseline.md"],
+    "skillGuidedInputs": [
+      "app-contract.md",
+      "prompts/skill-guided.md",
+      "skill-material/SKILL.md",
+      "skill-material/code-rules.md",
+      "skill-material/verification-rules.md"
+    ],
+    "ambientRepositoryRules": false,
+    "userConfig": false
+  },
+  "generation": {
+    "commandShape": "codex exec --dangerously-bypass-approvals-and-sandbox --ephemeral --ignore-user-config --ignore-rules --model gpt-5.6-sol -c model_reasoning_effort=\"xhigh\" --cd <isolated-workspace> --output-last-message <raw-output> - < <frozen-prompt>",
+    "schedule": "both arms launched independently after freeze",
+    "retryPolicy": "No retry or replacement after a model call begins. Preserve partial or invalid output as observed."
+  },
+  "extraction": {
+    "rule": "Accept only raw output containing exactly one triple-backtick fence labeled javascript, js, or mjs and no non-whitespace text outside it. Copy the fence body byte-for-byte except for removing the single delimiter-adjacent newline at each edge.",
+    "onFailure": "EXTRACTION_ERROR; do not repair, reinterpret, or request another candidate"
+  },
+  "evaluation": {
+    "candidateMutation": "forbidden",
+    "variantsInOrder": ["normal", "omit-post", "reject-post"],
+    "defaultFaultSeam": "DEMO_DEFAULT_FAULT passed through the existing Playwright webServer to VITE_DEMO_DEFAULT_FAULT; an explicit URL fault query still wins",
+    "normalRequirement": "exit 0 or candidate is INVALID_NORMAL",
+    "mutantKill": "nonzero exit causally attributable to an unchanged candidate assertion or request proof whose diagnostic matches the product fault",
+    "mutantSurvival": "exit 0",
+    "infrastructureError": "nonzero exit caused by configuration, syntax, browser, server, timeout unrelated to the intended missing/rejected write, or unavailable causal diagnostics",
+    "ports": {"baseline": 4211, "skill-guided": 4212},
+    "repetitions": 1
+  },
+  "skillMaterial": {
+    "repositoryPath": "skills/playwright-test-generator",
+    "files": {
+      "SKILL.md": "9f2917ee1ecd48c593fc876f4388275bd42e4e3e830fdb1a1623eeba5dd3e713",
+      "code-rules.md": "8d5b2c4d54bbb45ed01370e23afb99799d6d0b63b780efe0046061e15f51cf68",
+      "verification-rules.md": "0fbf5f3eba3def60a039395b7952d807789e144fcdca248f0f4c6a71860fc5e4"
+    }
+  }
+}

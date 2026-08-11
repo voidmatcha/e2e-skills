@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "amendedAt": "2026-08-11T13:56:00Z",
+  "reason": "The original protocol was frozen before generation. Later validity evidence and user requirements made the ambient generations and first execution attempt ineligible for comparison, so this additive amendment records the canonical recovery without changing protocol.json.",
+  "originalProtocolImmutable": true,
+  "observations": [
+    {
+      "artifact": "raw/baseline-contaminated.md",
+      "status": "EXCLUDED_CONTAMINATED",
+      "reason": "The ambient baseline read a globally discovered playwright-test-generator skill even though its prompt allowed only app-contract.md."
+    },
+    {
+      "artifact": "raw/skill-guided-contaminated.md",
+      "status": "EXCLUDED_CONTAMINATED",
+      "reason": "The guided generation used the ambient Codex home rather than the same staged clean home contract required for the baseline. Global surfaces were available, so the two arms were not symmetrically isolated."
+    },
+    {
+      "artifact": "execution-attempt-1.json",
+      "status": "EXCLUDED_INFRASTRUCTURE_ERROR",
+      "reason": "The baseline normal run encountered a Vite optimizer cache rename error while the two arms shared writable cache state and ran concurrently."
+    },
+    {
+      "artifact": "execution-attempt-2-contaminated-baseline.json",
+      "status": "EXCLUDED_CONTAMINATED",
+      "reason": "Private dependency overlays and sequential execution removed the cache/port collision, but the candidates still came from the ambient generations."
+    },
+    {
+      "artifact": "raw/baseline-clean-attempt-1.md",
+      "status": "EXCLUDED_UNPAIRED_CLEAN_ATTEMPT",
+      "reason": "This baseline was generated from an auth-only staged Codex home, but it preceded the requirement to regenerate both arms from matched independent clean homes. It was not selected or executed."
+    }
+  ],
+  "canonicalRecovery": {
+    "generation": {
+      "schedule": "baseline and skill-guided launched concurrently from independent matched staged homes",
+      "homeContractAtLaunch": "Each process received env -i, a distinct empty HOME, and a distinct CODEX_HOME containing only a private auth.json copy; neither staged home contained config.toml, skills, .agents, or repository rules.",
+      "baselineWorkspaceInputs": [
+        "app-contract.md",
+        "prompts/baseline.md"
+      ],
+      "skillGuidedWorkspaceInputs": [
+        "app-contract.md",
+        "prompts/skill-guided.md",
+        "skill-material/SKILL.md",
+        "skill-material/code-rules.md",
+        "skill-material/verification-rules.md"
+      ],
+      "canonicalRawOutputs": [
+        "raw/baseline.md",
+        "raw/skill-guided.md"
+      ]
+    },
+    "execution": {
+      "schedule": "arms sequential; variants sequential within each arm",
+      "ports": {
+        "baseline": 4211,
+        "skill-guided": 4212
+      },
+      "cacheIsolation": "Each run used a fresh product copy and a private node_modules directory. Package entries were linked read-only by path while .vite remained private and newly generated.",
+      "canonicalExecution": "execution.json"
+    }
+  },
+  "comparisonRule": "Only the canonical raw outputs, mechanically extracted canonical candidates, canonical logs, and execution.json may support the B-lite observation. All named attempts remain provenance-only."
+}

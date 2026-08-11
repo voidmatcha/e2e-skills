@@ -292,7 +292,7 @@ await expect(spinner).toBeHidden();
 **Detection (grep + LLM):** the scanner flags every `.not.toBeVisible()` / `.not.toBeAttached()` / `.toBeHidden()` / `.toHaveCount(0)` / `.should('not.exist'|'not.be.visible')` as `[P1?][LLM-TRIAGE]` — outside the exit gate, because grep cannot see the rest of the test. Phase 2 resolves each hit:
 
 - **SKIP** — the same locator (or an alias of it) is asserted present, or is clicked/filled/hovered, earlier in the test or its `beforeEach`.
-- **SKIP** — the test is an empty-state / no-results case that also asserts a positive counterpart (empty-state message visible, "0 results" text). This is the dominant legitimate shape; expect it to account for most raw hits.
+- **SKIP** — the test is an empty-state / no-results case that also asserts a positive counterpart (empty-state message visible, "0 results" text). This is the dominant legitimate shape; expect it to account for most raw hits. It does not cover the `#23` case: when a render guard suppresses seeded items, the empty-state message renders for the wrong reason and the positive counterpart proves nothing. Check that the fixture can actually satisfy the component's guards before skipping on this ground.
 - **SKIP** — `// JUSTIFIED:` on the preceding line.
 - **FLAG P1** — the locator appears nowhere else and nothing positive is asserted alongside. Report it as an assertion that can pass without proving the locator ever matched, and propose either proving the locator first or deleting the assertion.
 
@@ -712,7 +712,7 @@ prerequisite line.
 
 #### 19. Module-Level Mutable State In Test Utilities `[grep-detectable + LLM]`
 
-**Symptom:** A top-level (column-0) `let` declaration with an initializer in a test utility, helper, or POM file — state that persists across test invocations within the same worker.
+**Symptom:** Top-level (column-0) mutable state in a test utility, helper, or POM file — state that persists across test invocations within the same worker. The binding keyword does not decide it: an initialised `let`, a `var`, and a `const` holding a container that is mutated later (`const seen = new Set()`, `const cache = new Map()`) all survive a worker unchanged. The scanner emits only the initialised `let`; the other two reach Phase 2 through the mandatory sweep.
 
 ```typescript
 // BAD — module-level counter; survives across tests in the worker
@@ -880,6 +880,8 @@ when no documented convention explains them.
 **Symptom:** A seeded list/item fixture satisfies the API type but not the *render guards* of the component that displays it — e.g. a "Liked" tab whose item component does `if (tabIsLiked && !item.liked) return null;`, while the fixture seeds `liked: false`. The UI renders an empty container; the test fails with "element not found" that looks like infra flake, or—worse—a negative assertion (`toHaveCount(0)`, empty-state check) passes for the wrong reason.
 
 **Why it matters:** Type-correct fixtures aren't render-correct fixtures. Components self-hide on field+view-state combinations (`liked` in a liked view, `enabled`, `membershipOnly`, date windows, `items.slice(1)` init drops), and these guards live in the component, not the API contract. Hours go to debugging "flaky" tests whose mock data was simply unrenderable.
+
+**Severity:** P2 for the usual case, where the guard leaves the container empty and the test fails with a confusing "element not found". Report the variant this pattern calls worse — a negative assertion or empty-state check that passes because the guard suppressed the seeded items — at P0: nothing the test promised is verified, and it stays green while the feature is broken.
 
 **Rule:** Before seeding a list fixture, read the item component's early returns and filters; seed fields so the item passes every guard for the view under test. Document each discovered guard next to the fixture (e.g. "Like-tab items must seed `liked: true`") so the next generated test doesn't rediscover it.
 

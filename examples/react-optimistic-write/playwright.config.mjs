@@ -17,6 +17,13 @@ if (
 }
 
 const baseURL = `http://${host}:${port}`;
+const demoDefaultFault = process.env.DEMO_DEFAULT_FAULT ?? "";
+
+if (!["", "omit-post", "reject-post"].includes(demoDefaultFault)) {
+  throw new Error(
+    "DEMO_DEFAULT_FAULT must be empty, omit-post, or reject-post",
+  );
+}
 
 export default defineConfig({
   testDir: "./tests",
@@ -38,6 +45,7 @@ export default defineConfig({
     cwd: exampleRoot,
     env: {
       PORT: String(port),
+      VITE_DEMO_DEFAULT_FAULT: demoDefaultFault,
     },
     url: `${baseURL}/api/health`,
     reuseExistingServer: false,

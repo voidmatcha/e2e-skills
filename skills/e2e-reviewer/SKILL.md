@@ -231,7 +231,7 @@ The LLM performs only these checks:
 | 15 | Missing `await` on `expect()` confirmation | Phase 1 flags unobserved web-first matchers, `expect.poll(...).toX()`, and `expect(fn).toPass()`. Awaited/returned wrappers and synchronous value matchers are guards. |
 | 16 | Missing `await` on action confirmation | Phase 1 covers Locator actions plus `page.goto()`, `page.reload()`, `page.waitForURL()`, `page.waitForNavigation()`, `page.goBack()`, `page.goForward()`, and `locator.waitFor()`. Proven direct chains are final, broader POM/variable receivers are triage, and leading `await`/`return` or an observed Promise aggregate is excluded. |
 | 18 | `expect.soft()` dependency confirmation | Phase 1 routes `expect.soft()` and provenance-backed aliases of Playwright `expect` to LLM triage. Playwright still fails the test when a soft assertion fails; the risk is control flow continuing after a broken prerequisite. Flag P1 only when a scenario-critical soft assertion is a prerequisite for a later action or check and that dependent work runs without an intervening hard assertion proving the prerequisite. Do not flag from a soft-assertion count, ratio, or an all-soft terminal detail set alone. Anchor at the soft prerequisite line. |
-| 19 | Module-level mutable state confirmation | Phase 1 flags only top-level `let` declarations with an initializer (`let counter = 0;`, `let cache: Map<string, T> = new Map();`). Declaration-only bindings such as `let page: Page;` are excluded mechanically because reassignment in `beforeEach` is idiomatic. Confirm the initialized binding is mutable test state rather than an intentional worker-scoped cache, then report P1: it persists across tests within a long-lived worker and can collide across parallel workers. Playwright discards a failed test's worker before retrying, so retry survival is not part of this rule. |
+| 19 | Module-level mutable state confirmation | The contract covers `var` and mutated `const` containers too; Phase 1 flags only top-level `let` declarations with an initializer (`let counter = 0;`, `let cache: Map<string, T> = new Map();`). Declaration-only bindings such as `let page: Page;` are excluded mechanically because reassignment in `beforeEach` is idiomatic. Confirm the initialized binding is mutable test state rather than an intentional worker-scoped cache, then report P1: it persists across tests within a long-lived worker and can collide across parallel workers. Playwright discards a failed test's worker before retrying, so retry survival is not part of this rule. |
 
 **LLM-only write-path checks (#20–#23) — run on EVERY review; no grep signal exists.** These four patterns never appear in Phase 1 output, so nothing mechanical drives them — execute each procedure here regardless of scanner hit counts (full contracts in `references/pattern-reference.md`):
 
@@ -254,6 +254,7 @@ The LLM performs only these checks:
 | #7 | `\.only\(`, then immutable one-hop aliases: `const focused = test.only`, `const focused = test.only.bind(test)`, `const { only } = test`, or `const { only: focused } = test` — and the same destructure wrapped by a formatter, which needs its own `^\s*only\s*[,:]` sweep because neither `.only(` nor the one-line spellings appear in it; inspect alias calls, accept Playwright-proven receivers plus `it`/`test`/`describe` in Cypress-proven spec context, and reject reassigned, shadowed, foreign-framework, or non-test receivers |
 | #9b | `cy\.wait\(` with a non-literal argument — `cy.wait(delays.render)`, `cy.wait(TIMEOUT)` — which is the same fixed sleep. The scanner needs a digit right after the paren, or a single bare identifier |
 | #9c | `waitForLoadState\(` and `waitUntil:` whose value arrives through a constant (`const READY = 'networkidle'`). The scanner only recognises the quoted literal inline |
+| #19 | Module-level mutable state the scanner's `let` regex cannot see: `var` at column 0, and a `const` holding a container that is mutated later (`const seen = new Set()` written to inside a helper) |
 | #10b | `describe\.configure\(` whose argument is a variable — `const policy = { mode: 'serial' }; test.describe.configure(policy)`. The scanner's filter searches forward from the call for an inline `mode: 'serial'` literal, so no variable-supplied policy can satisfy it in either direction |
 | #10d | Cypress `it(`/`describe(`/hook calls whose `async` callback starts on a later line — a formatter-wrapped `it(\n  'name',\n  async () => {` mixes promises with the command queue and matches no single-line pattern |
 | #4a | `toBeGreaterThan\|toBeGreaterThanOrEqual\|toBeLessThan\|toBeLessThanOrEqual`, including negated forms. The scanner matches one literal spelling, so sweep for the bound instead: report when no product state can violate it (`>= 0` on a count, `> -1`, `<= Number.MAX_SAFE_INTEGER`). A bound the product can fail is not a hit |
@@ -443,7 +444,13 @@ The **§4.1 row** field is a slot, not a reminder: it cannot be filled without o
 The "Top N Priorities" section should list the 3-5 highest-impact fixes in concrete, actionable terms. This helps developers know where to start without scanning all P0 findings.
 
 **Severity classification:**
-- **P0 (Must fix):** Test silently passes when the feature is broken — no real verification happening
+- **P0 (Must fix):** Test silently passes when the feature is broken — no real verification happening.
+  Both halves are required. Passing while the feature is broken is not enough on its own: if the test
+  really verifies something it promised, and only a second promised effect goes unchecked, that is P1.
+  `#22` sits there — the optimistic UI assertion does verify client behavior, and the unverified part is
+  the write. A pattern's severity is its usual case; an instance can be reported higher when it meets
+  the P0 definition outright, the way `#12` already conditions P0 on the wrong surface actually
+  satisfying the test's assertions.
 - **P1 (Should fix):** Test works but gives poor diagnostics, wastes CI time, or misleads developers
 - **P2 (Nice to fix):** Weak but not wrong — maintenance and robustness improvements
 
@@ -471,7 +478,7 @@ This table is a **numerical index for scanning** — pattern # → severity, pha
 | 16 | Missing await on action | P1 | grep+LLM | Unawaited Locator action — actionability/navigation can race later work |
 | 17 | Discouraged direct Page selector API | P1 | grep | Selector-based `page.click`, `page.fill`, and related actions instead of Locator actions |
 | 18 | `expect.soft()` dependency leak | P1 | grep+LLM | A soft prerequisite is followed by dependent work without an intervening hard gate |
-| 19 | Module-Level Mutable State | P1 | grep+LLM | `let x = ...` at column 0 in test code — survives across tests within a worker |
+| 19 | Module-Level Mutable State | P1 | grep+LLM | `let x = ...`, `var x = ...`, or a mutated `const` container at column 0 in test code — survives across tests within a worker |
 | 20 | Unmocked Real-Backend Writes | P1 | LLM | Confirmed write reaches shared/persistent state with no stub or documented disposable/isolated backend boundary |
 | 21 | Manual Session-File Dependency | P2 | LLM | `storageState` JSON produced only by a manual capture script |
 | 22 | Optimistic UI Without Call Proof | P1 | LLM | Write-control click asserted only via optimistically-updated UI state — no `waitForRequest`/route-hit proof |

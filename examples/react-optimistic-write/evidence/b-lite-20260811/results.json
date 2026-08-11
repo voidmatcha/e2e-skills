@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "adjudicatedAt": "2026-08-11T13:56:00Z",
+  "experimentStatus": "COMPLETE_DEVELOPMENT_OBSERVATION",
+  "comparativeStatus": "INCONCLUSIVE",
+  "comparisonBoundary": "One uncontaminated generation per arm on a public, prompt-complete development case cannot estimate comparative accuracy or framework-wide behavior. The prompts intentionally represent different treatments: minimal generation versus the skill workflow's approved-scenario contract. The result describes these two candidates only and does not isolate the skill text from its guided instructions.",
+  "canonicalExecution": "execution.json",
+  "arms": [
+    {
+      "arm": "baseline",
+      "candidate": "candidates/baseline.spec.mjs",
+      "normal": "PASS",
+      "directWriteProof": "ABSENT",
+      "faults": {
+        "omit-post": {
+          "verdict": "KILLED_CAUSALLY",
+          "exitCode": 1,
+          "diagnostic": "The unchanged exact Saved on server. visibility assertion at candidate line 12 timed out because omitting POST prevents the 200-confirmed saved state."
+        },
+        "reject-post": {
+          "verdict": "KILLED_CAUSALLY",
+          "exitCode": 1,
+          "diagnostic": "The unchanged exact Saved on server. visibility assertion at candidate line 12 timed out because a 503 response produces failure/rollback rather than saved state."
+        }
+      }
+    },
+    {
+      "arm": "skill-guided",
+      "candidate": "candidates/skill-guided.spec.mjs",
+      "normal": "PASS",
+      "directWriteProof": "PASS_ON_NORMAL: exactly one POST /api/like with JSON { liked: true }",
+      "faults": {
+        "omit-post": {
+          "verdict": "KILLED_CAUSALLY",
+          "exitCode": 1,
+          "diagnostic": "The unchanged exact Saved on server. visibility assertion at candidate line 25 timed out because omitting POST prevents the 200-confirmed saved state."
+        },
+        "reject-post": {
+          "verdict": "KILLED_CAUSALLY",
+          "exitCode": 1,
+          "diagnostic": "The unchanged exact Saved on server. visibility assertion at candidate line 25 timed out because a 503 response produces failure/rollback rather than saved state."
+        }
+      }
+    }
+  ],
+  "crossArmObservation": {
+    "normalPasses": {
+      "baseline": 1,
+      "skillGuided": 1
+    },
+    "causalFaultKills": {
+      "baseline": 2,
+      "skillGuided": 2
+    },
+    "guidedOnlyObservedProperty": "The guided candidate explicitly observes the request and validates count plus payload on the normal path.",
+    "guidedOnlyInterpretation": "The guided prompt explicitly required that property, so its presence demonstrates treatment compliance rather than an independently discovered comparative advantage.",
+    "v3Nuance": "Neither fault run reached the post-reload aria-pressed primary assertion named by the guided prompt; both stopped earlier at the saved-confirmation assertion. Therefore the run proves causal detection of both faults, but not the narrower declared primary-assertion failure path.",
+    "claim": "No comparative advantage is established."
+  },
+  "staticReview": {
+    "scanner": "skills/e2e-reviewer/scripts/scan.sh",
+    "p0": 0,
+    "confirmedP1": 0,
+    "triageCandidates": 2,
+    "adjudication": "Both #10c candidates in the baseline were skipped under the pattern contract because Like article is a distinctive multi-word name on a static-only surface. The guided candidate already uses exact: true. No candidate was repaired or mutated."
+  },
+  "excludedEvidence": [
+    "raw/baseline-contaminated.md",
+    "raw/skill-guided-contaminated.md",
+    "raw/baseline-clean-attempt-1.md",
+    "candidates/baseline-contaminated.spec.mjs",
+    "candidates/skill-guided-contaminated.spec.mjs",
+    "execution-attempt-1.json",
+    "execution-attempt-2-contaminated-baseline.json",
+    "logs/attempt-1",
+    "logs/attempt-2-contaminated-baseline"
+  ]
+}

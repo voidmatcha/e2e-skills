@@ -18,7 +18,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=a0ff27ffac55aa882bb07698b6f6315b0816ef4542e1072cfe9c2ed38c0dd9f5; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=d9fbfa6d65d4eab6ea5c42d6a69b3a32b9e414da7a39067f1121342c68322e54; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 CI는 통과하지만 사용자가 실제로 겪는 동작은 검증하지 못하는 Playwright와 Cypress E2E 테스트를 찾아냅니다.
 
@@ -226,7 +226,7 @@ AI가 만들었거나 기존에 물려받은 E2E 테스트가 의도한 결과�
 | 16 | **동작의 `await` 누락** | actionability 확인, 동작 순서, 탐색이 뒤따르는 작업과 경합할 수 있음. 거부된 Promise는 대개 나중에 엉뚱한 위치의 오류로 나타남 | 동작 Promise를 `await`하거나 반환 |
 | 17 | **권장하지 않는 Page 셀렉터 API 직접 사용** | 셀렉터 기반 `page.click`, `page.fill`과 관련 Page 동작이 Locator 계층을 건너뜀 | 조합성, strictness, 재사용성, 명확한 실패 메시지를 위해 Locator 동작 사용 |
 | 18 | **`expect.soft()` 과다 사용** | 필수 조건을 엄격하게 확인하기 전에 핵심 soft assertion을 실행해 전제 조건이 깨진 뒤에도 후속 작업이 계속됨 | 핵심 상태를 먼저 일반 검증문으로 차단하고, `soft`는 서로 독립적인 세부 항목에만 사용 |
-| 19 | **테스트 코드의 모듈 수준 가변 상태** | 테스트 유틸리티 0열의 `let testNotebookSequence = 0;`가 오래 실행되는 worker에 남아 병렬 worker 사이에서 충돌 | 카운터 삭제. `Date.now()`와 `Math.random().toString(36).slice(2, 8)`로 고유한 값을 만들거나 상태를 `test.beforeEach`로 이동 |
+| 19 | **테스트 코드의 모듈 수준 가변 상태** | 테스트 유틸리티 0열의 `let seq = 0;` 또는 변형되는 `const cache = new Map()`가 오래 실행되는 worker에 남아 병렬 worker 사이에서 충돌 | 카운터 삭제. `Date.now()`와 `Math.random().toString(36).slice(2, 8)`로 고유한 값을 만들거나 상태를 `test.beforeEach`로 이동 |
 | 20 | **모의 처리하지 않은 실제 백엔드 쓰기** | 회원 가입/결제 테스트가 통제된 테스트 경계 없이 공유 또는 영구 상태에 접근 | 쓰기 요청을 stub 처리하거나 일회용 컨테이너, rollback fixture, 격리된 tenant/database처럼 통제된 백엔드임을 입증 |
 | 22 | **호출 근거 없는 낙관적 UI** | 좋아요 전환 테스트가 `aria-pressed` 변경만 검증. UI가 낙관적으로 갱신되면 POST가 사라져도 통과 | UI 검증을 클릭 전에 준비한 `page.waitForRequest()` 또는 route 적중 flag와 함께 사용 |
 

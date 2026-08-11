@@ -1,0 +1,47 @@
+[WebServer] (node:96766) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:96828) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/b-lite-candidate.spec.mjs:3:1 › persists the liked state after saving and reloading
+  1) tests/b-lite-candidate.spec.mjs:3:1 › persists the liked state after saving and reloading ─────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('Saved on server.', { exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByText('Saved on server.', { exact: true })
+
+
+      26 |   await expect(
+      27 |     page.getByText("Saved on server.", { exact: true }),
+    > 28 |   ).toBeVisible();
+         |     ^
+      29 |   await page.reload();
+      30 |
+      31 |   // Then: fresh server truth still reports the article as liked
+        at /private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/e2e-b-lite-skill-guided-reject-post-dGTrIl/tests/b-lite-candidate.spec.mjs:28:5
+
+    Error Context: test-results/b-lite-candidate-persists--deab3--after-saving-and-reloading/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/b-lite-candidate-persists--deab3--after-saving-and-reloading/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/b-lite-candidate-persists--deab3--after-saving-and-reloading/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    tests/b-lite-candidate.spec.mjs:3:1 › persists the liked state after saving and reloading ──────

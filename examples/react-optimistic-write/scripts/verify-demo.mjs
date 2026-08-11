@@ -46,6 +46,19 @@ const checks = [
     ),
   },
   {
+    expected: "request-proof red",
+    result: run(
+      "strong request proof under default omit-post variant",
+      [
+        "test",
+        "--config=playwright.config.mjs",
+        "--grep",
+        "sends exactly one like write",
+      ],
+      { DEMO_DEFAULT_FAULT: "omit-post" },
+    ),
+  },
+  {
     expected: "green",
     result: run("strong suite repeated three times", [
       "test",

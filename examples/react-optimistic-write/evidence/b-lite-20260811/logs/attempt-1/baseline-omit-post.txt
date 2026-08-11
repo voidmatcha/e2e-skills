@@ -1,0 +1,47 @@
+[WebServer] (node:79605) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:79606) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/b-lite-candidate.spec.mjs:3:1 › persists a successful article like after reload
+  1) tests/b-lite-candidate.spec.mjs:3:1 › persists a successful article like after reload ─────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('Saved on server.', { exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByText('Saved on server.', { exact: true })
+
+
+      10 |   // When: the user likes the article and the server finishes saving
+      11 |   await likeButton.click();
+    > 12 |   await expect(page.getByText('Saved on server.', { exact: true })).toBeVisible();
+         |                                                                     ^
+      13 |
+      14 |   // Then: the saved like remains after a fresh reload
+      15 |   await page.reload();
+        at /private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/e2e-b-lite-baseline-omit-post-lxxl3y/tests/b-lite-candidate.spec.mjs:12:69
+
+    Error Context: test-results/b-lite-candidate-persists--4171d-l-article-like-after-reload/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/b-lite-candidate-persists--4171d-l-article-like-after-reload/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/b-lite-candidate-persists--4171d-l-article-like-after-reload/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    tests/b-lite-candidate.spec.mjs:3:1 › persists a successful article like after reload ──────────

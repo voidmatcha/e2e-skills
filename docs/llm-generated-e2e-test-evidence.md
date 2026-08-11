@@ -205,3 +205,7 @@ The evidence points to a causal benchmark, not a larger pile of source-shape exa
 8. **Do not let one model author and judge its own benchmark.** Use model-family-independent and human review for contested labels, and publish disagreements rather than resolving them invisibly.
 
 These controls make the repository’s executable Playwright/Cypress fixtures useful evidence for the presently under-studied browser-E2E surface. They still do not turn a public development corpus into a neutral, sealed benchmark or make unit-test research directly transferable without qualification.
+
+### Local B-lite development observation
+
+The repository also preserves a bounded [actual-generation observation](../examples/react-optimistic-write/evidence/b-lite-20260811/README.md) on the React optimistic-write example. One clean baseline and one clean skill-guided Codex candidate each passed normal behavior and causally failed under both missing-write and rejected-write faults. The guided prompt explicitly required exact request count and payload proof, and its candidate complied, but the two candidates had the same fault-kill result. That difference is treatment compliance, not an independently discovered advantage. Ambient generations and an initial shared-cache infrastructure failure are retained only as excluded provenance. With `n=1` per arm on a public prompt-complete case, the comparison remains `INCONCLUSIVE` and is not a model, skill, or framework accuracy estimate.

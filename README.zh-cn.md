@@ -17,7 +17,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=a0ff27ffac55aa882bb07698b6f6315b0816ef4542e1072cfe9c2ed38c0dd9f5; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=d9fbfa6d65d4eab6ea5c42d6a69b3a32b9e414da7a39067f1121342c68322e54; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 找出那些能通过 CI、却没有验证用户可见行为的 Playwright 和 Cypress E2E 测试。
 
@@ -225,7 +225,7 @@ Debug the failed Cypress report in cypress/reports/.
 | 16 | **Missing `await` on action** | Actionability、action ordering 或 navigation 可能与后续工作竞态；rejection 通常稍后才暴露，归因更差 | `await` 或 return action Promise |
 | 17 | **Discouraged direct Page selector API** | 基于 selector 的 `page.click`、`page.fill` 及相关 Page actions 跳过 Locator 层 | 使用 Locator actions，以获得组合性、strictness、复用和更清晰的 failure |
 | 18 | **`expect.soft()` overuse** | 关键 soft assertions 在 hard scenario gate 之前运行，因此前置条件损坏后 dependent work 仍会继续 | 先对主要状态做 hard-gate；仅对独立细节使用 `soft` |
-| 19 | **Module-level mutable state in test code** | 测试工具中第 0 列的 `let testNotebookSequence = 0;`，它会在长生命周期 worker 中跨测试保留，并在并行 workers 间冲突 | 删除 counter；从 `Date.now()` + `Math.random().toString(36).slice(2, 8)` 派生唯一性，或把状态移入 `test.beforeEach` |
+| 19 | **Module-level mutable state in test code** | 测试工具中第 0 列的 `let seq = 0;` 或被修改的 `const cache = new Map()`，它会在长生命周期 worker 中跨测试保留，并在并行 workers 间冲突 | 删除 counter；从 `Date.now()` + `Math.random().toString(36).slice(2, 8)` 派生唯一性，或把状态移入 `test.beforeEach` |
 | 20 | **Unmocked real-backend writes** | Signup/checkout spec 触达共享或持久状态，却没有受控测试边界 | Stub 该写入，或证明存在 disposable container、rollback fixture、isolated tenant/database 或等价的受控 backend |
 | 22 | **Optimistic UI without call proof** | Like-toggle test 断言 `aria-pressed` 翻转 — UI 乐观更新，POST 被删除时仍会通过 | 将 UI assertion 与 `page.waitForRequest()`（点击前 armed）或 route-hit flag 配对 |
 

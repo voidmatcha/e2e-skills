@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "frozenAt": "2026-08-11T13:38:23Z",
+  "generationHadNotStartedAtFreeze": true,
+  "sha256": {
+    "app-contract.md": "9c1a11bdf6d2754da90aebd2bc2f12345b64d990bc3a01217bc5a4433246952d",
+    "prompts/baseline.md": "44749a841edf6c13488ae0848aa433cd15b42083636e0955f86e019aa46cef45",
+    "prompts/skill-guided.md": "e2638ddcc13c850a6b7c74bcaa5ecadf10d4ddab4cd33492eb5a413c5e5f39c5",
+    "protocol.json": "4d641d4d17e43fa2076ce0ec6ba097f6b2de85bc1566986351a470a9e326fd6a",
+    "skill-material/SKILL.md": "9f2917ee1ecd48c593fc876f4388275bd42e4e3e830fdb1a1623eeba5dd3e713",
+    "skill-material/code-rules.md": "8d5b2c4d54bbb45ed01370e23afb99799d6d0b63b780efe0046061e15f51cf68",
+    "skill-material/verification-rules.md": "0fbf5f3eba3def60a039395b7952d807789e144fcdca248f0f4c6a71860fc5e4",
+    "product/package.json": "141f7ab380df825dc3d5d2cedcd1e98f6bab1d02a71017c323d3908093d42671",
+    "product/package-lock.json": "18225dd49ab01ffd741a8ae5304b874f18fb0422a4501c647908ba333f69dc39",
+    "product/playwright.config.mjs": "92b13341e228eb7a3479ae8cd12ff246d2b84e0f5780b1ccf73664803735613b",
+    "product/server.mjs": "dc2bb07f6123da09aa48ed2723e8165fd321d7167d9753b67607816a0316a58a",
+    "product/vite.config.mjs": "edae74f7490eea51c4ae66f2f1728347d0497840a13e303dabd014cd6de8b13c",
+    "product/index.html": "5586456cb964cbea6de814d8eeaf458f95cfda56c1b10c1779d6c01fbfd57f4f",
+    "product/src/main.jsx": "0b43135aeab49049fd4d76d97138295cf7908833062e6e7e9711348171655fa6",
+    "product/src/LikeButton.jsx": "9e99bc32c32283de18cb5cad2406e63147532b00a3fb4c98a9733418424b0fc0",
+    "product/src/styles.css": "3be5d34b1b3806eae8f6a8b08a9737c2754bf98a1a8dfb8eb1aa254d0b4103f0"
+  }
+}

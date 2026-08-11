@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "completedAt": "2026-08-11T13:55:48.921Z",
+  "freezeVerified": true,
+  "candidates": [
+    {
+      "arm": "baseline",
+      "raw": "raw/baseline.md",
+      "rawSha256": "319c405d906bb12e07ddc699d5db5bdc277209b3b59c066662bbb6360f8d585f",
+      "candidate": "candidates/baseline.spec.mjs",
+      "candidateSha256": "5510b1c69449eac714e5d2ad25ca0c7088d055c2b2c17d7b6d7480a7428c6453"
+    },
+    {
+      "arm": "skill-guided",
+      "raw": "raw/skill-guided.md",
+      "rawSha256": "16a6ed03c8bdeaaae44b4aa0e08df93b864fad3f96e9fe21b6a2ee7d872c0d99",
+      "candidate": "candidates/skill-guided.spec.mjs",
+      "candidateSha256": "4141f8d62e6953b8d7132d326afeec0e852dad832ddf573cb0a901d2d154e9e6"
+    }
+  ],
+  "runs": [
+    {
+      "arm": "baseline",
+      "variant": "normal",
+      "port": 4211,
+      "startedAt": "2026-08-11T13:55:17.301Z",
+      "finishedAt": "2026-08-11T13:55:20.669Z",
+      "exitCode": 0,
+      "signal": null,
+      "candidateSha256Before": "5510b1c69449eac714e5d2ad25ca0c7088d055c2b2c17d7b6d7480a7428c6453",
+      "candidateSha256After": "5510b1c69449eac714e5d2ad25ca0c7088d055c2b2c17d7b6d7480a7428c6453",
+      "log": "logs/baseline-normal.txt",
+      "logSha256": "d543691ab4457be8f70ff0c5b420c78eef8ec5e29c6aed840ff09251dbbae037"
+    },
+    {
+      "arm": "baseline",
+      "variant": "omit-post",
+      "port": 4211,
+      "startedAt": "2026-08-11T13:55:20.691Z",
+      "finishedAt": "2026-08-11T13:55:27.266Z",
+      "exitCode": 1,
+      "signal": null,
+      "candidateSha256Before": "5510b1c69449eac714e5d2ad25ca0c7088d055c2b2c17d7b6d7480a7428c6453",
+      "candidateSha256After": "5510b1c69449eac714e5d2ad25ca0c7088d055c2b2c17d7b6d7480a7428c6453",
+      "log": "logs/baseline-omit-post.txt",
+      "logSha256": "5e72e8e7ba93241ae523d35b0ade6202e1ebc597be068b7aa98eb2b95b44e29e"
+    },
+    {
+      "arm": "baseline",
+      "variant": "reject-post",
+      "port": 4211,
+      "startedAt": "2026-08-11T13:55:27.280Z",
+      "finishedAt": "2026-08-11T13:55:33.902Z",
+      "exitCode": 1,
+      "signal": null,
+      "candidateSha256Before": "5510b1c69449eac714e5d2ad25ca0c7088d055c2b2c17d7b6d7480a7428c6453",
+      "candidateSha256After": "5510b1c69449eac714e5d2ad25ca0c7088d055c2b2c17d7b6d7480a7428c6453",
+      "log": "logs/baseline-reject-post.txt",
+      "logSha256": "75f693bd58f742824c3b7c1b7614c9b514e17b53db856c9578dd2f28af4f64d2"
+    },
+    {
+      "arm": "skill-guided",
+      "variant": "normal",
+      "port": 4212,
+      "startedAt": "2026-08-11T13:55:33.918Z",
+      "finishedAt": "2026-08-11T13:55:35.756Z",
+      "exitCode": 0,
+      "signal": null,
+      "candidateSha256Before": "4141f8d62e6953b8d7132d326afeec0e852dad832ddf573cb0a901d2d154e9e6",
+      "candidateSha256After": "4141f8d62e6953b8d7132d326afeec0e852dad832ddf573cb0a901d2d154e9e6",
+      "log": "logs/skill-guided-normal.txt",
+      "logSha256": "4d561c77d1a76c2f99c046c45fe8ece6e116da3f4b59640e59d83e33598fc55f"
+    },
+    {
+      "arm": "skill-guided",
+      "variant": "omit-post",
+      "port": 4212,
+      "startedAt": "2026-08-11T13:55:35.771Z",
+      "finishedAt": "2026-08-11T13:55:42.333Z",
+      "exitCode": 1,
+      "signal": null,
+      "candidateSha256Before": "4141f8d62e6953b8d7132d326afeec0e852dad832ddf573cb0a901d2d154e9e6",
+      "candidateSha256After": "4141f8d62e6953b8d7132d326afeec0e852dad832ddf573cb0a901d2d154e9e6",
+      "log": "logs/skill-guided-omit-post.txt",
+      "logSha256": "f9a833f97e7d864c47ddc0731e4e549cc4cf06b0fedc40f9629b6fd1e904780f"
+    },
+    {
+      "arm": "skill-guided",
+      "variant": "reject-post",
+      "port": 4212,
+      "startedAt": "2026-08-11T13:55:42.349Z",
+      "finishedAt": "2026-08-11T13:55:48.915Z",
+      "exitCode": 1,
+      "signal": null,
+      "candidateSha256Before": "4141f8d62e6953b8d7132d326afeec0e852dad832ddf573cb0a901d2d154e9e6",
+      "candidateSha256After": "4141f8d62e6953b8d7132d326afeec0e852dad832ddf573cb0a901d2d154e9e6",
+      "log": "logs/skill-guided-reject-post.txt",
+      "logSha256": "0ab058eae61a602c0ca90d2366545d51ee7d7eb8c26d02577cd333ec623ea4f7"
+    }
+  ],
+  "temporaryArtifactsRemaining": []
+}
