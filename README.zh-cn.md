@@ -17,7 +17,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=ccdd5be58c599b15a7c911a1923c758831ac091d08d25a1f1835a69e2f551911; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=a0ff27ffac55aa882bb07698b6f6315b0816ef4542e1072cfe9c2ed38c0dd9f5; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 找出那些能通过 CI、却没有验证用户可见行为的 Playwright 和 Cypress E2E 测试。
 
@@ -187,6 +187,8 @@ Debug the failed Cypress report in cypress/reports/.
 
 该目录包含 24 个稳定的 Playwright/Cypress test smells。最常见的 false-green 形态包括 Locator truthiness、缺失 assertion、吞掉错误、focused tests、缺失认证，以及没有 network proof 的 optimistic UI checks。参见 [完整 taxonomy 和 rationale](docs/e2e-test-smells.md)。
 
+有些模式需要应用代码在审查范围内，而不仅仅是测试。`#22` optimistic UI 是最明显的例子：点击是否真的发出 mutation，无法仅从 spec 判断，因此在只有测试的仓库中，审查不会猜测，而是不报告。这是有意的误报控制，也是可执行示例附带 component 的原因。
+
 <details>
 <summary>按严重程度查看全部 24 个模式</summary>
 
@@ -243,9 +245,6 @@ Debug the failed Cypress report in cypress/reports/.
 
 两个 debugger 使用同一套稳定的 F1–F15 root-cause taxonomy。Playwright 接受 `playwright-report/`、HTML reports、`trace.zip`、screenshots 和有界的 GitHub Actions artifacts。Cypress 接受 mochawesome 或 JUnit reports、screenshots、videos 和有界 CI artifacts。
 
-<details>
-<summary>查看 F1–F15 taxonomy</summary>
-
 | # | 类别 | 信号 |
 |---|----------|---------|
 | F1 | **Flaky / Timing** | `TimeoutError`，retry 后通过 |
@@ -264,7 +263,6 @@ Debug the failed Cypress report in cypress/reports/.
 | F14 | **Animation Race** | Content 尚未渲染，或 transient element 在被观察前移除 |
 | F15 | **Hydration Race** | Action 成功但没有效果：SSR page 尚未 hydrated；在下一个 assertion 失败 |
 
-</details>
 
 debuggers 会把产品回归与脆弱测试分开分类，并返回证据和具体修复。没有失败的 Playwright 或 Cypress 测试 artifact 时，它们不会诊断应用或 backend。
 

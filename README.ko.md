@@ -18,7 +18,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=ccdd5be58c599b15a7c911a1923c758831ac091d08d25a1f1835a69e2f551911; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=a0ff27ffac55aa882bb07698b6f6315b0816ef4542e1072cfe9c2ed38c0dd9f5; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 CI는 통과하지만 사용자가 실제로 겪는 동작은 검증하지 못하는 Playwright와 Cypress E2E 테스트를 찾아냅니다.
 
@@ -188,6 +188,8 @@ AI가 만들었거나 기존에 물려받은 E2E 테스트가 의도한 결과�
 
 목록에는 ID가 안정적으로 유지되는 Playwright/Cypress 테스트 냄새 24개가 들어 있습니다. 대표적인 허위 통과 유형으로는 Locator의 참·거짓 판정, 검증문 누락, 오류 삼키기, focused test, 인증 누락, 네트워크 호출을 입증하지 않는 낙관적 UI 검증이 있습니다. [전체 분류와 근거](docs/e2e-test-smells.md)를 참고하세요.
 
+일부 패턴은 테스트만이 아니라 애플리케이션이 검토 범위에 있어야 동작합니다. `#22` 낙관적 UI가 가장 분명한 예입니다. 클릭이 실제로 mutation을 보내는지는 spec만으로 결정할 수 없으므로, 테스트만 있는 저장소에서는 추측하는 대신 아무것도 보고하지 않습니다. 이는 의도된 오탐 억제이며, 실행 가능한 예제가 컴포넌트와 함께 제공되는 이유입니다.
+
 <details>
 <summary>심각도별 24개 패턴 보기</summary>
 
@@ -244,9 +246,6 @@ AI가 만들었거나 기존에 물려받은 E2E 테스트가 의도한 결과�
 
 두 디버거는 동일한 F1–F15 근본 원인 분류를 사용합니다. Playwright 디버거는 `playwright-report/`, HTML 보고서, `trace.zip`, 스크린샷, 범위가 정해진 GitHub Actions 산출물을 입력으로 받습니다. Cypress 디버거는 mochawesome 또는 JUnit 보고서, 스크린샷, 영상, 범위가 정해진 CI 산출물을 받습니다.
 
-<details>
-<summary>F1–F15 분류 보기</summary>
-
 | # | 범주 | 주요 신호 |
 |---|----------|---------|
 | F1 | **불안정성 / 타이밍** | `TimeoutError`, 재시도에서 통과 |
@@ -265,7 +264,6 @@ AI가 만들었거나 기존에 물려받은 E2E 테스트가 의도한 결과�
 | F14 | **애니메이션 경합** | 콘텐츠가 아직 렌더링되지 않았거나 일시적인 요소가 관찰 전에 사라짐 |
 | F15 | **Hydration 경합** | 동작은 성공하지만 효과가 없음. SSR 페이지의 hydration이 끝나기 전에 다음 검증문이 실행되어 실패 |
 
-</details>
 
 디버거는 제품 회귀와 깨지기 쉬운 테스트를 구분해 분류하고, 근거와 구체적인 수정안을 제시합니다. 실패한 Playwright 또는 Cypress 테스트 산출물이 없으면 애플리케이션이나 백엔드를 진단하지 않습니다.
 

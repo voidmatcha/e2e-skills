@@ -18,7 +18,7 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <strong>🇯🇵 日本語</strong> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=ccdd5be58c599b15a7c911a1923c758831ac091d08d25a1f1835a69e2f551911; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=a0ff27ffac55aa882bb07698b6f6315b0816ef4542e1072cfe9c2ed38c0dd9f5; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 CI は通るのに、ユーザーに見える挙動を検証できていない Playwright/Cypress の E2E テストを見つけます。
 
@@ -188,6 +188,8 @@ scores、failed gates、superseded runs、claim boundaries については [benc
 
 カタログには、24 個の安定した Playwright/Cypress test smells が含まれます。代表的な false-green には、Locator truthiness、missing assertions、swallowed errors、focused tests、missing authentication、network proof のない optimistic UI checks があります。[full taxonomy and rationale](docs/e2e-test-smells.md) を参照してください。
 
+一部のパターンは、テストだけでなくアプリケーションがレビュー範囲に含まれている必要があります。`#22` optimistic UI が最も明確な例です。クリックが実際に mutation を送るかどうかは spec だけでは判断できないため、テストのみのリポジトリでは推測せず何も報告しません。これは意図した false-positive 抑制であり、実行可能な例が component と共に提供される理由です。
+
 <details>
 <summary>重大度別に 24 パターンをすべて表示</summary>
 
@@ -244,9 +246,6 @@ scores、failed gates、superseded runs、claim boundaries については [benc
 
 両方の debugger は、同じ安定した F1–F15 root-cause taxonomy を使います。Playwright は `playwright-report/`、HTML reports、`trace.zip`、screenshots、bounded GitHub Actions artifacts を受け付けます。Cypress は mochawesome または JUnit reports、screenshots、videos、bounded CI artifacts を受け付けます。
 
-<details>
-<summary>F1–F15 taxonomy を表示</summary>
-
 | # | Category | Signals |
 |---|----------|---------|
 | F1 | **Flaky / Timing** | `TimeoutError`, passes on retry |
@@ -265,7 +264,6 @@ scores、failed gates、superseded runs、claim boundaries については [benc
 | F14 | **Animation Race** | Content not yet rendered, or a transient element removed before it is observed |
 | F15 | **Hydration Race** | Action succeeds but has no effect — SSR page not yet hydrated; fails at the next assertion |
 
-</details>
 
 debugger は product regression と brittle test を分けて分類し、evidence と具体的な fix を返します。失敗した Playwright または Cypress test artifact がない application や backend は診断しません。
 

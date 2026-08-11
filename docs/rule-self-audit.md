@@ -110,9 +110,10 @@ reachable by another route before the finding was written down.
 ## What the fix budget allows
 
 The scanner cannot absorb these repairs. `scan.sh` is one of seven surfaces in
-the v10 independent-review packet, and the packet currently measures 122,981 of
-a preregistered 123,000 reference tokens — nineteen tokens of headroom, roughly
-one line of code. Broadening a candidate regex is not affordable, and the cap is
+the v10 independent-review packet, and at the time of writing the packet measured 122,982 of a
+preregistered 123,000 reference tokens — eighteen tokens of headroom, roughly
+one line of code. Re-measure before relying on it; the figure moves with any
+edit to a packet surface. Broadening a candidate regex is not affordable, and the cap is
 frozen evidence rather than a tunable.
 
 The reviewer's `SKILL.md` and `pattern-reference.md` are not in that packet, so
@@ -171,7 +172,7 @@ the output contract of every classifier copy, with mutation cases in
 
 Still open: nothing from the confirmed list. The remaining item is the packet
 budget itself — `scan.sh`, both artifact readers, and
-`playwright-debugger/SKILL.md` have nineteen tokens between them, and the next
+`playwright-debugger/SKILL.md` have under twenty tokens between them, and the next
 defect found in any of those has nowhere to go.
 
 

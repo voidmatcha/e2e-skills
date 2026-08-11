@@ -26,6 +26,8 @@ Find Playwright and Cypress E2E tests that pass CI but fail to verify user-visib
 
 > In code-server, a committed `it.only` silently disabled eight tests for seven months. One skipped test was already broken while CI remained green.
 
+**Executable example:** [React optimistic-write proof](examples/react-optimistic-write/README.md) shows why optimistic UI needs request and persistence proof, not just visible state.
+
 ## See a false-green test
 
 A **false-green** test passes whether or not the behavior it names works. It is not a flaky test: a flaky test fails sometimes, so retry dashboards and flake analytics eventually see it. A false-green test never fails — including when the product is broken — so nothing that watches for tests flipping will ever surface it.
@@ -186,6 +188,8 @@ See [benchmark status](benchmarks/STATUS.md) for scores, failed gates, supersede
 
 The catalog contains 24 stable Playwright/Cypress test smells. The most common false-green shapes include Locator truthiness, missing assertions, swallowed errors, focused tests, missing authentication, and optimistic UI checks without network proof. See the [full taxonomy and rationale](docs/e2e-test-smells.md).
 
+Some patterns need the application in scope, not just the tests. `#22` optimistic UI is the clearest case: whether a click issues a mutation cannot be decided from a spec, so on a repository that holds tests alone the review reports nothing for it rather than guessing. That is deliberate false-positive control, and it is why the executable example ships with a component.
+
 <details>
 <summary>View all 24 patterns by severity</summary>
 
@@ -242,9 +246,6 @@ Weak but not wrong — addressed when refactoring.
 
 Both debuggers use the same stable F1–F15 root-cause taxonomy. Playwright accepts `playwright-report/`, HTML reports, `trace.zip`, screenshots, and bounded GitHub Actions artifacts. Cypress accepts mochawesome or JUnit reports, screenshots, videos, and bounded CI artifacts.
 
-<details>
-<summary>View the F1–F15 taxonomy</summary>
-
 | # | Category | Signals |
 |---|----------|---------|
 | F1 | **Flaky / Timing** | `TimeoutError`, passes on retry |
@@ -263,7 +264,6 @@ Both debuggers use the same stable F1–F15 root-cause taxonomy. Playwright acce
 | F14 | **Animation Race** | Content not yet rendered, or a transient element removed before it is observed |
 | F15 | **Hydration Race** | Action succeeds but has no effect — SSR page not yet hydrated; fails at the next assertion |
 
-</details>
 
 The debuggers classify product regressions separately from brittle tests and return evidence plus a concrete fix. They do not diagnose an application or backend without a failing Playwright or Cypress test artifact.
 

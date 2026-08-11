@@ -2,32 +2,36 @@
 
 ## [Unreleased]
 
-### Fixed
-
-- **Tier 2 no longer collapses on hosts carrying ast-grep 0.40 or newer.**
-  `capture_bounded_command` merged stderr into the stream the strict NDJSON
-  parser reads. Newer ast-grep writes `Error: N error(s) found in code.` to
-  stderr on a findings run, so the stream stopped parsing and the whole tier
-  reported `INCOMPLETE`. The stderr sink is now a separate positional argument;
-  callers that read the merged text as human diagnostics keep the old behavior.
-  The crash branch moved ahead of the empty-capture guard, because with stderr
-  separated an empty capture no longer distinguishes "never started" from
-  "started and crashed loudly".
-
-- **AST `#4f` findings were being dropped without a word.** The Tier 2 post
-  filter called `locator_assertion_hit_matches`, which is defined about 1,400
-  lines below the call site, so bash exited 127 and `|| continue` swallowed it.
-  Every AST `#4f` hit disappeared silently — the failure class this scanner
-  exists to catch. A self-contained confirmation now runs above Tier 2, and an
-  unconfirmed hit becomes LLM triage instead of vanishing.
-
-- **Tier 2 `#15` no longer fires on a shadowed `expect`.** `const { expect } =
-  helpers` and `catch (expect)` were reported as firm findings because the
-  provenance check only recognised a direct `const expect` redeclaration. A
-  binding the file imports from Playwright and then redeclares is now dropped;
-  an unknown custom `expect` still goes to triage, unchanged.
+## [1.12.0] - 2026-08-11
 
 ### Changed
+
+- **A `// JUSTIFIED:` comment above a `describe` block no longer silences the
+  tests inside it.** The callback-scope walk collected every line between the
+  marker and the hit and asked whether `.evaluate(` or `.waitForFunction(`
+  appeared anywhere in that span, so an `evaluate` call in an earlier sibling
+  test satisfied it. A marker whose rationale described a canvas read in one
+  test suppressed a `#4f` P0 and a `#9` P1 in another, and `scan.sh` exited 0
+  where it should have exited 1. Only the construct that opens the scope carries
+  the rationale now. **Expect findings to appear in repositories that were
+  relying on a block-level marker** — they were always there.
+
+- **The mandatory opening-token sweep grew from 7 rows to 21.** Fifteen rules
+  were confirmed unable to detect the defect they name: their candidate regexes
+  assume a statement fits on one physical line, and formatters wrap at 80
+  columns. `scan.sh` is a surface in a frozen review packet with nineteen tokens
+  of headroom and cannot grow, so the recovery moved to the sweep, each row
+  naming the blind spot it covers for. **Reviews take longer.**
+
+- **`#11` YAGNI no longer recommends deleting live code.** Its documented grep
+  says "specs, POMs, and other utility modules" while the glob beside it matched
+  specs only, so a member called from another POM returned zero hits and was
+  classified UNUSED. The glob covers the E2E root now and discounts only the
+  member's own declaration line.
+
+- **`#21` covers Cypress.** Detection keyed on `storageState:`, a
+  Playwright-only token, inside a two-framework skill. Cypress session JSON
+  restored through `cy.fixture` or a `cy.session()` callback is now swept.
 
 - **The lint-overlap map in the scanner report was wrong, and wrong in the
   direction that flattered this project.** `#17`, `#4c`-`#4e` and `#10a` were
@@ -56,6 +60,64 @@
 - **`#21` names the credential leak.** A committed `storageState` file was
   described only as unreproducible; it also carries live session cookies for
   whatever account captured it, and `#14` does not reach it.
+
+### Added
+
+- **A public cross-host holdout run is recorded, and kept fail-closed.** Codex
+  missed the repeated-precision threshold, Opus met every preregistered
+  threshold, and one Fable response was unscoreable, so the matrix is
+  `INCONCLUSIVE` and `release_eligible` stays false. The reports are committed
+  as evidence of what was measured, not as a claim about accuracy; they are
+  marked stale against the current skill, because the skill changed after the
+  run.
+
+- **`docs/rule-self-audit.md`** — an adversarial audit of this project's own 24
+  patterns, 15 failure codes, and operational rules. Every finding was
+  reproduced against the shipped scanner, and the claims that did not survive
+  checking are recorded alongside them.
+
+- Machine-readable skill classification metadata, and a definition of
+  false-green that separates it from flaky.
+
+### Fixed
+
+- **`#4i` names hallucinated locators.** An invented `data-testid` that never
+  matched anything is indistinguishable from a selector that rotted, and an
+  absence assertion keeps both green forever.
+
+- **Tier 2 no longer collapses on hosts carrying ast-grep 0.40 or newer.**
+  `capture_bounded_command` merged stderr into the stream the strict NDJSON
+  parser reads. Newer ast-grep writes `Error: N error(s) found in code.` to
+  stderr on a findings run, so the stream stopped parsing and the whole tier
+  reported `INCOMPLETE`. The stderr sink is now a separate positional argument;
+  callers that read the merged text as human diagnostics keep the old behavior.
+  The crash branch moved ahead of the empty-capture guard, because with stderr
+  separated an empty capture no longer distinguishes "never started" from
+  "started and crashed loudly".
+
+- **AST `#4f` findings were being dropped without a word.** The Tier 2 post
+  filter called `locator_assertion_hit_matches`, which is defined about 1,400
+  lines below the call site, so bash exited 127 and `|| continue` swallowed it.
+  Every AST `#4f` hit disappeared silently — the failure class this scanner
+  exists to catch. A self-contained confirmation now runs above Tier 2, and an
+  unconfirmed hit becomes LLM triage instead of vanishing.
+
+- **Tier 2 `#15` no longer fires on a shadowed `expect`.** `const { expect } =
+  helpers` and `catch (expect)` were reported as firm findings because the
+  provenance check only recognised a direct `const expect` redeclaration. A
+  binding the file imports from Playwright and then redeclares is now dropped;
+  an unknown custom `expect` still goes to triage, unchanged.
+
+### Performance
+
+- Three stages of the repository CI mirror got faster, each measured on its own:
+  the parity suite shards across disposable copies (629s to 217s), shell-file
+  enumeration stopped forking a grep per discovered file (15.3s to 1.0s), and
+  oracle text normalization is memoized. The scanner checks now run
+  concurrently, at half the cores — each worker spawns `scan.sh`, so filling
+  every core starved the checks that build large trees. No end-to-end figure is
+  quoted: the suite also gained stages over this release, and wall-clock on a
+  loaded machine moves more than any of these changes do.
 
 ### Security
 
