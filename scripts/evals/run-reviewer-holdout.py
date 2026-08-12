@@ -1699,13 +1699,39 @@ def prompt_set_digest(
     )
 
 
+def portable_host_path(
+    path: str | os.PathLike[str],
+    *,
+    home: Path | None = None,
+) -> str:
+    """Replace the current account name while preserving useful path shape."""
+    candidate = Path(path)
+    host_home = home or Path.home()
+    try:
+        relative = candidate.relative_to(host_home)
+    except ValueError:
+        return str(candidate)
+    return str(host_home.parent / "user" / relative)
+
+
+def validate_reasoning_effort(runner: str, reasoning_effort: str | None) -> None:
+    if reasoning_effort is None:
+        return
+    if runner != "codex":
+        raise ValueError("--reasoning-effort applies to the codex runner")
+    if re.fullmatch(r"[a-z]+", reasoning_effort) is None:
+        raise ValueError("--reasoning-effort must be a bare word")
+
+
 def runner_invocation(
     runner: str,
     executable: str,
     prompt: str,
     model: str | None,
+    reasoning_effort: str | None = None,
 ) -> tuple[list[str], str]:
     """Build a prompt-complete invocation with no model-callable tool surface."""
+    validate_reasoning_effort(runner, reasoning_effort)
     if runner == "codex":
         command = [
             executable,
@@ -1732,6 +1758,10 @@ def runner_invocation(
         ]
         if model:
             command.extend(["--model", model])
+        if reasoning_effort:
+            command.extend(
+                ["-c", f"model_reasoning_effort='{reasoning_effort}'"]
+            )
         command.append("-")
         return command, prompt
     if runner == "claude":
@@ -1917,10 +1947,17 @@ def run_once(
     isolation_prefix: list[str] | None = None,
     runner_executable: str | None = None,
     runner_credentials: dict[str, str] | None = None,
+    reasoning_effort: str | None = None,
 ) -> tuple[int, str, int]:
     started = time.monotonic()
     executable = runner_executable or resolve_runner_executable(runner)
-    command, stdin = runner_invocation(runner, executable, prompt, model)
+    command, stdin = runner_invocation(
+        runner,
+        executable,
+        prompt,
+        model,
+        reasoning_effort,
+    )
     command = [*(isolation_prefix or []), *command]
     runner_home = tempfile.TemporaryDirectory(prefix="e2e-reviewer-runner-home-")
     try:
@@ -2587,6 +2624,13 @@ def main() -> int:
     parser.add_argument("--output", type=Path)
     parser.add_argument("--model", help="model passed to codex or claude")
     parser.add_argument(
+        "--reasoning-effort",
+        help=(
+            "Codex reasoning effort recorded in report provenance; omitted runs "
+            "use the isolated CLI default"
+        ),
+    )
+    parser.add_argument(
         "--arm",
         choices=tuple(PROMPT_SKILL_PROFILES),
         default="full",
@@ -2625,6 +2669,10 @@ def main() -> int:
         ),
     )
     args = parser.parse_args()
+    try:
+        validate_reasoning_effort(args.runner, args.reasoning_effort)
+    except ValueError as exc:
+        parser.error(str(exc))
     if args.evidence_scope == "release":
         parser.error(
             "release evidence is unavailable: this harness has no "
@@ -2785,8 +2833,9 @@ def main() -> int:
         "schema_version": 2,
         "runner": args.runner,
         "runner_identity": runner_identity,
-        "runner_executable": runner_exec,
+        "runner_executable": portable_host_path(runner_exec),
         "model": args.model,
+        "reasoning_effort": args.reasoning_effort,
         "git_revision": git_revision,
         "git_dirty": git_dirty(),
         "git_dirty_sha256": git_dirty_digest(),
@@ -2800,14 +2849,14 @@ def main() -> int:
         "prompt_profile": args.arm,
         "skill_sha256": evaluated_skill_sha256,
         "snapshot_skill_sha256": snapshot_skill_sha256,
-        "skill_source_path": str(original_skill_dir),
+        "skill_source_path": portable_host_path(original_skill_dir),
         "corpus_sha256": corpus_sha256,
         "snapshot_corpus_sha256": snapshot_corpus_sha256,
         "corpus_visibility": corpus_visibility,
         "corpus_intended_use": metadata.get("intended_use"),
         "corpus_contamination_risk": metadata.get("contamination_risk"),
         "protocol_id": protocol["protocol_id"],
-        "protocol_path": str(args.protocol),
+        "protocol_path": portable_host_path(args.protocol),
         "protocol_sha256": protocol_sha256_before,
         "protocol": protocol,
         "schedule_seed": protocol["schedule"]["seed"],
@@ -2896,6 +2945,7 @@ def main() -> int:
                     isolation_prefix,
                     runner_exec,
                     runner_credentials,
+                    args.reasoning_effort,
                 )
                 findings = parse_findings(output) if rc == 0 else []
                 error = None if rc == 0 else f"runner exited {rc}"

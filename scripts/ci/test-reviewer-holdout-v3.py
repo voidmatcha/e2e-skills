@@ -213,6 +213,16 @@ def assert_runner_environment_allowlist() -> None:
     for key in RUNNER.CLAUDE_ENV_KEYS:
         assert key not in codex_environment and key not in custom_environment
 
+    macos_home = "/Users/" + "alice"
+    assert RUNNER.portable_host_path(
+        f"{macos_home}/.codex/bin/codex",
+        home=Path(macos_home),
+    ) == "/Users/user/.codex/bin/codex"
+    assert RUNNER.portable_host_path(
+        "/opt/codex/bin/codex",
+        home=Path(macos_home),
+    ) == "/opt/codex/bin/codex"
+
     codex_command, codex_stdin = RUNNER.runner_invocation(
         "codex", "/trusted/codex", "PROMPT", "test-model"
     )
@@ -243,6 +253,20 @@ def assert_runner_environment_allowlist() -> None:
         "test-model",
         "-",
     ]
+    codex_effort_command, codex_effort_stdin = RUNNER.runner_invocation(
+        "codex",
+        "/trusted/codex",
+        "PROMPT",
+        "test-model",
+        reasoning_effort="xhigh",
+    )
+    assert codex_effort_stdin == "PROMPT"
+    assert codex_effort_command == [
+        *codex_command[:-1],
+        "-c",
+        "model_reasoning_effort='xhigh'",
+        "-",
+    ]
     claude_command, claude_stdin = RUNNER.runner_invocation(
         "claude", "/trusted/claude", "PROMPT", "test-model"
     )
@@ -262,6 +286,18 @@ def assert_runner_environment_allowlist() -> None:
         "--model",
         "test-model",
     ]
+    try:
+        RUNNER.runner_invocation(
+            "claude",
+            "/trusted/claude",
+            "PROMPT",
+            "test-model",
+            reasoning_effort="xhigh",
+        )
+    except ValueError as exc:
+        assert str(exc) == "--reasoning-effort applies to the codex runner"
+    else:
+        raise AssertionError("Claude accepted a Codex reasoning-effort override")
 
 
 def assert_reserved_workspace_paths_rejected(temp: Path, cases: list[dict]) -> None:

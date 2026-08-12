@@ -70,6 +70,7 @@ REPORT_KEYS = {
 }
 REPORT_OPTIONAL_KEYS = {
     "runner_executable",
+    "reasoning_effort",
     "started_at",
 }
 RUN_KEYS = {
@@ -400,6 +401,9 @@ def validate_provenance(
             )
         ):
             raise ValueError("runner_executable must be an absolute path string")
+    reasoning_effort = report.get("reasoning_effort")
+    if reasoning_effort is not None:
+        RUNNER.validate_reasoning_effort(report["runner"], reasoning_effort)
 
     if report["snapshot_skill_sha256"] != report["skill_sha256"]:
         raise ValueError("snapshot_skill_sha256 does not match skill_sha256")
@@ -1458,7 +1462,11 @@ def compare_arm_reports(
             if (report["runner"], report["model"]) == (runner, model)
         ]
         identities = {
-            (report["runner_identity"], report.get("runner_executable"))
+            (
+                report["runner_identity"],
+                report.get("runner_executable"),
+                report.get("reasoning_effort"),
+            )
             for report in host_reports
         }
         if len(identities) != 1:
@@ -1475,7 +1483,11 @@ def compare_arm_reports(
             )
     for runner in {runner for runner, _ in required_hosts}:
         runner_bindings = {
-            (report["runner_identity"], report.get("runner_executable"))
+            (
+                report["runner_identity"],
+                report.get("runner_executable"),
+                report.get("reasoning_effort"),
+            )
             for report in normalized
             if report["runner"] == runner
         }
@@ -1951,9 +1963,9 @@ def main() -> int:
         "protocol_id": protocol.get("protocol_id"),
         "protocol_sha256": protocol_sha256,
         "corpus_sha256": selected_corpus_sha256,
-        "reports": [str(path) for path in report_paths],
+        "reports": [RUNNER.portable_host_path(path) for path in report_paths],
         "report_inputs": [
-            {"path": str(path), "sha256": digest}
+            {"path": RUNNER.portable_host_path(path), "sha256": digest}
             for path, digest in zip(report_paths, report_sha256s)
         ],
         "prompt_profiles": sorted(

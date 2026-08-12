@@ -169,7 +169,9 @@ def main() -> None:
         security_result = run(
             ["/bin/bash", str(SECURITY), "--quiet"],
             failing,
-            timeout=60,
+            # The production gate scans every shippable text artifact; this is
+            # a hang guard, not a performance assertion for a loaded CI host.
+            timeout=180,
         )
         assert "shell enumeration failed" not in security_result.stdout
         assert "synthetic find failure" not in security_result.stdout

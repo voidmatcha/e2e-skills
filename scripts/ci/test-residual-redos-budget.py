@@ -17,9 +17,9 @@ enough to catch a real regression is also tight enough to flake on a loaded
 CI box, and a threshold loose enough never to flake catches nothing. So there
 are two independent assertions per input family:
 
-  1. AN ABSOLUTE CEILING, deliberately generous -- roughly two orders of
-     magnitude above the measured cost -- which exists to turn catastrophic
-     backtracking into a failure rather than a hang.
+  1. AN ABSOLUTE CPU-TIME CEILING, deliberately generous -- roughly two
+     orders of magnitude above the measured cost -- which exists to turn
+     catastrophic backtracking into a failure rather than a hang.
 
   2. A SCALING ASSERTION, which is the one that actually has teeth. Each
      family is measured at three sizes, N, 4N and 16N. Linear work quadruples
@@ -28,10 +28,10 @@ are two independent assertions per input family:
      or how loaded the machine is -- a slow machine is slow at every size --
      while still failing on the first quadratic term anybody reintroduces.
 
-Timings are the MINIMUM of several repetitions, which is the right statistic
-for "how much work is this", because scheduler noise can only ever add time.
-A watchdog arms before the first probe so that exponential backtracking dies
-with a traceback instead of hanging the run.
+Timings use per-process CPU time and take the MINIMUM of several repetitions,
+so scheduler starvation cannot masquerade as regex growth. A wall-clock
+watchdog still arms before the first probe so that exponential backtracking
+dies with a traceback instead of hanging the run.
 """
 
 from __future__ import annotations
@@ -251,10 +251,18 @@ def assert_growth_check_has_teeth() -> None:
 def measure(work, text: str) -> float:
     best = float("inf")
     for _ in range(REPETITIONS):
-        start = time.perf_counter()
+        start = time.process_time()
         work(text)
-        best = min(best, time.perf_counter() - start)
+        best = min(best, time.process_time() - start)
     return best
+
+
+def assert_measure_excludes_wait_time() -> None:
+    """Scheduler wait must not masquerade as regex CPU growth."""
+    elapsed = measure(lambda _text: time.sleep(0.02), "")
+    assert elapsed < 0.005, (
+        f"measurement counted {elapsed:.4f}s of scheduler wait as regex work"
+    )
 
 
 def main() -> None:
@@ -279,6 +287,7 @@ def main() -> None:
         residual.string_has_residual_credential(text)
 
     assert_growth_check_has_teeth()
+    assert_measure_excludes_wait_time()
 
     faulthandler.dump_traceback_later(WATCHDOG_SECONDS, exit=True)
     try:

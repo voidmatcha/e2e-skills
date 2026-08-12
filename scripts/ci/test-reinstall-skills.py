@@ -411,7 +411,9 @@ class Harness:
             text=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            timeout=20,
+            # This guards hangs, not performance: each fixture verifies and may
+            # roll back four complete skill surfaces on a loaded CI host.
+            timeout=120,
             check=False,
         )
 

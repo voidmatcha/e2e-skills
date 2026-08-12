@@ -81,6 +81,14 @@ python3 scripts/evals/run-reviewer-holdout.py \
   --output benchmarks/reviewer-holdout-v3/reports/full-fable.json
 ```
 
+The canonical command above intentionally leaves reasoning effort unset, so it
+records the isolated Codex CLI default rather than inheriting a contributor's
+`config.toml`. To run a non-canonical diagnostic at an explicit level, add for
+example `--reasoning-effort xhigh` and write it under ignored `results/` instead
+of replacing `reports/full-codex.json`. Committed reports normalize the local
+account component in absolute provenance paths to `/Users/user/` or
+`/home/user/`; model, CLI version, path shape, and content digests remain intact.
+
 After all three reports complete, compare them:
 
 ```bash

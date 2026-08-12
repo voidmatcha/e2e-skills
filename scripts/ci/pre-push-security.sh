@@ -278,15 +278,13 @@ else
 fi
 
 section "Hardcoded paths"
-# Scope: scripts/, skills/, and the plugin manifests. README/CHANGELOG/docs are
-# allowed to use example paths freely (the previous `grep -vE '…|example|~/'`
-# exclusion was too loose to catch a real leak in those files anyway), but the
-# manifest JSON files MUST be scanned — a leaked `/Users/...` path there would
-# ship directly to every plugin user.
+# Scan every tracked or unignored text artifact that can ship from this repo,
+# including benchmark reports and example evidence. Generic `/Users/user/` and
+# `/Users/example/` placeholders remain allowed; real machine identities do not.
 run_policy_scan \
   "hardcoded-home" \
-  "no hardcoded absolute user-home paths in scripts/, skills/, or plugin manifests" \
-  "hardcoded absolute user-home paths found in scripts/, skills/, or plugin manifests"
+  "no machine-specific absolute user-home paths in public text artifacts" \
+  "machine-specific absolute user-home paths found in public text artifacts"
 
 echo ""
 echo "========================================"

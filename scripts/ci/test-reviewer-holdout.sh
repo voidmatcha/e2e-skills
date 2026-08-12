@@ -53,6 +53,28 @@ SH
 chmod +x "$TMP/fake-runner"
 
 if python3 "$ROOT/scripts/evals/run-reviewer-holdout.py" \
+  --runner claude \
+  --reasoning-effort xhigh \
+  --output "$TMP/claude-reasoning.json" \
+  >"$TMP/claude-reasoning.out" 2>&1; then
+  echo "test-reviewer-holdout: Claude accepted Codex reasoning effort" >&2
+  exit 1
+fi
+grep -q -- "--reasoning-effort applies to the codex runner" \
+  "$TMP/claude-reasoning.out"
+
+if python3 "$ROOT/scripts/evals/run-reviewer-holdout.py" \
+  --runner codex \
+  --reasoning-effort "xhigh';unsafe=true" \
+  --output "$TMP/unsafe-reasoning.json" \
+  >"$TMP/unsafe-reasoning.out" 2>&1; then
+  echo "test-reviewer-holdout: unsafe reasoning effort was accepted" >&2
+  exit 1
+fi
+grep -q -- "--reasoning-effort must be a bare word" \
+  "$TMP/unsafe-reasoning.out"
+
+if python3 "$ROOT/scripts/evals/run-reviewer-holdout.py" \
   --runner "$TMP/fake-runner" \
   --case playwright-split-context \
   --output "$TMP/unisolated-custom.json" >"$TMP/unisolated-custom.out" 2>&1; then
@@ -119,6 +141,7 @@ assert report["corpus_visibility"] == "public"
 assert report["runner_identity"].endswith("/fake-runner")
 assert report["runner_executable"].endswith("/fake-runner")
 assert report["model"] == "fake-model"
+assert report["reasoning_effort"] is None
 assert len(report["git_revision"]) == 40
 assert isinstance(report["git_dirty"], bool)
 assert len(report["git_dirty_sha256"]) == 64
@@ -126,9 +149,10 @@ assert len(report["evaluator_sha256"]) == 64
 assert len(report["prompt_set_sha256"]) == 64
 assert len(report["skill_sha256"]) == 64
 assert report["skill_sha256_after"] == report["skill_sha256"]
-assert pathlib.Path(report["skill_source_path"]).resolve() == (
-    pathlib.Path(sys.argv[2]) / "skills/e2e-reviewer"
-).resolve()
+assert pathlib.Path(report["skill_source_path"]).parts[-2:] == (
+    "skills",
+    "e2e-reviewer",
+)
 assert len(report["corpus_sha256"]) == 64
 assert report["corpus_sha256_after"] == report["corpus_sha256"]
 assert len(report["protocol_sha256"]) == 64
@@ -1349,6 +1373,7 @@ import pathlib
 import signal
 import subprocess
 import sys
+import time
 
 root = pathlib.Path(sys.argv[1])
 temp = pathlib.Path(sys.argv[2])
@@ -1372,16 +1397,25 @@ process = subprocess.Popen(
     stderr=subprocess.DEVNULL,
     start_new_session=True,
 )
+child_path = temp / "timeout-child.pid"
+startup_deadline = time.monotonic() + 120
+while not child_path.exists():
+    if process.poll() is not None:
+        raise AssertionError("timeout runner exited before creating its child")
+    if time.monotonic() >= startup_deadline:
+        os.killpg(process.pid, signal.SIGKILL)
+        process.wait()
+        raise AssertionError("timeout runner setup did not reach the cleanup probe")
+    time.sleep(0.05)
 try:
-    return_code = process.wait(timeout=15)
+    # Start the cleanup guard only after corpus and skill preflight finishes.
+    return_code = process.wait(timeout=30)
 except subprocess.TimeoutExpired as exc:
     os.killpg(process.pid, signal.SIGKILL)
-    child_path = temp / "timeout-child.pid"
-    if child_path.exists():
-        try:
-            os.killpg(int(child_path.read_text()), signal.SIGKILL)
-        except ProcessLookupError:
-            pass
+    try:
+        os.kill(int(child_path.read_text()), signal.SIGKILL)
+    except ProcessLookupError:
+        pass
     process.wait()
     raise AssertionError("timeout cleanup hung on a pipe-holding descendant") from exc
 assert return_code != 0, "timeout runner unexpectedly succeeded"

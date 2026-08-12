@@ -14,7 +14,7 @@ import sys
 SELF = Path("scripts/ci/lib/scan-security-policy.py")
 SECURITY_GATE = Path("scripts/ci/pre-push-security.sh")
 SHELL_SUFFIXES = {".sh"}
-HARDCODED_SUFFIXES = {".sh", ".md", ".json", ".yaml", ".yml", ".py"}
+HARDCODED_SUFFIXES = {".sh", ".md", ".json", ".yaml", ".yml", ".py", ".txt"}
 RULES = ("eval", "fixed-tmp", "backdoor", "hardcoded-home")
 SHELL_SHEBANG = re.compile(
     br"^#![ \t]*(?:"
@@ -91,16 +91,7 @@ def selected(rule: str, root: Path, relative: Path) -> bool:
         return False
     if rule in {"eval", "fixed-tmp", "backdoor"}:
         return is_shell_program(root, relative)
-    return (
-        relative.suffix.lower() in HARDCODED_SUFFIXES
-        and relative.parts[:1]
-        in {
-            ("scripts",),
-            ("skills",),
-            (".claude-plugin",),
-            (".codex-plugin",),
-        }
-    )
+    return relative.suffix.lower() in HARDCODED_SUFFIXES
 
 
 def line_matches(rule: str, line: str) -> bool:
@@ -147,7 +138,7 @@ def line_matches(rule: str, line: str) -> bool:
             is not None
         )
     homes = re.findall(r"/(?:Users|home)/([A-Za-z0-9._-]+)/", line)
-    return any(user not in {"example", "placeholder"} for user in homes)
+    return any(user not in {"example", "placeholder", "user"} for user in homes)
 
 
 def scan(root: Path, rule: str, test_git: Path | None = None) -> list[str]:
@@ -165,12 +156,20 @@ def scan(root: Path, rule: str, test_git: Path | None = None) -> list[str]:
         if path.is_symlink():
             raise RuntimeError("selected path is a symlink: {}".format(relative))
         try:
-            text = path.read_text(encoding="utf-8")
+            with path.open("r", encoding="utf-8") as stream:
+                for line_number, line in enumerate(stream, 1):
+                    if (
+                        rule == "hardcoded-home"
+                        and "/Users/" not in line
+                        and "/home/" not in line
+                    ):
+                        continue
+                    if line_matches(rule, line):
+                        findings.append(
+                            "{}:{}: {}".format(relative, line_number, rule)
+                        )
         except (OSError, UnicodeError) as exc:
             raise RuntimeError("cannot read {}: {}".format(relative, exc))
-        for line_number, line in enumerate(text.splitlines(), 1):
-            if line_matches(rule, line):
-                findings.append("{}:{}: {}".format(relative, line_number, rule))
     if selected_count == 0:
         raise RuntimeError("{} scan selected zero files".format(rule))
     return findings

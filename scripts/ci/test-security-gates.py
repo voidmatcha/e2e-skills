@@ -19,6 +19,7 @@ CI_LOCAL = ROOT / "scripts/ci/ci-local.sh"
 REVIEW = ROOT / "scripts/ci/review.sh"
 WORKFLOW = ROOT / ".github/workflows/e2e-smell-scan.yml"
 COMMAND_TIMEOUT_SECONDS = 90
+SECURITY_GATE_TIMEOUT_SECONDS = 180
 
 
 def write_executable(path: Path, source: str) -> None:
@@ -30,6 +31,7 @@ def run(
     command: list[str],
     cwd: Path,
     environment: Optional[Dict[str, str]] = None,
+    timeout: int = COMMAND_TIMEOUT_SECONDS,
 ) -> subprocess.CompletedProcess[str]:
     merged = os.environ.copy()
     if environment:
@@ -41,7 +43,7 @@ def run(
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        timeout=COMMAND_TIMEOUT_SECONDS,
+        timeout=timeout,
         check=False,
     )
 
@@ -103,6 +105,7 @@ def main() -> None:
                 "E2E_SECURITY_GIT": str(override_git),
                 "E2E_SHELL_FIND": str(override_find),
             },
+            timeout=SECURITY_GATE_TIMEOUT_SECONDS,
         )
         assert "Pre-push security:" in shadowed.stdout
         assert not sentinel.exists(), (
@@ -127,6 +130,7 @@ def main() -> None:
                 "BASH_FUNC_sed%%": f"() {{ echo imported-sed >> {sentinel}; }}",
                 "SHELLOPTS": "expand_aliases",
             },
+            timeout=SECURITY_GATE_TIMEOUT_SECONDS,
         )
         assert hostile_startup.returncode == 0, hostile_startup.stdout
         assert "Pre-push security:" in hostile_startup.stdout
@@ -498,6 +502,17 @@ def main() -> None:
             ["/usr/bin/git", "add", "-f", "scripts/ci/pre-push-security.sh"],
             repo,
         )
+        benchmark_fixture = repo / "benchmarks/local-provenance.json"
+        benchmark_fixture.parent.mkdir(parents=True, exist_ok=True)
+        benchmark_fixture.write_text(
+            '{"runner": "/' + 'Users/alice/bin/codex"}\n'
+            '{"example": "/' + 'Users/user/bin/codex"}\n',
+            encoding="utf-8",
+        )
+        run(
+            ["/usr/bin/git", "add", "-f", "benchmarks/local-provenance.json"],
+            repo,
+        )
         expected_policy_lines = {
             "eval": (1, 7, 8, 9),
             "fixed-tmp": (2, 3),
@@ -519,10 +534,14 @@ def main() -> None:
             assert "scripts/danger.sh" in policy_result.stdout
             for line_number in expected_policy_lines.get(rule, ()):
                 assert "scripts/danger.sh:{}:".format(line_number) in policy_result.stdout
+            if rule == "hardcoded-home":
+                assert "benchmarks/local-provenance.json:1:" in policy_result.stdout
+                assert "benchmarks/local-provenance.json:2:" not in policy_result.stdout
             if rule in {"eval", "fixed-tmp", "backdoor"}:
                 assert "scripts/hooks/pre-push" in policy_result.stdout
                 assert "scripts/ci/pre-push-security.sh" in policy_result.stdout
                 assert "scripts/shell-policy-notes.txt" not in policy_result.stdout
+                assert "benchmarks/local-provenance.json" not in policy_result.stdout
 
         failing_git = Path(temporary) / "failing-git"
         empty_git = Path(temporary) / "empty-git"
@@ -609,6 +628,7 @@ def main() -> None:
                 "E2E_SECURITY_GIT": str(failing_git),
                 "E2E_SHELL_FIND": str(missing_git),
             },
+            timeout=SECURITY_GATE_TIMEOUT_SECONDS,
         )
         assert "synthetic git failure" not in security_with_overrides.stdout
         assert "shell enumeration failed" not in security_with_overrides.stdout

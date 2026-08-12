@@ -8,6 +8,7 @@ import concurrent.futures
 from collections.abc import Callable
 import os
 from pathlib import Path
+import resource
 import shutil
 import subprocess
 import sys
@@ -20,6 +21,13 @@ SCANNER = ROOT / "skills/e2e-reviewer/scripts/scan.sh"
 EVAL_FILES = ROOT / "skills/e2e-reviewer/evals/files"
 WORKFLOW = ROOT / ".github/workflows/e2e-smell-scan.yml"
 CI_LOCAL = ROOT / "scripts/ci/ci-local.sh"
+SCANNER_HANG_TIMEOUT_SECONDS = 180
+SCANNER_PERFORMANCE_HANG_TIMEOUT_SECONDS = 900
+
+
+def child_process_cpu_seconds() -> float:
+    usage = resource.getrusage(resource.RUSAGE_CHILDREN)
+    return usage.ru_utime + usage.ru_stime
 
 
 def trusted_rg_executable() -> Path:
@@ -72,6 +80,7 @@ def scan_path(
     environment_overrides: dict[str, str] | None = None,
     *,
     privileged: bool = True,
+    timeout: int | None = None,
 ) -> subprocess.CompletedProcess[str]:
     environment = os.environ.copy()
     environment.pop("BASH_ENV", None)
@@ -113,6 +122,7 @@ def scan_path(
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         check=False,
+        timeout=timeout,
     )
 
 
@@ -1370,17 +1380,34 @@ def assert_representative_suite_completes_within_budget() -> None:
                 "});\n",
                 encoding="utf-8",
             )
-        started = time.monotonic()
-        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
-        elapsed = time.monotonic() - started
+        cpu_started = child_process_cpu_seconds()
+        wall_started = time.monotonic()
+        result = scan_path(
+            root,
+            {"E2E_SMELL_FAIL_ON": "none"},
+            timeout=SCANNER_PERFORMANCE_HANG_TIMEOUT_SECONDS,
+        )
+        cpu_elapsed = child_process_cpu_seconds() - cpu_started
+        wall_elapsed = time.monotonic() - wall_started
         assert result.returncode == 0, result.stdout
         assert (
             "[P1?][LLM-TRIAGE] #14 Hardcoded credential candidate"
             not in result.stdout
         )
-        assert elapsed < 30, (
-            f"representative 16-file scanner workload took {elapsed:.2f}s"
+        assert cpu_elapsed < 30, (
+            "representative 16-file scanner workload used "
+            f"{cpu_elapsed:.2f}s of child-process CPU time "
+            f"across {wall_elapsed:.2f}s wall time"
         )
+
+
+def assert_scanner_budget_excludes_scheduler_wait() -> None:
+    started = child_process_cpu_seconds()
+    subprocess.run(["/bin/sleep", "0.05"], check=True, timeout=5)
+    elapsed = child_process_cpu_seconds() - started
+    assert elapsed < 0.02, (
+        f"scanner budget counted {elapsed:.4f}s of wait as CPU work"
+    )
 
 
 def assert_parent_project_ast_grep_rejected() -> None:
@@ -3292,13 +3319,10 @@ def assert_excluded_trees_are_pruned_before_preflight() -> None:
         (excluded / "linked.spec.ts").symlink_to(target)
         os.mkfifo(excluded / "events.spec.ts")
 
-        started = time.monotonic()
-        result = scan_path(root)
-        elapsed = time.monotonic() - started
+        result = scan_path(root, timeout=SCANNER_HANG_TIMEOUT_SECONDS)
         assert result.returncode == 0, result.stdout
         assert "unsupported filesystem entries" not in result.stdout
         assert "generated-" not in result.stdout
-        assert elapsed < 15, f"excluded-tree scan took {elapsed:.2f}s"
 
 
 def assert_candidate_type_race_fails_closed() -> None:
@@ -4534,32 +4558,23 @@ def assert_scanner_workload_ceiling_fails_closed() -> None:
         )
         target.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
-        started = time.monotonic()
-        result = subprocess.run(
-            ["/bin/bash", str(SCANNER), str(target)],
-            cwd=ROOT,
-            env={
-                **os.environ,
+        result = scan_path(
+            target,
+            {
                 "E2E_SMELL_NO_ESLINT_DOWNLOAD": "1",
                 "E2E_SMELL_FAIL_ON": "none",
                 "E2E_SMELL_MAX_RULE_HITS": "3",
-                "LC_ALL": "C",
-                "LC_CTYPE": "C",
-                "LANG": "C",
             },
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            check=False,
-            timeout=10,
+            # This is a hang guard, not a performance budget. The assertions
+            # below prove the workload ceiling stops before publishing partial
+            # findings; wall time also includes scheduler starvation.
+            timeout=SCANNER_HANG_TIMEOUT_SECONDS,
         )
-        elapsed = time.monotonic() - started
         assert result.returncode == 2, result.stdout
         assert "INCOMPLETE" in result.stdout
         assert "E2E_SMELL_MAX_RULE_HITS" in result.stdout
         assert "[P0] #7" not in result.stdout
         assert "Summary:" not in result.stdout
-        assert elapsed < 10
 
         long_line = root / "long-line.spec.ts"
         long_line.write_text(
@@ -5781,7 +5796,8 @@ def main() -> None:
         assert_type_only_foreign_imports_do_not_leave_e2e_scope,
         assert_escaped_module_specifiers_resolve_to_their_evaluated_value,
     )
-    # Timed last and alone: a saturated pool would distort its own budget measurement.
+    # Measured last and alone so the child-CPU delta belongs only to this scan.
+    assert_scanner_budget_excludes_scheduler_wait()
     assert_representative_suite_completes_within_budget()
 
     print(
