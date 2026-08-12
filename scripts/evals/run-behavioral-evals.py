@@ -60,6 +60,8 @@ FIXTURE_ROOT = ROOT / "scripts/ci/fixtures/codex-smoke"
 MAX_RUNNER_OUTPUT_BYTES = 1_048_576
 MAX_GRADING_REGEX_CHARS = 4_096
 GRADING_REGEX_TIMEOUT_SECONDS = 0.1
+PROCESS_GROUP_GRACE_SECONDS = 5.0
+PROCESS_GROUP_POLL_SECONDS = 0.05
 PINNED_CASES_FILE_SHA256 = "96319fb0ecd71772a0849d78817aa0d6b2473f2123484d8f390d91088d1917c6"
 
 
@@ -317,25 +319,67 @@ def prepare_workspace(case: dict, workspace: Path) -> None:
     shutil.copytree(FIXTURE_ROOT, fixture_destination)
 
 
+def process_group_exists(process_group_id: int) -> bool:
+    try:
+        os.killpg(process_group_id, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
+
+
+def wait_for_process_group_exit(
+    process: subprocess.Popen[str], timeout: float
+) -> bool:
+    deadline = time.monotonic() + timeout
+    while True:
+        process.poll()
+        if not process_group_exists(process.pid):
+            return True
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            return False
+        time.sleep(min(PROCESS_GROUP_POLL_SECONDS, remaining))
+
+
 def stop_process_group(process: subprocess.Popen[str]) -> list[str]:
     # Best effort for the process group created by start_new_session. This
     # cannot claim containment of a child that deliberately creates a separate
     # session.
     failures = []
-    for label, action in (
-        ("SIGTERM", lambda: os.killpg(process.pid, signal.SIGTERM)),
-        ("wait-after-SIGTERM", lambda: process.wait(timeout=5)),
-        ("SIGKILL", lambda: os.killpg(process.pid, signal.SIGKILL)),
-        ("wait-after-SIGKILL", lambda: process.wait(timeout=5)),
-    ):
-        try:
-            action()
-        except ProcessLookupError:
-            continue
-        except subprocess.TimeoutExpired:
-            continue
-        except OSError as exc:
-            failures.append(f"{label}: {type(exc).__name__}: {exc}")
+    try:
+        os.killpg(process.pid, signal.SIGTERM)
+    except ProcessLookupError:
+        process.poll()
+        return failures
+    except OSError as exc:
+        failures.append(f"SIGTERM: {type(exc).__name__}: {exc}")
+    try:
+        if wait_for_process_group_exit(process, PROCESS_GROUP_GRACE_SECONDS):
+            return failures
+    except OSError as exc:
+        failures.append(f"wait-after-SIGTERM: {type(exc).__name__}: {exc}")
+
+    try:
+        os.killpg(process.pid, signal.SIGKILL)
+    except ProcessLookupError:
+        process.poll()
+        return failures
+    except OSError as exc:
+        failures.append(f"SIGKILL: {type(exc).__name__}: {exc}")
+    try:
+        group_exited = wait_for_process_group_exit(
+            process, PROCESS_GROUP_GRACE_SECONDS
+        )
+    except OSError as exc:
+        failures.append(f"wait-after-SIGKILL: {type(exc).__name__}: {exc}")
+    else:
+        if not group_exited:
+            failures.append(
+                "wait-after-SIGKILL: process group remained alive after "
+                f"{PROCESS_GROUP_GRACE_SECONDS:.1f}s"
+            )
     return failures
 
 

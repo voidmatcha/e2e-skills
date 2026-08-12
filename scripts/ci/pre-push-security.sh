@@ -278,13 +278,13 @@ else
 fi
 
 section "Hardcoded paths"
-# Scan every tracked or unignored text artifact that can ship from this repo,
-# including benchmark reports and example evidence. Generic `/Users/user/` and
+# Scan every tracked or unignored artifact that can ship from this repo,
+# including benchmark reports and binary evidence. Generic `/Users/user/` and
 # `/Users/example/` placeholders remain allowed; real machine identities do not.
 run_policy_scan \
   "hardcoded-home" \
-  "no machine-specific absolute user-home paths in public text artifacts" \
-  "machine-specific absolute user-home paths found in public text artifacts"
+  "no machine-specific absolute user-home paths in public artifacts" \
+  "machine-specific absolute user-home paths found in public artifacts"
 
 echo ""
 echo "========================================"

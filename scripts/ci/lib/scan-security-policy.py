@@ -14,7 +14,6 @@ import sys
 SELF = Path("scripts/ci/lib/scan-security-policy.py")
 SECURITY_GATE = Path("scripts/ci/pre-push-security.sh")
 SHELL_SUFFIXES = {".sh"}
-HARDCODED_SUFFIXES = {".sh", ".md", ".json", ".yaml", ".yml", ".py", ".txt"}
 RULES = ("eval", "fixed-tmp", "backdoor", "hardcoded-home")
 SHELL_SHEBANG = re.compile(
     br"^#![ \t]*(?:"
@@ -87,11 +86,11 @@ def is_shell_program(root: Path, relative: Path) -> bool:
 
 
 def selected(rule: str, root: Path, relative: Path) -> bool:
-    if relative == SELF:
+    if relative == SELF and rule != "hardcoded-home":
         return False
     if rule in {"eval", "fixed-tmp", "backdoor"}:
         return is_shell_program(root, relative)
-    return relative.suffix.lower() in HARDCODED_SUFFIXES
+    return True
 
 
 def line_matches(rule: str, line: str) -> bool:
@@ -137,8 +136,14 @@ def line_matches(rule: str, line: str) -> bool:
             )
             is not None
         )
-    homes = re.findall(r"/(?:Users|home)/([A-Za-z0-9._-]+)/", line)
-    return any(user not in {"example", "placeholder", "user"} for user in homes)
+    homes = re.findall(
+        r"/(?:Users|home)/([A-Za-z0-9._-]+)(?=/|[^A-Za-z0-9._-]|$)",
+        line,
+    )
+    return any(
+        user not in {"...", "example", "placeholder", "user"}
+        for user in homes
+    )
 
 
 def scan(root: Path, rule: str, test_git: Path | None = None) -> list[str]:
@@ -156,14 +161,19 @@ def scan(root: Path, rule: str, test_git: Path | None = None) -> list[str]:
         if path.is_symlink():
             raise RuntimeError("selected path is a symlink: {}".format(relative))
         try:
+            if rule == "hardcoded-home":
+                with path.open("rb") as stream:
+                    for line_number, raw_line in enumerate(stream, 1):
+                        if b"/Users/" not in raw_line and b"/home/" not in raw_line:
+                            continue
+                        line = raw_line.decode("utf-8", errors="replace")
+                        if line_matches(rule, line):
+                            findings.append(
+                                "{}:{}: {}".format(relative, line_number, rule)
+                            )
+                continue
             with path.open("r", encoding="utf-8") as stream:
                 for line_number, line in enumerate(stream, 1):
-                    if (
-                        rule == "hardcoded-home"
-                        and "/Users/" not in line
-                        and "/home/" not in line
-                    ):
-                        continue
                     if line_matches(rule, line):
                         findings.append(
                             "{}:{}: {}".format(relative, line_number, rule)

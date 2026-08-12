@@ -2,6 +2,16 @@
 
 This directory preserves the benchmark inputs, protocols, raw reports, and negative results behind the short conclusion in the project README.
 
+Historical raw archives may retain normalized host-path shapes, temporary
+workspace paths, process identifiers, invocation identifiers, and runner
+diagnostics when those bytes are bound by evidence hashes. Generic account
+components such as `/Users/user/` and `/home/user/` are placeholders, not a
+contributor identity. Treat those fields as local run provenance, not as setup
+instructions or evidence that another machine will use the same paths. New
+producers must redact credentials and normalize real account names before
+committing artifacts; do not rewrite a frozen archive merely to make its
+diagnostics look platform-neutral.
+
 ## Current conclusion
 
 `e2e-skills` has useful behavior-backed development evidence and concrete open-source adoption, but it does **not** yet have a passing release-grade benchmark for generalized reviewer accuracy.

@@ -36,6 +36,21 @@ fails on accidental support claims for out-of-scope frameworks.
 
 ## Development setup
 
+The full local CI mirror targets macOS and Linux with `/bin/bash`, a
+PCRE2-capable `rg`, and Python 3.10 or newer. Its frozen prompt-size replay also
+requires CPython 3.12 and access to the hash-locked Python packages (from a
+local cache or PyPI). For its trust boundary, the gate
+discovers interpreters only at standard system and Homebrew prefixes; a
+Nix-, Conda-, or pyenv-only layout is not currently auto-discovered. GitHub CI
+runs the full mirror on Ubuntu and a smaller portability contract on both
+Ubuntu and macOS.
+
+Hard-wrap ordinary prose when it makes reviews easier. Do not mechanically
+reflow Markdown table rows, shell commands, URLs, hashes, or frozen JSON/log
+evidence: their physical line boundaries are structural or evidence-bearing.
+Keep each table row on one physical line, and split a command only with an
+explicit shell continuation.
+
 ```bash
 # Clone the repo
 git clone https://github.com/voidmatcha/e2e-skills.git

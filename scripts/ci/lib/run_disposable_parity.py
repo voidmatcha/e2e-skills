@@ -9,26 +9,17 @@ import hashlib
 import os
 from pathlib import Path
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
 
 
-IGNORED_NAMES = frozenset(
-    {
-        ".DS_Store",
-        ".git",
-        ".omx",
-        ".serena",
-        "__pycache__",
-        "e2e-reviewer-workspace",
-        "node_modules",
-        "results",
-        "testbed",
-    }
-)
 DISPOSABLE_PREFIX = "e2e-parity-disposable-"
 SENTINEL = ".e2e-parity-disposable-root"
+TRUSTED_PATH = os.pathsep.join(
+    ("/usr/bin", "/bin", "/usr/local/bin", "/opt/homebrew/bin")
+)
 
 
 @dataclass(frozen=True)
@@ -39,50 +30,107 @@ class DisposableParityResult:
     cleaned: bool
 
 
-def _ignored(_directory: str, names: list[str]) -> set[str]:
-    return {
-        name
-        for name in names
-        if name in IGNORED_NAMES or name.endswith(".parity-backup")
-    }
+def _trusted_git() -> str:
+    git = shutil.which("git", path=TRUSTED_PATH)
+    if git is None:
+        raise RuntimeError("trusted git executable is unavailable")
+    return git
+
+
+def _git_environment() -> dict[str, str]:
+    environment = os.environ.copy()
+    for key in tuple(environment):
+        if key.startswith("GIT_"):
+            environment.pop(key)
+    environment["GIT_CONFIG_NOSYSTEM"] = "1"
+    environment["GIT_CONFIG_GLOBAL"] = "/dev/null"
+    return environment
+
+
+def repository_files(root: Path) -> list[Path]:
+    """List the working-tree files Git considers publishable inputs."""
+    completed = subprocess.run(
+        [
+            _trusted_git(),
+            "-c",
+            "core.hooksPath=/dev/null",
+            "ls-files",
+            "-co",
+            "--exclude-standard",
+            "-z",
+            "--",
+        ],
+        cwd=root,
+        env=_git_environment(),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if completed.returncode != 0:
+        detail = completed.stderr.decode("utf-8", errors="replace").strip()
+        raise RuntimeError(
+            "source file enumeration failed: " + (detail or "no diagnostic")
+        )
+    files = []
+    for raw_path in completed.stdout.split(b"\0"):
+        if not raw_path:
+            continue
+        try:
+            relative = Path(raw_path.decode("utf-8"))
+        except UnicodeDecodeError as exc:
+            raise RuntimeError(f"non-UTF-8 source path: {exc}") from exc
+        if relative.is_absolute() or ".." in relative.parts:
+            raise RuntimeError(f"unsafe source path from git: {relative}")
+        source = root / relative
+        if not os.path.lexists(source):
+            # A tracked path deleted in the working tree is not part of the
+            # snapshot even though `git ls-files --cached` still names it.
+            continue
+        if source.is_symlink():
+            raise RuntimeError(f"symlink source entry is not allowed: {relative}")
+        files.append(relative)
+    if not files:
+        raise RuntimeError("source file enumeration returned zero files")
+    return sorted(set(files))
 
 
 def source_digest(root: Path) -> str:
-    """Hash copied-source inputs without following symlinks."""
+    """Hash the tracked and non-ignored working-tree snapshot."""
     digest = hashlib.sha256()
     root = root.resolve()
-    for directory, dirnames, filenames in os.walk(root, followlinks=False):
-        dirnames[:] = sorted(name for name in dirnames if name not in IGNORED_NAMES)
-        base = Path(directory)
-        for name in sorted(filenames):
-            if name in IGNORED_NAMES or name.endswith(".parity-backup"):
-                continue
-            path = base / name
-            relative = path.relative_to(root).as_posix()
-            digest.update(relative.encode("utf-8"))
-            digest.update(b"\0")
-            if path.is_symlink():
-                digest.update(b"symlink\0")
-                digest.update(os.readlink(path).encode("utf-8"))
-            else:
-                digest.update(b"file\0")
-                with path.open("rb") as handle:
-                    for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-                        digest.update(chunk)
-            digest.update(b"\0")
+    for relative in repository_files(root):
+        path = root / relative
+        mode = stat.S_IMODE(path.lstat().st_mode)
+        digest.update(relative.as_posix().encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(f"{mode:o}".encode("ascii"))
+        digest.update(b"\0")
+        if path.is_file():
+            digest.update(b"file\0")
+            with path.open("rb") as handle:
+                for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                    digest.update(chunk)
+        else:
+            raise RuntimeError(f"unsupported source entry: {relative}")
+        digest.update(b"\0")
     return digest.hexdigest()
+
+
+def _copy_repository_files(source_root: Path, copied_root: Path) -> None:
+    for relative in repository_files(source_root):
+        source = source_root / relative
+        destination = copied_root / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        if source.is_file():
+            shutil.copy2(source, destination, follow_symlinks=False)
+        else:
+            raise RuntimeError(f"unsupported source entry: {relative}")
 
 
 def _initialize_disposable_git_index(copied_root: Path) -> None:
     """Create local tracked-file metadata without copying the source .git dir."""
-    trusted_path = os.pathsep.join(
-        ("/usr/bin", "/bin", "/usr/local/bin", "/opt/homebrew/bin")
-    )
-    git = shutil.which("git", path=trusted_path)
-    if git is None:
-        raise RuntimeError("trusted git executable is unavailable")
-    environment = os.environ.copy()
-    environment["GIT_CONFIG_NOSYSTEM"] = "1"
+    git = _trusted_git()
+    environment = _git_environment()
     commands = (
         [git, "-c", "core.hooksPath=/dev/null", "init", "--quiet"],
         [
@@ -136,28 +184,28 @@ def run_disposable_copy(
     inner_returncode = 1
     after = ""
     try:
-        shutil.copytree(
-            source_root,
-            copied_root,
-            symlinks=True,
-            ignore=_ignored,
-        )
+        copied_root.mkdir()
+        _copy_repository_files(source_root, copied_root)
         copied_root = copied_root.resolve(strict=True)
         (copied_root / SENTINEL).write_text(
-            f"source={source_root}\n", encoding="utf-8"
+            "disposable parity copy\n", encoding="utf-8"
         )
         _initialize_disposable_git_index(copied_root)
         command = copied_root / inner_script
         if not command.is_file():
             raise RuntimeError(f"inner parity script is missing: {inner_script}")
-        environment = os.environ.copy()
+        environment = _git_environment()
         environment["E2E_PARITY_DISPOSABLE_ROOT"] = str(copied_root)
+        for key in ("BASH_ENV", "ENV", "CDPATH", "GLOBIGNORE"):
+            environment.pop(key, None)
+        environment.pop("E2E_PARITY_SHARD_INDEX", None)
+        environment.pop("E2E_PARITY_SHARD_COUNT", None)
         if shard is not None:
             shard_index, shard_count = shard
             environment["E2E_PARITY_SHARD_INDEX"] = str(shard_index)
             environment["E2E_PARITY_SHARD_COUNT"] = str(shard_count)
         completed = subprocess.run(
-            ["/bin/bash", str(command)],
+            ["/bin/bash", "-p", str(command)],
             cwd=copied_root,
             env=environment,
             check=False,

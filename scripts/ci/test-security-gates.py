@@ -513,6 +513,38 @@ def main() -> None:
             ["/usr/bin/git", "add", "-f", "benchmarks/local-provenance.json"],
             repo,
         )
+        toml_fixture = repo / "config/tooling.toml"
+        toml_fixture.parent.mkdir(parents=True, exist_ok=True)
+        toml_fixture.write_text(
+            'runner = "/' + 'Users/alice/bin/codex"\n'
+            'example = "/' + 'Users/user/bin/codex"\n'
+            'home = "/' + 'Users/alice"\n'
+            'example_home = "/' + 'Users/user"\n'
+            'ellipsis = "/' + 'Users/..."\n',
+            encoding="utf-8",
+        )
+        binary_fixture = repo / "assets/provenance.bin"
+        binary_fixture.parent.mkdir(parents=True, exist_ok=True)
+        binary_fixture.write_bytes(
+            b"\x00runner=/" + b"home/alice/bin/codex\x00\n"
+        )
+        scanner_self_fixture = repo / "scripts/ci/lib/scan-security-policy.py"
+        scanner_self_fixture.parent.mkdir(parents=True, exist_ok=True)
+        scanner_self_fixture.write_text(
+            'DEVELOPER_HOME = "/' + 'home/scanner-owner"\n',
+            encoding="utf-8",
+        )
+        run(
+            [
+                "/usr/bin/git",
+                "add",
+                "-f",
+                "config/tooling.toml",
+                "assets/provenance.bin",
+                "scripts/ci/lib/scan-security-policy.py",
+            ],
+            repo,
+        )
         expected_policy_lines = {
             "eval": (1, 7, 8, 9),
             "fixed-tmp": (2, 3),
@@ -537,6 +569,16 @@ def main() -> None:
             if rule == "hardcoded-home":
                 assert "benchmarks/local-provenance.json:1:" in policy_result.stdout
                 assert "benchmarks/local-provenance.json:2:" not in policy_result.stdout
+                assert "config/tooling.toml:1:" in policy_result.stdout
+                assert "config/tooling.toml:2:" not in policy_result.stdout
+                assert "config/tooling.toml:3:" in policy_result.stdout
+                assert "config/tooling.toml:4:" not in policy_result.stdout
+                assert "config/tooling.toml:5:" not in policy_result.stdout
+                assert "assets/provenance.bin:1:" in policy_result.stdout
+                assert (
+                    "scripts/ci/lib/scan-security-policy.py:1:"
+                    in policy_result.stdout
+                )
             if rule in {"eval", "fixed-tmp", "backdoor"}:
                 assert "scripts/hooks/pre-push" in policy_result.stdout
                 assert "scripts/ci/pre-push-security.sh" in policy_result.stdout
@@ -637,7 +679,7 @@ def main() -> None:
     print(
         "security gate regression: pass "
         "(exact provider token shapes plus near-miss guards; source/config and "
-        "shipped text-asset coverage; trusted production executables; enumerator/read/"
+        "shipped artifact coverage; trusted production executables; enumerator/read/"
         "hook-symlink failures; skip refusal)"
     )
 

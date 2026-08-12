@@ -62,6 +62,7 @@ cleanup() {
   done
   [ -n "${SCAN_FIXDIR:-}" ] && rm -rf "$SCAN_FIXDIR" || true
   [ -n "${LANGUAGE_BAD_FILE:-}" ] && rm -f "$LANGUAGE_BAD_FILE" || true
+  [ -n "${ORPHAN_BAD_FILE:-}" ] && rm -f "$ORPHAN_BAD_FILE" || true
 }
 trap cleanup EXIT INT TERM
 
@@ -114,6 +115,22 @@ assert_fails() {
     PASS=$((PASS + 1))
   else
     echo "  [FAIL] $name — expected substring not found: '$expected'" >&2
+    echo "$output" | sed 's/^/         /' >&2
+    FAIL=$((FAIL + 1))
+  fi
+}
+
+assert_passes() {
+  local name="$1"
+  local output
+  local status=0
+  claim_case || return 0
+  output=$(bash scripts/ci/review.sh --quiet 2>&1) || status=$?
+  if [ "$status" -eq 0 ]; then
+    echo "  [PASS] $name"
+    PASS=$((PASS + 1))
+  else
+    echo "  [FAIL] $name — review unexpectedly failed" >&2
     echo "$output" | sed 's/^/         /' >&2
     FAIL=$((FAIL + 1))
   fi
@@ -180,6 +197,177 @@ mutate "$file" "| #1 |" "| #99 |"
 assert_fails "Check 1b — docs missing QR id" "missing rows for Quick Reference ids"
 restore "$file"
 
+# Case 2b: malformed docs taxonomy row — ID/severity parity can pass while
+# the public Markdown row drops its rationale/action columns.
+file="docs/e2e-test-smells.md"
+backup "$file"
+mutate \
+  "$file" \
+  "| #19 | Module-level mutable state in test code | Top-level (column-0) mutable state in a test utility or POM — an initialised \`let\`, a \`var\`, or a mutated \`const\` container — persists across tests within a long-lived worker. Independent worker copies can generate the same supposedly unique value during parallel execution. | Move mutable state behind per-test setup (\`beforeEach\`, fixtures, or factories), or use runtime-unique values such as \`Date.now()\` plus random data or \`testInfo\`-scoped identifiers. |" \
+  "| #19 | Module-level mutable state in test code | Top-level (column-0) mutable state persists across tests within a worker. |"
+assert_fails \
+  "Check 1c — docs taxonomy row must keep four columns" \
+  "taxonomy row must have 4 non-empty columns"
+restore "$file"
+
+# Case 2c: four populated cells are still malformed without the closing table
+# delimiter; this is the shape produced by hard-wrapping inside the last cell.
+file="docs/e2e-test-smells.md"
+backup "$file"
+mutate \
+  "$file" \
+  "random data or \`testInfo\`-scoped identifiers. |" \
+  "random data or \`testInfo\`-scoped identifiers."
+assert_fails \
+  "Check 1c — docs taxonomy row must retain its closing delimiter" \
+  "taxonomy row must start and end with |"
+restore "$file"
+
+# Case 2d: an escaped pipe belongs to a cell and must not become a separator.
+file="docs/e2e-test-smells.md"
+backup "$file"
+mutate \
+  "$file" \
+  "during parallel execution." \
+  'during parallel \| concurrent execution.'
+assert_passes "Check 1c — escaped pipe remains table-cell content"
+restore "$file"
+
+# Case 2e: changelog scanner-budget prose must match the measured audit note.
+file="CHANGELOG.md"
+backup "$file"
+mutate "$file" $'with eighteen tokens\n  of headroom' $'with nineteen tokens\n  of headroom'
+assert_fails \
+  "Check 1d — changelog scanner headroom matches rule self-audit" \
+  "scanner headroom must match docs/rule-self-audit.md"
+restore "$file"
+
+# Case 2f: the roadmap summary must count only rows in the false-green Merged
+# table. Reviewer-informed maintenance is deliberately tracked separately.
+file="docs/roadmap.md"
+backup "$file"
+mutate "$file" "**Merged:** 14 upstream PRs" "**Merged:** 15 upstream PRs"
+assert_fails \
+  "Check 1e — roadmap merged summary matches table rows" \
+  "Merged summary count 15 does not match 14 table rows"
+restore "$file"
+
+# Case 2g: an open maintenance cleanup must not inflate the false-green
+# campaign's In-review count.
+file="docs/roadmap.md"
+backup "$file"
+mutate "$file" "**In review:** 6 active/open upstream PRs" "**In review:** 7 active/open upstream PRs"
+assert_fails \
+  "Check 1e — roadmap maintenance stays outside in-review count" \
+  "In review summary count 7 does not match 6 table rows"
+restore "$file"
+
+# Case 2h: the canonical README adoption table must name the same merged PRs as
+# the roadmap, not merely carry the same row count.
+file="README.md"
+backup "$file"
+mutate \
+  "$file" \
+  "https://github.com/storybookjs/storybook/pull/34141" \
+  "https://github.com/storybookjs/storybook/pull/34142"
+assert_fails \
+  "Check 1e — README merged PR URLs match roadmap" \
+  "README.md: merged PR URL set differs from docs/roadmap.md"
+restore "$file"
+
+# Case 2i: the badge is a public count claim and must follow the roadmap table.
+file="README.md"
+backup "$file"
+mutate "$file" "merged_PRs-14-" "merged_PRs-15-"
+assert_fails \
+  "Check 1e — README merged badge matches roadmap" \
+  "README.md merged badge 15 does not match roadmap 14"
+restore "$file"
+
+# Case 2j: the benchmark status repeats the adoption count and must not drift.
+file="benchmarks/STATUS.md"
+backup "$file"
+mutate \
+  "$file" \
+  "Findings have contributed to **14 merged upstream PRs**" \
+  "Findings have contributed to **15 merged upstream PRs**"
+assert_fails \
+  "Check 1e — benchmark status merged count matches roadmap" \
+  "benchmarks/STATUS.md merged count 15 does not match roadmap 14"
+restore "$file"
+
+# Case 2k: even a coordinated 6 -> 7 count change cannot classify the ToolJet
+# maintenance cleanup as a false-green test fix.
+file="docs/roadmap.md"
+backup "$file"
+python3 - "$file" <<'PY_MOVE_TOOLJET'
+import pathlib
+import sys
+
+path = pathlib.Path(sys.argv[1])
+lines = path.read_text(encoding="utf-8").splitlines()
+row = next(line for line in lines if "ToolJet/ToolJet#17492" in line)
+lines.remove(row)
+maintenance = lines.index("## Reviewer-informed maintenance")
+lines.insert(maintenance - 1, row)
+text = "\n".join(lines) + "\n"
+text = text.replace(
+    "**In review:** 6 active/open upstream PRs",
+    "**In review:** 7 active/open upstream PRs",
+    1,
+)
+path.write_text(text, encoding="utf-8")
+PY_MOVE_TOOLJET
+assert_fails \
+  "Check 1e — ToolJet maintenance cannot enter false-green counts" \
+  "ToolJet #17492 must remain Reviewer-informed maintenance"
+restore "$file"
+
+# Case 2l: the in-review summary counts distinct PRs, not merely table rows.
+file="docs/roadmap.md"
+backup "$file"
+mutate \
+  "$file" \
+  "https://github.com/supabase/supabase/pull/47053" \
+  "https://github.com/expo/expo/pull/46699"
+assert_fails \
+  "Check 1e — in-review rows require distinct PR URLs" \
+  "In review table must contain one distinct PR URL per row"
+restore "$file"
+
+# Case 2m: translated badges repeat the public merged count and must remain
+# bound to the roadmap just like the canonical README badge.
+file="README.ko.md"
+backup "$file"
+mutate "$file" "merged_PRs-14-" "merged_PRs-15-"
+assert_fails \
+  "Check 1e — localized merged badge matches roadmap" \
+  "README.ko.md merged badge 15 does not match roadmap 14"
+restore "$file"
+
+# Case 2n: translated visible prose must not drift while its badge stays
+# correct. Both localized adoption claims are part of the public count surface.
+file="README.ko.md"
+backup "$file"
+mutate "$file" "PR 14건이" "PR 15건이"
+assert_fails \
+  "Check 1e — localized merged prose matches roadmap" \
+  "README.ko.md merged prose counts"
+restore "$file"
+
+# Case 2o: a second summary must not be hidden by selecting only the first
+# matching line, even when that first line still agrees with the table.
+file="docs/roadmap.md"
+backup "$file"
+mutate \
+  "$file" \
+  "- **Merged:** 14 upstream PRs accepted in real projects." \
+  $'- **Merged:** 14 upstream PRs accepted in real projects.\n- **Merged:** 15 upstream PRs accepted in real projects.'
+assert_fails \
+  "Check 1e — roadmap summary must be unique" \
+  "expected exactly one Merged summary count, found 2"
+restore "$file"
+
 # Case 3: README severity placement — relabel a P2 item under P0 table (Check 3)
 file="README.md"
 backup "$file"
@@ -209,12 +397,14 @@ mutate "$file" "name-assertion mismatch, missing Then" "missing Then, name-asser
 assert_fails "Check 5 — plugin.json out-of-order pattern phrase" "missing or out-of-order pattern"
 restore "$file"
 
-# Case 7: docs orphan — strip README reference so a docs file is no longer linked
-file="README.md"
-backup "$file"
-mutate "$file" "](docs/roadmap.md)" ""
-assert_fails "Check 7 — docs orphan detection" "docs/roadmap.md: orphan"
-restore "$file"
+# Case 7: docs orphan — add a publishable docs file with no incoming reference.
+# Mutating README.md would also trip the canonical translation acknowledgement,
+# while selecting an existing doc becomes brittle when CI starts referencing it.
+ORPHAN_BAD_FILE="docs/parity-orphan.md"
+printf '%s\n' '# Deliberately orphaned parity fixture' > "$ORPHAN_BAD_FILE"
+assert_fails "Check 7 — docs orphan detection" "$ORPHAN_BAD_FILE: orphan"
+rm -f "$ORPHAN_BAD_FILE"
+unset ORPHAN_BAD_FILE
 
 # Case 8: manifest version drift — bump .codex-plugin/plugin.json out of sync with the others
 file=".codex-plugin/plugin.json"
@@ -311,6 +501,20 @@ mutate \
   $'allow_implicit_invocation: true\nname: e2e-reviewer'
 assert_fails "OpenAI YAML parser — duplicate top-level key rejected" "invalid OpenAI agent YAML"
 assert_security_fails "Pre-push OpenAI YAML parser — duplicate top-level key rejected" "invalid OpenAI agent YAML"
+restore "$file"
+
+# Case 13c: machine-specific absolute home paths must fail anywhere in the
+# shipped text/code artifact set; placeholders like /Users/example remain ok.
+file="README.md"
+backup "$file"
+bad_home="/""Users/machine-owner/e2e-skills"
+mutate \
+  "$file" \
+  "Find Playwright and Cypress E2E tests that pass CI" \
+  "Find Playwright and Cypress E2E tests that pass CI from $bad_home"
+assert_security_fails \
+  "Pre-push hardcoded-home guard — public docs reject real user paths" \
+  "machine-specific absolute user-home paths found in public artifacts"
 restore "$file"
 
 # Case 14: Language guard — Hangul on a non-switcher README.md line must still fail.
@@ -697,6 +901,18 @@ assert_fails \
   "README i18n canonical revision — canonical byte change requires review" \
   "canonical revision acknowledgement is stale"
 restore "$file"
+
+# Scanner smoke is invariant across drift shards and uses CPU-heavy concurrent
+# checks internally. Run it once on shard zero instead of duplicating it across
+# every disposable copy.
+if [ "$PARITY_SHARD_INDEX" -ne 0 ]; then
+  echo ""
+  echo "========================================"
+  echo "  Drift smoke: $PASS passed, $FAIL failed"
+  echo "========================================"
+  [ "$FAIL" -gt 0 ] && exit 1
+  exit 0
+fi
 
 # ---------------------------------------------------------------------------
 # Scanner detection smoke — fixture-based and offline: eslint auto-download is

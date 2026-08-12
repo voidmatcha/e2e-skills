@@ -1,6 +1,6 @@
 # Upstream Contributions: Track Record and Roadmap
 
-This page tracks self-selected upstream contributions and future candidates. Merged PRs are adoption and case evidence: they show that maintainers accepted specific fixes, but they are not a representative validation set or a product-accuracy estimate. Open PRs show the next contribution queue.
+This page tracks self-selected upstream contributions and future candidates. Merged PRs are adoption and case evidence: they show that maintainers accepted specific fixes, but they are not a representative validation set or a product-accuracy estimate. Open false-green fixes show the next contribution queue; reviewer-informed maintenance that does not repair a false-green test is tracked separately.
 
 **Goal:** at least 25 merged upstream PRs. Each merge should be a small, reviewable fix for a Playwright/Cypress test that previously passed while proving too little.
 
@@ -43,6 +43,15 @@ Selected merged PRs below are sorted roughly by repository recognition, not chro
 | TanStack Router | ★14.7k | [TanStack/router#7616](https://github.com/TanStack/router/pull/7616) | Open | Always-passing E2E assertions and missing awaits. |
 | ngx-bootstrap | ★5.5k | [valor-software/ngx-bootstrap#6820](https://github.com/valor-software/ngx-bootstrap/pull/6820) | Open | Guarded / non-executing assertions converted into effective checks. |
 | DefGuard | ★2.7k | [DefGuard/defguard#3146](https://github.com/DefGuard/defguard/pull/3146) | Open | Async `find()` callback selected the wrong row; follow-up `toBeDefined()` was always true. |
+
+## Reviewer-informed maintenance
+
+These contributions came from E2E review but do not fix a false-green test, so
+they do not change the merged or in-review campaign counts above.
+
+| Repository | ★ | PR | Status | What it changes |
+|------------|----|----|--------|-----------------|
+| ToolJet | ★38.5k | [ToolJet/ToolJet#17492](https://github.com/ToolJet/ToolJet/pull/17492) | Open | Removes unused Cypress multipage helper exports (`#11`); maintenance cleanup, not a false-green test fix. |
 
 ## Queued
 

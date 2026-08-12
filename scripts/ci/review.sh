@@ -458,6 +458,248 @@ if missing_in_docs:
         f"docs/e2e-test-smells.md: missing rows for Quick Reference ids {missing_in_docs}"
     )
 
+# Check 1c: docs/e2e-test-smells.md taxonomy tables must keep four complete
+# columns. ID/severity parity can stay green even when a Markdown row is
+# truncated and drops the user-facing rationale.
+def split_markdown_table_row(line):
+    """Split separators while preserving Markdown-escaped pipe characters."""
+    cells = []
+    current = []
+    preceding_backslashes = 0
+    for character in line.strip()[1:-1]:
+        if character == '|' and preceding_backslashes % 2 == 0:
+            cells.append(''.join(current).strip())
+            current = []
+            preceding_backslashes = 0
+            continue
+        current.append(character)
+        if character == '\\':
+            preceding_backslashes += 1
+        else:
+            preceding_backslashes = 0
+    cells.append(''.join(current).strip())
+    return cells
+
+for number, line in enumerate(docs_text.splitlines(), 1):
+    if not re.match(r'\|\s*#\d+[a-z]?\s*\|', line):
+        continue
+    stripped = line.strip()
+    if not stripped.startswith('|') or not stripped.endswith('|'):
+        errors.append(
+            f"docs/e2e-test-smells.md:{number}: taxonomy row must start and end with |"
+        )
+        continue
+    cells = split_markdown_table_row(stripped)
+    if len(cells) != 4 or any(not cell for cell in cells):
+        errors.append(
+            f"docs/e2e-test-smells.md:{number}: taxonomy row must have 4 non-empty columns"
+        )
+
+# Check 1d: the changelog's scanner budget note must match the measured audit
+# document. This is not a benchmark claim; it protects a small public prose
+# contract from drifting by one number while both files still read plausibly.
+audit_budget = re.search(
+    r'preregistered 123,000 reference tokens\s+—\s+([a-z]+) tokens of headroom',
+    pathlib.Path('docs/rule-self-audit.md').read_text(encoding='utf-8'),
+)
+changelog_budget = re.search(
+    r'frozen review packet with ([a-z]+) tokens\s+of headroom',
+    pathlib.Path('CHANGELOG.md').read_text(encoding='utf-8'),
+)
+if not audit_budget:
+    errors.append("docs/rule-self-audit.md: missing scanner headroom statement")
+elif not changelog_budget:
+    errors.append("CHANGELOG.md: missing scanner headroom statement")
+elif changelog_budget.group(1) != audit_budget.group(1):
+    errors.append(
+        "CHANGELOG.md: scanner headroom must match docs/rule-self-audit.md "
+        f"({changelog_budget.group(1)} != {audit_budget.group(1)})"
+    )
+
+# Check 1e: roadmap campaign summaries must equal the rows in their own
+# false-green tables. Reviewer-informed maintenance is a separate contribution
+# class and must not inflate either campaign count.
+roadmap_text = pathlib.Path('docs/roadmap.md').read_text(encoding='utf-8')
+roadmap_sections = {}
+
+def roadmap_section(title):
+    if title in roadmap_sections:
+        return roadmap_sections[title]
+    sections = re.findall(
+        rf'^## {re.escape(title)}\s*$\n(.*?)(?=^## |\Z)',
+        roadmap_text,
+        re.M | re.S,
+    )
+    if len(sections) != 1:
+        errors.append(
+            f"docs/roadmap.md: expected exactly one {title} section, found {len(sections)}"
+        )
+        roadmap_sections[title] = None
+        return None
+    roadmap_sections[title] = sections[0]
+    return sections[0]
+
+def roadmap_section_rows(title):
+    section = roadmap_section(title)
+    if section is None:
+        return None
+    return [
+        line
+        for line in section.splitlines()
+        if re.match(r'^\|\s*[^-|][^|]*\|', line)
+        and not line.startswith('| Repository |')
+    ]
+
+roadmap_counts = {}
+for title, summary_pattern in (
+    ('Merged', r'^- \*\*Merged:\*\* (\d+) upstream PRs'),
+    ('In review', r'^- \*\*In review:\*\* (\d+) active/open upstream PRs'),
+):
+    summaries = re.findall(summary_pattern, roadmap_text, re.M)
+    rows = roadmap_section_rows(title)
+    if len(summaries) != 1:
+        errors.append(
+            f"docs/roadmap.md: expected exactly one {title} summary count, "
+            f"found {len(summaries)}"
+        )
+    else:
+        summary_count = int(summaries[0])
+        roadmap_counts[title] = summary_count
+        if rows is not None and summary_count != len(rows):
+            errors.append(
+                f"docs/roadmap.md: {title} summary count {summary_count} "
+                f"does not match {len(rows)} table rows"
+            )
+
+def pull_request_urls(text):
+    if text is None:
+        return []
+    return re.findall(
+        r'https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/pull/\d+',
+        text,
+    )
+
+merged_section = roadmap_section('Merged')
+in_review_section = roadmap_section('In review')
+maintenance_section = roadmap_section('Reviewer-informed maintenance')
+merged_urls = pull_request_urls(merged_section)
+in_review_urls = pull_request_urls(in_review_section)
+maintenance_urls = pull_request_urls(maintenance_section)
+
+for title, urls in (
+    ('Merged', merged_urls),
+    ('In review', in_review_urls),
+    ('Reviewer-informed maintenance', maintenance_urls),
+):
+    rows = roadmap_section_rows(title)
+    if rows is not None and (
+        len(urls) != len(rows) or len(urls) != len(set(urls))
+    ):
+        errors.append(
+            f"docs/roadmap.md: {title} table must contain one distinct PR URL per row"
+        )
+
+for left_title, left_urls, right_title, right_urls in (
+    ('Merged', merged_urls, 'In review', in_review_urls),
+    ('Merged', merged_urls, 'Reviewer-informed maintenance', maintenance_urls),
+    ('In review', in_review_urls, 'Reviewer-informed maintenance', maintenance_urls),
+):
+    overlap = sorted(set(left_urls) & set(right_urls))
+    if overlap:
+        errors.append(
+            f"docs/roadmap.md: {left_title} and {right_title} share PR URLs {overlap}"
+        )
+
+tooljet_url = 'https://github.com/ToolJet/ToolJet/pull/17492'
+if tooljet_url not in maintenance_urls:
+    errors.append(
+        "docs/roadmap.md: ToolJet #17492 must remain Reviewer-informed maintenance"
+    )
+if tooljet_url in merged_urls or tooljet_url in in_review_urls:
+    errors.append(
+        "docs/roadmap.md: ToolJet #17492 must not enter false-green campaign counts"
+    )
+
+readme_adoption = re.findall(
+    r'^## Open-source adoption\s*$\n(.*?)(?=^## |\Z)',
+    readme_text,
+    re.M | re.S,
+)
+if len(readme_adoption) != 1:
+    errors.append(
+        f"README.md: expected exactly one Open-source adoption section, found {len(readme_adoption)}"
+    )
+else:
+    readme_merged_urls = pull_request_urls(readme_adoption[0])
+    if len(readme_merged_urls) != len(set(readme_merged_urls)):
+        errors.append("README.md: Open-source adoption table contains duplicate PR URLs")
+    if set(readme_merged_urls) != set(merged_urls):
+        errors.append("README.md: merged PR URL set differs from docs/roadmap.md")
+
+merged_count = roadmap_counts.get('Merged')
+if merged_count is not None:
+    count_contracts = [
+        (
+            'README.md merged badge',
+            re.findall(r'merged_PRs-(\d+)-', readme_text),
+        ),
+        (
+            'README.md Why try it',
+            re.findall(
+                r'\[(\d+) merged upstream PRs\]\(#open-source-adoption\)',
+                readme_text,
+            ),
+        ),
+        (
+            'README.md Open-source adoption',
+            re.findall(r'\*\*(\d+) merged upstream PRs\*\*', readme_adoption[0])
+            if len(readme_adoption) == 1
+            else [],
+        ),
+        (
+            'benchmarks/STATUS.md merged count',
+            re.findall(
+                r'Findings have contributed to \*\*(\d+) merged upstream PRs\*\*',
+                pathlib.Path('benchmarks/STATUS.md').read_text(encoding='utf-8'),
+            ),
+        ),
+    ]
+    for label, matches in count_contracts:
+        if len(matches) != 1:
+            errors.append(f"{label}: expected exactly one count, found {len(matches)}")
+        elif int(matches[0]) != merged_count:
+            errors.append(
+                f"{label} {matches[0]} does not match roadmap {merged_count}"
+            )
+
+    translated_prose_patterns = {
+        'README.ko.md': r'PR (?:\*\*)?(\d+)건이',
+        'README.ja.md': r'(?:\[|\*\*)(\d+) 件のマージ済み upstream PR',
+        'README.zh-cn.md': r'(?:\[|\*\*)(\d+) 个合入上游的 PR',
+    }
+    for translated_readme, prose_pattern in translated_prose_patterns.items():
+        translated_text = pathlib.Path(translated_readme).read_text(encoding='utf-8')
+        badge_counts = re.findall(
+            r'merged_PRs-(\d+)-',
+            translated_text,
+        )
+        if len(badge_counts) != 1:
+            errors.append(
+                f"{translated_readme} merged badge: expected exactly one count, "
+                f"found {len(badge_counts)}"
+            )
+        elif int(badge_counts[0]) != merged_count:
+            errors.append(
+                f"{translated_readme} merged badge {badge_counts[0]} does not match "
+                f"roadmap {merged_count}"
+            )
+        prose_counts = re.findall(prose_pattern, translated_text)
+        if prose_counts != [str(merged_count), str(merged_count)]:
+            errors.append(
+                f"{translated_readme} merged prose counts {prose_counts} do not match "
+                f"roadmap {merged_count} twice"
+            )
+
 # Check 2: docs P0/P1/P2 section placement must agree with QR severity
 sections = re.split(r'^##\s+(P[012]):', docs_text, flags=re.M)
 for i in range(1, len(sections), 2):

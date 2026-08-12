@@ -173,6 +173,11 @@ class CleanupProcess:
     def poll(self):
         return None
 
+class TerminatingProcess(CleanupProcess):
+    def wait(self, timeout=None):
+        self.wait_calls += 1
+        return 0
+
 class SelectorKey:
     def __init__(self, fileobj, data):
         self.fileobj = fileobj
@@ -205,6 +210,8 @@ with patch.object(module.selectors, "DefaultSelector", CleanupSelector), patch.o
 ), patch.object(
     module.time, "monotonic", side_effect=[0.0, 2.0]
 ), patch.object(
+    module, "wait_for_process_group_exit", side_effect=[False, True]
+), patch.object(
     module.os, "killpg", side_effect=cleanup_killpg(timeout_signals, True)
 ):
     try:
@@ -218,7 +225,26 @@ with patch.object(module.selectors, "DefaultSelector", CleanupSelector), patch.o
     else:
         raise AssertionError("behavioral timeout unexpectedly completed")
 assert timeout_signals == [module.signal.SIGTERM, module.signal.SIGKILL]
-assert timeout_process.wait_calls == 2
+
+terminating_process = TerminatingProcess()
+terminating_signals = []
+with patch.object(module.selectors, "DefaultSelector", CleanupSelector), patch.object(
+    module.os, "set_blocking"
+), patch.object(
+    module.time, "monotonic", side_effect=[0.0, 2.0]
+), patch.object(
+    module, "wait_for_process_group_exit", return_value=True
+), patch.object(
+    module.os, "killpg", side_effect=cleanup_killpg(terminating_signals, False)
+):
+    try:
+        module.communicate_bounded(terminating_process, ["runner"], 1)
+    except subprocess.TimeoutExpired as exc:
+        assert exc.cleanup_attempted is True
+        assert getattr(exc, "cleanup_failures", []) == []
+    else:
+        raise AssertionError("behavioral timeout unexpectedly completed")
+assert terminating_signals == [module.signal.SIGTERM]
 
 successful_process = CleanupProcess()
 successful_signals = []
@@ -226,6 +252,8 @@ with patch.object(module.selectors, "DefaultSelector", CleanupSelector), patch.o
     module.os, "set_blocking"
 ), patch.object(
     module.time, "monotonic", side_effect=[0.0, 2.0]
+), patch.object(
+    module, "wait_for_process_group_exit", side_effect=[False, True]
 ), patch.object(
     module.os, "killpg", side_effect=cleanup_killpg(successful_signals, False)
 ):
@@ -237,7 +265,6 @@ with patch.object(module.selectors, "DefaultSelector", CleanupSelector), patch.o
     else:
         raise AssertionError("behavioral timeout unexpectedly completed")
 assert successful_signals == [module.signal.SIGTERM, module.signal.SIGKILL]
-assert successful_process.wait_calls == 2
 
 output_process = CleanupProcess()
 output_signals = []
@@ -249,6 +276,8 @@ with patch.object(
     module.os, "read", return_value=b"x" * (module.MAX_RUNNER_OUTPUT_BYTES + 1)
 ), patch.object(
     module.time, "monotonic", side_effect=[0.0, 0.1]
+), patch.object(
+    module, "wait_for_process_group_exit", side_effect=[False, True]
 ), patch.object(
     module.os, "killpg", side_effect=cleanup_killpg(output_signals, True)
 ):
@@ -264,7 +293,6 @@ with patch.object(
     else:
         raise AssertionError("oversized output unexpectedly completed")
 assert output_signals == [module.signal.SIGTERM, module.signal.SIGKILL]
-assert output_process.wait_calls == 2
 
 case = {
     "id": "reviewer-always-true-locator",
@@ -428,7 +456,7 @@ cat >"$TMP/oversized-output-runner" <<'SH'
 #!/usr/bin/env bash
 set -euo pipefail
 cat >/dev/null
-head -c 1048577 /dev/zero | tr '\0' x
+head -c 2097152 /dev/zero | tr '\0' x
 SH
 chmod +x "$TMP/oversized-output-runner"
 if python3 "$ROOT/scripts/evals/run-behavioral-evals.py" \
@@ -531,6 +559,50 @@ PY
 timeout_child="$(cat "$TMP/timeout-child.pid")"
 if kill -0 "$timeout_child" 2>/dev/null; then
   echo "test-behavioral-evals: timeout left child process $timeout_child alive" >&2
+  exit 1
+fi
+
+# The group leader may accept SIGTERM while one of its children ignores it.
+# Cleanup must observe the whole process group, not just reap the leader.
+cat >"$TMP/term-parent-runner" <<SH
+#!/usr/bin/env bash
+(
+  trap '' TERM
+  while :; do sleep 1; done
+) &
+echo "\$!" >"$TMP/term-parent-child.pid"
+while :; do sleep 1; done
+SH
+chmod +x "$TMP/term-parent-runner"
+PYTHONDONTWRITEBYTECODE=1 python3 - \
+  "$ROOT/scripts/evals/run-behavioral-evals.py" "$TMP/term-parent-runner" <<'PY'
+import importlib.util
+import pathlib
+import subprocess
+import sys
+
+path = pathlib.Path(sys.argv[1])
+spec = importlib.util.spec_from_file_location("behavioral_eval_runner", path)
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+case = {
+    "id": "reviewer-always-true-locator",
+    "skill": "e2e-reviewer",
+    "task": "Review {repo}/scripts/ci/fixtures/codex-smoke/silent.spec.ts.",
+    "assertions": [{"type": "contains", "value": "x"}],
+}
+try:
+    module.run_once(sys.argv[2], case, "with_skill", 1)
+except subprocess.TimeoutExpired as exc:
+    assert exc.cleanup_attempted is True
+    assert getattr(exc, "cleanup_failures", []) == []
+else:
+    raise AssertionError("TERM-parent runner unexpectedly completed")
+PY
+term_parent_child="$(cat "$TMP/term-parent-child.pid")"
+if kill -0 "$term_parent_child" 2>/dev/null; then
+  kill -KILL "$term_parent_child" 2>/dev/null || true
+  echo "test-behavioral-evals: TERM-parent cleanup left child process $term_parent_child alive" >&2
   exit 1
 fi
 

@@ -2,9 +2,14 @@
 
 ## [Unreleased]
 
-## [1.12.0] - 2026-08-11
+## [1.12.0] - 2026-08-13
 
 ### Changed
+
+- **The upstream roadmap separates false-green fixes from reviewer-informed
+  maintenance.** ToolJet [#17492](https://github.com/ToolJet/ToolJet/pull/17492)
+  is tracked as an open Cypress cleanup without inflating the 14 merged or six
+  in-review test-fix counts.
 
 - **A `// JUSTIFIED:` comment above a `describe` block no longer silences the
   tests inside it.** The callback-scope walk collected every line between the
@@ -19,7 +24,7 @@
 - **The mandatory opening-token sweep grew from 7 rows to 21.** Fifteen rules
   were confirmed unable to detect the defect they name: their candidate regexes
   assume a statement fits on one physical line, and formatters wrap at 80
-  columns. `scan.sh` is a surface in a frozen review packet with nineteen tokens
+  columns. `scan.sh` is a surface in a frozen review packet with eighteen tokens
   of headroom and cannot grow, so the recovery moved to the sweep, each row
   naming the blind spot it covers for. **Reviews take longer.**
 
@@ -80,6 +85,25 @@
   false-green that separates it from flaky.
 
 ### Fixed
+
+- **Public artifacts now fail closed on real absolute user-home paths.** The
+  security gate scans tracked and unignored artifacts regardless of file type,
+  including binary evidence and its own scanner source, while preserving
+  explicit placeholders and hash-bound normalized provenance.
+
+- **Taxonomy rows keep their Markdown structure.** CI requires all four
+  non-empty cells and the closing row delimiter, so an automatic hard-wrap
+  cannot silently remove the user-facing rationale or fix guidance.
+
+- **Behavioral-runner cleanup no longer races or strands same-group children.**
+  Cleanup observes process-group disappearance after `SIGTERM` and escalates to
+  `SIGKILL` only when the group remains alive.
+
+- **Parity smoke tests use a publishable, disposable Git snapshot.** Ignored
+  machine-local directories no longer enter the copy, source symlinks fail
+  closed, inherited Git, shard, and shell-startup variables cannot redirect or
+  truncate the run, and the source digest includes file modes as well as paths
+  and contents.
 
 - **`#4i` names hallucinated locators.** An invented `data-testid` that never
   matched anything is indistinguishable from a selector that rotted, and an
@@ -942,7 +966,7 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 ## [1.3.4] - 2026-06-01
 
 ### Added
-- **`e2e-reviewer/SKILL.md` — new anti-pattern `#19` Module-Level Mutable State In Test Utilities** (`P1`, grep + LLM). Catches top-level `let X = …` declarations in test utilities, helpers, and POMs — state that survives across tests within a Playwright/Cypress worker and across retries, breaking the "unique" contract counter-based identifiers were supposed to provide. Surfaced by the Zeppelin `fix/e2e-flaky-final` review where `let testNotebookNameSequence = 0;` collided under `workers > 1`. Phase 1 grep (`^let\s+`, glob `*.{ts,js,tsx,jsx,cy.ts,cy.js}`) flags every column-0 `let`; Phase 2 LLM filter SKIPS pure type declarations (`let page: Page;` reassigned in `beforeEach` — idiomatic Playwright fixture) and only confirms hits that carry an initializer. Suppress with `// JUSTIFIED: [reason]` for intentionally shared worker-scoped state. Fix pattern documented inline: derive uniqueness from `Date.now()` + `Math.random().toString(36).slice(2, 8)`, use `testInfo.workerIndex`, or move state into `test.beforeEach`.
+- **`e2e-reviewer/SKILL.md` — new anti-pattern `#19` Module-Level Mutable State In Test Utilities** (`P1`, grep + LLM). Catches top-level `let X = …` declarations in test utilities, helpers, and POMs — state that survives across tests within a long-lived worker, while independent worker copies can generate the same supposedly unique counter-based identifiers. Playwright replaces the worker before retrying a failed test, so retry survival is not part of this rule. Surfaced by the Zeppelin `fix/e2e-flaky-final` review where `let testNotebookNameSequence = 0;` collided under `workers > 1`. Phase 1 grep (`^let\s+`, glob `*.{ts,js,tsx,jsx,cy.ts,cy.js}`) flags every column-0 `let`; Phase 2 LLM filter SKIPS pure type declarations (`let page: Page;` reassigned in `beforeEach` — idiomatic Playwright fixture) and only confirms hits that carry an initializer. Suppress with `// JUSTIFIED: [reason]` for intentionally shared worker-scoped state. Fix pattern documented inline: derive uniqueness from `Date.now()` + `Math.random().toString(36).slice(2, 8)`, use `testInfo.workerIndex`, or move state into `test.beforeEach`.
 
 ### Changed
 - **`e2e-reviewer/SKILL.md` — extended `#11` YAGNI scope from Page Objects to Page Objects + Utility Modules.** The procedure now lists exported symbols of `utils.ts` / `helpers.ts` / `fixtures.ts` alongside POM members and applies the 2+ call-site threshold uniformly. The rationalization for the extension is the same one as the original POM scope — single-use indirection adds maintenance cost without reuse benefit. Common new patterns explicitly enumerated: single-use auth helpers, single-use REST helpers, single-use waits. The `Rule` row clarifies that utility-module helpers used only inside their own module should drop the `export` keyword.
