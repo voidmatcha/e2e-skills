@@ -48,13 +48,13 @@ FORBIDDEN_PATH_PARTS = {
     "evals",
 }
 FORBIDDEN_NAME_FRAGMENTS = ("holdout", "scorecard", "review")
-# Sections that state the project's own case — adoption evidence, benchmark claims, and the
+# Sections that state the project's own case — merged-fix evidence, benchmark claims, and the
 # comparison against competing tools. An independent reviewer must not be pre-fed them.
 # Renaming a heading here without renaming it in README.md silently disables the exclusion, so
 # source_representation refuses to build a packet when a name no longer resolves.
 README_EXCLUDED_HEADINGS = {
     "Evidence and limits",
-    "Open-source adoption",
+    "Merged upstream fixes",
     "How this differs from ESLint plugins",
 }
 DIMENSION_IDS = (

@@ -82,9 +82,17 @@ def scan_path(
     privileged: bool = True,
     timeout: int | None = None,
 ) -> subprocess.CompletedProcess[str]:
+    ast_grep_policy_keys = {
+        "E2E_SMELL_AST_GREP_BIN",
+        "E2E_SMELL_DISABLE_AST_GREP",
+        "E2E_SMELL_IGNORE_HOST_AST_GREP",
+        "E2E_SMELL_NO_AST_GREP_DOWNLOAD",
+    }
     environment = os.environ.copy()
     environment.pop("BASH_ENV", None)
     environment.pop("ENV", None)
+    for key in ast_grep_policy_keys:
+        environment.pop(key, None)
     environment.update(
         {
             "E2E_SMELL_NO_ESLINT_DOWNLOAD": "1",
@@ -102,12 +110,6 @@ def scan_path(
     # green on CI (no binary) and red locally, which inverts the "must pass before commit" gate.
     # A test that exercises Tier 2 already names a policy (a pinned binary, the npx tier, or an
     # explicit disable), so only the tests that never mention one are pinned here.
-    ast_grep_policy_keys = {
-        "E2E_SMELL_AST_GREP_BIN",
-        "E2E_SMELL_DISABLE_AST_GREP",
-        "E2E_SMELL_IGNORE_HOST_AST_GREP",
-        "E2E_SMELL_NO_AST_GREP_DOWNLOAD",
-    }
     if not (environment_overrides or {}).keys() & ast_grep_policy_keys:
         environment["E2E_SMELL_DISABLE_AST_GREP"] = "1"
     command = ["/bin/bash"]

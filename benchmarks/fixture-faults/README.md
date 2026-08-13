@@ -3,9 +3,11 @@
 `2026-07-31-current.json` is the current full 36-cell Playwright/Cypress
 execution report produced by `scripts/evals/run-fixture-faults.py`.
 `evidence-manifest.json` classifies and hashes every JSON report in this
-directory. Ordinary CI validates those immutable archives without requiring a
-machine-local `node_modules` tree. Reproducing browser execution remains an
-explicit live step after `npm ci --prefix scripts/evals/fixtures`.
+directory. Pull-request and local CI validate those immutable archives without
+requiring a machine-local `node_modules` tree. Every hosted `main` push also
+reproduces the pinned browser matrix on a disposable runner. Local browser
+reproduction remains an explicit step after
+`npm ci --prefix scripts/evals/fixtures`.
 
 For each of twelve fault operators:
 

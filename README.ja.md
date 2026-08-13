@@ -2,14 +2,14 @@
   <img src="docs/assets/hero.png" alt="e2e-skills — Playwright と Cypress 向けの Agent skills: 信頼できるエンドツーエンドテストを生成・レビュー・デバッグする。" width="100%" />
 </div>
 
-# e2e-skills: false-green な Playwright/Cypress E2E テストを見つける
+<h1 align="center">E2E Skills</h1>
 
 <p align="center">
   <a href="https://github.com/voidmatcha/e2e-skills"><img alt="Agent Skills" src="https://img.shields.io/badge/Agent_Skills-4-1FC07C?style=flat-square&labelColor=black"></a>
   <a href="https://claude.com/product/claude-code"><img alt="Claude Code" src="https://img.shields.io/badge/Claude_Code-compatible-D97757?style=flat-square&labelColor=black&logo=anthropic&logoColor=white"></a>
   <a href="https://github.com/openai/codex"><img alt="Codex" src="https://img.shields.io/badge/Codex-compatible-412991?style=flat-square&labelColor=black&logo=openai&logoColor=white"></a>
   <a href="https://playwright.dev"><img alt="Playwright | Cypress" src="https://img.shields.io/badge/Playwright_%7C_Cypress-supported-2EAD33?style=flat-square&labelColor=black&logo=playwright&logoColor=white"></a>
-  <a href="#open-source-adoption"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-14-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
+  <a href="#merged-upstream-fixes"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-14-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
   <a href="https://agents.md"><img alt="Runs in 55+ agents" src="https://img.shields.io/badge/runs_in-55%2B_agents-37B0E6?style=flat-square&labelColor=black"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/voidmatcha/e2e-skills?style=flat-square&labelColor=black&color=37B0E6"></a>
 </p>
@@ -18,19 +18,52 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <strong>🇯🇵 日本語</strong> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=d9fbfa6d65d4eab6ea5c42d6a69b3a32b9e414da7a39067f1121342c68322e54; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=c077b97b0378f9d46eb197c643ab1482cb24dde434fb45280855e617b2ff8f4b; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
-CI は通るのに、ユーザーに見える挙動を検証できていない Playwright/Cypress の E2E テストを見つけます。
+`e2e-skills` は、E2E テスト作業のために AI coding agent が使える 4 つのワークフローを提供します。Playwright カバレッジの生成、既存の Playwright/Cypress spec のレビュー、失敗した Playwright レポートのデバッグ、失敗した Cypress レポートのデバッグを扱います。レビュー catalog のうち機械的に判定できる subset を検出する決定論的スキャナーも含まれます。
 
-`e2e-skills` は、AI coding agent 向けに焦点を絞った 4 つのワークフローを提供します。Playwright カバレッジの生成、false-green テストを探す Playwright/Cypress spec のレビュー、失敗した Playwright または Cypress レポートのデバッグを扱います。機械的な silent-pass パターンを検出する決定論的スキャナーも含まれています。
+| Need | Skill | Result |
+| --- | --- | --- |
+| 新しい Playwright coverage を生成 | `playwright-test-generator` | 探索、承認、レビュー済みの Playwright specs |
+| 既存の Playwright/Cypress tests をレビュー | `e2e-reviewer` | 具体的な修正を伴う検証済み P0/P1/P2 findings |
+| 失敗した Playwright run をデバッグ | `playwright-debugger` | F1–F15 root cause、evidence、fix |
+| 失敗した Cypress run をデバッグ | `cypress-debugger` | F1–F15 root cause、evidence、fix |
+| 決定論的 local scan を実行 | `skills/e2e-reviewer/scripts/scan.sh` | Target project packages なしの mechanical candidates |
 
-**試す理由:** `e2e-reviewer` の指摘は、Storybook、SvelteKit、code-server、Strapi、Carbon Design System、Ghost、MUI X などの [14 件のマージ済み upstream PR](#open-source-adoption) に貢献しています。
+generator は coverage gap の分析と live browser の探索から始め、scenario の承認後に test を生成し、各候補を検証します。2 つの debugger は失敗した run の artifacts から、分類した root cause、根拠、具体的な fix を返します。
+
+false-green 検出はレビュー workflow の重要な一部ですが、bundle 全体の目的ではありません。`e2e-reviewer` の指摘に基づく修正は、Storybook、SvelteKit、code-server、Strapi、Carbon Design System、Ghost、MUI X などの [14 件のマージ済み upstream PR](#merged-upstream-fixes) に取り込まれています。
 
 > code-server では、コミット済みの `it.only` が 7 か月にわたって 8 件のテストを静かに無効化していました。そのうち 1 件の skip されたテストはすでに壊れていたにもかかわらず、CI は green のままでした。
 
+**実行可能な例:** [React optimistic-write proof](examples/react-optimistic-write/README.md) は、optimistic UI には visible state だけでなく request と persistence の proof が必要な理由を示します。
+
+<a id="merged-upstream-fixes"></a>
+
+## アップストリームにマージされた修正
+
+`e2e-reviewer` の findings は **14 件のマージ済み upstream PR** に貢献しています。これらの self-selected cases は実用例を示し、読者が修正内容を確認できるようにするためのものです。代表的な validation sample や accuracy estimate ではありません。
+
+| Repository | PR | Pattern fixed |
+| --- | --- | --- |
+| Storybook | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Playwright assertions の missing `await` |
+| code-server | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | Focused test leak、matcher-less `expect`、discarded visibility read |
+| Strapi | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | Discarded navigation/state checks |
+| SvelteKit | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Floating Playwright assertions |
+| Carbon Design System | [carbon-design-system/carbon#22564](https://github.com/carbon-design-system/carbon/pull/22564) | Locator truthiness を web-first assertions に置き換え |
+| Ghost | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | Promise-valued disabled-state assertion |
+| Cal.com | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | E2E flow の weak assertion patterns |
+| Bruno | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | Assertion と wait reliability fixes |
+| Qwik | [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777) | Locator/handle existence checks |
+| Element Web | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Locator null-check style assertions |
+| MUI X | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | UI handle checks を state assertions に置き換え |
+| module-federation/core | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Cypress spec 内の redundant blanket `uncaught:exception` suppression |
+| FiftyOne | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Locator-defined check を visible duplicate-name error assertion に置き換え |
+| Rancher Desktop | [rancher-sandbox/rancher-desktop#10557](https://github.com/rancher-sandbox/rancher-desktop/pull/10557) | `not.toBeNull()` locator checks を visible WSL integration-name assertions に置き換え |
+
 ## false-green テストを見る
 
-**false-green** なテストは、名前に書かれた挙動が動いていようといまいと通ります。flaky なテストとは違います。flaky なテストは時々失敗するので、リトライダッシュボードや flake 分析がいずれ検知します。false-green なテストは**製品が壊れていても失敗しない**ため、テストが red/green を行き来するのを監視する仕組みには決して現れません。
+**false-green** なテストは、名前に書かれた挙動が動いていようといまいと通ります。flaky なテストとは違います。flaky なテストは時々失敗するので、リトライダッシュボードや flake 分析がいずれ検知します。false-green なテストは**製品が壊れていても失敗しない**ため、pass/fail の監視だけでは表面化しません。
 
 この Playwright テストはもっともらしく見えますが、証明しているのは `Locator` オブジェクトが作られたことだけです。
 
@@ -69,7 +102,7 @@ Summary: 2 total hit(s), 2 P0
 
 整った assertion は、通るテストと同じではありません。lint は `toBeVisible()` が正しい matcher だとは教えますが、機能が壊れたときにそのテストが red になるかは教えません。
 
-`playwright-test-generator` はその問いに直接答えます。プロジェクトが承認した一時コピー上で primary assertion を反転し (V2)、根拠のある製品 fault を注入して (V3)、予告した箇所で予告した不一致により失敗することを要求します。timeout、ブラウザークラッシュ、設定エラーによる失敗は認めません。安全に証明できないものは推測せず `CANNOT_VERIFY` として報告します。
+generator の主な役割は、project の style に合う Playwright coverage を作ることです。V2 と V3 は、生成した各候補の verification gate です。project が承認した一時コピー上で `playwright-test-generator` は primary assertion を反転し (V2)、根拠のある製品 fault を注入して (V3)、予告した箇所で予告した不一致により失敗することを要求します。timeout、ブラウザークラッシュ、設定エラーによる失敗は認めません。安全に証明できないものは推測せず `CANNOT_VERIFY` として報告します。
 
 これは候補 spec 一つにスコープを絞った mutation testing です。その絞り込みこそが費用を現実的にします — E2E でスイート全体を mutation するのは現実的ではないからです。
 
@@ -147,17 +180,9 @@ Debug the failed Playwright report in playwright-report/.
 Debug the failed Cypress report in cypress/reports/.
 ```
 
-## 得られるもの
+## スコープと制限
 
-| 目的 | Skill | 結果 |
-| --- | --- | --- |
-| 新しい Playwright カバレッジを生成する | `playwright-test-generator` | 探索・承認・レビュー済みの Playwright specs |
-| 通っている Playwright/Cypress テストをレビューする | `e2e-reviewer` | 具体的な修正を伴う検証済み P0/P1/P2 findings |
-| 失敗した Playwright run をデバッグする | `playwright-debugger` | F1–F15 の root cause、evidence、fix |
-| 失敗した Cypress run をデバッグする | `cypress-debugger` | F1–F15 の root cause、evidence、fix |
-| 決定論的なローカル scan を実行する | `skills/e2e-reviewer/scripts/scan.sh` | 対象プロジェクトの package に依存しない機械的候補 |
-
-AI が生成した、または引き継いだ E2E テストが、意図した結果を証明しないまま通ってしまう可能性があるときに、このバンドルを使ってください。アプリケーションや実際の E2E suite の実行、汎用 lint preset、framework-agnostic なテストツールの代替としては使わないでください。サポート範囲は Playwright と Cypress です。新規生成は現在 Playwright のみを対象にしています。
+この bundle は、E2E テストの生成・レビューと、失敗した Playwright/Cypress run の原因分析に使います。アプリケーションと実際の E2E suite に加えて使うものであり、それらの代替ではありません。汎用 lint preset や framework-agnostic なテストツールでもありません。Playwright と Cypress をサポートし、新規テスト生成は現在 Playwright のみを対象にしています。
 
 生成したテストが通るだけでは不十分です。`Locator` や `Promise` 自体を検証していたり、テスト名に記した動作と無関係な状態を見ていたり、主要な assertion がテストの成否に影響していないことがあります。そのため generator は、適用可能な [V1–V6 verification](skills/playwright-test-generator/verification-rules.md) をすべて通過するまで、新しい spec を候補として扱います。
 
@@ -176,11 +201,12 @@ scanner match は候補であり、verdict ではありません。missing authe
 
 ## 根拠と限界
 
-現在の根拠で支えられる主張は限定的です。このプロジェクトには behavior-backed な開発根拠と実際の open-source adoption がありますが、一般化された reviewer accuracy は主張しません。
+現在の根拠で支えられる主張は限定的です。このプロジェクトには behavior-backed な開発根拠とアップストリームにマージされた 14 件の修正がありますが、一般化された reviewer accuracy は主張しません。
 
 - Browser fault injection は **36/36 Playwright/Cypress cells** を完了しています。
 - exact reviewer benchmark は **12 proven false-green cases and 12 clean guards** を対象にしています。10 件の fault cases は byte-identical operator mutants です。
 - Independent robustness gates v4、v5、v7、v8 は preregistered criteria を満たしませんでした。V6 と v9 は未実行で、v10 は frozen ですが未実行です。
+- debugger protocol は replay 可能な 30-case synthetic corpus を提供しますが、independently established debugger accuracy は主張しません。
 
 scores、failed gates、superseded runs、claim boundaries については [benchmark status](benchmarks/STATUS.md) を参照してください。[research evidence ledger](docs/llm-generated-e2e-test-evidence.md) は、隣接する unit-test や custom-agent studies をこのプロジェクトの測定値として扱わず、59 件の外部 source を監査しています。
 
@@ -189,9 +215,6 @@ scores、failed gates、superseded runs、claim boundaries については [benc
 カタログには、24 個の安定した Playwright/Cypress test smells が含まれます。代表的な false-green には、Locator truthiness、missing assertions、swallowed errors、focused tests、missing authentication、network proof のない optimistic UI checks があります。[full taxonomy and rationale](docs/e2e-test-smells.md) を参照してください。
 
 一部のパターンは、テストだけでなくアプリケーションがレビュー範囲に含まれている必要があります。`#22` optimistic UI が最も明確な例です。クリックが実際に mutation を送るかどうかは spec だけでは判断できないため、テストのみのリポジトリでは推測せず何も報告しません。これは意図した false-positive 抑制であり、実行可能な例が component と共に提供される理由です。
-
-<details>
-<summary>重大度別に 24 パターンをすべて表示</summary>
 
 ### 24 Patterns Detected — Grouped by Severity
 
@@ -239,8 +262,6 @@ scores、failed gates、superseded runs、claim boundaries については [benc
 | 11 | **YAGNI + Zombie Specs** | 一度も呼ばれない `clickEdit()`; unjustified empty wrapper class; 別 spec と丸ごと重複した spec | unused members と zombie specs を削除する。single-use helpers は meaningless indirection を明確に減らす場合だけ inline する |
 | 21 | **Manually-captured session-file dependency** | manual capture script でしか生成されない `storageState: 'auth/member.json'` — CI にはなく、静かに期限切れになる | session を programmatically regenerate する (API-login helper または `setup` project)。manual files は programmatic fallback 付き cache としてのみ使う |
 | 23 | **Fixture ignores render guards** | Liked-tab fixture が `liked: false` を seed し、card component がすべての item を `return null` する。empty UI が infra flake に見える | seed 前に item component の early returns/filters を読み、対象 view のすべての guard を通る fields を seed する |
-
-</details>
 
 ## 失敗デバッグ
 
@@ -296,29 +317,6 @@ Tier 3 は同梱 fallback です。optional ESLint と ast-grep tiers は precis
 - test intent や cross-file context が必要な findings に対する semantic review
 
 linter は直接的な Locator truthiness assertion や missing `await` を検出できます。しかし、「shows a duplicate-name error」という名前の test がその error を本当に確認しているか、protected-route test が authentication を忘れていないか、optimistic UI assertion が backend request の発生を証明しているかは判断できません。continuous linting には plugin を使い、test trustworthiness には `e2e-reviewer` を使ってください。
-
-<a id="open-source-adoption"></a>
-
-## オープンソースでの採用
-
-`e2e-reviewer` の findings は **14 件のマージ済み upstream PR** に貢献しています。これらの self-selected cases は実用例を示し、読者が修正内容を確認できるようにするためのものです。代表的な validation sample や accuracy estimate ではありません。
-
-| Repository | PR | Pattern fixed |
-| --- | --- | --- |
-| Storybook | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Playwright assertions の missing `await` |
-| code-server | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | Focused test leak、matcher-less `expect`、discarded visibility read |
-| Strapi | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | Discarded navigation/state checks |
-| SvelteKit | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Floating Playwright assertions |
-| Carbon Design System | [carbon-design-system/carbon#22564](https://github.com/carbon-design-system/carbon/pull/22564) | Locator truthiness を web-first assertions に置き換え |
-| Ghost | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | Promise-valued disabled-state assertion |
-| Cal.com | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | E2E flow の weak assertion patterns |
-| Bruno | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | Assertion と wait reliability fixes |
-| Qwik | [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777) | Locator/handle existence checks |
-| Element Web | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Locator null-check style assertions |
-| MUI X | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | UI handle checks を state assertions に置き換え |
-| module-federation/core | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Cypress spec 内の redundant blanket `uncaught:exception` suppression |
-| FiftyOne | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Locator-defined check を visible duplicate-name error assertion に置き換え |
-| Rancher Desktop | [rancher-sandbox/rancher-desktop#10557](https://github.com/rancher-sandbox/rancher-desktop/pull/10557) | `not.toBeNull()` locator checks を visible WSL integration-name assertions に置き換え |
 
 ## よくある質問
 

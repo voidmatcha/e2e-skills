@@ -2,6 +2,40 @@
 
 ## [Unreleased]
 
+### Changed
+
+- **The executable browser fault matrix now runs on every hosted `main` push.**
+  Pull requests keep the dependency-free archive and portability checks, while
+  the published branch also installs the pinned fixtures and Chromium and
+  fails CI if the live 36-cell reproduction regresses. Manual dispatch remains
+  available for an explicit rerun.
+- **The complete 24-pattern catalog is visible by default in every README
+  language.** English, Korean, Japanese, and Simplified Chinese readers no
+  longer need to expand a disclosure before scanning the severity-grouped
+  table.
+- **The README introduction now represents the full skill bundle.** Every
+  language uses the product name alone as its title and places verified
+  merged upstream fixes before the false-green walkthrough.
+- **The Playwright generator trigger is shorter without weakening its routing
+  boundary.** Its frontmatter description is 677 characters instead of 959,
+  front-loads common requests to add or scaffold coverage, and preserves the
+  approved non-production exploration and adjacent-skill exclusions.
+
+### Fixed
+
+- **The post-fix verifier no longer mistakes Linux `/usr/bin/sg` for
+  ast-grep.** The short name also belongs to the system shadow/group command;
+  ambient `PATH` discovery now accepts only `ast-grep`, while an explicitly
+  installed verifier-relative `sg` or absolute override remains supported.
+- **Hosted CI report capture no longer changes the source snapshot being
+  verified.** The report is written to the runner's temporary directory rather
+  than the checkout, so the disposable parity proof does not mistake its own
+  growing log artifact for a source-tree mutation.
+- **HOL plugin scanning no longer disables low-analyzability checks across the
+  repository.** The workflow loads `.plugin-scanner.toml`, keeps the rule set
+  enabled, and excludes only the reviewed files that trigger known scanner
+  category errors.
+
 ## [1.12.0] - 2026-08-13
 
 ### Changed

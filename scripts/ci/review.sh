@@ -620,19 +620,19 @@ if tooljet_url in merged_urls or tooljet_url in in_review_urls:
         "docs/roadmap.md: ToolJet #17492 must not enter false-green campaign counts"
     )
 
-readme_adoption = re.findall(
-    r'^## Open-source adoption\s*$\n(.*?)(?=^## |\Z)',
+readme_merged_fixes = re.findall(
+    r'^## Merged upstream fixes\s*$\n(.*?)(?=^## |\Z)',
     readme_text,
     re.M | re.S,
 )
-if len(readme_adoption) != 1:
+if len(readme_merged_fixes) != 1:
     errors.append(
-        f"README.md: expected exactly one Open-source adoption section, found {len(readme_adoption)}"
+        f"README.md: expected exactly one Merged upstream fixes section, found {len(readme_merged_fixes)}"
     )
 else:
-    readme_merged_urls = pull_request_urls(readme_adoption[0])
+    readme_merged_urls = pull_request_urls(readme_merged_fixes[0])
     if len(readme_merged_urls) != len(set(readme_merged_urls)):
-        errors.append("README.md: Open-source adoption table contains duplicate PR URLs")
+        errors.append("README.md: Merged upstream fixes table contains duplicate PR URLs")
     if set(readme_merged_urls) != set(merged_urls):
         errors.append("README.md: merged PR URL set differs from docs/roadmap.md")
 
@@ -646,14 +646,14 @@ if merged_count is not None:
         (
             'README.md Why try it',
             re.findall(
-                r'\[(\d+) merged upstream PRs\]\(#open-source-adoption\)',
+                r'\[(\d+) merged upstream PRs\]\(#merged-upstream-fixes\)',
                 readme_text,
             ),
         ),
         (
-            'README.md Open-source adoption',
-            re.findall(r'\*\*(\d+) merged upstream PRs\*\*', readme_adoption[0])
-            if len(readme_adoption) == 1
+            'README.md Merged upstream fixes',
+            re.findall(r'\*\*(\d+) merged upstream PRs\*\*', readme_merged_fixes[0])
+            if len(readme_merged_fixes) == 1
             else [],
         ),
         (
@@ -1539,6 +1539,40 @@ def taxonomy_contract(text):
     return pattern_severity, duplicates, f_codes
 
 
+def check_readme_intro_contract(path, text, merged_heading, false_green_heading, errors):
+    expected_title = '<h1 align="center">E2E Skills</h1>'
+    titles = re.findall(r"^(?:# [^\n]+|<h1\b[^>]*>.*?</h1>)$", text, re.M)
+    if titles != [expected_title]:
+        errors.append(
+            f"README i18n parity: {path} title must be exactly {expected_title!r}"
+        )
+
+    anchor = '<a id="merged-upstream-fixes"></a>'
+    merged_marker = f"## {merged_heading}"
+    false_green_marker = f"## {false_green_heading}"
+    if text.count(anchor) != 1:
+        errors.append(
+            f"README i18n parity: {path} must contain exactly one "
+            "merged-upstream-fixes anchor"
+        )
+        return
+    if text.count(merged_marker) != 1 or text.count(false_green_marker) != 1:
+        errors.append(
+            f"README i18n parity: {path} must contain exactly one "
+            f"{merged_heading} and {false_green_heading} heading"
+        )
+        return
+    if not (
+        text.index(anchor)
+        < text.index(merged_marker)
+        < text.index(false_green_marker)
+    ):
+        errors.append(
+            f"README i18n parity: {path} {merged_heading} must appear before "
+            f"{false_green_heading}"
+        )
+
+
 canonical_commands, canonical_urls = install_contract(canonical)
 if not canonical_commands or not canonical_urls:
     print("README i18n parity: canonical install command/URL contract is empty", file=sys.stderr)
@@ -1561,6 +1595,27 @@ if (
     raise SystemExit(1)
 
 errors = []
+intro_contracts = {
+    canonical_path: ("Merged upstream fixes", "See a false-green test"),
+    pathlib.Path("README.ko.md"): (
+        "업스트림에 병합된 수정 사례",
+        "false-green 테스트 살펴보기",
+    ),
+    pathlib.Path("README.ja.md"): (
+        "アップストリームにマージされた修正",
+        "false-green テストを見る",
+    ),
+    pathlib.Path("README.zh-cn.md"): (
+        "已合入上游的修复",
+        "看一个 false-green 测试",
+    ),
+}
+check_readme_intro_contract(
+    canonical_path,
+    canonical,
+    *intro_contracts[canonical_path],
+    errors,
+)
 check_manual_clone_contract(canonical_path, canonical, errors)
 check_codex_install_and_delegation_contract(canonical_path, canonical, errors)
 contract_start = "<!-- README-I18N-CONTRACT:CORE-SAFETY:START -->"
@@ -1571,7 +1626,7 @@ contract_re = re.compile(
 )
 contract_hashes = {
     "README.md": "ac9a9be1d95d6519bb06901a8c29c997dfad01a03909fe890c28cc629ffd15da",
-    "README.ko.md": "ab75ae3a16567155ae894b40ebcdc10fa55cfa2531238d6c1c54481b85fa0798",
+    "README.ko.md": "4c1975939b870755adf49725d25aed17df01a52f2ece4ff6ac2621ba74d61e27",
     "README.ja.md": "53ba87e9d0211ebbd56d8ab6c86a587f5003be4167ca171e7fdfde9c37c4857f",
     "README.zh-cn.md": "5f1646eeff6d91174af04e396eabf2a4eb954bbe16b373f43c1fb6e70e89efb0",
 }
@@ -1661,6 +1716,7 @@ for path in translations:
     except (OSError, UnicodeError) as exc:
         errors.append(f"README i18n parity: cannot read {path}: {exc}")
         continue
+    check_readme_intro_contract(path, text, *intro_contracts[path], errors)
     check_manual_clone_contract(path, text, errors)
     check_codex_install_and_delegation_contract(path, text, errors)
     acknowledgements = canonical_ack_re.findall(text)

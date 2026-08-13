@@ -128,7 +128,10 @@ through `review.sh`, and must be green before opening a PR. The direct
 pre-push security rerun, manual Codex smoke, standalone scanner example, and
 manifest JSON sanity commands above remain separate invocations.
 
-Live browser/model evidence is opt-in and stays outside ordinary CI:
+The hosted `main` workflow automatically reruns the pinned 36-cell browser
+fault matrix on a disposable runner. Pull-request and local CI remain
+dependency-free; other live browser/model evidence stays opt-in. Use these
+commands for an explicit local reproduction or the remaining live probes:
 
 ```bash
 npm ci --prefix scripts/evals/fixtures

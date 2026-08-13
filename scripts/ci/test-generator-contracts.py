@@ -1091,7 +1091,9 @@ def exercise_passive_fallback_runtime() -> None:
             cwd=ROOT / "scripts/evals/fixtures",
             check=False,
             capture_output=True,
-            timeout=20,
+            # Playwright's browser launch timeout alone defaults to 30 seconds.
+            # Leave enough room for its diagnostic and orderly process cleanup.
+            timeout=60,
         )
         if completed.returncode != 0 and (
             b"browserType.launch: Executable doesn't exist at "

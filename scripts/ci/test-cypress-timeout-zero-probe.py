@@ -96,10 +96,7 @@ def validate_report(report: Dict[str, object]) -> List[str]:
     if not isinstance(provenance, dict):
         errors.append("missing provenance")
         provenance = {}
-    artifacts, artifact_errors = MODULE.dependency_artifacts(MODULE.FIXTURES)
-    if artifact_errors:
-        errors.extend(artifact_errors)
-    expected_provenance = {
+    expected_current_provenance = {
         "probe_spec_sha256": sha256_file(MODULE.SPEC_PATH),
         "probe_app_sha256": sha256_file(MODULE.APP_ROOT / "index.html"),
         "evaluator_runner_sha256": sha256_file(RUNNER_PATH),
@@ -116,15 +113,26 @@ def validate_report(report: Dict[str, object]) -> List[str]:
         "generated_config_sha256": MODULE.sha256_bytes(
             MODULE.CONFIG_SOURCE.encode("utf-8")
         ),
-        "selected_executable_sha256": sha256_file(artifacts["executable"]),
-        "selected_package_json_sha256": sha256_file(artifacts["package_json"]),
-        "selected_package_lock_sha256": sha256_file(artifacts["package_lock"]),
+        "selected_package_lock_sha256": sha256_file(MODULE.LOCK_PATH),
         "selected_version_record_sha256": MODULE.canonical_sha256(
-            MODULE.package_lock_version_record(MODULE.FIXTURES)
+            MODULE.package_lock_version_record()
         ),
     }
-    if provenance != expected_provenance:
+    archived_dependency_keys = {
+        "selected_executable_sha256",
+        "selected_package_json_sha256",
+    }
+    if set(provenance) != (
+        set(expected_current_provenance) | archived_dependency_keys
+    ):
         errors.append("incomplete or stale provenance")
+    for key, expected in expected_current_provenance.items():
+        if provenance.get(key) != expected:
+            errors.append("incomplete or stale provenance")
+            break
+    # These two digests describe the platform-dependent dependency tree used
+    # for the historical live run. The evidence manifest authenticates the
+    # archive; ordinary CI must not require the ignored local node_modules tree.
     for key, value in provenance.items():
         if key.endswith("_sha256") and not SHA256_RE.fullmatch(str(value)):
             errors.append("invalid provenance hash: {}".format(key))
@@ -259,6 +267,14 @@ def assert_fail_closed(report: Dict[str, object]) -> None:
     stale_capture_helper["provenance"]["capture_helper_sha256"] = "0" * 64
     mutations.append(("stale capture helper", stale_capture_helper))
 
+    invalid_archived_dependency = copy.deepcopy(report)
+    invalid_archived_dependency["provenance"][
+        "selected_executable_sha256"
+    ] = "not-a-sha256"
+    mutations.append(
+        ("invalid archived dependency digest", invalid_archived_dependency)
+    )
+
     wrong_process_bound = copy.deepcopy(report)
     wrong_process_bound["process_output_limit_bytes"] = 1
     mutations.append(("wrong process output bound", wrong_process_bound))
@@ -287,6 +303,17 @@ def assert_fail_closed(report: Dict[str, object]) -> None:
     for label, mutation in mutations:
         if not validate_report(mutation):
             raise AssertionError("validator accepted {}".format(label))
+
+
+def test_archive_validation_does_not_read_local_dependencies(
+    report: Dict[str, object],
+) -> None:
+    with mock.patch.object(
+        MODULE,
+        "dependency_artifacts",
+        side_effect=AssertionError("archive validation read node_modules"),
+    ):
+        assert validate_report(report) == []
 
 
 def test_selected_dependency_provenance() -> None:
@@ -615,13 +642,14 @@ def main() -> None:
     if contract_errors:
         raise AssertionError("probe contract errors: {}".format(contract_errors))
     report = json.loads(REPORT_PATH.read_text(encoding="utf-8"))
+    test_archive_validation_does_not_read_local_dependencies(report)
     errors = validate_report(report)
     if errors:
         raise AssertionError("\n".join(errors))
     assert_fail_closed(report)
     print(
         "Cypress timeout-zero probe: pass "
-        "(#4g; exits 0/1/1; 8 fail-closed mutations rejected)"
+        "(#4g; exits 0/1/1; 9 fail-closed mutations rejected)"
     )
 
 

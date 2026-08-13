@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+import re
 import stat
 import subprocess
 import tempfile
@@ -18,6 +19,24 @@ SECURITY = ROOT / "scripts/ci/pre-push-security.sh"
 CI_LOCAL = ROOT / "scripts/ci/ci-local.sh"
 REVIEW = ROOT / "scripts/ci/review.sh"
 WORKFLOW = ROOT / ".github/workflows/e2e-smell-scan.yml"
+HOL_WORKFLOW = ROOT / ".github/workflows/hol-plugin-scanner.yml"
+HOL_CONFIG = ROOT / ".plugin-scanner.toml"
+HOL_SCANNER_FALSE_POSITIVE_PATHS = {
+    "skills/cypress-debugger/scripts/publish-mochawesome-report.py",
+    "skills/playwright-test-generator/scripts/raw-aria-snapshot.cjs",
+    "scripts/ci/test-codex-smoke-contract.py",
+    "scripts/ci/test-debugger-contracts.py",
+    "scripts/ci/test-debugger-holdout-v1.py",
+    "scripts/ci/test-eval-isolation.py",
+    "scripts/ci/test-eval-schema.py",
+    "scripts/ci/test-generator-faultkill-runner.py",
+    "scripts/ci/test-independent-review-v6.py",
+    "scripts/ci/test-independent-review.py",
+    "scripts/ci/test-local-eslint-path.sh",
+    "scripts/ci/test-playwright-debugger-artifact-download.py",
+    "scripts/ci/test-reviewer-scanner.py",
+    "scripts/evals/files/holdout-v3/cy-write-credentials/cypress/e2e/profile.cy.ts",
+}
 COMMAND_TIMEOUT_SECONDS = 90
 SECURITY_GATE_TIMEOUT_SECONDS = 180
 
@@ -55,9 +74,42 @@ def main() -> None:
     assert "@ast-grep/cli@^" not in workflow
     assert workflow.count(
         "shell: /bin/bash --noprofile --norc -p -e -o pipefail {0}"
-    ) == 2
+    ) == 3
+    assert 'hosted_node="$(command -v node)"' in workflow
+    assert 'hosted_node="$(realpath "$hosted_node")"' in workflow
+    assert 'if [[ "$hosted_node" != /usr/local/bin/node ]]; then' in workflow
+    assert 'sudo ln -sfn -- "$hosted_node" /usr/local/bin/node' in workflow
+    assert 'sudo chmod go-w -- "$hosted_node"' in workflow
+    assert 'const metadata = fs.statSync(process.execPath);' in workflow
+    assert '(metadata.mode & 0o022) !== 0' in workflow
     assert "/bin/bash -p scripts/ci/ci-local.sh" in workflow
     assert "/bin/bash -p scripts/ci/pre-push-security.sh" in workflow
+    assert 'tee "$RUNNER_TEMP/ci-local-report.txt"' in workflow
+    assert "path: ${{ runner.temp }}/ci-local-report.txt" in workflow
+    assert 'if [ -f "$RUNNER_TEMP/ci-local-report.txt" ]; then' in workflow
+    assert '< "$RUNNER_TEMP/ci-local-report.txt"' in workflow
+    assert "tee ci-local-report.txt" not in workflow
+    assert "live-fixture-reproduction:" in workflow
+    assert "if: github.event_name != 'pull_request'" in workflow
+
+    hol_workflow = HOL_WORKFLOW.read_text(encoding="utf-8")
+    assert "config: .plugin-scanner.toml" in hol_workflow
+    assert HOL_CONFIG.is_file(), "missing narrow HOL scanner false-positive policy"
+    hol_config = HOL_CONFIG.read_text(encoding="utf-8")
+    scanner_section = re.search(
+        r"(?ms)^\[scanner\]\s*(.*?)(?=^\[|\Z)", hol_config
+    )
+    assert scanner_section, "missing [scanner] section"
+    ignore_array = re.search(
+        r"(?ms)^ignore_paths\s*=\s*\[(.*?)\]\s*$",
+        scanner_section.group(1),
+    )
+    assert ignore_array, "missing scanner.ignore_paths array"
+    hol_ignores = re.findall(r'"([^"\n]+)"', ignore_array.group(1))
+    assert set(hol_ignores) == HOL_SCANNER_FALSE_POSITIVE_PATHS
+    assert len(hol_ignores) == len(HOL_SCANNER_FALSE_POSITIVE_PATHS)
+    assert all(not any(token in path for token in "*?[") for path in hol_ignores)
+
     with tempfile.TemporaryDirectory(prefix="security-path-shadow-") as temporary:
         fake_bin = Path(temporary) / "bin"
         fake_bin.mkdir()

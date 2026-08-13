@@ -53,6 +53,7 @@ DIMENSIONS = (
 # Newest generation first. Must stay identical to the runner's copy — this is the
 # independent reimplementation the runner is checked against.
 README_EXCLUDED_HEADING_GENERATIONS = (
+    ("Evidence and limits", "Merged upstream fixes", "How this differs from ESLint plugins"),
     ("Evidence and limits", "Open-source adoption", "How this differs from ESLint plugins"),
     (
         "Methodology", "Open-source adoption and case evidence",

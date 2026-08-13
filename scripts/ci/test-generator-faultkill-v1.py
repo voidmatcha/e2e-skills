@@ -237,6 +237,22 @@ def test_runtime_rows_are_reclassified_from_exit_and_output() -> None:
             )
 
 
+def test_archived_runtime_provenance_does_not_require_live_dependencies() -> None:
+    MODULE.expected_runtime_provenance.cache_clear()
+    expected = MODULE.expected_runtime_provenance()
+    assert set(expected) == {
+        "fixture_tree_sha256",
+        "operators_sha256",
+        "evaluator_runner_sha256",
+        "capture_helper_sha256",
+        "package_lock_sha256",
+        "selected_package_lock_sha256",
+    }
+    assert expected["selected_package_lock_sha256"] == expected[
+        "package_lock_sha256"
+    ]
+
+
 def test_runtime_archive_rejects_schema_state_command_and_provenance_tampering() -> None:
     evidence = MODULE.load_strict_json(MODULE.RUNTIME_EVIDENCE_PATH)
     operators = MODULE.parse_operators()
@@ -276,6 +292,15 @@ def test_runtime_archive_rejects_schema_state_command_and_provenance_tampering()
         "dependency provenance": lambda value, row: value["provenance"].__setitem__(
             "selected_package_lock_sha256", "0" * 64
         ),
+        "archived dependency digest": lambda value, row: value[
+            "provenance"
+        ].__setitem__("selected_node_modules_tree_sha256", "not-a-digest"),
+        "archived dependency version": lambda value, row: value[
+            "provenance"
+        ].__setitem__("selected_playwright_package_version", ""),
+        "archived runtime cache path": lambda value, row: value[
+            "provenance"
+        ].__setitem__("selected_cypress_runtime_cache_key", "/outside/Cypress"),
     }
     for label, mutate in mutations.items():
         tampered = json.loads(json.dumps(evidence))
@@ -376,6 +401,7 @@ def main() -> int:
         test_reference_predictions_score_all_scored_cases_and_controls,
         test_weakened_or_missing_oracle_cannot_receive_credit,
         test_runtime_rows_are_reclassified_from_exit_and_output,
+        test_archived_runtime_provenance_does_not_require_live_dependencies,
         test_runtime_archive_rejects_schema_state_command_and_provenance_tampering,
         test_manifest_is_explicitly_scorer_input_scoped_and_detects_tampering,
         test_cli_validate_only_and_reference_scoring,

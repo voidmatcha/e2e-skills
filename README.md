@@ -2,14 +2,14 @@
   <img src="docs/assets/hero.png" alt="e2e-skills — Agent skills for Playwright and Cypress: generate, review, and debug reliable end-to-end tests." width="100%" />
 </div>
 
-# e2e-skills: Find false-green Playwright and Cypress E2E tests
+<h1 align="center">E2E Skills</h1>
 
 <p align="center">
   <a href="https://github.com/voidmatcha/e2e-skills"><img alt="Agent Skills" src="https://img.shields.io/badge/Agent_Skills-4-1FC07C?style=flat-square&labelColor=black"></a>
   <a href="https://claude.com/product/claude-code"><img alt="Claude Code" src="https://img.shields.io/badge/Claude_Code-compatible-D97757?style=flat-square&labelColor=black&logo=anthropic&logoColor=white"></a>
   <a href="https://github.com/openai/codex"><img alt="Codex" src="https://img.shields.io/badge/Codex-compatible-412991?style=flat-square&labelColor=black&logo=openai&logoColor=white"></a>
   <a href="https://playwright.dev"><img alt="Playwright | Cypress" src="https://img.shields.io/badge/Playwright_%7C_Cypress-supported-2EAD33?style=flat-square&labelColor=black&logo=playwright&logoColor=white"></a>
-  <a href="#open-source-adoption"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-14-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
+  <a href="#merged-upstream-fixes"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-14-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
   <a href="https://agents.md"><img alt="Runs in 55+ agents" src="https://img.shields.io/badge/runs_in-55%2B_agents-37B0E6?style=flat-square&labelColor=black"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/voidmatcha/e2e-skills?style=flat-square&labelColor=black&color=37B0E6"></a>
 </p>
@@ -18,19 +18,50 @@
 <strong>🇺🇸 English</strong> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-Find Playwright and Cypress E2E tests that pass CI but fail to verify user-visible behavior.
+`e2e-skills` gives AI coding agents four focused workflows for Playwright and Cypress E2E work: generate Playwright coverage, review existing Playwright/Cypress specs, debug failed Playwright reports, and debug failed Cypress reports. It also includes a deterministic scanner for the mechanically detectable subset of the review catalog.
 
-`e2e-skills` gives AI coding agents four focused workflows: generate Playwright coverage, review Playwright/Cypress specs for false-green tests, and debug failed Playwright or Cypress reports. It also includes a deterministic scanner for mechanical silent-pass patterns.
+| Need | Skill | Result |
+| --- | --- | --- |
+| Generate new Playwright coverage | `playwright-test-generator` | Explored, approved, reviewed Playwright specs |
+| Review existing Playwright/Cypress tests | `e2e-reviewer` | Verified P0/P1/P2 findings with concrete fixes |
+| Debug a failed Playwright run | `playwright-debugger` | F1–F15 root cause, evidence, and fix |
+| Debug a failed Cypress run | `cypress-debugger` | F1–F15 root cause, evidence, and fix |
+| Run a deterministic local scan | `skills/e2e-reviewer/scripts/scan.sh` | Mechanical candidates without target-project packages |
 
-**Why try it:** `e2e-reviewer` findings have contributed to [14 merged upstream PRs](#open-source-adoption), including fixes in Storybook, SvelteKit, code-server, Strapi, Carbon Design System, Ghost, and MUI X.
+The generator starts with coverage-gap analysis and live-browser exploration, then generates after scenario approval and verifies each candidate. The debuggers start from failed-run artifacts and return a classified root cause, supporting evidence, and a concrete fix.
+
+False-green detection is one important part of the review workflow, not the bundle's entire purpose. Fixes based on `e2e-reviewer` findings have been merged through [14 merged upstream PRs](#merged-upstream-fixes), including Storybook, SvelteKit, code-server, Strapi, Carbon Design System, Ghost, and MUI X.
 
 > In code-server, a committed `it.only` silently disabled eight tests for seven months. One skipped test was already broken while CI remained green.
 
 **Executable example:** [React optimistic-write proof](examples/react-optimistic-write/README.md) shows why optimistic UI needs request and persistence proof, not just visible state.
 
+<a id="merged-upstream-fixes"></a>
+
+## Merged upstream fixes
+
+`e2e-reviewer` findings have contributed to **14 merged upstream PRs**. These self-selected cases show practical use and let readers inspect the fixes; they are not a representative validation sample or an accuracy estimate.
+
+| Repository | PR | Pattern fixed |
+| --- | --- | --- |
+| Storybook | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Missing `await` on Playwright assertions |
+| code-server | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | Focused test leak, matcher-less `expect`, discarded visibility read |
+| Strapi | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | Discarded navigation/state checks |
+| SvelteKit | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Floating Playwright assertions |
+| Carbon Design System | [carbon-design-system/carbon#22564](https://github.com/carbon-design-system/carbon/pull/22564) | Locator truthiness replaced with web-first assertions |
+| Ghost | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | Promise-valued disabled-state assertion |
+| Cal.com | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | Weak assertion patterns in E2E flow |
+| Bruno | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | Assertion and wait reliability fixes |
+| Qwik | [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777) | Locator/handle existence checks |
+| Element Web | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Locator null-check style assertions |
+| MUI X | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | UI handle checks replaced with state assertions |
+| module-federation/core | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Redundant blanket `uncaught:exception` suppression in a Cypress spec |
+| FiftyOne | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Locator-defined check replaced with a visible duplicate-name error assertion |
+| Rancher Desktop | [rancher-sandbox/rancher-desktop#10557](https://github.com/rancher-sandbox/rancher-desktop/pull/10557) | `not.toBeNull()` locator checks replaced with visible WSL integration-name assertions |
+
 ## See a false-green test
 
-A **false-green** test passes whether or not the behavior it names works. It is not a flaky test: a flaky test fails sometimes, so retry dashboards and flake analytics eventually see it. A false-green test never fails — including when the product is broken — so nothing that watches for tests flipping will ever surface it.
+A **false-green** test passes whether or not the behavior it names works. It is not a flaky test: a flaky test fails sometimes, so retry dashboards and flake analytics eventually see it. A false-green test never fails — including when the product is broken — so pass/fail monitoring alone will not surface it.
 
 This Playwright test looks reasonable but proves only that `Locator` objects were created:
 
@@ -69,7 +100,7 @@ Summary: 2 total hit(s), 2 P0
 
 A well-formed assertion is not a passing test. Lint can tell you `toBeVisible()` is the right matcher; it cannot tell you the test goes red when the feature breaks.
 
-`playwright-test-generator` answers that directly. On a scratch copy the project approves, it inverts the primary assertion (V2) and injects an evidenced product fault (V3), then requires the test to fail at the predicted line with the predicted mismatch. A run that fails for a timeout, a browser crash, or a config error does not count. Anything that cannot be proven safely is reported `CANNOT_VERIFY` rather than guessed.
+The generator's primary job is to create Playwright coverage in the project's style. V2 and V3 are verification gates for each generated candidate: on a scratch copy the project approves, `playwright-test-generator` inverts the primary assertion (V2) and injects an evidenced product fault (V3), then requires the test to fail at the predicted line with the predicted mismatch. A run that fails for a timeout, a browser crash, or a config error does not count. Anything that cannot be proven safely is reported `CANNOT_VERIFY` rather than guessed.
 
 That is mutation testing scoped to one candidate spec — which is what makes it affordable, because whole-suite mutation on E2E is not.
 
@@ -147,17 +178,9 @@ Debug the failed Playwright report in playwright-report/.
 Debug the failed Cypress report in cypress/reports/.
 ```
 
-## What you get
+## Scope and limits
 
-| Need | Skill | Result |
-| --- | --- | --- |
-| Generate new Playwright coverage | `playwright-test-generator` | Explored, approved, reviewed Playwright specs |
-| Review passing Playwright/Cypress tests | `e2e-reviewer` | Verified P0/P1/P2 findings with concrete fixes |
-| Debug a failed Playwright run | `playwright-debugger` | F1–F15 root cause, evidence, and fix |
-| Debug a failed Cypress run | `cypress-debugger` | F1–F15 root cause, evidence, and fix |
-| Run a deterministic local scan | `skills/e2e-reviewer/scripts/scan.sh` | Mechanical candidates without target-project packages |
-
-Use this bundle when AI-generated or inherited E2E tests may pass without proving the intended result. Do not use it as a replacement for running the application and its real E2E suite, a general lint preset, or a framework-agnostic test tool. Playwright and Cypress are the supported scope; generation currently targets Playwright only.
+Use this bundle to generate or review E2E tests and to diagnose failed Playwright/Cypress runs. Use it alongside the application and its real E2E suite, not instead of them; it is not a general lint preset or a framework-agnostic test tool. Playwright and Cypress are supported; new-test generation currently targets Playwright only.
 
 A green generated test is not enough: it may assert a `Locator` or `Promise`, observe state unrelated to the behavior named by the test, or leave its primary assertion non-load-bearing. The generator therefore treats every new spec as a candidate until all applicable [V1–V6 verification](skills/playwright-test-generator/verification-rules.md) passes.
 
@@ -176,11 +199,12 @@ A scanner match is a candidate, not a verdict. Cross-file findings such as missi
 
 ## Evidence and limits
 
-The current evidence supports a narrow claim: the project has behavior-backed development evidence and real open-source adoption, but it does not claim generalized reviewer accuracy.
+The current evidence supports a narrow claim: the project has behavior-backed development evidence and 14 merged upstream fixes, but it does not claim generalized reviewer accuracy.
 
 - Browser fault injection completed **36/36 Playwright/Cypress cells**.
 - The exact reviewer benchmark covers **12 proven false-green cases and 12 clean guards**; ten fault cases are byte-identical operator mutants.
 - Independent robustness gates v4, v5, v7, and v8 failed their preregistered criteria. V6 and v9 were not run, and v10 is frozen but not run.
+- The debugger protocol provides a replayable 30-case synthetic corpus, but no independently established debugger accuracy is claimed.
 
 See [benchmark status](benchmarks/STATUS.md) for scores, failed gates, superseded runs, and claim boundaries. The [research evidence ledger](docs/llm-generated-e2e-test-evidence.md) audits 59 external sources instead of treating adjacent unit-test or custom-agent studies as measurements of this project.
 
@@ -189,9 +213,6 @@ See [benchmark status](benchmarks/STATUS.md) for scores, failed gates, supersede
 The catalog contains 24 stable Playwright/Cypress test smells. The most common false-green shapes include Locator truthiness, missing assertions, swallowed errors, focused tests, missing authentication, and optimistic UI checks without network proof. See the [full taxonomy and rationale](docs/e2e-test-smells.md).
 
 Some patterns need the application in scope, not just the tests. `#22` optimistic UI is the clearest case: whether a click issues a mutation cannot be decided from a spec, so on a repository that holds tests alone the review reports nothing for it rather than guessing. That is deliberate false-positive control, and it is why the executable example ships with a component.
-
-<details>
-<summary>View all 24 patterns by severity</summary>
 
 ### 24 Patterns Detected — Grouped by Severity
 
@@ -239,8 +260,6 @@ Weak but not wrong — addressed when refactoring.
 | 11 | **YAGNI + Zombie Specs** | `clickEdit()` never called; unjustified empty wrapper class; entire spec duplicated by another | Delete unused members and zombie specs; inline single-use helpers only when that clearly removes meaningless indirection |
 | 21 | **Manually-captured session-file dependency** | `storageState: 'auth/member.json'` produced only by a manual capture script — absent on CI, silently expires | Regenerate session programmatically (API-login helper or `setup` project); manual files only as a cache with a programmatic fallback |
 | 23 | **Fixture ignores render guards** | Liked-tab fixture seeds `liked: false`; the card component `return null`s every item — empty UI looks like infra flake | Read the item component's early returns/filters before seeding; seed fields to pass every guard for the view under test |
-
-</details>
 
 ## Failure debugging
 
@@ -296,29 +315,6 @@ Tier 3 is the bundled fallback. Optional ESLint and ast-grep tiers add precision
 - Semantic review for findings that need test intent or cross-file context
 
 A linter can catch a direct Locator truthiness assertion or missing `await`. It cannot decide whether a test named “shows a duplicate-name error” ever checks the error, whether a protected-route test forgot authentication, or whether an optimistic UI assertion proves the backend request happened. Use the plugins for continuous linting and `e2e-reviewer` for test trustworthiness.
-
-<a id="open-source-adoption"></a>
-
-## Open-source adoption
-
-`e2e-reviewer` findings have contributed to **14 merged upstream PRs**. These self-selected cases show practical use and let readers inspect the fixes; they are not a representative validation sample or an accuracy estimate.
-
-| Repository | PR | Pattern fixed |
-| --- | --- | --- |
-| Storybook | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Missing `await` on Playwright assertions |
-| code-server | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | Focused test leak, matcher-less `expect`, discarded visibility read |
-| Strapi | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | Discarded navigation/state checks |
-| SvelteKit | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Floating Playwright assertions |
-| Carbon Design System | [carbon-design-system/carbon#22564](https://github.com/carbon-design-system/carbon/pull/22564) | Locator truthiness replaced with web-first assertions |
-| Ghost | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | Promise-valued disabled-state assertion |
-| Cal.com | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | Weak assertion patterns in E2E flow |
-| Bruno | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | Assertion and wait reliability fixes |
-| Qwik | [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777) | Locator/handle existence checks |
-| Element Web | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Locator null-check style assertions |
-| MUI X | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | UI handle checks replaced with state assertions |
-| module-federation/core | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Redundant blanket `uncaught:exception` suppression in a Cypress spec |
-| FiftyOne | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Locator-defined check replaced with a visible duplicate-name error assertion |
-| Rancher Desktop | [rancher-sandbox/rancher-desktop#10557](https://github.com/rancher-sandbox/rancher-desktop/pull/10557) | `not.toBeNull()` locator checks replaced with visible WSL integration-name assertions |
 
 ## Frequently asked questions
 

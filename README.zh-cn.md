@@ -2,14 +2,14 @@
   <img src="docs/assets/hero.png" alt="e2e-skills — 面向 Playwright 和 Cypress 的 Agent Skills：生成、审查并调试可靠的端到端测试。" width="100%" />
 </div>
 
-# e2e-skills：找出 false-green Playwright 和 Cypress E2E 测试
+<h1 align="center">E2E Skills</h1>
 
 <p align="center">
   <a href="https://github.com/voidmatcha/e2e-skills"><img alt="Agent Skills" src="https://img.shields.io/badge/Agent_Skills-4-1FC07C?style=flat-square&labelColor=black"></a>
   <a href="https://claude.com/product/claude-code"><img alt="Claude Code" src="https://img.shields.io/badge/Claude_Code-compatible-D97757?style=flat-square&labelColor=black&logo=anthropic&logoColor=white"></a>
   <a href="https://github.com/openai/codex"><img alt="Codex" src="https://img.shields.io/badge/Codex-compatible-412991?style=flat-square&labelColor=black&logo=openai&logoColor=white"></a>
   <a href="https://playwright.dev"><img alt="Playwright | Cypress" src="https://img.shields.io/badge/Playwright_%7C_Cypress-supported-2EAD33?style=flat-square&labelColor=black&logo=playwright&logoColor=white"></a>
-  <a href="#open-source-adoption"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-14-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
+  <a href="#merged-upstream-fixes"><img alt="Merged PRs" src="https://img.shields.io/badge/merged_PRs-14-1FC07C?style=flat-square&labelColor=black&logo=github"></a>
   <a href="https://agents.md"><img alt="Runs in 55+ agents" src="https://img.shields.io/badge/runs_in-55%2B_agents-37B0E6?style=flat-square&labelColor=black"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/github/license/voidmatcha/e2e-skills?style=flat-square&labelColor=black&color=37B0E6"></a>
 </p>
@@ -17,19 +17,52 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=d9fbfa6d65d4eab6ea5c42d6a69b3a32b9e414da7a39067f1121342c68322e54; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=c077b97b0378f9d46eb197c643ab1482cb24dde434fb45280855e617b2ff8f4b; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
-找出那些能通过 CI、却没有验证用户可见行为的 Playwright 和 Cypress E2E 测试。
+`e2e-skills` 为 AI 编程代理提供四个面向 E2E 测试工作的聚焦工作流：生成 Playwright 覆盖、审查现有 Playwright/Cypress spec、调试失败的 Playwright 报告，以及调试失败的 Cypress 报告。它还包含一个确定性扫描器，用于发现审查目录中可机械判定的子集。
 
-`e2e-skills` 为 AI 编程代理提供四个聚焦的工作流：生成 Playwright 覆盖、审查 Playwright/Cypress spec 中的 false-green 测试，以及调试失败的 Playwright 或 Cypress 报告。它还包含一个确定性扫描器，用来识别机械性的 silent-pass 模式。
+| Need | Skill | Result |
+| --- | --- | --- |
+| 生成新的 Playwright 覆盖 | `playwright-test-generator` | 经过探索、批准和审查的 Playwright specs |
+| 审查现有 Playwright/Cypress tests | `e2e-reviewer` | 带有具体修复建议的已验证 P0/P1/P2 findings |
+| 调试失败的 Playwright run | `playwright-debugger` | F1–F15 root cause、evidence 和 fix |
+| 调试失败的 Cypress run | `cypress-debugger` | F1–F15 root cause、evidence 和 fix |
+| 运行确定性本地扫描 | `skills/e2e-reviewer/scripts/scan.sh` | 不依赖 target-project packages 的 mechanical candidates |
 
-**为什么值得一试：** `e2e-reviewer` 的发现已经促成 [14 个合入上游的 PR](#open-source-adoption)，包括 Storybook、SvelteKit、code-server、Strapi、Carbon Design System、Ghost 和 MUI X 中的修复。
+生成器先分析覆盖缺口并通过真实浏览器探索，再在 scenario 获批后生成测试并验证每个候选。两个 debugger 从失败 run 的 artifacts 入手，返回已分类的 root cause、支持证据和具体 fix。
+
+false-green 检测是审查工作流的重要组成部分，但不是整个 bundle 的唯一用途。基于 `e2e-reviewer` 发现的修复已通过 [14 个合入上游的 PR](#merged-upstream-fixes) 合入，其中包括 Storybook、SvelteKit、code-server、Strapi、Carbon Design System、Ghost 和 MUI X。
 
 > 在 code-server 中，一个提交进仓库的 `it.only` 曾默默禁用 8 个测试长达 7 个月。其中一个被跳过的测试早已损坏，而 CI 仍然保持绿色。
 
+**可执行示例：** [React optimistic-write proof](examples/react-optimistic-write/README.md) 展示了为什么 optimistic UI 不只需要 visible state，还需要 request 和 persistence proof。
+
+<a id="merged-upstream-fixes"></a>
+
+## 已合入上游的修复
+
+`e2e-reviewer` 的发现已促成 **14 个合入上游的 PR**。这些自选案例展示了实际使用，也让读者可以检查修复；它们不是代表性 validation sample 或 accuracy estimate。
+
+| 仓库 | PR | 已修复模式 |
+| --- | --- | --- |
+| Storybook | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Playwright assertions 缺失 `await` |
+| code-server | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | Focused test leak、matcher-less `expect`、被丢弃的 visibility read |
+| Strapi | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | 被丢弃的 navigation/state checks |
+| SvelteKit | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Floating Playwright assertions |
+| Carbon Design System | [carbon-design-system/carbon#22564](https://github.com/carbon-design-system/carbon/pull/22564) | Locator truthiness 替换为 web-first assertions |
+| Ghost | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | Promise-valued disabled-state assertion |
+| Cal.com | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | E2E flow 中的 weak assertion patterns |
+| Bruno | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | Assertion 和 wait reliability fixes |
+| Qwik | [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777) | Locator/handle existence checks |
+| Element Web | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Locator null-check style assertions |
+| MUI X | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | UI handle checks 替换为 state assertions |
+| module-federation/core | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Cypress spec 中冗余的 blanket `uncaught:exception` suppression |
+| FiftyOne | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Locator-defined check 替换为可见的 duplicate-name error assertion |
+| Rancher Desktop | [rancher-sandbox/rancher-desktop#10557](https://github.com/rancher-sandbox/rancher-desktop/pull/10557) | `not.toBeNull()` locator checks 替换为可见的 WSL integration-name assertions |
+
 ## 看一个 false-green 测试
 
-**false-green**（假绿）测试无论它所声称的行为是否正常都会通过。它不是 flaky 测试：flaky 测试偶尔会失败，因此重试面板和 flake 分析最终能发现它。false-green 测试**即使产品已经损坏也从不失败**，所以任何监视测试状态翻转的工具都永远不会暴露它。
+**false-green**（假绿）测试无论它所声称的行为是否正常都会通过。它不是 flaky 测试：flaky 测试偶尔会失败，因此重试面板和 flake 分析最终能发现它。false-green 测试**即使产品已经损坏也不会失败**，因此仅监控 pass/fail 状态无法暴露它。
 
 这个 Playwright 测试看起来合理，但它只证明 `Locator` 对象被创建了：
 
@@ -68,7 +101,7 @@ Summary: 2 total hit(s), 2 P0
 
 写法规范的断言不等于有效的测试。lint 能告诉你 `toBeVisible()` 是正确的 matcher，却无法告诉你功能损坏时这个测试会不会变红。
 
-`playwright-test-generator` 直接回答这个问题。在项目批准的临时副本上，它反转主断言（V2）并注入有据可查的产品缺陷（V3），然后要求测试在预定位置以预定的不匹配失败。因超时、浏览器崩溃或配置错误导致的失败不算数。无法安全证明的内容会报告为 `CANNOT_VERIFY`，而不是猜测。
+生成器的主要工作是创建符合项目风格的 Playwright coverage。V2 和 V3 是每个生成候选的 verification gates：在项目批准的临时副本上，`playwright-test-generator` 反转主断言（V2），注入有据可查的产品缺陷（V3），然后要求测试在预定位置以预定的不匹配失败。因超时、浏览器崩溃或配置错误导致的失败不算数。无法安全证明的内容会报告为 `CANNOT_VERIFY`，而不是猜测。
 
 这是把范围收窄到单个候选 spec 的变异测试。正是这种收窄让成本可以承受——因为在 E2E 上对整个套件做变异测试并不可行。
 
@@ -146,17 +179,9 @@ Debug the failed Playwright report in playwright-report/.
 Debug the failed Cypress report in cypress/reports/.
 ```
 
-## 你会得到什么
+## 范围与限制
 
-| 需求 | Skill | 结果 |
-| --- | --- | --- |
-| 生成新的 Playwright 覆盖 | `playwright-test-generator` | 已探索、已批准、已审查的 Playwright specs |
-| 审查正在通过的 Playwright/Cypress 测试 | `e2e-reviewer` | 带具体修复的已验证 P0/P1/P2 发现 |
-| 调试失败的 Playwright 运行 | `playwright-debugger` | F1–F15 根因、证据和修复 |
-| 调试失败的 Cypress 运行 | `cypress-debugger` | F1–F15 根因、证据和修复 |
-| 运行确定性的本地扫描 | `skills/e2e-reviewer/scripts/scan.sh` | 不依赖目标项目 package 的机械候选项 |
-
-当 AI 生成或继承来的 E2E 测试可能在没有证明预期结果的情况下通过时，请使用这套 bundle。不要把它当作运行应用及其真实 E2E suite 的替代品，也不要把它当作通用 lint preset 或框架无关的测试工具。Playwright 和 Cypress 在支持范围内；生成目前只面向 Playwright。
+这套 bundle 用于生成或审查 E2E 测试，以及分析失败的 Playwright/Cypress 运行。它应与应用及其真实 E2E suite 配合使用，而不是替代它们；它也不是通用 lint preset 或框架无关的测试工具。它支持 Playwright 和 Cypress；新测试生成目前只面向 Playwright。
 
 生成的测试仅仅通过还不够：它可能断言的是 `Locator` 或 `Promise` 本身，观察的状态与测试名称所描述的行为无关，或者主要断言根本不影响测试结果。因此，在所有适用的 [V1–V6 验证](skills/playwright-test-generator/verification-rules.md) 通过之前，生成器始终把新 spec 视为候选项。
 
@@ -175,11 +200,12 @@ Debug the failed Cypress report in cypress/reports/.
 
 ## 证据与限制
 
-当前证据只支持一个窄口径声明：项目拥有 behavior-backed 开发证据和真实开源采用，但不声称具备可泛化的 reviewer accuracy。
+当前证据只支持一个窄口径声明：项目拥有 behavior-backed 开发证据和 14 个已合入上游的修复，但不声称具备可泛化的 reviewer accuracy。
 
 - Browser fault injection 已完成 **36/36 Playwright/Cypress cells**。
 - Exact reviewer benchmark 覆盖 **12 个已证实的 false-green cases 和 12 个 clean guards**；其中 10 个 fault cases 是 byte-identical operator mutants。
 - Independent robustness gates v4、v5、v7 和 v8 未达到其预注册标准。V6 和 v9 未运行，v10 已冻结但未运行。
+- Debugger protocol 提供可重放的 30-case synthetic corpus，但不声称已独立建立 debugger accuracy。
 
 查看 [benchmark status](benchmarks/STATUS.md) 了解分数、失败的 gates、被取代的 runs 和 claim 边界。[research evidence ledger](docs/llm-generated-e2e-test-evidence.md) 审计了 59 个外部来源，避免把相邻的 unit-test 或 custom-agent 研究当作本项目的测量结果。
 
@@ -188,9 +214,6 @@ Debug the failed Cypress report in cypress/reports/.
 该目录包含 24 个稳定的 Playwright/Cypress test smells。最常见的 false-green 形态包括 Locator truthiness、缺失 assertion、吞掉错误、focused tests、缺失认证，以及没有 network proof 的 optimistic UI checks。参见 [完整 taxonomy 和 rationale](docs/e2e-test-smells.md)。
 
 有些模式需要应用代码在审查范围内，而不仅仅是测试。`#22` optimistic UI 是最明显的例子：点击是否真的发出 mutation，无法仅从 spec 判断，因此在只有测试的仓库中，审查不会猜测，而是不报告。这是有意的误报控制，也是可执行示例附带 component 的原因。
-
-<details>
-<summary>按严重程度查看全部 24 个模式</summary>
 
 ### 检测到的 24 个模式 — 按严重程度分组
 
@@ -238,8 +261,6 @@ Debug the failed Cypress report in cypress/reports/.
 | 11 | **YAGNI + Zombie Specs** | `clickEdit()` 从未被调用；无理由的空 wrapper class；整个 spec 被另一个 spec 重复 | 删除未使用成员和 zombie specs；只有在确实能移除无意义间接层时，才内联 single-use helpers |
 | 21 | **Manually-captured session-file dependency** | `storageState: 'auth/member.json'` 只由手动 capture script 生成；CI 上会缺失，也会悄悄过期 | 以编程方式重新生成 session（API-login helper 或 `setup` project）；manual files 只作为带 programmatic fallback 的 cache |
 | 23 | **Fixture ignores render guards** | Liked-tab fixture seed 了 `liked: false`；card component 对每个 item 都 `return null`，让空 UI 看起来像 infra flake | 在 seeding 前读取 item component 的 early returns/filters；seed fields 以通过被测 view 的每个 guard |
-
-</details>
 
 ## 失败调试
 
@@ -295,29 +316,6 @@ Tier 3 是内置 fallback。可选的 ESLint 和 ast-grep tiers 会提高精度�
 - 对需要测试意图或跨文件上下文的发现做 semantic review
 
 linter 可以捕获直接的 Locator truthiness assertion 或缺失的 `await`。它无法判断名为“shows a duplicate-name error”的测试是否真的检查了该错误，protected-route test 是否忘了认证，或 optimistic UI assertion 是否证明了 backend request 发生。用 plugins 做持续 linting，用 `e2e-reviewer` 判断测试可信度。
-
-<a id="open-source-adoption"></a>
-
-## 开源采用
-
-`e2e-reviewer` 的发现已促成 **14 个合入上游的 PR**。这些自选案例展示了实际使用，也让读者可以检查修复；它们不是代表性 validation sample 或 accuracy estimate。
-
-| 仓库 | PR | 已修复模式 |
-| --- | --- | --- |
-| Storybook | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Playwright assertions 缺失 `await` |
-| code-server | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | Focused test leak、matcher-less `expect`、被丢弃的 visibility read |
-| Strapi | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | 被丢弃的 navigation/state checks |
-| SvelteKit | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Floating Playwright assertions |
-| Carbon Design System | [carbon-design-system/carbon#22564](https://github.com/carbon-design-system/carbon/pull/22564) | Locator truthiness 替换为 web-first assertions |
-| Ghost | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | Promise-valued disabled-state assertion |
-| Cal.com | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | E2E flow 中的 weak assertion patterns |
-| Bruno | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | Assertion 和 wait reliability fixes |
-| Qwik | [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777) | Locator/handle existence checks |
-| Element Web | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Locator null-check style assertions |
-| MUI X | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | UI handle checks 替换为 state assertions |
-| module-federation/core | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Cypress spec 中冗余的 blanket `uncaught:exception` suppression |
-| FiftyOne | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Locator-defined check 替换为可见的 duplicate-name error assertion |
-| Rancher Desktop | [rancher-sandbox/rancher-desktop#10557](https://github.com/rancher-sandbox/rancher-desktop/pull/10557) | `not.toBeNull()` locator checks 替换为可见的 WSL integration-name assertions |
 
 ## 常见问题
 

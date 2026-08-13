@@ -150,6 +150,20 @@ RUNTIME_PROVENANCE_KEYS = {
     "selected_cypress_runtime_cache_key",
     "selected_cypress_runtime_sha256",
 }
+ARCHIVED_DEPENDENCY_DIGEST_KEYS = {
+    "selected_node_modules_tree_sha256",
+    "selected_playwright_executable_sha256",
+    "selected_playwright_package_json_sha256",
+    "selected_playwright_lock_record_sha256",
+    "selected_cypress_executable_sha256",
+    "selected_cypress_package_json_sha256",
+    "selected_cypress_lock_record_sha256",
+    "selected_cypress_runtime_sha256",
+}
+ARCHIVED_DEPENDENCY_TEXT_KEYS = {
+    "selected_playwright_package_version",
+    "selected_cypress_package_version",
+}
 EXPECTED_RUNTIME_TRIAD = {
     "clean-strong": ("pass", "pass"),
     "fault-strong": ("fail", "fail"),
@@ -450,11 +464,9 @@ def expected_runtime_provenance() -> dict[str, str]:
     module = importlib.util.module_from_spec(spec)
     sys.modules[module_name] = module
     spec.loader.exec_module(module)
-    dependency, errors = module.full_dependency_provenance(
-        module.FIXTURES, ["playwright", "cypress"]
-    )
-    if errors:
-        raise ValueError(f"fixture dependency provenance is invalid: {errors}")
+    package_lock_sha256 = hashlib.sha256(
+        (module.FIXTURES / "package-lock.json").read_bytes()
+    ).hexdigest()
     return {
         "fixture_tree_sha256": module.fixture_tree_sha256(),
         "operators_sha256": module.operators_sha256(),
@@ -464,10 +476,8 @@ def expected_runtime_provenance() -> dict[str, str]:
         "capture_helper_sha256": hashlib.sha256(
             (ROOT / "scripts/evals/bounded_process.py").read_bytes()
         ).hexdigest(),
-        "package_lock_sha256": hashlib.sha256(
-            (module.FIXTURES / "package-lock.json").read_bytes()
-        ).hexdigest(),
-        **dependency,
+        "package_lock_sha256": package_lock_sha256,
+        "selected_package_lock_sha256": package_lock_sha256,
     }
 
 
@@ -524,6 +534,25 @@ def validate_runtime_archive(
     for key in ("python", "node", "playwright", "cypress", "platform", "machine"):
         if not isinstance(provenance[key], str) or not provenance[key].strip():
             raise ValueError(f"runtime evidence provenance is missing {key}")
+    for key in ARCHIVED_DEPENDENCY_DIGEST_KEYS:
+        value = provenance[key]
+        if not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value):
+            raise ValueError(f"runtime evidence provenance has invalid {key}")
+    for key in ARCHIVED_DEPENDENCY_TEXT_KEYS:
+        if not isinstance(provenance[key], str) or not provenance[key].strip():
+            raise ValueError(f"runtime evidence provenance is missing {key}")
+    runtime_cache_key = provenance["selected_cypress_runtime_cache_key"]
+    if not isinstance(runtime_cache_key, str) or not runtime_cache_key.strip():
+        raise ValueError(
+            "runtime evidence provenance is missing "
+            "selected_cypress_runtime_cache_key"
+        )
+    runtime_cache_path = PurePosixPath(runtime_cache_key)
+    if runtime_cache_path.is_absolute() or ".." in runtime_cache_path.parts:
+        raise ValueError(
+            "runtime evidence provenance has unsafe "
+            "selected_cypress_runtime_cache_key"
+        )
 
     rows = evidence["results"]
     expected_keys = {

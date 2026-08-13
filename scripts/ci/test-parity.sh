@@ -262,7 +262,7 @@ assert_fails \
   "In review summary count 7 does not match 6 table rows"
 restore "$file"
 
-# Case 2h: the canonical README adoption table must name the same merged PRs as
+# Case 2h: the canonical README merged-fixes table must name the same merged PRs as
 # the roadmap, not merely carry the same row count.
 file="README.md"
 backup "$file"
@@ -284,7 +284,7 @@ assert_fails \
   "README.md merged badge 15 does not match roadmap 14"
 restore "$file"
 
-# Case 2j: the benchmark status repeats the adoption count and must not drift.
+# Case 2j: the benchmark status repeats the merged-fix count and must not drift.
 file="benchmarks/STATUS.md"
 backup "$file"
 mutate \
@@ -346,7 +346,7 @@ assert_fails \
 restore "$file"
 
 # Case 2n: translated visible prose must not drift while its badge stays
-# correct. Both localized adoption claims are part of the public count surface.
+# correct. Both localized merged-fix claims are part of the public count surface.
 file="README.ko.md"
 backup "$file"
 mutate "$file" "PR 14건이" "PR 15건이"
@@ -510,8 +510,8 @@ backup "$file"
 bad_home="/""Users/machine-owner/e2e-skills"
 mutate \
   "$file" \
-  "Find Playwright and Cypress E2E tests that pass CI" \
-  "Find Playwright and Cypress E2E tests that pass CI from $bad_home"
+  "four focused workflows for Playwright and Cypress E2E work" \
+  "four focused workflows for Playwright and Cypress E2E work from $bad_home"
 assert_security_fails \
   "Pre-push hardcoded-home guard — public docs reject real user paths" \
   "machine-specific absolute user-home paths found in public artifacts"
@@ -521,7 +521,10 @@ restore "$file"
 # The switcher exemption only covers lines linking to README.<lang>.md translations.
 file="README.md"
 backup "$file"
-mutate "$file" "Find Playwright and Cypress E2E tests that pass CI" "Find Playwright and Cypress E2E tests 한국어 that pass CI"
+mutate \
+  "$file" \
+  "four focused workflows for Playwright and Cypress E2E work" \
+  "four focused workflows for Playwright and Cypress E2E 한국어 work"
 assert_fails "Language guard — Hangul outside switcher line in README.md" "Korean text found in public docs: README.md"
 restore "$file"
 
@@ -552,6 +555,103 @@ file="README.ko.md"
 backup "$file"
 mutate "$file" "## 설치" "###설치-변조"
 assert_fails "README i18n parity — section drift in README.ko.md" "README i18n parity: README.ko.md has"
+restore "$file"
+
+# Case 15a: every README accepts the centered display title while repository,
+# package, and install identifiers remain the lowercase e2e-skills slug.
+centered_title='<h1 align="center">E2E Skills</h1>'
+centered_title_files=(README.md README.ko.md README.ja.md README.zh-cn.md)
+for file in "${centered_title_files[@]}"; do
+  backup "$file"
+  if grep -qxF '# e2e-skills' "$file"; then
+    mutate "$file" $'# e2e-skills\n' "$centered_title"$'\n'
+  fi
+done
+assert_passes "README i18n parity — centered display title is accepted"
+for file in "${centered_title_files[@]}"; do
+  restore "$file"
+done
+
+# The display title must remain centered.
+file="README.md"
+backup "$file"
+mutate "$file" \
+  '<h1 align="center">E2E Skills</h1>' \
+  '<h1 align="left">E2E Skills</h1>'
+assert_fails \
+  "README i18n parity — canonical display title stays centered" \
+  "README i18n parity: README.md title must be exactly '<h1 align=\"center\">E2E Skills</h1>'"
+restore "$file"
+
+# A reviewer-specific subtitle would narrow the four-skill bundle again.
+file="README.ko.md"
+backup "$file"
+mutate "$file" \
+  '<h1 align="center">E2E Skills</h1>' \
+  '<h1 align="center">E2E Skills: 리뷰 전용 부제</h1>'
+assert_fails \
+  "README i18n parity — localized title stays product-only" \
+  "README i18n parity: README.ko.md title must be exactly '<h1 align=\"center\">E2E Skills</h1>'"
+restore "$file"
+
+# Case 15b: verified merged fixes are a top-level trust signal and must remain
+# before the first reviewer-specific false-green walkthrough in every language.
+file="README.md"
+backup "$file"
+python3 - "$file" <<'PY_MOVE_MERGED_FIXES'
+import pathlib
+import re
+import sys
+
+path = pathlib.Path(sys.argv[1])
+text = path.read_text(encoding="utf-8")
+match = re.search(
+    r'^<a id="merged-upstream-fixes"></a>\n\n'
+    r'## Merged upstream fixes\n.*?(?=^## )',
+    text,
+    re.M | re.S,
+)
+if match is None:
+    raise SystemExit("merged-fixes section not found")
+block = match.group(0)
+text = text[:match.start()] + text[match.end():]
+marker = "## E2E review catalog\n"
+if marker not in text:
+    raise SystemExit("review catalog marker not found")
+path.write_text(text.replace(marker, block + marker, 1), encoding="utf-8")
+PY_MOVE_MERGED_FIXES
+assert_fails \
+  "README i18n parity — merged fixes stay above first reviewer example" \
+  "README i18n parity: README.md Merged upstream fixes must appear before See a false-green test"
+restore "$file"
+
+file="README.ko.md"
+backup "$file"
+python3 - "$file" <<'PY_MOVE_MERGED_FIXES_KO'
+import pathlib
+import re
+import sys
+
+path = pathlib.Path(sys.argv[1])
+text = path.read_text(encoding="utf-8")
+match = re.search(
+    r'^<a id="merged-upstream-fixes"></a>\n\n'
+    r'## 업스트림에 병합된 수정 사례\n.*?(?=^## )',
+    text,
+    re.M | re.S,
+)
+if match is None:
+    raise SystemExit("localized merged-fixes section not found")
+block = match.group(0)
+text = text[:match.start()] + text[match.end():]
+marker = "## E2E 리뷰 목록\n"
+if marker not in text:
+    raise SystemExit("localized review catalog marker not found")
+path.write_text(text.replace(marker, block + marker, 1), encoding="utf-8")
+PY_MOVE_MERGED_FIXES_KO
+assert_fails \
+  "README i18n parity — localized merged fixes stay above first reviewer example" \
+  "README i18n parity: README.ko.md 업스트림에 병합된 수정 사례 must appear before false-green 테스트 살펴보기"
 restore "$file"
 
 # Case 16: subagent parity SP1 — dropping the absolute-path contract from an
@@ -705,8 +805,8 @@ for framework in Puppeteer Selenium WebdriverIO TestCafe Nightwatch; do
   backup "$file"
   mutate \
     "$file" \
-    "Find Playwright and Cypress E2E tests that pass CI" \
-    "Find Playwright, Cypress, and $framework E2E tests that pass CI"
+    "Playwright and Cypress E2E work" \
+    "Playwright, Cypress, and $framework E2E work"
   assert_fails \
     "Framework scope — $framework support claim rejected" \
     "unsupported framework reference: $framework"
@@ -811,7 +911,7 @@ done
 
 file="README.ko.md"
 backup "$file"
-mutate "$file" "#### P1 " "#### P0 "
+mutate "$file" "#### P1:" "#### P0:"
 assert_fails \
   "README i18n taxonomy — severity drift" \
   "README.ko.md pattern ID/severity contract differs from README.md"
@@ -895,8 +995,8 @@ file="README.md"
 backup "$file"
 mutate \
   "$file" \
-  "Find Playwright and Cypress E2E tests that pass CI but fail to verify user-visible behavior." \
-  "Find Playwright and Cypress E2E tests that pass CI but verify too little."
+  "False-green detection is one important part of the review workflow" \
+  "False-green detection is an important part of the review workflow"
 assert_fails \
   "README i18n canonical revision — canonical byte change requires review" \
   "canonical revision acknowledgement is stale"

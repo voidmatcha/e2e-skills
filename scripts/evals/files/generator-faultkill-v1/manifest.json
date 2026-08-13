@@ -16,7 +16,7 @@
     {
       "path": "scripts/evals/generator-faultkill-v1.py",
       "role": "deterministic-compiler-and-scorer",
-      "sha256": "2479d5a78edeeceddee6958a82c2a0b2d361cc225280adb61af734c70248c6ff"
+      "sha256": "241431557e12ee44750fd3d48b77b0f069476a09ec6d07721ca99878197f3222"
     },
     {
       "path": "scripts/evals/files/generator-faultkill-v1/reference-predictions.json",

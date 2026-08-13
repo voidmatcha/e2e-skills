@@ -566,11 +566,13 @@ fi
 # Cleanup must observe the whole process group, not just reap the leader.
 cat >"$TMP/term-parent-runner" <<SH
 #!/usr/bin/env bash
+trap '' TERM
 (
   trap '' TERM
   while :; do sleep 1; done
 ) &
 echo "\$!" >"$TMP/term-parent-child.pid"
+trap - TERM
 while :; do sleep 1; done
 SH
 chmod +x "$TMP/term-parent-runner"

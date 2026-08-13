@@ -193,7 +193,10 @@ else
   done
 
   if [[ ${#AST_GREP_CMD[@]} -eq 0 ]]; then
-    for ast_name in ast-grep sg; do
+    # `sg` is also the system shadow/group command on Linux. Accept that short
+    # name only from the explicit verifier-relative candidates above (or an
+    # absolute override), never by ambient PATH discovery.
+    for ast_name in ast-grep; do
       ast_candidate="$(command -v "$ast_name" 2>/dev/null || true)"
       [[ "$ast_candidate" == /* ]] || continue
       if accept_ast_grep "$ast_candidate"; then

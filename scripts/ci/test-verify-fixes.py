@@ -6,6 +6,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 import shlex
+import shutil
 import stat
 import subprocess
 import tempfile
@@ -13,6 +14,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
 VERIFY = ROOT / "scripts/verify-fixes.sh"
+RULES = ROOT / "skills/e2e-reviewer/scripts/ast-grep-rules"
 
 
 FAKE_AST_GREP = """#!/bin/sh
@@ -59,13 +61,14 @@ def run_verify(
     environment: dict[str, str],
     *explicit_targets: str,
     default_target: bool = True,
+    verifier: Path = VERIFY,
 ) -> subprocess.CompletedProcess[str]:
     if not explicit_targets and default_target:
         explicit_targets = ("tests/example.spec.ts",)
     return subprocess.run(
         [
             "/bin/bash",
-            str(VERIFY),
+            str(verifier),
             str(target),
             "--",
             *explicit_targets,
@@ -111,10 +114,22 @@ def main() -> None:
         )
 
         no_tool_bin = temp / "no-tool-bin"
+        isolated_verifier = temp / "isolated-verifier/scripts/verify-fixes.sh"
+        isolated_verifier.parent.mkdir(parents=True)
+        shutil.copy2(VERIFY, isolated_verifier)
+        shutil.copytree(
+            RULES,
+            temp / "isolated-verifier/skills/e2e-reviewer/scripts/ast-grep-rules",
+        )
         npx_marker = temp / "npx-called"
+        system_sg_marker = temp / "system-sg-called"
         write_executable(
             no_tool_bin / "npx",
             "#!/bin/sh\n: > \"$NPX_MARKER\"\nexit 99\n",
+        )
+        write_executable(
+            no_tool_bin / "sg",
+            "#!/bin/sh\n: > \"$SYSTEM_SG_MARKER\"\nexit 99\n",
         )
         target_ast_marker = temp / "target-ast-grep-called"
         write_executable(
@@ -126,13 +141,19 @@ def main() -> None:
             {
                 "PATH": "{}:/bin:/usr/bin".format(no_tool_bin),
                 "NPX_MARKER": str(npx_marker),
+                "SYSTEM_SG_MARKER": str(system_sg_marker),
                 "TARGET_AST_MARKER": str(target_ast_marker),
             }
         )
-        no_tool = run_verify(target, no_tool_environment)
+        no_tool = run_verify(
+            target,
+            no_tool_environment,
+            verifier=isolated_verifier,
+        )
         assert no_tool.returncode == 2, no_tool.stdout
         assert "ast-grep required" in no_tool.stdout
         assert not npx_marker.exists(), "verify-fixes invoked npx"
+        assert not system_sg_marker.exists(), "verify-fixes invoked system sg"
         assert not target_ast_marker.exists(), "verify-fixes invoked target-local ast-grep"
 
         target_path_environment = dict(base_environment)
@@ -144,7 +165,11 @@ def main() -> None:
                 "TARGET_AST_MARKER": str(target_ast_marker),
             }
         )
-        target_on_path = run_verify(target, target_path_environment)
+        target_on_path = run_verify(
+            target,
+            target_path_environment,
+            verifier=isolated_verifier,
+        )
         assert target_on_path.returncode == 2, target_on_path.stdout
         assert "ast-grep required" in target_on_path.stdout
         assert not target_ast_marker.exists(), "verify-fixes trusted target via PATH"
@@ -258,7 +283,11 @@ def main() -> None:
                 "FAKE_AST_MODE": "clean",
             }
         )
-        system_tool = run_verify(target, system_environment)
+        system_tool = run_verify(
+            target,
+            system_environment,
+            verifier=isolated_verifier,
+        )
         assert system_tool.returncode == 0, system_tool.stdout
         assert len(fake_log.read_text(encoding="utf-8").splitlines()) == 3
 

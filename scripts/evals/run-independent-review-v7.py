@@ -75,6 +75,11 @@ FORBIDDEN_NAME_FRAGMENTS = ("holdout", "scorecard", "review")
 README_EXCLUDED_HEADING_GENERATIONS = (
     (
         "Evidence and limits",
+        "Merged upstream fixes",
+        "How this differs from ESLint plugins",
+    ),
+    (
+        "Evidence and limits",
         "Open-source adoption",
         "How this differs from ESLint plugins",
     ),

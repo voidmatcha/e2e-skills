@@ -87,6 +87,12 @@ class GeneratorFaultkillRunnerTest(unittest.TestCase):
     def setUp(self) -> None:
         self.temp = tempfile.TemporaryDirectory(prefix="generator-runner-test-")
         self.root = Path(self.temp.name)
+        self.codex_home = self.root / "codex-home"
+        self.codex_home.mkdir(mode=0o700)
+        self.codex_home.chmod(0o700)
+        codex_auth = self.codex_home / "auth.json"
+        codex_auth.write_text('{"auth":"test"}\n', encoding="utf-8")
+        codex_auth.chmod(0o600)
 
     def tearDown(self) -> None:
         self.temp.cleanup()
@@ -131,6 +137,7 @@ class GeneratorFaultkillRunnerTest(unittest.TestCase):
             check=False,
             env={
                 **os.environ,
+                "CODEX_HOME": str(self.codex_home),
                 "CLAUDE_CODE_OAUTH_TOKEN": (
                     "claude-oauth-fixture-token-123456789"
                 ),

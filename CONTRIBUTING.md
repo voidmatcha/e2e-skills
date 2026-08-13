@@ -187,11 +187,12 @@ python3 scripts/evals/run-behavioral-evals.py --runner codex --allow-live
 Each case runs three times both with and without the skill. Reports are written
 under the gitignored `results/behavioral-evals/` directory and include pass
 rates, absolute lift, per-case results, timing, and saturated cases where the
-baseline already scores 100%. Live execution is deliberately opt-in: normal CI
-only tests deterministic harnesses because model and browser runs are variable
-and consume time, tokens, or downloads. A positive result on either small public
-set is evidence for those cases only, not a general cross-model superiority
-claim.
+baseline already scores 100%. The hosted `main` workflow automatically reruns
+the pinned 36-cell browser fault matrix on a disposable runner. Pull-request
+and local CI remain dependency-free, while live model runs and the other
+browser probes stay opt-in because they are variable or consume tokens and
+downloads. A positive result on either small public set is evidence for those
+cases only, not a general cross-model superiority claim.
 
 ## Conventions
 

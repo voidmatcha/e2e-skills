@@ -58,7 +58,7 @@ FORBIDDEN_PATH_PARTS = {
 FORBIDDEN_NAME_FRAGMENTS = ("holdout", "scorecard", "review")
 README_EXCLUDED_HEADINGS = {
     "Evidence and limits",
-    "Open-source adoption",
+    "Merged upstream fixes",
     "How this differs from ESLint plugins",
 }
 DIMENSION_IDS = (
