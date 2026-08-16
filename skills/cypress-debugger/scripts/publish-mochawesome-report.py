@@ -100,25 +100,57 @@ def create_temporary(parent_fd: int, destination: str) -> tuple[int, str]:
     fail("could not allocate a unique temporary report file")
 
 
-def terminate_process_group(process: subprocess.Popen[bytes]) -> None:
+def process_group_exists(group: int) -> bool:
     try:
-        os.killpg(process.pid, signal.SIGTERM)
+        os.killpg(group, 0)
     except ProcessLookupError:
-        process.wait()
-        return
+        return False
+    except PermissionError:
+        return True
+    return True
+
+
+def terminate_process_group(process: subprocess.Popen[bytes]) -> str | None:
+    group = process.pid
+    errors: list[str] = []
     try:
-        process.wait(timeout=TERMINATION_GRACE_SECONDS)
-    except subprocess.TimeoutExpired:
-        pass
-    # Always target the group once more after waiting for the session leader:
-    # a forked descendant may still hold stdout open after the leader exits.
+        for name, sig in (("SIGTERM", signal.SIGTERM), ("SIGKILL", signal.SIGKILL)):
+            try:
+                os.killpg(group, sig)
+            except ProcessLookupError:
+                process.poll()
+                return
+            except OSError as error:
+                errors.append(f"{name}: {type(error).__name__}: {error}")
+            deadline = time.monotonic() + TERMINATION_GRACE_SECONDS
+            while process_group_exists(group):
+                process.poll()
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    break
+                time.sleep(min(0.01, remaining))
+            else:
+                process.poll()
+                return
+    except Exception as error:
+        errors.append(f"{type(error).__name__}: {error}")
+        return "; ".join(errors)
+    errors.append("process group remained alive after SIGKILL grace period")
+    return "; ".join(errors)
+
+
+cleanup_process_group = terminate_process_group
+
+
+def fail_after_cleanup(
+    process: subprocess.Popen[bytes],
+    message: str,
+) -> NoReturn:
     try:
-        os.killpg(process.pid, signal.SIGKILL)
-    except (ProcessLookupError, PermissionError):
-        # macOS may return EPERM for an exited session leader whose zombie has
-        # just been reaped. Same-user live descendants remain signalable.
-        pass
-    process.wait()
+        cleanup_error = cleanup_process_group(process)
+    except Exception as error:
+        cleanup_error = f"{type(error).__name__}: {error}"
+    fail(f"{message}; cleanup failed: {cleanup_error}" if cleanup_error else message)
 
 
 def command_environment(pass_env: list[str]) -> dict[str, str]:
@@ -168,7 +200,7 @@ def capture_stdout(
         start_new_session=True,
     )
     deadline = time.monotonic() + MAX_COMMAND_SECONDS
-    cleanup_attempted = False
+    cleaned = False
     try:
         if process.stdout is None:
             fail("could not capture command stdout")
@@ -179,9 +211,8 @@ def capture_stdout(
             while True:
                 remaining = deadline - time.monotonic()
                 if remaining <= 0:
-                    cleanup_attempted = True
-                    terminate_process_group(process)
-                    fail(f"command timed out after {MAX_COMMAND_SECONDS} seconds")
+                    cleaned = True
+                    fail_after_cleanup(process, f"command timed out after {MAX_COMMAND_SECONDS} seconds")
                 if not selector.select(timeout=min(remaining, 0.1)):
                     continue
                 chunk = os.read(
@@ -195,11 +226,8 @@ def capture_stdout(
                     break
                 captured_bytes += len(chunk)
                 if captured_bytes > MAX_STDOUT_BYTES:
-                    cleanup_attempted = True
-                    terminate_process_group(process)
-                    fail(
-                        f"command stdout exceeds the {MAX_STDOUT_BYTES}-byte limit"
-                    )
+                    cleaned = True
+                    fail_after_cleanup(process, f"command stdout exceeds the {MAX_STDOUT_BYTES}-byte limit")
                 view = memoryview(chunk)
                 while view:
                     written = os.write(file_descriptor, view)
@@ -212,20 +240,23 @@ def capture_stdout(
 
         remaining = deadline - time.monotonic()
         if remaining <= 0:
-            cleanup_attempted = True
-            terminate_process_group(process)
-            fail(f"command timed out after {MAX_COMMAND_SECONDS} seconds")
+            cleaned = True
+            fail_after_cleanup(process, f"command timed out after {MAX_COMMAND_SECONDS} seconds")
         try:
             returncode = process.wait(timeout=remaining)
         except subprocess.TimeoutExpired:
-            cleanup_attempted = True
-            terminate_process_group(process)
-            fail(f"command timed out after {MAX_COMMAND_SECONDS} seconds")
+            cleaned = True
+            fail_after_cleanup(process, f"command timed out after {MAX_COMMAND_SECONDS} seconds")
         if returncode != 0:
             raise subprocess.CalledProcessError(returncode, command)
-    except BaseException:
-        if not cleanup_attempted and process.poll() is None:
-            terminate_process_group(process)
+        if process_group_exists(process.pid):
+            cleaned = True
+            fail_after_cleanup(process, "command left live descendants")
+    except BaseException as error:
+        if not cleaned:
+            cleanup_error = cleanup_process_group(process)
+            if cleanup_error is not None and isinstance(error, Exception):
+                fail(f"{error}; cleanup failed: {cleanup_error}")
         raise
 
 

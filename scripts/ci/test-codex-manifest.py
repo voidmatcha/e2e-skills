@@ -14,7 +14,7 @@ CI_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(CI_DIR))
 
 from lib.strict_json import StrictJsonError, load_manifest_json
-from lib.validate_codex import collect_codex_errors
+from lib.validate_codex import CODEX_PRIVACY_POLICY_URL, collect_codex_errors
 from lib.version_contract import is_canonical_semver
 
 
@@ -26,6 +26,7 @@ EXPECTED_SKILLS = {
     "playwright-debugger",
     "playwright-test-generator",
 }
+PRIVACY_POLICY = ROOT / "PRIVACY.md"
 
 
 def validate(manifest: dict, root: Path = ROOT) -> list[str]:
@@ -35,6 +36,12 @@ def validate(manifest: dict, root: Path = ROOT) -> list[str]:
 def main() -> None:
     manifest = load_manifest_json(MANIFEST)
     assert validate(manifest) == []
+    assert manifest["interface"].get("privacyPolicyURL") == CODEX_PRIVACY_POLICY_URL, (
+        "Codex manifest must publish the canonical privacy policy URL"
+    )
+    assert PRIVACY_POLICY.is_file() and not PRIVACY_POLICY.is_symlink(), (
+        "canonical privacy policy must be a regular in-repo file"
+    )
 
     mutations = (
         ("non-string logo", ("interface", "logo"), 7),
@@ -64,11 +71,15 @@ def main() -> None:
         target[path[-1]] = value
         assert validate(candidate), f"Codex manifest accepted {label}"
 
-    optional_policy = copy.deepcopy(manifest)
-    optional_policy["interface"]["privacyPolicyURL"] = "https://example.com/privacy"
-    assert validate(optional_policy) == []
+    alternate_policy_url = copy.deepcopy(manifest)
+    alternate_policy_url["interface"]["privacyPolicyURL"] = (
+        "https://example.com/privacy"
+    )
+    assert validate(alternate_policy_url), (
+        "Codex manifest accepted a non-canonical privacy policy URL"
+    )
 
-    for key in ("websiteURL", "termsOfServiceURL"):
+    for key in ("websiteURL", "privacyPolicyURL", "termsOfServiceURL"):
         candidate = copy.deepcopy(manifest)
         del candidate["interface"][key]
         assert validate(candidate), f"Codex manifest accepted missing interface.{key}"
@@ -171,6 +182,20 @@ def main() -> None:
                 raise AssertionError(
                     f"manifest loader accepted non-canonical version: {destination}"
                 )
+
+        missing_policy = load_manifest_json(MANIFEST)
+        del missing_policy["interface"]["privacyPolicyURL"]
+        missing_policy_path = temp / "missing-policy" / ".codex-plugin/plugin.json"
+        missing_policy_path.parent.mkdir(parents=True)
+        missing_policy_path.write_text(json.dumps(missing_policy), encoding="utf-8")
+        try:
+            load_manifest_json(missing_policy_path)
+        except StrictJsonError:
+            pass
+        else:
+            raise AssertionError(
+                "manifest loader accepted missing interface.privacyPolicyURL"
+            )
 
     print(
         "codex manifest: pass "

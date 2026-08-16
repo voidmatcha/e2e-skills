@@ -2,9 +2,10 @@
 
 An adversarial audit of this project's own contracts: the 24 anti-patterns, the
 15 failure codes, and the operational rules that decide how a finding is
-produced and whether it survives. Every finding below was reproduced against the
-shipped scanner before being written down. Findings that did not survive
-reproduction are recorded as refuted, at the end.
+produced and whether it survives. Scanner findings below cite scanner
+reproductions where they exist; debugger and procedure findings cite the source,
+eval, or local CI behavior that supported the claim. Findings that did not
+survive that evidence check are recorded as refuted, at the end.
 
 ## How it was run
 
@@ -16,8 +17,8 @@ The two families disagreed usefully. `#4f` and `#7` — both P0 — were cleared
 sound by one family and shown defective by the other, and both defects are
 documented below. A single-reviewer audit would have passed them.
 
-Five more rules were reported defective by only one family, and reproducing
-them kept all five: `#3b` misses the bracket form of the Cypress handler registration, `#9b` misses
+Five more rules were reported defective by only one family, and isolated
+scanner fixtures kept all five: `#3b` misses the bracket form of the Cypress handler registration, `#9b` misses
 `cy.wait(delays.render)`, `#9c` misses a `networkidle` constant reached through
 a variable, `#10d` misses a formatter-wrapped `async` callback, and `#10b`
 misses a serial policy supplied as a variable.
@@ -146,14 +147,11 @@ Cypress query commands, and `#17` renamed `page` fixtures now have sweep rows
 for the same reason as the five above: the scanner cannot grow, and the
 reviewer can.
 
-`#19` deliberately does not. A row for `var` and mutated `const` module state
-was written and then removed: `pattern-reference.md` defines `#19` as an
-initialised top-level `let`, so a sweep row covering the other binding forms
-would produce findings the finding-verifier — which resolves against
-pattern-reference — is obliged to refute. The hazard is real and now has no
-home on any path. Widening it is a taxonomy change to the contract itself, not
-something the sweep can paper over, and it is recorded here as an open gap
-rather than as covered. `#11` was a live-code hazard rather
+`#19` now follows the same split. The scanner emits initialized top-level
+`let`; the mandatory sweep routes `var` and mutated `const` containers to Phase
+2, and `pattern-reference.md` makes explicit that the binding keyword does not
+decide the finding. This closes the earlier coverage gap without broadening the
+mechanical scanner. `#11` was a live-code hazard rather
 than a coverage gap — its documented grep says "specs, POMs, and other utility
 modules" while the glob beside it matched specs only, so a member called from
 another POM returned zero hits and was classified UNUSED. The glob now covers
@@ -170,8 +168,9 @@ without it. `SP3b` in `review.sh` requires the term in both the procedure and
 the output contract of every classifier copy, with mutation cases in
 `test-parity.sh` for each.
 
-Still open: nothing from the confirmed list. The remaining item is the packet
-budget itself — `scan.sh`, both artifact readers, and
+Still open from the scanner/reviewer coverage list: no reproduced gap lacks a
+documented recovery path. The remaining item is the packet budget itself —
+`scan.sh`, both artifact readers, and
 `playwright-debugger/SKILL.md` have under twenty tokens between them, and the next
 defect found in any of those has nowhere to go.
 
@@ -192,8 +191,8 @@ else on the machine takes the CPU.
 | --- | --- | --- |
 | `test-debugger-contracts.py` | `extract-junit-failures.py` hit its 20-second timeout | 2/2 passed |
 | `test-reviewer-scanner.py` | the two checks that create 1500 files | failed only at load 20-40 |
-| `test-residual-redos-budget.py` | growth measured 10.1x where linear is 4x | 3/3 passed |
-| `test-playwright-debugger-report-publish.py` | a timeout marker file was not written | 3/3 passed |
+| `test-residual-redos-budget.py` | growth measured 10.1x where linear is 4x | fixed: regex work now uses process CPU time |
+| `test-playwright-debugger-report-publish.py` | a timeout marker file was not written | fixed: timeout assertions are separate from a readiness-gated process-group check |
 
 This is the inverse of what the project exists to catch. A false-green test
 passes when the product is broken; these fail when the product is fine. Both
@@ -226,10 +225,13 @@ flat six workers, each running `review.sh` over its own full-tree copy, so a
 host with fewer cores than that should set `E2E_PARITY_WORKERS` down. Only measuring across worker counts separated our own
 regression from the ambient load that was also real.
 
-Two of the four assert on elapsed time where a result would do: whether the
-reporter terminated, not whether it terminated within twenty seconds; whether
-the regex is linear in shape, not whether one timing sample stayed under 4x.
-Those need the assertion rewritten.
+Both remaining load-sensitive checks now have narrower assertions. The residual
+regex budget measures process CPU time instead of scheduler wall time, so
+sleeping no longer looks like regex work. Reporter integration tests assert
+preserved destinations and the intended timeout/stdout diagnostics; direct
+process-group tests wait for descendant readiness and then require the whole
+group to disappear. `subprocess.run(..., timeout=...)` remains an outer hang
+watchdog rather than the behavior under test.
 
 The debugger-contract timeouts are a different case and were fixed here. They
 never claimed a runtime — they bound a hang around work that finishes in under a

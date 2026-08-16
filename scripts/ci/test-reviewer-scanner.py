@@ -2118,6 +2118,15 @@ def assert_positional_selector_is_always_triage() -> None:
             "});\n",
             encoding="utf-8",
         )
+        pom_target = root / "admin-rooms.ts"
+        pom_target.write_text(
+            "import type { Locator, Page } from '@playwright/test';\n"
+            "export class AdminRooms {\n"
+            "  constructor(private readonly page: Page) {}\n"
+            "  getMessagesCell(): Locator { return this.page.getByRole('cell').nth(3); }\n"
+            "}\n",
+            encoding="utf-8",
+        )
 
         result = scan_path(root, {"E2E_SMELL_FAIL_ON": "any"})
         assert result.returncode == 0, result.stdout
@@ -2127,6 +2136,7 @@ def assert_positional_selector_is_always_triage() -> None:
         )
         assert "position.spec.ts:3:" in positional
         assert "position.spec.ts:4:" in positional
+        assert "admin-rooms.ts:4:" in positional
         assert "[P1] #10a Positional selector" not in result.stdout
 
 

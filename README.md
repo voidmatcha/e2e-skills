@@ -82,27 +82,25 @@ A useful test verifies visible behavior and can fail when that behavior breaks:
 + await expect(page.getByText('Welcome back')).toBeVisible()
 ```
 
-The bundled scanner catches the false-green assertions without project configuration:
+The bundled scanner catches the false-green assertions without project configuration. A shortened run shows the actionable lines:
 
 ```console
 $ /bin/bash -p skills/e2e-reviewer/scripts/scan.sh tests/
 
 [P0] #4f Locator always-true assertion (truthy/defined/not-null) (2 hits)
-  tests/login.spec.ts:6:  expect(page.getByText('Welcome back')).toBeDefined();
-  tests/login.spec.ts:8:  expect(page.locator('.user-badge')).not.toBeNull();
+  .../tests/login.spec.ts:5:  expect(page.getByText('Welcome back')).toBeDefined();
+  .../tests/login.spec.ts:6:  expect(page.locator('.user-badge')).not.toBeNull();
 
 Summary: 2 total hit(s), 2 P0
 ```
 
-`eslint-plugin-playwright` flags this exact shape too, through `no-unnecessary-assertions`. Enable it — a rule that runs on every commit beats a review you have to remember. Every run of the scanner prints which of its findings your lint config should already own, so the two compose instead of competing.
+Because this run reports P0 findings, `scan.sh` exits 1.
+
+`eslint-plugin-playwright` also flags this shape via `no-unnecessary-assertions`; enable it so commit-time lint owns what it can and the scanner fills the gaps.
 
 ## Prove the test can fail
 
-A well-formed assertion is not a passing test. Lint can tell you `toBeVisible()` is the right matcher; it cannot tell you the test goes red when the feature breaks.
-
-The generator's primary job is to create Playwright coverage in the project's style. V2 and V3 are verification gates for each generated candidate: on a scratch copy the project approves, `playwright-test-generator` inverts the primary assertion (V2) and injects an evidenced product fault (V3), then requires the test to fail at the predicted line with the predicted mismatch. A run that fails for a timeout, a browser crash, or a config error does not count. Anything that cannot be proven safely is reported `CANNOT_VERIFY` rather than guessed.
-
-That is mutation testing scoped to one candidate spec — which is what makes it affordable, because whole-suite mutation on E2E is not.
+A good matcher is not enough; the test must go red when behavior breaks. For each candidate, V2 inverts its primary assertion and V3 injects an evidenced fault in an approved scratch copy. It must fail at the predicted line with the predicted mismatch. The source stays byte-identical; timeouts, browser crashes, and config errors do not count, and unsafe probes are `CANNOT_VERIFY`.
 
 ## Install and try it
 
@@ -182,9 +180,9 @@ Debug the failed Cypress report in cypress/reports/.
 
 Use this bundle to generate or review E2E tests and to diagnose failed Playwright/Cypress runs. Use it alongside the application and its real E2E suite, not instead of them; it is not a general lint preset or a framework-agnostic test tool. Playwright and Cypress are supported; new-test generation currently targets Playwright only.
 
-A green generated test is not enough: it may assert a `Locator` or `Promise`, observe state unrelated to the behavior named by the test, or leave its primary assertion non-load-bearing. The generator therefore treats every new spec as a candidate until all applicable [V1–V6 verification](skills/playwright-test-generator/verification-rules.md) passes.
+The bundled shell scripts and artifact readers target macOS/Linux shells. Windows users should run them through WSL and keep scan/report artifacts inside the WSL filesystem.
 
-On a project-approved scratch copy, V2 can invert the primary assertion and V3 can inject an evidenced product fault. A red run counts only when the predeclared primary assertion fails at the expected location with the expected mismatch; setup, timeout, browser, or infrastructure failures do not kill the mutant. The source candidate remains byte-identical, and a probe that cannot run safely is reported as `CANNOT_VERIFY` rather than guessed.
+A green generated test is not enough: it may assert a `Locator` or `Promise`, observe state unrelated to the behavior named by the test, or leave its primary assertion non-load-bearing. The generator therefore treats every new spec as a candidate until all applicable [V1–V6 verification](skills/playwright-test-generator/verification-rules.md) passes.
 
 ## How the review works
 

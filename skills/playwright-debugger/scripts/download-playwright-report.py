@@ -24,6 +24,7 @@ import stat
 import subprocess
 import sys
 import time
+from typing import NoReturn
 import zipfile
 
 
@@ -71,7 +72,7 @@ REPOSITORY_SLUG = re.compile(
 )
 
 
-def fail(message: str) -> "NoReturn":
+def fail(message: str) -> NoReturn:
     raise ValueError(message)
 
 
@@ -206,9 +207,9 @@ def create_staging_directory(workspace_fd: int) -> tuple[int, str]:
     fail("could not allocate a private staging directory")
 
 
-def process_group_exists(process_group: int) -> bool:
+def process_group_exists(group: int) -> bool:
     try:
-        os.killpg(process_group, 0)
+        os.killpg(group, 0)
     except ProcessLookupError:
         return False
     except PermissionError:
@@ -216,27 +217,47 @@ def process_group_exists(process_group: int) -> bool:
     return True
 
 
-def terminate_process_group(process: subprocess.Popen[bytes]) -> None:
-    process_group = process.pid
+def terminate_process_group(process: subprocess.Popen[bytes]) -> str | None:
+    group = process.pid
+    errors: list[str] = []
     try:
-        os.killpg(process_group, signal.SIGTERM)
-    except ProcessLookupError:
-        process.wait()
-        return
+        for name, sig in (("SIGTERM", signal.SIGTERM), ("SIGKILL", signal.SIGKILL)):
+            try:
+                os.killpg(group, sig)
+            except ProcessLookupError:
+                process.poll()
+                return
+            except OSError as error:
+                errors.append(f"{name}: {type(error).__name__}: {error}")
+            deadline = time.monotonic() + TERMINATION_GRACE_SECONDS
+            while process_group_exists(group):
+                process.poll()
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    break
+                time.sleep(min(0.01, remaining))
+            else:
+                process.poll()
+                return
+    except Exception as error:
+        errors.append(f"{type(error).__name__}: {error}")
+        return "; ".join(errors)
+    errors.append("process group remained alive after SIGKILL grace period")
+    return "; ".join(errors)
 
-    deadline = time.monotonic() + TERMINATION_GRACE_SECONDS
-    while time.monotonic() < deadline:
-        process.poll()
-        if not process_group_exists(process_group):
-            process.wait()
-            return
-        time.sleep(0.01)
 
+cleanup_process_group = terminate_process_group
+
+
+def fail_after_cleanup(
+    process: subprocess.Popen[bytes],
+    message: str,
+) -> NoReturn:
     try:
-        os.killpg(process_group, signal.SIGKILL)
-    except (ProcessLookupError, PermissionError):
-        pass
-    process.wait()
+        cleanup_error = cleanup_process_group(process)
+    except Exception as error:
+        cleanup_error = f"{type(error).__name__}: {error}"
+    fail(f"{message}; cleanup failed: {cleanup_error}" if cleanup_error else message)
 
 
 def run_bounded(
@@ -262,12 +283,13 @@ def run_bounded(
     captured_stderr = bytearray()
     stdout_bytes = 0
     deadline = time.monotonic() + COMMAND_TIMEOUT_SECONDS
+    cleaned = False
     try:
         while selector.get_map():
             remaining = deadline - time.monotonic()
             if remaining <= 0:
-                terminate_process_group(process)
-                fail("gh command timed out")
+                cleaned = True
+                fail_after_cleanup(process, "gh command timed out")
             events = selector.select(timeout=min(remaining, 0.1))
             for key, _ in events:
                 chunk = os.read(key.fileobj.fileno(), CHUNK_BYTES)
@@ -277,8 +299,8 @@ def run_bounded(
                 if key.data == "stdout":
                     stdout_bytes += len(chunk)
                     if stdout_bytes > stdout_limit:
-                        terminate_process_group(process)
-                        fail("gh response exceeds the configured byte limit")
+                        cleaned = True
+                        fail_after_cleanup(process, "gh response exceeds the configured byte limit")
                     if stdout_fd is None:
                         captured_stdout.write(chunk)
                     else:
@@ -292,16 +314,24 @@ def run_bounded(
                     )
         remaining = deadline - time.monotonic()
         if remaining <= 0:
-            terminate_process_group(process)
-            fail("gh command timed out")
+            cleaned = True
+            fail_after_cleanup(process, "gh command timed out")
         returncode = process.wait(timeout=remaining)
         if returncode != 0:
             detail = captured_stderr.decode("utf-8", "replace").strip()
             fail(f"gh command failed with exit {returncode}: {detail}")
+        if process_group_exists(process.pid):
+            cleaned = True
+            fail_after_cleanup(process, "command left live descendants")
         return captured_stdout.getvalue()
-    except BaseException:
-        if process.poll() is None:
-            terminate_process_group(process)
+    except subprocess.TimeoutExpired:
+        cleaned = True
+        fail_after_cleanup(process, "gh command timed out")
+    except BaseException as error:
+        if not cleaned:
+            cleanup_error = cleanup_process_group(process)
+            if cleanup_error is not None and isinstance(error, Exception):
+                fail(f"{error}; cleanup failed: {cleanup_error}")
         raise
     finally:
         selector.close()

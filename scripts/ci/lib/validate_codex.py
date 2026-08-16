@@ -33,9 +33,12 @@ CODEX_INTERFACE_STRING_KEYS = (
 )
 CODEX_INTERFACE_REQUIRED_URL_KEYS = (
     "websiteURL",
+    "privacyPolicyURL",
     "termsOfServiceURL",
 )
-CODEX_INTERFACE_OPTIONAL_URL_KEYS = ("privacyPolicyURL",)
+CODEX_PRIVACY_POLICY_URL = (
+    "https://github.com/voidmatcha/e2e-skills/blob/main/PRIVACY.md"
+)
 CODEX_INTERFACE_ASSET_KEYS = ("composerIcon", "logo")
 CODEX_ASSET_SUFFIXES = {".jpeg", ".jpg", ".png", ".svg", ".webp"}
 
@@ -187,25 +190,11 @@ def collect_codex_errors(
             errors.append(
                 f".codex-plugin/plugin.json: interface.{key} must be an HTTPS URL"
             )
-
-    for key in CODEX_INTERFACE_OPTIONAL_URL_KEYS:
-        if key not in interface:
             continue
-        value = interface[key]
-        if not isinstance(value, str):
+        if key == "privacyPolicyURL" and value != CODEX_PRIVACY_POLICY_URL:
             errors.append(
-                f".codex-plugin/plugin.json: interface.{key} must be an HTTPS URL"
-            )
-            continue
-        parsed = urlparse(value)
-        if (
-            parsed.scheme != "https"
-            or not parsed.netloc
-            or parsed.username is not None
-            or parsed.password is not None
-        ):
-            errors.append(
-                f".codex-plugin/plugin.json: interface.{key} must be an HTTPS URL"
+                ".codex-plugin/plugin.json: interface.privacyPolicyURL must be "
+                f"{CODEX_PRIVACY_POLICY_URL!r}"
             )
 
     for key in CODEX_INTERFACE_ASSET_KEYS:

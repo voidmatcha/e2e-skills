@@ -572,6 +572,8 @@ Two sub-patterns that cause tests to fail intermittently in CI or parallel runs.
 
 **10a. Positional selectors** — locator `nth()`, `first()`, and `last()` without a comment break when DOM order changes. The scanner deliberately emits broad method-name candidates as `[P1?][LLM-TRIAGE]`; Phase 2 must first prove the receiver is a Playwright/Cypress locator. Unrelated methods such as a database query builder's `.first()` are not findings.
 
+Scan Playwright/Cypress-proven POM/support files as well as specs for positional locators. POM encapsulation is not an exemption: moving a positional locator into a semantically named Page Object method does not make it stable. Only a method name that explicitly promises positional access may use the method-name exemption. When a positional locator targets a collection that is conditionally rendered or reordered by viewport, feature flags, permissions, or state, inspect those render conditions before resolving the candidate.
+
 ```typescript
 // BAD — breaks if DOM order changes
 await expect(items.nth(2)).toContainText('expected text');

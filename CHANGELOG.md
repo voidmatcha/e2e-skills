@@ -2,8 +2,18 @@
 
 ## [Unreleased]
 
+## [1.12.1] - 2026-08-16
+
 ### Changed
 
+- **The Playwright generator defers detailed V1–V6 rules until verification.**
+  `SKILL.md` now requires a full read of `verification-rules.md` before Step 7
+  instead of repeating the same procedure inline, keeping the primary skill
+  shorter without dropping the safety, verdict, or completion contracts.
+- **Every README now shows a shortened scanner transcript and the same
+  Windows boundary.** The English, Korean, Japanese, and Simplified Chinese
+  examples show the actionable lines from `scan.sh`; the scope section directs
+  native Windows users to WSL and keeps artifacts inside its filesystem.
 - **The executable browser fault matrix now runs on every hosted `main` push.**
   Pull requests keep the dependency-free archive and portability checks, while
   the published branch also installs the pinned fixtures and Chromium and
@@ -16,13 +26,31 @@
 - **The README introduction now represents the full skill bundle.** Every
   language uses the product name alone as its title and places verified
   merged upstream fixes before the false-green walkthrough.
-- **The Playwright generator trigger is shorter without weakening its routing
-  boundary.** Its frontmatter description is 677 characters instead of 959,
-  front-loads common requests to add or scaffold coverage, and preserves the
-  approved non-production exploration and adjacent-skill exclusions.
+- **The Playwright generator trigger and Claude plugin description are shorter
+  without changing behavior.** Its frontmatter description is 677 characters
+  instead of 959, front-loads common requests to add or scaffold coverage, and
+  preserves the approved non-production exploration and adjacent-skill
+  exclusions. The Claude plugin description now leaves first-run conventions
+  and seed scaffolding to Step 5b, which still defines both.
 
 ### Fixed
 
+- **The #10a positional-locator guidance now covers Page Object wrappers.**
+  Reviewer docs and evals clarify that POM encapsulation is not an exemption,
+  while explicitly positional helper APIs remain allowed.
+- **The Codex plugin now publishes a dedicated privacy policy.** The interface
+  links to `PRIVACY.md` over HTTPS, and local manifest validation rejects a
+  missing or noncanonical policy URL to prevent contract drift.
+- **Debugger command cleanup no longer hangs after a macOS process-group
+  permission race.** Playwright and Cypress report publishers and downloaders
+  continue past a `SIGTERM` `EPERM`, observe process-group disappearance, and
+  escalate to `SIGKILL` only while the group remains. If cleanup still cannot be
+  proven, its bounded failure is appended to the original timeout or byte-limit
+  diagnostic. Live-process regressions cover all four command boundaries.
+- **Reporter cleanup tests no longer use scheduler wall time as correctness
+  evidence.** Timeout/stdout integration tests assert preserved destinations and
+  diagnostics, while a readiness-gated descendant test proves process-group
+  disappearance. A generous subprocess watchdog is only a hang guard.
 - **The post-fix verifier no longer mistakes Linux `/usr/bin/sg` for
   ast-grep.** The short name also belongs to the system shadow/group command;
   ambient `PATH` discovery now accepts only `ast-grep`, while an explicitly

@@ -1274,6 +1274,7 @@ def main() -> None:
     assert "final browser URL" in step_3
     assert "scheme, host, and effective port" in step_3
     assert "before taking a snapshot or performing any interaction" in step_3
+    assert "never paste raw snapshot content into responses" in step_3
     assert "cloud-metadata or link-local address" in step_3
     assert "arbitrary private-network host" in step_3
     assert "shared or production service" in step_3
@@ -1546,12 +1547,13 @@ def main() -> None:
     assert "An applicable V4 or V5 must be `PASS`" in step_7
     assert "the result is `PARTIAL/BLOCKED`, never `Complete`" in step_7
     assert "Before repeating any write-producing scenario" in step_7
-    assert "idempotency\n   key enforced at the persistent system boundary" in step_7
-    assert "reset or\n   rollback before and after every attempt" in step_7
-    assert "fully stubbed/intercepted writes" in step_7
-    assert "UI double-click protection or a\n   loopback frontend is not sufficient" in step_7
-    assert "do not\n   replay the persistent write" in step_7
-    assert "record V5 `CANNOT_VERIFY` and return\n   `PARTIAL/BLOCKED`" in step_7
+    step_7_words = " ".join(step_7.split())
+    assert "idempotency key enforced at the persistent system boundary" in step_7_words
+    assert "reset or rollback before and after every attempt" in step_7_words
+    assert "fully stubbed/intercepted writes" in step_7_words
+    assert "UI double-click protection or a loopback frontend is not sufficient" in step_7_words
+    assert "do not replay the persistent write" in step_7_words
+    assert "record V5 `CANNOT_VERIFY` and return `PARTIAL/BLOCKED`" in step_7_words
 
     v2 = section(
         verification_rules,

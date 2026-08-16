@@ -18,7 +18,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=c077b97b0378f9d46eb197c643ab1482cb24dde434fb45280855e617b2ff8f4b; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=59a49823b673df124bdc37067f260c048ecd65fb6673d075252eb0e118c04e88; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 AI 코딩 에이전트가 Playwright와 Cypress E2E 테스트를 생성·검토하고 실패 원인을 분석할 때 쓰는 네 가지 Agent Skills 모음입니다. 새 테스트 생성은 Playwright를 지원하고, 기존 테스트 검토와 실패 분석은 Playwright와 Cypress를 지원합니다. 검토 목록 가운데 규칙만으로 판별할 수 있는 항목을 찾는 `deterministic scanner`도 포함합니다.
 
@@ -84,27 +84,25 @@ test('shows the welcome message', async ({ page }) => {
 + await expect(page.getByText('Welcome back')).toBeVisible()
 ```
 
-함께 제공되는 스캐너는 별도의 프로젝트 설정 없이 이런 허위 검증문을 찾아냅니다.
+함께 제공되는 스캐너는 별도 설정 없이, 실제 결과를 확인하지 않고도 통과하는 테스트 코드를 찾아냅니다. 아래는 조치에 필요한 줄만 추린 출력입니다.
 
 ```console
 $ /bin/bash -p skills/e2e-reviewer/scripts/scan.sh tests/
 
 [P0] #4f Locator always-true assertion (truthy/defined/not-null) (2 hits)
-  tests/login.spec.ts:6:  expect(page.getByText('Welcome back')).toBeDefined();
-  tests/login.spec.ts:8:  expect(page.locator('.user-badge')).not.toBeNull();
+  .../tests/login.spec.ts:5:  expect(page.getByText('Welcome back')).toBeDefined();
+  .../tests/login.spec.ts:6:  expect(page.locator('.user-badge')).not.toBeNull();
 
 Summary: 2 total hit(s), 2 P0
 ```
 
-`eslint-plugin-playwright`도 `no-unnecessary-assertions` 규칙으로 이 형태를 찾습니다. 이 규칙을 켜 두면 커밋할 때마다 자동으로 확인할 수 있습니다. 스캐너는 각 결과가 기존 `lint` 설정으로도 잡히는지 표시하므로 두 도구는 서로를 보완합니다.
+이 실행은 P0 문제를 보고하므로 `scan.sh`는 exit 1로 종료됩니다.
+
+`eslint-plugin-playwright`도 `no-unnecessary-assertions`로 이 형태를 찾습니다. 커밋 시점의 `lint`가 잡을 수 있는 문제를 맡고, 나머지는 스캐너가 보완하도록 규칙을 켜 두세요.
 
 ## 테스트가 실패할 수 있음을 증명하기
 
-검증문이 그럴듯하다고 충분한 테스트가 되는 것은 아닙니다. `lint`는 `toBeVisible()`이 올바른 matcher라는 건 알려주지만, 기능이 의도대로 동작하지 않을 때 그 테스트가 실제로 실패하는지는 알려주지 못합니다.
-
-생성기의 주된 역할은 프로젝트의 작성 방식에 맞는 Playwright 테스트를 만드는 것입니다. V2와 V3는 생성한 각 후보를 확인하는 검증 단계입니다. 프로젝트가 승인한 임시 복사본에서 `playwright-test-generator`는 핵심 검증문의 조건을 뒤집고(V2), 근거가 확인된 제품 결함을 주입한 뒤(V3), 미리 지정한 위치에서 예상한 불일치로 실패할 것을 요구합니다. 제한 시간, 브라우저 충돌, 설정 오류로 실패한 실행은 인정하지 않습니다. 안전하게 증명할 수 없는 것은 추측하지 않고 `CANNOT_VERIFY`로 보고합니다.
-
-이것은 후보 spec 하나로 범위를 좁힌 뮤테이션 테스팅입니다. E2E 테스트 모음 전체에 적용하면 비용이 크지만, 후보 하나로 범위를 좁히면 감당할 수 있습니다.
+좋은 matcher만으로는 부족합니다. 동작이 깨졌을 때 테스트가 실제로 실패해야 합니다. 후보마다 V2는 핵심 검증문을 뒤집고, V3는 승인된 임시 복사본에 근거가 확인된 제품 결함을 주입한 뒤 미리 지정한 위치와 불일치로 실패할 것을 요구합니다. 원본은 바이트 단위로 유지하며 제한 시간, 브라우저 충돌, 설정 오류는 인정하지 않고 안전하지 않은 검증은 `CANNOT_VERIFY`로 보고합니다.
 
 ## 설치하고 사용해 보기
 
@@ -184,9 +182,9 @@ Debug the failed Cypress report in cypress/reports/.
 
 새 E2E 테스트를 만들거나 기존 테스트를 검토하고, 실패한 Playwright/Cypress 실행의 원인을 분석할 때 이 스킬 묶음을 사용하세요. 실제 애플리케이션과 E2E 테스트 모음에 더해 사용하는 도구이지, 이를 대신하지는 않습니다. 일반적인 `lint` preset이나 프레임워크에 상관없이 쓰는 테스트 도구도 아닙니다. Playwright와 Cypress를 지원하되, 새 테스트 생성은 현재 Playwright만 지원합니다.
 
-새로 만든 테스트가 통과한다고 해서 충분한 것은 아닙니다. `Locator`나 `Promise` 자체를 검증하거나, 테스트 이름에 적힌 동작과 무관한 상태를 확인하거나, 핵심 검증문이 실패 여부를 좌우하지 않을 수 있습니다. 그래서 생성기는 적용 가능한 [V1–V6 검증](skills/playwright-test-generator/verification-rules.md)을 모두 통과하기 전까지 새 테스트를 후보로 취급합니다.
+함께 제공되는 셸 스크립트와 artifact reader는 macOS/Linux 셸을 대상으로 합니다. Windows 사용자는 WSL에서 실행하고 scan/report artifact를 WSL filesystem 안에 두어야 합니다.
 
-프로젝트가 승인한 임시 복사본에서 V2는 핵심 검증문의 조건을 뒤집고, V3는 근거가 확인된 제품 결함을 주입합니다. 미리 지정한 핵심 검증문이 예상한 위치에서 예상한 불일치로 실패해야만 결함을 잡은 것으로 인정합니다. 설정, 제한 시간, 브라우저, 인프라 오류로 실행이 실패한 경우는 인정하지 않습니다. 원본 후보는 바이트 단위로 그대로 유지하며, 안전하게 실행할 수 없는 검증은 추측하지 않고 `CANNOT_VERIFY`로 보고합니다.
+새로 만든 테스트가 통과한다고 해서 충분한 것은 아닙니다. `Locator`나 `Promise` 자체를 검증하거나, 테스트 이름에 적힌 동작과 무관한 상태를 확인하거나, 핵심 검증문이 실패 여부를 좌우하지 않을 수 있습니다. 그래서 생성기는 적용 가능한 [V1–V6 검증](skills/playwright-test-generator/verification-rules.md)을 모두 통과하기 전까지 새 테스트를 후보로 취급합니다.
 
 ## 검토 방식
 
@@ -298,7 +296,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 스캐너에는 PCRE2를 지원하는 `rg`와 Python 3가 필요합니다. Python이 NUL-safe 후보 식별 레코드를 생성하고 검증하므로 후보 드리프트나 손상된 레코드는 fail-closed로 처리됩니다. 이 필수 기록 작업은 선택적인 Tier 2 AST 도구와 별개입니다. 기본적으로 대상 프로젝트가 제어하는 ESLint 실행 파일, 플러그인, 파서, 설정을 실행하지 않으며 도구도 내려받지 않습니다. `E2E_SMELL_ALLOW_PROJECT_ESLINT=1`은 신뢰하는 체크아웃에서 프로젝트 ESLint 실행을 명시적으로 켭니다. `E2E_SMELL_NO_ESLINT_DOWNLOAD=0`과 `E2E_SMELL_NO_AST_GREP_DOWNLOAD=0`은 각각 고정 버전 다운로드를 명시적으로 켭니다. 이식성 확인에서 미리 설치된 호스트 실행 파일을 무시해야 할 때는 `E2E_SMELL_DISABLE_AST_GREP=1`을 설정합니다.
 
-> **Read boundary.**
+> **읽기 범위.**
 > <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:START -->
 > 공통 소스 범위는 요청한 path 아래입니다. 번들 lexical filter를 포함한 포함 검사는 그 소스를 보고합니다. 프레임워크 출처 확인은 포함 프로젝트의 다른 위치에 있는 relative fixture/support import도 읽을 수 있습니다.
 > <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:END -->

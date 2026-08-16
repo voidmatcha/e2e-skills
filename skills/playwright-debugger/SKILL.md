@@ -7,7 +7,7 @@ metadata:
   frameworks: playwright
   testing-types: e2e
   languages: typescript,javascript
-  version: "1.12.0"
+  version: "1.12.1"
 ---
 
 # Playwright Failed Test Debugger

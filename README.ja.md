@@ -18,33 +18,33 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <strong>🇯🇵 日本語</strong> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=c077b97b0378f9d46eb197c643ab1482cb24dde434fb45280855e617b2ff8f4b; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=59a49823b673df124bdc37067f260c048ecd65fb6673d075252eb0e118c04e88; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
-`e2e-skills` は、E2E テスト作業のために AI coding agent が使える 4 つのワークフローを提供します。Playwright カバレッジの生成、既存の Playwright/Cypress spec のレビュー、失敗した Playwright レポートのデバッグ、失敗した Cypress レポートのデバッグを扱います。レビュー catalog のうち機械的に判定できる subset を検出する決定論的スキャナーも含まれます。
+`e2e-skills` は、AI コーディングエージェントが Playwright/Cypress の E2E テスト作業に使える 4 つのワークフローを提供します。Playwright カバレッジの生成、既存の Playwright/Cypress テスト仕様のレビュー、失敗した Playwright レポートのデバッグ、失敗した Cypress レポートのデバッグを扱います。レビューカタログのうち、機械的に判定できる部分集合を検出する決定論的スキャナーも含まれます。
 
-| Need | Skill | Result |
+| 必要なこと | スキル | 結果 |
 | --- | --- | --- |
-| 新しい Playwright coverage を生成 | `playwright-test-generator` | 探索、承認、レビュー済みの Playwright specs |
-| 既存の Playwright/Cypress tests をレビュー | `e2e-reviewer` | 具体的な修正を伴う検証済み P0/P1/P2 findings |
-| 失敗した Playwright run をデバッグ | `playwright-debugger` | F1–F15 root cause、evidence、fix |
-| 失敗した Cypress run をデバッグ | `cypress-debugger` | F1–F15 root cause、evidence、fix |
-| 決定論的 local scan を実行 | `skills/e2e-reviewer/scripts/scan.sh` | Target project packages なしの mechanical candidates |
+| 新しい Playwright カバレッジを生成 | `playwright-test-generator` | 探索、承認、レビューを経た Playwright テスト仕様 |
+| 既存の Playwright/Cypress テストをレビュー | `e2e-reviewer` | 具体的な修正を伴う検証済み P0/P1/P2 指摘 |
+| 失敗した Playwright 実行をデバッグ | `playwright-debugger` | F1–F15 の根本原因、根拠、修正 |
+| 失敗した Cypress 実行をデバッグ | `cypress-debugger` | F1–F15 の根本原因、根拠、修正 |
+| 決定論的なローカルスキャンを実行 | `skills/e2e-reviewer/scripts/scan.sh` | 対象プロジェクトの package に依存しない機械的候補 |
 
-generator は coverage gap の分析と live browser の探索から始め、scenario の承認後に test を生成し、各候補を検証します。2 つの debugger は失敗した run の artifacts から、分類した root cause、根拠、具体的な fix を返します。
+生成器はカバレッジ不足を分析し、実ブラウザーで探索してから、シナリオ承認後にテストを生成し、各候補を検証します。2 つのデバッガーは失敗した実行の artifact から始め、分類した根本原因、根拠、具体的な修正を返します。
 
-false-green 検出はレビュー workflow の重要な一部ですが、bundle 全体の目的ではありません。`e2e-reviewer` の指摘に基づく修正は、Storybook、SvelteKit、code-server、Strapi、Carbon Design System、Ghost、MUI X などの [14 件のマージ済み upstream PR](#merged-upstream-fixes) に取り込まれています。
+false-green 検出はレビューワークフローの重要な一部ですが、このバンドル全体の目的ではありません。`e2e-reviewer` の指摘に基づく修正は、Storybook、SvelteKit、code-server、Strapi、Carbon Design System、Ghost、MUI X などの [14 件のマージ済み upstream PR](#merged-upstream-fixes) に取り込まれています。
 
 > code-server では、コミット済みの `it.only` が 7 か月にわたって 8 件のテストを静かに無効化していました。そのうち 1 件の skip されたテストはすでに壊れていたにもかかわらず、CI は green のままでした。
 
-**実行可能な例:** [React optimistic-write proof](examples/react-optimistic-write/README.md) は、optimistic UI には visible state だけでなく request と persistence の proof が必要な理由を示します。
+**実行可能な例:** [React optimistic-write の証明](examples/react-optimistic-write/README.md) は、optimistic UI には画面に見える状態だけでなく、リクエストと永続化の証明も必要な理由を示します。
 
 <a id="merged-upstream-fixes"></a>
 
 ## アップストリームにマージされた修正
 
-`e2e-reviewer` の findings は **14 件のマージ済み upstream PR** に貢献しています。これらの self-selected cases は実用例を示し、読者が修正内容を確認できるようにするためのものです。代表的な validation sample や accuracy estimate ではありません。
+`e2e-reviewer` の指摘は **14 件のマージ済み upstream PR** に取り込まれています。これらは実用例を示し、読者が修正内容を確認できるようにするために選んだ事例です。代表的な検証サンプルでも、正確度の推定値でもありません。
 
-| Repository | PR | Pattern fixed |
+| リポジトリ | PR | 修正したパターン |
 | --- | --- | --- |
 | Storybook | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Playwright assertions の missing `await` |
 | code-server | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | Focused test leak、matcher-less `expect`、discarded visibility read |
@@ -84,27 +84,25 @@ test('shows the welcome message', async ({ page }) => {
 + await expect(page.getByText('Welcome back')).toBeVisible()
 ```
 
-同梱スキャナーは、プロジェクト設定なしで false-green assertion を検出します。
+同梱スキャナーは、プロジェクト設定なしで false-green assertion を検出します。以下は対応に必要な行だけを抜粋した出力です。
 
 ```console
 $ /bin/bash -p skills/e2e-reviewer/scripts/scan.sh tests/
 
 [P0] #4f Locator always-true assertion (truthy/defined/not-null) (2 hits)
-  tests/login.spec.ts:6:  expect(page.getByText('Welcome back')).toBeDefined();
-  tests/login.spec.ts:8:  expect(page.locator('.user-badge')).not.toBeNull();
+  .../tests/login.spec.ts:5:  expect(page.getByText('Welcome back')).toBeDefined();
+  .../tests/login.spec.ts:6:  expect(page.locator('.user-badge')).not.toBeNull();
 
 Summary: 2 total hit(s), 2 P0
 ```
 
-`eslint-plugin-playwright` も `no-unnecessary-assertions` でこの形を検出します。そのルールを有効にしてください — 毎コミットで走るルールは、思い出して実行するレビューに勝ります。スキャナーは実行のたびに、どの指摘があなたの lint 設定が既に担うべきものかを出力するので、両者は競合せず補完し合います。
+この実行は P0 指摘を報告するため、`scan.sh` は exit 1 で終了します。
+
+`eslint-plugin-playwright` も `no-unnecessary-assertions` でこの形を検出します。コミット時の lint が扱える問題を担当し、残りをスキャナーが補えるよう、このルールを有効にしてください。
 
 ## テストが失敗しうることを証明する
 
-整った assertion は、通るテストと同じではありません。lint は `toBeVisible()` が正しい matcher だとは教えますが、機能が壊れたときにそのテストが red になるかは教えません。
-
-generator の主な役割は、project の style に合う Playwright coverage を作ることです。V2 と V3 は、生成した各候補の verification gate です。project が承認した一時コピー上で `playwright-test-generator` は primary assertion を反転し (V2)、根拠のある製品 fault を注入して (V3)、予告した箇所で予告した不一致により失敗することを要求します。timeout、ブラウザークラッシュ、設定エラーによる失敗は認めません。安全に証明できないものは推測せず `CANNOT_VERIFY` として報告します。
-
-これは候補 spec 一つにスコープを絞った mutation testing です。その絞り込みこそが費用を現実的にします — E2E でスイート全体を mutation するのは現実的ではないからです。
+良い matcher だけでは不十分で、挙動が壊れたときにテストが red になる必要があります。各候補について、V2 は主要な assertion を反転し、V3 は承認済みの一時コピーへ根拠のある製品障害を注入して、予告した箇所と不一致での失敗を要求します。元の候補は byte-identical のまま保ち、timeout、ブラウザークラッシュ、設定エラーは認めず、安全でない検証は `CANNOT_VERIFY` と報告します。
 
 ## インストールして試す
 
@@ -182,67 +180,67 @@ Debug the failed Cypress report in cypress/reports/.
 
 ## スコープと制限
 
-この bundle は、E2E テストの生成・レビューと、失敗した Playwright/Cypress run の原因分析に使います。アプリケーションと実際の E2E suite に加えて使うものであり、それらの代替ではありません。汎用 lint preset や framework-agnostic なテストツールでもありません。Playwright と Cypress をサポートし、新規テスト生成は現在 Playwright のみを対象にしています。
+このバンドルは、E2E テストの生成・レビューと、失敗した Playwright/Cypress 実行の原因分析に使います。アプリケーションと実際の E2E suite に加えて使うものであり、それらの代替ではありません。汎用 lint preset やフレームワーク非依存のテストツールでもありません。Playwright と Cypress をサポートし、新規テスト生成は現在 Playwright のみを対象にしています。
 
-生成したテストが通るだけでは不十分です。`Locator` や `Promise` 自体を検証していたり、テスト名に記した動作と無関係な状態を見ていたり、主要な assertion がテストの成否に影響していないことがあります。そのため generator は、適用可能な [V1–V6 verification](skills/playwright-test-generator/verification-rules.md) をすべて通過するまで、新しい spec を候補として扱います。
+同梱の shell scripts と artifact readers は macOS/Linux shell を対象にしています。Windows ユーザーは WSL 経由で実行し、scan/report artifacts を WSL filesystem 内に置いてください。
 
-プロジェクトが承認した一時コピー上で、V2 は主要な assertion を反転させ、V3 は根拠の確認できたプロダクト障害を注入します。事前に定めた主要な assertion が、想定した場所で想定した不一致を示して失敗した場合のみ、障害を検出したと判定します。setup、timeout、browser、infrastructure のエラーによる失敗は mutant の kill として扱いません。元の候補は byte-identical のまま保ち、安全に実行できない検証は推測せず `CANNOT_VERIFY` と報告します。
+生成したテストが通るだけでは不十分です。`Locator` や `Promise` 自体を検証していたり、テスト名に記した動作と無関係な状態を見ていたり、主要な assertion がテストの成否に影響していないことがあります。そのため生成器は、適用可能な [V1–V6 verification](skills/playwright-test-generator/verification-rules.md) をすべて通過するまで、新しい spec を候補として扱います。
 
 ## レビューの仕組み
 
 有効なテストコードを生成することと、プロダクトが間違っているときに失敗するテストを生成することは別です。このワークフローは、機械的な検出と意味的な判断を分離します。
 
-1. スキャナーは Locator truthiness、focused tests、missing `await`、blanket error suppression など、決定論的に見つけられる候補を検出します。
-2. `e2e-reviewer` は finding を確定する前に、test names、actions、assertions、helpers、Page Objects、fixtures、configuration を読みます。
-3. Findings は安定した pattern ID と P0/P1/P2 severity を使うため、修正と regression を比較できます。
-4. 修正後、ワークフローは scanner と、プロジェクトで承認された E2E または lint command を再実行します。
+1. スキャナーは Locator truthiness、focused tests、`await` の欠落、blanket error suppression など、決定論的に見つけられる候補を検出します。
+2. `e2e-reviewer` は指摘を確定する前に、テスト名、操作、assertion、helper、Page Object、fixture、設定を読みます。
+3. 指摘は安定した pattern ID と P0/P1/P2 severity を使うため、修正と回帰を比較できます。
+4. 修正後、ワークフローはスキャナーと、プロジェクトで承認された E2E または lint コマンドを再実行します。
 
-scanner match は候補であり、verdict ではありません。missing authentication、call proof のない optimistic UI、name/assertion mismatch、render guard に阻まれる fixtures など、複数ファイルにまたがる findings には semantic review が必要です。
+スキャナーの一致は候補であり、判定ではありません。認証の欠落、呼び出し証明のない optimistic UI、name/assertion mismatch、render guard に阻まれる fixture など、複数ファイルにまたがる指摘には意味的なレビューが必要です。
 
 ## 根拠と限界
 
-現在の根拠で支えられる主張は限定的です。このプロジェクトには behavior-backed な開発根拠とアップストリームにマージされた 14 件の修正がありますが、一般化された reviewer accuracy は主張しません。
+現在の根拠で支えられる主張は限定的です。このプロジェクトには動作で裏付けた開発根拠とアップストリームにマージされた 14 件の修正がありますが、一般化されたレビュー精度は主張しません。
 
-- Browser fault injection は **36/36 Playwright/Cypress cells** を完了しています。
-- exact reviewer benchmark は **12 proven false-green cases and 12 clean guards** を対象にしています。10 件の fault cases は byte-identical operator mutants です。
-- Independent robustness gates v4、v5、v7、v8 は preregistered criteria を満たしませんでした。V6 と v9 は未実行で、v10 は frozen ですが未実行です。
-- debugger protocol は replay 可能な 30-case synthetic corpus を提供しますが、independently established debugger accuracy は主張しません。
+- ブラウザー障害注入は **36/36 Playwright/Cypress セル**で完了しています。
+- exact レビューベンチマークは **証明済みの false-green 事例 12 件と正常コードの保護事例 12 件**を対象にしています。10 件の障害事例は byte-identical operator mutants です。
+- Independent robustness gates v4、v5、v7、v8 は事前登録した基準を満たしませんでした。V6 と v9 は未実行で、v10 は凍結済みですが未実行です。
+- デバッガー protocol は再実行可能な 30-case synthetic corpus を提供しますが、独立に確立されたデバッガー精度は主張しません。
 
-scores、failed gates、superseded runs、claim boundaries については [benchmark status](benchmarks/STATUS.md) を参照してください。[research evidence ledger](docs/llm-generated-e2e-test-evidence.md) は、隣接する unit-test や custom-agent studies をこのプロジェクトの測定値として扱わず、59 件の外部 source を監査しています。
+スコア、失敗したゲート、置き換えられた実行、主張の境界については [ベンチマーク状況](benchmarks/STATUS.md) を参照してください。[研究根拠台帳](docs/llm-generated-e2e-test-evidence.md) は、隣接する unit-test や custom-agent studies をこのプロジェクトの測定値として扱わず、59 件の外部 source を監査しています。
 
 ## E2E レビューカタログ
 
-カタログには、24 個の安定した Playwright/Cypress test smells が含まれます。代表的な false-green には、Locator truthiness、missing assertions、swallowed errors、focused tests、missing authentication、network proof のない optimistic UI checks があります。[full taxonomy and rationale](docs/e2e-test-smells.md) を参照してください。
+カタログには、24 個の安定した Playwright/Cypress test smells が含まれます。代表的な false-green には、Locator truthiness、assertion の欠落、握りつぶされたエラー、focused tests、認証の欠落、network proof のない optimistic UI checks があります。[分類体系と根拠の詳細](docs/e2e-test-smells.md) を参照してください。
 
 一部のパターンは、テストだけでなくアプリケーションがレビュー範囲に含まれている必要があります。`#22` optimistic UI が最も明確な例です。クリックが実際に mutation を送るかどうかは spec だけでは判断できないため、テストのみのリポジトリでは推測せず何も報告しません。これは意図した false-positive 抑制であり、実行可能な例が component と共に提供される理由です。
 
-### 24 Patterns Detected — Grouped by Severity
+### 検出対象の 24 パターン — 重要度別
 
-#### P0 — Must Fix (silent always-pass)
+#### P0 — 必ず修正 (壊れていても静かに通る)
 
 機能が壊れていてもテストが通ります。実質的な検証がありません。
 
-| # | Pattern | Before | After |
+| # | パターン | 修正前 | 修正後 |
 |---|---------|--------|-------|
-| 1 | **Name-assertion mismatch** | 名前は "status" と言っているのに `toBeVisible()` しか確認していない | status content への assertion を追加するか、実際の check に合わせて rename する |
-| 2 | **Missing Then** | Cancel action と text restored は検証している。でも input はまだ visible? | restored state と dismissed state の両方を検証する |
+| 1 | **Name-assertion mismatch** | 名前は "status" と言っているのに `toBeVisible()` しか確認していない | `status` の内容に対する assertion を追加するか、実際の check に合わせて rename する |
+| 2 | **Missing Then** | Cancel 操作とテキスト復元は検証している。でも input はまだ visible? | restored state と dismissed state の両方を検証する |
 | 3 | **Error swallowing** | spec 内の `try/catch`、POM 内の `.catch(() => {})` | error で fail させる。POM methods から silent catch を取り除く |
-| 3b | **Cypress `uncaught:exception` suppression** | `cy.on('uncaught:exception', () => false)` が app errors を blanket-swallows する | handler を特定の known errors に限定し、unknown errors は re-throw する |
-| 4 | **Vacuous or retry-weakening assertion** (P0/P1) | P0: invariant predicates と Locator truthiness。P1: weak attachment proof、one-shot values/URL、zero-timeout retry/deadline hazards、unproven absence、promised accessible name を省いた ARIA snapshots | meaningful bounds と web-first auto-retrying assertions を使う。absence の前に presence を証明し、promised accessible names を load-bearing に保つ |
+| 3b | **Cypress `uncaught:exception` suppression** | `cy.on('uncaught:exception', () => false)` がアプリケーションエラーを一律に握りつぶす | handler を特定の known errors に限定し、unknown errors は re-throw する |
+| 4 | **Vacuous or retry-weakening assertion** (P0/P1) | P0: invariant predicates と Locator truthiness。P1: weak attachment proof、one-shot values/URL、zero-timeout retry/deadline hazards、証明されていない absence、promised accessible name を省いた ARIA snapshots | 意味のある境界と web-first auto-retrying assertions を使う。absence の前に presence を証明し、promised accessible names を load-bearing に保つ |
 | 5 | **Bypass patterns** (5a P0, 5b P1) | `if (await el.isVisible()) { expect(...) }`; comment なしの `{ force: true }` | 常に assert する。env checks は `beforeEach` に移し、force:true には `// JUSTIFIED:` を追加する |
 | 7 | **Focused test leak** | `test.only(...)` が commit され、CI は 1 件だけ実行して残りを静かに skip する | `.only` を削除する。local focus には `--grep` または `--spec` を使う |
-| 8 | **Missing assertion** | discarded locator/boolean が scenario 唯一の verification になっている | `await expect(locator).toBeVisible()` を追加する。independent verification/failure evidence がすでにある場合は #8 を skip する |
-| 12 | **Missing auth setup** | login/`storageState`/auth fixture がなく、protected-route spec が generic assertion で login/wrong surface にも一致して通る | `beforeEach` login を追加する、`storageState` を設定する、または auth fixture を使う。通常の auth-caused failure を P0 に分類しない |
+| 8 | **Missing assertion** | 捨てられた locator/boolean が scenario 唯一の verification になっている | `await expect(locator).toBeVisible()` を追加する。independent verification/failure evidence がすでにある場合は #8 を skip する |
+| 12 | **Missing auth setup** | login/`storageState`/auth fixture がなく、protected-route テスト仕様が汎用的なアサーションで login/wrong surface にも一致して通る | `beforeEach` login を追加する、`storageState` を設定する、または auth fixture を使う。通常の認証起因の失敗を P0 に分類しない |
 
-#### P1 — Should Fix (poor diagnostics / wastes CI time)
+#### P1 — 修正推奨 (診断が悪い / CI 時間を浪費)
 
 テストは動きますが、開発者を誤解させたり、CI 時間を浪費したり、将来の regression を招いたりします。
 
-| # | Pattern | Before | After |
+| # | パターン | 修正前 | 修正後 |
 |---|---------|--------|-------|
-| 6 | **Raw DOM queries** | `evaluate()` 内の `document.querySelector` | framework locator/query APIs (`locator` / `cy.get`) を使う |
-| 9 | **Hard-coded sleep** | `waitForTimeout(2000)` / `cy.wait(2000)` / `waitForLoadState('networkidle')` | framework auto-wait に任せ、condition-based waits を使う |
-| 10 | **Flaky test patterns** | comment なしの `items.nth(2)`; `test.describe.serial()`; unscoped accessible-name substring (10c); Cypress async callbacks、assigned `cy` commands、continued action chains (10d–10f) | stable/scoped locators と self-contained tests を使う。Cypress work は command chain 内に保ち、Chainables を values として代入せず、actions 後は re-query する |
+| 6 | **Raw DOM queries** | `evaluate()` 内の `document.querySelector` | フレームワークの locator/query APIs (`locator` / `cy.get`) を使う |
+| 9 | **Hard-coded sleep** | `waitForTimeout(2000)` / `cy.wait(2000)` / `waitForLoadState('networkidle')` | フレームワークの auto-wait に任せ、condition-based waits を使う |
+| 10 | **Flaky test patterns** | comment なしの `items.nth(2)`; `test.describe.serial()`; scope されていない accessible-name substring (10c); Cypress async callbacks、assigned `cy` commands、continued action chains (10d–10f) | stable/scoped locators と self-contained tests を使う。Cypress work は command chain 内に保ち、Chainables を values として代入せず、actions 後は re-query する |
 | 13 | **Inconsistent POM usage** | POM を import しているのに、POM-owned actions に raw `page.fill`/`page.click` を使っている | すべての interactions を POM 経由にし、UI changes の更新箇所を 1 か所にまとめる |
 | 14 | **Hardcoded credentials** | test code 内の `loginPage.login('demo-admin', '<literal-password>')` | `process.env.TEST_USER`、Playwright config secrets、または test data fixtures を使う |
 | 15 | **Missing `await` on `expect()`** | Async Locator/Page web-first matcher Promise が sequenced も observed もされず、rejection が後から悪い attribution で表面化しがち | matcher Promise を `await` または return する。sync value matchers は除外 |
@@ -251,13 +249,13 @@ scores、failed gates、superseded runs、claim boundaries については [benc
 | 18 | **`expect.soft()` overuse** | critical soft assertions が hard scenario gate の前に走り、broken prerequisite の後も dependent work が続く | primary state を先に hard-gate する。`soft` は independent details にだけ使う |
 | 19 | **Module-level mutable state in test code** | test utility の column 0 にある `let seq = 0;` または mutate される `const cache = new Map()` — long-lived worker の tests 間で残り、parallel workers 間で衝突する | counter を削除する。`Date.now()` + `Math.random().toString(36).slice(2, 8)` から uniqueness を作るか、state を `test.beforeEach` に移す |
 | 20 | **Unmocked real-backend writes** | Signup/checkout spec が controlled test boundary なしで shared or persistent state に到達する | write を stub するか、disposable container、rollback fixture、isolated tenant/database、または同等の controlled backend を証明する |
-| 22 | **Optimistic UI without call proof** | Like-toggle test が `aria-pressed` flip を assert するだけ。UI は optimistic に更新されるため、POST を削除しても通る | UI assertion に、click 前に armed した `page.waitForRequest()` または route-hit flag を組み合わせる |
+| 22 | **Optimistic UI without call proof** | Like-toggle test が `aria-pressed` flip を assert するだけ。UI は optimistic に更新されるため、POST を削除しても通る | UI assertion に、click 前に準備した `page.waitForRequest()` または route-hit flag を組み合わせる |
 
-#### P2 — Nice to Fix (maintenance / robustness)
+#### P2 — 余裕があれば修正 (保守性 / 堅牢性)
 
 弱いものの、誤りではありません。refactoring 時に対応します。
 
-| # | Pattern | Before | After |
+| # | パターン | 修正前 | 修正後 |
 |---|---------|--------|-------|
 | 11 | **YAGNI + Zombie Specs** | 一度も呼ばれない `clickEdit()`; unjustified empty wrapper class; 別 spec と丸ごと重複した spec | unused members と zombie specs を削除する。single-use helpers は meaningless indirection を明確に減らす場合だけ inline する |
 | 21 | **Manually-captured session-file dependency** | manual capture script でしか生成されない `storageState: 'auth/member.json'` — CI にはなく、静かに期限切れになる | session を programmatically regenerate する (API-login helper または `setup` project)。manual files は programmatic fallback 付き cache としてのみ使う |
@@ -265,40 +263,40 @@ scores、failed gates、superseded runs、claim boundaries については [benc
 
 ## 失敗デバッグ
 
-両方の debugger は、同じ安定した F1–F15 root-cause taxonomy を使います。Playwright は `playwright-report/`、HTML reports、`trace.zip`、screenshots、bounded GitHub Actions artifacts を受け付けます。Cypress は mochawesome または JUnit reports、screenshots、videos、bounded CI artifacts を受け付けます。
+両方のデバッガーは、同じ安定した F1–F15 root-cause taxonomy を使います。Playwright は `playwright-report/`、HTML report、`trace.zip`、screenshot、範囲を限定した GitHub Actions artifact を受け付けます。Cypress は mochawesome または JUnit report、screenshot、video、範囲を限定した CI artifact を受け付けます。
 
-| # | Category | Signals |
+| # | 分類 | 手がかり |
 |---|----------|---------|
-| F1 | **Flaky / Timing** | `TimeoutError`, passes on retry |
-| F2 | **Selector Broken** | `locator not found`, strict mode violation |
-| F3 | **Network Dependency** | `net::ERR_*`, unexpected API response |
-| F4 | **Assertion Mismatch** | `Expected X to equal Y`, subject-inversion |
-| F5 | **Missing Then** | Action completed but wrong state remains |
-| F6 | **Condition Branch Missing** | Element conditionally present, assertion always runs |
-| F7 | **Test Isolation Failure** | Passes alone, fails in suite |
-| F8 | **Environment Mismatch** | CI vs local only; viewport, OS, timezone |
-| F9 | **Data Dependency** | Missing seed data, hardcoded IDs |
-| F10 | **Auth / Session** | Session expired, role-based UI not rendered |
-| F11 | **Async Order Assumption** | `Promise.all` order, parallel race |
-| F12 | **POM / Locator Drift** | DOM structure changed, POM not updated |
-| F13 | **Error Swallowing** | `.catch(() => {})` hiding actual failure |
-| F14 | **Animation Race** | Content not yet rendered, or a transient element removed before it is observed |
-| F15 | **Hydration Race** | Action succeeds but has no effect — SSR page not yet hydrated; fails at the next assertion |
+| F1 | **不安定 / タイミング** | `TimeoutError`, 再試行では通る |
+| F2 | **セレクター破損** | `locator not found`, `strict mode violation` |
+| F3 | **ネットワーク依存** | `net::ERR_*`, 予期しない API レスポンス |
+| F4 | **アサーション不一致** | `Expected X to equal Y`, subject の取り違え |
+| F5 | **Then の欠落** | 操作は完了したが、誤った状態が残る |
+| F6 | **条件分岐の欠落** | 要素が条件付きで存在するのに、アサーションが常に実行される |
+| F7 | **テスト分離の失敗** | 単独では通り、テストスイートでは失敗する |
+| F8 | **環境差異** | CI とローカルの片方でだけ発生する。viewport、OS、timezone |
+| F9 | **データ依存** | seed データの欠落、hardcoded IDs |
+| F10 | **認証 / セッション** | セッション期限切れ、role-based UI が描画されない |
+| F11 | **非同期順序の仮定** | `Promise.all` の順序、並行処理の競合 |
+| F12 | **POM / Locator のずれ** | DOM 構造が変わったのに POM が更新されていない |
+| F13 | **エラー握りつぶし** | `.catch(() => {})` が実際の失敗を隠している |
+| F14 | **アニメーション競合** | 内容がまだ描画されていない、または一時的な要素が観測前に削除される |
+| F15 | **ハイドレーション競合** | 操作は成功するが効果がない — SSR ページのハイドレーションがまだ完了しておらず、次のアサーションで失敗する |
 
 
-debugger は product regression と brittle test を分けて分類し、evidence と具体的な fix を返します。失敗した Playwright または Cypress test artifact がない application や backend は診断しません。
+デバッガーはプロダクト回帰と壊れやすいテストを分けて分類し、根拠と具体的な修正を返します。失敗した Playwright または Cypress テスト artifact がないアプリケーションや backend は診断しません。
 
 ## スタンドアロンスキャナー
 
-決定論的な mechanical layer を直接実行できます。
+決定論的な機械的レイヤーを直接実行できます。
 
 ```bash
 /bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests
 ```
 
-スキャナーには PCRE2-capable `rg` と Python 3 が必要です。Python が NUL-safe な candidate identity records を作成・検証するため、candidate drift や不正な record は fail closed になります。この必須の bookkeeping は optional な Tier 2 AST tooling とは別です。デフォルトでは、target-controlled な ESLint binaries、plugins、parsers、configuration を実行せず、tools も download しません。`E2E_SMELL_ALLOW_PROJECT_ESLINT=1` は trusted checkout で project ESLint execution を opt in します。`E2E_SMELL_NO_ESLINT_DOWNLOAD=0` と `E2E_SMELL_NO_AST_GREP_DOWNLOAD=0` は、それぞれ pinned downloads を opt in します。portability check で preinstalled host binaries を無視する必要がある場合は、`E2E_SMELL_DISABLE_AST_GREP=1` を設定してください。
+スキャナーには PCRE2 対応の `rg` と Python 3 が必要です。Python が NUL-safe な candidate identity records を作成・検証するため、candidate drift や不正な record は fail closed になります。この必須の bookkeeping は optional な Tier 2 AST tooling とは別です。デフォルトでは、target-controlled な ESLint binaries、plugins、parsers、configuration を実行せず、tools も download しません。`E2E_SMELL_ALLOW_PROJECT_ESLINT=1` は trusted checkout で project ESLint execution を opt in します。`E2E_SMELL_NO_ESLINT_DOWNLOAD=0` と `E2E_SMELL_NO_AST_GREP_DOWNLOAD=0` は、それぞれ pinned downloads を opt in します。portability check で preinstalled host binaries を無視する必要がある場合は、`E2E_SMELL_DISABLE_AST_GREP=1` を設定してください。
 
-> **Read boundary.**
+> **読み取り範囲。**
 > <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:START -->
 > 同梱 checks は、requested path 配下の source を report します。Framework provenance resolution は、containing project 内の別の場所にある relative fixture/support imports も読む場合があります。
 > <!-- README-I18N-CONTRACT:SCANNER-READ-SCOPE:END -->
@@ -307,16 +305,16 @@ debugger は product regression と brittle test を分けて分類し、evidenc
 同梱 checks は `.ts`, `.js`, `.tsx`, `.jsx`, `.mts`, `.mjs`, `.cts`, `.cjs` の source を読み取ります。
 <!-- README-CONTRACT:SCANNER-EXTENSIONS:END -->
 
-Tier 3 は同梱 fallback です。optional ESLint と ast-grep tiers は precision を高めますが、semantic review を置き換えるものではありません。scanner は infrastructure または filesystem errors では false clean result を報告せず、exit 2 で終了します。trust と network boundary については [SECURITY.md](SECURITY.md) を参照してください。
+Tier 3 は同梱 fallback です。optional ESLint と ast-grep tiers は精度を高めますが、semantic review を置き換えるものではありません。scanner は infrastructure または filesystem errors では false clean result を報告せず、exit 2 で終了します。trust と network boundary については [SECURITY.md](SECURITY.md) を参照してください。
 
 ## ESLint plugin との違い
 
-`eslint-plugin-playwright` と `eslint-plugin-cypress` は、syntactic rules の every-commit baseline として優れています。`e2e-skills` は、そこに 2 つの異なる layer を追加します。
+`eslint-plugin-playwright` と `eslint-plugin-cypress` は、構文ルールの every-commit baseline として優れています。`e2e-skills` は、そこに 2 つの異なる layer を追加します。
 
 - 明示的に有効化されない限り target project の lint stack を実行しない secure-default scanner
-- test intent や cross-file context が必要な findings に対する semantic review
+- テスト意図や複数ファイルの文脈が必要な指摘に対する意味的なレビュー
 
-linter は直接的な Locator truthiness assertion や missing `await` を検出できます。しかし、「shows a duplicate-name error」という名前の test がその error を本当に確認しているか、protected-route test が authentication を忘れていないか、optimistic UI assertion が backend request の発生を証明しているかは判断できません。continuous linting には plugin を使い、test trustworthiness には `e2e-reviewer` を使ってください。
+linter は直接的な Locator truthiness assertion や missing `await` を検出できます。しかし、「shows a duplicate-name error」という名前の test がその error を本当に確認しているか、protected-route test が authentication を忘れていないか、optimistic UI assertion が backend request の発生を証明しているかは判断できません。継続的な linting には plugin を使い、test trustworthiness には `e2e-reviewer` を使ってください。
 
 ## よくある質問
 
@@ -330,11 +328,11 @@ debugger は、安定した F1–F15 taxonomy に照らして failures を分類
 non-public benchmark runs では、`--isolation-wrapper` は required hook であり、isolation の証明ではありません。Continuous integration (CI) は wrapper contract を検証しますが、filesystem、process、network isolation は attestation しません。
 <!-- README-I18N-CONTRACT:CORE-SAFETY:END -->
 
-該当する spec directory を `e2e-reviewer` に渡してください。findings を返す前に、決定論的候補と semantic review を組み合わせます。
+該当する spec directory を `e2e-reviewer` に渡してください。指摘を返す前に、決定論的候補と意味的なレビューを組み合わせます。
 
 ### これは Playwright/Cypress のテスト実行を置き換えますか?
 
-いいえ。変更のたびに application と実際の E2E suite を実行してください。このバンドルは test quality をレビューし、Playwright coverage を生成し、既存の failure を診断します。test runner ではありません。
+いいえ。変更のたびにアプリケーションと実際の E2E suite を実行してください。このバンドルはテスト品質をレビューし、Playwright カバレッジを生成し、既存の失敗を診断します。テスト runner ではありません。
 
 ### AI が生成した E2E テストをレビューするには?
 
@@ -342,34 +340,34 @@ non-public benchmark runs では、`--isolation-wrapper` は required hook で�
 
 ### Playwright だけでなく Cypress もサポートしますか?
 
-review と failure debugging は両方の framework をサポートします。新規テスト生成は現在 Playwright のみをサポートします。Cypress debugger は mochawesome と JUnit reports を受け付けます。
+レビューと失敗デバッグは両方の framework をサポートします。新規テスト生成は現在 Playwright のみをサポートします。Cypress デバッガーは mochawesome と JUnit report を受け付けます。
 
 ### CI でだけ失敗するテストをデバッグできますか?
 
-はい。local report artifacts またはサポート対象の GitHub Actions run を提供した場合に対応できます。debugger は F1–F15 taxonomy を使い、environment、timing、selector、data、authentication、product-regression の原因を分離します。
+はい。ローカル report artifact またはサポート対象の GitHub Actions run を提供した場合に対応できます。デバッガーは F1–F15 taxonomy を使い、環境、timing、selector、data、認証、product-regression の原因を分離します。
 
-### どの AI coding agent がサポートされていますか?
+### どの AI コーディングエージェントがサポートされていますか?
 
 Claude Code、Codex、そして `skills` CLI がサポートする 55+ hosts は public `SKILL.md` contracts を読み込めます。optional host-specific agent files は利用可能な環境で delegation を改善しますが、public skills はそれらなしでも利用できます。
 
 ## 詳細ドキュメント
 
-- [24 Playwright and Cypress E2E test smells](docs/e2e-test-smells.md)
-- [Self-audit of the rules](docs/rule-self-audit.md)
-- [Open-source case studies](docs/case-studies.md)
-- [Benchmark status and negative results](benchmarks/STATUS.md)
-- [External evidence ledger](docs/llm-generated-e2e-test-evidence.md)
-- [Historical AI reviewer benchmark](docs/ai-reviewer-benchmark.md)
-- [Debugger benchmark protocol](docs/debugger-benchmark/README.md)
-- [Framework scope](docs/framework-scope.md)
-- [Roadmap](docs/roadmap.md)
+- [Playwright/Cypress E2E テストスメル 24 種](docs/e2e-test-smells.md)
+- [ルールの自己監査](docs/rule-self-audit.md)
+- [オープンソースの事例集](docs/case-studies.md)
+- [ベンチマーク状況と否定的結果](benchmarks/STATUS.md)
+- [外部根拠台帳](docs/llm-generated-e2e-test-evidence.md)
+- [過去の AI レビューベンチマーク](docs/ai-reviewer-benchmark.md)
+- [デバッガーベンチマーク手順](docs/debugger-benchmark/README.md)
+- [フレームワークの対象範囲](docs/framework-scope.md)
+- [ロードマップ](docs/roadmap.md)
 
-planned work には cross-model convention consistency と stronger deterministic detection が含まれます。専用の verification が pass する前に、roadmap item を shipped とは説明しません。
+予定している作業には cross-model convention consistency と stronger deterministic detection が含まれます。専用の verification が pass する前に、roadmap item を shipped とは説明しません。
 
-## Contributing
+## コントリビューション
 
-Bug reports、false-positive guards、新しい anti-patterns、translations を歓迎します。setup と verification requirements については [CONTRIBUTING.md](CONTRIBUTING.md) から始めてください。cross-agent maintenance contracts は [AGENTS.md](AGENTS.md) にあります。
+bug report、false-positive guard、新しい anti-pattern、翻訳を歓迎します。setup と verification requirements については [CONTRIBUTING.md](CONTRIBUTING.md) から始めてください。cross-agent maintenance contracts は [AGENTS.md](AGENTS.md) にあります。
 
-## License
+## ライセンス
 
-Apache-2.0 &copy; [voidmatcha](https://github.com/voidmatcha). See [LICENSE](LICENSE).
+Apache-2.0 &copy; [voidmatcha](https://github.com/voidmatcha)。詳細は [LICENSE](LICENSE) を参照してください。

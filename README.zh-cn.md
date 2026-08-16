@@ -17,48 +17,48 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=c077b97b0378f9d46eb197c643ab1482cb24dde434fb45280855e617b2ff8f4b; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=59a49823b673df124bdc37067f260c048ecd65fb6673d075252eb0e118c04e88; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 为 AI 编程代理提供四个面向 E2E 测试工作的聚焦工作流：生成 Playwright 覆盖、审查现有 Playwright/Cypress spec、调试失败的 Playwright 报告，以及调试失败的 Cypress 报告。它还包含一个确定性扫描器，用于发现审查目录中可机械判定的子集。
 
-| Need | Skill | Result |
+| 需求 | Skill | 结果 |
 | --- | --- | --- |
-| 生成新的 Playwright 覆盖 | `playwright-test-generator` | 经过探索、批准和审查的 Playwright specs |
-| 审查现有 Playwright/Cypress tests | `e2e-reviewer` | 带有具体修复建议的已验证 P0/P1/P2 findings |
-| 调试失败的 Playwright run | `playwright-debugger` | F1–F15 root cause、evidence 和 fix |
-| 调试失败的 Cypress run | `cypress-debugger` | F1–F15 root cause、evidence 和 fix |
-| 运行确定性本地扫描 | `skills/e2e-reviewer/scripts/scan.sh` | 不依赖 target-project packages 的 mechanical candidates |
+| 生成新的 Playwright 覆盖 | `playwright-test-generator` | 经过探索、批准和审查的 Playwright spec |
+| 审查现有 Playwright/Cypress 测试 | `e2e-reviewer` | 带有具体修复建议的已验证 P0/P1/P2 发现 |
+| 调试失败的 Playwright 运行 | `playwright-debugger` | F1–F15 根本原因、证据和修复 |
+| 调试失败的 Cypress 运行 | `cypress-debugger` | F1–F15 根本原因、证据和修复 |
+| 运行确定性本地扫描 | `skills/e2e-reviewer/scripts/scan.sh` | 不依赖目标项目 package 的机械候选项 |
 
-生成器先分析覆盖缺口并通过真实浏览器探索，再在 scenario 获批后生成测试并验证每个候选。两个 debugger 从失败 run 的 artifacts 入手，返回已分类的 root cause、支持证据和具体 fix。
+生成器先分析覆盖缺口并通过真实浏览器探索，再在场景获批后生成测试并验证每个候选。两个调试器从失败运行的 artifact 入手，返回已分类的根本原因、支持证据和具体修复。
 
 false-green 检测是审查工作流的重要组成部分，但不是整个 bundle 的唯一用途。基于 `e2e-reviewer` 发现的修复已通过 [14 个合入上游的 PR](#merged-upstream-fixes) 合入，其中包括 Storybook、SvelteKit、code-server、Strapi、Carbon Design System、Ghost 和 MUI X。
 
 > 在 code-server 中，一个提交进仓库的 `it.only` 曾默默禁用 8 个测试长达 7 个月。其中一个被跳过的测试早已损坏，而 CI 仍然保持绿色。
 
-**可执行示例：** [React optimistic-write proof](examples/react-optimistic-write/README.md) 展示了为什么 optimistic UI 不只需要 visible state，还需要 request 和 persistence proof。
+**可执行示例：** [React 乐观写入证明](examples/react-optimistic-write/README.md) 展示了为什么乐观 UI 需要请求和持久化证明，而不只是可见状态。
 
 <a id="merged-upstream-fixes"></a>
 
 ## 已合入上游的修复
 
-`e2e-reviewer` 的发现已促成 **14 个合入上游的 PR**。这些自选案例展示了实际使用，也让读者可以检查修复；它们不是代表性 validation sample 或 accuracy estimate。
+`e2e-reviewer` 的发现已促成 **14 个合入上游的 PR**。这些自选案例展示了实际使用，也让读者可以检查修复；它们不是代表性验证样本，也不是准确率估计。
 
 | 仓库 | PR | 已修复模式 |
 | --- | --- | --- |
-| Storybook | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Playwright assertions 缺失 `await` |
-| code-server | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | Focused test leak、matcher-less `expect`、被丢弃的 visibility read |
-| Strapi | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | 被丢弃的 navigation/state checks |
-| SvelteKit | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Floating Playwright assertions |
-| Carbon Design System | [carbon-design-system/carbon#22564](https://github.com/carbon-design-system/carbon/pull/22564) | Locator truthiness 替换为 web-first assertions |
-| Ghost | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | Promise-valued disabled-state assertion |
-| Cal.com | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | E2E flow 中的 weak assertion patterns |
-| Bruno | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | Assertion 和 wait reliability fixes |
-| Qwik | [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777) | Locator/handle existence checks |
-| Element Web | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Locator null-check style assertions |
-| MUI X | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | UI handle checks 替换为 state assertions |
-| module-federation/core | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Cypress spec 中冗余的 blanket `uncaught:exception` suppression |
-| FiftyOne | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Locator-defined check 替换为可见的 duplicate-name error assertion |
-| Rancher Desktop | [rancher-sandbox/rancher-desktop#10557](https://github.com/rancher-sandbox/rancher-desktop/pull/10557) | `not.toBeNull()` locator checks 替换为可见的 WSL integration-name assertions |
+| Storybook | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Playwright 断言缺失 `await` |
+| code-server | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | Focused test 泄漏、没有 matcher 的 `expect`、被丢弃的可见性读取 |
+| Strapi | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | 被丢弃的导航/状态检查 |
+| SvelteKit | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | 未等待的 Playwright 断言 |
+| Carbon Design System | [carbon-design-system/carbon#22564](https://github.com/carbon-design-system/carbon/pull/22564) | Locator 真值判断改为 web-first 断言 |
+| Ghost | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | Promise 值的禁用状态断言 |
+| Cal.com | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | E2E 流程中的弱断言模式 |
+| Bruno | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | 断言与等待可靠性修复 |
+| Qwik | [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777) | Locator/handle 存在性检查 |
+| Element Web | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Locator null-check 风格断言 |
+| MUI X | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | UI handle 检查改为状态断言 |
+| module-federation/core | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Cypress spec 中冗余的 blanket `uncaught:exception` 抑制 |
+| FiftyOne | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Locator 定义检查改为可见的 duplicate-name 错误断言 |
+| Rancher Desktop | [rancher-sandbox/rancher-desktop#10557](https://github.com/rancher-sandbox/rancher-desktop/pull/10557) | `not.toBeNull()` Locator 检查改为可见的 WSL integration-name 断言 |
 
 ## 看一个 false-green 测试
 
@@ -83,27 +83,25 @@ test('shows the welcome message', async ({ page }) => {
 + await expect(page.getByText('Welcome back')).toBeVisible()
 ```
 
-内置扫描器无需项目配置即可捕获这些 false-green assertions：
+内置扫描器无需项目配置即可捕获这些 false-green 断言。下面只摘录需要处理的输出：
 
 ```console
 $ /bin/bash -p skills/e2e-reviewer/scripts/scan.sh tests/
 
 [P0] #4f Locator always-true assertion (truthy/defined/not-null) (2 hits)
-  tests/login.spec.ts:6:  expect(page.getByText('Welcome back')).toBeDefined();
-  tests/login.spec.ts:8:  expect(page.locator('.user-badge')).not.toBeNull();
+  .../tests/login.spec.ts:5:  expect(page.getByText('Welcome back')).toBeDefined();
+  .../tests/login.spec.ts:6:  expect(page.locator('.user-badge')).not.toBeNull();
 
 Summary: 2 total hit(s), 2 P0
 ```
 
-`eslint-plugin-playwright` 也会通过 `no-unnecessary-assertions` 标记这种写法。请启用该规则——每次提交都运行的规则，胜过需要你记得执行的评审。扫描器每次运行都会输出哪些发现本应由你的 lint 配置负责，因此两者是互补而非竞争。
+由于这次运行报告了 P0 发现，`scan.sh` 会以 exit 1 结束。
+
+`eslint-plugin-playwright` 也会通过 `no-unnecessary-assertions` 标记这种写法。请启用该规则，让提交时的 lint 负责它能捕获的问题，其余由扫描器补充。
 
 ## 证明测试会失败
 
-写法规范的断言不等于有效的测试。lint 能告诉你 `toBeVisible()` 是正确的 matcher，却无法告诉你功能损坏时这个测试会不会变红。
-
-生成器的主要工作是创建符合项目风格的 Playwright coverage。V2 和 V3 是每个生成候选的 verification gates：在项目批准的临时副本上，`playwright-test-generator` 反转主断言（V2），注入有据可查的产品缺陷（V3），然后要求测试在预定位置以预定的不匹配失败。因超时、浏览器崩溃或配置错误导致的失败不算数。无法安全证明的内容会报告为 `CANNOT_VERIFY`，而不是猜测。
-
-这是把范围收窄到单个候选 spec 的变异测试。正是这种收窄让成本可以承受——因为在 E2E 上对整个套件做变异测试并不可行。
+好的 matcher 还不够；行为损坏时测试必须变红。对每个候选，V2 会反转主断言，V3 会在已批准的临时副本中注入有依据的产品缺陷，并要求它在预定位置以预期的不匹配失败。源候选文件保持 byte-identical；超时、浏览器崩溃和配置错误不算，无法安全验证的探针会报告为 `CANNOT_VERIFY`。
 
 ## 安装并试用
 
@@ -130,7 +128,7 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a claude-code
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a codex
 ```
 
-对于 Codex 委派，`e2e-reviewer`、`playwright-debugger` 和 `cypress-debugger` 可以使用 native roles，也可以使用等价的 inline fallbacks。`playwright-test-generator` 的 V6 边界更严格：如果没有独立的 fresh-context reviewer，它会报告 `CANNOT_VERIFY` 和 `PARTIAL/BLOCKED`。源码 checkout 也在 `.codex/agents/` 下包含可选的 native agents；贡献者可查看 [AGENTS.md](AGENTS.md) 了解 packaging boundary。
+对于 Codex 委派，`e2e-reviewer`、`playwright-debugger` 和 `cypress-debugger` 可以使用 native roles，也可以使用等价的 inline fallbacks。`playwright-test-generator` 的 V6 边界更严格：如果没有独立的 fresh-context reviewer，它会报告 `CANNOT_VERIFY` 和 `PARTIAL/BLOCKED`。源码 checkout 也在 `.codex/agents/` 下包含可选的 native agents；贡献者可查看 [AGENTS.md](AGENTS.md) 了解打包边界。
 
 也可以走 Codex plugin marketplace 路径：
 
@@ -147,11 +145,11 @@ codex plugin add e2e-skills@voidmatcha
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
 ```
 
-如需只针对一个宿主，把 `--all` 替换为 `-a <agent>`；参见 [supported agents](https://github.com/vercel-labs/skills#supported-agents)。这些命令固定使用已审查的 CLI release，而不是执行未经审查的新版本。
+如需只针对一个宿主，把 `--all` 替换为 `-a <agent>`；参见 [支持的代理](https://github.com/vercel-labs/skills#supported-agents)。这些命令固定使用已审查的 CLI release，而不是执行未经审查的新版本。
 
 ### 手动 Claude Code checkout
 
-把 checkout 放在 `~/.claude/skills/` 之外，然后链接每个 public Skill 目录：
+把 checkout 放在 `~/.claude/skills/` 之外，然后链接每个公开 Skill 目录：
 
 ```bash
 git clone https://github.com/voidmatcha/e2e-skills.git "$HOME/.claude/e2e-skills"
@@ -183,109 +181,109 @@ Debug the failed Cypress report in cypress/reports/.
 
 这套 bundle 用于生成或审查 E2E 测试，以及分析失败的 Playwright/Cypress 运行。它应与应用及其真实 E2E suite 配合使用，而不是替代它们；它也不是通用 lint preset 或框架无关的测试工具。它支持 Playwright 和 Cypress；新测试生成目前只面向 Playwright。
 
-生成的测试仅仅通过还不够：它可能断言的是 `Locator` 或 `Promise` 本身，观察的状态与测试名称所描述的行为无关，或者主要断言根本不影响测试结果。因此，在所有适用的 [V1–V6 验证](skills/playwright-test-generator/verification-rules.md) 通过之前，生成器始终把新 spec 视为候选项。
+内置 shell scripts 和 artifact readers 面向 macOS/Linux shell。Windows 用户应通过 WSL 运行，并把 scan/report artifacts 保存在 WSL filesystem 内。
 
-在项目批准的临时副本上，V2 可以反转主要断言，V3 可以注入有证据支持的产品故障。只有预先指定的主要断言在预期位置因预期不匹配而失败，才算成功杀死 mutant；由 setup、timeout、browser 或 infrastructure 错误导致的失败不作数。源候选文件保持 byte-identical，无法安全运行的探针会报告为 `CANNOT_VERIFY`，而不是靠猜测得出结论。
+生成的测试仅仅通过还不够：它可能断言的是 `Locator` 或 `Promise` 本身，观察的状态与测试名称所描述的行为无关，或者主要断言根本不影响测试结果。因此，在所有适用的 [V1–V6 验证](skills/playwright-test-generator/verification-rules.md) 通过之前，生成器始终把新 spec 视为候选项。
 
 ## 审查如何工作
 
 语法有效的测试代码，不等于会在产品出错时失败的测试。该工作流把机械检测和语义判断分开：
 
-1. 扫描器会发现确定性候选项，例如 Locator truthiness、focused tests、缺失的 `await` 和 blanket error suppression。
-2. `e2e-reviewer` 会先读取测试名称、操作、断言、helpers、Page Objects、fixtures 和配置，再确认一项发现。
-3. 发现使用稳定的 pattern IDs 和 P0/P1/P2 severity，让修复与回归保持可比较。
+1. 扫描器会发现确定性候选项，例如 Locator 真值判断、focused tests、缺失的 `await` 和 blanket error suppression。
+2. `e2e-reviewer` 会先读取测试名称、操作、断言、helper、Page Object、fixture 和配置，再确认一项发现。
+3. 发现使用稳定的 pattern IDs 和 P0/P1/P2 严重程度，让修复与回归保持可比较。
 4. 修复后，工作流会重新运行扫描器，以及项目已批准的 E2E 或 lint 命令。
 
-扫描器命中只是候选项，不是 verdict。跨文件发现，例如缺失认证、没有 call proof 的 optimistic UI、name/assertion mismatch，以及被 render guards 阻塞的 fixtures，都需要语义审查。
+扫描器命中只是候选项，不是判定。跨文件发现，例如缺失认证、没有调用证明的乐观 UI、名称/断言不匹配，以及被渲染保护条件阻塞的 fixture，都需要语义审查。
 
 ## 证据与限制
 
-当前证据只支持一个窄口径声明：项目拥有 behavior-backed 开发证据和 14 个已合入上游的修复，但不声称具备可泛化的 reviewer accuracy。
+当前证据只支持一个窄口径声明：项目拥有行为支持的开发证据和 14 个已合入上游的修复，但不声称具备可泛化的审查准确率。
 
-- Browser fault injection 已完成 **36/36 Playwright/Cypress cells**。
+- 浏览器故障注入已完成 **36/36 Playwright/Cypress 单元**。
 - Exact reviewer benchmark 覆盖 **12 个已证实的 false-green cases 和 12 个 clean guards**；其中 10 个 fault cases 是 byte-identical operator mutants。
 - Independent robustness gates v4、v5、v7 和 v8 未达到其预注册标准。V6 和 v9 未运行，v10 已冻结但未运行。
-- Debugger protocol 提供可重放的 30-case synthetic corpus，但不声称已独立建立 debugger accuracy。
+- Debugger protocol 提供可重放的 30-case synthetic corpus，但不声称已独立建立调试器准确率。
 
-查看 [benchmark status](benchmarks/STATUS.md) 了解分数、失败的 gates、被取代的 runs 和 claim 边界。[research evidence ledger](docs/llm-generated-e2e-test-evidence.md) 审计了 59 个外部来源，避免把相邻的 unit-test 或 custom-agent 研究当作本项目的测量结果。
+查看 [基准状态](benchmarks/STATUS.md) 了解分数、失败的 gates、被取代的 runs 和声明边界。[研究证据台账](docs/llm-generated-e2e-test-evidence.md) 审计了 59 个外部来源，避免把相邻的 unit-test 或 custom-agent 研究当作本项目的测量结果。
 
 ## E2E 审查目录
 
-该目录包含 24 个稳定的 Playwright/Cypress test smells。最常见的 false-green 形态包括 Locator truthiness、缺失 assertion、吞掉错误、focused tests、缺失认证，以及没有 network proof 的 optimistic UI checks。参见 [完整 taxonomy 和 rationale](docs/e2e-test-smells.md)。
+该目录包含 24 个稳定的 Playwright/Cypress 测试异味。最常见的 false-green 形态包括 Locator 真值判断、缺失断言、吞掉错误、focused tests、缺失认证，以及没有网络调用证明的乐观 UI 检查。参见 [完整分类与依据](docs/e2e-test-smells.md)。
 
-有些模式需要应用代码在审查范围内，而不仅仅是测试。`#22` optimistic UI 是最明显的例子：点击是否真的发出 mutation，无法仅从 spec 判断，因此在只有测试的仓库中，审查不会猜测，而是不报告。这是有意的误报控制，也是可执行示例附带 component 的原因。
+有些模式需要应用代码在审查范围内，而不仅仅是测试。`#22` 乐观 UI 是最明显的例子：点击是否真的发出 mutation，无法仅从 spec 判断，因此在只有测试的仓库中，审查不会猜测，而是不报告。这是有意的误报控制，也是可执行示例附带组件的原因。
 
-### 检测到的 24 个模式 — 按严重程度分组
+### 检测到的 24 个模式：按严重程度分组
 
-#### P0 — 必须修复（silent always-pass）
+#### P0：必须修复（静默恒绿）
 
 功能损坏时测试仍会通过，因为没有发生真实验证。
 
 | # | 模式 | 修改前 | 修改后 |
 |---|---------|--------|-------|
-| 1 | **Name-assertion mismatch** | 名称说的是 "status"，但只检查 `toBeVisible()` | 添加 status 内容断言，或重命名为匹配实际检查 |
-| 2 | **Missing Then** | 执行 cancel action，验证文本已恢复，但输入框仍然可见？ | 同时验证 restored state 和 dismissed state |
-| 3 | **Error swallowing** | spec 中的 `try/catch`，POM 中的 `.catch(() => {})` | 让错误导致失败；从 POM methods 中移除 silent catch |
-| 3b | **Cypress `uncaught:exception` suppression** | `cy.on('uncaught:exception', () => false)` blanket-swallows app errors | 将 handler 限定到特定已知错误；重新抛出未知错误 |
-| 4 | **Vacuous or retry-weakening assertion** (P0/P1) | P0：invariant predicates 和 Locator truthiness。P1：weak attachment proof；one-shot values/URL；zero-timeout retry/deadline hazards；unproven absence；遗漏已承诺 accessible name 的 ARIA snapshots | 使用有意义的边界和 web-first auto-retrying assertions；先证明 presence，再证明 absence，并让已承诺的 accessible names 保持 load-bearing |
-| 5 | **Bypass patterns** (5a P0, 5b P1) | `if (await el.isVisible()) { expect(...) }`；没有注释的 `{ force: true }` | 始终断言；把 env checks 移到 `beforeEach`；给 force:true 添加 `// JUSTIFIED:` |
-| 7 | **Focused test leak** | 提交了 `test.only(...)` — CI 只运行一个测试，默默跳过其余测试 | 删除 `.only`；使用 `--grep` 或 `--spec` 做本地聚焦 |
-| 8 | **Missing assertion** | 被丢弃的 locator/boolean 是该场景唯一的验证 | 添加 `await expect(locator).toBeVisible()`；当独立 verification/failure evidence 已存在时跳过 #8 |
-| 12 | **Missing auth setup** | 缺少 login/`storageState`/auth fixture 时，protected-route spec 会通过，因为泛化断言也匹配 login/wrong surface | 添加 `beforeEach` login，配置 `storageState`，或使用 auth fixture；不要把正常的 auth-caused failure 归类为 P0 |
+| 1 | **名称与断言不匹配** | 名称说的是 "status"，但只检查 `toBeVisible()` | 添加 status 内容断言，或重命名为匹配实际检查 |
+| 2 | **Then 缺失** | 执行 cancel action，验证文本已恢复，但输入框仍然可见？ | 同时验证已恢复状态和已关闭状态 |
+| 3 | **吞掉错误** | spec 中的 `try/catch`，POM 中的 `.catch(() => {})` | 让错误导致失败；从 POM methods 中移除 silent catch |
+| 3b | **Cypress `uncaught:exception` 抑制** | `cy.on('uncaught:exception', () => false)` blanket-swallows app errors | 将 handler 限定到特定已知错误；重新抛出未知错误 |
+| 4 | **空洞或削弱重试的断言** (P0/P1) | P0：不变量谓词和 Locator 真值判断。P1：较弱的挂载证明；一次性读取的值/URL；zero-timeout 重试/截止时间风险；未证明的缺失状态；遗漏已承诺 accessible name 的 ARIA snapshots | 使用有意义的边界和 web-first 自动重试断言；先证明存在，再证明不存在，并让已承诺的 accessible names 保持 load-bearing |
+| 5 | **绕过模式** (5a P0, 5b P1) | `if (await el.isVisible()) { expect(...) }`；没有注释的 `{ force: true }` | 始终断言；把环境检查移到 `beforeEach`；给 force:true 添加 `// JUSTIFIED:` |
+| 7 | **Focused test 泄漏** | 提交了 `test.only(...)` — CI 只运行一个测试，默默跳过其余测试 | 删除 `.only`；使用 `--grep` 或 `--spec` 做本地聚焦 |
+| 8 | **断言缺失** | 被丢弃的 locator/boolean 是该场景唯一的验证 | 添加 `await expect(locator).toBeVisible()`；当独立 verification/failure evidence 已存在时跳过 #8 |
+| 12 | **认证设置缺失** | 缺少 login/`storageState`/auth fixture 时，protected-route spec 会通过，因为泛化断言也匹配 login/wrong surface | 添加 `beforeEach` login，配置 `storageState`，或使用 auth fixture；不要把正常的 auth-caused failure 归类为 P0 |
 
-#### P1 — 应修复（poor diagnostics / wastes CI time）
+#### P1：应修复（诊断质量差 / 浪费 CI 时间）
 
 测试能运行，但会误导开发者、浪费 CI 时间，或埋下未来回归。
 
 | # | 模式 | 修改前 | 修改后 |
 |---|---------|--------|-------|
-| 6 | **Raw DOM queries** | `evaluate()` 中的 `document.querySelector` | 使用 framework locator/query APIs（`locator` / `cy.get`） |
-| 9 | **Hard-coded sleep** | `waitForTimeout(2000)` / `cy.wait(2000)` / `waitForLoadState('networkidle')` | 依赖 framework auto-wait；使用 condition-based waits |
-| 10 | **Flaky test patterns** | 没有注释的 `items.nth(2)`；`test.describe.serial()`；未限定作用域的 accessible-name substring（10c）；Cypress async callbacks、被赋值的 `cy` commands，或继续串接的 action chains（10d–10f） | 使用稳定且限定作用域的 locators 和 self-contained tests；让 Cypress 工作留在其 command chain 中，不要把 Chainables 赋值为普通值，并在 actions 后重新 query |
-| 13 | **Inconsistent POM usage** | 已导入 POM，但 spec 对 POM-owned actions 使用 raw `page.fill`/`page.click` | 将所有交互路由到 POM，使 UI 变化只需在一个地方更新 |
-| 14 | **Hardcoded credentials** | 测试代码中的 `loginPage.login('demo-admin', '<literal-password>')` | 使用 `process.env.TEST_USER`、Playwright config secrets 或 test data fixtures |
-| 15 | **Missing `await` on `expect()`** | Async Locator/Page web-first matcher Promise 没有被排序或观察；rejection 通常稍后才暴露，归因更差 | `await` 或 return matcher Promise；sync value matchers 被排除 |
-| 16 | **Missing `await` on action** | Actionability、action ordering 或 navigation 可能与后续工作竞态；rejection 通常稍后才暴露，归因更差 | `await` 或 return action Promise |
-| 17 | **Discouraged direct Page selector API** | 基于 selector 的 `page.click`、`page.fill` 及相关 Page actions 跳过 Locator 层 | 使用 Locator actions，以获得组合性、strictness、复用和更清晰的 failure |
-| 18 | **`expect.soft()` overuse** | 关键 soft assertions 在 hard scenario gate 之前运行，因此前置条件损坏后 dependent work 仍会继续 | 先对主要状态做 hard-gate；仅对独立细节使用 `soft` |
-| 19 | **Module-level mutable state in test code** | 测试工具中第 0 列的 `let seq = 0;` 或被修改的 `const cache = new Map()`，它会在长生命周期 worker 中跨测试保留，并在并行 workers 间冲突 | 删除 counter；从 `Date.now()` + `Math.random().toString(36).slice(2, 8)` 派生唯一性，或把状态移入 `test.beforeEach` |
-| 20 | **Unmocked real-backend writes** | Signup/checkout spec 触达共享或持久状态，却没有受控测试边界 | Stub 该写入，或证明存在 disposable container、rollback fixture、isolated tenant/database 或等价的受控 backend |
-| 22 | **Optimistic UI without call proof** | Like-toggle test 断言 `aria-pressed` 翻转 — UI 乐观更新，POST 被删除时仍会通过 | 将 UI assertion 与 `page.waitForRequest()`（点击前 armed）或 route-hit flag 配对 |
+| 6 | **直接 DOM 查询** | `evaluate()` 中的 `document.querySelector` | 使用框架的 locator/query API（`locator` / `cy.get`） |
+| 9 | **硬编码等待** | `waitForTimeout(2000)` / `cy.wait(2000)` / `waitForLoadState('networkidle')` | 依赖框架自动等待；使用基于条件的等待 |
+| 10 | **不稳定测试模式** | 没有注释的 `items.nth(2)`；`test.describe.serial()`；未限定作用域的 accessible-name substring（10c）；Cypress async callbacks、被赋值的 `cy` commands，或继续串接的 action chains（10d–10f） | 使用稳定且限定作用域的 locators 和自包含测试；让 Cypress 工作留在其 command chain 中，不要把 Chainables 赋值为普通值，并在 actions 后重新查询 |
+| 13 | **POM 使用不一致** | 已导入 POM，但 spec 对 POM-owned actions 使用 raw `page.fill`/`page.click` | 将所有交互路由到 POM，使 UI 变化只需在一个地方更新 |
+| 14 | **硬编码凭据** | 测试代码中的 `loginPage.login('demo-admin', '<literal-password>')` | 使用 `process.env.TEST_USER`、Playwright config secrets 或 test data fixtures |
+| 15 | **`expect()` 缺失 `await`** | Async Locator/Page web-first matcher Promise 没有被排序或观察；rejection 通常稍后才暴露，归因更差 | `await` 或 return matcher Promise；sync value matchers 被排除 |
+| 16 | **action 缺失 `await`** | Actionability、action ordering 或 navigation 可能与后续工作竞态；rejection 通常稍后才暴露，归因更差 | `await` 或 return action Promise |
+| 17 | **不建议直接使用 Page selector API** | 基于 selector 的 `page.click`、`page.fill` 及相关 Page actions 跳过 Locator 层 | 使用 Locator actions，以获得组合性、strictness、复用和更清晰的 failure |
+| 18 | **过度使用 `expect.soft()`** | 关键 soft assertions 在 hard scenario gate 之前运行，因此前置条件损坏后 dependent work 仍会继续 | 先对主要状态做 hard-gate；仅对独立细节使用 `soft` |
+| 19 | **测试代码中的模块级可变状态** | 测试工具中第 0 列的 `let seq = 0;` 或被修改的 `const cache = new Map()`，它会在长生命周期 worker 中跨测试保留，并在并行 workers 间冲突 | 删除 counter；从 `Date.now()` + `Math.random().toString(36).slice(2, 8)` 派生唯一性，或把状态移入 `test.beforeEach` |
+| 20 | **未 mock 的真实后端写入** | Signup/checkout spec 触达共享或持久状态，却没有受控测试边界 | Stub 该写入，或证明存在 disposable container、rollback fixture、isolated tenant/database 或等价的受控 backend |
+| 22 | **乐观 UI 缺少调用证明** | Like-toggle test 断言 `aria-pressed` 翻转 — UI 乐观更新，POST 被删除时仍会通过 | 将 UI assertion 与 `page.waitForRequest()`（点击前 armed）或 route-hit flag 配对 |
 
-#### P2 — 可择机修复（maintenance / robustness）
+#### P2：可择机修复（维护性 / 鲁棒性）
 
 弱但不一定错误；重构时处理。
 
 | # | 模式 | 修改前 | 修改后 |
 |---|---------|--------|-------|
 | 11 | **YAGNI + Zombie Specs** | `clickEdit()` 从未被调用；无理由的空 wrapper class；整个 spec 被另一个 spec 重复 | 删除未使用成员和 zombie specs；只有在确实能移除无意义间接层时，才内联 single-use helpers |
-| 21 | **Manually-captured session-file dependency** | `storageState: 'auth/member.json'` 只由手动 capture script 生成；CI 上会缺失，也会悄悄过期 | 以编程方式重新生成 session（API-login helper 或 `setup` project）；manual files 只作为带 programmatic fallback 的 cache |
-| 23 | **Fixture ignores render guards** | Liked-tab fixture seed 了 `liked: false`；card component 对每个 item 都 `return null`，让空 UI 看起来像 infra flake | 在 seeding 前读取 item component 的 early returns/filters；seed fields 以通过被测 view 的每个 guard |
+| 21 | **手动捕获的 session 文件依赖** | `storageState: 'auth/member.json'` 只由手动 capture script 生成；CI 上会缺失，也会悄悄过期 | 以编程方式重新生成 session（API-login helper 或 `setup` project）；manual files 只作为带 programmatic fallback 的 cache |
+| 23 | **Fixture 忽略渲染保护条件** | Liked-tab fixture seed 了 `liked: false`；card component 对每个 item 都 `return null`，让空 UI 看起来像 infra flake | 在 seeding 前读取 item component 的 early returns/filters；seed fields 以通过被测 view 的每个 guard |
 
 ## 失败调试
 
-两个 debugger 使用同一套稳定的 F1–F15 root-cause taxonomy。Playwright 接受 `playwright-report/`、HTML reports、`trace.zip`、screenshots 和有界的 GitHub Actions artifacts。Cypress 接受 mochawesome 或 JUnit reports、screenshots、videos 和有界 CI artifacts。
+两个调试器使用同一套稳定的 F1–F15 根本原因分类。Playwright 接受 `playwright-report/`、HTML reports、`trace.zip`、screenshots 和有界的 GitHub Actions artifacts。Cypress 接受 mochawesome 或 JUnit reports、screenshots、videos 和有界 CI artifacts。
 
 | # | 类别 | 信号 |
 |---|----------|---------|
-| F1 | **Flaky / Timing** | `TimeoutError`，retry 后通过 |
-| F2 | **Selector Broken** | `locator not found`，strict mode violation |
-| F3 | **Network Dependency** | `net::ERR_*`，unexpected API response |
-| F4 | **Assertion Mismatch** | `Expected X to equal Y`，subject-inversion |
-| F5 | **Missing Then** | Action completed 但错误状态仍然存在 |
-| F6 | **Condition Branch Missing** | Element conditionally present，但 assertion 总是运行 |
-| F7 | **Test Isolation Failure** | 单独运行通过，suite 中失败 |
-| F8 | **Environment Mismatch** | 只在 CI vs local 出现；viewport、OS、timezone |
-| F9 | **Data Dependency** | 缺失 seed data，hardcoded IDs |
-| F10 | **Auth / Session** | Session expired，role-based UI 未渲染 |
-| F11 | **Async Order Assumption** | `Promise.all` order，parallel race |
-| F12 | **POM / Locator Drift** | DOM structure changed，POM 未更新 |
-| F13 | **Error Swallowing** | `.catch(() => {})` 隐藏实际 failure |
-| F14 | **Animation Race** | Content 尚未渲染，或 transient element 在被观察前移除 |
-| F15 | **Hydration Race** | Action 成功但没有效果：SSR page 尚未 hydrated；在下一个 assertion 失败 |
+| F1 | **不稳定 / 时序** | `TimeoutError`，重试后通过 |
+| F2 | **Selector 失效** | `locator not found`，strict mode violation |
+| F3 | **网络依赖** | `net::ERR_*`，意外的 API 响应 |
+| F4 | **断言不匹配** | `Expected X to equal Y`，实际值/期望值反置 |
+| F5 | **Then 缺失** | 动作已完成，但错误状态仍然存在 |
+| F6 | **条件分支缺失** | 元素有条件出现，但断言总是运行 |
+| F7 | **测试隔离失败** | 单独运行通过，suite 中失败 |
+| F8 | **环境不匹配** | 只在 CI vs local 出现；viewport、OS、timezone |
+| F9 | **数据依赖** | 缺失 seed data，hardcoded IDs |
+| F10 | **认证 / Session** | 会话过期，role-based UI 未渲染 |
+| F11 | **异步顺序假设** | `Promise.all` 顺序假设，parallel race |
+| F12 | **POM / Locator 漂移** | DOM 结构已变化，POM 未更新 |
+| F13 | **吞掉错误** | `.catch(() => {})` 隐藏实际 failure |
+| F14 | **动画竞态** | 内容尚未渲染，或 transient element 在被观察前移除 |
+| F15 | **Hydration 竞态** | Action 成功但没有效果：SSR page 尚未 hydrated；在下一个 assertion 失败 |
 
 
-debuggers 会把产品回归与脆弱测试分开分类，并返回证据和具体修复。没有失败的 Playwright 或 Cypress 测试 artifact 时，它们不会诊断应用或 backend。
+调试器会把产品回归与脆弱测试分开分类，并返回证据和具体修复。没有失败的 Playwright 或 Cypress 测试 artifact 时，它们不会诊断应用或 backend。
 
 ## 独立扫描器
 
@@ -312,10 +310,10 @@ Tier 3 是内置 fallback。可选的 ESLint 和 ast-grep tiers 会提高精度�
 
 `eslint-plugin-playwright` 和 `eslint-plugin-cypress` 是很好的每次提交基线，用于 syntactic rules。`e2e-skills` 另外提供两层能力：
 
-- secure-default scanner，除非显式启用，否则不会运行目标项目的 lint stack
-- 对需要测试意图或跨文件上下文的发现做 semantic review
+- 默认安全的扫描器，除非显式启用，否则不会运行目标项目的 lint stack
+- 对需要测试意图或跨文件上下文的发现做语义审查
 
-linter 可以捕获直接的 Locator truthiness assertion 或缺失的 `await`。它无法判断名为“shows a duplicate-name error”的测试是否真的检查了该错误，protected-route test 是否忘了认证，或 optimistic UI assertion 是否证明了 backend request 发生。用 plugins 做持续 linting，用 `e2e-reviewer` 判断测试可信度。
+linter 可以捕获直接的 Locator 真值断言或缺失的 `await`。它无法判断名为“shows a duplicate-name error”的测试是否真的检查了该错误，protected-route test 是否忘了认证，或乐观 UI 断言是否证明了 backend request 发生。用 plugins 做持续 linting，用 `e2e-reviewer` 判断测试可信度。
 
 ## 常见问题
 
@@ -341,33 +339,33 @@ debuggers 会按稳定的 F1–F15 taxonomy 对 failures 分类。只有在你�
 
 ### 它是否同时支持 Cypress 和 Playwright？
 
-审查和失败调试支持两个框架。新测试生成目前只支持 Playwright。Cypress debuggers 接受 mochawesome 和 JUnit reports。
+审查和失败调试支持两个框架。新测试生成目前只支持 Playwright。Cypress 调试器接受 mochawesome 和 JUnit reports。
 
 ### 它能调试只在 CI 中失败的测试吗？
 
-可以，前提是你提供本地 report artifacts 或受支持的 GitHub Actions run。debugger 会使用 F1–F15 taxonomy 区分 environment、timing、selector、data、authentication 和 product-regression causes。
+可以，前提是你提供本地 report artifacts 或受支持的 GitHub Actions run。调试器会使用 F1–F15 taxonomy 区分 environment、timing、selector、data、authentication 和 product-regression causes。
 
 ### 支持哪些 AI 编程代理？
 
-Claude Code、Codex，以及 `skills` CLI 支持的 55+ 宿主都可以加载公开的 `SKILL.md` contracts。可选的 host-specific agent files 会在可用时改善委派；即使没有这些文件，public Skills 仍然可用。
+Claude Code、Codex，以及 `skills` CLI 支持的 55+ 宿主都可以加载公开的 `SKILL.md` contracts。可选的 host-specific agent files 会在可用时改善委派；即使没有这些文件，公开 Skills 仍然可用。
 
 ## 详细文档
 
-- [24 Playwright and Cypress E2E test smells](docs/e2e-test-smells.md)
-- [Self-audit of the rules](docs/rule-self-audit.md)
-- [Open-source case studies](docs/case-studies.md)
-- [Benchmark status and negative results](benchmarks/STATUS.md)
-- [External evidence ledger](docs/llm-generated-e2e-test-evidence.md)
-- [Historical AI reviewer benchmark](docs/ai-reviewer-benchmark.md)
-- [Debugger benchmark protocol](docs/debugger-benchmark/README.md)
-- [Framework scope](docs/framework-scope.md)
-- [Roadmap](docs/roadmap.md)
+- [24 个 Playwright 和 Cypress E2E 测试异味](docs/e2e-test-smells.md)
+- [规则自审](docs/rule-self-audit.md)
+- [开源案例研究](docs/case-studies.md)
+- [基准状态与负面结果](benchmarks/STATUS.md)
+- [外部证据台账](docs/llm-generated-e2e-test-evidence.md)
+- [历史 AI 审查器基准](docs/ai-reviewer-benchmark.md)
+- [调试器基准协议](docs/debugger-benchmark/README.md)
+- [框架范围](docs/framework-scope.md)
+- [路线图](docs/roadmap.md)
 
-计划中的工作包括 cross-model convention consistency 和更强的确定性检测。在对应的专门验证通过之前，任何 roadmap item 都不会被描述为已交付。
+计划中的工作包括提升跨模型规则一致性，以及增强确定性检测。在对应的专门验证通过之前，任何路线图条目都不会被描述为已交付。
 
 ## 贡献
 
-欢迎提交 bug reports、false-positive guards、新 anti-patterns 和 translations。请从 [CONTRIBUTING.md](CONTRIBUTING.md) 开始了解 setup 和 verification requirements。跨代理维护契约位于 [AGENTS.md](AGENTS.md)。
+欢迎提交 bug reports、误报防护、新 anti-patterns 和 translations。请从 [CONTRIBUTING.md](CONTRIBUTING.md) 开始了解 setup 和 verification requirements。跨代理维护契约位于 [AGENTS.md](AGENTS.md)。
 
 ## 许可证
 

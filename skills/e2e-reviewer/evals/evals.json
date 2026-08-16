@@ -590,6 +590,22 @@
         "Does NOT report submit as UNUSED — placeOrder() uses it inside the same POM",
         "Discounts only a member's own declaration line in checkout-page.ts; other hits in that file are real usage, so submit — used by placeOrder() in the same file — is INTERNAL-ONLY, not UNUSED"
       ]
+    },
+    {
+      "id": 34,
+      "prompt": "Review the Playwright Page Object and supplied responsive table context in evals/files/positional-pom/. Determine which positional locators are final #10a findings.",
+      "expected_output": "Report getRoomMessagesCountCell as #10a P1: POM encapsulation is not an exemption, and a semantically named helper does not make nth(3) stable. Use the supplied table context to note that the messages cell is also conditional on a 1024px viewport, without inventing a separate pattern. Do not report getCellByIndex because its name and index parameter explicitly promise positional access.",
+      "files": [
+        "evals/files/positional-pom/admin-rooms.ts",
+        "evals/files/positional-pom/responsive-rooms-table.tsx"
+      ],
+      "assertions": [
+        "Reports admin-rooms.ts line 11 as #10a P1 — getRoomMessagesCountCell is a semantically named POM helper, not an explicitly positional API",
+        "States that moving nth(3) behind a Page Object method does not make the locator stable and is not a #10a exemption",
+        "Uses responsive-rooms-table.tsx line 11 and line 18 to note that the targeted messages cell exists only when the min-width: 1024px condition is true",
+        "Does NOT report admin-rooms.ts line 15 as #10a — getCellByIndex(name, index) explicitly promises positional access and qualifies for the documented method-name exemption",
+        "Does not create a new viewport-specific pattern or report the supplied production component as E2E test code"
+      ]
     }
   ]
 }

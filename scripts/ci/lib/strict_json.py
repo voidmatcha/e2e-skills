@@ -171,12 +171,12 @@ def load_manifest_json(path: Path) -> dict[str, Any]:
                 "defaultPrompt",
                 "brandColor",
                 "composerIcon",
+                "privacyPolicyURL",
                 "termsOfServiceURL",
                 "logo",
                 "screenshots",
             },
             context=f"{name}.interface",
-            optional={"privacyPolicyURL"},
         )
     else:
         raise StrictJsonError(f"{path}: unsupported manifest path")

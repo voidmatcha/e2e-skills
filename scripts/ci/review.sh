@@ -1573,6 +1573,62 @@ def check_readme_intro_contract(path, text, merged_heading, false_green_heading,
         )
 
 
+scanner_transcript_re = re.compile(
+    r"^```console\n"
+    r"\$ /bin/bash -p skills/e2e-reviewer/scripts/scan\.sh tests/\n\n"
+    r"(.*?)"
+    r"^```$",
+    re.M | re.S,
+)
+
+
+def check_scanner_transcript_contract(path, text, errors):
+    matches = scanner_transcript_re.findall(text)
+    if len(matches) != 1:
+        errors.append(
+            f"README i18n parity: {path} missing or duplicated scanner transcript"
+        )
+        return None
+    transcript = matches[0].strip()
+    required_lines = (
+        "[P0] #4f Locator always-true assertion (truthy/defined/not-null) (2 hits)",
+        ".../tests/login.spec.ts:5:  expect(page.getByText('Welcome back')).toBeDefined();",
+        ".../tests/login.spec.ts:6:  expect(page.locator('.user-badge')).not.toBeNull();",
+        "Summary: 2 total hit(s), 2 P0",
+    )
+    missing_or_duplicated = [
+        line for line in required_lines if transcript.count(line) != 1
+    ]
+    if missing_or_duplicated:
+        errors.append(
+            f"README i18n parity: {path} scanner transcript must preserve "
+            "the current P0 finding and summary output"
+        )
+    return transcript
+
+
+def check_platform_contract(path, text, scope_heading, errors):
+    marker = f"## {scope_heading}\n"
+    if text.count(marker) != 1:
+        errors.append(
+            f"README i18n parity: {path} missing or duplicated {scope_heading} section"
+        )
+        return
+    start = text.index(marker) + len(marker)
+    end = text.find("\n## ", start)
+    section = text[start:end if end >= 0 else len(text)]
+    missing = [token for token in ("macOS", "Linux", "Windows") if token not in section]
+    # One mention binds execution to WSL; the second keeps artifacts on its
+    # filesystem instead of crossing the native Windows mount boundary.
+    if section.count("WSL") < 2:
+        missing.append("WSL execution/filesystem boundary")
+    if missing:
+        errors.append(
+            f"README i18n parity: {path} {scope_heading} section missing "
+            f"platform-limit tokens {missing!r}"
+        )
+
+
 canonical_commands, canonical_urls = install_contract(canonical)
 if not canonical_commands or not canonical_urls:
     print("README i18n parity: canonical install command/URL contract is empty", file=sys.stderr)
@@ -1610,10 +1666,27 @@ intro_contracts = {
         "看一个 false-green 测试",
     ),
 }
+scope_headings = {
+    canonical_path: "Scope and limits",
+    pathlib.Path("README.ko.md"): "범위와 한계",
+    pathlib.Path("README.ja.md"): "スコープと制限",
+    pathlib.Path("README.zh-cn.md"): "范围与限制",
+}
 check_readme_intro_contract(
     canonical_path,
     canonical,
     *intro_contracts[canonical_path],
+    errors,
+)
+canonical_scanner_transcript = check_scanner_transcript_contract(
+    canonical_path,
+    canonical,
+    errors,
+)
+check_platform_contract(
+    canonical_path,
+    canonical,
+    scope_headings[canonical_path],
     errors,
 )
 check_manual_clone_contract(canonical_path, canonical, errors)
@@ -1717,6 +1790,16 @@ for path in translations:
         errors.append(f"README i18n parity: cannot read {path}: {exc}")
         continue
     check_readme_intro_contract(path, text, *intro_contracts[path], errors)
+    scanner_transcript = check_scanner_transcript_contract(path, text, errors)
+    if (
+        canonical_scanner_transcript is not None
+        and scanner_transcript is not None
+        and scanner_transcript != canonical_scanner_transcript
+    ):
+        errors.append(
+            f"README i18n parity: {path} scanner transcript differs from README.md"
+        )
+    check_platform_contract(path, text, scope_headings[path], errors)
     check_manual_clone_contract(path, text, errors)
     check_codex_install_and_delegation_contract(path, text, errors)
     acknowledgements = canonical_ack_re.findall(text)

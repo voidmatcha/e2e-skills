@@ -10,7 +10,6 @@ from pathlib import Path
 import stat
 import subprocess
 import tempfile
-import time
 import warnings
 import zipfile
 # Resolve the temp root so mkdtemp never returns a symlinked path.
@@ -152,6 +151,7 @@ module.GH_ENV_ALLOWLIST = module.GH_ENV_ALLOWLIST | frozenset({
     "MOCK_GH_RUN_JSON",
     "MOCK_GH_SLEEP",
     "MOCK_GH_ZIP",
+    "MOCK_MAX_ARCHIVE_BYTES",
     "MOCK_MAX_ENTRIES",
     "MOCK_MAX_COMPRESSION_RATIO",
     "MOCK_MAX_EXPANDED_BYTES",
@@ -170,6 +170,10 @@ if "MOCK_EXTRACTION_TIMEOUT" in __import__("os").environ:
 if "MOCK_TERMINATION_GRACE" in __import__("os").environ:
     module.TERMINATION_GRACE_SECONDS = float(
         __import__("os").environ["MOCK_TERMINATION_GRACE"]
+    )
+if "MOCK_MAX_ARCHIVE_BYTES" in __import__("os").environ:
+    module.MAX_ARCHIVE_BYTES = int(
+        __import__("os").environ["MOCK_MAX_ARCHIVE_BYTES"]
     )
 if "MOCK_MAX_ENTRIES" in __import__("os").environ:
     module.MAX_ENTRIES = int(__import__("os").environ["MOCK_MAX_ENTRIES"])
@@ -246,6 +250,10 @@ def run_helper(
     environment = {
         **os.environ,
         "PATH": ambient_path or "/usr/bin:/bin",
+        # Keep the production defaults asserted in main(), but size this
+        # subprocess boundary to the tiny archives used by the fixtures.
+        "MOCK_MAX_ARCHIVE_BYTES": str(1024 * 1024),
+        "MOCK_MIN_FREE_SPACE_BYTES": "0",
         "MOCK_GH_ZIP": str(archive),
         **extra_env,
     }
@@ -274,14 +282,306 @@ def assert_no_staging(workspace: Path) -> None:
     assert not list(workspace.glob(".playwright-report.download.*"))
 
 
-def assert_descriptor_guard_is_live() -> None:
+def load_helper_module() -> object:
     spec = importlib.util.spec_from_file_location(
-        "playwright_artifact_descriptor_guard",
+        "playwright_artifact_helper_contract",
         HELPER,
     )
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
     spec.loader.exec_module(module)
+    return module
+
+
+def assert_final_sigkill_permission_accepts_proven_group_exit() -> None:
+    module = load_helper_module()
+    original_killpg = module.os.killpg
+    original_grace = module.TERMINATION_GRACE_SECONDS
+    signals: list[int] = []
+
+    state = {"final_attempted": False}
+
+    class Process:
+        pid = 12345
+        poll_calls = 0
+
+        def poll(self) -> None:
+            self.poll_calls += 1
+            return None
+
+    process = Process()
+
+    def killpg(_process_group: int, signal_number: int) -> None:
+        signals.append(signal_number)
+        if signal_number == 0 and state["final_attempted"]:
+            raise ProcessLookupError
+        if signal_number == module.signal.SIGKILL:
+            state["final_attempted"] = True
+            raise PermissionError("operation not permitted")
+
+    try:
+        module.os.killpg = killpg
+        module.TERMINATION_GRACE_SECONDS = 0
+
+        cleanup_error = module.terminate_process_group(process)
+    finally:
+        module.os.killpg = original_killpg
+        module.TERMINATION_GRACE_SECONDS = original_grace
+
+    assert [item for item in signals if item != 0] == [
+        module.signal.SIGTERM,
+        module.signal.SIGKILL,
+    ]
+    assert cleanup_error is None
+    assert process.poll_calls >= 2
+
+
+def assert_initial_sigterm_permission_still_attempts_sigkill() -> None:
+    module = load_helper_module()
+    original_killpg = module.os.killpg
+    original_grace = module.TERMINATION_GRACE_SECONDS
+    signals: list[int] = []
+
+    state = {"killed": False}
+
+    class Process:
+        pid = 12345
+        poll_calls = 0
+
+        def poll(self) -> None:
+            self.poll_calls += 1
+            return None
+
+    process = Process()
+
+    def killpg(_process_group: int, signal_number: int) -> None:
+        signals.append(signal_number)
+        if signal_number == 0 and state["killed"]:
+            raise ProcessLookupError
+        if signal_number == module.signal.SIGTERM:
+            raise PermissionError("operation not permitted")
+        if signal_number == module.signal.SIGKILL:
+            state["killed"] = True
+
+    try:
+        module.os.killpg = killpg
+        module.TERMINATION_GRACE_SECONDS = 0
+
+        cleanup_error = module.terminate_process_group(process)
+    finally:
+        module.os.killpg = original_killpg
+        module.TERMINATION_GRACE_SECONDS = original_grace
+
+    assert [item for item in signals if item != 0] == [
+        module.signal.SIGTERM,
+        module.signal.SIGKILL,
+    ]
+    assert cleanup_error is None
+    assert process.poll_calls >= 2
+
+
+def assert_permission_denied_signals_report_a_live_process_group() -> None:
+    module = load_helper_module()
+    original_killpg = module.os.killpg
+    original_grace = module.TERMINATION_GRACE_SECONDS
+
+    class Process:
+        pid = 12345
+        args = ("fixture",)
+
+        def poll(self) -> None:
+            return None
+
+        def wait(self, timeout: float | None = None) -> None:
+            return None
+
+    def killpg(_process_group: int, signal_number: int) -> None:
+        if signal_number in (module.signal.SIGTERM, module.signal.SIGKILL):
+            raise PermissionError("operation not permitted")
+
+    try:
+        module.os.killpg = killpg
+        module.TERMINATION_GRACE_SECONDS = 0
+        cleanup_error = module.cleanup_process_group(Process())
+    finally:
+        module.os.killpg = original_killpg
+        module.TERMINATION_GRACE_SECONDS = original_grace
+
+    assert cleanup_error is not None
+    assert "SIGTERM" in cleanup_error
+    assert "SIGKILL" in cleanup_error
+    assert "remained alive" in cleanup_error
+
+
+def assert_final_sigkill_permission_reports_live_process_group() -> None:
+    module = load_helper_module()
+    process = subprocess.Popen(
+        [PYTHON, "-c", "import time; time.sleep(2)"],
+        start_new_session=True,
+    )
+    original_killpg = module.os.killpg
+    original_grace = module.TERMINATION_GRACE_SECONDS
+
+    def deny_only_final_kill(_process_group: int, signal_number: int) -> None:
+        if signal_number == module.signal.SIGKILL:
+            raise PermissionError("operation not permitted")
+
+    try:
+        module.os.killpg = deny_only_final_kill
+        module.TERMINATION_GRACE_SECONDS = 0.05
+
+        cleanup_error = module.cleanup_process_group(process)
+        assert cleanup_error is not None
+        assert "remained alive" in cleanup_error
+        assert process.poll() is None
+    finally:
+        module.os.killpg = original_killpg
+        module.TERMINATION_GRACE_SECONDS = original_grace
+        try:
+            original_killpg(process.pid, module.signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        process.wait(timeout=2)
+
+
+def assert_cleanup_timeout_preserves_original_run_bounded_diagnostic() -> None:
+    module = load_helper_module()
+    original_cleanup = module.cleanup_process_group
+    original_timeout = module.COMMAND_TIMEOUT_SECONDS
+    cleanup_calls = 0
+    try:
+        module.COMMAND_TIMEOUT_SECONDS = 0
+
+        def cleanup_timeout(process) -> None:
+            nonlocal cleanup_calls
+            cleanup_calls += 1
+            if cleanup_calls == 1:
+                raise subprocess.TimeoutExpired(process.args, 0)
+            try:
+                os.killpg(process.pid, module.signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            process.wait(timeout=2)
+            return None
+
+        module.cleanup_process_group = cleanup_timeout
+        try:
+            module.run_bounded(
+                [PYTHON, "-c", "import time; time.sleep(1)"],
+                environment={"PATH": "/usr/bin:/bin"},
+                stdout_fd=None,
+                stdout_limit=1024,
+            )
+        except ValueError as error:
+            message = str(error)
+            assert "gh command timed out" in message
+            assert "cleanup failed" in message
+            assert message.count("cleanup failed") == 1
+            assert cleanup_calls == 1
+        else:
+            raise AssertionError("timed-out gh command must fail")
+    finally:
+        module.cleanup_process_group = original_cleanup
+        module.COMMAND_TIMEOUT_SECONDS = original_timeout
+
+
+def assert_nonzero_leader_with_live_group_attempts_cleanup() -> None:
+    module = load_helper_module()
+    original_cleanup = module.cleanup_process_group
+    cleanup_calls = 0
+    try:
+        def cleanup(process) -> str:
+            nonlocal cleanup_calls
+            cleanup_calls += 1
+            try:
+                os.killpg(process.pid, module.signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            return "process group remained alive after leader exit"
+
+        module.cleanup_process_group = cleanup
+        try:
+            module.run_bounded(
+                [
+                    PYTHON,
+                    "-c",
+                    "import os, sys, time\n"
+                    "if os.fork() == 0:\n"
+                    "    os.close(1)\n"
+                    "    os.close(2)\n"
+                    "    time.sleep(5)\n"
+                    "    sys.exit(0)\n"
+                    "sys.stderr.write('leader failed\\n')\n"
+                    "sys.exit(7)\n",
+                ],
+                environment={"PATH": "/usr/bin:/bin"},
+                stdout_fd=None,
+                stdout_limit=1024,
+            )
+        except ValueError as error:
+            message = str(error)
+            assert "gh command failed with exit 7" in message
+            assert "leader failed" in message
+            assert "cleanup failed" in message
+            assert cleanup_calls == 1
+        else:
+            raise AssertionError("nonzero leader must fail")
+    finally:
+        module.cleanup_process_group = original_cleanup
+
+
+def assert_zero_leader_with_live_group_fails_closed() -> None:
+    module = load_helper_module()
+    original_cleanup = module.cleanup_process_group
+    cleanup_calls = 0
+    with tempfile.TemporaryDirectory(prefix="e2e-playwright-live-child-") as raw:
+        marker = Path(raw) / "ready"
+        try:
+            def cleanup(process) -> str:
+                nonlocal cleanup_calls
+                cleanup_calls += 1
+                try:
+                    os.killpg(process.pid, module.signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                return "process group remained alive after leader exit"
+
+            module.cleanup_process_group = cleanup
+            try:
+                module.run_bounded(
+                    [
+                        PYTHON,
+                        "-c",
+                        "import os, sys, time\n"
+                        "marker = sys.argv[1]\n"
+                        "if os.fork() == 0:\n"
+                        "    open(marker, 'w').close()\n"
+                        "    os.close(1)\n"
+                        "    os.close(2)\n"
+                        "    time.sleep(5)\n"
+                        "    sys.exit(0)\n"
+                        "while not os.path.exists(marker):\n"
+                        "    time.sleep(0.01)\n"
+                        "print('ok')\n",
+                        str(marker),
+                    ],
+                    environment={"PATH": "/usr/bin:/bin"},
+                    stdout_fd=None,
+                    stdout_limit=1024,
+                )
+            except ValueError as error:
+                message = str(error)
+                assert "command left live descendants" in message
+                assert message.count("cleanup failed") == 1
+                assert cleanup_calls == 1
+            else:
+                raise AssertionError("zero leader with live descendants must fail")
+        finally:
+            module.cleanup_process_group = original_cleanup
+
+
+def assert_descriptor_guard_is_live() -> None:
+    module = load_helper_module()
     original = module.os.supports_dir_fd
     try:
         module.os.supports_dir_fd = frozenset()
@@ -296,7 +596,17 @@ def assert_descriptor_guard_is_live() -> None:
 
 
 def main() -> None:
+    defaults = load_helper_module()
+    assert defaults.MAX_ARCHIVE_BYTES == 512 * 1024 * 1024
+    assert defaults.MIN_FREE_SPACE_BYTES == 256 * 1024 * 1024
     assert_descriptor_guard_is_live()
+    assert_final_sigkill_permission_accepts_proven_group_exit()
+    assert_initial_sigterm_permission_still_attempts_sigkill()
+    assert_permission_denied_signals_report_a_live_process_group()
+    assert_final_sigkill_permission_reports_live_process_group()
+    assert_cleanup_timeout_preserves_original_run_bounded_diagnostic()
+    assert_nonzero_leader_with_live_group_attempts_cleanup()
+    assert_zero_leader_with_live_group_fails_closed()
     with tempfile.TemporaryDirectory(
         prefix="e2e-playwright-download-contract-",
     ) as temp_dir:
@@ -691,6 +1001,7 @@ def main() -> None:
             assert_no_staging(workspace)
 
         bounded_cases = (
+            ("archive-limit", {"MOCK_MAX_ARCHIVE_BYTES": "8"}, "byte limit"),
             ("entry-limit", {"MOCK_MAX_ENTRIES": "1"}, "entries"),
             (
                 "expanded-limit",
@@ -748,6 +1059,7 @@ def main() -> None:
         )
         assert result.returncode != 0
         assert "gh command timed out" in result.stderr
+        assert "cleanup failed" not in result.stderr
         assert not (timeout_workspace / "playwright-report").exists()
         assert_no_staging(timeout_workspace)
 
@@ -765,10 +1077,7 @@ def main() -> None:
         )
         assert result.returncode != 0
         assert "gh command timed out" in result.stderr
-        time.sleep(0.6)
-        assert not descendant_marker.exists(), (
-            "SIGTERM-ignoring descendant escaped after its leader exited"
-        )
+        assert "cleanup failed" not in result.stderr
         assert not (descendant_workspace / "playwright-report").exists()
         assert_no_staging(descendant_workspace)
 

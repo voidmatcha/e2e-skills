@@ -36,6 +36,18 @@ def normalized(path: Path) -> str:
     return " ".join(path.read_text(encoding="utf-8").split())
 
 
+def source_line_number(source: str, needle: str) -> int:
+    matches = [
+        line_number
+        for line_number, line in enumerate(source.splitlines(), start=1)
+        if needle in line
+    ]
+    assert len(matches) == 1, (
+        f"expected one fixture line containing {needle!r}, found {matches}"
+    )
+    return matches[0]
+
+
 def scanner_extensions(scanner_source: str) -> tuple[str, ...]:
     match = re.search(
         r"^CODE_EXTENSIONS='([^']+)'$",
@@ -73,6 +85,7 @@ def main() -> None:
     eval_28 = next(case for case in evals if case["id"] == 28)
     eval_29 = next(case for case in evals if case["id"] == 29)
     eval_30 = next(case for case in evals if case["id"] == 30)
+    eval_34 = next(case for case in evals if case["id"] == 34)
     eval_28_text = " ".join(
         [eval_28["expected_output"], *eval_28["assertions"]]
     )
@@ -81,6 +94,9 @@ def main() -> None:
     )
     eval_30_text = " ".join(
         [eval_30["expected_output"], *eval_30["assertions"]]
+    )
+    eval_34_text = " ".join(
+        [eval_34["expected_output"], *eval_34["assertions"]]
     )
 
     pattern_reference_substring_fix = (
@@ -293,6 +309,76 @@ def main() -> None:
     assert sum(line.startswith(b"test.only(") for line in review_lines) == 1
     assert "test.only" in eval_30_text
     assert "#7" in eval_30_text
+
+    positional_pom_contract = (
+        "POM encapsulation is not an exemption: moving a positional locator "
+        "into a semantically named Page Object method does not make it stable."
+    )
+    positional_scope_contract = (
+        "Scan Playwright/Cypress-proven POM/support files as well as specs for "
+        "positional locators."
+    )
+    positional_name_contract = (
+        "Only a method name that explicitly promises positional access may "
+        "use the method-name exemption."
+    )
+    responsive_position_contract = (
+        "When a positional locator targets a collection that is conditionally "
+        "rendered or reordered by viewport, feature flags, permissions, or "
+        "state, inspect those render conditions before resolving the candidate."
+    )
+    for surface in (skill, pattern_reference, grep_patterns):
+        assert positional_scope_contract in surface
+        assert positional_pom_contract in surface
+        assert positional_name_contract in surface
+        assert responsive_position_contract in surface
+    for contract in (
+        "POM encapsulation is not an exemption",
+        "semantically named helper",
+        "1024px viewport",
+        "getCellByIndex",
+        "explicitly promises positional access",
+    ):
+        assert contract in eval_34_text
+    assert eval_34["files"] == [
+        "evals/files/positional-pom/admin-rooms.ts",
+        "evals/files/positional-pom/responsive-rooms-table.tsx",
+    ]
+    positional_fixture_dir = EVALS.parent / "files" / "positional-pom"
+    positional_pom = (
+        positional_fixture_dir / "admin-rooms.ts"
+    ).read_text(encoding="utf-8")
+    responsive_table = (
+        positional_fixture_dir / "responsive-rooms-table.tsx"
+    ).read_text(encoding="utf-8")
+    assert (
+        "getRoomMessagesCountCell(name: string): Locator" in positional_pom
+    )
+    assert "getByRole('cell').nth(3)" in positional_pom
+    assert "getCellByIndex(name: string, index: number)" in positional_pom
+    assert "getByRole('cell').nth(index)" in positional_pom
+    assert "useMediaQuery('(min-width: 1024px)')" in responsive_table
+    assert "<td>{type}</td>" in responsive_table
+    assert "showDetails && <td>{messages}</td>" in responsive_table
+    assert (
+        f"admin-rooms.ts line {source_line_number(positional_pom, 'nth(3)')} "
+        "as #10a P1"
+    ) in eval_34_text
+    assert (
+        "Does NOT report admin-rooms.ts line "
+        f"{source_line_number(positional_pom, 'nth(index)')} "
+        "as #10a"
+    ) in eval_34_text
+    responsive_condition_line = source_line_number(
+        responsive_table, "useMediaQuery('(min-width: 1024px)')"
+    )
+    responsive_messages_line = source_line_number(
+        responsive_table, "showDetails && <td>{messages}</td>"
+    )
+    assert (
+        "responsive-rooms-table.tsx line "
+        f"{responsive_condition_line} and line {responsive_messages_line}"
+    ) in eval_34_text
 
     for contract in (
         "require both Python 3 and `rg` with PCRE2 support",

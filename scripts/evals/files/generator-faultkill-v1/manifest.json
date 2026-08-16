@@ -26,7 +26,7 @@
     {
       "path": "scripts/ci/lib/strict_json.py",
       "role": "strict-json-decoder",
-      "sha256": "17815e94ea3f1b82ce0497448cb3df10cd0667520266df557e8a0762d29819df"
+      "sha256": "5fbff804b3b988eff0ef7a714cfc122fc1ab378bb01adc2113f96d8175f6e7fb"
     },
     {
       "path": "scripts/evals/run-fixture-faults.py",

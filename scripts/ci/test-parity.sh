@@ -557,6 +557,42 @@ mutate "$file" "## 설치" "###설치-변조"
 assert_fails "README i18n parity — section drift in README.ko.md" "README i18n parity: README.ko.md has"
 restore "$file"
 
+# The four shortened scanner transcripts preserve the same actionable fixture lines.
+file="README.ko.md"
+backup "$file"
+mutate \
+  "$file" \
+  "Summary: 2 total hit(s), 2 P0" \
+  "Summary: 2 total hit(s), 1 P0"
+assert_fails \
+  "README i18n parity — scanner transcript stays reproducible" \
+  "README.ko.md scanner transcript must preserve the current P0 finding and summary output"
+restore "$file"
+
+file="README.ja.md"
+backup "$file"
+mutate \
+  "$file" \
+  ".../tests/login.spec.ts:6:  expect(page.locator('.user-badge')).not.toBeNull();" \
+  ".../tests/login.spec.ts:7:  expect(page.locator('.user-badge')).not.toBeNull();"
+assert_fails \
+  "README i18n parity — localized scanner transcript matches canonical bytes" \
+  "README.ja.md scanner transcript differs from README.md"
+restore "$file"
+
+# The bundled scripts are POSIX-oriented; native Windows support must not be
+# implied when the documented execution boundary is WSL.
+file="README.md"
+backup "$file"
+mutate \
+  "$file" \
+  "Windows users should run them through WSL" \
+  "Windows users should run them through a compatible shell"
+assert_fails \
+  "README i18n parity — Windows limitation keeps the WSL boundary" \
+  "README.md Scope and limits section missing platform-limit tokens ['WSL execution/filesystem boundary']"
+restore "$file"
+
 # Case 15a: every README accepts the centered display title while repository,
 # package, and install identifiers remain the lowercase e2e-skills slug.
 centered_title='<h1 align="center">E2E Skills</h1>'

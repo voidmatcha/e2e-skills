@@ -21,6 +21,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path, PurePath
+from typing import NoReturn
 
 
 # Keep this publication ceiling aligned with read-playwright-artifact.py.
@@ -31,7 +32,7 @@ TERMINATION_GRACE_SECONDS = 1
 ENVIRONMENT_NAME = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
 
 
-def fail(message: str) -> "NoReturn":
+def fail(message: str) -> NoReturn:
     raise ValueError(message)
 
 
@@ -120,35 +121,57 @@ def validate_report(file_descriptor: int, validator: object) -> None:
     validator.validate_report_json(data)
 
 
-def process_group_exists(process_group: int) -> bool:
+def process_group_exists(group: int) -> bool:
     try:
-        os.killpg(process_group, 0)
+        os.killpg(group, 0)
     except ProcessLookupError:
         return False
+    except PermissionError:
+        return True
     return True
 
 
-def terminate_process_group(process: subprocess.Popen[bytes]) -> None:
-    process_group = process.pid
+def terminate_process_group(process: subprocess.Popen[bytes]) -> str | None:
+    group = process.pid
+    errors: list[str] = []
     try:
-        os.killpg(process_group, signal.SIGTERM)
-    except ProcessLookupError:
-        process.wait()
-        return
+        for name, sig in (("SIGTERM", signal.SIGTERM), ("SIGKILL", signal.SIGKILL)):
+            try:
+                os.killpg(group, sig)
+            except ProcessLookupError:
+                process.poll()
+                return
+            except OSError as error:
+                errors.append(f"{name}: {type(error).__name__}: {error}")
+            deadline = time.monotonic() + TERMINATION_GRACE_SECONDS
+            while process_group_exists(group):
+                process.poll()
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    break
+                time.sleep(min(0.01, remaining))
+            else:
+                process.poll()
+                return
+    except Exception as error:
+        errors.append(f"{type(error).__name__}: {error}")
+        return "; ".join(errors)
+    errors.append("process group remained alive after SIGKILL grace period")
+    return "; ".join(errors)
 
-    deadline = time.monotonic() + TERMINATION_GRACE_SECONDS
-    while time.monotonic() < deadline:
-        process.poll()
-        if not process_group_exists(process_group):
-            process.wait()
-            return
-        time.sleep(0.01)
 
+cleanup_process_group = terminate_process_group
+
+
+def fail_after_cleanup(
+    process: subprocess.Popen[bytes],
+    message: str,
+) -> NoReturn:
     try:
-        os.killpg(process_group, signal.SIGKILL)
-    except ProcessLookupError:
-        pass
-    process.wait()
+        cleanup_error = cleanup_process_group(process)
+    except Exception as error:
+        cleanup_error = f"{type(error).__name__}: {error}"
+    fail(f"{message}; cleanup failed: {cleanup_error}" if cleanup_error else message)
 
 
 def command_environment(pass_env: list[str]) -> dict[str, str]:
@@ -198,7 +221,7 @@ def capture_stdout(
         start_new_session=True,
     )
     deadline = time.monotonic() + MAX_COMMAND_SECONDS
-    cleanup_attempted = False
+    cleaned = False
     try:
         if process.stdout is None:
             fail("could not capture command stdout")
@@ -210,11 +233,8 @@ def capture_stdout(
                 while True:
                     remaining_seconds = deadline - time.monotonic()
                     if remaining_seconds <= 0:
-                        cleanup_attempted = True
-                        terminate_process_group(process)
-                        fail(
-                            f"command timed out after {MAX_COMMAND_SECONDS} seconds"
-                        )
+                        cleaned = True
+                        fail_after_cleanup(process, f"command timed out after {MAX_COMMAND_SECONDS} seconds")
                     if not selector.select(timeout=min(remaining_seconds, 0.1)):
                         continue
 
@@ -227,31 +247,31 @@ def capture_stdout(
                         break
                     captured_bytes += len(chunk)
                     if captured_bytes > MAX_STDOUT_BYTES:
-                        cleanup_attempted = True
-                        terminate_process_group(process)
-                        fail(
-                            f"command stdout exceeds the {MAX_STDOUT_BYTES}-byte limit"
-                        )
+                        cleaned = True
+                        fail_after_cleanup(process, f"command stdout exceeds the {MAX_STDOUT_BYTES}-byte limit")
                     temporary.write(chunk)
             finally:
                 selector.close()
 
         remaining_seconds = deadline - time.monotonic()
         if remaining_seconds <= 0:
-            cleanup_attempted = True
-            terminate_process_group(process)
-            fail(f"command timed out after {MAX_COMMAND_SECONDS} seconds")
+            cleaned = True
+            fail_after_cleanup(process, f"command timed out after {MAX_COMMAND_SECONDS} seconds")
         try:
             returncode = process.wait(timeout=remaining_seconds)
         except subprocess.TimeoutExpired:
-            cleanup_attempted = True
-            terminate_process_group(process)
-            fail(f"command timed out after {MAX_COMMAND_SECONDS} seconds")
+            cleaned = True
+            fail_after_cleanup(process, f"command timed out after {MAX_COMMAND_SECONDS} seconds")
         if returncode != 0:
             raise subprocess.CalledProcessError(returncode, command)
-    except BaseException:
-        if not cleanup_attempted:
-            terminate_process_group(process)
+        if process_group_exists(process.pid):
+            cleaned = True
+            fail_after_cleanup(process, "command left live descendants")
+    except BaseException as error:
+        if not cleaned:
+            cleanup_error = cleanup_process_group(process)
+            if cleanup_error is not None and isinstance(error, Exception):
+                fail(f"{error}; cleanup failed: {cleanup_error}")
         raise
 
 
