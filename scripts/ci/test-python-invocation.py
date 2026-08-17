@@ -187,6 +187,17 @@ def main() -> None:
 
     raw_python = re.findall(r"(?m)^[^#\n]*\bpython3\b.*$", source)
     assert raw_python == [], raw_python
+    raw_node = re.findall(r"(?m)^\s*node(?:\s|$).*$", source)
+    assert raw_node == [], raw_node
+    for candidate in (
+        "/opt/homebrew/bin/node",
+        "/usr/local/bin/node",
+        "/usr/bin/node",
+        "/bin/node",
+    ):
+        assert candidate in source
+    assert '"$NODE_BIN" --test examples/react-optimistic-write/scripts/test-b-lite-evidence-tools.mjs' in source
+    assert '"$NODE_BIN" examples/react-optimistic-write/scripts/verify-b-lite-evidence.mjs' in source
     assert "run_python scripts/ci/test-python-invocation.py" in source
     assert "run_python scripts/ci/test-eval-schema.py" in source
     assert '/bin/bash -p "$SHELL_ENUMERATOR" "$REPO_ROOT"' in source

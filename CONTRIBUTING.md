@@ -85,6 +85,8 @@ bash scripts/ci/test-local-eslint-path.sh # local lint + disabled-rule fail-clos
 bash scripts/validate-evals.sh       # eval JSON schema
 bash scripts/ci/test-reviewer-holdout.sh # labeled TP/FP/FN scorer + isolation
 python3 scripts/ci/test-reviewer-holdout-v3.py # all-family corpus + N-configuration contracts
+python3 scripts/ci/test-reviewer-holdout-v4.py # v4 corpus and protocol contracts
+python3 scripts/ci/test-reviewer-holdout-v5.py # current preregistered v5 corpus contracts
 /bin/bash -p scripts/ci/run-reference-tokenizer-suites.sh \
   scripts/ci/test-independent-review-v7.py \
   scripts/ci/test-independent-review-v10.py # v7/v10 preregistration + runner fail-closed contracts
@@ -117,13 +119,15 @@ python3 scripts/evals/run-reviewer-holdout.py \
 #   --runner claude --model claude-fable-5
 ```
 
-The current v3 corpus has eight multi-file cases, 24 findings covering all 24
+The completed v3 public corpus has eight multi-file cases, 24 findings covering all 24
 base pattern families, and 24 explicit false-positive guards. It is public, so
 it is a reproducible development holdout, not a secret release oracle. The
 historical v2/r3 corpus has 30 findings and 31 guards, but its performance
 estimate was oracle-invalidated after post-run adjudication. Pass an external
 corpus with `--cases` for a sealed run, inside an independently isolated
 environment supplied through `--isolation-wrapper <executable>`.
+The current preregistered v5 corpus remains pre-live; see
+[`benchmarks/STATUS.md`](benchmarks/STATUS.md) before making any accuracy claim.
 Reports under `benchmarks/reviewer-holdout-v3/reports/` include corpus/model/CLI/Git provenance,
 the evaluated-skill and protocol digests, seeded schedule, raw outputs, per-case
 TP/FP/FN, unique majority-stable precision/recall, repeated-run metrics, and

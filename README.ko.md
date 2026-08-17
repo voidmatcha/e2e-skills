@@ -18,14 +18,14 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=59a49823b673df124bdc37067f260c048ecd65fb6673d075252eb0e118c04e88; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=de124ba37301302a2d6c46222f811a1eb39e168c12c01ae6308232e66acd898b; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
-`e2e-skills`는 AI 코딩 에이전트가 Playwright와 Cypress E2E 테스트를 생성·검토하고 실패 원인을 분석할 때 쓰는 네 가지 Agent Skills 모음입니다. 새 테스트 생성은 Playwright를 지원하고, 기존 테스트 검토와 실패 분석은 Playwright와 Cypress를 지원합니다. 검토 목록 가운데 규칙만으로 판별할 수 있는 항목을 찾는 `deterministic scanner`도 포함합니다.
+`e2e-skills`는 AI 코딩 에이전트가 Playwright와 Cypress E2E 테스트를 생성·검토하고 실패 원인을 분석할 때 쓰는 네 가지 Agent Skills 모음입니다. 새 테스트 생성은 Playwright를 지원하고, 기존 테스트나 PR/diff 범위의 변경 검토와 실패 분석은 Playwright와 Cypress를 지원합니다. 검토 목록 가운데 규칙만으로 판별할 수 있는 항목을 찾는 `deterministic scanner`도 포함합니다.
 
 | 필요 | 스킬 | 결과 |
 | --- | --- | --- |
 | 새 Playwright 테스트 생성 | `playwright-test-generator` | 탐색, 승인, 검토를 거친 Playwright 테스트 |
-| 기존 Playwright/Cypress 테스트 검토 | `e2e-reviewer` | 구체적인 수정안이 포함된, 검증된 P0/P1/P2 문제 목록 |
+| Playwright/Cypress 테스트 또는 PR/diff 변경 검토 | `e2e-reviewer` | 구체적인 수정안과 신규·악화·기존 문제 구분이 포함된, 검증된 P0/P1/P2 문제 목록 |
 | 실패한 Playwright 실행 분석 | `playwright-debugger` | F1–F15 근본 원인, 근거, 수정안 |
 | 실패한 Cypress 실행 분석 | `cypress-debugger` | F1–F15 근본 원인, 근거, 수정안 |
 | `deterministic local scan` | `skills/e2e-reviewer/scripts/scan.sh` | 대상 프로젝트의 패키지 없이 규칙으로 찾은 후보 |
@@ -277,7 +277,7 @@ Debug the failed Cypress report in cypress/reports/.
 | F8 | **환경 불일치** | CI에서만 또는 로컬에서만 발생. viewport, OS, timezone 차이 |
 | F9 | **데이터 의존성** | seed data 누락, 하드코딩된 ID |
 | F10 | **인증 / 세션** | 세션 만료, 역할별 UI가 렌더링되지 않음 |
-| F11 | **비동기 순서 가정** | `Promise.all` 순서 가정, 병렬 실행 경합 |
+| F11 | **비동기/명령 순서 경합** | Playwright의 `Promise.all` 순서·병렬 실행 경합, Cypress의 요청 이후 intercept 등록·명령 체인 순서 뒤바뀜·visit/request 경합 |
 | F12 | **POM / Locator 불일치** | DOM 구조가 바뀌었지만 POM은 갱신되지 않음 |
 | F13 | **오류 무시** | `.catch(() => {})`가 실제 실패를 숨김 |
 | F14 | **애니메이션 경합** | 콘텐츠가 아직 렌더링되지 않았거나 일시적인 요소가 관찰 전에 사라짐 |

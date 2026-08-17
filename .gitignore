@@ -45,3 +45,9 @@ venv/
 
 # Runtime state locks the independent-review runner creates beside an archive
 benchmarks/.*.state.lock
+
+# Nested-project scan roots test-reviewer-scanner.py builds in the repository
+# root. Its context manager cleans up on exception but not on SIGKILL, and the
+# leftover carries a deliberate `test.only` fixture the repo's own scan cannot
+# flag, so an orphan must never become a committable file.
+/.e2e-reviewer-nested-project-*/

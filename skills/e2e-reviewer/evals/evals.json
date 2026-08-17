@@ -606,6 +606,46 @@
         "Does NOT report admin-rooms.ts line 15 as #10a — getCellByIndex(name, index) explicitly promises positional access and qualifies for the documented method-name exemption",
         "Does not create a new viewport-specific pattern or report the supplied production component as E2E test code"
       ]
+    },
+    {
+      "id": 35,
+      "prompt": "Run e2e-reviewer in diff mode for a PR. Changed files are evals/files/diff-review/changed-orders.spec.ts and evals/files/diff-review/orders-page.ts. Unchanged context files are evals/files/diff-review/legacy.spec.ts and evals/files/diff-review/README.md.",
+      "expected_output": "Use diff mode. Consult the nearest README.md and cite its rule that positional nth selectors are forbidden. Run Phase 1 with the bundled scanner once per changed in-scope E2E source artifact before Phase 2; never pass multiple changed-file paths to one scanner invocation because scan.sh accepts at most one root and fails closed on multiple roots. Do not run Phase 1 against unchanged context-only files such as legacy.spec.ts; an obvious smell encountered while reading supplied unchanged context may be advisory, but not a Phase 1 scan target or blocker. Attribute orders-page.ts line 11 as an introduced #10a P1 finding even though the POM method has a semantic name, and include the explicit Attribution (diff mode) field on the finding. Treat legacy.spec.ts line 3 test.only as pre-existing context/advisory only, not a PR blocker or top priority, because the file is unchanged. Also define worsened attribution: a changed hunk in Playwright/Cypress specs, POMs, support files, fixtures, custom commands, or E2E config artifacts can make an unchanged E2E line newly unreliable only when causal diff evidence links the hunk to that line. Include every Review Scope and Evidence template field: Mode, Behavior under review, Diff base/range, Changed E2E artifacts, Context-only files consulted, Static evidence, Runtime evidence, Independent verification, and Limitations/exclusions. Static evidence covers scanner tier coverage and semantic checks. Runtime evidence refers only to target-controlled project runtime and must not count the bundled scanner as runtime. Use none, unavailable, or not executed instead of omitting a field.",
+      "files": [
+        "evals/files/diff-review/changed-orders.spec.ts",
+        "evals/files/diff-review/orders-page.ts",
+        "evals/files/diff-review/legacy.spec.ts",
+        "evals/files/diff-review/README.md"
+      ],
+      "assertions": [
+        "Clearly states diff mode was used and separates changed files from unchanged context-only files",
+        "Consults the nearest README.md and uses its never-use-positional-nth selector rule as evidence",
+        "Runs Phase 1 with the bundled scanner once per changed in-scope E2E source artifact before Phase 2, never passes multiple roots to one invocation, and preserves scan.sh's fail-closed multiple-root behavior",
+        "Does NOT run Phase 1 against legacy.spec.ts or any unchanged context-only file",
+        "Allows an obvious smell encountered while reading supplied unchanged context to be advisory, but not a Phase 1 scan target or blocker",
+        "Reports orders-page.ts line 11 as an introduced #10a P1 finding because paidOrderExportButton is semantically named but still hides nth(2)",
+        "Every diff finding includes the explicit Attribution (diff mode) field instead of only putting attribution words in a heading",
+        "Labels legacy.spec.ts line 3 test.only as pre-existing/advisory and does not count it as a PR blocker or top priority",
+        "Defines worsened attribution as a changed hunk in Playwright/Cypress specs, POMs, support files, fixtures, custom commands, or E2E config artifacts making an unchanged E2E line newly unreliable, and requires causal diff evidence linking the hunk to that line",
+        "Includes all mandatory Review Scope and Evidence fields: Mode, Behavior under review, Diff base/range, Changed E2E artifacts, Context-only files consulted, Static evidence, Runtime evidence, Independent verification, and Limitations/exclusions",
+        "Uses Static evidence for scanner tier coverage and semantic checks",
+        "Runtime evidence refers only to target-controlled project runtime and does not count the bundled scanner as runtime",
+        "Uses none, unavailable, or not executed for empty Review Scope and Evidence fields instead of omitting them"
+      ]
+    },
+    {
+      "id": 36,
+      "prompt": "Run e2e-reviewer in diff mode for a PR where the only changed file is evals/files/diff-review/profile-panel.tsx.",
+      "expected_output": "Return a no in-scope E2E diff result because the PR does not change any Playwright/Cypress spec, POM, support file, fixture, custom command, or E2E config artifact. The changed file is application UI code, so do not perform a general app review and do not invent E2E findings. Include Review Scope and Evidence with the changed file classified out of scope.",
+      "files": [
+        "evals/files/diff-review/profile-panel.tsx"
+      ],
+      "assertions": [
+        "Reports no in-scope E2E diff instead of reviewing the app component generally",
+        "Classifies profile-panel.tsx as changed application code outside Playwright/Cypress specs, POMs, support files, fixtures, custom commands, and E2E config artifacts",
+        "Does not invent E2E findings or top priorities when there are no changed in-scope E2E artifacts",
+        "Includes a Review Scope and Evidence header"
+      ]
     }
   ]
 }

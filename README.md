@@ -18,12 +18,12 @@
 <strong>🇺🇸 English</strong> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-`e2e-skills` gives AI coding agents four focused workflows for Playwright and Cypress E2E work: generate Playwright coverage, review existing Playwright/Cypress specs, debug failed Playwright reports, and debug failed Cypress reports. It also includes a deterministic scanner for the mechanically detectable subset of the review catalog.
+`e2e-skills` gives AI coding agents four focused workflows for Playwright and Cypress E2E work: generate Playwright coverage, review existing specs or PR/diff-scoped test changes, debug failed Playwright reports, and debug failed Cypress reports. It also includes a deterministic scanner for the mechanically detectable subset of the review catalog.
 
 | Need | Skill | Result |
 | --- | --- | --- |
 | Generate new Playwright coverage | `playwright-test-generator` | Explored, approved, reviewed Playwright specs |
-| Review existing Playwright/Cypress tests | `e2e-reviewer` | Verified P0/P1/P2 findings with concrete fixes |
+| Review Playwright/Cypress tests or PR/diff changes | `e2e-reviewer` | Verified P0/P1/P2 findings with concrete fixes and introduced/worsened/pre-existing attribution |
 | Debug a failed Playwright run | `playwright-debugger` | F1–F15 root cause, evidence, and fix |
 | Debug a failed Cypress run | `cypress-debugger` | F1–F15 root cause, evidence, and fix |
 | Run a deterministic local scan | `skills/e2e-reviewer/scripts/scan.sh` | Mechanical candidates without target-project packages |
@@ -275,7 +275,7 @@ Both debuggers use the same stable F1–F15 root-cause taxonomy. Playwright acce
 | F8 | **Environment Mismatch** | CI vs local only; viewport, OS, timezone |
 | F9 | **Data Dependency** | Missing seed data, hardcoded IDs |
 | F10 | **Auth / Session** | Session expired, role-based UI not rendered |
-| F11 | **Async Order Assumption** | `Promise.all` order, parallel race |
+| F11 | **Async / Command-Order Race** | Playwright `Promise.all` order or parallel race; Cypress intercept registered after the request, chain-order swap, or visit/request race |
 | F12 | **POM / Locator Drift** | DOM structure changed, POM not updated |
 | F13 | **Error Swallowing** | `.catch(() => {})` hiding actual failure |
 | F14 | **Animation Race** | Content not yet rendered, or a transient element removed before it is observed |

@@ -17,14 +17,14 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=59a49823b673df124bdc37067f260c048ecd65fb6673d075252eb0e118c04e88; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=de124ba37301302a2d6c46222f811a1eb39e168c12c01ae6308232e66acd898b; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
-`e2e-skills` 为 AI 编程代理提供四个面向 E2E 测试工作的聚焦工作流：生成 Playwright 覆盖、审查现有 Playwright/Cypress spec、调试失败的 Playwright 报告，以及调试失败的 Cypress 报告。它还包含一个确定性扫描器，用于发现审查目录中可机械判定的子集。
+`e2e-skills` 为 AI 编程代理提供四个面向 E2E 测试工作的聚焦工作流：生成 Playwright 覆盖、审查现有 spec 或 PR/diff 范围内的测试变更、调试失败的 Playwright 报告，以及调试失败的 Cypress 报告。它还包含一个确定性扫描器，用于发现审查目录中可机械判定的子集。
 
 | 需求 | Skill | 结果 |
 | --- | --- | --- |
 | 生成新的 Playwright 覆盖 | `playwright-test-generator` | 经过探索、批准和审查的 Playwright spec |
-| 审查现有 Playwright/Cypress 测试 | `e2e-reviewer` | 带有具体修复建议的已验证 P0/P1/P2 发现 |
+| 审查 Playwright/Cypress 测试或 PR/diff 变更 | `e2e-reviewer` | 带有具体修复建议及 introduced/worsened/pre-existing 归属的已验证 P0/P1/P2 发现 |
 | 调试失败的 Playwright 运行 | `playwright-debugger` | F1–F15 根本原因、证据和修复 |
 | 调试失败的 Cypress 运行 | `cypress-debugger` | F1–F15 根本原因、证据和修复 |
 | 运行确定性本地扫描 | `skills/e2e-reviewer/scripts/scan.sh` | 不依赖目标项目 package 的机械候选项 |
@@ -276,7 +276,7 @@ Debug the failed Cypress report in cypress/reports/.
 | F8 | **环境不匹配** | 只在 CI vs local 出现；viewport、OS、timezone |
 | F9 | **数据依赖** | 缺失 seed data，hardcoded IDs |
 | F10 | **认证 / Session** | 会话过期，role-based UI 未渲染 |
-| F11 | **异步顺序假设** | `Promise.all` 顺序假设，parallel race |
+| F11 | **异步/命令顺序竞态** | Playwright 的 `Promise.all` 顺序或并行竞态；Cypress 在请求发出后注册 intercept、命令链顺序颠倒或 visit/request 竞态 |
 | F12 | **POM / Locator 漂移** | DOM 结构已变化，POM 未更新 |
 | F13 | **吞掉错误** | `.catch(() => {})` 隐藏实际 failure |
 | F14 | **动画竞态** | 内容尚未渲染，或 transient element 在被观察前移除 |

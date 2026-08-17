@@ -657,14 +657,14 @@ class SafeReportPublishTests(unittest.TestCase):
         destination = self.root / "playwright-report/results.json"
         destination.parent.mkdir()
         destination.write_text('{"old": true}', encoding="utf-8")
-        terminated = self.root / "terminated"
+        child_pid = self.root / "child-pid"
         completed = self.root / "completed"
         program = "\n".join(
             [
-                "import pathlib, signal, sys, time",
-                f"terminated = pathlib.Path({str(terminated)!r})",
+                "import os, pathlib, sys, time",
+                f"child_pid = pathlib.Path({str(child_pid)!r})",
                 f"completed = pathlib.Path({str(completed)!r})",
-                "signal.signal(signal.SIGTERM, lambda *_: terminated.write_text('yes'))",
+                "child_pid.write_text(str(os.getpid()))",
                 "sys.stdout.buffer.write(b'x' * (8 * 1024 * 1024 + 1))",
                 "sys.stdout.buffer.flush()",
                 "time.sleep(10)",
@@ -676,7 +676,9 @@ class SafeReportPublishTests(unittest.TestCase):
 
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("8388608-byte", result.stderr)
-        self.assertTrue(terminated.exists())
+        self.assertTrue(child_pid.exists())
+        with self.assertRaises(ProcessLookupError):
+            os.kill(int(child_pid.read_text(encoding="utf-8")), 0)
         self.assertFalse(completed.exists())
         self.assertEqual(destination.read_text(), '{"old": true}')
         self.assertEqual(list(destination.parent.glob(".*.tmp")), [])

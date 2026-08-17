@@ -18,14 +18,14 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <strong>🇯🇵 日本語</strong> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=59a49823b673df124bdc37067f260c048ecd65fb6673d075252eb0e118c04e88; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=de124ba37301302a2d6c46222f811a1eb39e168c12c01ae6308232e66acd898b; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
-`e2e-skills` は、AI コーディングエージェントが Playwright/Cypress の E2E テスト作業に使える 4 つのワークフローを提供します。Playwright カバレッジの生成、既存の Playwright/Cypress テスト仕様のレビュー、失敗した Playwright レポートのデバッグ、失敗した Cypress レポートのデバッグを扱います。レビューカタログのうち、機械的に判定できる部分集合を検出する決定論的スキャナーも含まれます。
+`e2e-skills` は、AI コーディングエージェントが Playwright/Cypress の E2E テスト作業に使える 4 つのワークフローを提供します。Playwright カバレッジの生成、既存のテスト仕様または PR/diff 範囲の変更レビュー、失敗した Playwright レポートのデバッグ、失敗した Cypress レポートのデバッグを扱います。レビューカタログのうち、機械的に判定できる部分集合を検出する決定論的スキャナーも含まれます。
 
 | 必要なこと | スキル | 結果 |
 | --- | --- | --- |
 | 新しい Playwright カバレッジを生成 | `playwright-test-generator` | 探索、承認、レビューを経た Playwright テスト仕様 |
-| 既存の Playwright/Cypress テストをレビュー | `e2e-reviewer` | 具体的な修正を伴う検証済み P0/P1/P2 指摘 |
+| Playwright/Cypress テストまたは PR/diff 変更をレビュー | `e2e-reviewer` | 具体的な修正と introduced/worsened/pre-existing の帰属を伴う検証済み P0/P1/P2 指摘 |
 | 失敗した Playwright 実行をデバッグ | `playwright-debugger` | F1–F15 の根本原因、根拠、修正 |
 | 失敗した Cypress 実行をデバッグ | `cypress-debugger` | F1–F15 の根本原因、根拠、修正 |
 | 決定論的なローカルスキャンを実行 | `skills/e2e-reviewer/scripts/scan.sh` | 対象プロジェクトの package に依存しない機械的候補 |
@@ -277,7 +277,7 @@ Debug the failed Cypress report in cypress/reports/.
 | F8 | **環境差異** | CI とローカルの片方でだけ発生する。viewport、OS、timezone |
 | F9 | **データ依存** | seed データの欠落、hardcoded IDs |
 | F10 | **認証 / セッション** | セッション期限切れ、role-based UI が描画されない |
-| F11 | **非同期順序の仮定** | `Promise.all` の順序、並行処理の競合 |
+| F11 | **非同期/コマンド順序の競合** | Playwright の `Promise.all` 順序・並行処理の競合、Cypress のリクエスト後の intercept 登録・コマンドチェーン順序の入れ替わり・visit/request 競合 |
 | F12 | **POM / Locator のずれ** | DOM 構造が変わったのに POM が更新されていない |
 | F13 | **エラー握りつぶし** | `.catch(() => {})` が実際の失敗を隠している |
 | F14 | **アニメーション競合** | 内容がまだ描画されていない、または一時的な要素が観測前に削除される |

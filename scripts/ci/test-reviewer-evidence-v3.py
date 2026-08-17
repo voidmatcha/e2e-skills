@@ -23,6 +23,8 @@ COMPARATOR_PATH = ROOT / "scripts/evals/compare-reviewer-holdouts.py"
 SKILL_DIR = ROOT / "skills/e2e-reviewer"
 REPORT_NAMES = ("full-codex.json", "full-opus.json", "full-fable.json")
 STATUS_PATH = EVIDENCE / "evidence-status.json"
+RESULT_PATH = EVIDENCE / "result.md"
+README_PATH = EVIDENCE / "README.md"
 REQUIRED_COMPLETE_ARTIFACTS = (
     "evidence-manifest.json",
     "reports/full-codex.json",
@@ -497,6 +499,43 @@ def run_incomplete_status_regressions(status: dict) -> None:
     assert_rejected(fabricated_complete, "complete status requires every")
 
 
+def verify_result_digest_provenance() -> None:
+    # This runs before the INCOMPLETE branch on purpose: the prose it checks
+    # describes the historical report, so it has to hold in both states. Every
+    # input is therefore named explicitly — a missing file here used to surface
+    # as a bare FileNotFoundError ahead of derive_verified_artifacts()'s clear
+    # message, which reads like a harness crash rather than a fail-closed gate.
+    codex_report = EVIDENCE / "reports/full-codex.json"
+    for required in (codex_report, RESULT_PATH, README_PATH):
+        if not required.is_file():
+            raise ValueError(
+                "v3 result provenance input is missing: "
+                f"{required.relative_to(ROOT)}"
+            )
+    evaluated_skill_sha256 = read_json(codex_report).get("skill_sha256")
+    marker = "Its evaluated skill digest is `"
+    for path in (RESULT_PATH, README_PATH):
+        content = path.read_text(encoding="utf-8")
+        normalized = " ".join(content.split())
+        if normalized.count(marker) != 1:
+            raise ValueError(f"{path.name} historical skill digest marker mismatch")
+        digest = normalized.split(marker, 1)[1].split("`", 1)[0]
+        if digest != evaluated_skill_sha256:
+            raise ValueError(f"{path.name} historical skill digest is stale")
+        if "current hardened skill digest is" in content:
+            raise ValueError(
+                f"{path.name} must defer the changing current digest to "
+                "evidence-status.json"
+            )
+        if (
+            "`evidence-status.json` records the current checked-out skill digest"
+            not in normalized
+        ):
+            raise ValueError(
+                f"{path.name} current-snapshot provenance is missing"
+            )
+
+
 def verify_complete_evidence(status: dict) -> None:
     verify_manifest()
     protocol = RUNNER.load_protocol(PROTOCOL_PATH)
@@ -629,6 +668,7 @@ def main() -> None:
         )
     status = read_json(STATUS_PATH)
     state = validate_evidence_status(status)
+    verify_result_digest_provenance()
     if state == "INCOMPLETE":
         run_incomplete_status_regressions(status)
         print(

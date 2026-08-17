@@ -2,6 +2,30 @@
 
 ## [Unreleased]
 
+### Added
+
+- **The E2E reviewer now supports PR/diff-scoped reviews.** Changed
+  Playwright and Cypress E2E artifacts are the primary review scope, unchanged
+  files are context, and findings are classified as introduced, worsened, or
+  pre-existing. Pre-existing findings are advisory and non-blocking. A Review
+  Scope and Evidence header records the validation limits for each diff-scoped
+  review. Diff mode invokes the scanner once per changed artifact, and the
+  scanner rejects multiple roots instead of silently ignoring extra paths.
+  Full-mode reviews remain available as the default when no PR or diff scope is
+  supplied.
+
+### Fixed
+
+- Security scanners now ignore inherited `GIT_*` repository/config overrides,
+  so a hostile index or global exclude file cannot hide secret or policy hits.
+- The B-lite evidence verifier now checks its frozen, evidence-local generator
+  snapshot instead of the evolving current skill, and the contract runs in
+  local CI.
+- Generator failure handling, scanner target exclusions, and debugger cleanup
+  now have regression coverage for their previously unguarded boundaries.
+- The shared F11 README row now covers both Playwright async ordering and
+  Cypress command/intercept races in all four maintained languages.
+
 ## [1.12.1] - 2026-08-16
 
 ### Changed

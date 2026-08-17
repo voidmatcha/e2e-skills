@@ -33,10 +33,10 @@ the model's alternative classification.
 
 The complete historical report is `reports/full-codex.json`. Its evaluated
 skill digest is
-`0ef4839b6bde078a4599e6354dcd60bb522c01a91534086d6f292d5217018214`,
-while the current hardened skill digest is
-`33832ed8029e2fdff37c5f72b7e68539a9e6f28fc03fc16d514057c0bdc88e0b`.
-It cannot be counted as the required current-snapshot Codex report.
+`400a93e8a6955491b938911188b9503968979d87bf428a7fdd17b95d4de115fc`.
+`evidence-status.json` records the current checked-out skill digest and marks
+this report stale when the two differ. It cannot be counted as the required
+current-snapshot Codex report.
 
 The first historical Codex `gpt-5.6-sol` snapshot completed 24/24 calls with no
 infrastructure errors. It produced 23 stable true positives, 2 stable false

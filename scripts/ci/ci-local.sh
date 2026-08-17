@@ -118,6 +118,25 @@ run_python scripts/ci/test-playwright-debugger-report-publish.py ||
   fail "test-playwright-debugger-report-publish.py"
 run_python scripts/ci/test-generator-contracts.py || fail "test-generator-contracts.py"
 
+step "B-lite evidence contract"
+if ! NODE_BIN="$(run_python -c '
+import os
+from pathlib import Path
+for raw in ("/opt/homebrew/bin/node", "/usr/local/bin/node", "/usr/bin/node", "/bin/node"):
+    binary = Path(raw)
+    if binary.is_file() and os.access(binary, os.X_OK):
+        print(binary.resolve())
+        raise SystemExit(0)
+raise SystemExit(1)
+')"; then
+  fail "trusted Node.js runtime resolution"
+fi
+[ -n "$NODE_BIN" ] || fail "trusted Node.js runtime unavailable"
+"$NODE_BIN" --test examples/react-optimistic-write/scripts/test-b-lite-evidence-tools.mjs ||
+  fail "test-b-lite-evidence-tools.mjs"
+"$NODE_BIN" examples/react-optimistic-write/scripts/verify-b-lite-evidence.mjs ||
+  fail "verify-b-lite-evidence.mjs"
+
 step "Labeled reviewer holdout"
 LC_ALL=C LC_CTYPE=C LANG=C /bin/bash -p scripts/ci/test-reviewer-holdout.sh ||
   fail "test-reviewer-holdout.sh"

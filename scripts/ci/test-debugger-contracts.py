@@ -41,6 +41,34 @@ CYPRESS_SKILL = ROOT / "skills/cypress-debugger"
 PLAYWRIGHT_SKILL = ROOT / "skills/playwright-debugger/SKILL.md"
 
 
+def assert_readme_f11_contract() -> None:
+    expected_rows = {
+        "README.md": (
+            "| F11 | **Async / Command-Order Race** | Playwright `Promise.all` "
+            "order or parallel race; Cypress intercept registered after the "
+            "request, chain-order swap, or visit/request race |"
+        ),
+        "README.ko.md": (
+            "| F11 | **비동기/명령 순서 경합** | Playwright의 `Promise.all` "
+            "순서·병렬 실행 경합, Cypress의 요청 이후 intercept 등록·명령 체인 "
+            "순서 뒤바뀜·visit/request 경합 |"
+        ),
+        "README.ja.md": (
+            "| F11 | **非同期/コマンド順序の競合** | Playwright の `Promise.all` "
+            "順序・並行処理の競合、Cypress のリクエスト後の intercept 登録・"
+            "コマンドチェーン順序の入れ替わり・visit/request 競合 |"
+        ),
+        "README.zh-cn.md": (
+            "| F11 | **异步/命令顺序竞态** | Playwright 的 `Promise.all` "
+            "顺序或并行竞态；Cypress 在请求发出后注册 intercept、命令链顺序"
+            "颠倒或 visit/request 竞态 |"
+        ),
+    }
+    for relative, expected in expected_rows.items():
+        readme = (ROOT / relative).read_text(encoding="utf-8")
+        assert readme.count(expected) == 1, f"{relative} F11 contract drifted"
+
+
 def run_extractor(
     extractor: Path,
     report_root: Path | None,
@@ -2091,6 +2119,7 @@ def assert_bundled_scripts_match_the_launcher_minimum_python() -> None:
 
 
 def main() -> None:
+    assert_readme_f11_contract()
     assert_artifact_reader_launcher_boundary()
     assert_bundled_helpers_never_resolve_python_through_path()
     assert_bundled_scripts_match_the_launcher_minimum_python()

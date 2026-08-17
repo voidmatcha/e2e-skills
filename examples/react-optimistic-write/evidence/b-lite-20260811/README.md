@@ -37,6 +37,9 @@ accuracy evaluation.
 
 - `protocol.json` and `freeze.json` hold the pre-generation contract and input
   digests.
+- `skill-material/` is the immutable local snapshot of the evaluated
+  `playwright-test-generator` files. It intentionally does not track the
+  repository's current skill files.
 - `protocol-amendment.json` records why later clean regeneration and sequential
   execution were required without rewriting the frozen protocol.
 - `provenance.json` records model-call lineage, usage, isolation, and exclusions.

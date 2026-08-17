@@ -81,6 +81,7 @@ def scan_path(
     *,
     privileged: bool = True,
     timeout: int | None = None,
+    scanner: Path | None = None,
 ) -> subprocess.CompletedProcess[str]:
     ast_grep_policy_keys = {
         "E2E_SMELL_AST_GREP_BIN",
@@ -115,7 +116,7 @@ def scan_path(
     command = ["/bin/bash"]
     if privileged:
         command.append("-p")
-    command.extend((str(SCANNER), str(path)))
+    command.extend((str(scanner or SCANNER), str(path)))
     return subprocess.run(
         command,
         cwd=ROOT,
@@ -3600,6 +3601,46 @@ def assert_option_like_root_rejected() -> None:
         assert "scan root must not begin with '-'" in result.stdout
 
 
+def assert_multiple_scan_roots_fail_closed() -> None:
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-multiple-roots-") as temp:
+        base = Path(temp)
+        first = base / "first.spec.ts"
+        second = base / "second.spec.ts"
+        first.write_text(
+            "import { test } from '@playwright/test';\n"
+            "test('first', async () => {});\n",
+            encoding="utf-8",
+        )
+        second.write_text(
+            "import { test } from '@playwright/test';\n"
+            "test.only('second', async () => {});\n",
+            encoding="utf-8",
+        )
+        environment = os.environ.copy()
+        environment.update(
+            {
+                "E2E_SMELL_NO_ESLINT_DOWNLOAD": "1",
+                "E2E_SMELL_NO_AST_GREP_DOWNLOAD": "1",
+                "LC_ALL": "C",
+                "LC_CTYPE": "C",
+                "LANG": "C",
+            }
+        )
+        result = subprocess.run(
+            ["/bin/bash", "-p", str(SCANNER), str(first), str(second)],
+            cwd=ROOT,
+            env=environment,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            check=False,
+        )
+        assert result.returncode == 2, result.stdout
+        assert "multiple scan roots are not supported" in result.stdout
+        assert "invoke scan.sh once per root" in result.stdout
+        assert "Summary:" not in result.stdout
+
+
 def assert_project_path_utility_hijack_rejected_before_execution() -> None:
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-path-hijack-") as temp:
         root = Path(temp) / "project"
@@ -4890,6 +4931,7 @@ def assert_ast_tier_honors_hard_exclusions_without_excluding_public_tests() -> N
             encoding="utf-8",
         )
         excluded_files = []
+        fixture_named_files = []
         public_file = root / "public/generated.spec.ts"
         for relative in (
             "node_modules/pkg/generated.spec.ts",
@@ -4901,13 +4943,19 @@ def assert_ast_tier_honors_hard_exclusions_without_excluding_public_tests() -> N
             ".next/generated.spec.ts",
             "out/generated.spec.ts",
             "coverage/generated.spec.ts",
+        ):
+            path = root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
+            excluded_files.append(path)
+        for relative in (
             "evals/files/generated.spec.ts",
             "scripts/ci/fixtures/generated.spec.ts",
         ):
             path = root / relative
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
-            excluded_files.append(path)
+            fixture_named_files.append(path)
         public_file.parent.mkdir(parents=True)
         public_file.write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
 
@@ -4922,8 +4970,6 @@ def assert_ast_tier_honors_hard_exclusions_without_excluding_public_tests() -> N
             "  '!**/playwright-report/**', '!**/cypress/reports/**',\n"
             "  '!**/test-results/**', '!**/dist/**', '!**/build/**',\n"
             "  '!**/.next/**', '!**/out/**', '!**/coverage/**',\n"
-            "  '!**/evals/files/**',\n"
-            "  '!**/scripts/ci/fixtures/**',\n"
             "]\n"
             "if any(value not in sys.argv for value in required):\n"
             "    print('missing required machine-output/exclusion option', file=sys.stderr)\n"
@@ -4953,11 +4999,136 @@ def assert_ast_tier_honors_hard_exclusions_without_excluding_public_tests() -> N
             },
         )
         assert result.returncode == 0, result.stdout
-        assert "[AST] sg-15-missing-await-playwright-expect (2 hits)" in result.stdout
+        assert "[AST] sg-15-missing-await-playwright-expect (4 hits)" in result.stdout
         assert "real.spec.ts:3:3" in result.stdout
         assert f"{public_file}:3:3" in result.stdout
+        for path in fixture_named_files:
+            assert f"{path}:3:3" in result.stdout
         for path in excluded_files:
             assert str(path) not in result.stdout
+
+
+def assert_fixture_path_exclusions_are_self_repo_only() -> None:
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-fixture-names-") as temp:
+        root = Path(temp) / "project"
+        targets = (
+            root / "evals" / "files" / "focused.spec.ts",
+            root / "scripts" / "ci" / "fixtures" / "focused.spec.ts",
+        )
+        for target in targets:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(
+                "import { test } from '@playwright/test';\n"
+                "test.only('fixture-shaped external project file', async () => {});\n",
+                encoding="utf-8",
+            )
+
+        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
+        assert result.returncode == 0, result.stdout
+        focused = section(result.stdout, "[P0] #7 Focused test committed")
+        for target in targets:
+            assert f"{target}:2:" in focused, result.stdout
+
+    with tempfile.TemporaryDirectory(
+        prefix=".e2e-reviewer-nested-project-",
+        dir=ROOT,
+    ) as temp:
+        nested_root = Path(temp)
+        (nested_root / "package.json").write_text("{}\n", encoding="utf-8")
+        nested_target = nested_root / "evals" / "files" / "focused.spec.ts"
+        nested_target.parent.mkdir(parents=True)
+        nested_target.write_text(
+            "import { test } from '@playwright/test';\n"
+            "test.only('nested external project file', async () => {});\n",
+            encoding="utf-8",
+        )
+
+        nested_result = scan_path(nested_root, {"E2E_SMELL_FAIL_ON": "none"})
+        assert nested_result.returncode == 0, nested_result.stdout
+        nested_focused = section(
+            nested_result.stdout,
+            "[P0] #7 Focused test committed",
+        )
+        assert f"{nested_target}:2:" in nested_focused, nested_result.stdout
+
+
+def summary_line(output: str) -> str:
+    return next(
+        line for line in output.splitlines() if line.startswith("Summary:")
+    )
+
+
+def assert_self_repo_scan_is_decided_by_the_scanned_project() -> None:
+    # Fixture exclusion must follow the project under scan, never the scanner's
+    # own location. reinstall-skills.sh installs REAL COPIES, so a
+    # location-derived answer made the documented verify-reviewer flow report
+    # this repository's intentional fixtures as findings while an in-repo run of
+    # the identical scanner reported none.
+    source = SCANNER.read_text(encoding="utf-8")
+    assert "SCANNER_REPO_ROOT_REAL" not in source, (
+        "self-repo detection must not reintroduce a scanner-location fingerprint"
+    )
+    assert '-f "$PROJECT_ROOT_REAL/AGENTS.md"' in source
+
+    target = ROOT / "skills"
+    in_repo = scan_path(target, {"E2E_SMELL_FAIL_ON": "none"})
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-installed-") as temp:
+        installed = Path(temp) / "e2e-reviewer"
+        shutil.copytree(ROOT / "skills/e2e-reviewer", installed)
+        copied = scan_path(
+            target,
+            {"E2E_SMELL_FAIL_ON": "none"},
+            scanner=installed / "scripts/scan.sh",
+        )
+
+    assert in_repo.returncode == 0, in_repo.stdout
+    assert copied.returncode == 0, copied.stdout
+    for result in (in_repo, copied):
+        assert "evals/files" not in result.stdout, result.stdout
+    assert summary_line(in_repo.stdout) == summary_line(copied.stdout), (
+        summary_line(in_repo.stdout),
+        summary_line(copied.stdout),
+    )
+
+
+def assert_symlinked_invocation_matches_real_path() -> None:
+    # A symlinked scan.sh used to resolve its own location logically, so
+    # `../../..` walked the symlink's parent, the repository fingerprint missed,
+    # SELF_REPO_SCAN stayed 0, and this repo's intentional fixture tree came
+    # back as real findings. The same defect aimed ASTGREP_RULES_DIR at a
+    # nonexistent directory; because the Tier 2 branch AND its "not run" notice
+    # both gate on `-d` that path, the tier vanished without printing anything.
+    # The Tier 2 paths are asserted at source level so this check stays
+    # deterministic on hosts that have no ast-grep.
+    source = SCANNER.read_text(encoding="utf-8")
+    for variable in ("ASTGREP_RULES_DIR", "ASTGREP_JSON_PARSER"):
+        assignments = [
+            line
+            for line in source.splitlines()
+            if line.startswith(f"{variable}=")
+        ]
+        assert len(assignments) == 1, assignments
+        assert "SCANNER_DIR_REAL" in assignments[0], assignments[0]
+
+    ancestor = ROOT / "skills/e2e-reviewer/evals"
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-symlink-") as temp:
+        link = Path(temp) / "scan-link.sh"
+        link.symlink_to(SCANNER)
+        real = scan_path(ancestor, {"E2E_SMELL_FAIL_ON": "none"})
+        linked = scan_path(
+            ancestor,
+            {"E2E_SMELL_FAIL_ON": "none"},
+            scanner=link,
+        )
+
+    assert real.returncode == 0, real.stdout
+    assert linked.returncode == 0, linked.stdout
+    for result in (real, linked):
+        assert "evals/files" not in result.stdout, result.stdout
+    assert summary_line(real.stdout) == summary_line(linked.stdout), (
+        summary_line(real.stdout),
+        summary_line(linked.stdout),
+    )
 
 
 def assert_inherited_path_and_output_are_untrusted() -> None:
@@ -5784,6 +5955,7 @@ def main() -> None:
         assert_parent_component_symlink_swap_fails_closed,
         assert_explicit_symlink_roots_rejected,
         assert_option_like_root_rejected,
+        assert_multiple_scan_roots_fail_closed,
         assert_project_path_utility_hijack_rejected_before_execution,
         assert_nested_generic_import_resolution,
         assert_v10_semantic_boundaries,
@@ -5801,6 +5973,9 @@ def main() -> None:
         assert_public_asset_symlink_is_benign_but_source_entries_fail_closed,
         assert_cdpath_cannot_redirect_relative_root,
         assert_ast_tier_honors_hard_exclusions_without_excluding_public_tests,
+        assert_fixture_path_exclusions_are_self_repo_only,
+        assert_symlinked_invocation_matches_real_path,
+        assert_self_repo_scan_is_decided_by_the_scanned_project,
         assert_inherited_path_and_output_are_untrusted,
         assert_v16_unresolved_scope_boundaries,
         assert_v25_scanner_security_boundaries,

@@ -7,7 +7,6 @@ import { fileURLToPath } from "node:url";
 import { extractCandidate } from "./b-lite-evidence-tools.mjs";
 
 const exampleRoot = fileURLToPath(new URL("..", import.meta.url));
-const repositoryRoot = fileURLToPath(new URL("../../..", import.meta.url));
 const evidenceRoot = join(exampleRoot, "evidence", "b-lite-20260811");
 
 async function sha256(path) {
@@ -16,12 +15,7 @@ async function sha256(path) {
 
 function resolveFrozenPath(key) {
   if (key.startsWith("skill-material/")) {
-    return join(
-      repositoryRoot,
-      "skills",
-      "playwright-test-generator",
-      key.slice("skill-material/".length),
-    );
+    return join(evidenceRoot, key);
   }
   if (key.startsWith("product/")) {
     return join(exampleRoot, key.slice("product/".length));

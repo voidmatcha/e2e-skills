@@ -1117,6 +1117,53 @@ def section(text: str, start: str, end: str) -> str:
     return text.split(start, 1)[1].split(end, 1)[0]
 
 
+def assert_failure_handling_contract(text: str) -> None:
+    failure_handling = section(
+        text,
+        "### Failure handling (max 3 auto-fix attempts)",
+        "### Completion report (on full pass)",
+    )
+    compact = " ".join(failure_handling.split())
+    assert "Per attempt, diagnose the actual failure" in compact
+    assert "apply the matching fix" in compact
+    assert "heal selectors by re-snapshotting" in compact
+    assert "role+name > placeholder > testid" in compact
+    assert "never by string tweaking" in compact
+    assert "classify assertion failures as product regression" in compact
+    assert "without changing the approved expected value or primary assertion" in compact
+    assert "fix structural issues such as missing `await`" in compact
+    assert "Hydration recovery may repeat only an action proven idempotent" in compact
+    assert "never replay submit/delete/payment/purchase/message-send" in compact
+    assert "Re-establish clean disposable state" in compact
+    assert "hydration/readiness gate" in compact
+    assert "stop and report uncertainty" in compact
+    assert "After 3 failed attempts" in compact
+    assert "invoke `playwright-debugger` skill" in compact
+    assert "repository-native artifacts" in compact
+    assert "do not attempt a 4th fix" in compact
+    assert "repair mechanics only" in compact
+    assert "return `NOFIX`" in compact
+    assert (
+        "rather than alter the primary outcome, expected value, request proof, "
+        "scenario count, or test enablement"
+    ) in compact
+    assert "After any repair, repeat V6 independent review" in compact
+
+
+def exercise_failure_handling_mutation_guard(text: str) -> None:
+    failure_handling = section(
+        text,
+        "### Failure handling (max 3 auto-fix attempts)",
+        "### Completion report (on full pass)",
+    )
+    mutated = text.replace(failure_handling, "\n\n", 1)
+    try:
+        assert_failure_handling_contract(mutated)
+    except AssertionError:
+        return
+    raise AssertionError("failure-handling deletion mutation survived")
+
+
 def main() -> None:
     exercise_utf8_frame_writer()
     exercise_framed_preflight_argv_boundary()
@@ -1554,6 +1601,8 @@ def main() -> None:
     assert "UI double-click protection or a loopback frontend is not sufficient" in step_7_words
     assert "do not replay the persistent write" in step_7_words
     assert "record V5 `CANNOT_VERIFY` and return `PARTIAL/BLOCKED`" in step_7_words
+    assert_failure_handling_contract(text)
+    exercise_failure_handling_mutation_guard(text)
 
     v2 = section(
         verification_rules,

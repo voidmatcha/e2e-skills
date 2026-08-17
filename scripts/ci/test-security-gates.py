@@ -273,6 +273,7 @@ def main() -> None:
         }
         for name, content in samples.items():
             (repo / name).write_text(content, encoding="utf-8")
+        (repo / "safe.py").write_text("value = 'safe fixture'\n", encoding="utf-8")
         run(["/usr/bin/git", "add", "-f", "."], repo)
 
         findings = run(
@@ -282,6 +283,30 @@ def main() -> None:
         assert findings.returncode == 1, findings.stdout
         for name in samples:
             assert name in findings.stdout, findings.stdout
+
+        hostile_excludes = Path(temporary) / "hostile-excludes"
+        hostile_config = Path(temporary) / "hostile-gitconfig"
+        hostile_index = Path(temporary) / "hostile-index"
+        hostile_excludes.write_text(
+            "".join("{}\n".format(name) for name in samples),
+            encoding="utf-8",
+        )
+        hostile_config.write_text(
+            "[core]\n\texcludesFile = {}\n".format(hostile_excludes),
+            encoding="utf-8",
+        )
+        hostile_git_environment = {
+            "GIT_CONFIG_GLOBAL": str(hostile_config),
+            "GIT_INDEX_FILE": str(hostile_index),
+        }
+        hostile_findings = run(
+            ["/usr/bin/python3", str(SCANNER), "--repo", str(repo)],
+            ROOT,
+            hostile_git_environment,
+        )
+        assert hostile_findings.returncode == 1, hostile_findings.stdout
+        for name in samples:
+            assert name in hostile_findings.stdout, hostile_findings.stdout
 
         for name in samples:
             (repo / name).write_text("safe fixture\n", encoding="utf-8")
@@ -636,6 +661,48 @@ def main() -> None:
                 assert "scripts/ci/pre-push-security.sh" in policy_result.stdout
                 assert "scripts/shell-policy-notes.txt" not in policy_result.stdout
                 assert "benchmarks/local-provenance.json" not in policy_result.stdout
+
+        hostile_policy_excludes = Path(temporary) / "hostile-policy-excludes"
+        hostile_policy_config = Path(temporary) / "hostile-policy-gitconfig"
+        hostile_policy_index = Path(temporary) / "hostile-policy-index"
+        hostile_policy_excludes.write_text(
+            "\n".join(
+                (
+                    "scripts/danger.sh",
+                    "scripts/hooks/pre-push",
+                    "scripts/ci/pre-push-security.sh",
+                    "benchmarks/local-provenance.json",
+                    "config/tooling.toml",
+                    "assets/provenance.bin",
+                    "scripts/ci/lib/scan-security-policy.py",
+                )
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        hostile_policy_config.write_text(
+            "[core]\n\texcludesFile = {}\n".format(hostile_policy_excludes),
+            encoding="utf-8",
+        )
+        hostile_policy_environment = {
+            "GIT_CONFIG_GLOBAL": str(hostile_policy_config),
+            "GIT_INDEX_FILE": str(hostile_policy_index),
+        }
+        for rule in ("eval", "fixed-tmp", "backdoor", "hardcoded-home"):
+            hostile_policy_result = run(
+                [
+                    "/usr/bin/python3",
+                    str(POLICY_SCANNER),
+                    "--repo",
+                    str(repo),
+                    "--rule",
+                    rule,
+                ],
+                ROOT,
+                hostile_policy_environment,
+            )
+            assert hostile_policy_result.returncode == 1, hostile_policy_result.stdout
+            assert "scripts/danger.sh" in hostile_policy_result.stdout
 
         failing_git = Path(temporary) / "failing-git"
         empty_git = Path(temporary) / "empty-git"

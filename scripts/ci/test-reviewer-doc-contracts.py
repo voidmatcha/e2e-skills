@@ -48,6 +48,10 @@ def source_line_number(source: str, needle: str) -> int:
     return matches[0]
 
 
+def require_contract(surface: str, contract: str, name: str) -> None:
+    assert contract in surface, f"{name} missing contract: {contract}"
+
+
 def scanner_extensions(scanner_source: str) -> tuple[str, ...]:
     match = re.search(
         r"^CODE_EXTENSIONS='([^']+)'$",
@@ -86,6 +90,8 @@ def main() -> None:
     eval_29 = next(case for case in evals if case["id"] == 29)
     eval_30 = next(case for case in evals if case["id"] == 30)
     eval_34 = next(case for case in evals if case["id"] == 34)
+    eval_35 = next(case for case in evals if case["id"] == 35)
+    eval_36 = next(case for case in evals if case["id"] == 36)
     eval_28_text = " ".join(
         [eval_28["expected_output"], *eval_28["assertions"]]
     )
@@ -97,6 +103,12 @@ def main() -> None:
     )
     eval_34_text = " ".join(
         [eval_34["expected_output"], *eval_34["assertions"]]
+    )
+    eval_35_text = " ".join(
+        [eval_35["expected_output"], *eval_35["assertions"]]
+    )
+    eval_36_text = " ".join(
+        [eval_36["expected_output"], *eval_36["assertions"]]
     )
 
     pattern_reference_substring_fix = (
@@ -379,6 +391,155 @@ def main() -> None:
         "responsive-rooms-table.tsx line "
         f"{responsive_condition_line} and line {responsive_messages_line}"
     ) in eval_34_text
+
+    diff_review_fixture_dir = EVALS.parent / "files" / "diff-review"
+    diff_review_fixture_bytes = {
+        path.name: path.read_bytes()
+        for path in (
+            diff_review_fixture_dir / "README.md",
+            diff_review_fixture_dir / "changed-orders.spec.ts",
+            diff_review_fixture_dir / "orders-page.ts",
+            diff_review_fixture_dir / "legacy.spec.ts",
+            diff_review_fixture_dir / "profile-panel.tsx",
+        )
+    }
+    assert diff_review_fixture_bytes["README.md"] == (
+        b"Never use positional nth selectors in Playwright locators. "
+        b"Prefer role, label,\n"
+        b"test id, or text locators that describe the user-visible target.\n"
+    )
+    assert diff_review_fixture_bytes["changed-orders.spec.ts"] == (
+        b"import { expect, test } from '@playwright/test';\n"
+        b"import { OrdersPage } from './orders-page';\n"
+        b"\n"
+        b"test('exports a paid order', async ({ page }) => {\n"
+        b"  const orders = new OrdersPage(page);\n"
+        b"\n"
+        b"  await orders.goto();\n"
+        b"  await orders.exportPaidOrder();\n"
+        b"  await expect(page.getByRole('status')).toHaveText('Export started');\n"
+        b"});\n"
+    )
+    assert diff_review_fixture_bytes["orders-page.ts"] == (
+        b"import type { Locator, Page } from '@playwright/test';\n"
+        b"\n"
+        b"export class OrdersPage {\n"
+        b"  constructor(private readonly page: Page) {}\n"
+        b"\n"
+        b"  async goto(): Promise<void> {\n"
+        b"    await this.page.goto('/orders');\n"
+        b"  }\n"
+        b"\n"
+        b"  paidOrderExportButton(): Locator {\n"
+        b"    return this.page.getByRole('row', { name: /paid/i }).nth(2).getByRole('button', {\n"
+        b"      name: 'Export',\n"
+        b"    });\n"
+        b"  }\n"
+        b"\n"
+        b"  async exportPaidOrder(): Promise<void> {\n"
+        b"    await this.paidOrderExportButton().click();\n"
+        b"  }\n"
+        b"}\n"
+    )
+    assert diff_review_fixture_bytes["legacy.spec.ts"] == (
+        b"import { expect, test } from '@playwright/test';\n"
+        b"\n"
+        b"test.only('legacy smoke still opens dashboard', async ({ page }) => {\n"
+        b"  await page.goto('/dashboard');\n"
+        b"  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();\n"
+        b"});\n"
+    )
+    assert diff_review_fixture_bytes["profile-panel.tsx"] == (
+        b"export function ProfilePanel({ name }: { name: string }) {\n"
+        b"  return (\n"
+        b"    <section aria-label=\"Profile\">\n"
+        b"      <h2>{name}</h2>\n"
+        b"      <button type=\"button\">Edit profile</button>\n"
+        b"    </section>\n"
+        b"  );\n"
+        b"}\n"
+    )
+    orders_page = diff_review_fixture_bytes["orders-page.ts"].decode()
+    legacy_spec = diff_review_fixture_bytes["legacy.spec.ts"].decode()
+    assert source_line_number(orders_page, "nth(2)") == 11
+    assert source_line_number(legacy_spec, "test.only") == 3
+    assert eval_35["files"] == [
+        "evals/files/diff-review/changed-orders.spec.ts",
+        "evals/files/diff-review/orders-page.ts",
+        "evals/files/diff-review/legacy.spec.ts",
+        "evals/files/diff-review/README.md",
+    ]
+    assert eval_36["files"] == [
+        "evals/files/diff-review/profile-panel.tsx",
+    ]
+    for contract in (
+        "diff mode",
+        "nearest README.md",
+        "Run Phase 1 with the bundled scanner once per changed in-scope E2E source artifact before Phase 2",
+        "never pass multiple changed-file paths to one scanner invocation",
+        "scan.sh accepts at most one root and fails closed on multiple roots",
+        "Do not run Phase 1 against unchanged context-only files",
+        "obvious smell encountered while reading supplied unchanged context may be advisory, but not a Phase 1 scan target or blocker",
+        "introduced #10a P1",
+        "Attribution (diff mode)",
+        "pre-existing/advisory",
+        "worsened attribution",
+        "changed hunk in Playwright/Cypress specs, POMs, support files, fixtures, custom commands, or E2E config artifacts",
+        "unchanged E2E line newly unreliable",
+        "causal diff evidence",
+        "not count it as a PR blocker or top priority",
+        "unchanged context-only files",
+        "Review Scope and Evidence",
+        "Mode",
+        "Behavior under review",
+        "Diff base/range",
+        "Changed E2E artifacts",
+        "Context-only files consulted",
+        "Static evidence",
+        "Runtime evidence",
+        "Independent verification",
+        "Limitations/exclusions",
+        "scanner tier coverage and semantic checks",
+        "Runtime evidence refers only to target-controlled project runtime",
+        "must not count the bundled scanner as runtime",
+        "none, unavailable, or not executed",
+    ):
+        assert contract in eval_35_text
+    for contract in (
+        "no in-scope E2E diff",
+        "does not change any Playwright/Cypress spec, POM, support file, fixture, custom command, or E2E config artifact",
+        "do not perform a general app review",
+        "Review Scope and Evidence",
+    ):
+        assert contract in eval_36_text
+    for contract in (
+        "Review Scope and Evidence",
+        "diff mode",
+        "Every field is mandatory",
+        "`Static evidence` records scanner tier coverage and semantic checks",
+        "`Runtime evidence` means target-controlled project runtime, never the bundled scanner",
+        "use `none`, `unavailable`, or `not executed`",
+        "Every diff finding must include the explicit `Attribution (diff mode)` field",
+        "Unchanged files are context-only evidence",
+        "Phase 1 remains mandatory in diff mode",
+        "run the bundled scanner against each changed in-scope E2E source artifact",
+        "Invoke `scan.sh` once per artifact",
+        "it accepts at most one scan root and fails closed on multiple roots",
+        "Never pass a changed-file list as multiple arguments to one scanner invocation",
+        "Phase 1 must not scan unchanged context-only files",
+        "scanner findings are limited to changed in-scope source artifacts",
+        "An obvious smell encountered while reading supplied unchanged context may be advisory, but not a Phase 1 scan target or blocker",
+        "`introduced`: the diff adds the issue to a changed in-scope E2E artifact",
+        "`worsened`: a changed in-scope E2E hunk makes an unchanged E2E line newly unreliable; cite the causal diff evidence",
+        "`pre-existing`: present at base and not worsened; advisory only",
+        "omit the candidate from blockers, Review Summary totals, and top priorities",
+        "outputs include only introduced or causally worsened findings",
+        "consult the nearest README.md before resolving selector-stability findings",
+        "when runtime was not executed, say so and recommend the relevant E2E run",
+        "If a PR changes no in-scope E2E artifact, return `no in-scope E2E diff`",
+        "do not perform a general app review",
+    ):
+        require_contract(skill, contract, "SKILL.md")
 
     for contract in (
         "require both Python 3 and `rg` with PCRE2 support",

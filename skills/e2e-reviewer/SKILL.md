@@ -1,6 +1,6 @@
 ---
 name: e2e-reviewer
-description: 'Use when reviewing Playwright or Cypress E2E specs or Page Objects (POM) — asked to review tests, audit test quality, or find weak, flaky, or silently-passing tests; when tests pass CI but prove nothing or miss bugs; when auditing missing awaits, vacuous or always-passing assertions, anti-patterns, or coverage gaps. Not for debugging a test that is currently failing at runtime (use playwright-debugger / cypress-debugger).'
+description: 'Use when reviewing Playwright or Cypress E2E specs, Page Objects (POM), PRs, pull requests, patches, diffs, or changed test files — asked to review tests, audit test quality, or find weak, flaky, or silently-passing tests; when tests pass CI but prove nothing or miss bugs; when auditing missing awaits, vacuous or always-passing assertions, anti-patterns, or coverage gaps. Not for debugging a test that is currently failing at runtime (use playwright-debugger / cypress-debugger).'
 license: Apache-2.0
 metadata:
   author: voidmatcha
@@ -19,6 +19,38 @@ Systematic checklist for reviewing E2E **spec files AND Page Object Model (POM) 
 - Cypress best practices: https://docs.cypress.io/app/core-concepts/best-practices
 
 ## Phase 0: Framework Detection
+
+Classify the requested mode:
+- **Full mode (default):** review the requested suite, directory, or repository.
+- **Diff mode:** review a supplied PR, patch, range, or changed-file list using
+  the supplied patch or read-only git metadata; never guess an unavailable base.
+
+An **in-scope E2E artifact** is a Playwright/Cypress spec, POM, support file,
+fixture, custom command, or E2E config. Application source is context only. Read
+repository guidance and consult the nearest README.md before resolving
+selector-stability findings.
+
+Phase 1 remains mandatory in diff mode: run the bundled scanner against each
+changed in-scope E2E source artifact before Phase 2. Invoke `scan.sh` once per
+artifact; it accepts at most one scan root and fails closed on multiple roots.
+Never pass a changed-file list as multiple arguments to one scanner invocation.
+Phase 1 must not scan unchanged context-only files, so scanner findings are
+limited to changed in-scope source artifacts. Unchanged files are context-only
+evidence and cannot block without causal diff evidence. An obvious smell
+encountered while reading supplied unchanged context may be advisory, but not a
+Phase 1 scan target or blocker. Do not mine unrelated unchanged files.
+
+Attribute every diff finding:
+- `introduced`: the diff adds the issue to a changed in-scope E2E artifact.
+- `worsened`: a changed in-scope E2E hunk makes an unchanged E2E line newly
+  unreliable; cite the causal diff evidence.
+- `pre-existing`: present at base and not worsened; advisory only.
+
+If supplied/read-only evidence cannot prove attribution, record the limitation
+and omit the candidate from blockers, Review Summary totals, and top priorities.
+Those outputs include only introduced or causally worsened findings; keep any
+pre-existing advisory findings separate. If a PR changes no in-scope E2E
+artifact, return `no in-scope E2E diff` and do not perform a general app review.
 
 Before running checks, enumerate candidate source files with the scanner's exact
 extension set: `.ts`, `.js`, `.tsx`, `.jsx`, `.mts`, `.mjs`, `.cts`, and `.cjs`.
@@ -404,6 +436,27 @@ The per-pattern contracts (24 patterns: detection semantics, severity rationale,
 
 ## Output Format
 
+Start every review with this evidence header:
+
+```markdown
+## Review Scope and Evidence
+- **Mode:** [full mode | diff mode]
+- **Behavior under review:** [suite/root behavior or PR/diff behavior]
+- **Diff base/range:** [base...head, patch source, changed-file list, or N/A]
+- **Changed E2E artifacts:** [changed Playwright/Cypress specs, POMs, support, fixtures, custom commands, and E2E config artifacts; or none]
+- **Context-only files consulted:** [unchanged imports/POMs/fixtures/support/app files read as evidence]
+- **Static evidence:** [scanner tier coverage and semantic checks, or none]
+- **Runtime evidence:** [command/result, or "not executed"; state when runtime was not executed and recommend the relevant E2E run]
+- **Independent verification:** [V1-V6 evidence or recommended/unexecuted]
+- **Limitations/exclusions:** [out-of-scope files, missing base, skipped runtime, or none]
+```
+
+Every field is mandatory; use `none`, `unavailable`, or `not executed`. `Static
+evidence` records scanner tier coverage and semantic checks. `Runtime evidence`
+means target-controlled project runtime, never the bundled scanner. In diff
+mode, identify context-only files; when runtime was not executed, say so and
+recommend the relevant E2E run. Emit the section even for `no in-scope E2E diff`.
+
 Present findings grouped by severity:
 
 ```markdown
@@ -411,6 +464,7 @@ Present findings grouped by severity:
 
 ### `[test name or POM method]`
 - **Issue:** [description]
+- **Attribution (diff mode):** [introduced | worsened | pre-existing | N/A in full mode]
 - **Fix:** [name change / assertion addition / merge / deletion]
 - **Verification:** [smallest applicable V1–V6 proof from `references/verification-rules.md`, or `N/A`; state `recommended` unless an actual command/result proves it ran]
 - **§4.1 row:** [REQUIRED whenever **Code:** is present — quote the AVOID → USE row for this pattern verbatim from `references/applying-fixes.md`, or write `no row (judgement call)` if the table has none]
@@ -419,6 +473,9 @@ Present findings grouped by severity:
   // concrete code to add or change
   ```
 ```
+
+Every diff finding must include the explicit `Attribution (diff mode)` field;
+attribution only in a heading is insufficient.
 
 The **§4.1 row** field is a slot, not a reminder: it cannot be filled without opening `references/applying-fixes.md`, which is the point. A fix emitted with that field blank or paraphrased was written without the canonical replacement table and must be redone against it.
 

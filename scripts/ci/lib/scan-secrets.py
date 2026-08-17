@@ -128,6 +128,15 @@ def git_executable(test_override: Path | None = None) -> str:
     return executable
 
 
+def git_environment() -> dict[str, str]:
+    environment = {
+        key: value for key, value in os.environ.items() if not key.startswith("GIT_")
+    }
+    environment["GIT_CONFIG_NOSYSTEM"] = "1"
+    environment["GIT_CONFIG_GLOBAL"] = "/dev/null"
+    return environment
+
+
 def enumerate_files(root: Path, test_git: Path | None = None) -> list[Path]:
     completed = subprocess.run(
         [
@@ -141,6 +150,7 @@ def enumerate_files(root: Path, test_git: Path | None = None) -> list[Path]:
         cwd=str(root),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        env=git_environment(),
         check=False,
     )
     if completed.returncode != 0:

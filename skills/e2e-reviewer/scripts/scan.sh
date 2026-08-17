@@ -1,16 +1,10 @@
 #!/bin/bash -p
-# Scanner portability notes for contributors:
-# - BSD sed (macOS default) silently fails on `\b` word boundaries — pattern `\bit\.only\(`
-#   matches the literal substring `bit.only(` and returns zero hits while reporting success.
-#   Avoid `\b` in any sed used by/around this scanner. Use `[^a-zA-Z_]` anchors instead.
-# - In-place edit flag differs: BSD sed needs `sed -i ''`, GNU sed needs `sed -i`. The
-#   most-portable form for repo-wide bulk fixes is `perl -i -0pe '...'` (handles multi-line too).
-# - This scanner itself uses `rg` (PCRE2) — verify with `rg --version | grep pcre2`.
-# Direct execution starts Bash in privileged mode so BASH_ENV and exported
-# functions are ignored. Keep this builtin-only scrub as defense in depth for
-# callers that explicitly invoke the file through an ordinary Bash process.
-# The inherited PATH is inspected below before it is replaced with the trusted
-# system path, so do not reset it here.
+# Portability: BSD sed lacks `\b` and uses a different `-i`; use explicit
+# character anchors and `perl -i -0pe` for multiline edits. The scanner needs
+# PCRE2-capable `rg`. Privileged Bash plus this builtin scrub blocks startup
+# files/functions before the inherited PATH trust check. Do not reset PATH here:
+# it is inspected below, while still untrusted, before the trusted system path
+# replaces it.
 builtin unset CDPATH ENV BASH_ENV GLOBIGNORE
 while IFS= builtin read -r imported_function; do
   builtin unset -f "$imported_function"
@@ -19,6 +13,11 @@ builtin shopt -u expand_aliases
 builtin unalias -a 2>/dev/null || true
 
 builtin set -uo pipefail
+
+if (( $# > 1 )); then
+  printf 'error: multiple scan roots are not supported; invoke scan.sh once per root\n' >&2
+  exit 2
+fi
 
 ROOT="${1:-.}"
 REQUESTED_ROOT="$ROOT"
@@ -100,6 +99,23 @@ for _code_extension in $CODE_EXTENSIONS; do
 done
 IFS="$_extension_ifs"
 
+has_project_marker() {
+  local directory="$1"
+  [[ -f "$directory/package.json" ||
+     -f "$directory/playwright.config.ts" ||
+     -f "$directory/playwright.config.js" ||
+     -f "$directory/playwright.config.mts" ||
+     -f "$directory/playwright.config.mjs" ||
+     -f "$directory/playwright.config.cts" ||
+     -f "$directory/playwright.config.cjs" ||
+     -f "$directory/cypress.config.ts" ||
+     -f "$directory/cypress.config.js" ||
+     -f "$directory/cypress.config.mts" ||
+     -f "$directory/cypress.config.mjs" ||
+     -f "$directory/cypress.config.cts" ||
+     -f "$directory/cypress.config.cjs" ]]
+}
+
 # Tool trust follows the containing project, not only the requested subdirectory.
 # Prefer the nearest Git worktree boundary. When Git metadata is absent, use the
 # nearest package/framework-config ancestor; otherwise fall back to the scan root.
@@ -120,19 +136,7 @@ if [[ -n "$SCAN_ROOT_REAL" ]]; then
   if [[ "$PROJECT_ROOT_REAL" == "$SCAN_ROOT_REAL" && ! -e "$SCAN_ROOT_REAL/.git" ]]; then
     _project_cursor="$SCAN_ROOT_REAL"
     while :; do
-      if [[ -f "$_project_cursor/package.json" ||
-            -f "$_project_cursor/playwright.config.ts" ||
-            -f "$_project_cursor/playwright.config.js" ||
-            -f "$_project_cursor/playwright.config.mts" ||
-            -f "$_project_cursor/playwright.config.mjs" ||
-            -f "$_project_cursor/playwright.config.cts" ||
-            -f "$_project_cursor/playwright.config.cjs" ||
-            -f "$_project_cursor/cypress.config.ts" ||
-            -f "$_project_cursor/cypress.config.js" ||
-            -f "$_project_cursor/cypress.config.mts" ||
-            -f "$_project_cursor/cypress.config.mjs" ||
-            -f "$_project_cursor/cypress.config.cts" ||
-            -f "$_project_cursor/cypress.config.cjs" ]]; then
+      if has_project_marker "$_project_cursor"; then
         PROJECT_ROOT_REAL="$_project_cursor"
         break
       fi
@@ -504,15 +508,83 @@ redact_credential_evidence() {
   '
 }
 
-# Eval fixtures contain intentional anti-patterns and are excluded from normal scans,
-# EXCEPT when the scan root itself is inside an evals/files tree (self-testing the fixtures).
-# bash 3.2 + set -u: expand with ${arr[@]+...} guard — empty-array expansion errors otherwise.
-EVAL_FIXTURE_EXCLUDES=(
-  --glob '!**/evals/files/**'
-  --glob '!**/scripts/ci/fixtures/**'
-)
-case "$(cd "$ROOT" 2>/dev/null && pwd || true)" in
-  *"/evals/files"*|*"/scripts/ci/fixtures"*) EVAL_FIXTURE_EXCLUDES=() ;;
+# Resolve $0 through symlinks to locate the scanner's own sibling files.
+# `cd "$(dirname "$0")" && pwd` reports a symlink's own directory, and bash's
+# logical `cd` makes any `..` walk from there worse, so `pwd -P` afterwards
+# cannot recover the real location. Reuse `SCANNER_DIR_REAL` for every
+# scanner-relative path. This locates files only — it must never decide what
+# gets scanned, or the answer would depend on how the scanner was installed.
+SCANNER_DIR_REAL=""
+_scanner_self="$0"
+_scanner_link_hops=0
+while [[ -n "$_scanner_self" && -L "$_scanner_self" ]]; do
+  _scanner_link_hops=$((_scanner_link_hops + 1))
+  if (( _scanner_link_hops > 40 )); then
+    _scanner_self=""
+    break
+  fi
+  if ! _scanner_link_target=$(readlink "$_scanner_self" 2>/dev/null); then
+    _scanner_self=""
+    break
+  fi
+  _scanner_link_parent=${_scanner_self%/*}
+  [[ "$_scanner_link_parent" == "$_scanner_self" ]] && _scanner_link_parent="."
+  case "$_scanner_link_target" in
+    /*) _scanner_self="$_scanner_link_target" ;;
+    *) _scanner_self="$_scanner_link_parent/$_scanner_link_target" ;;
+  esac
+done
+if [[ -n "$_scanner_self" ]]; then
+  _scanner_dir=${_scanner_self%/*}
+  [[ "$_scanner_dir" == "$_scanner_self" ]] && _scanner_dir="."
+  SCANNER_DIR_REAL=$(cd -P "$_scanner_dir" 2>/dev/null && pwd -P) || SCANNER_DIR_REAL=""
+fi
+unset _scanner_self _scanner_link_hops _scanner_link_target
+unset _scanner_link_parent _scanner_dir
+
+# Exclude intentional fixtures only when the SCANNED PROJECT is an e2e-skills
+# checkout. Fingerprint the scanned project, never the scanner's own location:
+# `reinstall-skills.sh` installs real copies and users symlink the skill, so a
+# location-derived answer makes identical input produce different findings
+# depending on how the tool was installed. A third-party project that merely
+# has an `evals/files/` directory does not match this fingerprint and stays in
+# scope, which is the point — silently skipping a target's real tests is the
+# failure this scanner exists to prevent.
+SELF_REPO_SCAN=0
+_self_boundary_cursor="$SCAN_ROOT_REAL"
+if [[ -n "$PROJECT_ROOT_REAL" &&
+      -f "$PROJECT_ROOT_REAL/AGENTS.md" &&
+      -f "$PROJECT_ROOT_REAL/skills/e2e-reviewer/SKILL.md" &&
+      -f "$PROJECT_ROOT_REAL/scripts/ci/test-reviewer-scanner.py" ]]; then
+  while [[ "$_self_boundary_cursor" == "$PROJECT_ROOT_REAL"/* ]]; do
+    # Nested package/config roots are separate targets even without Git metadata.
+    if [[ -e "$_self_boundary_cursor/.git" ]] ||
+       has_project_marker "$_self_boundary_cursor"; then
+      break
+    fi
+    _self_boundary_cursor=${_self_boundary_cursor%/*}
+  done
+  [[ "$_self_boundary_cursor" == "$PROJECT_ROOT_REAL" ]] && SELF_REPO_SCAN=1
+fi
+unset _self_boundary_cursor
+
+EVAL_FIXTURE_EXCLUDES=()
+EVAL_FIXTURE_AST_GREP_EXCLUDES=()
+if [[ "$SELF_REPO_SCAN" == "1" ]]; then
+  EVAL_FIXTURE_EXCLUDES=(
+    --glob '!**/evals/files/**'
+    --glob '!**/scripts/ci/fixtures/**'
+  )
+  EVAL_FIXTURE_AST_GREP_EXCLUDES=(
+    --globs '!**/evals/files/**'
+    --globs '!**/scripts/ci/fixtures/**'
+  )
+fi
+case "$ROOT/" in
+  *"/evals/files/"*|*"/scripts/ci/fixtures/"*)
+    EVAL_FIXTURE_EXCLUDES=()
+    EVAL_FIXTURE_AST_GREP_EXCLUDES=()
+    ;;
 esac
 
 # Remove JavaScript/TypeScript line and block comments before checking a module
@@ -1600,17 +1672,9 @@ expect_promise_nonfloating_at() {
     scanner_rg -q '^[[:space:]]*(return[[:space:]]+|(?:export[[:space:]]+)?(?:const|let|var)[[:space:]]+[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*=|void[[:space:]]+)expect[[:space:]]*\('
 }
 
-# Tier 2 runs before the later semantic helpers are declared, so this mirrors Tier 3's
-# source_binding_shadowed_at as a self-contained check. A binding proven to be redeclared in the
-# file is NOT an unproven Playwright expect — it is proven not to be one, so the hit is dropped
-# rather than demoted to triage. Destructuring is included because `const { expect } = helpers`
-# is the common shape and a `const[[:space:]]+expect` pattern never sees it.
-# Self-contained #4f confirmation, declared above Tier 2 for the same reason as
-# ast_playwright_expect_proven_at. The catalogue's locator_assertion_hit_matches lives ~1400 lines
-# below its Tier 2 call site, so bash reported `command not found`, `|| continue` swallowed the
-# rc 127, and every AST #4f hit was dropped without a word — a silent coverage loss in exactly the
-# class this scanner exists to catch. This confirms the two things Tier 2 can check on its own:
-# the asserted argument is a locator/query call, and the expect binding is provably Playwright's.
+# Tier 2 precedes the shared semantic helpers, so this self-contained #4f check
+# proves both a locator/query argument and a Playwright `expect` binding. Proven
+# local redeclarations are dropped; ambiguous receivers remain triage.
 ast_locator_truthiness_confirmed_at() {
   local file="$1" line="$2" code
   code=$(source_executable_code "$file" | sed -n "${line}p")
@@ -2442,15 +2506,9 @@ run_pinned_npx() {
   )
 }
 
-# Try the framework's official ESLint plugin (better than our regex for mechanical patterns).
-# Prefers locally installed; the bundled regex/semantic rules remain sufficient when missing.
-# Auto-download is disabled by default and exists only as an explicit legacy opt-in.
-# Skip entirely if no Playwright/Cypress import exists in $ROOT. A local ESLint
-# installation is invoked directly; npx is needed only for the explicit legacy
-# download path.
-# Uses a generated FLAT config file (eslint.config.mjs): ESLint v9+ removed --no-eslintrc/--ext and
-# inline-JSON -c. ESLINT_USE_FLAT_CONFIG=true opts v8.21+ local installs into the same path; anything
-# older fails with rc>=2 and we fall through WITHOUT claiming coverage (see exit-code gate below).
+# Optional Tier 1 uses an approved local ESLint or the explicit pinned-download
+# path; bundled checks remain sufficient when it is absent. A generated flat
+# config supports ESLint v8.21+ and v9+ without claiming coverage on failure.
 try_eslint() {
   local plugin="$1"; local label="$2"
 
@@ -2475,27 +2533,10 @@ try_eslint() {
     return 1
   else
     mode="auto-downloaded via npx (set E2E_SMELL_NO_ESLINT_DOWNLOAD=1 to skip)"
-    # `typescript` MUST be a direct -p dep. It is only a PEER dep of @typescript-eslint/parser,
-    # and npx (re)materializes its shared cache env using the npmrc of the cwd it runs from:
-    # `cd "$ROOT"` into a repo whose .npmrc sets `legacy-peer-deps=true` (xyflow, many monorepos)
-    # installs the env WITHOUT peer deps, so the parser dies with "Cannot find module 'typescript'"
-    # (eslint rc=2) and Tier 1 silently never fires — for that repo AND for every later scan that
-    # reuses the poisoned cache env. A direct dep is installed under every peer-deps policy.
-    # Supply-chain boundary: every package requested from the registry is an
-    # exact, jointly reviewed version. Do not replace these pins with tags,
-    # ranges, or a dynamically assembled unversioned package name. Updating
-    # any pin requires reviewing the complete set and rerunning the local
-    # ESLint/scanner contracts because their peer ranges are coupled.
-    # Scope of that boundary, stated honestly: only these DIRECT specs are
-    # pinned. npm still resolves the transitive closure from each package's own
-    # semver ranges at scan time, so a newly published matching transitive
-    # version is absorbed without a release change here. There is no lockfile
-    # and therefore no integrity pinning below the top level.
-    # `--ignore-scripts` is what keeps that residual exposure to code we
-    # actually load: no install/postinstall lifecycle script from any package in
-    # the closure runs during materialization. It is repeated as
-    # `npm_config_ignore_scripts=true` in pinned_npm_config_env so a project
-    # `.npmrc` `ignore-scripts=false` cannot re-enable them.
+    # Keep TypeScript direct so legacy-peer-deps cannot omit the parser peer.
+    # Top-level packages are exact and jointly reviewed; transitives still float
+    # because there is no lockfile. Both --ignore-scripts and the pinned npm
+    # environment block lifecycle scripts and project .npmrc overrides.
     npx_args=(
       --yes
       --ignore-scripts
@@ -2657,8 +2698,9 @@ EOFRES
   # Conditional evals/files ignore mirrors Tier 3's EVAL_FIXTURE_EXCLUDES.
   local _cfg _evalign=""
   _cfg="$_cfgd/eslint.config.mjs"
-  # bash 3.2 + set -u treats an empty array as unset; ${arr[*]+x} is the safe presence test.
-  if [[ -n "${EVAL_FIXTURE_EXCLUDES[*]+x}" ]]; then _evalign="'**/evals/files/**',"; fi
+  if [[ "${#EVAL_FIXTURE_EXCLUDES[@]}" -gt 0 ]]; then
+    _evalign="'**/evals/files/**','**/scripts/ci/fixtures/**',"
+  fi
   if [[ "$plugin" == "playwright" ]]; then
     {
       printf "import playwright from '%s';\n" "$_plugin_abs"
@@ -2966,8 +3008,11 @@ fi
 # Set E2E_SMELL_DISABLE_AST_GREP=1 to disable Tier 2 entirely, including any
 # deterministic binary already present on the host. This is for portability
 # contracts that deliberately must not depend on ambient ast-grep installs.
-ASTGREP_RULES_DIR="$(cd "$(dirname "$0")" && pwd)/ast-grep-rules"
-ASTGREP_JSON_PARSER="$(cd "$(dirname "$0")" && pwd)/parse-ast-grep-json.py"
+# Use the symlink-resolved directory: both the Tier 2 branch and its "not run"
+# notice gate on `-d "$ASTGREP_RULES_DIR"`, so a wrong path deleted the tier
+# without printing anything.
+ASTGREP_RULES_DIR="${SCANNER_DIR_REAL:-$(cd "$(dirname "$0")" && pwd)}/ast-grep-rules"
+ASTGREP_JSON_PARSER="${SCANNER_DIR_REAL:-$(cd "$(dirname "$0")" && pwd)}/parse-ast-grep-json.py"
 AST_GREP=""
 AST_GREP_CMD=()
 TIER2_INFRA_FAILURE=0
@@ -3013,11 +3058,8 @@ else AST_GREP=""; fi
 fi
 
 run_ast_grep_npx() {
-  # Supply-chain posture identical to the ESLint download step: exact reviewed
-  # version pin, no lifecycle scripts (belt via --ignore-scripts, braces via
-  # npm_config_ignore_scripts=true in pinned_npm_config_env so a project .npmrc
-  # cannot re-enable them), scanner-owned cache/prefix/registry, and a private
-  # working directory so the audited repository's .npmrc is never consulted.
+  # Match the ESLint download boundary: exact pin, no lifecycle scripts, and a
+  # private pinned npm environment that ignores the audited repository's .npmrc.
   run_pinned_npx --yes --ignore-scripts \
     --package '@ast-grep/cli@0.39.7' ast-grep "$@"
 }
@@ -3031,6 +3073,23 @@ if [[ "${#AST_GREP_CMD[@]}" -gt 0 && -d "$ASTGREP_RULES_DIR" &&
       -n "$PYTHON3_BIN" && -f "$ASTGREP_JSON_PARSER" ]]; then
   printf '\n--- Tier 2: AST-grep checks (Tree-sitter; covers FP-prone patterns more accurately) ---\n'
   ast_total=0
+  _ast_glob_args=(
+    --globs '!**/node_modules/**'
+    --globs '!**/.git/**'
+    --globs '!**/playwright-report/**'
+    --globs '!**/cypress/reports/**'
+    --globs '!**/test-results/**'
+    --globs '!**/dist/**'
+    --globs '!**/build/**'
+    --globs '!**/.next/**'
+    --globs '!**/out/**'
+    --globs '!**/coverage/**'
+    --globs '!**/*.min.js'
+    --globs '!**/*.min.ts'
+  )
+  if [[ "${#EVAL_FIXTURE_AST_GREP_EXCLUDES[@]}" -gt 0 ]]; then
+    _ast_glob_args+=("${EVAL_FIXTURE_AST_GREP_EXCLUDES[@]}")
+  fi
   for rule in "$ASTGREP_RULES_DIR"/sg-*.yml; do
     [[ "$(basename "$rule")" == sg-postfix-* ]] && continue  # postfix rules are for verify-fixes.sh
     rule_name=$(basename "$rule" .yml)
@@ -3049,20 +3108,7 @@ if [[ "${#AST_GREP_CMD[@]}" -gt 0 && -d "$ASTGREP_RULES_DIR" &&
       --no-ignore global \
       --no-ignore parent \
       --no-ignore vcs \
-      --globs '!**/node_modules/**' \
-      --globs '!**/.git/**' \
-      --globs '!**/playwright-report/**' \
-      --globs '!**/cypress/reports/**' \
-      --globs '!**/test-results/**' \
-      --globs '!**/dist/**' \
-      --globs '!**/build/**' \
-      --globs '!**/.next/**' \
-      --globs '!**/out/**' \
-      --globs '!**/coverage/**' \
-      --globs '!**/*.min.js' \
-      --globs '!**/*.min.ts' \
-      --globs '!**/evals/files/**' \
-      --globs '!**/scripts/ci/fixtures/**' \
+      "${_ast_glob_args[@]}" \
       "$ROOT"
     _ast_rc="$BOUNDED_COMMAND_RC"
     # A nonzero exit with an EMPTY capture is never ast-grep reporting: every
