@@ -1072,7 +1072,10 @@ run_scan() { # $1 = fixture subdir, $2 = FAIL_ON mode; sets SCAN_OUT and SCAN_RC
 assert_scan_contains() {
   local name="$1"
   local expected="$2"
-  if printf '%s\n' "$SCAN_OUT" | grep -qF "$expected"; then
+  # Native match, not `printf | grep -q`: `pipefail` plus grep's early exit
+  # returns 141 on scanner output larger than the pipe buffer, which reads as
+  # "not found" and would make assert_scan_absent pass without checking.
+  if [[ "$SCAN_OUT" == *"$expected"* ]]; then
     echo "  [PASS] $name"
     PASS=$((PASS + 1))
   else
@@ -1085,7 +1088,7 @@ assert_scan_contains() {
 assert_scan_absent() {
   local name="$1"
   local unexpected="$2"
-  if printf '%s\n' "$SCAN_OUT" | grep -qF "$unexpected"; then
+  if [[ "$SCAN_OUT" == *"$unexpected"* ]]; then
     echo "  [FAIL] $name — unexpected substring found: '$unexpected'" >&2
     printf '%s\n' "$SCAN_OUT" | sed 's/^/         /' >&2
     FAIL=$((FAIL + 1))

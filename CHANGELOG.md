@@ -38,6 +38,20 @@
 
 ### Fixed
 
+- **Four shell call sites reported a successful substring match as a failure.**
+  Under `set -o pipefail`, `printf ... | grep -q` returns 141 whenever grep
+  matches early enough to close the pipe before printf finishes writing, which
+  happens only once the output exceeds the pipe buffer. In
+  `skills/e2e-reviewer/scripts/scan.sh` this meant an ESLint run that exits 0
+  with warnings printed "no findings" and dropped every Tier 1 hit — the
+  silent-always-pass class the scanner exists to catch. It also made
+  `test-parity.sh`'s absence assertions pass without checking, `pr-preflight.sh`
+  flag an unchanged test title as renamed, and `codex-smoke.sh` report a
+  correct answer as a failed check. All four now use a native `[[ ]]` match with
+  no pipe.
+- `codex-smoke.sh` runs each check with the operator's MCP servers disabled, and
+  a nonzero exit now states whether the expected token was present anyway, so an
+  unrelated MCP or environment failure is not reported as a skill failure.
 - `install-codex-agents.sh` recognises the agent headers it wrote before the
   marker was renamed from `Codex` to `Codex/OMX`, so an existing install
   upgrades instead of being reported as a user-authored conflict. The previous

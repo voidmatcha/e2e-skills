@@ -14,6 +14,9 @@
 #     installed" and exits 0 (safe to call from any environment).
 #   - Otherwise runs 4 non-interactive `codex exec` checks and greps each
 #     output for an expected token. A failed check names itself; exit 1.
+#   - Each call runs with the operator's MCP servers disabled, and a nonzero
+#     exit reports whether the expected token was present anyway, so an
+#     environment failure is never read as a skill failure.
 #   - Every codex call is time-bounded (default 180 s; override with
 #     CODEX_SMOKE_TIMEOUT_SECS). All prompts that read a skill instruct
 #     "answer in under 8 lines" — a prior run without this cap death-spiraled
@@ -76,16 +79,38 @@ cd "$REPO_ROOT" || { echo "codex-smoke: cannot cd to $REPO_ROOT" >&2; exit 1; }
 # --- bounded, non-interactive codex call --------------------------------------
 # macOS ships no timeout(1); prefer timeout/gtimeout when present, else use the
 # perl alarm+exec trick (the alarm survives execve and SIGALRM kills codex).
+# `mcp_servers={}` drops the operator's MCP servers for the duration of the
+# check. None of the four checks needs one, and an unrelated server that fails
+# to authenticate emits a fatal transport error and can take codex's exit status
+# with it — turning an environment problem into a reported skill failure.
+CODEX_ISOLATION=(-c 'mcp_servers={}')
+
 run_codex() { # $1 = prompt; prints combined output; returns codex/timeout status
   local prompt="$1"
   if command -v timeout >/dev/null 2>&1; then
-    timeout "$TIMEOUT_SECS" codex exec --sandbox read-only "$prompt" 2>&1
+    timeout "$TIMEOUT_SECS" codex exec --sandbox read-only \
+      "${CODEX_ISOLATION[@]}" "$prompt" 2>&1
   elif command -v gtimeout >/dev/null 2>&1; then
-    gtimeout "$TIMEOUT_SECS" codex exec --sandbox read-only "$prompt" 2>&1
+    gtimeout "$TIMEOUT_SECS" codex exec --sandbox read-only \
+      "${CODEX_ISOLATION[@]}" "$prompt" 2>&1
   else
     perl -e 'alarm shift @ARGV; exec @ARGV or die "exec failed: $!\n"' \
-      "$TIMEOUT_SECS" codex exec --sandbox read-only "$prompt" 2>&1
+      "$TIMEOUT_SECS" codex exec --sandbox read-only \
+      "${CODEX_ISOLATION[@]}" "$prompt" 2>&1
   fi
+}
+
+# Substring test without a pipe. `printf ... | grep -q` is wrong here: under
+# `pipefail`, grep exits the moment it matches, printf takes SIGPIPE on anything
+# larger than the pipe buffer, and the pipeline returns 141 — reporting a
+# *successful* match as a failed check. Which check that hits depends only on
+# output size and match position, so it surfaced as an intermittent, unrelated
+# skill failure. Keep this pipe-free.
+contains() { # $1 = haystack, $2 = fixed-string needle
+  case "$1" in
+    *"$2"*) return 0 ;;
+    *) return 1 ;;
+  esac
 }
 
 FAILURES=0
@@ -95,17 +120,24 @@ check() { # $1 = check name, $2 = expected fixed-string token, $3 = prompt
   out="$(run_codex "$prompt")"
   rc=$?
   if [ "$rc" -ne 0 ]; then
+    # A nonzero exit with the expected token present means the harness failed,
+    # not the skill. Say which, or the dumped tail reads as a contradiction of
+    # the failure line above it and the next reader re-investigates from zero.
+    local verdict="expected token '$expect' NOT in output"
+    if contains "$out" "$expect"; then
+      verdict="expected token '$expect' WAS present — environment failure, not a skill failure"
+    fi
     # timeout(1) exits 124; SIGALRM via the perl fallback yields 142 (128+14).
     if [ "$rc" -eq 124 ] || [ "$rc" -eq 142 ]; then
-      echo "FAIL [$name]: codex exec timed out after ${TIMEOUT_SECS}s" >&2
+      echo "FAIL [$name]: codex exec timed out after ${TIMEOUT_SECS}s; $verdict" >&2
     else
-      echo "FAIL [$name]: codex exec exited $rc" >&2
+      echo "FAIL [$name]: codex exec exited $rc; $verdict" >&2
     fi
     printf '%s\n' "$out" | tail -n 20 | sed 's/^/    /' >&2
     FAILURES=$((FAILURES + 1))
     return 1
   fi
-  if printf '%s\n' "$out" | grep -qF -- "$expect"; then
+  if contains "$out" "$expect"; then
     echo "PASS [$name]: output contains '$expect'"
   else
     echo "FAIL [$name]: expected '$expect' in codex output; last lines were:" >&2

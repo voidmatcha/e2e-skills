@@ -607,7 +607,10 @@ if [[ -n "$removed_titles" && "${PREFLIGHT_ALLOW_RENAME:-0}" != "1" ]]; then
   rename_hit=""
   while IFS= read -r rt; do
     [[ -z "$rt" ]] && continue
-    printf '%s\n' "$added" | grep -qF "$rt" || rename_hit="$rt"
+    # Native match, not `printf | grep -q`: `pipefail` plus grep's early exit
+    # returns 141 on a large added-line set, which would flag a title as removed
+    # while it is right there in the diff.
+    [[ "$added" == *"$rt"* ]] || rename_hit="$rt"
   done <<< "$removed_titles"
   if [[ -n "$rename_hit" ]]; then
     verdict authoring FAIL "test title changed ($rename_hit) - keep original names unless factually wrong (PREFLIGHT_ALLOW_RENAME=1 to override)"

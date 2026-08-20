@@ -2889,7 +2889,12 @@ EOFCFG
     printf '%s\n' "$out" | sanitize_evidence | head -5 | sed 's/^/    /'
     return 1
   fi
-  if [[ "$_rc" -eq 1 ]] || printf '%s' "$out" | grep -qE '(error|warning)'; then
+  # Native match, not `printf | grep -q`: under `pipefail` grep exits on its
+  # first hit, printf takes SIGPIPE on output larger than the pipe buffer, and
+  # the pipeline returns 141. That reads as "no match", so a long eslint run
+  # that exits 0 with warnings would print "no findings" and drop every Tier 1
+  # hit — the silent-always-pass class this gate exists to prevent.
+  if [[ "$_rc" -eq 1 || "$out" == *error* || "$out" == *warning* ]]; then
     printf '%s\n' "$out" | sanitize_evidence | sed 's/^/  /' | head -100
   else
     printf '  no findings\n'
