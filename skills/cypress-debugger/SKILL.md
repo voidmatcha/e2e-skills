@@ -7,7 +7,7 @@ metadata:
   frameworks: cypress
   testing-types: e2e
   languages: typescript,javascript
-  version: "1.12.1"
+  version: "1.13.0"
 ---
 
 # Cypress Failed Test Debugger

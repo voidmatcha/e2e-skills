@@ -14,6 +14,15 @@ for name in e2e-finding-verifier e2e-failure-classifier; do
 done
 
 # Never overwrite a same-name user file that is not owned by e2e-skills.
+# A copy carrying this installer's OWN historical marker must upgrade without
+# forcing. The marker was renamed Codex -> Codex/OMX, and treating the older one
+# as foreign blocked every existing install behind E2E_SKILLS_FORCE_CODEX_AGENTS.
+printf '%s\n' '# e2e-skills Codex native agent: e2e-finding-verifier' \
+  > "$TMP/agents/e2e-finding-verifier.toml"
+CODEX_HOME="$TMP" bash "$ROOT/scripts/dev/install-codex-agents.sh" >/dev/null
+cmp "$ROOT/.codex/agents/e2e-finding-verifier.toml" \
+  "$TMP/agents/e2e-finding-verifier.toml"
+
 printf '%s\n' '# user-owned custom agent' > "$TMP/agents/e2e-finding-verifier.toml"
 if CODEX_HOME="$TMP" bash "$ROOT/scripts/dev/install-codex-agents.sh" >"$TMP/conflict.log" 2>&1; then
   echo "codex agent packaging: conflict guard did not fail" >&2

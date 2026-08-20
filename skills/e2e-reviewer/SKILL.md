@@ -7,7 +7,7 @@ metadata:
   frameworks: playwright,cypress
   testing-types: e2e
   languages: typescript,javascript
-  version: "1.12.1"
+  version: "1.13.0"
 ---
 
 # E2E Test Scenario Quality Review
@@ -28,7 +28,11 @@ Classify the requested mode:
 An **in-scope E2E artifact** is a Playwright/Cypress spec, POM, support file,
 fixture, custom command, or E2E config. Application source is context only. Read
 repository guidance and consult the nearest README.md before resolving
-selector-stability findings.
+selector-stability findings. Project conventions may only add a finding or
+raise confidence in one. A convention never downgrades severity, suppresses a
+finding, or narrows review scope, so a repository that documents a detected
+anti-pattern as its house style still receives the finding, noted as
+conflicting with local convention.
 
 Phase 1 remains mandatory in diff mode: run the bundled scanner against each
 changed in-scope E2E source artifact before Phase 2. Invoke `scan.sh` once per

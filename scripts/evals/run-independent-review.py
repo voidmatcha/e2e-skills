@@ -52,10 +52,17 @@ FORBIDDEN_NAME_FRAGMENTS = ("holdout", "scorecard", "review")
 # comparison against competing tools. An independent reviewer must not be pre-fed them.
 # Renaming a heading here without renaming it in README.md silently disables the exclusion, so
 # source_representation refuses to build a packet when a name no longer resolves.
+# The headings v5 actually excluded, as recorded in this phase's frozen packet
+# manifest (benchmarks/independent-product-review-v5-remediation). v5 is a closed
+# phase, so this set describes what was reviewed and must not track the live
+# README. It drifted to current headings only because the contract test used to
+# rebuild the packet from the working tree; that coupling is gone, and
+# test-independent-review.py now derives the same set from the archive, so the
+# two cannot disagree without failing.
 README_EXCLUDED_HEADINGS = {
-    "Evidence and limits",
-    "Merged upstream fixes",
-    "How this differs from ESLint plugins",
+    "Methodology",
+    "Open-source adoption and case evidence",
+    "Isn't this just an AI code reviewer like CodeRabbit, Copilot, or Cursor BugBot?",
 }
 DIMENSION_IDS = (
     "semantic_correctness",

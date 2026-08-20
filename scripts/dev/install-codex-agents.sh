@@ -141,7 +141,12 @@ for name in "${AGENTS[@]}"; do
     exit 1
   fi
   if [ -f "$dst" ] && ! "$CMP" -s "$src" "$dst"; then
-    if ! "$GREP" -q '^# e2e-skills Codex/OMX native agent:' "$dst" &&
+    # Accept every marker this installer has ever written, not just the current
+    # one. The header was renamed Codex -> Codex/OMX, which made the guard treat
+    # its own earlier installs as foreign: existing users could not upgrade and
+    # were told to force, training them past a guard whose only job is to protect
+    # genuinely user-authored agents.
+    if ! "$GREP" -qE '^# e2e-skills Codex(/OMX)? native agent:' "$dst" &&
        [ "${E2E_SKILLS_FORCE_CODEX_AGENTS:-0}" != "1" ]; then
       echo "install-codex-agents: refusing to overwrite non-e2e-skills file: $dst" >&2
       echo "set E2E_SKILLS_FORCE_CODEX_AGENTS=1 only if replacement is intentional" >&2

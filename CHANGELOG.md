@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.13.0] - 2026-08-17
 
 ### Added
 
@@ -13,11 +13,53 @@
   scanner rejects multiple roots instead of silently ignoring extra paths.
   Full-mode reviews remain available as the default when no PR or diff scope is
   supplied.
+- **`scripts/dev/install-claude-agents.sh` installs the two subagents for Claude
+  Code at user level.** The subagents ship inside the plugin, so a `skills` CLI
+  install never registered them, and installing the plugin just to obtain them
+  loads a second copy of all four skill descriptions into every session because
+  plugin skills are namespaced rather than deduplicated against same-named
+  personal skills. The installer mirrors the Codex one: a staged transaction
+  with rollback, refusal to write through a symlink or over a user-authored
+  agent of the same name, and frontmatter `name:` discovery validation.
+  `scripts/ci/test-claude-agents.sh` covers those guards and runs in local CI.
+
+### Changed
+
+- **The scanner no longer excludes `evals/files/` and `scripts/ci/fixtures/`
+  from every scan.** Those paths hold this repository's intentional
+  anti-patterns, and excluding them everywhere silently skipped real tests in
+  any target project that happened to use the same directory names. Exclusion
+  now applies only when the scanned project is itself an `e2e-skills` checkout.
+  **Upgrade impact:** a project with tests under either path goes from zero
+  reported hits to full reporting. Review those findings rather than
+  re-excluding the paths. Forks and vendored copies of this repository still
+  match the self-repo fingerprint, so their own tests under those two paths stay
+  exempt.
 
 ### Fixed
 
-- Security scanners now ignore inherited `GIT_*` repository/config overrides,
-  so a hostile index or global exclude file cannot hide secret or policy hits.
+- `install-codex-agents.sh` recognises the agent headers it wrote before the
+  marker was renamed from `Codex` to `Codex/OMX`, so an existing install
+  upgrades instead of being reported as a user-authored conflict. The previous
+  behaviour told users to force past the guard whose only job is to protect
+  genuinely user-authored agents.
+- Security scanners ignore inherited `GIT_*` overrides, disable system and
+  global config, and neutralise `core.excludesFile`, so a hostile index, a
+  global exclude file, or repository-local config cannot hide secret or policy
+  hits. In-tree `.gitignore` and `.git/info/exclude` remain trusted: the former
+  is reviewed with the tree, and the latter carries this repository's own
+  legitimate entries.
+- The independent-review v5 and v6 contract tests reproduce their packet from
+  the frozen source snapshot each phase reviewed instead of rebuilding it from
+  the working tree. Both phases are closed, so an old packet budget was gating
+  today's product and failed permanently once a later change legitimately grew
+  the same surfaces. v7 and v8 already worked this way. v6 builds from the v5
+  snapshot its own `phase_binding` pins by digest, which also makes that binding
+  verified rather than merely recorded.
+- `ci-local.sh` accepts a version-manager Node through `E2E_SKILLS_NODE_BIN`
+  instead of failing outright when Node is not on one of four absolute paths,
+  and it now refuses any Node that is group- or world-writable or that lives
+  inside the repository, matching the hosted workflow's integrity check.
 - The B-lite evidence verifier now checks its frozen, evidence-local generator
   snapshot instead of the evolving current skill, and the contract runs in
   local CI.

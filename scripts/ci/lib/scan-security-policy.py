@@ -46,6 +46,10 @@ def enumerate_files(root: Path, test_git: Path | None = None) -> list[Path]:
     completed = subprocess.run(
         [
             git_executable(test_git),
+            # Repo-local config can point core.excludesFile at an attacker-chosen
+            # list; neutralise it here because GIT_CONFIG_* scrubbing cannot.
+            "-c",
+            "core.excludesFile=/dev/null",
             "ls-files",
             "-co",
             "--exclude-standard",

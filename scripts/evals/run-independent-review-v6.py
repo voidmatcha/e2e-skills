@@ -56,10 +56,17 @@ FORBIDDEN_PATH_PARTS = {
     "evals",
 }
 FORBIDDEN_NAME_FRAGMENTS = ("holdout", "scorecard", "review")
+# The headings excluded from the predecessor surface this phase binds by digest
+# (phase_binding.predecessor_source_snapshot_sha256). v6 is terminal and was
+# superseded before its own packet freeze, so this set describes the bound
+# predecessor rather than the live README. It drifted to current headings only
+# because the contract test rebuilt the packet from the working tree; that
+# coupling is gone, and test-independent-review-v6.py now derives the same set
+# from the predecessor manifest, so the two cannot disagree without failing.
 README_EXCLUDED_HEADINGS = {
-    "Evidence and limits",
-    "Merged upstream fixes",
-    "How this differs from ESLint plugins",
+    "Methodology",
+    "Open-source adoption and case evidence",
+    "Isn't this just an AI code reviewer like CodeRabbit, Copilot, or Cursor BugBot?",
 }
 DIMENSION_IDS = (
     "semantic_correctness",

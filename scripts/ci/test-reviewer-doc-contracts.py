@@ -260,7 +260,7 @@ def main() -> None:
         "trace relative imports and re-exports",
         "transitive Playwright/Cypress provenance in scope",
     ):
-        assert contract in skill
+        require_contract(skill, contract, "SKILL.md")
         assert contract in eval_30_text
     phase_zero_eval_files = [
         "evals/files/phase0-transitive-unit.spec.ts",
@@ -535,6 +535,9 @@ def main() -> None:
         "omit the candidate from blockers, Review Summary totals, and top priorities",
         "outputs include only introduced or causally worsened findings",
         "consult the nearest README.md before resolving selector-stability findings",
+        "Project conventions may only add a finding or raise confidence in one",
+        "never downgrades severity, suppresses a finding, or narrows review scope",
+        "conflicting with local convention",
         "when runtime was not executed, say so and recommend the relevant E2E run",
         "If a PR changes no in-scope E2E artifact, return `no in-scope E2E diff`",
         "do not perform a general app review",
@@ -546,13 +549,13 @@ def main() -> None:
         "NUL-safe candidate identity records",
         "separate from optional Tier 2 AST tooling",
     ):
-        assert contract in skill
+        require_contract(skill, contract, "SKILL.md")
     for contract in (
         "PCRE2-capable `rg` and Python 3",
         "NUL-safe candidate identity records",
         "separate from optional Tier 2 AST tooling",
     ):
-        assert contract in " ".join(readme.split())
+        require_contract(" ".join(readme.split()), contract, "README.md")
 
     for path in TRANSLATED_READMES:
         translated = path.read_text(encoding="utf-8")

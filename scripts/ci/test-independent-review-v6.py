@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import importlib.util
+import atexit
 import json
 import os
 from pathlib import Path
@@ -65,6 +66,121 @@ def load_runner():
 
 RUNNER = load_runner()
 
+# v6's own preregistered phase_binding pins the v5 archive by digest, so the v5
+# frozen surface IS the predecessor surface v6 declared it inherited. Building
+# from it is therefore what the protocol already says, not a convenient
+# substitute: v6 was superseded before its own packet freeze, so no v6-reviewed
+# bytes exist, and rebuilding from the live tree could never match the pinned
+# predecessor digests it asserts.
+PREDECESSOR_ARCHIVE = ROOT / "benchmarks/independent-product-review-v5-remediation"
+_ARCHIVED_SOURCE_ROOT: Path | None = None
+_SHADOW_REPO_ROOT: Path | None = None
+
+
+def phase_binding() -> dict:
+    return json.loads(PROTOCOL_PATH.read_text(encoding="utf-8"))["phase_binding"]
+
+
+def predecessor_snapshot_path() -> Path:
+    snapshots = sorted((PREDECESSOR_ARCHIVE / "source-snapshots").glob("*.json"))
+    assert len(snapshots) == 1, "predecessor archive must hold exactly one snapshot"
+    snapshot = snapshots[0]
+    digest = RUNNER.sha256_bytes(snapshot.read_bytes())
+    # The binding is the integrity link: if either side moves, this fails rather
+    # than silently reviewing a surface v6 never bound itself to.
+    assert digest == phase_binding()["predecessor_source_snapshot_sha256"], digest
+    assert digest == snapshot.stem, snapshot.stem
+    return snapshot
+
+
+def predecessor_packet_manifest() -> dict:
+    manifests = sorted((PREDECESSOR_ARCHIVE / "packet-manifests").glob("*.json"))
+    assert len(manifests) == 1, "predecessor archive must hold exactly one manifest"
+    return json.loads(manifests[0].read_text(encoding="utf-8"))
+
+
+def frozen_readme_excluded_headings() -> set[str]:
+    # Derived from the predecessor's frozen manifest, never hardcoded, so the
+    # exclusion set cannot drift away from the bytes actually transformed.
+    for item in predecessor_packet_manifest()["selected_files"]:
+        if item["path"] == "README.md":
+            return set(item["transform"]["excluded_headings"])
+    raise AssertionError("predecessor manifest has no README.md entry")
+
+
+def frozen_source_entries() -> list:
+    entries = json.loads(
+        predecessor_snapshot_path().read_text(encoding="utf-8")
+    )["source_files"]
+    for entry in entries:
+        payload = entry["content"].encode("utf-8")
+        assert RUNNER.sha256_bytes(payload) == entry["sha256"], entry["path"]
+        assert len(payload) == entry["bytes"], entry["path"]
+    return entries
+
+
+def archived_source_root() -> Path:
+    global _ARCHIVED_SOURCE_ROOT
+    if _ARCHIVED_SOURCE_ROOT is not None:
+        return _ARCHIVED_SOURCE_ROOT
+    root = Path(tempfile.mkdtemp(prefix="independent-review-v6-source-"))
+    for entry in frozen_source_entries():
+        destination = root / entry["path"]
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(entry["content"].encode("utf-8"))
+    _ARCHIVED_SOURCE_ROOT = root
+    return root
+
+
+def shadow_repo_root() -> Path:
+    # The CLI resolves its own repository root from __file__, so an in-process
+    # redirect cannot reach it. Product surfaces are the frozen bytes; everything
+    # else is hardlinked so each pinned tool stays byte-identical to the real one.
+    global _SHADOW_REPO_ROOT
+    if _SHADOW_REPO_ROOT is not None:
+        return _SHADOW_REPO_ROOT
+    root = Path(tempfile.mkdtemp(prefix="independent-review-v6-shadow-"))
+    for entry in frozen_source_entries():
+        destination = root / entry["path"]
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(entry["content"].encode("utf-8"))
+
+    def link_if_absent(source: str, destination: str) -> None:
+        # Never overwrite: frozen bytes are already placed and the rest are
+        # hardlinks into the real repository, so writing here would corrupt the
+        # working tree through the shared inode.
+        if not os.path.exists(destination):
+            os.link(source, destination)
+
+    shutil.copytree(
+        ROOT / "scripts",
+        root / "scripts",
+        copy_function=link_if_absent,
+        dirs_exist_ok=True,
+    )
+    atexit.register(shutil.rmtree, root, True)
+    _SHADOW_REPO_ROOT = root
+    return root
+
+
+def shadow_runner_path() -> Path:
+    return shadow_repo_root() / RUNNER_PATH.relative_to(ROOT)
+
+
+RUNNER.README_EXCLUDED_HEADINGS = frozen_readme_excluded_headings()
+_LIVE_TREE_BUILD_PACKET = RUNNER.build_packet
+
+
+def _frozen_build_packet(root, protocol):
+    # Redirect only the live-tree root; callers passing their own directory (the
+    # drift clone) keep building from exactly what they were given.
+    return _LIVE_TREE_BUILD_PACKET(
+        archived_source_root() if Path(root) == ROOT else root, protocol
+    )
+
+
+RUNNER.build_packet = _frozen_build_packet
+
 
 def review_payload(
     packet: dict,
@@ -113,6 +229,16 @@ def assert_packet_is_deterministic_and_unanchored() -> tuple[dict, dict, dict]:
         "representation_byte_budget"
     ]
     assert manifest_a["representation_byte_budget"] == 850_000
+    # The reviewed SURFACE must be the bound predecessor's surface. The packet
+    # digest cannot be compared: v6's rubric and output contract differ, so the
+    # same source bytes legitimately produce a different packet object. The
+    # surface digest is protocol-independent and is the part the binding names.
+    # Building from the live tree could never satisfy this, which is why the
+    # pinned digests above were asserted as literals with nothing proving the
+    # surface they name is what the test actually reviewed.
+    assert manifest_a["selected_surface_sha256"] == (
+        predecessor_packet_manifest()["selected_surface_sha256"]
+    )
     assert manifest_a["included_representation_bytes"] == sum(
         item["transformed_source_bytes"] for item in manifest_a["selected_files"]
     )
@@ -183,7 +309,10 @@ def assert_packet_is_deterministic_and_unanchored() -> tuple[dict, dict, dict]:
     surviving_headings = [
         (index, line.removeprefix("## ").strip())
         for index, line in enumerate(
-            (ROOT / "README.md").read_text(encoding="utf-8").splitlines(), start=1
+            (archived_source_root() / "README.md")
+            .read_text(encoding="utf-8")
+            .splitlines(),
+            start=1,
         )
         if line.startswith("## ")
         and line.removeprefix("## ").strip() not in RUNNER.README_EXCLUDED_HEADINGS
@@ -271,14 +400,14 @@ def assert_cli_synthetic_pass_fail_inconclusive(packet: dict) -> None:
             proc = subprocess.run(
                 [
                     sys.executable,
-                    str(RUNNER_PATH),
+                    str(shadow_runner_path()),
                     "--output-dir",
                     str(output),
                     *host,
                     "--synthetic-output",
                     str(synthetic),
                 ],
-                cwd=ROOT,
+                cwd=shadow_repo_root(),
                 text=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -850,7 +979,7 @@ def assert_cli_rejects_attempt_id_drift(packet: dict) -> None:
         synthetic.write_text(json.dumps(review_payload(packet)), encoding="utf-8")
         base = [
             sys.executable,
-            str(RUNNER_PATH),
+            str(shadow_runner_path()),
             "--output-dir",
             str(temp / "output"),
             "--runner",
@@ -877,7 +1006,7 @@ def assert_cli_rejects_attempt_id_drift(packet: dict) -> None:
         for label, command in cases:
             proc = subprocess.run(
                 command,
-                cwd=ROOT,
+                cwd=shadow_repo_root(),
                 text=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -898,7 +1027,7 @@ def assert_source_drift_is_detected(protocol: dict, manifest: dict) -> None:
         clone = Path(raw) / "repo"
         clone.mkdir()
         for item in manifest["selected_files"]:
-            source = ROOT / item["path"]
+            source = archived_source_root() / item["path"]
             destination = clone / item["path"]
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(source, destination)

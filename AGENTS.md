@@ -208,6 +208,13 @@ bash scripts/dev/reinstall-skills.sh
 # Optional: register the two named Codex-native e2e agents globally
 bash scripts/dev/install-codex-agents.sh
 
+# Optional: register the same two subagents for Claude Code at user level.
+# Prefer this over installing the plugin when the four skills are already
+# present through the skills CLI: plugin skills are namespaced rather than
+# deduplicated, so the plugin would load a second copy of every skill
+# description into each session just to deliver these two agents.
+bash scripts/dev/install-claude-agents.sh
+
 # Wire `git push` to refresh the installed copies via `skills update` (one-time, opt-in)
 bash scripts/dev/install-hooks.sh
 ```

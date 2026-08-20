@@ -196,6 +196,15 @@ def main() -> None:
         "/bin/node",
     ):
         assert candidate in source
+    # The gate must accept a version-manager Node through an explicit override
+    # instead of blocking every commit from a contributor whose Node is not on
+    # one of the four default paths, and the override must clear the same
+    # absolute-path, non-writable, outside-the-repository checks.
+    assert "E2E_SKILLS_NODE_BIN" in source
+    assert 'candidates = (override,) if override else (' in source
+    assert "resolved.stat().st_mode & 0o022" in source
+    assert "repository in resolved.parents" in source
+    assert 'raw.startswith("/")' in source
     assert '"$NODE_BIN" --test examples/react-optimistic-write/scripts/test-b-lite-evidence-tools.mjs' in source
     assert '"$NODE_BIN" examples/react-optimistic-write/scripts/verify-b-lite-evidence.mjs' in source
     assert "run_python scripts/ci/test-python-invocation.py" in source

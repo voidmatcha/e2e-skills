@@ -568,6 +568,9 @@ if [[ -n "$PROJECT_ROOT_REAL" &&
 fi
 unset _self_boundary_cursor
 
+# bash 3.2 (macOS) plus `set -u` treats an empty array as unset, so the five
+# call sites below expand these with the ${arr[@]+"${arr[@]}"} presence guard.
+# Removing that guard makes every scan abort when the arrays are empty.
 EVAL_FIXTURE_EXCLUDES=()
 EVAL_FIXTURE_AST_GREP_EXCLUDES=()
 if [[ "$SELF_REPO_SCAN" == "1" ]]; then
@@ -1675,6 +1678,10 @@ expect_promise_nonfloating_at() {
 # Tier 2 precedes the shared semantic helpers, so this self-contained #4f check
 # proves both a locator/query argument and a Playwright `expect` binding. Proven
 # local redeclarations are dropped; ambiguous receivers remain triage.
+# KEEP THIS DEFINITION ABOVE ITS TIER 2 CALL SITE. When the equivalent check
+# lived ~1400 lines below the call, bash reported `command not found`, the
+# trailing `|| continue` swallowed rc 127, and every AST #4f hit was dropped
+# silently — the exact silent-coverage class this scanner exists to catch.
 ast_locator_truthiness_confirmed_at() {
   local file="$1" line="$2" code
   code=$(source_executable_code "$file" | sed -n "${line}p")
@@ -2534,6 +2541,9 @@ try_eslint() {
   else
     mode="auto-downloaded via npx (set E2E_SMELL_NO_ESLINT_DOWNLOAD=1 to skip)"
     # Keep TypeScript direct so legacy-peer-deps cannot omit the parser peer.
+    # Do not replace these pins with tags, ranges, or a dynamically assembled
+    # unversioned package name; updating any pin requires reviewing the whole
+    # set because their peer ranges are coupled.
     # Top-level packages are exact and jointly reviewed; transitives still float
     # because there is no lockfile. Both --ignore-scripts and the pinned npm
     # environment block lifecycle scripts and project .npmrc overrides.

@@ -74,6 +74,19 @@ and confirm they are green before opening a pull request:
 /bin/bash -p scripts/ci/pre-push-security.sh # secrets and credential-leak guard
 ```
 
+`ci-local.sh` runs one Node.js stage and resolves Node from `/opt/homebrew/bin`,
+`/usr/local/bin`, `/usr/bin`, or `/bin`. If your Node comes from a version
+manager (nvm, fnm, asdf), point the gate at it explicitly:
+
+```bash
+E2E_SKILLS_NODE_BIN="$(command -v node)" /bin/bash -p scripts/ci/ci-local.sh
+```
+
+The override clears the same checks as the defaults: it must be an absolute path
+to a regular executable file that is not group- or world-writable and does not
+live inside the repository. A Node the gate cannot trust fails the stage rather
+than being used.
+
 Useful individual stages while iterating:
 
 ```bash
@@ -81,6 +94,7 @@ bash scripts/ci/review.sh            # parity, language, links, framework scope,
 bash scripts/ci/test-parity.sh       # drift smoke test (mutate-and-detect) + scanner detection smoke
 bash scripts/ci/check-verification-parity.sh # V1-V6 contract parity
 bash scripts/ci/test-codex-agents.sh # optional Codex agent packaging contract
+bash scripts/ci/test-claude-agents.sh # Claude Code agent packaging contract
 bash scripts/ci/test-local-eslint-path.sh # local lint + disabled-rule fail-closed path
 bash scripts/validate-evals.sh       # eval JSON schema
 bash scripts/ci/test-reviewer-holdout.sh # labeled TP/FP/FN scorer + isolation

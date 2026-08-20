@@ -308,6 +308,41 @@ def main() -> None:
         for name in samples:
             assert name in hostile_findings.stdout, hostile_findings.stdout
 
+        # Repo-local config is a separate vector: scrubbing GIT_CONFIG_* cannot
+        # reach `.git/config`, so the scanner neutralises core.excludesFile on the
+        # command line. The sample above cannot prove this because those files are
+        # already in the index and excludes only govern untracked paths, so use a
+        # file that is never added.
+        untracked_leak = "untracked-leak.py"
+        (repo / untracked_leak).write_text(
+            "key = {!r}\n".format("ghp_" + "e" * 36), encoding="utf-8"
+        )
+        local_excludes = Path(temporary) / "local-excludes"
+        local_excludes.write_text("{}\n".format(untracked_leak), encoding="utf-8")
+        run(
+            [
+                "/usr/bin/git",
+                "config",
+                "--local",
+                "core.excludesFile",
+                str(local_excludes),
+            ],
+            repo,
+        )
+        local_config_findings = run(
+            ["/usr/bin/python3", str(SCANNER), "--repo", str(repo)],
+            ROOT,
+        )
+        assert local_config_findings.returncode == 1, local_config_findings.stdout
+        assert untracked_leak in local_config_findings.stdout, (
+            local_config_findings.stdout
+        )
+        run(
+            ["/usr/bin/git", "config", "--local", "--unset", "core.excludesFile"],
+            repo,
+        )
+        (repo / untracked_leak).unlink()
+
         for name in samples:
             (repo / name).write_text("safe fixture\n", encoding="utf-8")
         clean = run(

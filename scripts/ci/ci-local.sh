@@ -94,6 +94,7 @@ step "Verification-rule parity"
 
 step "Codex agent packaging"
 /bin/bash -p scripts/ci/test-codex-agents.sh || fail "test-codex-agents.sh"
+/bin/bash -p scripts/ci/test-claude-agents.sh || fail "test-claude-agents.sh"
 run_python scripts/ci/test-codex-agent-install.py ||
   fail "test-codex-agent-install.py"
 run_python scripts/ci/test-codex-manifest.py ||
@@ -119,16 +120,51 @@ run_python scripts/ci/test-playwright-debugger-report-publish.py ||
 run_python scripts/ci/test-generator-contracts.py || fail "test-generator-contracts.py"
 
 step "B-lite evidence contract"
+# Node comes from an absolute, non-writable path outside the repository. The
+# default list covers system and Homebrew installs; E2E_SKILLS_NODE_BIN lets a
+# version-manager install (nvm, fnm, asdf) satisfy the SAME checks instead of
+# being unable to run this gate at all. Values are passed as argv, not env, so
+# the isolated Python runner cannot drop them.
 if ! NODE_BIN="$(run_python -c '
 import os
+import sys
 from pathlib import Path
-for raw in ("/opt/homebrew/bin/node", "/usr/local/bin/node", "/usr/bin/node", "/bin/node"):
-    binary = Path(raw)
-    if binary.is_file() and os.access(binary, os.X_OK):
-        print(binary.resolve())
+
+repository = Path(sys.argv[1]).resolve()
+
+
+def trusted(raw):
+    if not raw.startswith("/"):
+        return None
+    try:
+        resolved = Path(raw).resolve(strict=True)
+    except OSError:
+        return None
+    if not resolved.is_file() or not os.access(resolved, os.X_OK):
+        return None
+    # Mirror the hosted gate: refuse an interpreter that group or other users can
+    # rewrite, and refuse one shipped inside the repository under review.
+    if resolved.stat().st_mode & 0o022:
+        return None
+    if resolved == repository or repository in resolved.parents:
+        return None
+    return resolved
+
+
+override = sys.argv[2]
+candidates = (override,) if override else (
+    "/opt/homebrew/bin/node",
+    "/usr/local/bin/node",
+    "/usr/bin/node",
+    "/bin/node",
+)
+for raw in candidates:
+    accepted = trusted(raw)
+    if accepted is not None:
+        print(accepted)
         raise SystemExit(0)
 raise SystemExit(1)
-')"; then
+' "$REPO_ROOT" "${E2E_SKILLS_NODE_BIN:-}")"; then
   fail "trusted Node.js runtime resolution"
 fi
 [ -n "$NODE_BIN" ] || fail "trusted Node.js runtime unavailable"
