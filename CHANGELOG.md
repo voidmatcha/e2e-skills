@@ -1,5 +1,27 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- **Reviewer holdout protocol v6.** v5 preregistered `Claude Code 2.1.220`, that
+  build is no longer retained, and v5 requires a complete three-host matrix, so
+  v5 can never finish. v6 reuses the v5 corpus byte-for-byte — its case and
+  corpus digests are identical to v5's — and changes only the frozen CLI
+  identity, which is what v5's own freeze policy prescribes for any later edit.
+  No v5 result had been produced, so nothing is being refitted after the fact.
+  The runner's frozen execution identity moved from a v5-only literal to a
+  per-protocol table, so each version stays pinned to its own builds.
+
+### Fixed
+
+- `ci-local.sh` drops inherited `__pycache__` trees before verification runs.
+  Python invalidates a cached `.pyc` by source mtime, which misses an edit made
+  in the same second as the cache, so an inherited cache could serve retired
+  pinned digests to the test whose job is to catch exactly that. Observed: the
+  pinned-input check reported a protocol digest that no longer existed anywhere
+  in the repository.
+
 ## [1.13.0] - 2026-08-17
 
 ### Added

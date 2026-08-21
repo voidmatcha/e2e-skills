@@ -29,6 +29,16 @@ builtin cd -- "$REPO_ROOT" || {
   exit 1
 }
 
+# Verification imports the eval runner to read its pinned digests. Python
+# invalidates a cached .pyc by source mtime, which misses an edit made in the
+# same second as the cache, so an inherited cache can serve retired pins to the
+# very test that exists to catch them. Dropping the caches here is what closes
+# that path: every import below then compiles from source. Exporting
+# PYTHONDONTWRITEBYTECODE would not, because the eval scripts pass a strict
+# environment allowlist and drop it. Caches written during this run are the
+# next run's inheritance, and this line removes them then.
+/usr/bin/find scripts skills -type d -name __pycache__ -prune -exec /bin/rm -rf {} + 2>/dev/null || true
+
 if [ "${E2E_SKILLS_SKIP_CI_LOCAL:-}" = "1" ]; then
   echo "ci-local: refusing E2E_SKILLS_SKIP_CI_LOCAL=1; the must-pass gate cannot report success without running" >&2
   exit 2

@@ -39,6 +39,9 @@ V4_CASES = ROOT / "scripts/evals/reviewer-holdout-v4.json"
 V4_PROTOCOL = ROOT / "scripts/evals/reviewer-validation-protocol-v4.json"
 V5_CASES = ROOT / "scripts/evals/reviewer-holdout-v5.json"
 V5_PROTOCOL = ROOT / "scripts/evals/reviewer-validation-protocol-v5.json"
+# v6 reuses the frozen v5 corpus unchanged; only the pinned CLI identity
+# differs, so the cases and corpus digests below are identical to v5's.
+V6_PROTOCOL = ROOT / "scripts/evals/reviewer-validation-protocol-v6.json"
 FAULT_CAUSAL_CASES = ROOT / "scripts/evals/reviewer-fault-causal-v1.json"
 FAULT_CAUSAL_PROTOCOL = (
     ROOT / "scripts/evals/reviewer-validation-protocol-fault-causal-v1.json"
@@ -137,6 +140,7 @@ SUPPORTED_PROTOCOL_IDS = {
     "reviewer-holdout-v3",
     "reviewer-holdout-v4",
     "reviewer-holdout-v5",
+    "reviewer-holdout-v6",
     "reviewer-fault-causal-v1",
     "reviewer-fault-causal-v2",
     "reviewer-fault-causal-v3",
@@ -145,6 +149,7 @@ STRICT_MAJORITY_PROTOCOL_IDS = {
     "reviewer-holdout-v3",
     "reviewer-holdout-v4",
     "reviewer-holdout-v5",
+    "reviewer-holdout-v6",
     "reviewer-fault-causal-v1",
     "reviewer-fault-causal-v2",
     "reviewer-fault-causal-v3",
@@ -152,6 +157,7 @@ STRICT_MAJORITY_PROTOCOL_IDS = {
 PROMPT_ARM_PROTOCOL_IDS = {
     "reviewer-holdout-v4",
     "reviewer-holdout-v5",
+    "reviewer-holdout-v6",
 }
 FULL_ONLY_PROTOCOL_IDS = {
     "reviewer-fault-causal-v3",
@@ -159,7 +165,27 @@ FULL_ONLY_PROTOCOL_IDS = {
 PROVIDER_BALANCED_PROTOCOL_IDS = {
     "reviewer-holdout-v4",
     "reviewer-holdout-v5",
+    "reviewer-holdout-v6",
     "reviewer-fault-causal-v3",
+}
+ARM_COMPARISON_PROTOCOL_IDS = {
+    "reviewer-holdout-v5",
+    "reviewer-holdout-v6",
+}
+# Each version freezes the CLI identity that was current when it was cut. v6
+# exists only because the v5 identity became unobtainable: its pinned codex and
+# Claude Code builds were superseded, and v5's own freeze policy requires a new
+# version rather than an edit. Never relax the match — an identity that drifts
+# silently is what makes an old benchmark number unreproducible.
+FROZEN_EXECUTION_IDENTITIES = {
+    "reviewer-holdout-v5": {
+        "codex": "codex-cli 0.146.0",
+        "claude": "Claude Code 2.1.220",
+    },
+    "reviewer-holdout-v6": {
+        "codex": "codex-cli 0.149.0",
+        "claude": "Claude Code 2.1.239",
+    },
 }
 HISTORICAL_DIAGNOSTIC_PROTOCOL_IDS = {
     "reviewer-fault-causal-v2",
@@ -190,6 +216,11 @@ PINNED_LIVE_INPUTS = {
         "cases_file_sha256": "50c828c5e267a683ced73a161a645af0b73f305f6391b6fe0e8ee150ec419849",
         "corpus_sha256": "745bc765fb6f424abe90d6d3fc9a3b85e921472a4cc1291054879af8002e965f",
         "protocol_sha256": "f7b8acb8b80d0ae673e0a3291b0bdd7c08d8f3e221dd624226724c9ef3c4b40c",
+    },
+    (V5_CASES, V6_PROTOCOL): {
+        "cases_file_sha256": "50c828c5e267a683ced73a161a645af0b73f305f6391b6fe0e8ee150ec419849",
+        "corpus_sha256": "745bc765fb6f424abe90d6d3fc9a3b85e921472a4cc1291054879af8002e965f",
+        "protocol_sha256": "342249121b8aaf4af43918552c6b4c5b568949e88a5e4b3892790e367bd43a82",
     },
     (FAULT_CAUSAL_V2_CASES, FAULT_CAUSAL_V2_PROTOCOL): {
         "cases_file_sha256": "30633a02eb134bed1d57f8c21c11e5938a284f56a1a7f2e14406b175b6481a6f",
@@ -368,7 +399,7 @@ def load_protocol(path: Path) -> dict:
     }
     if protocol_id in PROMPT_ARM_PROTOCOL_IDS:
         required_keys.add("prompt_arms")
-    if protocol_id == "reviewer-holdout-v5":
+    if protocol_id in ARM_COMPARISON_PROTOCOL_IDS:
         required_keys.update({"arm_comparison", "execution_identity"})
     require_exact_keys(
         data,
@@ -497,7 +528,7 @@ def load_protocol(path: Path) -> dict:
             "no_skill_is_taxonomy_free": False,
             "comparison_unit": "separate-complete-host-matrix",
         }
-        if protocol_id == "reviewer-holdout-v5":
+        if protocol_id in ARM_COMPARISON_PROTOCOL_IDS:
             expected_prompt_arms["matrix_requirement"] = (
                 "Run a separate complete host matrix for full, catalog-only, "
                 "and no-skill."
@@ -506,13 +537,12 @@ def load_protocol(path: Path) -> dict:
             raise ValueError(
                 f"{path}: protocol prompt arms must be exact"
             )
-    if protocol_id == "reviewer-holdout-v5":
+    if protocol_id in ARM_COMPARISON_PROTOCOL_IDS:
         expected_execution_identity = {
             "require_explicit_runner_path": True,
-            "expected_cli_versions": {
-                "codex": "codex-cli 0.146.0",
-                "claude": "Claude Code 2.1.220",
-            },
+            "expected_cli_versions": dict(
+                FROZEN_EXECUTION_IDENTITIES[protocol_id]
+            ),
             "run_identity_capture": (
                 "Capture the resolved runner path and CLI version in each report. "
                 "Do not pin user-specific absolute paths or binary digests in this "
@@ -525,7 +555,7 @@ def load_protocol(path: Path) -> dict:
         }
         if data.get("execution_identity") != expected_execution_identity:
             raise ValueError(
-                f"{path}: reviewer-holdout-v5 execution identity must be exact"
+                f"{path}: {protocol_id} execution identity must be exact"
             )
         arm_comparison = data.get("arm_comparison")
         require_exact_keys(
@@ -580,7 +610,7 @@ def load_protocol(path: Path) -> dict:
             )
         ):
             raise ValueError(
-                f"{path}: reviewer-holdout-v5 arm comparison must be exact"
+                f"{path}: {protocol_id} arm comparison must be exact"
             )
         expected_execution_order = [
             {
@@ -640,7 +670,7 @@ def load_protocol(path: Path) -> dict:
         ]
         if arm_comparison["execution_order"] != expected_execution_order:
             raise ValueError(
-                f"{path}: reviewer-holdout-v5 execution order must be exact"
+                f"{path}: {protocol_id} execution order must be exact"
             )
         uncertainty = arm_comparison["uncertainty"]
         require_exact_keys(
@@ -680,7 +710,7 @@ def load_protocol(path: Path) -> dict:
             )
         ):
             raise ValueError(
-                f"{path}: reviewer-holdout-v5 uncertainty contract must be exact"
+                f"{path}: {protocol_id} uncertainty contract must be exact"
             )
         arm_decision = arm_comparison["decision"]
         require_exact_keys(
@@ -699,7 +729,7 @@ def load_protocol(path: Path) -> dict:
         }
         if arm_thresholds != expected_arm_thresholds:
             raise ValueError(
-                f"{path}: reviewer-holdout-v5 arm thresholds must be exact"
+                f"{path}: {protocol_id} arm thresholds must be exact"
             )
         for name, value in arm_thresholds.items():
             if (
@@ -715,7 +745,7 @@ def load_protocol(path: Path) -> dict:
             "that misses any threshold is FAIL, not partial evidence."
         ):
             raise ValueError(
-                f"{path}: reviewer-holdout-v5 arm failure semantics must be exact"
+                f"{path}: {protocol_id} arm failure semantics must be exact"
             )
         claim_policy = arm_comparison["claim_policy"]
         require_exact_keys(
@@ -738,7 +768,7 @@ def load_protocol(path: Path) -> dict:
         }
         if claim_policy != expected_claim_policy:
             raise ValueError(
-                f"{path}: reviewer-holdout-v5 claim policy must fail closed"
+                f"{path}: {protocol_id} claim policy must fail closed"
             )
     return data
 
