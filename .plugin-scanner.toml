@@ -4,6 +4,26 @@
 # length-framed stdin plus RegExp.exec with file exfiltration and code execution.
 # Suppress only those exact reviewed files; the repository's mandatory security
 # gate still scans every tracked and unignored artifact.
+#
+# 2026-09-11: the HOL Plugin Scanner run on push c5e331b failed for the first
+# time in 9 consecutive runs, with no relevant content change in the flagged
+# files since the prior pass -- reproduced locally against a clean `git
+# archive HEAD` checkout (matching exactly what actions/checkout provides,
+# excluding gitignored local-only content like testbed/ and .handover/) with
+# the pinned action's underlying `codex-plugin-scanner` package, which this
+# workflow does not pin to an exact version. Six confirmed false positives,
+# all on long-standing files, reviewed against the actual SARIF output:
+# - scan.sh: HARDCODED_SECRET / SECRET_PASSWORD_VAR fire on the scanner's own
+#   #14 "hardcoded credential candidate" rule definitions (the pattern source
+#   text, not an embedded secret).
+# - the three debugger/reviewer SKILL.md files: UNICODE_OBFUSCATED_INSTRUCTION
+#   fires on ordinary YAML frontmatter (`--- name: ... description: ...`).
+# - playwright-test-generator/scripts/preflight_target.py:
+#   DATA_EXFIL_SOCKET_CONNECT fires on a legitimate `socket.getaddrinfo()`
+#   target-reachability preflight check.
+# - playwright-test-generator/SKILL.md: TOOL_ABUSE_UNDECLARED_NETWORK and
+#   SOCIAL_ENG_MISLEADING_DESC fire on the skill's own documented browser
+#   automation and network capability.
 [scanner]
 ignore_paths = [
   "skills/cypress-debugger/scripts/publish-mochawesome-report.py",
@@ -20,4 +40,10 @@ ignore_paths = [
   "scripts/ci/test-playwright-debugger-artifact-download.py",
   "scripts/ci/test-reviewer-scanner.py",
   "scripts/evals/files/holdout-v3/cy-write-credentials/cypress/e2e/profile.cy.ts",
+  "skills/e2e-reviewer/scripts/scan.sh",
+  "skills/e2e-reviewer/SKILL.md",
+  "skills/playwright-debugger/SKILL.md",
+  "skills/cypress-debugger/SKILL.md",
+  "skills/playwright-test-generator/SKILL.md",
+  "skills/playwright-test-generator/scripts/preflight_target.py",
 ]

@@ -36,6 +36,12 @@ HOL_SCANNER_FALSE_POSITIVE_PATHS = {
     "scripts/ci/test-playwright-debugger-artifact-download.py",
     "scripts/ci/test-reviewer-scanner.py",
     "scripts/evals/files/holdout-v3/cy-write-credentials/cypress/e2e/profile.cy.ts",
+    "skills/e2e-reviewer/scripts/scan.sh",
+    "skills/e2e-reviewer/SKILL.md",
+    "skills/playwright-debugger/SKILL.md",
+    "skills/cypress-debugger/SKILL.md",
+    "skills/playwright-test-generator/SKILL.md",
+    "skills/playwright-test-generator/scripts/preflight_target.py",
 }
 COMMAND_TIMEOUT_SECONDS = 90
 SECURITY_GATE_TIMEOUT_SECONDS = 180
