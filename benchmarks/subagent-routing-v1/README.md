@@ -1,6 +1,6 @@
 # Subagent routing v1
 
-**Status: `NOT_RUN` / preregistered, not yet frozen. No model call, agent installation, or case authoring has happened under this protocol. No routing result is claimed and production routing is unchanged.**
+**Status: `NOT_RUN` / preregistered, not yet frozen. No model call, agent installation, or case authoring has happened under this protocol. No routing result is claimed and production routing is unchanged. `protocol.json`'s pinned `sha256_at_preparation` digests were invalidated 2026-09-12 by the v1.16.1 `SKILL.md` version bump; re-preparation is required before this protocol may ever freeze.**
 
 The machine-readable contract is [`protocol.json`](protocol.json). If this README and that file differ, the JSON controls.
 

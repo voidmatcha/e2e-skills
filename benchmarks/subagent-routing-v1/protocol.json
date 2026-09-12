@@ -21,38 +21,14 @@
       "skill": "e2e-reviewer",
       "subagent": "e2e-finding-verifier",
       "source_of_truth": "skills/e2e-reviewer/references/pattern-reference.md (absolute path passed by the caller)",
-      "verdict_vocabulary": [
-        "CONFIRMED",
-        "FALSE-POSITIVE",
-        "NEEDS-CONTEXT"
-      ]
+      "verdict_vocabulary": ["CONFIRMED", "FALSE-POSITIVE", "NEEDS-CONTEXT"]
     },
     {
       "task_id": "failure_classification",
-      "skills": [
-        "playwright-debugger",
-        "cypress-debugger"
-      ],
+      "skills": ["playwright-debugger", "cypress-debugger"],
       "subagent": "e2e-failure-classifier",
       "source_of_truth": "the matching debugger SKILL.md F1-F15 table (absolute path passed by the caller)",
-      "verdict_vocabulary": [
-        "F1",
-        "F2",
-        "F3",
-        "F4",
-        "F5",
-        "F6",
-        "F7",
-        "F8",
-        "F9",
-        "F10",
-        "F11",
-        "F12",
-        "F13",
-        "F14",
-        "F15",
-        "CANNOT_VERIFY"
-      ]
+      "verdict_vocabulary": ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "CANNOT_VERIFY"]
     }
   ],
   "out_of_scope": {
@@ -77,7 +53,18 @@
       ".codex/agents/e2e-failure-classifier.toml": "d0404b1cf318dd8e951094aa1276ce6ac5bdf9103760ccfe359967e79fca2ffe"
     },
     "freeze_record_file": "freeze-record.json",
-    "freeze_record_exists": false
+    "freeze_record_exists": false,
+    "sha256_at_preparation_invalidated": {
+      "invalidated_on": "2026-09-12",
+      "files": [
+        "skills/e2e-reviewer/SKILL.md",
+        "skills/playwright-debugger/SKILL.md",
+        "skills/cypress-debugger/SKILL.md"
+      ],
+      "reason": "v1.16.1 bumped metadata.version in every skills/*/SKILL.md file (a byte change; only SKILL.md carries this frontmatter field, not pattern-reference.md or the agents/*.md, .codex/agents/*.toml files), which changed the sha256 of the three files listed above relative to the digests recorded in sha256_at_preparation. This was a deliberate operator decision, not drift: shipping the version bump was prioritized over keeping this still-NOT_RUN protocol's preparation-time digests valid.",
+      "consequence": "This protocol cannot freeze against the digests above. Re-preparation (recomputing sha256_at_preparation from the current git HEAD, with a new git_head_at_preparation/git_tag_at_preparation) is required before this protocol may ever be frozen or run.",
+      "does_not_affect": "The 16 frozen cases, arms, and decision rule below are unaffected -- only the pinned byte identity of the evaluated surface needs to be refreshed."
+    }
   },
   "preconditions": [
     "output-discipline v2 replay and fresh pilot reached a terminal, integrity-checked result (recorded in .handover/artifacts/handover-20260903-144354-c12d46/evidence/); reconfirm at freeze that no newer output-discipline run is in flight",
@@ -102,10 +89,7 @@
       "minimum_version": "2.1.268 (Claude Code), recorded 2026-09-11 via `claude --version`. version_policy remains minimum per execution_identity above -- this is the floor observed at preparation time, re-verify and update at actual freeze if time has passed.",
       "version_policy": "minimum",
       "agent_installation": "isolated Claude config directory populated from the evaluated checkout (both agents/*.md); no ambient user agents, no plugin install",
-      "arms": [
-        "claude.inline",
-        "claude.named"
-      ],
+      "arms": ["claude.inline", "claude.named"],
       "budget": {
         "strategy_executions_measured": 96,
         "strategy_executions_smoke": 2,
@@ -114,21 +98,9 @@
         "actual_model_requests": {
           "naive_estimate": 1200,
           "naive_basis": "inline ~10 requests per execution (parent only); named ~5 parent + ~10 child; 48 executions each. Assumption, not a measurement.",
-          "confirmation_checkpoint": {
-            "at_multiple_of_naive": 2,
-            "requests": 2400,
-            "behavior": "PAUSE_AND_ASK"
-          },
-          "hard_ceiling": {
-            "multiple_of_naive": 4,
-            "requests": 4800,
-            "behavior": "PAUSE_AND_ASK"
-          },
-          "per_execution_turn_cap": {
-            "parent": 40,
-            "child": 40,
-            "exceeding": "cell is INCOMPLETE for that repetition"
-          }
+          "confirmation_checkpoint": {"at_multiple_of_naive": 2, "requests": 2400, "behavior": "PAUSE_AND_ASK"},
+          "hard_ceiling": {"multiple_of_naive": 4, "requests": 4800, "behavior": "PAUSE_AND_ASK"},
+          "per_execution_turn_cap": {"parent": 40, "child": 40, "exceeding": "cell is INCOMPLETE for that repetition"}
         },
         "wall_time": {
           "per_execution_minutes_max": 15,
@@ -149,11 +121,7 @@
       "minimum_version": "TBD_IN_ACTIVATION_RECORD",
       "version_policy": "minimum",
       "agent_installation": "isolated Codex home per installation-sensitive arm; named TOMLs installed from the evaluated checkout; native-role arm loads no named TOML",
-      "arms": [
-        "codex.inline",
-        "codex.named",
-        "codex.native-role"
-      ],
+      "arms": ["codex.inline", "codex.named", "codex.native-role"],
       "budget": {
         "strategy_executions_measured": 144,
         "strategy_executions_smoke": 3,
@@ -166,11 +134,7 @@
           "per_execution_turn_cap": null,
           "note": "TBD. Must be supplied in codex-arm-activation.json before any Codex cell runs. UNSET means NOT READY."
         },
-        "wall_time": {
-          "per_execution_minutes_max": null,
-          "hard_ceiling_hours": null,
-          "note": "TBD in activation record"
-        },
+        "wall_time": {"per_execution_minutes_max": null, "hard_ceiling_hours": null, "note": "TBD in activation record"},
         "monetary": "TBD in activation record; if the Codex host exposes cost, a USD ceiling is required"
       },
       "activation": {
@@ -200,36 +164,11 @@
     }
   },
   "arms": [
-    {
-      "id": "claude.inline",
-      "host": "claude",
-      "status": "active",
-      "definition": "the parent executes the frozen refute-first / classification procedure itself without invoking a child; this is the inline fallback every host keeps"
-    },
-    {
-      "id": "claude.named",
-      "host": "claude",
-      "status": "active",
-      "definition": "the parent delegates exactly one case to the installed e2e-finding-verifier or e2e-failure-classifier agent"
-    },
-    {
-      "id": "codex.inline",
-      "host": "codex",
-      "status": "pending_authorization",
-      "definition": "the parent executes the frozen procedure without delegation"
-    },
-    {
-      "id": "codex.named",
-      "host": "codex",
-      "status": "pending_authorization",
-      "definition": "the parent delegates to the matching isolated TOML agent installed from the evaluated checkout"
-    },
-    {
-      "id": "codex.native-role",
-      "host": "codex",
-      "status": "pending_authorization",
-      "definition": "the parent delegates the identical payload to Codex's native verifier or debugger role without loading the named TOML; UNAVAILABLE unless the harness can attest which role ran"
-    }
+    {"id": "claude.inline", "host": "claude", "status": "active", "definition": "the parent executes the frozen refute-first / classification procedure itself without invoking a child; this is the inline fallback every host keeps"},
+    {"id": "claude.named", "host": "claude", "status": "active", "definition": "the parent delegates exactly one case to the installed e2e-finding-verifier or e2e-failure-classifier agent"},
+    {"id": "codex.inline", "host": "codex", "status": "pending_authorization", "definition": "the parent executes the frozen procedure without delegation"},
+    {"id": "codex.named", "host": "codex", "status": "pending_authorization", "definition": "the parent delegates to the matching isolated TOML agent installed from the evaluated checkout"},
+    {"id": "codex.native-role", "host": "codex", "status": "pending_authorization", "definition": "the parent delegates the identical payload to Codex's native verifier or debugger role without loading the named TOML; UNAVAILABLE unless the harness can attest which role ran"}
   ],
   "non_arms": {
     "deterministic_scanner": "produces candidate evidence, does not answer the contextual verdict question",
@@ -262,164 +201,29 @@
     "count": 16,
     "status": "slots_frozen_case_bytes_authored_at_freeze",
     "disposable_repository_rule": "each case is a self-contained minimal repository (spec, helpers, config, and for classification cases a sanitized report excerpt) with no secrets, no network access, no instructions to the model, and no mutable third-party state",
-    "per_case_predeclared": [
-      "accepted_verdict_or_code",
-      "decisive_evidence (file:line or report field)",
-      "allowed_confidence",
-      "required_limitation",
-      "forbidden_weakened_fix",
-      "concrete_fix_legal (bool)"
-    ],
+    "per_case_predeclared": ["accepted_verdict_or_code", "decisive_evidence (file:line or report field)", "allowed_confidence", "required_limitation", "forbidden_weakened_fix", "concrete_fix_legal (bool)"],
     "slots": [
-      {
-        "case_id": "FV-01",
-        "task": "finding_verification",
-        "stratum": "clear",
-        "framework": "playwright",
-        "pattern_id": "#8",
-        "expected": "CONFIRMED",
-        "sketch": "hold-request spec performs the actions and ends with no assertion"
-      },
-      {
-        "case_id": "FV-02",
-        "task": "finding_verification",
-        "stratum": "clear",
-        "framework": "cypress",
-        "pattern_id": "#9",
-        "expected": "CONFIRMED",
-        "sketch": "fixed cy.wait before asserting the fines total"
-      },
-      {
-        "case_id": "FV-03",
-        "task": "finding_verification",
-        "stratum": "clear",
-        "framework": "playwright",
-        "pattern_id": "#4",
-        "expected": "FALSE-POSITIVE",
-        "sketch": "documented retry-wrapper exclusion: a one-shot read of the reading-room seat count inside expect.poll"
-      },
-      {
-        "case_id": "FV-04",
-        "task": "finding_verification",
-        "stratum": "clear",
-        "framework": "cypress",
-        "pattern_id": "#14",
-        "expected": "FALSE-POSITIVE",
-        "sketch": "documented placeholder exclusion: obviously dummy patron PIN sourced from Cypress.env with a fixture default"
-      },
-      {
-        "case_id": "FV-05",
-        "task": "finding_verification",
-        "stratum": "context_dependent",
-        "framework": "playwright",
-        "pattern_id": "#12",
-        "expected": "CONFIRMED",
-        "sketch": "spec navigates to the staff hold queue; playwright.config project has no storageState and the app's route table marks the route as staff-only (config + route file required)"
-      },
-      {
-        "case_id": "FV-06",
-        "task": "finding_verification",
-        "stratum": "context_dependent",
-        "framework": "cypress",
-        "pattern_id": "#20",
-        "expected": "CONFIRMED",
-        "sketch": "fine-payment write with no intercept; cypress.config baseUrl and an env file point at a shared non-local backend (config required)"
-      },
-      {
-        "case_id": "FV-07",
-        "task": "finding_verification",
-        "stratum": "context_dependent",
-        "framework": "playwright",
-        "pattern_id": "#12",
-        "expected": "FALSE-POSITIVE",
-        "sketch": "same navigation as FV-05, but the config project depends on a setup project that writes storageState (cross-file exclusion)"
-      },
-      {
-        "case_id": "FV-08",
-        "task": "finding_verification",
-        "stratum": "context_dependent",
-        "framework": "cypress",
-        "pattern_id": "#3b",
-        "expected": "FALSE-POSITIVE",
-        "sketch": "support-file uncaught:exception handler that matches one documented third-party error and rethrows everything else (support + spec required)"
-      },
-      {
-        "case_id": "FC-01",
-        "task": "failure_classification",
-        "stratum": "clear",
-        "framework": "playwright",
-        "expected": "F2",
-        "sketch": "strict mode violation on the hold-list row locator"
-      },
-      {
-        "case_id": "FC-02",
-        "task": "failure_classification",
-        "stratum": "clear",
-        "framework": "cypress",
-        "expected": "F3",
-        "sketch": "cy.request to the fines endpoint returns 500 on every attempt"
-      },
-      {
-        "case_id": "FC-03",
-        "task": "failure_classification",
-        "stratum": "shared_setup",
-        "framework": "playwright",
-        "expected": "F9",
-        "sketch": "beforeAll seed of the sample patron fails, every test in the file fails identically; must be reported as one shared-setup failure, not N bugs"
-      },
-      {
-        "case_id": "FC-04",
-        "task": "failure_classification",
-        "stratum": "configuration_dependent",
-        "framework": "cypress",
-        "expected": "F8",
-        "sketch": "reading-room booking passes locally, fails in CI because cypress.config sets a CI-only viewport that collapses the booking calendar"
-      },
-      {
-        "case_id": "FC-05",
-        "task": "failure_classification",
-        "stratum": "two_codes_plausible",
-        "framework": "playwright",
-        "expected": "F6",
-        "sketch": "F4 vs F6 until the supplied DOM snapshot shows the overdue banner is conditionally rendered"
-      },
-      {
-        "case_id": "FC-06",
-        "task": "failure_classification",
-        "stratum": "two_codes_plausible",
-        "framework": "cypress",
-        "expected": "F13",
-        "sketch": "F5 vs F13 until the supplied custom-command source shows a catch that swallows the hold-placement error"
-      },
-      {
-        "case_id": "FC-07",
-        "task": "failure_classification",
-        "stratum": "f1_vs_f7",
-        "framework": "playwright",
-        "expected": "F7",
-        "sketch": "intermittent timeout; payload includes the isolation-probe outcomes (passes alone, fails in suite); apply the probe table"
-      },
-      {
-        "case_id": "FC-08",
-        "task": "failure_classification",
-        "stratum": "f1_vs_f7",
-        "framework": "cypress",
-        "expected": "CANNOT_VERIFY",
-        "sketch": "intermittent timeout with no probe outcomes supplied; CANNOT_VERIFY between F1 and F7 naming the two runs that decide it is the only valid result"
-      }
+      {"case_id": "FV-01", "task": "finding_verification", "stratum": "clear", "framework": "playwright", "pattern_id": "#8", "expected": "CONFIRMED", "sketch": "hold-request spec performs the actions and ends with no assertion"},
+      {"case_id": "FV-02", "task": "finding_verification", "stratum": "clear", "framework": "cypress", "pattern_id": "#9", "expected": "CONFIRMED", "sketch": "fixed cy.wait before asserting the fines total"},
+      {"case_id": "FV-03", "task": "finding_verification", "stratum": "clear", "framework": "playwright", "pattern_id": "#4", "expected": "FALSE-POSITIVE", "sketch": "documented retry-wrapper exclusion: a one-shot read of the reading-room seat count inside expect.poll"},
+      {"case_id": "FV-04", "task": "finding_verification", "stratum": "clear", "framework": "cypress", "pattern_id": "#14", "expected": "FALSE-POSITIVE", "sketch": "documented placeholder exclusion: obviously dummy patron PIN sourced from Cypress.env with a fixture default"},
+      {"case_id": "FV-05", "task": "finding_verification", "stratum": "context_dependent", "framework": "playwright", "pattern_id": "#12", "expected": "CONFIRMED", "sketch": "spec navigates to the staff hold queue; playwright.config project has no storageState and the app's route table marks the route as staff-only (config + route file required)"},
+      {"case_id": "FV-06", "task": "finding_verification", "stratum": "context_dependent", "framework": "cypress", "pattern_id": "#20", "expected": "CONFIRMED", "sketch": "fine-payment write with no intercept; cypress.config baseUrl and an env file point at a shared non-local backend (config required)"},
+      {"case_id": "FV-07", "task": "finding_verification", "stratum": "context_dependent", "framework": "playwright", "pattern_id": "#12", "expected": "FALSE-POSITIVE", "sketch": "same navigation as FV-05, but the config project depends on a setup project that writes storageState (cross-file exclusion)"},
+      {"case_id": "FV-08", "task": "finding_verification", "stratum": "context_dependent", "framework": "cypress", "pattern_id": "#3b", "expected": "FALSE-POSITIVE", "sketch": "support-file uncaught:exception handler that matches one documented third-party error and rethrows everything else (support + spec required)"},
+      {"case_id": "FC-01", "task": "failure_classification", "stratum": "clear", "framework": "playwright", "expected": "F2", "sketch": "strict mode violation on the hold-list row locator"},
+      {"case_id": "FC-02", "task": "failure_classification", "stratum": "clear", "framework": "cypress", "expected": "F3", "sketch": "cy.request to the fines endpoint returns 500 on every attempt"},
+      {"case_id": "FC-03", "task": "failure_classification", "stratum": "shared_setup", "framework": "playwright", "expected": "F9", "sketch": "beforeAll seed of the sample patron fails, every test in the file fails identically; must be reported as one shared-setup failure, not N bugs"},
+      {"case_id": "FC-04", "task": "failure_classification", "stratum": "configuration_dependent", "framework": "cypress", "expected": "F8", "sketch": "reading-room booking passes locally, fails in CI because cypress.config sets a CI-only viewport that collapses the booking calendar"},
+      {"case_id": "FC-05", "task": "failure_classification", "stratum": "two_codes_plausible", "framework": "playwright", "expected": "F6", "sketch": "F4 vs F6 until the supplied DOM snapshot shows the overdue banner is conditionally rendered"},
+      {"case_id": "FC-06", "task": "failure_classification", "stratum": "two_codes_plausible", "framework": "cypress", "expected": "F13", "sketch": "F5 vs F13 until the supplied custom-command source shows a catch that swallows the hold-placement error"},
+      {"case_id": "FC-07", "task": "failure_classification", "stratum": "f1_vs_f7", "framework": "playwright", "expected": "F7", "sketch": "intermittent timeout; payload includes the isolation-probe outcomes (passes alone, fails in suite); apply the probe table"},
+      {"case_id": "FC-08", "task": "failure_classification", "stratum": "f1_vs_f7", "framework": "cypress", "expected": "CANNOT_VERIFY", "sketch": "intermittent timeout with no probe outcomes supplied; CANNOT_VERIFY between F1 and F7 naming the two runs that decide it is the only valid result"}
     ],
     "smoke_cases": {
       "count": 1,
       "definition": "one sacrificial case (public-library domain, not among the 16) run once per active arm; excluded from scoring",
-      "proves": [
-        "intended agent/role actually selected",
-        "working directory is the disposable target repository",
-        "absolute contract path resolves to the evaluated snapshot",
-        "only required read-only surfaces available",
-        "child output returns to the correct parent and parses strictly",
-        "no network, shell, browser, mutation, nested-agent, or unrelated global-agent path reachable",
-        "timeout and process-group cleanup leave no child process"
-      ]
+      "proves": ["intended agent/role actually selected", "working directory is the disposable target repository", "absolute contract path resolves to the evaluated snapshot", "only required read-only surfaces available", "child output returns to the correct parent and parses strictly", "no network, shell, browser, mutation, nested-agent, or unrelated global-agent path reachable", "timeout and process-group cleanup leave no child process"]
     }
   },
   "schedule": {
@@ -446,13 +250,7 @@
     "stable_rule": "at_least_2_of_3_identical_normalized_verdicts; unstable cases count against the arm, never omitted"
   },
   "scoring": {
-    "deterministic_first": [
-      "verdict / F-code exact match",
-      "decisive-evidence citation present (file:line or report field)",
-      "required limitation present",
-      "forbidden weakened fix absent",
-      "parse/completeness"
-    ],
+    "deterministic_first": ["verdict / F-code exact match", "decisive-evidence citation present (file:line or report field)", "required limitation present", "forbidden weakened fix absent", "parse/completeness"],
     "judge": {
       "use": "blind opposite-provider judging only where the frozen deterministic selector says residual semantic quality cannot be scored from the oracle",
       "selector_frozen_before_judging": true,
@@ -475,12 +273,7 @@
     ]
   },
   "decision": {
-    "vocabulary": [
-      "ALWAYS_DELEGATE",
-      "SELECTIVE_DELEGATE",
-      "INLINE_DEFAULT",
-      "INCONCLUSIVE"
-    ],
+    "vocabulary": ["ALWAYS_DELEGATE", "SELECTIVE_DELEGATE", "INLINE_DEFAULT", "INCONCLUSIVE"],
     "unit": "one outcome per host per task",
     "rules": {
       "ALWAYS_DELEGATE": "the named route is majority-stable on both clear and context-dependent strata, introduces no additional harmful fix, and its correctness benefit over inline is stable and not confined to one case (at least two independent decisive cases in each stratum)",
@@ -525,16 +318,8 @@
     ]
   },
   "sequencing": {
-    "must_precede": [
-      "preconditions above",
-      "case authoring + freshness recheck + case digest freeze",
-      "two Claude smoke cases",
-      "operator confirmation of model, Claude Code build, and ceilings"
-    ],
-    "independent_of": [
-      "benchmarks/ours-vs-planner-pilot-v1 (separate snapshot label; no pooling)",
-      "reviewer-release-v1"
-    ],
+    "must_precede": ["preconditions above", "case authoring + freshness recheck + case digest freeze", "two Claude smoke cases", "operator confirmation of model, Claude Code build, and ceilings"],
+    "independent_of": ["benchmarks/ours-vs-planner-pilot-v1 (separate snapshot label; no pooling)", "reviewer-release-v1"],
     "codex_phase": "runs only after codex-arm-activation.json is complete and its three smoke cases pass; uses the same frozen case digest",
     "shared_resource_policy": "serial per provider; one model-benchmark lane at a time per integrated-validation PLAN"
   },

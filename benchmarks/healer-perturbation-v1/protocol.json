@@ -73,7 +73,18 @@
     "fixture_app_untouched": true,
     "freeze_requires_clean_committed_tree": true,
     "freeze_record_file": "freeze-record.json",
-    "freeze_record_exists": false
+    "freeze_record_exists": false,
+    "sha256_at_preparation_invalidated": {
+      "invalidated_on": "2026-09-12",
+      "files": [
+        "skills/playwright-test-generator/SKILL.md",
+        "skills/e2e-reviewer/SKILL.md",
+        "skills/playwright-debugger/SKILL.md"
+      ],
+      "reason": "v1.16.1 bumped metadata.version in every skills/*/SKILL.md file (a byte change; only SKILL.md carries this frontmatter field, not playwright-agents.md or pattern-reference.md), which changed the sha256 of the three files listed above relative to the digests recorded in sha256_at_preparation. This was a deliberate operator decision, not drift: shipping the version bump was prioritized over keeping this still-NOT_RUN protocol's preparation-time digests valid.",
+      "consequence": "This protocol cannot freeze against the digests above. Re-preparation (recomputing sha256_at_preparation from the current git HEAD, with a new git_head_at_preparation/git_tag_at_preparation) is required before this protocol may ever be frozen or run. test_perturbations.py's digest-parity test treats exactly the files listed here as an expected mismatch and still fails closed on any other drift.",
+      "does_not_affect": "The measures, arms, and decision rule below are unaffected -- only the pinned byte identity of the evaluated surface needs to be refreshed."
+    }
   },
   "execution_identity": {
     "version_policy": "minimum",

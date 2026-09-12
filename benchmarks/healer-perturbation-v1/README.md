@@ -1,6 +1,6 @@
 # Healer perturbation v1
 
-**Status: `NOT_RUN` / preregistered, not yet frozen. No model call, browser session, `init-agents` run, or healer invocation has happened under this protocol. No healer result is claimed and the product text is unchanged.**
+**Status: `NOT_RUN` / preregistered, not yet frozen. No model call, browser session, `init-agents` run, or healer invocation has happened under this protocol. No healer result is claimed and the product text is unchanged. `protocol.json`'s pinned `sha256_at_preparation` digests were invalidated 2026-09-12 by the v1.16.1 `SKILL.md` version bump; re-preparation is required before this protocol may ever freeze.**
 
 The machine-readable contract is [`protocol.json`](protocol.json). If this README and that file differ, the JSON controls. The perturbation catalog and its mutators live in [`perturbations.py`](perturbations.py); their RED/GREEN tests are [`test_perturbations.py`](test_perturbations.py). Only the model-call-free phase (catalog, mutators, tests, this preregistration) exists. The healer-execution phase is not authorized by anything in this directory.
 

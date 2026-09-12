@@ -348,11 +348,22 @@ class ProtocolContract(unittest.TestCase):
 
     def test_protocol_records_preparation_digests_of_every_pinned_surface(self) -> None:
         protocol = load_strict(PROTOCOL_PATH)
-        digests = protocol["evaluated_snapshot"]["sha256_at_preparation"]
+        snapshot = protocol["evaluated_snapshot"]
+        digests = snapshot["sha256_at_preparation"]
+        invalidated = set(
+            snapshot.get("sha256_at_preparation_invalidated", {}).get("files", [])
+        )
         for relative, expected in digests.items():
             if relative == "benchmarks/healer-perturbation-v1/perturbations.py":
                 continue  # self-referential; recomputed at freeze
-            self.assertEqual(sha256_file(ROOT / relative), expected, relative)
+            actual = sha256_file(ROOT / relative)
+            if relative in invalidated:
+                # A documented, deliberate invalidation (e.g. a version bump)
+                # must actually have changed the file -- otherwise the
+                # invalidation record itself is stale and should be removed.
+                self.assertNotEqual(actual, expected, relative)
+                continue
+            self.assertEqual(actual, expected, relative)
 
     def test_readme_declares_not_run_and_points_at_the_protocol(self) -> None:
         text = README_PATH.read_text(encoding="utf-8")
