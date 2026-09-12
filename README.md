@@ -205,7 +205,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 ## Scope and limits
 
-Use this bundle to generate or review E2E tests and to diagnose failed Playwright/Cypress runs. Use it alongside the application and its real E2E suite, not instead of them; it is not a general lint preset or a framework-agnostic test tool. Playwright and Cypress are supported; new-test generation currently targets Playwright only.
+This bundle keeps the browser-E2E layer thin and high-value, in line with the standard test-pyramid/hourglass guidance to spend E2E coverage on the checks that matter most rather than on test count. Use it to generate or review E2E tests and to diagnose failed Playwright/Cypress runs. Use it alongside the application and its real E2E suite, not instead of them; it is not a general lint preset or a framework-agnostic test tool. Playwright and Cypress are supported; new-test generation currently targets Playwright only.
 
 The bundled shell scripts and artifact readers target macOS/Linux shells. Windows users should run them through WSL and keep scan/report artifacts inside the WSL filesystem.
 

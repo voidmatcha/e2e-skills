@@ -2,17 +2,7 @@
 
 This inventory records methodology provenance. `e2e-skills` does not vendor upstream source and does not require these packages.
 
-The scanner's disabled-by-default registry fallback requests an exact, jointly
-reviewed tool set: ESLint 10.8.0, eslint-plugin-playwright 2.11.0,
-eslint-plugin-cypress 6.4.3, @typescript-eslint/parser 8.65.0, TypeScript 6.0.3,
-eslint-plugin-cypress-silent-pass 0.2.2, and eslint-plugin-mocha 12.0.1. These
-pins are one compatibility boundary: update them together only after the local
-ESLint path, scanner scope, and security contracts pass. Only these direct
-versions are pinned — npm resolves each package's transitive closure from its own
-semver ranges at scan time and the scanner ships no lockfile, so that closure is
-not integrity-pinned; install lifecycle scripts are disabled to bound the
-exposure. Offline operation and the bundled Tier 2/Tier 3 fallback never depend
-on this optional download.
+The scanner's disabled-by-default registry fallback requests an exact, jointly reviewed tool set: ESLint 10.8.0, eslint-plugin-playwright 2.11.0, eslint-plugin-cypress 6.4.3, @typescript-eslint/parser 8.65.0, TypeScript 6.0.3, eslint-plugin-cypress-silent-pass 0.2.2, and eslint-plugin-mocha 12.0.1. These pins are one compatibility boundary: update them together only after the local ESLint path, scanner scope, and security contracts pass. Only these direct versions are pinned — npm resolves each package's transitive closure from its own semver ranges at scan time and the scanner ships no lockfile, so that closure is not integrity-pinned; install lifecycle scripts are disabled to bound the exposure. Offline operation and the bundled Tier 2/Tier 3 fallback never depend on this optional download.
 
 ## Playwright ESLint precedent
 
@@ -51,59 +41,16 @@ The repository's full [59-source evidence ledger](https://github.com/voidmatcha/
 
 ## Post-hoc convergences and planning inputs
 
-This section distinguishes provenance from later corroboration. An item marked
-**convergence** describes an external source that independently supports a
-design already present here; it did not retroactively originate that design.
-An item marked **planning input** may shape future work but is not part of the
-current skill contract.
+This section distinguishes provenance from later corroboration. An item marked **convergence** describes an external source that independently supports a design already present here; it did not retroactively originate that design. An item marked **planning input** may shape future work but is not part of the current skill contract.
 
-- **Convergence — independent verification:** Shopify Engineering's [agentic
-  harness](https://shopify.engineering/building-an-agentic-harness-that-outlasts-the-model)
-  separates generation from verification and allows rejection or downgrade.
-  That independently converges with V6 and the repository's writer/reviewer
-  boundary; no Shopify code or workflow was copied.
-- **Convergence — integrity boundary:** Kent Beck's [“Genie Wants to
-  Leap”](https://newsletter.kentbeck.com/p/genie-wants-to-leap) documents an
-  agent deleting assertions or tests and faking an implementation. This
-  reinforces the existing requirement to preserve original inputs and reject a
-  probe that succeeds by weakening the test or product rather than exposing the
-  intended mismatch.
-- **Convergence — layered evidence:** [TestGen-LLM](https://doi.org/10.1145/3663529.3663839)
-  reports build, reliable-pass, and coverage-improvement filters separately.
-  [Slack's agentic-testing report](https://slack.engineering/agentic-testing-where-agents-fit-in-the-e2e-testing-stack/)
-  measures execution reliability, duration, and cost. These sources reinforce
-  keeping static detection, execution, causal fault detection, stability, and
-  cost as separate claims; neither supplies an `e2e-skills` accuracy or token
-  saving rate.
-- **Planning input — benchmark structure:**
-  [WebTestPilot](https://doi.org/10.1145/3797115) separates manually injected
-  faults from a GitHub-issue-derived bug replication. A future comparative
-  benchmark should preserve that synthetic-fault versus real-bug distinction,
-  while treating WebTestPilot's results as specific to its four-app system and
-  benchmark.
-- **Planning input — pre-generation admission:** Manish Saini's ConfQ 2026 talk,
-  [“AI Can Generate Tests. But It Cannot Generate
-  Trust”](https://www.youtube.com/watch?v=nmgwIm_bHbg), asks whether a proposed
-  test covers a new risk, belongs at the right layer, remains diagnosable, has
-  an owner, and increases confidence. A future generator admission record may
-  borrow and adapt that question structure. It is not a new smell ID and is not
-  current reviewer behavior; business risk and ownership must remain explicit
-  context gaps rather than model guesses.
-- **Planning input — harness presentation:** NAVER D2's Engineering Day 2026
-  talk, [“Building a Playwright E2E Test Harness for AI
-  Agents”](https://www.youtube.com/watch?v=wo0Rsh9hlTo), presents Playwright
-  tests as both executable sensors and agent-readable guides inside a
-  planner/generator/healer and CI-trace loop. Future documentation may borrow
-  that explanatory model only with an oracle-strength qualification: a test is
-  a trustworthy sensor and guide only after its assertion has been shown to
-  encode the intended behavior. The talk's organization-specific context,
-  route count, and CI-run observations are not reviewer behavior or repository
-  performance evidence.
+- **Convergence — independent verification:** Shopify Engineering's [agentic harness](https://shopify.engineering/building-an-agentic-harness-that-outlasts-the-model) separates generation from verification and allows rejection or downgrade. That independently converges with V6 and the repository's writer/reviewer boundary; no Shopify code or workflow was copied.
+- **Convergence — integrity boundary:** Kent Beck's [“Genie Wants to Leap”](https://newsletter.kentbeck.com/p/genie-wants-to-leap) documents an agent deleting assertions or tests and faking an implementation. This reinforces the existing requirement to preserve original inputs and reject a probe that succeeds by weakening the test or product rather than exposing the intended mismatch.
+- **Convergence — layered evidence:** [TestGen-LLM](https://doi.org/10.1145/3663529.3663839) reports build, reliable-pass, and coverage-improvement filters separately. [Slack's agentic-testing report](https://slack.engineering/agentic-testing-where-agents-fit-in-the-e2e-testing-stack/) measures execution reliability, duration, and cost. These sources reinforce keeping static detection, execution, causal fault detection, stability, and cost as separate claims; neither supplies an `e2e-skills` accuracy or token saving rate.
+- **Planning input — benchmark structure:** [WebTestPilot](https://doi.org/10.1145/3797115) separates manually injected faults from a GitHub-issue-derived bug replication. A future comparative benchmark should preserve that synthetic-fault versus real-bug distinction, while treating WebTestPilot's results as specific to its four-app system and benchmark.
+- **Adopted in the generator, not the reviewer:** Manish Saini's ConfQ 2026 talk, [“AI Can Generate Tests. But It Cannot Generate Trust”](https://www.youtube.com/watch?v=nmgwIm_bHbg), asks whether a proposed test covers a new risk, belongs at the right layer, remains diagnosable, has an owner, and increases confidence. `skills/playwright-test-generator/SKILL.md` Step 4 now requires exactly these five fields (distinct risk, right layer, diagnostic handle, owner-source, confidence/unknowns) before scenario approval, with `NEEDS_PRODUCT_CONTEXT` for missing ownership rather than a guess (`evals/evals.json` asserts this). It is still not a new smell ID and is not current reviewer behavior in this file's own scope.
+- **Planning input — harness presentation:** NAVER D2's Engineering Day 2026 talk, [“Building a Playwright E2E Test Harness for AI Agents”](https://www.youtube.com/watch?v=wo0Rsh9hlTo), presents Playwright tests as both executable sensors and agent-readable guides inside a planner/generator/healer and CI-trace loop. Future documentation may borrow that explanatory model only with an oracle-strength qualification: a test is a trustworthy sensor and guide only after its assertion has been shown to encode the intended behavior. The talk's organization-specific context, route count, and CI-run observations are not reviewer behavior or repository performance evidence.
 
-The public evidence ledger gives the quantitative and scope boundaries for the
-first four items. The ConfQ and NAVER items are practitioner framing used only
-for future planning; their directional or organization-specific figures are not
-imported as repository evidence.
+The public evidence ledger gives the quantitative and scope boundaries for the first four items. The ConfQ and NAVER items are practitioner framing used only for future planning; their directional or organization-specific figures are not imported as repository evidence.
 
 ## Adoption rule
 

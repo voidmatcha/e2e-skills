@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=9005893d6c62ad5d775127d3da2719260bfa8f6feba5f20aec11591359bfebb3; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=412e05651072b6624f804eb7f264dec33eb479d3cf22a25151ec324fc60aa968; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 AI 코딩 에이전트가 Playwright와 Cypress E2E 테스트를 생성·검토하고 실패 원인을 분석할 때 쓰는 네 가지 Agent Skills 모음입니다. 새 테스트 생성은 Playwright를 지원하고, 기존 테스트나 PR/diff 범위의 변경 검토와 실패 분석은 Playwright와 Cypress를 지원합니다. 검토 목록 가운데 규칙만으로 판별할 수 있는 항목을 찾는 `deterministic scanner`도 포함합니다.
 

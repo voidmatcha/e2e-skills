@@ -117,9 +117,9 @@ Source: [Playwright Test Agents](https://playwright.dev/docs/test-agents).
 
 Cypress AI Skills can author, review, run, explain, and debug Cypress tests. The official guidance already emphasizes project conventions, missing assertions, brittle selectors, arbitrary waits, and hidden dependencies. `e2e-reviewer` adds a separate cross-framework review pass with stable pattern IDs, PR/diff attribution, false-positive guards, and false-green checks that include blanket `uncaught:exception` suppression.
 
-Use the independent pass after an authoring or repair step, especially when the generated change alters assertions, exception handling, intercept registration, fixtures, or test isolation.
+Use the independent pass after an authoring or repair step, especially when the generated change alters assertions, exception handling, intercept registration, fixtures, or test isolation. The same applies to Cypress Studio's DOM-delta recordings: treat its suggested assertions as review input for this independent pass, not as a final authority, since Studio does not see application code or backend rules.
 
-Sources: [Cypress AI Skills](https://docs.cypress.io/app/tooling/ai-skills) and the [Cypress AI Toolkit](https://github.com/cypress-io/ai-toolkit).
+Sources: [Cypress AI Skills](https://docs.cypress.io/app/tooling/ai-skills), the [Cypress AI Toolkit](https://github.com/cypress-io/ai-toolkit), and [Cypress Studio](https://docs.cypress.io/app/guides/cypress-studio).
 
 ## Run the deterministic scanner
 
