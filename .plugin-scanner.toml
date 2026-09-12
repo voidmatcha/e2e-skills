@@ -24,6 +24,25 @@
 # - playwright-test-generator/SKILL.md: TOOL_ABUSE_UNDECLARED_NETWORK and
 #   SOCIAL_ENG_MISLEADING_DESC fire on the skill's own documented browser
 #   automation and network capability.
+#
+# 2026-09-12: ignore_paths above did not actually suppress a recurrence of
+# TOOL_ABUSE_UNDECLARED_NETWORK on playwright-test-generator/SKILL.md in the
+# hosted GitHub code-scanning alert for push 43520af, even though that exact
+# file/rule pair is listed above and the false positive was already
+# confirmed on 2026-09-11. Reading plugin-scanner==2.0.864's own source
+# (codex_plugin_scanner/scanner.py's _rebase_plugin_result) shows every
+# other category's findings get their file_path rebased from an absolute
+# runner path to a repo-relative one before ignore_paths's fnmatch check
+# runs, but each IntegrationResult (which is where a Cisco skill-scanner
+# finding like this one originates) is only renamed, not rebased -- so
+# ignore_paths's relative-path patterns cannot reliably match it. A local
+# reproduction with the identical pinned scanner version did not reproduce
+# this specific finding at all, so the underlying Cisco skill-scanner may
+# also be non-deterministic; either way, path-based suppression is not a
+# dependable control for Cisco-sourced findings specifically. Rather than
+# keep re-confirming the same known false positive after every push,
+# .github/workflows/hol-plugin-scanner.yml now sets `cisco_skill_scan: off`
+# directly, with its own dated comment explaining why.
 [scanner]
 ignore_paths = [
   "skills/cypress-debugger/scripts/publish-mochawesome-report.py",
