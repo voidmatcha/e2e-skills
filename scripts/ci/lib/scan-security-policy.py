@@ -15,6 +15,19 @@ SELF = Path("scripts/ci/lib/scan-security-policy.py")
 SECURITY_GATE = Path("scripts/ci/pre-push-security.sh")
 SHELL_SUFFIXES = {".sh"}
 RULES = ("eval", "fixed-tmp", "backdoor", "hardcoded-home")
+# Cheap byte-level pre-filter for the hardcoded-home rule, checked before the
+# more expensive decode + regex pass. Must cover every leak shape line_matches()
+# can detect: the classic slash form, the dash/underscore-encoded scratchpad-path
+# form, and a machine-local `ls -l`/`ls -la` owner column.
+HARDCODED_HOME_TRIGGERS = (
+    b"/Users/",
+    b"/home/",
+    b"-Users-",
+    b"_Users_",
+    b" staff ",
+    b" wheel ",
+    b" admin ",
+)
 SHELL_SHEBANG = re.compile(
     br"^#![ \t]*(?:"
     br"/(?:[^ \t\r\n/]+/)*(?:ba|da|k|z)?sh(?:[ \t\r\n]|$)"
@@ -173,6 +186,23 @@ def line_matches(rule: str, line: str) -> bool:
         r"/(?:Users|home)/([A-Za-z0-9._-]+)(?=/|[^A-Za-z0-9._-]|$)",
         line,
     )
+    # Dash/underscore-encoded home paths (e.g. a session scratchpad directory
+    # name shaped "-Users-<name>-Documents-...") don't contain a literal
+    # "/Users/" substring, so they need their own pattern. Capitalized "Users"
+    # only -- a lowercase "home" here is far too common in ordinary compound
+    # identifiers (e.g. "pilot-home-A-S1-...") to use as a signal on its own.
+    homes += re.findall(
+        r"[-_]Users[-_]([A-Za-z0-9.]+)(?=[-_]|$)",
+        line,
+    )
+    # A machine-local `ls -l`/`ls -la` owner column (e.g.
+    # "drwxr-xr-x@  18 <name>  staff  576 ...") leaks the real account name
+    # without any home-path substring at all.
+    homes += re.findall(
+        r"[-dlpsc][-rwxXsS]{9}[.@+]?\s+\d+\s+([A-Za-z][A-Za-z0-9._-]*)\s+"
+        r"(?:staff|wheel|admin|root|daemon)\s+\d+",
+        line,
+    )
     return any(
         user not in {"...", "example", "placeholder", "user"}
         for user in homes
@@ -204,7 +234,10 @@ def scan(root: Path, rule: str, test_git: Path | None = None) -> list[str]:
                     else path.read_bytes().splitlines(keepends=True)
                 )
                 for line_number, raw_line in enumerate(raw_lines, 1):
-                    if b"/Users/" not in raw_line and b"/home/" not in raw_line:
+                    if not any(
+                        trigger in raw_line
+                        for trigger in HARDCODED_HOME_TRIGGERS
+                    ):
                         continue
                     line = raw_line.decode("utf-8", errors="replace")
                     if line_matches(rule, line):

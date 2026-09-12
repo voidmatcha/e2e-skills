@@ -13,6 +13,7 @@
 
 - **The hosted HOL Plugin Scanner false-positived on six long-standing files.** `.plugin-scanner.toml` gained dated `ignore_paths` entries (`scan.sh`, three `SKILL.md` files, `preflight_target.py`) explaining each false-positive class, and `scripts/ci/test-security-gates.py`'s `HOL_SCANNER_FALSE_POSITIVE_PATHS` set was kept in sync with it — the two had silently drifted apart.
 - **`scripts/ci/test-parity.sh`'s CHANGELOG mutation test broke when this changelog was reflowed to one line per paragraph.** The mutate-string literal still assumed the pre-reflow hard-wrapped bytes (`with eighteen tokens\n  of headroom`), so the check silently stopped exercising the real file. Restored to a single-line literal matching this file's current format.
+- **`scripts/ci/lib/scan-security-policy.py`'s hardcoded-home rule missed two real leak shapes.** It only matched a literal `/Users/` or `/home/` substring, so a dash-encoded session-scratchpad path and an embedded `ls -la` tool-output owner column both evaded it — exactly how a real account-name leak reached committed pilot evidence in this release before being caught and redacted. Added a dash/underscore-bound `Users` pattern and an `ls -l`-shaped owner-column pattern; deliberately excluded a bare lowercase `home` pattern after a first attempt produced ~524 false positives from ordinary compound identifiers.
 
 ### Added
 
