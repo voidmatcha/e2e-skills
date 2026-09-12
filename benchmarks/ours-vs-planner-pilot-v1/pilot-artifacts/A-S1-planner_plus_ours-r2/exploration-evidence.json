@@ -1,0 +1,200 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "A-S1-planner_plus_ours-r2",
+  "target_id": "A",
+  "scenario_id": "A-S1",
+  "arm": "planner_plus_ours",
+  "repetition": 2,
+  "oracle_sha256": "bf3329632817c1cc3935dba370e860ced0c2b518acbfc2b2932ff744132fe72c",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "checkbox",
+      "name": "Assistant mode Funny mode",
+      "state": "checked",
+      "selector": "getByRole('checkbox', { name: /funny mode/i })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot of http://localhost:5174/ line 'checkbox \"Assistant mode Funny mode\" [checked] [ref=f2e22]'; playwright-cli generate-locator on that ref returned getByTestId('funny-mode-toggle'); run-code reported isChecked()=true",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "textbox",
+      "name": "Type a message…",
+      "state": "visible/enabled",
+      "selector": "getByPlaceholder('Type a message…')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot line 'textbox \"Type a message…\" [ref=f2e28]'; playwright-cli fill on that ref emitted getByTestId('chat-input').fill(...) and the value landed",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Send",
+      "state": "disabled when empty, enabled after fill, disabled again after send",
+      "selector": "getByRole('button', { name: 'Send' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot line 'button \"Send\" [disabled] [ref=f2e29]' before fill; run-code reported sendEnabledBeforeClick=true after fill and isDisabled()=true after send",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic",
+      "name": "",
+      "state": "user bubble, text = exact sent message",
+      "selector": "getByTestId('message-user')",
+      "provenance": "observed",
+      "evidence_ref": "post-send snapshot node 'generic [ref=f2e32]: Wookiee cookies'; generate-locator on f2e32 returned getByTestId('message-user'); allInnerTexts()=['Wookiee cookies']",
+      "used_in_final_test": false,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic",
+      "name": "",
+      "state": "assistant bubble, settled reply text",
+      "selector": "getByTestId('message-assistant')",
+      "provenance": "observed",
+      "evidence_ref": "post-send snapshot node 'generic [ref=f2e34]: White lemmings do not exist in the modern digital era'; generate-locator on f2e34 returned getByTestId('message-assistant')",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic",
+      "name": "",
+      "state": "transient, text 'Thinking...', count 0 once settled",
+      "selector": "getByTestId('loading-indicator')",
+      "provenance": "observed",
+      "evidence_ref": "run-code poll immediately after click reported \"loading-indicator visible, text=Thinking...\", then count 0 after the reply landed",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "paragraph",
+      "name": "No messages yet.",
+      "state": "visible on settled empty transcript",
+      "selector": "getByText('No messages yet.')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot line 'paragraph [ref=f2e31]: No messages yet.'; run-code reported isVisible()=true after Reset Chat",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "generator_implementation",
+      "role": "",
+      "name": "",
+      "state": "resolves to exactly 2 elements once settled, in render order",
+      "selector": "page.locator('.chat-window__list > [data-testid]')",
+      "provenance": "observed",
+      "evidence_ref": "derived from the live post-send DOM (list children f2e32/f2e34 under the .chat-window__list node f2e23) and confirmed at runtime by the V2/V3 call logs: '9 x locator resolved to 2 elements'",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Reset Chat",
+      "state": "enabled at rest",
+      "selector": "getByRole('button', { name: 'Reset Chat' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot line 'button \"Reset Chat\" [ref=f2e30]'; used via getByTestId('reset-button').click() in exploration run-code to return to the empty state",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Help",
+      "state": "enabled at rest",
+      "selector": "getByTestId('help-suggestion')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot line 'button \"Help\" [ref=f2e26]'; identified only to confirm it is a distinct control from the Send button and is not matched by the Send name filter",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "official_planner_delta",
+      "role": "paragraph",
+      "name": "Loading…",
+      "state": "transient pre-settle placeholder with all controls disabled",
+      "selector": "getByText('Loading…')",
+      "provenance": "unknown",
+      "evidence_ref": null,
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    }
+  ],
+  "states": {
+    "required_total": 4,
+    "reached": 4,
+    "transitions_observed": [
+      {
+        "from": "empty (settled, 'No messages yet.', Send disabled, Funny mode checked)",
+        "to": "typed (Send enabled)",
+        "evidence_ref": "run-code before/after fill: sendEnabledBeforeClick=true; ARIA snapshot showed [disabled] removed from the Send button"
+      },
+      {
+        "from": "typed",
+        "to": "pending",
+        "evidence_ref": "run-code poll racing the reply delay found getByTestId('loading-indicator') with innerText 'Thinking...'"
+      },
+      {
+        "from": "pending",
+        "to": "settled",
+        "evidence_ref": "loading-indicator count 0, message-user=['Wookiee cookies'], message-assistant=['White lemmings do not exist in the modern digital era'], input cleared, Send disabled again; reproduced for 'Bananas for scale' -> the distinct B reply, proving first-letter keying"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "boot-time 'Loading…' placeholder with all five controls disabled — the planner reported seeing it, but I did not durably capture it myself and the candidate asserts nothing about it (declined as a transient pre-settle race)",
+      "the error state ('Error: failed to get AI response') on the offline path — unreachable by design, since Funny mode never issues a request that can fail",
+      "the exact-match 'Hello there!' Easter egg and its GIF, the '?'+topic-keyword app-assistant interceptor, the exact 'Help' menu, and the no-letter/leading-non-letter fallback — source-known hazards, avoided by the test data, never exercised live",
+      "24 of the 26 letter mappings — only W (twice) and B were observed live in this session",
+      "whether persisted localStorage exchanges surface on the Message history / Search screens",
+      "Enter-to-send keyboard submission and any non-desktop viewport"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 2
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 1
+  },
+  "usage": {
+    "wall_seconds_setup": 9.4,
+    "wall_seconds_steady_state": 1357.9,
+    "browser_actions": 26,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 73,
+    "reported_tokens_in": 134,
+    "reported_tokens_out": 61717,
+    "reported_cost_usd": 7.421695400000003
+  },
+  "summary": {
+    "observed_locator_count": 10,
+    "inferred_locator_count": 0,
+    "unknown_locator_count": 1,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 5,
+    "observed_claims_total": 10
+  }
+}

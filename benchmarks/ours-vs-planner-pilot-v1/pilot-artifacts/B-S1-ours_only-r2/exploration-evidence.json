@@ -1,0 +1,198 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "B-S1-ours_only-r2",
+  "target_id": "B",
+  "scenario_id": "B-S1",
+  "arm": "ours_only",
+  "repetition": 2,
+  "oracle_sha256": "ababe741ce08d1374a2c1f607d9d2cbaa9eff4b136c9eaf5baa232e814d53bb2",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "application",
+      "name": "Gridfinity drawer grid, 10 columns by 8 rows",
+      "state": "visible",
+      "selector": "page.getByRole('application')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot line 264 of /tmp/pilot-snap-empty.yml; confirmed by aria-label read in run-code",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Bin 1 by 1, category Coral",
+      "state": "visible, aria-pressed=true",
+      "selector": "grid.getByRole('button', { name: /^Bin 1 by 1/ })",
+      "provenance": "observed",
+      "evidence_ref": "live outerHTML after grid click: role=\"button\" aria-label=\"Bin 1 by 1, category Coral\"; grid-scoped locator count=1",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "visible; text '0% filled · 0 bins' -> '1% filled · 1 bins'",
+      "selector": "getSidebar(page).getByText(/% filled/)",
+      "provenance": "observed",
+      "evidence_ref": "snapshot line 60 before click, line 60 after click; element inspect: SPAN inside [data-sidebar], page-wide count=1, codepoints confirm U+00B7",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "count 0 -> 1",
+      "selector": "page.locator('[data-bin-id]')",
+      "provenance": "observed",
+      "evidence_ref": "live outerHTML data-bin-id=\"mtx2ilrc-b9f4c69f4a\"; count read 0 before / 1 after click",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "visible",
+      "selector": "page.locator('[data-sidebar]') via getSidebar()",
+      "provenance": "observed",
+      "evidence_ref": "summary span evaluate: closest('[data-sidebar]') returned true",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "bounding box x=350 y=119 w=551 h=441",
+      "selector": "page.locator('[role=\"application\"]') via getGridBounds()",
+      "provenance": "observed",
+      "evidence_ref": "boundingBox read in run-code; same element as L1",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "present",
+      "selector": "page.waitForSelector('header') via waitForAppReady()",
+      "provenance": "observed",
+      "evidence_ref": "waitForSelector('header') resolved on every live navigation this session",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "generator_implementation",
+      "role": "dialog",
+      "name": "",
+      "state": "count 0 in observed states",
+      "selector": "page.locator('[role=\"dialog\"]:not([aria-label=\"Labs experimental features\"])') via getActiveDialog()",
+      "provenance": "inferred",
+      "evidence_ref": null,
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Bin List 1",
+      "state": "expanded",
+      "selector": "page.getByRole('button', { name: 'Bin List 1' })",
+      "provenance": "observed",
+      "evidence_ref": "post-click snapshot line 376 (header gains the count badge); considered as an alternative summary surface, not used",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "ours_exploration",
+      "role": "heading",
+      "name": "1×1 Bin",
+      "state": "visible",
+      "selector": "getInspector(page).getByRole('heading', { name: '1×1 Bin' })",
+      "provenance": "observed",
+      "evidence_ref": "post-click snapshot line 304 in the Inspector tabpanel; not needed for the approved outcome",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "0% filled · 0 bins (empty baseline)",
+      "selector": "page.getByText(/% filled/)",
+      "provenance": "observed",
+      "evidence_ref": "fresh second browser session on an empty profile returned '0% filled · 0 bins', stable across 3s",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    }
+  ],
+  "states": {
+    "required_total": 3,
+    "reached": 3,
+    "transitions_observed": [
+      {
+        "from": "empty new layout (0 bins, '0% filled · 0 bins')",
+        "to": "one 1x1 bin at grid cell 1/1 ('1% filled · 1 bins')",
+        "evidence_ref": "mouse click at grid bounds +50,+50; bin box x=351 y=120 w=54 h=54 inside grid box, computed grid-area '1 / 1 / span 1 / span 1'"
+      },
+      {
+        "from": "bin in memory",
+        "to": "bin persisted at the IndexedDB boundary",
+        "evidence_ref": "gridfinity-db/layouts record string length 208 (empty) -> 255 (one bin)"
+      },
+      {
+        "from": "persisted layout",
+        "to": "restored after full page reload",
+        "evidence_ref": "post-reload read: 1 bin on grid, summary '1% filled · 1 bins'"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "runner-level mutated/faulted execution of the candidate (V2 and V3) - requires a temporary spec path outside the approved command allowlist",
+      "suite-context and parallel V5 execution modes - same allowlist limitation",
+      "a failed-write / save-error UI state (the app toasts only after repeated auto-save failures) - not exercised",
+      "any role=dialog state: no dialog appeared in any observed state, so getActiveDialog() in afterEach is inferred from the project fixture and e2e/README.md, not observed"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 1
+  },
+  "usage": {
+    "wall_seconds_setup": 43.4,
+    "wall_seconds_steady_state": 1353.5,
+    "browser_actions": 24,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 84,
+    "reported_tokens_in": 146,
+    "reported_tokens_out": 57626,
+    "reported_cost_usd": 7.498554499999999
+  },
+  "summary": {
+    "observed_locator_count": 10,
+    "inferred_locator_count": 1,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 1,
+    "observed_claims_verified": 4,
+    "observed_claims_total": 10
+  }
+}

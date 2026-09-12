@@ -1,0 +1,248 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "B-S2-planner_plus_ours-r1",
+  "target_id": "B",
+  "scenario_id": "B-S2",
+  "arm": "planner_plus_ours",
+  "repetition": 1,
+  "oracle_sha256": "4af2f1777f2211c36548ada1c852a0674f61b3efc0036da22bcef35c23f7cd2d",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "application",
+      "name": "Gridfinity drawer grid, 10 columns by 8 rows",
+      "state": "visible",
+      "selector": "getByRole('application', { name: gridName(10, 8), exact: true })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot line 270 on fresh profile; re-resolved in a clean-profile dry-run (grid10visible=true)",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "application",
+      "name": "Gridfinity drawer grid, 5 columns by 8 rows",
+      "state": "visible",
+      "selector": "getByRole('application', { name: gridName(5, 8), exact: true })",
+      "provenance": "observed",
+      "evidence_ref": "post-shrink snapshot line 270 and dry-run getAttribute('aria-label') === 'Gridfinity drawer grid, 5 columns by 8 rows'",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "spinbutton",
+      "name": "Drawer width in grid units",
+      "state": "visible, value 10",
+      "selector": "getSidebar(page).getByRole('spinbutton', { name: 'Drawer width in grid units' })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot line 120 (value \"10\"); dry-run widthCount=1, widthValue='10' scoped inside [data-sidebar]",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Bin 2 by 2, category Coral",
+      "state": "visible, aria-pressed=true",
+      "selector": "[data-bin-id]",
+      "provenance": "observed",
+      "evidence_ref": "full attribute dump of the drawn bin: data-bin-id=mtwum1pn-113157a6eb, role=button, grid-area '1 / 9 / span 2 / span 2'",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "(size text, not unique)",
+      "state": "visible",
+      "selector": "[data-staging-bin-id=\"${binId}\"]",
+      "provenance": "observed",
+      "evidence_ref": "post-shrink attribute dump: data-staging-bin-id equals the pre-shrink data-bin-id; dry-run stagedSameId=true",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Stash 1 bins",
+      "state": "visible, expanded",
+      "selector": "getByRole('button', { name: 'Stash 1 bins' })",
+      "provenance": "observed",
+      "evidence_ref": "post-shrink snapshot line 283 'button \"Stash 1 bins\" [expanded]'; dry-run stashBtn=true",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "visible",
+      "selector": "[data-sidebar] (getSidebar fixture)",
+      "provenance": "observed",
+      "evidence_ref": "dry-run resolved the width spinbutton scoped inside it (count=1)",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "status",
+      "name": "Stash",
+      "state": "visible (empty state)",
+      "selector": "getByRole('status', { name: 'Stash' })",
+      "provenance": "observed",
+      "evidence_ref": "pre-shrink textContent 'Stash—Drag a bin here to stash it'; stopped matching post-shrink (role flips to button), which is how the state-dependent role was discovered",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "official_planner_delta",
+      "role": "spinbutton",
+      "name": "Drawer depth in grid units",
+      "state": "visible, value 8",
+      "selector": "getByRole('spinbutton', { name: 'Drawer depth in grid units' })",
+      "provenance": "observed",
+      "evidence_ref": "planner resolved it live; also visible at snapshot line 126 in my own session",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Decrease/Increase Drawer width in grid units",
+      "state": "visible",
+      "selector": "getByRole('button', { name: 'Increase Drawer width in grid units' })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot lines 119 and 121",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "ours_exploration",
+      "role": "alert",
+      "name": "",
+      "state": "absent",
+      "selector": "[role=alert]",
+      "provenance": "observed",
+      "evidence_ref": "post-shrink query returned alerts: [] and statuses: [] — no toast announces the displacement (limitation, no locator fabricated)",
+      "used_in_final_test": false,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L12",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Clear all",
+      "state": "visible after displacement",
+      "selector": "getByRole('button', { name: 'Clear all' })",
+      "provenance": "observed",
+      "evidence_ref": "post-shrink snapshot line 288",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L13",
+      "source_arm_stage": "ours_exploration",
+      "role": "tab",
+      "name": "Baseplate",
+      "state": "visible",
+      "selector": "getByRole('tab', { name: 'Baseplate' })",
+      "provenance": "observed",
+      "evidence_ref": "clicking it navigated to /baseplate — a separate route, out of the frozen scenario scope, so not used",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L14",
+      "source_arm_stage": "generator_implementation",
+      "role": "",
+      "name": "",
+      "state": "count 1 then 0",
+      "selector": "[data-bin-id] (count assertions via waitForBinCount fixture)",
+      "provenance": "observed",
+      "evidence_ref": "dry-run binCount=1 pre-shrink, gridBinsAfter=0 post-shrink",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L15",
+      "source_arm_stage": "reconciliation",
+      "role": "",
+      "name": "",
+      "state": "bounding box x beyond the post-shrink boundary",
+      "selector": "page.locator('[data-bin-id]').boundingBox()",
+      "provenance": "observed",
+      "evidence_ref": "bin rendered at grid-area '1 / 9 / span 2 / span 2' inside a grid box {x:350,width:551}; added after an independent review showed the probe's position was assumed rather than asserted",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    }
+  ],
+  "states": {
+    "required_total": 3,
+    "reached": 3,
+    "transitions_observed": [
+      {
+        "from": "fresh 10x8 drawer, no bins",
+        "to": "2x2 bin occupying columns 9-10",
+        "evidence_ref": "[data-bin-id] count 0 -> 1 after the mouse drag; element style grid-area '1 / 9 / span 2 / span 2'"
+      },
+      {
+        "from": "2x2 bin on a 10-column grid",
+        "to": "5-column grid with the bin displaced and reported",
+        "evidence_ref": "grid aria-label '10 columns by 8 rows' -> '5 columns by 8 rows'; [data-bin-id] 1 -> 0; [data-staging-bin-id] 0 -> 1 with the identical id; stash role=status 'Stash' -> role=button 'Stash 1 bins'"
+      },
+      {
+        "from": "displacement feature intact",
+        "to": "displacement cascade faulted",
+        "evidence_ref": "V3 route mutation of the served updateDrawer.ts module: bin stayed on the grid (Received: 1) while the grid still recomputed"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "No toast / role=alert / aria-live announcement of the displacement exists — verified by querying [role=alert] and [role=status] right after the resize (both empty). The report surface is the Stash panel; no announcement locator was invented.",
+      "Depth-axis displacement (planner observed that a depth shrink trims row 1 and renumbers survivors) — I did not re-resolve it live and it is not exercised; recorded as RETURNED_TO_APPROVAL_GATE, not implemented.",
+      "Mobile/tablet viewports: the drawer-size controls do not exist below 900px, so the test skips there by design — the behaviour was never observed on those projects.",
+      "Suite-context and multi-project runs of the candidate were not executed (outside the approved command allowlist)."
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [
+      "The application itself requested https://fonts.googleapis.com/css2?family=IBM+Plex+Mono — aborted pre-dispatch by the origin guard; not an action I initiated or followed."
+    ],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 9
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 1
+  },
+  "usage": {
+    "wall_seconds_setup": 55.7,
+    "wall_seconds_steady_state": 2760.9,
+    "browser_actions": 30,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 102,
+    "reported_tokens_in": 182,
+    "reported_tokens_out": 73800,
+    "reported_cost_usd": 18.857413549999993
+  },
+  "summary": {
+    "observed_locator_count": 15,
+    "inferred_locator_count": 0,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 7,
+    "observed_claims_total": 15
+  }
+}

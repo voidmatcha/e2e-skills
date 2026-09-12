@@ -1,0 +1,286 @@
+- heading "Gridfinity Planner & Layout Tool" [level=1]
+- link "Skip to grid planner":
+  - /url: "#main-grid"
+- banner:
+  - navigation "Tool Switcher":
+    - tablist "Active tool":
+      - tab "Layout" [selected]:
+        - img
+        - text: Layout
+      - tab "Bins":
+        - img
+        - text: Bins
+      - tab "Baseplate":
+        - img
+        - text: Baseplate
+  - button "Click to edit layout name": Untitled layout
+  - 'button "Switch layout (current: Untitled layout)"'
+  - button "Print layout":
+    - img
+    - text: Print
+  - button "Export layout (3D)":
+    - img
+    - text: Export
+  - tooltip "Export layout (3D)"
+  - button "Undo (⌘+Z)":
+    - img
+  - button "Redo (⌘+Y)" [disabled]:
+    - img
+  - button "Share layout":
+    - img
+  - button "Change language":
+    - img
+    - text: EN
+    - img
+  - button "Feedback":
+    - img
+    - text: Feedback
+  - button "Show help and keyboard shortcuts":
+    - img
+    - text: Help
+  - button "Open settings":
+    - img
+  - button "More links":
+    - img
+  - button "Support me on Ko-fi"
+- complementary:
+  - heading "Tools" [level=2]
+  - button "Collapse left panel":
+    - img
+  - button "Size Brush":
+    - img
+    - text: Size Brush
+    - img
+  - button "Fill 79 gaps":
+    - img
+    - text: Fill 79 gaps
+  - button "Clear 1 bins":
+    - img
+    - text: Clear 1 bins
+  - button "Layers" [expanded]
+  - button "Add new layer"
+  - region "Layers":
+    - button "9u headroom"
+    - button "Select Layer 1":
+      - button "Layer 1"
+      - button "Decrease Layer 1 height":
+        - img
+      - text: 3u
+      - button "Increase Layer 1 height":
+        - img
+    - text: 1% filled · 1 bins 3/12u
+  - button "Categories" [expanded]
+  - button "Save as defaults":
+    - img
+  - button "Add category"
+  - region "Categories":
+    - button "Change color"
+    - button "Apply Coral to 1 selected bin(s)" [pressed]: Coral
+    - button "Edit Coral":
+      - img
+    - text: "1"
+    - button "Change color"
+    - button "Apply Sky to 1 selected bin(s)": Sky
+    - button "Edit Sky":
+      - img
+    - button "Delete Sky"
+    - button "Change color"
+    - button "Apply Green to 1 selected bin(s)": Green
+    - button "Edit Green":
+      - img
+    - button "Delete Green"
+    - button "Change color"
+    - button "Apply Cloud to 1 selected bin(s)": Cloud
+    - button "Edit Cloud":
+      - img
+    - button "Delete Cloud"
+    - button "Change color"
+    - button "Apply Charcoal to 1 selected bin(s)": Charcoal
+    - button "Edit Charcoal":
+      - img
+    - button "Delete Charcoal"
+  - button "Inspiration Gallery Get ideas for your drawer":
+    - img
+    - text: Inspiration Gallery Get ideas for your drawer
+    - img
+  - button "Grid Size" [expanded]
+  - region "Grid Size":
+    - text: Width (u)
+    - button "Decrease Drawer width in grid units"
+    - spinbutton "Drawer width in grid units": "10"
+    - button "Increase Drawer width in grid units"
+    - text: Depth (u)
+    - button "Decrease Drawer depth in grid units"
+    - spinbutton "Drawer depth in grid units": "8"
+    - button "Increase Drawer depth in grid units"
+    - text: Drawer height
+    - button "Decrease Drawer height in millimeters"
+    - spinbutton "Drawer height in millimeters": "84"
+    - button "Increase Drawer height in millimeters"
+    - button "Edit measured drawer dimensions": 420 × 336 × 84 mm
+    - paragraph: Add a height measurement to check the lid closes
+    - checkbox "Toggle half-grid mode"
+    - text: Half-grid mode H
+    - checkbox "Custom drawer shape"
+    - text: Custom drawer shape
+    - button "Drawer shape options"
+  - button "Physical Units" [expanded]
+  - region "Physical Units":
+    - text: Grid unit
+    - spinbutton "Grid unit X": "42"
+    - button "Unlink X and Y grid units":
+      - img
+    - text: mm Height unit
+    - spinbutton "Height unit": "7"
+    - text: mm Print bed
+    - spinbutton "Print bed width": "256"
+    - button "Unlink width and depth":
+      - img
+    - text: mm
+    - button "Reset to Gridfinity Standard" [disabled]
+    - button "Fit bins to your drawer"
+  - button "Baseplate"
+  - button "Manage baseplates"
+  - button "Learn"
+  - text: Gridfinity Layout Tool
+  - button "Open What's New": v4.489.0
+  - tooltip "See what's changed recently"
+  - text: Gridfinity by
+  - link "Zack Freedman":
+    - /url: https://www.youtube.com/c/ZackFreedman
+  - text: Tool by
+  - link "Andy Aragon":
+    - /url: https://www.linkedin.com/in/andyhmai/
+  - text: ·
+  - link "Tip":
+    - /url: https://ko-fi.com/andyaragon
+    - img
+    - text: Tip
+  - text: ·
+  - link "Supporters":
+    - /url: /supporters
+  - text: ·
+  - link "Privacy":
+    - /url: /privacy
+  - text: ·
+  - link "Terms":
+    - /url: /terms
+- main:
+  - group "Zoom controls":
+    - button "Zoom out"
+    - text: 170%
+    - button "Zoom in"
+    - button "Fit grid to screen": Fit
+  - button "Show 3D preview":
+    - img
+    - text: 3D View
+  - button "Select bins in row 8": "8"
+  - button "Select bins in row 7": "7"
+  - button "Select bins in row 6": "6"
+  - button "Select bins in row 5": "5"
+  - button "Select bins in row 4": "4"
+  - button "Select bins in row 3": "3"
+  - button "Select bins in row 2": "2"
+  - button "Select bins in row 1": "1"
+  - application "Gridfinity drawer grid, 10 columns by 8 rows":
+    - button "Bin 1 by 1, category Coral" [pressed]:
+      - text: 1×1
+      - slider "Resize left edge"
+      - slider "Resize right edge"
+      - slider "Resize top edge"
+      - slider "Resize bottom edge"
+      - slider "Resize top-left corner"
+      - slider "Resize top-right corner"
+      - slider "Resize bottom-left corner"
+      - slider "Resize bottom-right corner"
+  - button "Select bins in column 1": "1"
+  - button "Select bins in column 2": "2"
+  - button "Select bins in column 3": "3"
+  - button "Select bins in column 4": "4"
+  - button "Select bins in column 5": "5"
+  - button "Select bins in column 6": "6"
+  - button "Select bins in column 7": "7"
+  - button "Select bins in column 8": "8"
+  - button "Select bins in column 9": "9"
+  - button "Select bins in column 10": "10"
+  - status "Stash":
+    - img
+    - text: Stash — Drag a bin here to stash it
+- complementary:
+  - button "Collapse right panel":
+    - img
+  - tablist:
+    - tab "Inspector" [selected]
+    - tab "History"
+  - tabpanel "Inspector":
+    - button "Bin Properties" [expanded]
+    - region "Bin Properties":
+      - heading "1×1 Bin" [level=2]
+      - button "Deselect bin"
+      - text: Width
+      - button "Decrease Width" [disabled]
+      - spinbutton "Width": "1"
+      - button "Increase Width"
+      - button "Swap width and depth"
+      - text: Depth
+      - button "Decrease Depth" [disabled]
+      - spinbutton "Depth": "1"
+      - button "Increase Depth"
+      - text: 42 × 42 × 21 mm
+      - button "Lock size"
+      - text: Height (mm)
+      - button "Decrease Bin height" [disabled]
+      - spinbutton "Bin height": "21"
+      - button "Increase Bin height"
+      - text: = 3u Clearance (mm)
+      - button "Decrease Bin clearance" [disabled]
+      - spinbutton "Bin clearance": "0"
+      - button "Increase Bin clearance"
+      - text: "= 0u Min 21mm: layer height · Max 84mm: remaining space Prints 25.4mm · stacks +20.65mm each"
+      - img
+      - text: 1×1 fits print bed (6×6mm) Category
+      - combobox "Bin category":
+        - option "Coral" [selected]
+        - option "Sky"
+        - option "Green"
+        - option "Cloud"
+        - option "Charcoal"
+      - text: Label
+      - combobox "Bin label"
+      - button "Search for 1×1 bin": Find STL
+      - text: Linked Design
+      - button "Create"
+      - button "Link":
+        - img
+        - text: Link
+      - text: Notes
+      - textbox "Bin notes":
+        - /placeholder: e.g., 2 dividers, STL link, contents
+      - text: 0/256 Custom Properties
+      - button "Add custom property": Add
+      - text: No custom properties
+      - button "To Stash"
+      - button "Delete"
+    - button "Bin List 1" [expanded]
+    - button "Copy bin list as TSV":
+      - img
+    - region "Bin List 1":
+      - table:
+        - rowgroup:
+          - row "Size H Qty Fil.":
+            - columnheader "Size"
+            - columnheader "H"
+            - columnheader "Qty"
+            - columnheader "Fil."
+        - rowgroup:
+          - row "Coral 1×1 3u 1 6.21":
+            - cell "Coral 1×1":
+              - img "Coral"
+              - text: 1×1
+            - cell "3u"
+            - cell "1"
+            - cell "6.21"
+      - text: Nozzle size
+      - spinbutton "Nozzle size": "0.4"
+      - text: mm Time~36m Cost$0.38 1 bins ~6.2m filament Spool 1.9%
+      - progressbar "Spool"

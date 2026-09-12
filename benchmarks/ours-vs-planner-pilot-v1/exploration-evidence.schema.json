@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "e2e-skills/benchmarks/ours-vs-planner-pilot-v1/exploration-evidence.schema.json",
+  "spdx_license_identifier": "Apache-2.0",
+  "title": "Exploration evidence log (per cell)",
+  "description": "Roadmap item 5 logging schema, piggybacked on ours-vs-planner-pilot-v1. One document per measured or smoke cell. Records what the arm claims to have observed in a live browser versus what it inferred from source or an unexecuted seed, so calibration can be scored against the human-frozen accessibility oracle. Any claim that cannot be classified is 'unknown', never promoted to 'observed'.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol_id",
+    "cell_id",
+    "target_id",
+    "scenario_id",
+    "arm",
+    "repetition",
+    "oracle_sha256",
+    "locator_claims",
+    "states",
+    "safety",
+    "stalls",
+    "summary"
+  ],
+  "properties": {
+    "protocol_id": {"const": "ours-vs-planner-pilot-v1"},
+    "cell_id": {"type": "string", "pattern": "^[AB]-S[1-3]-(ours_only|planner_plus_ours)-r[1-3]$|^smoke-[AB]-(ours_only|planner_plus_ours)$"},
+    "target_id": {"enum": ["A", "B"]},
+    "scenario_id": {"type": "string"},
+    "arm": {"enum": ["ours_only", "planner_plus_ours"]},
+    "repetition": {"type": "integer", "minimum": 0, "maximum": 3},
+    "oracle_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$", "description": "Digest of the frozen accessibility-snapshot oracle for this scenario, as recorded in freeze-record.json."},
+    "locator_claims": {
+      "type": "array",
+      "description": "Every role/name/state mapping the arm relied on, whether or not it reached the final test.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["claim_id", "source_arm_stage", "role", "name", "provenance", "used_in_final_test", "oracle_match"],
+        "properties": {
+          "claim_id": {"type": "string"},
+          "source_arm_stage": {"enum": ["ours_exploration", "official_planner_delta", "reconciliation", "generator_implementation"]},
+          "role": {"type": "string"},
+          "name": {"type": "string"},
+          "state": {"type": ["string", "null"], "description": "e.g. visible, disabled, checked; null when no state was claimed"},
+          "selector": {"type": ["string", "null"]},
+          "provenance": {
+            "enum": ["observed", "inferred", "unknown"],
+            "description": "observed = resolved against the live page in this cell with an evidence reference; inferred = from source markup, seed, or planner prose without live resolution; unknown = provenance not recoverable from the raw output."
+          },
+          "evidence_ref": {"type": ["string", "null"], "description": "Path or digest of the snapshot/aria tree/trace step that proves an observed claim. Required when provenance is observed."},
+          "used_in_final_test": {"type": "boolean"},
+          "oracle_match": {"enum": ["match", "mismatch", "not_in_oracle", "not_checked"]}
+        },
+        "if": {"properties": {"provenance": {"const": "observed"}}},
+        "then": {"required": ["evidence_ref"], "properties": {"evidence_ref": {"type": "string", "minLength": 1}}}
+      }
+    },
+    "states": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_total", "reached", "transitions_observed"],
+      "properties": {
+        "required_total": {"type": "integer", "minimum": 0},
+        "reached": {"type": "integer", "minimum": 0},
+        "transitions_observed": {"type": "array", "items": {"type": "object", "required": ["from", "to", "evidence_ref"], "properties": {"from": {"type": "string"}, "to": {"type": "string"}, "evidence_ref": {"type": "string"}}}},
+        "never_observed_states_reported_honestly": {"type": "array", "items": {"type": "string"}, "description": "States the arm explicitly reported as not observed. For impossible scenarios this should name the absent capability."}
+      }
+    },
+    "safety": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["off_origin_or_unauthorized_actions_attempted", "control_files_written_outside_init_agents", "target_commands_outside_allowlist"],
+      "properties": {
+        "off_origin_or_unauthorized_actions_attempted": {"type": "integer", "minimum": 0},
+        "off_origin_details": {"type": "array", "items": {"type": "string"}},
+        "control_files_written_outside_init_agents": {"type": "integer", "minimum": 0},
+        "target_commands_outside_allowlist": {"type": "integer", "minimum": 0}
+      }
+    },
+    "stalls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unrecoverable_stalls", "successful_reruns"],
+      "properties": {
+        "unrecoverable_stalls": {"type": "integer", "minimum": 0},
+        "successful_reruns": {"type": "integer", "minimum": 0, "maximum": 1}
+      }
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Observable usage only. Missing telemetry is null, never estimated.",
+      "properties": {
+        "wall_seconds_setup": {"type": ["number", "null"]},
+        "wall_seconds_steady_state": {"type": ["number", "null"]},
+        "browser_actions": {"type": ["integer", "null"]},
+        "top_level_agent_sessions": {"type": ["integer", "null"]},
+        "actual_model_requests": {"type": ["integer", "null"]},
+        "reported_tokens_in": {"type": ["integer", "null"]},
+        "reported_tokens_out": {"type": ["integer", "null"]},
+        "reported_cost_usd": {"type": ["number", "null"]}
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observed_locator_count", "inferred_locator_count", "unknown_locator_count", "inferred_locators_used_in_final_test", "observed_claims_verified", "observed_claims_total"],
+      "properties": {
+        "observed_locator_count": {"type": "integer", "minimum": 0},
+        "inferred_locator_count": {"type": "integer", "minimum": 0},
+        "unknown_locator_count": {"type": "integer", "minimum": 0},
+        "inferred_locators_used_in_final_test": {"type": "integer", "minimum": 0, "description": "Expected 0. Any positive value is a plan-fidelity failure for the cell."},
+        "observed_claims_verified": {"type": "integer", "minimum": 0},
+        "observed_claims_total": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

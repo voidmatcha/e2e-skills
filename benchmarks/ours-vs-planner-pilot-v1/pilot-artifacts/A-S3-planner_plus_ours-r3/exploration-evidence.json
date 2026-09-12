@@ -1,0 +1,222 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "A-S3-planner_plus_ours-r3",
+  "target_id": "A",
+  "scenario_id": "A-S3",
+  "arm": "planner_plus_ours",
+  "repetition": 3,
+  "oracle_sha256": "541a15fec6949a14ece3e258b5eee87d903806769c3095354e9edb7d4d563ef0",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "textbox",
+      "name": "Type a message…",
+      "state": "visible, enabled",
+      "selector": "getByPlaceholder('Type a message…')",
+      "provenance": "observed",
+      "evidence_ref": "a11y snapshot of http://localhost:5174/ this session: 'textbox \"Type a message…\" [ref=e5]'; filled successfully via ref e5",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Send",
+      "state": "disabled when input empty; enabled after filling input",
+      "selector": "getByRole('button', { name: 'Send' })",
+      "provenance": "observed",
+      "evidence_ref": "a11y snapshot showed 'button \"Send\" [disabled, ref=e6]' on load; after filling the textbox the click on e6 succeeded and produced a message pair",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Reset Chat",
+      "state": "visible, enabled",
+      "selector": "getByRole('button', { name: 'Reset Chat' })",
+      "provenance": "observed",
+      "evidence_ref": "a11y snapshot of / : 'button \"Reset Chat\" [ref=e7]'",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "checkbox",
+      "name": "Assistant mode Funny mode",
+      "state": "checked=true",
+      "selector": "getByRole('checkbox', { name: /funny mode/i })",
+      "provenance": "observed",
+      "evidence_ref": "a11y snapshot of / : 'checkbox \"Assistant mode Funny mode\" [checked=true, ref=e17]'",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Help",
+      "state": "visible, enabled (chat suggestion chip)",
+      "selector": "getByTestId('help-suggestion')",
+      "provenance": "observed",
+      "evidence_ref": "a11y snapshot of / : 'button \"Help\" [ref=e4]' distinct from nav link 'Help' [ref=e16]",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "navigation",
+      "name": "Main",
+      "state": "visible; children: Chat, Search, Message history, Playground, Help",
+      "selector": "getByRole('navigation', { name: 'Main' })",
+      "provenance": "observed",
+      "evidence_ref": "a11y snapshot of / : 'navigation \"Main\" [ref=e2]' with five link children",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "heading",
+      "name": "Playwright Chat Lab",
+      "state": "visible, level=1",
+      "selector": "getByRole('heading', { name: 'Playwright Chat Lab', level: 1 })",
+      "provenance": "observed",
+      "evidence_ref": "a11y snapshot of / : 'heading \"Playwright Chat Lab\" [level=1, ref=e11]'",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Delete history",
+      "state": "disabled (on /history with empty history)",
+      "selector": "getByRole('button', { name: 'Delete history' })",
+      "provenance": "observed",
+      "evidence_ref": "a11y snapshot of http://localhost:5174/history : 'button \"Delete history\" [disabled, ref=e4]'",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "searchbox",
+      "name": "SEARCH",
+      "state": "visible",
+      "selector": "getByRole('searchbox')",
+      "provenance": "observed",
+      "evidence_ref": "a11y snapshot of http://localhost:5174/search : 'searchbox \"SEARCH\" [ref=e13]'",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "ours_exploration",
+      "role": "button (sign-in / log-in control)",
+      "name": "",
+      "state": "DOES NOT EXIST",
+      "selector": null,
+      "provenance": "observed",
+      "evidence_ref": "absence proven live: full a11y snapshots of /, /search, /history, /playground, /help contain no such node, and a live DOM enumeration of every button/a on / returned only 'Aurora | Test Runner | Go to the chat screen | Chat | Search | Message history | Playground | Help | Help | Send | Reset Chat'",
+      "used_in_final_test": false,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "ours_exploration",
+      "role": "button (export / download / PDF control on chat screen)",
+      "name": "",
+      "state": "DOES NOT EXIST",
+      "selector": null,
+      "provenance": "observed",
+      "evidence_ref": "absence proven live in both empty and populated chat states: identical control sets before/after sending a message, and a word-match over document.body.innerHTML for pdf/export/download/signin/signout/login/logout/account/print returned NO_MATCHES",
+      "used_in_final_test": false,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L12",
+      "source_arm_stage": "official_planner_delta",
+      "role": "testid",
+      "name": "chat-input",
+      "state": "visible, enabled",
+      "selector": "getByTestId('chat-input')",
+      "provenance": "observed",
+      "evidence_ref": "planner used it live to type 'Hello, testing export' and send, producing a user message and an assistant reply; not independently re-resolved by me and superseded by L1 (role+name is the higher stable tier)",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L13",
+      "source_arm_stage": "official_planner_delta",
+      "role": "listitem",
+      "name": "Auth middleware",
+      "state": "visible on /playground (inert demo filter data, not an auth feature)",
+      "selector": null,
+      "provenance": "observed",
+      "evidence_ref": "planner observed it live on /playground; corroborated by src/data/playgroundItems.ts holding it as static sample data",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    }
+  ],
+  "states": {
+    "required_total": 4,
+    "reached": 2,
+    "transitions_observed": [
+      {
+        "from": "cold load of /",
+        "to": "chat screen ready, empty",
+        "evidence_ref": "a11y snapshot showing 'No messages yet.' plus enabled composer and disabled Send"
+      },
+      {
+        "from": "chat screen empty",
+        "to": "chat screen with one exchange",
+        "evidence_ref": "after fill('Hello there!') + click Send, snapshot showed StaticText 'Hello there!', StaticText 'GENERAL KENOBI!!' and image 'General Grievous reaction'"
+      },
+      {
+        "from": "chat screen",
+        "to": "/history, /search, /help, /playground",
+        "evidence_ref": "direct navigation to each route returned its own heading and control set, none containing sign-in or export"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "signed-in / authenticated user state — the application has no sign-in capability at all, so this state is unreachable rather than merely unobserved",
+      "conversation-export state (export control activated) — no export affordance exists on the chat screen",
+      "PDF download completed state — the application triggers no download of any kind; no Playwright download event could be produced without fabricating it",
+      "server-backed chat mode against the real backend — localhost:3001 was not running this session (ERR_CONNECTION_REFUSED on /api/messages); not required by this scenario"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 0
+  },
+  "usage": {
+    "wall_seconds_setup": 9.1,
+    "wall_seconds_steady_state": 442.1,
+    "browser_actions": 23,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 40,
+    "reported_tokens_in": 66,
+    "reported_tokens_out": 21146,
+    "reported_cost_usd": 2.2957311
+  },
+  "summary": {
+    "observed_locator_count": 13,
+    "inferred_locator_count": 0,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 8,
+    "observed_claims_total": 13
+  }
+}

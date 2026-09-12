@@ -1,0 +1,203 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "A-S1-planner_plus_ours-r1",
+  "target_id": "A",
+  "scenario_id": "A-S1",
+  "arm": "planner_plus_ours",
+  "repetition": 1,
+  "oracle_sha256": "bf3329632817c1cc3935dba370e860ced0c2b518acbfc2b2932ff744132fe72c",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "checkbox",
+      "name": "Assistant mode Funny mode",
+      "state": "checked, enabled after load (disabled during load)",
+      "selector": "getByRole('checkbox', { name: /funny mode/i })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot node 'checkbox \"Assistant mode Funny mode\" [checked]'; playwright-cli generate-locator on same ref returned getByTestId('funny-mode-toggle')",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "textbox",
+      "name": "Type a message…",
+      "state": "disabled during initial load, then enabled",
+      "selector": "getByPlaceholder('Type a message…')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot 'textbox \"Type a message…\" [disabled]' then enabled; CLI fill generated page.getByTestId('chat-input').fill(...)",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Send",
+      "state": "disabled when composer empty, enabled once non-empty",
+      "selector": "getByRole('button', { name: 'Send' })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot showed 'button \"Send\" [disabled]' before fill and enabled after; generate-locator returned getByTestId('send-button')",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic (no accessible name)",
+      "name": "",
+      "state": "visible after send",
+      "selector": "getByTestId('message-user')",
+      "provenance": "observed",
+      "evidence_ref": "generate-locator on the live user bubble returned exactly getByTestId('message-user'); node text was 'Kittens rule the internet.'",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic (no accessible name)",
+      "name": "",
+      "state": "visible after reply lands",
+      "selector": "getByTestId('message-assistant')",
+      "provenance": "observed",
+      "evidence_ref": "generate-locator on the live reply bubble returned exactly getByTestId('message-assistant'); node text was the K entry of the letter table",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "reconciliation",
+      "role": "generic (no accessible name)",
+      "name": "",
+      "state": "count 1 while pending, count 0 after reply",
+      "selector": "getByTestId('loading-indicator')",
+      "provenance": "observed",
+      "evidence_ref": "pre-armed waitFor before the send click returned SAW_LOADING, then count()===0 after the reply; independently observed by the planner as 'Thinking...' count=1 immediately post-click",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Reset Chat",
+      "state": "enabled after load",
+      "selector": "getByTestId('reset-button')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot 'button \"Reset Chat\"'; I clicked it live between letter probes to clear the transcript",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "paragraph",
+      "name": "No messages yet.",
+      "state": "visible in settled empty state",
+      "selector": null,
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot 'paragraph [ref=f1e31]: No messages yet.' after initial load settled",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "paragraph",
+      "name": "Loading…",
+      "state": "visible only pre-historyReady",
+      "selector": null,
+      "provenance": "observed",
+      "evidence_ref": "first post-navigation ARIA snapshot showed 'paragraph: Loading…' with all controls [disabled]",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "official_planner_delta",
+      "role": "",
+      "name": "",
+      "state": "backend-error state, never driven live",
+      "selector": "getByTestId('error-message')",
+      "provenance": "inferred",
+      "evidence_ref": null,
+      "used_in_final_test": false,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Help",
+      "state": "disabled during load, then enabled",
+      "selector": "getByTestId('help-suggestion')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot 'button \"Help\" [disabled]' then enabled; not exercised (would leave the frozen scenario's offline path)",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    }
+  ],
+  "states": {
+    "required_total": 4,
+    "reached": 4,
+    "transitions_observed": [
+      {
+        "from": "initial-loading",
+        "to": "settled-empty",
+        "evidence_ref": "'Loading…' + all controls [disabled] -> 'No messages yet.' + controls enabled"
+      },
+      {
+        "from": "composer-empty",
+        "to": "composer-filled",
+        "evidence_ref": "button 'Send' [disabled] -> enabled immediately after fill"
+      },
+      {
+        "from": "settled-empty",
+        "to": "reply-pending",
+        "evidence_ref": "pre-armed waitFor on loading-indicator resolved SAW_LOADING after the send click"
+      },
+      {
+        "from": "reply-pending",
+        "to": "settled-exchange",
+        "evidence_ref": "loading-indicator count 0 and message-user/message-assistant bubbles rendered with the K-entry text"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "backend-error state / error-message element - never driven live; would require leaving offline mode, outside the frozen scenario",
+      "real-backend (non-funny) success reply - no backend ships in this repo",
+      "no-letter / emoji fallback reply text",
+      "Message-history and Search screens reflecting the localStorage-persisted exchange"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 1
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 1
+  },
+  "usage": {
+    "wall_seconds_setup": 8.6,
+    "wall_seconds_steady_state": 2658.4,
+    "browser_actions": 34,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 94,
+    "reported_tokens_in": 168,
+    "reported_tokens_out": 75376,
+    "reported_cost_usd": 11.700905099999998
+  },
+  "summary": {
+    "observed_locator_count": 10,
+    "inferred_locator_count": 1,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 5,
+    "observed_claims_total": 10
+  }
+}

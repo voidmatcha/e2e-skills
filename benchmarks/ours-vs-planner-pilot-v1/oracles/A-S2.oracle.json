@@ -1,0 +1,136 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "scenario_id": "A-S2",
+  "target_id": "A",
+  "kind": "satisfiable",
+  "captured_at": "2026-09-11T06:43:55.616Z",
+  "capture_method": "Playwright chromium (headless, 1280x720) driving the pinned SHA served by its own dev server from a read-only scratch checkout; page.locator('body').ariaSnapshot() per state; off-origin requests aborted at the routing layer and listed in <target>-capture.json",
+  "required_states": [
+    "exchange recorded to localStorage after a send",
+    "Message history lists the exchange after reload",
+    "history empty after Delete history (confirm dialog accepted) and stays empty after reload"
+  ],
+  "absent_capability": null,
+  "observations": {
+    "local_storage_key_present_before_reload": true,
+    "history_items_after_reload": 2,
+    "history_texts": [
+      "Bananas are great",
+      "Bananas are just shy yellow kayaks that never learned to swim.",
+      "Zebra stripes",
+      "ZIP files are introverted folders wearing compression hoodies."
+    ],
+    "delete_button_enabled": true,
+    "delete_button_name": "Delete history",
+    "history_items_after_delete": 0,
+    "local_storage_key_present_after_delete": false,
+    "history_items_after_delete_and_reload": 0
+  },
+  "role_name_state_list": [
+    {
+      "role": "group",
+      "name": "Colour theme",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Aurora",
+      "state": "pressed"
+    },
+    {
+      "role": "button",
+      "name": "Test Runner",
+      "state": null
+    },
+    {
+      "role": "banner",
+      "name": "",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Go to the chat screen",
+      "state": null
+    },
+    {
+      "role": "heading",
+      "name": "Playwright Chat Lab",
+      "state": "level=1"
+    },
+    {
+      "role": "navigation",
+      "name": "Main",
+      "state": null
+    },
+    {
+      "role": "link",
+      "name": "Chat",
+      "state": null
+    },
+    {
+      "role": "link",
+      "name": "Search",
+      "state": null
+    },
+    {
+      "role": "link",
+      "name": "Message history",
+      "state": null
+    },
+    {
+      "role": "link",
+      "name": "Playground",
+      "state": null
+    },
+    {
+      "role": "link",
+      "name": "Help",
+      "state": null
+    },
+    {
+      "role": "heading",
+      "name": "Message history",
+      "state": "level=2"
+    },
+    {
+      "role": "paragraph",
+      "name": "",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Delete history",
+      "state": null
+    },
+    {
+      "role": "heading",
+      "name": "Friday, September 11, 2026",
+      "state": "level=3"
+    },
+    {
+      "role": "list",
+      "name": "",
+      "state": null
+    },
+    {
+      "role": "listitem",
+      "name": "",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Delete history",
+      "state": "disabled"
+    }
+  ],
+  "snapshots": {
+    "A-S2-history-after-reload.aria.yaml": {
+      "sha256": "2325ac1ca4fda9a17cc2aed63f0d3d090259b9e3b49c1589d5793ad826f6bbb1",
+      "aria_snapshot": "- group \"Colour theme\":\n  - button \"Aurora\" [pressed]\n  - button \"Test Runner\"\n- banner:\n  - button \"Go to the chat screen\"\n  - heading \"Playwright Chat Lab\" [level=1]\n- navigation \"Main\":\n  - link \"Chat\":\n    - /url: /\n  - link \"Search\":\n    - /url: /search\n  - link \"Message history\":\n    - /url: /history\n  - link \"Playground\":\n    - /url: /playground\n  - link \"Help\":\n    - /url: /help\n- heading \"Message history\" [level=2]\n- paragraph: Conversations are saved in this browser (your messages and assistant replies), grouped by day.\n- button \"Delete history\"\n- heading \"Friday, September 11, 2026\" [level=3]\n- list:\n  - listitem: 3:44 PM You Bananas are great Assistant Bananas are just shy yellow kayaks that never learned to swim.\n  - listitem: 3:44 PM You Zebra stripes Assistant ZIP files are introverted folders wearing compression hoodies."
+    },
+    "A-S2-history-after-delete.aria.yaml": {
+      "sha256": "d7343cb11ff74eb5958979a90c23719b20569c9576d3fcf378a9f15145950c95",
+      "aria_snapshot": "- group \"Colour theme\":\n  - button \"Aurora\" [pressed]\n  - button \"Test Runner\"\n- banner:\n  - button \"Go to the chat screen\"\n  - heading \"Playwright Chat Lab\" [level=1]\n- navigation \"Main\":\n  - link \"Chat\":\n    - /url: /\n  - link \"Search\":\n    - /url: /search\n  - link \"Message history\":\n    - /url: /history\n  - link \"Playground\":\n    - /url: /playground\n  - link \"Help\":\n    - /url: /help\n- heading \"Message history\" [level=2]\n- paragraph: Conversations are saved in this browser (your messages and assistant replies), grouped by day.\n- button \"Delete history\" [disabled]\n- paragraph: No history yet. Send a message in Chat to build your archive."
+    }
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "target": "A",
+  "base_url": "http://localhost:5190",
+  "captured_at": "2026-09-11T06:43:55.616Z",
+  "scenarios": {
+    "A-S1": {
+      "states": {
+        "chat_ready": {
+          "file": "A-S1-chat-ready.aria.yaml",
+          "bytes": 597
+        },
+        "after_send": {
+          "file": "A-S1-after-send.aria.yaml",
+          "bytes": 648
+        }
+      },
+      "funny_mode_checked_by_default": true,
+      "user_message": "Bananas are great",
+      "assistant_reply": "Bananas are just shy yellow kayaks that never learned to swim.",
+      "expected_reply_for_B": "Bananas are just shy yellow kayaks that never learned to swim.",
+      "reply_matches_letter_table": true,
+      "second_reply": "ZIP files are introverted folders wearing compression hoodies.",
+      "second_reply_expected_Z": "ZIP files are introverted folders wearing compression hoodies.",
+      "second_reply_matches": true
+    },
+    "A-S2": {
+      "states": {
+        "history_after_reload": {
+          "file": "A-S2-history-after-reload.aria.yaml",
+          "bytes": 848
+        },
+        "history_after_delete": {
+          "file": "A-S2-history-after-delete.aria.yaml",
+          "bytes": 647
+        }
+      },
+      "local_storage_key_present_before_reload": true,
+      "history_items_after_reload": 2,
+      "history_texts": [
+        "Bananas are great",
+        "Bananas are just shy yellow kayaks that never learned to swim.",
+        "Zebra stripes",
+        "ZIP files are introverted folders wearing compression hoodies."
+      ],
+      "delete_button_enabled": true,
+      "delete_button_name": "Delete history",
+      "history_items_after_delete": 0,
+      "local_storage_key_present_after_delete": false,
+      "history_items_after_delete_and_reload": 0
+    },
+    "A-S3": {
+      "routes": {
+        "/": {
+          "file": "A-S3-route-root.aria.yaml",
+          "bytes": 597
+        },
+        "/search": {
+          "file": "A-S3-route-search.aria.yaml",
+          "bytes": 584
+        },
+        "/history": {
+          "file": "A-S3-route-history.aria.yaml",
+          "bytes": 647
+        },
+        "/playground": {
+          "file": "A-S3-route-playground.aria.yaml",
+          "bytes": 2129
+        },
+        "/help": {
+          "file": "A-S3-route-help.aria.yaml",
+          "bytes": 744
+        }
+      },
+      "absence_checks": {
+        "/": {
+          "text_lines_matching_auth_or_export_pattern": [],
+          "buttons_or_links_matching": 0,
+          "anchors_with_download_attr": 0
+        },
+        "/search": {
+          "text_lines_matching_auth_or_export_pattern": [],
+          "buttons_or_links_matching": 0,
+          "anchors_with_download_attr": 0
+        },
+        "/history": {
+          "text_lines_matching_auth_or_export_pattern": [],
+          "buttons_or_links_matching": 0,
+          "anchors_with_download_attr": 0
+        },
+        "/playground": {
+          "text_lines_matching_auth_or_export_pattern": [],
+          "buttons_or_links_matching": 0,
+          "anchors_with_download_attr": 0
+        },
+        "/help": {
+          "text_lines_matching_auth_or_export_pattern": [],
+          "buttons_or_links_matching": 0,
+          "anchors_with_download_attr": 0
+        }
+      },
+      "absent_capabilities": [
+        "authentication / signed-in user",
+        "PDF export",
+        "file download of the conversation"
+      ]
+    }
+  },
+  "last_dialog": {
+    "type": "confirm",
+    "message": "Delete all message history stored in this browser? This cannot be undone."
+  },
+  "off_origin_requests_attempted_by_app": [
+    "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",
+    "http://localhost:3001/api/messages",
+    "http://localhost:3001/api/messages",
+    "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",
+    "http://localhost:3001/api/messages",
+    "http://localhost:3001/api/messages",
+    "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",
+    "http://localhost:3001/api/messages",
+    "http://localhost:3001/api/messages",
+    "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",
+    "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm",
+    "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+  ]
+}

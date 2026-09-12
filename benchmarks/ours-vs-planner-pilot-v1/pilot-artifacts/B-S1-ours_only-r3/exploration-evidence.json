@@ -1,0 +1,256 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "B-S1-ours_only-r3",
+  "target_id": "B",
+  "scenario_id": "B-S1",
+  "arm": "ours_only",
+  "repetition": 3,
+  "oracle_sha256": "ababe741ce08d1374a2c1f607d9d2cbaa9eff4b136c9eaf5baa232e814d53bb2",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "application",
+      "name": "Gridfinity drawer grid, 10 columns by 8 rows",
+      "state": "visible",
+      "selector": "page.getByRole('application', { name: /Gridfinity drawer grid/i })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot line 270 of fresh-context page; probe returned gridCount 1 and aria-label 'Gridfinity drawer grid, 10 columns by 8 rows'",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "/^Bin \\d+ by \\d+/ (generic placed-bin name)",
+      "state": "visible",
+      "selector": "grid.getByRole('button', { name: /^Bin \\d+ by \\d+/ })",
+      "provenance": "observed",
+      "evidence_ref": "probe: binButtonsInGrid 1, binNames ['1x1']; count 0 before click and 1 after, in the same fresh context",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Bin 1 by 1, category Coral",
+      "state": "visible, aria-pressed=true",
+      "selector": "grid.getByRole('button', { name: /^Bin \\d+ by \\d+/ }) then toHaveAttribute('aria-label', 'Bin 1 by 1, category Coral')",
+      "provenance": "observed",
+      "evidence_ref": "outerHTML captured after the click: role=button aria-label='Bin 1 by 1, category Coral' aria-pressed='true' data-bin-id='mtxo24pw-fddc46ebb1'",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "0% filled / 0 bins -> 1% filled / 1 bins (layer summary, generic element, no role)",
+      "state": "visible",
+      "selector": "getSidebar(page).getByText(/filled . \\d+ bins/)",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot line 66 pre-click '0% filled / 0 bins' and post-click '1% filled / 1 bins'; probe summaryInSidebar count 1 and isVisible true in both states",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "No bins to print (bin-list empty state)",
+      "state": "visible before add, hidden after",
+      "selector": "getInspector(page).getByText('No bins to print')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot line 318 pre-click; probe emptyVisibleInitial true / emptyVisibleAfter false in one fresh-context run",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "region",
+      "name": "Bin List (aria-labelledby, becomes 'Bin List 1' once a bin exists)",
+      "state": "expanded",
+      "selector": "getInspector(page).getByRole('region', { name: /^Bin List/ })",
+      "provenance": "observed",
+      "evidence_ref": "probe: binListRegionCount 1, aria-label null, aria-labelledby '_r_r_'; snapshot line 316 'region \"Bin List\"' and line 386 'region \"Bin List 1\"'",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "row / cell",
+      "name": "bin-list row filtered by '1x1' with cells ['1x1','3u','1','6.21']",
+      "state": "visible",
+      "selector": "binListRegion.getByRole('row').filter({ hasText: '1×1' }).getByRole('cell')",
+      "provenance": "observed",
+      "evidence_ref": "probe: rowCount 1, rowCellCount 4, allTextContents ['1x1','3u','1','6.21']; snapshot lines 396-404 show the table row",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "left sidebar container [data-sidebar]",
+      "state": "visible (desktop shell only)",
+      "selector": "getSidebar(page) -> page.locator('[data-sidebar]')",
+      "provenance": "observed",
+      "evidence_ref": "probe sidebarCount 1 at 1280x720; e2e/README.md selector table; grep of src/shell/Mobile returned zero matches, confirming absence below 768",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "right inspector container [data-inspector]",
+      "state": "visible (desktop shell only)",
+      "selector": "getInspector(page) -> page.locator('[data-inspector]')",
+      "provenance": "observed",
+      "evidence_ref": "probe inspectorCount 1 at 1280x720; grep of src/shell/Mobile returned zero matches",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "generator_implementation",
+      "role": "",
+      "name": "bin CSS grid placement grid-column-start 3 / grid-row-start 5 / *-end 'span 1'",
+      "state": "computed style after the click",
+      "selector": "expect(binsOnGrid).toHaveCSS('grid-column-start', '3') etc.",
+      "provenance": "observed",
+      "evidence_ref": "getComputedStyle on the placed bin returned {gridRowStart '5', gridRowEnd 'span 1', gridColumnStart '3', gridColumnEnd 'span 1'} for a click at column 3 / row 5; Bin.tsx:268-269 sets gridColumn/gridRow inline",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "inline style attribute containing 'grid-area: 3 / 3 / span 1 / span 1'",
+      "state": "present",
+      "selector": "expect(bin).toHaveAttribute('style', /grid-area: 3 \\/ 3 \\/ span 1 \\/ span 1/)",
+      "provenance": "observed",
+      "evidence_ref": "style attribute of the placed bin began 'grid-area: 5 / 3 / span 1 / span 1; ...'; used in the first revision, then replaced because the shorthand is CSSOM serialization of the gridColumn/gridRow longhands and a symmetric cell would survive an axis transposition",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L12",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Size Brush",
+      "state": "visible",
+      "selector": "page.getByRole('button', { name: /Size Brush/i })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot line 48; not needed because a single grid click adds a 1x1 bin without entering paint mode",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L13",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Fill 80 gaps / Clear 1 bins",
+      "state": "enabled (Clear layer disabled while empty)",
+      "selector": "getSidebar(page).getByRole('button', { name: /^Clear \\d+ bins/ })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot line 49-50 pre-click ('Fill 80 gaps', 'Clear layer' disabled) and post-click line 50 ('Clear 1 bins'); an alternative summary signal, not used",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L14",
+      "source_arm_stage": "ours_exploration",
+      "role": "heading",
+      "name": "1x1 Bin (inspector selection header)",
+      "state": "visible after the click",
+      "selector": "getInspector(page).getByRole('heading', { name: /^\\d×\\d Bin$/ })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot line 310 after the click; covered already by existing e2e/add-bins.spec.ts, so excluded to avoid duplicate coverage",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L15",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "header element (app-ready gate)",
+      "state": "attached",
+      "selector": "waitForAppReady(page) -> waitForSelector('header') + waitForSelector('[role=\"application\"]')",
+      "provenance": "observed",
+      "evidence_ref": "every exploration run gated on header + [role=application] before interacting and both resolved within timeout; e2e/fixtures.ts waitForAppReady",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    }
+  ],
+  "states": {
+    "required_total": 2,
+    "reached": 2,
+    "transitions_observed": [
+      {
+        "from": "fresh context, empty storage, no layout",
+        "to": "new empty layout at /l/<id>/untitled-layout, 0 bins, '0% filled / 0 bins', bin-list empty state visible",
+        "evidence_ref": "goto http://localhost:5174/ in a fresh browser context redirected to /l/EjFn2IzJRU66/untitled-layout with binsInitial 0 and summaryInitial '0% filled / 0 bins'"
+      },
+      {
+        "from": "new empty layout",
+        "to": "one 1x1 bin on the baseplate at column 3 / row 5 and summary '1% filled / 1 bins', bin-list row ['1x1','3u','1','6.21']",
+        "evidence_ref": "single mouse click at the computed cell centre; bins count 0 -> 1, computed grid-column-start 3 / grid-row-start 5, summary text change, empty state hidden"
+      },
+      {
+        "from": "new empty layout",
+        "to": "unchanged (0 bins, '0% filled / 0 bins')",
+        "evidence_ref": "control probe: click 40px left of the grid box left edge left binsAfterOffGrid 0 and the summary unchanged, proving the in-grid click target is load-bearing"
+      },
+      {
+        "from": "new empty layout",
+        "to": "one 2x2 bin and summary '5% filled / 1 bins' (V3 fault premise)",
+        "evidence_ref": "two-cell drag instead of a click produced aria-label 'Bin 2 by 2, category Coral', count still 1, summary '5% filled / 1 bins'"
+      },
+      {
+        "from": "layout with 1 bin, storage cleared, page reloaded",
+        "to": "bin restored (1 bin still present)",
+        "evidence_ref": "clearAllStorage + reload in a long-lived context restored the bin, so per-test isolation rests on a fresh Playwright context rather than on clearAllStorage alone; recorded because it affects the Given"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "mobile-shell and tablet-shell rendering of the layout summary and bin list (no [data-sidebar]/[data-inspector] below 900px) - not observed live, established from src/App.tsx and BREAKPOINTS and handled with a conditional skip rather than an assertion",
+      "the V2 mutant run (inverted primary matcher) - could not be executed under the two-command allowlist",
+      "the V3 faulted spec run - the fault's product effect was observed in the browser, but the faulted spec itself was never executed",
+      "V5 suite-context and parallel-execution behaviour of the candidate"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 1
+  },
+  "usage": {
+    "wall_seconds_setup": 67.2,
+    "wall_seconds_steady_state": 1763.8,
+    "browser_actions": 45,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 72,
+    "reported_tokens_in": 132,
+    "reported_tokens_out": 73435,
+    "reported_cost_usd": 10.467549249999998
+  },
+  "summary": {
+    "observed_locator_count": 15,
+    "inferred_locator_count": 0,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 3,
+    "observed_claims_total": 15
+  }
+}

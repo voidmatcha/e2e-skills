@@ -1,0 +1,178 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "A-S1-ours_only-r2",
+  "target_id": "A",
+  "scenario_id": "A-S1",
+  "arm": "ours_only",
+  "repetition": 2,
+  "oracle_sha256": "bf3329632817c1cc3935dba370e860ced0c2b518acbfc2b2932ff744132fe72c",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "checkbox",
+      "name": "Assistant mode Funny mode",
+      "state": "checked",
+      "selector": "getByRole('checkbox', { name: /funny mode/i })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot of http://localhost:5174/ : 'checkbox \"Assistant mode Funny mode\" [checked] [ref=f2e22]'; generate-locator f2e22 -> getByTestId('funny-mode-toggle'); isChecked() === true via run-code",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "textbox",
+      "name": "Type a message…",
+      "state": "visible",
+      "selector": "getByPlaceholder('Type a message…')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot: 'textbox \"Type a message…\" [ref=f2e28]'; playwright-cli fill f2e28 emitted getByTestId('chat-input').fill(...) and the text appeared in the snapshot",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Send",
+      "state": "disabled when composer empty, enabled after fill",
+      "selector": "getByRole('button', { name: 'Send' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot before fill: 'button \"Send\" [disabled] [ref=f2e29]'; after fill: 'button \"Send\" [ref=f2e29]'; click emitted getByTestId('send-button').click()",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic",
+      "name": "",
+      "state": "visible",
+      "selector": "getByTestId('message-user')",
+      "provenance": "observed",
+      "evidence_ref": "playwright-cli generate-locator f2e32 -> getByTestId('message-user'); allTextContents() === ['Keyboard shortcuts are neat']; count === 1",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic",
+      "name": "",
+      "state": "visible",
+      "selector": "getByTestId('message-assistant')",
+      "provenance": "observed",
+      "evidence_ref": "generate-locator f2e34 -> getByTestId('message-assistant'); allTextContents() === ['Keyboards are really just aggressive finger trampolines.']; count === 1",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "paragraph",
+      "name": "No messages yet.",
+      "state": "visible before first send, gone after",
+      "selector": "getByText('No messages yet.')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot on load: 'paragraph [ref=f2e31]: No messages yet.'; absent from the post-send snapshot",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic",
+      "name": "Thinking...",
+      "state": "visible transiently between send and reply",
+      "selector": "getByTestId('loading-indicator')",
+      "provenance": "observed",
+      "evidence_ref": "run-code probe: getByTestId('loading-indicator').waitFor({state:'visible', timeout:2000}) resolved (sawLoading true) during a send",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Reset Chat",
+      "state": "visible",
+      "selector": "getByRole('button', { name: 'Reset Chat' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot: 'button \"Reset Chat\" [ref=f2e30]'",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Help",
+      "state": "visible",
+      "selector": "getByTestId('help-suggestion')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot: 'button \"Help\" [ref=f2e26]' inside the chat panel",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    }
+  ],
+  "states": {
+    "required_total": 3,
+    "reached": 3,
+    "transitions_observed": [
+      {
+        "from": "page loaded, history fetch settled",
+        "to": "offline-ready empty transcript (Funny mode checked, 'No messages yet.', Send disabled)",
+        "evidence_ref": "ARIA snapshot after goto; GET http://localhost:3001/api/messages recorded as FAILED"
+      },
+      {
+        "from": "offline-ready empty transcript",
+        "to": "composed (input holds text, Send enabled)",
+        "evidence_ref": "post-fill ARIA snapshot: textbox contains 'Keyboard shortcuts are neat', Send no longer [disabled]"
+      },
+      {
+        "from": "composed",
+        "to": "pending ('Thinking...' loading bubble)",
+        "evidence_ref": "loading-indicator waitFor visible resolved during a send"
+      },
+      {
+        "from": "pending",
+        "to": "settled transcript (user bubble + K-keyed assistant bubble, loading-indicator count 0)",
+        "evidence_ref": "post-send ARIA snapshot + allTextContents for message-user/message-assistant; requests list showed no POST /api/chat"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "Assistant mode with a reachable backend on :3001 (no backend ships in this repo; out of scope for this scenario)",
+      "the error state 'Error: failed to get AI response' (assistant-mode-only path)",
+      "the app's behavior when the :3001 read succeeds (the mount fetch failed in every observation)"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 0
+  },
+  "usage": {
+    "wall_seconds_setup": 7.0,
+    "wall_seconds_steady_state": 857.8,
+    "browser_actions": 25,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 77,
+    "reported_tokens_in": 122,
+    "reported_tokens_out": 44152,
+    "reported_cost_usd": 6.022044
+  },
+  "summary": {
+    "observed_locator_count": 9,
+    "inferred_locator_count": 0,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 5,
+    "observed_claims_total": 9
+  }
+}

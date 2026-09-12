@@ -1,0 +1,82 @@
+
+Running 1 test using 1 worker
+
+  ✘  1 [chromium] › e2e/pilot-b-s2.spec.ts:46:3 › Drawer resize displacement › shrinking drawer width recomputes the grid and stashes the bin that no longer fits (9.1s)
+
+
+  1) [chromium] › e2e/pilot-b-s2.spec.ts:46:3 › Drawer resize displacement › shrinking drawer width recomputes the grid and stashes the bin that no longer fits 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  locator('[data-bin-id]')
+    Expected: 1
+    Received: 0
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCount" with timeout 5000ms
+      - waiting for locator('[data-bin-id]')
+        - waiting for" http://localhost:5174/l/ySr5kKzTyaPB/untitled-layout" navigation to finish...
+        - navigated to "http://localhost:5174/l/ySr5kKzTyaPB/untitled-layout"
+        14 × locator resolved to 0 elements
+           - unexpected value "0"
+
+
+       at fixtures.ts:56
+
+      54 |  */
+      55 | export async function waitForBinCount(page: Page, count: number, timeout = DEFAULT_TIMEOUT) {
+    > 56 |   await expect(page.locator('[data-bin-id]')).toHaveCount(count, { timeout });
+         |                                               ^
+      57 | }
+      58 |
+      59 | /**
+        at waitForBinCount (/private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-pilot-ws-B-S2-planner_plus_ours-r1-129ea5kt/gridfinity-layout-tool/e2e/fixtures.ts:56:47)
+        at /private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-pilot-ws-B-S2-planner_plus_ours-r1-129ea5kt/gridfinity-layout-tool/e2e/pilot-b-s2.spec.ts:78:11
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/pilot-b-s2-Drawer-resize-d-67dd5-the-bin-that-no-longer-fits-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/pilot-b-s2-Drawer-resize-d-67dd5-the-bin-that-no-longer-fits-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/pilot-b-s2-Drawer-resize-d-67dd5-the-bin-that-no-longer-fits-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/pilot-b-s2-Drawer-resize-d-67dd5-the-bin-that-no-longer-fits-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › e2e/pilot-b-s2.spec.ts:46:3 › Drawer resize displacement › shrinking drawer width recomputes the grid and stashes the bin that no longer fits 
+
+--- stderr ---
+[WebServer] (node:49646) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ pnpm run build:content && pnpm run build:en-locale && vite
+[WebServer] (node:49659) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ tsx scripts/build-content.ts
+[WebServer] (node:49682) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:49712) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:49713) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ tsx scripts/build-en-locale.ts
+[WebServer] (node:49759) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:49765) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:49766) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+[WebServer]   - import "./scripts/vite-plugin-version" without a file extension (vite.config.ts:8:31). Add the file extension
+[WebServer]   - import "./scripts/vite-plugin-content-routes" without a file extension (vite.config.ts:9:37). Add the file extension
+[WebServer]   - import "./scripts/vite-plugin-mediapipe-assets" without a file extension (vite.config.ts:10:39). Add the file extension
+[WebServer]   - import "./scripts/vite-plugin-minify-json-assets" without a file extension (vite.config.ts:11:34). Add the file extension
+[WebServer]   - import "./scripts/contentRoutes" without a file extension (vite.config.ts:12:48). Add the file extension
+[WebServer] Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+(node:49820) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)

@@ -1,0 +1,245 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "B-S1-planner_plus_ours-r1",
+  "target_id": "B",
+  "scenario_id": "B-S1",
+  "arm": "planner_plus_ours",
+  "repetition": 1,
+  "oracle_sha256": "ababe741ce08d1374a2c1f607d9d2cbaa9eff4b136c9eaf5baa232e814d53bb2",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "application",
+      "name": "Gridfinity drawer grid, 10 columns by 8 rows",
+      "state": "visible",
+      "selector": "page.getByRole('application', { name: 'Gridfinity drawer grid, 10 columns by 8 rows' })",
+      "provenance": "observed",
+      "evidence_ref": "live aria-label read via getAttribute on http://localhost:5174/ and locator count resolved to 1; also present in the live ARIA snapshot",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "/^Bin \\d+ by \\d+, category /",
+      "state": null,
+      "selector": "grid.getByRole('button', { name: ANY_BIN })",
+      "provenance": "observed",
+      "evidence_ref": "live count 0 on the empty layout and 1 after the drag, scoped inside the grid application element",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Bin 2 by 2, category Coral",
+      "state": "pressed (aria-pressed=\"true\")",
+      "selector": "grid.getByRole('button', { name: /^Bin 2 by 2, category / })",
+      "provenance": "observed",
+      "evidence_ref": "live aria-label 'Bin 2 by 2, category Coral' and aria-pressed 'true' read off the created element; reproduced on three fresh-state runs",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "region -> text",
+      "name": "Layers (region) containing /% filled/",
+      "state": "visible; text '0% filled · 0 bins' -> '5% filled · 1 bins'",
+      "selector": "page.getByRole('region', { name: 'Layers' }).getByText(/% filled/)",
+      "provenance": "observed",
+      "evidence_ref": "live innerText read before and after the drag; locator count resolved to exactly 1 in both states",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "official_planner_delta",
+      "role": "region",
+      "name": "Bin List (substring; becomes 'Bin List 1' once bins exist)",
+      "state": "visible",
+      "selector": "page.getByRole('region', { name: 'Bin List' })",
+      "provenance": "observed",
+      "evidence_ref": "planner reported the name change; I re-resolved it live in the reconciliation step — with bins present exact:true resolved to 0 while the default substring form resolved to 1",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "reconciliation",
+      "role": "button",
+      "name": "Bin List 1",
+      "state": "visible",
+      "selector": "page.getByRole('button', { name: 'Bin List 1', exact: true })",
+      "provenance": "observed",
+      "evidence_ref": "live exact-match count resolved to 1 after adding one bin; accordion innerText read as 'Bin List\\n1'",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "row",
+      "name": "/2×2/",
+      "state": "visible",
+      "selector": "binList.getByRole('row', { name: /2×2/ })",
+      "provenance": "observed",
+      "evidence_ref": "live table rows read as ['Size\\tH\\tQty\\tFil.', '2×2\\n\\t3u\\t1\\t21.45']; name-filtered row count resolved to 1",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "text",
+      "name": "No bins to print",
+      "state": "visible on the empty layout",
+      "selector": "binList.getByText('No bins to print')",
+      "provenance": "observed",
+      "evidence_ref": "live isVisible() true on the cleared/reloaded empty layout",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "official_planner_delta",
+      "role": "document (URL, not an element)",
+      "name": "/l/<id>/untitled-layout",
+      "state": null,
+      "selector": "expect(page).toHaveURL(/\\/l\\/[^/]+\\/untitled-layout$/)",
+      "provenance": "observed",
+      "evidence_ref": "planner observed the redirect; I re-resolved it live — page.url() read as http://localhost:5174/l/RPszZzIB5nvh/untitled-layout after goto('/') and again after clear+reload",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic (attribute hook)",
+      "name": "[data-bin-id]",
+      "state": null,
+      "selector": "page.locator('[data-bin-id]')",
+      "provenance": "observed",
+      "evidence_ref": "live element attributes read as data-bin-id='mtws23u2-c79a7889c0' with role=button and grid-area '1 / 1 / span 2 / span 2'",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "ours_exploration",
+      "role": "complementary (attribute hook)",
+      "name": "[data-sidebar] / [data-inspector]",
+      "state": "visible",
+      "selector": "page.locator('[data-sidebar]'), page.locator('[data-inspector]')",
+      "provenance": "observed",
+      "evidence_ref": "live counts resolved to 1 each; used only to orient during exploration",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L12",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Fill 80 gaps / Clear layer (disabled)",
+      "state": "Fill enabled; Clear layer disabled on the empty layout",
+      "selector": "sidebar.getByRole('button', { name: 'Fill 80 gaps' })",
+      "provenance": "observed",
+      "evidence_ref": "read from the live ARIA snapshot of the empty layout",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L13",
+      "source_arm_stage": "official_planner_delta",
+      "role": "region / heading",
+      "name": "Bin Properties, heading '2×2 Bin', button 'Deselect bin'",
+      "state": "replaces the 'Selection' accordion once a bin is selected",
+      "selector": "page.getByRole('region', { name: 'Bin Properties' })",
+      "provenance": "observed",
+      "evidence_ref": "planner's live-page observation only — I did NOT re-resolve this one myself, and it is declined (D6) so it does not reach the test",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L14",
+      "source_arm_stage": "official_planner_delta",
+      "role": "button",
+      "name": "Clear 1 bins / Fill 76 gaps / Undo (⌘+Z) enabled",
+      "state": "post-add states",
+      "selector": "sidebar.getByRole('button', { name: 'Clear 1 bins' })",
+      "provenance": "observed",
+      "evidence_ref": "planner's live-page observation only — not re-resolved by me; declined (D7)",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L15",
+      "source_arm_stage": "generator_implementation",
+      "role": "button",
+      "name": "Bin 3 by 3, category Coral",
+      "state": "summary reads '11% filled · 1 bins'",
+      "selector": "page.locator('[data-bin-id]') after a 3-cell drag",
+      "provenance": "observed",
+      "evidence_ref": "live 3-cell drag performed before the V3 probe so the fault's expected mismatch could be pre-declared exactly; aria-label and summary text read off the page",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    }
+  ],
+  "states": {
+    "required_total": 2,
+    "reached": 2,
+    "transitions_observed": [
+      {
+        "from": "fresh empty layout (0 bins)",
+        "to": "one 2×2 bin placed at grid cells (0,0)-(1,1)",
+        "evidence_ref": "layer summary '0% filled · 0 bins' -> '5% filled · 1 bins', grid-scoped bin-button count 0 -> 1, Bin List 'No bins to print' -> table row '2×2 3u 1 21.45', reproduced on three independent fresh-state runs"
+      },
+      {
+        "from": "one 2×2 bin",
+        "to": "two 2×2 bins",
+        "evidence_ref": "second drag at cells (3,3)-(4,4); layer summary '10% filled · 2 bins'; also confirmed zero network requests over the 2.5s spanning the action"
+      },
+      {
+        "from": "fresh empty layout",
+        "to": "one 3×3 bin (fault-probe state)",
+        "evidence_ref": "3-cell drag produced aria-label 'Bin 3 by 3, category Coral' and summary '11% filled · 1 bins' with bin count still 1"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "This candidate running in normal suite context alongside the repo's other 45 specs, and under cross-project parallelism — not exercised because both require commands outside the approved allowlist",
+      "Any failed/erroring persistence path for the layout (the app issued no network requests at all during the flow, so there is no write seam to fault)",
+      "The 'Bin Properties' inspector accordion and the 'Clear 1 bins' / 'Fill 76 gaps' post-add button states — reported by the planner on the live page but not re-resolved by me, and declined rather than used"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 1
+  },
+  "usage": {
+    "wall_seconds_setup": 41.5,
+    "wall_seconds_steady_state": 1832.0,
+    "browser_actions": 41,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 83,
+    "reported_tokens_in": 150,
+    "reported_tokens_out": 76684,
+    "reported_cost_usd": 10.20018895
+  },
+  "summary": {
+    "observed_locator_count": 15,
+    "inferred_locator_count": 0,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 2,
+    "observed_claims_total": 15
+  }
+}

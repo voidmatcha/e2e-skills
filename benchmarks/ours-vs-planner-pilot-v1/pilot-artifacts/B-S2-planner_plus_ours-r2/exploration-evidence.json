@@ -1,0 +1,221 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "B-S2-planner_plus_ours-r2",
+  "target_id": "B",
+  "scenario_id": "B-S2",
+  "arm": "planner_plus_ours",
+  "repetition": 2,
+  "oracle_sha256": "4af2f1777f2211c36548ada1c852a0674f61b3efc0036da22bcef35c23f7cd2d",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "application",
+      "name": "Gridfinity drawer grid, 10 columns by 8 rows",
+      "state": "visible",
+      "selector": "page.locator('[role=\"application\"]')",
+      "provenance": "observed",
+      "evidence_ref": "run-code getAttribute('aria-label') on fresh profile returned 'Gridfinity drawer grid, 10 columns by 8 rows'; after one width decrease returned '... 9 columns by 8 rows'",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "spinbutton",
+      "name": "Drawer width in grid units",
+      "state": "visible, value 10",
+      "selector": "getSidebar(page).getByRole('spinbutton', { name: 'Drawer width in grid units' })",
+      "provenance": "observed",
+      "evidence_ref": "inputValue() returned '10' fresh and '9' after the decrease click",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Decrease Drawer width in grid units",
+      "state": "visible, enabled",
+      "selector": "getSidebar(page).getByRole('button', { name: 'Decrease Drawer width in grid units' })",
+      "provenance": "observed",
+      "evidence_ref": "clicked live; width spinbutton went 10 -> 9 and grid aria-label recomputed",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Bin 1 by 1, category Coral",
+      "state": "visible, aria-pressed=true",
+      "selector": "page.locator('[data-bin-id]')",
+      "provenance": "observed",
+      "evidence_ref": "attribute dump after a grid drag: data-bin-id='mtx3eema-ab130141c3', role=button, style 'grid-area: 1 / 10 / span 1 / span 1'",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "1×1",
+      "state": "visible",
+      "selector": "page.locator('[data-staging-bin-id]')",
+      "provenance": "observed",
+      "evidence_ref": "after the resize the same id 'mtx3gttq-cf3258543c' left [data-bin-id] and appeared under [data-staging-bin-id] with innerText '1×1'",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "visible",
+      "selector": "page.locator('[data-sidebar]') via getSidebar()",
+      "provenance": "observed",
+      "evidence_ref": "repo fixture; resolved live - the width controls were found scoped inside it",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "visible",
+      "selector": "page.locator('[data-stash]') via getStash()",
+      "provenance": "observed",
+      "evidence_ref": "count()=1; innerText 'Stash\\n1 bins\\nClear all\\n1×1' after the resize",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "official_planner_delta",
+      "role": "button",
+      "name": "Stash 1 bins",
+      "state": "visible, aria-expanded=true",
+      "selector": "getStash(page).getByRole('button', { name: 'Stash 1 bins' })",
+      "provenance": "observed",
+      "evidence_ref": "planner reported it; I re-resolved it myself - getByRole('button', {name: /^Stash \\d+ bins?$/}) count()=1 in the post-resize state, textContent 'Stash1 bins'",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "visible, text '378 × 336 × 84 mm'",
+      "selector": "getSidebar(page).getByText(/^\\d+ × \\d+ × \\d+ mm$/)",
+      "provenance": "observed",
+      "evidence_ref": "'420 × 336 × 84 mm' fresh, '378 × 336 × 84 mm' after the decrease (9 x 42 = 378)",
+      "used_in_final_test": false,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "official_planner_delta",
+      "role": "button",
+      "name": "1×1",
+      "state": "visible",
+      "selector": "page.locator('#staging-stash-panel').getByRole('button', { name: '1×1' })",
+      "provenance": "observed",
+      "evidence_ref": "I re-resolved getByRole('button', {name: '1×1', exact: true}) -> count()=1; DECLINED as a test locator because '1×1' is shared by every 1×1 bin and proves no identity",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "ours_exploration",
+      "role": "separator",
+      "name": "Drag to resize stash panel",
+      "state": "visible",
+      "selector": "page.getByTestId('stash-resize-handle')",
+      "provenance": "observed",
+      "evidence_ref": "seen in [data-stash] innerHTML dump; not needed by the scenario",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L12",
+      "source_arm_stage": "official_planner_delta",
+      "role": "status",
+      "name": "",
+      "state": "present only while the stash is EMPTY; removed once populated",
+      "selector": "page.locator('[data-stash][role=\"status\"]')",
+      "provenance": "observed",
+      "evidence_ref": "planner reported it; I confirmed [data-stash] had no role attribute in the populated state, and a query for [aria-live],[role=status],[role=alert] returned [] post-resize",
+      "used_in_final_test": false,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L13",
+      "source_arm_stage": "ours_exploration",
+      "role": "spinbutton",
+      "name": "Drawer depth in grid units",
+      "state": "visible, value 8",
+      "selector": "getSidebar(page).getByRole('spinbutton', { name: 'Drawer depth in grid units' })",
+      "provenance": "observed",
+      "evidence_ref": "inputValue() returned '8'; not used - the frozen scenario is exercised on the width axis",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    }
+  ],
+  "states": {
+    "required_total": 3,
+    "reached": 3,
+    "transitions_observed": [
+      {
+        "from": "fresh profile, 10x8 drawer, empty stash",
+        "to": "two 1x1 bins placed at grid-area column 10 and column 1",
+        "evidence_ref": "attribute dump listed both ids with 'grid-area: 1 / 10 / span 1 / span 1' and 'grid-area: 1 / 1 / span 1 / span 1'"
+      },
+      {
+        "from": "10x8 drawer with two bins",
+        "to": "9x8 drawer, column-10 bin in the Stash, column-1 bin still on the grid",
+        "evidence_ref": "post-click dump: gridLabel '...9 columns by 8 rows', width '9', onGrid=[column-1 id], stashed=[column-10 id], stashCountText ['1 bins']"
+      },
+      {
+        "from": "unfaulted app",
+        "to": "faulted app that recomputes the grid but keeps the non-fitting bin",
+        "evidence_ref": "V3 route fault on computeDisplacedBins; primary assertion failed with 'element(s) not found'"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "Any toast, snackbar, ARIA live region or status announcement for the displacement event - queried directly post-resize and found none; the app does not provide one",
+      "The depth-axis displacement case (planner reports depth truncates from the opposite, low-index edge) - recorded in the ledger, deliberately NOT exercised because it would change the frozen scenario",
+      "Suite-context and multi-worker parallel execution of the candidate - no approved command expresses these modes"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 1
+  },
+  "usage": {
+    "wall_seconds_setup": 50.5,
+    "wall_seconds_steady_state": 1953.7,
+    "browser_actions": 14,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 92,
+    "reported_tokens_in": 158,
+    "reported_tokens_out": 62824,
+    "reported_cost_usd": 10.85262575
+  },
+  "summary": {
+    "observed_locator_count": 13,
+    "inferred_locator_count": 0,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 9,
+    "observed_claims_total": 13
+  }
+}

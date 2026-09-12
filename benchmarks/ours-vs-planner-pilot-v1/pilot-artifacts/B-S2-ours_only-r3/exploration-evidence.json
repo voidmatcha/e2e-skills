@@ -1,0 +1,221 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "B-S2-ours_only-r3",
+  "target_id": "B",
+  "scenario_id": "B-S2",
+  "arm": "ours_only",
+  "repetition": 3,
+  "oracle_sha256": "4af2f1777f2211c36548ada1c852a0674f61b3efc0036da22bcef35c23f7cd2d",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "spinbutton",
+      "name": "Drawer width in grid units",
+      "state": "visible, value '10'",
+      "selector": "getSidebar(page).getByRole('spinbutton', { name: 'Drawer width in grid units' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot of http://localhost:5174/l/.../untitled-layout line 120: 'spinbutton \"Drawer width in grid units\": \"10\"'; live fill('5')+blur changed the grid to 5 columns",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "application",
+      "name": "Gridfinity drawer grid, 10 columns by 8 rows",
+      "state": "visible",
+      "selector": "page.locator('[role=\"application\"]')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot line 270; getAttribute('aria-label') returned 'Gridfinity drawer grid, 10 columns by 8 rows' then 'Gridfinity drawer grid, 5 columns by 8 rows' after the resize",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Select bins in column 10",
+      "state": "visible before resize, absent after",
+      "selector": "page.getByRole('button', { name: 'Select bins in column 10' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot line 287 lists columns 1-10; post-resize snapshot grep counted 5 'Select bins in column' buttons",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Stash 1 bins",
+      "state": "absent before displacement, visible+expanded after",
+      "selector": "page.getByRole('button', { name: 'Stash 1 bins' })",
+      "provenance": "observed",
+      "evidence_ref": "post-resize ARIA snapshot line 283: 'button \"Stash 1 bins\" [expanded]'; pre-displacement probe returned count 0 for /^Stash/ buttons",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "1 element before resize, 0 for the displaced id after",
+      "selector": "page.locator('[data-bin-id]') / page.locator(`[data-bin-id=\"${id}\"]`)",
+      "provenance": "observed",
+      "evidence_ref": "live evaluateAll returned ['mtxqbn1x-eb4aa75911','mtxqbnew-8d0858bee4'] before and ['mtxqbn1x-eb4aa75911'] after the narrowing",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "0 before resize, 1 after (same id as the grid bin)",
+      "selector": "page.locator(`[data-staging-bin-id=\"${id}\"]`)",
+      "provenance": "observed",
+      "evidence_ref": "live evaluateAll returned ['mtxqbnew-8d0858bee4'] after the narrowing - byte-identical to the id read off the grid bin before it",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "visible at 1280x720",
+      "selector": "getSidebar(page) => page.locator('[data-sidebar]')",
+      "provenance": "observed",
+      "evidence_ref": "innerText of [data-sidebar] returned the Grid Size / Physical Units / Baseplate panel text",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "420 x 336 x 84 mm / 210 x 336 x 84 mm",
+      "state": "visible, single match inside the sidebar",
+      "selector": "getSidebar(page).getByText('420 × 336 × 84 mm')",
+      "provenance": "observed",
+      "evidence_ref": "sidebar getByText(/\\d+ × \\d+ × \\d+ mm/).allInnerTexts() returned exactly ['420 × 336 × 84 mm'] before and ['210 × 336 × 84 mm'] after",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "status",
+      "name": "Stash",
+      "state": "shows an em dash and 'Drag a bin here to stash it' when empty",
+      "selector": "page.locator('[data-stash]')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot line 288 and innerText probe 'Stash\\n—\\nDrag a bin here to stash it' with a bin on the grid but none stashed",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Increase Drawer width in grid units",
+      "state": "visible",
+      "selector": "getByRole('button', { name: 'Increase Drawer width in grid units' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot line 121",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "ours_exploration",
+      "role": "spinbutton",
+      "name": "Drawer depth in grid units",
+      "state": "visible, value '8'",
+      "selector": "getByRole('spinbutton', { name: 'Drawer depth in grid units' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot line 126",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L12",
+      "source_arm_stage": "generator_implementation",
+      "role": "banner",
+      "name": "",
+      "state": "present on load",
+      "selector": "waitForAppReady(page) => page.waitForSelector('header') + '[role=\"application\"]'",
+      "provenance": "observed",
+      "evidence_ref": "the existing fixture resolved on every live navigation and in all 7 native runs",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L13",
+      "source_arm_stage": "generator_implementation",
+      "role": "",
+      "name": "",
+      "state": "mobile layout renders no [data-sidebar]",
+      "selector": "test.skip(viewport.width < 900) guard",
+      "provenance": "inferred",
+      "evidence_ref": null,
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    }
+  ],
+  "states": {
+    "required_total": 3,
+    "reached": 3,
+    "transitions_observed": [
+      {
+        "from": "fresh layout, empty grid (10 columns by 8 rows, 420 x 336 x 84 mm, stash empty)",
+        "to": "two bins drawn (column 10 and column 2), 0 staged",
+        "evidence_ref": "live mouse drags on the [role=application] grid; [data-bin-id] evaluateAll returned two ids, [data-staging-bin-id] count 0"
+      },
+      {
+        "from": "two bins on a 10-column drawer",
+        "to": "5-column drawer; column-10 bin moved to the stash under the same id, column-2 bin retained",
+        "evidence_ref": "aria-label 10->5 columns, column headers 10->5, dims 420->210 mm, gridIdsAfter=[col2 id], stagedIds=[col10 id], button 'Stash 1 bins'"
+      },
+      {
+        "from": "unfaulted app",
+        "to": "faulted app with computeDisplacedBins stubbed to []",
+        "evidence_ref": "route hit count 1; grid still recomputed to 5 columns but gridBins=1 and staged=0 - the out-of-bounds bin was silently kept"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "mobile/tablet layout (< 900px viewport) - the test.skip guard rests on source reading and reviewer analysis of src/App.tsx and useResponsive.ts, not on live observation; the exploration browser ran only at desktop width",
+      "drawer depth changes and outline/custom-shape displacement paths - only the width axis was exercised",
+      "the unused i18n string grid.resizeWillStashBins ('will be moved to stash. Continue?') - no confirm dialog appeared on this path"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 1
+  },
+  "usage": {
+    "wall_seconds_setup": 52.2,
+    "wall_seconds_steady_state": 2152.8,
+    "browser_actions": 28,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 105,
+    "reported_tokens_in": 192,
+    "reported_tokens_out": 70245,
+    "reported_cost_usd": 13.562783500000004
+  },
+  "summary": {
+    "observed_locator_count": 12,
+    "inferred_locator_count": 1,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 1,
+    "observed_claims_verified": 7,
+    "observed_claims_total": 12
+  }
+}

@@ -1,0 +1,1018 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "scenario_id": "B-S1",
+  "target_id": "B",
+  "kind": "satisfiable",
+  "captured_at": "2026-09-11T06:48:26.508Z",
+  "capture_method": "Playwright chromium (headless, 1280x720) driving the pinned SHA served by its own dev server from a read-only scratch checkout; page.locator('body').ariaSnapshot() per state; off-origin requests aborted at the routing layer and listed in <target>-capture.json",
+  "required_states": [
+    "app ready: header, Tool Switcher navigation, empty grid 'Gridfinity drawer grid, 10 columns by 8 rows'",
+    "one bin placed on the grid after a click ([data-bin-id] count 1)",
+    "print-list summary in the right panel reflects the bin ('1 bins', '1% filled · 1 bins')"
+  ],
+  "absent_capability": null,
+  "observations": {
+    "url_after_load": "http://localhost:5174/l/PqEWbhBX6G8S/untitled-layout",
+    "grid_accessible_name_initial": "Gridfinity drawer grid, 10 columns by 8 rows",
+    "bins_initial": 0,
+    "bins_after_click": 1,
+    "text_lines_mentioning_bins": [
+      "Clear 1 bins",
+      "1% filled · 1 bins",
+      "1×1 Bin",
+      "1 bins"
+    ],
+    "inspector_visible": true
+  },
+  "role_name_state_list": [
+    {
+      "role": "heading",
+      "name": "Gridfinity Planner & Layout Tool",
+      "state": "level=1"
+    },
+    {
+      "role": "link",
+      "name": "Skip to grid planner",
+      "state": null
+    },
+    {
+      "role": "banner",
+      "name": "",
+      "state": null
+    },
+    {
+      "role": "navigation",
+      "name": "Tool Switcher",
+      "state": null
+    },
+    {
+      "role": "tablist",
+      "name": "Active tool",
+      "state": null
+    },
+    {
+      "role": "tab",
+      "name": "Layout",
+      "state": "selected"
+    },
+    {
+      "role": "img",
+      "name": "",
+      "state": null
+    },
+    {
+      "role": "tab",
+      "name": "Bins",
+      "state": null
+    },
+    {
+      "role": "tab",
+      "name": "Baseplate",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Click to edit layout name",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Print layout",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Export layout (3D)",
+      "state": null
+    },
+    {
+      "role": "tooltip",
+      "name": "Export layout (3D)",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Undo (⌘+Z)",
+      "state": "disabled"
+    },
+    {
+      "role": "button",
+      "name": "Redo (⌘+Y)",
+      "state": "disabled"
+    },
+    {
+      "role": "button",
+      "name": "Share layout",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Change language",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Feedback",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Show help and keyboard shortcuts",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Open settings",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "More links",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Support me on Ko-fi",
+      "state": null
+    },
+    {
+      "role": "complementary",
+      "name": "",
+      "state": null
+    },
+    {
+      "role": "heading",
+      "name": "Tools",
+      "state": "level=2"
+    },
+    {
+      "role": "button",
+      "name": "Collapse left panel",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Size Brush",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Fill 80 gaps",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Clear layer",
+      "state": "disabled"
+    },
+    {
+      "role": "button",
+      "name": "Layers",
+      "state": "expanded"
+    },
+    {
+      "role": "button",
+      "name": "Add new layer",
+      "state": null
+    },
+    {
+      "role": "region",
+      "name": "Layers",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "9u headroom",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select Layer 1",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Layer 1",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Decrease Layer 1 height",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Increase Layer 1 height",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Categories",
+      "state": "expanded"
+    },
+    {
+      "role": "button",
+      "name": "Save as defaults",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Add category",
+      "state": null
+    },
+    {
+      "role": "region",
+      "name": "Categories",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Change color",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Coral (selected for new bins)",
+      "state": "pressed"
+    },
+    {
+      "role": "button",
+      "name": "Edit Coral",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Delete Coral",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select Sky for new bins",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Edit Sky",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Delete Sky",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select Green for new bins",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Edit Green",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Delete Green",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select Cloud for new bins",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Edit Cloud",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Delete Cloud",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select Charcoal for new bins",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Edit Charcoal",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Delete Charcoal",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Inspiration Gallery Get ideas for your drawer",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Grid Size",
+      "state": "expanded"
+    },
+    {
+      "role": "region",
+      "name": "Grid Size",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Decrease Drawer width in grid units",
+      "state": null
+    },
+    {
+      "role": "spinbutton",
+      "name": "Drawer width in grid units",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Increase Drawer width in grid units",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Decrease Drawer depth in grid units",
+      "state": null
+    },
+    {
+      "role": "spinbutton",
+      "name": "Drawer depth in grid units",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Increase Drawer depth in grid units",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Decrease Drawer height in millimeters",
+      "state": null
+    },
+    {
+      "role": "spinbutton",
+      "name": "Drawer height in millimeters",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Increase Drawer height in millimeters",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Edit measured drawer dimensions",
+      "state": null
+    },
+    {
+      "role": "paragraph",
+      "name": "",
+      "state": null
+    },
+    {
+      "role": "checkbox",
+      "name": "Toggle half-grid mode",
+      "state": null
+    },
+    {
+      "role": "checkbox",
+      "name": "Custom drawer shape",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Drawer shape options",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Physical Units",
+      "state": "expanded"
+    },
+    {
+      "role": "region",
+      "name": "Physical Units",
+      "state": null
+    },
+    {
+      "role": "spinbutton",
+      "name": "Grid unit X",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Unlink X and Y grid units",
+      "state": null
+    },
+    {
+      "role": "spinbutton",
+      "name": "Height unit",
+      "state": null
+    },
+    {
+      "role": "spinbutton",
+      "name": "Print bed width",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Unlink width and depth",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Reset to Gridfinity Standard",
+      "state": "disabled"
+    },
+    {
+      "role": "button",
+      "name": "Fit bins to your drawer",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Baseplate",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Manage baseplates",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Learn",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Open What's New",
+      "state": null
+    },
+    {
+      "role": "tooltip",
+      "name": "See what's changed recently",
+      "state": null
+    },
+    {
+      "role": "link",
+      "name": "Zack Freedman",
+      "state": null
+    },
+    {
+      "role": "link",
+      "name": "Andy Aragon",
+      "state": null
+    },
+    {
+      "role": "link",
+      "name": "Tip",
+      "state": null
+    },
+    {
+      "role": "link",
+      "name": "Supporters",
+      "state": null
+    },
+    {
+      "role": "link",
+      "name": "Privacy",
+      "state": null
+    },
+    {
+      "role": "link",
+      "name": "Terms",
+      "state": null
+    },
+    {
+      "role": "main",
+      "name": "",
+      "state": null
+    },
+    {
+      "role": "group",
+      "name": "Zoom controls",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Zoom out",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Zoom in",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Fit grid to screen",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Show 3D preview",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select bins in row 8",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select bins in row 7",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select bins in row 6",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select bins in row 5",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select bins in row 4",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select bins in row 3",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select bins in row 2",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select bins in row 1",
+      "state": null
+    },
+    {
+      "role": "application",
+      "name": "Gridfinity drawer grid, 10 columns by 8 rows",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select bins in column 1",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select bins in column 2",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select bins in column 3",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select bins in column 4",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select bins in column 5",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select bins in column 6",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select bins in column 7",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select bins in column 8",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select bins in column 9",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Select bins in column 10",
+      "state": null
+    },
+    {
+      "role": "status",
+      "name": "Stash",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Collapse right panel",
+      "state": null
+    },
+    {
+      "role": "tablist",
+      "name": "",
+      "state": null
+    },
+    {
+      "role": "tab",
+      "name": "Inspector",
+      "state": "selected"
+    },
+    {
+      "role": "tab",
+      "name": "History",
+      "state": null
+    },
+    {
+      "role": "tabpanel",
+      "name": "Inspector",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Selection",
+      "state": "expanded"
+    },
+    {
+      "role": "region",
+      "name": "Selection",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Bin List",
+      "state": "expanded"
+    },
+    {
+      "role": "region",
+      "name": "Bin List",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Undo (⌘+Z)",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Fill 79 gaps",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Clear 1 bins",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Apply Coral to 1 selected bin(s)",
+      "state": "pressed"
+    },
+    {
+      "role": "button",
+      "name": "Apply Sky to 1 selected bin(s)",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Apply Green to 1 selected bin(s)",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Apply Cloud to 1 selected bin(s)",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Apply Charcoal to 1 selected bin(s)",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Bin 1 by 1, category Coral",
+      "state": "pressed"
+    },
+    {
+      "role": "slider",
+      "name": "Resize left edge",
+      "state": null
+    },
+    {
+      "role": "slider",
+      "name": "Resize right edge",
+      "state": null
+    },
+    {
+      "role": "slider",
+      "name": "Resize top edge",
+      "state": null
+    },
+    {
+      "role": "slider",
+      "name": "Resize bottom edge",
+      "state": null
+    },
+    {
+      "role": "slider",
+      "name": "Resize top-left corner",
+      "state": null
+    },
+    {
+      "role": "slider",
+      "name": "Resize top-right corner",
+      "state": null
+    },
+    {
+      "role": "slider",
+      "name": "Resize bottom-left corner",
+      "state": null
+    },
+    {
+      "role": "slider",
+      "name": "Resize bottom-right corner",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Bin Properties",
+      "state": "expanded"
+    },
+    {
+      "role": "region",
+      "name": "Bin Properties",
+      "state": null
+    },
+    {
+      "role": "heading",
+      "name": "1×1 Bin",
+      "state": "level=2"
+    },
+    {
+      "role": "button",
+      "name": "Deselect bin",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Decrease Width",
+      "state": "disabled"
+    },
+    {
+      "role": "spinbutton",
+      "name": "Width",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Increase Width",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Swap width and depth",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Decrease Depth",
+      "state": "disabled"
+    },
+    {
+      "role": "spinbutton",
+      "name": "Depth",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Increase Depth",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Lock size",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Decrease Bin height",
+      "state": "disabled"
+    },
+    {
+      "role": "spinbutton",
+      "name": "Bin height",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Increase Bin height",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Decrease Bin clearance",
+      "state": "disabled"
+    },
+    {
+      "role": "spinbutton",
+      "name": "Bin clearance",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Increase Bin clearance",
+      "state": null
+    },
+    {
+      "role": "combobox",
+      "name": "Bin category",
+      "state": null
+    },
+    {
+      "role": "option",
+      "name": "Coral",
+      "state": "selected"
+    },
+    {
+      "role": "option",
+      "name": "Sky",
+      "state": null
+    },
+    {
+      "role": "option",
+      "name": "Green",
+      "state": null
+    },
+    {
+      "role": "option",
+      "name": "Cloud",
+      "state": null
+    },
+    {
+      "role": "option",
+      "name": "Charcoal",
+      "state": null
+    },
+    {
+      "role": "combobox",
+      "name": "Bin label",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Search for 1×1 bin",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Create",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Link",
+      "state": null
+    },
+    {
+      "role": "textbox",
+      "name": "Bin notes",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Add custom property",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "To Stash",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Delete",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Bin List 1",
+      "state": "expanded"
+    },
+    {
+      "role": "button",
+      "name": "Copy bin list as TSV",
+      "state": null
+    },
+    {
+      "role": "region",
+      "name": "Bin List 1",
+      "state": null
+    },
+    {
+      "role": "table",
+      "name": "",
+      "state": null
+    },
+    {
+      "role": "rowgroup",
+      "name": "",
+      "state": null
+    },
+    {
+      "role": "row",
+      "name": "Size H Qty Fil.",
+      "state": null
+    },
+    {
+      "role": "columnheader",
+      "name": "Size",
+      "state": null
+    },
+    {
+      "role": "columnheader",
+      "name": "H",
+      "state": null
+    },
+    {
+      "role": "columnheader",
+      "name": "Qty",
+      "state": null
+    },
+    {
+      "role": "columnheader",
+      "name": "Fil.",
+      "state": null
+    },
+    {
+      "role": "row",
+      "name": "Coral 1×1 3u 1 6.21",
+      "state": null
+    },
+    {
+      "role": "cell",
+      "name": "Coral 1×1",
+      "state": null
+    },
+    {
+      "role": "img",
+      "name": "Coral",
+      "state": null
+    },
+    {
+      "role": "cell",
+      "name": "3u",
+      "state": null
+    },
+    {
+      "role": "cell",
+      "name": "1",
+      "state": null
+    },
+    {
+      "role": "cell",
+      "name": "6.21",
+      "state": null
+    },
+    {
+      "role": "spinbutton",
+      "name": "Nozzle size",
+      "state": null
+    },
+    {
+      "role": "progressbar",
+      "name": "Spool",
+      "state": null
+    }
+  ],
+  "snapshots": {
+    "B-S1-ready.aria.yaml": {
+      "sha256": "5bc25143365be0f3f1c5ccdce23940ad8881f61d4aa13f96c458ef2dc62197bd",
+      "aria_snapshot": "- heading \"Gridfinity Planner & Layout Tool\" [level=1]\n- link \"Skip to grid planner\":\n  - /url: \"#main-grid\"\n- banner:\n  - navigation \"Tool Switcher\":\n    - tablist \"Active tool\":\n      - tab \"Layout\" [selected]:\n        - img\n        - text: Layout\n      - tab \"Bins\":\n        - img\n        - text: Bins\n      - tab \"Baseplate\":\n        - img\n        - text: Baseplate\n  - button \"Click to edit layout name\": Untitled layout\n  - 'button \"Switch layout (current: Untitled layout)\"'\n  - button \"Print layout\":\n    - img\n    - text: Print\n  - button \"Export layout (3D)\":\n    - img\n    - text: Export\n  - tooltip \"Export layout (3D)\"\n  - button \"Undo (⌘+Z)\" [disabled]:\n    - img\n  - button \"Redo (⌘+Y)\" [disabled]:\n    - img\n  - button \"Share layout\":\n    - img\n  - button \"Change language\":\n    - img\n    - text: EN\n    - img\n  - button \"Feedback\":\n    - img\n    - text: Feedback\n  - button \"Show help and keyboard shortcuts\":\n    - img\n    - text: Help\n  - button \"Open settings\":\n    - img\n  - button \"More links\":\n    - img\n  - button \"Support me on Ko-fi\"\n- complementary:\n  - heading \"Tools\" [level=2]\n  - button \"Collapse left panel\":\n    - img\n  - button \"Size Brush\":\n    - img\n    - text: Size Brush\n    - img\n  - button \"Fill 80 gaps\":\n    - img\n    - text: Fill 80 gaps\n  - button \"Clear layer\" [disabled]:\n    - img\n    - text: Clear layer\n  - button \"Layers\" [expanded]\n  - button \"Add new layer\"\n  - region \"Layers\":\n    - button \"9u headroom\"\n    - button \"Select Layer 1\":\n      - button \"Layer 1\"\n      - button \"Decrease Layer 1 height\":\n        - img\n      - text: 3u\n      - button \"Increase Layer 1 height\":\n        - img\n    - text: 0% filled · 0 bins 3/12u\n  - button \"Categories\" [expanded]\n  - button \"Save as defaults\":\n    - img\n  - button \"Add category\"\n  - region \"Categories\":\n    - button \"Change color\"\n    - button \"Coral (selected for new bins)\" [pressed]: Coral\n    - button \"Edit Coral\":\n      - img\n    - button \"Delete Coral\"\n    - button \"Change color\"\n    - button \"Select Sky for new bins\": Sky\n    - button \"Edit Sky\":\n      - img\n    - button \"Delete Sky\"\n    - button \"Change color\"\n    - button \"Select Green for new bins\": Green\n    - button \"Edit Green\":\n      - img\n    - button \"Delete Green\"\n    - button \"Change color\"\n    - button \"Select Cloud for new bins\": Cloud\n    - button \"Edit Cloud\":\n      - img\n    - button \"Delete Cloud\"\n    - button \"Change color\"\n    - button \"Select Charcoal for new bins\": Charcoal\n    - button \"Edit Charcoal\":\n      - img\n    - button \"Delete Charcoal\"\n  - button \"Inspiration Gallery Get ideas for your drawer\":\n    - img\n    - text: Inspiration Gallery Get ideas for your drawer\n    - img\n  - button \"Grid Size\" [expanded]\n  - region \"Grid Size\":\n    - text: Width (u)\n    - button \"Decrease Drawer width in grid units\"\n    - spinbutton \"Drawer width in grid units\": \"10\"\n    - button \"Increase Drawer width in grid units\"\n    - text: Depth (u)\n    - button \"Decrease Drawer depth in grid units\"\n    - spinbutton \"Drawer depth in grid units\": \"8\"\n    - button \"Increase Drawer depth in grid units\"\n    - text: Drawer height\n    - button \"Decrease Drawer height in millimeters\"\n    - spinbutton \"Drawer height in millimeters\": \"84\"\n    - button \"Increase Drawer height in millimeters\"\n    - button \"Edit measured drawer dimensions\": 420 × 336 × 84 mm\n    - paragraph: Add a height measurement to check the lid closes\n    - checkbox \"Toggle half-grid mode\"\n    - text: Half-grid mode H\n    - checkbox \"Custom drawer shape\"\n    - text: Custom drawer shape\n    - button \"Drawer shape options\"\n  - button \"Physical Units\" [expanded]\n  - region \"Physical Units\":\n    - text: Grid unit\n    - spinbutton \"Grid unit X\": \"42\"\n    - button \"Unlink X and Y grid units\":\n      - img\n    - text: mm Height unit\n    - spinbutton \"Height unit\": \"7\"\n    - text: mm Print bed\n    - spinbutton \"Print bed width\": \"256\"\n    - button \"Unlink width and depth\":\n      - img\n    - text: mm\n    - button \"Reset to Gridfinity Standard\" [disabled]\n    - button \"Fit bins to your drawer\"\n  - button \"Baseplate\"\n  - button \"Manage baseplates\"\n  - button \"Learn\"\n  - text: Gridfinity Layout Tool\n  - button \"Open What's New\": v4.489.0\n  - tooltip \"See what's changed recently\"\n  - text: Gridfinity by\n  - link \"Zack Freedman\":\n    - /url: https://www.youtube.com/c/ZackFreedman\n  - text: Tool by\n  - link \"Andy Aragon\":\n    - /url: https://www.linkedin.com/in/andyhmai/\n  - text: ·\n  - link \"Tip\":\n    - /url: https://ko-fi.com/andyaragon\n    - img\n    - text: Tip\n  - text: ·\n  - link \"Supporters\":\n    - /url: /supporters\n  - text: ·\n  - link \"Privacy\":\n    - /url: /privacy\n  - text: ·\n  - link \"Terms\":\n    - /url: /terms\n- main:\n  - group \"Zoom controls\":\n    - button \"Zoom out\"\n    - text: 170%\n    - button \"Zoom in\"\n    - button \"Fit grid to screen\": Fit\n  - button \"Show 3D preview\":\n    - img\n    - text: 3D View\n  - button \"Select bins in row 8\": \"8\"\n  - button \"Select bins in row 7\": \"7\"\n  - button \"Select bins in row 6\": \"6\"\n  - button \"Select bins in row 5\": \"5\"\n  - button \"Select bins in row 4\": \"4\"\n  - button \"Select bins in row 3\": \"3\"\n  - button \"Select bins in row 2\": \"2\"\n  - button \"Select bins in row 1\": \"1\"\n  - application \"Gridfinity drawer grid, 10 columns by 8 rows\":\n    - paragraph: Click and drag to draw a bin\n  - button \"Select bins in column 1\": \"1\"\n  - button \"Select bins in column 2\": \"2\"\n  - button \"Select bins in column 3\": \"3\"\n  - button \"Select bins in column 4\": \"4\"\n  - button \"Select bins in column 5\": \"5\"\n  - button \"Select bins in column 6\": \"6\"\n  - button \"Select bins in column 7\": \"7\"\n  - button \"Select bins in column 8\": \"8\"\n  - button \"Select bins in column 9\": \"9\"\n  - button \"Select bins in column 10\": \"10\"\n  - status \"Stash\":\n    - img\n    - text: Stash — Drag a bin here to stash it\n- complementary:\n  - button \"Collapse right panel\":\n    - img\n  - tablist:\n    - tab \"Inspector\" [selected]\n    - tab \"History\"\n  - tabpanel \"Inspector\":\n    - button \"Selection\" [expanded]\n    - region \"Selection\":\n      - img\n      - paragraph: No bin selected\n      - paragraph: Click a bin on the grid or draw to create one\n      - text: Drag Draw to create a bin Ctrl+D Duplicate selected bin L Add/edit label\n    - button \"Bin List\" [expanded]\n    - region \"Bin List\":\n      - img\n      - paragraph: No bins to print\n      - paragraph: Add bins to the grid to see the print list"
+    },
+    "B-S1-after-add.aria.yaml": {
+      "sha256": "2363764a4c5e6ffc02019bc8ae611c9e1030312318d32fcb4a61399df9cad521",
+      "aria_snapshot": "- heading \"Gridfinity Planner & Layout Tool\" [level=1]\n- link \"Skip to grid planner\":\n  - /url: \"#main-grid\"\n- banner:\n  - navigation \"Tool Switcher\":\n    - tablist \"Active tool\":\n      - tab \"Layout\" [selected]:\n        - img\n        - text: Layout\n      - tab \"Bins\":\n        - img\n        - text: Bins\n      - tab \"Baseplate\":\n        - img\n        - text: Baseplate\n  - button \"Click to edit layout name\": Untitled layout\n  - 'button \"Switch layout (current: Untitled layout)\"'\n  - button \"Print layout\":\n    - img\n    - text: Print\n  - button \"Export layout (3D)\":\n    - img\n    - text: Export\n  - tooltip \"Export layout (3D)\"\n  - button \"Undo (⌘+Z)\":\n    - img\n  - button \"Redo (⌘+Y)\" [disabled]:\n    - img\n  - button \"Share layout\":\n    - img\n  - button \"Change language\":\n    - img\n    - text: EN\n    - img\n  - button \"Feedback\":\n    - img\n    - text: Feedback\n  - button \"Show help and keyboard shortcuts\":\n    - img\n    - text: Help\n  - button \"Open settings\":\n    - img\n  - button \"More links\":\n    - img\n  - button \"Support me on Ko-fi\"\n- complementary:\n  - heading \"Tools\" [level=2]\n  - button \"Collapse left panel\":\n    - img\n  - button \"Size Brush\":\n    - img\n    - text: Size Brush\n    - img\n  - button \"Fill 79 gaps\":\n    - img\n    - text: Fill 79 gaps\n  - button \"Clear 1 bins\":\n    - img\n    - text: Clear 1 bins\n  - button \"Layers\" [expanded]\n  - button \"Add new layer\"\n  - region \"Layers\":\n    - button \"9u headroom\"\n    - button \"Select Layer 1\":\n      - button \"Layer 1\"\n      - button \"Decrease Layer 1 height\":\n        - img\n      - text: 3u\n      - button \"Increase Layer 1 height\":\n        - img\n    - text: 1% filled · 1 bins 3/12u\n  - button \"Categories\" [expanded]\n  - button \"Save as defaults\":\n    - img\n  - button \"Add category\"\n  - region \"Categories\":\n    - button \"Change color\"\n    - button \"Apply Coral to 1 selected bin(s)\" [pressed]: Coral\n    - button \"Edit Coral\":\n      - img\n    - text: \"1\"\n    - button \"Change color\"\n    - button \"Apply Sky to 1 selected bin(s)\": Sky\n    - button \"Edit Sky\":\n      - img\n    - button \"Delete Sky\"\n    - button \"Change color\"\n    - button \"Apply Green to 1 selected bin(s)\": Green\n    - button \"Edit Green\":\n      - img\n    - button \"Delete Green\"\n    - button \"Change color\"\n    - button \"Apply Cloud to 1 selected bin(s)\": Cloud\n    - button \"Edit Cloud\":\n      - img\n    - button \"Delete Cloud\"\n    - button \"Change color\"\n    - button \"Apply Charcoal to 1 selected bin(s)\": Charcoal\n    - button \"Edit Charcoal\":\n      - img\n    - button \"Delete Charcoal\"\n  - button \"Inspiration Gallery Get ideas for your drawer\":\n    - img\n    - text: Inspiration Gallery Get ideas for your drawer\n    - img\n  - button \"Grid Size\" [expanded]\n  - region \"Grid Size\":\n    - text: Width (u)\n    - button \"Decrease Drawer width in grid units\"\n    - spinbutton \"Drawer width in grid units\": \"10\"\n    - button \"Increase Drawer width in grid units\"\n    - text: Depth (u)\n    - button \"Decrease Drawer depth in grid units\"\n    - spinbutton \"Drawer depth in grid units\": \"8\"\n    - button \"Increase Drawer depth in grid units\"\n    - text: Drawer height\n    - button \"Decrease Drawer height in millimeters\"\n    - spinbutton \"Drawer height in millimeters\": \"84\"\n    - button \"Increase Drawer height in millimeters\"\n    - button \"Edit measured drawer dimensions\": 420 × 336 × 84 mm\n    - paragraph: Add a height measurement to check the lid closes\n    - checkbox \"Toggle half-grid mode\"\n    - text: Half-grid mode H\n    - checkbox \"Custom drawer shape\"\n    - text: Custom drawer shape\n    - button \"Drawer shape options\"\n  - button \"Physical Units\" [expanded]\n  - region \"Physical Units\":\n    - text: Grid unit\n    - spinbutton \"Grid unit X\": \"42\"\n    - button \"Unlink X and Y grid units\":\n      - img\n    - text: mm Height unit\n    - spinbutton \"Height unit\": \"7\"\n    - text: mm Print bed\n    - spinbutton \"Print bed width\": \"256\"\n    - button \"Unlink width and depth\":\n      - img\n    - text: mm\n    - button \"Reset to Gridfinity Standard\" [disabled]\n    - button \"Fit bins to your drawer\"\n  - button \"Baseplate\"\n  - button \"Manage baseplates\"\n  - button \"Learn\"\n  - text: Gridfinity Layout Tool\n  - button \"Open What's New\": v4.489.0\n  - tooltip \"See what's changed recently\"\n  - text: Gridfinity by\n  - link \"Zack Freedman\":\n    - /url: https://www.youtube.com/c/ZackFreedman\n  - text: Tool by\n  - link \"Andy Aragon\":\n    - /url: https://www.linkedin.com/in/andyhmai/\n  - text: ·\n  - link \"Tip\":\n    - /url: https://ko-fi.com/andyaragon\n    - img\n    - text: Tip\n  - text: ·\n  - link \"Supporters\":\n    - /url: /supporters\n  - text: ·\n  - link \"Privacy\":\n    - /url: /privacy\n  - text: ·\n  - link \"Terms\":\n    - /url: /terms\n- main:\n  - group \"Zoom controls\":\n    - button \"Zoom out\"\n    - text: 170%\n    - button \"Zoom in\"\n    - button \"Fit grid to screen\": Fit\n  - button \"Show 3D preview\":\n    - img\n    - text: 3D View\n  - button \"Select bins in row 8\": \"8\"\n  - button \"Select bins in row 7\": \"7\"\n  - button \"Select bins in row 6\": \"6\"\n  - button \"Select bins in row 5\": \"5\"\n  - button \"Select bins in row 4\": \"4\"\n  - button \"Select bins in row 3\": \"3\"\n  - button \"Select bins in row 2\": \"2\"\n  - button \"Select bins in row 1\": \"1\"\n  - application \"Gridfinity drawer grid, 10 columns by 8 rows\":\n    - button \"Bin 1 by 1, category Coral\" [pressed]:\n      - text: 1×1\n      - slider \"Resize left edge\"\n      - slider \"Resize right edge\"\n      - slider \"Resize top edge\"\n      - slider \"Resize bottom edge\"\n      - slider \"Resize top-left corner\"\n      - slider \"Resize top-right corner\"\n      - slider \"Resize bottom-left corner\"\n      - slider \"Resize bottom-right corner\"\n  - button \"Select bins in column 1\": \"1\"\n  - button \"Select bins in column 2\": \"2\"\n  - button \"Select bins in column 3\": \"3\"\n  - button \"Select bins in column 4\": \"4\"\n  - button \"Select bins in column 5\": \"5\"\n  - button \"Select bins in column 6\": \"6\"\n  - button \"Select bins in column 7\": \"7\"\n  - button \"Select bins in column 8\": \"8\"\n  - button \"Select bins in column 9\": \"9\"\n  - button \"Select bins in column 10\": \"10\"\n  - status \"Stash\":\n    - img\n    - text: Stash — Drag a bin here to stash it\n- complementary:\n  - button \"Collapse right panel\":\n    - img\n  - tablist:\n    - tab \"Inspector\" [selected]\n    - tab \"History\"\n  - tabpanel \"Inspector\":\n    - button \"Bin Properties\" [expanded]\n    - region \"Bin Properties\":\n      - heading \"1×1 Bin\" [level=2]\n      - button \"Deselect bin\"\n      - text: Width\n      - button \"Decrease Width\" [disabled]\n      - spinbutton \"Width\": \"1\"\n      - button \"Increase Width\"\n      - button \"Swap width and depth\"\n      - text: Depth\n      - button \"Decrease Depth\" [disabled]\n      - spinbutton \"Depth\": \"1\"\n      - button \"Increase Depth\"\n      - text: 42 × 42 × 21 mm\n      - button \"Lock size\"\n      - text: Height (mm)\n      - button \"Decrease Bin height\" [disabled]\n      - spinbutton \"Bin height\": \"21\"\n      - button \"Increase Bin height\"\n      - text: = 3u Clearance (mm)\n      - button \"Decrease Bin clearance\" [disabled]\n      - spinbutton \"Bin clearance\": \"0\"\n      - button \"Increase Bin clearance\"\n      - text: \"= 0u Min 21mm: layer height · Max 84mm: remaining space Prints 25.4mm · stacks +20.65mm each\"\n      - img\n      - text: 1×1 fits print bed (6×6mm) Category\n      - combobox \"Bin category\":\n        - option \"Coral\" [selected]\n        - option \"Sky\"\n        - option \"Green\"\n        - option \"Cloud\"\n        - option \"Charcoal\"\n      - text: Label\n      - combobox \"Bin label\"\n      - button \"Search for 1×1 bin\": Find STL\n      - text: Linked Design\n      - button \"Create\"\n      - button \"Link\":\n        - img\n        - text: Link\n      - text: Notes\n      - textbox \"Bin notes\":\n        - /placeholder: e.g., 2 dividers, STL link, contents\n      - text: 0/256 Custom Properties\n      - button \"Add custom property\": Add\n      - text: No custom properties\n      - button \"To Stash\"\n      - button \"Delete\"\n    - button \"Bin List 1\" [expanded]\n    - button \"Copy bin list as TSV\":\n      - img\n    - region \"Bin List 1\":\n      - table:\n        - rowgroup:\n          - row \"Size H Qty Fil.\":\n            - columnheader \"Size\"\n            - columnheader \"H\"\n            - columnheader \"Qty\"\n            - columnheader \"Fil.\"\n        - rowgroup:\n          - row \"Coral 1×1 3u 1 6.21\":\n            - cell \"Coral 1×1\":\n              - img \"Coral\"\n              - text: 1×1\n            - cell \"3u\"\n            - cell \"1\"\n            - cell \"6.21\"\n      - text: Nozzle size\n      - spinbutton \"Nozzle size\": \"0.4\"\n      - text: mm Time~36m Cost$0.38 1 bins ~6.2m filament Spool 1.9%\n      - progressbar \"Spool\""
+    },
+    "B-S1-right-panel-after-add.aria.yaml": {
+      "sha256": "0c8667ac1551f0ffd55c6d9651d7c01bead94c3d11ddb86a551353deb879a808",
+      "aria_snapshot": "- complementary:\n  - button \"Collapse right panel\":\n    - img\n  - tablist:\n    - tab \"Inspector\" [selected]\n    - tab \"History\"\n  - tabpanel \"Inspector\":\n    - button \"Bin Properties\" [expanded]\n    - region \"Bin Properties\":\n      - heading \"1×1 Bin\" [level=2]\n      - button \"Deselect bin\"\n      - text: Width\n      - button \"Decrease Width\" [disabled]\n      - spinbutton \"Width\": \"1\"\n      - button \"Increase Width\"\n      - button \"Swap width and depth\"\n      - text: Depth\n      - button \"Decrease Depth\" [disabled]\n      - spinbutton \"Depth\": \"1\"\n      - button \"Increase Depth\"\n      - text: 42 × 42 × 21 mm\n      - button \"Lock size\"\n      - text: Height (mm)\n      - button \"Decrease Bin height\" [disabled]\n      - spinbutton \"Bin height\": \"21\"\n      - button \"Increase Bin height\"\n      - text: = 3u Clearance (mm)\n      - button \"Decrease Bin clearance\" [disabled]\n      - spinbutton \"Bin clearance\": \"0\"\n      - button \"Increase Bin clearance\"\n      - text: \"= 0u Min 21mm: layer height · Max 84mm: remaining space Prints 25.4mm · stacks +20.65mm each\"\n      - img\n      - text: 1×1 fits print bed (6×6mm) Category\n      - combobox \"Bin category\":\n        - option \"Coral\" [selected]\n        - option \"Sky\"\n        - option \"Green\"\n        - option \"Cloud\"\n        - option \"Charcoal\"\n      - text: Label\n      - combobox \"Bin label\"\n      - button \"Search for 1×1 bin\": Find STL\n      - text: Linked Design\n      - button \"Create\"\n      - button \"Link\":\n        - img\n        - text: Link\n      - text: Notes\n      - textbox \"Bin notes\":\n        - /placeholder: e.g., 2 dividers, STL link, contents\n      - text: 0/256 Custom Properties\n      - button \"Add custom property\": Add\n      - text: No custom properties\n      - button \"To Stash\"\n      - button \"Delete\"\n    - button \"Bin List 1\" [expanded]\n    - button \"Copy bin list as TSV\":\n      - img\n    - region \"Bin List 1\":\n      - table:\n        - rowgroup:\n          - row \"Size H Qty Fil.\":\n            - columnheader \"Size\"\n            - columnheader \"H\"\n            - columnheader \"Qty\"\n            - columnheader \"Fil.\"\n        - rowgroup:\n          - row \"Coral 1×1 3u 1 6.21\":\n            - cell \"Coral 1×1\":\n              - img \"Coral\"\n              - text: 1×1\n            - cell \"3u\"\n            - cell \"1\"\n            - cell \"6.21\"\n      - text: Nozzle size\n      - spinbutton \"Nozzle size\": \"0.4\"\n      - text: mm Time~36m Cost$0.38 1 bins ~6.2m filament Spool 1.9%\n      - progressbar \"Spool\""
+    }
+  }
+}

@@ -1,0 +1,75 @@
+- dialog "Settings":
+  - heading "Settings" [level=2]
+  - button "Close"
+  - combobox "Search settings…"
+  - tablist "Settings":
+    - paragraph: Preferences
+    - tab "General" [selected]:
+      - img
+      - text: General
+    - tab "Appearance":
+      - img
+      - text: Appearance
+    - tab "Accessibility":
+      - img
+      - text: Accessibility
+    - paragraph: Defaults
+    - tab "Layout Defaults":
+      - img
+      - text: Layout Defaults
+    - tab "Print & Material":
+      - img
+      - text: Print & Material
+    - tab "Categories & Bins":
+      - img
+      - text: Categories & Bins
+    - paragraph: Account & Data
+    - tab "Account":
+      - img
+      - text: Account
+    - tab "Privacy":
+      - img
+      - text: Privacy
+    - tab "Storage":
+      - img
+      - text: Storage
+    - paragraph: Advanced
+    - tab "STL Search":
+      - img
+      - text: STL Search
+    - tab "Labs":
+      - img
+      - text: Labs
+  - tabpanel "General":
+    - heading "Language" [level=3]
+    - paragraph: Choose your preferred language
+    - radiogroup "Language":
+      - radio "Auto (browser default)" [checked]
+      - radio "English"
+      - radio "Deutsch": DeutschGerman
+      - radio "Nederlands": NederlandsDutch
+      - radio "Español": EspañolSpanish
+      - radio "Português (Brasil)": Português (Brasil)Portuguese (Brazil)
+      - radio "Français": FrançaisFrench
+      - radio "Italiano": ItalianoItalian
+      - radio "Norsk bokmål": Norsk bokmålNorwegian Bokmål
+      - radio "Українська": УкраїнськаUkrainian
+      - radio "Svenska": SvenskaSwedish
+      - radio "日本語": 日本語Japanese
+      - radio "Polski": PolskiPolish
+      - radio "简体中文": 简体中文Chinese (Simplified)
+      - radio "Čeština": ČeštinaCzech
+      - radio "한국어": 한국어Korean
+      - radio "ქართული": ქართულიGeorgian
+    - heading "Show update summaries" [level=3]
+    - button "Reset Show update summaries to defaults": Reset
+    - text: After an update, show a short summary of what changed. Unseen highlights are badged in the sidebar either way.
+    - switch "Show update summaries" [checked]: ✓
+  - button "Reset all settings"
+  - text: ·
+  - button "Reset onboarding"
+  - link "Privacy Policy":
+    - /url: /privacy
+  - text: ·
+  - link "Terms of Service":
+    - /url: /terms

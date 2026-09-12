@@ -1,0 +1,204 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "A-S3-ours_only-r1",
+  "target_id": "A",
+  "scenario_id": "A-S3",
+  "arm": "ours_only",
+  "repetition": 1,
+  "oracle_sha256": "541a15fec6949a14ece3e258b5eee87d903806769c3095354e9edb7d4d563ef0",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "textbox",
+      "name": "Type a message…",
+      "state": "visible",
+      "selector": "getByPlaceholder('Type a message…')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot of http://localhost:5174/ after settle: 'textbox \"Type a message…\" [ref=f1e28]'; filled successfully via playwright-cli fill f1e28",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Send",
+      "state": "disabled when input empty, enabled after fill",
+      "selector": "getByRole('button', { name: 'Send' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot showed 'button \"Send\" [disabled] [ref=f1e29]' pre-fill; click f1e29 after fill produced the user message bubble",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Reset Chat",
+      "state": "visible, enabled after history load",
+      "selector": "getByRole('button', { name: 'Reset Chat' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot: 'button \"Reset Chat\" [ref=f1e30] [cursor=pointer]' (disabled in the pre-settle snapshot)",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "checkbox",
+      "name": "Assistant mode Funny mode",
+      "state": "checked, disabled until history loads then enabled",
+      "selector": "getByRole('checkbox', { name: /funny mode/i })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot: 'checkbox \"Assistant mode Funny mode\" [checked] [disabled]' then '[checked]' after settle",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Help",
+      "state": "visible, enabled after history load",
+      "selector": "getByRole('button', { name: 'Help' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot: 'button \"Help\" [disabled] [ref=f1e26]' pre-settle, '[cursor=pointer]' enabled post-settle",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "paragraph",
+      "name": "No messages yet.",
+      "state": "visible on empty storage",
+      "selector": "getByText('No messages yet.')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot on fresh profile: 'paragraph [ref=f1e31]: No messages yet.'",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "paragraph",
+      "name": "Loading…",
+      "state": "visible transiently before history resolves",
+      "selector": "getByText('Loading…')",
+      "provenance": "observed",
+      "evidence_ref": "First post-goto ARIA snapshot: 'paragraph [ref=f1e24]: Loading…' with all controls disabled",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "navigation",
+      "name": "Main",
+      "state": "visible",
+      "selector": "getByRole('navigation', { name: 'Main' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot: 'navigation \"Main\"' containing links Chat, Search, Message history, Playground, Help",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic",
+      "name": "Hello there! / GENERAL KENOBI!!",
+      "state": "visible after send",
+      "selector": "n/a — message bubbles exposed as unnamed generics in the accessibility tree",
+      "provenance": "observed",
+      "evidence_ref": "Post-send ARIA snapshot: 'generic [ref=f1e32]: Hello there!' and 'generic [ref=f1e35]: GENERAL KENOBI!!' + img \"General Grievous reaction\"",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Export as PDF (or any export/download/print control)",
+      "state": null,
+      "selector": null,
+      "provenance": "unknown",
+      "evidence_ref": null,
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "ours_exploration",
+      "role": "link",
+      "name": "any download link",
+      "state": null,
+      "selector": "a[download], a[href$='.pdf']",
+      "provenance": "observed",
+      "evidence_ref": "Live DOM count on the chat screen with a populated conversation returned 0 matches",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L12",
+      "source_arm_stage": "ours_exploration",
+      "role": "button/link/form",
+      "name": "Sign in / Log in / Account",
+      "state": null,
+      "selector": null,
+      "provenance": "unknown",
+      "evidence_ref": null,
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    }
+  ],
+  "states": {
+    "required_total": 4,
+    "reached": 2,
+    "transitions_observed": [
+      {
+        "from": "initial navigation (history pending)",
+        "to": "chat screen settled, empty thread",
+        "evidence_ref": "'Loading…' paragraph with all controls disabled → 'No messages yet.' with checkbox/Help/input/Reset enabled"
+      },
+      {
+        "from": "chat screen, empty thread",
+        "to": "chat screen with one exchange",
+        "evidence_ref": "fill 'Hello there!' + click Send → user bubble 'Hello there!' and assistant bubble 'GENERAL KENOBI!!' in the ARIA snapshot"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "signed-in state — the application exposes no authentication surface on /, /search, /history, /playground, or /help; keyword sweep for 'Sign in' matched nothing on any route",
+      "export control visible on the chat screen — full button/link enumeration and keyword sweep for PDF/Export/Download/Print returned nothing, with and without a populated conversation",
+      "PDF download event — unreachable, as no control exists that could trigger one"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 0
+  },
+  "usage": {
+    "wall_seconds_setup": 7.4,
+    "wall_seconds_steady_state": 322.2,
+    "browser_actions": 42,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 44,
+    "reported_tokens_in": 74,
+    "reported_tokens_out": 16755,
+    "reported_cost_usd": 2.0519920000000003
+  },
+  "summary": {
+    "observed_locator_count": 10,
+    "inferred_locator_count": 0,
+    "unknown_locator_count": 2,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 6,
+    "observed_claims_total": 10
+  }
+}

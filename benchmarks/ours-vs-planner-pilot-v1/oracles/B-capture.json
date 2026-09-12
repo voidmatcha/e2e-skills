@@ -1,0 +1,121 @@
+{
+  "target": "B",
+  "base_url": "http://localhost:5174",
+  "captured_at": "2026-09-11T06:48:26.508Z",
+  "scenarios": {
+    "B-S1": {
+      "states": {
+        "ready": {
+          "file": "B-S1-ready.aria.yaml",
+          "bytes": 6402
+        },
+        "after_add": {
+          "file": "B-S1-after-add.aria.yaml",
+          "bytes": 8631
+        }
+      },
+      "url_after_load": "http://localhost:5174/l/PqEWbhBX6G8S/untitled-layout",
+      "grid_accessible_name_initial": "Gridfinity drawer grid, 10 columns by 8 rows",
+      "bins_initial": 0,
+      "bins_after_click": 1,
+      "text_lines_mentioning_bins": [
+        "Clear 1 bins",
+        "1% filled · 1 bins",
+        "1×1 Bin",
+        "1 bins"
+      ],
+      "inspector_visible": true,
+      "right_panel_after_add": {
+        "file": "B-S1-right-panel-after-add.aria.yaml",
+        "bytes": 2482
+      }
+    },
+    "B-S2": {
+      "states": {
+        "before_resize": {
+          "file": "B-S2-before-resize.aria.yaml",
+          "bytes": 8521
+        },
+        "after_resize": {
+          "file": "B-S2-after-resize.aria.yaml",
+          "bytes": 7828
+        },
+        "stash": {
+          "file": "B-S2-stash.aria.yaml",
+          "bytes": 205
+        }
+      },
+      "grid_name_before": "Gridfinity drawer grid, 10 columns by 8 rows",
+      "bins_before": 1,
+      "stash_bins_before": 0,
+      "width_input_present": true,
+      "width_before": "10",
+      "decrease_button_present": true,
+      "width_after": "9",
+      "grid_name_after": "Gridfinity drawer grid, 9 columns by 8 rows",
+      "bins_after": 0,
+      "stash_bins_after": 1,
+      "stash_visible": true,
+      "text_lines_mentioning_stash_or_moved": [
+        "Fit bins to your drawer",
+        "Measure your drawer height to see which bin heights fit.",
+        "Fit",
+        "Stash",
+        "1×1 fits print bed (6×6mm)"
+      ],
+      "status_or_alert_regions": []
+    },
+    "B-S3": {
+      "states": {
+        "settings_dialog": {
+          "file": "B-S3-settings-dialog.aria.yaml",
+          "bytes": 2364
+        },
+        "account_tab": {
+          "file": "B-S3-account-tab.aria.yaml",
+          "bytes": 1256
+        }
+      },
+      "settings_button_count": 2,
+      "account_tab_count": 1,
+      "account_tab_text_lines": [
+        "Settings",
+        "PREFERENCES",
+        "General",
+        "Appearance",
+        "Accessibility",
+        "DEFAULTS",
+        "Layout Defaults",
+        "Print & Material",
+        "Categories & Bins",
+        "ACCOUNT & DATA",
+        "Account",
+        "Privacy",
+        "Storage",
+        "ADVANCED",
+        "STL Search",
+        "Labs",
+        "Account",
+        "Cloud sync",
+        "All changes synced",
+        "Not synced yet",
+        "Reset all settings·Reset onboarding",
+        "Privacy Policy·Terms of Service"
+      ],
+      "sign_in_buttons": [],
+      "sync_related_lines": [
+        "Cloud sync",
+        "All changes synced",
+        "Not synced yet"
+      ],
+      "absent_capabilities": [
+        "anonymous (not signed in) Cloud Sync",
+        "automatic cross-profile appearance of a layout without sign-in"
+      ]
+    }
+  },
+  "off_origin_requests_attempted_by_app": [
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=optional",
+    "https://va.vercel-scripts.com/v1/script.debug.js"
+  ]
+}

@@ -1,0 +1,11 @@
+- separator "Drag to resize stash panel"
+- button "Stash 1 bins" [expanded]:
+  - img
+  - img
+  - text: Stash 1 bins
+- button "Clear all":
+  - img
+  - text: Clear all
+- button "1×1":
+  - text: 1×1
+  - img

@@ -1,0 +1,20 @@
+
+Running 1 test using 1 worker
+
+  ✓  1 [chromium] › e2e/pilot-a-s2.spec.ts:11:3 › Message history persistence › keeps a sent exchange across a reload and drops it when history is cleared (1.6s)
+
+  1 passed (3.3s)
+
+--- stderr ---
+npm warn Unknown env config "store-dir". This will error in a future major version of npm. See `npm help npmrc` for supported config options.
+npm notice run playwright-chat-lab@0.0.0 npx
+npm notice run 'playwright' test e2e/pilot-a-s2.spec.ts --project=chromium --retries=0 --reporter=list
+[WebServer] npm warn Unknown env config "store-dir". This will error in a future major version of npm. See `npm help npmrc` for supported config options.
+[WebServer] npm notice run playwright-chat-lab@0.0.0 dev
+[WebServer] npm notice run vite
+[WebServer] (node:70843) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+(node:70878) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:70878) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)

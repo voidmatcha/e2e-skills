@@ -1,0 +1,76 @@
+diff --git a/e2e/pages/chatHistoryPage.ts b/e2e/pages/chatHistoryPage.ts
+index e69de29..eddc3e2 100644
+--- a/e2e/pages/chatHistoryPage.ts
++++ b/e2e/pages/chatHistoryPage.ts
+@@ -0,0 +1,71 @@
++import type { Locator, Page } from '@playwright/test'
++
++/** localStorage key the app persists the archive under. */
++export const CHAT_HISTORY_STORAGE_KEY = 'ai-assistant-chat-history-v1'
++
++export interface StoredExchange {
++  id: string
++  userContent: string
++  assistantContent: string
++  userTimestamp: string
++  assistantTimestamp: string
++}
++
++export class ChatHistoryPage {
++  private readonly page: Page
++
++  /** Toolbar */
++  readonly deleteHistoryButton: Locator
++
++  /** Archive */
++  readonly entries: Locator
++  readonly emptyState: Locator
++
++  constructor(page: Page) {
++    this.page = page
++
++    this.deleteHistoryButton = page.getByRole('button', {
++      name: 'Delete history',
++    })
++
++    this.entries = page.getByRole('listitem')
++    this.emptyState = page.getByText(
++      'No history yet. Send a message in Chat to build your archive.',
++    )
++  }
++
++  /**
++   * Deleting asks for confirmation through a native `confirm()` dialog.
++   * Playwright auto-dismisses dialogs, so without this handler the click is
++   * accepted but `clearAllHistory()` never runs and the archive stays put.
++   */
++  async clearHistory(): Promise<void> {
++    this.page.once('dialog', (dialog) => {
++      void dialog.accept()
++    })
++    await this.deleteHistoryButton.click()
++  }
++
++  /**
++   * The persistence boundary for this feature is localStorage, not an HTTP
++   * request, so reading it is the only way to prove what was actually written.
++   */
++  // JUSTIFIED: no Playwright API exposes localStorage for a single key; the
++  // framework's storage APIs only snapshot the whole context.
++  async readStoredExchanges(): Promise<StoredExchange[]> {
++    const raw = await this.page.evaluate(
++      (key) => localStorage.getItem(key),
++      CHAT_HISTORY_STORAGE_KEY,
++    )
++    return raw === null ? [] : (JSON.parse(raw) as StoredExchange[])
++  }
++
++  // JUSTIFIED: same as above — raw storage access is the product's own
++  // persistence seam and has no locator-based equivalent.
++  async readRawStoredHistory(): Promise<string | null> {
++    return await this.page.evaluate(
++      (key) => localStorage.getItem(key),
++      CHAT_HISTORY_STORAGE_KEY,
++    )
++  }
++}

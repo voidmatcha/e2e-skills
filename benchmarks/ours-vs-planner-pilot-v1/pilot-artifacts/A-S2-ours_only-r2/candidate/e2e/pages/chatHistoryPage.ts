@@ -1,0 +1,76 @@
+import type { Locator, Page } from '@playwright/test'
+
+/** The single localStorage key the archive is persisted under. */
+export const HISTORY_STORAGE_KEY = 'ai-assistant-chat-history-v1'
+
+/** Only the fields this page object asserts on. */
+export interface StoredExchange {
+  userContent: string
+  assistantContent: string
+}
+
+/**
+ * Message history screen ("/history"). Getting to the screen stays with
+ * AppLayoutPage, which already owns the nav tab locators.
+ */
+export class ChatHistoryPage {
+  readonly page: Page
+
+  /** Empty state */
+  readonly emptyState: Locator
+
+  /** Toolbar */
+  readonly deleteHistoryButton: Locator
+
+  /** Archive */
+  readonly entries: Locator
+  readonly exchangeTexts: Locator
+
+  constructor(page: Page) {
+    this.page = page
+    this.emptyState = page.getByText(
+      'No history yet. Send a message in Chat to build your archive.',
+    )
+    this.deleteHistoryButton = page.getByTestId('delete-history-button')
+    // The day groups are the only list on this screen, so every listitem is
+    // one stored exchange.
+    this.entries = page.getByRole('listitem')
+    // Structural class from HistoryPage.tsx: one node per side of an
+    // exchange, user first then assistant, in render order. Neither side
+    // carries a role or test id of its own.
+    this.exchangeTexts = page.locator('.history-exchange__text')
+  }
+
+  /**
+   * Clears the archive through the toolbar button and accepts the
+   * `window.confirm` the screen gates the delete behind, returning the text
+   * the user was asked to confirm.
+   */
+  async clearHistoryAndConfirm(): Promise<string> {
+    const confirmText = new Promise<string>((resolve, reject) => {
+      this.page.once('dialog', (dialog) => {
+        dialog
+          .accept()
+          .then(() => resolve(dialog.message()))
+          .catch(reject)
+      })
+    })
+    await this.deleteHistoryButton.click()
+    return await confirmText
+  }
+
+  /**
+   * Reads the persisted archive, or `null` when the key is absent — which is
+   * how a cleared archive differs from an archive of zero exchanges.
+   */
+  async readStoredExchanges(): Promise<StoredExchange[] | null> {
+    // JUSTIFIED: the archive is persisted to localStorage
+    // (src/lib/chatHistoryStorage.ts); no locator API can observe that
+    // boundary, and this scenario is about what survives a reload.
+    const raw = await this.page.evaluate(
+      (key) => window.localStorage.getItem(key),
+      HISTORY_STORAGE_KEY,
+    )
+    return raw === null ? null : (JSON.parse(raw) as StoredExchange[])
+  }
+}

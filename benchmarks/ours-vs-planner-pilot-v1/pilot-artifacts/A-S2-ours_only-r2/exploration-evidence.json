@@ -1,0 +1,293 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "A-S2-ours_only-r2",
+  "target_id": "A",
+  "scenario_id": "A-S2",
+  "arm": "ours_only",
+  "repetition": 2,
+  "oracle_sha256": "a3f10a70172289167f3073a5dd219cabfc6dbb88eb11abeeb2a39ce2b33a80af",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "textbox",
+      "name": "Type a message…",
+      "state": "disabled while loading, then enabled",
+      "selector": "getByPlaceholder('Type a message…')",
+      "provenance": "observed",
+      "evidence_ref": "playwright-cli snapshot on / showed textbox \"Type a message…\" [disabled] at first paint and enabled after settle; eval reported chat-input disabled=false",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Send",
+      "state": "disabled when input empty, enabled when filled",
+      "selector": "getByRole('button', { name: 'Send' })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot showed button \"Send\" [disabled]; after fill, click ran page.getByTestId('send-button').click() and produced the reply",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "link",
+      "name": "Message history",
+      "state": "visible; [active] when on /history",
+      "selector": "getByTestId('nav-tab-history')",
+      "provenance": "observed",
+      "evidence_ref": "click resolved to page.getByTestId('nav-tab-history').click(); Page URL became http://localhost:5174/history",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "link",
+      "name": "Chat",
+      "state": "visible",
+      "selector": "getByTestId('nav-tab-chat')",
+      "provenance": "observed",
+      "evidence_ref": "click on the Chat link returned Page URL http://localhost:5174/ with placeholder \"No messages yet.\"",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Delete history",
+      "state": "disabled when archive empty, enabled with 1 exchange",
+      "selector": "getByTestId('delete-history-button')",
+      "provenance": "observed",
+      "evidence_ref": "snapshot showed button \"Delete history\" [disabled] on empty archive and enabled when populated; eval returned outerHTML with data-testid=\"delete-history-button\" and disabled=false",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "listitem",
+      "name": "",
+      "state": "1 when populated, 0 when empty",
+      "selector": "getByRole('listitem')",
+      "provenance": "observed",
+      "evidence_ref": "eval: document.querySelectorAll('ol,ul').length === 1 (class history-day__list) and querySelectorAll('li').length === 1 populated / 0 empty — so listitem is unambiguous on /history",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "two nodes, user text then assistant text, in render order",
+      "selector": "locator('.history-exchange__text')",
+      "provenance": "observed",
+      "evidence_ref": "eval returned ['Hello there!','GENERAL KENOBI!!'] for .history-exchange__text on populated /history, [] when empty",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "paragraph",
+      "name": "No history yet. Send a message in Chat to build your archive.",
+      "state": "visible only when archive empty",
+      "selector": "getByText('No history yet. Send a message in Chat to build your archive.')",
+      "provenance": "observed",
+      "evidence_ref": "snapshot after accepting the confirm, and eval of .panel__empty textContent returned that exact string",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "heading",
+      "name": "Message history",
+      "state": "visible (level 2)",
+      "selector": "getByRole('heading', { name: 'Message history', level: 2 })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot of /history showed heading \"Message history\" [level=2]",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "assistant reply bubble, excluding the loading placeholder",
+      "selector": ".chat-message--assistant:not(.chat-message--loading) .chat-message__bubble (existing ChatPage.chatMessageFirstReply)",
+      "provenance": "observed",
+      "evidence_ref": "eval over that exact selector returned ['GENERAL KENOBI!!'] for the canned pair and ['Programmers don’t panic; …'] for another message",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "ours_exploration",
+      "role": "checkbox",
+      "name": "Assistant mode Funny mode",
+      "state": "checked; disabled until history load settles",
+      "selector": "getByRole('checkbox', { name: /funny mode/i })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot showed checkbox \"Assistant mode Funny mode\" [checked] [disabled] then [checked] — default Funny mode confirmed, never toggled by the test",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L12",
+      "source_arm_stage": "generator_implementation",
+      "role": "",
+      "name": "",
+      "state": "one message-user and one message-assistant node after send",
+      "selector": "getByTestId('message-assistant') / getByTestId('message-user')",
+      "provenance": "observed",
+      "evidence_ref": "eval returned assistantTestIds ['GENERAL KENOBI!!'] and userTestIds ['Hello there!'] — considered as the reply gate, existing POM locator used instead",
+      "used_in_final_test": false,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L13",
+      "source_arm_stage": "ours_exploration",
+      "role": "dialog",
+      "name": "Delete all message history stored in this browser? This cannot be undone.",
+      "state": "confirm dialog, open after clicking Delete history",
+      "selector": "page.once('dialog', …) + dialog.accept()",
+      "provenance": "observed",
+      "evidence_ref": "playwright-cli reported Modal state: [\"confirm\" dialog with message \"Delete all message history stored in this browser? This cannot be undone.\"]",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L14",
+      "source_arm_stage": "ours_exploration",
+      "role": "paragraph",
+      "name": "Loading…",
+      "state": "visible before the history load settles",
+      "selector": "getByText('Loading…')",
+      "provenance": "observed",
+      "evidence_ref": "first snapshot after open showed paragraph \"Loading…\" with all controls disabled; replaced by \"No messages yet.\" on the next snapshot",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L15",
+      "source_arm_stage": "generator_implementation",
+      "role": "",
+      "name": "",
+      "state": "loading placeholder carries its own test id, so it cannot collide with message-assistant",
+      "selector": "getByTestId('loading-indicator')",
+      "provenance": "inferred",
+      "evidence_ref": null,
+      "used_in_final_test": false,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L16",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "localStorage key absent when empty; holds one exchange with userContent/assistantContent after send; removed after clear",
+      "selector": "page.evaluate(key => window.localStorage.getItem(key), 'ai-assistant-chat-history-v1')",
+      "provenance": "observed",
+      "evidence_ref": "localstorage-get returned null pre-send, then the full exchange JSON (userContent 'Hello there!', assistantContent 'GENERAL KENOBI!!'); after dialog-accept, localstorage-list showed only chat-lab:theme",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    }
+  ],
+  "states": {
+    "required_total": 9,
+    "reached": 9,
+    "transitions_observed": [
+      {
+        "from": "cold load (Loading…, controls disabled)",
+        "to": "chat ready (No messages yet., composer enabled)",
+        "evidence_ref": "two consecutive playwright-cli snapshots of / before and after settle"
+      },
+      {
+        "from": "chat ready",
+        "to": "history empty state",
+        "evidence_ref": "nav-tab-history click → /history snapshot with disabled Delete history and the empty paragraph; eval showed 0 li and 0 .history-exchange__text"
+      },
+      {
+        "from": "chat ready",
+        "to": "message sent + canned reply rendered",
+        "evidence_ref": "fill + Send click → snapshot showing 'Hello there!' and 'GENERAL KENOBI!!' with the Grievous img"
+      },
+      {
+        "from": "reply rendered",
+        "to": "exchange persisted to localStorage",
+        "evidence_ref": "localstorage-get returned the exchange JSON with both contents and timestamps"
+      },
+      {
+        "from": "exchange persisted",
+        "to": "history populated (1 listitem, Delete history enabled)",
+        "evidence_ref": "/history snapshot with day heading 'Friday, September 11, 2026', list/listitem, You/Assistant texts"
+      },
+      {
+        "from": "history populated",
+        "to": "history still populated after full page reload",
+        "evidence_ref": "playwright-cli reload on /history then find 'Hello there!' → 1 match inside list/listitem"
+      },
+      {
+        "from": "history populated",
+        "to": "confirm dialog open",
+        "evidence_ref": "click Delete history → Modal state reported the confirm with its exact message"
+      },
+      {
+        "from": "confirm dialog open",
+        "to": "archive cleared (empty state, Delete history disabled, storage key removed)",
+        "evidence_ref": "dialog-accept → snapshot with empty paragraph and [disabled] button; localstorage-list showed only chat-lab:theme"
+      },
+      {
+        "from": "archive cleared",
+        "to": "still empty after a second reload",
+        "evidence_ref": "reload → find matched only the 'No history yet…' paragraph"
+      },
+      {
+        "from": "history screen",
+        "to": "chat screen with thread reset",
+        "evidence_ref": "Chat link click → eval reported placeholder 'No messages yet.', 0 message nodes, input enabled — proving the thread is per-mount state while the archive persists"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "backend-connected Assistant mode (no server on :3001; the app's own fetch to that port was blocked by the origin allowlist and is not part of this scenario)",
+      "history grouped across more than one day heading",
+      "multiple exchanges in one day group",
+      "dialog-dismiss (cancel) path of the delete confirm — outside the frozen scenario"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 4
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 0
+  },
+  "usage": {
+    "wall_seconds_setup": 7.7,
+    "wall_seconds_steady_state": 1269.0,
+    "browser_actions": 36,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 90,
+    "reported_tokens_in": 168,
+    "reported_tokens_out": 64167,
+    "reported_cost_usd": 8.1165745
+  },
+  "summary": {
+    "observed_locator_count": 15,
+    "inferred_locator_count": 1,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 4,
+    "observed_claims_total": 15
+  }
+}

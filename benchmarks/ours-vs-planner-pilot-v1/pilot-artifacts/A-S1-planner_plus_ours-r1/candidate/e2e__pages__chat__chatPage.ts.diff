@@ -1,0 +1,30 @@
+diff --git a/e2e/pages/chat/chatPage.ts b/e2e/pages/chat/chatPage.ts
+index d2e154a..f6840ed 100644
+--- a/e2e/pages/chat/chatPage.ts
++++ b/e2e/pages/chat/chatPage.ts
+@@ -17,6 +17,14 @@ export class ChatPage {
+   readonly chatMessageFirst: Locator
+   readonly chatMessageFirstReply: Locator
+ 
++  /** Thread, addressed by test hook rather than by style class. The app tags
++   * every rendered bubble with a role-specific data-testid, and tags the
++   * pending "Thinking..." placeholder with a *different* one, so these three
++   * never match each other — no :not() qualifier needed. */
++  readonly userMessages: Locator
++  readonly assistantMessages: Locator
++  readonly loadingIndicator: Locator
++
+   constructor(page: Page) {
+     this.funnyModeCheckbox = page.getByRole('checkbox', {
+       name: /funny mode/i,
+@@ -41,6 +49,10 @@ export class ChatPage {
+       .locator('.chat-message--assistant:not(.chat-message--loading)')
+       .first()
+       .locator('.chat-message__bubble')
++
++    this.userMessages = page.getByTestId('message-user')
++    this.assistantMessages = page.getByTestId('message-assistant')
++    this.loadingIndicator = page.getByTestId('loading-indicator')
+   }
+ 
+   async sendMessage() {

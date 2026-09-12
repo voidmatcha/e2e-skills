@@ -1,0 +1,293 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "B-S3-planner_plus_ours-r1",
+  "target_id": "B",
+  "scenario_id": "B-S3",
+  "arm": "planner_plus_ours",
+  "repetition": 1,
+  "oracle_sha256": "e7219a579a5cea1e0d7644d22574beef30bd218ccf59aa897209f59036904611",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Open settings",
+      "state": "visible",
+      "selector": "getByRole('button', { name: 'Open settings' })",
+      "provenance": "observed",
+      "evidence_ref": "clicked in profile p1; Settings dialog with tablist 'Settings' appeared in the resulting snapshot",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "tab",
+      "name": "Account",
+      "state": "visible → [active][selected] after click",
+      "selector": "getByRole('tab', { name: 'Account' })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot showed tab \"Account\" [active] [selected] under the 'Account & Data' group",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "tabpanel",
+      "name": "Account",
+      "state": "visible",
+      "selector": "getByRole('tabpanel', { name: 'Account' })",
+      "provenance": "observed",
+      "evidence_ref": "innerText read live in profile p2 = 'Account | Cloud sync | All changes synced | Not synced yet'",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "heading",
+      "name": "Cloud sync",
+      "state": "visible (level 3)",
+      "selector": "getByRole('heading', { name: 'Cloud sync', level: 3 })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot line 'heading \"Cloud sync\" [level=3] [ref=f2e807]' inside the Account tabpanel",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic/text",
+      "name": "Not synced yet",
+      "state": "visible in both fresh profiles",
+      "selector": "getByText('Not synced yet')",
+      "provenance": "observed",
+      "evidence_ref": "Account tabpanel innerText in p1 and p2; identical in both — rejected as a tautological assertion",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic/text",
+      "name": "All changes synced",
+      "state": "visible in both fresh profiles",
+      "selector": "getByText('All changes synced')",
+      "provenance": "observed",
+      "evidence_ref": "same Account tabpanel innerText; constant for an anonymous session — rejected as tautological",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Switch layout (current: <layout name>)",
+      "state": "visible → [expanded] after click",
+      "selector": "getByRole('button', { name: /^Switch layout/ })",
+      "provenance": "observed",
+      "evidence_ref": "clicked in both profiles; snapshot showed [expanded] plus a menu of menuitems",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "menuitem",
+      "name": "Pilot B-S3 Sync Probe",
+      "state": "[active] in profile A; count 0 in profile B",
+      "selector": "getByRole('menuitem', { name: 'Pilot B-S3 Sync Probe' })",
+      "provenance": "observed",
+      "evidence_ref": "present in p1 snapshot; in p2 allTextContents() = ['Untitled layout','New layout','Manage layouts'] with probeCount 0 — this is the falsifying observation",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "none (attribute)",
+      "name": "data-bin-id",
+      "state": "count 1 in profile A, 0 in profile B",
+      "selector": "page.locator('[data-bin-id]')",
+      "provenance": "observed",
+      "evidence_ref": "drew a bin in p1 → binCount 1; p2 reported bins 0 after reload + 12s wait",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "ours_exploration",
+      "role": "application",
+      "name": "",
+      "state": "visible",
+      "selector": "page.locator('[role=\"application\"]')",
+      "provenance": "observed",
+      "evidence_ref": "bounding box resolved for the mouse drag that created the bin; matches e2e/fixtures.ts getGrid()",
+      "used_in_final_test": false,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "ours_exploration",
+      "role": "button → textbox",
+      "name": "Click to edit layout name",
+      "state": "button when idle, textbox [active] while editing",
+      "selector": "getByRole('button', { name: 'Click to edit layout name' })",
+      "provenance": "observed",
+      "evidence_ref": "clicked, filled 'Pilot B-S3 Sync Probe'; snapshot then showed 'textbox \"Click to edit layout name\" [active]: Pilot B-S3 Sync Probe'",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L12",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Share layout",
+      "state": "visible",
+      "selector": "getByRole('button', { name: /^Share/ })",
+      "provenance": "observed",
+      "evidence_ref": "count 1 in p1; clicking opened the share dialog",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L13",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Create share link",
+      "state": "visible inside share dialog",
+      "selector": "getActiveDialog(page).getByRole('button', { name: 'Create share link' })",
+      "provenance": "observed",
+      "evidence_ref": "share dialog innerText = 'Pilot B-S3 Sync Probe | Anyone with link can view | Anyone with link can edit | Create share link' — proves the only anonymous cross-profile path is link-carried",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L14",
+      "source_arm_stage": "official_planner_delta",
+      "role": "combobox",
+      "name": "Anyone with link can",
+      "state": "visible inside dialog 'Share Layout'",
+      "selector": "getByRole('combobox', { name: 'Anyone with link can' })",
+      "provenance": "observed",
+      "evidence_ref": "planner resolved it on the live page; I corroborated the same two option strings via the dialog's innerText",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L15",
+      "source_arm_stage": "ours_exploration",
+      "role": "button and link",
+      "name": "/sign in/i",
+      "state": "absent — count 0 for both roles",
+      "selector": "getByRole('button', { name: /sign in/i }) / getByRole('link', { name: /sign in/i })",
+      "provenance": "observed",
+      "evidence_ref": "measured live in fresh profile p2: signInButtons 0, signInLinks 0 (session status never leaves 'unknown' because /api/auth/me serves raw source)",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L16",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Sign in with Google / Sign in with GitHub",
+      "state": "never rendered in this session",
+      "selector": "getByRole('button', { name: 'Sign in with Google' })",
+      "provenance": "inferred",
+      "evidence_ref": null,
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L17",
+      "source_arm_stage": "ours_exploration",
+      "role": "status",
+      "name": "Working locally · Sign in to sync",
+      "state": "never rendered in this session",
+      "selector": "getByRole('status', { name: /Working locally/ })",
+      "provenance": "inferred",
+      "evidence_ref": null,
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L18",
+      "source_arm_stage": "official_planner_delta",
+      "role": "generic",
+      "name": "identity block with aria-busy=\"true\"",
+      "state": "aria-busy, never resolves",
+      "selector": "getByRole('tabpanel', { name: 'Account' }).locator('[aria-busy=\"true\"]')",
+      "provenance": "observed",
+      "evidence_ref": "planner observed it unresolved after a 2s wait; corroborated by my Account tabpanel innerText containing no identity text between the 'Account' and 'Cloud sync' headings",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    }
+  ],
+  "states": {
+    "required_total": 5,
+    "reached": 3,
+    "transitions_observed": [
+      {
+        "from": "fresh profile A, empty client storage, entry route /",
+        "to": "own new layout at /l/ZgAaW0C2jUP5/untitled-layout, anonymous, 'Not synced yet'",
+        "evidence_ref": "goto returned that final same-origin URL; Account tabpanel read 'Cloud sync | All changes synced | Not synced yet'"
+      },
+      {
+        "from": "empty layout in profile A",
+        "to": "layout with 1 bin named 'Pilot B-S3 Sync Probe' listed in profile A's own layout menu",
+        "evidence_ref": "run-code returned binCount 1; snapshot showed menuitem 'Pilot B-S3 Sync Probe' [active]"
+      },
+      {
+        "from": "layout persisted in profile A",
+        "to": "fresh profile B loads its OWN new layout at /l/Fv3rpSs12vOX/untitled-layout with 11 localStorage keys",
+        "evidence_ref": "p2 eval returned that url and ls count; layout menu listed only 'Untitled layout'"
+      },
+      {
+        "from": "profile B first load",
+        "to": "profile B after reload + 12s wait — still no profile A layout",
+        "evidence_ref": "menuitems ['Untitled layout','New layout','Manage layouts'], probeCount 0, bins 0"
+      },
+      {
+        "from": "anonymous profile B",
+        "to": "Account panel with zero sign-in affordances",
+        "evidence_ref": "signInButtons 0, signInLinks 0; /api/auth/me returned 200 text/javascript with raw handler source"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "Cloud Sync active without sign-in — no such state exists; the engine is started only when session status is 'authenticated'",
+      "Layout from profile A automatically present in profile B — never occurred (the scenario's required end state)",
+      "Authenticated session state — unreachable here: sign-in is off-origin OAuth (out of scope) and /api/auth/me is not executed by the dev server, so session status stays 'unknown'",
+      "The 'anonymous' session branch of the UI (dock 'Working locally · Sign in to sync', 'Sign in with Google/GitHub' buttons) — the session never resolved past 'unknown', so UserDock rendered null throughout",
+      "Any device-pairing / sync-code / anonymous-sync surface — searched i18n, settings tabs (Account, Storage), and the sidebar; none exists"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 0
+  },
+  "usage": {
+    "wall_seconds_setup": 50.3,
+    "wall_seconds_steady_state": 1158.8,
+    "browser_actions": 37,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 91,
+    "reported_tokens_in": 146,
+    "reported_tokens_out": 41134,
+    "reported_cost_usd": 6.175478000000003
+  },
+  "summary": {
+    "observed_locator_count": 16,
+    "inferred_locator_count": 2,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 3,
+    "observed_claims_total": 16
+  }
+}

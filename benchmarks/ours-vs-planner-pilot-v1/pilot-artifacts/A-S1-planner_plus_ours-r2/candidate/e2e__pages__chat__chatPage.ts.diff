@@ -1,0 +1,38 @@
+diff --git a/e2e/pages/chat/chatPage.ts b/e2e/pages/chat/chatPage.ts
+index d2e154a..8891b97 100644
+--- a/e2e/pages/chat/chatPage.ts
++++ b/e2e/pages/chat/chatPage.ts
+@@ -17,6 +17,17 @@ export class ChatPage {
+   readonly chatMessageFirst: Locator
+   readonly chatMessageFirstReply: Locator
+ 
++  /**
++   * Thread, addressed by test id. LoadingMessage carries its own
++   * data-testid ("loading-indicator") rather than the assistant one, so
++   * unlike the class-based locators above these can never bind to the
++   * transient "Thinking…" placeholder and need no :not() qualifier.
++   */
++  readonly emptyPlaceholder: Locator
++  readonly transcriptBubbles: Locator
++  readonly assistantMessage: Locator
++  readonly loadingIndicator: Locator
++
+   constructor(page: Page) {
+     this.funnyModeCheckbox = page.getByRole('checkbox', {
+       name: /funny mode/i,
+@@ -41,6 +52,15 @@ export class ChatPage {
+       .locator('.chat-message--assistant:not(.chat-message--loading)')
+       .first()
+       .locator('.chat-message__bubble')
++
++    this.emptyPlaceholder = page.getByText('No messages yet.')
++    // Direct test-id children of the list, in render order. The "No messages
++    // yet."/"Loading…" placeholder is a <p> with no test id, so it never
++    // matches; the pending "Thinking…" bubble does match while it is mounted,
++    // which is why callers gate on loadingIndicator before asserting on this.
++    this.transcriptBubbles = page.locator('.chat-window__list > [data-testid]')
++    this.assistantMessage = page.getByTestId('message-assistant')
++    this.loadingIndicator = page.getByTestId('loading-indicator')
+   }
+ 
+   async sendMessage() {

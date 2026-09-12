@@ -1,0 +1,247 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "B-S2-ours_only-r1",
+  "target_id": "B",
+  "scenario_id": "B-S2",
+  "arm": "ours_only",
+  "repetition": 1,
+  "oracle_sha256": "4af2f1777f2211c36548ada1c852a0674f61b3efc0036da22bcef35c23f7cd2d",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "application",
+      "name": "Gridfinity drawer grid, 10 columns by 8 rows",
+      "state": "visible",
+      "selector": "page.getByRole('application', { name: /^Gridfinity drawer grid,/ })",
+      "provenance": "observed",
+      "evidence_ref": "getAttribute('aria-label') returned 'Gridfinity drawer grid, 10 columns by 8 rows' on load and 'Gridfinity drawer grid, 9 columns by 8 rows' after the width decrease; ARIA snapshot listed div|application with that name",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "spinbutton",
+      "name": "Drawer width in grid units",
+      "state": "visible",
+      "selector": "page.getByRole('spinbutton', { name: 'Drawer width in grid units' })",
+      "provenance": "observed",
+      "evidence_ref": "ariaSnapshot of [data-grid-size-panel] showed 'spinbutton \"Drawer width in grid units\": \"9\"'; inputValue() returned '10' then '9'",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "spinbutton",
+      "name": "Drawer depth in grid units",
+      "state": "visible",
+      "selector": "page.getByRole('spinbutton', { name: 'Drawer depth in grid units' })",
+      "provenance": "observed",
+      "evidence_ref": "same ariaSnapshot showed 'spinbutton \"Drawer depth in grid units\": \"8\"'; inputValue() returned '8'",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Decrease Drawer width in grid units",
+      "state": "visible",
+      "selector": "getSidebar(page).getByRole('button', { name: 'Decrease Drawer width in grid units' })",
+      "provenance": "observed",
+      "evidence_ref": "ariaSnapshot listed the button; clicking it moved the width spinbutton 10 -> 9 and the grid aria-label to '9 columns by 8 rows'",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Increase Drawer width in grid units",
+      "state": "visible",
+      "selector": "page.getByRole('button', { name: 'Increase Drawer width in grid units' })",
+      "provenance": "observed",
+      "evidence_ref": "listed in the [data-grid-size-panel] ariaSnapshot and in the page-wide aria-label enumeration; never clicked",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Stash 1 bins",
+      "state": "visible",
+      "selector": "page.getByRole('button', { name: /^Stash \\d+ bins?$/ })",
+      "provenance": "observed",
+      "evidence_ref": "stash ariaSnapshot after the shrink showed 'button \"Stash 1 bins\" [expanded]'; the same locator counted 0 before the shrink and 1 after",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "status",
+      "name": "Stash",
+      "state": "visible",
+      "selector": "page.getByRole('status', { name: 'Stash' })",
+      "provenance": "observed",
+      "evidence_ref": "empty-state stash ariaSnapshot showed '- status \"Stash\": text: Stash — Drag a bin here to stash it'; count was 1 before the shrink and 0 after (replaced by L6)",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Bin 1 by 1, category Coral",
+      "state": "visible",
+      "selector": "page.locator('[data-bin-id=\"<id>\"]')",
+      "provenance": "observed",
+      "evidence_ref": "evaluateAll over [data-bin-id] returned role=button, aria-label 'Bin 1 by 1, category Coral' and style 'grid-area: 1 / 1 / span 1 / span 1'; the edge bin returned 'grid-area: 4 / 9 / span 1 / span 2'",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "1×1",
+      "state": "visible",
+      "selector": "page.locator('[data-staging-bin-id=\"<id>\"]')",
+      "provenance": "observed",
+      "evidence_ref": "after the shrink, [data-staging-bin-id] carried the identical id previously on [data-bin-id] (e.g. mtwt9eg7-5d7ce87572), title '1×1×3u - Unlabeled', role=button",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "visible",
+      "selector": "page.locator('[data-sidebar]') via getSidebar()",
+      "provenance": "observed",
+      "evidence_ref": "count() returned 1 on the live page; documented in e2e/README.md as the sidebar selector",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "visible",
+      "selector": "page.locator('[data-stash]')",
+      "provenance": "observed",
+      "evidence_ref": "count() returned 1; innerText was 'Stash / — / Drag a bin here to stash it' before and 'Stash / 1 bins / Clear all / 1×1' after the shrink",
+      "used_in_final_test": false,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L12",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Clear all",
+      "state": "visible",
+      "selector": "page.getByRole('button', { name: 'Clear all' })",
+      "provenance": "observed",
+      "evidence_ref": "appeared in the stash ariaSnapshot only after a bin was displaced; never clicked",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L13",
+      "source_arm_stage": "ours_exploration",
+      "role": "separator",
+      "name": "Drag to resize stash panel",
+      "state": "visible",
+      "selector": "page.getByRole('separator', { name: 'Drag to resize stash panel' })",
+      "provenance": "observed",
+      "evidence_ref": "present in the populated stash ariaSnapshot and outerHTML; not used",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L14",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "visible",
+      "selector": "page.waitForSelector('header') via waitForAppReady()",
+      "provenance": "observed",
+      "evidence_ref": "waitForSelector('header') and waitForSelector('[role=\"application\"]') both resolved on every live load",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L15",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Edit measured drawer dimensions",
+      "state": "visible",
+      "selector": "page.getByRole('button', { name: 'Edit measured drawer dimensions' })",
+      "provenance": "observed",
+      "evidence_ref": "ariaSnapshot showed 'button \"Edit measured drawer dimensions\": 378 × 336 × 84 mm'; an alternative resize entry point, not used",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    }
+  ],
+  "states": {
+    "required_total": 3,
+    "reached": 3,
+    "transitions_observed": [
+      {
+        "from": "fresh app, drawer 10x8, stash empty",
+        "to": "two bins placed (col 1 and cols 9-10), stash still empty",
+        "evidence_ref": "bin count 0->1->2 via waitForFunction; grid-area styles 'grid-area: 1 / 1 / span 1 / span 1' and 'grid-area: 4 / 9 / span 1 / span 2'; getByRole button /^Stash \\d+ bins?$/ count 0"
+      },
+      {
+        "from": "two bins placed, drawer width 10",
+        "to": "drawer width 9: grid recomputed, edge bin displaced to Stash, first-column bin kept",
+        "evidence_ref": "after clicking Decrease: width spinbutton 10->9, grid aria-label '10 columns by 8 rows'->'9 columns by 8 rows', edge bin id moved from [data-bin-id] to [data-staging-bin-id], kept bin id still at 'grid-area: 1 / 1', stash ariaSnapshot gained 'button \"Stash 1 bins\"'"
+      },
+      {
+        "from": "two bins placed, drawer width 10, displacement logic faulted",
+        "to": "drawer width 9 but BOTH bins silently kept on the grid",
+        "evidence_ref": "route-stub of /src/core/cqrs/v2/domain/drawer/displacement.ts (2 intercepted module requests) making computeDisplacedBins return []: staged edge bin visible false, edge bin still on grid count 1, stash button count 0, bins on grid 2, while grid aria-label still recomputed to '9 columns by 8 rows'"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "depth-axis shrink (Decrease Drawer depth in grid units) — only the width axis was exercised; the scenario says 'drawer dimensions' and I verified one axis",
+      "outline/custom-drawer-shape displacement path in computeDisplacedBins — not exercised",
+      "the candidate spec running in full-suite context or under Playwright parallelism — no approved command can express it (this is the V5 CANNOT_VERIFY)",
+      "the candidate spec running under fault injection — no approved command can express it (this is the V3 CANNOT_VERIFY)",
+      "non-chromium projects (firefox/webkit/mobile/tablet) — the approved command pins --project=chromium"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 1
+  },
+  "usage": {
+    "wall_seconds_setup": 40.4,
+    "wall_seconds_steady_state": 1342.9,
+    "browser_actions": 150,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 4,
+    "reported_tokens_in": 8,
+    "reported_tokens_out": 10271,
+    "reported_cost_usd": 8.243351500000001
+  },
+  "summary": {
+    "observed_locator_count": 15,
+    "inferred_locator_count": 0,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 12,
+    "observed_claims_total": 15
+  }
+}

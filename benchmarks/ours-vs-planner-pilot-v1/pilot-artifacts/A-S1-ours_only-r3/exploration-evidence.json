@@ -1,0 +1,193 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "A-S1-ours_only-r3",
+  "target_id": "A",
+  "scenario_id": "A-S1",
+  "arm": "ours_only",
+  "repetition": 3,
+  "oracle_sha256": "bf3329632817c1cc3935dba370e860ced0c2b518acbfc2b2932ff744132fe72c",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "checkbox",
+      "name": "Assistant mode Funny mode",
+      "state": "visible|checked|enabled (becomes disabled while pending)",
+      "selector": "getByRole('checkbox', { name: /funny mode/i })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot line '- checkbox \"Assistant mode Funny mode\" [checked]'; isChecked()=true, isEnabled()=true; data-testid='funny-mode-toggle'; snapshot during send showed '[checked] [disabled]'",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "textbox",
+      "name": "Type a message…",
+      "state": "visible|enabled (disabled while pending)",
+      "selector": "getByPlaceholder('Type a message…')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot '- textbox \"Type a message…\"'; tagName=TEXTAREA; data-testid='chat-input'; inputValue()='' after send",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Send",
+      "state": "disabled when composer empty, enabled after fill",
+      "selector": "getByRole('button', { name: 'Send' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot '- button \"Send\" [disabled]'; isDisabled()=true empty then false after fill('Zebras ignore deadlines.'); data-testid='send-button'",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "paragraph",
+      "name": "No messages yet.",
+      "state": "visible on fresh context, count 0 after first exchange",
+      "selector": "getByText('No messages yet.')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot '- paragraph: No messages yet.' on load with cleared storage; count()=0 after send",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "none (plain div, no ARIA role)",
+      "name": "",
+      "state": "visible after send, count 1",
+      "selector": "getByTestId('message-user')",
+      "provenance": "observed",
+      "evidence_ref": "DOM read returned {testid:'message-user', cls:'chat-message chat-message--user', text:'Zebras ignore deadlines.'}; count()=1",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "none (plain div, no ARIA role)",
+      "name": "",
+      "state": "visible after reply settles, count 1",
+      "selector": "getByTestId('message-assistant')",
+      "provenance": "observed",
+      "evidence_ref": "DOM read returned {testid:'message-assistant', text:'ZIP files are introverted folders wearing compression hoodies.'}; count()=1; absent from the pending-state testid list, confirming it never matches the placeholder",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "none (plain div)",
+      "name": "",
+      "state": "present only while reply pending",
+      "selector": "getByTestId('loading-indicator')",
+      "provenance": "observed",
+      "evidence_ref": "pending-state testid scan included 'loading-indicator|chat-message chat-message--assistant chat-message--loading'; ARIA text during send read 'Thinking...'",
+      "used_in_final_test": false,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "generator_implementation",
+      "role": "button",
+      "name": "Reset Chat",
+      "state": "visible|enabled (disabled while pending)",
+      "selector": "getByRole('button', { name: 'Reset Chat' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot '- button \"Reset Chat\"' idle and '[disabled]' during send; data-testid='reset-button'",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Help",
+      "state": "visible|enabled (disabled while pending)",
+      "selector": "getByTestId('help-suggestion')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot '- button \"Help\"'; pending-state testid scan listed 'help-suggestion|chat-suggestion'",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "ours_exploration",
+      "role": "link",
+      "name": "Chat / Search / Message history / Playground / Help",
+      "state": "visible",
+      "selector": "getByTestId('nav-tab-chat') etc.",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot 'navigation \"Main\"' with the five links and their /url targets; testid scan listed nav-tab-chat|search|history|playground|help",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    }
+  ],
+  "states": {
+    "required_total": 4,
+    "reached": 4,
+    "transitions_observed": [
+      {
+        "from": "fresh load, empty transcript, offline mode on",
+        "to": "composing (send enabled)",
+        "evidence_ref": "sendButton.isDisabled() went true -> false after fill(MESSAGE); empty-state paragraph still visible"
+      },
+      {
+        "from": "composing",
+        "to": "pending reply",
+        "evidence_ref": "ARIA snapshot immediately after click showed every control '[disabled]' and text '... Thinking...'; testid 'loading-indicator' present with class chat-message--loading"
+      },
+      {
+        "from": "pending reply",
+        "to": "settled keyed reply",
+        "evidence_ref": "loading-indicator gone; message-assistant bubble = 'ZIP files are introverted folders wearing compression hoodies.'; controls re-enabled; composer cleared; empty-state count 0"
+      },
+      {
+        "from": "settled (1 exchange)",
+        "to": "settled (2 exchanges, different letter)",
+        "evidence_ref": "second send 'Queueing is a lifestyle.' appended reply 'Queue is just Q with four impatient friends standing behind it.' — third distinct letter confirming keying (B and Z observed separately)"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "Assistant (non-offline) mode success reply — no backend runs at localhost:3001, so the online POST /api/chat success state was never reached (out of scope for A-S1)",
+      "The 'Hello there!' exact-match reply with its inline GIF variant (out of scope for A-S1)",
+      "The no-letter fallback reply (message containing no [a-zA-Z]) — not exercised",
+      "Suite-context and CI-parallel execution of the candidate — no approved command expresses either mode"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [
+      "Note, not an agent action: the application itself requested https://fonts.googleapis.com/css2 and http://localhost:3001/api/messages on load. Both were aborted pre-dispatch by the exploration origin guard; neither was initiated by me and neither was permitted to leave the browser."
+    ],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 1
+  },
+  "usage": {
+    "wall_seconds_setup": 9.8,
+    "wall_seconds_steady_state": 1664.7,
+    "browser_actions": 22,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 81,
+    "reported_tokens_in": 142,
+    "reported_tokens_out": 80102,
+    "reported_cost_usd": 9.392329000000002
+  },
+  "summary": {
+    "observed_locator_count": 10,
+    "inferred_locator_count": 0,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 5,
+    "observed_claims_total": 10
+  }
+}

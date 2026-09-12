@@ -1,0 +1,44 @@
+import type { Page } from '@playwright/test'
+import { AppLayoutPage } from './layout/appLayoutPage'
+import { ChatPage } from './chat/chatPage'
+import { ChatHistoryPage } from './chatHistoryPage'
+import { HelpPage } from './helpPage'
+import { SearchPage } from './searchPage'
+
+export class PageManager {
+  private readonly page: Page
+  private readonly appLayoutPage: AppLayoutPage
+  private readonly chatPage: ChatPage
+  private readonly chatHistoryPage: ChatHistoryPage
+  private readonly searchPage: SearchPage
+  private readonly helpPage: HelpPage
+
+  constructor(page: Page) {
+    this.page = page
+    this.appLayoutPage = new AppLayoutPage(this.page)
+    this.chatPage = new ChatPage(this.page)
+    this.chatHistoryPage = new ChatHistoryPage(this.page)
+    this.searchPage = new SearchPage(this.page)
+    this.helpPage = new HelpPage(this.page)
+  }
+
+  onAppLayout() {
+    return this.appLayoutPage
+  }
+
+  onChatPage() {
+    return this.chatPage
+  }
+
+  onChatHistoryPage() {
+    return this.chatHistoryPage
+  }
+
+  onSearchPage() {
+    return this.searchPage
+  }
+
+  onHelpPage() {
+    return this.helpPage
+  }
+}

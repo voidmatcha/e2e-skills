@@ -1,0 +1,23 @@
+- group "Colour theme":
+  - button "Aurora" [pressed]
+  - button "Test Runner"
+- banner:
+  - button "Go to the chat screen"
+  - heading "Playwright Chat Lab" [level=1]
+- navigation "Main":
+  - link "Chat":
+    - /url: /
+  - link "Search":
+    - /url: /search
+  - link "Message history":
+    - /url: /history
+  - link "Playground":
+    - /url: /playground
+  - link "Help":
+    - /url: /help
+- heading "Search" [level=2]
+- paragraph: Find past questions and answers stored in this browser.
+- text: Search
+- searchbox "Search"
+- paragraph: Enter text to search your local history.
+- list

@@ -1,0 +1,195 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "A-S1-planner_plus_ours-r3",
+  "target_id": "A",
+  "scenario_id": "A-S1",
+  "arm": "planner_plus_ours",
+  "repetition": 3,
+  "oracle_sha256": "bf3329632817c1cc3935dba370e860ced0c2b518acbfc2b2932ff744132fe72c",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "checkbox",
+      "name": "Assistant mode Funny mode",
+      "state": "checked, initially disabled then enabled",
+      "selector": "getByRole('checkbox', { name: /funny mode/i })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot node 'checkbox \"Assistant mode Funny mode\" [checked] [disabled]' then '[checked]' after settle; playwright-cli generate-locator on ref f1e22 returned getByTestId('funny-mode-toggle') for the same element",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "textbox",
+      "name": "Type a message…",
+      "state": "initially disabled then enabled",
+      "selector": "getByPlaceholder('Type a message…')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot node 'textbox \"Type a message…\" [ref=f1e28]'; fill on ref f1e28 emitted getByTestId('chat-input')",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Send",
+      "state": "disabled when input empty, enabled with text",
+      "selector": "getByRole('button', { name: 'Send' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot node 'button \"Send\" [disabled] [ref=f1e29]'; click on ref f1e29 emitted getByTestId('send-button')",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic",
+      "name": "Zebra crossing at dawn",
+      "state": "visible",
+      "selector": "getByTestId('message-user')",
+      "provenance": "observed",
+      "evidence_ref": "playwright-cli generate-locator on post-send ref f1e32 returned getByTestId('message-user')",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic",
+      "name": "ZIP files are introverted folders wearing compression hoodies.",
+      "state": "visible",
+      "selector": "getByTestId('message-assistant')",
+      "provenance": "observed",
+      "evidence_ref": "playwright-cli generate-locator on post-send ref f1e34 returned getByTestId('message-assistant'); textContent read back identical",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "paragraph",
+      "name": "No messages yet.",
+      "state": "visible after readiness gate clears",
+      "selector": "getByText('No messages yet.')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot node 'paragraph [ref=f1e31]: No messages yet.' replacing 'paragraph [ref=f1e24]: Loading…'",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic",
+      "name": "Thinking...",
+      "state": "transiently visible during the ~120 ms reply delay",
+      "selector": "getByTestId('loading-indicator')",
+      "provenance": "observed",
+      "evidence_ref": "run-code waitFor({state:'visible'}) on getByTestId('loading-indicator') resolved during a live send, returning 'Thinking-visible'; the planner could only infer this from source",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Reset Chat",
+      "state": "enabled after readiness gate",
+      "selector": "getByTestId('reset-button')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot node 'button \"Reset Chat\" [ref=f1e30]'; three live clicks each cleared the transcript back to zero messages",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "official_planner_delta",
+      "role": "button",
+      "name": "Help",
+      "state": "initially disabled then enabled",
+      "selector": "getByTestId('help-suggestion')",
+      "provenance": "observed",
+      "evidence_ref": "corroborated in my own ARIA snapshot as 'button \"Help\" [disabled] [ref=f1e26]' then enabled; not needed by the frozen scenario",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "reconciliation",
+      "role": "",
+      "name": "",
+      "state": null,
+      "selector": null,
+      "provenance": "inferred",
+      "evidence_ref": null,
+      "used_in_final_test": false,
+      "oracle_match": "not_checked"
+    }
+  ],
+  "states": {
+    "required_total": 5,
+    "reached": 5,
+    "transitions_observed": [
+      {
+        "from": "initial loading (controls disabled, 'Loading…')",
+        "to": "ready empty ('No messages yet.', controls enabled)",
+        "evidence_ref": "ARIA snapshot diff across the same refs: f1e22 lost [disabled], f1e24 'Loading…' replaced by f1e31 'No messages yet.'"
+      },
+      {
+        "from": "ready empty",
+        "to": "sending ('Thinking...' placeholder)",
+        "evidence_ref": "getByTestId('loading-indicator').waitFor({state:'visible'}) resolved during a live send"
+      },
+      {
+        "from": "sending",
+        "to": "settled transcript (1 user + 1 assistant, no placeholder)",
+        "evidence_ref": "run-code read back userCount=1, assistantCount=1, loadingCount=0, placeholderCount=0, assistant text = the Z-keyed reply"
+      },
+      {
+        "from": "settled transcript",
+        "to": "ready empty (after Reset Chat)",
+        "evidence_ref": "reset-button click followed by a resend returned counts to exactly 1/1 rather than 2/2, proving the reset cleared rather than appended"
+      },
+      {
+        "from": "message starting with Q",
+        "to": "Q-keyed reply",
+        "evidence_ref": "'Quiet morning at dawn' returned 'Queue is just Q with four impatient friends standing behind it.' while 'Zebra crossing at dawn' (same suffix) returned the Z line — proves the reply is keyed by the first letter, not the sentence"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "Assistant mode (funny-mode toggle OFF) and its real POST /api/chat path — never exercised; scenario-changing and returned to the approval gate",
+      "Application behaviour with a live backend on :3001 — no backend ships in this repo, so the bootstrap GET /api/messages was only ever observed failing",
+      "The mutated (V2) and faulted (V3) variants of the candidate — never executed, because no approved command can run them"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 1
+  },
+  "usage": {
+    "wall_seconds_setup": 9.5,
+    "wall_seconds_steady_state": 1473.0,
+    "browser_actions": 22,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 76,
+    "reported_tokens_in": 124,
+    "reported_tokens_out": 50488,
+    "reported_cost_usd": 6.943337200000004
+  },
+  "summary": {
+    "observed_locator_count": 9,
+    "inferred_locator_count": 1,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 5,
+    "observed_claims_total": 9
+  }
+}

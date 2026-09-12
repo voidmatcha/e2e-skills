@@ -1,0 +1,126 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "scenario_id": "A-S1",
+  "target_id": "A",
+  "kind": "satisfiable",
+  "captured_at": "2026-09-11T06:43:55.616Z",
+  "capture_method": "Playwright chromium (headless, 1280x720) driving the pinned SHA served by its own dev server from a read-only scratch checkout; page.locator('body').ariaSnapshot() per state; off-origin requests aborted at the routing layer and listed in <target>-capture.json",
+  "required_states": [
+    "chat screen ready with Funny mode checked (offline)",
+    "user message rendered in the transcript",
+    "assistant canned reply rendered, keyed by the first letter of the user message"
+  ],
+  "absent_capability": null,
+  "observations": {
+    "funny_mode_checked_by_default": true,
+    "user_message": "Bananas are great",
+    "assistant_reply": "Bananas are just shy yellow kayaks that never learned to swim.",
+    "expected_reply_for_B": "Bananas are just shy yellow kayaks that never learned to swim.",
+    "reply_matches_letter_table": true,
+    "second_reply": "ZIP files are introverted folders wearing compression hoodies.",
+    "second_reply_expected_Z": "ZIP files are introverted folders wearing compression hoodies.",
+    "second_reply_matches": true
+  },
+  "role_name_state_list": [
+    {
+      "role": "group",
+      "name": "Colour theme",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Aurora",
+      "state": "pressed"
+    },
+    {
+      "role": "button",
+      "name": "Test Runner",
+      "state": null
+    },
+    {
+      "role": "banner",
+      "name": "",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Go to the chat screen",
+      "state": null
+    },
+    {
+      "role": "heading",
+      "name": "Playwright Chat Lab",
+      "state": "level=1"
+    },
+    {
+      "role": "navigation",
+      "name": "Main",
+      "state": null
+    },
+    {
+      "role": "link",
+      "name": "Chat",
+      "state": null
+    },
+    {
+      "role": "link",
+      "name": "Search",
+      "state": null
+    },
+    {
+      "role": "link",
+      "name": "Message history",
+      "state": null
+    },
+    {
+      "role": "link",
+      "name": "Playground",
+      "state": null
+    },
+    {
+      "role": "link",
+      "name": "Help",
+      "state": null
+    },
+    {
+      "role": "checkbox",
+      "name": "Assistant mode Funny mode",
+      "state": "checked"
+    },
+    {
+      "role": "paragraph",
+      "name": "",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Help",
+      "state": null
+    },
+    {
+      "role": "textbox",
+      "name": "Type a message…",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Send",
+      "state": "disabled"
+    },
+    {
+      "role": "button",
+      "name": "Reset Chat",
+      "state": null
+    }
+  ],
+  "snapshots": {
+    "A-S1-chat-ready.aria.yaml": {
+      "sha256": "7b3462622914deb170547d56979cc0c3e892cb072ba74b195b614883ae71dade",
+      "aria_snapshot": "- group \"Colour theme\":\n  - button \"Aurora\" [pressed]\n  - button \"Test Runner\"\n- banner:\n  - button \"Go to the chat screen\"\n  - heading \"Playwright Chat Lab\" [level=1]\n- navigation \"Main\":\n  - link \"Chat\":\n    - /url: /\n  - link \"Search\":\n    - /url: /search\n  - link \"Message history\":\n    - /url: /history\n  - link \"Playground\":\n    - /url: /playground\n  - link \"Help\":\n    - /url: /help\n- checkbox \"Assistant mode Funny mode\" [checked]\n- text: Assistant mode Funny mode\n- paragraph: No messages yet.\n- button \"Help\"\n- textbox \"Type a message…\"\n- button \"Send\" [disabled]\n- button \"Reset Chat\""
+    },
+    "A-S1-after-send.aria.yaml": {
+      "sha256": "93dbb93e00451c4707127c4623ea14f5eac25934efc8e13c2bca86c47c634341",
+      "aria_snapshot": "- group \"Colour theme\":\n  - button \"Aurora\" [pressed]\n  - button \"Test Runner\"\n- banner:\n  - button \"Go to the chat screen\"\n  - heading \"Playwright Chat Lab\" [level=1]\n- navigation \"Main\":\n  - link \"Chat\":\n    - /url: /\n  - link \"Search\":\n    - /url: /search\n  - link \"Message history\":\n    - /url: /history\n  - link \"Playground\":\n    - /url: /playground\n  - link \"Help\":\n    - /url: /help\n- checkbox \"Assistant mode Funny mode\" [checked]\n- text: Assistant mode Funny mode Bananas are great Bananas are just shy yellow kayaks that never learned to swim.\n- button \"Help\"\n- textbox \"Type a message…\"\n- button \"Send\" [disabled]\n- button \"Reset Chat\""
+    }
+  }
+}

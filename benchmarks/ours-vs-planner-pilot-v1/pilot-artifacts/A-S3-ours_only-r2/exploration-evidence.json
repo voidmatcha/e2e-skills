@@ -1,0 +1,178 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "A-S3-ours_only-r2",
+  "target_id": "A",
+  "scenario_id": "A-S3",
+  "arm": "ours_only",
+  "repetition": 2,
+  "oracle_sha256": "541a15fec6949a14ece3e258b5eee87d903806769c3095354e9edb7d4d563ef0",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "textbox",
+      "name": "Type a message…",
+      "state": "visible",
+      "selector": "getByRole('textbox', { name: 'Type a message…' })",
+      "provenance": "observed",
+      "evidence_ref": "agent-browser snapshot -i of http://localhost:5174/ listed `textbox \"Type a message…\" [ref=e5]`; filled successfully during exploration",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Send",
+      "state": "disabled when input empty; enabled after typing",
+      "selector": "getByTestId('send-button')",
+      "provenance": "observed",
+      "evidence_ref": "snapshot showed `button \"Send\" [disabled, ref=e6]`; after fill, click succeeded and a user message plus assistant reply appeared in the next snapshot",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Reset Chat",
+      "state": "visible",
+      "selector": "getByTestId('reset-button')",
+      "provenance": "observed",
+      "evidence_ref": "snapshot `button \"Reset Chat\" [ref=e7]`; DOM enumeration returned `BUTTON|reset-button|Reset Chat`",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Help",
+      "state": "visible",
+      "selector": "getByTestId('help-suggestion')",
+      "provenance": "observed",
+      "evidence_ref": "snapshot `button \"Help\" [ref=e4]`; DOM enumeration returned `BUTTON|help-suggestion|Help`",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "checkbox",
+      "name": "Assistant mode Funny mode",
+      "state": "checked",
+      "selector": "getByTestId('funny-mode-toggle')",
+      "provenance": "observed",
+      "evidence_ref": "snapshot `checkbox \"Assistant mode Funny mode\" [checked=true, ref=e17]`",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "navigation",
+      "name": "Main",
+      "state": "visible",
+      "selector": "getByRole('navigation', { name: 'Main' })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot on all five routes listed `navigation \"Main\"` containing links Chat/Search/Message history/Playground/Help",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "heading",
+      "name": "Playwright Chat Lab",
+      "state": "visible, level=1",
+      "selector": "getByRole('heading', { name: 'Playwright Chat Lab', level: 1 })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot `heading \"Playwright Chat Lab\" [level=1, ref=e11]`",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "<export / download PDF control>",
+      "state": null,
+      "selector": null,
+      "provenance": "unknown",
+      "evidence_ref": null,
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "link",
+      "name": "<sign-in / account control>",
+      "state": null,
+      "selector": null,
+      "provenance": "unknown",
+      "evidence_ref": null,
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    }
+  ],
+  "states": {
+    "required_total": 4,
+    "reached": 1,
+    "transitions_observed": [
+      {
+        "from": "chat screen, empty conversation",
+        "to": "chat screen, conversation present",
+        "evidence_ref": "filled the message textbox with 'hello from the pilot' and clicked Send; the next snapshot contained StaticText 'hello from the pilot' and an assistant reply StaticText"
+      },
+      {
+        "from": "/ (chat)",
+        "to": "/history, /search, /help, /playground",
+        "evidence_ref": "agent-browser open + snapshot -i on each route returned that route's distinct level-2 heading"
+      },
+      {
+        "from": "request for /login",
+        "to": "/",
+        "evidence_ref": "agent-browser get url after opening http://localhost:5174/login returned http://localhost:5174/ (catch-all redirect)"
+      },
+      {
+        "from": "request for /export",
+        "to": "/",
+        "evidence_ref": "agent-browser get url after opening http://localhost:5174/export returned http://localhost:5174/"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "signed-in user session — no authentication capability exists; no login route, no auth control, and localStorage/sessionStorage/document.cookie were all empty",
+      "export-conversation control in a visible/enabled state — absent from every route's accessibility tree and from the live DOM button/link enumeration",
+      "PDF download event — no a[download] element (count 0) and no export request path, so no download could be triggered or observed"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 1
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 0
+  },
+  "usage": {
+    "wall_seconds_setup": 7.0,
+    "wall_seconds_steady_state": 260.1,
+    "browser_actions": 26,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 38,
+    "reported_tokens_in": 60,
+    "reported_tokens_out": 18562,
+    "reported_cost_usd": 1.7893415
+  },
+  "summary": {
+    "observed_locator_count": 7,
+    "inferred_locator_count": 0,
+    "unknown_locator_count": 2,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 7,
+    "observed_claims_total": 7
+  }
+}

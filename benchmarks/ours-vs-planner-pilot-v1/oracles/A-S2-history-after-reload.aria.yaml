@@ -1,0 +1,24 @@
+- group "Colour theme":
+  - button "Aurora" [pressed]
+  - button "Test Runner"
+- banner:
+  - button "Go to the chat screen"
+  - heading "Playwright Chat Lab" [level=1]
+- navigation "Main":
+  - link "Chat":
+    - /url: /
+  - link "Search":
+    - /url: /search
+  - link "Message history":
+    - /url: /history
+  - link "Playground":
+    - /url: /playground
+  - link "Help":
+    - /url: /help
+- heading "Message history" [level=2]
+- paragraph: Conversations are saved in this browser (your messages and assistant replies), grouped by day.
+- button "Delete history"
+- heading "Friday, September 11, 2026" [level=3]
+- list:
+  - listitem: 3:44 PM You Bananas are great Assistant Bananas are just shy yellow kayaks that never learned to swim.
+  - listitem: 3:44 PM You Zebra stripes Assistant ZIP files are introverted folders wearing compression hoodies.

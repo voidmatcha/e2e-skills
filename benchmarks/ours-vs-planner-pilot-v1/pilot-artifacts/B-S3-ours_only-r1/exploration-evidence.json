@@ -1,0 +1,249 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "B-S3-ours_only-r1",
+  "target_id": "B",
+  "scenario_id": "B-S3",
+  "arm": "ours_only",
+  "repetition": 1,
+  "oracle_sha256": "e7219a579a5cea1e0d7644d22574beef30bd218ccf59aa897209f59036904611",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Open settings",
+      "state": "visible",
+      "selector": "getByRole('button', { name: 'Open settings' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot ref f4e61 on http://localhost:5174/l/YhPLAbP7VtJ4/untitled-layout; clicking it opened dialog 'Settings' (ref f4e546)",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "tab",
+      "name": "Account",
+      "state": "visible",
+      "selector": "getByRole('tab', { name: 'Account' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot ref f4e599 under tablist 'Settings' group 'Account & Data'; clicking it rendered tabpanel 'Account' (ref f4e705)",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "heading",
+      "name": "Cloud sync",
+      "state": "visible (level 3)",
+      "selector": "getByRole('heading', { name: 'Cloud sync', level: 3 })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot ref f4e711 inside tabpanel 'Account'; this is the entire Cloud Sync surface - a heading over a status readout, with no controls",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic",
+      "name": "All changes synced",
+      "state": "visible, read-only text",
+      "selector": "getByText('All changes synced')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot ref f4e714; i18n key dock.syncStatusIdle; no interactive role, no toggle sibling",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic",
+      "name": "Not synced yet",
+      "state": "visible, read-only text",
+      "selector": "getByText('Not synced yet')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot ref f4e715; i18n key account.sync.lastSyncedNever - proves sync never ran while anonymous",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "tab",
+      "name": "Storage",
+      "state": "visible",
+      "selector": "getByRole('tab', { name: 'Storage' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot ref f4e607; clicking it rendered tabpanel 'Storage' (ref f4e716) showing only device-local IndexedDB stats",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "tab",
+      "name": "Labs",
+      "state": "visible",
+      "selector": "getByRole('tab', { name: 'Labs' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot ref f4e617; clicking it rendered tabpanel 'Labs' (ref f4e759) listing 8 features, none enabling anonymous sync",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Share layout",
+      "state": "visible",
+      "selector": "getByRole('button', { name: 'Share layout' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot ref f4e41 in the header toolbar; clicking it opened dialog 'Share Layout' (ref f4e865)",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "dialog",
+      "name": "Share Layout",
+      "state": "visible",
+      "selector": "getByRole('dialog', { name: 'Share Layout' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot ref f4e865 after clicking L8",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Create share link",
+      "state": "visible, enabled",
+      "selector": "getByRole('button', { name: 'Create share link' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot ref f4e875 inside dialog 'Share Layout' - the only anonymous cloud affordance, and it yields a manually-transferred URL rather than automatic cross-profile sync",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "ours_exploration",
+      "role": "combobox",
+      "name": "Anyone with link can",
+      "state": "visible; options 'view' (selected) / 'edit'",
+      "selector": "getByRole('combobox', { name: 'Anyone with link can' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot ref f4e874 inside dialog 'Share Layout'",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L12",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Clear all data",
+      "state": "visible",
+      "selector": "getByRole('button', { name: 'Clear all data' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot ref f4e758 in tabpanel 'Storage' Danger Zone - confirms storage is device-local",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L13",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic",
+      "name": "Working locally",
+      "state": "NEVER RENDERED",
+      "selector": null,
+      "provenance": "unknown",
+      "evidence_ref": null,
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L14",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Sign in with Google",
+      "state": "NEVER RENDERED",
+      "selector": null,
+      "provenance": "unknown",
+      "evidence_ref": null,
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L15",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "<any Cloud Sync enable/pair control>",
+      "state": "DOES NOT EXIST",
+      "selector": null,
+      "provenance": "unknown",
+      "evidence_ref": null,
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    }
+  ],
+  "states": {
+    "required_total": 4,
+    "reached": 1,
+    "transitions_observed": [
+      {
+        "from": "cold start / empty client storage",
+        "to": "auto-created local layout at /l/YhPLAbP7VtJ4/untitled-layout",
+        "evidence_ref": "page.goto('http://localhost:5174/') settled on the /l/<id>/untitled-layout URL; Storage tab reported '1 layouts'"
+      },
+      {
+        "from": "editor view",
+        "to": "Settings dialog open on Account tab showing the Cloud sync status readout",
+        "evidence_ref": "click ref f4e61 then ref f4e599; tabpanel 'Account' (f4e705) contained heading 'Cloud sync' + 'All changes synced' / 'Not synced yet'"
+      },
+      {
+        "from": "editor view",
+        "to": "Share Layout dialog open with 'Create share link'",
+        "evidence_ref": "click ref f4e41; dialog 'Share Layout' (f4e865) with combobox f4e874 and button f4e875"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "Anonymous ('Working locally') identity card and its Sign in with Google/GitHub buttons - the Account identity section stayed in its aria-busy skeleton because /api/auth/me returns raw TypeScript source under `pnpm run dev` (no serverless runtime), so getMe() throws and session status never leaves 'unknown'",
+      "Cloud Sync enabled while not signed in - no such control exists anywhere in the UI (Account, Storage, Labs, command palette) or in the i18n catalog",
+      "A layout propagating to a second browser profile - never attempted, because no account-less sync mechanism exists to trigger it; a second profile was never opened",
+      "Signed-in cloud sync (the supported variant) - unreachable in this dev environment for the same missing-auth-API reason"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [
+      "Disclosure: during one diagnostic step I temporarily swapped the aborting origin guard for a pass-through logging guard to isolate a run-code sandbox bug ('URL is not defined' inside the route handler). While that pass-through guard was active the application's own pre-existing requests to https://fonts.googleapis.com and https://va.vercel-scripts.com were allowed to dispatch. These are the app's own load-time requests (explicitly acknowledged by the brief), not navigations or fetches I initiated; no off-origin URL was ever a target of my own actions. The aborting guard was reinstalled immediately afterwards and both origins were then confirmed blocked with net::ERR_BLOCKED_BY_CLIENT.",
+      "Preflight deviation: run-preflight-target.sh could not pass because localhost resolves to {127.0.0.1, ::1} while Vite bound only to ::1 (all-peers-agree probe failed, curl exit 7), and the IPv6-literal retry hit a validator bug at preflight_target.py:455 which emits an unbracketed hostname into --resolve (curl exit 49). All URL/authority/scheme/port/loopback-safety validation stages passed; only reachability was unsatisfiable. Reachability was proven independently with a pinned same-origin curl probe (HTTP 200), and the browser ran behind a before-dispatch context.route('**/*') guard restricted to exactly http://localhost:5174, empirically demonstrated to abort off-origin requests."
+    ],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 0
+  },
+  "usage": {
+    "wall_seconds_setup": 52.2,
+    "wall_seconds_steady_state": 491.5,
+    "browser_actions": 32,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 61,
+    "reported_tokens_in": 104,
+    "reported_tokens_out": 31244,
+    "reported_cost_usd": 3.3868555000000002
+  },
+  "summary": {
+    "observed_locator_count": 12,
+    "inferred_locator_count": 0,
+    "unknown_locator_count": 3,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 4,
+    "observed_claims_total": 12
+  }
+}

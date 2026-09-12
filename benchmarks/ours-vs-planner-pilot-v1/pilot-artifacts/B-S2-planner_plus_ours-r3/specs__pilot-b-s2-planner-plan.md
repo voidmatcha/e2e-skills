@@ -1,0 +1,77 @@
+# Scenario B-S2 Plan-Hardening Deltas
+
+## Application Overview
+
+Auxiliary plan-hardening pass for one FROZEN, already-approved scenario (B-S2) on the Gridfinity Layout Tool (http://localhost:5174, entry route `/`). This document does not add, split, reword, or broaden the scenario. It records live-verified deltas against the prior observation set, in four labelled classes (observed / inference / verification condition / limitation), plus direct answers to the four assigned questions. No delta below changes the scope of the frozen Given/When/Then; where a finding affects test *setup mechanics* only (e.g. how to truly satisfy "fresh browser profile, empty client-side storage"), it is called out explicitly as non-scope-changing.
+
+FROZEN SCENARIO (reproduced verbatim, not modified):
+
+## Scenario B-S2
+- Given: the application is served at http://localhost:5174, fresh browser profile, empty client-side storage
+- When: the user performs the actions the outcome below requires
+- Then: Changing the drawer dimensions recomputes the baseplate grid, and a bin that no longer fits is reported rather than silently kept.
+
+## Test Scenarios
+
+### 1. B-S2 Plan-Hardening Deltas (no new tests authored — annotations only)
+
+**Seed:** `e2e/seed.spec.ts`
+
+#### 1.1. DELTAS — observed (resolved live this session)
+
+**File:** `specs/pilot-b-s2-planner-plan.md`
+
+**Steps:**
+  1. Reference only — not an executable test. Recorded from live exploration at http://localhost:5174/.
+    - expect: CONFIRMED (matches prior observation): spinbutton "Drawer width in grid units" default 10, sibling "Drawer depth in grid units" default 8; button "Fill 80 gaps" deterministically creates 4 bins with aria-labels "Bin 6 by 6, category Coral", "Bin 4 by 6, category Coral", "Bin 6 by 2, category Coral", "Bin 4 by 2, category Coral"; [role="application"] aria-label reads "Gridfinity drawer grid, 10 columns by 8 rows" and updates to "...8 columns by 8 rows" after committing width=8; column header buttons "Select bins in column N" exist for N=1..width (verified N=1..10 then N=1..8); after width 10->8 grid bins go 4->2 and [data-staging-bin-id] elements go 0->2, stash toggle accessible name changes "Stash —" -> "Stash 2 bins"; width 10->12 (counter-case, done as 8->12 live) recomputes the aria-label to 12 columns and does not add any further displacement.
+    - expect: ID PRESERVATION — DIRECTLY VERIFIED WITH CONCRETE IDS: on a genuinely fresh layout, after Fill 80 gaps the 4 grid bins carried data-bin-id values mtxsstav-7307c8557f (6x6), mtxsstav-f29cf688fd (4x6), mtxsstaw-3fd1da7ffc (6x2), mtxsstaw-d94f6a14b2 (4x2). After committing width=8, the grid retained exactly {mtxsstav-7307c8557f, mtxsstaw-3fd1da7ffc} as data-bin-id, and the stash gained exactly {mtxsstaw-d94f6a14b2, mtxsstav-f29cf688fd} as data-staging-bin-id — the same two id strings, verbatim, moved from data-bin-id to data-staging-bin-id. This is the load-bearing evidence for 'displaced, not deleted or silently kept'.
+    - expect: COMMIT MECHANISM — RESOLVED: the width input is a plain <input type=number>. Using page.fill() to set the value to '8' updates el.value and fires an input/change event, but the grid aria-label and layout do NOT update while the input remains focused (confirmed: value became '8' while aria-label stayed 'Gridfinity drawer grid, 10 columns by 8 rows'). The recompute only fires on blur (Tab was used and confirmed sufficient). Enter-to-submit was not separately tested but blur is a confirmed, sufficient commit trigger. Answers question (c).
+    - expect: CORRECTION to the counter-case framing: widening the drawer (8->12) does NOT automatically restore previously-stashed bins back onto the grid even though there is now room for them (grid stayed at 2 bins, stash stayed at 2 bins, same ids, after the widen). The prior note 'displaces nothing (stash stays empty)' is only true when the stash was already empty before the widen; it must not be read as 'widening un-stashes bins'. This refines, not contradicts, the original counter-case.
+    - expect: STASH BIN ACCESSIBLE NAME DIFFERS FROM GRID BIN ACCESSIBLE NAME: elements under [data-staging-bin-id] are role=button divs with NO aria-label; their accessible name is derived from visible text content only (e.g. plain "4×2", "4×6") — they do NOT carry the "Bin W by H, category X" pattern used by on-grid bins (which do have aria-label="Bin 6 by 6, category Coral" etc., confirmed via attribute dump). A test must not attempt to locate a stashed bin by the on-grid aria-label pattern; it should key off data-staging-bin-id or the plain size text.
+    - expect: GRID BIN POSITION IS EXPOSED VIA INLINE STYLE: each on-grid bin div carries style="grid-area: <rowStart> / <colStart> / span <rows> / span <cols>; ..." (e.g. 'grid-area: 3 / 1 / span 6 / span 6' for the 6x6 bin, 'grid-area: 1 / 1 / span 2 / span 6' for the 6x2 bin). This is parseable and gives a direct, independent way to assert that every bin remaining on the grid after a resize fits within the new column/row bounds (colStart + cols - 1 <= new width), which is a stronger structural check than only counting data-bin-id elements.
+    - expect: ROUTE '/' IS NOT GUARANTEED BLANK: navigating to http://localhost:5174/ redirects to a persisted per-profile layout URL of the form /l/<id>/untitled-layout. On a browser profile that already has state, this redirect preserves ALL prior bins/stash/grid-size (confirmed: after doing the Fill-80/resize sequence, re-navigating to '/' reproduced the exact same 2 grid bins + 2 stash bins + 8-column grid). Calling localStorage.clear()+sessionStorage.clear() alone is NOT sufficient to reset this — state survives because it is persisted in IndexedDB (confirmed databases: gridfinity-baseplate-v1, gridfinity-db, gridfinity-designer-v1, gridfinity-events-db). Only after deleting all four IndexedDB databases (in addition to clearing local/session storage) did navigating to '/' generate a brand-new layout id and a genuinely empty grid (0 grid bins, 0 stash bins, width=10, depth=8). This does not change the scenario's Given clause (which already stipulates 'fresh browser profile, empty client-side storage') — it clarifies that satisfying that Given in an automated test requires either a brand-new isolated browser context/profile per test run, or explicit IndexedDB deletion in addition to Storage.clear(); Playwright's default per-test isolated context (new browser context, no shared profile) already satisfies this, so this is primarily a warning against reusing a single page/context across multiple scenarios or test retries without a fresh context.
+    - expect: NOTIFICATIONS ARE TRANSIENT AND UNRELATED TO RESIZE: a toast notification ("Added 4 bin(s) to fill gaps", region role=status inside a 'Notifications' landmark) appears after 'Fill 80 gaps' but auto-dismisses and the Notifications region is removed from the DOM entirely when empty. No toast/notification of any kind was observed when committing the width change that caused displacement — confirmed by both visual snapshot and a DOM query for the notifications region returning 'no notifications region' immediately after the width blur.
+    - expect: BIN LIST PANEL AND CATEGORY BADGE BEHAVE DIFFERENTLY: the right-panel 'Bin List N' region counts and lists ONLY bins currently on the grid (it went from 'Bin List 4' with 4 rows to 'Bin List 2' with 2 rows after the resize, dropping the 4x6 and 4x2 rows entirely) — it is not a report of displacement, it simply omits stashed bins. In contrast, the Categories panel's per-category count badge (e.g. "4 bin(s) use this category" for Coral) counts grid+stash bins TOGETHER and stayed at 4 through the resize — it also does not report displacement per se, but it does corroborate that no bin was lost (total count is conserved across the grid/stash boundary).
+    - expect: HISTORY TAB IS GENERIC AUTOSAVE, NOT AN EVENT LOG: the right-panel 'History' tab shows only periodic autosave checkpoints with a bin/layer count summary (e.g. "Save checkpoint / Auto-saved / 1 min ago · 4 bins · 1 layers / Restore") and a Restore action. It contains no per-action description (nothing says 'bin displaced due to resize' or similar), so it cannot serve as an alternate 'report' of the displacement event.
+
+#### 1.2. DELTAS — inference (source/seed only, not resolved live; will not reach final test)
+
+**File:** `specs/pilot-b-s2-planner-plan.md`
+
+**Steps:**
+  1. Reference only — not an executable test.
+    - expect: None recorded. All claims in this pass were resolved against the live page (see 'observed' above); no source-only inferences were needed or made.
+
+#### 1.3. DELTAS — additional verification conditions the automated test should assert
+
+**File:** `specs/pilot-b-s2-planner-plan.md`
+
+**Steps:**
+  1. Reference only — not an executable test. Each item below is a concrete failure condition plus why it is load-bearing for scenario B-S2's Then-clause ('a bin that no longer fits is reported rather than silently kept').
+    - expect: The test MUST fail if, after committing width=8, any element with [data-bin-id] remains on the grid whose id was one of the two pre-resize ids known to no longer fit (mtxsstaw-d94f6a14b2 / 4x2 and mtxsstav-f29cf688fd / 4x6 in this session, or equivalently 'the two widest bins whose column-span exceeds the new width' in general). This is the direct negative check for 'silently kept' — without it, a regression that stops displacing oversized bins (but still shrinks the grid label) would pass a test that only checks the aria-label text.
+    - expect: The test MUST fail if the count of [data-staging-bin-id] elements does not exactly equal the count of bins whose original grid-area column-start+span exceeded the new width. This guards against both under-reporting (a bin silently deleted, not stashed — count too low) and over-reporting (an unaffected bin incorrectly evicted — count too high).
+    - expect: The test MUST fail if a displaced bin's data-staging-bin-id does not exactly match its own prior data-bin-id (i.e. id churn/replacement, which would indicate the app deleted-and-recreated rather than moved the bin, silently losing bin-specific state such as label/category association even though a stash entry exists). Verified achievable and false-positive-free live in this session with concrete id strings.
+    - expect: The test MUST fail if any bin still on the grid after resize has a grid-area column-start + column-span - 1 greater than the new committed width (parsed from the inline style attribute). This is a structural, geometry-level guard independent of counts/ids, catching a case where the app resizes the grid container visually but leaves a bin's grid-area unclamped (visually overflowing) rather than moving it to the stash.
+    - expect: The test MUST fail if the stash toggle's accessible name (e.g. "Stash 2 bins") does not match the actual number of [data-staging-bin-id] elements. This catches a UI-only regression where the stash badge count desyncs from the actual stashed contents.
+    - expect: The test SHOULD assert the per-category total (grid count + stash count for the affected category, e.g. Coral) is unchanged before and after the resize, as a conservation check that no bin was silently dropped outright (neither kept oversized nor deleted) — corroborating evidence distinct from the direct id-preservation check above.
+    - expect: The test MUST use a fresh, isolated browser context (Playwright's default per-test context, not a reused/shared page) to satisfy the scenario's Given clause ('fresh browser profile, empty client-side storage'); reusing a context/page across scenario runs will make the Fill-80/resize preconditions non-deterministic because the app persists layouts to IndexedDB across reloads of the same origin/profile, and even localStorage.clear()+sessionStorage.clear() alone were confirmed insufficient to reset it.
+
+#### 1.4. DELTAS — limitations (not provided by the app / not observable)
+
+**File:** `specs/pilot-b-s2-planner-plan.md`
+
+**Steps:**
+  1. Reference only — not an executable test.
+    - expect: (a) No other user-visible 'report' of the displaced bin exists besides the stash. Searched live: no toast/alert appears on the width-commit that causes displacement (Notifications region is absent from the DOM at that moment); the Bin List panel merely stops listing the displaced bins (it is grid-only, not a displacement report); the Categories panel's per-category badge is a conserved total across grid+stash, not a displacement flag; the History tab shows only generic autosave checkpoints with aggregate bin counts, with no per-action/event description. The stash panel (toggle label + count, and the individual stashed bin chips carrying data-staging-bin-id) is the sole live-observable report.
+    - expect: (b) No more direct 'baseplate grid' readout exists inside the Layout tool at route `/` than the [role="application"] aria-label. The sidebar's embedded, collapsible 'Baseplate' section (distinct from the top 'Baseplate' tool tab) only exposes an 'Active baseplate design' combobox (e.g. option 'Baseplate 1') and a 'Manage baseplates' button opening a 'Baseplate Library' dialog that lists named baseplate designs with a count ('1 baseplate(s)') — neither surfaces grid width/height/column/row numbers. Note: clicking the top-level 'Baseplate' tab in the Tool Switcher navigates OFF the Layout editor entirely to a separate standalone route (/baseplate, a different marketing/generator page, confirmed via URL and page-title change to 'Gridfinity Baseplate Maker'); this is a different tool, not a baseplate-grid readout mode within Layout, and was excluded from further exploration as it falls outside 'inside the Layout tool at route /'.
+    - expect: Not independently tested in this session: whether pressing Enter (as opposed to Tab/blur) also commits the width input. Blur (Tab) was confirmed sufficient; Enter was not separately isolated, so no claim is made about it either way.
+    - expect: Not independently tested in this session: depth-dimension shrink (only width was exercised for the id-preservation and counter-case checks); behavior is expected to be symmetric given the shared 'Grid Size' controls, but this was not directly verified live and should not be assumed without a corroborating check if the final test also exercises depth.
+    - expect: An unrelated background console error was observed throughout the session (`Failed to load resource: 404 @ /api/ml-telemetry`). This is a telemetry endpoint 404 in the dev environment, unrelated to grid/bin logic, and is noted only so it is not mistaken for an application defect if the final test asserts on console errors.
+
+#### 1.5. DELTAS — items flagged for return to approval gate (scope-changing)
+
+**File:** `specs/pilot-b-s2-planner-plan.md`
+
+**Steps:**
+  1. Reference only — not an executable test.
+    - expect: None. Every delta above operates strictly within the frozen Given/When/Then of Scenario B-S2: they either (i) confirm/correct implementation-level facts needed to author reliable locators and assertions, or (ii) clarify test-setup mechanics required to honestly satisfy the already-stated Given ('fresh browser profile, empty client-side storage'). No delta proposes new user-facing behavior to test, no delta broadens the Then-clause, and no delta requires the scenario text itself to change. Nothing is returned to the approval gate.

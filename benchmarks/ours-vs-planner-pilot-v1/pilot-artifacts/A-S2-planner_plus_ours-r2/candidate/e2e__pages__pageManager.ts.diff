@@ -1,0 +1,39 @@
+diff --git a/e2e/pages/pageManager.ts b/e2e/pages/pageManager.ts
+index f18be38..3a57f8f 100644
+--- a/e2e/pages/pageManager.ts
++++ b/e2e/pages/pageManager.ts
+@@ -1,6 +1,7 @@
+ import type { Page } from '@playwright/test'
+ import { AppLayoutPage } from './layout/appLayoutPage'
+ import { ChatPage } from './chat/chatPage'
++import { ChatHistoryPage } from './chatHistoryPage'
+ import { HelpPage } from './helpPage'
+ import { SearchPage } from './searchPage'
+ 
+@@ -8,6 +9,7 @@ export class PageManager {
+   private readonly page: Page
+   private readonly appLayoutPage: AppLayoutPage
+   private readonly chatPage: ChatPage
++  private readonly chatHistoryPage: ChatHistoryPage
+   private readonly searchPage: SearchPage
+   private readonly helpPage: HelpPage
+ 
+@@ -15,6 +17,7 @@ export class PageManager {
+     this.page = page
+     this.appLayoutPage = new AppLayoutPage(this.page)
+     this.chatPage = new ChatPage(this.page)
++    this.chatHistoryPage = new ChatHistoryPage(this.page)
+     this.searchPage = new SearchPage(this.page)
+     this.helpPage = new HelpPage(this.page)
+   }
+@@ -27,6 +30,10 @@ export class PageManager {
+     return this.chatPage
+   }
+ 
++  onChatHistoryPage() {
++    return this.chatHistoryPage
++  }
++
+   onSearchPage() {
+     return this.searchPage
+   }

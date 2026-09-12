@@ -1,0 +1,36 @@
+
+Running 1 test using 1 worker
+
+  ✓  1 [chromium] › e2e/pilot-b-s2.spec.ts:36:3 › Drawer resize vs. bins that no longer fit › shrinking drawer width recomputes the grid and stashes the bin that no longer fits (4.2s)
+
+  1 passed (7.0s)
+
+--- stderr ---
+[WebServer] (node:43600) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ pnpm run build:content && pnpm run build:en-locale && vite
+[WebServer] (node:43645) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ tsx scripts/build-content.ts
+[WebServer] (node:43658) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:43665) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:43666) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ tsx scripts/build-en-locale.ts
+[WebServer] (node:43681) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:43718) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:43719) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+[WebServer]   - import "./scripts/vite-plugin-version" without a file extension (vite.config.ts:8:31). Add the file extension
+[WebServer]   - import "./scripts/vite-plugin-content-routes" without a file extension (vite.config.ts:9:37). Add the file extension
+[WebServer]   - import "./scripts/vite-plugin-mediapipe-assets" without a file extension (vite.config.ts:10:39). Add the file extension
+[WebServer]   - import "./scripts/vite-plugin-minify-json-assets" without a file extension (vite.config.ts:11:34). Add the file extension
+[WebServer]   - import "./scripts/contentRoutes" without a file extension (vite.config.ts:12:48). Add the file extension
+[WebServer] Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+(node:43746) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)

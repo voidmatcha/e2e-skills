@@ -1,0 +1,54 @@
+- dialog "Settings":
+  - heading "Settings" [level=2]
+  - button "Close"
+  - combobox "Search settings…"
+  - tablist "Settings":
+    - paragraph: Preferences
+    - tab "General":
+      - img
+      - text: General
+    - tab "Appearance":
+      - img
+      - text: Appearance
+    - tab "Accessibility":
+      - img
+      - text: Accessibility
+    - paragraph: Defaults
+    - tab "Layout Defaults":
+      - img
+      - text: Layout Defaults
+    - tab "Print & Material":
+      - img
+      - text: Print & Material
+    - tab "Categories & Bins":
+      - img
+      - text: Categories & Bins
+    - paragraph: Account & Data
+    - tab "Account" [selected]:
+      - img
+      - text: Account
+    - tab "Privacy":
+      - img
+      - text: Privacy
+    - tab "Storage":
+      - img
+      - text: Storage
+    - paragraph: Advanced
+    - tab "STL Search":
+      - img
+      - text: STL Search
+    - tab "Labs":
+      - img
+      - text: Labs
+  - tabpanel "Account":
+    - heading "Account" [level=3]
+    - heading "Cloud sync" [level=3]
+    - text: All changes synced Not synced yet
+  - button "Reset all settings"
+  - text: ·
+  - button "Reset onboarding"
+  - link "Privacy Policy":
+    - /url: /privacy
+  - text: ·
+  - link "Terms of Service":
+    - /url: /terms

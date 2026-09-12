@@ -1,0 +1,24 @@
+- group "Colour theme":
+  - button "Aurora" [pressed]
+  - button "Test Runner"
+- banner:
+  - button "Go to the chat screen"
+  - heading "Playwright Chat Lab" [level=1]
+- navigation "Main":
+  - link "Chat":
+    - /url: /
+  - link "Search":
+    - /url: /search
+  - link "Message history":
+    - /url: /history
+  - link "Playground":
+    - /url: /playground
+  - link "Help":
+    - /url: /help
+- heading "Help" [level=2]
+- paragraph: Common issues and quick fixes for the Playwright Chat Lab demo.
+- group: "“Error: failed to get AI response” Expand"
+- group: Blank chat or missing past messages Expand
+- group: Message history or search looks empty Expand
+- group: Cannot send a message Expand
+- group: Reset Chat does not clear history Expand

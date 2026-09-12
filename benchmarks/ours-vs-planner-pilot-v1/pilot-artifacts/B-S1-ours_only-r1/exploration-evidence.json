@@ -1,0 +1,262 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "B-S1-ours_only-r1",
+  "target_id": "B",
+  "scenario_id": "B-S1",
+  "arm": "ours_only",
+  "repetition": 1,
+  "oracle_sha256": "ababe741ce08d1374a2c1f607d9d2cbaa9eff4b136c9eaf5baa232e814d53bb2",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "application",
+      "name": "Gridfinity drawer grid, 10 columns by 8 rows",
+      "state": "visible",
+      "selector": "page.getByRole('application', { name: 'Gridfinity drawer grid, 10 columns by 8 rows' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot line 270 of /tmp/snap1.txt; probe returned appCount=1, appName='Gridfinity drawer grid, 10 columns by 8 rows'; loc-check gridCount=1",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Bin 2 by 2, category Coral",
+      "state": "visible, pressed (aria-pressed=true)",
+      "selector": "baseplateGrid.getByRole('button', { name: 'Bin 2 by 2, category Coral' })",
+      "provenance": "observed",
+      "evidence_ref": "outerHTML dump after drag: data-bin-id='mtwr70ka-de375bbca4' role='button' aria-label='Bin 2 by 2, category Coral' aria-pressed='true'; snapshot snap2.txt line 271 shows it nested under the application node; loc-check placedBinCount=1, placedBinVisible=true",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "layer/layout summary text",
+      "state": "visible; '0% filled · 0 bins' before, '5% filled · 1 bins' after",
+      "selector": "page.locator('[data-sidebar]').getByText(/% filled/)",
+      "provenance": "observed",
+      "evidence_ref": "probe returned summaryCount=1 and summaryHtml='<span>5% filled · 1 bins</span>'; snap1.txt line 66 shows '0% filled · 0 bins'; loc-check summaryTextEmpty/summaryTextAfter",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "paragraph",
+      "name": "No bins to print",
+      "state": "visible when empty, count 0 after placement",
+      "selector": "page.locator('[data-inspector]').getByText('No bins to print')",
+      "provenance": "observed",
+      "evidence_ref": "snap1.txt line ~415 'paragraph: No bins to print'; loc-check emptyPrintList=1 before, emptyPrintListAfter=0",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "row",
+      "name": "bin list row containing 2×2",
+      "state": "exactly 1 row",
+      "selector": "page.locator('[data-inspector]').getByRole('row').filter({ hasText: '2×2' })",
+      "provenance": "observed",
+      "evidence_ref": "snap2.txt lines 388-401 (table > rowgroup > row with cell text '2×2', '3u', '1', '21.45'); loc-check rowCount=1, rowText='2×2\\n\\t3u\\t1\\t21.45'",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "print-list bin total",
+      "state": "'1 bins'",
+      "selector": "page.locator('[data-inspector]').getByText(/^\\d+ bins$/)",
+      "provenance": "observed",
+      "evidence_ref": "probe returned totalCount=1, totalHtml='<span class=\"text-sm text-content tabular-nums whitespace-nowrap\">1 bins</span>'; loc-check totalText='1 bins'",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "bin elements (count gate)",
+      "state": "0 before, 1 after",
+      "selector": "page.locator('[data-bin-id]') via fixtures waitForBinCount/drawBinOnGrid",
+      "provenance": "observed",
+      "evidence_ref": "run-code draw: before=0, after=1; loc-check binCountEmpty=0",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "sidebar / inspector containers",
+      "state": "attached",
+      "selector": "[data-sidebar] and [data-inspector] (fixtures getSidebar/getInspector)",
+      "provenance": "observed",
+      "evidence_ref": "probe dataAttrs enumeration of the live DOM listed data-sidebar and data-inspector; both scoped queries resolved to 1 match each",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "header element (app-ready gate)",
+      "state": "present",
+      "selector": "page.waitForSelector('header') via fixtures waitForAppReady",
+      "provenance": "observed",
+      "evidence_ref": "full-flow run awaited waitForSelector('header') successfully before every interaction",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "placed bin CSS grid placement",
+      "state": "grid-area '1 / 1 / span 2 / span 2'",
+      "selector": "getComputedStyle(bin).gridArea",
+      "provenance": "observed",
+      "evidence_ref": "geom-check: identical '1 / 1 / span 2 / span 2' on 3 consecutive fresh-state runs",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "ours_exploration",
+      "role": "heading",
+      "name": "2×2 Bin",
+      "state": "visible, level 2, in inspector",
+      "selector": "page.locator('[data-inspector]').getByRole('heading', { level: 2 })",
+      "provenance": "observed",
+      "evidence_ref": "snap2.txt line 310; draw-clean inspectorHeading=['2×2 Bin']",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L12",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Clear layer / Clear 1 bins",
+      "state": "disabled when empty, enabled and relabelled after placement",
+      "selector": "page.locator('[data-sidebar]').getByRole('button', { name: /^Clear/ })",
+      "provenance": "observed",
+      "evidence_ref": "snap1.txt line 51 'button \"Clear layer\" [disabled]'; snap2.txt line 50 'button \"Clear 1 bins\"'; draw-clean clearBtn='Clear 1 bins'",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L13",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Fill 80 gaps / Fill 76 gaps",
+      "state": "visible",
+      "selector": "page.locator('[data-sidebar]').getByRole('button', { name: /^Fill/ })",
+      "provenance": "observed",
+      "evidence_ref": "snap1.txt line 50 'Fill 80 gaps'; snap2.txt line 49 'Fill 76 gaps'",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L14",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Bin List 1",
+      "state": "expanded",
+      "selector": "page.locator('[data-inspector]').getByRole('button', { name: /^Bin List/ })",
+      "provenance": "observed",
+      "evidence_ref": "snap2.txt line 382 'button \"Bin List 1\" [expanded]'; draw-clean binListBtnName='Bin List\\n1'",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L15",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Size Brush",
+      "state": "visible",
+      "selector": "page.locator('[data-sidebar]').getByRole('button', { name: /Size Brush/i })",
+      "provenance": "observed",
+      "evidence_ref": "snap1.txt line 49; also used by the repo's existing selectBinSize fixture",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L16",
+      "source_arm_stage": "generator_implementation",
+      "role": "",
+      "name": "drawer default dimensions 10 columns x 8 rows",
+      "state": "spinbuttons 'Drawer width in grid units'=10, 'Drawer depth in grid units'=8",
+      "selector": "COLUMNS=10 / ROWS=8 constants in the spec",
+      "provenance": "observed",
+      "evidence_ref": "snap1.txt lines 120 and 126 (spinbutton values on a brand-new layout); the grid's own accessible name repeats '10 columns by 8 rows' and the spec asserts that name before using the constants",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    }
+  ],
+  "states": {
+    "required_total": 3,
+    "reached": 3,
+    "transitions_observed": [
+      {
+        "from": "cold load of a fresh profile",
+        "to": "new empty layout at /l/<id>/untitled-layout",
+        "evidence_ref": "full-flow in a fresh guarded context: urlAfterGoto='http://[::1]:5174/l/S0G2Az3f5Rs8/untitled-layout', binsBefore=0, summaryBefore='0% filled · 0 bins', emptyList=1, dialogs=0"
+      },
+      {
+        "from": "empty baseplate",
+        "to": "one 2x2 bin placed at grid cells (1,1)-(2,2) with summary updated",
+        "evidence_ref": "geom-check x3: count=1, gridArea='1 / 1 / span 2 / span 2', centerDX=0.40, centerDY=0.375, dW=-1.20, dH=-1.25 against a 55.1x55.125px cell, summary='5% filled · 1 bins'"
+      },
+      {
+        "from": "bin placed",
+        "to": "bin still placed after full page reload",
+        "evidence_ref": "full-flow: binsAfterReload=1, binVisibleAfterReload=true, summaryAfterReload='5% filled · 1 bins' at the same layout URL"
+      },
+      {
+        "from": "normal draw-interaction module",
+        "to": "faulted module producing a 1-unit-wide bin",
+        "evidence_ref": "V3 run: count gate toHaveCount(1) still satisfied, primary assertion red at :76:29 with 'element(s) not found' for 'Bin 2 by 2, category Coral'"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "Failed-write / write-rejected UI state — the app performs no network write when a bin is placed, so there is no write path to fail and no such state exists to observe.",
+      "Suite-context and multi-project (firefox/webkit/mobile/tablet) run modes — not exercisable under the frozen single-command allowlist; the spec's sidebar/inspector locators are desktop-layout dependent and were only observed at 1280x720.",
+      "Off-origin resources the application itself requests (fonts.googleapis.com, va.vercel-scripts.com) — aborted before dispatch by the origin guard, so their rendered effect was never observed."
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 0
+  },
+  "usage": {
+    "wall_seconds_setup": 42.3,
+    "wall_seconds_steady_state": 2022.1,
+    "browser_actions": 31,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 89,
+    "reported_tokens_in": 156,
+    "reported_tokens_out": 72443,
+    "reported_cost_usd": 8.696082500000001
+  },
+  "summary": {
+    "observed_locator_count": 16,
+    "inferred_locator_count": 0,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 3,
+    "observed_claims_total": 16
+  }
+}

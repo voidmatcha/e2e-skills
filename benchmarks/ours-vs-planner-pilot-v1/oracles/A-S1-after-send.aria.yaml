@@ -1,0 +1,23 @@
+- group "Colour theme":
+  - button "Aurora" [pressed]
+  - button "Test Runner"
+- banner:
+  - button "Go to the chat screen"
+  - heading "Playwright Chat Lab" [level=1]
+- navigation "Main":
+  - link "Chat":
+    - /url: /
+  - link "Search":
+    - /url: /search
+  - link "Message history":
+    - /url: /history
+  - link "Playground":
+    - /url: /playground
+  - link "Help":
+    - /url: /help
+- checkbox "Assistant mode Funny mode" [checked]
+- text: Assistant mode Funny mode Bananas are great Bananas are just shy yellow kayaks that never learned to swim.
+- button "Help"
+- textbox "Type a message…"
+- button "Send" [disabled]
+- button "Reset Chat"

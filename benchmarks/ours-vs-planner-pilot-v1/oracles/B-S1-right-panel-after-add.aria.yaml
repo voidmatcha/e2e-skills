@@ -1,0 +1,78 @@
+- complementary:
+  - button "Collapse right panel":
+    - img
+  - tablist:
+    - tab "Inspector" [selected]
+    - tab "History"
+  - tabpanel "Inspector":
+    - button "Bin Properties" [expanded]
+    - region "Bin Properties":
+      - heading "1×1 Bin" [level=2]
+      - button "Deselect bin"
+      - text: Width
+      - button "Decrease Width" [disabled]
+      - spinbutton "Width": "1"
+      - button "Increase Width"
+      - button "Swap width and depth"
+      - text: Depth
+      - button "Decrease Depth" [disabled]
+      - spinbutton "Depth": "1"
+      - button "Increase Depth"
+      - text: 42 × 42 × 21 mm
+      - button "Lock size"
+      - text: Height (mm)
+      - button "Decrease Bin height" [disabled]
+      - spinbutton "Bin height": "21"
+      - button "Increase Bin height"
+      - text: = 3u Clearance (mm)
+      - button "Decrease Bin clearance" [disabled]
+      - spinbutton "Bin clearance": "0"
+      - button "Increase Bin clearance"
+      - text: "= 0u Min 21mm: layer height · Max 84mm: remaining space Prints 25.4mm · stacks +20.65mm each"
+      - img
+      - text: 1×1 fits print bed (6×6mm) Category
+      - combobox "Bin category":
+        - option "Coral" [selected]
+        - option "Sky"
+        - option "Green"
+        - option "Cloud"
+        - option "Charcoal"
+      - text: Label
+      - combobox "Bin label"
+      - button "Search for 1×1 bin": Find STL
+      - text: Linked Design
+      - button "Create"
+      - button "Link":
+        - img
+        - text: Link
+      - text: Notes
+      - textbox "Bin notes":
+        - /placeholder: e.g., 2 dividers, STL link, contents
+      - text: 0/256 Custom Properties
+      - button "Add custom property": Add
+      - text: No custom properties
+      - button "To Stash"
+      - button "Delete"
+    - button "Bin List 1" [expanded]
+    - button "Copy bin list as TSV":
+      - img
+    - region "Bin List 1":
+      - table:
+        - rowgroup:
+          - row "Size H Qty Fil.":
+            - columnheader "Size"
+            - columnheader "H"
+            - columnheader "Qty"
+            - columnheader "Fil."
+        - rowgroup:
+          - row "Coral 1×1 3u 1 6.21":
+            - cell "Coral 1×1":
+              - img "Coral"
+              - text: 1×1
+            - cell "3u"
+            - cell "1"
+            - cell "6.21"
+      - text: Nozzle size
+      - spinbutton "Nozzle size": "0.4"
+      - text: mm Time~36m Cost$0.38 1 bins ~6.2m filament Spool 1.9%
+      - progressbar "Spool"

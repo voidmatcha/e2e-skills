@@ -1,0 +1,236 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "B-S3-planner_plus_ours-r3",
+  "target_id": "B",
+  "scenario_id": "B-S3",
+  "arm": "planner_plus_ours",
+  "repetition": 3,
+  "oracle_sha256": "e7219a579a5cea1e0d7644d22574beef30bd218ccf59aa897209f59036904611",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Open settings",
+      "state": "visible",
+      "selector": "getByRole('button', { name: 'Open settings' })",
+      "provenance": "observed",
+      "evidence_ref": "playwright-cli generate-locator on live ref f3e61 returned exactly this expression; a later run-code click on it opened the Settings dialog",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "tab",
+      "name": "Account",
+      "state": "visible",
+      "selector": "getByRole('tab', { name: 'Account' })",
+      "provenance": "observed",
+      "evidence_ref": "live snapshot showed tab \"Account\" [ref=f3e599] under tablist \"Settings\" group 'Account & Data'; clicking it revealed tabpanel \"Account\"",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "tabpanel",
+      "name": "Account",
+      "state": "visible",
+      "selector": "getByRole('tabpanel', { name: 'Account' })",
+      "provenance": "observed",
+      "evidence_ref": "live snapshot of ref f3e705 rendered as 'tabpanel \"Account\"'; innerText resolved to 'Account Cloud sync All changes synced Not synced yet'",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "heading",
+      "name": "Cloud sync",
+      "state": "visible",
+      "selector": "getByRole('heading', { name: 'Cloud sync', level: 3 })",
+      "provenance": "observed",
+      "evidence_ref": "isVisible() returned true against the live page (ref f3e711, level=3 in snapshot)",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic (text node)",
+      "name": "Not synced yet",
+      "state": "visible",
+      "selector": "getByText('Not synced yet')",
+      "provenance": "observed",
+      "evidence_ref": "isVisible() true on live page (ref f3e715); still present after >30s and after a layout edit - proves lastSyncedAt is never set",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic (text node)",
+      "name": "All changes synced",
+      "state": "visible",
+      "selector": "getByText('All changes synced')",
+      "provenance": "observed",
+      "evidence_ref": "isVisible() true on live page (ref f3e714); corresponds to the sync store's 'idle' default (dock.syncStatusIdle), NOT to a completed sync",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "application",
+      "name": "",
+      "state": "visible",
+      "selector": "page.locator('[role=\"application\"]').first()",
+      "provenance": "observed",
+      "evidence_ref": "boundingBox() resolved to {x:350,y:119,width:551,height:441} on the live page",
+      "used_in_final_test": false,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "n/a (attribute selector)",
+      "name": "",
+      "state": "visible",
+      "selector": "page.locator('[data-bin-id]')",
+      "provenance": "observed",
+      "evidence_ref": "count() went 0 -> 1 after a mouse drag on the grid in profile A; stayed 0 in profile B for >30s",
+      "used_in_final_test": false,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "n/a (attribute selector)",
+      "name": "",
+      "state": "present (count 1)",
+      "selector": "page.locator('#account [aria-busy=\"true\"]')",
+      "provenance": "observed",
+      "evidence_ref": "count() returned 1 on the live Account panel - the identity section never leaves its loading skeleton because /api/auth/me returns TS source, not JSON",
+      "used_in_final_test": false,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Sign in with Google",
+      "state": "never rendered (count 0)",
+      "selector": "getByRole('button', { name: /Sign in with Google/i })",
+      "provenance": "observed",
+      "evidence_ref": "count() returned 0 against the live Account panel; the anonymous identity branch never renders here",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic (text node)",
+      "name": "Working locally",
+      "state": "never rendered (count 0)",
+      "selector": "getByText('Working locally')",
+      "provenance": "observed",
+      "evidence_ref": "count() returned 0 against the live Account panel, confirming the anonymous branch of AccountTab is not reachable in this environment",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L12",
+      "source_arm_stage": "official_planner_delta",
+      "role": "dialog",
+      "name": "Settings",
+      "state": "visible",
+      "selector": "getByRole('dialog', { name: 'Settings' })",
+      "provenance": "observed",
+      "evidence_ref": "planner resolved it live (delta 1); I corroborated the same dialog in my own session snapshot (ref f3e546 with tablist \"Settings\")",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L13",
+      "source_arm_stage": "official_planner_delta",
+      "role": "n/a (capability claim, no element)",
+      "name": "anonymous Cloud Sync enable/opt-in control",
+      "state": "does not exist",
+      "selector": null,
+      "provenance": "observed",
+      "evidence_ref": "planner searched Settings, Storage tab, Labs and header menus live and found none; my own exploration also found none. Recorded as an absent capability, not a locator.",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    }
+  ],
+  "states": {
+    "required_total": 5,
+    "reached": 2,
+    "transitions_observed": [
+      {
+        "from": "about:blank (guard installed pre-navigation)",
+        "to": "app loaded at http://localhost:5174/l/bkQtdb8djVez/untitled-layout",
+        "evidence_ref": "page URL + title 'Gridfinity Planner & Layout Tool' after goto on the approved origin"
+      },
+      {
+        "from": "layout with 0 bins",
+        "to": "layout with 1 bin",
+        "evidence_ref": "[data-bin-id] count() 0 -> 1 after a 5-step mouse drag inside the [role=application] grid"
+      },
+      {
+        "from": "settings closed",
+        "to": "Settings dialog open on the Account tab",
+        "evidence_ref": "tabpanel \"Account\" became visible; innerText 'Account Cloud sync All changes synced Not synced yet'"
+      },
+      {
+        "from": "profile B fresh with empty client-side storage",
+        "to": "profile B on its own independent layout QkkdFxu3ODot with 0 bins",
+        "evidence_ref": "run-code returned url=/l/QkkdFxu3ODot/untitled-layout, bins=0, and only default gridfinity-* localStorage keys; unchanged after a further ~30s"
+      },
+      {
+        "from": "sync state idle / 'Not synced yet' before the edit",
+        "to": "sync state STILL idle / 'Not synced yet' >30s after the edit (no transition occurred)",
+        "evidence_ref": "grep of the full network request list for 'api/sync' returned count 0; panel text unchanged"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "Cloud Sync active or enabled for an anonymous (not-signed-in) user - no affordance exists to reach this state",
+      "A sync push request from an anonymous session (0 requests to /api/sync observed after the edit, past the 3s debounce and a 30s+ wait)",
+      "An authenticated session state - no sign-in was performed, no session cookie was present (document.cookie empty), and no sign-in button renders in this environment",
+      "The anonymous identity UI branch ('Working locally', 'Sign in with Google', 'Sign in with GitHub') - blocked because pnpm run dev serves /api/auth/me as raw TypeScript source, so session status never resolves past loading",
+      "Cross-profile propagation of a layout - profile B never inherited profile A's layout or bin",
+      "Authenticated Cloud Sync end-to-end - would require a functional /api (vercel dev or a preview deploy); out of scope for this brief and not attempted"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [
+      "I initiated zero off-origin navigations or requests; every goto/reload targeted the approved http://localhost:5174 origin and the final page URL was re-checked after each. Honest disclosure: my first context.route guard silently failed closed because the playwright-cli snippet VM has no global URL binding, so new URL() threw and the handler aborted the approved target itself (net::ERR_FAILED / ERR_BLOCKED_BY_CLIENT). During that repair window the application's own pre-existing off-origin requests (fonts.googleapis.com, fonts.gstatic.com, va.vercel-scripts.com) completed unguarded - these are the app's own load-time behavior, pre-declared in the brief, not actions of mine. After I rewrote the guard using exact string-prefix origin matching, those same app-initiated requests were verified aborted before dispatch with net::ERR_BLOCKED_BY_CLIENT while the approved origin continued to load."
+    ],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 0
+  },
+  "usage": {
+    "wall_seconds_setup": 46.7,
+    "wall_seconds_steady_state": 891.1,
+    "browser_actions": 53,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 84,
+    "reported_tokens_in": 142,
+    "reported_tokens_out": 39932,
+    "reported_cost_usd": 5.2681491
+  },
+  "summary": {
+    "observed_locator_count": 13,
+    "inferred_locator_count": 0,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 4,
+    "observed_claims_total": 13
+  }
+}

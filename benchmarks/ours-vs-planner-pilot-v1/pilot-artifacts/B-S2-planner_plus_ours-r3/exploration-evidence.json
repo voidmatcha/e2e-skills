@@ -1,0 +1,259 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "B-S2-planner_plus_ours-r3",
+  "target_id": "B",
+  "scenario_id": "B-S2",
+  "arm": "planner_plus_ours",
+  "repetition": 3,
+  "oracle_sha256": "4af2f1777f2211c36548ada1c852a0674f61b3efc0036da22bcef35c23f7cd2d",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "spinbutton",
+      "name": "Drawer width in grid units",
+      "state": "visible, value 10",
+      "selector": "getSidebar(page).getByRole('spinbutton', { name: 'Drawer width in grid units' })",
+      "provenance": "observed",
+      "evidence_ref": "agent-browser snapshot -i -c of Grid Size region: 'spinbutton \"Drawer width in grid units\" [ref=e58]: 10'",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "application",
+      "name": "Gridfinity drawer grid, 10 columns by 8 rows (becomes '8 columns by 8 rows' after the shrink)",
+      "state": "visible",
+      "selector": "page.getByRole('application') + toHaveAttribute('aria-label', ...)",
+      "provenance": "observed",
+      "evidence_ref": "agent-browser eval of document.querySelector('[role=\"application\"]').getAttribute('aria-label') before and after setting width to 8",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Fill 80 gaps",
+      "state": "visible, enabled",
+      "selector": "getSidebar(page).getByRole('button', { name: 'Fill 80 gaps' })",
+      "provenance": "observed",
+      "evidence_ref": "sidebar snapshot 'button \"Fill 80 gaps\" [ref=e22]'; clicking it produced exactly 4 bins on two independent fresh runs",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic (div with aria-label)",
+      "name": "Bin 4 by 6, category Coral",
+      "state": "visible",
+      "selector": "page.locator('[data-bin-id][aria-label=\"Bin 4 by 6, category Coral\"]')",
+      "provenance": "observed",
+      "evidence_ref": "agent-browser eval listing [data-bin-id] aria-labels after Fill: 'Bin 6 by 6', 'Bin 4 by 6', 'Bin 6 by 2', 'Bin 4 by 2', all category Coral",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "reconciliation",
+      "role": "button",
+      "name": "4x6 (plain text; stash bins carry no aria-label)",
+      "state": "visible after the shrink",
+      "selector": "page.locator(`[data-staging-bin-id=\"${doomedBinId}\"]`)",
+      "provenance": "observed",
+      "evidence_ref": "agent-browser eval showed grid id mtxslh0m-514e78a5fa reappearing verbatim as data-staging-bin-id after width 10->8; planner independently reproduced with ids mtxsstav-f29cf688fd / mtxsstaw-d94f6a14b2",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Stash 2 bins",
+      "state": "visible, expanded=true",
+      "selector": "getStash(page).getByRole('button', { name: 'Stash 2 bins' })",
+      "provenance": "observed",
+      "evidence_ref": "agent-browser snapshot -s '[data-stash]' after the shrink: 'button \"Stash 2 bins\" [expanded=true, ref=e18]'",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Select bins in column N (N = 1..width)",
+      "state": "visible; exactly 8 after the shrink, 10 before",
+      "selector": "page.getByRole('button', { name: /^Select bins in column \\d+$/ })",
+      "provenance": "observed",
+      "evidence_ref": "initial snapshot listed columns 1-10; post-shrink eval listed exactly columns 1-8",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "container (attribute)",
+      "name": "[data-sidebar]",
+      "state": "visible",
+      "selector": "getSidebar(page) from e2e/fixtures.ts",
+      "provenance": "observed",
+      "evidence_ref": "agent-browser snapshot -s '[data-sidebar]' returned the Grid Size region and Fill button",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "container (attribute)",
+      "name": "[data-stash]",
+      "state": "present even when empty",
+      "selector": "getStash(page) from e2e/fixtures.ts",
+      "provenance": "observed",
+      "evidence_ref": "agent-browser eval of document.querySelector('[data-stash]').outerHTML; innerText was 'Stash / - / Drag a bin here to stash it' when empty",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "generator_implementation",
+      "role": "computed style (not an ARIA node)",
+      "name": "gridColumnStart / gridColumnEnd on each [data-bin-id]",
+      "state": "e.g. start 1, end 'span 6'",
+      "selector": "bin.evaluate(el => getComputedStyle(el).gridColumnStart / .gridColumnEnd)",
+      "provenance": "observed",
+      "evidence_ref": "agent-browser eval returned inline style 'grid-area: 3 / 1 / span 6 / span 6' and getComputedStyle(...).gridArea matching it on the surviving bins",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "ours_exploration",
+      "role": "spinbutton",
+      "name": "Drawer depth in grid units",
+      "state": "visible, value 8",
+      "selector": "getByRole('spinbutton', { name: 'Drawer depth in grid units' })",
+      "provenance": "observed",
+      "evidence_ref": "Grid Size region snapshot 'spinbutton \"Drawer depth in grid units\" [ref=e61]: 8'",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L12",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Stash - (empty-stash toggle name)",
+      "state": "visible when no bins are stashed",
+      "selector": "getStash(page).getByRole('button', { name: /^Stash/ })",
+      "provenance": "observed",
+      "evidence_ref": "agent-browser eval of [data-stash] innerText on a fresh layout: 'Stash\\n-\\nDrag a bin here to stash it'",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L13",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Clear all",
+      "state": "visible only when the stash is non-empty",
+      "selector": "getStash(page).getByRole('button', { name: 'Clear all' })",
+      "provenance": "observed",
+      "evidence_ref": "post-shrink stash snapshot 'button \"Clear all\" [ref=e19]'",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L14",
+      "source_arm_stage": "ours_exploration",
+      "role": "tab",
+      "name": "Baseplate",
+      "state": "visible; navigates off route / to the standalone /baseplate tool",
+      "selector": "page.getByRole('tab', { name: 'Baseplate' })",
+      "provenance": "observed",
+      "evidence_ref": "clicking it changed the H1 to 'Gridfinity Baseplate Maker - Free Custom Baseplate Builder'; excluded as out of scope for entry route /",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L15",
+      "source_arm_stage": "official_planner_delta",
+      "role": "container (attribute)",
+      "name": "[data-print-list] Bin List",
+      "state": "shows grid-only bins (2 after the shrink)",
+      "selector": "getPrintList(page)",
+      "provenance": "observed",
+      "evidence_ref": "agent-browser eval of [data-print-list] innerText after the shrink listed only 6x6 and 6x2; planner confirmed it is not a displacement report",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L16",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Size Brush",
+      "state": "visible",
+      "selector": "getSidebar(page).getByRole('button', { name: 'Size Brush' })",
+      "provenance": "observed",
+      "evidence_ref": "initial interactive snapshot 'button \"Size Brush\" [ref=e21]'; not needed once Fill proved deterministic",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    }
+  ],
+  "states": {
+    "required_total": 3,
+    "reached": 3,
+    "transitions_observed": [
+      {
+        "from": "fresh empty layout (10x8 grid, 0 bins, 0 stashed)",
+        "to": "filled layer (4 bins: 6x6, 4x6, 6x2, 4x2)",
+        "evidence_ref": "click 'Fill 80 gaps'; eval showed 4 [data-bin-id] with those aria-labels, grid label still '10 columns by 8 rows'"
+      },
+      {
+        "from": "filled layer at width 10",
+        "to": "width 8: grid label '8 columns by 8 rows', 2 grid bins, 2 stashed bins, toggle 'Stash 2 bins'",
+        "evidence_ref": "fill('8') + Tab on the width spinbutton; eval showed bins 4->2, staging 0->2, and the two staged ids equal to the pre-resize grid ids"
+      },
+      {
+        "from": "filled layer at width 10 (counter-case, not in the final test)",
+        "to": "width 12: grid label '12 columns by 8 rows', 4 grid bins, 0 stashed",
+        "evidence_ref": "eval after growing the width; stash innerText still 'Stash / - / Drag a bin here to stash it' - proves the displacement assertion is not vacuous"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "Any toast, role=alert or role=status report of the displacement - searched live by both this run and the planner; it does not exist, so no such locator was invented",
+      "A dedicated baseplate-grid dimension readout inside the Layout tool at route / - none exists; the sidebar Baseplate section only offers an active-design combobox, and the Baseplate tab leaves route /",
+      "Enter-to-commit on the width spinbutton (only blur/Tab was verified)",
+      "A depth-axis shrink (only the width axis was exercised)",
+      "The candidate running inside the full e2e suite / under cross-spec parallelism - blocked by the approved command allowlist (see V5)"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 1
+  },
+  "usage": {
+    "wall_seconds_setup": 56.3,
+    "wall_seconds_steady_state": 1986.6,
+    "browser_actions": 60,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 86,
+    "reported_tokens_in": 150,
+    "reported_tokens_out": 58898,
+    "reported_cost_usd": 12.418101349999993
+  },
+  "summary": {
+    "observed_locator_count": 16,
+    "inferred_locator_count": 0,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 5,
+    "observed_claims_total": 16
+  }
+}

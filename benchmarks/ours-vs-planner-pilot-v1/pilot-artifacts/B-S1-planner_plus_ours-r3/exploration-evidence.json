@@ -1,0 +1,258 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "B-S1-planner_plus_ours-r3",
+  "target_id": "B",
+  "scenario_id": "B-S1",
+  "arm": "planner_plus_ours",
+  "repetition": 3,
+  "oracle_sha256": "ababe741ce08d1374a2c1f607d9d2cbaa9eff4b136c9eaf5baa232e814d53bb2",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "application",
+      "name": "Gridfinity drawer grid, 10 columns by 8 rows",
+      "state": "visible",
+      "selector": "page.getByRole('application', { name: 'Gridfinity drawer grid, 10 columns by 8 rows' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot node 'application \"Gridfinity drawer grid, 10 columns by 8 rows\" [ref=f2e388]'; getByRole count = 1; boundingBox 551x441",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Bin 2 by 2, category Coral",
+      "state": "visible|pressed",
+      "selector": "grid.getByRole('button', { name: 'Bin 2 by 2, category Coral' })",
+      "provenance": "observed",
+      "evidence_ref": "outerHTML aria-label=\"Bin 2 by 2, category Coral\" aria-pressed=\"true\"; snapshot node 'button \"Bin 2 by 2, category Coral\" [pressed]'",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "visible",
+      "selector": "getSidebar(page).getByText(/% filled/)",
+      "provenance": "observed",
+      "evidence_ref": "count = 1 in both states; textContent '0% filled · 0 bins' before, '5% filled · 1 bins' after; parent HTML <span>5% filled · 1 bins</span>",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "reconciliation",
+      "role": "region",
+      "name": "Bin List (becomes 'Bin List 1' once bins exist)",
+      "state": "visible",
+      "selector": "page.getByRole('region', { name: /^Bin List/ })",
+      "provenance": "observed",
+      "evidence_ref": "aria-labelledby target innerText 'Bin List\\n1' after add; getByRole exact:true count = 0, /^Bin List/ count = 1",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "row",
+      "name": "/2×2/",
+      "state": "visible",
+      "selector": "binList.getByRole('row', { name: /2×2/ })",
+      "provenance": "observed",
+      "evidence_ref": "rows count = 2 (header + data); data row innerText '2×2|\\t3u\\t1\\t21.45'; filtered count = 1",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "cell",
+      "name": "",
+      "state": "visible",
+      "selector": "binListRow.getByRole('cell') → .first() / .nth(2)",
+      "provenance": "observed",
+      "evidence_ref": "cell texts ['2×2','3u','1','21.45']; real <table> markup with Size/H/Qty/Fil. headers",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "count 0 → 1",
+      "selector": "grid.locator('[data-bin-id]')",
+      "provenance": "observed",
+      "evidence_ref": "count 0 on fresh load, 1 after the drag, 2 after a second click; data-bin-id=\"mtxp5ey4-fb11611f42\" read from DOM",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "visible",
+      "selector": "[data-sidebar] (via getSidebar fixture)",
+      "provenance": "observed",
+      "evidence_ref": "innerText 'Tools / Size Brush / Fill 76 gaps / Clear 1 bins / Layers / … 5% filled · 1 bins …'",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "visible (empty state)",
+      "selector": "binList → text 'No bins to print'",
+      "provenance": "observed",
+      "evidence_ref": "Bin List region innerText 'No bins to print\\n\\nAdd bins to the grid to see the print list' before any bin",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "ours_exploration",
+      "role": "banner",
+      "name": "",
+      "state": "visible",
+      "selector": "header (via waitForAppReady fixture)",
+      "provenance": "observed",
+      "evidence_ref": "snapshot node 'banner [ref=f2e6]'; waitForSelector('header') resolved on every navigation",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Bin 1 by 1, category Coral",
+      "state": "pressed",
+      "selector": "page.locator('[data-bin-id]') after a single grid click",
+      "provenance": "observed",
+      "evidence_ref": "outerHTML aria-label=\"Bin 1 by 1, category Coral\", grid-area 1/1/span 1/span 1 after clicking the top-left cell",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L12",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Fill 80 gaps → Fill 76 gaps / Clear layer (disabled) → Clear 1 bins",
+      "state": "enabled|disabled",
+      "selector": "getSidebar(page).getByRole('button', { name: /Fill \\d+ gaps/ })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot before: 'button \"Fill 80 gaps\"', 'button \"Clear layer\" [disabled]'; after: 'button \"Fill 79 gaps\"', 'button \"Clear 1 bins\"'",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L13",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Coral (selected for new bins)",
+      "state": "pressed",
+      "selector": "getSidebar(page).getByRole('button', { name: 'Coral (selected for new bins)' })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot node 'button \"Coral (selected for new bins)\" [pressed] [ref=f2e143]' — explains the default category in L2's name",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L14",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Undo (⌘+Z)",
+      "state": "disabled (empty layout)",
+      "selector": "page.getByRole('button', { name: /undo/i })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot node 'button \"Undo (⌘+Z)\" [disabled]' on the fresh empty layout",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L15",
+      "source_arm_stage": "official_planner_delta",
+      "role": "button",
+      "name": "Undo (⌘+Z)",
+      "state": "enabled after adding a bin",
+      "selector": "page.getByRole('button', { name: /undo/i })",
+      "provenance": "inferred",
+      "evidence_ref": null,
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L16",
+      "source_arm_stage": "official_planner_delta",
+      "role": "",
+      "name": "Saving... / Saved (transient header status)",
+      "state": "transient",
+      "selector": null,
+      "provenance": "inferred",
+      "evidence_ref": null,
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    }
+  ],
+  "states": {
+    "required_total": 3,
+    "reached": 3,
+    "transitions_observed": [
+      {
+        "from": "fresh profile, empty storage, no layout",
+        "to": "new empty layout at /l/<id>/untitled-layout",
+        "evidence_ref": "URL rewrite observed; 0 [data-bin-id]; summary '0% filled · 0 bins'; Bin List 'No bins to print'"
+      },
+      {
+        "from": "empty new layout",
+        "to": "one 2x2 bin placed on the baseplate",
+        "evidence_ref": "pointer drag across two cells → bin count 0→1, aria-label 'Bin 2 by 2, category Coral', bin box (466,290,98→109px) inside grid box and covering both dragged cell centres"
+      },
+      {
+        "from": "one bin placed",
+        "to": "layout summary reflects it",
+        "evidence_ref": "sidebar span '0% filled · 0 bins' → '5% filled · 1 bins'; Bin List row 2×2/3u/1/21.45; a second bin moved it to '6% filled · 2 bins'"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "failed-persistence UI (the app issues no HTTP write; a forced IndexedDB failure was not probed)",
+      "the transient 'Saving...'/'Saved' header indicator (planner-reported only; not resolved by the implementer)",
+      "Undo button in the enabled state after adding a bin (planner-reported only; the delta was returned to the approval gate)",
+      "suite-context and parallel-worker execution of the candidate (command allowlist permits only the single-spec run)"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 0
+  },
+  "usage": {
+    "wall_seconds_setup": 53.7,
+    "wall_seconds_steady_state": 1631.1,
+    "browser_actions": 31,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 85,
+    "reported_tokens_in": 154,
+    "reported_tokens_out": 75228,
+    "reported_cost_usd": 9.40534665
+  },
+  "summary": {
+    "observed_locator_count": 14,
+    "inferred_locator_count": 2,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 4,
+    "observed_claims_total": 14
+  }
+}

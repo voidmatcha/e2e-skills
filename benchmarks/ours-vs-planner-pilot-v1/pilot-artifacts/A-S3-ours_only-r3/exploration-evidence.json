@@ -1,0 +1,190 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "A-S3-ours_only-r3",
+  "target_id": "A",
+  "scenario_id": "A-S3",
+  "arm": "ours_only",
+  "repetition": 3,
+  "oracle_sha256": "541a15fec6949a14ece3e258b5eee87d903806769c3095354e9edb7d4d563ef0",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "textbox",
+      "name": "Type a message…",
+      "state": "visible",
+      "selector": "getByPlaceholder('Type a message…')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot of / : 'textbox \"Type a message…\" [ref=f6e28]'; filled successfully, CLI echoed getByTestId('chat-input').fill('Hello there!')",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Send",
+      "state": "disabled when input empty, enabled after fill",
+      "selector": "getByRole('button', { name: 'Send' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot 'button \"Send\" [disabled] [ref=f6e29]' in empty state; click succeeded after fill, producing the assistant reply",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Reset Chat",
+      "state": "visible",
+      "selector": "getByRole('button', { name: 'Reset Chat' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot of / ; DOM button inventory entry 'Reset Chat | testid=reset-button'",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "checkbox",
+      "name": "Assistant mode Funny mode",
+      "state": "checked",
+      "selector": "getByRole('checkbox', { name: /funny mode/i })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot of / : 'checkbox \"Assistant mode Funny mode\" [checked] [ref=f1e22]'",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Delete history",
+      "state": "disabled with empty history",
+      "selector": "getByRole('button', { name: 'Delete history' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot of /history : 'button \"Delete history\" [disabled] [ref=f2e24]'",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "link",
+      "name": "Message history",
+      "state": "visible",
+      "selector": "getByRole('link', { name: 'Message history' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot navigation \"Main\" on all five routes, /url: /history",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Help",
+      "state": "visible",
+      "selector": "getByRole('button', { name: 'Help' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot of / ; DOM inventory 'Help | testid=help-suggestion'",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Aurora / Test Runner (theme)",
+      "state": "Aurora pressed",
+      "selector": "getByRole('button', { name: 'Aurora' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot group \"Colour theme\" : 'button \"Aurora\" [pressed]'; DOM testid=theme-aurora",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Export as PDF (or any export/download control)",
+      "state": null,
+      "selector": null,
+      "provenance": "unknown",
+      "evidence_ref": "SEARCHED AND ABSENT: playwright-cli find for 'export','pdf','download','print' each returned 'No matches found' on the chat screen with a live conversation; DOM regex scan over text and all attributes returned hits:[]; a[download] and a[href$='.pdf'] returned anchors:[]",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "ours_exploration",
+      "role": "button/link",
+      "name": "Sign in / Sign out / Account / Profile",
+      "state": null,
+      "selector": null,
+      "provenance": "unknown",
+      "evidence_ref": "SEARCHED AND ABSENT: find for 'sign in','sign out','account','profile' each returned 'No matches found'; DOM scan for sign in|sign out|logout|login returned hits:[]; localStorage keys were only ['ai-assistant-chat-history-v1','chat-lab:theme'], sessionStorage empty, document.cookie empty",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    }
+  ],
+  "states": {
+    "required_total": 4,
+    "reached": 2,
+    "transitions_observed": [
+      {
+        "from": "app not loaded",
+        "to": "chat screen, empty conversation ('No messages yet.')",
+        "evidence_ref": "goto http://[::1]:5174/ → final URL verified, title 'Playwright Chat Lab', ARIA snapshot showed paragraph 'No messages yet.'"
+      },
+      {
+        "from": "chat screen, empty conversation",
+        "to": "chat screen, populated conversation",
+        "evidence_ref": "fill 'Hello there!' + click Send → ARIA snapshot showed user bubble 'Hello there!' and assistant bubble 'GENERAL KENOBI!!' with img 'General Grievous reaction'"
+      },
+      {
+        "from": "chat screen",
+        "to": "/history with stored conversation",
+        "evidence_ref": "goto /history → DOM inventory showed only 'Delete history'; localStorage key ai-assistant-chat-history-v1 present"
+      },
+      {
+        "from": "goto /export",
+        "to": "chat screen (fallback redirect)",
+        "evidence_ref": "location.pathname evaluated to '/' after navigating to /export, proving no export route exists"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "signed-in user — the application has no authentication; this state is unreachable, not merely unobserved",
+      "export-triggered / download-in-progress — no control exists on the chat screen to initiate it",
+      "PDF download completed (Playwright 'download' event with a .pdf suffixed filename) — no download can be produced by the application"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 1
+  },
+  "usage": {
+    "wall_seconds_setup": 7.5,
+    "wall_seconds_steady_state": 305.6,
+    "browser_actions": 35,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 45,
+    "reported_tokens_in": 78,
+    "reported_tokens_out": 20491,
+    "reported_cost_usd": 2.099989
+  },
+  "summary": {
+    "observed_locator_count": 8,
+    "inferred_locator_count": 0,
+    "unknown_locator_count": 2,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 7,
+    "observed_claims_total": 8
+  }
+}

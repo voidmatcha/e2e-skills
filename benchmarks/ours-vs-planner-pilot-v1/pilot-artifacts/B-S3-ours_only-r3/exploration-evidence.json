@@ -1,0 +1,245 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "B-S3-ours_only-r3",
+  "target_id": "B",
+  "scenario_id": "B-S3",
+  "arm": "ours_only",
+  "repetition": 3,
+  "oracle_sha256": "e7219a579a5cea1e0d7644d22574beef30bd218ccf59aa897209f59036904611",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Open settings",
+      "state": "visible",
+      "selector": "getByRole('button', { name: 'Open settings' })",
+      "provenance": "observed",
+      "evidence_ref": "root ARIA snapshot of http://localhost:5174/ (header controls); clicking it opened dialog 'Settings'",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "tab",
+      "name": "Account",
+      "state": "visible",
+      "selector": "getByRole('tab', { name: 'Account' })",
+      "provenance": "observed",
+      "evidence_ref": "Settings dialog tablist snapshot, group 'Account & Data'; click rendered tabpanel 'Account'",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "heading",
+      "name": "Cloud sync",
+      "state": "visible",
+      "selector": "getByRole('heading', { name: 'Cloud sync', level: 3 })",
+      "provenance": "observed",
+      "evidence_ref": "tabpanel 'Account' snapshot after clicking the Account tab",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic",
+      "name": "All changes synced",
+      "state": "visible",
+      "selector": "getByText('All changes synced')",
+      "provenance": "observed",
+      "evidence_ref": "tabpanel 'Account' snapshot; renders from sync status store default 'idle' with no engine running — deliberately NOT used, it would be a tautological assertion",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic",
+      "name": "Not synced yet",
+      "state": "visible",
+      "selector": "getByText('Not synced yet')",
+      "provenance": "observed",
+      "evidence_ref": "tabpanel 'Account' snapshot; lastSyncedAt is null because no sync ever occurs while anonymous",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Share layout",
+      "state": "visible",
+      "selector": "getByRole('button', { name: 'Share layout' })",
+      "provenance": "observed",
+      "evidence_ref": "root snapshot header; click opened dialog 'Share Layout'",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "combobox",
+      "name": "Anyone with link can",
+      "state": "visible, selected option 'Anyone with link can view'",
+      "selector": "getByRole('combobox', { name: 'Anyone with link can' })",
+      "provenance": "observed",
+      "evidence_ref": "dialog 'Share Layout' snapshot",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Create share link",
+      "state": "visible",
+      "selector": "getByRole('button', { name: 'Create share link' })",
+      "provenance": "observed",
+      "evidence_ref": "dialog 'Share Layout' snapshot; clicking it issued POST http://localhost:5174/api/share => 404 (playwright-cli requests + console error), no link produced",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "tab",
+      "name": "Labs",
+      "state": "visible",
+      "selector": "getByRole('tab', { name: 'Labs' })",
+      "provenance": "observed",
+      "evidence_ref": "Settings dialog tablist group 'Advanced'; click rendered tabpanel 'Labs'",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Now for everyone (15)",
+      "state": "visible",
+      "selector": "getByRole('button', { name: 'Now for everyone (15)' })",
+      "provenance": "observed",
+      "evidence_ref": "tabpanel 'Labs' snapshot; click expanded the graduated-features list",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic",
+      "name": "Cloud Sync (sign in)",
+      "state": "visible, labelled 'Now available for everyone'",
+      "selector": "getByText('Cloud Sync (sign in)')",
+      "provenance": "observed",
+      "evidence_ref": "playwright-cli find 'Cloud Sync' inside expanded Labs graduated list — the live label itself states sign-in is required",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L12",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Sign in with Google",
+      "state": "never rendered in this session",
+      "selector": "getByRole('button', { name: 'Sign in with Google' })",
+      "provenance": "inferred",
+      "evidence_ref": null,
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L13",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Sign in with GitHub",
+      "state": "never rendered in this session",
+      "selector": "getByRole('button', { name: 'Sign in with GitHub' })",
+      "provenance": "inferred",
+      "evidence_ref": null,
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L14",
+      "source_arm_stage": "ours_exploration",
+      "role": "status",
+      "name": "Working locally · Sign in to sync",
+      "state": "never rendered in this session (UserDock returns null while session status is 'unknown')",
+      "selector": "getByRole('status', { name: /Sign in to sync/ })",
+      "provenance": "inferred",
+      "evidence_ref": null,
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    }
+  ],
+  "states": {
+    "required_total": 4,
+    "reached": 1,
+    "transitions_observed": [
+      {
+        "from": "cold load of /",
+        "to": "app ready, auto-created 'Untitled layout' at /l/P0Mc6gLVDYd2/untitled-layout",
+        "evidence_ref": "root ARIA snapshot with role=application grid, header controls, layer/category panels"
+      },
+      {
+        "from": "app ready",
+        "to": "Settings dialog open",
+        "evidence_ref": "click 'Open settings' → dialog with heading 'Settings' and tablist 'Settings'"
+      },
+      {
+        "from": "Settings/General",
+        "to": "Settings/Account (anonymous)",
+        "evidence_ref": "tabpanel 'Account' showed heading 'Cloud sync' plus an empty aria-busy identity skeleton — no sign-in controls, session status 'unknown'"
+      },
+      {
+        "from": "Settings/Account",
+        "to": "Settings/Labs graduated list expanded",
+        "evidence_ref": "click 'Labs' then 'Now for everyone (15)' → entry 'Cloud Sync (sign in)'"
+      },
+      {
+        "from": "app ready",
+        "to": "Share Layout dialog → failed share creation",
+        "evidence_ref": "click 'Create share link' → POST /api/share 404, dialog dismissed with no link and no share state"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "anonymous Cloud Sync transport active (does not exist — engine gated on status==='authenticated')",
+      "authenticated session / signed-in user (no auth backend under pnpm run dev; /api/auth/me returns the SPA bundle)",
+      "sign-in affordances (AccountTab local-mode block and UserDock never rendered because session status stayed 'unknown')",
+      "second browser profile receiving profile A's layout automatically",
+      "a successfully created cloud share link (POST /api/share → 404 in this environment)"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 0
+  },
+  "usage": {
+    "wall_seconds_setup": 51.8,
+    "wall_seconds_steady_state": 497.7,
+    "browser_actions": 28,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 61,
+    "reported_tokens_in": 100,
+    "reported_tokens_out": 24828,
+    "reported_cost_usd": 3.3844320000000008
+  },
+  "summary": {
+    "observed_locator_count": 11,
+    "inferred_locator_count": 3,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 3,
+    "observed_claims_total": 11
+  }
+}

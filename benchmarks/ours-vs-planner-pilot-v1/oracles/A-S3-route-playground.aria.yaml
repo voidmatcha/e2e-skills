@@ -1,0 +1,93 @@
+- group "Colour theme":
+  - button "Aurora" [pressed]
+  - button "Test Runner"
+- banner:
+  - button "Go to the chat screen"
+  - heading "Playwright Chat Lab" [level=1]
+- navigation "Main":
+  - link "Chat":
+    - /url: /
+  - link "Search":
+    - /url: /search
+  - link "Message history":
+    - /url: /history
+  - link "Playground":
+    - /url: /playground
+  - link "Help":
+    - /url: /help
+- heading "Playground" [level=2]
+- paragraph: Interactive elements — slider, drag and drop, modal, video player, calendar, filter, and an image gallery — for practicing Playwright locators, actions, and assertions beyond the Chat screens.
+- heading "Image gallery" [level=3]
+- img "Hero illustration"
+- paragraph: Hero illustration
+- button [pressed]
+- button
+- button
+- button
+- heading "Video player" [level=3]
+- button "Play"
+- button "Unmute" [pressed]
+- text: 0.0s
+- heading "Calendar" [level=3]
+- button "Previous month": ‹
+- text: September 2026
+- button "Next month": ›
+- text: Su Mo Tu We Th Fr Sa
+- button "1"
+- button "2"
+- button "3"
+- button "4"
+- button "5"
+- button "6"
+- button "7"
+- button "8"
+- button "9"
+- button "10"
+- button "11"
+- button "12"
+- button "13"
+- button "14"
+- button "15"
+- button "16"
+- button "17"
+- button "18"
+- button "19"
+- button "20"
+- button "21"
+- button "22"
+- button "23"
+- button "24"
+- button "25"
+- button "26"
+- button "27"
+- button "28"
+- button "29"
+- button "30"
+- paragraph: No date selected
+- heading "Filter" [level=3]
+- searchbox "Filter by title…"
+- button "frontend"
+- button "backend"
+- button "testing"
+- button "design"
+- list:
+  - listitem: Responsive navbar frontend
+  - listitem: Auth middleware backend
+  - listitem: Locator strategy guide testing
+  - listitem: Color palette tokens design
+  - listitem: Drag and drop board frontend
+- heading "Slider" [level=3]
+- text: Volume
+- slider "Volume": "50"
+- button "Reset" [disabled]
+- text: 50%
+- heading "Modal window" [level=3]
+- button "Open modal"
+- heading "Drag and drop" [level=3]
+- list:
+  - listitem: Apple
+  - listitem: Banana
+  - listitem: Cherry
+- paragraph: Drop here
+- list
+- button "Reset" [disabled]

@@ -1,0 +1,3340 @@
+{
+  "schema_version": 1,
+  "spdx_license_identifier": "Apache-2.0",
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "protocol_sha256": "a8cff0c259fb7381f6767b310011a2e595ecfbfa26c27b15ad56c7f29f3251fc",
+  "stage": "smoke_cells",
+  "scored": false,
+  "excluded_from_every_denominator": true,
+  "smoke_scenario": "the application shell loads and the primary navigation is visible",
+  "frozen_scenarios_touched": false,
+  "freeze_record_written": false,
+  "started_at": "2026-09-11T03:39:22+00:00",
+  "finished_at": "2026-09-11T06:27:11+00:00",
+  "host": {
+    "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+    "claude_executable": "/Users/user/.local/share/claude/versions/2.1.268",
+    "claude_version": "2.1.268 (Claude Code)",
+    "protocol_minimum_version": "2.1.268 (Claude Code), recorded 2026-09-11 via `claude --version`. version_policy remains minimum per execution_identity above -- this is the floor observed at preparation time, re-verify and update at actual freeze if time has passed.",
+    "claude_version_meets_minimum": true,
+    "model": "claude-opus-5",
+    "node_bin": "/Users/user/.nvm/versions/node/v24.20.0/bin",
+    "node_version": "v24.20.0",
+    "port_substitution": {
+      "chosen_port": 5174,
+      "search_start": 5174,
+      "rejected": {},
+      "upstream_port": 5173,
+      "operator_decision": "do not touch this machine's Tailscale networking (a tailscale serve route holds 5173 on the tailnet address); patch each disposable checkout's playwright.config.ts and vite.config.ts to the chosen port instead; 5174 requested, first free port >= 5174 used",
+      "patched_files_per_checkout": [
+        "playwright.config.ts",
+        "vite.config.ts"
+      ]
+    },
+    "host_settings_sha256_before": "5c26ac3a0dc9e53e974244b43a2d92e52bd3c8f476a8055243efdd8003abc42d",
+    "host_settings_sha256_after": "5c26ac3a0dc9e53e974244b43a2d92e52bd3c8f476a8055243efdd8003abc42d",
+    "session_flags": [
+      "-p",
+      "--output-format json",
+      "--setting-sources user (runner-home only)",
+      "--strict-mcp-config",
+      "--dangerously-skip-permissions",
+      "--model claude-opus-5",
+      "--max-turns 250",
+      "--max-budget-usd 40",
+      "planner arm: --mcp-config <workspace>/.mcp.json --agents <init-agents definitions>"
+    ],
+    "session_timeouts_s": {
+      "ours_only": 1800,
+      "planner_plus_ours": 2400
+    },
+    "isolation": "fresh runner HOME per cell (skills staged from ./skills), fresh blobless checkout per cell, REVIEWER.clean_env allowlist + Node 24 bin fronted, single OAuth token from keychain via REVIEWER.claude_runner_credentials, output capped by REVIEWER.communicate_bounded",
+    "shared_caches": {
+      "npm": "/private/tmp/claude-501/-Users-user-Documents-e2e-skills/bdab4ab8-0929-498d-8dc4-243b2df6b804/scratchpad/npm-cache",
+      "pnpm": "/private/tmp/claude-501/-Users-user-Documents-e2e-skills/bdab4ab8-0929-498d-8dc4-243b2df6b804/scratchpad/pnpm-store",
+      "corepack": "/private/tmp/claude-501/-Users-user-Documents-e2e-skills/bdab4ab8-0929-498d-8dc4-243b2df6b804/scratchpad/corepack",
+      "browsers": "/private/tmp/claude-501/-Users-user-Documents-e2e-skills/bdab4ab8-0929-498d-8dc4-243b2df6b804/scratchpad/pw-browsers"
+    },
+    "shared_caches_note": "content-addressed package/browser caches only; deleted at exit unless --cache-dir was given",
+    "port_precondition": {
+      "ok": true
+    },
+    "host_settings_unchanged": true,
+    "shared_caches_deleted": false,
+    "post_hoc_home_path_redaction": {
+      "applied_at": "2026-09-11T07:05:00+00:00",
+      "reason": "scripts/ci/pre-push-security.sh 'hardcoded-home' blocker (freeze prerequisite): the four smoke transcripts and this file carried the machine's absolute home prefix in tool/runner paths (agent-browser and playwright-cli under ~/.nvm, claude executable, node_bin, per-cell runner homes). The prefix was replaced with the sanctioned '/Users/user' placeholder by a literal string substitution; no other byte changed.",
+      "placeholder": "/Users/user",
+      "transcripts": [
+        {"path": "smoke-artifacts/smoke-A-ours_only/transcript.jsonl", "replacements": 2, "sha256_before_prefix": "0f5dda77721688c7", "sha256_after_prefix": "55cb622a011c555c"},
+        {"path": "smoke-artifacts/smoke-A-planner_plus_ours/transcript.jsonl", "replacements": 4, "sha256_before_prefix": "77115470b0b962bb", "sha256_after_prefix": "c1988d9ad7c810d9"},
+        {"path": "smoke-artifacts/smoke-B-ours_only/transcript.jsonl", "replacements": 5, "sha256_before_prefix": "bcf8602854b43050", "sha256_after_prefix": "78b3f2c35b1ab57a"},
+        {"path": "smoke-artifacts/smoke-B-planner_plus_ours/transcript.jsonl", "replacements": 7, "sha256_before_prefix": "8f40884e1c414265", "sha256_after_prefix": "abb7eead1074e432"}
+      ],
+      "note": "setup_attempts[].transcript.sha256 values below are the pre-redaction digests recorded at capture time; the prefixes above identify the pre- and post-redaction bytes. The measured-pilot runner (run_pilot.py) applies the same placeholder substitution before writing any artifact, so no later evidence needs a post-hoc edit."
+    }
+  },
+  "skill_sha256_at_preparation": {
+    "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+    "skills/playwright-test-generator/playwright-agents.md": "9bd577cdf5624d2929c84b226c69952eb6d05eee8a651c021a5871a935f66251",
+    "skills/e2e-reviewer/SKILL.md": "c8420ba913c6092749b40ab892460eebf730cad3e4a2e28ed2cedc24d47f2c30",
+    "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb"
+  },
+  "model_calls_made": 7,
+  "cells": [
+    {
+      "cell_id": "smoke-A-ours_only",
+      "order": 1,
+      "target_id": "A",
+      "repository": "eilinwis/playwright-chat-lab",
+      "pinned_sha": "7f2e2650af1c2b3775e6d4592d5507a4ac46ea1b",
+      "arm": "ours_only",
+      "status": "PASS",
+      "superseded_runs": [
+        {
+          "cell_id": "smoke-A-ours_only",
+          "order": 1,
+          "target_id": "A",
+          "repository": "eilinwis/playwright-chat-lab",
+          "pinned_sha": "7f2e2650af1c2b3775e6d4592d5507a4ac46ea1b",
+          "arm": "ours_only",
+          "status": "FAIL",
+          "artifacts_dir": "benchmarks/ours-vs-planner-pilot-v1/smoke-artifacts/smoke-A-ours_only",
+          "started_at": "2026-09-11T03:39:22+00:00",
+          "setup_attempts": [
+            {
+              "attempt": 1,
+              "runner_home": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-A-ours_only-mtprkx8r",
+              "workspace": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-ours_only-jw5y3767/playwright-chat-lab",
+              "skill_snapshot": {
+                "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+                "skills/playwright-test-generator/playwright-agents.md": "9bd577cdf5624d2929c84b226c69952eb6d05eee8a651c021a5871a935f66251",
+                "skills/e2e-reviewer/SKILL.md": "c8420ba913c6092749b40ab892460eebf730cad3e4a2e28ed2cedc24d47f2c30",
+                "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb"
+              },
+              "fetch": {
+                "ok": true,
+                "head": "7f2e2650af1c2b3775e6d4592d5507a4ac46ea1b",
+                "expected": "7f2e2650af1c2b3775e6d4592d5507a4ac46ea1b",
+                "elapsed_s": 2.2,
+                "error": null
+              },
+              "port_substitution": {
+                "ok": true,
+                "upstream_port": 5173,
+                "new_port": 5176,
+                "files": [
+                  {
+                    "file": "playwright.config.ts",
+                    "status": "patched",
+                    "sha256_before": "dbc35bed0db4b0bf08608da72088fda1736afd24bb6d2ecc48ebc685cddc1445",
+                    "sha256_after": "90d2019c309554393fb5048c9edb7c775118c596c1d90e017e4826b1b9865d90",
+                    "occurrences_of_upstream_port_remaining": 0,
+                    "occurrences_of_new_port": 2
+                  },
+                  {
+                    "file": "vite.config.ts",
+                    "status": "patched",
+                    "sha256_before": "9e5f1265d9defa3e24dcc586132f062b613ceac2332128bd48d6eade04f2a996",
+                    "sha256_after": "c85c3972e97f2ed9ad5f486f0d3a7945dc5a48ee8d89963856cc1d7f4d691571",
+                    "occurrences_of_upstream_port_remaining": 0,
+                    "occurrences_of_new_port": 1
+                  }
+                ],
+                "scope": "disposable checkout only; upstream repository untouched; checkout deleted after the cell",
+                "effective_base_url": "http://localhost:5176"
+              },
+              "install": {
+                "ok": true,
+                "runs": [
+                  {
+                    "command": [
+                      "npm",
+                      "ci"
+                    ],
+                    "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-ours_only-jw5y3767/playwright-chat-lab",
+                    "timeout_s": 900,
+                    "returncode": 0,
+                    "timed_out": false,
+                    "elapsed_s": 1.7,
+                    "stdout_sha256": "34e1cdd873ae10494198035680dc6405bdf865fc8bbbbf20c311ee378a2dc92e",
+                    "stdout_bytes": 26,
+                    "stdout_tail": "\nadded 288 packages in 2s\n",
+                    "stderr_sha256": "edf319fe7b10e88cb17d606cd3bcd67a1ef0a0866f93a79c3647069fc364ae12",
+                    "stderr_bytes": 744,
+                    "stderr_tail": "m warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation\nnpm warn install-scripts 3 packages had install scripts blocked because they are not covered by allowScripts:\nnpm warn install-scripts   esbuild@0.27.7 (postinstall: node install.js)\nnpm warn install-scripts   fsevents@2.3.3 (install: (install scripts present))\nnpm warn install-scripts   fsevents@2.3.2 (install: (install scripts present))\nnpm warn install-scripts\nnpm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.\n"
+                  },
+                  {
+                    "command": [
+                      "npx",
+                      "playwright",
+                      "install",
+                      "chromium"
+                    ],
+                    "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-ours_only-jw5y3767/playwright-chat-lab",
+                    "timeout_s": 900,
+                    "returncode": 0,
+                    "timed_out": false,
+                    "elapsed_s": 1.2,
+                    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "stdout_bytes": 0,
+                    "stdout_tail": "",
+                    "stderr_sha256": "cdd87cb44782759cb871d94ee7298a71c07a9a005438f90ede5f21cdca912477",
+                    "stderr_bytes": 232,
+                    "stderr_tail": "npm warn Unknown env config \"store-dir\". This will error in a future major version of npm. See `npm help npmrc` for supported config options.\nnpm notice run playwright-chat-lab@0.0.0 npx\nnpm notice run 'playwright' install chromium\n"
+                  }
+                ]
+              },
+              "dev_server": {
+                "base_url": "http://localhost:5176",
+                "command": "npm run dev",
+                "ok": true,
+                "http_status": 200,
+                "ready_after_s": 2.2,
+                "exited_early": false,
+                "port_free_after_stop": true,
+                "output_tail": "npm warn Unknown env config \"store-dir\". This will error in a future major version of npm. See `npm help npmrc` for supported config options.\nnpm notice run playwright-chat-lab@0.0.0 dev\nnpm notice run vite\n\n  VITE v8.0.1  ready in 704 ms\n\n  ➜  Local:   http://localhost:5176/\n  ➜  Network: use --host to expose\n",
+                "served_on_expected_port": true
+              },
+              "pre_session_state": {
+                "porcelain": [
+                  " M playwright.config.ts",
+                  " M vite.config.ts"
+                ],
+                "tracked_diff_sha256": "a353e73782177707877c963041f13268815870be16fd14e6ca9591aee1f9a7fc",
+                "tracked_diff_bytes": 1332,
+                "modified_tracked": [
+                  "playwright.config.ts",
+                  "vite.config.ts"
+                ],
+                "untracked": []
+              },
+              "prompt_sha256": "33067ad4a30e2ea7cc41847a70439888d7f7423546e02762b256c7eb2e35a7f9",
+              "session_command": [
+                "/Users/user/.local/share/claude/versions/2.1.268",
+                "-p",
+                "--output-format",
+                "json",
+                "--setting-sources",
+                "user",
+                "--strict-mcp-config",
+                "--dangerously-skip-permissions",
+                "--model",
+                "claude-opus-5",
+                "--max-turns",
+                "250",
+                "--max-budget-usd",
+                "40"
+              ],
+              "session": {
+                "command": [
+                  "/Users/user/.local/share/claude/versions/2.1.268",
+                  "-p",
+                  "--output-format",
+                  "json",
+                  "--setting-sources",
+                  "user",
+                  "--strict-mcp-config",
+                  "--dangerously-skip-permissions",
+                  "--model",
+                  "claude-opus-5",
+                  "--max-turns",
+                  "250",
+                  "--max-budget-usd",
+                  "40"
+                ],
+                "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-ours_only-jw5y3767/playwright-chat-lab",
+                "timeout_s": 1800,
+                "returncode": 0,
+                "timed_out": false,
+                "elapsed_s": 1152.0,
+                "stdout_sha256": "4cd31591547a92575f13b229a426a1b74d00fddf7bf95bb3dfe78f52cf08fdea",
+                "stdout_bytes": 8337,
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "stderr_bytes": 0,
+                "credential_shaped_output_detected": false,
+                "result": {
+                  "parsed": true,
+                  "subtype": "success",
+                  "is_error": false,
+                  "num_turns": 87,
+                  "duration_ms": 1151221,
+                  "duration_api_ms": 986235,
+                  "total_cost_usd_reported": 7.795286249999998,
+                  "usage": {
+                    "input_tokens": 160,
+                    "cache_creation_input_tokens": 158782,
+                    "cache_read_input_tokens": 7145160,
+                    "output_tokens": 57090,
+                    "output_tokens_details": {
+                      "thinking_tokens": 30183
+                    },
+                    "server_tool_use": {
+                      "web_search_requests": 0,
+                      "web_fetch_requests": 0
+                    },
+                    "service_tier": "standard",
+                    "cache_creation": {
+                      "ephemeral_1h_input_tokens": 158782,
+                      "ephemeral_5m_input_tokens": 0
+                    },
+                    "inference_geo": "not_available",
+                    "iterations": [
+                      {
+                        "input_tokens": 2,
+                        "output_tokens": 2992,
+                        "cache_read_input_tokens": 168165,
+                        "cache_creation_input_tokens": 649,
+                        "cache_creation": {
+                          "ephemeral_5m_input_tokens": 0,
+                          "ephemeral_1h_input_tokens": 649
+                        },
+                        "type": "message"
+                      }
+                    ],
+                    "speed": "standard"
+                  },
+                  "model_usage": {
+                    "claude-opus-5": {
+                      "inputTokens": 184,
+                      "outputTokens": 74722,
+                      "cacheReadInputTokens": 7734655,
+                      "cacheCreationInputTokens": 234169,
+                      "webSearchRequests": 0,
+                      "costUSD": 7.795286249999998,
+                      "contextWindow": 1000000,
+                      "maxOutputTokens": 64000,
+                      "thinkingTokens": 38118,
+                      "canonicalModel": "claude-opus-5",
+                      "provider": "firstParty",
+                      "costBasis": "list"
+                    }
+                  },
+                  "session_id": "b3fc8769-2d04-462f-a948-cd73b49eaeb2",
+                  "final_text_sha256": "ed5477a45c9e81ef6842b5f0b3bd27d3cc910b227ed4473fe05aa5a7dc07b53d",
+                  "final_text_bytes": 6401,
+                  "self_report": {
+                    "cell": "smoke-A-ours_only",
+                    "arm": "ours_only",
+                    "outcome": "Complete",
+                    "candidate_files": [
+                      "e2e/smoke-shell.spec.ts",
+                      "e2e/pages/layout/appLayoutPage.ts"
+                    ],
+                    "browser_source": "agent-browser",
+                    "planner_status": "N/A",
+                    "native_run_command": "npx --no-install playwright test e2e/smoke-shell.spec.ts --project=chromium --retries=0 --reporter=list",
+                    "native_run_passed": true,
+                    "verification": {
+                      "V1": "PASS",
+                      "V2": "PASS",
+                      "V3": "PASS",
+                      "V4": "N/A (read-only scenario, no writes)",
+                      "V5": "PASS (3 solo runs + 3 multi-spec 2-worker runs, 0 retries, 0 flakes; full-suite mode not exercised — no approved command covers it)",
+                      "V6": "PASS (independent fresh-context read-only reviewer: 0 P0, 1 P1, 0 P2)"
+                    }
+                  }
+                }
+              },
+              "post_session_port_sweep": {
+                "killed_workspace_listeners": [],
+                "foreign_listeners": [],
+                "port_free_after": true
+              },
+              "transcript": {
+                "path": "benchmarks/ours-vs-planner-pilot-v1/smoke-artifacts/smoke-A-ours_only/transcript.jsonl",
+                "bytes": 1111958,
+                "sha256": "ea77e10e4754016adbe533431c859745bdadb1d411a93b9a68e6a1dd01f7e216",
+                "raw_sha256": "ea77e10e4754016adbe533431c859745bdadb1d411a93b9a68e6a1dd01f7e216",
+                "redactions_applied": false,
+                "lines": 470
+              },
+              "post_session_state": {
+                "tracked_diff_sha256": "fa5f9ee0d73c458dc7eb90f5c0eca1ed56aa39160a0956bffd9e251af5958cb4",
+                "tracked_unchanged": false,
+                "expected_modified_by_harness": [
+                  "playwright.config.ts",
+                  "vite.config.ts"
+                ],
+                "modified_tracked": [
+                  "e2e/pages/layout/appLayoutPage.ts",
+                  "playwright.config.ts",
+                  "vite.config.ts"
+                ],
+                "new_untracked": [
+                  "e2e/smoke-shell.spec.ts"
+                ],
+                "unexpected_untracked": [],
+                "init_control_file_drift": {}
+              },
+              "candidate": {
+                "expected_path": "e2e/smoke-shell.spec.ts",
+                "exists": true,
+                "spec_files_created": [
+                  "e2e/smoke-shell.spec.ts"
+                ],
+                "sha256": "83b4ce4430bb58014c8c6c4cec8e5cd7d3783d3a22afed08577fa8e42ec9fd61"
+              },
+              "native_run": {
+                "command": [
+                  "npx",
+                  "--no-install",
+                  "playwright",
+                  "test",
+                  "e2e/smoke-shell.spec.ts",
+                  "--project=chromium",
+                  "--retries=0",
+                  "--reporter=list"
+                ],
+                "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-ours_only-jw5y3767/playwright-chat-lab",
+                "timeout_s": 600,
+                "returncode": 0,
+                "timed_out": false,
+                "elapsed_s": 5.5,
+                "stdout_sha256": "b50efa8a8a296172829198c5cf4c622732dfd6368469be5dda1c3a2e51d0bb5d",
+                "stdout_bytes": 195,
+                "stdout_tail": "\nRunning 1 test using 1 worker\n\n  ✓  1 [chromium] › e2e/smoke-shell.spec.ts:23:3 › Application shell › serves the app shell with the primary navigation visible (290ms)\n\n  1 passed (4.7s)\n",
+                "stderr_sha256": "aaa03b7d558c3f15a5c05399b4cb6b63bfd657dcc50f27668444b6e4f17131eb",
+                "stderr_bytes": 1050,
+                "stderr_tail": "npm warn Unknown env config \"store-dir\". This will error in a future major version of npm. See `npm help npmrc` for supported config options.\nnpm notice run playwright-chat-lab@0.0.0 npx\nnpm notice run 'playwright' test e2e/smoke-shell.spec.ts --project=chromium --retries=0 --reporter=list\n[WebServer] npm warn Unknown env config \"store-dir\". This will error in a future major version of npm. See `npm help npmrc` for supported config options.\n[WebServer] npm notice run playwright-chat-lab@0.0.0 dev\n[WebServer] npm notice run vite\n[WebServer] (node:78063) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n(node:78070) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:78070) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n",
+                "ok": true,
+                "env_overrides": {
+                  "CI": "1"
+                }
+              },
+              "post_native_port_sweep": {
+                "killed_workspace_listeners": [],
+                "foreign_listeners": [],
+                "port_free_after": true
+              },
+              "cleanup": {
+                "port_sweep": {
+                  "killed_workspace_listeners": [],
+                  "foreign_listeners": [],
+                  "port_free_after": true
+                },
+                "workspace": "removed",
+                "runner_home": "removed"
+              }
+            }
+          ],
+          "fail_reasons": [
+            "tracked files modified"
+          ],
+          "finished_at": "2026-09-11T03:58:49+00:00",
+          "wall_time_s": 1166.6,
+          "corrected_rule_assessment": {
+            "verdict": "UNDETERMINED",
+            "drift_under_corrected_rule": [],
+            "needs_numstat_check": [
+              "e2e/pages/layout/appLayoutPage.ts"
+            ],
+            "non_drift_fail_reasons": [],
+            "old_status": "FAIL",
+            "old_fail_reasons": [
+              "tracked files modified"
+            ]
+          }
+        }
+      ],
+      "artifacts_dir": "benchmarks/ours-vs-planner-pilot-v1/smoke-artifacts/smoke-A-ours_only",
+      "started_at": "2026-09-11T04:37:13+00:00",
+      "setup_attempts": [
+        {
+          "attempt": 1,
+          "runner_home": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-A-ours_only-wm9_n94o",
+          "workspace": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-ours_only-hh3e_sva/playwright-chat-lab",
+          "skill_snapshot": {
+            "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+            "skills/playwright-test-generator/playwright-agents.md": "9bd577cdf5624d2929c84b226c69952eb6d05eee8a651c021a5871a935f66251",
+            "skills/e2e-reviewer/SKILL.md": "c8420ba913c6092749b40ab892460eebf730cad3e4a2e28ed2cedc24d47f2c30",
+            "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb"
+          },
+          "fetch": {
+            "ok": true,
+            "head": "7f2e2650af1c2b3775e6d4592d5507a4ac46ea1b",
+            "expected": "7f2e2650af1c2b3775e6d4592d5507a4ac46ea1b",
+            "elapsed_s": 2.0,
+            "error": null
+          },
+          "port_substitution": {
+            "ok": true,
+            "upstream_port": 5173,
+            "new_port": 5174,
+            "files": [
+              {
+                "file": "playwright.config.ts",
+                "status": "patched",
+                "sha256_before": "dbc35bed0db4b0bf08608da72088fda1736afd24bb6d2ecc48ebc685cddc1445",
+                "sha256_after": "1fe4c2dfd9d61e58232274b5e35beb78f4425773f61feff31cc689f224162f8a",
+                "occurrences_of_upstream_port_remaining": 0,
+                "occurrences_of_new_port": 2
+              },
+              {
+                "file": "vite.config.ts",
+                "status": "patched",
+                "sha256_before": "9e5f1265d9defa3e24dcc586132f062b613ceac2332128bd48d6eade04f2a996",
+                "sha256_after": "ebc17bfd031f7ad7f451b327245e1b57648dc93dfe58d90898b6f89c3ce7533c",
+                "occurrences_of_upstream_port_remaining": 0,
+                "occurrences_of_new_port": 1
+              }
+            ],
+            "scope": "disposable checkout only; upstream repository untouched; checkout deleted after the cell",
+            "effective_base_url": "http://localhost:5174"
+          },
+          "install": {
+            "ok": true,
+            "runs": [
+              {
+                "command": [
+                  "npm",
+                  "ci"
+                ],
+                "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-ours_only-hh3e_sva/playwright-chat-lab",
+                "timeout_s": 900,
+                "returncode": 0,
+                "timed_out": false,
+                "elapsed_s": 3.4,
+                "stdout_sha256": "fd17a6b8fe24984e298beef83358377d96e04e47eb9541578219a498cad03030",
+                "stdout_bytes": 26,
+                "stdout_tail": "\nadded 288 packages in 3s\n",
+                "stderr_sha256": "edf319fe7b10e88cb17d606cd3bcd67a1ef0a0866f93a79c3647069fc364ae12",
+                "stderr_bytes": 744,
+                "stderr_tail": "m warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation\nnpm warn install-scripts 3 packages had install scripts blocked because they are not covered by allowScripts:\nnpm warn install-scripts   esbuild@0.27.7 (postinstall: node install.js)\nnpm warn install-scripts   fsevents@2.3.3 (install: (install scripts present))\nnpm warn install-scripts   fsevents@2.3.2 (install: (install scripts present))\nnpm warn install-scripts\nnpm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.\n"
+              },
+              {
+                "command": [
+                  "npx",
+                  "playwright",
+                  "install",
+                  "chromium"
+                ],
+                "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-ours_only-hh3e_sva/playwright-chat-lab",
+                "timeout_s": 900,
+                "returncode": 0,
+                "timed_out": false,
+                "elapsed_s": 30.4,
+                "stdout_sha256": "381e6005761ab904c9705e4da48f00a38de0965c26531b2236e2cafd4597414a",
+                "stdout_bytes": 5126,
+                "stdout_tail": "■■■■■■■■■■■■■■■■                        |  70% of 91.1 MiB\n|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 91.1 MiB\n|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 91.1 MiB\n|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 91.1 MiB\nChrome Headless Shell 145.0.7632.6 (playwright chromium-headless-shell v1208) downloaded to /private/tmp/claude-501/-Users-user-Documents-e2e-skills/bdab4ab8-0929-498d-8dc4-243b2df6b804/scratchpad/pw-browsers/chromium_headless_shell-1208\n",
+                "stderr_sha256": "cdd87cb44782759cb871d94ee7298a71c07a9a005438f90ede5f21cdca912477",
+                "stderr_bytes": 232,
+                "stderr_tail": "npm warn Unknown env config \"store-dir\". This will error in a future major version of npm. See `npm help npmrc` for supported config options.\nnpm notice run playwright-chat-lab@0.0.0 npx\nnpm notice run 'playwright' install chromium\n"
+              }
+            ]
+          },
+          "dev_server": {
+            "base_url": "http://localhost:5174",
+            "command": "npm run dev",
+            "ok": true,
+            "http_status": 200,
+            "ready_after_s": 2.2,
+            "exited_early": false,
+            "port_free_after_stop": true,
+            "output_tail": "npm warn Unknown env config \"store-dir\". This will error in a future major version of npm. See `npm help npmrc` for supported config options.\nnpm notice run playwright-chat-lab@0.0.0 dev\nnpm notice run vite\n\n  VITE v8.0.1  ready in 1073 ms\n\n  ➜  Local:   http://localhost:5174/\n  ➜  Network: use --host to expose\n",
+            "served_on_expected_port": true
+          },
+          "pre_session_state": {
+            "porcelain": [
+              " M playwright.config.ts",
+              " M vite.config.ts"
+            ],
+            "tracked_diff_sha256": "21e00a4b7376da756d2d5bb60c6f6d8c6d98ae9018e94f71266608361b658466",
+            "tracked_diff_bytes": 1332,
+            "modified_tracked": [
+              "playwright.config.ts",
+              "vite.config.ts"
+            ],
+            "untracked": []
+          },
+          "prompt_sha256": "bb714435be13869468ac85eaf88ecaf98565b22ffc9fff06fd6e03de422d38cc",
+          "session_command": [
+            "/Users/user/.local/share/claude/versions/2.1.268",
+            "-p",
+            "--output-format",
+            "json",
+            "--setting-sources",
+            "user",
+            "--strict-mcp-config",
+            "--dangerously-skip-permissions",
+            "--model",
+            "claude-opus-5",
+            "--max-turns",
+            "250",
+            "--max-budget-usd",
+            "40"
+          ],
+          "session": {
+            "command": [
+              "/Users/user/.local/share/claude/versions/2.1.268",
+              "-p",
+              "--output-format",
+              "json",
+              "--setting-sources",
+              "user",
+              "--strict-mcp-config",
+              "--dangerously-skip-permissions",
+              "--model",
+              "claude-opus-5",
+              "--max-turns",
+              "250",
+              "--max-budget-usd",
+              "40"
+            ],
+            "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-ours_only-hh3e_sva/playwright-chat-lab",
+            "timeout_s": 1800,
+            "returncode": 0,
+            "timed_out": false,
+            "elapsed_s": 610.7,
+            "stdout_sha256": "606a3adfe1f97d56d9123558f8253794fb7f8c4e38ee22ccfa30bdddcdbd6ddb",
+            "stdout_bytes": 7289,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stderr_bytes": 0,
+            "credential_shaped_output_detected": false,
+            "result": {
+              "parsed": true,
+              "subtype": "success",
+              "is_error": false,
+              "num_turns": 61,
+              "duration_ms": 609861,
+              "duration_api_ms": 553175,
+              "total_cost_usd_reported": 4.44460075,
+              "usage": {
+                "input_tokens": 106,
+                "cache_creation_input_tokens": 116804,
+                "cache_read_input_tokens": 3630106,
+                "output_tokens": 34040,
+                "output_tokens_details": {
+                  "thinking_tokens": 15826
+                },
+                "server_tool_use": {
+                  "web_search_requests": 0,
+                  "web_fetch_requests": 0
+                },
+                "service_tier": "standard",
+                "cache_creation": {
+                  "ephemeral_1h_input_tokens": 116804,
+                  "ephemeral_5m_input_tokens": 0
+                },
+                "inference_geo": "not_available",
+                "iterations": [
+                  {
+                    "input_tokens": 2,
+                    "output_tokens": 2452,
+                    "cache_read_input_tokens": 126226,
+                    "cache_creation_input_tokens": 610,
+                    "cache_creation": {
+                      "ephemeral_5m_input_tokens": 0,
+                      "ephemeral_1h_input_tokens": 610
+                    },
+                    "type": "message"
+                  }
+                ],
+                "speed": "standard"
+              },
+              "model_usage": {
+                "claude-opus-5": {
+                  "inputTokens": 122,
+                  "outputTokens": 41081,
+                  "cacheReadInputTokens": 3894064,
+                  "cacheCreationInputTokens": 165107,
+                  "webSearchRequests": 0,
+                  "costUSD": 4.44460075,
+                  "contextWindow": 1000000,
+                  "maxOutputTokens": 64000,
+                  "thinkingTokens": 17949,
+                  "canonicalModel": "claude-opus-5",
+                  "provider": "firstParty",
+                  "costBasis": "list"
+                }
+              },
+              "session_id": "bcab62e8-83a5-4f04-b9d5-54a0db053efd",
+              "final_text_sha256": "cbcf4ecc85d47d29a74ff222acb30531b73198856639e65d0e8aa0669e01e5bb",
+              "final_text_bytes": 5383,
+              "self_report": {
+                "cell": "smoke-A-ours_only",
+                "arm": "ours_only",
+                "outcome": "PARTIAL/BLOCKED",
+                "candidate_files": [
+                  "e2e/smoke-shell.spec.ts"
+                ],
+                "browser_source": "playwright-cli",
+                "planner_status": "N/A",
+                "native_run_command": "npx --no-install playwright test e2e/smoke-shell.spec.ts --project=chromium --retries=0 --reporter=list",
+                "native_run_passed": true,
+                "verification": {
+                  "V1": "PASS — 1 passed; primary outcome (Main nav visible with its five destinations) observed on the approved native command",
+                  "V2": "PASS — temp-copy inverse .not.toHaveText([...]) failed at the mutated primary assertion (line 30) with the expected contradictory matcher diagnostic",
+                  "V3": "PASS — faulted AppLayout.tsx module (Playground->Sandbox) killed the unchanged primary assertion at line 30 with the declared observable mismatch",
+                  "V4": "N/A — read-only scenario; no writes performed (only page.goto('/') plus assertions)",
+                  "V5": "CANNOT_VERIFY — solo PASS and 3x sequential repeat PASS (0 flaky), but the project's native repeat mechanism (--repeat-each) and a normal suite-context run are both outside the frozen approved command string; a suite run also could not yield a clean signal because all four e2e/tests specs hardcode the unreachable http://localhost:5173",
+                  "V6": "PASS — independent fresh-context read-only reviewer ran the full e2e-reviewer contract: Real P0 = 0, zero P1/P2"
+                }
+              }
+            }
+          },
+          "post_session_port_sweep": {
+            "killed_workspace_listeners": [],
+            "foreign_listeners": [],
+            "port_free_after": true
+          },
+          "transcript": {
+            "path": "benchmarks/ours-vs-planner-pilot-v1/smoke-artifacts/smoke-A-ours_only/transcript.jsonl",
+            "bytes": 821952,
+            "sha256": "0f5dda77721688c7d42d4dbdf9b7042d07a47373c6eb9854b946f161e849f42d",
+            "raw_sha256": "0f5dda77721688c7d42d4dbdf9b7042d07a47373c6eb9854b946f161e849f42d",
+            "redactions_applied": false,
+            "lines": 343
+          },
+          "post_session_state": {
+            "rule": "protocol.json schedule.candidate_completion_surface",
+            "buckets": {
+              "candidate_spec": [
+                "e2e/smoke-shell.spec.ts"
+              ],
+              "new_test_dir_files": [],
+              "planner_specs_output": [],
+              "runtime_artifacts": [],
+              "additive_test_dir_edits": [],
+              "harness_patched": [
+                "playwright.config.ts",
+                "vite.config.ts"
+              ],
+              "drift": []
+            },
+            "tracked_diff_sha256": "21e00a4b7376da756d2d5bb60c6f6d8c6d98ae9018e94f71266608361b658466",
+            "porcelain": [
+              " M playwright.config.ts",
+              " M vite.config.ts",
+              "?? e2e/smoke-shell.spec.ts"
+            ],
+            "within_surface": true,
+            "expected_modified_by_harness": [
+              "playwright.config.ts",
+              "vite.config.ts"
+            ]
+          },
+          "candidate": {
+            "expected_path": "e2e/smoke-shell.spec.ts",
+            "exists": true,
+            "spec_files_created": [
+              "e2e/smoke-shell.spec.ts"
+            ],
+            "sha256": "b1e90dfd460d71d8382d248574dd0d3d0f38c4604b70b997fda2ae49fbd36ee4"
+          },
+          "native_run": {
+            "command": [
+              "npx",
+              "--no-install",
+              "playwright",
+              "test",
+              "e2e/smoke-shell.spec.ts",
+              "--project=chromium",
+              "--retries=0",
+              "--reporter=list"
+            ],
+            "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-ours_only-hh3e_sva/playwright-chat-lab",
+            "timeout_s": 600,
+            "returncode": 0,
+            "timed_out": false,
+            "elapsed_s": 6.4,
+            "stdout_sha256": "b54e6e851a9e27fa78944eb557cee54fd69fbc051ed8efebdefa7f67094cb346",
+            "stdout_bytes": 184,
+            "stdout_tail": "\nRunning 1 test using 1 worker\n\n  ✓  1 [chromium] › e2e/smoke-shell.spec.ts:8:3 › Application shell › loads on / with the primary navigation visible (501ms)\n\n  1 passed (5.2s)\n",
+            "stderr_sha256": "df4d8cedfbd8d5666e4fa4f30547567af934a38a97a6cc701fe7fd907389ea9f",
+            "stderr_bytes": 1050,
+            "stderr_tail": "npm warn Unknown env config \"store-dir\". This will error in a future major version of npm. See `npm help npmrc` for supported config options.\nnpm notice run playwright-chat-lab@0.0.0 npx\nnpm notice run 'playwright' test e2e/smoke-shell.spec.ts --project=chromium --retries=0 --reporter=list\n[WebServer] npm warn Unknown env config \"store-dir\". This will error in a future major version of npm. See `npm help npmrc` for supported config options.\n[WebServer] npm notice run playwright-chat-lab@0.0.0 dev\n[WebServer] npm notice run vite\n[WebServer] (node:75153) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n(node:75312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:75312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n",
+            "ok": true,
+            "env_overrides": {
+              "CI": "1"
+            }
+          },
+          "post_native_port_sweep": {
+            "killed_workspace_listeners": [],
+            "foreign_listeners": [],
+            "port_free_after": true
+          },
+          "cleanup": {
+            "port_sweep": {
+              "killed_workspace_listeners": [],
+              "foreign_listeners": [],
+              "port_free_after": true
+            },
+            "workspace": "removed",
+            "runner_home": "removed",
+            "short_tmpdir": "removed"
+          }
+        }
+      ],
+      "fail_reasons": [],
+      "finished_at": "2026-09-11T04:48:10+00:00",
+      "wall_time_s": 657.3
+    },
+    {
+      "cell_id": "smoke-A-planner_plus_ours",
+      "order": 2,
+      "target_id": "A",
+      "repository": "eilinwis/playwright-chat-lab",
+      "pinned_sha": "7f2e2650af1c2b3775e6d4592d5507a4ac46ea1b",
+      "arm": "planner_plus_ours",
+      "status": "PASS",
+      "superseded_runs": [
+        {
+          "cell_id": "smoke-A-planner_plus_ours",
+          "order": 2,
+          "target_id": "A",
+          "repository": "eilinwis/playwright-chat-lab",
+          "pinned_sha": "7f2e2650af1c2b3775e6d4592d5507a4ac46ea1b",
+          "arm": "planner_plus_ours",
+          "status": "FAIL",
+          "artifacts_dir": "benchmarks/ours-vs-planner-pilot-v1/smoke-artifacts/smoke-A-planner_plus_ours",
+          "started_at": "2026-09-11T03:58:49+00:00",
+          "setup_attempts": [
+            {
+              "attempt": 1,
+              "runner_home": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-A-planner_plus_ours-bwjvw1dg",
+              "workspace": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-planner_plus_ours-i4_umme6/playwright-chat-lab",
+              "skill_snapshot": {
+                "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+                "skills/playwright-test-generator/playwright-agents.md": "9bd577cdf5624d2929c84b226c69952eb6d05eee8a651c021a5871a935f66251",
+                "skills/e2e-reviewer/SKILL.md": "c8420ba913c6092749b40ab892460eebf730cad3e4a2e28ed2cedc24d47f2c30",
+                "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb"
+              },
+              "fetch": {
+                "ok": true,
+                "head": "7f2e2650af1c2b3775e6d4592d5507a4ac46ea1b",
+                "expected": "7f2e2650af1c2b3775e6d4592d5507a4ac46ea1b",
+                "elapsed_s": 2.1,
+                "error": null
+              },
+              "port_substitution": {
+                "ok": true,
+                "upstream_port": 5173,
+                "new_port": 5176,
+                "files": [
+                  {
+                    "file": "playwright.config.ts",
+                    "status": "patched",
+                    "sha256_before": "dbc35bed0db4b0bf08608da72088fda1736afd24bb6d2ecc48ebc685cddc1445",
+                    "sha256_after": "90d2019c309554393fb5048c9edb7c775118c596c1d90e017e4826b1b9865d90",
+                    "occurrences_of_upstream_port_remaining": 0,
+                    "occurrences_of_new_port": 2
+                  },
+                  {
+                    "file": "vite.config.ts",
+                    "status": "patched",
+                    "sha256_before": "9e5f1265d9defa3e24dcc586132f062b613ceac2332128bd48d6eade04f2a996",
+                    "sha256_after": "c85c3972e97f2ed9ad5f486f0d3a7945dc5a48ee8d89963856cc1d7f4d691571",
+                    "occurrences_of_upstream_port_remaining": 0,
+                    "occurrences_of_new_port": 1
+                  }
+                ],
+                "scope": "disposable checkout only; upstream repository untouched; checkout deleted after the cell",
+                "effective_base_url": "http://localhost:5176"
+              },
+              "install": {
+                "ok": true,
+                "runs": [
+                  {
+                    "command": [
+                      "npm",
+                      "ci"
+                    ],
+                    "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-planner_plus_ours-i4_umme6/playwright-chat-lab",
+                    "timeout_s": 900,
+                    "returncode": 0,
+                    "timed_out": false,
+                    "elapsed_s": 1.7,
+                    "stdout_sha256": "34e1cdd873ae10494198035680dc6405bdf865fc8bbbbf20c311ee378a2dc92e",
+                    "stdout_bytes": 26,
+                    "stdout_tail": "\nadded 288 packages in 2s\n",
+                    "stderr_sha256": "edf319fe7b10e88cb17d606cd3bcd67a1ef0a0866f93a79c3647069fc364ae12",
+                    "stderr_bytes": 744,
+                    "stderr_tail": "m warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation\nnpm warn install-scripts 3 packages had install scripts blocked because they are not covered by allowScripts:\nnpm warn install-scripts   esbuild@0.27.7 (postinstall: node install.js)\nnpm warn install-scripts   fsevents@2.3.3 (install: (install scripts present))\nnpm warn install-scripts   fsevents@2.3.2 (install: (install scripts present))\nnpm warn install-scripts\nnpm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.\n"
+                  },
+                  {
+                    "command": [
+                      "npx",
+                      "playwright",
+                      "install",
+                      "chromium"
+                    ],
+                    "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-planner_plus_ours-i4_umme6/playwright-chat-lab",
+                    "timeout_s": 900,
+                    "returncode": 0,
+                    "timed_out": false,
+                    "elapsed_s": 1.1,
+                    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "stdout_bytes": 0,
+                    "stdout_tail": "",
+                    "stderr_sha256": "cdd87cb44782759cb871d94ee7298a71c07a9a005438f90ede5f21cdca912477",
+                    "stderr_bytes": 232,
+                    "stderr_tail": "npm warn Unknown env config \"store-dir\". This will error in a future major version of npm. See `npm help npmrc` for supported config options.\nnpm notice run playwright-chat-lab@0.0.0 npx\nnpm notice run 'playwright' install chromium\n"
+                  }
+                ]
+              },
+              "dev_server": {
+                "base_url": "http://localhost:5176",
+                "command": "npm run dev",
+                "ok": true,
+                "http_status": 200,
+                "ready_after_s": 2.0,
+                "exited_early": false,
+                "port_free_after_stop": true,
+                "output_tail": "npm warn Unknown env config \"store-dir\". This will error in a future major version of npm. See `npm help npmrc` for supported config options.\nnpm notice run playwright-chat-lab@0.0.0 dev\nnpm notice run vite\n\n  VITE v8.0.1  ready in 1638 ms\n\n  ➜  Local:   http://localhost:5176/\n  ➜  Network: use --host to expose\n",
+                "served_on_expected_port": true
+              },
+              "init_agents": {
+                "ok": true,
+                "status": "READY",
+                "run": {
+                  "command": [
+                    "npx",
+                    "--no-install",
+                    "playwright",
+                    "init-agents",
+                    "--loop=claude"
+                  ],
+                  "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-planner_plus_ours-i4_umme6/playwright-chat-lab",
+                  "timeout_s": 300,
+                  "returncode": 0,
+                  "timed_out": false,
+                  "elapsed_s": 0.8,
+                  "stdout_sha256": "5f539564661e5032b831b51f3f61f6c9d75c447c8d71ab37bcc11ef263fcbacf",
+                  "stdout_bytes": 459,
+                  "stdout_tail": " 🎭 Using project \"chromium\" as a primary project\n 📝 specs/README.md \u001b[2m- directory for test plans\u001b[22m\n 🌱 e2e/seed.spec.ts \u001b[2m- default environment seed file\u001b[22m\n 🤖 .claude/agents/playwright-test-generator.md \u001b[2m- agent definition\u001b[22m\n 🤖 .claude/agents/playwright-test-healer.md \u001b[2m- agent definition\u001b[22m\n 🤖 .claude/agents/playwright-test-planner.md \u001b[2m- agent definition\u001b[22m\n 🔧 .mcp.json \u001b[2m- mcp configuration\u001b[22m\n ✅ Done.\n",
+                  "stderr_sha256": "2430017d5206dd31d94a1cc3264992a167b6e2a1ecbec188ae52771b6df35935",
+                  "stderr_bytes": 241,
+                  "stderr_tail": "npm warn Unknown env config \"store-dir\". This will error in a future major version of npm. See `npm help npmrc` for supported config options.\nnpm notice run playwright-chat-lab@0.0.0 npx\nnpm notice run 'playwright' init-agents --loop=claude\n"
+                },
+                "created_files": [
+                  ".claude/agents/playwright-test-generator.md",
+                  ".claude/agents/playwright-test-healer.md",
+                  ".claude/agents/playwright-test-planner.md",
+                  ".mcp.json",
+                  "e2e/seed.spec.ts",
+                  "specs/README.md"
+                ],
+                "control_file_sha256": {
+                  ".claude/agents/playwright-test-generator.md": "d267d66831af32d6db4d3d8c4c742cd0882e47897871082993fb15b03e77d094",
+                  ".claude/agents/playwright-test-healer.md": "943cbd78de685300548f81f44ed4a7e7f8f43c6c62f117522a4797ca25b32370",
+                  ".claude/agents/playwright-test-planner.md": "7e6cce358555abb18efaf484fec1488046ea654c79a6e5d4ee87f10756d723b9",
+                  ".mcp.json": "4d5cb64e14d92e37d7eb368b126394b67a791867986559ac950ca072f95703fd",
+                  "e2e/seed.spec.ts": "26e975f2a7278f28c62fa93f255a9a9a4fa104a73921d3fe76452d9bdd1cb679",
+                  "specs/README.md": "615fde3ec0e0bcfc76313ed765820bce93c6967be8e6bfae5870f0d77a256604"
+                },
+                "agents_passed_via_flag": [
+                  "playwright-test-generator",
+                  "playwright-test-healer",
+                  "playwright-test-planner"
+                ],
+                "planner_agent_declares_setup_and_save_tools": true,
+                "mcp_config": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-planner_plus_ours-i4_umme6/playwright-chat-lab/.mcp.json",
+                "modified_tracked_by_init": [
+                  "playwright.config.ts",
+                  "vite.config.ts"
+                ]
+              },
+              "pre_session_state": {
+                "porcelain": [
+                  " M playwright.config.ts",
+                  " M vite.config.ts",
+                  "?? .claude/agents/playwright-test-generator.md",
+                  "?? .claude/agents/playwright-test-healer.md",
+                  "?? .claude/agents/playwright-test-planner.md",
+                  "?? .mcp.json",
+                  "?? e2e/seed.spec.ts",
+                  "?? specs/README.md"
+                ],
+                "tracked_diff_sha256": "a353e73782177707877c963041f13268815870be16fd14e6ca9591aee1f9a7fc",
+                "tracked_diff_bytes": 1332,
+                "modified_tracked": [
+                  "playwright.config.ts",
+                  "vite.config.ts"
+                ],
+                "untracked": [
+                  ".claude/agents/playwright-test-generator.md",
+                  ".claude/agents/playwright-test-healer.md",
+                  ".claude/agents/playwright-test-planner.md",
+                  ".mcp.json",
+                  "e2e/seed.spec.ts",
+                  "specs/README.md"
+                ]
+              },
+              "prompt_sha256": "14c9de3cbf637c18c6696df43a4c7cee3c8598d187e21b9080defb5779ce3f62",
+              "session_command": [
+                "/Users/user/.local/share/claude/versions/2.1.268",
+                "-p",
+                "--output-format",
+                "json",
+                "--setting-sources",
+                "user",
+                "--strict-mcp-config",
+                "--dangerously-skip-permissions",
+                "--model",
+                "claude-opus-5",
+                "--max-turns",
+                "250",
+                "--max-budget-usd",
+                "40",
+                "--mcp-config",
+                "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-planner_plus_ours-i4_umme6/playwright-chat-lab/.mcp.json",
+                "--agents",
+                "<agents-json>"
+              ],
+              "session": {
+                "command": [
+                  "/Users/user/.local/share/claude/versions/2.1.268",
+                  "-p",
+                  "--output-format",
+                  "json",
+                  "--setting-sources",
+                  "user",
+                  "--strict-mcp-config",
+                  "--dangerously-skip-permissions",
+                  "--model",
+                  "claude-opus-5",
+                  "--max-turns",
+                  "250",
+                  "--max-budget-usd",
+                  "40",
+                  "--mcp-config",
+                  "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-planner_plus_ours-i4_umme6/playwright-chat-lab/.mcp.json",
+                  "--agents",
+                  "<agents-json>"
+                ],
+                "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-planner_plus_ours-i4_umme6/playwright-chat-lab",
+                "timeout_s": 2400,
+                "returncode": 0,
+                "timed_out": false,
+                "elapsed_s": 2041.4,
+                "stdout_sha256": "5bd5384208ecf95ccb68ac2f818d8dba377390d02a8873947f704905eb920baf",
+                "stdout_bytes": 6803,
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "stderr_bytes": 0,
+                "credential_shaped_output_detected": false,
+                "result": {
+                  "parsed": true,
+                  "subtype": "success",
+                  "is_error": false,
+                  "num_turns": 88,
+                  "duration_ms": 2040085,
+                  "duration_api_ms": 1494703,
+                  "total_cost_usd_reported": 9.749837199999996,
+                  "usage": {
+                    "input_tokens": 150,
+                    "cache_creation_input_tokens": 181260,
+                    "cache_read_input_tokens": 7727454,
+                    "output_tokens": 65453,
+                    "output_tokens_details": {
+                      "thinking_tokens": 32113
+                    },
+                    "server_tool_use": {
+                      "web_search_requests": 0,
+                      "web_fetch_requests": 0
+                    },
+                    "service_tier": "standard",
+                    "cache_creation": {
+                      "ephemeral_1h_input_tokens": 181260,
+                      "ephemeral_5m_input_tokens": 0
+                    },
+                    "inference_geo": "not_available",
+                    "iterations": [
+                      {
+                        "input_tokens": 2,
+                        "output_tokens": 2557,
+                        "cache_read_input_tokens": 190440,
+                        "cache_creation_input_tokens": 852,
+                        "cache_creation": {
+                          "ephemeral_5m_input_tokens": 0,
+                          "ephemeral_1h_input_tokens": 852
+                        },
+                        "type": "message"
+                      }
+                    ],
+                    "speed": "standard"
+                  },
+                  "model_usage": {
+                    "claude-opus-5": {
+                      "inputTokens": 202,
+                      "outputTokens": 105467,
+                      "cacheReadInputTokens": 8810563,
+                      "cacheCreationInputTokens": 304398,
+                      "webSearchRequests": 0,
+                      "costUSD": 9.625178999999996,
+                      "contextWindow": 1000000,
+                      "maxOutputTokens": 64000,
+                      "thinkingTokens": 50620,
+                      "canonicalModel": "claude-opus-5",
+                      "provider": "firstParty",
+                      "costBasis": "list"
+                    },
+                    "claude-sonnet-5": {
+                      "inputTokens": 10,
+                      "outputTokens": 6761,
+                      "cacheReadInputTokens": 48916,
+                      "cacheCreationInputTokens": 18898,
+                      "webSearchRequests": 0,
+                      "costUSD": 0.1246582,
+                      "contextWindow": 1000000,
+                      "maxOutputTokens": 64000,
+                      "thinkingTokens": 2167,
+                      "canonicalModel": "claude-sonnet-5",
+                      "provider": "firstParty",
+                      "costBasis": "list"
+                    }
+                  },
+                  "session_id": "c4dde69f-3212-41a6-aecf-091d64184fb0",
+                  "final_text_sha256": "a61aebda0a150cc295271124c42220e4b230f9577f3baf955bb15fa50da5acfb",
+                  "final_text_bytes": 4545,
+                  "self_report": {
+                    "cell": "smoke-A-planner_plus_ours",
+                    "arm": "planner_plus_ours",
+                    "outcome": "PARTIAL/BLOCKED",
+                    "candidate_files": [
+                      "e2e/smoke-shell.spec.ts",
+                      "e2e/pages/layout/appLayoutPage.ts",
+                      "specs/smoke-planner-delta.md",
+                      "specs/smoke-shell-plan.md"
+                    ],
+                    "browser_source": "playwright-cli",
+                    "planner_status": "READY",
+                    "native_run_command": "npx --no-install playwright test e2e/smoke-shell.spec.ts --project=chromium --retries=0 --reporter=list",
+                    "native_run_passed": true,
+                    "verification": {
+                      "V1": "PASS — 5 clean native runs, 0 retries, 0 flakes; nav landmark + 5 ordered tabs + h1 + aria-current observed",
+                      "V2": "PASS — inverted primary toHaveText died at line 53 with expected/received contradiction after the same settled gate",
+                      "V3": "PASS — AppLayout.tsx module fault turned the unchanged primary assertion red at the declared line with the declared mismatch ('Message history' -> 'Message archive'); visibility gate still passed",
+                      "V4": "N/A — read-only scenario, no writes; asserted via expect(mutatingRequests).toEqual([])",
+                      "V5": "CANNOT_VERIFY — solo + 4 bounded repeats PASS; suite-context and parallel modes require an invocation broader than the approved command, which is pinned to e2e/smoke-shell.spec.ts",
+                      "V6": "PASS — two fresh-context read-only e2e-reviewer actors, Real P0 = 0, 0 P1, 0 P2; second review ran after the post-review origin-predicate hardening"
+                    }
+                  }
+                }
+              },
+              "post_session_port_sweep": {
+                "killed_workspace_listeners": [],
+                "foreign_listeners": [],
+                "port_free_after": true
+              },
+              "transcript": {
+                "path": "benchmarks/ours-vs-planner-pilot-v1/smoke-artifacts/smoke-A-planner_plus_ours/transcript.jsonl",
+                "bytes": 1313042,
+                "sha256": "767a5434a45b19a9d9fa5ed48628bf30b84612211dc5669573cfa45ec195f443",
+                "raw_sha256": "767a5434a45b19a9d9fa5ed48628bf30b84612211dc5669573cfa45ec195f443",
+                "redactions_applied": false,
+                "lines": 490
+              },
+              "post_session_state": {
+                "tracked_diff_sha256": "41b97f342d54445cef5919eaf1afe85449484ded36621e03d7f0e4fbada3ec00",
+                "tracked_unchanged": false,
+                "expected_modified_by_harness": [
+                  "playwright.config.ts",
+                  "vite.config.ts"
+                ],
+                "modified_tracked": [
+                  "e2e/pages/layout/appLayoutPage.ts",
+                  "playwright.config.ts",
+                  "vite.config.ts"
+                ],
+                "new_untracked": [
+                  "e2e/smoke-shell.spec.ts",
+                  "specs/smoke-planner-delta.md",
+                  "specs/smoke-shell-plan.md"
+                ],
+                "unexpected_untracked": [],
+                "init_control_file_drift": {}
+              },
+              "candidate": {
+                "expected_path": "e2e/smoke-shell.spec.ts",
+                "exists": true,
+                "spec_files_created": [
+                  "e2e/smoke-shell.spec.ts"
+                ],
+                "sha256": "9edb3df1aeeb8603606b0bdcb187f16a197c8759f9788f4bf904a6b807b2eb74"
+              },
+              "planner_delta": {
+                "exists": true,
+                "sha256": "258b7b40bad0e871f89137ffc8988d3c4755ef63d448d21cbf7115862ae69b1c",
+                "unavailable_marker": false
+              },
+              "native_run": {
+                "command": [
+                  "npx",
+                  "--no-install",
+                  "playwright",
+                  "test",
+                  "e2e/smoke-shell.spec.ts",
+                  "--project=chromium",
+                  "--retries=0",
+                  "--reporter=list"
+                ],
+                "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-planner_plus_ours-i4_umme6/playwright-chat-lab",
+                "timeout_s": 600,
+                "returncode": 0,
+                "timed_out": false,
+                "elapsed_s": 3.2,
+                "stdout_sha256": "9b93b8d8d522f5a130ec7da2679157814798a9996d918de2760bf635150cf0af",
+                "stdout_bytes": 191,
+                "stdout_tail": "\nRunning 1 test using 1 worker\n\n  ✓  1 [chromium] › e2e/smoke-shell.spec.ts:16:3 › Application shell › loads with the primary navigation on the index route (336ms)\n\n  1 passed (2.0s)\n",
+                "stderr_sha256": "b35621d985bfd40778e023e087f6ea0aef4edae85e4d6615d35fd81d9fd7656e",
+                "stderr_bytes": 1050,
+                "stderr_tail": "npm warn Unknown env config \"store-dir\". This will error in a future major version of npm. See `npm help npmrc` for supported config options.\nnpm notice run playwright-chat-lab@0.0.0 npx\nnpm notice run 'playwright' test e2e/smoke-shell.spec.ts --project=chromium --retries=0 --reporter=list\n[WebServer] npm warn Unknown env config \"store-dir\". This will error in a future major version of npm. See `npm help npmrc` for supported config options.\n[WebServer] npm notice run playwright-chat-lab@0.0.0 dev\n[WebServer] npm notice run vite\n[WebServer] (node:43759) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n(node:43760) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:43760) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n",
+                "ok": true,
+                "env_overrides": {
+                  "CI": "1"
+                }
+              },
+              "post_native_port_sweep": {
+                "killed_workspace_listeners": [],
+                "foreign_listeners": [],
+                "port_free_after": true
+              },
+              "cleanup": {
+                "port_sweep": {
+                  "killed_workspace_listeners": [],
+                  "foreign_listeners": [],
+                  "port_free_after": true
+                },
+                "workspace": "removed",
+                "runner_home": "removed"
+              }
+            }
+          ],
+          "planner_availability": "READY",
+          "fail_reasons": [
+            "tracked files modified"
+          ],
+          "finished_at": "2026-09-11T04:33:04+00:00",
+          "wall_time_s": 2055.0,
+          "corrected_rule_assessment": {
+            "verdict": "UNDETERMINED",
+            "drift_under_corrected_rule": [],
+            "needs_numstat_check": [
+              "e2e/pages/layout/appLayoutPage.ts"
+            ],
+            "non_drift_fail_reasons": [],
+            "old_status": "FAIL",
+            "old_fail_reasons": [
+              "tracked files modified"
+            ]
+          }
+        }
+      ],
+      "artifacts_dir": "benchmarks/ours-vs-planner-pilot-v1/smoke-artifacts/smoke-A-planner_plus_ours",
+      "started_at": "2026-09-11T04:48:10+00:00",
+      "setup_attempts": [
+        {
+          "attempt": 1,
+          "runner_home": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-A-planner_plus_ours-9168dsqs",
+          "workspace": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-planner_plus_ours-5zr2r8db/playwright-chat-lab",
+          "skill_snapshot": {
+            "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+            "skills/playwright-test-generator/playwright-agents.md": "9bd577cdf5624d2929c84b226c69952eb6d05eee8a651c021a5871a935f66251",
+            "skills/e2e-reviewer/SKILL.md": "c8420ba913c6092749b40ab892460eebf730cad3e4a2e28ed2cedc24d47f2c30",
+            "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb"
+          },
+          "fetch": {
+            "ok": true,
+            "head": "7f2e2650af1c2b3775e6d4592d5507a4ac46ea1b",
+            "expected": "7f2e2650af1c2b3775e6d4592d5507a4ac46ea1b",
+            "elapsed_s": 2.0,
+            "error": null
+          },
+          "port_substitution": {
+            "ok": true,
+            "upstream_port": 5173,
+            "new_port": 5174,
+            "files": [
+              {
+                "file": "playwright.config.ts",
+                "status": "patched",
+                "sha256_before": "dbc35bed0db4b0bf08608da72088fda1736afd24bb6d2ecc48ebc685cddc1445",
+                "sha256_after": "1fe4c2dfd9d61e58232274b5e35beb78f4425773f61feff31cc689f224162f8a",
+                "occurrences_of_upstream_port_remaining": 0,
+                "occurrences_of_new_port": 2
+              },
+              {
+                "file": "vite.config.ts",
+                "status": "patched",
+                "sha256_before": "9e5f1265d9defa3e24dcc586132f062b613ceac2332128bd48d6eade04f2a996",
+                "sha256_after": "ebc17bfd031f7ad7f451b327245e1b57648dc93dfe58d90898b6f89c3ce7533c",
+                "occurrences_of_upstream_port_remaining": 0,
+                "occurrences_of_new_port": 1
+              }
+            ],
+            "scope": "disposable checkout only; upstream repository untouched; checkout deleted after the cell",
+            "effective_base_url": "http://localhost:5174"
+          },
+          "install": {
+            "ok": true,
+            "runs": [
+              {
+                "command": [
+                  "npm",
+                  "ci"
+                ],
+                "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-planner_plus_ours-5zr2r8db/playwright-chat-lab",
+                "timeout_s": 900,
+                "returncode": 0,
+                "timed_out": false,
+                "elapsed_s": 2.1,
+                "stdout_sha256": "34e1cdd873ae10494198035680dc6405bdf865fc8bbbbf20c311ee378a2dc92e",
+                "stdout_bytes": 26,
+                "stdout_tail": "\nadded 288 packages in 2s\n",
+                "stderr_sha256": "edf319fe7b10e88cb17d606cd3bcd67a1ef0a0866f93a79c3647069fc364ae12",
+                "stderr_bytes": 744,
+                "stderr_tail": "m warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation\nnpm warn install-scripts 3 packages had install scripts blocked because they are not covered by allowScripts:\nnpm warn install-scripts   esbuild@0.27.7 (postinstall: node install.js)\nnpm warn install-scripts   fsevents@2.3.3 (install: (install scripts present))\nnpm warn install-scripts   fsevents@2.3.2 (install: (install scripts present))\nnpm warn install-scripts\nnpm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.\n"
+              },
+              {
+                "command": [
+                  "npx",
+                  "playwright",
+                  "install",
+                  "chromium"
+                ],
+                "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-planner_plus_ours-5zr2r8db/playwright-chat-lab",
+                "timeout_s": 900,
+                "returncode": 0,
+                "timed_out": false,
+                "elapsed_s": 1.7,
+                "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "stdout_bytes": 0,
+                "stdout_tail": "",
+                "stderr_sha256": "cdd87cb44782759cb871d94ee7298a71c07a9a005438f90ede5f21cdca912477",
+                "stderr_bytes": 232,
+                "stderr_tail": "npm warn Unknown env config \"store-dir\". This will error in a future major version of npm. See `npm help npmrc` for supported config options.\nnpm notice run playwright-chat-lab@0.0.0 npx\nnpm notice run 'playwright' install chromium\n"
+              }
+            ]
+          },
+          "dev_server": {
+            "base_url": "http://localhost:5174",
+            "command": "npm run dev",
+            "ok": true,
+            "http_status": 200,
+            "ready_after_s": 2.1,
+            "exited_early": false,
+            "port_free_after_stop": true,
+            "output_tail": "npm warn Unknown env config \"store-dir\". This will error in a future major version of npm. See `npm help npmrc` for supported config options.\nnpm notice run playwright-chat-lab@0.0.0 dev\nnpm notice run vite\n\n  VITE v8.0.1  ready in 1092 ms\n\n  ➜  Local:   http://localhost:5174/\n  ➜  Network: use --host to expose\n",
+            "served_on_expected_port": true
+          },
+          "init_agents": {
+            "ok": true,
+            "status": "READY",
+            "run": {
+              "command": [
+                "npx",
+                "--no-install",
+                "playwright",
+                "init-agents",
+                "--loop=claude"
+              ],
+              "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-planner_plus_ours-5zr2r8db/playwright-chat-lab",
+              "timeout_s": 300,
+              "returncode": 0,
+              "timed_out": false,
+              "elapsed_s": 1.0,
+              "stdout_sha256": "5f539564661e5032b831b51f3f61f6c9d75c447c8d71ab37bcc11ef263fcbacf",
+              "stdout_bytes": 459,
+              "stdout_tail": " 🎭 Using project \"chromium\" as a primary project\n 📝 specs/README.md \u001b[2m- directory for test plans\u001b[22m\n 🌱 e2e/seed.spec.ts \u001b[2m- default environment seed file\u001b[22m\n 🤖 .claude/agents/playwright-test-generator.md \u001b[2m- agent definition\u001b[22m\n 🤖 .claude/agents/playwright-test-healer.md \u001b[2m- agent definition\u001b[22m\n 🤖 .claude/agents/playwright-test-planner.md \u001b[2m- agent definition\u001b[22m\n 🔧 .mcp.json \u001b[2m- mcp configuration\u001b[22m\n ✅ Done.\n",
+              "stderr_sha256": "2430017d5206dd31d94a1cc3264992a167b6e2a1ecbec188ae52771b6df35935",
+              "stderr_bytes": 241,
+              "stderr_tail": "npm warn Unknown env config \"store-dir\". This will error in a future major version of npm. See `npm help npmrc` for supported config options.\nnpm notice run playwright-chat-lab@0.0.0 npx\nnpm notice run 'playwright' init-agents --loop=claude\n"
+            },
+            "created_files": [
+              ".claude/agents/playwright-test-generator.md",
+              ".claude/agents/playwright-test-healer.md",
+              ".claude/agents/playwright-test-planner.md",
+              ".mcp.json",
+              "e2e/seed.spec.ts",
+              "specs/README.md"
+            ],
+            "control_file_sha256": {
+              ".claude/agents/playwright-test-generator.md": "d267d66831af32d6db4d3d8c4c742cd0882e47897871082993fb15b03e77d094",
+              ".claude/agents/playwright-test-healer.md": "943cbd78de685300548f81f44ed4a7e7f8f43c6c62f117522a4797ca25b32370",
+              ".claude/agents/playwright-test-planner.md": "7e6cce358555abb18efaf484fec1488046ea654c79a6e5d4ee87f10756d723b9",
+              ".mcp.json": "4d5cb64e14d92e37d7eb368b126394b67a791867986559ac950ca072f95703fd",
+              "e2e/seed.spec.ts": "26e975f2a7278f28c62fa93f255a9a9a4fa104a73921d3fe76452d9bdd1cb679",
+              "specs/README.md": "615fde3ec0e0bcfc76313ed765820bce93c6967be8e6bfae5870f0d77a256604"
+            },
+            "agents_passed_via_flag": [
+              "playwright-test-generator",
+              "playwright-test-healer",
+              "playwright-test-planner"
+            ],
+            "planner_agent_declares_setup_and_save_tools": true,
+            "mcp_config": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-planner_plus_ours-5zr2r8db/playwright-chat-lab/.mcp.json",
+            "modified_tracked_by_init": [
+              "playwright.config.ts",
+              "vite.config.ts"
+            ]
+          },
+          "pre_session_state": {
+            "porcelain": [
+              " M playwright.config.ts",
+              " M vite.config.ts",
+              "?? .claude/agents/playwright-test-generator.md",
+              "?? .claude/agents/playwright-test-healer.md",
+              "?? .claude/agents/playwright-test-planner.md",
+              "?? .mcp.json",
+              "?? e2e/seed.spec.ts",
+              "?? specs/README.md"
+            ],
+            "tracked_diff_sha256": "21e00a4b7376da756d2d5bb60c6f6d8c6d98ae9018e94f71266608361b658466",
+            "tracked_diff_bytes": 1332,
+            "modified_tracked": [
+              "playwright.config.ts",
+              "vite.config.ts"
+            ],
+            "untracked": [
+              ".claude/agents/playwright-test-generator.md",
+              ".claude/agents/playwright-test-healer.md",
+              ".claude/agents/playwright-test-planner.md",
+              ".mcp.json",
+              "e2e/seed.spec.ts",
+              "specs/README.md"
+            ]
+          },
+          "prompt_sha256": "45e46e790358cd412da27b459a371c744fc8a36dacd76638ce037d8d9c5a04e1",
+          "session_command": [
+            "/Users/user/.local/share/claude/versions/2.1.268",
+            "-p",
+            "--output-format",
+            "json",
+            "--setting-sources",
+            "user",
+            "--strict-mcp-config",
+            "--dangerously-skip-permissions",
+            "--model",
+            "claude-opus-5",
+            "--max-turns",
+            "250",
+            "--max-budget-usd",
+            "40",
+            "--mcp-config",
+            "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-planner_plus_ours-5zr2r8db/playwright-chat-lab/.mcp.json",
+            "--agents",
+            "<agents-json>"
+          ],
+          "session": {
+            "command": [
+              "/Users/user/.local/share/claude/versions/2.1.268",
+              "-p",
+              "--output-format",
+              "json",
+              "--setting-sources",
+              "user",
+              "--strict-mcp-config",
+              "--dangerously-skip-permissions",
+              "--model",
+              "claude-opus-5",
+              "--max-turns",
+              "250",
+              "--max-budget-usd",
+              "40",
+              "--mcp-config",
+              "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-planner_plus_ours-5zr2r8db/playwright-chat-lab/.mcp.json",
+              "--agents",
+              "<agents-json>"
+            ],
+            "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-planner_plus_ours-5zr2r8db/playwright-chat-lab",
+            "timeout_s": 2400,
+            "returncode": 0,
+            "timed_out": false,
+            "elapsed_s": 923.2,
+            "stdout_sha256": "179871bcbe7704e7ebb1fe3eb8c155a71e08e0585ee72d2dbf4522f2b2cf9230",
+            "stdout_bytes": 7721,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stderr_bytes": 0,
+            "credential_shaped_output_detected": false,
+            "result": {
+              "parsed": true,
+              "subtype": "success",
+              "is_error": false,
+              "num_turns": 61,
+              "duration_ms": 921715,
+              "duration_api_ms": 835182,
+              "total_cost_usd_reported": 5.9593351000000006,
+              "usage": {
+                "input_tokens": 106,
+                "cache_creation_input_tokens": 150056,
+                "cache_read_input_tokens": 4613192,
+                "output_tokens": 48996,
+                "output_tokens_details": {
+                  "thinking_tokens": 22454
+                },
+                "server_tool_use": {
+                  "web_search_requests": 0,
+                  "web_fetch_requests": 0
+                },
+                "service_tier": "standard",
+                "cache_creation": {
+                  "ephemeral_1h_input_tokens": 150056,
+                  "ephemeral_5m_input_tokens": 0
+                },
+                "inference_geo": "not_available",
+                "iterations": [
+                  {
+                    "input_tokens": 2,
+                    "output_tokens": 2552,
+                    "cache_read_input_tokens": 159527,
+                    "cache_creation_input_tokens": 561,
+                    "cache_creation": {
+                      "ephemeral_5m_input_tokens": 0,
+                      "ephemeral_1h_input_tokens": 561
+                    },
+                    "type": "message"
+                  }
+                ],
+                "speed": "standard"
+              },
+              "model_usage": {
+                "claude-opus-5": {
+                  "inputTokens": 122,
+                  "outputTokens": 59954,
+                  "cacheReadInputTokens": 4925565,
+                  "cacheCreationInputTokens": 213768,
+                  "webSearchRequests": 0,
+                  "costUSD": 5.8610025,
+                  "contextWindow": 1000000,
+                  "maxOutputTokens": 64000,
+                  "thinkingTokens": 26070,
+                  "canonicalModel": "claude-opus-5",
+                  "provider": "firstParty",
+                  "costBasis": "list"
+                },
+                "claude-sonnet-5": {
+                  "inputTokens": 10,
+                  "outputTokens": 4397,
+                  "cacheReadInputTokens": 50588,
+                  "cacheCreationInputTokens": 17690,
+                  "webSearchRequests": 0,
+                  "costUSD": 0.09833259999999999,
+                  "contextWindow": 1000000,
+                  "maxOutputTokens": 64000,
+                  "thinkingTokens": 784,
+                  "canonicalModel": "claude-sonnet-5",
+                  "provider": "firstParty",
+                  "costBasis": "list"
+                }
+              },
+              "session_id": "5827e995-f246-4349-976d-358789c6102d",
+              "final_text_sha256": "939da8de5761dab20684c18df66d2316b1acf8132055e95a0562143ef9516d0b",
+              "final_text_bytes": 5457,
+              "self_report": {
+                "cell": "smoke-A-planner_plus_ours",
+                "arm": "planner_plus_ours",
+                "outcome": "Complete",
+                "candidate_files": [
+                  "e2e/smoke-shell.spec.ts",
+                  "e2e/pages/layout/appLayoutPage.ts",
+                  "specs/smoke-planner-delta.md",
+                  "specs/smoke-planner-plan.md"
+                ],
+                "browser_source": "playwright-cli",
+                "planner_status": "READY",
+                "native_run_command": "npx --no-install playwright test e2e/smoke-shell.spec.ts --project=chromium --retries=0 --reporter=list",
+                "native_run_passed": true,
+                "verification": {
+                  "V1": "PASS",
+                  "V2": "PASS",
+                  "V3": "PASS",
+                  "V4": "N/A",
+                  "V5": "PASS",
+                  "V6": "PASS"
+                }
+              }
+            }
+          },
+          "post_session_port_sweep": {
+            "killed_workspace_listeners": [],
+            "foreign_listeners": [],
+            "port_free_after": true
+          },
+          "transcript": {
+            "path": "benchmarks/ours-vs-planner-pilot-v1/smoke-artifacts/smoke-A-planner_plus_ours/transcript.jsonl",
+            "bytes": 953476,
+            "sha256": "77115470b0b962bbc6b397a89626eb25232e0cee16472e4abfa5ddab1f6bfdd7",
+            "raw_sha256": "77115470b0b962bbc6b397a89626eb25232e0cee16472e4abfa5ddab1f6bfdd7",
+            "redactions_applied": false,
+            "lines": 346
+          },
+          "post_session_state": {
+            "rule": "protocol.json schedule.candidate_completion_surface",
+            "buckets": {
+              "candidate_spec": [
+                "e2e/smoke-shell.spec.ts"
+              ],
+              "new_test_dir_files": [],
+              "planner_specs_output": [
+                "specs/smoke-planner-delta.md",
+                "specs/smoke-planner-plan.md"
+              ],
+              "runtime_artifacts": [],
+              "additive_test_dir_edits": [
+                {
+                  "path": "e2e/pages/layout/appLayoutPage.ts",
+                  "lines_added": 15
+                }
+              ],
+              "harness_patched": [
+                "playwright.config.ts",
+                "vite.config.ts"
+              ],
+              "drift": []
+            },
+            "tracked_diff_sha256": "18d4a58d83e722f099009c627199fc3ade8d096604fde0a6d48d8f213769d2eb",
+            "porcelain": [
+              " M e2e/pages/layout/appLayoutPage.ts",
+              " M playwright.config.ts",
+              " M vite.config.ts",
+              "?? .claude/agents/playwright-test-generator.md",
+              "?? .claude/agents/playwright-test-healer.md",
+              "?? .claude/agents/playwright-test-planner.md",
+              "?? .mcp.json",
+              "?? e2e/seed.spec.ts",
+              "?? e2e/smoke-shell.spec.ts",
+              "?? specs/README.md",
+              "?? specs/smoke-planner-delta.md",
+              "?? specs/smoke-planner-plan.md"
+            ],
+            "within_surface": true,
+            "expected_modified_by_harness": [
+              "playwright.config.ts",
+              "vite.config.ts"
+            ]
+          },
+          "candidate": {
+            "expected_path": "e2e/smoke-shell.spec.ts",
+            "exists": true,
+            "spec_files_created": [
+              "e2e/smoke-shell.spec.ts"
+            ],
+            "sha256": "cbc710042a966de189481539d7b4657bc99cbbaaae4b5f2ad41e0f9332c0761f"
+          },
+          "planner_delta": {
+            "exists": true,
+            "sha256": "b4e9a14f9e6239f8996c6fa35f02fb9bcdf0d2a8a5f1969601f5d0c58e13f3f3",
+            "unavailable_marker": false
+          },
+          "native_run": {
+            "command": [
+              "npx",
+              "--no-install",
+              "playwright",
+              "test",
+              "e2e/smoke-shell.spec.ts",
+              "--project=chromium",
+              "--retries=0",
+              "--reporter=list"
+            ],
+            "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-A-planner_plus_ours-5zr2r8db/playwright-chat-lab",
+            "timeout_s": 600,
+            "returncode": 0,
+            "timed_out": false,
+            "elapsed_s": 3.4,
+            "stdout_sha256": "a53dc3b5b76d989a50d21db7e5519dbafdd23a5788bf82521ffe62e7cc00a601",
+            "stdout_bytes": 180,
+            "stdout_tail": "\nRunning 1 test using 1 worker\n\n  ✓  1 [chromium] › e2e/smoke-shell.spec.ts:15:3 › Application shell › loads with the primary navigation visible (509ms)\n\n  1 passed (2.2s)\n",
+            "stderr_sha256": "8f3f49b237513a29c1257037b8a2e3557ca9b3b530ee421c456c041c131d9420",
+            "stderr_bytes": 1050,
+            "stderr_tail": "npm warn Unknown env config \"store-dir\". This will error in a future major version of npm. See `npm help npmrc` for supported config options.\nnpm notice run playwright-chat-lab@0.0.0 npx\nnpm notice run 'playwright' test e2e/smoke-shell.spec.ts --project=chromium --retries=0 --reporter=list\n[WebServer] npm warn Unknown env config \"store-dir\". This will error in a future major version of npm. See `npm help npmrc` for supported config options.\n[WebServer] npm notice run playwright-chat-lab@0.0.0 dev\n[WebServer] npm notice run vite\n[WebServer] (node:54978) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n(node:55020) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:55020) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n",
+            "ok": true,
+            "env_overrides": {
+              "CI": "1"
+            }
+          },
+          "post_native_port_sweep": {
+            "killed_workspace_listeners": [],
+            "foreign_listeners": [],
+            "port_free_after": true
+          },
+          "cleanup": {
+            "port_sweep": {
+              "killed_workspace_listeners": [],
+              "foreign_listeners": [],
+              "port_free_after": true
+            },
+            "workspace": "removed",
+            "runner_home": "removed",
+            "short_tmpdir": "removed"
+          }
+        }
+      ],
+      "planner_availability": "READY",
+      "fail_reasons": [],
+      "finished_at": "2026-09-11T05:03:48+00:00",
+      "wall_time_s": 938.2
+    },
+    {
+      "cell_id": "smoke-B-ours_only",
+      "order": 3,
+      "target_id": "B",
+      "repository": "andymai/gridfinity-layout-tool",
+      "pinned_sha": "8902951e70f0e6e90e04780bb685faf837bc12bf",
+      "arm": "ours_only",
+      "status": "PASS",
+      "superseded_runs": [
+        {
+          "cell_id": "smoke-B-ours_only",
+          "order": 3,
+          "target_id": "B",
+          "repository": "andymai/gridfinity-layout-tool",
+          "pinned_sha": "8902951e70f0e6e90e04780bb685faf837bc12bf",
+          "arm": "ours_only",
+          "status": "SETUP_FAILED",
+          "artifacts_dir": "benchmarks/ours-vs-planner-pilot-v1/smoke-artifacts/smoke-B-ours_only",
+          "started_at": "2026-09-11T04:33:04+00:00",
+          "setup_attempts": [
+            {
+              "attempt": 1,
+              "runner_home": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-B-ours_only-3pbziybl",
+              "workspace": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-5g868acp/gridfinity-layout-tool",
+              "skill_snapshot": {
+                "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+                "skills/playwright-test-generator/playwright-agents.md": "9bd577cdf5624d2929c84b226c69952eb6d05eee8a651c021a5871a935f66251",
+                "skills/e2e-reviewer/SKILL.md": "c8420ba913c6092749b40ab892460eebf730cad3e4a2e28ed2cedc24d47f2c30",
+                "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb"
+              },
+              "fetch": {
+                "ok": true,
+                "head": "8902951e70f0e6e90e04780bb685faf837bc12bf",
+                "expected": "8902951e70f0e6e90e04780bb685faf837bc12bf",
+                "elapsed_s": 7.5,
+                "error": null
+              },
+              "port_substitution": {
+                "ok": true,
+                "upstream_port": 5173,
+                "new_port": 5176,
+                "files": [
+                  {
+                    "file": "playwright.config.ts",
+                    "status": "patched",
+                    "sha256_before": "249cd66ada221792eaddf426f4b1c93c421932975ae018ebd575e70616d1ac15",
+                    "sha256_after": "bec94fd3a09d1deb4364ff7adeda55a3f427470589031239cdb08dbcb50ef4eb",
+                    "occurrences_of_upstream_port_remaining": 0,
+                    "occurrences_of_new_port": 2
+                  },
+                  {
+                    "file": "vite.config.ts",
+                    "status": "patched",
+                    "sha256_before": "455e31b36c91d62bfa1bde8d1f40663e21daa50c3ad08b183d0fe4b7efd2b5d4",
+                    "sha256_after": "d18b89e54c7df0ac3bf83e3fe3d3ce73e975a8151d7cc0214d6d7821734576fd",
+                    "occurrences_of_upstream_port_remaining": 0,
+                    "occurrences_of_new_port": 1
+                  }
+                ],
+                "scope": "disposable checkout only; upstream repository untouched; checkout deleted after the cell",
+                "effective_base_url": "http://localhost:5176"
+              },
+              "install": {
+                "ok": true,
+                "runs": [
+                  {
+                    "command": [
+                      "pnpm",
+                      "install",
+                      "--frozen-lockfile"
+                    ],
+                    "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-5g868acp/gridfinity-layout-tool",
+                    "timeout_s": 900,
+                    "returncode": 0,
+                    "timed_out": false,
+                    "elapsed_s": 23.1,
+                    "stdout_sha256": "63a6c555a7f8525102fa9abc77f03325b491e35c13a15bfcab00155d7a06aec3",
+                    "stdout_bytes": 4110,
+                    "stdout_tail": "nt-plugin-jsx-a11y 6.10.2\n+ eslint-plugin-react-hooks 7.1.1\n+ eslint-plugin-react-refresh 0.5.5\n+ fake-indexeddb 6.2.5\n+ globals 17.11.0\n+ gltf-pipeline 4.3.1\n+ husky 9.1.7\n+ js-yaml 5.4.1\n+ jsdom 30.0.1\n+ knip 6.33.0\n+ lint-staged 17.4.1\n+ marked 18.0.11\n+ path-to-regexp 6.3.0\n+ postcss 8.5.26\n+ prettier 3.9.6\n+ rollup-plugin-visualizer 7.1.1\n+ size-limit 13.0.3\n+ tailwindcss 4.3.3\n+ tsx 4.23.13\n+ typescript 6.0.3\n+ typescript-eslint 8.68.0\n+ vite 8.2.2\n+ vite-plugin-pwa 1.3.0\n+ vite-plugin-wasm 3.6.0\n+ vitest 4.1.11\n+ vitest-axe 0.1.0\n+ workbox-window 7.4.1\n\nDone in 22.9s using pnpm v11.2.2\n",
+                    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "stderr_bytes": 0,
+                    "stderr_tail": ""
+                  },
+                  {
+                    "command": [
+                      "pnpm",
+                      "exec",
+                      "playwright",
+                      "install",
+                      "chromium"
+                    ],
+                    "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-5g868acp/gridfinity-layout-tool",
+                    "timeout_s": 900,
+                    "returncode": 0,
+                    "timed_out": false,
+                    "elapsed_s": 28.7,
+                    "stdout_sha256": "5a37844454d4a683e7df064ed176a41bfc9e9875303497430d00655ddc6e2965",
+                    "stdout_bytes": 5110,
+                    "stdout_tail": "■■■■■■■■■■■■■■■                        |  70% of 93.5 MiB\n|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 93.5 MiB\n|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 93.5 MiB\n|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 93.5 MiB\nChrome Headless Shell 149.0.7827.55 (playwright chromium-headless-shell v1228) downloaded to /private/tmp/claude-501/-Users-user-Documents-e2e-skills/bdab4ab8-0929-498d-8dc4-243b2df6b804/scratchpad/pw-browsers/chromium_headless_shell-1228\n",
+                    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "stderr_bytes": 0,
+                    "stderr_tail": ""
+                  }
+                ]
+              },
+              "dev_server": {
+                "base_url": "http://localhost:5176",
+                "command": "pnpm run dev",
+                "ok": false,
+                "http_status": null,
+                "ready_after_s": 2.1,
+                "exited_early": true,
+                "port_free_after_stop": true,
+                "output_tail": "ules/tsx/dist/cli.mjs:53:31472\n    at new Promise (<anonymous>)\n    at createIpcServer (file:///private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-5g868acp/gridfinity-layout-tool/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/cli.mjs:53:31450)\n    at async file:///private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-5g868acp/gridfinity-layout-tool/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/cli.mjs:55:542 {\n  code: 'EINVAL',\n  errno: -22,\n  syscall: 'listen',\n  address: '/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-B-ours_only-3pbziybl/tmp/tsx-501/58798.pipe',\n  port: -1\n}\n\nNode.js v24.20.0\n[ELIFECYCLE] Command failed with exit code 1.\n[ELIFECYCLE] Command failed with exit code 1.\n",
+                "served_on_expected_port": false
+              },
+              "error": "RuntimeError: dev server: {'base_url': 'http://localhost:5176', 'command': 'pnpm run dev', 'ok': False, 'http_status': None, 'ready_after_s': 2.1, 'exited_early': True, 'port_free_after_stop': True, 'output_tail': \"ules/tsx/dist/cli.mjs:53:31472\\n    at new Promise (<anonymous>)\\n    at createIpcServer (file:///private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-5g868acp/gridfinity-layout-tool/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/cli.mjs:53:31450)\\n    at async file:///private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-5g868acp/gridfinity-layout-tool/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/cli.mjs:55:542 {\\n  code: 'EINVAL',\\n  errno: -22,\\n  syscall: 'listen',\\n  address: '/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-B-ours_only-3pbziybl/tmp/tsx-501/58798.pipe',\\n  port: -1\\n}\\n\\nNode.js v24.20.0\\n[ELIFECYCLE] Command failed with exit code 1.\\n[ELIFECYCLE] Command failed with exit code 1.\\n\", 'served_on_expected_port': False}",
+              "cleanup": {
+                "port_sweep": {
+                  "killed_workspace_listeners": [],
+                  "foreign_listeners": [],
+                  "port_free_after": true
+                },
+                "workspace": "removed",
+                "runner_home": "removed"
+              }
+            },
+            {
+              "attempt": 2,
+              "runner_home": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-B-ours_only-9756qf_p",
+              "workspace": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-7ndk1zce/gridfinity-layout-tool",
+              "skill_snapshot": {
+                "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+                "skills/playwright-test-generator/playwright-agents.md": "9bd577cdf5624d2929c84b226c69952eb6d05eee8a651c021a5871a935f66251",
+                "skills/e2e-reviewer/SKILL.md": "c8420ba913c6092749b40ab892460eebf730cad3e4a2e28ed2cedc24d47f2c30",
+                "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb"
+              },
+              "fetch": {
+                "ok": true,
+                "head": "8902951e70f0e6e90e04780bb685faf837bc12bf",
+                "expected": "8902951e70f0e6e90e04780bb685faf837bc12bf",
+                "elapsed_s": 7.5,
+                "error": null
+              },
+              "port_substitution": {
+                "ok": true,
+                "upstream_port": 5173,
+                "new_port": 5176,
+                "files": [
+                  {
+                    "file": "playwright.config.ts",
+                    "status": "patched",
+                    "sha256_before": "249cd66ada221792eaddf426f4b1c93c421932975ae018ebd575e70616d1ac15",
+                    "sha256_after": "bec94fd3a09d1deb4364ff7adeda55a3f427470589031239cdb08dbcb50ef4eb",
+                    "occurrences_of_upstream_port_remaining": 0,
+                    "occurrences_of_new_port": 2
+                  },
+                  {
+                    "file": "vite.config.ts",
+                    "status": "patched",
+                    "sha256_before": "455e31b36c91d62bfa1bde8d1f40663e21daa50c3ad08b183d0fe4b7efd2b5d4",
+                    "sha256_after": "d18b89e54c7df0ac3bf83e3fe3d3ce73e975a8151d7cc0214d6d7821734576fd",
+                    "occurrences_of_upstream_port_remaining": 0,
+                    "occurrences_of_new_port": 1
+                  }
+                ],
+                "scope": "disposable checkout only; upstream repository untouched; checkout deleted after the cell",
+                "effective_base_url": "http://localhost:5176"
+              },
+              "install": {
+                "ok": true,
+                "runs": [
+                  {
+                    "command": [
+                      "pnpm",
+                      "install",
+                      "--frozen-lockfile"
+                    ],
+                    "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-7ndk1zce/gridfinity-layout-tool",
+                    "timeout_s": 900,
+                    "returncode": 0,
+                    "timed_out": false,
+                    "elapsed_s": 25.6,
+                    "stdout_sha256": "68e4867152e66b88dc66e395881c6a555917ccafb1e85f2e8f75c4ec97ad9cbb",
+                    "stdout_bytes": 4230,
+                    "stdout_tail": "nt-plugin-jsx-a11y 6.10.2\n+ eslint-plugin-react-hooks 7.1.1\n+ eslint-plugin-react-refresh 0.5.5\n+ fake-indexeddb 6.2.5\n+ globals 17.11.0\n+ gltf-pipeline 4.3.1\n+ husky 9.1.7\n+ js-yaml 5.4.1\n+ jsdom 30.0.1\n+ knip 6.33.0\n+ lint-staged 17.4.1\n+ marked 18.0.11\n+ path-to-regexp 6.3.0\n+ postcss 8.5.26\n+ prettier 3.9.6\n+ rollup-plugin-visualizer 7.1.1\n+ size-limit 13.0.3\n+ tailwindcss 4.3.3\n+ tsx 4.23.13\n+ typescript 6.0.3\n+ typescript-eslint 8.68.0\n+ vite 8.2.2\n+ vite-plugin-pwa 1.3.0\n+ vite-plugin-wasm 3.6.0\n+ vitest 4.1.11\n+ vitest-axe 0.1.0\n+ workbox-window 7.4.1\n\nDone in 25.4s using pnpm v11.2.2\n",
+                    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "stderr_bytes": 0,
+                    "stderr_tail": ""
+                  },
+                  {
+                    "command": [
+                      "pnpm",
+                      "exec",
+                      "playwright",
+                      "install",
+                      "chromium"
+                    ],
+                    "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-7ndk1zce/gridfinity-layout-tool",
+                    "timeout_s": 900,
+                    "returncode": 0,
+                    "timed_out": false,
+                    "elapsed_s": 1.8,
+                    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "stdout_bytes": 0,
+                    "stdout_tail": "",
+                    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "stderr_bytes": 0,
+                    "stderr_tail": ""
+                  }
+                ]
+              },
+              "dev_server": {
+                "base_url": "http://localhost:5176",
+                "command": "pnpm run dev",
+                "ok": false,
+                "http_status": null,
+                "ready_after_s": 2.2,
+                "exited_early": true,
+                "port_free_after_stop": true,
+                "output_tail": "ules/tsx/dist/cli.mjs:53:31472\n    at new Promise (<anonymous>)\n    at createIpcServer (file:///private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-7ndk1zce/gridfinity-layout-tool/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/cli.mjs:53:31450)\n    at async file:///private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-7ndk1zce/gridfinity-layout-tool/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/cli.mjs:55:542 {\n  code: 'EINVAL',\n  errno: -22,\n  syscall: 'listen',\n  address: '/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-B-ours_only-9756qf_p/tmp/tsx-501/72837.pipe',\n  port: -1\n}\n\nNode.js v24.20.0\n[ELIFECYCLE] Command failed with exit code 1.\n[ELIFECYCLE] Command failed with exit code 1.\n",
+                "served_on_expected_port": false
+              },
+              "error": "RuntimeError: dev server: {'base_url': 'http://localhost:5176', 'command': 'pnpm run dev', 'ok': False, 'http_status': None, 'ready_after_s': 2.2, 'exited_early': True, 'port_free_after_stop': True, 'output_tail': \"ules/tsx/dist/cli.mjs:53:31472\\n    at new Promise (<anonymous>)\\n    at createIpcServer (file:///private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-7ndk1zce/gridfinity-layout-tool/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/cli.mjs:53:31450)\\n    at async file:///private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-7ndk1zce/gridfinity-layout-tool/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/cli.mjs:55:542 {\\n  code: 'EINVAL',\\n  errno: -22,\\n  syscall: 'listen',\\n  address: '/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-B-ours_only-9756qf_p/tmp/tsx-501/72837.pipe',\\n  port: -1\\n}\\n\\nNode.js v24.20.0\\n[ELIFECYCLE] Command failed with exit code 1.\\n[ELIFECYCLE] Command failed with exit code 1.\\n\", 'served_on_expected_port': False}",
+              "cleanup": {
+                "port_sweep": {
+                  "killed_workspace_listeners": [],
+                  "foreign_listeners": [],
+                  "port_free_after": true
+                },
+                "workspace": "removed",
+                "runner_home": "removed"
+              }
+            }
+          ],
+          "finished_at": "2026-09-11T04:35:08+00:00",
+          "wall_time_s": 124.1,
+          "fail_reasons": [
+            "RuntimeError: dev server: {'base_url': 'http://localhost:5176', 'command': 'pnpm run dev', 'ok': False, 'http_status': None, 'ready_after_s': 2.2, 'exited_early': True, 'port_free_after_stop': True, 'output_tail': \"ules/tsx/dist/cli.mjs:53:31472\\n    at new Promise (<anonymous>)\\n    at createIpcServer (file:///private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-7ndk1zce/gridfinity-layout-tool/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/cli.mjs:53:31450)\\n    at async file:///private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-7ndk1zce/gridfinity-layout-tool/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/cli.mjs:55:542 {\\n  code: 'EINVAL',\\n  errno: -22,\\n  syscall: 'listen',\\n  address: '/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-B-ours_only-9756qf_p/tmp/tsx-501/72837.pipe',\\n  port: -1\\n}\\n\\nNode.js v24.20.0\\n[ELIFECYCLE] Command failed with exit code 1.\\n[ELIFECYCLE] Command failed with exit code 1.\\n\", 'served_on_expected_port': False}"
+          ],
+          "corrected_rule_assessment": {
+            "verdict": "SETUP_FAILED",
+            "reason": "no session record to reassess"
+          }
+        }
+      ],
+      "artifacts_dir": "benchmarks/ours-vs-planner-pilot-v1/smoke-artifacts/smoke-B-ours_only",
+      "started_at": "2026-09-11T05:03:48+00:00",
+      "setup_attempts": [
+        {
+          "attempt": 1,
+          "runner_home": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-B-ours_only-yj4bih8w",
+          "workspace": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-hlbud7n7/gridfinity-layout-tool",
+          "skill_snapshot": {
+            "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+            "skills/playwright-test-generator/playwright-agents.md": "9bd577cdf5624d2929c84b226c69952eb6d05eee8a651c021a5871a935f66251",
+            "skills/e2e-reviewer/SKILL.md": "c8420ba913c6092749b40ab892460eebf730cad3e4a2e28ed2cedc24d47f2c30",
+            "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb"
+          },
+          "fetch": {
+            "ok": true,
+            "head": "8902951e70f0e6e90e04780bb685faf837bc12bf",
+            "expected": "8902951e70f0e6e90e04780bb685faf837bc12bf",
+            "elapsed_s": 9.1,
+            "error": null
+          },
+          "port_substitution": {
+            "ok": true,
+            "upstream_port": 5173,
+            "new_port": 5174,
+            "files": [
+              {
+                "file": "playwright.config.ts",
+                "status": "patched",
+                "sha256_before": "249cd66ada221792eaddf426f4b1c93c421932975ae018ebd575e70616d1ac15",
+                "sha256_after": "fa42394d3420d6a3316bbbb41aa6ca89498f0b744b0f2a6547cbc18118e04db0",
+                "occurrences_of_upstream_port_remaining": 0,
+                "occurrences_of_new_port": 2
+              },
+              {
+                "file": "vite.config.ts",
+                "status": "patched",
+                "sha256_before": "455e31b36c91d62bfa1bde8d1f40663e21daa50c3ad08b183d0fe4b7efd2b5d4",
+                "sha256_after": "09d1168cb526c3cadd722077368a340fa44765c45b12053f78cc8ebf7a039cf7",
+                "occurrences_of_upstream_port_remaining": 0,
+                "occurrences_of_new_port": 1
+              }
+            ],
+            "scope": "disposable checkout only; upstream repository untouched; checkout deleted after the cell",
+            "effective_base_url": "http://localhost:5174"
+          },
+          "install": {
+            "ok": true,
+            "runs": [
+              {
+                "command": [
+                  "pnpm",
+                  "install",
+                  "--frozen-lockfile"
+                ],
+                "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-hlbud7n7/gridfinity-layout-tool",
+                "timeout_s": 900,
+                "returncode": 0,
+                "timed_out": false,
+                "elapsed_s": 25.8,
+                "stdout_sha256": "65476189678700d35b9b998885b839e80bbe8eaf846103e6caa32393be887c76",
+                "stdout_bytes": 4230,
+                "stdout_tail": "nt-plugin-jsx-a11y 6.10.2\n+ eslint-plugin-react-hooks 7.1.1\n+ eslint-plugin-react-refresh 0.5.5\n+ fake-indexeddb 6.2.5\n+ globals 17.11.0\n+ gltf-pipeline 4.3.1\n+ husky 9.1.7\n+ js-yaml 5.4.1\n+ jsdom 30.0.1\n+ knip 6.33.0\n+ lint-staged 17.4.1\n+ marked 18.0.11\n+ path-to-regexp 6.3.0\n+ postcss 8.5.26\n+ prettier 3.9.6\n+ rollup-plugin-visualizer 7.1.1\n+ size-limit 13.0.3\n+ tailwindcss 4.3.3\n+ tsx 4.23.13\n+ typescript 6.0.3\n+ typescript-eslint 8.68.0\n+ vite 8.2.2\n+ vite-plugin-pwa 1.3.0\n+ vite-plugin-wasm 3.6.0\n+ vitest 4.1.11\n+ vitest-axe 0.1.0\n+ workbox-window 7.4.1\n\nDone in 25.3s using pnpm v11.2.2\n",
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "stderr_bytes": 0,
+                "stderr_tail": ""
+              },
+              {
+                "command": [
+                  "pnpm",
+                  "exec",
+                  "playwright",
+                  "install",
+                  "chromium"
+                ],
+                "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-hlbud7n7/gridfinity-layout-tool",
+                "timeout_s": 900,
+                "returncode": 0,
+                "timed_out": false,
+                "elapsed_s": 31.2,
+                "stdout_sha256": "5a37844454d4a683e7df064ed176a41bfc9e9875303497430d00655ddc6e2965",
+                "stdout_bytes": 5110,
+                "stdout_tail": "■■■■■■■■■■■■■■■                        |  70% of 93.5 MiB\n|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 93.5 MiB\n|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 93.5 MiB\n|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 93.5 MiB\nChrome Headless Shell 149.0.7827.55 (playwright chromium-headless-shell v1228) downloaded to /private/tmp/claude-501/-Users-user-Documents-e2e-skills/bdab4ab8-0929-498d-8dc4-243b2df6b804/scratchpad/pw-browsers/chromium_headless_shell-1228\n",
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "stderr_bytes": 0,
+                "stderr_tail": ""
+              }
+            ]
+          },
+          "dev_server": {
+            "base_url": "http://localhost:5174",
+            "command": "pnpm run dev",
+            "ok": true,
+            "http_status": 200,
+            "ready_after_s": 8.5,
+            "exited_early": false,
+            "port_free_after_stop": true,
+            "output_tail": "  - import \"./scripts/vite-plugin-version\" without a file extension (vite.config.ts:8:31). Add the file extension\n  - import \"./scripts/vite-plugin-content-routes\" without a file extension (vite.config.ts:9:37). Add the file extension\n  - import \"./scripts/vite-plugin-mediapipe-assets\" without a file extension (vite.config.ts:10:39). Add the file extension\n  - import \"./scripts/vite-plugin-minify-json-assets\" without a file extension (vite.config.ts:11:34). Add the file extension\n  - import \"./scripts/contentRoutes\" without a file extension (vite.config.ts:12:48). Add the file extension\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n\n  VITE v8.2.2  ready in 2969 ms\n\n  ➜  Local:   http://localhost:5174/\n  ➜  Network: use --host to expose\n[ELIFECYCLE] Command failed.\n",
+            "served_on_expected_port": true
+          },
+          "pre_session_state": {
+            "porcelain": [
+              " M playwright.config.ts",
+              " M vite.config.ts"
+            ],
+            "tracked_diff_sha256": "5d35220be973a07f192865d810d1264bd890e9673bcdade7d7cf996a9f67bb70",
+            "tracked_diff_bytes": 1343,
+            "modified_tracked": [
+              "playwright.config.ts",
+              "vite.config.ts"
+            ],
+            "untracked": []
+          },
+          "prompt_sha256": "9c7c76c894020c249c1c25ab2c4dd03a1d52cdb1fbd30040a2a294a99eda71ee",
+          "session_command": [
+            "/Users/user/.local/share/claude/versions/2.1.268",
+            "-p",
+            "--output-format",
+            "json",
+            "--setting-sources",
+            "user",
+            "--strict-mcp-config",
+            "--dangerously-skip-permissions",
+            "--model",
+            "claude-opus-5",
+            "--max-turns",
+            "250",
+            "--max-budget-usd",
+            "40"
+          ],
+          "session": {
+            "command": [
+              "/Users/user/.local/share/claude/versions/2.1.268",
+              "-p",
+              "--output-format",
+              "json",
+              "--setting-sources",
+              "user",
+              "--strict-mcp-config",
+              "--dangerously-skip-permissions",
+              "--model",
+              "claude-opus-5",
+              "--max-turns",
+              "250",
+              "--max-budget-usd",
+              "40"
+            ],
+            "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-hlbud7n7/gridfinity-layout-tool",
+            "timeout_s": 1800,
+            "returncode": 0,
+            "timed_out": false,
+            "elapsed_s": 1259.9,
+            "stdout_sha256": "32ed9164c7f9b6fd989b6732115ce26984d0d385cec3bf4b7fd7b053b4a67bc5",
+            "stdout_bytes": 7440,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stderr_bytes": 0,
+            "credential_shaped_output_detected": false,
+            "result": {
+              "parsed": true,
+              "subtype": "success",
+              "is_error": false,
+              "num_turns": 4,
+              "duration_ms": 60163,
+              "duration_api_ms": 1127780,
+              "total_cost_usd_reported": 8.270672499999998,
+              "usage": {
+                "input_tokens": 8,
+                "cache_creation_input_tokens": 5844,
+                "cache_read_input_tokens": 565979,
+                "output_tokens": 4616,
+                "output_tokens_details": {
+                  "thinking_tokens": 1618
+                },
+                "server_tool_use": {
+                  "web_search_requests": 0,
+                  "web_fetch_requests": 0
+                },
+                "service_tier": "standard",
+                "cache_creation": {
+                  "ephemeral_1h_input_tokens": 5844,
+                  "ephemeral_5m_input_tokens": 0
+                },
+                "inference_geo": "not_available",
+                "iterations": [
+                  {
+                    "input_tokens": 2,
+                    "output_tokens": 3358,
+                    "cache_read_input_tokens": 143215,
+                    "cache_creation_input_tokens": 522,
+                    "cache_creation": {
+                      "ephemeral_5m_input_tokens": 0,
+                      "ephemeral_1h_input_tokens": 522
+                    },
+                    "type": "message"
+                  }
+                ],
+                "speed": "standard"
+              },
+              "model_usage": {
+                "claude-opus-5": {
+                  "inputTokens": 208,
+                  "outputTokens": 84963,
+                  "cacheReadInputTokens": 7493640,
+                  "cacheCreationInputTokens": 303575,
+                  "webSearchRequests": 0,
+                  "costUSD": 8.270672499999998,
+                  "contextWindow": 1000000,
+                  "maxOutputTokens": 64000,
+                  "thinkingTokens": 43686,
+                  "canonicalModel": "claude-opus-5",
+                  "provider": "firstParty",
+                  "costBasis": "list"
+                }
+              },
+              "session_id": "37381d4b-b92b-42ec-a573-41cf4e9a7d9e",
+              "final_text_sha256": "99f0e5a78047f3a926219fc1e57c218491bc27f9e6907888613332ee09efaf5d",
+              "final_text_bytes": 5492,
+              "self_report": {
+                "cell": "smoke-B-ours_only",
+                "arm": "ours_only",
+                "outcome": "Complete",
+                "candidate_files": [
+                  "e2e/smoke-shell.spec.ts"
+                ],
+                "browser_source": "playwright-cli",
+                "planner_status": "N/A",
+                "native_run_command": "pnpm exec playwright test e2e/smoke-shell.spec.ts --project=chromium --retries=0 --reporter=list",
+                "native_run_passed": true,
+                "verification": {
+                  "V1": "PASS - Tool Switcher navigation landmark visible after opening /; clean native run",
+                  "V2": "CANNOT_VERIFY - primary assertion is itself the readiness gate; no deterministic settled-state gate precedes it, so not.toBeVisible() is not guaranteed contradictory",
+                  "V3": "PASS - aborting /src/main.tsx turned the unchanged primary assertion red at line 22 with the declared 'element(s) not found' mismatch",
+                  "V4": "N/A - read-only scenario, no writes",
+                  "V5": "PASS (scoped) - solo + 3 bounded repeats clean, no retries/flakes; suite-context and the other 5 projects not exercised because the approved command is pinned to this spec and --project=chromium",
+                  "V6": "PASS - two independent fresh-context read-only reviews, Real P0 = 0; second review's sha1 matches the landed file"
+                }
+              }
+            }
+          },
+          "post_session_port_sweep": {
+            "killed_workspace_listeners": [],
+            "foreign_listeners": [],
+            "port_free_after": true
+          },
+          "transcript": {
+            "path": "benchmarks/ours-vs-planner-pilot-v1/smoke-artifacts/smoke-B-ours_only/transcript.jsonl",
+            "bytes": 921678,
+            "sha256": "bcf8602854b43050bea8e6a73581974754e3343a57d76d2d60b918ebef916df3",
+            "raw_sha256": "bcf8602854b43050bea8e6a73581974754e3343a57d76d2d60b918ebef916df3",
+            "redactions_applied": false,
+            "lines": 400
+          },
+          "post_session_state": {
+            "rule": "protocol.json schedule.candidate_completion_surface",
+            "buckets": {
+              "candidate_spec": [
+                "e2e/smoke-shell.spec.ts"
+              ],
+              "new_test_dir_files": [],
+              "planner_specs_output": [],
+              "runtime_artifacts": [],
+              "additive_test_dir_edits": [],
+              "harness_patched": [
+                "playwright.config.ts",
+                "vite.config.ts"
+              ],
+              "drift": []
+            },
+            "tracked_diff_sha256": "5d35220be973a07f192865d810d1264bd890e9673bcdade7d7cf996a9f67bb70",
+            "porcelain": [
+              " M playwright.config.ts",
+              " M vite.config.ts",
+              "?? e2e/smoke-shell.spec.ts"
+            ],
+            "within_surface": true,
+            "expected_modified_by_harness": [
+              "playwright.config.ts",
+              "vite.config.ts"
+            ]
+          },
+          "candidate": {
+            "expected_path": "e2e/smoke-shell.spec.ts",
+            "exists": true,
+            "spec_files_created": [
+              "e2e/smoke-shell.spec.ts"
+            ],
+            "sha256": "0e4fd0f6cb247b62f8a411fc5baa0047795b35e62b766cfa659a851ba7fdc00c"
+          },
+          "native_run": {
+            "command": [
+              "pnpm",
+              "exec",
+              "playwright",
+              "test",
+              "e2e/smoke-shell.spec.ts",
+              "--project=chromium",
+              "--retries=0",
+              "--reporter=list"
+            ],
+            "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-ours_only-hlbud7n7/gridfinity-layout-tool",
+            "timeout_s": 600,
+            "returncode": 0,
+            "timed_out": false,
+            "elapsed_s": 10.1,
+            "stdout_sha256": "dce8a58d9f7e5c1bb90c7512e65a1c3b2f25224efc214ea62209dd6aa9af41e2",
+            "stdout_bytes": 192,
+            "stdout_tail": "\nRunning 1 test using 1 worker\n\n  ✓  1 [chromium] › e2e/smoke-shell.spec.ts:9:3 › Application Shell › loads the app shell with the primary navigation visible (4.2s)\n\n  1 passed (9.3s)\n",
+            "stderr_sha256": "7ca7f7b2ca250e2f67ffbedf400bd12fb25a5fe1e949cd5259bd557d2680eb8c",
+            "stderr_bytes": 2737,
+            "stderr_tail": "gnored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] (node:66914) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] $ tsx scripts/build-en-locale.ts\n[WebServer] (node:67064) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] (node:67093) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] (node:67163) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] (!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n[WebServer]   - import \"./scripts/vite-plugin-version\" without a file extension (vite.config.ts:8:31). Add the file extension\n[WebServer]   - import \"./scripts/vite-plugin-content-routes\" without a file extension (vite.config.ts:9:37). Add the file extension\n[WebServer]   - import \"./scripts/vite-plugin-mediapipe-assets\" without a file extension (vite.config.ts:10:39). Add the file extension\n[WebServer]   - import \"./scripts/vite-plugin-minify-json-assets\" without a file extension (vite.config.ts:11:34). Add the file extension\n[WebServer]   - import \"./scripts/contentRoutes\" without a file extension (vite.config.ts:12:48). Add the file extension\n[WebServer] Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n(node:68781) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n",
+            "ok": true,
+            "env_overrides": {}
+          },
+          "post_native_port_sweep": {
+            "killed_workspace_listeners": [],
+            "foreign_listeners": [],
+            "port_free_after": true
+          },
+          "cleanup": {
+            "port_sweep": {
+              "killed_workspace_listeners": [],
+              "foreign_listeners": [],
+              "port_free_after": true
+            },
+            "workspace": "removed",
+            "runner_home": "removed",
+            "short_tmpdir": "removed"
+          }
+        }
+      ],
+      "fail_reasons": [],
+      "finished_at": "2026-09-11T05:26:31+00:00",
+      "wall_time_s": 1362.6
+    },
+    {
+      "cell_id": "smoke-B-planner_plus_ours",
+      "order": 4,
+      "target_id": "B",
+      "repository": "andymai/gridfinity-layout-tool",
+      "pinned_sha": "8902951e70f0e6e90e04780bb685faf837bc12bf",
+      "arm": "planner_plus_ours",
+      "status": "PASS",
+      "superseded_runs": [
+        {
+          "cell_id": "smoke-B-planner_plus_ours",
+          "order": 4,
+          "target_id": "B",
+          "repository": "andymai/gridfinity-layout-tool",
+          "pinned_sha": "8902951e70f0e6e90e04780bb685faf837bc12bf",
+          "arm": "planner_plus_ours",
+          "status": "SETUP_FAILED",
+          "artifacts_dir": "benchmarks/ours-vs-planner-pilot-v1/smoke-artifacts/smoke-B-planner_plus_ours",
+          "started_at": "2026-09-11T04:35:08+00:00",
+          "setup_attempts": [
+            {
+              "attempt": 1,
+              "runner_home": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-B-planner_plus_ours-rdg89dte",
+              "workspace": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-wd3ld2hd/gridfinity-layout-tool",
+              "skill_snapshot": {
+                "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+                "skills/playwright-test-generator/playwright-agents.md": "9bd577cdf5624d2929c84b226c69952eb6d05eee8a651c021a5871a935f66251",
+                "skills/e2e-reviewer/SKILL.md": "c8420ba913c6092749b40ab892460eebf730cad3e4a2e28ed2cedc24d47f2c30",
+                "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb"
+              },
+              "fetch": {
+                "ok": true,
+                "head": "8902951e70f0e6e90e04780bb685faf837bc12bf",
+                "expected": "8902951e70f0e6e90e04780bb685faf837bc12bf",
+                "elapsed_s": 8.7,
+                "error": null
+              },
+              "port_substitution": {
+                "ok": true,
+                "upstream_port": 5173,
+                "new_port": 5176,
+                "files": [
+                  {
+                    "file": "playwright.config.ts",
+                    "status": "patched",
+                    "sha256_before": "249cd66ada221792eaddf426f4b1c93c421932975ae018ebd575e70616d1ac15",
+                    "sha256_after": "bec94fd3a09d1deb4364ff7adeda55a3f427470589031239cdb08dbcb50ef4eb",
+                    "occurrences_of_upstream_port_remaining": 0,
+                    "occurrences_of_new_port": 2
+                  },
+                  {
+                    "file": "vite.config.ts",
+                    "status": "patched",
+                    "sha256_before": "455e31b36c91d62bfa1bde8d1f40663e21daa50c3ad08b183d0fe4b7efd2b5d4",
+                    "sha256_after": "d18b89e54c7df0ac3bf83e3fe3d3ce73e975a8151d7cc0214d6d7821734576fd",
+                    "occurrences_of_upstream_port_remaining": 0,
+                    "occurrences_of_new_port": 1
+                  }
+                ],
+                "scope": "disposable checkout only; upstream repository untouched; checkout deleted after the cell",
+                "effective_base_url": "http://localhost:5176"
+              },
+              "install": {
+                "ok": true,
+                "runs": [
+                  {
+                    "command": [
+                      "pnpm",
+                      "install",
+                      "--frozen-lockfile"
+                    ],
+                    "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-wd3ld2hd/gridfinity-layout-tool",
+                    "timeout_s": 900,
+                    "returncode": 0,
+                    "timed_out": false,
+                    "elapsed_s": 26.9,
+                    "stdout_sha256": "4dec0f379a1305fcdc783db23364765b8c77bb2ca9d357caa2240db258d5fba6",
+                    "stdout_bytes": 4230,
+                    "stdout_tail": "nt-plugin-jsx-a11y 6.10.2\n+ eslint-plugin-react-hooks 7.1.1\n+ eslint-plugin-react-refresh 0.5.5\n+ fake-indexeddb 6.2.5\n+ globals 17.11.0\n+ gltf-pipeline 4.3.1\n+ husky 9.1.7\n+ js-yaml 5.4.1\n+ jsdom 30.0.1\n+ knip 6.33.0\n+ lint-staged 17.4.1\n+ marked 18.0.11\n+ path-to-regexp 6.3.0\n+ postcss 8.5.26\n+ prettier 3.9.6\n+ rollup-plugin-visualizer 7.1.1\n+ size-limit 13.0.3\n+ tailwindcss 4.3.3\n+ tsx 4.23.13\n+ typescript 6.0.3\n+ typescript-eslint 8.68.0\n+ vite 8.2.2\n+ vite-plugin-pwa 1.3.0\n+ vite-plugin-wasm 3.6.0\n+ vitest 4.1.11\n+ vitest-axe 0.1.0\n+ workbox-window 7.4.1\n\nDone in 26.7s using pnpm v11.2.2\n",
+                    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "stderr_bytes": 0,
+                    "stderr_tail": ""
+                  },
+                  {
+                    "command": [
+                      "pnpm",
+                      "exec",
+                      "playwright",
+                      "install",
+                      "chromium"
+                    ],
+                    "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-wd3ld2hd/gridfinity-layout-tool",
+                    "timeout_s": 900,
+                    "returncode": 0,
+                    "timed_out": false,
+                    "elapsed_s": 1.6,
+                    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "stdout_bytes": 0,
+                    "stdout_tail": "",
+                    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "stderr_bytes": 0,
+                    "stderr_tail": ""
+                  }
+                ]
+              },
+              "dev_server": {
+                "base_url": "http://localhost:5176",
+                "command": "pnpm run dev",
+                "ok": false,
+                "http_status": null,
+                "ready_after_s": 2.1,
+                "exited_early": true,
+                "port_free_after_stop": true,
+                "output_tail": ":31472\n    at new Promise (<anonymous>)\n    at createIpcServer (file:///private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-wd3ld2hd/gridfinity-layout-tool/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/cli.mjs:53:31450)\n    at async file:///private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-wd3ld2hd/gridfinity-layout-tool/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/cli.mjs:55:542 {\n  code: 'EINVAL',\n  errno: -22,\n  syscall: 'listen',\n  address: '/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-B-planner_plus_ours-rdg89dte/tmp/tsx-501/87820.pipe',\n  port: -1\n}\n\nNode.js v24.20.0\n[ELIFECYCLE] Command failed with exit code 1.\n[ELIFECYCLE] Command failed with exit code 1.\n",
+                "served_on_expected_port": false
+              },
+              "error": "RuntimeError: dev server: {'base_url': 'http://localhost:5176', 'command': 'pnpm run dev', 'ok': False, 'http_status': None, 'ready_after_s': 2.1, 'exited_early': True, 'port_free_after_stop': True, 'output_tail': \":31472\\n    at new Promise (<anonymous>)\\n    at createIpcServer (file:///private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-wd3ld2hd/gridfinity-layout-tool/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/cli.mjs:53:31450)\\n    at async file:///private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-wd3ld2hd/gridfinity-layout-tool/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/cli.mjs:55:542 {\\n  code: 'EINVAL',\\n  errno: -22,\\n  syscall: 'listen',\\n  address: '/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-B-planner_plus_ours-rdg89dte/tmp/tsx-501/87820.pipe',\\n  port: -1\\n}\\n\\nNode.js v24.20.0\\n[ELIFECYCLE] Command failed with exit code 1.\\n[ELIFECYCLE] Command failed with exit code 1.\\n\", 'served_on_expected_port': False}",
+              "cleanup": {
+                "port_sweep": {
+                  "killed_workspace_listeners": [],
+                  "foreign_listeners": [],
+                  "port_free_after": true
+                },
+                "workspace": "removed",
+                "runner_home": "removed"
+              }
+            },
+            {
+              "attempt": 2,
+              "runner_home": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-B-planner_plus_ours-ubr49uup",
+              "workspace": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-7jav86qd/gridfinity-layout-tool",
+              "skill_snapshot": {
+                "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+                "skills/playwright-test-generator/playwright-agents.md": "9bd577cdf5624d2929c84b226c69952eb6d05eee8a651c021a5871a935f66251",
+                "skills/e2e-reviewer/SKILL.md": "c8420ba913c6092749b40ab892460eebf730cad3e4a2e28ed2cedc24d47f2c30",
+                "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb"
+              },
+              "fetch": {
+                "ok": true,
+                "head": "8902951e70f0e6e90e04780bb685faf837bc12bf",
+                "expected": "8902951e70f0e6e90e04780bb685faf837bc12bf",
+                "elapsed_s": 9.0,
+                "error": null
+              },
+              "port_substitution": {
+                "ok": true,
+                "upstream_port": 5173,
+                "new_port": 5176,
+                "files": [
+                  {
+                    "file": "playwright.config.ts",
+                    "status": "patched",
+                    "sha256_before": "249cd66ada221792eaddf426f4b1c93c421932975ae018ebd575e70616d1ac15",
+                    "sha256_after": "bec94fd3a09d1deb4364ff7adeda55a3f427470589031239cdb08dbcb50ef4eb",
+                    "occurrences_of_upstream_port_remaining": 0,
+                    "occurrences_of_new_port": 2
+                  },
+                  {
+                    "file": "vite.config.ts",
+                    "status": "patched",
+                    "sha256_before": "455e31b36c91d62bfa1bde8d1f40663e21daa50c3ad08b183d0fe4b7efd2b5d4",
+                    "sha256_after": "d18b89e54c7df0ac3bf83e3fe3d3ce73e975a8151d7cc0214d6d7821734576fd",
+                    "occurrences_of_upstream_port_remaining": 0,
+                    "occurrences_of_new_port": 1
+                  }
+                ],
+                "scope": "disposable checkout only; upstream repository untouched; checkout deleted after the cell",
+                "effective_base_url": "http://localhost:5176"
+              },
+              "install": {
+                "ok": true,
+                "runs": [
+                  {
+                    "command": [
+                      "pnpm",
+                      "install",
+                      "--frozen-lockfile"
+                    ],
+                    "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-7jav86qd/gridfinity-layout-tool",
+                    "timeout_s": 900,
+                    "returncode": 0,
+                    "timed_out": false,
+                    "elapsed_s": 25.8,
+                    "stdout_sha256": "6e9f815329e33d2fbe2d759fe730781e31bec0292252a427e0f6afa31deceb1d",
+                    "stdout_bytes": 4230,
+                    "stdout_tail": "nt-plugin-jsx-a11y 6.10.2\n+ eslint-plugin-react-hooks 7.1.1\n+ eslint-plugin-react-refresh 0.5.5\n+ fake-indexeddb 6.2.5\n+ globals 17.11.0\n+ gltf-pipeline 4.3.1\n+ husky 9.1.7\n+ js-yaml 5.4.1\n+ jsdom 30.0.1\n+ knip 6.33.0\n+ lint-staged 17.4.1\n+ marked 18.0.11\n+ path-to-regexp 6.3.0\n+ postcss 8.5.26\n+ prettier 3.9.6\n+ rollup-plugin-visualizer 7.1.1\n+ size-limit 13.0.3\n+ tailwindcss 4.3.3\n+ tsx 4.23.13\n+ typescript 6.0.3\n+ typescript-eslint 8.68.0\n+ vite 8.2.2\n+ vite-plugin-pwa 1.3.0\n+ vite-plugin-wasm 3.6.0\n+ vitest 4.1.11\n+ vitest-axe 0.1.0\n+ workbox-window 7.4.1\n\nDone in 25.5s using pnpm v11.2.2\n",
+                    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "stderr_bytes": 0,
+                    "stderr_tail": ""
+                  },
+                  {
+                    "command": [
+                      "pnpm",
+                      "exec",
+                      "playwright",
+                      "install",
+                      "chromium"
+                    ],
+                    "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-7jav86qd/gridfinity-layout-tool",
+                    "timeout_s": 900,
+                    "returncode": 0,
+                    "timed_out": false,
+                    "elapsed_s": 1.6,
+                    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "stdout_bytes": 0,
+                    "stdout_tail": "",
+                    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "stderr_bytes": 0,
+                    "stderr_tail": ""
+                  }
+                ]
+              },
+              "dev_server": {
+                "base_url": "http://localhost:5176",
+                "command": "pnpm run dev",
+                "ok": false,
+                "http_status": null,
+                "ready_after_s": 2.1,
+                "exited_early": true,
+                "port_free_after_stop": true,
+                "output_tail": "3:31472\n    at new Promise (<anonymous>)\n    at createIpcServer (file:///private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-7jav86qd/gridfinity-layout-tool/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/cli.mjs:53:31450)\n    at async file:///private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-7jav86qd/gridfinity-layout-tool/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/cli.mjs:55:542 {\n  code: 'EINVAL',\n  errno: -22,\n  syscall: 'listen',\n  address: '/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-B-planner_plus_ours-ubr49uup/tmp/tsx-501/3877.pipe',\n  port: -1\n}\n\nNode.js v24.20.0\n[ELIFECYCLE] Command failed with exit code 1.\n[ELIFECYCLE] Command failed with exit code 1.\n",
+                "served_on_expected_port": false
+              },
+              "error": "RuntimeError: dev server: {'base_url': 'http://localhost:5176', 'command': 'pnpm run dev', 'ok': False, 'http_status': None, 'ready_after_s': 2.1, 'exited_early': True, 'port_free_after_stop': True, 'output_tail': \"3:31472\\n    at new Promise (<anonymous>)\\n    at createIpcServer (file:///private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-7jav86qd/gridfinity-layout-tool/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/cli.mjs:53:31450)\\n    at async file:///private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-7jav86qd/gridfinity-layout-tool/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/cli.mjs:55:542 {\\n  code: 'EINVAL',\\n  errno: -22,\\n  syscall: 'listen',\\n  address: '/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-B-planner_plus_ours-ubr49uup/tmp/tsx-501/3877.pipe',\\n  port: -1\\n}\\n\\nNode.js v24.20.0\\n[ELIFECYCLE] Command failed with exit code 1.\\n[ELIFECYCLE] Command failed with exit code 1.\\n\", 'served_on_expected_port': False}",
+              "cleanup": {
+                "port_sweep": {
+                  "killed_workspace_listeners": [],
+                  "foreign_listeners": [],
+                  "port_free_after": true
+                },
+                "workspace": "removed",
+                "runner_home": "removed"
+              }
+            }
+          ],
+          "finished_at": "2026-09-11T04:36:53+00:00",
+          "wall_time_s": 104.6,
+          "fail_reasons": [
+            "RuntimeError: dev server: {'base_url': 'http://localhost:5176', 'command': 'pnpm run dev', 'ok': False, 'http_status': None, 'ready_after_s': 2.1, 'exited_early': True, 'port_free_after_stop': True, 'output_tail': \"3:31472\\n    at new Promise (<anonymous>)\\n    at createIpcServer (file:///private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-7jav86qd/gridfinity-layout-tool/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/cli.mjs:53:31450)\\n    at async file:///private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-7jav86qd/gridfinity-layout-tool/node_modules/.pnpm/tsx@4.23.13/node_modules/tsx/dist/cli.mjs:55:542 {\\n  code: 'EINVAL',\\n  errno: -22,\\n  syscall: 'listen',\\n  address: '/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-B-planner_plus_ours-ubr49uup/tmp/tsx-501/3877.pipe',\\n  port: -1\\n}\\n\\nNode.js v24.20.0\\n[ELIFECYCLE] Command failed with exit code 1.\\n[ELIFECYCLE] Command failed with exit code 1.\\n\", 'served_on_expected_port': False}"
+          ],
+          "corrected_rule_assessment": {
+            "verdict": "SETUP_FAILED",
+            "reason": "no session record to reassess"
+          }
+        },
+        {
+          "cell_id": "smoke-B-planner_plus_ours",
+          "order": 4,
+          "target_id": "B",
+          "repository": "andymai/gridfinity-layout-tool",
+          "pinned_sha": "8902951e70f0e6e90e04780bb685faf837bc12bf",
+          "arm": "planner_plus_ours",
+          "status": "FAIL",
+          "artifacts_dir": "benchmarks/ours-vs-planner-pilot-v1/smoke-artifacts/smoke-B-planner_plus_ours",
+          "started_at": "2026-09-11T05:26:31+00:00",
+          "setup_attempts": [
+            {
+              "attempt": 1,
+              "runner_home": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-B-planner_plus_ours-v9b1r8dk",
+              "workspace": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-m0udri4v/gridfinity-layout-tool",
+              "skill_snapshot": {
+                "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+                "skills/playwright-test-generator/playwright-agents.md": "9bd577cdf5624d2929c84b226c69952eb6d05eee8a651c021a5871a935f66251",
+                "skills/e2e-reviewer/SKILL.md": "c8420ba913c6092749b40ab892460eebf730cad3e4a2e28ed2cedc24d47f2c30",
+                "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb"
+              },
+              "fetch": {
+                "ok": true,
+                "head": "8902951e70f0e6e90e04780bb685faf837bc12bf",
+                "expected": "8902951e70f0e6e90e04780bb685faf837bc12bf",
+                "elapsed_s": 7.9,
+                "error": null
+              },
+              "port_substitution": {
+                "ok": true,
+                "upstream_port": 5173,
+                "new_port": 5174,
+                "files": [
+                  {
+                    "file": "playwright.config.ts",
+                    "status": "patched",
+                    "sha256_before": "249cd66ada221792eaddf426f4b1c93c421932975ae018ebd575e70616d1ac15",
+                    "sha256_after": "fa42394d3420d6a3316bbbb41aa6ca89498f0b744b0f2a6547cbc18118e04db0",
+                    "occurrences_of_upstream_port_remaining": 0,
+                    "occurrences_of_new_port": 2
+                  },
+                  {
+                    "file": "vite.config.ts",
+                    "status": "patched",
+                    "sha256_before": "455e31b36c91d62bfa1bde8d1f40663e21daa50c3ad08b183d0fe4b7efd2b5d4",
+                    "sha256_after": "09d1168cb526c3cadd722077368a340fa44765c45b12053f78cc8ebf7a039cf7",
+                    "occurrences_of_upstream_port_remaining": 0,
+                    "occurrences_of_new_port": 1
+                  }
+                ],
+                "scope": "disposable checkout only; upstream repository untouched; checkout deleted after the cell",
+                "effective_base_url": "http://localhost:5174"
+              },
+              "install": {
+                "ok": true,
+                "runs": [
+                  {
+                    "command": [
+                      "pnpm",
+                      "install",
+                      "--frozen-lockfile"
+                    ],
+                    "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-m0udri4v/gridfinity-layout-tool",
+                    "timeout_s": 900,
+                    "returncode": 0,
+                    "timed_out": false,
+                    "elapsed_s": 27.9,
+                    "stdout_sha256": "f53353dd767fa6e66b15d15a4c55ffbfb8feab6cb23624f153254e54de3b11cd",
+                    "stdout_bytes": 4230,
+                    "stdout_tail": "nt-plugin-jsx-a11y 6.10.2\n+ eslint-plugin-react-hooks 7.1.1\n+ eslint-plugin-react-refresh 0.5.5\n+ fake-indexeddb 6.2.5\n+ globals 17.11.0\n+ gltf-pipeline 4.3.1\n+ husky 9.1.7\n+ js-yaml 5.4.1\n+ jsdom 30.0.1\n+ knip 6.33.0\n+ lint-staged 17.4.1\n+ marked 18.0.11\n+ path-to-regexp 6.3.0\n+ postcss 8.5.26\n+ prettier 3.9.6\n+ rollup-plugin-visualizer 7.1.1\n+ size-limit 13.0.3\n+ tailwindcss 4.3.3\n+ tsx 4.23.13\n+ typescript 6.0.3\n+ typescript-eslint 8.68.0\n+ vite 8.2.2\n+ vite-plugin-pwa 1.3.0\n+ vite-plugin-wasm 3.6.0\n+ vitest 4.1.11\n+ vitest-axe 0.1.0\n+ workbox-window 7.4.1\n\nDone in 27.8s using pnpm v11.2.2\n",
+                    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "stderr_bytes": 0,
+                    "stderr_tail": ""
+                  },
+                  {
+                    "command": [
+                      "pnpm",
+                      "exec",
+                      "playwright",
+                      "install",
+                      "chromium"
+                    ],
+                    "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-m0udri4v/gridfinity-layout-tool",
+                    "timeout_s": 900,
+                    "returncode": 0,
+                    "timed_out": false,
+                    "elapsed_s": 1.6,
+                    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "stdout_bytes": 0,
+                    "stdout_tail": "",
+                    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "stderr_bytes": 0,
+                    "stderr_tail": ""
+                  }
+                ]
+              },
+              "dev_server": {
+                "base_url": "http://localhost:5174",
+                "command": "pnpm run dev",
+                "ok": true,
+                "http_status": 200,
+                "ready_after_s": 6.3,
+                "exited_early": false,
+                "port_free_after_stop": true,
+                "output_tail": "ion (vite.config.ts:8:31). Add the file extension\n  - import \"./scripts/vite-plugin-content-routes\" without a file extension (vite.config.ts:9:37). Add the file extension\n  - import \"./scripts/vite-plugin-mediapipe-assets\" without a file extension (vite.config.ts:10:39). Add the file extension\n  - import \"./scripts/vite-plugin-minify-json-assets\" without a file extension (vite.config.ts:11:34). Add the file extension\n  - import \"./scripts/contentRoutes\" without a file extension (vite.config.ts:12:48). Add the file extension\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n\n  VITE v8.2.2  ready in 1588 ms\n\n  ➜  Local:   http://localhost:5174/\n  ➜  Network: use --host to expose\n2:27:14 PM [vite] (client) [optimizer] scanning dependencies...\n[ELIFECYCLE] Command failed.\n",
+                "served_on_expected_port": true
+              },
+              "init_agents": {
+                "ok": true,
+                "status": "READY",
+                "run": {
+                  "command": [
+                    "pnpm",
+                    "exec",
+                    "playwright",
+                    "init-agents",
+                    "--loop=claude"
+                  ],
+                  "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-m0udri4v/gridfinity-layout-tool",
+                  "timeout_s": 300,
+                  "returncode": 0,
+                  "timed_out": false,
+                  "elapsed_s": 1.1,
+                  "stdout_sha256": "5f539564661e5032b831b51f3f61f6c9d75c447c8d71ab37bcc11ef263fcbacf",
+                  "stdout_bytes": 459,
+                  "stdout_tail": " 🎭 Using project \"chromium\" as a primary project\n 📝 specs/README.md \u001b[2m- directory for test plans\u001b[22m\n 🌱 e2e/seed.spec.ts \u001b[2m- default environment seed file\u001b[22m\n 🤖 .claude/agents/playwright-test-generator.md \u001b[2m- agent definition\u001b[22m\n 🤖 .claude/agents/playwright-test-healer.md \u001b[2m- agent definition\u001b[22m\n 🤖 .claude/agents/playwright-test-planner.md \u001b[2m- agent definition\u001b[22m\n 🔧 .mcp.json \u001b[2m- mcp configuration\u001b[22m\n ✅ Done.\n",
+                  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "stderr_bytes": 0,
+                  "stderr_tail": ""
+                },
+                "created_files": [
+                  ".claude/agents/playwright-test-generator.md",
+                  ".claude/agents/playwright-test-healer.md",
+                  ".claude/agents/playwright-test-planner.md",
+                  ".mcp.json",
+                  "e2e/seed.spec.ts",
+                  "specs/README.md"
+                ],
+                "control_file_sha256": {
+                  ".claude/agents/playwright-test-generator.md": "d267d66831af32d6db4d3d8c4c742cd0882e47897871082993fb15b03e77d094",
+                  ".claude/agents/playwright-test-healer.md": "7ace70bce4716641633a46a6c5f41773277812a046cba517be616e677e7ccdf8",
+                  ".claude/agents/playwright-test-planner.md": "4566f7ea58d11ceb8e65b7992c658d959cb610df4b9949e370cfbfb1f3ea310b",
+                  ".mcp.json": "4d5cb64e14d92e37d7eb368b126394b67a791867986559ac950ca072f95703fd",
+                  "e2e/seed.spec.ts": "26e975f2a7278f28c62fa93f255a9a9a4fa104a73921d3fe76452d9bdd1cb679",
+                  "specs/README.md": "615fde3ec0e0bcfc76313ed765820bce93c6967be8e6bfae5870f0d77a256604"
+                },
+                "agents_passed_via_flag": [
+                  "bugfix-investigator",
+                  "code-simplifier",
+                  "i18n-reviewer",
+                  "playwright-test-generator",
+                  "playwright-test-healer",
+                  "playwright-test-planner"
+                ],
+                "planner_agent_declares_setup_and_save_tools": true,
+                "mcp_config": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-m0udri4v/gridfinity-layout-tool/.mcp.json",
+                "modified_tracked_by_init": [
+                  "playwright.config.ts",
+                  "vite.config.ts"
+                ]
+              },
+              "pre_session_state": {
+                "porcelain": [
+                  " M playwright.config.ts",
+                  " M vite.config.ts",
+                  "?? .claude/agents/playwright-test-generator.md",
+                  "?? .claude/agents/playwright-test-healer.md",
+                  "?? .claude/agents/playwright-test-planner.md",
+                  "?? .mcp.json",
+                  "?? e2e/seed.spec.ts",
+                  "?? specs/README.md"
+                ],
+                "tracked_diff_sha256": "5d35220be973a07f192865d810d1264bd890e9673bcdade7d7cf996a9f67bb70",
+                "tracked_diff_bytes": 1343,
+                "modified_tracked": [
+                  "playwright.config.ts",
+                  "vite.config.ts"
+                ],
+                "untracked": [
+                  ".claude/agents/playwright-test-generator.md",
+                  ".claude/agents/playwright-test-healer.md",
+                  ".claude/agents/playwright-test-planner.md",
+                  ".mcp.json",
+                  "e2e/seed.spec.ts",
+                  "specs/README.md"
+                ]
+              },
+              "prompt_sha256": "c2a811ef642bb0cc8839b4e2eb6381d3687b6e73eb704f4c68b17abfdafdc5ef",
+              "session_command": [
+                "/Users/user/.local/share/claude/versions/2.1.268",
+                "-p",
+                "--output-format",
+                "json",
+                "--setting-sources",
+                "user",
+                "--strict-mcp-config",
+                "--dangerously-skip-permissions",
+                "--model",
+                "claude-opus-5",
+                "--max-turns",
+                "250",
+                "--max-budget-usd",
+                "40",
+                "--mcp-config",
+                "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-m0udri4v/gridfinity-layout-tool/.mcp.json",
+                "--agents",
+                "<agents-json>"
+              ],
+              "session": {
+                "command": [
+                  "/Users/user/.local/share/claude/versions/2.1.268",
+                  "-p",
+                  "--output-format",
+                  "json",
+                  "--setting-sources",
+                  "user",
+                  "--strict-mcp-config",
+                  "--dangerously-skip-permissions",
+                  "--model",
+                  "claude-opus-5",
+                  "--max-turns",
+                  "250",
+                  "--max-budget-usd",
+                  "40",
+                  "--mcp-config",
+                  "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-m0udri4v/gridfinity-layout-tool/.mcp.json",
+                  "--agents",
+                  "<agents-json>"
+                ],
+                "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-m0udri4v/gridfinity-layout-tool",
+                "timeout_s": 2400,
+                "returncode": null,
+                "timed_out": true,
+                "cleanup_failures": [],
+                "elapsed_s": 2400.5,
+                "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "stdout_bytes": 0,
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "stderr_bytes": 0,
+                "credential_shaped_output_detected": false,
+                "result": {
+                  "parsed": false
+                }
+              },
+              "post_session_port_sweep": {
+                "killed_workspace_listeners": [],
+                "foreign_listeners": [],
+                "port_free_after": true
+              },
+              "transcript": {
+                "path": "benchmarks/ours-vs-planner-pilot-v1/smoke-artifacts/smoke-B-planner_plus_ours/transcript.jsonl",
+                "bytes": 1231699,
+                "sha256": "ff94a56f7e656d1662b278eca9db71cf75cb6889221534b40d22a2ca2626b544",
+                "raw_sha256": "ff94a56f7e656d1662b278eca9db71cf75cb6889221534b40d22a2ca2626b544",
+                "redactions_applied": false,
+                "lines": 439
+              },
+              "post_session_state": {
+                "rule": "protocol.json schedule.candidate_completion_surface",
+                "buckets": {
+                  "candidate_spec": [
+                    "e2e/smoke-shell.spec.ts"
+                  ],
+                  "new_test_dir_files": [],
+                  "planner_specs_output": [
+                    "specs/smoke-planner-delta.md",
+                    "specs/smoke-shell-plan.md"
+                  ],
+                  "runtime_artifacts": [],
+                  "additive_test_dir_edits": [],
+                  "harness_patched": [
+                    "playwright.config.ts",
+                    "vite.config.ts"
+                  ],
+                  "drift": []
+                },
+                "tracked_diff_sha256": "5d35220be973a07f192865d810d1264bd890e9673bcdade7d7cf996a9f67bb70",
+                "porcelain": [
+                  " M playwright.config.ts",
+                  " M vite.config.ts",
+                  "?? .claude/agents/playwright-test-generator.md",
+                  "?? .claude/agents/playwright-test-healer.md",
+                  "?? .claude/agents/playwright-test-planner.md",
+                  "?? .mcp.json",
+                  "?? e2e/seed.spec.ts",
+                  "?? e2e/smoke-shell.spec.ts",
+                  "?? specs/README.md",
+                  "?? specs/smoke-planner-delta.md",
+                  "?? specs/smoke-shell-plan.md"
+                ],
+                "within_surface": true,
+                "expected_modified_by_harness": [
+                  "playwright.config.ts",
+                  "vite.config.ts"
+                ]
+              },
+              "candidate": {
+                "expected_path": "e2e/smoke-shell.spec.ts",
+                "exists": true,
+                "spec_files_created": [
+                  "e2e/smoke-shell.spec.ts"
+                ],
+                "sha256": "5fd60e3f09f069f14894dacd30687fa04c16fa64c24e409e1616a0b3ed97b6aa"
+              },
+              "planner_delta": {
+                "exists": true,
+                "sha256": "9fbfafc0bad27f64d7f0207f7d70902a337ca1938d8102df1d4bbe23f9036042",
+                "unavailable_marker": false
+              },
+              "native_run": {
+                "command": [
+                  "pnpm",
+                  "exec",
+                  "playwright",
+                  "test",
+                  "e2e/smoke-shell.spec.ts",
+                  "--project=chromium",
+                  "--retries=0",
+                  "--reporter=list"
+                ],
+                "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-m0udri4v/gridfinity-layout-tool",
+                "timeout_s": 600,
+                "returncode": 0,
+                "timed_out": false,
+                "elapsed_s": 12.2,
+                "stdout_sha256": "e2f7b3eb63bd8714cb0fe2300f2f00f71003b7079e5eacf0724e5f36e2d2b94a",
+                "stdout_bytes": 201,
+                "stdout_tail": "\nRunning 1 test using 1 worker\n\n  ✓  1 [chromium] › e2e/smoke-shell.spec.ts:21:3 › Application shell › root route loads the shell with the primary navigation visible (6.1s)\n\n  1 passed (11.1s)\n",
+                "stderr_sha256": "5c3bc63162ba437e31b7e15119bcd7c8178d7afef69cbac78c2b735c2a224bc2",
+                "stderr_bytes": 2737,
+                "stderr_tail": "gnored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] (node:17537) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] $ tsx scripts/build-en-locale.ts\n[WebServer] (node:17558) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] (node:17574) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] (node:17602) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] (!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n[WebServer]   - import \"./scripts/vite-plugin-version\" without a file extension (vite.config.ts:8:31). Add the file extension\n[WebServer]   - import \"./scripts/vite-plugin-content-routes\" without a file extension (vite.config.ts:9:37). Add the file extension\n[WebServer]   - import \"./scripts/vite-plugin-mediapipe-assets\" without a file extension (vite.config.ts:10:39). Add the file extension\n[WebServer]   - import \"./scripts/vite-plugin-minify-json-assets\" without a file extension (vite.config.ts:11:34). Add the file extension\n[WebServer]   - import \"./scripts/contentRoutes\" without a file extension (vite.config.ts:12:48). Add the file extension\n[WebServer] Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n(node:17643) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n",
+                "ok": true,
+                "env_overrides": {}
+              },
+              "post_native_port_sweep": {
+                "killed_workspace_listeners": [],
+                "foreign_listeners": [],
+                "port_free_after": true
+              },
+              "cleanup": {
+                "port_sweep": {
+                  "killed_workspace_listeners": [],
+                  "foreign_listeners": [],
+                  "port_free_after": true
+                },
+                "workspace": "removed",
+                "runner_home": "removed",
+                "short_tmpdir": "removed"
+              }
+            }
+          ],
+          "planner_availability": "READY",
+          "fail_reasons": [
+            "session timed out",
+            "session exit None"
+          ],
+          "finished_at": "2026-09-11T06:07:48+00:00",
+          "wall_time_s": 2479.0
+        }
+      ],
+      "artifacts_dir": "benchmarks/ours-vs-planner-pilot-v1/smoke-artifacts/smoke-B-planner_plus_ours",
+      "started_at": "2026-09-11T06:08:56+00:00",
+      "setup_attempts": [
+        {
+          "attempt": 1,
+          "runner_home": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-home-smoke-B-planner_plus_ours-x1qr1bzj",
+          "workspace": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-i8icyv31/gridfinity-layout-tool",
+          "skill_snapshot": {
+            "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+            "skills/playwright-test-generator/playwright-agents.md": "9bd577cdf5624d2929c84b226c69952eb6d05eee8a651c021a5871a935f66251",
+            "skills/e2e-reviewer/SKILL.md": "c8420ba913c6092749b40ab892460eebf730cad3e4a2e28ed2cedc24d47f2c30",
+            "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb"
+          },
+          "fetch": {
+            "ok": true,
+            "head": "8902951e70f0e6e90e04780bb685faf837bc12bf",
+            "expected": "8902951e70f0e6e90e04780bb685faf837bc12bf",
+            "elapsed_s": 13.4,
+            "error": null
+          },
+          "port_substitution": {
+            "ok": true,
+            "upstream_port": 5173,
+            "new_port": 5174,
+            "files": [
+              {
+                "file": "playwright.config.ts",
+                "status": "patched",
+                "sha256_before": "249cd66ada221792eaddf426f4b1c93c421932975ae018ebd575e70616d1ac15",
+                "sha256_after": "fa42394d3420d6a3316bbbb41aa6ca89498f0b744b0f2a6547cbc18118e04db0",
+                "occurrences_of_upstream_port_remaining": 0,
+                "occurrences_of_new_port": 2
+              },
+              {
+                "file": "vite.config.ts",
+                "status": "patched",
+                "sha256_before": "455e31b36c91d62bfa1bde8d1f40663e21daa50c3ad08b183d0fe4b7efd2b5d4",
+                "sha256_after": "09d1168cb526c3cadd722077368a340fa44765c45b12053f78cc8ebf7a039cf7",
+                "occurrences_of_upstream_port_remaining": 0,
+                "occurrences_of_new_port": 1
+              }
+            ],
+            "scope": "disposable checkout only; upstream repository untouched; checkout deleted after the cell",
+            "effective_base_url": "http://localhost:5174"
+          },
+          "install": {
+            "ok": true,
+            "runs": [
+              {
+                "command": [
+                  "pnpm",
+                  "install",
+                  "--frozen-lockfile"
+                ],
+                "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-i8icyv31/gridfinity-layout-tool",
+                "timeout_s": 900,
+                "returncode": 0,
+                "timed_out": false,
+                "elapsed_s": 26.7,
+                "stdout_sha256": "cef5e19a8cea96e3877fbdb722002c3efba4f2074043be4a9c7fa47b8315f9d7",
+                "stdout_bytes": 4230,
+                "stdout_tail": "nt-plugin-jsx-a11y 6.10.2\n+ eslint-plugin-react-hooks 7.1.1\n+ eslint-plugin-react-refresh 0.5.5\n+ fake-indexeddb 6.2.5\n+ globals 17.11.0\n+ gltf-pipeline 4.3.1\n+ husky 9.1.7\n+ js-yaml 5.4.1\n+ jsdom 30.0.1\n+ knip 6.33.0\n+ lint-staged 17.4.1\n+ marked 18.0.11\n+ path-to-regexp 6.3.0\n+ postcss 8.5.26\n+ prettier 3.9.6\n+ rollup-plugin-visualizer 7.1.1\n+ size-limit 13.0.3\n+ tailwindcss 4.3.3\n+ tsx 4.23.13\n+ typescript 6.0.3\n+ typescript-eslint 8.68.0\n+ vite 8.2.2\n+ vite-plugin-pwa 1.3.0\n+ vite-plugin-wasm 3.6.0\n+ vitest 4.1.11\n+ vitest-axe 0.1.0\n+ workbox-window 7.4.1\n\nDone in 26.5s using pnpm v11.2.2\n",
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "stderr_bytes": 0,
+                "stderr_tail": ""
+              },
+              {
+                "command": [
+                  "pnpm",
+                  "exec",
+                  "playwright",
+                  "install",
+                  "chromium"
+                ],
+                "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-i8icyv31/gridfinity-layout-tool",
+                "timeout_s": 900,
+                "returncode": 0,
+                "timed_out": false,
+                "elapsed_s": 1.9,
+                "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "stdout_bytes": 0,
+                "stdout_tail": "",
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "stderr_bytes": 0,
+                "stderr_tail": ""
+              }
+            ]
+          },
+          "dev_server": {
+            "base_url": "http://localhost:5174",
+            "command": "pnpm run dev",
+            "ok": true,
+            "http_status": 200,
+            "ready_after_s": 4.5,
+            "exited_early": false,
+            "port_free_after_stop": true,
+            "output_tail": "  - import \"./scripts/vite-plugin-version\" without a file extension (vite.config.ts:8:31). Add the file extension\n  - import \"./scripts/vite-plugin-content-routes\" without a file extension (vite.config.ts:9:37). Add the file extension\n  - import \"./scripts/vite-plugin-mediapipe-assets\" without a file extension (vite.config.ts:10:39). Add the file extension\n  - import \"./scripts/vite-plugin-minify-json-assets\" without a file extension (vite.config.ts:11:34). Add the file extension\n  - import \"./scripts/contentRoutes\" without a file extension (vite.config.ts:12:48). Add the file extension\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n\n  VITE v8.2.2  ready in 1393 ms\n\n  ➜  Local:   http://localhost:5174/\n  ➜  Network: use --host to expose\n[ELIFECYCLE] Command failed.\n",
+            "served_on_expected_port": true
+          },
+          "init_agents": {
+            "ok": true,
+            "status": "READY",
+            "run": {
+              "command": [
+                "pnpm",
+                "exec",
+                "playwright",
+                "init-agents",
+                "--loop=claude"
+              ],
+              "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-i8icyv31/gridfinity-layout-tool",
+              "timeout_s": 300,
+              "returncode": 0,
+              "timed_out": false,
+              "elapsed_s": 0.7,
+              "stdout_sha256": "5f539564661e5032b831b51f3f61f6c9d75c447c8d71ab37bcc11ef263fcbacf",
+              "stdout_bytes": 459,
+              "stdout_tail": " 🎭 Using project \"chromium\" as a primary project\n 📝 specs/README.md \u001b[2m- directory for test plans\u001b[22m\n 🌱 e2e/seed.spec.ts \u001b[2m- default environment seed file\u001b[22m\n 🤖 .claude/agents/playwright-test-generator.md \u001b[2m- agent definition\u001b[22m\n 🤖 .claude/agents/playwright-test-healer.md \u001b[2m- agent definition\u001b[22m\n 🤖 .claude/agents/playwright-test-planner.md \u001b[2m- agent definition\u001b[22m\n 🔧 .mcp.json \u001b[2m- mcp configuration\u001b[22m\n ✅ Done.\n",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stderr_bytes": 0,
+              "stderr_tail": ""
+            },
+            "created_files": [
+              ".claude/agents/playwright-test-generator.md",
+              ".claude/agents/playwright-test-healer.md",
+              ".claude/agents/playwright-test-planner.md",
+              ".mcp.json",
+              "e2e/seed.spec.ts",
+              "specs/README.md"
+            ],
+            "control_file_sha256": {
+              ".claude/agents/playwright-test-generator.md": "d267d66831af32d6db4d3d8c4c742cd0882e47897871082993fb15b03e77d094",
+              ".claude/agents/playwright-test-healer.md": "7ace70bce4716641633a46a6c5f41773277812a046cba517be616e677e7ccdf8",
+              ".claude/agents/playwright-test-planner.md": "4566f7ea58d11ceb8e65b7992c658d959cb610df4b9949e370cfbfb1f3ea310b",
+              ".mcp.json": "4d5cb64e14d92e37d7eb368b126394b67a791867986559ac950ca072f95703fd",
+              "e2e/seed.spec.ts": "26e975f2a7278f28c62fa93f255a9a9a4fa104a73921d3fe76452d9bdd1cb679",
+              "specs/README.md": "615fde3ec0e0bcfc76313ed765820bce93c6967be8e6bfae5870f0d77a256604"
+            },
+            "agents_passed_via_flag": [
+              "bugfix-investigator",
+              "code-simplifier",
+              "i18n-reviewer",
+              "playwright-test-generator",
+              "playwright-test-healer",
+              "playwright-test-planner"
+            ],
+            "planner_agent_declares_setup_and_save_tools": true,
+            "mcp_config": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-i8icyv31/gridfinity-layout-tool/.mcp.json",
+            "modified_tracked_by_init": [
+              "playwright.config.ts",
+              "vite.config.ts"
+            ]
+          },
+          "pre_session_state": {
+            "porcelain": [
+              " M playwright.config.ts",
+              " M vite.config.ts",
+              "?? .claude/agents/playwright-test-generator.md",
+              "?? .claude/agents/playwright-test-healer.md",
+              "?? .claude/agents/playwright-test-planner.md",
+              "?? .mcp.json",
+              "?? e2e/seed.spec.ts",
+              "?? specs/README.md"
+            ],
+            "tracked_diff_sha256": "5d35220be973a07f192865d810d1264bd890e9673bcdade7d7cf996a9f67bb70",
+            "tracked_diff_bytes": 1343,
+            "modified_tracked": [
+              "playwright.config.ts",
+              "vite.config.ts"
+            ],
+            "untracked": [
+              ".claude/agents/playwright-test-generator.md",
+              ".claude/agents/playwright-test-healer.md",
+              ".claude/agents/playwright-test-planner.md",
+              ".mcp.json",
+              "e2e/seed.spec.ts",
+              "specs/README.md"
+            ]
+          },
+          "prompt_sha256": "c2a811ef642bb0cc8839b4e2eb6381d3687b6e73eb704f4c68b17abfdafdc5ef",
+          "session_command": [
+            "/Users/user/.local/share/claude/versions/2.1.268",
+            "-p",
+            "--output-format",
+            "json",
+            "--setting-sources",
+            "user",
+            "--strict-mcp-config",
+            "--dangerously-skip-permissions",
+            "--model",
+            "claude-opus-5",
+            "--max-turns",
+            "250",
+            "--max-budget-usd",
+            "40",
+            "--mcp-config",
+            "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-i8icyv31/gridfinity-layout-tool/.mcp.json",
+            "--agents",
+            "<agents-json>"
+          ],
+          "session": {
+            "command": [
+              "/Users/user/.local/share/claude/versions/2.1.268",
+              "-p",
+              "--output-format",
+              "json",
+              "--setting-sources",
+              "user",
+              "--strict-mcp-config",
+              "--dangerously-skip-permissions",
+              "--model",
+              "claude-opus-5",
+              "--max-turns",
+              "250",
+              "--max-budget-usd",
+              "40",
+              "--mcp-config",
+              "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-i8icyv31/gridfinity-layout-tool/.mcp.json",
+              "--agents",
+              "<agents-json>"
+            ],
+            "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-i8icyv31/gridfinity-layout-tool",
+            "timeout_s": 3600,
+            "returncode": 0,
+            "timed_out": false,
+            "elapsed_s": 1025.7,
+            "stdout_sha256": "d8623e088a1a9a956885f814057b2b99e244a002441f68efb2d7b0a141787d40",
+            "stdout_bytes": 7476,
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stderr_bytes": 0,
+            "credential_shaped_output_detected": false,
+            "result": {
+              "parsed": true,
+              "subtype": "success",
+              "is_error": false,
+              "num_turns": 73,
+              "duration_ms": 1023838,
+              "duration_api_ms": 839164,
+              "total_cost_usd_reported": 6.779952249999999,
+              "usage": {
+                "input_tokens": 126,
+                "cache_creation_input_tokens": 147067,
+                "cache_read_input_tokens": 5844491,
+                "output_tokens": 40536,
+                "output_tokens_details": {
+                  "thinking_tokens": 18166
+                },
+                "server_tool_use": {
+                  "web_search_requests": 0,
+                  "web_fetch_requests": 0
+                },
+                "service_tier": "standard",
+                "cache_creation": {
+                  "ephemeral_1h_input_tokens": 147067,
+                  "ephemeral_5m_input_tokens": 0
+                },
+                "inference_geo": "not_available",
+                "iterations": [
+                  {
+                    "input_tokens": 2,
+                    "output_tokens": 3146,
+                    "cache_read_input_tokens": 156439,
+                    "cache_creation_input_tokens": 660,
+                    "cache_creation": {
+                      "ephemeral_5m_input_tokens": 0,
+                      "ephemeral_1h_input_tokens": 660
+                    },
+                    "type": "message"
+                  }
+                ],
+                "speed": "standard"
+              },
+              "model_usage": {
+                "claude-opus-5": {
+                  "inputTokens": 154,
+                  "outputTokens": 54140,
+                  "cacheReadInputTokens": 6530903,
+                  "cacheCreationInputTokens": 219924,
+                  "webSearchRequests": 0,
+                  "costUSD": 6.545747749999999,
+                  "contextWindow": 1000000,
+                  "maxOutputTokens": 64000,
+                  "thinkingTokens": 24914,
+                  "canonicalModel": "claude-opus-5",
+                  "provider": "firstParty",
+                  "costBasis": "list"
+                },
+                "claude-sonnet-5": {
+                  "inputTokens": 18,
+                  "outputTokens": 10298,
+                  "cacheReadInputTokens": 165405,
+                  "cacheCreationInputTokens": 39243,
+                  "webSearchRequests": 0,
+                  "costUSD": 0.23420450000000004,
+                  "contextWindow": 1000000,
+                  "maxOutputTokens": 64000,
+                  "thinkingTokens": 1478,
+                  "canonicalModel": "claude-sonnet-5",
+                  "provider": "firstParty",
+                  "costBasis": "list"
+                }
+              },
+              "session_id": "0c8b4407-5b0f-4fa6-820e-682762bf07f2",
+              "final_text_sha256": "a1d8bf392fa414851d273ee0116ead0a22547820df16112340a2d605a2d44885",
+              "final_text_bytes": 5184,
+              "self_report": {
+                "cell": "smoke-B-planner_plus_ours",
+                "arm": "planner_plus_ours",
+                "outcome": "PARTIAL/BLOCKED",
+                "candidate_files": [
+                  "e2e/smoke-shell.spec.ts",
+                  "specs/smoke-planner-delta.md",
+                  "specs/smoke-shell-plan.md"
+                ],
+                "browser_source": "agent-browser",
+                "planner_status": "READY",
+                "native_run_command": "pnpm exec playwright test e2e/smoke-shell.spec.ts --project=chromium --retries=0 --reporter=list",
+                "native_run_passed": true,
+                "verification": {
+                  "V1": "PASS",
+                  "V2": "PASS",
+                  "V3": "PASS",
+                  "V4": "N/A",
+                  "V5": "CANNOT_VERIFY",
+                  "V6": "PASS"
+                }
+              }
+            }
+          },
+          "post_session_port_sweep": {
+            "killed_workspace_listeners": [],
+            "foreign_listeners": [],
+            "port_free_after": true
+          },
+          "transcript": {
+            "path": "benchmarks/ours-vs-planner-pilot-v1/smoke-artifacts/smoke-B-planner_plus_ours/transcript.jsonl",
+            "bytes": 1015486,
+            "sha256": "8f40884e1c414265670f74e859f09c0cb1b9700e23c2df6e4d351e686455024e",
+            "raw_sha256": "8f40884e1c414265670f74e859f09c0cb1b9700e23c2df6e4d351e686455024e",
+            "redactions_applied": false,
+            "lines": 390
+          },
+          "post_session_state": {
+            "rule": "protocol.json schedule.candidate_completion_surface",
+            "buckets": {
+              "candidate_spec": [
+                "e2e/smoke-shell.spec.ts"
+              ],
+              "new_test_dir_files": [],
+              "planner_specs_output": [
+                "specs/smoke-planner-delta.md",
+                "specs/smoke-shell-plan.md"
+              ],
+              "runtime_artifacts": [],
+              "additive_test_dir_edits": [],
+              "harness_patched": [
+                "playwright.config.ts",
+                "vite.config.ts"
+              ],
+              "drift": []
+            },
+            "tracked_diff_sha256": "5d35220be973a07f192865d810d1264bd890e9673bcdade7d7cf996a9f67bb70",
+            "porcelain": [
+              " M playwright.config.ts",
+              " M vite.config.ts",
+              "?? .claude/agents/playwright-test-generator.md",
+              "?? .claude/agents/playwright-test-healer.md",
+              "?? .claude/agents/playwright-test-planner.md",
+              "?? .mcp.json",
+              "?? e2e/seed.spec.ts",
+              "?? e2e/smoke-shell.spec.ts",
+              "?? specs/README.md",
+              "?? specs/smoke-planner-delta.md",
+              "?? specs/smoke-shell-plan.md"
+            ],
+            "within_surface": true,
+            "expected_modified_by_harness": [
+              "playwright.config.ts",
+              "vite.config.ts"
+            ]
+          },
+          "candidate": {
+            "expected_path": "e2e/smoke-shell.spec.ts",
+            "exists": true,
+            "spec_files_created": [
+              "e2e/smoke-shell.spec.ts"
+            ],
+            "sha256": "32a6989613cd0ac9f44681dec4087a20e1ff897fa1d86c485723e50f7b170990"
+          },
+          "planner_delta": {
+            "exists": true,
+            "sha256": "0b3521c3fbc31514c7e459ef4936bbb69d307c935f60a51a8b006d585ba32d62",
+            "unavailable_marker": false
+          },
+          "native_run": {
+            "command": [
+              "pnpm",
+              "exec",
+              "playwright",
+              "test",
+              "e2e/smoke-shell.spec.ts",
+              "--project=chromium",
+              "--retries=0",
+              "--reporter=list"
+            ],
+            "cwd": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-smoke-ws-smoke-B-planner_plus_ours-i8icyv31/gridfinity-layout-tool",
+            "timeout_s": 600,
+            "returncode": 0,
+            "timed_out": false,
+            "elapsed_s": 7.6,
+            "stdout_sha256": "15c7af18ffa5f658a9b468a869d6dbc32400ffc7379fd739717c651c78c8375f",
+            "stdout_bytes": 184,
+            "stdout_tail": "\nRunning 1 test using 1 worker\n\n  ✓  1 [chromium] › e2e/smoke-shell.spec.ts:23:3 › Application shell › loads at / with the primary navigation visible (2.6s)\n\n  1 passed (6.9s)\n",
+            "stderr_sha256": "a5c1d5c0d6e1d434220621d97d832207001fe1d406377c361465e57181fa372e",
+            "stderr_bytes": 2737,
+            "stderr_tail": "gnored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] (node:11763) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] $ tsx scripts/build-en-locale.ts\n[WebServer] (node:11791) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] (node:11797) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] (node:11800) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)\n[WebServer] (!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n[WebServer]   - import \"./scripts/vite-plugin-version\" without a file extension (vite.config.ts:8:31). Add the file extension\n[WebServer]   - import \"./scripts/vite-plugin-content-routes\" without a file extension (vite.config.ts:9:37). Add the file extension\n[WebServer]   - import \"./scripts/vite-plugin-mediapipe-assets\" without a file extension (vite.config.ts:10:39). Add the file extension\n[WebServer]   - import \"./scripts/vite-plugin-minify-json-assets\" without a file extension (vite.config.ts:11:34). Add the file extension\n[WebServer]   - import \"./scripts/contentRoutes\" without a file extension (vite.config.ts:12:48). Add the file extension\n[WebServer] Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n(node:11924) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n",
+            "ok": true,
+            "env_overrides": {}
+          },
+          "post_native_port_sweep": {
+            "killed_workspace_listeners": [],
+            "foreign_listeners": [],
+            "port_free_after": true
+          },
+          "cleanup": {
+            "port_sweep": {
+              "killed_workspace_listeners": [],
+              "foreign_listeners": [],
+              "port_free_after": true
+            },
+            "workspace": "removed",
+            "runner_home": "removed",
+            "short_tmpdir": "removed"
+          }
+        }
+      ],
+      "planner_availability": "READY",
+      "fail_reasons": [],
+      "finished_at": "2026-09-11T06:27:11+00:00",
+      "wall_time_s": 1095.5
+    }
+  ],
+  "summary": {
+    "cells_total": 4,
+    "cells_pass": 4,
+    "cells_fail": 0,
+    "cells_setup_failed": 0,
+    "cells_not_run": 0,
+    "model_calls_made": 7,
+    "total_wall_time_s_including_superseded": 9982.9,
+    "total_cost_usd_reported_by_cli_including_superseded": 42.9997,
+    "cost_note": "subscription-billed host; CLI-reported USD is nominal, per protocol cost_ceiling.monetary",
+    "smoke_gate": "PASS"
+  },
+  "skill_sha256_staged": {
+    "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+    "skills/playwright-test-generator/playwright-agents.md": "9bd577cdf5624d2929c84b226c69952eb6d05eee8a651c021a5871a935f66251",
+    "skills/e2e-reviewer/SKILL.md": "c8420ba913c6092749b40ab892460eebf730cad3e4a2e28ed2cedc24d47f2c30",
+    "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb"
+  },
+  "skill_digest_matches_protocol": true,
+  "assessed_at": "2026-09-11T04:37:01+00:00",
+  "reruns": [
+    {
+      "started_at": "2026-09-11T04:37:13+00:00",
+      "cells": [
+        "smoke-A-ours_only",
+        "smoke-A-planner_plus_ours",
+        "smoke-B-ours_only",
+        "smoke-B-planner_plus_ours"
+      ],
+      "reason": "verdict under the corrected drift rule (protocol.json corrections[0]) differs from or is undetermined by the record produced under the old rule",
+      "protocol_sha256_at_rerun": "a8cff0c259fb7381f6767b310011a2e595ecfbfa26c27b15ad56c7f29f3251fc"
+    },
+    {
+      "started_at": "2026-09-11T06:08:56+00:00",
+      "cells": [
+        "smoke-B-planner_plus_ours"
+      ],
+      "reason": "infrastructure-only retry (protocol cost_ceiling.retries.infrastructure_only=1): the first run was censored by the smoke harness's 40-minute session cap, below the protocol's 60-minute planner-cell cap, while the session was mid-way through its fifth sequential V6 independent-review round (not hung: transcript shows tool calls up to 06:07:10Z); candidate, planner delta, and a passing harness-side native run already existed at the cut",
+      "session_timeouts_s": {
+        "ours_only": 2700,
+        "planner_plus_ours": 3600
+      },
+      "protocol_sha256_at_rerun": "a8cff0c259fb7381f6767b310011a2e595ecfbfa26c27b15ad56c7f29f3251fc"
+    }
+  ]
+}

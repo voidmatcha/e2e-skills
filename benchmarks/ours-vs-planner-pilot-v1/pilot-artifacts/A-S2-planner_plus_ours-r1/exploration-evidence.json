@@ -1,0 +1,237 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "A-S2-planner_plus_ours-r1",
+  "target_id": "A",
+  "scenario_id": "A-S2",
+  "arm": "planner_plus_ours",
+  "repetition": 1,
+  "oracle_sha256": "a3f10a70172289167f3073a5dd219cabfc6dbb88eb11abeeb2a39ce2b33a80af",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "textbox",
+      "name": "Type a message…",
+      "state": "enabled after initial history load; disabled while loading",
+      "selector": "page.getByPlaceholder('Type a message…')",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot of http://localhost:5174/ showed 'textbox \"Type a message…\" [disabled]' then enabled after settle; fill() resolved against it",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Send",
+      "state": "disabled when composer empty, enabled after fill",
+      "selector": "page.getByRole('button', { name: 'Send' })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot showed 'button \"Send\" [disabled]'; run-code returned isEnabled()===true after fill, then click posted the message",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "link",
+      "name": "Message history",
+      "state": "[active] once on /history",
+      "selector": "page.getByTestId('nav-tab-history')",
+      "provenance": "observed",
+      "evidence_ref": "clicked ref f1e17 -> page URL became http://localhost:5174/history; playwright-cli generate-locator returned getByTestId('nav-tab-history')",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "listitem",
+      "name": "",
+      "state": "present after reload, absent after clear",
+      "selector": "page.getByRole('listitem').filter({ hasText: 'Hello there!' })",
+      "provenance": "observed",
+      "evidence_ref": "run-code on /history returned count===1 and innerText '5:44 PM\\nYOU\\nHello there!\\nASSISTANT\\nGENERAL KENOBI!!'",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Delete history",
+      "state": "enabled with history present, [disabled] after clear",
+      "selector": "page.getByRole('button', { name: 'Delete history' })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot 'button \"Delete history\" [ref=f1e36]' then 'button \"Delete history\" [disabled]' after accepting the dialog; generate-locator returned getByTestId('delete-history-button') for the same node",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "paragraph",
+      "name": "No history yet. Send a message in Chat to build your archive.",
+      "state": "visible only when history empty",
+      "selector": "page.getByText('No history yet. Send a message in Chat to build your archive.')",
+      "provenance": "observed",
+      "evidence_ref": "post-clear snapshot showed the paragraph; still present after a subsequent reload",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic (chat bubble)",
+      "name": "",
+      "state": "visible after send",
+      "selector": ".chat-message--user >> first >> .chat-message__bubble (existing ChatPage.chatMessageFirst)",
+      "provenance": "observed",
+      "evidence_ref": "run-code returned innerText 'Hello there!' and count 1 for that existing POM locator",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic (chat bubble)",
+      "name": "",
+      "state": "visible after reply settles; excludes the transient 'Thinking…' placeholder",
+      "selector": ".chat-message--assistant:not(.chat-message--loading) >> first >> .chat-message__bubble (existing ChatPage.chatMessageFirstReply)",
+      "provenance": "observed",
+      "evidence_ref": "run-code returned innerText 'GENERAL KENOBI!!' for that existing POM locator",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "native confirm dialog",
+      "name": "Delete all message history stored in this browser? This cannot be undone.",
+      "state": "modal, blocks until handled",
+      "selector": "page.once('dialog', d => d.accept())",
+      "provenance": "observed",
+      "evidence_ref": "playwright-cli reported 'Modal state: [\"confirm\" dialog with message …]' after clicking Delete history; dialog-accept then cleared the archive",
+      "used_in_final_test": true,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "ours_exploration",
+      "role": "checkbox",
+      "name": "Assistant mode Funny mode",
+      "state": "[checked], [disabled] until initial load completes",
+      "selector": "page.getByRole('checkbox', { name: /funny mode/i })",
+      "provenance": "observed",
+      "evidence_ref": "initial ARIA snapshot showed 'checkbox \"Assistant mode Funny mode\" [checked] [disabled]' then enabled",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "official_planner_delta",
+      "role": "button",
+      "name": "Reset Chat",
+      "state": "enabled once loaded",
+      "selector": "page.getByRole('button', { name: 'Reset Chat' })",
+      "provenance": "observed",
+      "evidence_ref": "present in my own chat-screen ARIA snapshot as 'button \"Reset Chat\"'; planner flagged it only to prevent confusion with Delete history",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L12",
+      "source_arm_stage": "ours_exploration",
+      "role": "link",
+      "name": "Chat",
+      "state": "default",
+      "selector": "page.getByTestId('nav-tab-chat')",
+      "provenance": "observed",
+      "evidence_ref": "clicked during exploration; returned the page to the chat screen at http://localhost:5174/",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L13",
+      "source_arm_stage": "reconciliation",
+      "role": "list",
+      "name": "",
+      "state": "exactly 1 list on /history",
+      "selector": "page.getByRole('list')",
+      "provenance": "observed",
+      "evidence_ref": "run-code returned listCount===1 on /history, confirming the unscoped listitem locator is unambiguous there",
+      "used_in_final_test": false,
+      "oracle_match": "not_checked"
+    }
+  ],
+  "states": {
+    "required_total": 6,
+    "reached": 6,
+    "transitions_observed": [
+      {
+        "from": "loading (composer disabled, 'Loading…')",
+        "to": "empty chat ('No messages yet.', storage has only chat-lab:theme)",
+        "evidence_ref": "two successive ARIA snapshots of / plus localStorage key dump"
+      },
+      {
+        "from": "empty chat",
+        "to": "exchange rendered",
+        "evidence_ref": "post-click snapshot showing 'Hello there!' and 'GENERAL KENOBI!!' + grievous img; localStorage key written with both halves"
+      },
+      {
+        "from": "exchange rendered",
+        "to": "after full reload",
+        "evidence_ref": "playwright-cli reload; chat thread reset to 'No messages yet.' while localStorage retained the entry"
+      },
+      {
+        "from": "after full reload",
+        "to": "history screen listing the exchange",
+        "evidence_ref": "click nav-tab-history -> URL /history, snapshot shows date heading + listitem with You/Assistant text; count===1"
+      },
+      {
+        "from": "history listing",
+        "to": "confirm dialog open",
+        "evidence_ref": "click Delete history -> tool reported the native confirm dialog and its exact message"
+      },
+      {
+        "from": "confirm dialog open",
+        "to": "history cleared",
+        "evidence_ref": "dialog-accept -> listitem gone, empty-state paragraph shown, Delete history [disabled], storage key not found; state survived a further reload"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "confirm-dialog cancel/dismiss path (history presumably retained) — not exercised; would be a second scenario",
+      "effect of the Chat screen's 'Reset Chat' button on persisted /history data",
+      "multi-day grouping of the history archive (only a single same-day exchange was ever created)",
+      "any server-backed path: the app's backend at localhost:3001 was never running, so mergeServerMessages/de-duplication of API exchanges was never exercised"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 1
+  },
+  "usage": {
+    "wall_seconds_setup": 8.4,
+    "wall_seconds_steady_state": 1426.8,
+    "browser_actions": 35,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 82,
+    "reported_tokens_in": 154,
+    "reported_tokens_out": 52441,
+    "reported_cost_usd": 7.7873249
+  },
+  "summary": {
+    "observed_locator_count": 13,
+    "inferred_locator_count": 0,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 3,
+    "observed_claims_total": 13
+  }
+}

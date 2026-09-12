@@ -1,0 +1,193 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "A-S1-ours_only-r1",
+  "target_id": "A",
+  "scenario_id": "A-S1",
+  "arm": "ours_only",
+  "repetition": 1,
+  "oracle_sha256": "bf3329632817c1cc3935dba370e860ced0c2b518acbfc2b2932ff744132fe72c",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "checkbox",
+      "name": "Assistant mode Funny mode",
+      "state": "checked; disabled before history settles, enabled after",
+      "selector": "getByRole('checkbox', { name: /funny mode/i })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot of http://localhost:5174/ showed 'checkbox \"Assistant mode Funny mode\" [checked] [disabled]' pre-ready and '[checked]' enabled in the settled snapshot",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "textbox",
+      "name": "Type a message…",
+      "state": "visible; disabled until historyReady, then enabled",
+      "selector": "getByPlaceholder('Type a message…')",
+      "provenance": "observed",
+      "evidence_ref": "snapshot node 'textbox \"Type a message…\" [ref=e28]'; playwright-cli fill e28 resolved to getByTestId('chat-input') and accepted text",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Send",
+      "state": "disabled while composer empty, enabled with text",
+      "selector": "getByRole('button', { name: 'Send' })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot 'button \"Send\" [disabled]' when empty; playwright-cli click e29 dispatched the send and the transcript gained both bubbles",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "paragraph",
+      "name": "No messages yet.",
+      "state": "visible only when ready AND transcript empty",
+      "selector": "getByText('No messages yet.')",
+      "provenance": "observed",
+      "evidence_ref": "settled snapshot node 'paragraph [ref=e31]: No messages yet.' replacing the earlier 'Loading…' paragraph",
+      "used_in_final_test": true,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "visible; generic div with data-testid, no ARIA role",
+      "selector": "getByTestId('message-user')",
+      "provenance": "observed",
+      "evidence_ref": "playwright-cli generate-locator on snapshot ref e32 returned getByTestId('message-user'); allTextContents() returned exactly the two messages sent",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "visible; generic div with data-testid, no ARIA role",
+      "selector": "getByTestId('message-assistant')",
+      "provenance": "observed",
+      "evidence_ref": "playwright-cli generate-locator on snapshot ref e34 returned getByTestId('message-assistant'); allTextContents() returned the W-, D- and Z-keyed canned replies verbatim",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "present only while a send is in flight (~120ms)",
+      "selector": "getByTestId('loading-indicator')",
+      "provenance": "observed",
+      "evidence_ref": "run-code during an in-flight click: getByTestId('loading-indicator').textContent() resolved to 'Thinking...' before the reply bubble appeared; proves the placeholder does NOT carry data-testid message-assistant",
+      "used_in_final_test": false,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Reset Chat",
+      "state": "disabled pre-ready, enabled after",
+      "selector": "getByRole('button', { name: 'Reset Chat' })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot showed 'button \"Reset Chat\" [disabled]' pre-ready and '[cursor=pointer]' enabled once settled",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "paragraph",
+      "name": "Loading…",
+      "state": "visible only before the history fetch settles",
+      "selector": "getByText('Loading…')",
+      "provenance": "observed",
+      "evidence_ref": "first post-navigation snapshot node 'paragraph [ref=e24]: Loading…' alongside every control disabled",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "generator_implementation",
+      "role": "button",
+      "name": "Help",
+      "state": "disabled pre-ready, enabled after",
+      "selector": "getByTestId('help-suggestion')",
+      "provenance": "observed",
+      "evidence_ref": "snapshot node 'button \"Help\" [disabled]' then enabled; inspected only to confirm it is NOT on the path of the scenario's send flow",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    }
+  ],
+  "states": {
+    "required_total": 5,
+    "reached": 5,
+    "transitions_observed": [
+      {
+        "from": "initial-not-ready",
+        "to": "ready-empty-transcript",
+        "evidence_ref": "first snapshot: 'Loading…' paragraph with checkbox/textbox/Send/Reset all [disabled]; settled snapshot: 'No messages yet.' with checkbox [checked] enabled and textbox enabled"
+      },
+      {
+        "from": "ready-empty-transcript",
+        "to": "send-in-flight",
+        "evidence_ref": "run-code issued click without awaiting and getByTestId('loading-indicator').textContent() returned 'Thinking...' while the assistant list had not yet grown"
+      },
+      {
+        "from": "send-in-flight",
+        "to": "first-exchange-settled",
+        "evidence_ref": "post-click snapshot listed the user bubble 'Waffles are structurally sound breakfast architecture.' followed by 'White lemmings do not exist in the modern digital era' (the W entry of the canned table)"
+      },
+      {
+        "from": "first-exchange-settled",
+        "to": "second-exchange-settled",
+        "evidence_ref": "after the second send the snapshot listed four bubbles ending in 'Ducks think breadcrumbs are cryptocurrency with excellent UX.' (the D entry), and a third send with 'Zebra…' produced the Z entry — three distinct letters, three distinct replies"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "Assistant (non-offline) mode reply path — the funny-mode toggle was never unchecked; out of scope for this scenario",
+      "Chat error state (.chat-window__error / 'Error: failed to get AI response') — unreachable in offline mode, never rendered",
+      "The 'Hello there!' exact-match special case and its inline GIF branch — deliberately avoided so the letter-keyed path was the one under test",
+      "127.0.0.1:5174 — never reachable this session; Vite bound to ::1 only, which is why the bundled preflight's pinned probe could not complete"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [
+      "Note: the application itself requested https://fonts.googleapis.com and http://localhost:3001/api/messages during load; the before-dispatch context.route() guard aborted both with ERR_BLOCKED_BY_CLIENT. These are the app's own pre-existing requests per the brief, not navigations or fetches initiated by me."
+    ],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 1
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 1
+  },
+  "usage": {
+    "wall_seconds_setup": 8.5,
+    "wall_seconds_steady_state": 1268.8,
+    "browser_actions": 23,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 69,
+    "reported_tokens_in": 122,
+    "reported_tokens_out": 53971,
+    "reported_cost_usd": 6.475047750000002
+  },
+  "summary": {
+    "observed_locator_count": 10,
+    "inferred_locator_count": 0,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 5,
+    "observed_claims_total": 10
+  }
+}

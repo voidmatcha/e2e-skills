@@ -1,0 +1,246 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "B-S2-ours_only-r2",
+  "target_id": "B",
+  "scenario_id": "B-S2",
+  "arm": "ours_only",
+  "repetition": 2,
+  "oracle_sha256": "4af2f1777f2211c36548ada1c852a0674f61b3efc0036da22bcef35c23f7cd2d",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "application",
+      "name": "Gridfinity drawer grid, 10 columns by 8 rows",
+      "state": "visible",
+      "selector": "getByRole('application', { name: 'Gridfinity drawer grid, 10 columns by 8 rows', exact: true })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot of fresh app: 'application \"Gridfinity drawer grid, 10 columns by 8 rows\" [ref=f2e388]'; run-code count=1 with exact:true",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "application",
+      "name": "Gridfinity drawer grid, 9 columns by 8 rows",
+      "state": "visible",
+      "selector": "getByRole('application', { name: 'Gridfinity drawer grid, 9 columns by 8 rows', exact: true })",
+      "provenance": "observed",
+      "evidence_ref": "after one Decrease click, getAttribute('aria-label') returned 'Gridfinity drawer grid, 9 columns by 8 rows'; getByRole exact:true count=1 while the 10-column name counted 0",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "spinbutton",
+      "name": "Drawer width in grid units",
+      "state": "visible, value 10 then 9",
+      "selector": "page.locator('[data-sidebar]').getByRole('spinbutton', { name: 'Drawer width in grid units' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot 'spinbutton \"Drawer width in grid units\" [ref=f2e221]: \"10\"'; inputValue() returned 9 after decrement; sidebar-scoped count=1",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Decrease Drawer width in grid units",
+      "state": "visible, enabled",
+      "selector": "page.locator('[data-sidebar]').getByRole('button', { name: 'Decrease Drawer width in grid units' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot ref=f2e219; clicked 5 times in a row, width went 10->9->8->7->6->5; count=1 both page-scoped and sidebar-scoped",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Stash 1 bins",
+      "state": "visible, expanded",
+      "selector": "getByRole('button', { name: 'Stash 1 bins', exact: true })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot after displacement: 'button \"Stash 1 bins\" [expanded] [ref=f2e561]'; getByRole exact:true count=1",
+      "used_in_final_test": true,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "attached",
+      "selector": "[data-bin-id]",
+      "provenance": "observed",
+      "evidence_ref": "evaluateAll returned ids [mtx4mofz-b95d2b3a87, mtx4mot9-63cffc3183] with aria-label 'Bin 2 by 2, category Coral'; count went 0->1->2->1",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "visible",
+      "selector": "[data-staging-bin-id]",
+      "provenance": "observed",
+      "evidence_ref": "after decrement, evaluateAll returned id mtx4mot9-63cffc3183 (identical to the bin previously under [data-bin-id]) with text '2x2'; count 0->1",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "attached",
+      "selector": "[data-sidebar]",
+      "provenance": "observed",
+      "evidence_ref": "run-code count=1 on the live page",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "application",
+      "name": "",
+      "state": "visible",
+      "selector": "[role=\"application\"] (via getGridBounds/waitForAppReady in e2e/fixtures.ts)",
+      "provenance": "observed",
+      "evidence_ref": "boundingBox() returned {x:336,y:119,width:551,height:441} for the 10x8 grid and {width:231,height:369} for a 5x8 grid",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "attached",
+      "selector": "header (waitForAppReady gate)",
+      "provenance": "observed",
+      "evidence_ref": "waitForSelector('header') resolved on every exploration navigation and in all 5 native runs",
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Increase Drawer width in grid units",
+      "state": "visible",
+      "selector": "getByRole('button', { name: 'Increase Drawer width in grid units' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot ref=f2e222; not exercised",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L12",
+      "source_arm_stage": "ours_exploration",
+      "role": "spinbutton",
+      "name": "Drawer depth in grid units",
+      "state": "visible, value 8",
+      "selector": "getByRole('spinbutton', { name: 'Drawer depth in grid units' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot 'spinbutton \"Drawer depth in grid units\" [ref=f2e229]: \"8\"'; depth left unchanged by the scenario",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L13",
+      "source_arm_stage": "ours_exploration",
+      "role": "status",
+      "name": "Stash",
+      "state": "visible, empty ('Drag a bin here to stash it')",
+      "selector": "getByRole('status', { name: 'Stash' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot of fresh app: 'status \"Stash\" [ref=f2e488]' with child text 'Drag a bin here to stash it'; superseded by L5 once populated",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L14",
+      "source_arm_stage": "ours_exploration",
+      "role": "",
+      "name": "",
+      "state": "attached",
+      "selector": "[data-stash]",
+      "provenance": "observed",
+      "evidence_ref": "run-code count=1 on the live page; not needed once [data-staging-bin-id] proved sufficient",
+      "used_in_final_test": false,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L15",
+      "source_arm_stage": "generator_implementation",
+      "role": "dialog",
+      "name": "",
+      "state": "unknown",
+      "selector": "[role=\"dialog\"]:not([aria-label=\"Labs experimental features\"]) (getActiveDialog, e2e/fixtures.ts)",
+      "provenance": "inferred",
+      "evidence_ref": null,
+      "used_in_final_test": true,
+      "oracle_match": "not_checked"
+    }
+  ],
+  "states": {
+    "required_total": 4,
+    "reached": 4,
+    "transitions_observed": [
+      {
+        "from": "fresh-app-10x8-empty",
+        "to": "two-bins-on-10-wide-grid",
+        "evidence_ref": "[data-bin-id] count 0 -> 2 with captured ids mtx4mofz-b95d2b3a87 (cols 1-2) and mtx4mot9-63cffc3183 (cols 9-10); [data-staging-bin-id] still 0"
+      },
+      {
+        "from": "drawer-width-10",
+        "to": "drawer-width-9-baseplate-recomputed",
+        "evidence_ref": "grid aria-label 'Gridfinity drawer grid, 10 columns by 8 rows' -> '… 9 columns by 8 rows'; width spinbutton '10' -> '9'; column ruler lost its 'Select bins in column 10' button"
+      },
+      {
+        "from": "edge-bin-on-grid",
+        "to": "edge-bin-reported-in-stash",
+        "evidence_ref": "id mtx4mot9-63cffc3183 disappeared from [data-bin-id] and appeared under [data-staging-bin-id]; stash panel rendered button 'Stash 1 bins'; kept bin mtx4mofz-b95d2b3a87 remained on the grid"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "suite-context / multi-spec co-execution of the candidate (no approved command runs the full e2e suite)",
+      "the afterEach dialog-close teardown path (getActiveDialog, L15) — no dialog was ever open during exploration or any run, so that branch is source-inferred only",
+      "the mobile/bottom-sheet rendering of the stash and grid-size controls (desktop 1280x720 only)",
+      "drawer DEPTH shrink displacement — only the width axis was exercised live"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 1
+  },
+  "usage": {
+    "wall_seconds_setup": 49.5,
+    "wall_seconds_steady_state": 1015.7,
+    "browser_actions": 26,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 85,
+    "reported_tokens_in": 156,
+    "reported_tokens_out": 55630,
+    "reported_cost_usd": 8.27961375
+  },
+  "summary": {
+    "observed_locator_count": 14,
+    "inferred_locator_count": 1,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 1,
+    "observed_claims_verified": 8,
+    "observed_claims_total": 14
+  }
+}

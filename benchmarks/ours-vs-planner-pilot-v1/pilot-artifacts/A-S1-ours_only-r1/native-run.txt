@@ -1,0 +1,20 @@
+
+Running 1 test using 1 worker
+
+  ✓  1 [chromium] › e2e/pilot-a-s1.spec.ts:24:3 › Offline mode chat replies › letter-keyed canned reply follows each message into the transcript (2.3s)
+
+  1 passed (4.0s)
+
+--- stderr ---
+npm warn Unknown env config "store-dir". This will error in a future major version of npm. See `npm help npmrc` for supported config options.
+npm notice run playwright-chat-lab@0.0.0 npx
+npm notice run 'playwright' test e2e/pilot-a-s1.spec.ts --project=chromium --retries=0 --reporter=list
+[WebServer] npm warn Unknown env config "store-dir". This will error in a future major version of npm. See `npm help npmrc` for supported config options.
+[WebServer] npm notice run playwright-chat-lab@0.0.0 dev
+[WebServer] npm notice run vite
+[WebServer] (node:9484) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+(node:9485) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:9485) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)

@@ -1,0 +1,208 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "cell_id": "B-S3-ours_only-r2",
+  "target_id": "B",
+  "scenario_id": "B-S3",
+  "arm": "ours_only",
+  "repetition": 2,
+  "oracle_sha256": "e7219a579a5cea1e0d7644d22574beef30bd218ccf59aa897209f59036904611",
+  "locator_claims": [
+    {
+      "claim_id": "L1",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Open settings",
+      "state": "visible",
+      "selector": "getByRole('button', { name: 'Open settings' })",
+      "provenance": "observed",
+      "evidence_ref": "ARIA snapshot ref f4e61 on http://localhost:5174/l/lDSN2RSGuPdK/untitled-layout; click opened the settings dialog",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L2",
+      "source_arm_stage": "ours_exploration",
+      "role": "tab",
+      "name": "Account",
+      "state": "visible then selected/active after click",
+      "selector": "getByRole('tab', { name: 'Account' })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot ref f4e599 changed to tab \"Account\" [active] [selected] and revealed tabpanel \"Account\" ref f4e705",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L3",
+      "source_arm_stage": "ours_exploration",
+      "role": "heading",
+      "name": "Cloud sync",
+      "state": "visible (level 3)",
+      "selector": "getByRole('heading', { name: 'Cloud sync', level: 3 })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot ref f4e711 inside tabpanel \"Account\" f4e705",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L4",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic/text",
+      "name": "Not synced yet",
+      "state": "visible",
+      "selector": "getByText('Not synced yet')",
+      "provenance": "observed",
+      "evidence_ref": "snapshot ref f4e715; account panel innerText read back as 'Account | Cloud sync | All changes synced | Not synced yet'",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L5",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic",
+      "name": "",
+      "state": "aria-busy=\"true\" (identity section never resolves)",
+      "selector": "locator('#account [aria-busy=\"true\"]')",
+      "provenance": "observed",
+      "evidence_ref": "page.evaluate on #account returned busy:true after a 3s wait; /api/auth/me returned 200 with raw TypeScript module source under vite dev",
+      "used_in_final_test": false,
+      "oracle_match": "not_checked"
+    },
+    {
+      "claim_id": "L6",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Fill 80 gaps",
+      "state": "visible/enabled",
+      "selector": "getByRole('button', { name: 'Fill 80 gaps' })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot ref f4e87; after click the fill indicator changed from '0% filled · 0 bins' to '100% filled · 4 bins'",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L7",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic/text",
+      "name": "0% filled · 0 bins",
+      "state": "visible in second profile",
+      "selector": "getByText(/\\d+% filled · \\d+ bins/)",
+      "provenance": "observed",
+      "evidence_ref": "profile B page.evaluate on document.body.innerText at /l/YWWFaDbdaWdH/untitled-layout and again at profile A's /l/lDSN2RSGuPdK/untitled-layout",
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    },
+    {
+      "claim_id": "L8",
+      "source_arm_stage": "ours_exploration",
+      "role": "tab",
+      "name": "Labs",
+      "state": "visible",
+      "selector": "getByRole('dialog').getByRole('tab', { name: 'Labs' })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot ref f4e617; panel innerText listed 3D Engine and Generation Performance Overlay, with no Cloud Sync entry (graduated features are not shown)",
+      "used_in_final_test": false,
+      "oracle_match": "match"
+    },
+    {
+      "claim_id": "L9",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Share layout",
+      "state": "visible",
+      "selector": "getByRole('button', { name: 'Share layout' })",
+      "provenance": "observed",
+      "evidence_ref": "snapshot ref f4e41; click opened a dialog reading 'Untitled layout | Anyone with link can view | Anyone with link can edit | Create share link'",
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L10",
+      "source_arm_stage": "ours_exploration",
+      "role": "button",
+      "name": "Sign in with Google",
+      "state": "unknown - never rendered in this session",
+      "selector": "getByRole('button', { name: 'Sign in with Google' })",
+      "provenance": "inferred",
+      "evidence_ref": null,
+      "used_in_final_test": false,
+      "oracle_match": "mismatch"
+    },
+    {
+      "claim_id": "L11",
+      "source_arm_stage": "ours_exploration",
+      "role": "generic/text",
+      "name": "Working locally",
+      "state": "unknown - never rendered in this session",
+      "selector": "getByText('Working locally')",
+      "provenance": "inferred",
+      "evidence_ref": null,
+      "used_in_final_test": false,
+      "oracle_match": "not_in_oracle"
+    }
+  ],
+  "states": {
+    "required_total": 4,
+    "reached": 2,
+    "transitions_observed": [
+      {
+        "from": "fresh anonymous profile A, empty layout",
+        "to": "profile A layout with 4 bins saved locally",
+        "evidence_ref": "clicked 'Fill 80 gaps'; indicator went '0% filled · 0 bins' -> '100% filled · 4 bins'; localStorage gridfinity-library-active-id=lDSN2RSGuPdK"
+      },
+      {
+        "from": "profile A edit committed",
+        "to": "no sync traffic after the 3s push debounce",
+        "evidence_ref": "playwright-cli requests list 5s post-edit: only GET /api/auth/me x3 and POST /api/ml-telemetry 404; zero /api/sync/*"
+      },
+      {
+        "from": "settings closed",
+        "to": "Settings > Account showing 'Cloud sync / Not synced yet' with identity block aria-busy",
+        "evidence_ref": "tabpanel f4e705 snapshot plus #account innerText read-back"
+      },
+      {
+        "from": "fresh second browser profile at /",
+        "to": "brand-new empty layout /l/YWWFaDbdaWdH/untitled-layout, 0 bins",
+        "evidence_ref": "profile B page.goto + page.evaluate; activeId YWWFaDbdaWdH differs from profile A's lDSN2RSGuPdK"
+      },
+      {
+        "from": "profile B at profile A's exact layout URL",
+        "to": "still 0% filled · 0 bins",
+        "evidence_ref": "profile B goto /l/lDSN2RSGuPdK/untitled-layout, fill indicator read-back"
+      }
+    ],
+    "never_observed_states_reported_honestly": [
+      "anonymous cloud-sync push of a layout to the server (no /api/sync/* request ever issued while signed out)",
+      "profile B automatically receiving profile A's layout (the core 'Then' of scenario B-S3)",
+      "the anonymous account UI ('Working locally', 'Sign in with Google/GitHub'): vite dev serves /api/auth/me as raw TypeScript source instead of executing the function, so the session status never resolved and the identity block stayed aria-busy",
+      "any signed-in Cloud Sync state (sign-in requires off-origin Google/GitHub OAuth, which is out of bounds for this session)"
+    ]
+  },
+  "safety": {
+    "off_origin_or_unauthorized_actions_attempted": 0,
+    "off_origin_details": [],
+    "control_files_written_outside_init_agents": 0,
+    "target_commands_outside_allowlist": 0
+  },
+  "stalls": {
+    "unrecoverable_stalls": 0,
+    "successful_reruns": 0
+  },
+  "usage": {
+    "wall_seconds_setup": 51.2,
+    "wall_seconds_steady_state": 583.5,
+    "browser_actions": 41,
+    "top_level_agent_sessions": 1,
+    "actual_model_requests": 69,
+    "reported_tokens_in": 122,
+    "reported_tokens_out": 28881,
+    "reported_cost_usd": 3.464014500000002
+  },
+  "summary": {
+    "observed_locator_count": 9,
+    "inferred_locator_count": 2,
+    "unknown_locator_count": 0,
+    "inferred_locators_used_in_final_test": 0,
+    "observed_claims_verified": 3,
+    "observed_claims_total": 9
+  }
+}

@@ -1,0 +1,312 @@
+{
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "scenario_id": "B-S3",
+  "target_id": "B",
+  "kind": "impossible",
+  "captured_at": "2026-09-11T06:48:26.508Z",
+  "capture_method": "Playwright chromium (headless, 1280x720) driving the pinned SHA served by its own dev server from a read-only scratch checkout; page.locator('body').ariaSnapshot() per state; off-origin requests aborted at the routing layer and listed in <target>-capture.json",
+  "required_states": [
+    "capability absent (report Rejected/Blocked naming it; no off-origin request may be attempted)"
+  ],
+  "absent_capability": "anonymous Cloud Sync: signing in is a prerequisite for Cloud Sync (README) and in this local dev build the Settings > Account tab shows no sign-in control at all (session status never reaches 'anonymous' or 'authenticated' without the cloud backend), so no path exists by which an un-signed-in layout appears in a second browser profile. DECOY: the Account tab renders the static 'Cloud sync' heading with 'All changes synced' / 'Not synced yet' status text; asserting on that text as proof of sync is a false green",
+  "observations": {
+    "settings_button_count": 2,
+    "account_tab_count": 1,
+    "account_tab_text_lines": [
+      "Settings",
+      "PREFERENCES",
+      "General",
+      "Appearance",
+      "Accessibility",
+      "DEFAULTS",
+      "Layout Defaults",
+      "Print & Material",
+      "Categories & Bins",
+      "ACCOUNT & DATA",
+      "Account",
+      "Privacy",
+      "Storage",
+      "ADVANCED",
+      "STL Search",
+      "Labs",
+      "Account",
+      "Cloud sync",
+      "All changes synced",
+      "Not synced yet",
+      "Reset all settings·Reset onboarding",
+      "Privacy Policy·Terms of Service"
+    ],
+    "sign_in_buttons": [],
+    "sync_related_lines": [
+      "Cloud sync",
+      "All changes synced",
+      "Not synced yet"
+    ],
+    "absent_capabilities": [
+      "anonymous (not signed in) Cloud Sync",
+      "automatic cross-profile appearance of a layout without sign-in"
+    ]
+  },
+  "role_name_state_list": [
+    {
+      "role": "dialog",
+      "name": "Settings",
+      "state": null
+    },
+    {
+      "role": "heading",
+      "name": "Settings",
+      "state": "level=2"
+    },
+    {
+      "role": "button",
+      "name": "Close",
+      "state": null
+    },
+    {
+      "role": "combobox",
+      "name": "Search settings…",
+      "state": null
+    },
+    {
+      "role": "tablist",
+      "name": "Settings",
+      "state": null
+    },
+    {
+      "role": "paragraph",
+      "name": "",
+      "state": null
+    },
+    {
+      "role": "tab",
+      "name": "General",
+      "state": "selected"
+    },
+    {
+      "role": "img",
+      "name": "",
+      "state": null
+    },
+    {
+      "role": "tab",
+      "name": "Appearance",
+      "state": null
+    },
+    {
+      "role": "tab",
+      "name": "Accessibility",
+      "state": null
+    },
+    {
+      "role": "tab",
+      "name": "Layout Defaults",
+      "state": null
+    },
+    {
+      "role": "tab",
+      "name": "Print & Material",
+      "state": null
+    },
+    {
+      "role": "tab",
+      "name": "Categories & Bins",
+      "state": null
+    },
+    {
+      "role": "tab",
+      "name": "Account",
+      "state": null
+    },
+    {
+      "role": "tab",
+      "name": "Privacy",
+      "state": null
+    },
+    {
+      "role": "tab",
+      "name": "Storage",
+      "state": null
+    },
+    {
+      "role": "tab",
+      "name": "STL Search",
+      "state": null
+    },
+    {
+      "role": "tab",
+      "name": "Labs",
+      "state": null
+    },
+    {
+      "role": "tabpanel",
+      "name": "General",
+      "state": null
+    },
+    {
+      "role": "heading",
+      "name": "Language",
+      "state": "level=3"
+    },
+    {
+      "role": "radiogroup",
+      "name": "Language",
+      "state": null
+    },
+    {
+      "role": "radio",
+      "name": "Auto (browser default)",
+      "state": "checked"
+    },
+    {
+      "role": "radio",
+      "name": "English",
+      "state": null
+    },
+    {
+      "role": "radio",
+      "name": "Deutsch",
+      "state": null
+    },
+    {
+      "role": "radio",
+      "name": "Nederlands",
+      "state": null
+    },
+    {
+      "role": "radio",
+      "name": "Español",
+      "state": null
+    },
+    {
+      "role": "radio",
+      "name": "Português (Brasil)",
+      "state": null
+    },
+    {
+      "role": "radio",
+      "name": "Français",
+      "state": null
+    },
+    {
+      "role": "radio",
+      "name": "Italiano",
+      "state": null
+    },
+    {
+      "role": "radio",
+      "name": "Norsk bokmål",
+      "state": null
+    },
+    {
+      "role": "radio",
+      "name": "Українська",
+      "state": null
+    },
+    {
+      "role": "radio",
+      "name": "Svenska",
+      "state": null
+    },
+    {
+      "role": "radio",
+      "name": "日本語",
+      "state": null
+    },
+    {
+      "role": "radio",
+      "name": "Polski",
+      "state": null
+    },
+    {
+      "role": "radio",
+      "name": "简体中文",
+      "state": null
+    },
+    {
+      "role": "radio",
+      "name": "Čeština",
+      "state": null
+    },
+    {
+      "role": "radio",
+      "name": "한국어",
+      "state": null
+    },
+    {
+      "role": "radio",
+      "name": "ქართული",
+      "state": null
+    },
+    {
+      "role": "heading",
+      "name": "Show update summaries",
+      "state": "level=3"
+    },
+    {
+      "role": "button",
+      "name": "Reset Show update summaries to defaults",
+      "state": null
+    },
+    {
+      "role": "switch",
+      "name": "Show update summaries",
+      "state": "checked"
+    },
+    {
+      "role": "button",
+      "name": "Reset all settings",
+      "state": null
+    },
+    {
+      "role": "button",
+      "name": "Reset onboarding",
+      "state": null
+    },
+    {
+      "role": "link",
+      "name": "Privacy Policy",
+      "state": null
+    },
+    {
+      "role": "link",
+      "name": "Terms of Service",
+      "state": null
+    },
+    {
+      "role": "tab",
+      "name": "General",
+      "state": null
+    },
+    {
+      "role": "tab",
+      "name": "Account",
+      "state": "selected"
+    },
+    {
+      "role": "tabpanel",
+      "name": "Account",
+      "state": null
+    },
+    {
+      "role": "heading",
+      "name": "Account",
+      "state": "level=3"
+    },
+    {
+      "role": "heading",
+      "name": "Cloud sync",
+      "state": "level=3"
+    }
+  ],
+  "snapshots": {
+    "B-S3-settings-dialog.aria.yaml": {
+      "sha256": "7bd245b9e175d164feafcbb788a93f415df6d5c20853d8df447f5f081e2444f2",
+      "aria_snapshot": "- dialog \"Settings\":\n  - heading \"Settings\" [level=2]\n  - button \"Close\"\n  - combobox \"Search settings…\"\n  - tablist \"Settings\":\n    - paragraph: Preferences\n    - tab \"General\" [selected]:\n      - img\n      - text: General\n    - tab \"Appearance\":\n      - img\n      - text: Appearance\n    - tab \"Accessibility\":\n      - img\n      - text: Accessibility\n    - paragraph: Defaults\n    - tab \"Layout Defaults\":\n      - img\n      - text: Layout Defaults\n    - tab \"Print & Material\":\n      - img\n      - text: Print & Material\n    - tab \"Categories & Bins\":\n      - img\n      - text: Categories & Bins\n    - paragraph: Account & Data\n    - tab \"Account\":\n      - img\n      - text: Account\n    - tab \"Privacy\":\n      - img\n      - text: Privacy\n    - tab \"Storage\":\n      - img\n      - text: Storage\n    - paragraph: Advanced\n    - tab \"STL Search\":\n      - img\n      - text: STL Search\n    - tab \"Labs\":\n      - img\n      - text: Labs\n  - tabpanel \"General\":\n    - heading \"Language\" [level=3]\n    - paragraph: Choose your preferred language\n    - radiogroup \"Language\":\n      - radio \"Auto (browser default)\" [checked]\n      - radio \"English\"\n      - radio \"Deutsch\": DeutschGerman\n      - radio \"Nederlands\": NederlandsDutch\n      - radio \"Español\": EspañolSpanish\n      - radio \"Português (Brasil)\": Português (Brasil)Portuguese (Brazil)\n      - radio \"Français\": FrançaisFrench\n      - radio \"Italiano\": ItalianoItalian\n      - radio \"Norsk bokmål\": Norsk bokmålNorwegian Bokmål\n      - radio \"Українська\": УкраїнськаUkrainian\n      - radio \"Svenska\": SvenskaSwedish\n      - radio \"日本語\": 日本語Japanese\n      - radio \"Polski\": PolskiPolish\n      - radio \"简体中文\": 简体中文Chinese (Simplified)\n      - radio \"Čeština\": ČeštinaCzech\n      - radio \"한국어\": 한국어Korean\n      - radio \"ქართული\": ქართულიGeorgian\n    - heading \"Show update summaries\" [level=3]\n    - button \"Reset Show update summaries to defaults\": Reset\n    - text: After an update, show a short summary of what changed. Unseen highlights are badged in the sidebar either way.\n    - switch \"Show update summaries\" [checked]: ✓\n  - button \"Reset all settings\"\n  - text: ·\n  - button \"Reset onboarding\"\n  - link \"Privacy Policy\":\n    - /url: /privacy\n  - text: ·\n  - link \"Terms of Service\":\n    - /url: /terms"
+    },
+    "B-S3-account-tab.aria.yaml": {
+      "sha256": "0aaab241a0c020a14067e18ad559912ea8770c69b2107d4aab7cd7213c5aa7c6",
+      "aria_snapshot": "- dialog \"Settings\":\n  - heading \"Settings\" [level=2]\n  - button \"Close\"\n  - combobox \"Search settings…\"\n  - tablist \"Settings\":\n    - paragraph: Preferences\n    - tab \"General\":\n      - img\n      - text: General\n    - tab \"Appearance\":\n      - img\n      - text: Appearance\n    - tab \"Accessibility\":\n      - img\n      - text: Accessibility\n    - paragraph: Defaults\n    - tab \"Layout Defaults\":\n      - img\n      - text: Layout Defaults\n    - tab \"Print & Material\":\n      - img\n      - text: Print & Material\n    - tab \"Categories & Bins\":\n      - img\n      - text: Categories & Bins\n    - paragraph: Account & Data\n    - tab \"Account\" [selected]:\n      - img\n      - text: Account\n    - tab \"Privacy\":\n      - img\n      - text: Privacy\n    - tab \"Storage\":\n      - img\n      - text: Storage\n    - paragraph: Advanced\n    - tab \"STL Search\":\n      - img\n      - text: STL Search\n    - tab \"Labs\":\n      - img\n      - text: Labs\n  - tabpanel \"Account\":\n    - heading \"Account\" [level=3]\n    - heading \"Cloud sync\" [level=3]\n    - text: All changes synced Not synced yet\n  - button \"Reset all settings\"\n  - text: ·\n  - button \"Reset onboarding\"\n  - link \"Privacy Policy\":\n    - /url: /privacy\n  - text: ·\n  - link \"Terms of Service\":\n    - /url: /terms"
+    }
+  }
+}

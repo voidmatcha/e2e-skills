@@ -1,0 +1,593 @@
+{
+  "schema_version": 1,
+  "spdx_license_identifier": "Apache-2.0",
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "frozen_at": "2026-09-11T06:57:13+00:00",
+  "frozen_by": "run_pilot harness operator agent (Claude Code session), on operator authorization relayed by the coordinator",
+  "protocol_sha256": "a8cff0c259fb7381f6767b310011a2e595ecfbfa26c27b15ad56c7f29f3251fc",
+  "exploration_evidence_schema_sha256": "0c329d4c9b563c460d4dc655b6f6c41b8999e8255651ade22c1a28d61170b374",
+  "smoke_results_sha256": "2011b8081953c3c955a05d739286588e4ac4a6f3fe9fe06214aba4b1870fc84b",
+  "smoke_gate": {
+    "cells_total": 4,
+    "cells_pass": 4,
+    "cells_fail": 0,
+    "cells_setup_failed": 0,
+    "cells_not_run": 0,
+    "model_calls_made": 7,
+    "total_wall_time_s_including_superseded": 9982.9,
+    "total_cost_usd_reported_by_cli_including_superseded": 42.9997,
+    "cost_note": "subscription-billed host; CLI-reported USD is nominal, per protocol cost_ceiling.monetary",
+    "smoke_gate": "PASS"
+  },
+  "rules_after_freeze": [
+    "scenario text, targets, arms, decision rule, thresholds, model, and Claude Code floor are fixed",
+    "this file is never edited; a later deviation is recorded in pilot-results.json, not here"
+  ],
+  "evaluated_snapshot": {
+    "policy": "staged skill bytes come from `git archive <git_head_at_preparation> skills`, never from the working tree",
+    "git_head_at_preparation": "c5e331b88d5b6488aea3adbe873d529c02a44a79",
+    "git_tags_at_commit": [
+      "v1.16.0"
+    ],
+    "git_head_at_freeze": "c5e331b88d5b6488aea3adbe873d529c02a44a79",
+    "head_equals_evaluated_commit": true,
+    "sha256_recomputed_at_freeze": {
+      "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+      "skills/playwright-test-generator/playwright-agents.md": "9bd577cdf5624d2929c84b226c69952eb6d05eee8a651c021a5871a935f66251",
+      "skills/e2e-reviewer/SKILL.md": "c8420ba913c6092749b40ab892460eebf730cad3e4a2e28ed2cedc24d47f2c30",
+      "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb"
+    },
+    "matches_sha256_at_preparation": true,
+    "staged_manifest_sha256": "158047422814d6dbeb8733024333ab0a1ce23264b7b8a8f28667b0a800dc0d68",
+    "staged_manifest_file_count": 143,
+    "staged_manifest": {
+      "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+      "skills/playwright-test-generator/agents/openai.yaml": "66bd352fd7d7b8fed1340a0d762619b011aed131f268f87e77cfe7297a68fdfc",
+      "skills/playwright-test-generator/best-practices.md": "d7d732eb667b84217c754f1c7bbd16e4c4cbfdac3aa737536b80ce2b6b98b3c6",
+      "skills/playwright-test-generator/code-rules.md": "8d5b2c4d54bbb45ed01370e23afb99799d6d0b63b780efe0046061e15f51cf68",
+      "skills/playwright-test-generator/conventions-template.md": "48c7ebe5301b9a29d52d2b40b6ea52df354268b897d2d4e6d2a241ae604849c2",
+      "skills/playwright-test-generator/evals/evals.json": "3cf3959927b06de6d67bf1a39dc368653ded87148987dcaa96dcf5b241c28fe2",
+      "skills/playwright-test-generator/evals/files/project-flat/playwright.config.ts": "0adad00aff475f4a2167b62a979f68070b7fa836f48fd616de354c4940dc67d4",
+      "skills/playwright-test-generator/evals/files/project-flat/src/app/page.tsx": "1e330aa7ee8e7f43015351cb55a27f9e2834c468bb249e2d533d2314a64f8575",
+      "skills/playwright-test-generator/evals/files/project-flat/tests/login.spec.ts": "c880267c1097afe12e01672b6fa041689e5ed1c34f4fdf1e46bfe91bd57a207f",
+      "skills/playwright-test-generator/evals/files/project-pom/playwright.config.ts": "2015513ba981202336575978b8851b958afe5da22ccf6ac9179e1197b024d1e4",
+      "skills/playwright-test-generator/evals/files/project-pom/src/routes.ts": "d7ab094c21aa8636126f56f949d3a2a6aa20c4c62b7eb3b6f5a3edac52a57f81",
+      "skills/playwright-test-generator/evals/files/project-pom/tests/auth.spec.ts": "e644ec974aedf7cba6c44b9bde944c176e788a508b703a37ce9c3d954bcec912",
+      "skills/playwright-test-generator/evals/files/project-pom/tests/pages/base-page.ts": "90e5aeaeec2079ba77e79d1afcfb201f814a3c5d6a795fca1bdfb0742770d27f",
+      "skills/playwright-test-generator/evals/files/project-pom/tests/pages/login-page.ts": "cfd24874118a86c12650b6e564e29cc5297c2d73995fc47b800f1f7abbbb31b6",
+      "skills/playwright-test-generator/evals/trigger-evals.json": "1cfdab9e9e3a3d69211c56b1b62dfca1be46af538985498935ee392e3e3a8332",
+      "skills/playwright-test-generator/playwright-agents.md": "9bd577cdf5624d2929c84b226c69952eb6d05eee8a651c021a5871a935f66251",
+      "skills/playwright-test-generator/recommended-lint.md": "819cb967a837954fbdcf63d89d5ee85ad157b5143cf0dbabaa0049aed7e23456",
+      "skills/playwright-test-generator/scripts/preflight_target.py": "3d9aef90459e23f3fc34c2a6427db5bb75fefb85a76fa2a252ce0ace6b320cc4",
+      "skills/playwright-test-generator/scripts/raw-aria-snapshot.cjs": "a937df0effcd27fd3ceb37e8f26bee12dd477ea5056f68ada02fcbec56f83065",
+      "skills/playwright-test-generator/scripts/run-preflight-target.sh": "5608363aee83ba91db6ccba1b5c48367676ac3d52fc997239222864f398cec92",
+      "skills/playwright-test-generator/scripts/run-raw-aria-snapshot.sh": "2951e8c72e1b98cdb428bfa5d1c734a6e18402d1ac09d27a0d0e6cf871f6c9d0",
+      "skills/playwright-test-generator/scripts/write-utf8-frame.sh": "743409518aa2cfa1b2eeafec84c1b4371876a33e116725e3dfbc91d230b58617",
+      "skills/playwright-test-generator/verification-rules.md": "0fbf5f3eba3def60a039395b7952d807789e144fcdca248f0f4c6a71860fc5e4",
+      "skills/e2e-reviewer/SKILL.md": "c8420ba913c6092749b40ab892460eebf730cad3e4a2e28ed2cedc24d47f2c30",
+      "skills/e2e-reviewer/agents/openai.yaml": "013523bb097466a2af5d84fc3129d0b81ff61a654735eec8d3c8c8b930f32ea3",
+      "skills/e2e-reviewer/evals/evals.json": "1e28c7d098ac0b0eeefc514840e70926fffe8b406d7b8514f350092596406db5",
+      "skills/e2e-reviewer/evals/files/absence-assertion.spec.ts": "56bd475e499edcf596da1952b4f582d65d22c5fe37ef6cefcae2918606147419",
+      "skills/e2e-reviewer/evals/files/accessible-name.spec.ts": "7dd10571ad955f29942f43c2aa5d5313d90c7039ef594c3573ca87db1079fc11",
+      "skills/e2e-reviewer/evals/files/adversarial-boundaries.spec.ts": "64d3f6f93ef1ae45a190cb6a3a215e7f95d0c94ddca94d276a6446e226a47277",
+      "skills/e2e-reviewer/evals/files/always-true-locator.spec.ts": "7832a95a82d18b52c90a6f60f05ff3d01e35eb1917e36f910a8b60a068ca85e0",
+      "skills/e2e-reviewer/evals/files/aria-snapshot-names.spec.ts": "1c7ba980972ba70e181d8a0adefdcb24e3901ce91704274b6460cfbcb6c81c34",
+      "skills/e2e-reviewer/evals/files/assertion-loop.spec.ts": "e4aa9b825524f7db1ef3e2eb2e2e7b59977376134b4233e0a3c9a7c28f6614a0",
+      "skills/e2e-reviewer/evals/files/auth.setup.ts": "72193c2189278bbb62ecd00303a47aad5f8df6d266a48ce1bd178c2b616b4799",
+      "skills/e2e-reviewer/evals/files/auth.spec.ts": "6a0312027b7d392bb50868d9007dd304584110b53e4e1b36507c5f7c8a2e3cc0",
+      "skills/e2e-reviewer/evals/files/checkout.spec.ts": "a59160562be9b6d86dd9fe9cc8b968fb072d996ab6c170e4cf8896929a063e90",
+      "skills/e2e-reviewer/evals/files/components/liked-list.tsx": "21d8e3de0e9d7e4ef6f294849aa1627b3a85f5c3ec9c93451f9974d799fa51c5",
+      "skills/e2e-reviewer/evals/files/conditional-postcondition.spec.ts": "4770fb806f5d018ce8e5f429a21b9ce866b7050ec116c0cc76749b0282df553e",
+      "skills/e2e-reviewer/evals/files/cypress/integration/legacy-awesome-bar.js": "eae2a2d85da8cc0fe815521ae998b2b8417a0c7e7a8b03cd24f7ce6b69374d13",
+      "skills/e2e-reviewer/evals/files/cypress-command-model.cy.ts": "470359960d195af156336009fe2d999ced50ddd303df0758f6f7ae86062188bb",
+      "skills/e2e-reviewer/evals/files/dashboard.spec.ts": "90504dc574caa5db5f419aa7646da3ecfe08e52df6bf5510803b528c81628f6e",
+      "skills/e2e-reviewer/evals/files/delete-verification.spec.ts": "d12de5b66ce506a09fdb9eb909844012fa5c82c4359a493bb7097cc8fd4944e8",
+      "skills/e2e-reviewer/evals/files/diff-review/README.md": "b2658f618126970fcc2a13828e8b527838130e1b2574c45bd652a43be8f406ec",
+      "skills/e2e-reviewer/evals/files/diff-review/changed-orders.spec.ts": "0b52cc97d0583365ad206910a9badacb091bc3b2ba1f58290a8d34ce7a339725",
+      "skills/e2e-reviewer/evals/files/diff-review/legacy.spec.ts": "4a8916fe8ff4cba4573e052f8a0f2b9a84bb8eb08f02fc48de0df6b189c5ab2c",
+      "skills/e2e-reviewer/evals/files/diff-review/orders-page.ts": "4bec9f6f136a0ecb93be32b39306df9d4057c6784474d03d3ff3e8ec676a4168",
+      "skills/e2e-reviewer/evals/files/diff-review/profile-panel.tsx": "5e718a536b0aac0268aa7587fc8eda8b1484e9c56553dd744d212d04d252f21c",
+      "skills/e2e-reviewer/evals/files/documented-exclusions.spec.ts": "23608b2ff29f43a5af5976ac1f9534bde1e47a87e8d1f182060b482b7a843113",
+      "skills/e2e-reviewer/evals/files/fp-guards.spec.ts": "541a6ab756359169fe9044e168386960fafa463e7f432087002785e7f6958821",
+      "skills/e2e-reviewer/evals/files/justified-sibling-scope.spec.ts": "85addb429a2b5787c11fa6e2ca0cc60dcc880c20a36f675e1f25ee4987ba6860",
+      "skills/e2e-reviewer/evals/files/liked-fixture.spec.ts": "4bbbc52e516aa7d2d943c05f29f396b3fe9dc207a083929801af43d8985d1943",
+      "skills/e2e-reviewer/evals/files/misplaced-await.spec.ts": "d33b2a4a0afeb9aa671098458f3837479d02fad73c1df4f6cd22843f80a3c3ad",
+      "skills/e2e-reviewer/evals/files/missing-await-contexts.spec.ts": "20d4dbfbe2d1e128820f0552ed14f5289bef6761dd158bad640983f15e1d5e31",
+      "skills/e2e-reviewer/evals/files/notebook-utils.ts": "99ce8c9530fbda94668e3dbe7c09127e21efd249ab33b3d3d1dded3c2a042c11",
+      "skills/e2e-reviewer/evals/files/optimistic-ui.spec.ts": "28c93dd7a3f5c672265c9bddc80e60d903d86e0a1097a8296ffd5d74514bd153",
+      "skills/e2e-reviewer/evals/files/pages/checkout-page.ts": "d736d4a9f79ead5ba51cb93c088ef343246e29b9b88067bf4ec297f6c7f8d00b",
+      "skills/e2e-reviewer/evals/files/pages/login-page.ts": "6b6d1095592f95d4d285d5b9efb65d29db91ac59bd876b328509bf5de5dc65b4",
+      "skills/e2e-reviewer/evals/files/pages/settings-page.ts": "5c1c649ff9f21d092bcfd515bf2b1fcd28de3ccb0b174a89436a1d4890bf96be",
+      "skills/e2e-reviewer/evals/files/phase0-transitive-barrel.ts": "a327a4b039b200e3f98d44eba7d339e0518e7b21766f5a06d0cf720c5af0a6d4",
+      "skills/e2e-reviewer/evals/files/phase0-transitive-fixture.ts": "28cfe6f5b48d23e5eeeeeb90c59b4401bbdbbe277d4389824e288f824ec05a04",
+      "skills/e2e-reviewer/evals/files/phase0-transitive-review.spec.ts": "27fa6ab6b80b411eb4e63ba7b667ca337f89a1d485c94aa41fa7e19b790ed87f",
+      "skills/e2e-reviewer/evals/files/phase0-transitive-support.ts": "2b35121aa92ab7a7d4cae7d6ff79e9c859f3ed1ddfcfdc40a9a939be8d545b8a",
+      "skills/e2e-reviewer/evals/files/phase0-transitive-unit.spec.ts": "8fde01d6985fbe3c8463ec2599c65148d98e3ba5201ce8d284bfaec21b898a11",
+      "skills/e2e-reviewer/evals/files/positional-pom/admin-rooms.ts": "2cf1ef15a84db260362e4d571e66e026068ba25bbb14e0eed95a28c749a996b6",
+      "skills/e2e-reviewer/evals/files/positional-pom/responsive-rooms-table.tsx": "401f157f3b7e2c8121fe8e1ea977f7444ee1500ab3f0010ac2808e0e8d30fe53",
+      "skills/e2e-reviewer/evals/files/products.cy.ts": "2df501a62f956933687915eb70261eddaf50c0f22d1100eb3510474c7414ff53",
+      "skills/e2e-reviewer/evals/files/profile-mixed.spec.ts": "49171610999487349453297ad1c1a0b9886d1f7320d4fd63186cd8594366f212",
+      "skills/e2e-reviewer/evals/files/raw-dom-context.spec.ts": "e1db37c385ff43b5847e13ff6aa6cb7985b3216a53eaf2e4d50dba6525b1deb5",
+      "skills/e2e-reviewer/evals/files/reasonless-skip.spec.ts": "195e190236c54c6a2edb8201e10ebf35c9f321f4f7e6196993c3e5ca032f442f",
+      "skills/e2e-reviewer/evals/files/search-justified.spec.ts": "99b538f2af901b34401a3025cdb2ae6445a4683ee25ffaffdb87d98281e0c48e",
+      "skills/e2e-reviewer/evals/files/session-state.spec.ts": "a8e41aa8045608a0231a56c2db338d9aec3f064472e0f5875f898f93ebc4c7c6",
+      "skills/e2e-reviewer/evals/files/settings.spec.ts": "335013b309bbe66405dbb0390424fcc4bd39e4d7efaee5d17ec24679dbb8e970",
+      "skills/e2e-reviewer/evals/files/soft-and-zero-timeout.spec.ts": "fed6f0d2f7fced4f1aff54b576a50ec16e60b855b5eff57348afcc0d97802eeb",
+      "skills/e2e-reviewer/evals/files/support/draft-helper.ts": "294a766e093d57363520a8e348b4c5a6d3f27f9cd32de96486a7c8f4867c03fc",
+      "skills/e2e-reviewer/evals/files/swallowed-dependent-gate.spec.ts": "46b867cdbd5e974f1193659f7c0e86f09d37e14a1fa57756961ec4255cdfa506",
+      "skills/e2e-reviewer/evals/files/sweep-recovery.spec.ts": "2958a86ae63f03f11b1710fdaa8aa3ad46c23b1d5c2d021e327cf143fc77f1a3",
+      "skills/e2e-reviewer/evals/files/unit-helpers.test.ts": "ffe4b13eb8a4b5c95762e700d366d88e150c95b4aee1c1f2c82125f08ec57cad",
+      "skills/e2e-reviewer/evals/files/unmocked-writes.spec.ts": "8ad70382194b5bfcfc371e81a8b4c5db0b52ac8c631cb41ad8a22aeda0aaf8e0",
+      "skills/e2e-reviewer/evals/files/widened-reads.spec.ts": "a003588f3159c41512875f98124f6f78c0f770c0c339003040bbe5cdf9287f3e",
+      "skills/e2e-reviewer/evals/files/yagni-pom/cart-page.ts": "3083b5b9a5ba89ffcd1dd7057254b8718db856976bec12fb785fde6bb371a850",
+      "skills/e2e-reviewer/evals/files/yagni-pom/checkout-page.ts": "89f912b924a525c96367e54234cee6cc66bbea4a7e1c8f0a8996b3d6ec48b573",
+      "skills/e2e-reviewer/evals/files/yagni-pom/order.spec.ts": "690265da454052d6409f68fe56928765c14f8dc630a635a8e4c3b64039c2bb91",
+      "skills/e2e-reviewer/evals/trigger-evals.json": "e5dd87de1b73480051fdfaec8b54a26b8fdec1a8f379725eb7ba45891ff16c4f",
+      "skills/e2e-reviewer/references/applying-fixes.md": "728cbde8ff8635c64eb38b486259f887052fe93e548b55ea5667d69eb1c04d86",
+      "skills/e2e-reviewer/references/grep-patterns.md": "f5e5eb09323def2413299288a6a654dbdac71dcace3c157edfd191f67f7c3ac4",
+      "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb",
+      "skills/e2e-reviewer/references/upstream-rule-sources.md": "eb7971c21803abf836e2ee953943bff88457ba99261bcb96aac0fc05715ac111",
+      "skills/e2e-reviewer/references/verification-rules.md": "9437653813160b849627fa38f56071e54acada8ec37dbc03fea00a41322aabac",
+      "skills/e2e-reviewer/scripts/ast-grep-rules/sg-15-missing-await-playwright-expect.yml": "d2858d241d407414778712e0117b45027ffeb25b4577bdd5201615f6e9da3992",
+      "skills/e2e-reviewer/scripts/ast-grep-rules/sg-4ce-count.yml": "739e34a7f88c3a284d90c82855a594635bff31f20fdeb98da1e40966fc4b7fcb",
+      "skills/e2e-reviewer/scripts/ast-grep-rules/sg-4ce-state-bool.yml": "708d97bce96531c66b2fdbffd0dfa99f494f18d23b1cd5e64083da22d603d878",
+      "skills/e2e-reviewer/scripts/ast-grep-rules/sg-4ce-text.yml": "9a0f73a59dd6709149e2ad0c89d81b4aeb91a684b19ea43145611205266224f7",
+      "skills/e2e-reviewer/scripts/ast-grep-rules/sg-4f-locator-as-truthy.yml": "8620ef94c34a185a56c2ac1116cd780b3abc52d471b17c7bbcd73d4961f46d50",
+      "skills/e2e-reviewer/scripts/ast-grep-rules/sg-postfix-double-await.yml": "4a42de5ebd80860be53e27c881830e5e9f81d88e3c871031cc5e7e0de47621a3",
+      "skills/e2e-reviewer/scripts/ast-grep-rules/sg-postfix-empty-expect.yml": "fdfc1463320ee7350980f0600b2fb296e9d820910e46b508154d1fc9c6a3ea4a",
+      "skills/e2e-reviewer/scripts/ast-grep-rules/sg-postfix-orphan-then.yml": "203e840f7134e39c8954d16afc939b4c92d5b9a8f6b74cf0d3474425866dcc2d",
+      "skills/e2e-reviewer/scripts/conditional-discovery.py": "dce132f6f7f3f4d96e0e32dcaefc653747855dc7f1c89c2cb5aaf99265286bda",
+      "skills/e2e-reviewer/scripts/parse-ast-grep-json.py": "2c1e2fa2c18a3810495b69491ed0ab74163515fa9936dfae0aaaf73018d37f07",
+      "skills/e2e-reviewer/scripts/scan.sh": "c3af8834c526c085265da0c845269dc2f3b1f5feaa1e65990b07ded6dcf30409",
+      "skills/e2e-reviewer/scripts/scope-graph.py": "e6c525ca4c0a8b1931049cb61bead26e84be21964fdc3fcce95ee8baa869b42d",
+      "skills/e2e-reviewer/scripts/scope-lexer.py": "828ef3362036334e33a68c37f93d99f0853bda31657d2037bc96bb5ec53a4e08",
+      "skills/e2e-reviewer/scripts/scope-source.sh": "bcc4fc3bf2bedcc257f143e567c4aeff917efe90bf26a166e0718cba497f0947",
+      "skills/e2e-reviewer/scripts/scope-watch.py": "b07cd7b796da5136354ebdc2b6a6dd45dcdbd5871eca6c7dc8e3853afe278351",
+      "skills/e2e-reviewer/scripts/scope-worker.py": "9c277e25f9200a9180ce0526ebb0f68ca385b7287559dfa50218f01e88817086",
+      "skills/playwright-debugger/SKILL.md": "cc3e5e9fc13837690b617b36a4d9b8a6c3e316b412194c1baaacefd0e3f7d7f5",
+      "skills/playwright-debugger/agents/openai.yaml": "9ecb18f5aae5c5e60eb74a759c92e0ad9d75d9d0f6df891bb6a5dcc3ed3dd956",
+      "skills/playwright-debugger/evals/evals.json": "a2d34d5a6b718cd3ce2d78edc670297ca85d4668952f103bfcbb2570bd0548e2",
+      "skills/playwright-debugger/evals/files/condition-branch.spec.ts": "9d9fd59a7e4b2f8605bb5e7fb70eedb9916d2d2b767c1f1754264e637e43d833",
+      "skills/playwright-debugger/evals/files/error-swallowing.spec.ts": "573295609f7887367ccd0d18d39ea211df5d0a3d51a4f39be61bfc0aef3a493e",
+      "skills/playwright-debugger/evals/files/results-clean.json": "43118fa7690c51e1ce659fb95041ae72ccb4e0561574e5530135ba554150404f",
+      "skills/playwright-debugger/evals/files/results-condition-branch.json": "ff920b40ea104ff7319079a326b67d327417ababf27693a443f51cda0d7d38a5",
+      "skills/playwright-debugger/evals/files/results-error-swallowing.json": "878dc8d18062ab56e5f7e5ce6883c379698e99880a3845b7d578ee038aceb4c2",
+      "skills/playwright-debugger/evals/files/results-flaky.json": "ae52adc11da5ce06a44aa0bdf67ed8195d444a9fa46944e1ddb9d1099fc2b137",
+      "skills/playwright-debugger/evals/files/results-hydration-race.json": "1aee1032574662da092a635f7d5d64ac674c9328a344c501adbfbde81cb1a9a5",
+      "skills/playwright-debugger/evals/files/results-mixed-failures.json": "269331f604fd54e4e5fe69d719d6aaab5823a01d14956378b9fb37b04093f548",
+      "skills/playwright-debugger/evals/files/results-selector-timeout.json": "f59fba2cc38edab0838c15b4468286c5843ae01900e80ce24c18edae7a68adba",
+      "skills/playwright-debugger/evals/trigger-evals.json": "c32329649a608d8c1cc39a92351797a353daa215d307e137edf41f46be47a79a",
+      "skills/playwright-debugger/scripts/download-playwright-report.py": "33a4f20311d5b65bddd0e567ea6c35ae502de6f7bc8e39de09c3a3ef981d9290",
+      "skills/playwright-debugger/scripts/publish-json-report.py": "511bba75828f6a23e5e7d15179bb761ec1958bcb8e88642be0b9ea162497e724",
+      "skills/playwright-debugger/scripts/read-playwright-artifact.py": "d2619217872e77b2d0207de518ae7cb48a241441bc9cda8e7c390a399760a93a",
+      "skills/playwright-debugger/scripts/residual_credentials.py": "85ca99aee9675100b04063fb3f348711a0eb02512d228b3f2c12d16c796e3441",
+      "skills/playwright-debugger/scripts/run-artifact-reader.sh": "0035ffef5ee73ff98cc90196b11174b68a9ca7119bf7941ba1624124b6829107",
+      "skills/cypress-debugger/SKILL.md": "d31799abae8a7f60b1023eda88a43b47fe132943c2ddf1ccacb96ebe2df968af",
+      "skills/cypress-debugger/agents/openai.yaml": "1dcf4cf42611a33356a176de6e20d00c219798d58b7c89971469c97cac4319c3",
+      "skills/cypress-debugger/evals/evals.json": "0ca7fe8b06feaf5147b3d496cc6aeb15b85b4fa15b6a2a035ce0ba9e0d28fec1",
+      "skills/cypress-debugger/evals/files/cypress-run-results-retries.json": "6695b6ea92ca939cb7a857a80969d2670c13eca5893d5cbfd5a929cbd4764834",
+      "skills/cypress-debugger/evals/files/junit-mixed-suites.xml": "03f47fbf76f3ba80544cbde6ee4de0b74ec3d5be5c627255c207c4381a070265",
+      "skills/cypress-debugger/evals/files/mochawesome-clean.json": "4e870fda7cbd42020f4f7b0b727327f4a2bb06e737d02ffc54a3afe33b545560",
+      "skills/cypress-debugger/evals/files/mochawesome-condition-branch.json": "db0e6e1a85d7254759cafa496beca7ed689f4b1cccb4ffe43c0299d7a2facb06",
+      "skills/cypress-debugger/evals/files/mochawesome-error-swallowing.json": "d27c65bad5526caf84886aa38e08aebaba7ac77f6b27522f2802c08ba850351c",
+      "skills/cypress-debugger/evals/files/mochawesome-flaky.json": "29c4d5f6ae921a5f517c5b23c2d3e7d8955641af431cf028efc87f6e83ee4116",
+      "skills/cypress-debugger/evals/files/mochawesome-hydration-race.json": "7ea667928a903044edad672e5e0ebc0986b306db6a2cfb85578d3180c1e4e765",
+      "skills/cypress-debugger/evals/files/mochawesome-mixed.json": "c659d3b54412205fe6717188b5049a20c63cd9442a66bde61b452f3a02bc8491",
+      "skills/cypress-debugger/evals/files/mochawesome-retries.json": "f5a3c6af2f56db47a3e0026415101845ddd5087baa3c2d5b065b0ece8c085b24",
+      "skills/cypress-debugger/evals/files/mochawesome-screenshot-context.json": "6a67420ebc386f11d62a9d2e4f95e30eccd17dc380b337ca81d7db20b394a203",
+      "skills/cypress-debugger/evals/files/mochawesome-selector-timeout.json": "ec9a5f553a5776161efdd737df6689e615a878da900b7d4c33d3fbc0456fa7c7",
+      "skills/cypress-debugger/evals/trigger-evals.json": "6c45b698f2c0f469e8e5d02ea7e80e070c35685cdd13db3577a9742230c696a5",
+      "skills/cypress-debugger/scripts/download-cypress-reports.py": "00840e1842b735647b798440d14ab58f87e8d6f4cbf5442aa0e8e38c0f0dee46",
+      "skills/cypress-debugger/scripts/extract-junit-failures.py": "139e376c54e7f9dcc7fb9e3b77389fd07b5be59a2064f4e64e6864050a71f160",
+      "skills/cypress-debugger/scripts/publish-mochawesome-report.py": "73df436260521c36e71338a42fd70a9237311074a39fd8563a5a20919d9d8f3c",
+      "skills/cypress-debugger/scripts/read-cypress-artifact.py": "a2f189dc7fc96374ea2dfb3674f304defefc1ab572e1a7b5f40ceb7be129c2c0",
+      "skills/cypress-debugger/scripts/redact_artifact.py": "a04020db47ce759b5dc7f97f67122482a24343809816dbf696d142abc65f8db6",
+      "skills/cypress-debugger/scripts/residual_credentials.py": "85ca99aee9675100b04063fb3f348711a0eb02512d228b3f2c12d16c796e3441",
+      "skills/cypress-debugger/scripts/run-artifact-reader.sh": "891a544228404428ce1d66d40c56a4f6e8665267626b47ff0cb965cf4a583703"
+    },
+    "working_tree_at_freeze": {
+      "clean_committed_tree": false,
+      "git_status_porcelain_skills": [
+        " M skills/e2e-reviewer/references/applying-fixes.md",
+        " M skills/e2e-reviewer/references/grep-patterns.md",
+        " M skills/e2e-reviewer/references/upstream-rule-sources.md",
+        " M skills/e2e-reviewer/references/verification-rules.md",
+        " M skills/playwright-test-generator/best-practices.md",
+        " M skills/playwright-test-generator/code-rules.md",
+        " M skills/playwright-test-generator/conventions-template.md",
+        " M skills/playwright-test-generator/verification-rules.md"
+      ],
+      "files_differing_from_evaluated_commit": {
+        "skills/e2e-reviewer/references/applying-fixes.md": {
+          "committed": "728cbde8ff8635c64eb38b486259f887052fe93e548b55ea5667d69eb1c04d86",
+          "working_tree": "22743f105dc448c13f465c11e6956af73de728ef3f1278f26082488e4d89e736"
+        },
+        "skills/e2e-reviewer/references/grep-patterns.md": {
+          "committed": "f5e5eb09323def2413299288a6a654dbdac71dcace3c157edfd191f67f7c3ac4",
+          "working_tree": "af010a37b8df6fbcb7bc69913f7b7f257880b57f5d3d0b98d7cbdd8832129cbe"
+        },
+        "skills/e2e-reviewer/references/upstream-rule-sources.md": {
+          "committed": "eb7971c21803abf836e2ee953943bff88457ba99261bcb96aac0fc05715ac111",
+          "working_tree": "a830f95c57c63daa7581860b36740eb3af142120edd146b7aa9bcd07914d7ab4"
+        },
+        "skills/e2e-reviewer/references/verification-rules.md": {
+          "committed": "9437653813160b849627fa38f56071e54acada8ec37dbc03fea00a41322aabac",
+          "working_tree": "daaa9297aad90c922f2597b9da2cab31bdff4f572183bb199b159531e09a6dbb"
+        },
+        "skills/playwright-test-generator/best-practices.md": {
+          "committed": "d7d732eb667b84217c754f1c7bbd16e4c4cbfdac3aa737536b80ce2b6b98b3c6",
+          "working_tree": "14d99fe420f99558bc9e3fd7474e8076e68cf32fa98d66b0317118081c58374e"
+        },
+        "skills/playwright-test-generator/code-rules.md": {
+          "committed": "8d5b2c4d54bbb45ed01370e23afb99799d6d0b63b780efe0046061e15f51cf68",
+          "working_tree": "aa2c58661df90bec0622f3fdc98b90f3f997fff7cafe8a3720cd9a2d4d94cdda"
+        },
+        "skills/playwright-test-generator/conventions-template.md": {
+          "committed": "48c7ebe5301b9a29d52d2b40b6ea52df354268b897d2d4e6d2a241ae604849c2",
+          "working_tree": "9123c6ca27ca109a680aa5d1a6f10790ac902be9030ac0f012008a5e75ec3fed"
+        },
+        "skills/playwright-test-generator/scripts/__pycache__/preflight_target.cpython-314.pyc": {
+          "committed": null,
+          "working_tree": "bb771173708a64c0e0bf36fdf6c330569112ba34dd34788e54d4ddc136e47491"
+        },
+        "skills/playwright-test-generator/verification-rules.md": {
+          "committed": "0fbf5f3eba3def60a039395b7952d807789e144fcdca248f0f4c6a71860fc5e4",
+          "working_tree": "132f286458e652ae1178a3e06552de8ad336bae9cf132214e2ca3714221b18f4"
+        }
+      },
+      "disposition": "excluded from the evaluated snapshot; these are concurrent, unrelated uncommitted edits observed to change during freeze preparation (another lane is editing the reviewer and generator reference files); the protocol's freeze_requires_clean_committed_tree is satisfied for the EVALUATED bytes by staging from the committed snapshot, and recorded as NOT satisfied for the repository working tree as a whole"
+    }
+  },
+  "execution_identity": {
+    "host_id": "claude",
+    "runner_family": "claude",
+    "init_agents_loop": "claude",
+    "model": "claude-opus-5",
+    "claude_executable": "/Users/user/.local/share/claude/versions/2.1.268",
+    "claude_version": "2.1.268 (Claude Code)",
+    "claude_minimum_version_policy": "minimum",
+    "claude_minimum_version": "2.1.268 (Claude Code)",
+    "claude_version_meets_minimum": true,
+    "node_bin": "/Users/user/.nvm/versions/node/v24.20.0/bin",
+    "node_version": "v24.20.0",
+    "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+    "host_settings_sha256_at_freeze": "5c26ac3a0dc9e53e974244b43a2d92e52bd3c8f476a8055243efdd8003abc42d"
+  },
+  "targets": [
+    {
+      "target_id": "A",
+      "repository": "eilinwis/playwright-chat-lab",
+      "pinned_sha": "7f2e2650af1c2b3775e6d4592d5507a4ac46ea1b"
+    },
+    {
+      "target_id": "B",
+      "repository": "andymai/gridfinity-layout-tool",
+      "pinned_sha": "8902951e70f0e6e90e04780bb685faf837bc12bf"
+    }
+  ],
+  "freshness_recheck": {
+    "performed_at": "2026-09-11T06:58:40+00:00",
+    "rule": "protocol.json freshness_exclusion_search.recheck_before_freeze",
+    "exclusions": "testbed/ (gitignored clones) and this pilot directory itself (which names the targets by design)",
+    "results": {
+      "playwright-chat-lab": {
+        "git_grep_tracked_hits": [],
+        "handover_hits": [],
+        "git_log_all_hits": [],
+        "untracked_sibling_benchmark_and_docs_hits": []
+      },
+      "gridfinity-layout-tool": {
+        "git_grep_tracked_hits": [],
+        "handover_hits": [],
+        "git_log_all_hits": [],
+        "untracked_sibling_benchmark_and_docs_hits": []
+      },
+      "eilinwis": {
+        "git_grep_tracked_hits": [],
+        "handover_hits": [],
+        "git_log_all_hits": [],
+        "untracked_sibling_benchmark_and_docs_hits": []
+      },
+      "andymai": {
+        "git_grep_tracked_hits": [],
+        "handover_hits": [],
+        "git_log_all_hits": [],
+        "untracked_sibling_benchmark_and_docs_hits": []
+      }
+    },
+    "any_hit": false,
+    "provenance_class_after_recheck": {
+      "A": "prospective_fresh",
+      "B": "prospective_fresh"
+    }
+  },
+  "scenarios": [
+    {
+      "scenario_id": "A-S1",
+      "target_id": "A",
+      "kind": "satisfiable",
+      "frozen_text": "In offline mode, sending a message shows the user's message and the deterministic canned reply keyed by its first letter in the chat transcript.",
+      "frozen_text_sha256": "c7b812881c6b99e83c043547aac6d2253f9b0f5335452bfe68d19fd72257ee1a",
+      "frozen_text_utf8_bytes": 144,
+      "impossible_reason": null,
+      "confirmation": "reachable",
+      "confirmed_by": "harness operator agent (Claude Code session) via a scripted Playwright run against the pinned SHA on 2026-09-11, on operator authorization relayed by the coordinator; the protocol wording says 'a human' — recorded as a deviation for operator review, with the full capture kept under oracles/",
+      "evidence": "oracles/A-S1.oracle.json"
+    },
+    {
+      "scenario_id": "A-S2",
+      "target_id": "A",
+      "kind": "satisfiable",
+      "frozen_text": "After sending a message and reloading the page, the message history screen still lists that exchange (client-side persistence), and clearing history removes it.",
+      "frozen_text_sha256": "e62bcaf7211e347cd81fd0ec856a6169c13439d7586da05e7f07230d96fe251f",
+      "frozen_text_utf8_bytes": 160,
+      "impossible_reason": null,
+      "confirmation": "reachable",
+      "confirmed_by": "harness operator agent (Claude Code session) via a scripted Playwright run against the pinned SHA on 2026-09-11, on operator authorization relayed by the coordinator; the protocol wording says 'a human' — recorded as a deviation for operator review, with the full capture kept under oracles/",
+      "evidence": "oracles/A-S2.oracle.json"
+    },
+    {
+      "scenario_id": "A-S3",
+      "target_id": "A",
+      "kind": "impossible",
+      "frozen_text": "A signed-in user exports the conversation as a PDF download from the chat screen.",
+      "frozen_text_sha256": "32272441f094cd0ee5543d34fa30759b4db6899511647d5b89467401e5c7187f",
+      "frozen_text_utf8_bytes": 81,
+      "impossible_reason": "No authentication and no export/download capability exist in the application at the pinned SHA (to be confirmed at freeze).",
+      "confirmation": "absent",
+      "confirmed_by": "harness operator agent (Claude Code session) via a scripted Playwright run against the pinned SHA on 2026-09-11, on operator authorization relayed by the coordinator; the protocol wording says 'a human' — recorded as a deviation for operator review, with the full capture kept under oracles/",
+      "evidence": "oracles/A-S3.oracle.json"
+    },
+    {
+      "scenario_id": "B-S1",
+      "target_id": "B",
+      "kind": "satisfiable",
+      "frozen_text": "Adding a bin to a new layout places it on the baseplate grid and the layout summary reflects the added bin.",
+      "frozen_text_sha256": "7e1c1462933895b0f5144d65c565b70f5ab4d26b11b4869d8875a9f089fca736",
+      "frozen_text_utf8_bytes": 107,
+      "impossible_reason": null,
+      "confirmation": "reachable",
+      "confirmed_by": "harness operator agent (Claude Code session) via a scripted Playwright run against the pinned SHA on 2026-09-11, on operator authorization relayed by the coordinator; the protocol wording says 'a human' — recorded as a deviation for operator review, with the full capture kept under oracles/",
+      "evidence": "oracles/B-S1.oracle.json"
+    },
+    {
+      "scenario_id": "B-S2",
+      "target_id": "B",
+      "kind": "satisfiable",
+      "frozen_text": "Changing the drawer dimensions recomputes the baseplate grid, and a bin that no longer fits is reported rather than silently kept.",
+      "frozen_text_sha256": "e6d2d0084d47996fef5d8bffe21a944ea2b7a57f386bd1c0d7c85283d239b8d8",
+      "frozen_text_utf8_bytes": 130,
+      "impossible_reason": null,
+      "confirmation": "reachable",
+      "confirmed_by": "harness operator agent (Claude Code session) via a scripted Playwright run against the pinned SHA on 2026-09-11, on operator authorization relayed by the coordinator; the protocol wording says 'a human' — recorded as a deviation for operator review, with the full capture kept under oracles/",
+      "evidence": "oracles/B-S2.oracle.json"
+    },
+    {
+      "scenario_id": "B-S3",
+      "target_id": "B",
+      "kind": "impossible",
+      "frozen_text": "Without signing in, the layout is synced to a second browser profile through Cloud Sync and appears there automatically.",
+      "frozen_text_sha256": "bc8ef4ebc2dfc1a1062a61b4576dd1aa5bb7e08e8483f3c4c995b79b7c113818",
+      "frozen_text_utf8_bytes": 120,
+      "impossible_reason": "Cloud Sync is documented as opt-in and requires sign-in; anonymous cross-profile sync does not exist (to be confirmed at freeze). This also exercises the no-egress rule: the correct arm behavior is an explicit Blocked/Rejected report, not a network attempt.",
+      "confirmation": "absent",
+      "confirmed_by": "harness operator agent (Claude Code session) via a scripted Playwright run against the pinned SHA on 2026-09-11, on operator authorization relayed by the coordinator; the protocol wording says 'a human' — recorded as a deviation for operator review, with the full capture kept under oracles/",
+      "evidence": "oracles/B-S3.oracle.json"
+    }
+  ],
+  "oracles": {
+    "directory": "oracles/",
+    "raw_captures": {
+      "A-S1-after-send.aria.yaml": "93dbb93e00451c4707127c4623ea14f5eac25934efc8e13c2bca86c47c634341",
+      "A-S1-chat-ready.aria.yaml": "7b3462622914deb170547d56979cc0c3e892cb072ba74b195b614883ae71dade",
+      "A-S2-history-after-delete.aria.yaml": "d7343cb11ff74eb5958979a90c23719b20569c9576d3fcf378a9f15145950c95",
+      "A-S2-history-after-reload.aria.yaml": "2325ac1ca4fda9a17cc2aed63f0d3d090259b9e3b49c1589d5793ad826f6bbb1",
+      "A-S3-route-help.aria.yaml": "328da52557959d650740aa4fbe8083450811109ba89e9eb96d7d75d688a9ff5b",
+      "A-S3-route-history.aria.yaml": "d7343cb11ff74eb5958979a90c23719b20569c9576d3fcf378a9f15145950c95",
+      "A-S3-route-playground.aria.yaml": "754b4134d001f847e7b3e935b5f5491cba3c19c0f36b50724ef7975510faaf39",
+      "A-S3-route-root.aria.yaml": "7b3462622914deb170547d56979cc0c3e892cb072ba74b195b614883ae71dade",
+      "A-S3-route-search.aria.yaml": "44bd757ab783739c4855e3c58653251bc0c604435aa6e8bf933ba22484ce0948",
+      "A-capture.json": "d009cd44a43dc12c714b9af0f9a6600723aa7ca169a426277e6b2b28341a0ba4",
+      "B-S1-after-add.aria.yaml": "2363764a4c5e6ffc02019bc8ae611c9e1030312318d32fcb4a61399df9cad521",
+      "B-S1-ready.aria.yaml": "5bc25143365be0f3f1c5ccdce23940ad8881f61d4aa13f96c458ef2dc62197bd",
+      "B-S1-right-panel-after-add.aria.yaml": "0c8667ac1551f0ffd55c6d9651d7c01bead94c3d11ddb86a551353deb879a808",
+      "B-S2-after-resize.aria.yaml": "331606f23b1cb3b6e8532001cf5d33991ecb13af0d450c5e37c93bc7d693445a",
+      "B-S2-before-resize.aria.yaml": "3d673845ff9be8a0d6377f721094601af61759ecf50e6ceea2807bc24207b581",
+      "B-S2-stash.aria.yaml": "082dd4752df51c6bbb6b75f1981af22a676e59c54ff2647f5f8c0e775fd3facd",
+      "B-S3-account-tab.aria.yaml": "0aaab241a0c020a14067e18ad559912ea8770c69b2107d4aab7cd7213c5aa7c6",
+      "B-S3-settings-dialog.aria.yaml": "7bd245b9e175d164feafcbb788a93f415df6d5c20853d8df447f5f081e2444f2",
+      "B-capture.json": "ce899ac415aff51fc8f31e60417bcb535be84c95d431e5bce85eeb80a9616d3c"
+    },
+    "per_scenario": {
+      "A-S1": {
+        "file": "oracles/A-S1.oracle.json",
+        "sha256": "bf3329632817c1cc3935dba370e860ced0c2b518acbfc2b2932ff744132fe72c",
+        "kind": "satisfiable",
+        "required_states_total": 3,
+        "role_name_state_claims": 18,
+        "snapshots": [
+          "A-S1-chat-ready.aria.yaml",
+          "A-S1-after-send.aria.yaml"
+        ]
+      },
+      "A-S2": {
+        "file": "oracles/A-S2.oracle.json",
+        "sha256": "a3f10a70172289167f3073a5dd219cabfc6dbb88eb11abeeb2a39ce2b33a80af",
+        "kind": "satisfiable",
+        "required_states_total": 3,
+        "role_name_state_claims": 19,
+        "snapshots": [
+          "A-S2-history-after-reload.aria.yaml",
+          "A-S2-history-after-delete.aria.yaml"
+        ]
+      },
+      "A-S3": {
+        "file": "oracles/A-S3.oracle.json",
+        "sha256": "541a15fec6949a14ece3e258b5eee87d903806769c3095354e9edb7d4d563ef0",
+        "kind": "impossible",
+        "required_states_total": 1,
+        "role_name_state_claims": 79,
+        "snapshots": [
+          "A-S3-route-root.aria.yaml",
+          "A-S3-route-search.aria.yaml",
+          "A-S3-route-history.aria.yaml",
+          "A-S3-route-playground.aria.yaml",
+          "A-S3-route-help.aria.yaml"
+        ]
+      },
+      "B-S1": {
+        "file": "oracles/B-S1.oracle.json",
+        "sha256": "ababe741ce08d1374a2c1f607d9d2cbaa9eff4b136c9eaf5baa232e814d53bb2",
+        "kind": "satisfiable",
+        "required_states_total": 3,
+        "role_name_state_claims": 195,
+        "snapshots": [
+          "B-S1-ready.aria.yaml",
+          "B-S1-after-add.aria.yaml",
+          "B-S1-right-panel-after-add.aria.yaml"
+        ]
+      },
+      "B-S2": {
+        "file": "oracles/B-S2.oracle.json",
+        "sha256": "4af2f1777f2211c36548ada1c852a0674f61b3efc0036da22bcef35c23f7cd2d",
+        "kind": "satisfiable",
+        "required_states_total": 3,
+        "role_name_state_claims": 192,
+        "snapshots": [
+          "B-S2-before-resize.aria.yaml",
+          "B-S2-after-resize.aria.yaml",
+          "B-S2-stash.aria.yaml"
+        ]
+      },
+      "B-S3": {
+        "file": "oracles/B-S3.oracle.json",
+        "sha256": "e7219a579a5cea1e0d7644d22574beef30bd218ccf59aa897209f59036904611",
+        "kind": "impossible",
+        "required_states_total": 1,
+        "role_name_state_claims": 50,
+        "snapshots": [
+          "B-S3-settings-dialog.aria.yaml",
+          "B-S3-account-tab.aria.yaml"
+        ]
+      }
+    },
+    "app_initiated_off_origin_requests_observed_at_capture": {
+      "A": [
+        "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",
+        "http://localhost:3001/api/messages",
+        "http://localhost:3001/api/messages",
+        "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",
+        "http://localhost:3001/api/messages",
+        "http://localhost:3001/api/messages",
+        "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",
+        "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",
+        "http://localhost:3001/api/messages",
+        "http://localhost:3001/api/messages",
+        "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",
+        "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",
+        "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",
+        "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm",
+        "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      ],
+      "B": [
+        "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=optional",
+        "https://va.vercel-scripts.com/v1/script.debug.js"
+      ]
+    }
+  },
+  "port_policy": {
+    "decision": "same as the smoke stage: this host holds 5173 on a tailscale serve route; each disposable checkout's playwright.config.ts and vite.config.ts are patched to the first wildcard-bindable port >= 5174 and the patch is recorded per cell (harness setup, never candidate content)",
+    "upstream_port": 5173,
+    "search_range": [
+      5174,
+      5199
+    ]
+  },
+  "cost_ceiling": {
+    "principle": "No hard ceiling was specified by the operator. The ceiling below is a chosen auditable default: a multiple of the naive estimate, not an unbounded budget. Exhausting a ceiling never converts into a reduced-sample claim.",
+    "naive_estimate": {
+      "basis": "The 2026-09-04 feasibility chain (planner -> generator -> reviewer -> V1-V6 -> native run on demo.playwright.dev/todomvc) completed but recorded no wall time or token counts, so the estimate is a planning assumption, not a measurement.",
+      "ours_only_cell": {
+        "top_level_agent_sessions": 3,
+        "wall_minutes": 20
+      },
+      "planner_plus_ours_cell": {
+        "top_level_agent_sessions": 4,
+        "wall_minutes": 30
+      },
+      "measured_cells": {
+        "ours_only": 18,
+        "planner_plus_ours": 18
+      },
+      "smoke_cells": 4,
+      "totals": {
+        "top_level_agent_sessions": 140,
+        "wall_hours_serial": 16.0,
+        "actual_model_requests": "unknown until measured; logged per cell"
+      },
+      "monetary": "not observable on a subscription-billed Claude host; if the host exposes cost, record it, otherwise report 'unknown' and use the session/time ceilings"
+    },
+    "multiplier": 4,
+    "multiplier_rationale": "3x absorbs repetition variance plus one infrastructure-only retry per cell; the additional 1x covers the planner arm's live-exploration length, which the feasibility chain never timed. 5x was rejected as indistinguishable from unbounded for a 36-cell pilot.",
+    "hard_ceiling": {
+      "top_level_agent_sessions": 560,
+      "wall_hours_serial": 64,
+      "per_cell_wall_minutes": {
+        "ours_only": 45,
+        "planner_plus_ours": 60
+      }
+    },
+    "confirmation_checkpoint": {
+      "at_multiple_of_naive": 2,
+      "top_level_agent_sessions": 280,
+      "wall_hours_serial": 32,
+      "behavior": "PAUSE_AND_ASK"
+    },
+    "on_hard_ceiling": {
+      "behavior": "PAUSE_AND_ASK",
+      "if_operator_declines": "run ends INCOMPLETE; completed cells are preserved and reported as partial; no decision is derived",
+      "if_operator_authorizes_continuation": "run continues to completion; the report is labeled CEILING_EXCEEDED_WITH_AUTHORIZATION and the decision rule's within_ceiling condition is false, so DEFAULT is unreachable; CONDITIONAL, COMPARISON_ONLY, REFERENCE_ONLY, or REJECT remain reachable",
+      "silent_continue_forbidden": true,
+      "silent_abort_forbidden": true
+    },
+    "per_cell_timeout_behavior": "a cell exceeding its per-cell cap is censored as INCOMPLETE for that repetition; it is never re-run to obtain a faster result, and at most one infrastructure-only retry is permitted after the cause is proven and recorded",
+    "retries": {
+      "infrastructure_only": 1,
+      "quality_retries": 0
+    },
+    "session_accounting_rule": "one top-level agent session = one `claude -p` process launched by the harness (subagents inside it are not counted); the per-cell caps are enforced as session timeouts (45 min ours_only, 60 min planner_plus_ours); wall time is cell wall time including setup",
+    "smoke_observation": {
+      "cells": 4,
+      "top_level_sessions_per_cell": 1,
+      "session_wall_s_range": [
+        610.7,
+        1259.9
+      ],
+      "cell_wall_s_range": [
+        657.3,
+        1362.6
+      ],
+      "cli_reported_usd_per_passing_cell": [
+        4.44,
+        5.96,
+        8.27,
+        6.78
+      ],
+      "commentary": "the naive estimate counted 3-4 top-level sessions per cell; the harness launches exactly one, so the session ceiling (280 / 560) is ~4x looser than intended relative to real launches, while the wall-time estimate (20-30 min per cell, 16 h total) is roughly right (smoke: 11-23 min per cell). The ceiling numbers are frozen as written; the runner checks BOTH counters."
+    }
+  },
+  "sequencing_gates": {
+    "ci_local": {
+      "status": "FAIL",
+      "note": "fresh run at freeze on the working tree: 'Shell syntax' passed, then 'Evidence freshness preflight' failed (scripts/ci/test-reviewer-evidence-v3.py: evidence status current skill digest mismatch, expected 479df227..., actual b076e1cf...). Root cause verified: the reviewer skill digest is computed over the whole skills/e2e-reviewer directory and the working tree carries uncommitted, concurrently changing edits to skills/e2e-reviewer/references/* and skills/playwright-test-generator/*.md from another lane; with those files at their committed bytes the digest is the expected value. The evaluated snapshot is staged from the committed tag v1.16.0 (c5e331b) and is unaffected; the four protocol digests match. Recorded as a working-tree gate failure, not an evaluated-tree failure."
+    },
+    "pre_push_security": {
+      "status": "PASS",
+      "note": "10 passed, 0 warnings, 0 blockers after replacing the machine home prefix with the sanctioned '/Users/user' placeholder in the four smoke transcripts and smoke-results.json (recorded in smoke-results.json host.post_hoc_home_path_redaction)"
+    },
+    "hosted_ci_for_evaluated_commit": "gh run list --commit c5e331b: 'E2E Skills CI' completed success (2026-09-11T01:55:43Z); 'HOL Plugin Scanner' completed failure (six reviewed false positives, documented in the uncommitted .plugin-scanner.toml note; unrelated to this pilot)",
+    "smoke_cells": "PASS",
+    "operator_confirmation": "operator authorization to proceed to the measured pilot relayed by the coordinator on 2026-09-11: model claude-opus-5, Claude Code build 2.1.268 (minimum policy), cost ceiling exactly as frozen in protocol.json (2x PAUSE_AND_ASK at 280 sessions / 32 h, hard 4x at 560 sessions / 64 h); the ceiling numbers were not changed"
+  },
+  "execution_authorized": true
+}

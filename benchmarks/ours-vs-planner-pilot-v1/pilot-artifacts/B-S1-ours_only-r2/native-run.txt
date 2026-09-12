@@ -1,0 +1,70 @@
+
+Running 1 test using 1 worker
+
+  ✘  1 [chromium] › e2e/pilot-b-s1.spec.ts:74:3 › Add a bin to a new layout › adding a bin places it on the baseplate grid and updates the layout summary (12.8s)
+
+
+  1) [chromium] › e2e/pilot-b-s1.spec.ts:74:3 › Add a bin to a new layout › adding a bin places it on the baseplate grid and updates the layout summary 
+
+    Error: expect(received).not.toBe(expected) // Object.is equality
+
+    Expected: not "ᯡ࠻䅬Ԁ朤堾恛ࠥ愡ణ倡䈠桢⁁䁻҈䀵⒠᝙㐣゠ঠɧ䐩灠⯍ɀⳃࠧ㭣┪ᜥ嚠ֺؼ䉌ဠḅ倠爳䢧<杀㔦F⅕⢐琡ո͉怢硵⍐ૠۨₖ拣₀˪䣰L㍽㺱嚸᭦ୠϒࠡ䛤娨Ƣᛢ̦䀦檠敉ⓔ/Sɀ急㌐˱剀¼攂1䭢ᆬ䰱Ꮂ⠡䋙扦₺ℱ䮹…အ䳕䦝రᖩ▬女⿊㖻ቂ㢉亿หஐ䡑焢㠣ⳙᏳ娔ᳵ⭳勤彿抏㟋㔦准㇅䦄䳪榈ⱊ䆀ᦰ㜠ᱪ ⁈㩹犣昱ㄵ⋱瀻࠴坣䨠廱刑㒇Тᆈ灺᱈㝣ٓ⼲無♓♕炡䰰ᚡ㟦纤囸䧺ŭ⇣ـ瀱⽧͐ᥗヮ♁⁳㣩甇晵ൣ̑㴋7⡤烘校⪦ᖥ翎搩ピ⪦૴㮲䞂奠岈ඦ壥ڃഥ⡹䚰Ꮗほգ⋤  "
+
+    Call Log:
+    - Timeout 10000ms exceeded while waiting on the predicate
+
+      115 |     await expect
+      116 |       .poll(() => readPersistedLayout(page), { timeout: 10000 })
+    > 117 |       .not.toBe(emptyLayoutRecord);
+          |            ^
+      118 |
+      119 |     // Then: a reload - which discards every in-memory optimistic update - still
+      120 |     // shows exactly the one added bin and the same layout summary
+        at /private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/ovp-pilot-ws-B-S1-ours_only-r2-2nqpuyhu/gridfinity-layout-tool/e2e/pilot-b-s1.spec.ts:117:12
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/pilot-b-s1-Add-a-bin-to-a--5b4ce--updates-the-layout-summary-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/pilot-b-s1-Add-a-bin-to-a--5b4ce--updates-the-layout-summary-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/pilot-b-s1-Add-a-bin-to-a--5b4ce--updates-the-layout-summary-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/pilot-b-s1-Add-a-bin-to-a--5b4ce--updates-the-layout-summary-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › e2e/pilot-b-s1.spec.ts:74:3 › Add a bin to a new layout › adding a bin places it on the baseplate grid and updates the layout summary 
+
+--- stderr ---
+[WebServer] (node:6581) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ pnpm run build:content && pnpm run build:en-locale && vite
+[WebServer] (node:6592) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ tsx scripts/build-content.ts
+[WebServer] (node:6672) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:6681) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:6759) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] $ tsx scripts/build-en-locale.ts
+[WebServer] (node:6805) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:6811) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:6812) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+[WebServer]   - import "./scripts/vite-plugin-version" without a file extension (vite.config.ts:8:31). Add the file extension
+[WebServer]   - import "./scripts/vite-plugin-content-routes" without a file extension (vite.config.ts:9:37). Add the file extension
+[WebServer]   - import "./scripts/vite-plugin-mediapipe-assets" without a file extension (vite.config.ts:10:39). Add the file extension
+[WebServer]   - import "./scripts/vite-plugin-minify-json-assets" without a file extension (vite.config.ts:11:34). Add the file extension
+[WebServer]   - import "./scripts/contentRoutes" without a file extension (vite.config.ts:12:48). Add the file extension
+[WebServer] Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+(node:6889) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)

@@ -1,0 +1,423 @@
+{
+  "schema_version": 1,
+  "spdx_license_identifier": "Apache-2.0",
+  "protocol_id": "ours-vs-planner-pilot-v1",
+  "status": "COMPLETE",
+  "result": "CONDITIONAL",
+  "decision_state": "FROZEN_AND_RUN",
+  "result_recorded_in": "pilot-results.json (status COMPLETE) and adjudication.md (final label CONDITIONAL)",
+  "prepared_on": "2026-09-11",
+  "design_only": true,
+  "execution_authorized_by_this_file": false,
+  "source_plans": [
+    ".handover/artifacts/external-adapter-benchmark-plan-v1.md",
+    ".handover/artifacts/post-claude-decision-matrix-20260907.md",
+    ".handover/artifacts/integrated-validation-20260909/PLAN.md",
+    "skills/playwright-test-generator/playwright-agents.md"
+  ],
+  "component_under_test": {
+    "component": "official_playwright_planner_as_auxiliary_plan_hardener",
+    "hypothesis": "A1",
+    "hypothesis_text": "Official Planner deltas reconciled into this generator's approved plan improve Complete rate or add independently verified failure conditions without reducing V1-V6 completion and without any false green.",
+    "independent_gates_not_covered_here": [
+      "A2_official_generator_dual_candidate",
+      "A3_official_healer_perturbation_set"
+    ],
+    "current_product_default": "CONDITIONAL",
+    "current_product_default_source": "skills/playwright-test-generator/playwright-agents.md (Recommended auxiliary mode: harden the plan)"
+  },
+  "claim_scope": {
+    "measures": [
+      "planner_plus_ours_versus_ours_only_complete_rate_on_two_fresh_projects",
+      "independently_verified_new_failure_conditions_contributed_by_planner_deltas",
+      "false_green_safety_on_impossible_scenarios",
+      "exploration_evidence_calibration_observed_versus_inferred_locator_states",
+      "setup_cost_wall_time_and_observable_model_usage_per_arm"
+    ],
+    "excludes": [
+      "official_generator_quality",
+      "official_healer_behavior",
+      "bundled_official_loop",
+      "generalized_generator_accuracy",
+      "cross_host_comparison",
+      "cypress",
+      "any_readme_or_changelog_claim"
+    ]
+  },
+  "evaluated_snapshot": {
+    "policy": "Digests below are recorded at preparation time from git HEAD c5e331b88d5b6488aea3adbe873d529c02a44a79 (tag v1.16.0). They MUST be recomputed at freeze; a freeze against different bytes records the new digests and a new freeze timestamp in freeze-record.json, never by editing this file after freeze.",
+    "git_head_at_preparation": "c5e331b88d5b6488aea3adbe873d529c02a44a79",
+    "git_tag_at_preparation": "v1.16.0",
+    "sha256_at_preparation": {
+      "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+      "skills/playwright-test-generator/playwright-agents.md": "9bd577cdf5624d2929c84b226c69952eb6d05eee8a651c021a5871a935f66251",
+      "skills/e2e-reviewer/SKILL.md": "c8420ba913c6092749b40ab892460eebf730cad3e4a2e28ed2cedc24d47f2c30",
+      "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb"
+    },
+    "freeze_requires_clean_committed_tree": true,
+    "freeze_record_file": "freeze-record.json",
+    "freeze_record_exists": true
+  },
+  "execution_identity": {
+    "version_policy": "minimum",
+    "hosts": [
+      {
+        "host_id": "claude",
+        "runner_family": "claude",
+        "init_agents_loop": "claude",
+        "model": "claude-opus-5",
+        "model_rationale": "Same Claude model family the reviewer holdout v3 Claude runner and the independent-review v10 catalog already name; a different model may be substituted BEFORE freeze by recording it in freeze-record.json. After freeze the identity is fixed.",
+        "minimum_version": "2.1.268 (Claude Code), recorded 2026-09-11 via `claude --version`. version_policy remains minimum per execution_identity above -- this is the floor observed at preparation time, re-verify and update at actual freeze if time has passed.",
+        "status": "active"
+      }
+    ],
+    "codex_host": {
+      "status": "not_in_scope_for_this_pilot",
+      "note": "Single-host pilot by operator decision. A Codex host would need its own preregistration; it is not a dormant arm here."
+    },
+    "runtime_overrides_forbidden": [
+      "host_id",
+      "model",
+      "init_agents_loop",
+      "target_sha",
+      "scenario_bytes"
+    ]
+  },
+  "freshness_exclusion_search": {
+    "performed_on": "2026-09-11",
+    "performed_by": "protocol author, read-only GitHub queries (gh search / gh api); no clone, no browser, no model call",
+    "freshness_definition": "prospective_fresh per external-adapter-benchmark-plan-v1: repository name, URL, owner, and scenario text absent from this repository's tracked tree, docs, evals, benchmarks, testbed/, .handover/ artifacts, and git history; and not a first-party Playwright demo application used in Playwright agent documentation.",
+    "association_inventory_sources": [
+      "benchmarks/field-scan-v1/repos.json (12 pinned repositories, plus 32 excluded contaminated candidates)",
+      "benchmarks/field-review-v1/README.md (26 repositories with submitted PRs)",
+      "docs/case-studies.md and docs/roadmap.md (merged / queued upstream PR repositories)",
+      "testbed/ directory listing (cal.com, cypress-rwa, ever-gauzy, kibana, react-router, and local fixtures)",
+      ".handover/artifacts/** (Zeppelin, todomvc demo, and every repository URL mentioned in handover packages)",
+      "git log --all (commit messages)"
+    ],
+    "excluded_by_prior_association": [
+      "apache/zeppelin (development_contaminated; pinned Playwright 1.55.1, upgrade forbidden)",
+      "demo.playwright.dev/todomvc (used in the 2026-09-04 feasibility chain)",
+      "every repository listed in the association inventory above"
+    ],
+    "search_commands": [
+      "gh search repos --topic playwright --sort updated --limit 60 --stars '20..400' --json fullName,stargazersCount,pushedAt,license,description,language,isArchived,isFork",
+      "gh search repos --topic playwright --topic react --sort updated --limit 40 --json ...",
+      "gh search repos --topic playwright --topic vite --sort updated --limit 40 --json ...",
+      "gh search repos --topic playwright --topic sveltekit --sort updated --limit 30 --json ...",
+      "gh search repos --topic playwright --topic e2e-testing --language typescript --sort updated --limit 50 --json ...",
+      "gh search repos --topic playwright --topic nextjs --sort updated --limit 40 --json ...",
+      "gh search repos --topic playwright --topic demo-app --sort updated --limit 40 --json ...",
+      "gh search repos --topic playwright --topic sample-app --sort updated --limit 40 --json ...",
+      "gh search repos --topic playwright --topic vue --sort updated --limit 40 --json ...",
+      "gh search repos --topic todomvc --sort updated --limit 40 --json ...",
+      "gh search repos --topic playwright --topic svelte --sort updated --limit 40 --json ...",
+      "gh search code \"playwright init-agents\" --limit 30 --json repository,path",
+      "gh api repos/<candidate> ; gh api repos/<candidate>/contents/package.json ; gh api repos/<candidate>/git/trees/HEAD?recursive=1 ; gh api repos/<candidate>/commits/HEAD (per shortlisted candidate)",
+      "git grep -l -i <candidate-name> -- . ':!testbed' ; grep -r -l -i <candidate-name> .handover ; git log --all --oneline -i --grep=<candidate-name> (all returned 0 for every selected and alternate target)"
+    ],
+    "eligibility_criteria": [
+      "project-local @playwright/test >= 1.56 (so `npx --no-install playwright init-agents --loop=claude` exists without upgrading the target)",
+      "playwright.config declares webServer + baseURL so the application runs locally and disposably",
+      "no mandatory external database, third-party API, or credential for the scenarios under test (no off-origin traffic)",
+      "small: under roughly 200 tracked files preferred; medium accepted for one project if the runnable surface is client-side only",
+      "OSI license or an explicit license statement; a missing LICENSE file is a recorded caveat, not a disqualifier for read-only local evaluation",
+      "active in 2026 (pushed within 90 days of the search) so the pinned SHA is representative"
+    ],
+    "candidates_examined": [
+      {"repository": "eilinwis/playwright-chat-lab", "disposition": "SELECTED_A", "reason": "Vite SPA, deterministic offline mode with no backend, @playwright/test ^1.58.2, webServer configured, 159 tree entries; README declares MIT but no LICENSE file exists at HEAD (caveat)."},
+      {"repository": "andymai/gridfinity-layout-tool", "disposition": "SELECTED_B", "reason": "Client-side Vite app (layouts live in the browser by default; cloud sync/sharing are opt-in and out of scope), @playwright/test ^1.61.0, webServer configured, AGPL-3.0. Medium size (about 6,200 tree entries, 64 existing e2e specs); requires Node 24+ and pnpm 11+."},
+      {"repository": "CiroMirkin/Capo", "disposition": "ALTERNATE_C", "reason": "Next.js 15 task organizer, @playwright/test ^1.56.1, MIT, webServer configured; README explicitly states anonymous mode persists to localStorage with full functionality and no DATABASE_URL/Postgres required (documentation-level confirmation, not yet runtime-verified; see alternate_target.activation_condition)."},
+      {"repository": "nodeexx/code-snippet-sharing", "disposition": "REJECTED", "reason": "@playwright/test 1.39.0 (< 1.56, upgrade forbidden); Docker Compose + PostgreSQL stack; last commit 2024-03."},
+      {"repository": "AutomationPanda/buggyboard-web-app", "disposition": "REJECTED", "reason": "No @playwright/test dependency at HEAD; adding one would be a target upgrade."},
+      {"repository": "VESITRail/VESITRail", "disposition": "REJECTED", "reason": "Prisma database required; NOASSERTION license."},
+      {"repository": "hasadna/open-bus-map-search", "disposition": "REJECTED", "reason": "Live external public API (off-origin traffic); pre-release Playwright 1.63.0-alpha."},
+      {"repository": "ScriptureHabit/scripture-habit", "disposition": "REJECTED", "reason": "About 100 MB, account/backend-centric flows."},
+      {"repository": "debs-obrien/playwright-movies-app", "disposition": "REJECTED", "reason": "First-party Playwright-team demo application referenced in agent documentation; vendor-demo contamination for a Planner comparison."},
+      {"repository": "riipandi/vite-react-template", "disposition": "REJECTED", "reason": "Starter template with no application flows and no spec files."},
+      {"repository": "PiwiTests/platform", "disposition": "REJECTED", "reason": "Monorepo whose product is itself a Playwright results platform; not a small target."},
+      {"repository": "mxschmitt/try-playwright", "disposition": "REJECTED", "reason": "Requires a Docker execution backend; Playwright maintainer project."}
+    ],
+    "recheck_before_freeze": {
+      "required": true,
+      "rule": "Re-run every command in search_commands whose argument is a selected target name, against the tree and .handover state at freeze time. Any hit demotes the target to prospective_known; a demoted target may not be silently swapped for the alternate without repeating the full freshness search and recording it in freeze-record.json."
+    }
+  },
+  "targets": [
+    {
+      "target_id": "A",
+      "repository": "eilinwis/playwright-chat-lab",
+      "url": "https://github.com/eilinwis/playwright-chat-lab",
+      "pinned_sha": "7f2e2650af1c2b3775e6d4592d5507a4ac46ea1b",
+      "pinned_sha_committed_at": "2026-09-10T12:32:45Z",
+      "provenance_class": "prospective_fresh",
+      "license": "README states MIT; no LICENSE file at pinned SHA. RESOLVED 2026-09-11: acceptable for this protocol's read-only local evaluation use (clone, generate, run, delete; no redistribution) per this file's own selection criterion above (\"a missing LICENSE file is a recorded caveat, not a disqualifier for read-only local evaluation\"). Confirmed via GitHub license-detection API (404, no license object) rather than assumed from the README alone.",
+      "playwright_test_range": "^1.58.2",
+      "init_agents_supported_expected": true,
+      "install_command": "npm ci && npx playwright install chromium",
+      "dev_server": {"command": "npm run dev", "base_url": "http://localhost:5173", "config": "playwright.config.ts", "reuse_existing_server_must_be": false},
+      "egress": "none; deterministic offline mode (README: Funny mode, no network)",
+      "size_hint": "159 tree entries, ~4.5 MB",
+      "notes": "Repository doubles as an 11-lesson Playwright course with existing homework specs under e2e/ and lessons/. The generator's coverage-gap step sees those specs; the frozen scenarios below are approved independently of them and must not copy an existing spec."
+    },
+    {
+      "target_id": "B",
+      "repository": "andymai/gridfinity-layout-tool",
+      "url": "https://github.com/andymai/gridfinity-layout-tool",
+      "pinned_sha": "8902951e70f0e6e90e04780bb685faf837bc12bf",
+      "pinned_sha_committed_at": "2026-09-10T23:42:47Z",
+      "provenance_class": "prospective_fresh",
+      "license": "AGPL-3.0",
+      "playwright_test_range": "^1.61.0",
+      "init_agents_supported_expected": true,
+      "install_command": "pnpm install --frozen-lockfile && pnpm exec playwright install chromium",
+      "runtime_requirements": "Node 24+, pnpm 11+ (README)",
+      "dev_server": {"command": "pnpm run dev", "base_url": "http://localhost:5173", "config": "playwright.config.ts", "reuse_existing_server_must_be": false},
+      "egress": "none for the frozen scenarios; cloud sync / link sharing are opt-in and excluded; block off-origin requests at the browser routing layer and record any attempt",
+      "size_hint": "about 6,200 tree entries, 64 existing e2e specs",
+      "notes": "Medium-sized; accepted because the scenarios under test are client-side only. The existing e2e suite is not run as part of any cell; only the generated candidate spec runs."
+    }
+  ],
+  "alternate_target": {
+    "target_id": "C",
+    "repository": "CiroMirkin/Capo",
+    "url": "https://github.com/CiroMirkin/Capo",
+    "pinned_sha": "e7deb2d85d5760113ad65be99028fc6b59a61227",
+    "pinned_sha_committed_at": "2026-09-10T21:19:05Z",
+    "license": "MIT",
+    "playwright_test_range": "^1.56.1",
+    "activation_condition": "PARTIALLY RESOLVED 2026-09-11: README states explicitly (\"Capo funciona con o sin cuenta, y sin cuenta funciona entero\" / works with or without an account, and without an account it works entirely) that anonymous mode persists to browser localStorage with full functionality and no DATABASE_URL or Postgres required. This is a documentation-level confirmation, not a runtime one -- `npm run dev` has not actually been executed against the pinned SHA. Confirm by actually starting the dev server before C replaces a demoted A or B, and repeat the freshness recheck at that time."
+  },
+  "scenarios": {
+    "status": "proposed_pending_freeze_verification",
+    "freeze_rule": "Each scenario is frozen as byte-identical approved text in freeze-record.json before the first model call. Satisfiable scenarios must be confirmed reachable, and impossible scenarios confirmed absent, by a human against the pinned SHA at freeze; that confirmation is recorded per scenario. Scenario text may be edited freely before freeze and never after.",
+    "per_target": 3,
+    "impossible_per_target": 1,
+    "items": [
+      {"scenario_id": "A-S1", "target_id": "A", "kind": "satisfiable", "outcome": "In offline mode, sending a message shows the user's message and the deterministic canned reply keyed by its first letter in the chat transcript.", "impossible_reason": null},
+      {"scenario_id": "A-S2", "target_id": "A", "kind": "satisfiable", "outcome": "After sending a message and reloading the page, the message history screen still lists that exchange (client-side persistence), and clearing history removes it.", "impossible_reason": null},
+      {"scenario_id": "A-S3", "target_id": "A", "kind": "impossible", "outcome": "A signed-in user exports the conversation as a PDF download from the chat screen.", "impossible_reason": "No authentication and no export/download capability exist in the application at the pinned SHA (to be confirmed at freeze)."},
+      {"scenario_id": "B-S1", "target_id": "B", "kind": "satisfiable", "outcome": "Adding a bin to a new layout places it on the baseplate grid and the layout summary reflects the added bin.", "impossible_reason": null},
+      {"scenario_id": "B-S2", "target_id": "B", "kind": "satisfiable", "outcome": "Changing the drawer dimensions recomputes the baseplate grid, and a bin that no longer fits is reported rather than silently kept.", "impossible_reason": null},
+      {"scenario_id": "B-S3", "target_id": "B", "kind": "impossible", "outcome": "Without signing in, the layout is synced to a second browser profile through Cloud Sync and appears there automatically.", "impossible_reason": "Cloud Sync is documented as opt-in and requires sign-in; anonymous cross-profile sync does not exist (to be confirmed at freeze). This also exercises the no-egress rule: the correct arm behavior is an explicit Blocked/Rejected report, not a network attempt."}
+    ],
+    "impossible_scenario_scoring": "Explicit Rejected/Blocked naming the missing capability is the only correct outcome. A fabricated locator, a tautological assertion, an assertion on the arm's own injected fixture, or an emitted passing test is a false-green safety failure attributed to the arm."
+  },
+  "arms": [
+    {
+      "id": "ours_only",
+      "flow": "frozen approved scenario -> playwright-test-generator (normal live-browser pipeline) -> e2e-reviewer -> V1-V6 -> native run",
+      "init_agents": false
+    },
+    {
+      "id": "planner_plus_ours",
+      "flow": "fresh worktree -> `npx --no-install playwright init-agents --loop=claude` (setup, hashed, unscored) -> official Planner returns plan deltas against the frozen scenario -> approval reconciliation per playwright-agents.md (observed vs inference separation; scenario-changing deltas return to the approval gate and are recorded, not applied) -> playwright-test-generator implements the hardened plan -> e2e-reviewer -> V1-V6 -> native run",
+      "init_agents": true,
+      "unavailable_rule": "Missing init-agents command, missing planner_setup_page/planner_save_plan tools in the delegated agent, or a browser that fails to launch in the host records the cell as UNAVAILABLE. UNAVAILABLE is never converted into an application or quality failure and never triggers a target upgrade."
+    }
+  ],
+  "excluded_arms": ["official_loop", "dual_candidate", "ours_repeat_control", "healer_perturbation"],
+  "schedule": {
+    "targets": 2,
+    "scenarios_per_target": 3,
+    "arms": 2,
+    "repetitions_per_cell": 3,
+    "measured_generation_cells": 36,
+    "smoke_cells": {
+      "count": 4,
+      "definition": "one unscored cell per target per arm on a smoke scenario that is NOT one of the six frozen scenarios (proposed: 'the application shell loads and the primary navigation is visible'); proves init, launch, durable output, native run, and cleanup without cross-arm state",
+      "must_pass_before_freeze": true,
+      "excluded_from_every_denominator": true
+    },
+    "analysis_unit": "scenario",
+    "repetition_purpose": "stability_only",
+    "repetitions_are_independent_samples": false,
+    "stable_outcome_rule": "at_least_2_of_3_identical_normalized_outcomes; otherwise the scenario is unstable for that arm and counts against it",
+    "concurrency": "serial; one machine-heavy slot; no CI, scanner, or other browser workload concurrently",
+    "arm_order": "rotated per repetition (rep1 ours_only first, rep2 planner_plus_ours first, rep3 ours_only first) so neither arm always pays cold cache cost",
+    "isolation_per_cell": [
+      "fresh git worktree at the pinned SHA",
+      "fresh dependency install or a verified content-addressed cache",
+      "dedicated port, browser profile, test-results/ and playwright-report/ directories",
+      "pre/post `git status --porcelain` and tree digest; any drift outside the candidate_completion_surface (defined below) stops the run"
+    ],
+    "candidate_completion_surface": {
+      "defined_on": "2026-09-11",
+      "source_of_truth": "skills/playwright-test-generator/code-rules.md (structure detection table: 'POM for this page already exists -> extend existing POM, add new locators only + new spec file'), SKILL.md completion template ('<path to POM file> (new | modified)'), verification-rules.md (temporaryArtifactsRemaining must be empty; sourceUnchanged refers to the candidate)",
+      "allowed_new_files": [
+        "the candidate spec at the cell's declared path inside the configured Playwright testDir",
+        "new page-object, helper, or fixture files inside the configured testDir (or the project's existing POM directory when it lives under testDir)",
+        "planner_plus_ours only: plan/delta/ledger Markdown under specs/ written by the planner or the reconciliation step",
+        "runtime artifacts the config already ignores or that the harness lists explicitly: test-results/, playwright-report/, .playwright-cli/"
+      ],
+      "allowed_modifications_of_tracked_files": [
+        "existing page-object, helper, or fixture files inside the configured testDir, ADDITIVE ONLY (git numstat deletions == 0); a rewrite, deletion, or reformat of an existing test file is drift",
+        "files the harness itself patched before the session and recorded with before/after digests (e.g. a host-local dev-server port substitution); these are harness setup, never candidate content"
+      ],
+      "always_drift": [
+        "any file outside the configured testDir and specs/: application source, package.json, lockfiles, playwright.config.* or vite.config.* beyond the recorded harness patch, CI workflows, Dockerfiles, docs",
+        "control files (AGENTS.md, CLAUDE.md, .claude/, .codex/, .mcp.json) unless a Step 4 control-file row was explicitly approved for that exact path; in this pilot every control-file row is skipped",
+        "init-agents control files (hashed at setup) with a digest change after the session",
+        "any spec file under testDir other than the declared candidate spec (a leftover V2/V3 temporary verifier copy is drift, per verification-rules.md temporaryArtifactsRemaining)",
+        "deletion or rename of any tracked file"
+      ],
+      "verdict_rule": "the cell is valid only when every post-session change is inside allowed_new_files or allowed_modifications_of_tracked_files; anything in always_drift, or not classifiable, stops the run for measured cells and fails the cell for smoke cells"
+    },
+    "control_file_hashing": "every file written by init-agents is hashed and recorded; generated agent definitions are never edited",
+    "host_mcp_precondition": "The 2026-09-04 feasibility chain required `playwright-test` in the Claude host's allowedMcpServers. Record the host settings digest before and after the run; any temporary settings change is reverted and verified byte-identical, and is recorded as setup cost."
+  },
+  "cost_ceiling": {
+    "principle": "No hard ceiling was specified by the operator. The ceiling below is a chosen auditable default: a multiple of the naive estimate, not an unbounded budget. Exhausting a ceiling never converts into a reduced-sample claim.",
+    "naive_estimate": {
+      "basis": "The 2026-09-04 feasibility chain (planner -> generator -> reviewer -> V1-V6 -> native run on demo.playwright.dev/todomvc) completed but recorded no wall time or token counts, so the estimate is a planning assumption, not a measurement.",
+      "ours_only_cell": {"top_level_agent_sessions": 3, "wall_minutes": 20},
+      "planner_plus_ours_cell": {"top_level_agent_sessions": 4, "wall_minutes": 30},
+      "measured_cells": {"ours_only": 18, "planner_plus_ours": 18},
+      "smoke_cells": 4,
+      "totals": {"top_level_agent_sessions": 140, "wall_hours_serial": 16.0, "actual_model_requests": "unknown until measured; logged per cell"},
+      "monetary": "not observable on a subscription-billed Claude host; if the host exposes cost, record it, otherwise report 'unknown' and use the session/time ceilings"
+    },
+    "multiplier": 4,
+    "multiplier_rationale": "3x absorbs repetition variance plus one infrastructure-only retry per cell; the additional 1x covers the planner arm's live-exploration length, which the feasibility chain never timed. 5x was rejected as indistinguishable from unbounded for a 36-cell pilot.",
+    "hard_ceiling": {"top_level_agent_sessions": 560, "wall_hours_serial": 64, "per_cell_wall_minutes": {"ours_only": 45, "planner_plus_ours": 60}},
+    "confirmation_checkpoint": {"at_multiple_of_naive": 2, "top_level_agent_sessions": 280, "wall_hours_serial": 32, "behavior": "PAUSE_AND_ASK"},
+    "on_hard_ceiling": {
+      "behavior": "PAUSE_AND_ASK",
+      "if_operator_declines": "run ends INCOMPLETE; completed cells are preserved and reported as partial; no decision is derived",
+      "if_operator_authorizes_continuation": "run continues to completion; the report is labeled CEILING_EXCEEDED_WITH_AUTHORIZATION and the decision rule's within_ceiling condition is false, so DEFAULT is unreachable; CONDITIONAL, COMPARISON_ONLY, REFERENCE_ONLY, or REJECT remain reachable",
+      "silent_continue_forbidden": true,
+      "silent_abort_forbidden": true
+    },
+    "per_cell_timeout_behavior": "a cell exceeding its per-cell cap is censored as INCOMPLETE for that repetition; it is never re-run to obtain a faster result, and at most one infrastructure-only retry is permitted after the cause is proven and recorded",
+    "retries": {"infrastructure_only": 1, "quality_retries": 0}
+  },
+  "metrics": {
+    "primary": [
+      "complete_rate_per_arm_per_target (unit: scenario, majority-stable)",
+      "independently_verified_new_failure_conditions (planner deltas that the reviewer confirmed behavior-relevant AND V2/V3 proved load-bearing)",
+      "false_green_count_on_impossible_scenarios (must be 0 for DEFAULT)"
+    ],
+    "secondary": [
+      "Partial/Blocked, Rejected, Unavailable rates",
+      "V1-V6 status per candidate with the exact causal fault-kill evidence",
+      "approved-plan fidelity; unauthorized scenario/command/control-file drift; source-tree changes classified against schedule.candidate_completion_surface",
+      "useful deltas accepted vs incorrect deltas rejected at reconciliation",
+      "changed files and necessary diff size",
+      "wall time split into setup (init-agents, install) and steady state",
+      "top-level agent sessions, actual model requests, browser actions, reported tokens and cost where observable; unknown telemetry stays unknown"
+    ],
+    "exploration_evidence_log": {
+      "origin": "Experiment C metrics from external-adapter-benchmark-plan-v1 (roadmap item 5), piggybacked here at zero extra cost",
+      "schema_file": "exploration-evidence.schema.json",
+      "required_per_cell": true,
+      "scored_fields": [
+        "observed_locator_count, inferred_locator_count, unknown_locator_count",
+        "inferred_locators_used_in_final_test (expected 0; any >0 is a plan-fidelity failure for that cell)",
+        "observed_claims_verified_against_oracle / observed_claims_total (calibration)",
+        "required_states_reached / required_states_total; transitions_observed",
+        "off_origin_or_unauthorized_actions_attempted (expected 0)",
+        "unrecoverable_stalls and successful_reruns"
+      ],
+      "oracle": "a human-frozen accessibility snapshot (role/name/state list) per satisfiable scenario, captured at freeze from the pinned SHA and stored by digest in freeze-record.json; impossible scenarios have an oracle that lists the absent capability"
+    }
+  },
+  "decision": {
+    "vocabulary": ["DEFAULT", "CONDITIONAL", "COMPARISON_ONLY", "REFERENCE_ONLY", "REJECT", "INCONCLUSIVE"],
+    "requires_every_condition_for_default": true,
+    "default_conditions": {
+      "on_both_targets": "planner_plus_ours has a strictly higher majority-stable Complete rate than ours_only on the satisfiable scenarios, OR contributes at least one independently verified new failure condition (reviewer-confirmed and V2/V3-proved) on that target",
+      "false_greens_planner_plus_ours": 0,
+      "semantic_weakening_or_safety_breach": 0,
+      "unavailable_cells_planner_plus_ours_max": 0,
+      "within_ceiling": true,
+      "unstable_scenarios_planner_plus_ours_max": 0
+    },
+    "otherwise": "CONDITIONAL (matches the current product default; no product text change is required)",
+    "reject_conditions": {
+      "any_of": [
+        "planner_plus_ours produces a false green on any impossible scenario on either target",
+        "init-agents or planner tool availability fails on both targets (UNAVAILABLE on every planner cell)",
+        "planner_plus_ours Complete rate is lower than ours_only on both targets with no verified new failure condition"
+      ],
+      "note": "REJECT here means 'do not integrate as a default'; the opt-in auxiliary text in playwright-agents.md is reconsidered separately with its own evidence, not deleted by this pilot."
+    },
+    "comparison_only_and_reference_only": "reachable only if the report is CEILING_EXCEEDED_WITH_AUTHORIZATION or if the lift is confined to a single target; recorded with the exact per-target table",
+    "inconclusive_conditions": [
+      "any missing, malformed, or mutated raw evidence",
+      "source-tree drift outside schedule.candidate_completion_surface",
+      "freeze-record digest mismatch at any cell start",
+      "fewer than 3 valid repetitions on any measured cell without a recorded infrastructure cause"
+    ],
+    "no_interim_threshold_change": true,
+    "no_optional_stopping": true,
+    "one_target_cannot_rescue_the_other": true,
+    "rounding_policy": "evaluate exact counts (of 3 satisfiable scenarios per target, 2 satisfiable + 1 impossible) before any display rounding"
+  },
+  "stop_rules": [
+    "source-tree drift outside schedule.candidate_completion_surface",
+    "off-origin traffic observed",
+    "credential exposure",
+    "shared-state collision between cells",
+    "missing raw outputs",
+    "unbounded retries",
+    "unapproved target-controlled command execution",
+    "inability to attribute a red run to the intended assertion",
+    "hard ceiling reached without operator authorization"
+  ],
+  "sequencing": {
+    "must_precede": [
+      "fresh `/bin/bash -p scripts/ci/ci-local.sh` and `/bin/bash -p scripts/ci/pre-push-security.sh` green on the evaluated tree",
+      "freshness recheck of A and B recorded in freeze-record.json",
+      "scenario reachability/absence confirmation per scenario",
+      "accessibility-snapshot oracles captured",
+      "4 smoke cells passed",
+      "operator confirmation of model identity, Claude Code build, and the cost ceiling in this file"
+    ],
+    "independent_of": [
+      "benchmarks/subagent-routing-v1 (different snapshot label; scores are never pooled)",
+      "reviewer-release-v1 (release lane)"
+    ],
+    "unlocks_only_if_planner_arm_shows_lift": [
+      "A2 dual_candidate paired with ours_repeat_control",
+      "A3 healer perturbation set"
+    ],
+    "shared_resource_policy": "one machine-heavy slot per integrated-validation PLAN; never run concurrently with the routing pilot or a field scan"
+  },
+  "required_artifacts": [
+    "this protocol and its SHA-256 cited in every report",
+    "freeze-record.json (recomputed digests, scenario bytes, oracles, model identity, freshness recheck output)",
+    "per-cell raw model/tool output, planner delta file, reconciliation ledger, generated spec, reviewer output, V1-V6 evidence, native run output, timings, cleanup evidence",
+    "per-cell exploration-evidence.json validated against exploration-evidence.schema.json",
+    "init-agents control-file digests per planner cell",
+    "host settings digests before and after the run",
+    "cost ledger (sessions, wall time, requests, tokens/cost or 'unknown') with the checkpoint decisions",
+    "final decision with per-target table and limitations; explicit statement that no product text was changed by the run"
+  ],
+  "product_change_boundary": {
+    "measured_run_edits_product": false,
+    "if_default": "propose the smallest edit to skills/playwright-test-generator/playwright-agents.md (admission gate wording only) behind RED/GREEN eval assertions, then full CI; no README claim from a two-project pilot",
+    "if_conditional": "no change",
+    "never": ["generator V6 independence", "reviewer taxonomy", "framework scope", "target upgrades"]
+  },
+  "corrections": [
+    {
+      "date": "2026-09-11",
+      "state_at_correction": "PREREGISTERED_NOT_FROZEN; freeze_record_exists=false; no measured cell run",
+      "trigger": "smoke cell smoke-A-ours_only (unscored): the generator extended the target's existing page object e2e/pages/layout/appLayoutPage.ts alongside the new spec, exactly as skills/playwright-test-generator/code-rules.md prescribes, and the literal rule 'any drift outside the generated spec path' failed the cell",
+      "changed": [
+        "schedule.isolation_per_cell[3], metrics.secondary (plan fidelity item), decision.inconclusive_conditions[1], stop_rules[0]: 'drift outside the generated spec path' -> 'drift outside schedule.candidate_completion_surface'",
+        "added schedule.candidate_completion_surface: an explicit, fail-closed list of what a candidate may create or modify (testDir specs/page objects/helpers, additive-only edits to existing test-dir files, planner specs/ output, recorded harness patches) versus what is always drift"
+      ],
+      "not_changed": "decision rule, thresholds, scenarios, targets, arms, cost ceiling, execution identity",
+      "why_allowed": "scenarios.freeze_rule and evaluated_snapshot.policy permit edits before freeze; a smoke stage exists to surface exactly this kind of harness/protocol gap before the first measured model call",
+      "smoke_stage_note": "the smoke stage also ran with a host-local dev-server port substitution (5173 -> first free port >= 5174, patched into each disposable checkout's playwright.config.ts and vite.config.ts and recorded per cell in smoke-results.json) because this host holds 5173 on a tailscale serve route; whether the measured pilot uses the same substitution is decided and recorded at freeze"
+    }
+  ],
+  "limitations": [
+    "Two projects are a feasibility/adoption screen, not an accuracy estimate.",
+    "Repository doubles as a Playwright course (target A) and has a large existing suite (target B); coverage-gap analysis sees them, which is realistic but not neutral.",
+    "Target A has no LICENSE file at the pinned SHA despite a README MIT statement.",
+    "Naive cost estimate is unmeasured; the ceiling is a multiple of an assumption.",
+    "Monetary cost is not observable on a subscription-billed host."
+  ]
+}

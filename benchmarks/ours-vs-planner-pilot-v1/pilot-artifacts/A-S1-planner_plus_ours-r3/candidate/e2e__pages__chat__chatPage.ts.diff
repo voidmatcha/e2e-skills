@@ -1,0 +1,30 @@
+diff --git a/e2e/pages/chat/chatPage.ts b/e2e/pages/chat/chatPage.ts
+index d2e154a..7dfd0d0 100644
+--- a/e2e/pages/chat/chatPage.ts
++++ b/e2e/pages/chat/chatPage.ts
+@@ -17,6 +17,14 @@ export class ChatPage {
+   readonly chatMessageFirst: Locator
+   readonly chatMessageFirstReply: Locator
+ 
++  /** Thread, addressed by the components' own test hooks rather than by
++   * styling classes. `loading-indicator` is a distinct test id from
++   * `message-assistant`, so `assistantMessages` can never transiently match
++   * the "Thinking..." placeholder. */
++  readonly userMessages: Locator
++  readonly assistantMessages: Locator
++  readonly emptyThreadPlaceholder: Locator
++
+   constructor(page: Page) {
+     this.funnyModeCheckbox = page.getByRole('checkbox', {
+       name: /funny mode/i,
+@@ -41,6 +49,10 @@ export class ChatPage {
+       .locator('.chat-message--assistant:not(.chat-message--loading)')
+       .first()
+       .locator('.chat-message__bubble')
++
++    this.userMessages = page.getByTestId('message-user')
++    this.assistantMessages = page.getByTestId('message-assistant')
++    this.emptyThreadPlaceholder = page.getByText('No messages yet.')
+   }
+ 
+   async sendMessage() {
