@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "spdx_license_identifier": "Apache-2.0",
+  "protocol_id": "subagent-routing-v1",
+  "status": "FROZEN",
+  "frozen_on": "2026-09-12T16:23:06Z",
+  "git_head_at_freeze": "db97bbb6926694e79150d6c567f3b5f05f29e38d",
+  "protocol_sha256": "7a7d7cf94a1ee502a8a1a5305209b938ad1f7f8c5a0dc3f8193e351b7723869b",
+  "runner_sha256": "78b000f51f3418ef3f20407cf2654635a7c81dfa18286671f03f2ca427b09925",
+  "smoke_runner_sha256": "28e3ff83586c756284cd430ce448e9f7041f9811562318457b369a3f94998c76",
+  "case_manifest_sha256": "f24fa0c5b7d7a4eb15f7e45549a2b782ae17feee1d9fad04d5ef2411bacc5d5a",
+  "case_tree_sha256": "ca622ed91811977c131f143effbe109620ccd3114949c036a73ace4fe497bc8a",
+  "smoke_manifest_sha256": "3a9a900f1257385190c09b27c8c4266ae5f1257fc4a5a9a9914d1c1f2bfce494",
+  "smoke_tree_sha256": "63bf30675379ce57cdba0978b7f078c2d492487c13701584cbd19efe63216a5f",
+  "evaluated_snapshot": {
+    "skills/e2e-reviewer/SKILL.md": "a1558dc829753e93697389759309b24588250cc1ea28e3d255edc2bca0362a14",
+    "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb",
+    "skills/playwright-debugger/SKILL.md": "469691cb9c0893c9018451c1b2a2a83f3a4b742fcadd31c7804175c25f258983",
+    "skills/cypress-debugger/SKILL.md": "a27b35118803adb85cced3dcbe9de5bac0e9d09d0993f81b1da37f1e9a82b3b5",
+    "agents/e2e-finding-verifier.md": "c9b49b7164c0c9646124260c562d9569ed7af0da3faa810f4fcbf48800b0fef0",
+    "agents/e2e-failure-classifier.md": "1826e4f80601306be6bef07fc0084374c4317bf51c1ffdbbdfa805302204d37f",
+    ".codex/agents/e2e-finding-verifier.toml": "23ef858b3813205f48aad15de934f24397b99290009d93cbe8a2af605ca92088",
+    ".codex/agents/e2e-failure-classifier.toml": "d0404b1cf318dd8e951094aa1276ce6ac5bdf9103760ccfe359967e79fca2ffe"
+  },
+  "smoke_results": {
+    "claude": "7c2699c7d0abbd8c45844ba5d2039e23ff1acf45768a6a0fa7c793be20d0e42e"
+  },
+  "immutable_surface_digest": {
+    "algorithm": "sha256 of UTF-8 RFC 8259 JSON over the named digest fields and evaluated_snapshot, with keys sorted and separators ',' and ':'",
+    "sha256": "067c849f2a16f0a12becf3df7ec07d62e01c1145eb0104d1719284933eec070c"
+  },
+  "claude_smoke_gate": {
+    "status": "PASS",
+    "arms": [
+      "claude.inline",
+      "claude.named"
+    ],
+    "strategy_executions": 2,
+    "observable_parent_requests": 5,
+    "parent_input_tokens": 8,
+    "parent_output_tokens": 3971,
+    "provider_visible_session_cost_usd": 0.9807075,
+    "wall_seconds": 76.795,
+    "execution_identity": {
+      "runner_family": "claude",
+      "executable": "/Users/user/.local/share/claude/versions/2.1.269",
+      "version": "2.1.269 (Claude Code)",
+      "minimum_version": "2.1.268",
+      "version_policy": "minimum",
+      "model": "claude-opus-5"
+    }
+  },
+  "freshness_recheck": {
+    "performed_on": "2026-09-13",
+    "text_search_command": "git grep -n -i -E 'patron|reading room|book hold|library branch|overdue fine' -- skills scripts docs README.md CHANGELOG.md benchmarks ':(exclude)benchmarks/subagent-routing-v1'",
+    "text_search_exit_status": 1,
+    "case_material_hits": 0,
+    "measured_repository_files": 42,
+    "public_surface_files_compared": 5380,
+    "external_exact_byte_collisions": 0,
+    "within_set_duplicate_groups": 0
+  },
+  "preconditions_at_freeze": {
+    "ci_local": "PASS",
+    "pre_push_security": "PASS",
+    "newer_output_discipline_process_active": false,
+    "measured_model_cells_run": 0
+  },
+  "execution_authorization": {
+    "granted_by_this_record": false,
+    "claude_measured_authorization_file_present": false,
+    "codex_arm_activation_authorized": false,
+    "codex_arm_activation_file_present": false,
+    "note": "This record freezes inputs only. Measured execution requires a separate host-specific authorization accepted by the harness."
+  },
+  "immutability_rule": "Do not edit protocol.json, run_routing.py, run_smoke.py, either manifest, any case byte, the evaluated snapshot, or this freeze record after freeze. Any digest drift makes a measured run INCONCLUSIVE and requires a new protocol version."
+}

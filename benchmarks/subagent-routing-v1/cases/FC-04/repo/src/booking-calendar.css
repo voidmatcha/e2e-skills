@@ -1,0 +1,16 @@
+.booking-calendar-desktop {
+  display: grid;
+}
+
+.booking-calendar-mobile {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .booking-calendar-desktop {
+    display: none;
+  }
+  .booking-calendar-mobile {
+    display: block;
+  }
+}

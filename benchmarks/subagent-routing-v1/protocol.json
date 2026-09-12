@@ -2,12 +2,45 @@
   "schema_version": 1,
   "spdx_license_identifier": "Apache-2.0",
   "protocol_id": "subagent-routing-v1",
+  "protocol_revision": 4,
   "status": "NOT_RUN",
   "result": "INCONCLUSIVE",
   "decision_state": "PREREGISTERED_NOT_FROZEN",
-  "prepared_on": "2026-09-11",
-  "design_only": true,
+  "prepared_on": "2026-09-12",
+  "design_only": false,
   "execution_authorized_by_this_file": false,
+  "revision_history": [
+    {
+      "protocol_revision": 1,
+      "status": "SUPERSEDED_AFTER_MEASURED_INFRASTRUCTURE_FINDING",
+      "superseded_on": "2026-09-13",
+      "protocol_sha256": "7a7d7cf94a1ee502a8a1a5305209b938ad1f7f8c5a0dc3f8193e351b7723869b",
+      "runner_sha256": "78b000f51f3418ef3f20407cf2654635a7c81dfa18286671f03f2ca427b09925",
+      "freeze_sha256": "29df46bcf53c93c4a3c8e4d03182711e9aac98862f2c0d94cde9417b37b96b89",
+      "archive": "revision-history/revision-1/",
+      "reason": "The first measured named-agent cell exposed that route_attestation counted an Agent tool_progress heartbeat as a second invocation. A one-cell diagnostic rerun proved the heartbeat parent_tool_use_id was the genuine Agent call's id. Revision 1 stopped after each attempt and remains unscored and preserved."
+    },
+    {
+      "protocol_revision": 2,
+      "status": "SUPERSEDED_AFTER_MEASURED_PROMPT_FINDING",
+      "superseded_on": "2026-09-13",
+      "protocol_sha256": "afd35e126c34ac7782bcc02650854dba2eb0ee17c35ec4168ba826d711b3ec9a",
+      "runner_sha256": "7ff49c83b4b60860659e84da5d654ef678e579fe675fb379fa6956bb4778bd0b",
+      "freeze_sha256": "d9574f3a4607b7841efc5d32cbf824f69c5f55f017ed5bbf29f0a590f1ab45a3",
+      "archive": "revision-history/revision-2/",
+      "reason": "The first measured failure-classification cell exposed that render_prompt showed only the file-and-line evidence shape even though report citations require source='report_excerpt' with a report_field. All eight failure-classification cases use that shape. Revision 2 stopped immediately and remains unscored and preserved; scoring logic and case bytes were not changed."
+    },
+    {
+      "protocol_revision": 3,
+      "status": "SUPERSEDED_FOR_CODEX_SCOPE_REDUCTION_AFTER_CLAUDE_COMPLETION",
+      "superseded_on": "2026-09-13",
+      "protocol_sha256": "183d0f184978c9e8b0f90b1c91d7a36373fb3bb60dc5e9216e650e256ed64fa6",
+      "runner_sha256": "e8e3559d272b8e82ba5a0fc356ac2d13036f1098763cf8b0b47f725c2b0ef863",
+      "freeze_sha256": "418b6999434a6c068c82c801a58ca85de06d755e9560836314b92a498465c031",
+      "archive": "revision-history/revision-3/",
+      "reason": "Revision 3 completed the authorized 96-cell Claude phase. The later Codex feasibility smoke passed codex.inline but proved that codex.named and codex.native-role generated zero real delegation events after CLI spawn failures. Revision 4 preserves the full Codex schedule while explicitly recording both delegation arms UNAVAILABLE at zero cost; no revision-3 Codex measured cell ran."
+    }
+  ],
   "source_plans": [
     ".handover/artifacts/handover-20260903-144354-c12d46/subagent-routing-benchmark-handover.md",
     ".handover/artifacts/post-claude-decision-matrix-20260907.md",
@@ -39,14 +72,14 @@
     "inline_fallback_removal": "never; the inline path is load-bearing on every host and is not a candidate outcome"
   },
   "evaluated_snapshot": {
-    "policy": "Digests below are recorded at preparation time from git HEAD c5e331b88d5b6488aea3adbe873d529c02a44a79 (tag v1.16.0). One immutable digest over all of these surfaces plus fixtures, oracle, prompts, runner, rubric, and schedule is recorded in freeze-record.json at freeze; any later drift makes the run INCONCLUSIVE.",
-    "git_head_at_preparation": "c5e331b88d5b6488aea3adbe873d529c02a44a79",
-    "git_tag_at_preparation": "v1.16.0",
+    "policy": "Digests below are recorded at re-preparation time from git HEAD 43520afa5fd7688dab396ce23fbe90de2839d9a9 (tag v1.16.1), after the prior v1.16.0 preparation was documented as invalidated by the v1.16.1 version bump. One immutable digest over all of these surfaces plus fixtures, oracle, prompts, runner, rubric, and schedule is recorded in freeze-record.json at freeze; any later drift makes the run INCONCLUSIVE.",
+    "git_head_at_preparation": "43520afa5fd7688dab396ce23fbe90de2839d9a9",
+    "git_tag_at_preparation": "v1.16.1",
     "sha256_at_preparation": {
-      "skills/e2e-reviewer/SKILL.md": "c8420ba913c6092749b40ab892460eebf730cad3e4a2e28ed2cedc24d47f2c30",
+      "skills/e2e-reviewer/SKILL.md": "a1558dc829753e93697389759309b24588250cc1ea28e3d255edc2bca0362a14",
       "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb",
-      "skills/playwright-debugger/SKILL.md": "cc3e5e9fc13837690b617b36a4d9b8a6c3e316b412194c1baaacefd0e3f7d7f5",
-      "skills/cypress-debugger/SKILL.md": "d31799abae8a7f60b1023eda88a43b47fe132943c2ddf1ccacb96ebe2df968af",
+      "skills/playwright-debugger/SKILL.md": "469691cb9c0893c9018451c1b2a2a83f3a4b742fcadd31c7804175c25f258983",
+      "skills/cypress-debugger/SKILL.md": "a27b35118803adb85cced3dcbe9de5bac0e9d09d0993f81b1da37f1e9a82b3b5",
       "agents/e2e-finding-verifier.md": "c9b49b7164c0c9646124260c562d9569ed7af0da3faa810f4fcbf48800b0fef0",
       "agents/e2e-failure-classifier.md": "1826e4f80601306be6bef07fc0084374c4317bf51c1ffdbbdfa805302204d37f",
       ".codex/agents/e2e-finding-verifier.toml": "23ef858b3813205f48aad15de934f24397b99290009d93cbe8a2af605ca92088",
@@ -54,16 +87,19 @@
     },
     "freeze_record_file": "freeze-record.json",
     "freeze_record_exists": false,
-    "sha256_at_preparation_invalidated": {
+    "sha256_at_preparation_reprepared_after_invalidation": {
       "invalidated_on": "2026-09-12",
+      "previous_git_head_at_preparation": "c5e331b88d5b6488aea3adbe873d529c02a44a79",
+      "previous_git_tag_at_preparation": "v1.16.0",
       "files": [
         "skills/e2e-reviewer/SKILL.md",
         "skills/playwright-debugger/SKILL.md",
         "skills/cypress-debugger/SKILL.md"
       ],
       "reason": "v1.16.1 bumped metadata.version in every skills/*/SKILL.md file (a byte change; only SKILL.md carries this frontmatter field, not pattern-reference.md or the agents/*.md, .codex/agents/*.toml files), which changed the sha256 of the three files listed above relative to the digests recorded in sha256_at_preparation. This was a deliberate operator decision, not drift: shipping the version bump was prioritized over keeping this still-NOT_RUN protocol's preparation-time digests valid.",
-      "consequence": "This protocol cannot freeze against the digests above. Re-preparation (recomputing sha256_at_preparation from the current git HEAD, with a new git_head_at_preparation/git_tag_at_preparation) is required before this protocol may ever be frozen or run.",
-      "does_not_affect": "The 16 frozen cases, arms, and decision rule below are unaffected -- only the pinned byte identity of the evaluated surface needs to be refreshed."
+      "reprepared_on": "2026-09-12",
+      "resolution": "Re-prepared sha256_at_preparation against git HEAD 43520afa5fd7688dab396ce23fbe90de2839d9a9 (tag v1.16.1); the current digests above supersede the invalidated v1.16.0 preparation without erasing its invalidation record.",
+      "does_not_affect": "The invalidation did not affect the 16 frozen cases, arms, or decision rule below; it required only the pinned byte-identity refresh completed by this re-preparation."
     }
   },
   "preconditions": [
@@ -72,12 +108,12 @@
     "one immutable digest over the evaluated skill, both Claude agent Markdown files, both Codex TOML ports, the inline fallback text, fixtures, oracle, prompts, runner, rubric, and schedule",
     "declared maximum strategy executions, actual-request ceiling, wall-time budget, and stop rule (all present below)",
     "provider limits available without interrupting another benchmark; not started immediately after another large model pilot",
-    "the five feasibility smoke cases (amendment c) pass for every ACTIVE arm before the runner is frozen"
+    "the feasibility smoke passes for every executable arm; activation-declared unavailable arms remain visible as zero-cost UNAVAILABLE cells before the runner is frozen"
   ],
   "protocol_amendments_incorporated": {
     "a_parent_child_request_accounting": "Every cell logs actual model requests, tokens, elapsed time, and visible cost separately for the parent session and for each child session. The legacy phrase '240 model calls' is retired: 240 is the full-matrix count of strategy executions, not requests. Unknown child telemetry is recorded as null, never estimated or conflated with parent usage.",
     "b_codex_native_role_attestation": "A Codex native-role arm whose harness cannot prove which role actually ran (or cannot force the named-versus-native distinction) records UNAVAILABLE for that cell. Silent substitution of another route is a protocol violation that voids the arm.",
-    "c_feasibility_smoke_gate": "The five smoke cases (one per host arm: claude.inline, claude.named, codex.inline, codex.named, codex.native-role) must pass before the runner is frozen. For the Claude-only phase the two Claude smoke cases must pass; the three Codex smoke cases run when that arm is activated. Any runner change after the smoke invalidates it and requires a new protocol version.",
+    "c_feasibility_smoke_gate": "Every executable host arm must pass its smoke case before the runner is frozen. An activation-declared structurally unavailable delegation arm is retained in the smoke and measured schedules as UNAVAILABLE at zero cost, with no model process launched. Revision 4 applies that disclosed reduction to codex.named and codex.native-role after their preserved smoke attempts produced zero real delegation events. Any runner change after the smoke invalidates it and requires a new protocol version.",
     "d_freshness_search_recorded": "The search used to establish the 16 fresh cases is recorded in freshness_exclusion_search below and rerun at freeze."
   },
   "hosts": {
@@ -112,9 +148,9 @@
       }
     },
     "codex": {
-      "status": "pending_authorization",
-      "dormant": true,
-      "why_dormant": "Operator decision on 2026-09-11: budget and host availability unresolved. The arm is retained in full so it can be activated later without a redesign.",
+      "status": "active_with_disclosed_scope_reduction",
+      "dormant": false,
+      "why_dormant": null,
       "runner_family": "codex",
       "model": "gpt-5.6-sol",
       "model_rationale": "Matches the reviewer-release-v1 primary cell; may be changed in the activation record before that arm's freeze.",
@@ -152,13 +188,17 @@
           "wall_time.hard_ceiling_hours",
           "monetary_ceiling_usd_or_unknown",
           "native_role_attestation_method (how the harness proves which role ran; if none, codex.native-role is UNAVAILABLE for the whole arm)",
-          "three_codex_smoke_cases_passed (evidence path)"
+          "delegation_unavailable_arms (unique subset of codex.named and codex.native-role)",
+          "delegation_unavailable_reason (non-empty explanation citing feasibility evidence)",
+          "codex_smoke_evidence (evidence path containing every declared Codex arm)"
         ],
         "invariants": [
           "same 16 frozen cases, same case bytes, same oracle, same scoring rules, same judge selector as the Claude arm; the freeze-record case digest must match",
-          "this protocol.json is not edited to activate the arm; the activation record is hashed and cited alongside it, so the preregistration digest is unchanged",
+          "the revision-4 protocol and activation record are both hashed into the Codex freeze after the evidence-backed scope reduction",
           "Codex results are reported per host and never pooled with Claude results",
-          "if the Claude phase has already produced a decision, the Codex phase produces its own per-host decision and does not reopen the Claude one"
+          "if the Claude phase has already produced a decision, the Codex phase produces its own per-host decision and does not reopen the Claude one",
+          "the full 144-cell Codex schedule is retained for disclosure; activation-declared unavailable arms are materialized as UNAVAILABLE with zero requests and zero cost, leaving 48 executable codex.inline cells",
+          "a missing delegation arm keeps the eventual Codex host decision INCONCLUSIVE even though codex.inline observations remain real evidence"
         ]
       }
     }
@@ -166,16 +206,16 @@
   "arms": [
     {"id": "claude.inline", "host": "claude", "status": "active", "definition": "the parent executes the frozen refute-first / classification procedure itself without invoking a child; this is the inline fallback every host keeps"},
     {"id": "claude.named", "host": "claude", "status": "active", "definition": "the parent delegates exactly one case to the installed e2e-finding-verifier or e2e-failure-classifier agent"},
-    {"id": "codex.inline", "host": "codex", "status": "pending_authorization", "definition": "the parent executes the frozen procedure without delegation"},
-    {"id": "codex.named", "host": "codex", "status": "pending_authorization", "definition": "the parent delegates to the matching isolated TOML agent installed from the evaluated checkout"},
-    {"id": "codex.native-role", "host": "codex", "status": "pending_authorization", "definition": "the parent delegates the identical payload to Codex's native verifier or debugger role without loading the named TOML; UNAVAILABLE unless the harness can attest which role ran"}
+    {"id": "codex.inline", "host": "codex", "status": "active", "definition": "the parent executes the frozen procedure without delegation"},
+    {"id": "codex.named", "host": "codex", "status": "unavailable_by_activation_evidence", "definition": "the parent would delegate to the matching isolated TOML agent installed from the evaluated checkout; revision-4 Codex cells are zero-cost UNAVAILABLE because feasibility smoke proved no real delegation event"},
+    {"id": "codex.native-role", "host": "codex", "status": "unavailable_by_activation_evidence", "definition": "the parent would delegate the identical payload to Codex's native verifier or debugger role without loading the named TOML; revision-4 Codex cells are zero-cost UNAVAILABLE because feasibility smoke proved no real delegation event"}
   ],
   "non_arms": {
     "deterministic_scanner": "produces candidate evidence, does not answer the contextual verdict question",
     "accept_without_verification_reference": "computed directly from the frozen candidate labels with zero model calls; descriptive only"
   },
   "freshness_exclusion_search": {
-    "performed_on": "2026-09-11",
+    "performed_on": "2026-09-13",
     "freshness_definition": "development-level independence: no source-byte duplicate and no scenario/defect-lineage duplicate of any case in the existing corpora, evals, holdouts, output-discipline pilot corpora, or examples in skill prose. Pattern IDs and F-codes are a closed vocabulary of 24 and 15 entries respectively and are NOT the freshness unit; the scenario, application domain, selectors, test names, file layout, and defect lineage are.",
     "inventories_checked": [
       "scripts/evals/reviewer-holdout-v3.json (8 cases; domains: receipts/report page, admin billing/navigation, settings/preferences, invoices, search, profile/board, catalog)",
@@ -189,8 +229,8 @@
     ],
     "search_commands": [
       "python3 inventory dump of every corpus above (ids, framework, pattern_id / f_code, source_line) - see benchmarks/subagent-routing-v1/README.md for the summary",
-      "git grep -n -i -E 'patron|reading room|book hold|library branch|overdue fine' -- skills scripts docs README.md CHANGELOG.md benchmarks  (0 hits)",
-      "grep -r -n -i -E 'patron|reading room|book hold|overdue fine' .handover  (only unrelated Spanish i18n strings inside a vendored open-mercato fixture; no case material)"
+      "git grep -n -i -E 'patron|reading room|book hold|library branch|overdue fine' -- skills scripts docs README.md CHANGELOG.md benchmarks ':(exclude)benchmarks/subagent-routing-v1'  (0 hits; the protocol's own preregistration text is excluded because it necessarily names the chosen domain)",
+      "rg -n -i 'patron|reading room|book hold|library branch|overdue fine' .handover  (3 unrelated Spanish i18n substring hits inside a vendored open-mercato fixture; 0 case-material hits)"
     ],
     "chosen_domain": "public library branch: patron holds, reading-room bookings, overdue fines, staff hold queue. Absent from every inventory above.",
     "authoring_rule": "Cases are authored fresh in that domain at freeze, in disposable repositories, with new selectors, test names, and file layouts. They are compared byte-wise and by lineage against every inventory before the case digest is frozen; a collision is rewritten, never waived.",
@@ -199,7 +239,7 @@
   },
   "case_set": {
     "count": 16,
-    "status": "slots_frozen_case_bytes_authored_at_freeze",
+    "status": "case_bytes_authored_pending_review_smoke_and_freeze",
     "disposable_repository_rule": "each case is a self-contained minimal repository (spec, helpers, config, and for classification cases a sanitized report excerpt) with no secrets, no network access, no instructions to the model, and no mutable third-party state",
     "per_case_predeclared": ["accepted_verdict_or_code", "decisive_evidence (file:line or report field)", "allowed_confidence", "required_limitation", "forbidden_weakened_fix", "concrete_fix_legal (bool)"],
     "slots": [
@@ -320,7 +360,7 @@
   "sequencing": {
     "must_precede": ["preconditions above", "case authoring + freshness recheck + case digest freeze", "two Claude smoke cases", "operator confirmation of model, Claude Code build, and ceilings"],
     "independent_of": ["benchmarks/ours-vs-planner-pilot-v1 (separate snapshot label; no pooling)", "reviewer-release-v1"],
-    "codex_phase": "runs only after codex-arm-activation.json is complete and its three smoke cases pass; uses the same frozen case digest",
+        "codex_phase": "runs only after codex-arm-activation.json is complete, every executable Codex smoke passes, and declared unavailable arms are present as zero-cost UNAVAILABLE cells; uses the same frozen case digest",
     "shared_resource_policy": "serial per provider; one model-benchmark lane at a time per integrated-validation PLAN"
   },
   "required_artifacts": [
@@ -338,7 +378,7 @@
   "limitations": [
     "Sixteen cases support a directional routing pilot, not a generalized performance claim; any production change needs a separate confirmation set.",
     "Host CLIs may not expose reliable child model identity or child token usage; the benchmark is an end-to-end routing comparison and reports unavailable telemetry as null.",
-    "With the Codex arm dormant, opposite-provider blind judging has no provider; judged fields are reported as unjudged unless a Codex judge budget is separately authorized.",
+        "The Codex delegation arms are structurally unavailable in this environment, so the Codex host decision remains INCONCLUSIVE even though its inline cells are real evidence.",
     "The naive request estimate is an assumption; the ceiling is a multiple of that assumption."
   ]
 }

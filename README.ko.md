@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=412e05651072b6624f804eb7f264dec33eb479d3cf22a25151ec324fc60aa968; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=f9a531b408ac923af26ab87b029623f6bd03bdefabe28dff8e31f082b0aedff1; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 AI 코딩 에이전트가 Playwright와 Cypress E2E 테스트를 생성·검토하고 실패 원인을 분석할 때 쓰는 네 가지 Agent Skills 모음입니다. 새 테스트 생성은 Playwright를 지원하고, 기존 테스트나 PR/diff 범위의 변경 검토와 실패 분석은 Playwright와 Cypress를 지원합니다. 검토 목록 가운데 규칙만으로 판별할 수 있는 항목을 찾는 `deterministic scanner`도 포함합니다.
 
@@ -156,7 +156,9 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a claude-code
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a codex
 ```
 
-Codex에서는 `e2e-reviewer`, `playwright-debugger`, `cypress-debugger` 작업을 전용 에이전트에 맡기거나 현재 세션에서 같은 절차를 직접 수행할 수 있습니다. `playwright-test-generator`에는 더 엄격한 V6 경계가 적용됩니다. 새 문맥에서 검토할 별도 리뷰어가 없으면 `CANNOT_VERIFY`와 `PARTIAL/BLOCKED`를 보고합니다.
+Codex에서는 `e2e-reviewer`, `playwright-debugger`, `cypress-debugger` 작업을 전용 에이전트에 위임을 시도하거나 현재 세션에서 같은 절차를 직접 수행할 수 있습니다. `playwright-test-generator`에는 더 엄격한 V6 경계가 적용됩니다. 새 문맥에서 검토할 별도 리뷰어가 없으면 `CANNOT_VERIFY`와 `PARTIAL/BLOCKED`를 보고합니다.
+
+**2026-09 기준, Codex에서의 전용 에이전트 위임은 정상 작동이 검증되지 않았으므로 의존하지 마세요.** 실측 파일럿에서 세션 중 위임이 내부 `collab spawn failed: no thread with id` 오류로 결정적으로 실패하는 것을 확인했습니다 — 아직 해결 안 된 업스트림 이슈([openai/codex#41474](https://github.com/openai/codex/issues/41474), [#33672](https://github.com/openai/codex/issues/33672))입니다. 오류가 안 뜨는 경우에도 모델 스스로의 성공 자기보고는 신뢰할 수 없습니다. 전체 근거는 [`benchmarks/subagent-routing-v1/`](benchmarks/subagent-routing-v1/README.md) 참고. 각 스킬의 인라인 fallback이 동일한 결론에 도달하므로 정확성엔 영향 없지만, 지금은 이 에이전트들을 설치해도 Codex에서는 실측으로 확인된 이득이 없습니다.
 
 여기서 전용 에이전트는 선택적 서브에이전트인 `e2e-finding-verifier`와 `e2e-failure-classifier`입니다. **Codex는 이 둘을 플러그인으로 설치할 수 없습니다.** Codex 플러그인 매니페스트에는 agents 필드가 없고 에이전트 역할은 config 레이어에서만 불러오므로, `codex plugin add`와 `skills` CLI 모두 이 둘을 등록하지 않습니다.
 
@@ -165,7 +167,7 @@ Codex에서는 `e2e-reviewer`, `playwright-debugger`, `cypress-debugger` 작업�
 - `bash scripts/dev/install-codex-agents.sh`를 실행해 두 에이전트를 `~/.codex/agents/`에 전역 설치합니다.
 - 이 저장소의 체크아웃에서 작업합니다. Codex 세션이 별도 설치 없이 `.codex/agents/`를 인식합니다.
 
-두 방법을 모두 건너뛰어도 현재 세션에서 같은 절차를 직접 수행할 수 있습니다. 패키징 경계는 [AGENTS.md](AGENTS.md)에서 확인할 수 있습니다.
+두 방법을 모두 건너뛰어도 현재 세션에서 같은 절차를 직접 수행할 수 있습니다 — 이게 지금 이 호스트에서 신뢰할 수 있는 경로입니다. 패키징 경계는 [AGENTS.md](AGENTS.md)에서 확인할 수 있습니다.
 
 Codex 플러그인 마켓플레이스를 쓰는 다른 설치 경로:
 

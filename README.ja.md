@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <strong>🇯🇵 日本語</strong> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=412e05651072b6624f804eb7f264dec33eb479d3cf22a25151ec324fc60aa968; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=f9a531b408ac923af26ab87b029623f6bd03bdefabe28dff8e31f082b0aedff1; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、AI コーディングエージェントが Playwright/Cypress の E2E テスト作業に使える 4 つのワークフローを提供します。Playwright カバレッジの生成、既存のテスト仕様または PR/diff 範囲の変更レビュー、失敗した Playwright レポートのデバッグ、失敗した Cypress レポートのデバッグを扱います。レビューカタログのうち、機械的に判定できる部分集合を検出する決定論的スキャナーも含まれます。
 
@@ -154,9 +154,11 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a claude-code
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a codex
 ```
 
-Codex の delegation では、`e2e-reviewer`、`playwright-debugger`、`cypress-debugger` が native role または同等の inline fallback を使えます。`playwright-test-generator` には、より厳格な V6 境界があります。独立した fresh-context reviewer がない場合は、`CANNOT_VERIFY` と `PARTIAL/BLOCKED` を報告します。
+Codex の delegation では、`e2e-reviewer`、`playwright-debugger`、`cypress-debugger` が native role の delegation を試みるか、同等の inline fallback を使えます。`playwright-test-generator` には、より厳格な V6 境界があります。独立した fresh-context reviewer がない場合は、`CANNOT_VERIFY` と `PARTIAL/BLOCKED` を報告します。
 
-ここでいう native role とは、optional な subagent である `e2e-finding-verifier` と `e2e-failure-classifier` のことで、**Codex はこの 2 つを plugin から install できません。** Codex の plugin manifest に agents フィールドはなく、agent role は config layer からのみ読み込まれるため、`codex plugin add` も `skills` CLI もこれらを登録しません。supported な経路は 2 つです。`bash scripts/dev/install-codex-agents.sh` を実行して `~/.codex/agents/` に global install するか、この repository の checkout で作業すると、Codex session が install 手順なしで `.codex/agents/` を認識します。どちらも省略して構いません。inline fallback が動作します。packaging boundary については [AGENTS.md](AGENTS.md) を参照してください。
+**2026-09 時点で、Codex 上の native role delegation は動作が検証されておらず、依存すべきではありません。** 実測パイロットで、セッション内 delegation が内部の `collab spawn failed: no thread with id` エラーで決定的に失敗することが分かりました — 既知の、まだ open な upstream issue([openai/codex#41474](https://github.com/openai/codex/issues/41474)、[#33672](https://github.com/openai/codex/issues/33672))です。エラーが出ない場合でも、モデル自身の成功の自己申告は信用できません。詳しい根拠は [`benchmarks/subagent-routing-v1/`](benchmarks/subagent-routing-v1/README.md) を参照。各 skill の inline fallback が同じ verdict に到達するため正確性自体には影響しませんが、現時点では named agent を install しても Codex 上で実測された利点はありません。
+
+ここでいう native role とは、optional な subagent である `e2e-finding-verifier` と `e2e-failure-classifier` のことで、**Codex はこの 2 つを plugin から install できません。** Codex の plugin manifest に agents フィールドはなく、agent role は config layer からのみ読み込まれるため、`codex plugin add` も `skills` CLI もこれらを登録しません。supported な経路は 2 つです。`bash scripts/dev/install-codex-agents.sh` を実行して `~/.codex/agents/` に global install するか、この repository の checkout で作業すると、Codex session が install 手順なしで `.codex/agents/` を認識します。どちらも省略して構いません。inline fallback が動作します — これが現時点でこの host で信頼できる経路です。packaging boundary については [AGENTS.md](AGENTS.md) を参照してください。
 
 別ルートとして、Codex plugin marketplace からもインストールできます:
 

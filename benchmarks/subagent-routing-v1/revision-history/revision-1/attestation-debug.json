@@ -1,0 +1,61 @@
+{
+  "host": "claude",
+  "arm": "claude.named",
+  "task": "failure_classification",
+  "event_count": 38,
+  "matches": [
+    {
+      "event_index": 16,
+      "event_type": "assistant",
+      "event_subtype": null,
+      "json_path": "$.message.content[0]",
+      "matched_key": "name",
+      "matched_name": "Agent",
+      "matched_structure": {
+        "type": "tool_use",
+        "id": "toolu_01FWCAeXvTux7xk2afoLiosc",
+        "name": "Agent",
+        "input": {
+          "subagent_type": "e2e-failure-classifier",
+          "description": "Classify e2e failure FC-03",
+          "run_in_background": false,
+          "prompt_bytes": 6496,
+          "prompt_sha256": "ba07fc8bda277057aaf0d79866b3791af7381211f27e07e4bb8cca144a799d57"
+        },
+        "caller": {
+          "type": "dict"
+        }
+      }
+    },
+    {
+      "event_index": 32,
+      "event_type": "tool_progress",
+      "event_subtype": null,
+      "json_path": "$",
+      "matched_key": "tool_name",
+      "matched_name": "Agent",
+      "matched_structure": {
+        "type": "tool_progress",
+        "tool_use_id": "toolu_01FWCAeXvTux7xk2afoLiosc-heartbeat-0",
+        "tool_name": "Agent",
+        "parent_tool_use_id": "toolu_01FWCAeXvTux7xk2afoLiosc",
+        "elapsed_time_seconds": 30,
+        "heartbeat": true,
+        "session_id": "3e3ac9b4-dd40-468a-9b9b-453c89c56b2b",
+        "uuid": "5d3c4df5-9ff9-4b4d-a1d1-5f7a898d5c2f"
+      }
+    }
+  ],
+  "original_scoring_result": {
+    "ok": false,
+    "host": "claude",
+    "arm": "claude.named",
+    "expected_identity": "e2e-failure-classifier",
+    "delegation_events": 2,
+    "observed_identity_counts": {
+      "e2e-failure-classifier": 1
+    },
+    "native_attestation_method": null,
+    "reason": "cannot attest exactly one e2e-failure-classifier delegation from claude transcript (delegation_events=2, observed={'e2e-failure-classifier': 1})"
+  }
+}

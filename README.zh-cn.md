@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=412e05651072b6624f804eb7f264dec33eb479d3cf22a25151ec324fc60aa968; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=f9a531b408ac923af26ab87b029623f6bd03bdefabe28dff8e31f082b0aedff1; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 为 AI 编程代理提供四个面向 E2E 测试工作的聚焦工作流：生成 Playwright 覆盖、审查现有 spec 或 PR/diff 范围内的测试变更、调试失败的 Playwright 报告，以及调试失败的 Cypress 报告。它还包含一个确定性扫描器，用于发现审查目录中可机械判定的子集。
 
@@ -153,9 +153,11 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a claude-code
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a codex
 ```
 
-对于 Codex 委派，`e2e-reviewer`、`playwright-debugger` 和 `cypress-debugger` 可以使用 native roles，也可以使用等价的 inline fallbacks。`playwright-test-generator` 的 V6 边界更严格：如果没有独立的 fresh-context reviewer，它会报告 `CANNOT_VERIFY` 和 `PARTIAL/BLOCKED`。
+对于 Codex 委派，`e2e-reviewer`、`playwright-debugger` 和 `cypress-debugger` 可以尝试 native role 委派，也可以使用等价的 inline fallback。`playwright-test-generator` 的 V6 边界更严格：如果没有独立的 fresh-context reviewer，它会报告 `CANNOT_VERIFY` 和 `PARTIAL/BLOCKED`。
 
-这里所说的 native roles 就是两个可选子代理 `e2e-finding-verifier` 和 `e2e-failure-classifier`，而 **Codex 无法通过插件安装它们。** Codex 的插件清单没有 agents 字段，agent role 只从 config 层加载，因此 `codex plugin add` 和 `skills` CLI 都不会注册它们。受支持的路径有两条：运行 `bash scripts/dev/install-codex-agents.sh` 将两者全局安装到 `~/.codex/agents/`，或者在本仓库的 checkout 中工作，此时 Codex 会话无需任何安装步骤即可识别 `.codex/agents/`。两者都跳过也没问题，你会得到 inline fallback。有关打包边界，请参阅 [AGENTS.md](AGENTS.md)。
+**截至 2026 年 9 月，Codex 上的 native role 委派尚未验证能正常工作，不应依赖它。** 实测发现会话内委派会确定性地失败，报出内部错误 `collab spawn failed: no thread with id` —— 这是一个已知的、仍未解决的上游问题（[openai/codex#41474](https://github.com/openai/codex/issues/41474)、[#33672](https://github.com/openai/codex/issues/33672)）。即使没有报错，模型自己声称委派成功的说法也不可信。完整证据见 [`benchmarks/subagent-routing-v1/`](benchmarks/subagent-routing-v1/README.md)。每个 skill 的 inline fallback 都会得出相同结论，所以正确性不受影响——但目前安装这些 named agent 在 Codex 上并不能带来任何实测到的好处。
+
+这里所说的 native roles 就是两个可选子代理 `e2e-finding-verifier` 和 `e2e-failure-classifier`，而 **Codex 无法通过插件安装它们。** Codex 的插件清单没有 agents 字段，agent role 只从 config 层加载，因此 `codex plugin add` 和 `skills` CLI 都不会注册它们。受支持的路径有两条：运行 `bash scripts/dev/install-codex-agents.sh` 将两者全局安装到 `~/.codex/agents/`，或者在本仓库的 checkout 中工作，此时 Codex 会话无需任何安装步骤即可识别 `.codex/agents/`。两者都跳过也没问题，你会得到 inline fallback —— 这是目前在该宿主上可靠的路径。有关打包边界，请参阅 [AGENTS.md](AGENTS.md)。
 
 也可以走 Codex plugin marketplace 路径：
 

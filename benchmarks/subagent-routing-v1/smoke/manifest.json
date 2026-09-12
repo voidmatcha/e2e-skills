@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "protocol_id": "subagent-routing-v1",
+  "kind": "smoke",
+  "cases": [
+    {
+      "case_id": "SMOKE-FV-01",
+      "task": "finding_verification",
+      "stratum": "sacrificial_clear",
+      "framework": "playwright",
+      "repository_root": "SMOKE-FV-01/repo",
+      "files": [
+        {
+          "path": "playwright.config.ts",
+          "sha256": "cfb216b0fb127798cff5efb18cf2af20924d1baddd1649b523b6c8ad16873fea"
+        },
+        {
+          "path": "tests/branch-hours.spec.ts",
+          "sha256": "b8ee29600c4be4900fbf97443e7d8e02fcc13228984e53414126facd022e05e0"
+        }
+      ],
+      "candidate": {
+        "pattern_id": "#7",
+        "file": "tests/branch-hours.spec.ts",
+        "line": 3,
+        "snippet": "test.only(\"shows the library branch hours\", async ({ page }) => {"
+      },
+      "report_excerpt": null,
+      "oracle": {
+        "accepted_verdict": "CONFIRMED",
+        "decisive_evidence": [
+          "tests/branch-hours.spec.ts:3"
+        ],
+        "allowed_confidence": [
+          "high"
+        ],
+        "required_limitation": null,
+        "forbidden_weakened_fix": [
+          "replace it with test.skip",
+          "delete the test"
+        ],
+        "concrete_fix_legal": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "protocol_id": "subagent-routing-v1",
+  "host": "claude",
+  "authorized_by": "operator, relayed by the Codex coordinator session on the operator's explicit instruction to continue the claude.* measured phase after revision-3 refreeze",
+  "authorized_on": "2026-09-13",
+  "scope": "measured_cells",
+  "protocol_sha256": "183d0f184978c9e8b0f90b1c91d7a36373fb3bb60dc5e9216e650e256ed64fa6",
+  "freeze_sha256": "418b6999434a6c068c82c801a58ca85de06d755e9560836314b92a498465c031"
+}

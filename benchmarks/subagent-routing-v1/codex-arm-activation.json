@@ -1,0 +1,25 @@
+{
+  "authorized_by": "operator, relayed by Claude Code coordinator session on the operator's explicit instruction to activate and run the codex.* arms overnight, following the same-night completion of the claude.* measured phase",
+  "authorized_on": "2026-09-13",
+  "minimum_version": "0.150.0",
+  "model": "gpt-5.6-sol",
+  "actual_model_requests": {
+    "naive_estimate": 2000,
+    "naive_basis": "The original 2,000-request activation ceiling is retained as conservative headroom. Revision 4 launches only 48 codex.inline measured executions after feasibility smoke proved both delegation arms structurally unavailable; their 96 schedule cells consume zero requests.",
+    "confirmation_checkpoint": {"at_multiple_of_naive": 2, "requests": 4000, "behavior": "PAUSE_AND_ASK"},
+    "hard_ceiling": {"multiple_of_naive": 4, "requests": 8000, "behavior": "PAUSE_AND_ASK"},
+    "per_execution_turn_cap": {"parent": 40, "child": 40}
+  },
+  "wall_time": {
+    "per_execution_minutes_max": 15,
+    "hard_ceiling_hours": 78
+  },
+  "monetary_ceiling_usd_or_unknown": 150,
+  "native_role_attestation_method": "codex-jsonl-spawn-agent-agent_type",
+  "delegation_unavailable_arms": [
+    "codex.named",
+    "codex.native-role"
+  ],
+  "delegation_unavailable_reason": "Codex CLI 0.154.0 feasibility smoke produced zero real delegation_events for codex.named and codex.native-role. Both arms emitted collab spawn failed errors, while response JSON could self-report delegation without any matching tool invocation. smoke-results-codex.json and its preserved artifacts therefore establish that this environment has no working mid-session delegation mechanism analogous to Claude Code's Agent tool. Revision 4 records both arms as UNAVAILABLE at zero cost and launches no model process for their schedule cells.",
+  "codex_smoke_evidence": "smoke-results-codex.json"
+}

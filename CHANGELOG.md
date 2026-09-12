@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Added
+
+- **Roadmap item 6's real subagent-routing pilot ran to completion on the Claude host.** `benchmarks/subagent-routing-v1/` records 96 measured Claude cells (finding-verification and failure-classification, `claude.inline` vs `claude.named`) run against the frozen protocol, after two real harness bugs found live were fixed and the protocol re-frozen (a delegation-attestation heartbeat double-count; a missing report-citation example in the prompt affecting all 8 failure-classification cases). Per-task result: delegating `e2e-finding-verifier` for finding verification is `SELECTIVE_DELEGATE` (stable benefit on context-dependent findings only, zero regressions); delegating `e2e-failure-classifier` for failure classification is `INLINE_DEFAULT` (no stable benefit, one majority-stable regression). No product text changes yet: the frozen protocol requires a separate RED-test-first change process and a newly frozen confirmation case set before any SKILL.md delegation wording is touched.
+- **The same pilot's Codex arms could not be measured, for a documented and independently verified reason.** `codex.named` and `codex.native-role` were activated and attempted, but Codex CLI's mid-session delegation ("collab spawn") failed deterministically on every attempt with `no thread with id: <the session's own thread_id>`. This was independently reproduced outside the harness on two Codex CLI versions (0.153.4 and 0.154.0, the latter the current npm-latest) and matches three open upstream issues on `openai/codex` (#41474, #33672, #35781); #41474 traces the root cause to `--ephemeral` sessions lacking a persisted thread-history row that the spawn path unconditionally requires. The failure is silent to the calling model (the turn still completes, and the model's own self-reported `route.delegated` field cannot be trusted) — exactly the failure mode this protocol's transcript-based `route_attestation()` was designed to catch instead of trusting self-reports. Both arms are recorded `UNAVAILABLE` at zero cost; the Codex host's overall result is `INCONCLUSIVE` pending an upstream fix.
+
 ## [1.16.1] - 2026-09-12
 
 ### Changed

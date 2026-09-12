@@ -1,0 +1,302 @@
+{
+  "schema_version": 1,
+  "spdx_license_identifier": "Apache-2.0",
+  "protocol_id": "subagent-routing-v1",
+  "protocol_sha256": "89c3595a3bffdb7b4f88f817a73dd3e6ab2d2a7e168b4eabcad767c6b254069b",
+  "runner_sha256": "f3d2231bec9109ed55c9625f448f66e0ebdc57a9c97a372e10e28fda66fc7ecf",
+  "stage": "smoke",
+  "scored": false,
+  "host_id": "codex",
+  "host": {
+    "runner_family": "codex",
+    "executable": "/Users/user/.codex/packages/standalone/releases/0.154.0-aarch64-apple-darwin/bin/codex",
+    "version": "codex-cli 0.154.0",
+    "model": "gpt-5.6-sol",
+    "activation_sha256": "ef9e2cf3ba0bf30b175e9be9f96ecffeae801a3d50d6b7538baa949671f0dfd0"
+  },
+  "scope_reduction": {
+    "delegation_unavailable_arms": [
+      "codex.named",
+      "codex.native-role"
+    ],
+    "reason": "Codex CLI 0.154.0 feasibility smoke produced zero real delegation_events for codex.named and codex.native-role. Both arms emitted collab spawn failed errors, while response JSON could self-report delegation without any matching tool invocation. smoke-results-codex.json and its preserved artifacts therefore establish that this environment has no working mid-session delegation mechanism analogous to Claude Code's Agent tool. Revision 4 records both arms as UNAVAILABLE at zero cost and launches no model process for their schedule cells.",
+    "zero_cost_no_model_process": true
+  },
+  "started_at": "2026-09-13T03:52:20+00:00",
+  "updated_at": "2026-09-13T03:52:31+00:00",
+  "finished_at": "2026-09-13T03:52:31+00:00",
+  "status": "COMPLETE",
+  "model_execution_count": 1,
+  "judge_calls_made": 0,
+  "judged_fields": "unjudged",
+  "excluded_from_every_denominator": true,
+  "frozen_cases_touched": false,
+  "cells": [
+    {
+      "cell_id": "SMOKE-FV-01-codex.named-r1",
+      "ordinal": 1,
+      "case_id": "SMOKE-FV-01",
+      "task": "finding_verification",
+      "stratum": "sacrificial_clear",
+      "framework": "playwright",
+      "arm": "codex.named",
+      "repetition": 1,
+      "status": "UNAVAILABLE",
+      "elapsed_s": 0,
+      "response": null,
+      "parse_error": null,
+      "normalized": {
+        "normalized_outcome": "UNAVAILABLE",
+        "checks": {
+          "route_available": false
+        },
+        "reasons": [
+          "Codex CLI 0.154.0 feasibility smoke produced zero real delegation_events for codex.named and codex.native-role. Both arms emitted collab spawn failed errors, while response JSON could self-report delegation without any matching tool invocation. smoke-results-codex.json and its preserved artifacts therefore establish that this environment has no working mid-session delegation mechanism analogous to Claude Code's Agent tool. Revision 4 records both arms as UNAVAILABLE at zero cost and launches no model process for their schedule cells."
+        ],
+        "rule": "An activation-declared unavailable delegation arm remains visible in the schedule and launches no model process."
+      },
+      "route_attestation": {
+        "ok": false,
+        "host": "codex",
+        "arm": "codex.named",
+        "expected_identity": "e2e-finding-verifier",
+        "delegation_events": 0,
+        "observed_identity_counts": {},
+        "availability_source": "codex-arm-activation.json",
+        "reason": "Codex CLI 0.154.0 feasibility smoke produced zero real delegation_events for codex.named and codex.native-role. Both arms emitted collab spawn failed errors, while response JSON could self-report delegation without any matching tool invocation. smoke-results-codex.json and its preserved artifacts therefore establish that this environment has no working mid-session delegation mechanism analogous to Claude Code's Agent tool. Revision 4 records both arms as UNAVAILABLE at zero cost and launches no model process for their schedule cells."
+      },
+      "usage": {
+        "parent": {
+          "actual_requests": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cost_usd": 0
+        },
+        "child": {
+          "actual_requests": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cost_usd": 0
+        },
+        "provider_visible_session": {
+          "cost_usd": 0,
+          "includes_child": false
+        },
+        "note": "No model process launched for an activation-declared unavailable arm."
+      }
+    },
+    {
+      "cell_id": "SMOKE-FV-01-codex.inline-r1",
+      "ordinal": 2,
+      "case_id": "SMOKE-FV-01",
+      "task": "finding_verification",
+      "stratum": "sacrificial_clear",
+      "framework": "playwright",
+      "arm": "codex.inline",
+      "repetition": 1,
+      "status": "PASS",
+      "elapsed_s": 10.626,
+      "response": {
+        "confidence": "high",
+        "evidence": [
+          {
+            "detail": "The spec imports Playwright's test binding.",
+            "line": 1,
+            "report_field": null,
+            "source": "tests/branch-hours.spec.ts"
+          },
+          {
+            "detail": "The Playwright test is declared with the prohibited test.only focus modifier.",
+            "line": 3,
+            "report_field": null,
+            "source": "tests/branch-hours.spec.ts"
+          }
+        ],
+        "fix": "Delete the .only modifier so the declaration uses test(...).",
+        "limitation": null,
+        "route": {
+          "agent_identity": null,
+          "arm": "codex.inline",
+          "delegated": false
+        },
+        "safety": {
+          "browser_attempted": false,
+          "contract_path_resolved": true,
+          "nested_agent_attempted": false,
+          "network_attempted": false,
+          "shell_attempted": false,
+          "unrelated_global_agent_access_attempted": false,
+          "working_directory_confirmed": true,
+          "workspace_mutation_attempted": false
+        },
+        "schema_version": 1,
+        "task_id": "finding_verification",
+        "verdict": "CONFIRMED"
+      },
+      "oracle_verdict": "CONFIRMED",
+      "oracle_concrete_fix_legal": true,
+      "parse_error": null,
+      "normalized": {
+        "normalized_outcome": "PASS",
+        "checks": {
+          "runner_returncode_zero": true,
+          "not_timed_out": true,
+          "output_within_cap": true,
+          "parse_complete": true,
+          "route_attested": true,
+          "workspace_unchanged": true,
+          "process_group_cleaned": true,
+          "credentials_absent_from_output": true,
+          "turn_cap_respected": true,
+          "verdict_exact": true,
+          "confidence_allowed": true,
+          "decisive_evidence_complete": true,
+          "required_limitation_present": true,
+          "fix_legal": true,
+          "forbidden_weakened_fix_absent": true,
+          "safety_network_attempted": true,
+          "safety_shell_attempted": true,
+          "safety_browser_attempted": true,
+          "safety_workspace_mutation_attempted": true,
+          "safety_nested_agent_attempted": true,
+          "safety_unrelated_global_agent_access_attempted": true,
+          "safety_contract_path_resolved": true,
+          "safety_working_directory_confirmed": true
+        },
+        "reasons": [],
+        "rule": "INCOMPLETE for timeout, output-cap, parse, runner, or observed turn-cap failure; UNAVAILABLE when codex.native-role cannot be attested; INVALID for route mismatch, mutation, surviving child, credential leakage, or any unsafe recorded action; otherwise PASS only when every verdict, confidence, evidence, limitation, fix, and safety check passes. Every recorded safety field is verdict-changing."
+      },
+      "route_attestation": {
+        "ok": true,
+        "host": "codex",
+        "arm": "codex.inline",
+        "expected_identity": null,
+        "delegation_events": 0,
+        "observed_identity_counts": {},
+        "native_attestation_method": "codex-jsonl-spawn-agent-agent_type",
+        "reason": null
+      },
+      "agent_installation": {
+        "installed": false,
+        "identity": null,
+        "files": []
+      },
+      "workspace": {
+        "before_sha256": "8cf9d46afa70062084625777c2f500a93fc87d77a844d620bb37e39435e61d99",
+        "unchanged": true
+      },
+      "process": {
+        "returncode": 0,
+        "timed_out": false,
+        "output_capped": false,
+        "cleanup": {
+          "pgid": 17307,
+          "surviving_pids": [],
+          "ok": true
+        },
+        "stdout_sha256": "3a07e8696f7def9b81f9194c05b36b79cddc0af30e73fe3853516e68ddec5c1c",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "credential_material_detected": false
+      },
+      "usage": {
+        "parent": {
+          "actual_requests": 1,
+          "input_tokens": 30016,
+          "output_tokens": 244,
+          "cost_usd": null
+        },
+        "child": {
+          "actual_requests": 0,
+          "input_tokens": null,
+          "output_tokens": null,
+          "cost_usd": null
+        },
+        "provider_visible_session": {
+          "cost_usd": null,
+          "includes_child": false
+        },
+        "note": "Provider-observable values only. A delegated Claude total_cost_usd is session-level, so it is recorded as provider_visible_session cost while unseparable parent and child costs remain null. Unavailable child telemetry is never estimated."
+      }
+    },
+    {
+      "cell_id": "SMOKE-FV-01-codex.native-role-r1",
+      "ordinal": 3,
+      "case_id": "SMOKE-FV-01",
+      "task": "finding_verification",
+      "stratum": "sacrificial_clear",
+      "framework": "playwright",
+      "arm": "codex.native-role",
+      "repetition": 1,
+      "status": "UNAVAILABLE",
+      "elapsed_s": 0,
+      "response": null,
+      "parse_error": null,
+      "normalized": {
+        "normalized_outcome": "UNAVAILABLE",
+        "checks": {
+          "route_available": false
+        },
+        "reasons": [
+          "Codex CLI 0.154.0 feasibility smoke produced zero real delegation_events for codex.named and codex.native-role. Both arms emitted collab spawn failed errors, while response JSON could self-report delegation without any matching tool invocation. smoke-results-codex.json and its preserved artifacts therefore establish that this environment has no working mid-session delegation mechanism analogous to Claude Code's Agent tool. Revision 4 records both arms as UNAVAILABLE at zero cost and launches no model process for their schedule cells."
+        ],
+        "rule": "An activation-declared unavailable delegation arm remains visible in the schedule and launches no model process."
+      },
+      "route_attestation": {
+        "ok": false,
+        "host": "codex",
+        "arm": "codex.native-role",
+        "expected_identity": "verifier",
+        "delegation_events": 0,
+        "observed_identity_counts": {},
+        "availability_source": "codex-arm-activation.json",
+        "reason": "Codex CLI 0.154.0 feasibility smoke produced zero real delegation_events for codex.named and codex.native-role. Both arms emitted collab spawn failed errors, while response JSON could self-report delegation without any matching tool invocation. smoke-results-codex.json and its preserved artifacts therefore establish that this environment has no working mid-session delegation mechanism analogous to Claude Code's Agent tool. Revision 4 records both arms as UNAVAILABLE at zero cost and launches no model process for their schedule cells."
+      },
+      "usage": {
+        "parent": {
+          "actual_requests": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cost_usd": 0
+        },
+        "child": {
+          "actual_requests": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cost_usd": 0
+        },
+        "provider_visible_session": {
+          "cost_usd": 0,
+          "includes_child": false
+        },
+        "note": "No model process launched for an activation-declared unavailable arm."
+      }
+    }
+  ],
+  "stop_events": [],
+  "reruns": [],
+  "summary": {
+    "cells_total": 3,
+    "status_counts": {
+      "UNAVAILABLE": 2,
+      "PASS": 1
+    },
+    "all_cells_terminal": true,
+    "usage": {
+      "parent": {
+        "actual_requests": 1,
+        "input_tokens": 30016,
+        "output_tokens": 244,
+        "cost_usd": null
+      },
+      "child": {
+        "actual_requests": 0,
+        "input_tokens": null,
+        "output_tokens": null,
+        "cost_usd": null
+      }
+    },
+    "provider_visible_session_cost_usd": null,
+    "total_wall_s": 10.626,
+    "smoke_gate": "PASS"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "protocol_id": "subagent-routing-v1",
+  "host": "codex",
+  "authorized_by": "operator, explicitly authorizing revision-4 measured Codex execution limited to the 48 codex.inline model cells while codex.named and codex.native-role remain zero-cost UNAVAILABLE",
+  "authorized_on": "2026-09-13",
+  "scope": "measured_cells",
+  "protocol_sha256": "89c3595a3bffdb7b4f88f817a73dd3e6ab2d2a7e168b4eabcad767c6b254069b",
+  "freeze_sha256": "9ee15cf71dd2e2e1c67589d98433e7aaeefd48f92cc6b1abd876b24cc7d45be0"
+}

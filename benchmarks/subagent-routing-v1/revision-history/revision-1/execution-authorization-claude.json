@@ -1,0 +1,9 @@
+{
+  "protocol_id": "subagent-routing-v1",
+  "host": "claude",
+  "authorized_by": "operator, relayed by Claude Code coordinator session on the operator's explicit instruction to run the claude.* measured phase overnight",
+  "authorized_on": "2026-09-13",
+  "scope": "measured_cells",
+  "protocol_sha256": "7a7d7cf94a1ee502a8a1a5305209b938ad1f7f8c5a0dc3f8193e351b7723869b",
+  "freeze_sha256": "29df46bcf53c93c4a3c8e4d03182711e9aac98862f2c0d94cde9417b37b96b89"
+}

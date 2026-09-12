@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "spdx_license_identifier": "Apache-2.0",
+  "protocol_id": "subagent-routing-v1",
+  "protocol_revision": 4,
+  "status": "FROZEN",
+  "frozen_on": "2026-09-13T04:16:13Z",
+  "git_head_at_freeze": "630c8048dbfd4d81c896e5102c98b3a4c112b0ca",
+  "protocol_sha256": "89c3595a3bffdb7b4f88f817a73dd3e6ab2d2a7e168b4eabcad767c6b254069b",
+  "runner_sha256": "c774d666b3d9651ac39d3a799026f64020283e89ed80e791702f5f90152c097b",
+  "smoke_runner_sha256": "28e3ff83586c756284cd430ce448e9f7041f9811562318457b369a3f94998c76",
+  "codex_activation_sha256": "ef9e2cf3ba0bf30b175e9be9f96ecffeae801a3d50d6b7538baa949671f0dfd0",
+  "case_manifest_sha256": "f24fa0c5b7d7a4eb15f7e45549a2b782ae17feee1d9fad04d5ef2411bacc5d5a",
+  "case_tree_sha256": "ca622ed91811977c131f143effbe109620ccd3114949c036a73ace4fe497bc8a",
+  "smoke_manifest_sha256": "3a9a900f1257385190c09b27c8c4266ae5f1257fc4a5a9a9914d1c1f2bfce494",
+  "smoke_tree_sha256": "63bf30675379ce57cdba0978b7f078c2d492487c13701584cbd19efe63216a5f",
+  "evaluated_snapshot": {
+    "skills/e2e-reviewer/SKILL.md": "a1558dc829753e93697389759309b24588250cc1ea28e3d255edc2bca0362a14",
+    "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb",
+    "skills/playwright-debugger/SKILL.md": "469691cb9c0893c9018451c1b2a2a83f3a4b742fcadd31c7804175c25f258983",
+    "skills/cypress-debugger/SKILL.md": "a27b35118803adb85cced3dcbe9de5bac0e9d09d0993f81b1da37f1e9a82b3b5",
+    "agents/e2e-finding-verifier.md": "c9b49b7164c0c9646124260c562d9569ed7af0da3faa810f4fcbf48800b0fef0",
+    "agents/e2e-failure-classifier.md": "1826e4f80601306be6bef07fc0084374c4317bf51c1ffdbbdfa805302204d37f",
+    ".codex/agents/e2e-finding-verifier.toml": "23ef858b3813205f48aad15de934f24397b99290009d93cbe8a2af605ca92088",
+    ".codex/agents/e2e-failure-classifier.toml": "d0404b1cf318dd8e951094aa1276ce6ac5bdf9103760ccfe359967e79fca2ffe"
+  },
+  "smoke_results": {
+    "codex": "ffd432b268f3421d2af7e56d8a2030a1db692734d9251347efb82bc2aa75dccd"
+  },
+  "immutable_surface_digest": {
+    "algorithm": "sha256 of UTF-8 RFC 8259 JSON over protocol_sha256, runner_sha256, smoke_runner_sha256, codex_activation_sha256, case_manifest_sha256, case_tree_sha256, smoke_manifest_sha256, smoke_tree_sha256, evaluated_snapshot, and smoke_results, with keys sorted and separators ',' and ':'",
+    "sha256": "2aa7660db527f8ca503112793e51a7efc89e08360b651af8e9cdcb246f32cb0e"
+  },
+  "codex_smoke_gate": {
+    "status": "PASS_WITH_DISCLOSED_UNAVAILABLE_ARMS",
+    "report_slots": 3,
+    "model_processes_launched": 1,
+    "passed_arms": ["codex.inline"],
+    "unavailable_arms": ["codex.named", "codex.native-role"],
+    "unavailable_parent_requests": 0,
+    "unavailable_child_requests": 0,
+    "observable_parent_requests": 1,
+    "parent_input_tokens": 30008,
+    "parent_output_tokens": 163,
+    "provider_visible_session_cost_usd": null,
+    "wall_seconds": 6.91,
+    "execution_identity": {
+      "runner_family": "codex",
+      "executable": "/Users/user/.codex/packages/standalone/releases/0.154.0-aarch64-apple-darwin/bin/codex",
+      "version": "codex-cli 0.154.0",
+      "minimum_version": "0.150.0",
+      "version_policy": "minimum",
+      "model": "gpt-5.6-sol"
+    }
+  },
+  "freshness_recheck": {
+    "performed_on": "2026-09-13",
+    "text_search_command": "git grep -n -i -E 'patron|reading room|book hold|library branch|overdue fine' -- skills scripts docs README.md CHANGELOG.md benchmarks ':(exclude)benchmarks/subagent-routing-v1'",
+    "text_search_exit_status": 1,
+    "case_material_hits": 0,
+    "measured_repository_files": 42,
+    "case_manifest_unchanged_from_revision_3": true,
+    "case_tree_unchanged_from_revision_3": true,
+    "external_exact_byte_collisions_at_revision_3": 0,
+    "within_set_duplicate_groups_at_revision_3": 0
+  },
+  "preconditions_at_freeze": {
+    "ci_local": "PASS",
+    "pre_push_security": "PASS",
+    "newer_output_discipline_process_active": false,
+    "codex_measured_model_cells_run_under_this_revision": 0,
+    "invalidated_revision_4_inline_smokes_preserved": 1
+  },
+  "execution_authorization": {
+    "granted_by_this_record": false,
+    "codex_measured_authorization_source": "operator authorization in the coordinating session, limited to measured_cells on the Codex host after revision-4 refreeze",
+    "codex_executable_model_cells": 48,
+    "codex_zero_cost_unavailable_cells": 96,
+    "claude_revision_3_results_modified": false,
+    "note": "A separate execution-authorization-codex.json must bind the exact protocol and freeze digests before measured execution."
+  },
+  "immutability_rule": "Do not edit protocol.json, run_routing.py, run_smoke.py, codex-arm-activation.json, either manifest, any case byte, the evaluated snapshot, or this freeze record after freeze. Any digest drift makes the Codex measured run INCONCLUSIVE and requires a new protocol version."
+}
