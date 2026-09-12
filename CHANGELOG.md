@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- **Four roadmap items (3, 4, 5, 6) gained preregistered protocol designs; none is authorized to run.** `benchmarks/healer-perturbation-v1/` defines the Healer-vs-honesty-control comparison (5 perturbations, 2 arms) and wires its contract tests into `ci-local.sh`. `benchmarks/subagent-routing-v1/` defines the named-subagent-vs-inline-fallback comparison for `e2e-finding-verifier`/`e2e-failure-classifier`. `benchmarks/stryker-feasibility-v1/` gained a full `protocol.json` (previously README-only) for the already-decided `REFERENCE_ONLY`-by-default Stryker adjunct question; it pins no `skills/*/SKILL.md` file, so it never competes for the same frozen surface as items 3/6. `benchmarks/exploration-fallback-v1/` records two deferred candidate exploration arms (recorded-trace, adapter-usage logging) with concrete re-trigger conditions instead of a time-based reconsideration schedule.
+
 ### Changed
 
 - **`docs/llm-generated-e2e-test-evidence.md` corrected three overclaimed external-evidence rows.** NAVER's "explain the harness" framing was not actually adopted anywhere in this repo and the claim was removed; Slack's adapter-comparison claim was flagged as unmeasured and cross-referenced to `benchmarks/exploration-fallback-v1/`; Shopify's writer/verifier framing was reworded from "borrowed idea" to "converges with," since this repo's design predated reading that article. A Toss FE platform team talk and a flex.team backend post were independently evaluated and recorded as **not adopted**, each with a specific reason (native-app-platform infrastructure the talk assumes this repo doesn't have; a JVM backend stack out of this repo's Playwright/Cypress scope, whose underlying principle is already covered by reviewer patterns #10b/#19/#20).

@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "spdx_license_identifier": "Apache-2.0",
+  "protocol_id": "stryker-feasibility-v1",
+  "status": "NOT_RUN",
+  "result": "INCONCLUSIVE",
+  "decision_state": "PREREGISTERED_NOT_FROZEN",
+  "prepared_on": "2026-09-12",
+  "design_only": true,
+  "execution_authorized_by_this_file": false,
+  "priority": "lowest_of_six_roadmap_items",
+  "source_plans": [
+    ".handover/artifacts/external-adapter-benchmark-plan-v1.md (stryker_serial arm only; external_gate and native_kernel arms excluded from this decision entirely, not deferred)",
+    "skills/e2e-reviewer/references/upstream-rule-sources.md (StrykerJS is 'not a dependency')",
+    "benchmarks/fixture-faults/README.md (36/36 proven fault operators, the frozen V3 oracle this item measures against)"
+  ],
+  "component_under_test": {
+    "component": "general_purpose_mutation_testing_as_a_v2_v3_adjunct",
+    "hypothesis": "A general-purpose mutation tool (StrykerJS) catches at least one causally valid, behaviorally distinct fault that this repo's own targeted V2/V3 fault injection misses, at reasonable cost.",
+    "already_decided": "Raw mutation score is not product quality and is never reported as one. StrykerJS is not a dependency and is not built into e2e-skills regardless of this result -- the only open question is the narrower adjunct-coverage one above.",
+    "current_product_default": "REFERENCE_ONLY",
+    "current_product_default_source": "benchmarks/stryker-feasibility-v1/README.md"
+  },
+  "claim_scope": {
+    "measures": [
+      "causally_valid_behaviorally_distinct_survivors_or_kills_not_in_the_frozen_v3_manifest (the only gated quantity)",
+      "invalid_or_infra_failure_rate (automatic REJECT above a preregistered threshold, never a smaller sample)",
+      "wall_time_and_cpu_cost_local_only (no model calls anywhere in this protocol)"
+    ],
+    "excludes": [
+      "raw_mutation_score_as_a_quality_metric",
+      "official_planner_quality",
+      "official_generator_quality",
+      "official_healer_quality",
+      "cypress",
+      "any_readme_or_changelog_claim",
+      "adding_stryker_as_a_dependency_of_any_kind"
+    ]
+  },
+  "evaluated_snapshot": {
+    "policy": "Digests below are recorded at preparation time from git HEAD 90b1d4088d63df623cee4be9bfd2543a41d8b210 (tag v1.16.0); every listed file was verified byte-identical to that HEAD when recorded. They MUST be recomputed at freeze into freeze-record.json together with the model-free tool identity (Stryker version, install method) and the unfaulted-native-stability check. This file is never edited after freeze.",
+    "git_head_at_preparation": "90b1d4088d63df623cee4be9bfd2543a41d8b210",
+    "git_tag_at_preparation": "v1.16.0",
+    "sha256_at_preparation": {
+      "benchmarks/fixture-faults/2026-07-31-current.json": "932a3d6c9912edae97519ea1f48ee83b5e514d387d3acb50954cd9cc4f734213",
+      "scripts/evals/fixtures/package.json": "0e643f98e0f317eac2340dc107573ffb145dc3f42abb4c3f5a4b23e26f88f74f",
+      "scripts/evals/fixtures/package-lock.json": "6195ecb1ddb09930325a82192fe059d732ecba09f57cdf3bbf77fd8de41aa872",
+      "scripts/evals/fixtures/server.mjs": "91456c34eb40addf655dc17fc41b06fb72dac7f4e6baf7b302f188496eeb24aa",
+      "scripts/evals/fixtures/playwright/playwright.config.mjs": "f5d7879ba553a5fbb03abab8ecedeb3356cd366589ec34aa8722a5b5f121050e",
+      "scripts/evals/fixtures/playwright/app/index.html": "22d3226a55ea5b368a540417c7b1cd995f272738abdcbadfa4fd27595eef5166",
+      "scripts/evals/fixtures/playwright/tests/counter.spec.mjs": "3130b4b694518e0d715904eca054e365ea4be6948322bca021ad15d25d901548",
+      "scripts/evals/fixtures/playwright/tests/missing-auth.spec.mjs": "9ff6736877c335f6f1a36553c77466aad2ad806a7ee7ebb4d5ef64e343f02fc8",
+      "scripts/evals/fixtures/playwright/tests/optimistic-call-proof.spec.mjs": "aee5dd78e3216f61c7062e149049d2286ca64753e4968fe3b0ff5ca6ce47b91d"
+    },
+    "freeze_record_file": "freeze-record.json",
+    "freeze_record_exists": false,
+    "note": "This protocol touches zero skills/*/SKILL.md, playwright-agents.md, pattern-reference.md, agents/*.md, or .codex/agents/*.toml files -- no model call, no skill invocation, no generator/reviewer/debugger/healer/planner arm anywhere in this design. It therefore places no sha256 hold on any of those files and does not compete with healer-perturbation-v1 or subagent-routing-v1 for the same pinned surface."
+  },
+  "targets": {
+    "primary": "scripts/evals/fixtures/playwright (this repo's own fixture app; the 12-operator, 36/36-proven V3 fault catalog in benchmarks/fixture-faults/ is the frozen oracle of behaviorally relevant fault)",
+    "secondary_optional": "one second, small, fresh application chosen the same way item 1/6 select fresh targets (freshness-exclusion search recorded before selection), used only if the primary target's result is ambiguous or the operator wants a cross-app signal"
+  },
+  "arms": {
+    "stryker_serial": {
+      "status": "design_only",
+      "tool": "StrykerJS, disposable install, never added to any target's own package.json/lockfile",
+      "excluded_arms_not_deferred": ["external_gate (playwright-mutation-gate)", "native_kernel"]
+    }
+  },
+  "procedure": [
+    "1. Unfaulted native run of the fixture app's Playwright suite, 3 repetitions; abort if not stable 3/3.",
+    "2. Freeze and hash the V3 fault manifest (benchmarks/fixture-faults/2026-07-31-current.json) BEFORE any Stryker output is inspected.",
+    "3. Dry-run Stryker first (no mutation execution) to validate config against the frozen source tree.",
+    "4. Real run: concurrency 1, incremental mode off.",
+    "5. Required control cells: no-op-copy (identical source, must not report any kill), positive-control (a known-killable seeded mutant, must report killed), irrelevant-fault-control (a mutant outside any user-visible behavior, must not be counted toward the verdict even if reported killed).",
+    "6. Source fingerprint (sha256 of the whole fixture tree) compared before and after every Stryker invocation; any drift aborts the run.",
+    "7. A process exit code alone is never counted as a kill -- the failure must reach the primary assertion of a real test, verified per survivor/kill the same way V2/V3 verifies causality."
+  ],
+  "decision_rule": {
+    "optional_adapter": "Only if, on every target run (primary, and secondary if used), within the preregistered budget below, Stryker finds at least one causally valid, behaviorally distinct survivor/kill not already present in the frozen V3 manifest.",
+    "reference_only": "Default outcome otherwise -- no adjunct value demonstrated beyond what V2/V3 already covers.",
+    "reject": "Automatic if the invalid/infra-failure rate exceeds the preregistered threshold (TBD at freeze). A REJECT is never rescued by a smaller sample.",
+    "no_threshold_changes_after_any_result_is_seen": true
+  },
+  "cost_ceiling": {
+    "model_calls": 0,
+    "note": "Local CPU only. Naive estimate and hard ceiling for wall-clock/CPU time are TBD at freeze -- Stryker's real per-mutant runtime on this fixture app has never been measured, unlike the top-level-agent-session estimates used in item 1/3/6.",
+    "pause_and_ask_at": "TBD at freeze (2x of the freeze-time naive estimate, matching the multiplier convention used by item 1/3/6)",
+    "hard_ceiling_at": "TBD at freeze (4x)"
+  },
+  "open_items_needs_human": [
+    "Whether to authorize this item to move past design_only at all -- the stub's own priority note says authorization 'should not be assumed to come soon.'",
+    "Whether the secondary/fresh target is used at all, and if so, which one (freshness-exclusion search not yet run).",
+    "The invalid/infra-failure-rate REJECT threshold.",
+    "Naive time estimate and cost ceiling multiplier, once a first real Stryker dry-run on the fixture app gives an actual per-mutant timing."
+  ]
+}
