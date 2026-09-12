@@ -42,9 +42,7 @@ Why it matters: focused-test leaks silently remove coverage from CI, while match
 + await expect(page).toHaveURL(expectedUrl);
 ```
 
-Why it matters: a missing `await` leaves the assertion Promise unsequenced.
-Current Playwright workers normally surface a rejection, but attribution is
-degraded and a resolving assertion can race later work.
+Why it matters: a missing `await` leaves the assertion Promise unsequenced. Current Playwright workers normally surface a rejection, but attribution is degraded and a resolving assertion can race later work.
 
 ## Strapi: discarded boolean reads
 
@@ -60,9 +58,7 @@ Why it matters: reading a boolean is not a test assertion. The fixed tests asser
 - PR: [`TryGhost/Ghost#28712`](https://github.com/TryGhost/Ghost/pull/28712) — merged
 - Pattern: `expect(likeButton.isDisabled()).toBeTruthy()` checked a promise-like value instead of the button state.
 
-Why it matters: Promise-valued state checks need `await` or a web-first
-assertion; otherwise a truthy Promise object can be asserted instead of the
-disabled state.
+Why it matters: Promise-valued state checks need `await` or a web-first assertion; otherwise a truthy Promise object can be asserted instead of the disabled state.
 
 ## Cal.com: weak assertions and hard waits
 

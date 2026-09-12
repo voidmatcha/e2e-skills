@@ -4,49 +4,28 @@
 
 Current snapshot freeze time: 2026-07-30 08:29 KST.
 
-Patterns #15 and #16 are P1 in the current taxonomy. Playwright 1.62 live
-probes and runner-source inspection showed that their rejected floating
-Promises normally fail the test worker rather than necessarily producing a
-silent always-pass result. Their invariant defect is unsequenced work and poor
-failure attribution; a swallowed rejection remains #3 P0, and an independently
-missing postcondition may remain #2 P0.
+Patterns #15 and #16 are P1 in the current taxonomy. Playwright 1.62 live probes and runner-source inspection showed that their rejected floating Promises normally fail the test worker rather than necessarily producing a silent always-pass result. Their invariant defect is unsequenced work and poor failure attribution; a swallowed rejection remains #3 P0, and an independently missing postcondition may remain #2 P0.
 
 ### Blind source-audit failure and corpus repair
 
-Two fresh auditors first received a physically isolated bundle containing only
-the holdout sources, `SKILL.md`, and `pattern-reference.md`. They were barred
-from the labeled JSON, reports, scores, prior audits, Git, memory, and parent
-directories. Both independently reconstructed **22**, not 24, findings:
-5 P0, 14 P1, and 3 P2.
+Two fresh auditors first received a physically isolated bundle containing only the holdout sources, `SKILL.md`, and `pattern-reference.md`. They were barred from the labeled JSON, reports, scores, prior audits, Git, memory, and parent directories. Both independently reconstructed **22**, not 24, findings: 5 P0, 14 P1, and 3 P2.
 
-Their agreement exposed two real oracle-design defects rather than model
-mistakes:
+Their agreement exposed two real oracle-design defects rather than model mistakes:
 
-- `cy-contract-runtime/cypress/e2e/invoices.cy.ts:10` did not make the
-  promised restoration outcome explicit enough for #2; and
-- `pw-context-boundaries/tests/locator-discard.spec.ts:5` still had an
-  independent meaningful status assertion, so it contradicted the #8 P0
-  contract.
+- `cy-contract-runtime/cypress/e2e/invoices.cy.ts:10` did not make the promised restoration outcome explicit enough for #2; and
+- `pw-context-boundaries/tests/locator-discard.spec.ts:5` still had an independent meaningful status assertion, so it contradicted the #8 P0 contract.
 
-The benchmark source was repaired before the current model run. The archive
-test title now explicitly promises invoice restoration while intentionally
-omitting restoration proof, and the dangling-locator test no longer contains
-an independent postcondition. No label, severity, threshold, prompt, or
-schedule was changed to fit model output.
+The benchmark source was repaired before the current model run. The archive test title now explicitly promises invoice restoration while intentionally omitting restoration proof, and the dangling-locator test no longer contains an independent postcondition. No label, severity, threshold, prompt, or schedule was changed to fit model output.
 
-Two new source-only auditors then received a newly created isolated bundle.
-They independently reconstructed:
+Two new source-only auditors then received a newly created isolated bundle. They independently reconstructed:
 
-- 24 findings and one representative false-positive guard for every normalized
-  family;
+- 24 findings and one representative false-positive guard for every normalized family;
 - all 24 stable families exactly once;
 - 7 P0, 14 P1, and 3 P2 findings;
 - #2 at `cy-contract-runtime/cypress/e2e/invoices.cy.ts:10`; and
 - #8 at `pw-context-boundaries/tests/locator-discard.spec.ts:5`.
 
-The labeled corpus itself contains 24 explicit finding anchors and 24 explicit
-guard anchors. The corpus schema stores `source_line` as the physical source
-line after leading and trailing whitespace is removed.
+The labeled corpus itself contains 24 explicit finding anchors and 24 explicit guard anchors. The corpus schema stores `source_line` as the physical source line after leading and trailing whitespace is removed.
 
 ### Current semantic inputs
 
@@ -62,24 +41,15 @@ line after leading and trailing whitespace is removed.
 | `scripts/evals/run-reviewer-holdout.py` | `e25d99f3d6a3c82cd1d87fd3215e2e07d7ed67777465d8986352eb87f0ebf987` |
 | `scripts/evals/compare-reviewer-holdouts.py` | `f905cd3aa68390bca2cb76d2aa9ad43c9f91bc16aece6c462558a22fdee51e5a` |
 
-These remain model audits from the same Codex family and written taxonomy, not
-independent human annotations. They establish reproducible internal
-consistency and show that the first blind audit was allowed to invalidate the
-oracle. They do not estimate unseen-repository generalization.
+These remain model audits from the same Codex family and written taxonomy, not independent human annotations. They establish reproducible internal consistency and show that the first blind audit was allowed to invalidate the oracle. They do not estimate unseen-repository generalization.
 
 ## Historical pre-reclassification snapshot
 
 Final snapshot freeze time: 2026-07-30 01:49 KST.
 
-Historical-only notice: the later #15/#16 P0-to-P1 reclassification invalidates
-this frozen oracle and all metrics derived from it for the current taxonomy.
-Rows and digests below are intentionally preserved as the historical snapshot.
+Historical-only notice: the later #15/#16 P0-to-P1 reclassification invalidates this frozen oracle and all metrics derived from it for the current taxonomy. Rows and digests below are intentionally preserved as the historical snapshot.
 
-This is a public development corpus. Pre-remediation model output and product
-reviews were visible before the final snapshot, so this audit establishes
-internal consistency and reproducibility, not blind or sealed generalization.
-The original pre-remediation audit remains in
-`oracle-audit-pre-remediation.md`.
+This is a public development corpus. Pre-remediation model output and product reviews were visible before the final snapshot, so this audit establishes internal consistency and reproducibility, not blind or sealed generalization. The original pre-remediation audit remains in `oracle-audit-pre-remediation.md`.
 
 ## Frozen semantic inputs
 
@@ -95,10 +65,7 @@ The original pre-remediation audit remains in
 | `scripts/evals/run-reviewer-holdout.py` | `da20df81569ea037d291a1f8342f72b550063c9b76035a54749a755be5483856` |
 | `scripts/evals/compare-reviewer-holdouts.py` | `54e9632ff7cebd8d6d05a6877f00dbfca0146b8851f5d5f3f6d45114442e8a98` |
 
-Every final report must record the same canonical corpus, complete skill,
-protocol, evaluator, prompt-set, schedule, and staged-workspace digests. The
-runner verifies original and copied inputs before and after every call; the
-comparator re-parses raw output and rejects provenance mismatches.
+Every final report must record the same canonical corpus, complete skill, protocol, evaluator, prompt-set, schedule, and staged-workspace digests. The runner verifies original and copied inputs before and after every call; the comparator re-parses raw output and rejects provenance mismatches.
 
 ## Independent source-only reconstruction
 
@@ -108,9 +75,7 @@ Two fresh Codex-native auditors independently read only:
 - `skills/e2e-reviewer/SKILL.md`
 - `skills/e2e-reviewer/references/pattern-reference.md`
 
-They were barred from the labeled corpus, reports, mutation notes, prior
-reviews, oracle files, and Git history. Neither changed files. Both
-independently reconstructed exactly:
+They were barred from the labeled corpus, reports, mutation notes, prior reviews, oracle files, and Git history. Neither changed files. Both independently reconstructed exactly:
 
 - 24 non-overlapping findings;
 - every one of the 24 base pattern families;
@@ -144,13 +109,8 @@ independently reconstructed exactly:
 | #22 | P1 | `cy-write-credentials/cypress/e2e/board.cy.ts:6` |
 | #23 | P2 | `cy-structure-fixture/cypress/fixtures/guarded-product.json:3` |
 
-The auditors specifically rejected nearby false positives for application
-methods named `only`, invalid-password test data, justified forced actions,
-retry-wrapper one-shot URL reads, proven absence assertions, authenticated
-counterparts, and actions inside `Promise.all`.
+The auditors specifically rejected nearby false positives for application methods named `only`, invalid-password test data, justified forced actions, retry-wrapper one-shot URL reads, proven absence assertions, authenticated counterparts, and actions inside `Promise.all`.
 
-These are model audits from the same Codex family and written taxonomy, not
-independent human annotations. They support consistency but do not remove
-author, model-family, or public-corpus bias.
+These are model audits from the same Codex family and written taxonomy, not independent human annotations. They support consistency but do not remove author, model-family, or public-corpus bias.
 
 Licensed under Apache-2.0 with the repository.

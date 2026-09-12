@@ -4,9 +4,7 @@ Date: 2026-07-30
 Decision: **FAIL / REQUEST CHANGES**  
 Score: **77/100**
 
-The reviewer used a no-Git, temporary-HOME snapshot with global skills, local
-state, labeled corpora, prior reviews, model reports, and reviewer benchmark
-directories physically absent.
+The reviewer used a no-Git, temporary-HOME snapshot with global skills, local state, labeled corpora, prior reviews, model reports, and reviewer benchmark directories physically absent.
 
 | Category | Score |
 |---|---:|
@@ -20,17 +18,11 @@ directories physically absent.
 
 ## Findings
 
-1. Comparator recomputation did not propagate non-public
-   `source_read_isolation`, so rewritten reports could drop the isolation gate.
+1. Comparator recomputation did not propagate non-public `source_read_isolation`, so rewritten reports could drop the isolation gate.
 2. The floating-Promise archive had stale helper provenance.
 3. Aliased Playwright test bindings such as `pwTest.only` could bypass #7.
-4. Unresolved workspace/path-alias fixtures were conservatively admitted only
-   for #7, allowing other candidates to disappear instead of reaching triage.
+4. Unresolved workspace/path-alias fixtures were conservatively admitted only for #7, allowing other candidates to disappear instead of reaching triage.
 5. Colon-containing filenames broke colon-delimited hit parsing.
-6. Framework-scope CI enforced only Puppeteer although contributor policy
-   declares five excluded frameworks.
+6. Framework-scope CI enforced only Puppeteer although contributor policy declares five excluded frameworks.
 
-The review snapshot did not contain the labeled oracle, prior metrics, Git,
-external skills, or machine-local logs. All findings above are source-level;
-the stale evidence item was refreshed through the live six-cell runner after
-this snapshot.
+The review snapshot did not contain the labeled oracle, prior metrics, Git, external skills, or machine-local logs. All findings above are source-level; the stale evidence item was refreshed through the live six-cell runner after this snapshot.

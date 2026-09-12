@@ -11,17 +11,9 @@ Before verification, read `package.json`, lockfiles, Playwright config, testing 
 
 If the project already has mutation, coverage, lint, accessibility, visual, or fault-injection tooling, reuse it. Otherwise use Playwright-native temporary probes. Existing tooling is an implementation of a V-rule, not a prerequisite.
 
-Do not begin browser-backed verification from a target URL unless exploration
-recorded an approved DNS snapshot, pinned peer probes, and a no-drift result.
-For an untrusted remote target, verification also requires the same enforceable
-browser egress policy used during exploration; a Playwright route callback is
-not a transport boundary. If those controls are unavailable, do not navigate
-and record the affected browser-backed rule as `CANNOT_VERIFY`.
+Do not begin browser-backed verification from a target URL unless exploration recorded an approved DNS snapshot, pinned peer probes, and a no-drift result. For an untrusted remote target, verification also requires the same enforceable browser egress policy used during exploration; a Playwright route callback is not a transport boundary. If those controls are unavailable, do not navigate and record the affected browser-backed rule as `CANNOT_VERIFY`.
 
-When auth depends on named environment variables, credential values remain
-local to the user's environment. The agent may inspect only each variable's
-presence and non-empty status; it never requests, reads, prints, echoes, logs,
-or asks the user to paste a value.
+When auth depends on named environment variables, credential values remain local to the user's environment. The agent may inspect only each variable's presence and non-empty status; it never requests, reads, prints, echoes, logs, or asks the user to paste a value.
 
 ## Verdicts
 
@@ -36,19 +28,7 @@ Name one observable product outcome per scenario before generation. The test tit
 
 ## V2 — Assertion Falsification
 
-Use V2 only when the candidate reaches an evidenced deterministic settled-state gate
-before its primary assertion (for example, a proven terminal response,
-completed navigation plus an application-specific ready state, or a terminal UI
-state). In a temporary copy, mutate one single-line, framework-native primary
-matcher only when the mutation is guaranteed contradictory after that same gate,
-then run the repository-native targeted command. The mutated run must turn
-red **because the changed primary assertion reports the expected contradictory
-mismatch**. Capture the failure location and matcher diagnostics and require
-them to identify that exact mutated assertion. A nonzero exit caused only by
-setup, navigation, fixture, browser, timeout, worker, reporter, or other
-unrelated infrastructure failure does not kill the mutant: record `ERROR` when
-the verifier/run infrastructure failed, or `CANNOT_VERIFY` when causal
-attribution cannot be established.
+Use V2 only when the candidate reaches an evidenced deterministic settled-state gate before its primary assertion (for example, a proven terminal response, completed navigation plus an application-specific ready state, or a terminal UI state). In a temporary copy, mutate one single-line, framework-native primary matcher only when the mutation is guaranteed contradictory after that same gate, then run the repository-native targeted command. The mutated run must turn red **because the changed primary assertion reports the expected contradictory mismatch**. Capture the failure location and matcher diagnostics and require them to identify that exact mutated assertion. A nonzero exit caused only by setup, navigation, fixture, browser, timeout, worker, reporter, or other unrelated infrastructure failure does not kill the mutant: record `ERROR` when the verifier/run infrastructure failed, or `CANNOT_VERIFY` when causal attribution cannot be established.
 
 | Original | Conditionally safe temporary inverse |
 |---|---|
@@ -58,35 +38,15 @@ attribution cannot be established.
 | `toHaveURL(x)` | `not.toHaveURL(x)` after the same settled-state gate |
 | `toHaveCount(n)` | `not.toHaveCount(n)` after the same settled-state gate |
 
-Return `CANNOT_VERIFY` when the assertion observes transitional or eventually changing state,
-no deterministic settled-state gate is evidenced, the inverse
-is not guaranteed contradictory after that gate, or the test depends on
-uncontrolled timing between separate runs. Also return it for custom matchers,
-multiple assertions on one line, dynamic matcher construction, multi-line
-chains that cannot be rewritten safely, or a candidate the project runner
-cannot execute from scratch. Never mutate the source candidate. `FAIL` if a
-valid contradictory mutation survives. Return `ERROR` or `CANNOT_VERIFY`, never
-`PASS`, when the mutant run is red but its output does not prove failure at the
-changed primary assertion.
+Return `CANNOT_VERIFY` when the assertion observes transitional or eventually changing state, no deterministic settled-state gate is evidenced, the inverse is not guaranteed contradictory after that gate, or the test depends on uncontrolled timing between separate runs. Also return it for custom matchers, multiple assertions on one line, dynamic matcher construction, multi-line chains that cannot be rewritten safely, or a candidate the project runner cannot execute from scratch. Never mutate the source candidate. `FAIL` if a valid contradictory mutation survives. Return `ERROR` or `CANNOT_VERIFY`, never `PASS`, when the mutant run is red but its output does not prove failure at the changed primary assertion.
 
 ## V3 — Behavior Fault Injection
 
 Use `page.route()` or an existing project fixture to corrupt a product input that repository source, a trace, or observed network evidence proves is load-bearing: success to error, expected text to a different value, non-empty to empty, response to abort, or a bounded delay.
 
-Before applying the fault, record both (1) the exact unchanged primary assertion
-expected to fail and (2) the observable mismatch that its matcher is expected
-to report under that fault. First require the unfaulted candidate to pass. The
-unchanged primary assertion must turn red. The fault kills the test only when
-the faulted run turns red at that exact primary
-assertion and its diagnostics match the declared observable difference. A red
-run with a different failure location or mismatch is `ERROR` when the verifier
-or run infrastructure failed, or `CANNOT_VERIFY` when causal attribution cannot
-be established; it is never `PASS`.
+Before applying the fault, record both (1) the exact unchanged primary assertion expected to fail and (2) the observable mismatch that its matcher is expected to report under that fault. First require the unfaulted candidate to pass. The unchanged primary assertion must turn red. The fault kills the test only when the faulted run turns red at that exact primary assertion and its diagnostics match the declared observable difference. A red run with a different failure location or mismatch is `ERROR` when the verifier or run infrastructure failed, or `CANNOT_VERIFY` when causal attribution cannot be established; it is never `PASS`.
 
-Do not invent endpoints or mutate third-party/production traffic. Return
-`CANNOT_VERIFY` when no safe, local, interceptable dependency is evidenced.
-This per-scenario runtime declaration is not the `generator-faultkill-v1`
-planning DSL and does not change that benchmark's frozen plan language.
+Do not invent endpoints or mutate third-party/production traffic. Return `CANNOT_VERIFY` when no safe, local, interceptable dependency is evidenced. This per-scenario runtime declaration is not the `generator-faultkill-v1` planning DSL and does not change that benchmark's frozen plan language.
 
 ## V4 — Write Contract Proof
 
@@ -96,38 +56,19 @@ For signup, checkout, save, delete, toggle, and similar writes, establish reques
 
 Use repository-native commands to run the candidate alone, repeatedly with the project's supported repeat mechanism, and in its normal suite context. Exercise normal CI parallelism when the project supports it. A pass after retry is flaky evidence, not a clean pass. Keep repetitions bounded and report any mode the repository cannot express as `CANNOT_VERIFY`.
 
-Before repeating a write-producing scenario, prove at least one replay-safe
-boundary:
+Before repeating a write-producing scenario, prove at least one replay-safe boundary:
 
-1. the write carries an idempotency key whose enforcement is proven at the
-   persistent system boundary;
-2. every attempt uses disposable state that is reset or rolled back before and
-   after that attempt; or
-3. every write is fully stubbed or intercepted, with evidence that no
-   persistent boundary is reached.
+1. the write carries an idempotency key whose enforcement is proven at the persistent system boundary;
+2. every attempt uses disposable state that is reset or rolled back before and after that attempt; or
+3. every write is fully stubbed or intercepted, with evidence that no persistent boundary is reached.
 
-A disabled button, double-click guard, unique UI value, or loopback frontend
-alone does not prove replay safety. If none of the three boundaries is proven,
-do not replay the persistent write. Record V5 as `CANNOT_VERIFY` and return
-`PARTIAL/BLOCKED` under the completion matrix. A single normal run may still
-provide V1/V4 evidence, but it cannot substitute for V5 repetition.
+A disabled button, double-click guard, unique UI value, or loopback frontend alone does not prove replay safety. If none of the three boundaries is proven, do not replay the persistent write. Record V5 as `CANNOT_VERIFY` and return `PARTIAL/BLOCKED` under the completion matrix. A single normal run may still provide V1/V4 evidence, but it cannot substitute for V5 repetition.
 
 ## V6 — Independent Re-review
 
-The writer or debugger cannot approve its own output. Run `e2e-reviewer` through
-a distinct fresh-context, read-only reviewer actor or process that did not write
-or repair the candidate. Give it the candidate paths and the reviewer contract,
-not the writer's conclusions; require a recorded verdict and evidence.
-Inline self-review by the writer or debugger cannot produce `PASS`.
-Return `CANNOT_VERIFY` when the host cannot provide a separate reviewer context or
-cannot keep that reviewer read-only.
+The writer or debugger cannot approve its own output. Run `e2e-reviewer` through a distinct fresh-context, read-only reviewer actor or process that did not write or repair the candidate. Give it the candidate paths and the reviewer contract, not the writer's conclusions; require a recorded verdict and evidence. Inline self-review by the writer or debugger cannot produce `PASS`. Return `CANNOT_VERIFY` when the host cannot provide a separate reviewer context or cannot keep that reviewer read-only.
 
-Run this independent review after generation and again after any debugger
-repair. During repair, expected values, primary outcome, assertion target,
-scenario count, and request proof are immutable. The debugger may fix only
-evidenced mechanics such as locator, wait strategy, navigation, fixture, setup
-order, or test data. It must not delete/skip a test or weaken an assertion to
-manufacture green; return `NOFIX` when behavior and approved intent disagree.
+Run this independent review after generation and again after any debugger repair. During repair, expected values, primary outcome, assertion target, scenario count, and request proof are immutable. The debugger may fix only evidenced mechanics such as locator, wait strategy, navigation, fixture, setup order, or test data. It must not delete/skip a test or weaken an assertion to manufacture green; return `NOFIX` when behavior and approved intent disagree.
 
 ## Temporary-copy safety
 
@@ -165,6 +106,4 @@ Every applicable V-rule needs one of the four verdicts. Use `reason`, not invent
 | Applicable V4 or V5 is `ERROR` | `PARTIAL/BLOCKED` with the verifier error; never reinterpret it as product evidence |
 | Applicable V4 or V5 is `FAIL` | `BLOCKED` until the candidate is repaired and reverified |
 
-`CANNOT_VERIFY` and `ERROR` are honest outcomes, but they are not successful
-completion evidence for write proof or repeat/isolation. Never emit a
-`Complete` heading when an applicable V4 or V5 has either status.
+`CANNOT_VERIFY` and `ERROR` are honest outcomes, but they are not successful completion evidence for write proof or repeat/isolation. Never emit a `Complete` heading when an applicable V4 or V5 has either status.

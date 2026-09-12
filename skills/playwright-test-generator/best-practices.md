@@ -59,15 +59,9 @@ Condensed from [playwright.dev/docs/best-practices](https://playwright.dev/docs/
 | `page.click(selector)` / `page.fill(selector, v)` | Prefer locator-first actions (`page.locator(selector).click()`) — composable and reviewable. |
 | `expect()` or action without `await` | Breaks sequencing: the promise can race later steps, reject after the test ends, or surface as an unhandled rejection. |
 
-Raw `locator.count()` is not categorically wrong. Do not use one sampled count
-as the sole outcome assertion or readiness gate. It is acceptable for evidenced
-data collection or bounded iteration after the relevant state is ready, as long
-as a separate web-first assertion proves the user-visible postcondition.
+Raw `locator.count()` is not categorically wrong. Do not use one sampled count as the sole outcome assertion or readiness gate. It is acceptable for evidenced data collection or bounded iteration after the relevant state is ready, as long as a separate web-first assertion proves the user-visible postcondition.
 
-Use `toBeAttached()` when DOM attachment is itself the approved contract, such
-as a CSS-hidden panel that must persist in the DOM or a hydration marker. Do not
-substitute attachment for a promised visible state, or for removal when the
-contract requires detachment.
+Use `toBeAttached()` when DOM attachment is itself the approved contract, such as a CSS-hidden panel that must persist in the DOM or a hydration marker. Do not substitute attachment for a promised visible state, or for removal when the contract requires detachment.
 
 ## CI
 

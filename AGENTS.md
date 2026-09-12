@@ -22,12 +22,7 @@ The repo doubles as a Claude Code plugin (`.claude-plugin/`), a Codex plugin (`.
 [ ] /bin/bash -p scripts/ci/pre-push-security.sh # secrets and credential leak guard
 ```
 
-`ci-local.sh` is the single source of truth for the repository CI mirror
-(shell syntax, security, parity, evals, public skill surface, framework scope,
-link integrity, docs orphan check, language, and the E2E smell scan).
-`ci-local.sh` reaches the security gate through `review.sh`; the explicit
-`pre-push-security.sh` command above reruns that mandatory gate at the
-pre-push boundary. If you change a CI check, update `ci-local.sh` first.
+`ci-local.sh` is the single source of truth for the repository CI mirror (shell syntax, security, parity, evals, public skill surface, framework scope, link integrity, docs orphan check, language, and the E2E smell scan). `ci-local.sh` reaches the security gate through `review.sh`; the explicit `pre-push-security.sh` command above reruns that mandatory gate at the pre-push boundary. If you change a CI check, update `ci-local.sh` first.
 
 ## Directory Layout
 
@@ -123,15 +118,9 @@ python3 -m json.tool .claude-plugin/plugin.json
 python3 -m json.tool .claude-plugin/marketplace.json
 ```
 
-`ci-local.sh` runs the repository CI mirror, including the security gate
-through `review.sh`, and must be green before opening a PR. The direct
-pre-push security rerun, manual Codex smoke, standalone scanner example, and
-manifest JSON sanity commands above remain separate invocations.
+`ci-local.sh` runs the repository CI mirror, including the security gate through `review.sh`, and must be green before opening a PR. The direct pre-push security rerun, manual Codex smoke, standalone scanner example, and manifest JSON sanity commands above remain separate invocations.
 
-The hosted `main` workflow automatically reruns the pinned 36-cell browser
-fault matrix on a disposable runner. Pull-request and local CI remain
-dependency-free; other live browser/model evidence stays opt-in. Use these
-commands for an explicit local reproduction or the remaining live probes:
+The hosted `main` workflow automatically reruns the pinned 36-cell browser fault matrix on a disposable runner. Pull-request and local CI remain dependency-free; other live browser/model evidence stays opt-in. Use these commands for an explicit local reproduction or the remaining live probes:
 
 ```bash
 npm ci --prefix scripts/evals/fixtures
@@ -163,46 +152,7 @@ python3 scripts/evals/compare-reviewer-holdouts.py \
   --output benchmarks/reviewer-holdout-v3/reports/cross-host.json
 ```
 
-The committed labeled corpus is a public development holdout. Use an external
-`--cases` bundle for a sealed release run; do not describe a public corpus as hidden.
-Wrapper-free live runs are limited to the exact built-in corpus/protocol paths and
-pinned digests. Every external `--cases` bundle requires `--isolation-wrapper`,
-regardless of its self-declared visibility. Built-in public live runs use one
-start-of-run skill/corpus snapshot, fresh temporary
-workspaces, prompt-complete Codex/Claude calls with every model tool disabled,
-and pre/post digests of every staged
-path and original input; any mutation makes the report incomplete.
-Corpus workspace paths must not enter runner-controlled surfaces (`.skill/`,
-`.git/`, `.codex/`, `.claude/`, `.agents/`, `.omx/`, `AGENTS.md`, or
-`CLAUDE.md`). The staged `.skill/e2e-reviewer` digest is checked against the
-frozen evaluated skill before and after every call.
-The runner passes a strict environment allowlist. Codex receives only a private
-staged copy of the parent `auth.json`; Claude receives one validated
-`CLAUDE_CODE_OAUTH_TOKEN` snapshot but no ambient config directory or API key;
-custom executables receive no Codex/Claude credentials. Generic tokens, cloud
-credentials, proxy variables, and shell/runtime injection variables are removed.
-There is no built-in sealed sandbox. A non-public corpus requires
-`--isolation-wrapper <executable>` and an independently isolated release environment;
-the wrapper receives the runner command as its argument vector.
-The bundled harness records wrapper isolation as not proven and keeps the
-report `INCONCLUSIVE`; it never promotes a wrapped run to `PASS` merely
-because the wrapper is executable.
-The release protocol declares the host/model matrix and fixes the schedule and
-thresholds before execution. Local runner/model strings are provenance, not
-cryptographic attestation. Primary accuracy is computed on unique
-majority-stable labels and predictions; repeated totals also enforce a precision
-floor against rotating one-off false positives, but are not additional
-independent defects.
-A new protocol should declare `execution_identity.version_policy: "minimum"` and
-pin a floor rather than a single build. `exact` strands a protocol: v5 and v6
-both stopped being runnable from an ordinary checkout once the Claude Code
-installer rotated the pinned build out of the local install. Those builds are
-still served by the vendor channel and `--runner-path` accepts a manually
-re-fetched binary, so the loss is recoverable rather than permanent — but a
-protocol that needs a manual download before it can start is one nobody reruns.
-One identity per runner family across a matrix is enforced by the comparator, so
-`minimum` costs nothing that matters. Never change the policy of an already
-frozen protocol.
+The committed labeled corpus is a public development holdout. Use an external `--cases` bundle for a sealed release run; do not describe a public corpus as hidden. Wrapper-free live runs are limited to the exact built-in corpus/protocol paths and pinned digests. Every external `--cases` bundle requires `--isolation-wrapper`, regardless of its self-declared visibility. Built-in public live runs use one start-of-run skill/corpus snapshot, fresh temporary workspaces, prompt-complete Codex/Claude calls with every model tool disabled, and pre/post digests of every staged path and original input; any mutation makes the report incomplete. Corpus workspace paths must not enter runner-controlled surfaces (`.skill/`, `.git/`, `.codex/`, `.claude/`, `.agents/`, `.omx/`, `AGENTS.md`, or `CLAUDE.md`). The staged `.skill/e2e-reviewer` digest is checked against the frozen evaluated skill before and after every call. The runner passes a strict environment allowlist. Codex receives only a private staged copy of the parent `auth.json`; Claude receives one validated `CLAUDE_CODE_OAUTH_TOKEN` snapshot but no ambient config directory or API key; custom executables receive no Codex/Claude credentials. Generic tokens, cloud credentials, proxy variables, and shell/runtime injection variables are removed. There is no built-in sealed sandbox. A non-public corpus requires `--isolation-wrapper <executable>` and an independently isolated release environment; the wrapper receives the runner command as its argument vector. The bundled harness records wrapper isolation as not proven and keeps the report `INCONCLUSIVE`; it never promotes a wrapped run to `PASS` merely because the wrapper is executable. The release protocol declares the host/model matrix and fixes the schedule and thresholds before execution. Local runner/model strings are provenance, not cryptographic attestation. Primary accuracy is computed on unique majority-stable labels and predictions; repeated totals also enforce a precision floor against rotating one-off false positives, but are not additional independent defects. A new protocol should declare `execution_identity.version_policy: "minimum"` and pin a floor rather than a single build. `exact` strands a protocol: v5 and v6 both stopped being runnable from an ordinary checkout once the Claude Code installer rotated the pinned build out of the local install. Those builds are still served by the vendor channel and `--runner-path` accepts a manually re-fetched binary, so the loss is recoverable rather than permanent — but a protocol that needs a manual download before it can start is one nobody reruns. One identity per runner family across a matrix is enforced by the comparator, so `minimum` costs nothing that matters. Never change the policy of an already frozen protocol.
 
 ### Local dev workflow (testbed + auto-reinstall)
 
@@ -229,19 +179,7 @@ bash scripts/dev/install-claude-agents.sh
 bash scripts/dev/install-hooks.sh
 ```
 
-The reinstall script executes a verified `skills@1.5.21` artifact from an exact
-dependency lock, then replaces only the four e2e-skills as real copies. It
-verifies the canonical store, the requested Claude Code projection, and any
-Codex shadow before accepting the install; other installed skills are
-untouched. `--copy` mode snapshots the current working tree at invocation time,
-including uncommitted edits, so later source edits do not leak into the runtime
-until the next reinstall. The pre-push hook refreshes that snapshot from the
-working tree present at push time. `E2E_SKILLS_AGENTS` is restricted to the
-receiving surfaces this installer verifies (`claude-code` and `codex`; default:
-both). Named Codex-agent installation remains a separate global opt-in: run
-`scripts/dev/install-codex-agents.sh` directly, or set
-`E2E_SKILLS_INSTALL_CODEX_AGENTS=1` for an explicit combined reinstall; the
-default is `0`.
+The reinstall script executes a verified `skills@1.5.21` artifact from an exact dependency lock, then replaces only the four e2e-skills as real copies. It verifies the canonical store, the requested Claude Code projection, and any Codex shadow before accepting the install; other installed skills are untouched. `--copy` mode snapshots the current working tree at invocation time, including uncommitted edits, so later source edits do not leak into the runtime until the next reinstall. The pre-push hook refreshes that snapshot from the working tree present at push time. `E2E_SKILLS_AGENTS` is restricted to the receiving surfaces this installer verifies (`claude-code` and `codex`; default: both). Named Codex-agent installation remains a separate global opt-in: run `scripts/dev/install-codex-agents.sh` directly, or set `E2E_SKILLS_INSTALL_CODEX_AGENTS=1` for an explicit combined reinstall; the default is `0`.
 
 ## When You Edit Skills
 

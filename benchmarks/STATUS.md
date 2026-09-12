@@ -2,27 +2,13 @@
 
 This directory preserves the benchmark inputs, protocols, raw reports, and negative results behind the short conclusion in the project README.
 
-Historical raw archives may retain normalized host-path shapes, temporary
-workspace paths, process identifiers, invocation identifiers, and runner
-diagnostics when those bytes are bound by evidence hashes. Generic account
-components such as `/Users/user/` and `/home/user/` are placeholders, not a
-contributor identity. Treat those fields as local run provenance, not as setup
-instructions or evidence that another machine will use the same paths. New
-producers must redact credentials and normalize real account names before
-committing artifacts; do not rewrite a frozen archive merely to make its
-diagnostics look platform-neutral.
+Historical raw archives may retain normalized host-path shapes, temporary workspace paths, process identifiers, invocation identifiers, and runner diagnostics when those bytes are bound by evidence hashes. Generic account components such as `/Users/user/` and `/home/user/` are placeholders, not a contributor identity. Treat those fields as local run provenance, not as setup instructions or evidence that another machine will use the same paths. New producers must redact credentials and normalize real account names before committing artifacts; do not rewrite a frozen archive merely to make its diagnostics look platform-neutral.
 
 ## Current conclusion
 
 `e2e-skills` has useful behavior-backed development evidence and concrete open-source adoption, but it does **not** yet have a passing release-grade benchmark for generalized reviewer accuracy.
 
-- [Reviewer release v1](reviewer-release-v1/README.md) is the new from-scratch
-  release protocol: 120 externally held sealed cases, three paired arms, blinded
-  human adjudication, and explicit correctness, lift, stability, and user-helpfulness
-  gates. It has not been run and remains `NOT_RUN` / `INCONCLUSIVE`; without a
-  machine-verifiable signed isolation attestation it can produce development
-  evidence only. The current decision is `PROCEED_WITH_INFRASTRUCTURE_ONLY`
-  until those prerequisites exist.
+- [Reviewer release v1](reviewer-release-v1/README.md) is the new from-scratch release protocol: 120 externally held sealed cases, three paired arms, blinded human adjudication, and explicit correctness, lift, stability, and user-helpfulness gates. It has not been run and remains `NOT_RUN` / `INCONCLUSIVE`; without a machine-verifiable signed isolation attestation it can produce development evidence only. The current decision is `PROCEED_WITH_INFRASTRUCTURE_ONLY` until those prerequisites exist.
 
 - The browser fixture archive completed **36/36 cells (12 fault operators x 3 expected outcomes)**: for each operator, the strong test passed on correct behavior, the strong test failed after its paired application fault, and the deliberately weakened test stayed green against that fault.
 - The exact-artifact reviewer benchmark contains **12 proven false-green cases and 12 separate clean guards**. Ten fault cases are byte-identical operator mutants; two remove only answer-leading comments. It measures recognition of known fault shapes, not production accuracy.
@@ -64,31 +50,13 @@ The archives intentionally retain failed and superseded rounds instead of rewrit
 
 ## Execution identity drift
 
-A protocol pins the CLI builds it was cut against, and `require_explicit_runner_path`
-exists so a run names the build it used instead of whatever is currently on `PATH`.
-Both matter more than they look:
+A protocol pins the CLI builds it was cut against, and `require_explicit_runner_path` exists so a run names the build it used instead of whatever is currently on `PATH`. Both matter more than they look:
 
-- The installed `codex` entry point is a symlink to an auto-updating `current`
-  release. Between cutting v6 and running it, that pointer moved twice
-  (`0.146.0` to `0.147.0` to `0.149.0`), and Claude Code moved as well. Passing
-  the plain command name makes the recorded identity a race, not a pin.
-- Pass the versioned install path instead. Retained release directories are what
-  make an older pinned identity reproducible from an ordinary checkout; once the
-  installer rotates a build away, a protocol pinned to it stops being runnable
-  without manual recovery, which is what stalled v5's Claude host.
-- Local rotation has now stalled two protocols in a row. v5 pinned `Claude Code
-  2.1.220` and v6 pinned `2.1.239`; the Claude installer keeps roughly four
-  recent versions, so both pins left the local install within days of being cut.
-  Neither build was deleted at the source: the vendor release channel still
-  serves both, and the runner accepts an explicit `--runner-path`, so re-fetching
-  the pinned build completes the matrix. What exact-equality enforcement costs is
-  that the protocol cannot be run from a normal checkout the moment the local
-  build rotates, and it buys nothing the comparator's within-matrix identity
-  checks do not already provide.
+- The installed `codex` entry point is a symlink to an auto-updating `current` release. Between cutting v6 and running it, that pointer moved twice (`0.146.0` to `0.147.0` to `0.149.0`), and Claude Code moved as well. Passing the plain command name makes the recorded identity a race, not a pin.
+- Pass the versioned install path instead. Retained release directories are what make an older pinned identity reproducible from an ordinary checkout; once the installer rotates a build away, a protocol pinned to it stops being runnable without manual recovery, which is what stalled v5's Claude host.
+- Local rotation has now stalled two protocols in a row. v5 pinned `Claude Code 2.1.220` and v6 pinned `2.1.239`; the Claude installer keeps roughly four recent versions, so both pins left the local install within days of being cut. Neither build was deleted at the source: the vendor release channel still serves both, and the runner accepts an explicit `--runner-path`, so re-fetching the pinned build completes the matrix. What exact-equality enforcement costs is that the protocol cannot be run from a normal checkout the moment the local build rotates, and it buys nothing the comparator's within-matrix identity checks do not already provide.
 
-Treat a pinned identity as reproducible while that exact build is still
-addressable — on disk, or re-fetchable from the vendor channel, which is a
-convenience and not a guarantee. This is provenance, not attestation.
+Treat a pinned identity as reproducible while that exact build is still addressable — on disk, or re-fetchable from the vendor channel, which is a convenience and not a guarantee. This is provenance, not attestation.
 
 ## External research
 

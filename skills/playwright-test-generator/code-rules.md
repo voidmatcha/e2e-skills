@@ -9,28 +9,8 @@ Non-negotiable for every generated spec, regardless of project shape:
 - **`await` everything** — every `expect()` on a Locator and every Playwright action (`.click()`, `.fill()`, `.press()`, `.check()`, `.selectOption()`, `.hover()`). Missing `await` breaks test sequencing: the promise may still start, but its result is no longer ordered with the next step and a rejection may surface late as an unhandled rejection or after the test has ended.
 - **Web-first assertions only** — `toBeVisible()`, `toHaveText()`, `toHaveURL()`, etc. Never `expect(await el.isVisible()).toBe(true)` (resolves once, no retry).
 - **Control writes at their actual seam** — signup, login, payment, and other mutations must use the project's deterministic browser- or server-side test seam. A generated test never mutates real shared backend data.
-- **Freeze network identity before exploration** — use one approved DNS address
-  snapshot, pin every preflight peer, reject drift or mixed unsafe answers, and
-  use the bundled executable preflight helper for special-address
-  classification. The helper binds a root-owned absolute curl executable
-  instead of ambient `PATH`, records its hash, and rejects credential-bearing
-  or ambiguous queries before subprocess launch; ordinary non-secret route
-  parameters may remain. A protected local route may prove reachability with matching
-  peer-wide `401`/`403` or one non-followed same-origin redirect to a validated
-  login URL; authenticate only afterward under the same guards. Live remote
-  exploration is limited to an explicitly approved non-production target in an
-  externally isolated controlled browser harness with enforceable egress.
-  Shared, production, or unknown remote targets are snapshot-only.
-  Sanitize user-provided snapshots from those targets by removing credentials,
-  cookies, authentication/session tokens, sensitive query values, PII,
-  customer data, secrets, and internal hostnames as appropriate; use stable
-  placeholders and preserve only non-sensitive roles, names, labels, testids,
-  and structure.
-  Application-layer URL checks alone are not DNS-rebinding protection.
-- **Credential values stay outside the agent context** — the user sets
-  specifically named environment variables locally; the agent checks only
-  presence and non-empty status and never requests, reads, prints, echoes, logs,
-  or asks the user to paste a value.
+- **Freeze network identity before exploration** — use one approved DNS address snapshot, pin every preflight peer, reject drift or mixed unsafe answers, and use the bundled executable preflight helper for special-address classification. The helper binds a root-owned absolute curl executable instead of ambient `PATH`, records its hash, and rejects credential-bearing or ambiguous queries before subprocess launch; ordinary non-secret route parameters may remain. A protected local route may prove reachability with matching peer-wide `401`/`403` or one non-followed same-origin redirect to a validated login URL; authenticate only afterward under the same guards. Live remote exploration is limited to an explicitly approved non-production target in an externally isolated controlled browser harness with enforceable egress. Shared, production, or unknown remote targets are snapshot-only. Sanitize user-provided snapshots from those targets by removing credentials, cookies, authentication/session tokens, sensitive query values, PII, customer data, secrets, and internal hostnames as appropriate; use stable placeholders and preserve only non-sensitive roles, names, labels, testids, and structure. Application-layer URL checks alone are not DNS-rebinding protection.
+- **Credential values stay outside the agent context** — the user sets specifically named environment variables locally; the agent checks only presence and non-empty status and never requests, reads, prints, echoes, logs, or asks the user to paste a value.
 - **Gate hydration** — on SSR/SSG apps, gate the first interaction on a hydration signal, never `waitForTimeout()` after `goto`.
 - **One hard `expect()` per test** — a test built only from `expect.soft()` never fails early.
 
@@ -263,8 +243,7 @@ When a forbidden pattern is genuinely unavoidable, add `// JUSTIFIED: <reason>` 
 Patterns that accept `// JUSTIFIED:`:
 - `.nth()` / `.first()` / `.last()` — explain why positional selection is required
 - `{ force: true }` — explain why the element is not normally actionable
-- `{ timeout: 0 }` — explain why the assertion should share the enclosing test
-  deadline instead of having a finite local bound
+- `{ timeout: 0 }` — explain why the assertion should share the enclosing test deadline instead of having a finite local bound
 - `evaluate()` / `waitForFunction()` with raw DOM — explain why the framework API can't express the condition
 
 **No suppression exists for:** `test.only` / `it.only` (always remove before commit).

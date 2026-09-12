@@ -1681,7 +1681,7 @@ def main() -> None:
     assert "because the changed primary assertion reports the expected contradictory" in v2
     assert "setup, navigation, fixture, browser, timeout, worker, reporter" in v2
     assert "does not kill the mutant" in v2
-    assert "never\n`PASS`" in v2
+    assert "never `PASS`" in v2
     assert "transitional or eventually changing state" in v2
     assert "Return `CANNOT_VERIFY`" in v2
 
@@ -1695,7 +1695,7 @@ def main() -> None:
     assert "First require the unfaulted candidate to pass" in v3
     assert "different failure location or mismatch" in v3
     assert "it is never `PASS`" in v3
-    assert "not the `generator-faultkill-v1`\nplanning DSL" in v3
+    assert "not the `generator-faultkill-v1` planning DSL" in v3
 
     scenario_contract = section(
         text,
@@ -1705,7 +1705,7 @@ def main() -> None:
     assert "V3 expected failing assertion" in scenario_contract
     assert "V3 expected observable mismatch" in scenario_contract
 
-    assert "one sampled count\nas the sole outcome assertion" in best_practices
+    assert "one sampled count as the sole outcome assertion" in best_practices
     assert "separate web-first assertion proves the user-visible postcondition" in best_practices
     assert "CSS-hidden panel that must persist in the DOM" in best_practices
     assert "every repeated action is proven idempotent" in best_practices
@@ -1723,16 +1723,16 @@ def main() -> None:
         "## V6 — Independent Re-review",
     )
     assert "Before repeating a write-producing scenario" in v5
-    assert "idempotency key whose enforcement is proven at the\n   persistent system boundary" in v5
-    assert "reset or rolled back before and\n   after that attempt" in v5
+    assert "idempotency key whose enforcement is proven at the persistent system boundary" in v5
+    assert "reset or rolled back before and after that attempt" in v5
     assert "fully stubbed or intercepted" in v5
-    assert "no\n   persistent boundary is reached" in v5
+    assert "no persistent boundary is reached" in v5
     assert "double-click guard" in v5
-    assert "loopback frontend\nalone does not prove replay safety" in v5
+    assert "loopback frontend alone does not prove replay safety" in v5
     assert "do not replay the persistent write" in v5
     assert "Record V5 as `CANNOT_VERIFY`" in v5
-    assert "return\n`PARTIAL/BLOCKED`" in v5
-    assert "A single normal run may still\nprovide V1/V4 evidence" in v5
+    assert "return `PARTIAL/BLOCKED`" in v5
+    assert "A single normal run may still provide V1/V4 evidence" in v5
     assert "cannot substitute for V5 repetition" in v5
 
     capability_discovery = section(

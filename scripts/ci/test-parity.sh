@@ -295,7 +295,7 @@ restore "$file"
 # Case 2e: changelog scanner-budget prose must match the measured audit note.
 file="CHANGELOG.md"
 backup "$file"
-mutate "$file" $'with eighteen tokens\n  of headroom' $'with nineteen tokens\n  of headroom'
+mutate "$file" 'with eighteen tokens of headroom' 'with nineteen tokens of headroom'
 assert_fails \
   "Check 1d — changelog scanner headroom matches rule self-audit" \
   "scanner headroom must match docs/rule-self-audit.md"

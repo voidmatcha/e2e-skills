@@ -1,8 +1,6 @@
 # Codex remediation review, round 3
 
-This is development feedback, not benchmark scoring or blind adjudication.
-The reviewer was barred from the v3 labeled corpus, scored reports, oracle
-audit, and other model reviews.
+This is development feedback, not benchmark scoring or blind adjudication. The reviewer was barred from the v3 labeled corpus, scored reports, oracle audit, and other model reviews.
 
 ## Review progression
 
@@ -28,10 +26,6 @@ The intermediate reviews reproduced and drove fixes for:
 - multi-line comment handling before Promise array literals; and
 - string delimiters such as `**/*` and `https://` being mistaken for comments.
 
-The final reviewer independently reproduced the repaired custom-fixture,
-unit-fixture, Promise-array, URL, template, escaped-quote, and follow-on
-floating-action boundaries. It also reran the scanner regression, Bash syntax,
-ShellCheck, Python compilation, and `git diff --check`. Its final verdict was
-`APPROVE`, with no remaining confirmed defect in the bounded review scope.
+The final reviewer independently reproduced the repaired custom-fixture, unit-fixture, Promise-array, URL, template, escaped-quote, and follow-on floating-action boundaries. It also reran the scanner regression, Bash syntax, ShellCheck, Python compilation, and `git diff --check`. Its final verdict was `APPROVE`, with no remaining confirmed defect in the bounded review scope.
 
 Licensed under Apache-2.0 with the repository.

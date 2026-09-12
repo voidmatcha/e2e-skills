@@ -48,9 +48,7 @@ Selected merged PRs below are sorted roughly by repository recognition, not chro
 
 ## Closed without merge
 
-Every submission that closed without merging, with the reason it closed.
-They are kept here so the merged count above has a denominator: a merge
-rate is not a rate until the rejections are counted alongside it.
+Every submission that closed without merging, with the reason it closed. They are kept here so the merged count above has a denominator: a merge rate is not a rate until the rejections are counted alongside it.
 
 | Repository | ★ | PR | Why it closed | Anti-pattern family |
 |------------|----|----|---------------|---------------------|
@@ -62,8 +60,7 @@ rate is not a rate until the rejections are counted alongside it.
 
 ## Reviewer-informed maintenance
 
-These contributions came from E2E review but do not fix a false-green test, so
-they do not change the merged or in-review campaign counts above.
+These contributions came from E2E review but do not fix a false-green test, so they do not change the merged or in-review campaign counts above.
 
 | Repository | ★ | PR | Status | What it changes |
 |------------|----|----|--------|-----------------|

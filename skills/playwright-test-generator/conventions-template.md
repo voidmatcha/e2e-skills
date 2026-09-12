@@ -42,5 +42,4 @@ Auto-waiting web-first assertions only (`toBeVisible`, `toHaveURL`, `toHaveText`
 - Dev server: `<"auto-started via playwright webServer (reuses a running one)" | "must be running at <url> first">`
 
 ### Adding tests (AI agents start here)
-To add E2E coverage for feature X: copy the shape of `<seed spec path>`, add locators only via the Locator Mapping Table workflow, stub every write endpoint via `<mock helper>`, then run `<verify command>`.
-Deferred areas — do not auto-generate without sign-off: `<e.g. payment (external PG redirect), member-session deep flows>`.
+To add E2E coverage for feature X: copy the shape of `<seed spec path>`, add locators only via the Locator Mapping Table workflow, stub every write endpoint via `<mock helper>`, then run `<verify command>`. Deferred areas — do not auto-generate without sign-off: `<e.g. payment (external PG redirect), member-session deep flows>`.

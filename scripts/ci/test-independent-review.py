@@ -528,10 +528,10 @@ def assert_public_claude_auth_contract_matches_runner() -> None:
     docs = (ROOT / "docs/ai-reviewer-benchmark.md").read_text(encoding="utf-8")
     security = (ROOT / "SECURITY.md").read_text(encoding="utf-8")
     assert (
-        "Claude receives exactly one validated\n"
+        "Claude receives exactly one validated "
         "`CLAUDE_CODE_OAUTH_TOKEN` snapshot"
     ) in docs
-    assert "it does not inherit\n`CLAUDE_CONFIG_DIR`, `ANTHROPIC_API_KEY`" in docs
+    assert "it does not inherit `CLAUDE_CONFIG_DIR`, `ANTHROPIC_API_KEY`" in docs
     assert "No API-key, OAuth-token, or cloud-credential variables are forwarded" not in docs
     for text in (docs, security):
         assert "`CLAUDE_CODE_OAUTH_TOKEN` snapshot" in text

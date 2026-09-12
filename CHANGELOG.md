@@ -6,680 +6,189 @@
 
 ### Added
 
-- **A preregistered reviewer release protocol now defines what release-grade
-  evidence would require.** The new 120-case, three-arm design freezes
-  correctness, skill-lift, stability, and blinded helpfulness gates alongside
-  external-custody and signed-isolation requirements. It remains `NOT_RUN` /
-  `INCONCLUSIVE`; this release adds and validates infrastructure only and makes
-  no new accuracy claim. The model executor and human-adjudication operation
-  are not implemented.
-- **`e2e-reviewer` now constrains what a review says, not only what it
-  detects.** A clean result reports the clean verdict and its scope
-  limitations without volunteering selector, payload, coverage, style, or
-  general-improvement advice outside the 24-pattern catalog; limitations stay
-  in the evidence header rather than inside a finding or the summary, and may
-  not be relabelled as a non-blocking observation to get past that; each
-  finding carries one minimal evidence-backed fix; no alternative may reduce
-  what the test proves; and `always` is reserved for evidence proving an
-  unconditional outcome. Its contract test also asserts the detection surface
-  is unchanged, so tightening what the reviewer says cannot quietly shrink
-  what it finds. Eval 4 previously *required* coverage-gap suggestions on a
-  clean fixture, which contradicted the first rule.
+- **A preregistered reviewer release protocol now defines what release-grade evidence would require.** The new 120-case, three-arm design freezes correctness, skill-lift, stability, and blinded helpfulness gates alongside external-custody and signed-isolation requirements. It remains `NOT_RUN` / `INCONCLUSIVE`; this release adds and validates infrastructure only and makes no new accuracy claim. The model executor and human-adjudication operation are not implemented.
+- **`e2e-reviewer` now constrains what a review says, not only what it detects.** A clean result reports the clean verdict and its scope limitations without volunteering selector, payload, coverage, style, or general-improvement advice outside the 24-pattern catalog; limitations stay in the evidence header rather than inside a finding or the summary, and may not be relabelled as a non-blocking observation to get past that; each finding carries one minimal evidence-backed fix; no alternative may reduce what the test proves; and `always` is reserved for evidence proving an unconditional outcome. Its contract test also asserts the detection surface is unchanged, so tightening what the reviewer says cannot quietly shrink what it finds. Eval 4 previously *required* coverage-gap suggestions on a clean fixture, which contradicted the first rule.
+
 ### Changed
 
-- **Local CI uses four workers for its two process-heavy suites by default.**
-  The reviewer scanner still derives its worker count from available cores but
-  now caps it at four; the disposable parity suite also defaults to four
-  full-tree copies instead of six. Both retain their existing environment
-  overrides. This avoids oversubscribing a ten-core host: four scanner workers
-  completed faster than five in adjacent runs, and four parity workers passed
-  all 51 smoke checks after a six-worker run produced an incomplete disposable
-  snapshot.
-- **Playwright generation now uses a CLI-first, verification-first workflow.**
-  Browser exploration prefers a compatible project-local Playwright CLI
-  (`playwright cli`), then the `playwright-cli` command from an already-installed
-  standalone `@playwright/cli` package, `agent-browser`, an existing Playwright
-  MCP surface, and finally the restricted ARIA fallback. The deprecated
-  unscoped `playwright-cli` package is not used. Exploration remains separate
-  from execution: every candidate still runs with the repository's native
-  Playwright Test command and passes the applicable V1–V6 checks before it is
-  accepted. Playwright's first-party agents are optional planning aids behind
-  an admission gate, not competing final implementers.
-- **CLI-first is now documented as a portability default, not a universal
-  efficiency claim.** It avoids requiring MCP registration, while the evidence
-  ledger records Slack's environment-specific result where MCP used fewer
-  tokens and completed faster than its CLI harness.
-- **Generation now admits risk before producing code and expands from one
-  proven tracer.** Every scenario identifies its distinct user risk, why E2E
-  is the right layer, and how a later failure will be diagnosed. First-run,
-  three-or-more-scenario, authentication, write, fixture, and runner-sensitive
-  work marks a representative tracer; any requested expansion waits until that
-  scenario passes review and V1–V6.
-- **Local CI now fails earlier on stale reviewer evidence.** The evaluated-skill
-  digest check runs immediately after shell trust-boundary validation, while
-  the remaining inexpensive release contracts run before the multi-minute
-  review stage.
-- **Historical evidence now states its actual limits.** Six internally
-  contradictory rows in the archived 100-PR AI-reviewer pilot reduce its
-  model-judged issue denominator from 110 to 104, so the pilot is explicitly
-  invalidated as a current performance claim. Reviewer holdout v3 prose now
-  matches its committed report, and the v6 record distinguishes first-run
-  report loss from the later CLI-rotation rerun obstacle.
+- **Local CI uses four workers for its two process-heavy suites by default.** The reviewer scanner still derives its worker count from available cores but now caps it at four; the disposable parity suite also defaults to four full-tree copies instead of six. Both retain their existing environment overrides. This avoids oversubscribing a ten-core host: four scanner workers completed faster than five in adjacent runs, and four parity workers passed all 51 smoke checks after a six-worker run produced an incomplete disposable snapshot.
+- **Playwright generation now uses a CLI-first, verification-first workflow.** Browser exploration prefers a compatible project-local Playwright CLI (`playwright cli`), then the `playwright-cli` command from an already-installed standalone `@playwright/cli` package, `agent-browser`, an existing Playwright MCP surface, and finally the restricted ARIA fallback. The deprecated unscoped `playwright-cli` package is not used. Exploration remains separate from execution: every candidate still runs with the repository's native Playwright Test command and passes the applicable V1–V6 checks before it is accepted. Playwright's first-party agents are optional planning aids behind an admission gate, not competing final implementers.
+- **CLI-first is now documented as a portability default, not a universal efficiency claim.** It avoids requiring MCP registration, while the evidence ledger records Slack's environment-specific result where MCP used fewer tokens and completed faster than its CLI harness.
+- **Generation now admits risk before producing code and expands from one proven tracer.** Every scenario identifies its distinct user risk, why E2E is the right layer, and how a later failure will be diagnosed. First-run, three-or-more-scenario, authentication, write, fixture, and runner-sensitive work marks a representative tracer; any requested expansion waits until that scenario passes review and V1–V6.
+- **Local CI now fails earlier on stale reviewer evidence.** The evaluated-skill digest check runs immediately after shell trust-boundary validation, while the remaining inexpensive release contracts run before the multi-minute review stage.
+- **Historical evidence now states its actual limits.** Six internally contradictory rows in the archived 100-PR AI-reviewer pilot reduce its model-judged issue denominator from 110 to 104, so the pilot is explicitly invalidated as a current performance claim. Reviewer holdout v3 prose now matches its committed report, and the v6 record distinguishes first-run report loss from the later CLI-rotation rerun obstacle.
 
 ### Fixed
 
-- **Scanner limits now apply after exact file-scope checks and necessary
-  discovery guards.** Unrelated files and expressions no longer exhaust rules
-  that would reject them. Focused-test discovery retains computed member calls
-  without matching every array expression. The default limits and downstream
-  classifiers remain unchanged; any suppressed rule still makes the scan
-  incomplete.
-- **Scope analysis reuses one private worker and its lexical metadata.**
-  Ordered, depth-bounded import traversal and dependency validation remain in
-  place. Small ASCII sources can use an equivalent Python lexer; unsupported
-  inputs and explicit tool overrides retain the shell path. Ordinary pathname
-  operations avoid extra processes while preserving physical-root checks.
-- **Field-scan rendering requires completion evidence.** A process that exits
-  with an error, lacks a complete Summary, suppresses a rule, or has
-  unreconciled counts is incomplete. Partial counts remain visible as floors;
-  timeouts and fetch failures also make aggregate counts floors.
-- **`e2e-reviewer` `#3` error swallowing no longer confirms what it has not
-  proven.** Every `#3` hit — including a `.catch(` attached to the assertion
-  itself where the assertion returns a promise that can actually reject (a
-  web-first matcher, `toPass()`, or a matcher under `expect.poll`) — now
-  reports as `[LLM-TRIAGE]` rather than a confirmed P0 defect; the default
-  `E2E_SMELL_FAIL_ON=p0` gate does not exit non-zero for any `#3` hit. Use
-  `E2E_SMELL_FAIL_ON=p0-candidate` to also gate on these triage candidates.
-  Previously any assertion-looking token anywhere in the evidence window was
-  enough to confirm the finding, so a catch on a neighbouring statement, a
-  synchronous `expect(1).toBe(2)` whose `.catch()` never runs, and value
-  conversions such as `.toString()` were all reported as confirmed defects.
-  Swallowed actions, navigation, queries and readiness gates were already
-  `[LLM-TRIAGE]` and remain so. The pattern id and its documented P0 severity
-  are unchanged and no candidate is dropped.
-- **Field scan v1 evidence regenerated under its frozen conditions.**
-  10/12 pinned repositories completed with no suppressed rules; 2 timed out.
-  Complete scans reported 0 P0 hits. The generated ledger and documentation
-  preserve the historical correction to the over-promoted 294 `#3` hits and
-  distinguish unavailable results from zeroes.
-- **Field scan v1's designed 12-repository sample is now fully measured.**
-  v1's own selection rule set the sample at 12 repositories and its own
-  results self-declared "Incomplete: 10/12 repositories completed with no
-  suppressed rules" — `ever-co/ever-gauzy` and `open-mercato/open-mercato`,
-  the two rows in the entry above, never produced a measurement under the
-  frozen 30-minute budget. A separate,
-  disclosed [`benchmarks/field-scan-v1-extension`](benchmarks/field-scan-v1-extension/README.md)
-  protocol (no wall-clock cutoff; bounded per-rule hit/byte limits raised to
-  their documented hard ceilings, `E2E_SMELL_MAX_RULE_HITS=10000` /
-  `E2E_SMELL_MAX_RULE_BYTES=16777216`) completes both rows: natural scanner
-  exit (exit 0), zero suppressed rules, a reconciled hit count, unchanged
-  source fingerprint, 0 P0 hits, 0 model calls. The frozen
-  `benchmarks/field-scan-v1/ledger.json` from the entry above is unchanged;
-  this is scanner-completion evidence under a separate disclosed protocol,
-  not a rerun of the v1 pool and not reviewer-accuracy evidence.
-- **`#4i` no longer contradicts itself on where a locator may be proven.** The
-  Rule required the locator to be proven "somewhere in that test's execution
-  path" and the FLAG criterion fired only when it "appears nowhere else", but
-  the SKIP bullet credited proof appearing "earlier in the test or its
-  `beforeEach`". A locator proven *later* satisfied the Rule and the FLAG
-  criterion while failing the literal SKIP bullet, which produced false
-  positives on specs whose absence assertion was followed by `toHaveCount(1)`
-  and a real action on the same locator. Direction cannot matter: a later use
-  fails just as loudly when the selector rots. The SKIP wording is now
-  direction-neutral across `pattern-reference.md`, `SKILL.md`,
-  `grep-patterns.md`, and the scanner's triage comment; `absence-assertion.spec.ts`
-  gains a fifth case for the later-proof shape and eval 22 asserts it by line
-  alongside the unchanged true positive. No pattern id, title, severity, or
-  scanner regex changed.
-- **`#3` no longer exempts a swallowed gate because of where it sits.** The
-  rule excused "`try/catch` in non-assertion code (setup, teardown, optional
-  cleanup)", which covers a swallowed readiness `waitFor` inside an imported
-  helper and a swallowed response-status assertion inside a
-  `cy.wait().then()` callback. Both look ancillary; both decide whether the
-  assertion that follows means anything. The exemption is now stated by
-  consequence — exempt only when the swallowed failure cannot change what the
-  test proves — so best-effort teardown stays exempt while a wait, gate, or
-  status check a later assertion depends on does not. The contract also names
-  where a swallow can hide: any file the spec reaches, including an imported
-  helper or support module, a custom command, and callback bodies. Reviewing
-  the spec alone missed one of these entirely, so eval 39 requires the helper
-  file to be named. **A controlled ablation on a fresh corpus found no
-  measurable detection improvement from this wording** — 0.19 with the new text
-  against 0.17 with the old, one detection out of thirty-six, and no difference
-  at all for one of the two providers. Five of six fresh error-swallow
-  positives went undetected in both arms. The wording is more accurate than
-  what it replaced and is kept on that basis, but it is not a detection
-  improvement: a reviewer told to read imported helpers still does not read
-  them. The pilot harness that produced this measurement was removed in the
-  same release, so the number is a recorded observation rather than something
-  a reader can currently reproduce from this tree.
-- **The isolated eval runner no longer pins a stale CLI build.**
-  `trusted_runner_search_path()` lists `/opt/homebrew/bin` before
-  `~/.local/bin`, and resolution took the first `shutil.which()` match, so a
-  machine with several `codex` installs silently used the Homebrew build
-  (0.149.0) over a newer standalone one (0.152.1). Directory order is not a
-  freshness signal. Resolution now enumerates every trusted install,
-  deduplicates by resolved realpath, and selects by actual `--version` output;
-  a single install behaves exactly as before and an unparsable identity falls
-  back rather than guessing. No protocol floor was lowered and no identity is
-  forged — this only decides which installed binary is probed, never how its
-  version is validated. `run-behavioral-evals.py` delegated its duplicate
-  first-match lookup to the shared resolver, keeping its stricter
-  absolute-path requirement for custom runners.
-- **Two resolver tests were exercising a mechanism that no longer governs
-  lookup.** Both patched `shutil.which`, which the fixed resolver does not
-  call. `test-reviewer-holdout.sh` was the worse case: with `Path.is_file`
-  patched `True` it enumerated this machine's real `codex` installs and passed
-  by lexicographic accident. Both now drive resolution through a controlled
-  fake install in a temporary directory, so they are deterministic and
-  machine-independent, and their security intent — the ambient `PATH` must
-  never bind a credentialed runner, and resolution must fail closed with an
-  explicit `--runner-path` hint — is unchanged and still asserted.
-- **The manual Codex compatibility smoke now isolates user configuration and
-  exercises all four skills.** `--ignore-user-config` replaces the ineffective
-  empty MCP-table override, which current Codex merges with configured servers,
-  and ephemeral execution avoids retaining smoke sessions. A fifth check uses
-  the bounded Playwright artifact launcher to classify a committed selector
-  failure, closing the previous `playwright-debugger` coverage gap.
-- **Older Playwright releases no longer produce a false-positive CLI support
-  result.** The generator probes `npx --no-install playwright help cli` instead
-  of accepting `playwright cli --help` or `--version`, which Playwright 1.55 can
-  exit successfully while printing root help or the package version. A fresh
-  Zeppelin testbed confirmed that standalone Playwright CLI exploration can
-  coexist with a project-native Playwright 1.55.1 test run without using MCP.
-- **Release and pre-push verification now fail closed across two ambient-state
-  attacks.** The pinned isolation verifier receives a fixed system `PATH`
-  instead of the caller's search path, and both security scanners inspect the
-  Git index when an unstaged deletion removes a tracked working-tree file.
-- **Every debugger holdout input now contains an observed failure.** Two F13
-  swallowed-error fixtures previously showed passing attempts even though the
-  debugger skill is triggered by failed runs. They now carry explicit audit
-  failures, and the corpus contract rejects any future case without a failed
-  attempt while documenting its conservative six-axis stability rule.
+- **Scanner limits now apply after exact file-scope checks and necessary discovery guards.** Unrelated files and expressions no longer exhaust rules that would reject them. Focused-test discovery retains computed member calls without matching every array expression. The default limits and downstream classifiers remain unchanged; any suppressed rule still makes the scan incomplete.
+- **Scope analysis reuses one private worker and its lexical metadata.** Ordered, depth-bounded import traversal and dependency validation remain in place. Small ASCII sources can use an equivalent Python lexer; unsupported inputs and explicit tool overrides retain the shell path. Ordinary pathname operations avoid extra processes while preserving physical-root checks.
+- **Field-scan rendering requires completion evidence.** A process that exits with an error, lacks a complete Summary, suppresses a rule, or has unreconciled counts is incomplete. Partial counts remain visible as floors; timeouts and fetch failures also make aggregate counts floors.
+- **`e2e-reviewer` `#3` error swallowing no longer confirms what it has not proven.** Every `#3` hit — including a `.catch(` attached to the assertion itself where the assertion returns a promise that can actually reject (a web-first matcher, `toPass()`, or a matcher under `expect.poll`) — now reports as `[LLM-TRIAGE]` rather than a confirmed P0 defect; the default `E2E_SMELL_FAIL_ON=p0` gate does not exit non-zero for any `#3` hit. Use `E2E_SMELL_FAIL_ON=p0-candidate` to also gate on these triage candidates. Previously any assertion-looking token anywhere in the evidence window was enough to confirm the finding, so a catch on a neighbouring statement, a synchronous `expect(1).toBe(2)` whose `.catch()` never runs, and value conversions such as `.toString()` were all reported as confirmed defects. Swallowed actions, navigation, queries and readiness gates were already `[LLM-TRIAGE]` and remain so. The pattern id and its documented P0 severity are unchanged and no candidate is dropped.
+- **Field scan v1 evidence regenerated under its frozen conditions.** 10/12 pinned repositories completed with no suppressed rules; 2 timed out. Complete scans reported 0 P0 hits. The generated ledger and documentation preserve the historical correction to the over-promoted 294 `#3` hits and distinguish unavailable results from zeroes.
+- **Field scan v1's designed 12-repository sample is now fully measured.** v1's own selection rule set the sample at 12 repositories and its own results self-declared "Incomplete: 10/12 repositories completed with no suppressed rules" — `ever-co/ever-gauzy` and `open-mercato/open-mercato`, the two rows in the entry above, never produced a measurement under the frozen 30-minute budget. A separate, disclosed [`benchmarks/field-scan-v1-extension`](benchmarks/field-scan-v1-extension/README.md) protocol (no wall-clock cutoff; bounded per-rule hit/byte limits raised to their documented hard ceilings, `E2E_SMELL_MAX_RULE_HITS=10000` / `E2E_SMELL_MAX_RULE_BYTES=16777216`) completes both rows: natural scanner exit (exit 0), zero suppressed rules, a reconciled hit count, unchanged source fingerprint, 0 P0 hits, 0 model calls. The frozen `benchmarks/field-scan-v1/ledger.json` from the entry above is unchanged; this is scanner-completion evidence under a separate disclosed protocol, not a rerun of the v1 pool and not reviewer-accuracy evidence.
+- **`#4i` no longer contradicts itself on where a locator may be proven.** The Rule required the locator to be proven "somewhere in that test's execution path" and the FLAG criterion fired only when it "appears nowhere else", but the SKIP bullet credited proof appearing "earlier in the test or its `beforeEach`". A locator proven *later* satisfied the Rule and the FLAG criterion while failing the literal SKIP bullet, which produced false positives on specs whose absence assertion was followed by `toHaveCount(1)` and a real action on the same locator. Direction cannot matter: a later use fails just as loudly when the selector rots. The SKIP wording is now direction-neutral across `pattern-reference.md`, `SKILL.md`, `grep-patterns.md`, and the scanner's triage comment; `absence-assertion.spec.ts` gains a fifth case for the later-proof shape and eval 22 asserts it by line alongside the unchanged true positive. No pattern id, title, severity, or scanner regex changed.
+- **`#3` no longer exempts a swallowed gate because of where it sits.** The rule excused "`try/catch` in non-assertion code (setup, teardown, optional cleanup)", which covers a swallowed readiness `waitFor` inside an imported helper and a swallowed response-status assertion inside a `cy.wait().then()` callback. Both look ancillary; both decide whether the assertion that follows means anything. The exemption is now stated by consequence — exempt only when the swallowed failure cannot change what the test proves — so best-effort teardown stays exempt while a wait, gate, or status check a later assertion depends on does not. The contract also names where a swallow can hide: any file the spec reaches, including an imported helper or support module, a custom command, and callback bodies. Reviewing the spec alone missed one of these entirely, so eval 39 requires the helper file to be named. **A controlled ablation on a fresh corpus found no measurable detection improvement from this wording** — 0.19 with the new text against 0.17 with the old, one detection out of thirty-six, and no difference at all for one of the two providers. Five of six fresh error-swallow positives went undetected in both arms. The wording is more accurate than what it replaced and is kept on that basis, but it is not a detection improvement: a reviewer told to read imported helpers still does not read them. The pilot harness that produced this measurement was removed in the same release, so the number is a recorded observation rather than something a reader can currently reproduce from this tree.
+- **The isolated eval runner no longer pins a stale CLI build.** `trusted_runner_search_path()` lists `/opt/homebrew/bin` before `~/.local/bin`, and resolution took the first `shutil.which()` match, so a machine with several `codex` installs silently used the Homebrew build (0.149.0) over a newer standalone one (0.152.1). Directory order is not a freshness signal. Resolution now enumerates every trusted install, deduplicates by resolved realpath, and selects by actual `--version` output; a single install behaves exactly as before and an unparsable identity falls back rather than guessing. No protocol floor was lowered and no identity is forged — this only decides which installed binary is probed, never how its version is validated. `run-behavioral-evals.py` delegated its duplicate first-match lookup to the shared resolver, keeping its stricter absolute-path requirement for custom runners.
+- **Two resolver tests were exercising a mechanism that no longer governs lookup.** Both patched `shutil.which`, which the fixed resolver does not call. `test-reviewer-holdout.sh` was the worse case: with `Path.is_file` patched `True` it enumerated this machine's real `codex` installs and passed by lexicographic accident. Both now drive resolution through a controlled fake install in a temporary directory, so they are deterministic and machine-independent, and their security intent — the ambient `PATH` must never bind a credentialed runner, and resolution must fail closed with an explicit `--runner-path` hint — is unchanged and still asserted.
+- **The manual Codex compatibility smoke now isolates user configuration and exercises all four skills.** `--ignore-user-config` replaces the ineffective empty MCP-table override, which current Codex merges with configured servers, and ephemeral execution avoids retaining smoke sessions. A fifth check uses the bounded Playwright artifact launcher to classify a committed selector failure, closing the previous `playwright-debugger` coverage gap.
+- **Older Playwright releases no longer produce a false-positive CLI support result.** The generator probes `npx --no-install playwright help cli` instead of accepting `playwright cli --help` or `--version`, which Playwright 1.55 can exit successfully while printing root help or the package version. A fresh Zeppelin testbed confirmed that standalone Playwright CLI exploration can coexist with a project-native Playwright 1.55.1 test run without using MCP.
+- **Release and pre-push verification now fail closed across two ambient-state attacks.** The pinned isolation verifier receives a fixed system `PATH` instead of the caller's search path, and both security scanners inspect the Git index when an unstaged deletion removes a tracked working-tree file.
+- **Every debugger holdout input now contains an observed failure.** Two F13 swallowed-error fixtures previously showed passing attempts even though the debugger skill is triggered by failed runs. They now carry explicit audit failures, and the corpus contract rejects any future case without a failed attempt while documenting its conservative six-axis stability rule.
 
 ## [1.15.1] - 2026-09-02
 
 ### Added
 
-- **The reviewer now covers assertion loops over unproven collections (`#4k`).**
-  It triages Playwright `locator.all()` loops and Cypress `.each()` callbacks
-  whose assertions can execute zero times, while preserving guards for explicit
-  non-empty and collection-size proofs.
-- **The reviewer now identifies unexplained test skips (`#11c`).** Bare
-  `skip`/`fixme` calls are P2 candidates, while conditional skips, reason
-  strings, ticket/date comments, and `JUSTIFIED` markers remain intentional.
-- **A public workflow for reviewing AI-generated Playwright and Cypress tests.**
-  The guide includes copyable prompts, a false-green before/after example,
-  deterministic scanner output, the semantic review evidence fields, and
-  direct FAQ answers.
-- **Playwright debugger guidance for the supported trace CLI.** On trusted
-  projects using Playwright 1.59 or newer, the debugger can use `trace actions`,
-  snapshot evaluation, pass/fail trace comparison, and multi-trace failure
-  clustering after the execution gate passes.
+- **The reviewer now covers assertion loops over unproven collections (`#4k`).** It triages Playwright `locator.all()` loops and Cypress `.each()` callbacks whose assertions can execute zero times, while preserving guards for explicit non-empty and collection-size proofs.
+- **The reviewer now identifies unexplained test skips (`#11c`).** Bare `skip`/`fixme` calls are P2 candidates, while conditional skips, reason strings, ticket/date comments, and `JUSTIFIED` markers remain intentional.
+- **A public workflow for reviewing AI-generated Playwright and Cypress tests.** The guide includes copyable prompts, a false-green before/after example, deterministic scanner output, the semantic review evidence fields, and direct FAQ answers.
+- **Playwright debugger guidance for the supported trace CLI.** On trusted projects using Playwright 1.59 or newer, the debugger can use `trace actions`, snapshot evaluation, pass/fail trace comparison, and multi-trace failure clustering after the execution gate passes.
 
 ### Changed
 
-- **README discovery now leads with AI-generated-test review and false-green
-  proof.** It links the public workflow, explains how the bundle complements
-  Playwright Test Agents and Cypress AI Skills, and records the current Kimi
-  listing and skills.sh install milestone without treating either as accuracy
-  evidence.
-- **Local CI now reports stage timings and avoids duplicate validation work.**
-  The parity smoke suite no longer reruns an unchanged security gate for every
-  ordinary mutation, and the reference-tokenizer unit suites no longer rebuild
-  three identical standalone wrapper environments after already exercising
-  those wrappers under adversarial conditions. Security-specific mutations and
-  the canonical pre-push gate still execute the real security script.
-- **Scanner contract runs report their slowest checks.** The worker ceiling is
-  unchanged after a higher concurrency setting measured slower on the current
-  host.
+- **README discovery now leads with AI-generated-test review and false-green proof.** It links the public workflow, explains how the bundle complements Playwright Test Agents and Cypress AI Skills, and records the current Kimi listing and skills.sh install milestone without treating either as accuracy evidence.
+- **Local CI now reports stage timings and avoids duplicate validation work.** The parity smoke suite no longer reruns an unchanged security gate for every ordinary mutation, and the reference-tokenizer unit suites no longer rebuild three identical standalone wrapper environments after already exercising those wrappers under adversarial conditions. Security-specific mutations and the canonical pre-push gate still execute the real security script.
+- **Scanner contract runs report their slowest checks.** The worker ceiling is unchanged after a higher concurrency setting measured slower on the current host.
 
 ### Fixed
 
-- **`test-fixture-faults.py` no longer fails under CPU contention.** Two
-  process-cleanup cases gave the parent 300ms to start a Python interpreter,
-  spawn a nested one, and flush a line before the timeout fired, so a loaded
-  machine failed the output assertion instead of a real regression. Every
-  interval is rescaled and the ordering the test proves is unchanged.
-- **Behavioral process-cleanup checks no longer race their PID fixtures.** The
-  two live process-group cases now allow enough startup time for a loaded host
-  to launch Bash, spawn the nested process, and flush its PID before timeout;
-  the TERM/KILL cleanup assertions and their failure conditions are unchanged.
-- **`manifest_phrase_contract.py` is now `reviewer_taxonomy_contract.py`.** It
-  stopped holding manifest phrases when 1.15.0 moved the taxonomy out of the
-  package descriptions; the name described what it no longer did.
+- **`test-fixture-faults.py` no longer fails under CPU contention.** Two process-cleanup cases gave the parent 300ms to start a Python interpreter, spawn a nested one, and flush a line before the timeout fired, so a loaded machine failed the output assertion instead of a real regression. Every interval is rescaled and the ordering the test proves is unchanged.
+- **Behavioral process-cleanup checks no longer race their PID fixtures.** The two live process-group cases now allow enough startup time for a loaded host to launch Bash, spawn the nested process, and flush its PID before timeout; the TERM/KILL cleanup assertions and their failure conditions are unchanged.
+- **`manifest_phrase_contract.py` is now `reviewer_taxonomy_contract.py`.** It stopped holding manifest phrases when 1.15.0 moved the taxonomy out of the package descriptions; the name described what it no longer did.
 
-- **Corrected a false claim about why holdout v5 and v6 stalled.** The 1.14.0
-  notes, `benchmarks/STATUS.md`, `benchmarks/reviewer-holdout-v6/README.md`,
-  and `AGENTS.md` all said the pinned Claude Code builds had been pruned and the
-  protocols were "permanently unrunnable". Only the local installer rotated
-  those builds away. The vendor release channel still serves both `2.1.220` and
-  `2.1.239`, and the runner accepts an explicit `--runner-path`, so re-fetching
-  a pinned build completes the matrix. The `minimum` version policy is unchanged
-  and still worth having — a protocol that needs a manual download before it can
-  start is one nobody reruns — but its stated justification was wrong and is now
-  accurate.
-- **Restored the live-exploration scope to the package descriptions.** The
-  1.15.0 shortening dropped "live exploration only on local/disposable or
-  externally isolated approved non-production targets" from all three manifests,
-  and narrowed the CI guard to the generator's trigger surfaces in the same
-  commit, so nothing caught it. A user reading the marketplace listing had no
-  indication the generator drives a real browser. The phrase is back and the
-  guard now covers the package descriptions again.
-- **Reports no longer claim an identity policy that was never applied.**
-  `execution_identity_policy` was written as `"exact"` even when no identity
-  check ran — a custom runner, or a protocol without `execution_identity`. It is
-  now `None` in that case, so a provenance artifact stops asserting a check the
-  harness did not make.
-- **The Quick Reference order check no longer hardcodes the pattern set.** It
-  derived the expected order from a literal `1..23 + "3b"`, so adding pattern
-  `#24` in the correct position failed with a row-order error. The order is now
-  derived from the IDs present, and `AGENTS.md` records that `review.sh` needs no
-  edit when a pattern is added.
-- **Documented the verified source of the skill-manifest limits.** The 64/1024
-  caps in `skill_metadata_contract.py` carried no citation. They are correct,
-  confirmed against `openai/codex` `rust-v0.151.0` (`MAX_NAME_LEN`,
-  `MAX_DESCRIPTION_LEN`), and the module now records that an over-length field is
-  dropped rather than truncated, and that Codex counts Unicode characters after
-  collapsing whitespace.
-- **Corrected the v6 archive's account of `full-opus`.** The README said it
-  never ran. `opus.log` shows it completed all 60 scheduled runs with zero
-  infrastructure errors; only its report file was lost. The conclusion that no
-  usable `full`-arm report survives is unchanged, because the per-run records
-  the primary metric needs are gone, but the stated fact was false and
-  contradicted the same file's own list of lost reports.
+- **Corrected a false claim about why holdout v5 and v6 stalled.** The 1.14.0 notes, `benchmarks/STATUS.md`, `benchmarks/reviewer-holdout-v6/README.md`, and `AGENTS.md` all said the pinned Claude Code builds had been pruned and the protocols were "permanently unrunnable". Only the local installer rotated those builds away. The vendor release channel still serves both `2.1.220` and `2.1.239`, and the runner accepts an explicit `--runner-path`, so re-fetching a pinned build completes the matrix. The `minimum` version policy is unchanged and still worth having — a protocol that needs a manual download before it can start is one nobody reruns — but its stated justification was wrong and is now accurate.
+- **Restored the live-exploration scope to the package descriptions.** The 1.15.0 shortening dropped "live exploration only on local/disposable or externally isolated approved non-production targets" from all three manifests, and narrowed the CI guard to the generator's trigger surfaces in the same commit, so nothing caught it. A user reading the marketplace listing had no indication the generator drives a real browser. The phrase is back and the guard now covers the package descriptions again.
+- **Reports no longer claim an identity policy that was never applied.** `execution_identity_policy` was written as `"exact"` even when no identity check ran — a custom runner, or a protocol without `execution_identity`. It is now `None` in that case, so a provenance artifact stops asserting a check the harness did not make.
+- **The Quick Reference order check no longer hardcodes the pattern set.** It derived the expected order from a literal `1..23 + "3b"`, so adding pattern `#24` in the correct position failed with a row-order error. The order is now derived from the IDs present, and `AGENTS.md` records that `review.sh` needs no edit when a pattern is added.
+- **Documented the verified source of the skill-manifest limits.** The 64/1024 caps in `skill_metadata_contract.py` carried no citation. They are correct, confirmed against `openai/codex` `rust-v0.151.0` (`MAX_NAME_LEN`, `MAX_DESCRIPTION_LEN`), and the module now records that an over-length field is dropped rather than truncated, and that Codex counts Unicode characters after collapsing whitespace.
+- **Corrected the v6 archive's account of `full-opus`.** The README said it never ran. `opus.log` shows it completed all 60 scheduled runs with zero infrastructure errors; only its report file was lost. The conclusion that no usable `full`-arm report survives is unchanged, because the per-run records the primary metric needs are gone, but the stated fact was false and contradicted the same file's own list of lost reports.
 
 ## [1.15.0] - 2026-08-30
 
 ### Added
 
-- **CI enforces the Codex directory submission rules.** `validate_codex.py` now
-  checks the manifest description against a 1024-character limit, the listing
-  strings against their 30-character limits, `longDescription` against 4000,
-  the developer name against 80, and `category` against the supported
-  thirteen-value taxonomy. The repository was violating two of these without
-  any surface reporting it: `.codex-plugin/plugin.json` declared the category
-  `Testing`, which is not a supported value, and a 57-character
-  `shortDescription` against a 30-character limit. Both are fixed; the category
-  is now `Developer Tools`.
-- **A balanced trigger fixture for every public skill.** Each of the four
-  skills ships `evals/trigger-evals.json` with sixteen cases, eight that must
-  trigger the skill and eight adjacent negatives that must not — a Playwright
-  report with a TimeoutError belongs to the debugger, not the reviewer, and a
-  request to write new coverage belongs to the generator. `review.sh` validates
-  structure, unique kebab-case ids, realistic multi-word queries, and the
-  per-label floor. It never calls a model; measured trigger rates stay outside
-  ordinary CI.
+- **CI enforces the Codex directory submission rules.** `validate_codex.py` now checks the manifest description against a 1024-character limit, the listing strings against their 30-character limits, `longDescription` against 4000, the developer name against 80, and `category` against the supported thirteen-value taxonomy. The repository was violating two of these without any surface reporting it: `.codex-plugin/plugin.json` declared the category `Testing`, which is not a supported value, and a 57-character `shortDescription` against a 30-character limit. Both are fixed; the category is now `Developer Tools`.
+- **A balanced trigger fixture for every public skill.** Each of the four skills ships `evals/trigger-evals.json` with sixteen cases, eight that must trigger the skill and eight adjacent negatives that must not — a Playwright report with a TimeoutError belongs to the debugger, not the reviewer, and a request to write new coverage belongs to the generator. `review.sh` validates structure, unique kebab-case ids, realistic multi-word queries, and the per-label floor. It never calls a model; measured trigger rates stay outside ordinary CI.
 
 ### Changed
 
-- **Manifest descriptions stop storing the reviewer taxonomy.** All 24 pattern
-  phrases previously had to appear in order inside three manifest descriptions,
-  which made every pattern rename a four-file edit and pushed the description
-  to 1138 characters — past the limit for directory submission. The canonical
-  order now lives in `scripts/ci/lib/manifest_phrase_contract.py` alone, and
-  `review.sh` still checks all 24 ids, titles, order, and severities against
-  the `e2e-reviewer/SKILL.md` Quick Reference. Nothing was dropped from
-  enforcement; it moved from prose to data. Keyword discovery is unaffected —
-  the 52-entry `keywords` array and the 818-character `longDescription` still
-  carry the pattern vocabulary.
+- **Manifest descriptions stop storing the reviewer taxonomy.** All 24 pattern phrases previously had to appear in order inside three manifest descriptions, which made every pattern rename a four-file edit and pushed the description to 1138 characters — past the limit for directory submission. The canonical order now lives in `scripts/ci/lib/manifest_phrase_contract.py` alone, and `review.sh` still checks all 24 ids, titles, order, and severities against the `e2e-reviewer/SKILL.md` Quick Reference. Nothing was dropped from enforcement; it moved from prose to data. Keyword discovery is unaffected — the 52-entry `keywords` array and the 818-character `longDescription` still carry the pattern vocabulary.
 
 ## [1.14.0] - 2026-08-30
 
 ### Added
 
-- **Reviewer holdout protocol v6.** v5 preregistered `Claude Code 2.1.220`, that
-  build is no longer retained, and v5 requires a complete three-host matrix, so
-  v5 can never finish. v6 reuses the v5 corpus byte-for-byte — its case and
-  corpus digests are identical to v5's — and changes only the frozen CLI
-  identity, which is what v5's own freeze policy prescribes for any later edit.
-  No v5 result had been produced, so nothing is being refitted after the fact.
-  The runner's frozen execution identity moved from a v5-only literal to a
-  per-protocol table, so each version stays pinned to its own builds.
-- **A `minimum` execution-identity version policy.** A protocol's
-  `execution_identity` may now declare `version_policy`, either `exact`
-  (default) or `minimum`. Under `minimum` the runner accepts the preregistered
-  build or any later one and records the resolved identity plus an
-  `execution_identity_match` of `exact` or `minimum-satisfied` in the report, so
-  drift is written down rather than silent. v5 and v6 remain `exact`; their
-  frozen JSON and pinned digests are untouched.
+- **Reviewer holdout protocol v6.** v5 preregistered `Claude Code 2.1.220`, that build is no longer retained, and v5 requires a complete three-host matrix, so v5 can never finish. v6 reuses the v5 corpus byte-for-byte — its case and corpus digests are identical to v5's — and changes only the frozen CLI identity, which is what v5's own freeze policy prescribes for any later edit. No v5 result had been produced, so nothing is being refitted after the fact. The runner's frozen execution identity moved from a v5-only literal to a per-protocol table, so each version stays pinned to its own builds.
+- **A `minimum` execution-identity version policy.** A protocol's `execution_identity` may now declare `version_policy`, either `exact` (default) or `minimum`. Under `minimum` the runner accepts the preregistered build or any later one and records the resolved identity plus an `execution_identity_match` of `exact` or `minimum-satisfied` in the report, so drift is written down rather than silent. v5 and v6 remain `exact`; their frozen JSON and pinned digests are untouched.
 
 ### Fixed
 
-- **The four `agents/openai.yaml` files were inert.** codex-cli reads that file
-  for every discovered skill, plugin-installed or not, but its parser accepts
-  only `interface`, `policy`, and `dependencies`. The repo shipped `name`,
-  `description`, `metadata`, and a top-level `allow_implicit_invocation`, none
-  of which that struct has — and the loader warns then falls back to defaults
-  instead of failing, so all four skills silently had no display name, no short
-  description, and no default prompt in the Codex UI. They now use the real
-  schema and pass the validator bundled with codex-cli. `allow_implicit_invocation`
-  moves under `policy`, where it is actually read; its default is `true`, so
-  behavior is unchanged either way. The trigger surface was never this file — it
-  is SKILL.md frontmatter, which already carries longer text.
-  `playwright-test-generator` keeps its live-exploration scope phrase, moved from
-  the discarded `description` into `interface.default_prompt` so the V5-T2 safety
-  contract stays on a surface that is actually read. The repo's own fail-closed
-  parser, duplicated in `review.sh` and `pre-push-security.sh`, was rewritten for
-  the real schema; the directory binding that the removed `name` field used to
-  provide is now the `$<skill>` invocation required in each `default_prompt`.
+- **The four `agents/openai.yaml` files were inert.** codex-cli reads that file for every discovered skill, plugin-installed or not, but its parser accepts only `interface`, `policy`, and `dependencies`. The repo shipped `name`, `description`, `metadata`, and a top-level `allow_implicit_invocation`, none of which that struct has — and the loader warns then falls back to defaults instead of failing, so all four skills silently had no display name, no short description, and no default prompt in the Codex UI. They now use the real schema and pass the validator bundled with codex-cli. `allow_implicit_invocation` moves under `policy`, where it is actually read; its default is `true`, so behavior is unchanged either way. The trigger surface was never this file — it is SKILL.md frontmatter, which already carries longer text. `playwright-test-generator` keeps its live-exploration scope phrase, moved from the discarded `description` into `interface.default_prompt` so the V5-T2 safety contract stays on a surface that is actually read. The repo's own fail-closed parser, duplicated in `review.sh` and `pre-push-security.sh`, was rewritten for the real schema; the directory binding that the removed `name` field used to provide is now the `$<skill>` invocation required in each `default_prompt`.
 
-- **Exact CLI pinning stranded two protocols.** v5 pinned `Claude Code 2.1.220`
-  and v6 pinned `2.1.239`; the installer keeps only a few recent builds, so both
-  pins left the local install before their matrix was finished. The property an
-  arm comparison actually needs, one identity across every cell of one matrix,
-  is already enforced by `compare-reviewer-holdouts.py`
-  (`arm_runner_identity_mismatch`, `arm_runner_binding_mismatch`) together with
-  the 12-hour matrix window, and never depended on the cut-time constant. New
-  protocols can now pin a floor instead of a single build the installer will
-  rotate away.
-- **Reviewer holdout v6 archived as incomplete.** Five of nine cells survived,
-  two of them execution-complete. `benchmarks/reviewer-holdout-v6/` records the
-  reports, the driver logs, why the run stalled, and which single arm contrast
-  the partial data actually supports. No v6 accuracy or skill-lift result is
-  claimed.
+- **Exact CLI pinning stranded two protocols.** v5 pinned `Claude Code 2.1.220` and v6 pinned `2.1.239`; the installer keeps only a few recent builds, so both pins left the local install before their matrix was finished. The property an arm comparison actually needs, one identity across every cell of one matrix, is already enforced by `compare-reviewer-holdouts.py` (`arm_runner_identity_mismatch`, `arm_runner_binding_mismatch`) together with the 12-hour matrix window, and never depended on the cut-time constant. New protocols can now pin a floor instead of a single build the installer will rotate away.
+- **Reviewer holdout v6 archived as incomplete.** Five of nine cells survived, two of them execution-complete. `benchmarks/reviewer-holdout-v6/` records the reports, the driver logs, why the run stalled, and which single arm contrast the partial data actually supports. No v6 accuracy or skill-lift result is claimed.
 
-- `ci-local.sh` drops inherited `__pycache__` trees before verification runs.
-  Python invalidates a cached `.pyc` by source mtime, which misses an edit made
-  in the same second as the cache, so an inherited cache could serve retired
-  pinned digests to the test whose job is to catch exactly that. Observed: the
-  pinned-input check reported a protocol digest that no longer existed anywhere
-  in the repository.
+- `ci-local.sh` drops inherited `__pycache__` trees before verification runs. Python invalidates a cached `.pyc` by source mtime, which misses an edit made in the same second as the cache, so an inherited cache could serve retired pinned digests to the test whose job is to catch exactly that. Observed: the pinned-input check reported a protocol digest that no longer existed anywhere in the repository.
 
 ## [1.13.0] - 2026-08-17
 
 ### Added
 
-- **The E2E reviewer now supports PR/diff-scoped reviews.** Changed
-  Playwright and Cypress E2E artifacts are the primary review scope, unchanged
-  files are context, and findings are classified as introduced, worsened, or
-  pre-existing. Pre-existing findings are advisory and non-blocking. A Review
-  Scope and Evidence header records the validation limits for each diff-scoped
-  review. Diff mode invokes the scanner once per changed artifact, and the
-  scanner rejects multiple roots instead of silently ignoring extra paths.
-  Full-mode reviews remain available as the default when no PR or diff scope is
-  supplied.
-- **`scripts/dev/install-claude-agents.sh` installs the two subagents for Claude
-  Code at user level.** The subagents ship inside the plugin, so a `skills` CLI
-  install never registered them, and installing the plugin just to obtain them
-  loads a second copy of all four skill descriptions into every session because
-  plugin skills are namespaced rather than deduplicated against same-named
-  personal skills. The installer mirrors the Codex one: a staged transaction
-  with rollback, refusal to write through a symlink or over a user-authored
-  agent of the same name, and frontmatter `name:` discovery validation.
-  `scripts/ci/test-claude-agents.sh` covers those guards and runs in local CI.
+- **The E2E reviewer now supports PR/diff-scoped reviews.** Changed Playwright and Cypress E2E artifacts are the primary review scope, unchanged files are context, and findings are classified as introduced, worsened, or pre-existing. Pre-existing findings are advisory and non-blocking. A Review Scope and Evidence header records the validation limits for each diff-scoped review. Diff mode invokes the scanner once per changed artifact, and the scanner rejects multiple roots instead of silently ignoring extra paths. Full-mode reviews remain available as the default when no PR or diff scope is supplied.
+- **`scripts/dev/install-claude-agents.sh` installs the two subagents for Claude Code at user level.** The subagents ship inside the plugin, so a `skills` CLI install never registered them, and installing the plugin just to obtain them loads a second copy of all four skill descriptions into every session because plugin skills are namespaced rather than deduplicated against same-named personal skills. The installer mirrors the Codex one: a staged transaction with rollback, refusal to write through a symlink or over a user-authored agent of the same name, and frontmatter `name:` discovery validation. `scripts/ci/test-claude-agents.sh` covers those guards and runs in local CI.
 
 ### Changed
 
-- **The scanner no longer excludes `evals/files/` and `scripts/ci/fixtures/`
-  from every scan.** Those paths hold this repository's intentional
-  anti-patterns, and excluding them everywhere silently skipped real tests in
-  any target project that happened to use the same directory names. Exclusion
-  now applies only when the scanned project is itself an `e2e-skills` checkout.
-  **Upgrade impact:** a project with tests under either path goes from zero
-  reported hits to full reporting. Review those findings rather than
-  re-excluding the paths. Forks and vendored copies of this repository still
-  match the self-repo fingerprint, so their own tests under those two paths stay
-  exempt.
+- **The scanner no longer excludes `evals/files/` and `scripts/ci/fixtures/` from every scan.** Those paths hold this repository's intentional anti-patterns, and excluding them everywhere silently skipped real tests in any target project that happened to use the same directory names. Exclusion now applies only when the scanned project is itself an `e2e-skills` checkout. **Upgrade impact:** a project with tests under either path goes from zero reported hits to full reporting. Review those findings rather than re-excluding the paths. Forks and vendored copies of this repository still match the self-repo fingerprint, so their own tests under those two paths stay exempt.
 
 ### Fixed
 
-- **Four shell call sites reported a successful substring match as a failure.**
-  Under `set -o pipefail`, `printf ... | grep -q` returns 141 whenever grep
-  matches early enough to close the pipe before printf finishes writing, which
-  happens only once the output exceeds the pipe buffer. In
-  `skills/e2e-reviewer/scripts/scan.sh` this meant an ESLint run that exits 0
-  with warnings printed "no findings" and dropped every Tier 1 hit — the
-  silent-always-pass class the scanner exists to catch. It also made
-  `test-parity.sh`'s absence assertions pass without checking, `pr-preflight.sh`
-  flag an unchanged test title as renamed, and `codex-smoke.sh` report a
-  correct answer as a failed check. All four now use a native `[[ ]]` match with
-  no pipe.
-- `codex-smoke.sh` runs each check with the operator's MCP servers disabled, and
-  a nonzero exit now states whether the expected token was present anyway, so an
-  unrelated MCP or environment failure is not reported as a skill failure.
-- `install-codex-agents.sh` recognises the agent headers it wrote before the
-  marker was renamed from `Codex` to `Codex/OMX`, so an existing install
-  upgrades instead of being reported as a user-authored conflict. The previous
-  behaviour told users to force past the guard whose only job is to protect
-  genuinely user-authored agents.
-- Security scanners ignore inherited `GIT_*` overrides, disable system and
-  global config, and neutralise `core.excludesFile`, so a hostile index, a
-  global exclude file, or repository-local config cannot hide secret or policy
-  hits. In-tree `.gitignore` and `.git/info/exclude` remain trusted: the former
-  is reviewed with the tree, and the latter carries this repository's own
-  legitimate entries.
-- The independent-review v5 and v6 contract tests reproduce their packet from
-  the frozen source snapshot each phase reviewed instead of rebuilding it from
-  the working tree. Both phases are closed, so an old packet budget was gating
-  today's product and failed permanently once a later change legitimately grew
-  the same surfaces. v7 and v8 already worked this way. v6 builds from the v5
-  snapshot its own `phase_binding` pins by digest, which also makes that binding
-  verified rather than merely recorded.
-- `ci-local.sh` accepts a version-manager Node through `E2E_SKILLS_NODE_BIN`
-  instead of failing outright when Node is not on one of four absolute paths,
-  and it now refuses any Node that is group- or world-writable or that lives
-  inside the repository, matching the hosted workflow's integrity check.
-- The B-lite evidence verifier now checks its frozen, evidence-local generator
-  snapshot instead of the evolving current skill, and the contract runs in
-  local CI.
-- Generator failure handling, scanner target exclusions, and debugger cleanup
-  now have regression coverage for their previously unguarded boundaries.
-- The shared F11 README row now covers both Playwright async ordering and
-  Cypress command/intercept races in all four maintained languages.
+- **Four shell call sites reported a successful substring match as a failure.** Under `set -o pipefail`, `printf ... | grep -q` returns 141 whenever grep matches early enough to close the pipe before printf finishes writing, which happens only once the output exceeds the pipe buffer. In `skills/e2e-reviewer/scripts/scan.sh` this meant an ESLint run that exits 0 with warnings printed "no findings" and dropped every Tier 1 hit — the silent-always-pass class the scanner exists to catch. It also made `test-parity.sh`'s absence assertions pass without checking, `pr-preflight.sh` flag an unchanged test title as renamed, and `codex-smoke.sh` report a correct answer as a failed check. All four now use a native `[[ ]]` match with no pipe.
+- `codex-smoke.sh` runs each check with the operator's MCP servers disabled, and a nonzero exit now states whether the expected token was present anyway, so an unrelated MCP or environment failure is not reported as a skill failure.
+- `install-codex-agents.sh` recognises the agent headers it wrote before the marker was renamed from `Codex` to `Codex/OMX`, so an existing install upgrades instead of being reported as a user-authored conflict. The previous behaviour told users to force past the guard whose only job is to protect genuinely user-authored agents.
+- Security scanners ignore inherited `GIT_*` overrides, disable system and global config, and neutralise `core.excludesFile`, so a hostile index, a global exclude file, or repository-local config cannot hide secret or policy hits. In-tree `.gitignore` and `.git/info/exclude` remain trusted: the former is reviewed with the tree, and the latter carries this repository's own legitimate entries.
+- The independent-review v5 and v6 contract tests reproduce their packet from the frozen source snapshot each phase reviewed instead of rebuilding it from the working tree. Both phases are closed, so an old packet budget was gating today's product and failed permanently once a later change legitimately grew the same surfaces. v7 and v8 already worked this way. v6 builds from the v5 snapshot its own `phase_binding` pins by digest, which also makes that binding verified rather than merely recorded.
+- `ci-local.sh` accepts a version-manager Node through `E2E_SKILLS_NODE_BIN` instead of failing outright when Node is not on one of four absolute paths, and it now refuses any Node that is group- or world-writable or that lives inside the repository, matching the hosted workflow's integrity check.
+- The B-lite evidence verifier now checks its frozen, evidence-local generator snapshot instead of the evolving current skill, and the contract runs in local CI.
+- Generator failure handling, scanner target exclusions, and debugger cleanup now have regression coverage for their previously unguarded boundaries.
+- The shared F11 README row now covers both Playwright async ordering and Cypress command/intercept races in all four maintained languages.
 
 ## [1.12.1] - 2026-08-16
 
 ### Changed
 
-- **The Playwright generator defers detailed V1–V6 rules until verification.**
-  `SKILL.md` now requires a full read of `verification-rules.md` before Step 7
-  instead of repeating the same procedure inline, keeping the primary skill
-  shorter without dropping the safety, verdict, or completion contracts.
-- **Every README now shows a shortened scanner transcript and the same
-  Windows boundary.** The English, Korean, Japanese, and Simplified Chinese
-  examples show the actionable lines from `scan.sh`; the scope section directs
-  native Windows users to WSL and keeps artifacts inside its filesystem.
-- **The executable browser fault matrix now runs on every hosted `main` push.**
-  Pull requests keep the dependency-free archive and portability checks, while
-  the published branch also installs the pinned fixtures and Chromium and
-  fails CI if the live 36-cell reproduction regresses. Manual dispatch remains
-  available for an explicit rerun.
-- **The complete 24-pattern catalog is visible by default in every README
-  language.** English, Korean, Japanese, and Simplified Chinese readers no
-  longer need to expand a disclosure before scanning the severity-grouped
-  table.
-- **The README introduction now represents the full skill bundle.** Every
-  language uses the product name alone as its title and places verified
-  merged upstream fixes before the false-green walkthrough.
-- **The Playwright generator trigger and Claude plugin description are shorter
-  without changing behavior.** Its frontmatter description is 677 characters
-  instead of 959, front-loads common requests to add or scaffold coverage, and
-  preserves the approved non-production exploration and adjacent-skill
-  exclusions. The Claude plugin description now leaves first-run conventions
-  and seed scaffolding to Step 5b, which still defines both.
+- **The Playwright generator defers detailed V1–V6 rules until verification.** `SKILL.md` now requires a full read of `verification-rules.md` before Step 7 instead of repeating the same procedure inline, keeping the primary skill shorter without dropping the safety, verdict, or completion contracts.
+- **Every README now shows a shortened scanner transcript and the same Windows boundary.** The English, Korean, Japanese, and Simplified Chinese examples show the actionable lines from `scan.sh`; the scope section directs native Windows users to WSL and keeps artifacts inside its filesystem.
+- **The executable browser fault matrix now runs on every hosted `main` push.** Pull requests keep the dependency-free archive and portability checks, while the published branch also installs the pinned fixtures and Chromium and fails CI if the live 36-cell reproduction regresses. Manual dispatch remains available for an explicit rerun.
+- **The complete 24-pattern catalog is visible by default in every README language.** English, Korean, Japanese, and Simplified Chinese readers no longer need to expand a disclosure before scanning the severity-grouped table.
+- **The README introduction now represents the full skill bundle.** Every language uses the product name alone as its title and places verified merged upstream fixes before the false-green walkthrough.
+- **The Playwright generator trigger and Claude plugin description are shorter without changing behavior.** Its frontmatter description is 677 characters instead of 959, front-loads common requests to add or scaffold coverage, and preserves the approved non-production exploration and adjacent-skill exclusions. The Claude plugin description now leaves first-run conventions and seed scaffolding to Step 5b, which still defines both.
 
 ### Fixed
 
-- **The #10a positional-locator guidance now covers Page Object wrappers.**
-  Reviewer docs and evals clarify that POM encapsulation is not an exemption,
-  while explicitly positional helper APIs remain allowed.
-- **The Codex plugin now publishes a dedicated privacy policy.** The interface
-  links to `PRIVACY.md` over HTTPS, and local manifest validation rejects a
-  missing or noncanonical policy URL to prevent contract drift.
-- **Debugger command cleanup no longer hangs after a macOS process-group
-  permission race.** Playwright and Cypress report publishers and downloaders
-  continue past a `SIGTERM` `EPERM`, observe process-group disappearance, and
-  escalate to `SIGKILL` only while the group remains. If cleanup still cannot be
-  proven, its bounded failure is appended to the original timeout or byte-limit
-  diagnostic. Live-process regressions cover all four command boundaries.
-- **Reporter cleanup tests no longer use scheduler wall time as correctness
-  evidence.** Timeout/stdout integration tests assert preserved destinations and
-  diagnostics, while a readiness-gated descendant test proves process-group
-  disappearance. A generous subprocess watchdog is only a hang guard.
-- **The post-fix verifier no longer mistakes Linux `/usr/bin/sg` for
-  ast-grep.** The short name also belongs to the system shadow/group command;
-  ambient `PATH` discovery now accepts only `ast-grep`, while an explicitly
-  installed verifier-relative `sg` or absolute override remains supported.
-- **Hosted CI report capture no longer changes the source snapshot being
-  verified.** The report is written to the runner's temporary directory rather
-  than the checkout, so the disposable parity proof does not mistake its own
-  growing log artifact for a source-tree mutation.
-- **HOL plugin scanning no longer disables low-analyzability checks across the
-  repository.** The workflow loads `.plugin-scanner.toml`, keeps the rule set
-  enabled, and excludes only the reviewed files that trigger known scanner
-  category errors.
+- **The #10a positional-locator guidance now covers Page Object wrappers.** Reviewer docs and evals clarify that POM encapsulation is not an exemption, while explicitly positional helper APIs remain allowed.
+- **The Codex plugin now publishes a dedicated privacy policy.** The interface links to `PRIVACY.md` over HTTPS, and local manifest validation rejects a missing or noncanonical policy URL to prevent contract drift.
+- **Debugger command cleanup no longer hangs after a macOS process-group permission race.** Playwright and Cypress report publishers and downloaders continue past a `SIGTERM` `EPERM`, observe process-group disappearance, and escalate to `SIGKILL` only while the group remains. If cleanup still cannot be proven, its bounded failure is appended to the original timeout or byte-limit diagnostic. Live-process regressions cover all four command boundaries.
+- **Reporter cleanup tests no longer use scheduler wall time as correctness evidence.** Timeout/stdout integration tests assert preserved destinations and diagnostics, while a readiness-gated descendant test proves process-group disappearance. A generous subprocess watchdog is only a hang guard.
+- **The post-fix verifier no longer mistakes Linux `/usr/bin/sg` for ast-grep.** The short name also belongs to the system shadow/group command; ambient `PATH` discovery now accepts only `ast-grep`, while an explicitly installed verifier-relative `sg` or absolute override remains supported.
+- **Hosted CI report capture no longer changes the source snapshot being verified.** The report is written to the runner's temporary directory rather than the checkout, so the disposable parity proof does not mistake its own growing log artifact for a source-tree mutation.
+- **HOL plugin scanning no longer disables low-analyzability checks across the repository.** The workflow loads `.plugin-scanner.toml`, keeps the rule set enabled, and excludes only the reviewed files that trigger known scanner category errors.
 
 ## [1.12.0] - 2026-08-13
 
 ### Changed
 
-- **The upstream roadmap separates false-green fixes from reviewer-informed
-  maintenance.** ToolJet [#17492](https://github.com/ToolJet/ToolJet/pull/17492)
-  is tracked as an open Cypress cleanup without inflating the 14 merged or six
-  in-review test-fix counts.
+- **The upstream roadmap separates false-green fixes from reviewer-informed maintenance.** ToolJet [#17492](https://github.com/ToolJet/ToolJet/pull/17492) is tracked as an open Cypress cleanup without inflating the 14 merged or six in-review test-fix counts.
 
-- **A `// JUSTIFIED:` comment above a `describe` block no longer silences the
-  tests inside it.** The callback-scope walk collected every line between the
-  marker and the hit and asked whether `.evaluate(` or `.waitForFunction(`
-  appeared anywhere in that span, so an `evaluate` call in an earlier sibling
-  test satisfied it. A marker whose rationale described a canvas read in one
-  test suppressed a `#4f` P0 and a `#9` P1 in another, and `scan.sh` exited 0
-  where it should have exited 1. Only the construct that opens the scope carries
-  the rationale now. **Expect findings to appear in repositories that were
-  relying on a block-level marker** — they were always there.
+- **A `// JUSTIFIED:` comment above a `describe` block no longer silences the tests inside it.** The callback-scope walk collected every line between the marker and the hit and asked whether `.evaluate(` or `.waitForFunction(` appeared anywhere in that span, so an `evaluate` call in an earlier sibling test satisfied it. A marker whose rationale described a canvas read in one test suppressed a `#4f` P0 and a `#9` P1 in another, and `scan.sh` exited 0 where it should have exited 1. Only the construct that opens the scope carries the rationale now. **Expect findings to appear in repositories that were relying on a block-level marker** — they were always there.
 
-- **The mandatory opening-token sweep grew from 7 rows to 21.** Fifteen rules
-  were confirmed unable to detect the defect they name: their candidate regexes
-  assume a statement fits on one physical line, and formatters wrap at 80
-  columns. `scan.sh` is a surface in a frozen review packet with eighteen tokens
-  of headroom and cannot grow, so the recovery moved to the sweep, each row
-  naming the blind spot it covers for. **Reviews take longer.**
+- **The mandatory opening-token sweep grew from 7 rows to 21.** Fifteen rules were confirmed unable to detect the defect they name: their candidate regexes assume a statement fits on one physical line, and formatters wrap at 80 columns. `scan.sh` is a surface in a frozen review packet with eighteen tokens of headroom and cannot grow, so the recovery moved to the sweep, each row naming the blind spot it covers for. **Reviews take longer.**
 
-- **`#11` YAGNI no longer recommends deleting live code.** Its documented grep
-  says "specs, POMs, and other utility modules" while the glob beside it matched
-  specs only, so a member called from another POM returned zero hits and was
-  classified UNUSED. The glob covers the E2E root now and discounts only the
-  member's own declaration line.
+- **`#11` YAGNI no longer recommends deleting live code.** Its documented grep says "specs, POMs, and other utility modules" while the glob beside it matched specs only, so a member called from another POM returned zero hits and was classified UNUSED. The glob covers the E2E root now and discounts only the member's own declaration line.
 
-- **`#21` covers Cypress.** Detection keyed on `storageState:`, a
-  Playwright-only token, inside a two-framework skill. Cypress session JSON
-  restored through `cy.fixture` or a `cy.session()` callback is now swept.
+- **`#21` covers Cypress.** Detection keyed on `storageState:`, a Playwright-only token, inside a two-framework skill. Cypress session JSON restored through `cy.fixture` or a `cy.session()` callback is now swept.
 
-- **The lint-overlap map in the scanner report was wrong, and wrong in the
-  direction that flattered this project.** `#17`, `#4c`-`#4e` and `#10a` were
-  printed as having no ESLint equivalent while `prefer-locator` and
-  `prefer-web-first-assertions` ship enabled in
-  `eslint-plugin-playwright@2.11.0`, and `#5a`, `#5b`, `#6` were labelled
-  opt-in while all three are in the recommended preset. `#16` pointed at
-  `missing-playwright-await`, which only sees matchers. The map is corrected
-  against the published preset and `SKILL.md`'s "~19 patterns" claim is now
-  ~11.
+- **The lint-overlap map in the scanner report was wrong, and wrong in the direction that flattered this project.** `#17`, `#4c`-`#4e` and `#10a` were printed as having no ESLint equivalent while `prefer-locator` and `prefer-web-first-assertions` ship enabled in `eslint-plugin-playwright@2.11.0`, and `#5a`, `#5b`, `#6` were labelled opt-in while all three are in the recommended preset. `#16` pointed at `missing-playwright-await`, which only sees matchers. The map is corrected against the published preset and `SKILL.md`'s "~19 patterns" claim is now ~11.
 
-- **Both debuggers decide F1 versus F7 with an isolation probe.** A timeout
-  message alone cannot separate a non-deterministic test from one that only
-  breaks beside its neighbours. The failing test now runs alone and repeated,
-  then at the suite's real parallelism, and the pair of outcomes selects the
-  code. When the suite cannot be run the finding is `CANNOT_VERIFY` between the
-  two rather than a guess.
+- **Both debuggers decide F1 versus F7 with an isolation probe.** A timeout message alone cannot separate a non-deterministic test from one that only breaks beside its neighbours. The failing test now runs alone and repeated, then at the suite's real parallelism, and the pair of outcomes selects the code. When the suite cannot be run the finding is `CANNOT_VERIFY` between the two rather than a guess.
 
-- **README states the ESLint boundary and leads with the fault-injection
-  proof.** The hero example is a shape `no-unnecessary-assertions` now flags for
-  free, so the README says so and points readers at the rule. A new section
-  covers what no lint rule can do: V2 assertion inversion and V3 fault
-  injection on an approved scratch copy, requiring the test to fail at the
-  predicted line.
+- **README states the ESLint boundary and leads with the fault-injection proof.** The hero example is a shape `no-unnecessary-assertions` now flags for free, so the README says so and points readers at the rule. A new section covers what no lint rule can do: V2 assertion inversion and V3 fault injection on an approved scratch copy, requiring the test to fail at the predicted line.
 
-- **`#21` names the credential leak.** A committed `storageState` file was
-  described only as unreproducible; it also carries live session cookies for
-  whatever account captured it, and `#14` does not reach it.
+- **`#21` names the credential leak.** A committed `storageState` file was described only as unreproducible; it also carries live session cookies for whatever account captured it, and `#14` does not reach it.
 
 ### Added
 
-- **A public cross-host holdout run is recorded, and kept fail-closed.** Codex
-  missed the repeated-precision threshold, Opus met every preregistered
-  threshold, and one Fable response was unscoreable, so the matrix is
-  `INCONCLUSIVE` and `release_eligible` stays false. The reports are committed
-  as evidence of what was measured, not as a claim about accuracy; they are
-  marked stale against the current skill, because the skill changed after the
-  run.
+- **A public cross-host holdout run is recorded, and kept fail-closed.** Codex missed the repeated-precision threshold, Opus met every preregistered threshold, and one Fable response was unscoreable, so the matrix is `INCONCLUSIVE` and `release_eligible` stays false. The reports are committed as evidence of what was measured, not as a claim about accuracy; they are marked stale against the current skill, because the skill changed after the run.
 
-- **`docs/rule-self-audit.md`** — an adversarial audit of this project's own 24
-  patterns, 15 failure codes, and operational rules. Every finding was
-  reproduced against the shipped scanner, and the claims that did not survive
-  checking are recorded alongside them.
+- **`docs/rule-self-audit.md`** — an adversarial audit of this project's own 24 patterns, 15 failure codes, and operational rules. Every finding was reproduced against the shipped scanner, and the claims that did not survive checking are recorded alongside them.
 
-- Machine-readable skill classification metadata, and a definition of
-  false-green that separates it from flaky.
+- Machine-readable skill classification metadata, and a definition of false-green that separates it from flaky.
 
 ### Fixed
 
-- **Public artifacts now fail closed on real absolute user-home paths.** The
-  security gate scans tracked and unignored artifacts regardless of file type,
-  including binary evidence and its own scanner source, while preserving
-  explicit placeholders and hash-bound normalized provenance.
+- **Public artifacts now fail closed on real absolute user-home paths.** The security gate scans tracked and unignored artifacts regardless of file type, including binary evidence and its own scanner source, while preserving explicit placeholders and hash-bound normalized provenance.
 
-- **Taxonomy rows keep their Markdown structure.** CI requires all four
-  non-empty cells and the closing row delimiter, so an automatic hard-wrap
-  cannot silently remove the user-facing rationale or fix guidance.
+- **Taxonomy rows keep their Markdown structure.** CI requires all four non-empty cells and the closing row delimiter, so an automatic hard-wrap cannot silently remove the user-facing rationale or fix guidance.
 
-- **Behavioral-runner cleanup no longer races or strands same-group children.**
-  Cleanup observes process-group disappearance after `SIGTERM` and escalates to
-  `SIGKILL` only when the group remains alive.
+- **Behavioral-runner cleanup no longer races or strands same-group children.** Cleanup observes process-group disappearance after `SIGTERM` and escalates to `SIGKILL` only when the group remains alive.
 
-- **Parity smoke tests use a publishable, disposable Git snapshot.** Ignored
-  machine-local directories no longer enter the copy, source symlinks fail
-  closed, inherited Git, shard, and shell-startup variables cannot redirect or
-  truncate the run, and the source digest includes file modes as well as paths
-  and contents.
+- **Parity smoke tests use a publishable, disposable Git snapshot.** Ignored machine-local directories no longer enter the copy, source symlinks fail closed, inherited Git, shard, and shell-startup variables cannot redirect or truncate the run, and the source digest includes file modes as well as paths and contents.
 
-- **`#4i` names hallucinated locators.** An invented `data-testid` that never
-  matched anything is indistinguishable from a selector that rotted, and an
-  absence assertion keeps both green forever.
+- **`#4i` names hallucinated locators.** An invented `data-testid` that never matched anything is indistinguishable from a selector that rotted, and an absence assertion keeps both green forever.
 
-- **Tier 2 no longer collapses on hosts carrying ast-grep 0.40 or newer.**
-  `capture_bounded_command` merged stderr into the stream the strict NDJSON
-  parser reads. Newer ast-grep writes `Error: N error(s) found in code.` to
-  stderr on a findings run, so the stream stopped parsing and the whole tier
-  reported `INCOMPLETE`. The stderr sink is now a separate positional argument;
-  callers that read the merged text as human diagnostics keep the old behavior.
-  The crash branch moved ahead of the empty-capture guard, because with stderr
-  separated an empty capture no longer distinguishes "never started" from
-  "started and crashed loudly".
+- **Tier 2 no longer collapses on hosts carrying ast-grep 0.40 or newer.** `capture_bounded_command` merged stderr into the stream the strict NDJSON parser reads. Newer ast-grep writes `Error: N error(s) found in code.` to stderr on a findings run, so the stream stopped parsing and the whole tier reported `INCOMPLETE`. The stderr sink is now a separate positional argument; callers that read the merged text as human diagnostics keep the old behavior. The crash branch moved ahead of the empty-capture guard, because with stderr separated an empty capture no longer distinguishes "never started" from "started and crashed loudly".
 
-- **AST `#4f` findings were being dropped without a word.** The Tier 2 post
-  filter called `locator_assertion_hit_matches`, which is defined about 1,400
-  lines below the call site, so bash exited 127 and `|| continue` swallowed it.
-  Every AST `#4f` hit disappeared silently — the failure class this scanner
-  exists to catch. A self-contained confirmation now runs above Tier 2, and an
-  unconfirmed hit becomes LLM triage instead of vanishing.
+- **AST `#4f` findings were being dropped without a word.** The Tier 2 post filter called `locator_assertion_hit_matches`, which is defined about 1,400 lines below the call site, so bash exited 127 and `|| continue` swallowed it. Every AST `#4f` hit disappeared silently — the failure class this scanner exists to catch. A self-contained confirmation now runs above Tier 2, and an unconfirmed hit becomes LLM triage instead of vanishing.
 
-- **Tier 2 `#15` no longer fires on a shadowed `expect`.** `const { expect } =
-  helpers` and `catch (expect)` were reported as firm findings because the
-  provenance check only recognised a direct `const expect` redeclaration. A
-  binding the file imports from Playwright and then redeclares is now dropped;
-  an unknown custom `expect` still goes to triage, unchanged.
+- **Tier 2 `#15` no longer fires on a shadowed `expect`.** `const { expect } = helpers` and `catch (expect)` were reported as firm findings because the provenance check only recognised a direct `const expect` redeclaration. A binding the file imports from Playwright and then redeclares is now dropped; an unknown custom `expect` still goes to triage, unchanged.
 
 ### Performance
 
-- Three stages of the repository CI mirror got faster, each measured on its own:
-  the parity suite shards across disposable copies (629s to 217s), shell-file
-  enumeration stopped forking a grep per discovered file (15.3s to 1.0s), and
-  oracle text normalization is memoized. The scanner checks now run
-  concurrently, at half the cores — each worker spawns `scan.sh`, so filling
-  every core starved the checks that build large trees. No end-to-end figure is
-  quoted: the suite also gained stages over this release, and wall-clock on a
-  loaded machine moves more than any of these changes do.
+- Three stages of the repository CI mirror got faster, each measured on its own: the parity suite shards across disposable copies (629s to 217s), shell-file enumeration stopped forking a grep per discovered file (15.3s to 1.0s), and oracle text normalization is memoized. The scanner checks now run concurrently, at half the cores — each worker spawns `scan.sh`, so filling every core starved the checks that build large trees. No end-to-end figure is quoted: the suite also gained stages over this release, and wall-clock on a loaded machine moves more than any of these changes do.
 
 ### Security
 
-- **The independent-review packet stopped excluding this project's own case.**
-  `README_EXCLUDED_HEADINGS` named headings a later README rewrite had renamed
-  or deleted, so the exclusion silently became a no-op and the adoption,
-  benchmark and competitor sections shipped to reviewers who are supposed to
-  judge without them. The names are repaired and the runner now refuses to
-  build a packet when a configured heading no longer resolves. See
-  `benchmarks/STATUS.md` for the resulting packet discontinuity.
+- **The independent-review packet stopped excluding this project's own case.** `README_EXCLUDED_HEADINGS` named headings a later README rewrite had renamed or deleted, so the exclusion silently became a no-op and the adoption, benchmark and competitor sections shipped to reviewers who are supposed to judge without them. The names are repaired and the runner now refuses to build a packet when a configured heading no longer resolves. See `benchmarks/STATUS.md` for the resulting packet discontinuity.
 
 ## [1.11.0] - 2026-08-02
 
@@ -687,543 +196,99 @@
 
 - **README now leads with the user decision instead of the evidence chronology.** The English and localized READMEs move from a concrete false-green example to installation and first prompts, keep the complete 24-pattern catalog and 14 merged-PR table behind a shorter narrative, consolidate the shared F1–F15 taxonomy, and send benchmark audit detail to `benchmarks/STATUS.md`.
 
-- **Benchmark conclusions now come before the audit trail.** The README keeps
-  only the current result and limits; `benchmarks/STATUS.md` preserves detailed
-  scores, failed gates, superseded runs, and evidence boundaries.
+- **Benchmark conclusions now come before the audit trail.** The README keeps only the current result and limits; `benchmarks/STATUS.md` preserves detailed scores, failed gates, superseded runs, and evidence boundaries.
 
-- **Closure remediation and preregistered Codex robustness evidence.** Seven
-  independently confirmed v3 defects now have executable regressions: canonical
-  scanner tool binding, Tier 3 continuation after Tier 2 failure, isolated
-  pinned `npx` execution, framed preflight URL input, causal assertion-mutant
-  attribution, full-root Phase 0 provenance tracing, and minimal debugger
-  publisher environments. Protocol v4 was frozen before those edits and then
-  ran three zero-tool Codex reviews on one 28-surface packet. The individual
-  scores were 90.50 (`FAIL`, one high), 92.50 (`PASS`), and 91.50 (`PASS`);
-  the fixed all-three gate therefore failed. This is curated-subset robustness
-  evidence, not skill accuracy or a cross-model result; Opus and Fable were not
-  run.
-- **The first remediation confirmation failed and remains archived.** The v5
-  Codex-only phase scored 87.33, 88.00, and 88.00; all three attempts repeated
-  one High finding because the raw-ARIA fallback accepted `localhost` without a
-  browser-transport DNS pin. The fallback now accepts only canonical numeric
-  loopback literals and rejects `localhost` before project Playwright loads.
-  Four confirmed Medium findings also gained contract regressions: qualified
-  live-exploration scope, actionable snapshot sanitization, physical target-cwd
-  interpreter exclusion, and sanitized debugger error excerpts. The other v5
-  r1 High is retained as an evidence-backed false-positive disposition because
-  unresolved imported `test.only` remains non-gating LLM triage in the
-  executable scanner regression.
-- **V6 was superseded before packet freeze or model calls.** Its immutable
-  archive binds the failed v5 evidence and selected-remediation ledger, but an
-  independent pre-call audit found that the 850,000-byte cap measured
-  transformed source rather than the larger line-annotated representation
-  actually sent in the prompt. V6 is therefore preserved as
-  `SUPERSEDED_BEFORE_FREEZE` / `NOT_RUN`, with zero packets, reservations,
-  attempts, or model calls. The archive and runner now both fail closed against
-  any later v6 freeze, ingest, prepare, synthetic, or live execution.
-- **Budget-corrected v7 successor defined before calls.** The successor keeps
-  the same 30 product surfaces, six dimensions, 90 overall / 85 per-dimension
-  minimums, zero-Critical / zero-High limits, and all-three-attempt rule. It
-  adds separately enforced transformed-source, annotated-content,
-  canonical-packet, rendered-prompt, prompt-token, context-window, effective
-  context, and output-reserve gates with a pinned tokenizer contract. V4 and
-  v5 remain failed and v6 remains not run; v7 is post-hoc Codex-only selected
-  remediation confirmation, not unbiased, cross-model, full-product, or
-  accuracy evidence.
-- **V8 completed and failed, and its five findings are remediated.** Three
-  preregistered Codex attempts ran against one frozen packet. `r1` was consumed
-  as `INCONCLUSIVE` when the local runner exited non-zero before a verdict, `r2`
-  scored 87.67 and `FAIL` on two High findings, and `r3` scored 92.67 and `PASS`
-  with three Medium findings. Under the FAIL-first aggregate rule the archive is
-  `COMPLETE` / `FAIL`; neither scored attempt reopened a bound remediation
-  target. The five findings now have executable regressions: a bundled launcher
-  that binds a validated absolute non-project interpreter for both debuggers,
-  independent residual-credential detection, UTF-8 byte-length framing through
-  one shared writer for preflight and raw-ARIA, foreign-test-module exclusion
-  applied before Cypress basename admission, and exact pinned versions for every
-  opt-in downloaded ESLint package.
-- **Adversarial re-review of those remediations found twelve bypasses; the two
-  silent classes are closed.** The reviewer scanner dropped every finding in a
-  genuine Cypress spec when one runtime-erased type-only import was present, and
-  degraded a gating finding to non-gating triage when a module specifier used a
-  JavaScript escape. Both are closed: the Cypress provenance check is now
-  multi-line aware, the foreign-module check distinguishes value imports from
-  erased type imports, and one lexer now evaluates escape sequences for every
-  detector. Separately, the debugger artifact readers emitted credentials whose
-  keyword sat inside a longer identifier, whose separator was any comparison or
-  compound operator, or whose value ran past the first space.
-- **The residual-credential gate no longer parses values.** Mirroring the
-  redactor's value extent could not converge: too narrow certified a
-  half-redacted line as safe, too wide failed closed on genuine error text such
-  as a Chrome `credentials: 'include'` message. The gate now asserts a marker
-  invariant instead. For every sensitivity keyword followed by an assignment
-  separator, the next token must be the redaction marker. The gate's separator
-  alphabet is every ECMAScript punctuator containing `=` plus `->`, `:=` and
-  `:`, and a test enforces that it stays a superset of the redactor's, so a
-  separator the redactor does not handle fails closed rather than leaking. The
-  accepted cost is stated in the module: values next to a sensitivity keyword
-  are redacted whether or not they are secret. Known and still open: the value extent crosses exactly one
-  continuation line, so the second and later lines of a multi-line value are
-  emitted, and a value that begins on the separator's own line and then wraps
-  is claimed only as far as that line. Both are recorded in the module and
-  pinned by a boundary test so widening the extent stays a deliberate change.
-- **Superseded-phase evidence checks no longer assert a live tree.** V6 froze
-  source digests for a phase that was superseded before any model call, and v7
-  and v8 rebuilt their frozen packets from whatever the working tree currently
-  held. Both broke permanently once later phases legitimately grew the same
-  product surfaces past the earlier phases' frozen caps. V6 digests are now
-  read as provenance, with the target files still required to exist unmodified
-  in kind and each remediation still required to name a wired verification; v7
-  and v8 rebuild from their archived source snapshots, which reproduce the
-  archived packets byte-for-byte. No frozen evidence, ledger, protocol, runner
-  or validator digest was altered.
-- **V9 is superseded before freeze; v10 is preregistered and frozen on Claude.**
-  The v9 Codex-only host matrix is no longer executable by this operator, and
-  amending a pinned protocol after the fact would destroy the point of pinning
-  it, so v9 is recorded as `SUPERSEDED_BEFORE_FREEZE` / `NOT_RUN` in
-  `scripts/evals/independent-review-v9-supersession.json`, following the v6
-  precedent. Unlike v6 that record preserves the absence of any measurement,
-  because v9 never built a packet. The v10 successor binds the same completed
-  v8 archive as its predecessor, since v9 produced nothing, and runs three
-  attempts across `claude-opus-5` twice and `claude-fable-5` once: cross-model
-  within one provider family, deliberately unbalanced, and never cross-provider
-  evidence. Its ledger binds nine targets, the five v8 findings plus the four
-  classes closed after that archive by adversarial re-review, and both the
-  runner and the evidence validator now fail closed if any bound target cites a
-  file outside the frozen packet, because such a target could never be reopened.
-- **V10 is re-preregistered on a bound-target-only packet, because the first
-  frozen packet did not fit `claude-opus-5`.** Two independent pre-call audits
-  measured the frozen prompt at 877,407 UTF-8 bytes through the pinned local CLI
-  and found `claude-opus-5` rejecting it with `Prompt is too long` (exit 1),
-  accepting 505,000 bytes and rejecting 530,000, while `claude-fable-5` accepted
-  the full 877,407. The protocol maps a length rejection to
-  `runner_nonzero_exit` and therefore `INCONCLUSIVE`, and two of the three
-  preregistered attempts are `claude-opus-5`, so the phase could not have
-  produced evidence. Rather than quietly dropping a model, the packet is reduced
-  before freeze to exactly the seven surfaces the nine bound targets name:
-  433,862 line-annotated bytes and a 440,800-byte rendered prompt that both
-  models accept with a well-formed strict-JSON review. The caps in the protocol
-  drop with it. The reduction is declared rather than buried: the protocol
-  carries a `packet.surface_scope` block naming the seven surfaces, the reason,
-  and the narrowed claim, the ledger's scope policy and claim boundary say the
-  same, and the README repeats it. The existing gate that every bound target's
-  `affected_files` must be a packet surface is preserved, and its converse is
-  added, so no surface can enter the packet that no bound target cites and the
-  reviewed scope can never exceed the declared scope. The schedule seed and
-  version change with the scope and the digest is re-derived; the three attempt
-  IDs are unchanged and none has been consumed.
-- **The v7 and v10 unit suites no longer skip their own adversarial checks.**
-  Four checks across those suites (frozen fake-attestation rejection, the public
-  `--prepare-only`/freeze integration, and the measurer's exact end-to-end
-  contract) returned early when `tiktoken` was missing. The ci-local Python
-  runner has never had it, so in CI those checks were permanent no-ops. They now
-  fail closed, and `ci-local.sh` runs both suites through
-  `scripts/ci/run-reference-tokenizer-suites.sh`, one hash-locked replay venv
-  shared by both. The same escape hatch is removed from the v8 suite, which no
-  CI gate invokes.
-- **The v10 prompt budget is measured in bytes, not in the model's tokens.**
-  V9 called its tiktoken `o200k_base` count an exact token replay. Against an
-  Anthropic model that is false, so v10 renames the artifact to a prompt-size
-  attestation: the exact quantities are UTF-8 byte sizes and their SHA-256
-  digests, and the `o200k_base` count is labelled a deterministic size proxy in
-  the protocol, the measurer, the attestation payload and the validator. No
-  local source on the release machine publishes a context window for the two
-  declared models, so the catalog records `context_window_provenance:
-  unavailable-locally`, declares no window, and v10 drops the context-window,
-  effective-context and output-reserve gates entirely rather than asserting
-  numbers it cannot verify. A prompt the model rejects for length is therefore
-  `INCONCLUSIVE`, not a silent pass. The local Claude Code CLI is pinned by
-  SHA-256 and `--version` under the same provenance boundary v9 used for Codex:
-  local hash and version only, never remote model attestation.
-- **The debugger helpers no longer choose their own interpreter.** The publisher
-  and downloader were prescribed as `/usr/bin/env -i PATH="$PATH" python3` and as
-  a bare `python3`. The first clears the environment and then resolves the bare
-  name through the forwarded `PATH`, and the publisher executes the bundled
-  reader in-process, so a project virtualenv or any writable directory ahead on
-  `PATH` controlled the interpreter the reader ran under; the second inherited
-  the environment outright, so `PYTHONPATH` could run a checkout-supplied
-  `sitecustomize` before the helper's first statement. Both now go through the
-  bundled launcher, which selects a root-owned absolute system interpreter
-  outside the project and forwards only a per-script allowlist: nothing for the
-  readers, `PATH` for the publishers, `HOME` and the two `gh` token variables for
-  the downloaders. `PYTHON*` never crosses. The bundled scripts also declare a
-  Python 3.9 floor, matching the oldest interpreter the launcher can select, and
-  a Cypress downloader that crashed on that interpreter was fixed.
-- **The opt-in download tiers no longer trust the audited repository.** Both npx
-  invocations in the ESLint tier ran with the reviewed repository as their
-  working directory, so that repository's `.npmrc` chose the registry for the
-  pinned packages, and a scoped registry key defeated a plain registry variable.
-  The resolve step ran before the hardened environment existed at all, so the
-  step that downloads and first executes third-party code inherited the
-  operator's real `HOME` and npm credentials. Every npx call now goes through one
-  helper that runs from a private work directory with its own `package.json`
-  anchor and scanner-owned `.npmrc`, pins registry, cache, prefix, both config
-  paths and `ignore-scripts`, and refuses to run before that environment exists.
-  Only the direct versions are pinned; the transitive closure still re-resolves
-  at scan time, which the security and reference docs now state rather than
-  imply otherwise, with lifecycle scripts disabled to bound it.
-- **Tier 2 had been dead on every npm 9 or newer host.** The ast-grep launcher
-  set both the user and global npm config paths to `/dev/null`, which npm rejects
-  as a double load before resolving any config, so the tier produced no AST
-  findings at all. The failure was loud only by accident: the tier's own
-  exit-code guard never fired, and what surfaced the problem was npm's diagnostic
-  landing on a stream the JSON parser then rejected. Since that parser exits zero
-  on empty input, a launcher failing quietly would have reported a clean tier.
-  The config is repaired, the tier now shares the hardened npm environment, and a
-  guard fails closed when the launcher exits non-zero with an empty capture.
-- **The Claude host's prompt limit is recorded as a measurement, not an
-  assumption.** Probing the pinned CLI with the frozen v10 prompt showed
-  `claude-fable-5` accepting all 877,407 bytes and returning a well-formed
-  review, while `claude-opus-5` refused it and every payload down to 530,000
-  bytes, accepting 505,000. Two of the three preregistered v10 attempts are
-  `claude-opus-5`, so the schedule cannot complete at the current packet size.
-  This was found before any scheduled call, so no preregistered attempt id was
-  consumed and the archive remains `FROZEN` at zero attempts.
-- **The contract suites run on Linux again.** Seventeen call sites created their
-  temporary trees under a hardcoded `/private/tmp`. That path is macOS-only: it
-  exists because macOS `/tmp` is a symlink and the bundled launchers reject
-  symlinked roots, but hardcoding it broke every non-macOS runner with
-  `FileNotFoundError`. The suites now resolve the platform temp root once, which
-  keeps the no-symlink property on macOS and works everywhere else.
-- **CI binds ast-grep the way the scanner expects.** `scan.sh` resolves ast-grep
-  only from a fixed absolute candidate list, deliberately, because PATH is
-  attacker-controllable for a tool that runs across a reviewed repository. A
-  hosted runner's global npm install lands outside that list, so the scanner fell
-  through to the opt-in download path, whose progress output is not JSON, and
-  Tier 2 reported an infrastructure failure. The workflow now points the
-  documented `E2E_SMELL_AST_GREP_BIN` override at the version it just pinned, and
-  the job that intentionally has no ast-grep disables the download instead of
-  attempting it.
-- **Public evidence docs refreshed to the 2026-07-31 state.** README and benchmark
-  docs now describe the 59-source ledger (21 verified / 14 qualified / 24 not
-  cleared), separate WebTestPilot's 100 injected-bug benchmark from its 22/23
-  real-bug replication study, and qualify WEFix and AutoE2E as peer-reviewed
-  evidence for narrower questions rather than this skill's accuracy.
-- **Reviewer validation docs now point to v5/v3.** `reviewer-holdout-v5` is the
-  current pre-live public corpus (20 cases, 50 source files, 24 findings, 24
-  guards, 12 positive cases, 8 globally clean cases, 10/10 Playwright/Cypress
-  split) with independent positive and clean source audits passing. `v4` is
-  historical and invalid for performance claims after oracle audit, with only
-  three diagnostic calls. `reviewer-fault-causal-v3` is current; `causal-v2` is
-  historical/invalid for current claims because answer-leading comments leaked
-  expected verdicts.
-- **Benchmark protocol language tightened.** Public docs now require the full
-  9-report `full` / `catalog-only` / `no-skill` model/arm matrix before any
-  skill-lift comparison, forbid partial lift claims, and state that no live v5
-  reviewer result or generator v2 result is claimed. Generator validation is
-  described as prompt-complete planning accuracy against stated acceptance
-  criteria, not source generation or autonomous oracle discovery. Debugger v1 is
-  described as synthetic author-created labels.
-- **Debugger benchmark docs updated for the hardened schema-v2 surface.** Public
-  docs now describe strict-majority stable unique-case metrics, Wilson intervals,
-  repeated accuracy and macro precision, framework/category worst slices, and the
-  raw-output re-deriving comparator over the fixed Codex `gpt-5.6-sol`, Claude
-  Opus, and Claude Fable provider-family matrix. The limitation remains explicit:
-  the corpus is 30 short public author-created synthetic excerpts, not full
-  reports/traces, and it has no independent oracle audit or live result claim.
+- **Closure remediation and preregistered Codex robustness evidence.** Seven independently confirmed v3 defects now have executable regressions: canonical scanner tool binding, Tier 3 continuation after Tier 2 failure, isolated pinned `npx` execution, framed preflight URL input, causal assertion-mutant attribution, full-root Phase 0 provenance tracing, and minimal debugger publisher environments. Protocol v4 was frozen before those edits and then ran three zero-tool Codex reviews on one 28-surface packet. The individual scores were 90.50 (`FAIL`, one high), 92.50 (`PASS`), and 91.50 (`PASS`); the fixed all-three gate therefore failed. This is curated-subset robustness evidence, not skill accuracy or a cross-model result; Opus and Fable were not run.
+- **The first remediation confirmation failed and remains archived.** The v5 Codex-only phase scored 87.33, 88.00, and 88.00; all three attempts repeated one High finding because the raw-ARIA fallback accepted `localhost` without a browser-transport DNS pin. The fallback now accepts only canonical numeric loopback literals and rejects `localhost` before project Playwright loads. Four confirmed Medium findings also gained contract regressions: qualified live-exploration scope, actionable snapshot sanitization, physical target-cwd interpreter exclusion, and sanitized debugger error excerpts. The other v5 r1 High is retained as an evidence-backed false-positive disposition because unresolved imported `test.only` remains non-gating LLM triage in the executable scanner regression.
+- **V6 was superseded before packet freeze or model calls.** Its immutable archive binds the failed v5 evidence and selected-remediation ledger, but an independent pre-call audit found that the 850,000-byte cap measured transformed source rather than the larger line-annotated representation actually sent in the prompt. V6 is therefore preserved as `SUPERSEDED_BEFORE_FREEZE` / `NOT_RUN`, with zero packets, reservations, attempts, or model calls. The archive and runner now both fail closed against any later v6 freeze, ingest, prepare, synthetic, or live execution.
+- **Budget-corrected v7 successor defined before calls.** The successor keeps the same 30 product surfaces, six dimensions, 90 overall / 85 per-dimension minimums, zero-Critical / zero-High limits, and all-three-attempt rule. It adds separately enforced transformed-source, annotated-content, canonical-packet, rendered-prompt, prompt-token, context-window, effective context, and output-reserve gates with a pinned tokenizer contract. V4 and v5 remain failed and v6 remains not run; v7 is post-hoc Codex-only selected remediation confirmation, not unbiased, cross-model, full-product, or accuracy evidence.
+- **V8 completed and failed, and its five findings are remediated.** Three preregistered Codex attempts ran against one frozen packet. `r1` was consumed as `INCONCLUSIVE` when the local runner exited non-zero before a verdict, `r2` scored 87.67 and `FAIL` on two High findings, and `r3` scored 92.67 and `PASS` with three Medium findings. Under the FAIL-first aggregate rule the archive is `COMPLETE` / `FAIL`; neither scored attempt reopened a bound remediation target. The five findings now have executable regressions: a bundled launcher that binds a validated absolute non-project interpreter for both debuggers, independent residual-credential detection, UTF-8 byte-length framing through one shared writer for preflight and raw-ARIA, foreign-test-module exclusion applied before Cypress basename admission, and exact pinned versions for every opt-in downloaded ESLint package.
+- **Adversarial re-review of those remediations found twelve bypasses; the two silent classes are closed.** The reviewer scanner dropped every finding in a genuine Cypress spec when one runtime-erased type-only import was present, and degraded a gating finding to non-gating triage when a module specifier used a JavaScript escape. Both are closed: the Cypress provenance check is now multi-line aware, the foreign-module check distinguishes value imports from erased type imports, and one lexer now evaluates escape sequences for every detector. Separately, the debugger artifact readers emitted credentials whose keyword sat inside a longer identifier, whose separator was any comparison or compound operator, or whose value ran past the first space.
+- **The residual-credential gate no longer parses values.** Mirroring the redactor's value extent could not converge: too narrow certified a half-redacted line as safe, too wide failed closed on genuine error text such as a Chrome `credentials: 'include'` message. The gate now asserts a marker invariant instead. For every sensitivity keyword followed by an assignment separator, the next token must be the redaction marker. The gate's separator alphabet is every ECMAScript punctuator containing `=` plus `->`, `:=` and `:`, and a test enforces that it stays a superset of the redactor's, so a separator the redactor does not handle fails closed rather than leaking. The accepted cost is stated in the module: values next to a sensitivity keyword are redacted whether or not they are secret. Known and still open: the value extent crosses exactly one continuation line, so the second and later lines of a multi-line value are emitted, and a value that begins on the separator's own line and then wraps is claimed only as far as that line. Both are recorded in the module and pinned by a boundary test so widening the extent stays a deliberate change.
+- **Superseded-phase evidence checks no longer assert a live tree.** V6 froze source digests for a phase that was superseded before any model call, and v7 and v8 rebuilt their frozen packets from whatever the working tree currently held. Both broke permanently once later phases legitimately grew the same product surfaces past the earlier phases' frozen caps. V6 digests are now read as provenance, with the target files still required to exist unmodified in kind and each remediation still required to name a wired verification; v7 and v8 rebuild from their archived source snapshots, which reproduce the archived packets byte-for-byte. No frozen evidence, ledger, protocol, runner or validator digest was altered.
+- **V9 is superseded before freeze; v10 is preregistered and frozen on Claude.** The v9 Codex-only host matrix is no longer executable by this operator, and amending a pinned protocol after the fact would destroy the point of pinning it, so v9 is recorded as `SUPERSEDED_BEFORE_FREEZE` / `NOT_RUN` in `scripts/evals/independent-review-v9-supersession.json`, following the v6 precedent. Unlike v6 that record preserves the absence of any measurement, because v9 never built a packet. The v10 successor binds the same completed v8 archive as its predecessor, since v9 produced nothing, and runs three attempts across `claude-opus-5` twice and `claude-fable-5` once: cross-model within one provider family, deliberately unbalanced, and never cross-provider evidence. Its ledger binds nine targets, the five v8 findings plus the four classes closed after that archive by adversarial re-review, and both the runner and the evidence validator now fail closed if any bound target cites a file outside the frozen packet, because such a target could never be reopened.
+- **V10 is re-preregistered on a bound-target-only packet, because the first frozen packet did not fit `claude-opus-5`.** Two independent pre-call audits measured the frozen prompt at 877,407 UTF-8 bytes through the pinned local CLI and found `claude-opus-5` rejecting it with `Prompt is too long` (exit 1), accepting 505,000 bytes and rejecting 530,000, while `claude-fable-5` accepted the full 877,407. The protocol maps a length rejection to `runner_nonzero_exit` and therefore `INCONCLUSIVE`, and two of the three preregistered attempts are `claude-opus-5`, so the phase could not have produced evidence. Rather than quietly dropping a model, the packet is reduced before freeze to exactly the seven surfaces the nine bound targets name: 433,862 line-annotated bytes and a 440,800-byte rendered prompt that both models accept with a well-formed strict-JSON review. The caps in the protocol drop with it. The reduction is declared rather than buried: the protocol carries a `packet.surface_scope` block naming the seven surfaces, the reason, and the narrowed claim, the ledger's scope policy and claim boundary say the same, and the README repeats it. The existing gate that every bound target's `affected_files` must be a packet surface is preserved, and its converse is added, so no surface can enter the packet that no bound target cites and the reviewed scope can never exceed the declared scope. The schedule seed and version change with the scope and the digest is re-derived; the three attempt IDs are unchanged and none has been consumed.
+- **The v7 and v10 unit suites no longer skip their own adversarial checks.** Four checks across those suites (frozen fake-attestation rejection, the public `--prepare-only`/freeze integration, and the measurer's exact end-to-end contract) returned early when `tiktoken` was missing. The ci-local Python runner has never had it, so in CI those checks were permanent no-ops. They now fail closed, and `ci-local.sh` runs both suites through `scripts/ci/run-reference-tokenizer-suites.sh`, one hash-locked replay venv shared by both. The same escape hatch is removed from the v8 suite, which no CI gate invokes.
+- **The v10 prompt budget is measured in bytes, not in the model's tokens.** V9 called its tiktoken `o200k_base` count an exact token replay. Against an Anthropic model that is false, so v10 renames the artifact to a prompt-size attestation: the exact quantities are UTF-8 byte sizes and their SHA-256 digests, and the `o200k_base` count is labelled a deterministic size proxy in the protocol, the measurer, the attestation payload and the validator. No local source on the release machine publishes a context window for the two declared models, so the catalog records `context_window_provenance: unavailable-locally`, declares no window, and v10 drops the context-window, effective-context and output-reserve gates entirely rather than asserting numbers it cannot verify. A prompt the model rejects for length is therefore `INCONCLUSIVE`, not a silent pass. The local Claude Code CLI is pinned by SHA-256 and `--version` under the same provenance boundary v9 used for Codex: local hash and version only, never remote model attestation.
+- **The debugger helpers no longer choose their own interpreter.** The publisher and downloader were prescribed as `/usr/bin/env -i PATH="$PATH" python3` and as a bare `python3`. The first clears the environment and then resolves the bare name through the forwarded `PATH`, and the publisher executes the bundled reader in-process, so a project virtualenv or any writable directory ahead on `PATH` controlled the interpreter the reader ran under; the second inherited the environment outright, so `PYTHONPATH` could run a checkout-supplied `sitecustomize` before the helper's first statement. Both now go through the bundled launcher, which selects a root-owned absolute system interpreter outside the project and forwards only a per-script allowlist: nothing for the readers, `PATH` for the publishers, `HOME` and the two `gh` token variables for the downloaders. `PYTHON*` never crosses. The bundled scripts also declare a Python 3.9 floor, matching the oldest interpreter the launcher can select, and a Cypress downloader that crashed on that interpreter was fixed.
+- **The opt-in download tiers no longer trust the audited repository.** Both npx invocations in the ESLint tier ran with the reviewed repository as their working directory, so that repository's `.npmrc` chose the registry for the pinned packages, and a scoped registry key defeated a plain registry variable. The resolve step ran before the hardened environment existed at all, so the step that downloads and first executes third-party code inherited the operator's real `HOME` and npm credentials. Every npx call now goes through one helper that runs from a private work directory with its own `package.json` anchor and scanner-owned `.npmrc`, pins registry, cache, prefix, both config paths and `ignore-scripts`, and refuses to run before that environment exists. Only the direct versions are pinned; the transitive closure still re-resolves at scan time, which the security and reference docs now state rather than imply otherwise, with lifecycle scripts disabled to bound it.
+- **Tier 2 had been dead on every npm 9 or newer host.** The ast-grep launcher set both the user and global npm config paths to `/dev/null`, which npm rejects as a double load before resolving any config, so the tier produced no AST findings at all. The failure was loud only by accident: the tier's own exit-code guard never fired, and what surfaced the problem was npm's diagnostic landing on a stream the JSON parser then rejected. Since that parser exits zero on empty input, a launcher failing quietly would have reported a clean tier. The config is repaired, the tier now shares the hardened npm environment, and a guard fails closed when the launcher exits non-zero with an empty capture.
+- **The Claude host's prompt limit is recorded as a measurement, not an assumption.** Probing the pinned CLI with the frozen v10 prompt showed `claude-fable-5` accepting all 877,407 bytes and returning a well-formed review, while `claude-opus-5` refused it and every payload down to 530,000 bytes, accepting 505,000. Two of the three preregistered v10 attempts are `claude-opus-5`, so the schedule cannot complete at the current packet size. This was found before any scheduled call, so no preregistered attempt id was consumed and the archive remains `FROZEN` at zero attempts.
+- **The contract suites run on Linux again.** Seventeen call sites created their temporary trees under a hardcoded `/private/tmp`. That path is macOS-only: it exists because macOS `/tmp` is a symlink and the bundled launchers reject symlinked roots, but hardcoding it broke every non-macOS runner with `FileNotFoundError`. The suites now resolve the platform temp root once, which keeps the no-symlink property on macOS and works everywhere else.
+- **CI binds ast-grep the way the scanner expects.** `scan.sh` resolves ast-grep only from a fixed absolute candidate list, deliberately, because PATH is attacker-controllable for a tool that runs across a reviewed repository. A hosted runner's global npm install lands outside that list, so the scanner fell through to the opt-in download path, whose progress output is not JSON, and Tier 2 reported an infrastructure failure. The workflow now points the documented `E2E_SMELL_AST_GREP_BIN` override at the version it just pinned, and the job that intentionally has no ast-grep disables the download instead of attempting it.
+- **Public evidence docs refreshed to the 2026-07-31 state.** README and benchmark docs now describe the 59-source ledger (21 verified / 14 qualified / 24 not cleared), separate WebTestPilot's 100 injected-bug benchmark from its 22/23 real-bug replication study, and qualify WEFix and AutoE2E as peer-reviewed evidence for narrower questions rather than this skill's accuracy.
+- **Reviewer validation docs now point to v5/v3.** `reviewer-holdout-v5` is the current pre-live public corpus (20 cases, 50 source files, 24 findings, 24 guards, 12 positive cases, 8 globally clean cases, 10/10 Playwright/Cypress split) with independent positive and clean source audits passing. `v4` is historical and invalid for performance claims after oracle audit, with only three diagnostic calls. `reviewer-fault-causal-v3` is current; `causal-v2` is historical/invalid for current claims because answer-leading comments leaked expected verdicts.
+- **Benchmark protocol language tightened.** Public docs now require the full 9-report `full` / `catalog-only` / `no-skill` model/arm matrix before any skill-lift comparison, forbid partial lift claims, and state that no live v5 reviewer result or generator v2 result is claimed. Generator validation is described as prompt-complete planning accuracy against stated acceptance criteria, not source generation or autonomous oracle discovery. Debugger v1 is described as synthetic author-created labels.
+- **Debugger benchmark docs updated for the hardened schema-v2 surface.** Public docs now describe strict-majority stable unique-case metrics, Wilson intervals, repeated accuracy and macro precision, framework/category worst slices, and the raw-output re-deriving comparator over the fixed Codex `gpt-5.6-sol`, Claude Opus, and Claude Fable provider-family matrix. The limitation remains explicit: the corpus is 30 short public author-created synthetic excerpts, not full reports/traces, and it has no independent oracle audit or live result claim.
 
 ### Fixed
 
 - Playwright and Cypress media readers now verify that the requested path still names the descriptor they opened, so a same-read rename or symlink replacement fails closed instead of returning a snapshot from a path that changed underneath the read.
-- Portable scanner contracts can explicitly disable Tier 2 so preinstalled
-  host `ast-grep` binaries cannot make no-tool checks nondeterministic.
-- Artifact-reader launchers now select GNU `stat` formats before BSD formats,
-  preserving the root-owned system-Python boundary on Linux as well as macOS.
+- Portable scanner contracts can explicitly disable Tier 2 so preinstalled host `ast-grep` binaries cannot make no-tool checks nondeterministic.
+- Artifact-reader launchers now select GNU `stat` formats before BSD formats, preserving the root-owned system-Python boundary on Linux as well as macOS.
 
 ## [1.10.0] - 2026-07-30
 
 ### Added
 
-- **Neutral all-family reviewer holdout v4.** Twenty repository-shaped cases
-  and 50 source files separate 24 exact findings from 24 matched
-  false-positive guards. Playwright/Cypress and positive/clean cases are
-  balanced, every base pattern family appears once on each side, and
-  clean-case specificity is gated independently. The labels remain synthetic
-  public development evidence rather than an independently adjudicated oracle.
-- **Three-model strict-majority evaluation.** The v4 protocol fixes a seeded
-  60-call schedule per configuration, three repetitions, per-model
-  precision/recall and
-  guard/clean-specificity thresholds, all-pairs prediction agreement, and
-  provider-family-balanced recall-gap checks before live execution. CI
-  re-parses raw model outputs rather than trusting serialized scores; a
-  legitimate performance
-  `FAIL` remains valid evidence, while incomplete or provenance-mismatched
-  reports fail the integrity test. The declared matrix is Codex, Claude Opus,
-  and Claude Fable across two provider/runtime families; three configurations
-  are not presented as three independent hosts.
-- **Recoverable live benchmark artifacts.** Runner timeouts now terminate
-  pipe-holding descendants even after their CLI leader exits, Claude live runs
-  ignore user/project/local settings and plugin sync, and per-configuration/comparison
-  reports are replaced atomically so infrastructure failures cannot truncate
-  the last valid partial report.
-- **V1–V6 verification doctrine for generated and reviewed E2E tests.** The
-  skills now require outcome-first assertions, falsification, behavior fault
-  injection, write-contract checks, repeat/isolation evidence, and independent
-  re-review rather than treating a green run as proof of correctness.
-- **Cypress-specific reliability checks.** The reviewer now triages async
-  callbacks containing queued commands (`#10d`), assigned Cypress commands
-  (`#10e`), and unsafe continued action chains (`#10f`) alongside the existing
-  Playwright coverage.
-- **Cross-host subagent fallback and packaging.** For the reviewer and
-  debuggers, Claude named agents, Codex native verifier/debugger roles, and
-  inline fallbacks share one taxonomy and verdict contract. The generator does
-  not claim that equivalence: V6 requires an independent fresh-context,
-  read-only reviewer and returns `CANNOT_VERIFY` / `PARTIAL/BLOCKED` when that
-  separation is unavailable. Optional Codex agent installation includes a
-  conflict guard and parity test without requiring Python 3.11 or a package
-  install.
-- **Paired behavioral evaluation harness.**
-  `scripts/evals/run-behavioral-evals.py` compares repeated `with_skill` and
-  `without_skill` runs, records runner/version and repository provenance, and
-  reports per-case lift and saturated baselines. The live runner is opt-in;
-  ordinary CI uses a deterministic fake runner.
-- **Historical v2/r3 machine-labeled reviewer holdout.** A hard public
-  development corpus covers
-  eight Playwright/Cypress multi-file cases with 30 unique findings and 31
-  explicit false-positive guards. The isolated runner computes exact TP/FP/FN
-  across repeated Claude/Codex runs while keeping unique majority-stable
-  precision/recall separate from repeated-run stability evidence and
-  recording model, CLI, Git dirty state, evaluated-skill/corpus digests, timing,
-  and raw-output provenance. Public runs use fresh temporary workspaces,
-  read-only host controls, and pre/post staged-workspace digests; mutations are
-  infrastructure errors. Non-public corpora require an explicit external
-  isolation wrapper because the harness does not claim a built-in sealed sandbox.
-  Infrastructure failures keep the report incomplete and never become false
-  negatives.
-- **Executable behavior-fault fixtures.** Real pinned Playwright and Cypress
-  apps now exercise twelve fault operators across 36 browser cells and prove the
-  falsification chain: strong tests pass on correct behavior, fail after
-  behavior fault injection, and assertion-mutated weak tests stay green against
-  the same fault. The added `#4j` operator proves Playwright's documented
-  unnamed-ARIA-snapshot false green against an accessible-label fault. CI
-  validates fixture contracts without downloading browsers; full browser runs
-  remain explicit release evidence.
-- **Audited LLM-test evidence ledger.** A 55-source primary-source review now
-  separates verified, qualified, and not-cleared claims; corrects misleading
-  denominators and model rankings; adds the peer-reviewed WebTestPilot,
-  WEFix, and GenIA-E2ETest results; and replaces the former “no direct study”
-  claim with a narrower evidence boundary.
-- **Exact operator-linked causal reviewer benchmark v2.** Twelve weak-test
-  cases are mechanically derived byte-for-byte from executable fixture
-  operators and paired with twelve separate clean guards. A linkage ledger
-  pins transformation spans and hashes, while CI reconstructs every mapping.
-  This measures whether the reviewer detects proven false-green mechanisms
-  without presenting public exact-match evidence as sealed generation quality.
-- **Debugger holdout v1.** Thirty sanitized report excerpts cover F1–F15 once
-  per framework and score category, confidence, product/test diagnosis,
-  impact, urgency, and confirmed-test-defect severity as separate axes.
-- **Generator fault-kill planning v1.** A closed declarative plan language
-  compiles into trusted Playwright templates for behavior, label, auth, and
-  write faults. Case, fault-mode macro, and worst-case metrics are reported;
-  Cypress inputs are explicit unscored scope controls, and model-generated
-  code is never executed.
-- **Unanchored independent product-review runner.** A fixed packet of 25
-  product files excludes holdouts, evals, results, scorecards, prior reviews,
-  and Git history before Codex, Claude Opus, or Claude Fable sees it. The
-  zero-tool runner freezes source/representation digests, requires strict
-  file-and-line evidence, and scores six fixed dimensions while disclosing
-  that model-family review is neither human nor sealed adjudication.
-- **Playwright 1.62 floating-Promise semantic probe.** A separate six-cell
-  browser probe covers #15 assertions and #16 Locator actions. Awaited clean
-  calls exit 0, awaited faults exit 1, and the same faulting calls still exit 1
-  after deleting only their leading `await`. This negative result is archived
-  separately from the 11-operator/33-cell weak-green fixture matrix; CI
-  validates the report and contracts without rerunning the opt-in browser work.
-- **Preregistered v2 decision protocol.** A seeded schedule, three-run majority
-  rule, unique-unit Wilson intervals, per-host release thresholds, and
-  fail-closed protocol/workspace integrity checks are frozen before live calls.
-  `compare-reviewer-holdouts.py` additionally requires identical provenance,
-  both individual reports to pass, a Claude/Codex recall gap no greater than
-  10 percentage points, and stable-prediction Jaccard agreement of at least 0.80.
-- **Immutable benchmark evidence bundle.**
-  `benchmarks/reviewer-holdout-v2/` now freezes the initial oracle, full raw
-  Claude/Codex reports, catalog-only controls, ablation outputs, oracle revision
-  ledger, hardened rerun, and post-run adjudications. CI pins every artifact by
-  SHA-256 and re-derives the documented aggregates.
+- **Neutral all-family reviewer holdout v4.** Twenty repository-shaped cases and 50 source files separate 24 exact findings from 24 matched false-positive guards. Playwright/Cypress and positive/clean cases are balanced, every base pattern family appears once on each side, and clean-case specificity is gated independently. The labels remain synthetic public development evidence rather than an independently adjudicated oracle.
+- **Three-model strict-majority evaluation.** The v4 protocol fixes a seeded 60-call schedule per configuration, three repetitions, per-model precision/recall and guard/clean-specificity thresholds, all-pairs prediction agreement, and provider-family-balanced recall-gap checks before live execution. CI re-parses raw model outputs rather than trusting serialized scores; a legitimate performance `FAIL` remains valid evidence, while incomplete or provenance-mismatched reports fail the integrity test. The declared matrix is Codex, Claude Opus, and Claude Fable across two provider/runtime families; three configurations are not presented as three independent hosts.
+- **Recoverable live benchmark artifacts.** Runner timeouts now terminate pipe-holding descendants even after their CLI leader exits, Claude live runs ignore user/project/local settings and plugin sync, and per-configuration/comparison reports are replaced atomically so infrastructure failures cannot truncate the last valid partial report.
+- **V1–V6 verification doctrine for generated and reviewed E2E tests.** The skills now require outcome-first assertions, falsification, behavior fault injection, write-contract checks, repeat/isolation evidence, and independent re-review rather than treating a green run as proof of correctness.
+- **Cypress-specific reliability checks.** The reviewer now triages async callbacks containing queued commands (`#10d`), assigned Cypress commands (`#10e`), and unsafe continued action chains (`#10f`) alongside the existing Playwright coverage.
+- **Cross-host subagent fallback and packaging.** For the reviewer and debuggers, Claude named agents, Codex native verifier/debugger roles, and inline fallbacks share one taxonomy and verdict contract. The generator does not claim that equivalence: V6 requires an independent fresh-context, read-only reviewer and returns `CANNOT_VERIFY` / `PARTIAL/BLOCKED` when that separation is unavailable. Optional Codex agent installation includes a conflict guard and parity test without requiring Python 3.11 or a package install.
+- **Paired behavioral evaluation harness.** `scripts/evals/run-behavioral-evals.py` compares repeated `with_skill` and `without_skill` runs, records runner/version and repository provenance, and reports per-case lift and saturated baselines. The live runner is opt-in; ordinary CI uses a deterministic fake runner.
+- **Historical v2/r3 machine-labeled reviewer holdout.** A hard public development corpus covers eight Playwright/Cypress multi-file cases with 30 unique findings and 31 explicit false-positive guards. The isolated runner computes exact TP/FP/FN across repeated Claude/Codex runs while keeping unique majority-stable precision/recall separate from repeated-run stability evidence and recording model, CLI, Git dirty state, evaluated-skill/corpus digests, timing, and raw-output provenance. Public runs use fresh temporary workspaces, read-only host controls, and pre/post staged-workspace digests; mutations are infrastructure errors. Non-public corpora require an explicit external isolation wrapper because the harness does not claim a built-in sealed sandbox. Infrastructure failures keep the report incomplete and never become false negatives.
+- **Executable behavior-fault fixtures.** Real pinned Playwright and Cypress apps now exercise twelve fault operators across 36 browser cells and prove the falsification chain: strong tests pass on correct behavior, fail after behavior fault injection, and assertion-mutated weak tests stay green against the same fault. The added `#4j` operator proves Playwright's documented unnamed-ARIA-snapshot false green against an accessible-label fault. CI validates fixture contracts without downloading browsers; full browser runs remain explicit release evidence.
+- **Audited LLM-test evidence ledger.** A 55-source primary-source review now separates verified, qualified, and not-cleared claims; corrects misleading denominators and model rankings; adds the peer-reviewed WebTestPilot, WEFix, and GenIA-E2ETest results; and replaces the former “no direct study” claim with a narrower evidence boundary.
+- **Exact operator-linked causal reviewer benchmark v2.** Twelve weak-test cases are mechanically derived byte-for-byte from executable fixture operators and paired with twelve separate clean guards. A linkage ledger pins transformation spans and hashes, while CI reconstructs every mapping. This measures whether the reviewer detects proven false-green mechanisms without presenting public exact-match evidence as sealed generation quality.
+- **Debugger holdout v1.** Thirty sanitized report excerpts cover F1–F15 once per framework and score category, confidence, product/test diagnosis, impact, urgency, and confirmed-test-defect severity as separate axes.
+- **Generator fault-kill planning v1.** A closed declarative plan language compiles into trusted Playwright templates for behavior, label, auth, and write faults. Case, fault-mode macro, and worst-case metrics are reported; Cypress inputs are explicit unscored scope controls, and model-generated code is never executed.
+- **Unanchored independent product-review runner.** A fixed packet of 25 product files excludes holdouts, evals, results, scorecards, prior reviews, and Git history before Codex, Claude Opus, or Claude Fable sees it. The zero-tool runner freezes source/representation digests, requires strict file-and-line evidence, and scores six fixed dimensions while disclosing that model-family review is neither human nor sealed adjudication.
+- **Playwright 1.62 floating-Promise semantic probe.** A separate six-cell browser probe covers #15 assertions and #16 Locator actions. Awaited clean calls exit 0, awaited faults exit 1, and the same faulting calls still exit 1 after deleting only their leading `await`. This negative result is archived separately from the 11-operator/33-cell weak-green fixture matrix; CI validates the report and contracts without rerunning the opt-in browser work.
+- **Preregistered v2 decision protocol.** A seeded schedule, three-run majority rule, unique-unit Wilson intervals, per-host release thresholds, and fail-closed protocol/workspace integrity checks are frozen before live calls. `compare-reviewer-holdouts.py` additionally requires identical provenance, both individual reports to pass, a Claude/Codex recall gap no greater than 10 percentage points, and stable-prediction Jaccard agreement of at least 0.80.
+- **Immutable benchmark evidence bundle.** `benchmarks/reviewer-holdout-v2/` now freezes the initial oracle, full raw Claude/Codex reports, catalog-only controls, ablation outputs, oracle revision ledger, hardened rerun, and post-run adjudications. CI pins every artifact by SHA-256 and re-derives the documented aggregates.
 
 ### Changed
 
-- **Adversarial boundaries now fail closed across scanning, generation,
-  debugging, evaluation, and installation.** Unresolved custom-fixture imports
-  keep every affected P0 family visible as non-gating LLM triage instead of
-  suppressing findings; framework-unproven `.e2e.*` files cannot create gating
-  P0 output; computed focused-test aliases are detected without matching arrow
-  callbacks; and credential-like scanner evidence is location-only. Generator
-  exploration installs a pre-dispatch navigation guard and requires an exact,
-  redirect-disabled target preflight. Debugger and malformed-model projections
-  redact credentials before truncation. The contributor reinstaller now pins
-  and hashes the complete `skills@1.5.21` dependency tree, verifies requested
-  receiving surfaces, and restores the prior four-skill state on ordinary
-  failure or `HUP`/`INT`/`TERM`.
-- **Blind product-review blockers were fixed without changing benchmark
-  thresholds or labels.** The scanner now applies one eight-extension JS/TS
-  source contract across ESLint and bundled checks; lexically excludes
-  focused-test strings, comments, and unrelated receivers; detects formatted
-  multi-line #4f Locator assertions; routes raw #4a and #14 candidates through
-  semantic triage; and rejects `ast-grep`/`sg` anywhere inside the containing
-  target project when scanning a subdirectory. The holdout runner now validates
-  corpus severities against the evaluated `--skill-dir` and its frozen copy,
-  and live children receive runner-specific environment allowlists instead of
-  the ambient caller environment.
-- **Second blind-review boundary defects now fail closed.** Tier 3 rejects
-  missing PCRE2 support and ripgrep scan errors instead of reporting a false
-  clean result; framework-content scoping covers custom `testMatch` basenames;
-  `JUSTIFIED` suppression requires a lexical line comment with a nonempty
-  rationale; nested test-directory scans resolve opted-in ESLint from the
-  containing project while retaining the requested file boundary; and #8
-  candidates require semantic confirmation that the discarded read was the
-  scenario's only verification. Holdout corpus paths cannot overwrite
-  runner-controlled surfaces, and the staged skill digest is verified against
-  the frozen skill before and after every call. Non-public wrapper runs remain
-  `INCONCLUSIVE` because executable presence does not attest source isolation.
-- **The standalone scanner no longer executes target-project code by default.**
-  Local ESLint, plugins, parsers, and flat config now require the explicit
-  `E2E_SMELL_ALLOW_PROJECT_ESLINT=1` trust capability. Opted-in Tier 1 receives
-  only E2E-proven files and a minimized environment with a temporary
-  home/config/cache; documentation states that this reduces ambient credential
-  exposure but is not a sandbox. Project-root `ast-grep`/`sg` shims are
-  rejected, while bundled Tier 3 remains load-bearing.
-- **Scanner scope and context boundaries are stricter.** Tier 1 no longer lets
-  neighboring Vitest/Jest files become Playwright/Cypress P0 findings,
-  multiline conditional boolean reads are routed to #5a triage instead of
-  misclassified as discarded #8b values, and Playwright-proven POM/support
-  `.catch` paths now receive mechanical or triage coverage.
-- **Pattern #4g now matches Playwright 1.62 runtime semantics.** A zero matcher
-  timeout removes the assertion-local deadline and can consume the enclosing
-  test/hook timeout; it does not collapse a web-first assertion into a
-  one-shot read. The P1 severity is unchanged. A separate browser probe and
-  archived validator lock this behavior without altering the 11/33
-  weak-green matrix.
-- **Independent product-review defects are fixed instead of scoring around
-  them.** Pattern #18 now states the real Playwright contract: soft assertion
-  failures still fail the test, while the review concern is dependent work
-  continuing before a hard scenario gate. Pattern #16 now covers the broader
-  Locator action surface and formatted multiline chains. README lint and
-  `page.click()` guidance no longer overstates plugin completeness or invents
-  an auto-wait distinction. The prior 24/24 Codex report is retained as
-  pre-product-review evidence and all three configurations must rerun against
-  the corrected snapshot.
-- **Fixture evidence is independently inspectable.** Schema v3 archives
-  sanitized bounded stdout/stderr for every successful and failing browser
-  cell, includes the fixture evaluator's own SHA-256, and fails closed on
-  missing output, provenance drift, unsafe redaction, or an over-limit archive.
-  The expanded report was regenerated from a fresh 33/33 browser run.
-- **Framework semantics and severity boundaries were tightened.** Standalone
-  Cypress `cy.get()` queries are no longer treated as discarded Playwright
-  locators; one-shot but fallible Playwright reads are P1 retry weaknesses
-  rather than P0 always-pass defects; and missing-auth #12 is P0 only when the
-  login/wrong surface can actually satisfy the test.
-- **Missing-await retry and receiver boundaries were corrected.** `toPass()` and
-  `expect.poll()` no longer exempt floating #15/#16 Promises that their callback
-  neither awaits nor returns. The scanner now routes Locator variables and POM
-  properties to semantic triage while keeping `Promise.all` actions and
-  action-only visibility branches outside its mechanical P0 exit gate.
-- **Scanner tiers now fail closed without policy leaks.** A project's disabled
-  ESLint rule can no longer suppress the bundled Tier 2/3 checks. Exact
-  file/line/rule-class deduplication prevents duplicate counts, AST-only P0
-  findings affect the default exit gate, non-E2E AST hits are filtered, the
-  explicit ast-grep download path invokes the correct binary, and formatted,
-  commented, nested `Promise.all`/`Promise.race` actions retain their exclusion.
-- **Debugger report correlation was hardened.** Cypress JUnit extraction now
-  uses a bundled standard-library XML parser that keeps each failure paired
-  with its testcase, classname, suite file, and report. The Cypress debugger
-  never auto-installs `mochawesome-merge`; the Playwright debugger deduplicates
-  the same file/title across browser projects and aggregates project names.
-- **Cross-host comparisons require the full corpus.** Reports produced with
-  `--case` remain valid development artifacts, but the release comparator now
-  rejects any schedule whose case set differs from the selected corpus.
-- **Playwright worker-retry semantics were corrected.** Pattern #19 now focuses
-  on cross-test persistence and cross-worker collisions; it no longer claims a
-  failed Playwright test retries in the same worker.
-- **Lint and AST tooling are no longer auto-downloaded by default.** The
-  reviewer reuses project-native tools and keeps the dependency-free fallback;
-  offline execution no longer requires `npx`, ESLint, or ast-grep downloads.
-- **Local ESLint plugins are invoked directly.** When a target project already
-  has ESLint and `eslint-plugin-playwright`/`eslint-plugin-cypress`, the scanner
-  runs the project's `node_modules/.bin/eslint` and resolves its local rules
-  without using `npx` as a wrapper. The legacy npx path is limited to explicit
-  opt-in downloads when local tooling is absent.
-- **Eval and contract parity are now CI-checked.** Verification-rule parity,
-  result-schema parity, subagent fallback parity, and behavioral-harness
-  regression checks run from `ci-local.sh`.
-- **The parity drift smoke is portable to macOS Bash 3.2.** Expected-error
-  matching no longer uses a `grep -q` pipeline whose early exit can trip
-  `pipefail` with a false SIGPIPE failure.
-- **The reviewer evaluator now fails closed against measurement tampering.**
-  Live runs copy the complete skill and corpus once, use only that snapshot,
-  verify source and snapshot digests after execution, preregister the exact
-  model matrix, and gate repeated precision as well as majority-stable
-  metrics. The cross-host comparator re-parses raw output and re-derives the
-  schedule, every run score, aggregate, and status. Deterministic regressions
-  cover rotating false positives, report/status/metric/schedule tampering,
-  oracle-token leakage, and skill/corpus drift.
-  Host/model fields remain declared local provenance rather than signed
-  execution attestation, and the benchmark docs state that boundary explicitly.
-- **Fixture evidence records executable provenance.** Runtime reports now
-  include fixture/operator/lockfile digests, normalized commands, output
-  hashes, Python/Node/framework versions, and platform identity. A browser-free
-  CI test exercises all 33 classification cells plus missing-marker and
-  unexpected-exit paths.
-- **Contributor documentation now distinguishes deterministic CI evidence from
-  optional live model evidence.** A passing smoke case is not presented as a
-  general precision/recall or cross-model claim.
-- **Public benchmark claims are sample-scoped.** README translations and the
-  benchmark page now say “no judged false positives in this sample” instead of
-  implying perfect precision, distinguish re-derived aggregates from a full raw
-  replay, and separate merged, in-review, and queued upstream counts.
+- **Adversarial boundaries now fail closed across scanning, generation, debugging, evaluation, and installation.** Unresolved custom-fixture imports keep every affected P0 family visible as non-gating LLM triage instead of suppressing findings; framework-unproven `.e2e.*` files cannot create gating P0 output; computed focused-test aliases are detected without matching arrow callbacks; and credential-like scanner evidence is location-only. Generator exploration installs a pre-dispatch navigation guard and requires an exact, redirect-disabled target preflight. Debugger and malformed-model projections redact credentials before truncation. The contributor reinstaller now pins and hashes the complete `skills@1.5.21` dependency tree, verifies requested receiving surfaces, and restores the prior four-skill state on ordinary failure or `HUP`/`INT`/`TERM`.
+- **Blind product-review blockers were fixed without changing benchmark thresholds or labels.** The scanner now applies one eight-extension JS/TS source contract across ESLint and bundled checks; lexically excludes focused-test strings, comments, and unrelated receivers; detects formatted multi-line #4f Locator assertions; routes raw #4a and #14 candidates through semantic triage; and rejects `ast-grep`/`sg` anywhere inside the containing target project when scanning a subdirectory. The holdout runner now validates corpus severities against the evaluated `--skill-dir` and its frozen copy, and live children receive runner-specific environment allowlists instead of the ambient caller environment.
+- **Second blind-review boundary defects now fail closed.** Tier 3 rejects missing PCRE2 support and ripgrep scan errors instead of reporting a false clean result; framework-content scoping covers custom `testMatch` basenames; `JUSTIFIED` suppression requires a lexical line comment with a nonempty rationale; nested test-directory scans resolve opted-in ESLint from the containing project while retaining the requested file boundary; and #8 candidates require semantic confirmation that the discarded read was the scenario's only verification. Holdout corpus paths cannot overwrite runner-controlled surfaces, and the staged skill digest is verified against the frozen skill before and after every call. Non-public wrapper runs remain `INCONCLUSIVE` because executable presence does not attest source isolation.
+- **The standalone scanner no longer executes target-project code by default.** Local ESLint, plugins, parsers, and flat config now require the explicit `E2E_SMELL_ALLOW_PROJECT_ESLINT=1` trust capability. Opted-in Tier 1 receives only E2E-proven files and a minimized environment with a temporary home/config/cache; documentation states that this reduces ambient credential exposure but is not a sandbox. Project-root `ast-grep`/`sg` shims are rejected, while bundled Tier 3 remains load-bearing.
+- **Scanner scope and context boundaries are stricter.** Tier 1 no longer lets neighboring Vitest/Jest files become Playwright/Cypress P0 findings, multiline conditional boolean reads are routed to #5a triage instead of misclassified as discarded #8b values, and Playwright-proven POM/support `.catch` paths now receive mechanical or triage coverage.
+- **Pattern #4g now matches Playwright 1.62 runtime semantics.** A zero matcher timeout removes the assertion-local deadline and can consume the enclosing test/hook timeout; it does not collapse a web-first assertion into a one-shot read. The P1 severity is unchanged. A separate browser probe and archived validator lock this behavior without altering the 11/33 weak-green matrix.
+- **Independent product-review defects are fixed instead of scoring around them.** Pattern #18 now states the real Playwright contract: soft assertion failures still fail the test, while the review concern is dependent work continuing before a hard scenario gate. Pattern #16 now covers the broader Locator action surface and formatted multiline chains. README lint and `page.click()` guidance no longer overstates plugin completeness or invents an auto-wait distinction. The prior 24/24 Codex report is retained as pre-product-review evidence and all three configurations must rerun against the corrected snapshot.
+- **Fixture evidence is independently inspectable.** Schema v3 archives sanitized bounded stdout/stderr for every successful and failing browser cell, includes the fixture evaluator's own SHA-256, and fails closed on missing output, provenance drift, unsafe redaction, or an over-limit archive. The expanded report was regenerated from a fresh 33/33 browser run.
+- **Framework semantics and severity boundaries were tightened.** Standalone Cypress `cy.get()` queries are no longer treated as discarded Playwright locators; one-shot but fallible Playwright reads are P1 retry weaknesses rather than P0 always-pass defects; and missing-auth #12 is P0 only when the login/wrong surface can actually satisfy the test.
+- **Missing-await retry and receiver boundaries were corrected.** `toPass()` and `expect.poll()` no longer exempt floating #15/#16 Promises that their callback neither awaits nor returns. The scanner now routes Locator variables and POM properties to semantic triage while keeping `Promise.all` actions and action-only visibility branches outside its mechanical P0 exit gate.
+- **Scanner tiers now fail closed without policy leaks.** A project's disabled ESLint rule can no longer suppress the bundled Tier 2/3 checks. Exact file/line/rule-class deduplication prevents duplicate counts, AST-only P0 findings affect the default exit gate, non-E2E AST hits are filtered, the explicit ast-grep download path invokes the correct binary, and formatted, commented, nested `Promise.all`/`Promise.race` actions retain their exclusion.
+- **Debugger report correlation was hardened.** Cypress JUnit extraction now uses a bundled standard-library XML parser that keeps each failure paired with its testcase, classname, suite file, and report. The Cypress debugger never auto-installs `mochawesome-merge`; the Playwright debugger deduplicates the same file/title across browser projects and aggregates project names.
+- **Cross-host comparisons require the full corpus.** Reports produced with `--case` remain valid development artifacts, but the release comparator now rejects any schedule whose case set differs from the selected corpus.
+- **Playwright worker-retry semantics were corrected.** Pattern #19 now focuses on cross-test persistence and cross-worker collisions; it no longer claims a failed Playwright test retries in the same worker.
+- **Lint and AST tooling are no longer auto-downloaded by default.** The reviewer reuses project-native tools and keeps the dependency-free fallback; offline execution no longer requires `npx`, ESLint, or ast-grep downloads.
+- **Local ESLint plugins are invoked directly.** When a target project already has ESLint and `eslint-plugin-playwright`/`eslint-plugin-cypress`, the scanner runs the project's `node_modules/.bin/eslint` and resolves its local rules without using `npx` as a wrapper. The legacy npx path is limited to explicit opt-in downloads when local tooling is absent.
+- **Eval and contract parity are now CI-checked.** Verification-rule parity, result-schema parity, subagent fallback parity, and behavioral-harness regression checks run from `ci-local.sh`.
+- **The parity drift smoke is portable to macOS Bash 3.2.** Expected-error matching no longer uses a `grep -q` pipeline whose early exit can trip `pipefail` with a false SIGPIPE failure.
+- **The reviewer evaluator now fails closed against measurement tampering.** Live runs copy the complete skill and corpus once, use only that snapshot, verify source and snapshot digests after execution, preregister the exact model matrix, and gate repeated precision as well as majority-stable metrics. The cross-host comparator re-parses raw output and re-derives the schedule, every run score, aggregate, and status. Deterministic regressions cover rotating false positives, report/status/metric/schedule tampering, oracle-token leakage, and skill/corpus drift. Host/model fields remain declared local provenance rather than signed execution attestation, and the benchmark docs state that boundary explicitly.
+- **Fixture evidence records executable provenance.** Runtime reports now include fixture/operator/lockfile digests, normalized commands, output hashes, Python/Node/framework versions, and platform identity. A browser-free CI test exercises all 33 classification cells plus missing-marker and unexpected-exit paths.
+- **Contributor documentation now distinguishes deterministic CI evidence from optional live model evidence.** A passing smoke case is not presented as a general precision/recall or cross-model claim.
+- **Public benchmark claims are sample-scoped.** README translations and the benchmark page now say “no judged false positives in this sample” instead of implying perfect precision, distinguish re-derived aggregates from a full raw replay, and separate merged, in-review, and queued upstream counts.
 
 ### Verification
 
-- `bash scripts/ci/ci-local.sh` — all non-v3-evidence stages passed; drift
-  smoke **49/49**. The v3 evidence stage remains intentionally blocked until
-  both full Claude reports exist.
-- `bash scripts/ci/pre-push-security.sh` — passed; **10 checks, 0 warnings,
-  0 blockers**.
-- Codex behavioral pilot — `with_skill` and `without_skill` both passed the
-  easy reviewer case, producing **0% measured lift** and correctly marking the
-  case as saturated rather than overstating the result.
-- Executable Playwright/Cypress fault matrix — **33/33 expected outcomes matched**
-  across eleven fault operators on a fresh fixture dependency install.
-- Playwright 1.62 floating-Promise semantic probe — **6/6 expected exits
-  matched** across #15 and #16, including two nonzero fault-unawaited runs; the
-  canonical weak-green fixture report remains **11 operators / 33 cells**.
-- Labeled holdout fake-runner regression — exact repeated scoring produced the
-  expected **6 TP / 4 FP / 2 FN**, including explicit FP-guard attribution.
-- Preregistered full public-holdout baseline — Codex `gpt-5.6-sol` passed with
-  **25 stable TP / 0 FP / 0 FN**; Claude `claude-opus-5` completed all 24 calls
-  but failed the precision gate with **24 TP / 2 FP / 1 FN**. Cross-host recall
-  gap (0.04) and stable-prediction Jaccard (0.889) passed, but the combined gate
-  failed because both host reports must pass.
-- Catalog-only ablation — both controls failed the precision gate: Codex
-  **24 TP / 13 FP / 1 FN**, Claude **24 TP / 4 FP / 1 FN**. The full workflow
-  improved stable F1 by 0.226 on Codex and 0.036 on Claude; the Claude lift was
-  below the separately preregistered 0.05 ablation threshold.
-- Targeted post-fix public regression — after clarifying acceptance targets and
-  causal source-line anchors, both hosts completed the two affected cases three
-  times with **7 stable TP / 0 FP / 0 FN**. This is contaminated development
-  evidence, not a sealed-corpus or universal-accuracy claim. A later full Claude
-  rerun hit the local CLI session limit and was correctly kept `INCONCLUSIVE`
-  instead of being scored as false negatives.
-- Oracle re-adjudication — a reviewer challenge to unexpected predictions found
-  that the initial 25-label corpus had omitted two invariantly true `#4a`
-  assertions, one single-use `#11` POM method, and two name/assertion contract
-  failures under `#1`. The corrected corpus now has **30 findings and 31
-  guards**. Initial live scores remain identified as
-  results against the old oracle and are not relabeled as preregistered evidence.
-- Hardened current-oracle Codex rerun — all **24/24** calls completed with zero
-  infrastructure errors, but the frozen r3 score failed: stable
-  **30 TP / 4 FP / 0 FN** (precision 0.882) and repeated
-  **86 TP / 14 FP / 4 FN** (precision 0.860). The failure was preserved rather
-  than rerun away.
-- Post-run oracle challenge — four isolated finding verifiers independently
-  confirmed all four majority-stable “false positives” were real `#4a` defects
-  omitted by r3. The report was not rescored; it is marked
-  **oracle-invalidated** for performance claims. This is evidence that the
-  public synthetic corpus still needs a new blind/human-adjudicated replacement,
-  not evidence for a 100% precision claim.
-- The matching current-oracle Claude run could not start because Claude Code
-  reported its session limit and a reset at 18:30 Asia/Seoul. No partial run or
-  substitute model was reported as cross-host evidence.
+- `bash scripts/ci/ci-local.sh` — all non-v3-evidence stages passed; drift smoke **49/49**. The v3 evidence stage remains intentionally blocked until both full Claude reports exist.
+- `bash scripts/ci/pre-push-security.sh` — passed; **10 checks, 0 warnings, 0 blockers**.
+- Codex behavioral pilot — `with_skill` and `without_skill` both passed the easy reviewer case, producing **0% measured lift** and correctly marking the case as saturated rather than overstating the result.
+- Executable Playwright/Cypress fault matrix — **33/33 expected outcomes matched** across eleven fault operators on a fresh fixture dependency install.
+- Playwright 1.62 floating-Promise semantic probe — **6/6 expected exits matched** across #15 and #16, including two nonzero fault-unawaited runs; the canonical weak-green fixture report remains **11 operators / 33 cells**.
+- Labeled holdout fake-runner regression — exact repeated scoring produced the expected **6 TP / 4 FP / 2 FN**, including explicit FP-guard attribution.
+- Preregistered full public-holdout baseline — Codex `gpt-5.6-sol` passed with **25 stable TP / 0 FP / 0 FN**; Claude `claude-opus-5` completed all 24 calls but failed the precision gate with **24 TP / 2 FP / 1 FN**. Cross-host recall gap (0.04) and stable-prediction Jaccard (0.889) passed, but the combined gate failed because both host reports must pass.
+- Catalog-only ablation — both controls failed the precision gate: Codex **24 TP / 13 FP / 1 FN**, Claude **24 TP / 4 FP / 1 FN**. The full workflow improved stable F1 by 0.226 on Codex and 0.036 on Claude; the Claude lift was below the separately preregistered 0.05 ablation threshold.
+- Targeted post-fix public regression — after clarifying acceptance targets and causal source-line anchors, both hosts completed the two affected cases three times with **7 stable TP / 0 FP / 0 FN**. This is contaminated development evidence, not a sealed-corpus or universal-accuracy claim. A later full Claude rerun hit the local CLI session limit and was correctly kept `INCONCLUSIVE` instead of being scored as false negatives.
+- Oracle re-adjudication — a reviewer challenge to unexpected predictions found that the initial 25-label corpus had omitted two invariantly true `#4a` assertions, one single-use `#11` POM method, and two name/assertion contract failures under `#1`. The corrected corpus now has **30 findings and 31 guards**. Initial live scores remain identified as results against the old oracle and are not relabeled as preregistered evidence.
+- Hardened current-oracle Codex rerun — all **24/24** calls completed with zero infrastructure errors, but the frozen r3 score failed: stable **30 TP / 4 FP / 0 FN** (precision 0.882) and repeated **86 TP / 14 FP / 4 FN** (precision 0.860). The failure was preserved rather than rerun away.
+- Post-run oracle challenge — four isolated finding verifiers independently confirmed all four majority-stable “false positives” were real `#4a` defects omitted by r3. The report was not rescored; it is marked **oracle-invalidated** for performance claims. This is evidence that the public synthetic corpus still needs a new blind/human-adjudicated replacement, not evidence for a 100% precision claim.
+- The matching current-oracle Claude run could not start because Claude Code reported its session limit and a reset at 18:30 Asia/Seoul. No partial run or substitute model was reported as cross-host evidence.
 
 ## [1.9.1] - 2026-07-27
 
@@ -1613,16 +678,8 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 
 ### Added (dev tooling)
 - **Testbed for live OSS validation** — added `testbed/` (gitignored) as the canonical location to clone real-world Playwright/Cypress repos against which the skills can be exercised. Clone manually (`git clone --depth 1 <url> testbed/<name>`); then `bash scripts/e2e-smell-scan.sh testbed/<name>` or invoke `e2e-reviewer` on the path.
-- **Local-install reinstall script (historical behavior)** — the original
-  implementation ran `npx skills remove` then `npx skills add <repo-root>
-  --copy`. This entry's old claim that working-tree edits could not enter the
-  copy is superseded: the current installer intentionally snapshots the exact
-  working tree at invocation, uses a verified pinned CLI dependency closure,
-  and verifies receiving surfaces before accepting replacement.
-- **Pre-push git hook (historical behavior)** — the original hook ran `npx
-  skills update`. The current hook delegates to the hardened reinstall script,
-  so the installed copy reflects the working tree present at push time rather
-  than claiming an automatic HEAD-only snapshot.
+- **Local-install reinstall script (historical behavior)** — the original implementation ran `npx skills remove` then `npx skills add <repo-root> --copy`. This entry's old claim that working-tree edits could not enter the copy is superseded: the current installer intentionally snapshots the exact working tree at invocation, uses a verified pinned CLI dependency closure, and verifies receiving surfaces before accepting replacement.
+- **Pre-push git hook (historical behavior)** — the original hook ran `npx skills update`. The current hook delegates to the hardened reinstall script, so the installed copy reflects the working tree present at push time rather than claiming an automatic HEAD-only snapshot.
 
 ### Fixed (additional)
 - **`e2e-reviewer/SKILL.md` frontmatter YAML parse regression** — description re-introduced `): ` (colon-space) tokens forbidden in YAML plain scalars when the severity-first restructure added phrases like `P0 must-fix (silent always-pass):`. Same failure mode as v0.7.3 (`YAMLException` in gray-matter, skills CLI silently skips the skill). Fix: wrap the description in single quotes. Also updated `scripts/ci/review.sh` Check 5 regex lookahead to accept the closing single quote (`\.(?=[\s']|$)`) and added a stdlib-only frontmatter guard that fails any unquoted `description:` value containing `: `. Drift smoke Case 10 covers the regression.

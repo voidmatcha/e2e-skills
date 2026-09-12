@@ -1,7 +1,6 @@
 # Phase 4: Applying Fixes — full contract
 
-Read on demand when SKILL.md Phase 4 begins (producing fixes). This file is the authority for
-canonical replacements, band-aid handling, cascade cleanups, cycle count, and scope discipline.
+Read on demand when SKILL.md Phase 4 begins (producing fixes). This file is the authority for canonical replacements, band-aid handling, cascade cleanups, cycle count, and scope discipline.
 
 When you go beyond reviewing into fixing, follow these rules. They prevent two common failure modes: (1) using a non-canonical replacement that re-introduces flake, and (2) ripping out a "band-aid" anti-pattern that was actually load-bearing for an upstream flake.
 
@@ -49,28 +48,15 @@ Use these idiomatic fixes. Don't invent alternatives. **The replacements below a
 |------------------|---------------|-------|
 | `#4f` `expect(screen.getBy*(...)).toBeTruthy()` | `expect(screen.getBy*(...)).toBeInTheDocument()` | jest-dom matcher — see prereq check below |
 
-**Scope note (Phase 0 + 4.1 reconciliation):** e2e-reviewer covers
-Playwright and Cypress only. Pure Jest/Vitest unit tests and Storybook
-interaction tests are out of scope, even when they use Testing Library helpers;
-do not report or auto-fix them through this skill. The RTL row applies only when
-RTL/Testing-Library helpers appear inside an otherwise in-scope
-Playwright/Cypress spec (rare).
+**Scope note (Phase 0 + 4.1 reconciliation):** e2e-reviewer covers Playwright and Cypress only. Pure Jest/Vitest unit tests and Storybook interaction tests are out of scope, even when they use Testing Library helpers; do not report or auto-fix them through this skill. The RTL row applies only when RTL/Testing-Library helpers appear inside an otherwise in-scope Playwright/Cypress spec (rare).
 
-**Note:** `not.toBeAttached()` is the canonical assertion for "element is not
-in DOM." A positive `.toBeAttached()` is also meaningful when DOM attachment
-itself is the promised state. Report #4b only when attachment adds no evidence
-for the action's promised outcome.
+**Note:** `not.toBeAttached()` is the canonical assertion for "element is not in DOM." A positive `.toBeAttached()` is also meaningful when DOM attachment itself is the promised state. Report #4b only when attachment adds no evidence for the action's promised outcome.
 
 #### `#4f` RTL / Jest / Vitest jest-dom prerequisite check (MANDATORY before bulk replacement)
 
-This prerequisite applies only to the React Testing Library / Jest / Vitest row
-above. Playwright Locators use awaited Playwright assertions such as
-`await expect(locator).toBeVisible()` or `await expect(locator).toBeAttached()`
-and must not be converted to jest-dom matchers.
+This prerequisite applies only to the React Testing Library / Jest / Vitest row above. Playwright Locators use awaited Playwright assertions such as `await expect(locator).toBeVisible()` or `await expect(locator).toBeAttached()` and must not be converted to jest-dom matchers.
 
-`.toBeInTheDocument()` is a `jest-dom` matcher — without it, the assertion throws
-`TypeError: expect(...).toBeInTheDocument is not a function`. Verify presence
-before replacing an RTL assertion:
+`.toBeInTheDocument()` is a `jest-dom` matcher — without it, the assertion throws `TypeError: expect(...).toBeInTheDocument is not a function`. Verify presence before replacing an RTL assertion:
 
 1. **Search for global setup**:
    ```bash
@@ -91,16 +77,12 @@ before replacing an RTL assertion:
 Most replacements above are **flake-protective**: the new form auto-retries where the old read once. Examples:
 - `expect(await x.isVisible()).toBe(true)` reads ONCE → races against async render
 - `await expect(x).toBeVisible()` retries until visible OR timeout → handles async render gracefully
-- Playwright `expect(page.getByText(...)).toBeTruthy()` always passes on the
-  Locator object; `await expect(page.getByText(...)).toBeVisible()` retries and
-  verifies rendered UI
+- Playwright `expect(page.getByText(...)).toBeTruthy()` always passes on the Locator object; `await expect(page.getByText(...)).toBeVisible()` retries and verifies rendered UI
 
 A few replacements are **flake-neutral** (semantic improvement only, not flake-fixing):
-- RTL / Jest / Vitest `#4f` toBeTruthy → toBeInTheDocument (`screen.getByText`
-  already throws on miss; both pass on success)
+- RTL / Jest / Vitest `#4f` toBeTruthy → toBeInTheDocument (`screen.getByText` already throws on miss; both pass on success)
 - `#7` `.only` removal (no flake change; just removes debug leak)
-- `#4b` weak positive `toBeAttached()` replacement/removal when attachment adds
-  no outcome proof
+- `#4b` weak positive `toBeAttached()` replacement/removal when attachment adds no outcome proof
 
 When the user says "test was already flaky and I added the band-aid for that reason" — see 4.2 below.
 

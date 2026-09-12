@@ -1,20 +1,10 @@
 # Development Evidence Score (100-point rubric)
 
-This rubric was frozen before complete Fable or Opus results were available,
-after four successful Fable calls and one infrastructure timeout had been
-observed. It limits post-hoc scoring discretion, but it is not a fully blind
-preregistration because those partial calls, a pre-remediation Codex run, and
-development product reviews were already visible.
+This rubric was frozen before complete Fable or Opus results were available, after four successful Fable calls and one infrastructure timeout had been observed. It limits post-hoc scoring discretion, but it is not a fully blind preregistration because those partial calls, a pre-remediation Codex run, and development product reviews were already visible.
 
-No score is currently available. `evidence-status.json` forbids publishing a
-Development Evidence Score while the declared matrix is incomplete; this
-rubric becomes applicable only after strict verification of a `COMPLETE`
-status and its full evidence manifest.
+No score is currently available. `evidence-status.json` forbids publishing a Development Evidence Score while the declared matrix is incomplete; this rubric becomes applicable only after strict verification of a `COMPLETE` status and its full evidence manifest.
 
-This is a self-authored public-development evidence-maturity score, not an
-unbiased general skill-quality score. V3 external validity is **not
-established**: there is no sealed real-repository sample, human oracle, or
-control arm. See `reviews/methodology-bias-audit.md`.
+This is a self-authored public-development evidence-maturity score, not an unbiased general skill-quality score. V3 external validity is **not established**: there is no sealed real-repository sample, human oracle, or control arm. See `reviews/methodology-bias-audit.md`.
 
 | Dimension | Points | Fixed scoring rule |
 |---|---:|---|
@@ -26,14 +16,8 @@ control arm. See `reviews/methodology-bias-audit.md`.
 | Oracle and generalization quality | 10 | A public synthetic corpus with source-only model adjudication is capped at 3. Two additional points require executable causal linkage from labeled weak tests to browser-level app faults. The remaining 5 require a sealed external corpus with two independent human annotators, a third adjudicator, and a generated-test fault-detection arm rather than reviewer exact-match alone. |
 | User-facing clarity | 5 | Reproducible install/run instructions, exact scope, honest limitations, and an auditable result viewer. Independent product reviews may reduce this score for confirmed documentation or usability defects. |
 
-Use unrounded metric values in the calculation and round only the final total
-to one decimal place. Do not award partial credit inside the binary dimensions
-unless the rule explicitly uses a metric. A recovered infrastructure retry may
-support a complete result only when the failed attempt remains published and no
-semantic input or threshold changes.
+Use unrounded metric values in the calculation and round only the final total to one decimal place. Do not award partial credit inside the binary dimensions unless the rule explicitly uses a metric. A recovered infrastructure retry may support a complete result only when the failed attempt remains published and no semantic input or threshold changes.
 
-This score measures the current public-development evidence bundle when all
-declared reports are present. It is not a probability that an arbitrary future
-finding is correct and must not be presented as a general skill-quality score.
+This score measures the current public-development evidence bundle when all declared reports are present. It is not a probability that an arbitrary future finding is correct and must not be presented as a general skill-quality score.
 
 Licensed under Apache-2.0 with the repository.

@@ -2,60 +2,20 @@
 
 **This file is a lookup table, not a dispatch procedure.** Phase 1 runs `bash <skill-base>/scripts/scan.sh` (the runtime source of truth); use this file to interpret what each pattern ID means when reading scanner output, doing Phase 2 review, or mapping debugger failure categories back to review patterns. Do NOT hand-dispatch these greps.
 
-Treat `// JUSTIFIED:` as a request to suppress a documented exception, not as
-proof that every marked hit is safe. For P1/P2, skip a hit after confirming a
-concrete rationale in one of the positions below. For P0, keep the hit visible
-as a deduplicated `[P0?][JUSTIFIED-REVIEW]` candidate until Phase 2 or an
-external verifier confirms the rationale; it still gates
-`E2E_SMELL_FAIL_ON=p0-candidate` before that confirmation. #7 Focused Test
-Leak is never suppressible:
+Treat `// JUSTIFIED:` as a request to suppress a documented exception, not as proof that every marked hit is safe. For P1/P2, skip a hit after confirming a concrete rationale in one of the positions below. For P0, keep the hit visible as a deduplicated `[P0?][JUSTIFIED-REVIEW]` candidate until Phase 2 or an external verifier confirms the rationale; it still gates `E2E_SMELL_FAIL_ON=p0-candidate` before that confirmation. #7 Focused Test Leak is never suppressible:
 1. The line **immediately preceding** the hit.
 2. The line immediately preceding the **enclosing call/block** when the hit is inside a callback body — e.g., `// JUSTIFIED:` above `page.evaluate(() => { … document.querySelector(…) … })` covers every qualifying pattern inside that callback.
 3. For chained calls split across lines (`page.locator(…)\n  .filter(…)\n  .first()`), the line immediately preceding the chain's starting expression covers `.nth()` / `.first()` / `.last()` further down the chain.
 
-The scanner applies the direct-line and bounded fluent-chain forms itself, and
-also the enclosing-block form for brace-delimited Playwright
-`evaluate()`/`waitForFunction()` callbacks. The
-marker must be the immediately preceding pure `//` comment; another comment,
-code line, semicolon, block boundary, or second independent expression ends
-that boundary.
+The scanner applies the direct-line and bounded fluent-chain forms itself, and also the enclosing-block form for brace-delimited Playwright `evaluate()`/`waitForFunction()` callbacks. The marker must be the immediately preceding pure `//` comment; another comment, code line, semicolon, block boundary, or second independent expression ends that boundary.
 
 When raw grep output is the only thing you have, always read 1–3 lines of surrounding context before flagging — most false positives come from JUSTIFIED comments sitting just above the visible match.
 
-**Discovery and tool trust:** filename validation, Tier 2, and every Tier-3
-rule use no-ignore mode; repository, parent, global Git, `.ignore`, and
-`.rgignore` configuration cannot hide candidates. Explicit `node_modules`,
-generated, vendor, report, eval-fixture, and minified-output exclusions still
-win in every tier. Tier 2 requests a bounded ast-grep JSON stream, validates
-each record before counting it, and fails closed on malformed or unconsumed
-output. The scanner replaces inherited `PATH` before external commands and
-binds `rg`, optional
-`node`/`npx`, and optional `ast-grep` from deterministic locations or explicit
-absolute `E2E_SMELL_*_BIN` overrides.
+**Discovery and tool trust:** filename validation, Tier 2, and every Tier-3 rule use no-ignore mode; repository, parent, global Git, `.ignore`, and `.rgignore` configuration cannot hide candidates. Explicit `node_modules`, generated, vendor, report, eval-fixture, and minified-output exclusions still win in every tier. Tier 2 requests a bounded ast-grep JSON stream, validates each record before counting it, and fails closed on malformed or unconsumed output. The scanner replaces inherited `PATH` before external commands and binds `rg`, optional `node`/`npx`, and optional `ast-grep` from deterministic locations or explicit absolute `E2E_SMELL_*_BIN` overrides.
 
-**Tier-3 workload ceiling:** each rule accepts at most 1,000 raw candidates by
-default, after its file-scope checks and necessary discovery guards. The limit
-applies across all eligible files, not separately to each file.
-`E2E_SMELL_MAX_RULE_HITS` may be set from 1 through 10,000. Exceeding it
-suppresses that rule, prints `INCOMPLETE`, and keeps the final
-`Summary [INCOMPLETE]` and exit 2 even when other rules finish. Tier 2
-and Tier 3 tool output, plus opted-in Tier 1 ESLint output, is streamed through
-the same line ceiling and a byte
-ceiling before shell materialization; `E2E_SMELL_MAX_RULE_BYTES` defaults to
-1 MiB and may be set up to 16 MiB. Tool or storage failures can abort before
-the Summary. Do not interpret a limit or infrastructure failure as a P0 count.
+**Tier-3 workload ceiling:** each rule accepts at most 1,000 raw candidates by default, after its file-scope checks and necessary discovery guards. The limit applies across all eligible files, not separately to each file. `E2E_SMELL_MAX_RULE_HITS` may be set from 1 through 10,000. Exceeding it suppresses that rule, prints `INCOMPLETE`, and keeps the final `Summary [INCOMPLETE]` and exit 2 even when other rules finish. Tier 2 and Tier 3 tool output, plus opted-in Tier 1 ESLint output, is streamed through the same line ceiling and a byte ceiling before shell materialization; `E2E_SMELL_MAX_RULE_BYTES` defaults to 1 MiB and may be set up to 16 MiB. Tool or storage failures can abort before the Summary. Do not interpret a limit or infrastructure failure as a P0 count.
 
-**Optional strict scope watching:** set `E2E_SMELL_SCOPE_WATCH=strict` to use
-kernel directory-change notifications for missing dependency candidates on
-macOS local APFS. The default is `off`. Existing paths, unsupported filesystems
-or platforms, symlink traversals, and paths exceeding the bounded watch capacity
-keep their original metadata checks. No additional compiler or package is
-required. For ordinary `..` paths, each traversed directory is verified before
-watches are shared, including directories exited by `..`.
-This mode is deliberately stricter about concurrent writes: a watched
-directory change, including a temporary or unrelated sibling creation, aborts
-the scan without a normal Summary. Use it on a quiescent checkout. It does not
-raise candidate limits or turn an incomplete scan into complete coverage.
+**Optional strict scope watching:** set `E2E_SMELL_SCOPE_WATCH=strict` to use kernel directory-change notifications for missing dependency candidates on macOS local APFS. The default is `off`. Existing paths, unsupported filesystems or platforms, symlink traversals, and paths exceeding the bounded watch capacity keep their original metadata checks. No additional compiler or package is required. For ordinary `..` paths, each traversed directory is verified before watches are shared, including directories exited by `..`. This mode is deliberately stricter about concurrent writes: a watched directory change, including a temporary or unrelated sibling creation, aborts the scan without a normal Summary. Use it on a quiescent checkout. It does not raise candidate limits or turn an incomplete scan into complete coverage.
 
 **Phase-0 e2e-file scope filter (Tier 3):** the scanner drops hits in files that carry no executable Playwright/Cypress marker — `.cy.` / `.e2e.` names, Cypress paths, Playwright imports (including namespace aliases and transitive relative ESM/CommonJS fixture modules), Playwright fixture/type provenance, or executable `page.<api>` / `cy.<cmd>(` usage. Framework-looking text inside comments and strings does not create scope. A known foreign test-module import overrides a `.cy.*` basename for Cypress-only rules unless the same file also has executable Cypress module/runtime provenance. Playwright-only rules additionally require Playwright provenance, so a Cypress file with an unrelated object named `page` does not become a Playwright file. Skipped files are counted and reported on a `Scope filter:` line before the Summary — never silently.
 
