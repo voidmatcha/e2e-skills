@@ -1,0 +1,471 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "ca96c9e9920084baf91e5cc4de8a828e53b22664fca5b6981c4222432bd1a2d1",
+  "freeze_sha256": "e6afb005ec7118dd1025232407b9965a9ffe3857c08b852528ef5510660abe30",
+  "results_sha256": "b1d3b31c1eb7dafc56f8597ee49652b982f39b486f348e8d795acb7cc40f4fbb",
+  "integrity_checks": {
+    "report_complete": true,
+    "report_scoreable": true,
+    "protocol_bound": true,
+    "runner_bound": true,
+    "manifest_bound": true,
+    "claude_only": true
+  },
+  "unstable_case_arms": [],
+  "safety_or_fix_failures": [],
+  "reviewer": {
+    "upheld": false,
+    "named_only_advantage_cross_file_or_config": [],
+    "named_only_advantage_clear_or_same_file": [],
+    "inline_only_advantage_cross_file_or_config": []
+  },
+  "debugger": {
+    "upheld": true,
+    "named_only_advantage": [],
+    "stable_disagreement_not_favoring_inline": []
+  },
+  "comparisons": [
+    {
+      "case_id": "CFC-01",
+      "task": "failure_classification",
+      "stratum": "uncertainty_trigger",
+      "oracle": "F6",
+      "inline": {
+        "case_id": "CFC-01",
+        "arm": "claude.inline",
+        "majority_verdict": "F6",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 2
+      },
+      "named": {
+        "case_id": "CFC-01",
+        "arm": "claude.named",
+        "majority_verdict": "F6",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 2
+      },
+      "named_only_advantage": false,
+      "inline_only_advantage": false,
+      "stable_disagreement": false
+    },
+    {
+      "case_id": "CFC-02",
+      "task": "failure_classification",
+      "stratum": "uncertainty_trigger",
+      "oracle": "F13",
+      "inline": {
+        "case_id": "CFC-02",
+        "arm": "claude.inline",
+        "majority_verdict": "F13",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 1
+      },
+      "named": {
+        "case_id": "CFC-02",
+        "arm": "claude.named",
+        "majority_verdict": "F13",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 2
+      },
+      "named_only_advantage": false,
+      "inline_only_advantage": false,
+      "stable_disagreement": false
+    },
+    {
+      "case_id": "CFC-03",
+      "task": "failure_classification",
+      "stratum": "uncertainty_trigger",
+      "oracle": "F7",
+      "inline": {
+        "case_id": "CFC-03",
+        "arm": "claude.inline",
+        "majority_verdict": "F7",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 3
+      },
+      "named": {
+        "case_id": "CFC-03",
+        "arm": "claude.named",
+        "majority_verdict": "F7",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 2
+      },
+      "named_only_advantage": false,
+      "inline_only_advantage": false,
+      "stable_disagreement": false
+    },
+    {
+      "case_id": "CFC-04",
+      "task": "failure_classification",
+      "stratum": "uncertainty_trigger",
+      "oracle": "CANNOT_VERIFY",
+      "inline": {
+        "case_id": "CFC-04",
+        "arm": "claude.inline",
+        "majority_verdict": "CANNOT_VERIFY",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 3
+      },
+      "named": {
+        "case_id": "CFC-04",
+        "arm": "claude.named",
+        "majority_verdict": "CANNOT_VERIFY",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 3
+      },
+      "named_only_advantage": false,
+      "inline_only_advantage": false,
+      "stable_disagreement": false
+    },
+    {
+      "case_id": "CFC-05",
+      "task": "failure_classification",
+      "stratum": "disagreement_reconciliation",
+      "oracle": "F9",
+      "inline": {
+        "case_id": "CFC-05",
+        "arm": "claude.inline",
+        "majority_verdict": "F9",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 0
+      },
+      "named": {
+        "case_id": "CFC-05",
+        "arm": "claude.named",
+        "majority_verdict": "F9",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 1
+      },
+      "named_only_advantage": false,
+      "inline_only_advantage": false,
+      "stable_disagreement": false
+    },
+    {
+      "case_id": "CFC-06",
+      "task": "failure_classification",
+      "stratum": "disagreement_reconciliation",
+      "oracle": "F8",
+      "inline": {
+        "case_id": "CFC-06",
+        "arm": "claude.inline",
+        "majority_verdict": "F8",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 2
+      },
+      "named": {
+        "case_id": "CFC-06",
+        "arm": "claude.named",
+        "majority_verdict": "F8",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 2
+      },
+      "named_only_advantage": false,
+      "inline_only_advantage": false,
+      "stable_disagreement": false
+    },
+    {
+      "case_id": "CFC-07",
+      "task": "failure_classification",
+      "stratum": "disagreement_reconciliation",
+      "oracle": "F10",
+      "inline": {
+        "case_id": "CFC-07",
+        "arm": "claude.inline",
+        "majority_verdict": "F10",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 3
+      },
+      "named": {
+        "case_id": "CFC-07",
+        "arm": "claude.named",
+        "majority_verdict": "F10",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 3
+      },
+      "named_only_advantage": false,
+      "inline_only_advantage": false,
+      "stable_disagreement": false
+    },
+    {
+      "case_id": "CFC-08",
+      "task": "failure_classification",
+      "stratum": "disagreement_reconciliation",
+      "oracle": "F11",
+      "inline": {
+        "case_id": "CFC-08",
+        "arm": "claude.inline",
+        "majority_verdict": "F11",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 2
+      },
+      "named": {
+        "case_id": "CFC-08",
+        "arm": "claude.named",
+        "majority_verdict": "F11",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 1
+      },
+      "named_only_advantage": false,
+      "inline_only_advantage": false,
+      "stable_disagreement": false
+    },
+    {
+      "case_id": "CFV-01",
+      "task": "finding_verification",
+      "stratum": "clear",
+      "oracle": "CONFIRMED",
+      "inline": {
+        "case_id": "CFV-01",
+        "arm": "claude.inline",
+        "majority_verdict": "CONFIRMED",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 3
+      },
+      "named": {
+        "case_id": "CFV-01",
+        "arm": "claude.named",
+        "majority_verdict": "CONFIRMED",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 3
+      },
+      "named_only_advantage": false,
+      "inline_only_advantage": false,
+      "stable_disagreement": false
+    },
+    {
+      "case_id": "CFV-02",
+      "task": "finding_verification",
+      "stratum": "clear",
+      "oracle": "FALSE-POSITIVE",
+      "inline": {
+        "case_id": "CFV-02",
+        "arm": "claude.inline",
+        "majority_verdict": "FALSE-POSITIVE",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 3
+      },
+      "named": {
+        "case_id": "CFV-02",
+        "arm": "claude.named",
+        "majority_verdict": "FALSE-POSITIVE",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 3
+      },
+      "named_only_advantage": false,
+      "inline_only_advantage": false,
+      "stable_disagreement": false
+    },
+    {
+      "case_id": "CFV-03",
+      "task": "finding_verification",
+      "stratum": "same_file",
+      "oracle": "CONFIRMED",
+      "inline": {
+        "case_id": "CFV-03",
+        "arm": "claude.inline",
+        "majority_verdict": "CONFIRMED",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 3
+      },
+      "named": {
+        "case_id": "CFV-03",
+        "arm": "claude.named",
+        "majority_verdict": "CONFIRMED",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 3
+      },
+      "named_only_advantage": false,
+      "inline_only_advantage": false,
+      "stable_disagreement": false
+    },
+    {
+      "case_id": "CFV-04",
+      "task": "finding_verification",
+      "stratum": "same_file",
+      "oracle": "FALSE-POSITIVE",
+      "inline": {
+        "case_id": "CFV-04",
+        "arm": "claude.inline",
+        "majority_verdict": "FALSE-POSITIVE",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 3
+      },
+      "named": {
+        "case_id": "CFV-04",
+        "arm": "claude.named",
+        "majority_verdict": "FALSE-POSITIVE",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 3
+      },
+      "named_only_advantage": false,
+      "inline_only_advantage": false,
+      "stable_disagreement": false
+    },
+    {
+      "case_id": "CFV-05",
+      "task": "finding_verification",
+      "stratum": "cross_file_or_config",
+      "oracle": "FALSE-POSITIVE",
+      "inline": {
+        "case_id": "CFV-05",
+        "arm": "claude.inline",
+        "majority_verdict": "FALSE-POSITIVE",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 3
+      },
+      "named": {
+        "case_id": "CFV-05",
+        "arm": "claude.named",
+        "majority_verdict": "FALSE-POSITIVE",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 3
+      },
+      "named_only_advantage": false,
+      "inline_only_advantage": false,
+      "stable_disagreement": false
+    },
+    {
+      "case_id": "CFV-06",
+      "task": "finding_verification",
+      "stratum": "cross_file_or_config",
+      "oracle": "CONFIRMED",
+      "inline": {
+        "case_id": "CFV-06",
+        "arm": "claude.inline",
+        "majority_verdict": "CONFIRMED",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 3
+      },
+      "named": {
+        "case_id": "CFV-06",
+        "arm": "claude.named",
+        "majority_verdict": "CONFIRMED",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 3
+      },
+      "named_only_advantage": false,
+      "inline_only_advantage": false,
+      "stable_disagreement": false
+    },
+    {
+      "case_id": "CFV-07",
+      "task": "finding_verification",
+      "stratum": "cross_file_or_config",
+      "oracle": "FALSE-POSITIVE",
+      "inline": {
+        "case_id": "CFV-07",
+        "arm": "claude.inline",
+        "majority_verdict": "FALSE-POSITIVE",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 2
+      },
+      "named": {
+        "case_id": "CFV-07",
+        "arm": "claude.named",
+        "majority_verdict": "FALSE-POSITIVE",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 1
+      },
+      "named_only_advantage": false,
+      "inline_only_advantage": false,
+      "stable_disagreement": false
+    },
+    {
+      "case_id": "CFV-08",
+      "task": "finding_verification",
+      "stratum": "cross_file_or_config",
+      "oracle": "FALSE-POSITIVE",
+      "inline": {
+        "case_id": "CFV-08",
+        "arm": "claude.inline",
+        "majority_verdict": "FALSE-POSITIVE",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 2
+      },
+      "named": {
+        "case_id": "CFV-08",
+        "arm": "claude.named",
+        "majority_verdict": "FALSE-POSITIVE",
+        "majority_count": 3,
+        "stable": true,
+        "correct": true,
+        "pass_repetitions": 3
+      },
+      "named_only_advantage": false,
+      "inline_only_advantage": false,
+      "stable_disagreement": false
+    }
+  ],
+  "result": "NEEDS_WORDING_REVISION",
+  "decision_rule": {
+    "analysis_unit": "unique majority-stable case: at least 2 of 3 identical verdicts",
+    "reviewer_upheld": "No stable named-only advantage on clear or same_file; at least two stable named-only advantages on cross_file_or_config; no stable inline-only advantage there; no harmful fix or safety regression.",
+    "reviewer_revise": "Any stable named-only advantage on clear or same_file, any stable inline-only advantage on cross_file_or_config, fewer than two named-only cross-file/config advantages, or any safety regression.",
+    "debugger_upheld": "No stable named PASS paired with stable inline FAIL; every stable disagreement favors inline; no harmful fix or safety regression.",
+    "debugger_revise": "Any stable named PASS paired with stable inline FAIL, or any safety regression.",
+    "debugger_proxy_limitation": "Forced-route A/B tests the empirical premise, not whether a free-running model elects to delegate.",
+    "overall": "FULLY_CONFIRMED only if reviewer_upheld and debugger_upheld; otherwise NEEDS_WORDING_REVISION"
+  }
+}

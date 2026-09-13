@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "spdx_license_identifier": "Apache-2.0",
+  "protocol_id": "subagent-routing-v1",
+  "protocol_revision": 4,
+  "status": "FROZEN",
+  "frozen_on": "2026-09-13T13:34:59Z",
+  "git_head_at_freeze": "989c25ed59f9f91e64210da4b3d25e5d4a36e698",
+  "protocol_sha256": "2856da2d37ecaf82fde40bcfe64045a69051888b9929bf899847ca02d2ba4bbe",
+  "runner_sha256": "d1593c47b8ecec8ca16e64854bbbce663f3d2a8046e98070cf7c233459c06301",
+  "smoke_runner_sha256": "be1e42c2521c8eaa10ff93619ab95a571b00452d9d1805e4edd319800117260a",
+  "codex_activation_sha256": "1a5a591f7029c1b5d290e4b0f6315d31d8924c3fc4b01c133e1c58ef5d968951",
+  "case_manifest_sha256": "679e2dd3ebe21936758eba291e0b543befcbf777bec2acd1e3625db2f6f31ac1",
+  "case_tree_sha256": "054bc66615906e11a5bfb246832d39b0026938a9f820371a346eadd74d57b2ae",
+  "smoke_manifest_sha256": "64b926f04a02bfe43f924363b06e5c8fbb408faab89b9b8ab34eb7ec76416d97",
+  "smoke_tree_sha256": "31417caee2074a2566151fe01fbeaf8c79aa0b8d1d5f945b779078b83b842167",
+  "evaluated_snapshot": {
+    "benchmarks/subagent-routing-v1/confirmation-v1/evaluated-snapshot/skills/e2e-reviewer/SKILL.md": "945e01c4f4fbfaeb710ca94080ba3b5f09a6ded91db8a3b3d1f1df97f81fe4fa",
+    "benchmarks/subagent-routing-v1/confirmation-v1/evaluated-snapshot/skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb",
+    "benchmarks/subagent-routing-v1/confirmation-v1/evaluated-snapshot/skills/playwright-debugger/SKILL.md": "37ffce11f06fb27eae466547d14969ff14320b907828d0411c9ea42e3192d62b",
+    "benchmarks/subagent-routing-v1/confirmation-v1/evaluated-snapshot/skills/cypress-debugger/SKILL.md": "d95ca981a84031d540fb9f93efd3817ee003af02eb4ebe7c478e1fdc14f00dd6",
+    "benchmarks/subagent-routing-v1/confirmation-v1/evaluated-snapshot/agents/e2e-finding-verifier.md": "c9b49b7164c0c9646124260c562d9569ed7af0da3faa810f4fcbf48800b0fef0",
+    "benchmarks/subagent-routing-v1/confirmation-v1/evaluated-snapshot/agents/e2e-failure-classifier.md": "1826e4f80601306be6bef07fc0084374c4317bf51c1ffdbbdfa805302204d37f",
+    "benchmarks/subagent-routing-v1/run_routing.py": "c774d666b3d9651ac39d3a799026f64020283e89ed80e791702f5f90152c097b"
+  },
+  "smoke_results": {
+    "claude": "9ee22d6558b04e951d3bc69bb6e4cdd9558a8fa1b1e7319a6f081c52c1382022"
+  },
+  "confirmation_scorer_sha256": "32e34c47d23ec837531916cd9a84a745c493f5aea3a61f6c3c40a4abcbf287be",
+  "preparation_script_sha256": "6864ea32705f97a7577bdcac6037388c2e4ed3952f5909b65b651f44a44a71cf",
+  "immutable_surface_digest": {
+    "algorithm": "sha256 of canonical UTF-8 JSON over all bound surface fields",
+    "sha256": "a3559e6147dfd9b9747e67390748505e02a7dd9b2590e1d5ff39c99ce3aaa35e"
+  },
+  "scope": {
+    "host": "claude",
+    "measured_strategy_executions": 96,
+    "codex": "OUT_OF_SCOPE"
+  },
+  "immutability_rule": "Do not edit any bound surface after freeze. Digest drift makes the confirmation run INCONCLUSIVE and requires a new protocol revision."
+}

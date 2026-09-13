@@ -1,0 +1,9 @@
+{
+  "protocol_id": "subagent-routing-v1",
+  "host": "claude",
+  "authorized_by": "operator, via the coordinating Codex session, for the full-scale confirmation-v1 measured_cells run",
+  "authorized_on": "2026-09-13",
+  "scope": "measured_cells",
+  "protocol_sha256": "c66c2eb63e5e8363955c5f684ec583afa0c0750eefb2a5587406023d0ffdeabe",
+  "freeze_sha256": "a8d69fb580ed6743d3a019b3d32d7abdde1dab836857fd66107726e8b1d97610"
+}

@@ -1,0 +1,597 @@
+{
+  "schema_version": 1,
+  "spdx_license_identifier": "Apache-2.0",
+  "protocol_id": "subagent-routing-v1",
+  "protocol_revision": 6,
+  "status": "NOT_RUN",
+  "result": "INCONCLUSIVE",
+  "decision_state": "PREREGISTERED_NOT_FROZEN",
+  "prepared_on": "2026-09-12",
+  "design_only": false,
+  "execution_authorized_by_this_file": false,
+  "revision_history": [
+    {
+      "revision": 6,
+      "when": "after the complete 96-cell revision-5 run and independent majority-stable recomputation",
+      "change": "Correct CFV-05's reversed #12 oracle, relax CFC-04's limitation phrase to the stable full-suite-run requirement, and align CFC-05's decisive report evidence with the parent-object paths consistently cited by correct responses; preserve the complete revision-5 score, results, smoke, authorization, freeze, and raw artifacts under invalidated-revision-5.",
+      "reason": "Both arms returned FALSE-POSITIVE for CFV-05 in all repetitions because its feature-specific assertion cannot pass on the wrong surface, exactly as pattern #12 requires. Both arms returned the accepted CANNOT_VERIFY or F9 verdicts for CFC-04 and CFC-05 in all repetitions and failed only brittle exact limitation wording or hidden leaf-level report paths. Revision 6 changes only those three case oracles and their preparation source, not harness scoring logic."
+    },
+    {
+      "revision": 5,
+      "when": "after 73 revision-4 terminal cells, including one operator-approved permanent INVALID and one operator-requested pause",
+      "change": "Replace brittle decisive-evidence triplets for CFC-01 and CFC-06 with exact keys consistently used by correct inline and named classifications; preserve all revision-4 smoke, partial measured, redaction, and pause evidence under invalidated-revision-4.",
+      "reason": "All five completed attempts for each affected case returned the correct F6 or F8 with legal fixes and failed only exact evidence-key completeness. CFC-06 additionally required CSS line 3 although the hiding declaration is line 4. Independent controls found CFC-03 correctly strict and CFC-08 non-systemic. Revision 5 changes case oracles only, not harness scoring logic."
+    },
+    {
+      "revision": 4,
+      "when": "after 11 measured cells and one repeated incomplete cell, before any scoreable measured completion",
+      "change": "Remove CFV-03's independent heading assertion so the same-file case actually matches its preregistered CONFIRMED #8 oracle; make CFC-05 an unambiguous HTTP-200 missing-seed-data F9 fixture instead of a 503 that could indicate F3.",
+      "reason": "Both preserved CFV-03 inline attempts correctly applied pattern #8's leftover-read exclusion and returned FALSE-POSITIVE; the case bytes, not the parser or model, contradicted the oracle. A full frozen-case audit then found CFC-05's report text crossed F3/F9 boundaries before that case had run. Revision-3 smoke, partial measured results, and retry evidence are preserved under invalidated-revision-3 and are not reused."
+    },
+    {
+      "revision": 3,
+      "when": "after revision-2 smoke but before any measured model execution",
+      "change": "Bind the imported parent run_routing.py implementation in evaluated_snapshot.sha256_at_preparation so every execution refuses parent-harness drift.",
+      "reason": "The confirmation wrapper hash alone did not cryptographically bind the implementation it imports. Revision-2 smoke and freeze evidence is preserved under invalidated-revision-2 and is not reused."
+    },
+    {
+      "revision": 2,
+      "when": "before any live model execution",
+      "change": "The confirmation-local concurrency guard excludes shell polling loops whose command text self-matches ci-local.sh, while continuing to reject actual runner, browser, and CI workloads.",
+      "reason": "Owner-created CI completion waiters remained alive after a clean CI run because pgrep matched their own polling command lines."
+    }
+  ],
+  "source_plans": [
+    ".handover/artifacts/handover-20260903-144354-c12d46/subagent-routing-benchmark-handover.md",
+    ".handover/artifacts/post-claude-decision-matrix-20260907.md",
+    ".handover/artifacts/integrated-validation-20260909/PLAN.md (Stage 4)",
+    "AGENTS.md (Keep subagent wiring delegation-aware)"
+  ],
+  "objective": "Confirm reviewer clear/same-file/cross-file routing and debugger uncertainty-trigger/inline-wins reconciliation on fresh cases.",
+  "tasks": [
+    {
+      "task_id": "finding_verification",
+      "skill": "e2e-reviewer",
+      "subagent": "e2e-finding-verifier",
+      "source_of_truth": "skills/e2e-reviewer/references/pattern-reference.md (absolute path passed by the caller)",
+      "verdict_vocabulary": [
+        "CONFIRMED",
+        "FALSE-POSITIVE",
+        "NEEDS-CONTEXT"
+      ]
+    },
+    {
+      "task_id": "failure_classification",
+      "skills": [
+        "playwright-debugger",
+        "cypress-debugger"
+      ],
+      "subagent": "e2e-failure-classifier",
+      "source_of_truth": "the matching debugger SKILL.md F1-F15 table (absolute path passed by the caller)",
+      "verdict_vocabulary": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9",
+        "F10",
+        "F11",
+        "F12",
+        "F13",
+        "F14",
+        "F15",
+        "CANNOT_VERIFY"
+      ]
+    }
+  ],
+  "out_of_scope": {
+    "generator_v6_fresh_context_review": "independence requirement, not a cost optimization; never weakened by this benchmark",
+    "cross_host_ranking": true,
+    "pooled_claude_and_codex_scores": true,
+    "generalized_subagent_benefit_claim": true,
+    "inline_fallback_removal": "never; the inline path is load-bearing on every host and is not a candidate outcome"
+  },
+  "evaluated_snapshot": {
+    "policy": "Exact provisional working-tree bytes copied before any live call; copied bytes are immutable evaluated inputs.",
+    "git_head_at_preparation": "e4e42fd583b498cb56b66bce879990192ce3e42b",
+    "git_tag_at_preparation": null,
+    "sha256_at_preparation": {
+      "benchmarks/subagent-routing-v1/confirmation-v1/evaluated-snapshot/skills/e2e-reviewer/SKILL.md": "945e01c4f4fbfaeb710ca94080ba3b5f09a6ded91db8a3b3d1f1df97f81fe4fa",
+      "benchmarks/subagent-routing-v1/confirmation-v1/evaluated-snapshot/skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb",
+      "benchmarks/subagent-routing-v1/confirmation-v1/evaluated-snapshot/skills/playwright-debugger/SKILL.md": "37ffce11f06fb27eae466547d14969ff14320b907828d0411c9ea42e3192d62b",
+      "benchmarks/subagent-routing-v1/confirmation-v1/evaluated-snapshot/skills/cypress-debugger/SKILL.md": "d95ca981a84031d540fb9f93efd3817ee003af02eb4ebe7c478e1fdc14f00dd6",
+      "benchmarks/subagent-routing-v1/confirmation-v1/evaluated-snapshot/agents/e2e-finding-verifier.md": "c9b49b7164c0c9646124260c562d9569ed7af0da3faa810f4fcbf48800b0fef0",
+      "benchmarks/subagent-routing-v1/confirmation-v1/evaluated-snapshot/agents/e2e-failure-classifier.md": "1826e4f80601306be6bef07fc0084374c4317bf51c1ffdbbdfa805302204d37f",
+      "benchmarks/subagent-routing-v1/run_routing.py": "c774d666b3d9651ac39d3a799026f64020283e89ed80e791702f5f90152c097b"
+    },
+    "freeze_record_file": "freeze-record.json",
+    "freeze_record_exists": false
+  },
+  "preconditions": [
+    "output-discipline v2 replay and fresh pilot reached a terminal, integrity-checked result (recorded in .handover/artifacts/handover-20260903-144354-c12d46/evidence/); reconfirm at freeze that no newer output-discipline run is in flight",
+    "fresh `/bin/bash -p scripts/ci/ci-local.sh` and `/bin/bash -p scripts/ci/pre-push-security.sh` green on the evaluated tree",
+    "one immutable digest over the evaluated skill, both Claude agent Markdown files, both Codex TOML ports, the inline fallback text, fixtures, oracle, prompts, runner, rubric, and schedule",
+    "declared maximum strategy executions, actual-request ceiling, wall-time budget, and stop rule (all present below)",
+    "provider limits available without interrupting another benchmark; not started immediately after another large model pilot",
+    "the feasibility smoke passes for every executable arm; activation-declared unavailable arms remain visible as zero-cost UNAVAILABLE cells before the runner is frozen"
+  ],
+  "protocol_amendments_incorporated": {
+    "a_parent_child_request_accounting": "Every cell logs actual model requests, tokens, elapsed time, and visible cost separately for the parent session and for each child session. The legacy phrase '240 model calls' is retired: 240 is the full-matrix count of strategy executions, not requests. Unknown child telemetry is recorded as null, never estimated or conflated with parent usage.",
+    "b_codex_native_role_attestation": "A Codex native-role arm whose harness cannot prove which role actually ran (or cannot force the named-versus-native distinction) records UNAVAILABLE for that cell. Silent substitution of another route is a protocol violation that voids the arm.",
+    "c_feasibility_smoke_gate": "Every executable host arm must pass its smoke case before the runner is frozen. An activation-declared structurally unavailable delegation arm is retained in the smoke and measured schedules as UNAVAILABLE at zero cost, with no model process launched. Revision 4 applies that disclosed reduction to codex.named and codex.native-role after their preserved smoke attempts produced zero real delegation events. Any runner change after the smoke invalidates it and requires a new protocol version.",
+    "d_freshness_search_recorded": "The search used to establish the 16 fresh cases is recorded in freshness_exclusion_search below and rerun at freeze."
+  },
+  "hosts": {
+    "claude": {
+      "status": "active",
+      "runner_family": "claude",
+      "model": "claude-opus-5",
+      "model_rationale": "Same Claude model family already named by reviewer holdout v3 and the independent-review v10 catalog; may be changed BEFORE freeze by recording it in freeze-record.json.",
+      "minimum_version": "2.1.268 (Claude Code), recorded 2026-09-11 via `claude --version`. version_policy remains minimum per execution_identity above -- this is the floor observed at preparation time, re-verify and update at actual freeze if time has passed.",
+      "version_policy": "minimum",
+      "agent_installation": "isolated Claude config directory populated from the evaluated checkout (both agents/*.md); no ambient user agents, no plugin install",
+      "arms": [
+        "claude.inline",
+        "claude.named"
+      ],
+      "budget": {
+        "strategy_executions_measured": 96,
+        "strategy_executions_smoke": 2,
+        "judge_calls_max": 0,
+        "strategy_executions_total_max": 110,
+        "actual_model_requests": {
+          "naive_estimate": 1200,
+          "naive_basis": "inline ~10 requests per execution (parent only); named ~5 parent + ~10 child; 48 executions each. Assumption, not a measurement.",
+          "confirmation_checkpoint": {
+            "at_multiple_of_naive": 2,
+            "requests": 2400,
+            "behavior": "PAUSE_AND_ASK"
+          },
+          "hard_ceiling": {
+            "multiple_of_naive": 4,
+            "requests": 4800,
+            "behavior": "PAUSE_AND_ASK"
+          },
+          "per_execution_turn_cap": {
+            "parent": 40,
+            "child": 40,
+            "exceeding": "cell is INCOMPLETE for that repetition"
+          }
+        },
+        "wall_time": {
+          "per_execution_minutes_max": 15,
+          "naive_total_hours": 13,
+          "confirmation_checkpoint_hours": 26,
+          "hard_ceiling_hours": 52
+        },
+        "monetary": "not observable on a subscription-billed host; record as unknown"
+      }
+    },
+    "codex": {
+      "status": "out_of_scope_confirmation",
+      "dormant": false,
+      "why_dormant": null,
+      "runner_family": "codex",
+      "model": "gpt-5.6-sol",
+      "model_rationale": "Matches the reviewer-release-v1 primary cell; may be changed in the activation record before that arm's freeze.",
+      "minimum_version": "TBD_IN_ACTIVATION_RECORD",
+      "version_policy": "minimum",
+      "agent_installation": "isolated Codex home per installation-sensitive arm; named TOMLs installed from the evaluated checkout; native-role arm loads no named TOML",
+      "arms": [
+        "codex.inline",
+        "codex.named",
+        "codex.native-role"
+      ],
+      "budget": {
+        "strategy_executions_measured": 144,
+        "strategy_executions_smoke": 3,
+        "judge_calls_max": 48,
+        "strategy_executions_total_max": 195,
+        "actual_model_requests": {
+          "naive_estimate": null,
+          "confirmation_checkpoint": null,
+          "hard_ceiling": null,
+          "per_execution_turn_cap": null,
+          "note": "TBD. Must be supplied in codex-arm-activation.json before any Codex cell runs. UNSET means NOT READY."
+        },
+        "wall_time": {
+          "per_execution_minutes_max": null,
+          "hard_ceiling_hours": null,
+          "note": "TBD in activation record"
+        },
+        "monetary": "TBD in activation record; if the Codex host exposes cost, a USD ceiling is required"
+      },
+      "activation": {
+        "mechanism": "codex-arm-activation.json placed beside this protocol",
+        "required_fields": [
+          "authorized_by",
+          "authorized_on",
+          "minimum_version",
+          "model (may confirm gpt-5.6-sol or name another; recorded as provenance)",
+          "actual_model_requests.naive_estimate",
+          "actual_model_requests.confirmation_checkpoint.requests",
+          "actual_model_requests.hard_ceiling.requests",
+          "actual_model_requests.per_execution_turn_cap.parent and .child",
+          "wall_time.per_execution_minutes_max",
+          "wall_time.hard_ceiling_hours",
+          "monetary_ceiling_usd_or_unknown",
+          "native_role_attestation_method (how the harness proves which role ran; if none, codex.native-role is UNAVAILABLE for the whole arm)",
+          "delegation_unavailable_arms (unique subset of codex.named and codex.native-role)",
+          "delegation_unavailable_reason (non-empty explanation citing feasibility evidence)",
+          "codex_smoke_evidence (evidence path containing every declared Codex arm)"
+        ],
+        "invariants": [
+          "same 16 frozen cases, same case bytes, same oracle, same scoring rules, same judge selector as the Claude arm; the freeze-record case digest must match",
+          "the revision-4 protocol and activation record are both hashed into the Codex freeze after the evidence-backed scope reduction",
+          "Codex results are reported per host and never pooled with Claude results",
+          "if the Claude phase has already produced a decision, the Codex phase produces its own per-host decision and does not reopen the Claude one",
+          "the full 144-cell Codex schedule is retained for disclosure; activation-declared unavailable arms are materialized as UNAVAILABLE with zero requests and zero cost, leaving 48 executable codex.inline cells",
+          "a missing delegation arm keeps the eventual Codex host decision INCONCLUSIVE even though codex.inline observations remain real evidence"
+        ]
+      }
+    }
+  },
+  "arms": [
+    {
+      "id": "claude.inline",
+      "host": "claude",
+      "status": "active",
+      "definition": "the parent executes the frozen refute-first / classification procedure itself without invoking a child; this is the inline fallback every host keeps"
+    },
+    {
+      "id": "claude.named",
+      "host": "claude",
+      "status": "active",
+      "definition": "the parent delegates exactly one case to the installed e2e-finding-verifier or e2e-failure-classifier agent"
+    },
+    {
+      "id": "codex.inline",
+      "host": "codex",
+      "status": "active",
+      "definition": "the parent executes the frozen procedure without delegation"
+    },
+    {
+      "id": "codex.named",
+      "host": "codex",
+      "status": "unavailable_by_activation_evidence",
+      "definition": "the parent would delegate to the matching isolated TOML agent installed from the evaluated checkout; revision-4 Codex cells are zero-cost UNAVAILABLE because feasibility smoke proved no real delegation event"
+    },
+    {
+      "id": "codex.native-role",
+      "host": "codex",
+      "status": "unavailable_by_activation_evidence",
+      "definition": "the parent would delegate the identical payload to Codex's native verifier or debugger role without loading the named TOML; revision-4 Codex cells are zero-cost UNAVAILABLE because feasibility smoke proved no real delegation event"
+    }
+  ],
+  "non_arms": {
+    "deterministic_scanner": "produces candidate evidence, does not answer the contextual verdict question",
+    "accept_without_verification_reference": "computed directly from the frozen candidate labels with zero model calls; descriptive only"
+  },
+  "freshness_exclusion_search": {
+    "performed_on": "2026-09-13",
+    "domain": "community theatre operations",
+    "command": "git grep -n -i -E 'community theatre|box office|matinee|audition slot|stage cue|rehearsal room|prop checkout|costume rack' -- . ':(exclude)benchmarks/subagent-routing-v1/confirmation-v1'",
+    "result": "zero hits before case authoring; no exact-byte duplicate files within the measured case tree after authoring",
+    "excluded_prior_domains": "All domains listed in ../README.md, plus public-library, jobs/reports, and garden/harvest pilots."
+  },
+  "case_set": {
+    "count": 16,
+    "status": "AUTHORED_PREREGISTERED_NOT_FROZEN",
+    "domain": "community theatre operations",
+    "disposable_repository_rule": "Self-contained UTF-8 text; no secrets, network execution, model instructions, or mutable state.",
+    "per_case_predeclared": [
+      "accepted_verdict_or_code",
+      "decisive_evidence (file:line or report field)",
+      "allowed_confidence",
+      "required_limitation",
+      "forbidden_weakened_fix",
+      "concrete_fix_legal (bool)"
+    ],
+    "slots": [
+      {
+        "case_id": "CFV-01",
+        "task": "finding_verification",
+        "stratum": "clear",
+        "framework": "playwright",
+        "pattern_id": "#8",
+        "expected": "CONFIRMED",
+        "sketch": "fresh community-theatre clear case"
+      },
+      {
+        "case_id": "CFV-02",
+        "task": "finding_verification",
+        "stratum": "clear",
+        "framework": "cypress",
+        "pattern_id": "#14",
+        "expected": "FALSE-POSITIVE",
+        "sketch": "fresh community-theatre clear case"
+      },
+      {
+        "case_id": "CFV-03",
+        "task": "finding_verification",
+        "stratum": "same_file",
+        "framework": "playwright",
+        "pattern_id": "#8",
+        "expected": "CONFIRMED",
+        "sketch": "fresh community-theatre same_file case"
+      },
+      {
+        "case_id": "CFV-04",
+        "task": "finding_verification",
+        "stratum": "same_file",
+        "framework": "cypress",
+        "pattern_id": "#3b",
+        "expected": "FALSE-POSITIVE",
+        "sketch": "fresh community-theatre same_file case"
+      },
+      {
+        "case_id": "CFV-05",
+        "task": "finding_verification",
+        "stratum": "cross_file_or_config",
+        "framework": "playwright",
+        "pattern_id": "#12",
+        "expected": "FALSE-POSITIVE",
+        "sketch": "fresh community-theatre cross_file_or_config case"
+      },
+      {
+        "case_id": "CFV-06",
+        "task": "finding_verification",
+        "stratum": "cross_file_or_config",
+        "framework": "cypress",
+        "pattern_id": "#20",
+        "expected": "CONFIRMED",
+        "sketch": "fresh community-theatre cross_file_or_config case"
+      },
+      {
+        "case_id": "CFV-07",
+        "task": "finding_verification",
+        "stratum": "cross_file_or_config",
+        "framework": "playwright",
+        "pattern_id": "#12",
+        "expected": "FALSE-POSITIVE",
+        "sketch": "fresh community-theatre cross_file_or_config case"
+      },
+      {
+        "case_id": "CFV-08",
+        "task": "finding_verification",
+        "stratum": "cross_file_or_config",
+        "framework": "cypress",
+        "pattern_id": "#20",
+        "expected": "FALSE-POSITIVE",
+        "sketch": "fresh community-theatre cross_file_or_config case"
+      },
+      {
+        "case_id": "CFC-01",
+        "task": "failure_classification",
+        "stratum": "uncertainty_trigger",
+        "framework": "playwright",
+        "expected": "F6",
+        "sketch": "fresh community-theatre uncertainty_trigger case"
+      },
+      {
+        "case_id": "CFC-02",
+        "task": "failure_classification",
+        "stratum": "uncertainty_trigger",
+        "framework": "cypress",
+        "expected": "F13",
+        "sketch": "fresh community-theatre uncertainty_trigger case"
+      },
+      {
+        "case_id": "CFC-03",
+        "task": "failure_classification",
+        "stratum": "uncertainty_trigger",
+        "framework": "playwright",
+        "expected": "F7",
+        "sketch": "fresh community-theatre uncertainty_trigger case"
+      },
+      {
+        "case_id": "CFC-04",
+        "task": "failure_classification",
+        "stratum": "uncertainty_trigger",
+        "framework": "cypress",
+        "expected": "CANNOT_VERIFY",
+        "sketch": "fresh community-theatre uncertainty_trigger case"
+      },
+      {
+        "case_id": "CFC-05",
+        "task": "failure_classification",
+        "stratum": "disagreement_reconciliation",
+        "framework": "playwright",
+        "expected": "F9",
+        "sketch": "fresh community-theatre disagreement_reconciliation case"
+      },
+      {
+        "case_id": "CFC-06",
+        "task": "failure_classification",
+        "stratum": "disagreement_reconciliation",
+        "framework": "cypress",
+        "expected": "F8",
+        "sketch": "fresh community-theatre disagreement_reconciliation case"
+      },
+      {
+        "case_id": "CFC-07",
+        "task": "failure_classification",
+        "stratum": "disagreement_reconciliation",
+        "framework": "playwright",
+        "expected": "F10",
+        "sketch": "fresh community-theatre disagreement_reconciliation case"
+      },
+      {
+        "case_id": "CFC-08",
+        "task": "failure_classification",
+        "stratum": "disagreement_reconciliation",
+        "framework": "cypress",
+        "expected": "F11",
+        "sketch": "fresh community-theatre disagreement_reconciliation case"
+      }
+    ],
+    "smoke_cases": {
+      "count": 1,
+      "definition": "one sacrificial community-theatre case outside measured slots",
+      "proves": [
+        "intended agent/role actually selected",
+        "working directory is the disposable target repository",
+        "absolute contract path resolves to the evaluated snapshot",
+        "only required read-only surfaces available",
+        "child output returns to the correct parent and parses strictly",
+        "no network, shell, browser, mutation, nested-agent, or unrelated global-agent path reachable",
+        "timeout and process-group cleanup leave no child process"
+      ]
+    }
+  },
+  "schedule": {
+    "repetitions_per_case_arm": 3,
+    "fresh_session_and_workspace_per_repetition": true,
+    "full_matrix": {
+      "claude_strategy_executions": 96,
+      "codex_strategy_executions": 0,
+      "total_strategy_executions": 96,
+      "smoke_strategy_executions": 2,
+      "judge_calls_max": 0,
+      "note": "Claude-only confirmation."
+    },
+    "claude_only_phase": {
+      "strategy_executions": 96,
+      "smoke": 2,
+      "judge_calls_max": 0,
+      "total_max": 110
+    },
+    "concurrency": "serial per provider; never concurrent with a browser/scanner/CI workload or with benchmarks/ours-vs-planner-pilot-v1",
+    "arm_order": "sha256-seeded per case per repetition",
+    "analysis_unit": "unique majority-stable case",
+    "stable_rule": "at_least_2_of_3_identical_normalized_verdicts; unstable cases count against the arm, never omitted"
+  },
+  "scoring": {
+    "deterministic_first": [
+      "verdict / F-code exact match",
+      "decisive-evidence citation present (file:line or report field)",
+      "required limitation present",
+      "forbidden weakened fix absent",
+      "parse/completeness"
+    ],
+    "judge": {
+      "use": "blind opposite-provider judging only where the frozen deterministic selector says residual semantic quality cannot be scored from the oracle",
+      "selector_frozen_before_judging": true,
+      "judge_cell_manifest_frozen_before_judging": true,
+      "fewer_calls_valid_only_if_manifest_explains": true,
+      "more_than_manifest_invalid": true,
+      "claude_only_phase_judge_provider": "RESOLVED 2026-09-11: no Codex judge budget is authorized for the Claude-only phase (Codex arm is dormant, see codex arms above). Judged fields for this phase are reported as unjudged, never self-judged by the same Claude identity under test. Opposite-provider judging is deferred until a Codex arm is separately authorized."
+    },
+    "metrics_per_host_task_stratum": [
+      "majority-stable verdict/F-code accuracy",
+      "repeated accuracy and stability",
+      "false-positive refutation rate",
+      "correct NEEDS-CONTEXT / CANNOT_VERIFY calibration",
+      "decisive-evidence citation completeness",
+      "harmful or behavior-weakening fix rate",
+      "unsupported advice rate",
+      "parse/completeness failures",
+      "wall-clock latency",
+      "parent and child requests, tokens, and cost separately (null when unobservable)"
+    ]
+  },
+  "decision": {
+    "vocabulary": [
+      "ALWAYS_DELEGATE",
+      "SELECTIVE_DELEGATE",
+      "INLINE_DEFAULT",
+      "INCONCLUSIVE"
+    ],
+    "unit": "one outcome per host per task",
+    "rules": {
+      "ALWAYS_DELEGATE": "the named route is majority-stable on both clear and context-dependent strata, introduces no additional harmful fix, and its correctness benefit over inline is stable and not confined to one case (at least two independent decisive cases in each stratum)",
+      "SELECTIVE_DELEGATE": "the named route improves context-dependent (or two-codes / f1_vs_f7) cases without a stable advantage on clear cases; route only the documented ambiguity classes; clear cases stay inline",
+      "INLINE_DEFAULT": "delegation shows no stable correctness/calibration benefit, regresses any case, or adds material latency/usage without compensating quality",
+      "INCONCLUSIVE": "missing arm, unstable repetitions, integrity failure, ceiling exceeded without authorization, or fewer independent decisive cases than the rule requires"
+    },
+    "no_percentage_threshold_invented_after_results": true,
+    "one_case_directional_difference_is_diagnostic_only": true,
+    "repetitions_create_no_additional_defects": true,
+    "inline_fallback_is_never_a_removal_candidate": true
+  },
+  "stop_rules": [
+    "unexpected per-stage strategy-execution count",
+    "actual-request hard ceiling reached without operator authorization",
+    "missing cell, duplicate session, digest drift, role mismatch, tool leakage, workspace mutation, parse failure, incomplete cleanup",
+    "any child process surviving its parent's timeout"
+  ],
+  "ceiling_behavior": {
+    "confirmation_checkpoint": "PAUSE_AND_ASK at 2x naive actual requests or 2x naive wall time",
+    "hard_ceiling": "PAUSE_AND_ASK; declining ends the run INCOMPLETE with partial raw evidence preserved and unscored; authorizing continuation labels the report CEILING_EXCEEDED_WITH_AUTHORIZATION, which makes ALWAYS_DELEGATE unreachable for that host (a routing change that needed over-budget evidence is not a stable benefit) while SELECTIVE_DELEGATE, INLINE_DEFAULT, and INCONCLUSIVE remain reachable",
+    "silent_continue_forbidden": true,
+    "silent_abort_forbidden": true
+  },
+  "change_boundary_after_results": {
+    "measured_run_edits_product": false,
+    "allowed_if_result_supports_and_user_asks": [
+      "RED routing-contract tests first",
+      "smallest wording change to the delegation blocks only: skills/e2e-reviewer/SKILL.md (Verifying findings), skills/playwright-debugger/SKILL.md and skills/cypress-debugger/SKILL.md (Classifier delegation)",
+      "agent descriptions only if their trigger/routing promise changed",
+      "targeted tests, full local CI, pre-push security",
+      "confirmation on a separately frozen fresh case set before treating the routing decision as stable"
+    ],
+    "never": [
+      "remove or weaken the inline fallback",
+      "verdict vocabulary (CONFIRMED / FALSE-POSITIVE / NEEDS-CONTEXT)",
+      "F1-F15 codes or names",
+      "pattern IDs or severities",
+      "SP1-SP5 subagent parity contracts in scripts/ci/review.sh",
+      "generator V6 independence",
+      "framework scope or installation behavior"
+    ]
+  },
+  "sequencing": {
+    "must_precede": [
+      "preconditions above",
+      "case authoring + freshness recheck + case digest freeze",
+      "two Claude smoke cases",
+      "operator confirmation of model, Claude Code build, and ceilings"
+    ],
+    "independent_of": [
+      "benchmarks/ours-vs-planner-pilot-v1 (separate snapshot label; no pooling)",
+      "reviewer-release-v1"
+    ],
+    "codex_phase": "runs only after codex-arm-activation.json is complete, every executable Codex smoke passes, and declared unavailable arms are present as zero-cost UNAVAILABLE cells; uses the same frozen case digest",
+    "shared_resource_policy": "serial per provider; one model-benchmark lane at a time per integrated-validation PLAN"
+  },
+  "required_artifacts": [
+    "this protocol and its SHA-256, plus codex-arm-activation.json and its SHA-256 when present",
+    "freeze-record.json: fixture/oracle/rubric/schedule digests, evaluated agent/skill/runner snapshot digest, freshness recheck output, model identity",
+    "feasibility-smoke evidence per arm",
+    "raw parent and child outputs per cell",
+    "strict parser and integrity results",
+    "exact strategy-execution, judge-call, and actual-request counts (parent and child separately)",
+    "per-host / per-task / per-stratum metrics",
+    "latency and observable usage report with null for unobservable telemetry",
+    "limitations and the selected routing outcome per host per task",
+    "explicit statement that production routing was not changed by the measured run"
+  ],
+  "limitations": [
+    "One Claude host; no cross-host claim.",
+    "Forced-route debugger A/B tests the policy premise, not autonomous route selection.",
+    "The provisional source files are user-owned and remain untouched; immutable copies are evaluated."
+  ],
+  "confirmation": {
+    "confirmation_id": "subagent-routing-v1-confirmation-v1",
+    "target": "uncommitted provisional v1.16.2 delegation wording",
+    "evaluated_worktree_snapshot": true,
+    "host_scope": [
+      "claude"
+    ],
+    "codex_out_of_scope_reason": "delegation arms remain structurally unavailable",
+    "debugger_policy_test_method": "preregistered inline-vs-named A/B proxy"
+  },
+  "confirmation_decision_rule": {
+    "analysis_unit": "unique majority-stable case: at least 2 of 3 identical verdicts",
+    "reviewer_upheld": "No stable named-only advantage on clear or same_file; at least two stable named-only advantages on cross_file_or_config; no stable inline-only advantage there; no harmful fix or safety regression.",
+    "reviewer_revise": "Any stable named-only advantage on clear or same_file, any stable inline-only advantage on cross_file_or_config, fewer than two named-only cross-file/config advantages, or any safety regression.",
+    "debugger_upheld": "No stable named PASS paired with stable inline FAIL; every stable disagreement favors inline; no harmful fix or safety regression.",
+    "debugger_revise": "Any stable named PASS paired with stable inline FAIL, or any safety regression.",
+    "debugger_proxy_limitation": "Forced-route A/B tests the empirical premise, not whether a free-running model elects to delegate.",
+    "overall": "FULLY_CONFIRMED only if reviewer_upheld and debugger_upheld; otherwise NEEDS_WORDING_REVISION"
+  }
+}

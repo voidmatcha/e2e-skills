@@ -1,0 +1,774 @@
+{
+  "schema_version": 1,
+  "protocol_id": "subagent-routing-v1",
+  "kind": "measured",
+  "cases": [
+    {
+      "case_id": "CFV-01",
+      "task": "finding_verification",
+      "stratum": "clear",
+      "framework": "playwright",
+      "repository_root": "CFV-01/repo",
+      "files": [
+        {
+          "path": "playwright.config.ts",
+          "sha256": "21a91c5ac67719801de7bc66388c9ff8fe9948d7d2b19a19200f182d23c555b5"
+        },
+        {
+          "path": "tests/live-segment.spec.ts",
+          "sha256": "494829bf5245a6261a2d3477ba1fe5fdbddebd61b93ac25b0f9616876095eb39"
+        }
+      ],
+      "candidate": {
+        "pattern_id": "#8",
+        "file": "tests/live-segment.spec.ts",
+        "snippet": "await page.getByTestId('segment-live').isVisible();",
+        "line": 7
+      },
+      "report_excerpt": null,
+      "oracle": {
+        "accepted_verdict": "CONFIRMED",
+        "decisive_evidence": [
+          "tests/live-segment.spec.ts:7"
+        ],
+        "allowed_confidence": [
+          "high"
+        ],
+        "required_limitation": null,
+        "forbidden_weakened_fix": [
+          "remove the test",
+          "mark the test skipped"
+        ],
+        "concrete_fix_legal": true
+      }
+    },
+    {
+      "case_id": "CFV-02",
+      "task": "finding_verification",
+      "stratum": "clear",
+      "framework": "cypress",
+      "repository_root": "CFV-02/repo",
+      "files": [
+        {
+          "path": "cypress.config.ts",
+          "sha256": "104b86f8239a1a2c29512251ab99b85d0c3f40216fc768bf3b0f720008131e54"
+        },
+        {
+          "path": "cypress/e2e/placeholder-card.cy.ts",
+          "sha256": "e6791eb3314c0cbccb8c2e9bddcc5beffe09cd566d3f35a4d72c6328d2d2e9f7"
+        }
+      ],
+      "candidate": {
+        "pattern_id": "#14",
+        "file": "cypress/e2e/placeholder-card.cy.ts",
+        "snippet": "const OBVIOUS_BOX_OFFICE_PLACEHOLDER = '0000-TEST-ONLY';",
+        "line": 2
+      },
+      "report_excerpt": null,
+      "oracle": {
+        "accepted_verdict": "FALSE-POSITIVE",
+        "decisive_evidence": [
+          "cypress/e2e/placeholder-card.cy.ts:2"
+        ],
+        "allowed_confidence": [
+          "high"
+        ],
+        "required_limitation": null,
+        "forbidden_weakened_fix": [],
+        "concrete_fix_legal": false
+      }
+    },
+    {
+      "case_id": "CFV-03",
+      "task": "finding_verification",
+      "stratum": "same_file",
+      "framework": "playwright",
+      "repository_root": "CFV-03/repo",
+      "files": [
+        {
+          "path": "playwright.config.ts",
+          "sha256": "28abec27f4d3b8f94e5339cdd0eca5772f1c5d7fc460222326fc384dd1f027bc"
+        },
+        {
+          "path": "tests/cue-panel.spec.ts",
+          "sha256": "d8dee0d96a6d7e8048d06d66943f2efb82f001644651a222810114b56df6c1fd"
+        }
+      ],
+      "candidate": {
+        "pattern_id": "#8",
+        "file": "tests/cue-panel.spec.ts",
+        "snippet": "await cuePanelIsReady(page);",
+        "line": 10
+      },
+      "report_excerpt": null,
+      "oracle": {
+        "accepted_verdict": "CONFIRMED",
+        "decisive_evidence": [
+          "tests/cue-panel.spec.ts:5",
+          "tests/cue-panel.spec.ts:10"
+        ],
+        "allowed_confidence": [
+          "high",
+          "medium"
+        ],
+        "required_limitation": null,
+        "forbidden_weakened_fix": [
+          "delete cuePanelIsReady",
+          "mark the test skipped"
+        ],
+        "concrete_fix_legal": true
+      }
+    },
+    {
+      "case_id": "CFV-04",
+      "task": "finding_verification",
+      "stratum": "same_file",
+      "framework": "cypress",
+      "repository_root": "CFV-04/repo",
+      "files": [
+        {
+          "path": "cypress.config.ts",
+          "sha256": "fdee0167edc95e892a22309336502ca3914940b0df932cdffbe2d763f545c5a1"
+        },
+        {
+          "path": "cypress/e2e/costume-preview.cy.ts",
+          "sha256": "47ecccc1ce9a1091593c35af95b5a0f65fdf51366c55bda91161f1504103a6f8"
+        },
+        {
+          "path": "cypress/support/e2e.ts",
+          "sha256": "4dcf4a6ffa29460850ae1d65d6481fefba4250043a7e31f32b7656068bc5958a"
+        }
+      ],
+      "candidate": {
+        "pattern_id": "#3b",
+        "file": "cypress/support/e2e.ts",
+        "snippet": "Cypress.on('uncaught:exception', (error) => {",
+        "line": 2
+      },
+      "report_excerpt": null,
+      "oracle": {
+        "accepted_verdict": "FALSE-POSITIVE",
+        "decisive_evidence": [
+          "cypress/support/e2e.ts:3",
+          "cypress/support/e2e.ts:6"
+        ],
+        "allowed_confidence": [
+          "high",
+          "medium"
+        ],
+        "required_limitation": null,
+        "forbidden_weakened_fix": [],
+        "concrete_fix_legal": false
+      }
+    },
+    {
+      "case_id": "CFV-05",
+      "task": "finding_verification",
+      "stratum": "cross_file_or_config",
+      "framework": "playwright",
+      "repository_root": "CFV-05/repo",
+      "files": [
+        {
+          "path": "playwright.config.ts",
+          "sha256": "deda90e69216c6abf31ae66f5b1f8053f7d476812f569098b77c6a5271115fc3"
+        },
+        {
+          "path": "src/routes.ts",
+          "sha256": "38174d3555cee325e3055ba7833ff69321ae782bb02b06ce7bc6b438aae5e2bd"
+        },
+        {
+          "path": "tests/transmitter.spec.ts",
+          "sha256": "411d46a2f87cdbe50f53dea9ea23e4eb052cc29513c0f3ef2fd2aa78860682d1"
+        }
+      ],
+      "candidate": {
+        "pattern_id": "#12",
+        "file": "tests/transmitter.spec.ts",
+        "snippet": "await page.goto('/production/transmitter');",
+        "line": 5
+      },
+      "report_excerpt": null,
+      "oracle": {
+        "accepted_verdict": "FALSE-POSITIVE",
+        "decisive_evidence": [
+          "tests/transmitter.spec.ts:6",
+          "src/routes.ts:3",
+          "playwright.config.ts:3"
+        ],
+        "allowed_confidence": [
+          "high",
+          "medium"
+        ],
+        "required_limitation": null,
+        "forbidden_weakened_fix": [],
+        "concrete_fix_legal": false
+      }
+    },
+    {
+      "case_id": "CFV-06",
+      "task": "finding_verification",
+      "stratum": "cross_file_or_config",
+      "framework": "cypress",
+      "repository_root": "CFV-06/repo",
+      "files": [
+        {
+          "path": "cypress.config.ts",
+          "sha256": "05532fb2eebe725c2af020c8c98a26c9cb551de6630f53853f9742ebc4adaa03"
+        },
+        {
+          "path": "cypress/e2e/audition-booking.cy.ts",
+          "sha256": "e56a8e8558913ac44745baf6822d26b13bb10129e511e89ed99dd242d9e19903"
+        },
+        {
+          "path": "src/audition-booking.ts",
+          "sha256": "8aca17cae62bd3630437997fab5bf13b2d12b9d345d8555dbf52d98b556470b3"
+        }
+      ],
+      "candidate": {
+        "pattern_id": "#20",
+        "file": "cypress/e2e/audition-booking.cy.ts",
+        "snippet": "cy.get('[data-cy=reserve-evening]').click();",
+        "line": 5
+      },
+      "report_excerpt": null,
+      "oracle": {
+        "accepted_verdict": "CONFIRMED",
+        "decisive_evidence": [
+          "cypress/e2e/audition-booking.cy.ts:5",
+          "src/audition-booking.ts:3",
+          "cypress.config.ts:3"
+        ],
+        "allowed_confidence": [
+          "high",
+          "medium"
+        ],
+        "required_limitation": null,
+        "forbidden_weakened_fix": [
+          "disable the test",
+          "ignore the request"
+        ],
+        "concrete_fix_legal": true
+      }
+    },
+    {
+      "case_id": "CFV-07",
+      "task": "finding_verification",
+      "stratum": "cross_file_or_config",
+      "framework": "playwright",
+      "repository_root": "CFV-07/repo",
+      "files": [
+        {
+          "path": "playwright.config.ts",
+          "sha256": "74d43e2c12f974f24d43807b09510a8b230aea65a5f183d7a948e773a490e585"
+        },
+        {
+          "path": "src/routes.ts",
+          "sha256": "06e6c8e4c57eaccb4197b5d32dd255a6c235ac8f24cca3b004a28372c98a12d9"
+        },
+        {
+          "path": "tests/director.setup.ts",
+          "sha256": "7311a17497abaf39fb2383de0e4a2d4f7b6aaca2a519df3b8ac814518320a8c0"
+        },
+        {
+          "path": "tests/light-board.spec.ts",
+          "sha256": "dffccc35f71485fb7148e8e2015b012491e9ce0ceb5ea76502735569709ce68c"
+        }
+      ],
+      "candidate": {
+        "pattern_id": "#12",
+        "file": "tests/light-board.spec.ts",
+        "snippet": "await page.goto('/production/light-board');",
+        "line": 4
+      },
+      "report_excerpt": null,
+      "oracle": {
+        "accepted_verdict": "FALSE-POSITIVE",
+        "decisive_evidence": [
+          "playwright.config.ts:5",
+          "playwright.config.ts:5",
+          "tests/director.setup.ts:7"
+        ],
+        "allowed_confidence": [
+          "high",
+          "medium"
+        ],
+        "required_limitation": null,
+        "forbidden_weakened_fix": [],
+        "concrete_fix_legal": false
+      }
+    },
+    {
+      "case_id": "CFV-08",
+      "task": "finding_verification",
+      "stratum": "cross_file_or_config",
+      "framework": "cypress",
+      "repository_root": "CFV-08/repo",
+      "files": [
+        {
+          "path": "cypress.config.ts",
+          "sha256": "3271da27b66f56465ff57b7a0b31d32729d962b46f37f03f3cb48449a89ab366"
+        },
+        {
+          "path": "cypress/e2e/prop-checkout.cy.ts",
+          "sha256": "9efced31e9676df97823c67614fe04e437272aae94ca68ef8002f3bbefca2f66"
+        },
+        {
+          "path": "cypress/support/e2e.ts",
+          "sha256": "50fedbf46a8693536037debcf0437c68e8c0b46fe2486994d5e6036c28bcf3cd"
+        },
+        {
+          "path": "src/prop-checkout.ts",
+          "sha256": "7f72f5465a3afd576df2de6980c02772a10ae47243efba843c485898e8a27344"
+        }
+      ],
+      "candidate": {
+        "pattern_id": "#20",
+        "file": "cypress/e2e/prop-checkout.cy.ts",
+        "snippet": "cy.get('[data-cy=checkout-brass-lantern]').click();",
+        "line": 5
+      },
+      "report_excerpt": null,
+      "oracle": {
+        "accepted_verdict": "FALSE-POSITIVE",
+        "decisive_evidence": [
+          "cypress.config.ts:3",
+          "cypress/support/e2e.ts:2",
+          "src/prop-checkout.ts:3"
+        ],
+        "allowed_confidence": [
+          "high",
+          "medium"
+        ],
+        "required_limitation": null,
+        "forbidden_weakened_fix": [],
+        "concrete_fix_legal": false
+      }
+    },
+    {
+      "case_id": "CFC-01",
+      "task": "failure_classification",
+      "stratum": "uncertainty_trigger",
+      "framework": "playwright",
+      "repository_root": "CFC-01/repo",
+      "files": [
+        {
+          "path": "playwright.config.ts",
+          "sha256": "a3f07771a152550b4b852efe273ac3b3675b804e37a784bfb29b33b3fca657ac"
+        },
+        {
+          "path": "src/cast-banner.tsx",
+          "sha256": "f7ec4921f7be86919084d250a6239862ed8671035ab45e32b6399b01d342a06a"
+        },
+        {
+          "path": "tests/cast-banner.spec.ts",
+          "sha256": "e5352574dde443d4e7b708793698566cf8791be734dff4206b45779fe5229781"
+        }
+      ],
+      "candidate": {
+        "failing_test": "shows the understudy notice",
+        "file": "tests/cast-banner.spec.ts",
+        "snippet": "understudy-banner resolved to no element",
+        "line": 5
+      },
+      "report_excerpt": {
+        "error": {
+          "message": "expect.toBeVisible failed: understudy-banner resolved to no element",
+          "stack": "tests/cast-banner.spec.ts:4:60"
+        },
+        "dom_snapshot": {
+          "understudy": false,
+          "banner_present": false
+        },
+        "attempt_summary": "one failure; retries disabled"
+      },
+      "oracle": {
+        "accepted_verdict": "F6",
+        "decisive_evidence": [
+          "tests/cast-banner.spec.ts:4",
+          "src/cast-banner.tsx:3",
+          "report_excerpt#error.message"
+        ],
+        "allowed_confidence": [
+          "high",
+          "medium"
+        ],
+        "required_limitation": null,
+        "forbidden_weakened_fix": [
+          "remove the assertion",
+          "waitForTimeout"
+        ],
+        "concrete_fix_legal": true
+      }
+    },
+    {
+      "case_id": "CFC-02",
+      "task": "failure_classification",
+      "stratum": "uncertainty_trigger",
+      "framework": "cypress",
+      "repository_root": "CFC-02/repo",
+      "files": [
+        {
+          "path": "cypress.config.ts",
+          "sha256": "da0d155309479c75d1bc48ebf85229b5935ad0d57c46c7ada90c7c6e5b22aa2d"
+        },
+        {
+          "path": "cypress/e2e/rehearsal-room.cy.ts",
+          "sha256": "f84d43046f1eb0343669a861f1fa87a5a5d7cb5832e8930fe4ba941fe90f4dca"
+        },
+        {
+          "path": "cypress/support/commands.ts",
+          "sha256": "2cb1546863ff56dce80e573307bc0281dc2aeec569e471438e67aafab80c5bc3"
+        }
+      ],
+      "candidate": {
+        "failing_test": "shows the reserved state",
+        "file": "cypress/e2e/rehearsal-room.cy.ts",
+        "snippet": "room-state was Available rather than Reserved",
+        "line": 5
+      },
+      "report_excerpt": {
+        "error": {
+          "message": "expected room-state to have text 'Reserved', but it was 'Available'",
+          "stack": "cypress/e2e/rehearsal-room.cy.ts:4:40"
+        },
+        "network": {
+          "request": "POST /api/rehearsals/reservations",
+          "result": "rejected before response"
+        },
+        "attempt_summary": "custom command completed and assertion failed"
+      },
+      "oracle": {
+        "accepted_verdict": "F13",
+        "decisive_evidence": [
+          "cypress/support/commands.ts:3",
+          "report_excerpt#network.result",
+          "cypress/e2e/rehearsal-room.cy.ts:5"
+        ],
+        "allowed_confidence": [
+          "high",
+          "medium"
+        ],
+        "required_limitation": null,
+        "forbidden_weakened_fix": [
+          "remove the assertion",
+          "return false"
+        ],
+        "concrete_fix_legal": true
+      }
+    },
+    {
+      "case_id": "CFC-03",
+      "task": "failure_classification",
+      "stratum": "uncertainty_trigger",
+      "framework": "playwright",
+      "repository_root": "CFC-03/repo",
+      "files": [
+        {
+          "path": "playwright.config.ts",
+          "sha256": "843e4eecc371ad8a27d262aa2cec370168234ddd6508be80b138e9ac9c6a3316"
+        },
+        {
+          "path": "tests/cue-sequence.spec.ts",
+          "sha256": "08c884515ec024995272268e6860a63d639a6f21960d2fd8b783a2db47b1e90f"
+        }
+      ],
+      "candidate": {
+        "failing_test": "shows closing cue independently",
+        "file": "tests/cue-sequence.spec.ts",
+        "snippet": "timeout waiting for closing-cue",
+        "line": 10
+      },
+      "report_excerpt": {
+        "error": {
+          "message": "Timeout 5000ms exceeded while waiting for closing-cue",
+          "stack": "tests/cue-sequence.spec.ts:9:55"
+        },
+        "isolation_probe": {
+          "alone": "10/10 passed",
+          "full_suite": "failed after opening cue test"
+        },
+        "attempt_summary": "failure only in complete file"
+      },
+      "oracle": {
+        "accepted_verdict": "F7",
+        "decisive_evidence": [
+          "report_excerpt#isolation_probe.alone",
+          "report_excerpt#isolation_probe.full_suite",
+          "tests/cue-sequence.spec.ts:3"
+        ],
+        "allowed_confidence": [
+          "high"
+        ],
+        "required_limitation": null,
+        "forbidden_weakened_fix": [
+          "reorder the tests",
+          "workers: 1"
+        ],
+        "concrete_fix_legal": true
+      }
+    },
+    {
+      "case_id": "CFC-04",
+      "task": "failure_classification",
+      "stratum": "uncertainty_trigger",
+      "framework": "cypress",
+      "repository_root": "CFC-04/repo",
+      "files": [
+        {
+          "path": "cypress.config.ts",
+          "sha256": "7f69a8e44bc828443d44ed1f3bc4ecd989d18849d24df9413d7d9c2f4501c471"
+        },
+        {
+          "path": "cypress/e2e/costume-rack.cy.ts",
+          "sha256": "ab796a64f4a258dc019bca92114faabe6a4199402ac120e40d99e359531b707e"
+        }
+      ],
+      "candidate": {
+        "failing_test": "shows moon-chorus costume",
+        "file": "cypress/e2e/costume-rack.cy.ts",
+        "snippet": "timed out waiting for moon-chorus",
+        "line": 5
+      },
+      "report_excerpt": {
+        "error": {
+          "message": "Timed out retrying: expected moon-chorus to be visible",
+          "stack": "cypress/e2e/costume-rack.cy.ts:4:38"
+        },
+        "attempt_summary": "initial attempt failed and retry passed",
+        "isolation_probe": {
+          "performed": false,
+          "missing_evidence": "spec-alone repetitions and full-suite run"
+        }
+      },
+      "oracle": {
+        "accepted_verdict": "CANNOT_VERIFY",
+        "decisive_evidence": [
+          "report_excerpt#isolation_probe.performed",
+          "cypress.config.ts:3"
+        ],
+        "allowed_confidence": [
+          "high",
+          "medium"
+        ],
+        "required_limitation": "full-suite run",
+        "forbidden_weakened_fix": [],
+        "concrete_fix_legal": false
+      }
+    },
+    {
+      "case_id": "CFC-05",
+      "task": "failure_classification",
+      "stratum": "disagreement_reconciliation",
+      "framework": "playwright",
+      "repository_root": "CFC-05/repo",
+      "files": [
+        {
+          "path": "playwright.config.ts",
+          "sha256": "d38e8a43338ae9297705591c64760ed13e0a9015a17ef4800500d48d614234f5"
+        },
+        {
+          "path": "tests/box-office-suite.spec.ts",
+          "sha256": "b94bffc639acfbe033d9afaef48211b86ac466a9015ff7282cf128a41e41e7ab"
+        }
+      ],
+      "candidate": {
+        "failing_test": "box office suite (two affected tests)",
+        "file": "tests/box-office-suite.spec.ts",
+        "snippet": "beforeAll seed payload omitted the required matinee production",
+        "line": 3
+      },
+      "report_excerpt": {
+        "error": {
+          "message": "beforeAll hook failed: expected seededProductions [] to contain matinee",
+          "stack": "tests/box-office-suite.spec.ts:6:37"
+        },
+        "seed_payload": {
+          "http_status": 200,
+          "seeded_productions": []
+        },
+        "suite_summary": {
+          "failed": 2,
+          "identical_hook_failures": 2,
+          "test_body_failures": 0
+        },
+        "attempt_summary": "both tests failed from the same missing seed fixture"
+      },
+      "oracle": {
+        "accepted_verdict": "F9",
+        "decisive_evidence": [
+          "report_excerpt#seed_payload",
+          "report_excerpt#suite_summary",
+          "tests/box-office-suite.spec.ts:6"
+        ],
+        "allowed_confidence": [
+          "high",
+          "medium"
+        ],
+        "required_limitation": null,
+        "forbidden_weakened_fix": [
+          "skip both tests",
+          "increase retries"
+        ],
+        "concrete_fix_legal": true
+      }
+    },
+    {
+      "case_id": "CFC-06",
+      "task": "failure_classification",
+      "stratum": "disagreement_reconciliation",
+      "framework": "cypress",
+      "repository_root": "CFC-06/repo",
+      "files": [
+        {
+          "path": "cypress.config.ts",
+          "sha256": "aa6007cf6f6edcf5e419a1d79a4a8a608d63a0645886ba84b0da60f2ec4b2b56"
+        },
+        {
+          "path": "cypress/e2e/matinee-grid.cy.ts",
+          "sha256": "525dcfe805ba05686046ed7aad1bba558ee99d1fc4850647ecbbd7a49bb7c426"
+        },
+        {
+          "path": "src/matinee-layout.css",
+          "sha256": "5035da005a4ad1de40bdcb6b9b7b681a9e7fb8d20b55644434f26d90a1643f09"
+        }
+      ],
+      "candidate": {
+        "failing_test": "opens noon performance",
+        "file": "cypress/e2e/matinee-grid.cy.ts",
+        "snippet": "desktop grid not visible in CI",
+        "line": 5
+      },
+      "report_excerpt": {
+        "error": {
+          "message": "desktop-matinee-grid noon element is not visible",
+          "stack": "cypress/e2e/matinee-grid.cy.ts:4:65"
+        },
+        "environment": {
+          "local": "passed at 1280x800",
+          "ci": "failed at 620x800"
+        },
+        "attempt_summary": "only CI viewport reproduces"
+      },
+      "oracle": {
+        "accepted_verdict": "F8",
+        "decisive_evidence": [
+          "cypress.config.ts:3",
+          "cypress/e2e/matinee-grid.cy.ts:5",
+          "report_excerpt#environment"
+        ],
+        "allowed_confidence": [
+          "high",
+          "medium"
+        ],
+        "required_limitation": null,
+        "forbidden_weakened_fix": [
+          "force: true",
+          "cy.wait("
+        ],
+        "concrete_fix_legal": true
+      }
+    },
+    {
+      "case_id": "CFC-07",
+      "task": "failure_classification",
+      "stratum": "disagreement_reconciliation",
+      "framework": "playwright",
+      "repository_root": "CFC-07/repo",
+      "files": [
+        {
+          "path": "playwright.config.ts",
+          "sha256": "c3fa9c49ee91a78c4866141feb874f2240fd54f6bbcd1161fa84601431ef08b2"
+        },
+        {
+          "path": "tests/director-console.spec.ts",
+          "sha256": "3e465ee486b57f9fcf877e1330f01a38b24fc19bc3484cc26ff23fa4e8c4fc0b"
+        }
+      ],
+      "candidate": {
+        "failing_test": "shows director console",
+        "file": "tests/director-console.spec.ts",
+        "snippet": "director-controls resolved to no element",
+        "line": 6
+      },
+      "report_excerpt": {
+        "error": {
+          "message": "director-controls resolved to no element; current URL /login?expired=1",
+          "stack": "tests/director-console.spec.ts:5:58"
+        },
+        "session": {
+          "storage_state": ".auth/expired-director.json",
+          "redirect": "/login?expired=1"
+        },
+        "attempt_summary": "failed on both attempts"
+      },
+      "oracle": {
+        "accepted_verdict": "F10",
+        "decisive_evidence": [
+          "report_excerpt#session.redirect",
+          "tests/director-console.spec.ts:3"
+        ],
+        "allowed_confidence": [
+          "high",
+          "medium"
+        ],
+        "required_limitation": null,
+        "forbidden_weakened_fix": [
+          "remove the assertion",
+          "waitForTimeout"
+        ],
+        "concrete_fix_legal": true
+      }
+    },
+    {
+      "case_id": "CFC-08",
+      "task": "failure_classification",
+      "stratum": "disagreement_reconciliation",
+      "framework": "cypress",
+      "repository_root": "CFC-08/repo",
+      "files": [
+        {
+          "path": "cypress.config.ts",
+          "sha256": "8f372a2917b560628d575c26491287deaac2be13f0699fafa0d3fb2c1fcf9882"
+        },
+        {
+          "path": "cypress/e2e/prop-return.cy.ts",
+          "sha256": "599c00393ab224ff3afb04ab6266b086d5e8b4deb0fa5df82092238028a29fa6"
+        }
+      ],
+      "candidate": {
+        "failing_test": "records lantern return",
+        "file": "cypress/e2e/prop-return.cy.ts",
+        "snippet": "cy.wait found no aliased request",
+        "line": 7
+      },
+      "report_excerpt": {
+        "error": {
+          "message": "cy.wait timed out for route returnProp; no request occurred",
+          "stack": "cypress/e2e/prop-return.cy.ts:6:8"
+        },
+        "network": {
+          "observed": "POST completed after click before intercept registration"
+        },
+        "attempt_summary": "same ordering on both attempts"
+      },
+      "oracle": {
+        "accepted_verdict": "F11",
+        "decisive_evidence": [
+          "cypress/e2e/prop-return.cy.ts:5",
+          "cypress/e2e/prop-return.cy.ts:6",
+          "report_excerpt#network.observed"
+        ],
+        "allowed_confidence": [
+          "high",
+          "medium"
+        ],
+        "required_limitation": null,
+        "forbidden_weakened_fix": [
+          "increase the timeout",
+          "cy.wait(5000"
+        ],
+        "concrete_fix_legal": true
+      }
+    }
+  ]
+}

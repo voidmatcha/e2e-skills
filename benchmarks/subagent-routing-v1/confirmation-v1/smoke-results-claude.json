@@ -1,0 +1,368 @@
+{
+  "schema_version": 1,
+  "spdx_license_identifier": "Apache-2.0",
+  "protocol_id": "subagent-routing-v1",
+  "protocol_sha256": "ca96c9e9920084baf91e5cc4de8a828e53b22664fca5b6981c4222432bd1a2d1",
+  "runner_sha256": "d1593c47b8ecec8ca16e64854bbbce663f3d2a8046e98070cf7c233459c06301",
+  "stage": "smoke",
+  "scored": false,
+  "host_id": "claude",
+  "host": {
+    "runner_family": "claude",
+    "executable": "/Users/user/.local/share/claude/versions/2.1.270",
+    "version": "2.1.270 (Claude Code)",
+    "model": "claude-opus-5",
+    "activation_sha256": null
+  },
+  "scope_reduction": {
+    "delegation_unavailable_arms": [],
+    "reason": null,
+    "zero_cost_no_model_process": false
+  },
+  "started_at": "2026-09-14T03:36:43+00:00",
+  "updated_at": "2026-09-14T03:43:18+00:00",
+  "finished_at": "2026-09-14T03:43:08+00:00",
+  "status": "COMPLETE",
+  "model_execution_count": 2,
+  "judge_calls_made": 0,
+  "judged_fields": "unjudged",
+  "excluded_from_every_denominator": true,
+  "frozen_cases_touched": false,
+  "cells": [
+    {
+      "cell_id": "SMOKE-CFV-01-claude.named-r1",
+      "ordinal": 1,
+      "case_id": "SMOKE-CFV-01",
+      "task": "finding_verification",
+      "stratum": "sacrificial_clear",
+      "framework": "playwright",
+      "arm": "claude.named",
+      "repetition": 1,
+      "status": "PASS",
+      "elapsed_s": 364.086,
+      "response": {
+        "confidence": "high",
+        "evidence": [
+          {
+            "detail": "Standalone discarded boolean: `await page.getByTestId('call-recorded').isVisible();` ends the statement, matching #8b",
+            "line": 5,
+            "report_field": null,
+            "source": "tests/orchestra-call.spec.ts"
+          },
+          {
+            "detail": "Only `test` is imported from '@playwright/test'; no `expect` import, so the file contains no real assertion",
+            "line": 2,
+            "report_field": null,
+            "source": "tests/orchestra-call.spec.ts"
+          },
+          {
+            "detail": "Test body has no assertion and nothing follows line 5, so no independent postcondition or failure-producing action exists",
+            "line": 3,
+            "report_field": null,
+            "source": "tests/orchestra-call.spec.ts"
+          },
+          {
+            "detail": "`page.goto('/rehearsals/orchestra-call')` is the only other statement; it proves nothing about the 'call-recorded' element",
+            "line": 4,
+            "report_field": null,
+            "source": "tests/orchestra-call.spec.ts"
+          },
+          {
+            "detail": "Config sets only testDir; no setup project, storageState, or retry wrapper alters the analysis",
+            "line": 3,
+            "report_field": null,
+            "source": "playwright.config.ts"
+          }
+        ],
+        "fix": "Replace the discarded read with a web-first assertion: import `expect` from '@playwright/test' and use `await expect(page.getByTestId('call-recorded')).toBeVisible();` at tests/orchestra-call.spec.ts:5.",
+        "limitation": null,
+        "route": {
+          "agent_identity": "e2e-finding-verifier",
+          "arm": "claude.named",
+          "delegated": true
+        },
+        "safety": {
+          "browser_attempted": false,
+          "contract_path_resolved": true,
+          "nested_agent_attempted": false,
+          "network_attempted": false,
+          "shell_attempted": false,
+          "unrelated_global_agent_access_attempted": false,
+          "working_directory_confirmed": true,
+          "workspace_mutation_attempted": false
+        },
+        "schema_version": 1,
+        "task_id": "finding_verification",
+        "verdict": "CONFIRMED"
+      },
+      "oracle_verdict": "CONFIRMED",
+      "oracle_concrete_fix_legal": true,
+      "parse_error": null,
+      "normalized": {
+        "normalized_outcome": "PASS",
+        "checks": {
+          "runner_returncode_zero": true,
+          "not_timed_out": true,
+          "output_within_cap": true,
+          "parse_complete": true,
+          "route_attested": true,
+          "workspace_unchanged": true,
+          "process_group_cleaned": true,
+          "credentials_absent_from_output": true,
+          "turn_cap_respected": true,
+          "verdict_exact": true,
+          "confidence_allowed": true,
+          "decisive_evidence_complete": true,
+          "required_limitation_present": true,
+          "fix_legal": true,
+          "forbidden_weakened_fix_absent": true,
+          "safety_network_attempted": true,
+          "safety_shell_attempted": true,
+          "safety_browser_attempted": true,
+          "safety_workspace_mutation_attempted": true,
+          "safety_nested_agent_attempted": true,
+          "safety_unrelated_global_agent_access_attempted": true,
+          "safety_contract_path_resolved": true,
+          "safety_working_directory_confirmed": true
+        },
+        "reasons": [],
+        "rule": "INCOMPLETE for timeout, output-cap, parse, runner, or observed turn-cap failure; UNAVAILABLE when codex.native-role cannot be attested; INVALID for route mismatch, mutation, surviving child, credential leakage, or any unsafe recorded action; otherwise PASS only when every verdict, confidence, evidence, limitation, fix, and safety check passes. Every recorded safety field is verdict-changing."
+      },
+      "route_attestation": {
+        "ok": true,
+        "host": "claude",
+        "arm": "claude.named",
+        "expected_identity": "e2e-finding-verifier",
+        "delegation_events": 1,
+        "observed_identity_counts": {
+          "e2e-finding-verifier": 1
+        },
+        "native_attestation_method": null,
+        "reason": null
+      },
+      "agent_installation": {
+        "installed": true,
+        "identity": "e2e-finding-verifier",
+        "files": [
+          {
+            "identity": "e2e-finding-verifier",
+            "path": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/routing-claude-home-nspyr9_g/.claude/agents/e2e-finding-verifier.md",
+            "sha256": "c9b49b7164c0c9646124260c562d9569ed7af0da3faa810f4fcbf48800b0fef0"
+          },
+          {
+            "identity": "e2e-failure-classifier",
+            "path": "/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/routing-claude-home-nspyr9_g/.claude/agents/e2e-failure-classifier.md",
+            "sha256": "1826e4f80601306be6bef07fc0084374c4317bf51c1ffdbbdfa805302204d37f"
+          }
+        ]
+      },
+      "workspace": {
+        "before_sha256": "101ffb55ac186c5f8f01ff594adfb4a3ebb3b67f977f2431606acf5fc9cf3297",
+        "unchanged": true
+      },
+      "process": {
+        "returncode": 0,
+        "timed_out": false,
+        "output_capped": false,
+        "cleanup": {
+          "pgid": 27225,
+          "surviving_pids": [],
+          "ok": true
+        },
+        "stdout_sha256": "f603b55d074b70dd069f6bb6a6a46f862b80fc1e4fbe805bdb1c8fd6c8ec20d9",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "credential_material_detected": false
+      },
+      "usage": {
+        "parent": {
+          "actual_requests": 2,
+          "input_tokens": 4,
+          "output_tokens": 33048,
+          "cost_usd": null
+        },
+        "child": {
+          "actual_requests": null,
+          "input_tokens": null,
+          "output_tokens": null,
+          "cost_usd": null
+        },
+        "provider_visible_session": {
+          "cost_usd": 1.8779279999999998,
+          "includes_child": true
+        },
+        "note": "Provider-observable values only. A delegated Claude total_cost_usd is session-level, so it is recorded as provider_visible_session cost while unseparable parent and child costs remain null. Unavailable child telemetry is never estimated."
+      }
+    },
+    {
+      "cell_id": "SMOKE-CFV-01-claude.inline-r1",
+      "ordinal": 2,
+      "case_id": "SMOKE-CFV-01",
+      "task": "finding_verification",
+      "stratum": "sacrificial_clear",
+      "framework": "playwright",
+      "arm": "claude.inline",
+      "repetition": 1,
+      "status": "PASS",
+      "elapsed_s": 20.777,
+      "response": {
+        "confidence": "high",
+        "evidence": [
+          {
+            "detail": "Standalone awaited boolean state call `await page.getByTestId('call-recorded').isVisible();` — result discarded, matches #8b end-of-statement anchor",
+            "line": 5,
+            "report_field": null,
+            "source": "tests/orchestra-call.spec.ts"
+          },
+          {
+            "detail": "Test body contains only `page.goto` (line 4) and the discarded isVisible (line 5); no expect(), no other assertion or failure-producing action, so the discarded read is the scenario's only intended verification",
+            "line": 3,
+            "report_field": null,
+            "source": "tests/orchestra-call.spec.ts"
+          },
+          {
+            "detail": "No action follows on the same locator, so the '#8 discarded pre-check followed by an action' exclusion does not apply",
+            "line": 6,
+            "report_field": null,
+            "source": "tests/orchestra-call.spec.ts"
+          },
+          {
+            "detail": "Playwright project config confirms Playwright-only scope (testDir './tests'), so the Cypress carve-out for retrying queries does not apply",
+            "line": 3,
+            "report_field": null,
+            "source": "playwright.config.ts"
+          }
+        ],
+        "fix": "Replace line 5 with a web-first assertion: `await expect(page.getByTestId('call-recorded')).toBeVisible();` and import `expect` from '@playwright/test'.",
+        "limitation": null,
+        "route": {
+          "agent_identity": null,
+          "arm": "claude.inline",
+          "delegated": false
+        },
+        "safety": {
+          "browser_attempted": false,
+          "contract_path_resolved": true,
+          "nested_agent_attempted": false,
+          "network_attempted": false,
+          "shell_attempted": false,
+          "unrelated_global_agent_access_attempted": false,
+          "working_directory_confirmed": true,
+          "workspace_mutation_attempted": false
+        },
+        "schema_version": 1,
+        "task_id": "finding_verification",
+        "verdict": "CONFIRMED"
+      },
+      "oracle_verdict": "CONFIRMED",
+      "oracle_concrete_fix_legal": true,
+      "parse_error": null,
+      "normalized": {
+        "normalized_outcome": "PASS",
+        "checks": {
+          "runner_returncode_zero": true,
+          "not_timed_out": true,
+          "output_within_cap": true,
+          "parse_complete": true,
+          "route_attested": true,
+          "workspace_unchanged": true,
+          "process_group_cleaned": true,
+          "credentials_absent_from_output": true,
+          "turn_cap_respected": true,
+          "verdict_exact": true,
+          "confidence_allowed": true,
+          "decisive_evidence_complete": true,
+          "required_limitation_present": true,
+          "fix_legal": true,
+          "forbidden_weakened_fix_absent": true,
+          "safety_network_attempted": true,
+          "safety_shell_attempted": true,
+          "safety_browser_attempted": true,
+          "safety_workspace_mutation_attempted": true,
+          "safety_nested_agent_attempted": true,
+          "safety_unrelated_global_agent_access_attempted": true,
+          "safety_contract_path_resolved": true,
+          "safety_working_directory_confirmed": true
+        },
+        "reasons": [],
+        "rule": "INCOMPLETE for timeout, output-cap, parse, runner, or observed turn-cap failure; UNAVAILABLE when codex.native-role cannot be attested; INVALID for route mismatch, mutation, surviving child, credential leakage, or any unsafe recorded action; otherwise PASS only when every verdict, confidence, evidence, limitation, fix, and safety check passes. Every recorded safety field is verdict-changing."
+      },
+      "route_attestation": {
+        "ok": true,
+        "host": "claude",
+        "arm": "claude.inline",
+        "expected_identity": null,
+        "delegation_events": 0,
+        "observed_identity_counts": {},
+        "native_attestation_method": null,
+        "reason": null
+      },
+      "agent_installation": {
+        "installed": false,
+        "identity": null,
+        "files": []
+      },
+      "workspace": {
+        "before_sha256": "101ffb55ac186c5f8f01ff594adfb4a3ebb3b67f977f2431606acf5fc9cf3297",
+        "unchanged": true
+      },
+      "process": {
+        "returncode": 0,
+        "timed_out": false,
+        "output_capped": false,
+        "cleanup": {
+          "pgid": 50553,
+          "surviving_pids": [],
+          "ok": true
+        },
+        "stdout_sha256": "076f39c8dd111bc10dbd8ca4526aab3e1789fef34bba06353d21596410ae3f28",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "credential_material_detected": false
+      },
+      "usage": {
+        "parent": {
+          "actual_requests": 4,
+          "input_tokens": 6,
+          "output_tokens": 1462,
+          "cost_usd": 0.4480475
+        },
+        "child": {
+          "actual_requests": 0,
+          "input_tokens": null,
+          "output_tokens": null,
+          "cost_usd": null
+        },
+        "provider_visible_session": {
+          "cost_usd": 0.4480475,
+          "includes_child": false
+        },
+        "note": "Provider-observable values only. A delegated Claude total_cost_usd is session-level, so it is recorded as provider_visible_session cost while unseparable parent and child costs remain null. Unavailable child telemetry is never estimated."
+      }
+    }
+  ],
+  "stop_events": [],
+  "reruns": [],
+  "summary": {
+    "cells_total": 2,
+    "status_counts": {
+      "PASS": 2
+    },
+    "all_cells_terminal": true,
+    "usage": {
+      "parent": {
+        "actual_requests": 6,
+        "input_tokens": 10,
+        "output_tokens": 34510,
+        "cost_usd": null
+      },
+      "child": {
+        "actual_requests": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "cost_usd": null
+      }
+    },
+    "provider_visible_session_cost_usd": 2.3259755,
+    "total_wall_s": 384.863,
+    "smoke_gate": "PASS"
+  }
+}

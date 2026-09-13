@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "protocol_id": "subagent-routing-v1",
+  "kind": "smoke",
+  "cases": [
+    {
+      "case_id": "SMOKE-CFV-01",
+      "task": "finding_verification",
+      "stratum": "sacrificial_clear",
+      "framework": "playwright",
+      "repository_root": "SMOKE-CFV-01/repo",
+      "files": [
+        {
+          "path": "playwright.config.ts",
+          "sha256": "8afab15e1eb0e463f424657a4154ab0b1412ad7820178d6c4231433d7f418f45"
+        },
+        {
+          "path": "tests/orchestra-call.spec.ts",
+          "sha256": "a74e20c31dc505059740da9cddb182a37551af74df5c87666e2b1ff1bc6d7309"
+        }
+      ],
+      "candidate": {
+        "pattern_id": "#8",
+        "file": "tests/orchestra-call.spec.ts",
+        "snippet": "await page.getByTestId('call-recorded').isVisible();",
+        "line": 5
+      },
+      "report_excerpt": null,
+      "oracle": {
+        "accepted_verdict": "CONFIRMED",
+        "decisive_evidence": [
+          "tests/orchestra-call.spec.ts:5"
+        ],
+        "allowed_confidence": [
+          "high"
+        ],
+        "required_limitation": null,
+        "forbidden_weakened_fix": [
+          "remove the test"
+        ],
+        "concrete_fix_legal": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+/* confirmation-case: CFC-06/src/matinee-layout.css */
+[data-cy='desktop-matinee-grid'] { display: grid; }
+@media (max-width: 700px) {
+  [data-cy='desktop-matinee-grid'] { display: none; }
+  [data-cy='mobile-matinee-list'] { display: block; }
+}
