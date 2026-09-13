@@ -178,6 +178,7 @@ run_python scripts/ci/test-reinstall-skills.py ||
 step "Behavioral eval harness"
 /bin/bash -p scripts/ci/test-behavioral-evals.sh || fail "test-behavioral-evals.sh"
 run_python scripts/ci/test-debugger-contracts.py || fail "test-debugger-contracts.py"
+run_python scripts/ci/test-routing-contract.py || fail "test-routing-contract.py"
 run_python scripts/ci/test-residual-redos-budget.py ||
   fail "test-residual-redos-budget.py"
 run_python scripts/ci/test-cypress-debugger-artifact-download.py ||

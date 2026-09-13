@@ -7,7 +7,7 @@ metadata:
   frameworks: cypress
   testing-types: e2e
   languages: typescript,javascript
-  version: "1.16.1"
+  version: "1.16.2"
 ---
 
 # Cypress Failed Test Debugger
@@ -375,7 +375,7 @@ PROJECT_ROOT=$(/bin/pwd -P)
 
 Use Phase 1 output (error message + duration) to classify. **Most failures are identifiable here — only go to Phase 3 if still unclear.**
 
-**Classifier delegation (delegation-aware):** prefer the named `e2e-failure-classifier` when registered by a Claude Code plugin or by a Codex `.codex/agents/` / `~/.codex/agents/` TOML. If that custom agent is absent but Codex exposes native role routing, delegate the same single-failure payload to the native `debugger` role; named registration is an optimization, not a correctness dependency. Pass the failing test name, only the sanitized and bounded report excerpt permitted by the output contract below (error, stack, attempt/screenshot signal), repo root, and the **absolute** path to this skill's `SKILL.md` (the directory containing this SKILL.md + `/SKILL.md`; on Codex/`skills` CLI it is under `~/.agents/skills/`). Never pass raw artifact text or an unredacted directly supplied error/stack to a subagent. Every delegated working directory is the project under debug, so a repo-relative `skills/...` path is invalid. Require the F-code with confidence, evidence, and a fix. If neither named nor native delegation is available, classify inline with the same F1–F15 table and steps below. The F-code must be identical on all three paths.
+**Classifier delegation (inline by default):** classify inline with the same F1–F15 table and steps below by default — named delegation showed no stable correctness benefit over inline. The named `e2e-failure-classifier`, when registered by a Claude Code plugin or by a Codex `.codex/agents/` / `~/.codex/agents/` TOML, or the native `debugger` role when Codex exposes native role routing, remain available as an optional second opinion, never a required step; named registration is an optimization, not a correctness dependency. Delegate only when the inline classification is itself uncertain (low confidence, or two F-codes remain plausible after the steps below); if the delegated verdict disagrees with the inline one, keep the inline verdict — the measured pilot found no case where delegation corrected an inline error, and one case where it introduced an evidentiary-completeness failure inline did not have. If delegating, pass the failing test name, only the sanitized and bounded report excerpt permitted by the output contract below (error, stack, attempt/screenshot signal), repo root, and the **absolute** path to this skill's `SKILL.md` (the directory containing this SKILL.md + `/SKILL.md`; on Codex/`skills` CLI it is under `~/.agents/skills/`). Never pass raw artifact text or an unredacted directly supplied error/stack to a subagent. Every delegated working directory is the project under debug, so a repo-relative `skills/...` path is invalid. Require the F-code with confidence, evidence, and a fix. The F-code must be identical on all three paths.
 
 | # | Category | Signals | Review Pattern |
 |---|----------|---------|----------------|

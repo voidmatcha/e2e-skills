@@ -8,7 +8,7 @@
       "name": "e2e-skills",
       "source": "./",
       "description": "Four agent skills for Playwright and Cypress end-to-end tests: generate new Playwright coverage with live exploration only on local/disposable or externally isolated approved non-production targets, review existing specs or PR diffs, and debug failed runs.",
-      "version": "1.16.1",
+      "version": "1.16.2",
       "author": {
         "name": "YONGJAE LEE"
       },
