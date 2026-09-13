@@ -15,6 +15,8 @@ Guidance for AI coding agents (Claude Code, Codex, and other AGENTS.md-compatibl
 
 The repo doubles as a Claude Code plugin (`.claude-plugin/`), a Codex plugin (`.codex-plugin/`), a cross-agent skill source via the `skills` CLI, and a standalone scanner (`skills/e2e-reviewer/scripts/scan.sh`).
 
+**Product vs. infrastructure.** The four `skills/` directories above are the product — what a user installs and runs. `benchmarks/`, most of `scripts/ci/`, and the eval harnesses are this project's own verification infrastructure: the evidence backing the skills' claims, and the CI that keeps that evidence honest as the skills change. A typo fix or a small skill-wording change barely touches any of it — see `CONTRIBUTING.md`'s tier table before assuming a change needs the full process below.
+
 ## Verification gate (must pass before commit)
 
 ```

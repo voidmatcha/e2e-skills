@@ -17,6 +17,28 @@ Be respectful and constructive. We follow the spirit of the [Contributor Covenan
 
 The project is **Playwright and Cypress only**. It does not accept code or advice for Puppeteer, Selenium, WebdriverIO, TestCafe, or Nightwatch. See [`docs/framework-scope.md`](./docs/framework-scope.md) for the rationale; CI fails on accidental support claims for out-of-scope frameworks.
 
+## Contribution tiers
+
+Not every change needs the same amount of process. Which tier a change falls into decides what you need before opening a PR.
+
+| Tier | What it covers | What you need |
+| --- | --- | --- |
+| **0 — Docs & typos** | README/CHANGELOG wording, comments, typo fixes, anything that isn't inside `skills/*/SKILL.md` or the reviewer taxonomy | Nothing beyond `scripts/ci/review.sh`'s Markdown/link checks passing |
+| **1 — Skill instruction wording** | Editing prose inside a `skills/*/SKILL.md` that doesn't add/remove/renumber a pattern ID, F-code, or verdict term | A RED/GREEN contract test proving the old wording violated your intent and the new wording satisfies it (see `scripts/ci/test-routing-contract.py` for a worked example), then `ci-local.sh` green — `scripts/dev/tier1-check.sh` runs that gate for you |
+| **2 — Taxonomy / decision-surface change** | New or renumbered pattern IDs, F-codes, verdict vocabulary, or a delegation-routing decision not yet backed by measured evidence | A preregistered benchmark protocol under `benchmarks/`, per the pattern in `benchmarks/subagent-routing-v1/` — the heavy path below, reserved for changes that make a new correctness claim about the skills themselves |
+
+Most contributions are Tier 0 or Tier 1. Tier 2 is rare by design and most
+contributors will never need it. Issues labeled `good first issue` are Tier
+0/1 — they don't require touching the frozen protocol surfaces in
+`benchmarks/`.
+
+The four directories under `skills/` are the product — what a user actually
+installs and runs. `benchmarks/`, most of `scripts/ci/`, and the eval
+harnesses below are this project's own verification infrastructure: the
+evidence backing the skills' claims, and the CI that keeps that evidence
+honest as the skills change. A typo fix or a Tier 1 wording change barely
+touches any of it.
+
 ## Development setup
 
 The full local CI mirror targets macOS and Linux with `/bin/bash`, a PCRE2-capable `rg`, and Python 3.10 or newer. Its frozen prompt-size replay also requires CPython 3.12 and access to the hash-locked Python packages (from a local cache or PyPI). For its trust boundary, the gate discovers interpreters only at standard system and Homebrew prefixes; a Nix-, Conda-, or pyenv-only layout is not currently auto-discovered. GitHub CI runs the full mirror on Ubuntu and a smaller portability contract on both Ubuntu and macOS.
