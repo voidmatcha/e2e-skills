@@ -3,32 +3,33 @@
 """Guards the delegation-block wording against the frozen routing decision.
 
 benchmarks/subagent-routing-v1/README.md's "Result (2026-09-13)" section
-froze one outcome per host per task:
+froze SELECTIVE_DELEGATE for Claude/finding_verification and INLINE_DEFAULT
+for Claude/failure_classification, based on the original 96-cell pilot.
 
-  - Claude / finding_verification: SELECTIVE_DELEGATE (prefer delegation only
-    for the context-dependent / cross-file / config-dependent stratum; the
-    clear stratum -- including same-file context beyond the flagged snippet,
-    which was never measured -- is inline by default).
-  - Claude / failure_classification: INLINE_DEFAULT (named delegation showed
-    zero stable wins and one stable regression; inline is the default and
-    delegation is not preferred).
+A subsequent confirmation run (benchmarks/subagent-routing-v1/confirmation-v1/,
+revision 6, protocol-valid after two rounds of real oracle-defect correction)
+re-tested that decision on a fresh case set and found the finding_verification
+side did NOT hold up: named delegation showed zero stable wins and one stable
+regression (CFV-07) even on the cross-file/config-dependent stratum
+SELECTIVE_DELEGATE was meant to justify. Per the confirmation evidence, both
+tasks are now INLINE_DEFAULT: verify/classify inline by default in every
+stratum, with named/native delegation available only as an optional second
+opinion when the inline result is itself uncertain, and inline authoritative
+on disagreement.
 
-Per that file's "Change boundary" section, a wording change to the three
-delegation blocks requires a RED test proving the current wording doesn't
-match the decision, before the smallest possible edit is made. This is
-that test.
+Per the change boundary, a wording change to the three delegation blocks
+requires a RED test proving the current wording doesn't match the decision,
+before the smallest possible edit is made. This is that test.
 
 Two failure modes are guarded separately:
   1. The real SKILL.md files must currently satisfy the checks.
   2. The checks themselves must actually reject known-bad wording -- both
-     the literal pre-change wording and a hand-built "inverted" paragraph
-     that satisfies naive keyword matching while encoding the opposite
-     routing policy. An adversarial review of this file's first version
-     found the checks passed a paragraph that says "clear" and "inline"
-     without ever making inline the default, and an anchored
-     `^Prefer the named` check that never matched anything because the
-     real paragraph never started with that string. Both fixture classes
-     below exist to catch a regression back to that state.
+     literal pre-change wordings and hand-built "inverted" paragraphs that
+     satisfy naive keyword matching while encoding the opposite routing
+     policy. An adversarial review of this file's first version found the
+     checks passed a paragraph that said "clear" and "inline" without ever
+     making inline the default; those fixtures guard against a regression
+     back to that state.
 
 Never touched (per the change boundary): the inline fallback itself, the
 verdict vocabulary, F1-F15, pattern IDs/severities, SP1-SP5 parity.
@@ -61,88 +62,73 @@ def _delegation_paragraph(text: str, anchor: str, path: pathlib.Path) -> str:
 
 
 # --- Pure checks, usable against both the real files and synthetic fixtures ---
+#
+# Both tasks are now INLINE_DEFAULT, so reviewer and debugger paragraphs must
+# satisfy the same shape: inline by default (proximity-tied, not just present
+# anywhere), no unconditional preference for the named path, a concrete
+# trigger for when delegation is worth invoking, and an authoritative
+# tie-break on disagreement.
 
 
-def reviewer_paragraph_error(para: str) -> str | None:
-    """Return an error message if `para` does not implement SELECTIVE_DELEGATE
-    (inline-by-default with delegation gated on cross-file/config stratum),
-    else None."""
+def _inline_default_error(para: str, label: str, agent_noun: str) -> str | None:
     if "absolute" not in para:
-        return "the e2e-finding-verifier delegation line must keep the absolute source-of-truth path contract (SP2)."
-
-    lower = para.lower()
-
-    # "by default" must specifically describe INLINE being the default, not
-    # merely appear somewhere in the paragraph -- a rewrite that makes
-    # DELEGATION "the default ... for clear findings too" while still using
-    # the words "clear" and "inline" elsewhere must not pass. Proximity to
-    # the word "inline" is what ties the claim to the right subject.
-    default_match = re.search(
-        r"inline[^.;]{0,120}\bby default\b|\bby default\b[^.;]{0,120}inline",
-        lower,
-    )
-    # Inline-as-default must also come BEFORE any mention of preferring the
-    # named agent -- ordering, not just presence, is what stops "inline is
-    # mentioned somewhere, but named is still preferred first" from passing.
-    pos_prefer_named = lower.find("prefer the named")
-    if default_match is None:
-        return "must state, with 'inline' and 'by default' tied together, that the inline path is the default (SELECTIVE_DELEGATE gates delegation on stratum, inline is not merely a fallback)."
-    if pos_prefer_named != -1 and pos_prefer_named < default_match.start():
-        return "the named agent is preferred before inline is established as the default -- inline-by-default must come first in the paragraph."
-
-    # The stratum gating delegation must be named explicitly (cross-file or
-    # config-dependent), not merely implied.
-    if not re.search(r"cross-file|config-depend", para, re.IGNORECASE):
-        return "must name the cross-file / config-dependent stratum as the one where named/native delegation is preferred (SELECTIVE_DELEGATE), not delegate unconditionally."
-
-    # Same-file-but-not-flagged-snippet context is an unmeasured middle case;
-    # the paragraph must place it on the inline side explicitly, not leave it
-    # to "otherwise" (an adversarial review flagged this as a real gap).
-    if "same-file" not in lower and "same file" not in lower:
-        return "must explicitly place same-file (non-cross-file) context on the inline side -- it was never measured, so it cannot silently fall to the delegate branch via 'otherwise'."
-
-    return None
-
-
-def debugger_paragraph_error(para: str, label: str) -> str | None:
-    """Return an error message if `para` does not implement INLINE_DEFAULT
-    (inline classification by default, named delegation optional and gated
-    on inline uncertainty, with inline authoritative on disagreement), else
-    None."""
-    if "absolute" not in para:
-        return f"{label}: the e2e-failure-classifier delegation line must keep the absolute source-of-truth path contract (SP2)."
+        return f"{label}: the {agent_noun} delegation line must keep the absolute source-of-truth path contract (SP2)."
 
     lower = para.lower()
 
     if re.search(r"prefer the named", para, re.IGNORECASE):
-        return f"{label}: still prefers the named classifier by default -- INLINE_DEFAULT requires classifying inline first, with delegation optional/not preferred."
+        return f"{label}: still prefers the named {agent_noun} unconditionally -- INLINE_DEFAULT requires resolving inline first, with delegation optional/not preferred."
 
-    if not re.search(r"inline\b.*\bdefault|default\b.*\binline", para, re.IGNORECASE):
-        return f"{label}: must state inline classification is the default (INLINE_DEFAULT: zero stable wins and one stable regression for named delegation)."
+    # "by default" must specifically describe INLINE being the default, not
+    # merely appear somewhere in the paragraph -- a rewrite that makes
+    # DELEGATION "the default ... for X too" while still using the words
+    # "inline" and "default" elsewhere must not pass. Proximity to the word
+    # "inline" is what ties the claim to the right subject.
+    if not re.search(
+        r"inline[^.;]{0,120}\bby default\b|\bby default\b[^.;]{0,120}inline",
+        lower,
+    ):
+        return f"{label}: must state, with 'inline' and 'by default' tied together, that the inline path is the default (INLINE_DEFAULT: no stable named-delegation benefit was confirmed in any stratum, including cross-file/config-dependent)."
 
     # A bounded trigger for when to actually delegate, not an unconditional
     # "optional second opinion" with no criterion (flagged by two
     # independent reviews as leaving the agent no rule to follow).
     if "uncertain" not in lower and "low confidence" not in lower:
-        return f"{label}: must state a concrete trigger for when to delegate (e.g. the inline classification is itself uncertain) -- 'optional, never required' alone gives no criterion."
+        return f"{label}: must state a concrete trigger for when to delegate (e.g. the inline result is itself uncertain) -- 'optional, never required' alone gives no criterion."
 
     # Reconciliation rule for a named/inline disagreement -- without this,
     # two runs could disagree on which verdict wins with no stated authority.
     if "keep the inline verdict" not in lower and "inline verdict wins" not in lower:
-        return f"{label}: must state which verdict is authoritative when the delegated and inline classifications disagree."
+        return f"{label}: must state which verdict is authoritative when the delegated and inline results disagree."
 
     return None
+
+
+def reviewer_paragraph_error(para: str) -> str | None:
+    """Return an error message if `para` does not implement INLINE_DEFAULT
+    for finding_verification (verify inline by default in every stratum;
+    delegate only when the inline verification is itself uncertain; inline
+    authoritative on disagreement), else None."""
+    return _inline_default_error(para, str(REVIEWER), "e2e-finding-verifier")
+
+
+def debugger_paragraph_error(para: str, label: str) -> str | None:
+    """Return an error message if `para` does not implement INLINE_DEFAULT
+    for failure_classification (inline classification by default, named
+    delegation optional and gated on inline uncertainty, with inline
+    authoritative on disagreement), else None."""
+    return _inline_default_error(para, label, "e2e-failure-classifier")
 
 
 # --- Real-file assertions ---
 
 
-def assert_reviewer_is_selective_delegate() -> None:
+def assert_reviewer_is_inline_default() -> None:
     text = _read(REVIEWER)
     para = _delegation_paragraph(text, "e2e-finding-verifier", REVIEWER)
     error = reviewer_paragraph_error(para)
     if error:
-        raise AssertionError(f"{REVIEWER}: {error}")
+        raise AssertionError(error)
 
 
 def assert_debuggers_are_inline_default() -> None:
@@ -156,8 +142,26 @@ def assert_debuggers_are_inline_default() -> None:
 
 # --- Negative fixtures: known-bad wording that the checks above MUST reject ---
 
-# The literal pre-change reviewer wording (unconditional "prefer the named"),
-# lightly excerpted to keep this file readable.
+# The literal SELECTIVE_DELEGATE-era reviewer wording (unconditional
+# cross-file/config preference for the named agent) -- superseded by the
+# confirmation-v1 revision-6 result.
+OLD_SELECTIVE_DELEGATE_REVIEWER_WORDING = (
+    "Before a Phase 2 finding is reported, verify it survives its real context "
+    "— refute first. Verify inline by default: this covers both a finding "
+    "decided fully by the flagged snippet alone and one needing more context "
+    "from elsewhere in the same file; only the specific cross-file or "
+    "config-dependent stratum below is measured to benefit from delegation, "
+    "so any other case, including same-file context, stays inline. For a "
+    "finding whose correctness depends on another file or repo config the "
+    "snippet doesn't show, prefer the named `e2e-finding-verifier` when "
+    "registered by a Claude Code plugin. Pass the pattern ID, file:line, "
+    "flagged snippet, repo root, and the **absolute** path to "
+    "pattern-reference.md. Require CONFIRMED / FALSE-POSITIVE / NEEDS-CONTEXT "
+    "with evidence."
+)
+
+# The literal pre-change (pre-SELECTIVE_DELEGATE) reviewer wording
+# (unconditional "prefer the named").
 OLD_REVIEWER_WORDING = (
     "Before a Phase 2 finding is reported, verify it survives its real context "
     "— refute first. Prefer the named `e2e-finding-verifier` when registered by "
@@ -172,10 +176,10 @@ OLD_REVIEWER_WORDING = (
 )
 
 # A hand-built paragraph that satisfies naive "clear" + "inline" keyword
-# matching while encoding the OPPOSITE of SELECTIVE_DELEGATE: it still
-# prefers the named agent generally and only verifies inline "as a last
-# resort" -- exactly the adversarial rewrite an independent review
-# constructed to show the original checks were vacuous.
+# matching while encoding the OPPOSITE of INLINE_DEFAULT: it still prefers
+# the named agent generally and only verifies inline "as a last resort" --
+# exactly the adversarial rewrite an independent review constructed to show
+# the original checks were vacuous.
 INVERTED_REVIEWER_WORDING = (
     "Before a Phase 2 finding is reported, verify it survives its real "
     "context. Delegating to the named `e2e-finding-verifier` (an "
@@ -217,6 +221,7 @@ INVERTED_DEBUGGER_WORDING = (
 def assert_checks_reject_known_bad_wording() -> None:
     for label, para in (
         ("pre-change reviewer wording", OLD_REVIEWER_WORDING),
+        ("SELECTIVE_DELEGATE-era reviewer wording", OLD_SELECTIVE_DELEGATE_REVIEWER_WORDING),
         ("inverted reviewer wording", INVERTED_REVIEWER_WORDING),
     ):
         if reviewer_paragraph_error(para) is None:
@@ -237,7 +242,7 @@ def assert_checks_reject_known_bad_wording() -> None:
 
 
 CHECKS = (
-    assert_reviewer_is_selective_delegate,
+    assert_reviewer_is_inline_default,
     assert_debuggers_are_inline_default,
     assert_checks_reject_known_bad_wording,
 )
