@@ -1,0 +1,88 @@
+{
+  "cells": [
+    {
+      "arm": "official_healer_direct_guarded",
+      "artifact_dir": "smoke-artifacts-codex-r6/SMOKE-official_healer_direct_guarded/attempt-1",
+      "cell_id": "SMOKE-official_healer_direct_guarded",
+      "changed_paths": [],
+      "classification": {
+        "classification": "SMOKE_FAIL",
+        "reason": "smoke contract failed"
+      },
+      "completed_at": "2026-09-14T20:40:27+00:00",
+      "model": {
+        "credential_material_detected": false,
+        "elapsed_s": 28.719,
+        "final_report": "NOFIX \u2014 target remained byte-identical (SHA-256 unchanged).\n\nVerification was blocked by a missing Playwright Chromium executable; no test logic ran. Debug mode also rejected the test fixture setup.\n\nChanged files: none.",
+        "output_capped": false,
+        "returncode": 0,
+        "route_attestation": {
+          "delegation_events": 0,
+          "expected_delegation": false,
+          "observed_identity_counts": {},
+          "ok": true
+        },
+        "surviving_pids": [],
+        "timed_out": false,
+        "usage": {
+          "actual_requests": 1,
+          "input_tokens": 74956,
+          "output_tokens": 824
+        }
+      },
+      "native": {
+        "fault_kill_returncode": null,
+        "healed_returncode": 0,
+        "red_returncode": null
+      },
+      "preparation": {
+        "browser_connection": {
+          "nested_config_sha256": "bf4573f1800edf5a33a8d181c873566501cf2c302df7242487a9c78e1b27d616",
+          "root_config_sha256": "521f83d72ab204090cf06adff44a9d7b3061141da17d257c55828e1f870147f0"
+        },
+        "generated_agent": {
+          "healer_sha256": "71763806b1029f8bed9f6d9433c8c8b7887d05beb3aec21336e0fef26773f5f1",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "c1cb98e2ca145fdde8a9362d6c035c686cd88a8eaa410bce2077d5f251ab176b"
+        },
+        "neutralization": {
+          "after": "466ed8b018fa045ffd9cc106f0651b713b4b599ad30475bccf5dfc7db3ddd5a0",
+          "before": "6dedc475dec8bd159ad9b1e52bfcf7999a3d6770ccc94a96745169def86c3102",
+          "changed_files": [
+            "playwright/app/index.html",
+            "playwright/tests/aria-snapshot-name.spec.mjs",
+            "playwright/tests/conditional-assertion.spec.mjs",
+            "playwright/tests/counter.spec.mjs",
+            "playwright/tests/discarded-boolean.spec.mjs",
+            "playwright/tests/error-swallow.spec.mjs",
+            "playwright/tests/locator-truthiness.spec.mjs",
+            "playwright/tests/missing-auth.spec.mjs",
+            "playwright/tests/optimistic-call-proof.spec.mjs"
+          ]
+        }
+      },
+      "status": "FAIL",
+      "workspace": {
+        "after_sha256": "18255edbd32a0e1edd0e5bc1c49fddcf7a73be58ad0a1b5ea7ca4249ea7202db",
+        "baseline_sha256": "18255edbd32a0e1edd0e5bc1c49fddcf7a73be58ad0a1b5ea7ca4249ea7202db"
+      }
+    },
+    {
+      "arm": "ours_step7",
+      "cell_id": "SMOKE-ours_step7",
+      "status": "PENDING"
+    }
+  ],
+  "freeze_sha256": null,
+  "host": "codex",
+  "model": "gpt-5.6-sol",
+  "protocol_id": "healer-perturbation-v1",
+  "protocol_revision": 6,
+  "protocol_sha256": "964b41b16e4a553d2a86d1c73ccd91f2fd36b9e5a6e9aa8a47e3705cf658b6b4",
+  "runner_identity": "codex-cli 0.154.0",
+  "runner_sha256": "241650ec159326f2334857b66d457a1fed697b26ec7221a98be7c9a6d11eb897",
+  "schema_version": 1,
+  "stage": "smoke",
+  "started_at": "2026-09-14T20:39:45+00:00",
+  "status": "PAUSED"
+}

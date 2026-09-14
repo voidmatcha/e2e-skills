@@ -39,12 +39,12 @@ ROOT = BENCHMARK_DIR.parents[1]
 PROTOCOL_PATH = BENCHMARK_DIR / "protocol.json"
 FREEZE_PATH = BENCHMARK_DIR / "freeze-record.json"
 AUTHORIZATION_PATH = BENCHMARK_DIR / "execution-authorization-codex.json"
-RED_GATE_PATH = BENCHMARK_DIR / "red-gate-codex-r6.json"
-SMOKE_RESULTS_PATH = BENCHMARK_DIR / "smoke-results-codex-r6.json"
+RED_GATE_PATH = BENCHMARK_DIR / "red-gate-codex-r7.json"
+SMOKE_RESULTS_PATH = BENCHMARK_DIR / "smoke-results-codex-r7.json"
 RESULTS_PATH = BENCHMARK_DIR / "healer-results-codex.json"
 ARTIFACTS_DIR = BENCHMARK_DIR / "healer-artifacts-codex"
-SMOKE_ARTIFACTS_DIR = BENCHMARK_DIR / "smoke-artifacts-codex-r6"
-RED_GATE_ARTIFACTS_DIR = BENCHMARK_DIR / "red-gate-artifacts-codex-r6"
+SMOKE_ARTIFACTS_DIR = BENCHMARK_DIR / "smoke-artifacts-codex-r7"
+RED_GATE_ARTIFACTS_DIR = BENCHMARK_DIR / "red-gate-artifacts-codex-r7"
 MAX_OUTPUT_BYTES = 1_048_576
 RUNTIME_DIRS = {
     "node_modules",
@@ -569,7 +569,14 @@ def generated_healer_instructions(root: Path) -> str:
     return match.group(1).strip()
 
 
-def codex_command(executable: Path, model: str, arm: str, root: Path) -> list[str]:
+def codex_command(
+    executable: Path,
+    model: str,
+    arm: str,
+    root: Path,
+    ws_endpoint: str | None = None,
+    base_url: str | None = None,
+) -> list[str]:
     command = [
         str(executable),
         "exec",
@@ -592,6 +599,8 @@ def codex_command(executable: Path, model: str, arm: str, root: Path) -> list[st
         model,
     ]
     if arm == "official_healer_direct_guarded":
+        if ws_endpoint is None or base_url is None:
+            raise ContractError("official healer MCP requires isolated browser and fixture endpoints")
         command.extend(
             [
                 "-c",
@@ -600,6 +609,12 @@ def codex_command(executable: Path, model: str, arm: str, root: Path) -> list[st
                 'mcp_servers.playwright-test.command="npx"',
                 "-c",
                 'mcp_servers.playwright-test.args=["playwright","run-test-mcp-server","--headless","--config","playwright.config.mjs"]',
+                "-c",
+                "mcp_servers.playwright-test.env={ PLAYWRIGHT_WS_ENDPOINT = "
+                + json.dumps(ws_endpoint)
+                + ", FIXTURE_BASE_URL = "
+                + json.dumps(base_url)
+                + " }",
                 "-c",
                 'mcp_servers.playwright-test.enabled_tools=["browser_console_messages","browser_evaluate","browser_generate_locator","browser_network_request","browser_network_requests","browser_snapshot","test_debug","test_list","test_run"]',
             ]
@@ -627,7 +642,9 @@ def invoke_codex(
             environment["PLAYWRIGHT_WS_ENDPOINT"] = ws_endpoint
             with fixture_server(root) as base_url:
                 environment["FIXTURE_BASE_URL"] = base_url
-                command = codex_command(executable, model, arm, root)
+                command = codex_command(
+                    executable, model, arm, root, ws_endpoint, base_url
+                )
                 started = time.monotonic()
                 with tempfile.TemporaryFile() as prompt_stream:
                     prompt_stream.write(prompt.encode())
@@ -1362,11 +1379,17 @@ def self_test() -> int:
             encoding="utf-8",
         )
         command = codex_command(
-            Path("/absolute/codex"), "gpt-5.6-sol", "official_healer_direct_guarded", root
+            Path("/absolute/codex"),
+            "gpt-5.6-sol",
+            "official_healer_direct_guarded",
+            root,
+            "ws://127.0.0.1:1234/probe",
+            "http://127.0.0.1:5678",
         )
         assert any("developer_instructions=" in part for part in command)
         assert "official healer probe" in " ".join(command)
         assert "playwright.config.mjs" in " ".join(command)
+        assert "PLAYWRIGHT_WS_ENDPOINT" in " ".join(command)
         assert command[command.index("--disable") + 1] == "image_generation"
         assert command[-3:] == ["--disable", "multi_agent", "-"]
     assert len(build_cells(False)) == 30
