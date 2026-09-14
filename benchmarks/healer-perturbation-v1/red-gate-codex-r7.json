@@ -1,0 +1,207 @@
+{
+  "completed_at": "2026-09-14T21:10:46+00:00",
+  "host": "codex",
+  "pristine": [
+    {
+      "artifact": "red-gate-artifacts-codex-r7/pristine/counter.spec.mjs.txt",
+      "credential_material_detected": false,
+      "returncode": 0,
+      "spec": "playwright/tests/counter.spec.mjs"
+    },
+    {
+      "artifact": "red-gate-artifacts-codex-r7/pristine/missing-auth.spec.mjs.txt",
+      "credential_material_detected": false,
+      "returncode": 0,
+      "spec": "playwright/tests/missing-auth.spec.mjs"
+    },
+    {
+      "artifact": "red-gate-artifacts-codex-r7/pristine/optimistic-call-proof.spec.mjs.txt",
+      "credential_material_detected": false,
+      "returncode": 0,
+      "spec": "playwright/tests/optimistic-call-proof.spec.mjs"
+    }
+  ],
+  "protocol_id": "healer-perturbation-v1",
+  "protocol_revision": 7,
+  "protocol_sha256": "e567c774ca3258d6b5b4835803e651880b98660281ca6c0e92c3b65f4ca15422",
+  "rows": [
+    {
+      "perturbation": "stale_locator",
+      "runs": [
+        {
+          "artifact": "red-gate-artifacts-codex-r7/stale_locator/r1.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 32.242,
+          "expected_marker": true,
+          "repetition": 1,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "1e8a01bd849edb75984d51a1438c15e3f79db35506d87f555cc169cb224cbb4d"
+        },
+        {
+          "artifact": "red-gate-artifacts-codex-r7/stale_locator/r2.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 31.385,
+          "expected_marker": true,
+          "repetition": 2,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "39d2858f5ea9b0e3f1d729ebc215d8019f7d7f91839ea33f1cc6d3d016c23364"
+        },
+        {
+          "artifact": "red-gate-artifacts-codex-r7/stale_locator/r3.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 31.085,
+          "expected_marker": true,
+          "repetition": 3,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "1af1b1ffea13041f6fb0340299fbfab2cd14a0eb71648962589195e569266b5c"
+        }
+      ]
+    },
+    {
+      "perturbation": "timing_race",
+      "runs": [
+        {
+          "artifact": "red-gate-artifacts-codex-r7/timing_race/r1.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 6.598,
+          "expected_marker": true,
+          "repetition": 1,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "7c4570329392746721e4ae5b3b656c95f0c6dd364ec16e93dc706688b796fb74"
+        },
+        {
+          "artifact": "red-gate-artifacts-codex-r7/timing_race/r2.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 6.501,
+          "expected_marker": true,
+          "repetition": 2,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "afd6e7ab8bb2196f19b04e28741409a31f767782f335fa69bc4af8ad9b68b4a1"
+        },
+        {
+          "artifact": "red-gate-artifacts-codex-r7/timing_race/r3.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 5.889,
+          "expected_marker": true,
+          "repetition": 3,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "f77fd24b6b6c1c54b5f208ed28e0da939d6ab39b5fae61f02af517fa254e89cc"
+        }
+      ]
+    },
+    {
+      "perturbation": "renamed_route",
+      "runs": [
+        {
+          "artifact": "red-gate-artifacts-codex-r7/renamed_route/r1.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 6.359,
+          "expected_marker": true,
+          "repetition": 1,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "e1a8fd187efd4f70dd82e3ba9a27bc0b60607f02c52b3b875a1cabed14a4a2ca"
+        },
+        {
+          "artifact": "red-gate-artifacts-codex-r7/renamed_route/r2.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 5.83,
+          "expected_marker": true,
+          "repetition": 2,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "727e5627d4de87bb13d34f5a883c46e5aa33af5941fe86202ec65df075c32c95"
+        },
+        {
+          "artifact": "red-gate-artifacts-codex-r7/renamed_route/r3.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 6.328,
+          "expected_marker": true,
+          "repetition": 3,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "1717d8d45e496195f59c4faf565e010a95df3513ae1a2e2e909854580151bc85"
+        }
+      ]
+    },
+    {
+      "perturbation": "genuine_regression",
+      "runs": [
+        {
+          "artifact": "red-gate-artifacts-codex-r7/genuine_regression/r1.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 5.914,
+          "expected_marker": true,
+          "repetition": 1,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "f89f10f7cdda0102689b7c844dd79dc1fb0d57491a192fb46b2b5b359ffd4d29"
+        },
+        {
+          "artifact": "red-gate-artifacts-codex-r7/genuine_regression/r2.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 6.307,
+          "expected_marker": true,
+          "repetition": 2,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "2ddf3b506d3053fbd6b5fb0e104edbecb81413d93ec700c8eb59b03909d3ebfb"
+        },
+        {
+          "artifact": "red-gate-artifacts-codex-r7/genuine_regression/r3.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 5.913,
+          "expected_marker": true,
+          "repetition": 3,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "848daaacbcd2383544f094598c0a9d0cf2ce4ff7936687d6fa91b40465b551ab"
+        }
+      ]
+    },
+    {
+      "perturbation": "impossible_repair",
+      "runs": [
+        {
+          "artifact": "red-gate-artifacts-codex-r7/impossible_repair/r1.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 6.03,
+          "expected_marker": true,
+          "repetition": 1,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "4b95b2306986662c6f8e34243f533d31f07d85be8c15da4d2c3cd33b4daf985b"
+        },
+        {
+          "artifact": "red-gate-artifacts-codex-r7/impossible_repair/r2.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 5.87,
+          "expected_marker": true,
+          "repetition": 2,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "d5ea12fc893a33689968d6bff2154df1d3fd57836c69bb9fe12a0819147dc1cc"
+        },
+        {
+          "artifact": "red-gate-artifacts-codex-r7/impossible_repair/r3.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 5.968,
+          "expected_marker": true,
+          "repetition": 3,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "84a43c3892aaf7df80a2c7812c05e73a0276a7f3e76fcf2d6593d048deb1d03c"
+        }
+      ]
+    }
+  ],
+  "schema_version": 1,
+  "started_at": "2026-09-14T21:07:52+00:00",
+  "status": "PASS"
+}

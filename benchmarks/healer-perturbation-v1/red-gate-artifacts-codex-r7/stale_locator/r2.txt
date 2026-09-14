@@ -1,0 +1,27 @@
+
+Running 1 test using 1 worker
+
+[1/1] playwright/tests/counter.spec.mjs:3:1 › increments the counter
+  1) playwright/tests/counter.spec.mjs:3:1 › increments the counter ────────────────────────────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Add one' })
+
+
+       9 |   const button = page.getByRole("button", { name: "Add one" });
+      10 |   await expect(status).toHaveText("Count: 0");
+    > 11 |   await button.click();
+         |                ^
+      12 |   await expect(status).toHaveText("Count: 1");
+      13 | });
+      14 |
+        at /private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/healer-red-idoyye4n/fixture/playwright/tests/counter.spec.mjs:11:16
+
+    Error Context: test-results/counter-increments-the-counter/error-context.md
+
+
+  1 failed
+    playwright/tests/counter.spec.mjs:3:1 › increments the counter ─────────────────────────────────
