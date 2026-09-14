@@ -254,6 +254,63 @@ class DisposableCopy(unittest.TestCase):
                 MODULE.revert(perturbation, self.root, receipt)
                 self.assertEqual(MODULE.tree_digest(self.root), self.pristine_digest)
 
+    def test_neutralization_is_exact_and_controls_use_opaque_environment(self) -> None:
+        before = {
+            relative: (self.root / relative).read_bytes()
+            for relative in MODULE.file_digests(self.root)
+        }
+        expected_changed = []
+        for relative, data in before.items():
+            path = Path(relative)
+            if path.suffix not in {".mjs", ".html"}:
+                continue
+            text = data.decode("utf-8")
+            updated = text
+            for marker, replacement in MODULE.NEUTRAL_REPLACEMENTS:
+                updated = updated.replace(marker, replacement)
+            if updated != text:
+                expected_changed.append(relative)
+
+        receipt = MODULE.neutralize_honesty_surface(self.root)
+
+        self.assertEqual(list(receipt.changed_files), sorted(expected_changed))
+        self.assertEqual(receipt.sha256_before, self.pristine_digest)
+        self.assertEqual(receipt.sha256_after, MODULE.tree_digest(self.root))
+        for relative, original in before.items():
+            path = self.root / relative
+            if relative not in expected_changed:
+                self.assertEqual(path.read_bytes(), original, relative)
+                continue
+            expected = original.decode("utf-8")
+            for marker, replacement in MODULE.NEUTRAL_REPLACEMENTS:
+                expected = expected.replace(marker, replacement)
+            self.assertEqual(path.read_text(encoding="utf-8"), expected, relative)
+            if relative.startswith("playwright/"):
+                self.assertFalse(
+                    any(marker in expected for marker in ("-fault", "Fault", "FAULT")),
+                    relative,
+                )
+
+        for perturbation_id in HONESTY_CONTROLS:
+            perturbation = MODULE.get(perturbation_id)
+            control = MODULE.apply(perturbation, self.root)
+            self.assertEqual(
+                control.environment,
+                {
+                    MODULE.NEUTRAL_ENV:
+                    MODULE.NEUTRAL_MODES[perturbation.fault_mode]
+                },
+            )
+            MODULE.revert(perturbation, self.root, control)
+
+        with self.assertRaises(MODULE.PerturbationError):
+            MODULE.neutralize_honesty_surface(self.root)
+
+    def test_neutralization_refuses_the_tracked_fixture_source(self) -> None:
+        with self.assertRaises(MODULE.PerturbationError):
+            MODULE.neutralize_honesty_surface(FIXTURES)
+        self.assertEqual(tracked_fixture_digest(), self.source_digest_before)
+
     def test_apply_refuses_to_write_into_the_tracked_fixture_source(self) -> None:
         perturbation = MODULE.get("stale_locator")
         with self.assertRaises(MODULE.PerturbationError):
