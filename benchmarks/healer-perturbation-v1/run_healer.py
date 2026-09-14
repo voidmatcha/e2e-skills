@@ -39,12 +39,12 @@ ROOT = BENCHMARK_DIR.parents[1]
 PROTOCOL_PATH = BENCHMARK_DIR / "protocol.json"
 FREEZE_PATH = BENCHMARK_DIR / "freeze-record.json"
 AUTHORIZATION_PATH = BENCHMARK_DIR / "execution-authorization-codex.json"
-RED_GATE_PATH = BENCHMARK_DIR / "red-gate-codex-r5.json"
-SMOKE_RESULTS_PATH = BENCHMARK_DIR / "smoke-results-codex-r5.json"
+RED_GATE_PATH = BENCHMARK_DIR / "red-gate-codex-r6.json"
+SMOKE_RESULTS_PATH = BENCHMARK_DIR / "smoke-results-codex-r6.json"
 RESULTS_PATH = BENCHMARK_DIR / "healer-results-codex.json"
 ARTIFACTS_DIR = BENCHMARK_DIR / "healer-artifacts-codex"
-SMOKE_ARTIFACTS_DIR = BENCHMARK_DIR / "smoke-artifacts-codex-r5"
-RED_GATE_ARTIFACTS_DIR = BENCHMARK_DIR / "red-gate-artifacts-codex-r5"
+SMOKE_ARTIFACTS_DIR = BENCHMARK_DIR / "smoke-artifacts-codex-r6"
+RED_GATE_ARTIFACTS_DIR = BENCHMARK_DIR / "red-gate-artifacts-codex-r6"
 MAX_OUTPUT_BYTES = 1_048_576
 RUNTIME_DIRS = {
     "node_modules",
@@ -599,7 +599,7 @@ def codex_command(executable: Path, model: str, arm: str, root: Path) -> list[st
                 "-c",
                 'mcp_servers.playwright-test.command="npx"',
                 "-c",
-                'mcp_servers.playwright-test.args=["playwright","run-test-mcp-server"]',
+                'mcp_servers.playwright-test.args=["playwright","run-test-mcp-server","--headless","--config","playwright.config.mjs"]',
                 "-c",
                 'mcp_servers.playwright-test.enabled_tools=["browser_console_messages","browser_evaluate","browser_generate_locator","browser_network_request","browser_network_requests","browser_snapshot","test_debug","test_list","test_run"]',
             ]
@@ -805,6 +805,14 @@ def persist_artifacts(path: Path, values: dict[str, str]) -> None:
         (path / name).write_text(value, encoding="utf-8")
 
 
+def blocked_verification_report(report: str) -> bool:
+    return re.search(
+        r"\b(?:blocked|could not complete|missing\b[^.\n]{0,80}\b(?:browser|chromium)|(?:browser|chromium)\b[^.\n]{0,80}\bmissing|verification failed|tests? failed|command failed|sandbox launch denial|launch permission error|permission denied|environment(?:al)? (?:issue|error))\b",
+        report,
+        re.IGNORECASE,
+    ) is not None
+
+
 def run_cell(
     cell: dict[str, Any],
     *,
@@ -889,11 +897,7 @@ def run_cell(
                 and model["route_attestation"]["ok"]
                 and not changed_paths
                 and healed_run["returncode"] == 0
-                and not re.search(
-                    r"\b(?:blocked|could not complete|missing (?:browser|chromium)|verification failed|tests? failed|command failed|sandbox launch denial|launch permission error|permission denied|environment(?:al)? (?:issue|error))\b",
-                    model["final_report"],
-                    re.IGNORECASE,
-                )
+                and not blocked_verification_report(model["final_report"])
             )
             classification = {
                 "classification": "SMOKE_PASS" if passed else "SMOKE_FAIL",
@@ -1303,6 +1307,9 @@ def self_test() -> int:
     assert str(Path.home()) not in sanitized
     assert username not in sanitized
     assert sanitized == "<HOME>/fixture owned by <USER>"
+    assert blocked_verification_report("the configured Chromium executable is missing")
+    assert blocked_verification_report("missing browser executable")
+    assert not blocked_verification_report("the approved test already passes")
     with tempfile.TemporaryDirectory(prefix="healer-browser-test-") as parent:
         root = Path(parent) / "fixture"
         preparation = prepare_workspace(root, None)
@@ -1359,6 +1366,7 @@ def self_test() -> int:
         )
         assert any("developer_instructions=" in part for part in command)
         assert "official healer probe" in " ".join(command)
+        assert "playwright.config.mjs" in " ".join(command)
         assert command[command.index("--disable") + 1] == "image_generation"
         assert command[-3:] == ["--disable", "multi_agent", "-"]
     assert len(build_cells(False)) == 30
