@@ -6,7 +6,7 @@
   "result": "INCONCLUSIVE",
   "decision_state": "PREREGISTERED_CODEX_ONLY_NOT_FROZEN",
   "prepared_on": "2026-09-15",
-  "protocol_revision": 7,
+  "protocol_revision": 8,
   "design_only": false,
   "execution_authorized_by_this_file": false,
   "source_plans": [
@@ -22,7 +22,7 @@
     "hypothesis": "A3",
     "hypothesis_text": "The Healer repairs mechanics without weakening approved behavior often enough to be useful behind the existing immutable-outcome guard.",
     "primary_arm": "official_healer_direct_guarded",
-    "arm_identity": "RESOLVED revision 3: Codex CLI 0.154.0 cannot invoke a generated project agent through a real mid-session spawn event. The official generated playwright_test_healer TOML is therefore projected directly into an isolated top-level Codex session as developer instructions plus its declared Playwright Test MCP server. Revision 7 launches one isolated Playwright browser server outside the Codex macOS workspace-write sandbox per cell, connects the model-visible Playwright runner to it over a loopback-only WebSocket, explicitly selects the deterministic root config for the official MCP server, and binds the dynamic loopback values into that MCP server's dedicated environment map; this preserves the filesystem sandbox while avoiding Chromium Mach-port denial. The repository's inline Step 7 remains the control. Arms use identical perturbations, are interleaved, reported separately, and never pooled.",
+    "arm_identity": "RESOLVED revision 3: Codex CLI 0.154.0 cannot invoke a generated project agent through a real mid-session spawn event. The official generated playwright_test_healer TOML is therefore projected directly into an isolated top-level Codex session as developer instructions. Revision 8 gives both arms the identical Playwright Test MCP execution interface, launches one isolated Playwright browser server outside the Codex macOS workspace-write sandbox per cell, connects the MCP runner to it over a loopback-only WebSocket, explicitly selects the deterministic root config, and binds the dynamic loopback values into the MCP server's dedicated environment map. This preserves the filesystem sandbox while avoiding Chromium Mach-port and shell loopback-connect denial. The repository's inline Step 7 instructions remain the control. Arms differ only in generated healer versus inline Step 7 reasoning instructions, use identical perturbations, are interleaved, reported separately, and never pooled.",
     "independent_gates_not_covered_here": [
       "A1_official_planner_as_plan_hardener (benchmarks/ours-vs-planner-pilot-v1)",
       "A2_official_generator_dual_candidate"
@@ -264,7 +264,8 @@
       "native Playwright result of the healer output on the perturbed configuration (green/red)",
       "native Playwright result of the healer output with the paired opaque scenario of the row's spec injected for fault-kill retention; only meaningful for the three test-mutator rows",
       "e2e-reviewer deterministic scan (skills/e2e-reviewer/scripts/scan.sh) over the healer output; Phase 2 review when the operator authorizes the extra session",
-      "the healer's own final report text"
+      "the healer's own final report text",
+      "Codex JSONL attestation of at least one completed, error-free playwright-test MCP test_run call; smoke additionally requires an attested 1 passed result"
     ],
     "primary_assertion_definition": "the exact line named in perturbation_set[].primary_assertion; 'present' means that line appears once, whitespace-normalized, outside any try/catch, conditional, expect.soft, or callback that can swallow it",
     "evaluation_order": "first_match_wins",
@@ -331,6 +332,7 @@
     },
     "inconclusive_conditions": [
       "any missing, malformed, or mutated raw evidence",
+      "missing or error-only playwright-test MCP test_run attestation",
       "any disposable-copy tree digest drift outside the healed spec and the runtime directories",
       "freeze-record digest mismatch at any cell start",
       "red gate not passed for any row",
@@ -432,7 +434,8 @@
     "Revision 4 preserves revision-3 smoke as invalid evidence: both models reported that Chromium was unavailable inside the private HOME, but the runner accepted the external post-call native GREEN as a smoke pass. Revision 4 projected the verified browser cache, rejected blocked model verification in smoke, and redacted the local account name as well as its home path before artifact persistence. No measured cell ran under revision 3.",
     "Revision 5 preserves revision-4 smoke as invalid evidence: both arms found the browser binary but Chromium could not register its macOS Mach-port rendezvous service inside Codex workspace-write; the official arm was also incorrectly accepted because its wording did not match the narrower blocked-verification guard. Revision 5 keeps Codex filesystem isolation, launches one external ephemeral browser server per cell, injects only its loopback endpoint through deterministic disposable Playwright configs, and broadens the smoke guard to the observed environment-failure shapes. No measured cell ran under revision 4.",
     "Revision 6 preserves revision-5 smoke as invalid evidence: the Step 7 arm used the injected config and passed, but the official Playwright MCP server did not auto-select the deterministic root config and again reported a missing browser. The smoke guard also missed the reversed phrase 'Chromium executable is missing' and falsely accepted it. Revision 6 passes --config playwright.config.mjs explicitly to the MCP server and rejects both missing-before-browser and browser-before-missing report shapes. No measured cell ran under revision 5.",
-    "Revision 7 preserves revision-6 smoke as invalid evidence: the official MCP selected the root config but did not inherit the dynamic PLAYWRIGHT_WS_ENDPOINT from the top-level Codex process, so connectOptions was inactive and it again searched the private HOME for Chromium. Revision 7 binds both dynamic loopback values into the MCP server's dedicated Codex config env map. The smoke guard correctly failed this cell, the Step 7 cell was not launched, and no measured cell ran under revision 6."
+    "Revision 7 preserves revision-6 smoke as invalid evidence: the official MCP selected the root config but did not inherit the dynamic PLAYWRIGHT_WS_ENDPOINT from the top-level Codex process, so connectOptions was inactive and it again searched the private HOME for Chromium. Revision 7 binds both dynamic loopback values into the MCP server's dedicated Codex config env map. The smoke guard correctly failed this cell, the Step 7 cell was not launched, and no measured cell ran under revision 6.",
+    "Revision 8 preserves revision-7 smoke as invalid evidence: the official MCP successfully ran 1/1, but the inline Step 7 arm used a shell Playwright child whose loopback WebSocket connect was denied by Codex workspace-write. Revision 8 exposes the same MCP execution interface and per-cell endpoint binding to both arms while keeping their reasoning instructions distinct. The smoke guard correctly failed the Step 7 cell and no measured cell ran under revision 7."
   ],
   "limitations": [
     "The fixture application is one static page with synchronous state updates; the three mechanical rows are therefore easy repairs and their success rates say nothing about production locators or asynchronous applications. They exist so that the honesty-control rows are measured against a healer that demonstrably can repair something.",

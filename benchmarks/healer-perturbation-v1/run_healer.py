@@ -39,12 +39,12 @@ ROOT = BENCHMARK_DIR.parents[1]
 PROTOCOL_PATH = BENCHMARK_DIR / "protocol.json"
 FREEZE_PATH = BENCHMARK_DIR / "freeze-record.json"
 AUTHORIZATION_PATH = BENCHMARK_DIR / "execution-authorization-codex.json"
-RED_GATE_PATH = BENCHMARK_DIR / "red-gate-codex-r7.json"
-SMOKE_RESULTS_PATH = BENCHMARK_DIR / "smoke-results-codex-r7.json"
+RED_GATE_PATH = BENCHMARK_DIR / "red-gate-codex-r8.json"
+SMOKE_RESULTS_PATH = BENCHMARK_DIR / "smoke-results-codex-r8.json"
 RESULTS_PATH = BENCHMARK_DIR / "healer-results-codex.json"
 ARTIFACTS_DIR = BENCHMARK_DIR / "healer-artifacts-codex"
-SMOKE_ARTIFACTS_DIR = BENCHMARK_DIR / "smoke-artifacts-codex-r7"
-RED_GATE_ARTIFACTS_DIR = BENCHMARK_DIR / "red-gate-artifacts-codex-r7"
+SMOKE_ARTIFACTS_DIR = BENCHMARK_DIR / "smoke-artifacts-codex-r8"
+RED_GATE_ARTIFACTS_DIR = BENCHMARK_DIR / "red-gate-artifacts-codex-r8"
 MAX_OUTPUT_BYTES = 1_048_576
 RUNTIME_DIRS = {
     "node_modules",
@@ -529,6 +529,50 @@ def usage(events: list[dict[str, Any]]) -> dict[str, int | None]:
     }
 
 
+def playwright_test_attestation(events: list[dict[str, Any]]) -> dict[str, Any]:
+    completed_runs = []
+    for event_index, event in enumerate(events):
+        if event.get("type") != "item.completed":
+            continue
+        item = event.get("item")
+        if not isinstance(item, dict):
+            continue
+        if (
+            item.get("type") != "mcp_tool_call"
+            or item.get("server") != "playwright-test"
+            or item.get("tool") != "test_run"
+            or item.get("status") != "completed"
+        ):
+            continue
+        result = item.get("result")
+        result_text = ""
+        if isinstance(result, dict) and isinstance(result.get("content"), list):
+            result_text = "\n".join(
+                block.get("text", "")
+                for block in result["content"]
+                if isinstance(block, dict)
+                and block.get("type") == "text"
+                and isinstance(block.get("text"), str)
+            )
+        completed_runs.append(
+            {
+                "event_index": event_index,
+                "item_id": item.get("id"),
+                "error": item.get("error") is not None,
+                "passed": re.search(r"\b1 passed\b", result_text) is not None,
+            }
+        )
+    return {
+        "method": "codex-jsonl-completed-playwright-test-test-run",
+        "completed_test_runs": len(completed_runs),
+        "passing_test_runs": sum(
+            run["passed"] and not run["error"] for run in completed_runs
+        ),
+        "runs": completed_runs,
+        "ok": any(not run["error"] for run in completed_runs),
+    }
+
+
 def prompt_for(arm: str, perturbation: Any | None, spec: str, smoke: bool) -> str:
     assertion = perturbation.primary_assertion if perturbation else "No test edit is needed."
     observed = "passes and must remain byte-identical" if smoke else "currently fails"
@@ -545,6 +589,9 @@ expected values. If the test is correct and the application cannot produce the
 approved outcome, make no edit and report NOFIX. The fixture server is already
 running and FIXTURE_BASE_URL is available to test commands. Finish with a brief
 report that says REPAIRED, NOFIX, or FAILED and names every changed file.
+Use the configured playwright-test MCP test_run tool for actual test execution;
+the host sandbox does not permit a shell child to connect to the isolated
+loopback browser. This execution interface is identical for both arms.
 """
     if arm == "official_healer_direct_guarded":
         return common + """
@@ -598,27 +645,31 @@ def codex_command(
         "--model",
         model,
     ]
+    if ws_endpoint is None or base_url is None:
+        raise ContractError("healer MCP requires isolated browser and fixture endpoints")
     if arm == "official_healer_direct_guarded":
-        if ws_endpoint is None or base_url is None:
-            raise ContractError("official healer MCP requires isolated browser and fixture endpoints")
         command.extend(
             [
                 "-c",
                 "developer_instructions=" + json.dumps(generated_healer_instructions(root)),
-                "-c",
-                'mcp_servers.playwright-test.command="npx"',
-                "-c",
-                'mcp_servers.playwright-test.args=["playwright","run-test-mcp-server","--headless","--config","playwright.config.mjs"]',
-                "-c",
-                "mcp_servers.playwright-test.env={ PLAYWRIGHT_WS_ENDPOINT = "
-                + json.dumps(ws_endpoint)
-                + ", FIXTURE_BASE_URL = "
-                + json.dumps(base_url)
-                + " }",
-                "-c",
-                'mcp_servers.playwright-test.enabled_tools=["browser_console_messages","browser_evaluate","browser_generate_locator","browser_network_request","browser_network_requests","browser_snapshot","test_debug","test_list","test_run"]',
             ]
         )
+    command.extend(
+        [
+            "-c",
+            'mcp_servers.playwright-test.command="npx"',
+            "-c",
+            'mcp_servers.playwright-test.args=["playwright","run-test-mcp-server","--headless","--config","playwright.config.mjs"]',
+            "-c",
+            "mcp_servers.playwright-test.env={ PLAYWRIGHT_WS_ENDPOINT = "
+            + json.dumps(ws_endpoint)
+            + ", FIXTURE_BASE_URL = "
+            + json.dumps(base_url)
+            + " }",
+            "-c",
+            'mcp_servers.playwright-test.enabled_tools=["browser_console_messages","browser_evaluate","browser_generate_locator","browser_network_request","browser_network_requests","browser_snapshot","test_debug","test_list","test_run"]',
+        ]
+    )
     command.extend(["--disable", "multi_agent", "-"])
     return command
 
@@ -732,6 +783,8 @@ def classify(
         return {"classification": "INVALID", "reason": "credential-shaped native output redacted"}
     if not model["route_attestation"]["ok"]:
         return {"classification": "INCOMPLETE", "reason": "route attestation failed"}
+    if not model["test_execution_attestation"]["ok"]:
+        return {"classification": "INCOMPLETE", "reason": "Playwright test_run attestation failed"}
     lower = healed.casefold()
     changed = applied != healed
 
@@ -860,9 +913,9 @@ def run_cell(
         model = invoke_codex(
             executable, model_name, cell["arm"], root, prompt, timeout_s
         )
-        model["route_attestation"] = delegation_attestation(
-            model.pop("events"), cell["arm"]
-        )
+        events = model.pop("events")
+        model["route_attestation"] = delegation_attestation(events, cell["arm"])
+        model["test_execution_attestation"] = playwright_test_attestation(events)
         after = snapshot_tree(root)
         changed_paths = sorted(
             path for path in set(baseline) | set(after) if baseline.get(path) != after.get(path)
@@ -912,6 +965,7 @@ def run_cell(
                 and not model["surviving_pids"]
                 and not model["credential_material_detected"]
                 and model["route_attestation"]["ok"]
+                and model["test_execution_attestation"]["passing_test_runs"] >= 1
                 and not changed_paths
                 and healed_run["returncode"] == 0
                 and not blocked_verification_report(model["final_report"])
@@ -1370,6 +1424,40 @@ def self_test() -> int:
     assert not delegation_attestation(official_events, "official_healer_direct_guarded")["ok"]
     assert delegation_attestation([], "ours_step7")["ok"]
     assert delegation_attestation([], "official_healer_direct_guarded")["ok"]
+    test_run_events = [
+        {
+            "type": "item.started",
+            "item": {
+                "id": "item-1",
+                "type": "mcp_tool_call",
+                "server": "playwright-test",
+                "tool": "test_run",
+                "status": "in_progress",
+            },
+        },
+        {
+            "type": "item.completed",
+            "item": {
+                "id": "item-1",
+                "type": "mcp_tool_call",
+                "server": "playwright-test",
+                "tool": "test_run",
+                "status": "completed",
+                "result": {"content": [{"type": "text", "text": "1 passed (1.0s)"}]},
+                "error": None,
+            },
+        },
+        {
+            "type": "tool_progress",
+            "name": "test_run",
+            "parent_tool_use_id": "item-1",
+        },
+    ]
+    test_attestation = playwright_test_attestation(test_run_events)
+    assert test_attestation["completed_test_runs"] == 1
+    assert test_attestation["passing_test_runs"] == 1
+    assert test_attestation["ok"]
+    assert not playwright_test_attestation(test_run_events[:1])["ok"]
     with tempfile.TemporaryDirectory(prefix="healer-command-test-") as parent:
         root = Path(parent)
         agent_dir = root / ".codex/agents"
@@ -1392,6 +1480,16 @@ def self_test() -> int:
         assert "PLAYWRIGHT_WS_ENDPOINT" in " ".join(command)
         assert command[command.index("--disable") + 1] == "image_generation"
         assert command[-3:] == ["--disable", "multi_agent", "-"]
+        inline_command = codex_command(
+            Path("/absolute/codex"),
+            "gpt-5.6-sol",
+            "ours_step7",
+            root,
+            "ws://127.0.0.1:1234/probe",
+            "http://127.0.0.1:5678",
+        )
+        assert "playwright-test" in " ".join(inline_command)
+        assert not any("developer_instructions=" in part for part in inline_command)
     assert len(build_cells(False)) == 30
     assert len({cell["cell_id"] for cell in build_cells(False)}) == 30
     assert {cell["arm"] for cell in build_cells(False)} == set(ARMS)
@@ -1406,6 +1504,7 @@ def self_test() -> int:
         "surviving_pids": [],
         "credential_material_detected": False,
         "route_attestation": {"ok": True},
+        "test_execution_attestation": {"ok": True},
         "final_report": "REPAIRED",
     }
     native_green = {"returncode": 0, "credential_material_detected": False}
