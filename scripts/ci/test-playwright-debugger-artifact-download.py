@@ -1094,8 +1094,13 @@ def main() -> None:
         assert "project-controlled HOME" in result.stderr
         assert not (project_home_workspace / "playwright-report").exists()
 
-    skill = (ROOT / "skills/playwright-debugger/SKILL.md").read_text(
-        encoding="utf-8"
+    skill_root = ROOT / "skills/playwright-debugger"
+    skill = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (
+            skill_root / "SKILL.md",
+            skill_root / "references/ci-artifact-download.md",
+        )
     )
     assert "download-playwright-report.py" in skill
     assert '--repo "$REPO" "$RUN_ID"' in skill

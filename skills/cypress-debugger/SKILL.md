@@ -180,47 +180,6 @@ test -x node_modules/.bin/mochawesome-merge &&
   --reporter junit --reporter-options "mochaFile=cypress/reports/results-[hash].xml"
 ```
 
-**3. Report exists but is from CI and you need local artifacts (screenshots/videos for Phase 3)** → download the CI artifact into a fresh local directory using a user-confirmed repository slug and numeric run ID. Do **not** download artifacts from forked-PR runs or from arbitrary URLs.
-
-```bash
-REPO=<confirmed-owner/repository>
-RUN_ID=<numeric-github-actions-run-id>
-PROJECT_ROOT=$(/bin/pwd -P)
-<skill-dir>/scripts/run-artifact-reader.sh \
-  --project-root "$PROJECT_ROOT" \
-  --reader download-cypress-reports.py \
-  --pass-env HOME --pass-env GH_TOKEN -- \
-  --repo "$REPO" "$RUN_ID"
-```
-
-Pass `--pass-env GITHUB_TOKEN` instead of `--pass-env GH_TOKEN` when that is
-the name holding the token, and drop the token option entirely when `gh` reads
-an already-authenticated host config under `HOME`. `--pass-env HOME` is always
-required. Do not add any other variable: the launcher rejects a name outside
-this helper's allowlist, and that rejection is the intended behavior, not an
-obstacle to route around.
-
-The helper requires the user-confirmed strict `owner/repository` slug, resolves
-that repository's numeric identity from `github.com`, and binds the Actions
-run's repository, head-repository, and pull-request head metadata to that
-identity. It uses explicit repository API endpoints on the fixed host and
-ignores ambient checkout and `GH_REPO` context. It rejects forked runs, then
-requires exactly one unexpired artifact named `cypress-reports`, streams its
-bounded ZIP into a private staging directory, and never gives `gh` an extraction
-path. It walks the physical repository directory through descriptor-relative
-no-follow opens,
-requires `cypress/reports/` to be absent, and rejects traversal, duplicate,
-encrypted, symlink, and special ZIP members. Extraction uses held directory
-descriptors; staging identity is rechecked and the completed tree is published
-with an atomic no-replace rename. The helper resolves an absolute `gh`
-executable outside the repository, invokes it with a minimal allowlisted
-environment, canonicalizes `HOME`, rejects a repository-contained `HOME`, and
-leaves no published report after a failed or non-zero download. This prevents
-normal path-component and destination-swap races; it is not a sandbox against a
-same-user or privileged local process that can discover and move the private
-staging directory while the download is active. Stop such concurrent untrusted
-processes before downloading.
-
 The Mochawesome publisher opens `cypress/reports/` descriptor-relatively without
 following symlinks, captures bounded merger stdout into a private temporary
 file, requires a successful merger exit, and validates the strict Mochawesome
@@ -233,25 +192,7 @@ child executable is resolved only through that child `PATH`, while an explicit
 relative/absolute executable is resolved to an executable regular file before
 launch.
 
-Then reproduce the specific failing spec locally with the same environment:
-
-```bash
-# Default: the exact failing spec, one attempt. Use the repository's existing
-# exact-title filter too when one is already installed and trusted.
-/usr/bin/env -i PATH="$PATH" node_modules/.bin/cypress run \
-  --spec path/to/spec.cy.ts --browser chrome \
-  --config retries=0,video=true
-
-# If CI uses a non-default baseUrl or env, mirror it
-/usr/bin/env -i PATH="$PATH" CYPRESS_BASE_URL=<ci-base-url> \
-  node_modules/.bin/cypress run \
-  --spec path/to/spec.cy.ts --config retries=0
-```
-
-Only add a retry probe after repository evidence proves every action and its
-system-boundary effects are idempotent. Then, and only then, use the same exact
-spec (and existing exact-title filter when available) with bounded
-`--config retries=2`.
+**3. Report exists but is from CI and you need local artifacts (screenshots/videos for Phase 3)** → read `<skill-dir>/references/ci-artifact-download.md` for the full procedure: confirming the repository slug and numeric run ID with the user, routing `--reader download-cypress-reports.py` through the bundled launcher with only the documented `--pass-env HOME`/token allowlist, what it validates and enforces, and reproducing the specific failing spec locally afterward. Never download from forked-PR runs or arbitrary URLs.
 
 If the test passes locally but failed in CI → likely **F7 (test isolation)** or **F8 (environment mismatch)**; jump to Phase 2 with that hypothesis instead of trying to repro further.
 
@@ -461,61 +402,20 @@ cy.get('[data-testid="order-row"]').should('have.length', 3);
 
 ## Phase 3: Screenshot & Video Analysis (only if Phase 2 is unclear)
 
-Cypress automatically captures screenshots on failure and optionally records video.
+Cypress automatically captures screenshots on failure and optionally records
+video. Read `<skill-dir>/references/screenshot-video-analysis.md` for the
+full procedure: locating local vs. downloaded-artifact media (they live
+under different roots), the exact path-remapping rule for a downloaded
+artifact's context path, and the `media` reader invocations for each root.
 
-Screenshot and video filenames embed **test titles**, which are untrusted data (see Safety). Always quote report-derived strings when they reach a shell — `open -- "$png"`, `find cypress/screenshots -path "*$title*"` — and never interpolate a title, path, or error string from a report into a shell command unquoted.
-
-```bash
-# Local Cypress run
-find cypress/screenshots -name "*.png" | head -20
-find cypress/videos -name "*.mp4" | head -10
-
-# Artifact downloaded by download-cypress-reports.py
-find cypress/reports/screenshots -name "*.png" | head -20
-find cypress/reports/videos -name "*.mp4" | head -10
-```
-
-The bounded mochawesome output from Phase 1 already includes failed-test
-`screenshots` context paths and the bounded error stack. Treat every context path
-as untrusted. For a downloaded artifact, remap only a relative path whose
-components have the exact `cypress/screenshots/` or `cypress/videos/` prefix and
-contain no empty, `.`, `..`, backslash, or NUL component: strip that prefix and
-append the remaining components beneath `cypress/reports/screenshots/` or
-`cypress/reports/videos/`. Reject every other context path rather than
-normalizing it. Validate the selected media file before sending it to a browser
-agent or viewer:
-
-```bash
-PROJECT_ROOT=$(/bin/pwd -P)
-<skill-dir>/scripts/run-artifact-reader.sh --project-root "$PROJECT_ROOT" -- media \
-  --artifact-root cypress/screenshots \
-  "cypress/screenshots/<spec>/<test name> (failed).png"
-<skill-dir>/scripts/run-artifact-reader.sh --project-root "$PROJECT_ROOT" -- media \
-  --artifact-root cypress/videos \
-  "cypress/videos/<spec>.mp4"
-<skill-dir>/scripts/run-artifact-reader.sh --project-root "$PROJECT_ROOT" -- media \
-  --artifact-root cypress/reports/screenshots \
-  "cypress/reports/screenshots/<spec>/<test name> (failed).png"
-<skill-dir>/scripts/run-artifact-reader.sh --project-root "$PROJECT_ROOT" -- media \
-  --artifact-root cypress/reports/videos \
-  "cypress/reports/videos/<spec>.mp4"
-```
-
-Media mode opens every artifact-root component from the filesystem root with
-descriptor-relative no-follow operations and traverses only from that held
-root descriptor. It then validates the regular-file signature and copies the
-exact descriptor bytes into a random `0700` temporary directory. The snapshot
-is an owner-read-only `0400` file: a temporary owner-only snapshot. Media mode
-verifies the source descriptor identity, size, mtime, and ctime after the copy
-and emits the snapshot path, type, size, SHA-256 digest, cleanup directory, and
-lifecycle notice. It
-accepts PNG files up to 64 MiB and MP4 files up to 512 MiB and does not decode
-video. Pass only the returned `path` to the browser agent or viewer; never
-reopen the original screenshot/video path. Keep the snapshot only while the
-viewer needs it, then delete the snapshot file and delete the exact
-`snapshot_directory` with `rmdir`. Never use a broad temporary-directory glob
-for cleanup. If mochawesome context has no screenshot path, use the regular-file
-discovery commands above, then validate the selected result.
+**The invariants that apply regardless of source:** screenshot/video
+filenames embed untrusted test titles — always quote report-derived
+strings when they reach a shell, never interpolate one unquoted. Validate
+every media file through the bundled reader before opening it; the reader
+copies validated bytes into a temporary owner-only snapshot and emits only
+that path — pass only the returned path to a viewer, never reopen the
+original screenshot/video path, and delete the exact `snapshot_directory`
+with `rmdir` once the viewer is done (never a broad temp-directory glob).
 
 Progressive disclosure: inspect the bounded error/stack first, then a validated
 screenshot, then a validated video; stop as soon as the root cause is clear.

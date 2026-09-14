@@ -1200,8 +1200,13 @@ def main() -> None:
             else:
                 os.environ["HOME"] = previous_home
 
-    skill = (ROOT / "skills/cypress-debugger/SKILL.md").read_text(
-        encoding="utf-8"
+    skill_root = ROOT / "skills/cypress-debugger"
+    skill = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (
+            skill_root / "SKILL.md",
+            skill_root / "references/ci-artifact-download.md",
+        )
     )
     assert "download-cypress-reports.py" in skill
     assert "--repo" in skill

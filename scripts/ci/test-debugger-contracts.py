@@ -3696,7 +3696,13 @@ def main() -> None:
             media_path.unlink()
             media_directory.rmdir()
 
-    cypress_text = (CYPRESS_SKILL / "SKILL.md").read_text(encoding="utf-8")
+    cypress_text = (
+        (CYPRESS_SKILL / "SKILL.md").read_text(encoding="utf-8")
+        + "\n"
+        + (CYPRESS_SKILL / "references/screenshot-video-analysis.md").read_text(encoding="utf-8")
+        + "\n"
+        + (CYPRESS_SKILL / "references/ci-artifact-download.md").read_text(encoding="utf-8")
+    )
     cypress_flat = " ".join(cypress_text.split())
     for module_name, script_name in (
         (
@@ -3824,7 +3830,17 @@ def main() -> None:
     ):
         assert artifact in cypress_text, f"missing Cypress artifact guard: {artifact}"
 
-    playwright_text = PLAYWRIGHT_SKILL.read_text(encoding="utf-8")
+    playwright_text = (
+        PLAYWRIGHT_SKILL.read_text(encoding="utf-8")
+        + "\n"
+        + (PLAYWRIGHT_SKILL.parent / "references/trace-media-analysis.md").read_text(
+            encoding="utf-8"
+        )
+        + "\n"
+        + (PLAYWRIGHT_SKILL.parent / "references/ci-artifact-download.md").read_text(
+            encoding="utf-8"
+        )
+    )
     playwright_flat = " ".join(playwright_text.split())
     playwright_reader = (
         ROOT / "skills/playwright-debugger/scripts/read-playwright-artifact.py"
