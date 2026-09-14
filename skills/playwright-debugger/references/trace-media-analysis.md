@@ -1,7 +1,8 @@
 # Trace and media analysis (Phase 3 detail)
 
-Read this only when Phase 2 (report-based classification) left the root cause
-unclear. Most failures are identifiable from Phase 1/2 alone.
+Read this when an HTML/trace-only report sends you directly to trace analysis,
+or when Phase 2 (report-based classification) left the root cause unclear.
+Most failures are identifiable from Phase 1/2 alone.
 
 Find trace files (restrict to regular files under `playwright-report/`):
 `find playwright-report -type f -name "*.zip" | head -10`
@@ -62,11 +63,13 @@ Playwright also ships its own trace skill (`playwright trace install-skill`).
 When the user already has it installed, use it for trace reading and keep this
 skill for classification and the fix contract; do not duplicate its guidance.
 
-Two trace comparisons that resolve F1 and F3 faster than reading one trace:
+Two trace comparisons that resolve timing and dependency hypotheses faster than
+reading one trace:
 
 - **Pass/fail diff.** Capture `actions` for a passing run and a failing run of
-  the same test; the first diverging action is where the race resolves. This
-  separates a genuine race (F3) from a deterministic product change (F1).
+  the same test; the first diverging action shows where behavior begins to vary
+  or exposes a stable product/network failure. Classify the cause against the
+  F1-F15 table instead of assigning an F-code from the diff alone.
 - **CI sweep.** Across a directory of failed traces, cluster by shared failing
   request or console signature. Twenty tests failing on the same 500 is one
   backend fault, not twenty flakes, and the fix belongs upstream of the specs.

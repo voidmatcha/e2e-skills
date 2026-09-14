@@ -354,9 +354,10 @@ Classification steps:
 
 **Click landed but nothing happened (F15 hydration race):** server-rendered pages paint interactive-looking elements before the framework attaches event listeners. Playwright's actionability checks (visible, stable, enabled) all pass against the inert pre-hydration DOM, so the action is reported successful and the failure surfaces only at the *next* assertion. Signals: SSR/SSG framework (Next.js, Nuxt, SvelteKit, Astro, Remix), the failing assertion follows the first interaction after `page.goto()`, the failure screenshot shows a fully painted page, passes on retry or with `slowMo`. Distinguish from F14: in F14 the element/content is racing render or removal (not yet rendered, or already gone); in F15 it is rendered but inert. Fix, in order of preference: (1) gate the first interaction on an app-provided hydration marker — `await expect(page.locator('html[data-hydrated]')).toBeAttached();` — and if the app exposes none, propose the one-line marker upstream (set an attribute in a root `useEffect`/`onMounted`); it fixes every spec at once. (2) Only when repository evidence proves the action is idempotent, make it self-verifying so a retry can land: `await expect(async () => { await button.click(); await expect(dialog).toBeVisible({ timeout: 1000 }); }).toPass();`. **Never retry a non-idempotent action** such as submit, payment, delete, registration, or toggle; wait for a readiness signal instead, because replay can duplicate or reverse a write. Do NOT paper over it with `waitForTimeout()` after `goto` — that's the #9 band-aid the reviewer flags, and it still races on slow CI.
 
-## Phase 3: Trace Analysis (only if Phase 2 is unclear)
+## Phase 3: Trace Analysis (for trace-only input or if Phase 2 is unclear)
 
-Most failures are identifiable from Phase 1/2 alone. When they aren't, read
+Most failures are identifiable from Phase 1/2 alone. For an HTML/trace-only
+report, or when Phase 2 is still inconclusive, read
 `<skill-dir>/references/trace-media-analysis.md` for the full procedure:
 finding and validating trace ZIPs through the bundled reader (`-- trace`),
 the supported Playwright trace CLI fallback, pass/fail and CI-sweep trace

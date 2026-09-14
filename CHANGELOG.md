@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Changed
+
+- **Playwright and Cypress debugger guidance now loads conditional procedures on demand.** Phase 3 trace, screenshot, and video analysis plus CI artifact download and local-reproduction details moved from each `SKILL.md` entrypoint into one-hop sibling references. The entrypoints retain the routing conditions and artifact-safety invariants needed on every invocation, and each skill remains independently installable.
+
+### Fixed
+
+- **Playwright trace comparison no longer assigns timing and product failures to the wrong F-codes.** Pass/fail trace differences now identify the first behavioral divergence and defer classification to the canonical F1-F15 table. HTML/trace-only reports are also explicitly admitted to Phase 3 without first requiring report-based Phase 2 analysis. CI separately guards the reference links and core safety invariants from the detailed commands in each conditional reference.
+
 ## [1.16.2] - 2026-09-13
 
 ### Added

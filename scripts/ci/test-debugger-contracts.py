@@ -1785,30 +1785,38 @@ def assert_bundled_helpers_never_resolve_python_through_path() -> None:
             f"{launcher} resolves its interpreter through PATH"
         )
 
-    # No SKILL.md may prescribe a bare python3 for a bundled helper any more.
-    for skill_path, helpers in (
+    # No skill surface may prescribe a bare python3 for a bundled helper any more.
+    for skill_paths, helpers in (
         (
-            PLAYWRIGHT_SKILL,
+            (
+                PLAYWRIGHT_SKILL,
+                PLAYWRIGHT_SKILL.parent / "references/ci-artifact-download.md",
+            ),
             ("publish-json-report.py", "download-playwright-report.py"),
         ),
         (
-            CYPRESS_SKILL / "SKILL.md",
+            (
+                CYPRESS_SKILL / "SKILL.md",
+                CYPRESS_SKILL / "references/ci-artifact-download.md",
+            ),
             ("publish-mochawesome-report.py", "download-cypress-reports.py"),
         ),
     ):
-        skill_text = skill_path.read_text(encoding="utf-8")
+        skill_text = "\n".join(
+            skill_path.read_text(encoding="utf-8") for skill_path in skill_paths
+        )
         for helper in helpers:
             assert f"python3 <skill-dir>/scripts/{helper}" not in skill_text, (
-                f"{skill_path} still starts {helper} with a bare python3"
+                f"{skill_paths} still start {helper} with a bare python3"
             )
             assert f'PATH="$PATH" python3 \\\n  <skill-dir>/scripts/{helper}' not in (
                 skill_text
-            ), f"{skill_path} still starts {helper} with a PATH-resolved python3"
+            ), f"{skill_paths} still start {helper} with a PATH-resolved python3"
             assert f"--reader {helper}" in skill_text, (
-                f"{skill_path} does not route {helper} through the launcher"
+                f"{skill_paths} do not route {helper} through the launcher"
             )
-        assert "does **not** satisfy this rule" in skill_text, skill_path
-        assert "--pass-env NAME" in skill_text, skill_path
+        assert "does **not** satisfy this rule" in skill_text, skill_paths
+        assert "--pass-env NAME" in skill_text, skill_paths
 
     with tempfile.TemporaryDirectory(
         prefix="e2e-helper-interpreter-boundary-",
@@ -3696,12 +3704,22 @@ def main() -> None:
             media_path.unlink()
             media_directory.rmdir()
 
-    cypress_text = (
-        (CYPRESS_SKILL / "SKILL.md").read_text(encoding="utf-8")
-        + "\n"
-        + (CYPRESS_SKILL / "references/screenshot-video-analysis.md").read_text(encoding="utf-8")
-        + "\n"
-        + (CYPRESS_SKILL / "references/ci-artifact-download.md").read_text(encoding="utf-8")
+    cypress_core_text = (CYPRESS_SKILL / "SKILL.md").read_text(encoding="utf-8")
+    cypress_media_reference_text = (
+        CYPRESS_SKILL / "references/screenshot-video-analysis.md"
+    ).read_text(encoding="utf-8")
+    cypress_ci_reference_text = (
+        CYPRESS_SKILL / "references/ci-artifact-download.md"
+    ).read_text(encoding="utf-8")
+    cypress_core_flat = " ".join(cypress_core_text.split())
+    assert "<skill-dir>/references/screenshot-video-analysis.md" in cypress_core_text
+    assert "<skill-dir>/references/ci-artifact-download.md" in cypress_core_text
+    assert "pass only the returned path to a viewer" in cypress_core_flat
+    assert "never reopen the original screenshot/video path" in cypress_core_flat
+    assert "delete the exact `snapshot_directory`" in cypress_core_flat
+    assert "Never download from forked-PR runs or arbitrary URLs" in cypress_core_flat
+    cypress_text = "\n".join(
+        (cypress_core_text, cypress_media_reference_text, cypress_ci_reference_text)
     )
     cypress_flat = " ".join(cypress_text.split())
     for module_name, script_name in (
@@ -3830,16 +3848,27 @@ def main() -> None:
     ):
         assert artifact in cypress_text, f"missing Cypress artifact guard: {artifact}"
 
-    playwright_text = (
-        PLAYWRIGHT_SKILL.read_text(encoding="utf-8")
-        + "\n"
-        + (PLAYWRIGHT_SKILL.parent / "references/trace-media-analysis.md").read_text(
-            encoding="utf-8"
-        )
-        + "\n"
-        + (PLAYWRIGHT_SKILL.parent / "references/ci-artifact-download.md").read_text(
-            encoding="utf-8"
-        )
+    playwright_core_text = PLAYWRIGHT_SKILL.read_text(encoding="utf-8")
+    playwright_trace_reference_text = (
+        PLAYWRIGHT_SKILL.parent / "references/trace-media-analysis.md"
+    ).read_text(encoding="utf-8")
+    playwright_ci_reference_text = (
+        PLAYWRIGHT_SKILL.parent / "references/ci-artifact-download.md"
+    ).read_text(encoding="utf-8")
+    playwright_core_flat = " ".join(playwright_core_text.split())
+    playwright_trace_reference_flat = " ".join(playwright_trace_reference_text.split())
+    assert "<skill-dir>/references/trace-media-analysis.md" in playwright_core_text
+    assert "<skill-dir>/references/ci-artifact-download.md" in playwright_core_text
+    assert "HTML/trace-only" in playwright_core_flat
+    assert "never reopen the original media path" in playwright_core_flat
+    assert "delete the emitted `snapshot_directory`" in playwright_core_flat
+    assert "Never download from forked-PR runs or arbitrary URLs" in playwright_core_flat
+    assert "HTML/trace-only report" in playwright_trace_reference_flat
+    assert "F1-F15 table" in playwright_trace_reference_flat
+    assert "genuine race (F3)" not in playwright_trace_reference_text
+    assert "deterministic product change (F1)" not in playwright_trace_reference_text
+    playwright_text = "\n".join(
+        (playwright_core_text, playwright_trace_reference_text, playwright_ci_reference_text)
     )
     playwright_flat = " ".join(playwright_text.split())
     playwright_reader = (

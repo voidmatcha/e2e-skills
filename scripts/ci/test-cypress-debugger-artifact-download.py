@@ -1201,18 +1201,19 @@ def main() -> None:
                 os.environ["HOME"] = previous_home
 
     skill_root = ROOT / "skills/cypress-debugger"
-    skill = "\n".join(
-        path.read_text(encoding="utf-8")
-        for path in (
-            skill_root / "SKILL.md",
-            skill_root / "references/ci-artifact-download.md",
-        )
+    skill_core = (skill_root / "SKILL.md").read_text(encoding="utf-8")
+    download_reference = (skill_root / "references/ci-artifact-download.md").read_text(
+        encoding="utf-8"
     )
-    assert "download-cypress-reports.py" in skill
-    assert "--repo" in skill
-    assert "gh run download" not in skill
-    assert "cypress-reports" in skill
-    assert "forked" in skill
+    assert "<skill-dir>/references/ci-artifact-download.md" in skill_core
+    assert "--reader download-cypress-reports.py" in skill_core
+    assert "Never download from forked-PR runs or arbitrary URLs" in skill_core
+    assert "download-cypress-reports.py" in download_reference
+    assert "--repo" in download_reference
+    assert "cypress-reports" in download_reference
+    assert "forked" in download_reference
+    assert "gh run download" not in skill_core
+    assert "gh run download" not in download_reference
     print("Cypress artifact download safety: pass")
 
 

@@ -1095,18 +1095,19 @@ def main() -> None:
         assert not (project_home_workspace / "playwright-report").exists()
 
     skill_root = ROOT / "skills/playwright-debugger"
-    skill = "\n".join(
-        path.read_text(encoding="utf-8")
-        for path in (
-            skill_root / "SKILL.md",
-            skill_root / "references/ci-artifact-download.md",
-        )
+    skill_core = (skill_root / "SKILL.md").read_text(encoding="utf-8")
+    download_reference = (skill_root / "references/ci-artifact-download.md").read_text(
+        encoding="utf-8"
     )
-    assert "download-playwright-report.py" in skill
-    assert '--repo "$REPO" "$RUN_ID"' in skill
-    assert "do not infer the repository" in skill
-    assert "gh run download" not in skill
-    assert "same-user or privileged local process" in skill
+    assert "<skill-dir>/references/ci-artifact-download.md" in skill_core
+    assert "--reader download-playwright-report.py" in skill_core
+    assert "Never download from forked-PR runs or arbitrary URLs" in skill_core
+    assert "download-playwright-report.py" in download_reference
+    assert '--repo "$REPO" "$RUN_ID"' in download_reference
+    assert "do not infer the repository" in download_reference
+    assert "same-user or privileged local process" in download_reference
+    assert "gh run download" not in skill_core
+    assert "gh run download" not in download_reference
     for readme_name in (
         "README.md",
         "README.ko.md",
