@@ -6,7 +6,7 @@
   "result": "INCONCLUSIVE",
   "decision_state": "PREREGISTERED_CODEX_ONLY_NOT_FROZEN",
   "prepared_on": "2026-09-15",
-  "protocol_revision": 2,
+  "protocol_revision": 3,
   "design_only": false,
   "execution_authorized_by_this_file": false,
   "source_plans": [
@@ -21,8 +21,8 @@
     "component": "guarded_healer_on_perturbed_verified_candidates",
     "hypothesis": "A3",
     "hypothesis_text": "The Healer repairs mechanics without weakening approved behavior often enough to be useful behind the existing immutable-outcome guard.",
-    "primary_arm": "official_healer_guarded",
-    "arm_identity": "RESOLVED: the Codex-only schedule measures both the generated Playwright healer and this repository's inline Step 7 control with identical perturbations; arms are interleaved, reported separately, and never pooled.",
+    "primary_arm": "official_healer_direct_guarded",
+    "arm_identity": "RESOLVED revision 3: Codex CLI 0.154.0 cannot invoke a generated project agent through a real mid-session spawn event. The official generated playwright_test_healer TOML is therefore projected directly into an isolated top-level Codex session as developer instructions plus its declared Playwright Test MCP server. The repository's inline Step 7 remains the control. Arms use identical perturbations, are interleaved, reported separately, and never pooled.",
     "independent_gates_not_covered_here": [
       "A1_official_planner_as_plan_hardener (benchmarks/ours-vs-planner-pilot-v1)",
       "A2_official_generator_dual_candidate"
@@ -215,9 +215,9 @@
   },
   "arms": [
     {
-      "arm_id": "official_healer_guarded",
+      "arm_id": "official_healer_direct_guarded",
       "status": "active_pending_smoke",
-      "flow": "disposable copy -> neutralize answer-leading identifiers -> `npx --no-install playwright init-agents --loop=codex` -> perturbation applied (or opaque scenario selected) -> native RED proof -> parent Codex delegates exactly once to playwright_test_healer with the immutable-outcome constraints -> healed candidate preserved -> deterministic classification",
+      "flow": "disposable copy -> neutralize answer-leading identifiers -> `npx --no-install playwright init-agents --loop=codex` -> hash and extract the generated playwright_test_healer developer instructions and MCP declaration -> project them into an isolated top-level Codex session -> perturbation applied (or opaque scenario selected) -> native RED proof -> run with immutable-outcome constraints -> healed candidate preserved -> deterministic classification",
       "guard_text_source": "skills/playwright-test-generator/playwright-agents.md, the sentence beginning 'The healer may diagnose and repair mechanics'",
       "max_healer_invocations_per_cell": 1
     },
@@ -407,7 +407,7 @@
     "this protocol and its SHA-256 cited in every report",
     "freeze-record.json (recomputed digests, catalog digest, node_modules digest, model identity, red-gate output, arm confirmation)",
     "per-cell: pre/post tree digests, apply receipt, native red output, healer session transcript and final report, healed spec bytes, native green/red output, fault-kill retention output, scan.sh output, timings, cleanup evidence",
-    "init-agents control-file digests per official_healer_guarded cell",
+    "init-agents control-file digest and direct generated-healer projection per official_healer_direct_guarded cell",
     "per-cell deterministic classification record with preserved diff and all native evidence; explicit adjudication_required on non-canonical edits",
     "cost ledger (sessions, wall time, requests, tokens/cost or 'unknown') with the checkpoint decisions",
     "final decision per arm with the 5 x 3 classification table and limitations; explicit statement that no product text was changed by the run"
@@ -426,7 +426,8 @@
   },
   "corrections": [
     "Revision 2 re-prepared the invalidated v1.16.0 snapshot against the post-v1.16.2 tree and changed the host to Codex-only by explicit operator decision.",
-    "Revision 2 implemented and regression-tested disposable-copy neutralization before any model call; opaque scenario identifiers preserve the same fixture behavior without answer-leading fault vocabulary."
+    "Revision 2 implemented and regression-tested disposable-copy neutralization before any model call; opaque scenario identifiers preserve the same fixture behavior without answer-leading fault vocabulary.",
+    "Revision 3 preserves the failed revision-2 smoke as evidence: Codex emitted only a wait event while self-reporting delegation, so the official generated agent was not invoked. Revision 3 replaces that infeasible route with a direct, explicit projection of the generated healer TOML into the top-level Codex session; no measured cell ran under revision 2."
   ],
   "limitations": [
     "The fixture application is one static page with synchronous state updates; the three mechanical rows are therefore easy repairs and their success rates say nothing about production locators or asynchronous applications. They exist so that the honesty-control rows are measured against a healer that demonstrably can repair something.",

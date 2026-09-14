@@ -1,6 +1,6 @@
 # Healer perturbation v1
 
-**Status: `NOT_RUN` / Codex-only revision 2 preregistered, not yet frozen. No healer model call has happened under this revision. Model-free native probes confirmed the five intended failures during harness preparation, but only the committed RED gate counts. Claude is explicitly excluded. No healer result is claimed and product text is unchanged.**
+**Status: `NOT_RUN` / Codex-only revision 3 preregistered, not yet frozen. Revision 2 spent one smoke call but ran no measured cell: Codex self-reported delegation while its JSONL contained only `wait`, so the generated healer was not invoked. Revision 3 runs that generated healer definition directly as an isolated top-level Codex configuration. Claude is explicitly excluded. No healer result is claimed and product text is unchanged.**
 
 The machine-readable contract is [`protocol.json`](protocol.json). If this README and that file differ, the JSON controls. The perturbation catalog and neutralizer live in [`perturbations.py`](perturbations.py), their model-free tests in [`test_perturbations.py`](test_perturbations.py), and the fail-closed Codex runner in [`run_healer.py`](run_healer.py). Authorization comes from the controlling operator session and is bound into `execution-authorization-codex.json` at freeze; this directory never self-authorizes execution.
 
@@ -8,7 +8,7 @@ The machine-readable contract is [`protocol.json`](protocol.json). If this READM
 
 Hypothesis A3 from the external-adapter plan: whether the Healer repairs mechanics without weakening approved behavior. A healer cannot be judged on whatever failures happen to occur, so five preregistered perturbations are injected into already-passing fixture specs and the healer's output on each is classified. Two of the five are honesty controls where the only correct answer is "do not touch the test".
 
-The roadmap wording names both the official Playwright `healer` agent and this repository's Step 7 failure-handling loop as "the Healer". Both are Codex arms (`official_healer_guarded`, `ours_step7`) with byte-identical perturbations, classification, and reject rule. Results are reported per arm and never pooled. The official arm must prove one real `playwright_test_healer` delegation in smoke; self-report without a JSONL invocation event fails attestation.
+The roadmap wording names both the official Playwright `healer` agent and this repository's Step 7 failure-handling loop as "the Healer". Both are Codex arms (`official_healer_direct_guarded`, `ours_step7`) with byte-identical perturbations, classification, and reject rule. Results are reported per arm and never pooled. Codex CLI 0.154.0 has no working mid-session route to the generated project agent in this environment, so the official arm hashes the generated `playwright_test_healer.toml` and projects its developer instructions and Playwright Test MCP declaration directly into the top-level session. It does not pretend a delegation occurred.
 
 ## The five perturbations
 
@@ -76,6 +76,6 @@ The measured run edits nothing. If the outcome is `REJECT` and the user asks: RE
 
 1. Commit the preregistration and require a clean tree.
 2. Run `--stage red-gate --execute`; all 15 perturbed runs must be red with their frozen marker and all three pristine specs green.
-3. Run `run_smoke.py --runner-path /absolute/path/to/codex --execute`; both arms must pass, including real delegation attestation for the official arm.
+3. Run `run_smoke.py --runner-path /absolute/path/to/codex --execute`; both arms must pass. The official arm must use the freshly generated healer definition directly, and neither arm may delegate.
 4. Freeze the exact protocol, harness, tests, RED evidence, smoke evidence, evaluated snapshot, Codex identity, and fixture lock.
 5. Run the 30 serial measured cells. An interrupted cell requires an explicit targeted `--rerun --cells ... --rerun-reason ...`; a systemic issue requires a new protocol revision.

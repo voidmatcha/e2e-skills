@@ -37,12 +37,12 @@ ROOT = BENCHMARK_DIR.parents[1]
 PROTOCOL_PATH = BENCHMARK_DIR / "protocol.json"
 FREEZE_PATH = BENCHMARK_DIR / "freeze-record.json"
 AUTHORIZATION_PATH = BENCHMARK_DIR / "execution-authorization-codex.json"
-RED_GATE_PATH = BENCHMARK_DIR / "red-gate-codex.json"
-SMOKE_RESULTS_PATH = BENCHMARK_DIR / "smoke-results-codex.json"
+RED_GATE_PATH = BENCHMARK_DIR / "red-gate-codex-r3.json"
+SMOKE_RESULTS_PATH = BENCHMARK_DIR / "smoke-results-codex-r3.json"
 RESULTS_PATH = BENCHMARK_DIR / "healer-results-codex.json"
 ARTIFACTS_DIR = BENCHMARK_DIR / "healer-artifacts-codex"
-SMOKE_ARTIFACTS_DIR = BENCHMARK_DIR / "smoke-artifacts-codex"
-RED_GATE_ARTIFACTS_DIR = BENCHMARK_DIR / "red-gate-artifacts-codex"
+SMOKE_ARTIFACTS_DIR = BENCHMARK_DIR / "smoke-artifacts-codex-r3"
+RED_GATE_ARTIFACTS_DIR = BENCHMARK_DIR / "red-gate-artifacts-codex-r3"
 MAX_OUTPUT_BYTES = 1_048_576
 RUNTIME_DIRS = {
     "node_modules",
@@ -53,7 +53,7 @@ RUNTIME_DIRS = {
     "videos",
     ".playwright-cli",
 }
-ARMS = ("official_healer_guarded", "ours_step7")
+ARMS = ("official_healer_direct_guarded", "ours_step7")
 FAULT_KILL_MODE = {
     "stale_locator": "behavior",
     "timing_race": "write",
@@ -207,7 +207,7 @@ def prepare_workspace(destination: Path, arm: str | None) -> dict[str, Any]:
     node_modules = destination / "node_modules"
     node_modules.symlink_to(PERTURBATIONS.FIXTURES / "node_modules", target_is_directory=True)
     generated: dict[str, Any] | None = None
-    if arm == "official_healer_guarded":
+    if arm == "official_healer_direct_guarded":
         result = checked_run(
             [
                 "npx",
@@ -403,13 +403,8 @@ def delegation_attestation(events: list[dict[str, Any]], arm: str) -> dict[str, 
             key = str(identifier) if isinstance(identifier, str) else f"{event_index}:{node_index}"
             invocations.setdefault(key, identity)
     counts = collections.Counter(value for value in invocations.values() if value)
-    expected = arm == "official_healer_guarded"
-    ok = (
-        len(invocations) == 1
-        and counts.get("playwright_test_healer", 0) == 1
-        if expected
-        else len(invocations) == 0
-    )
+    expected = False
+    ok = len(invocations) == 0
     return {
         "ok": ok,
         "expected_delegation": expected,
@@ -466,12 +461,12 @@ approved outcome, make no edit and report NOFIX. The fixture server is already
 running and FIXTURE_BASE_URL is available to test commands. Finish with a brief
 report that says REPAIRED, NOFIX, or FAILED and names every changed file.
 """
-    if arm == "official_healer_guarded":
+    if arm == "official_healer_direct_guarded":
         return common + """
-Delegate exactly once to the project agent named playwright_test_healer. Give
-that agent the target, observed failure, immutable outcome, and every guard
-above. Do not edit the file in the parent turn. After the delegated agent
-finishes, report its result without delegating again.
+You are running directly with the generated playwright_test_healer developer
+instructions and Playwright Test MCP configuration. Do not delegate. The
+immutable-outcome restrictions in this request override any generated advice
+to skip or weaken a persistently failing test.
 """
     return common + """
 Do not delegate. Read .skill/playwright-test-generator/SKILL.md and its sibling
@@ -480,7 +475,16 @@ most three repair attempts. Preserve NOFIX when the failure is not test-side.
 """
 
 
-def codex_command(executable: Path, model: str, arm: str) -> list[str]:
+def generated_healer_instructions(root: Path) -> str:
+    path = root / ".codex/agents/playwright_test_healer.toml"
+    text = path.read_text(encoding="utf-8")
+    match = re.search(r'^developer_instructions\s*=\s*"""(.*?)"""', text, re.DOTALL | re.MULTILINE)
+    if match is None or not match.group(1).strip():
+        raise ContractError("generated healer has no developer instructions")
+    return match.group(1).strip()
+
+
+def codex_command(executable: Path, model: str, arm: str, root: Path) -> list[str]:
     command = [
         str(executable),
         "exec",
@@ -501,10 +505,21 @@ def codex_command(executable: Path, model: str, arm: str) -> list[str]:
         "shell_environment_policy.inherit='all'",
         "--model",
         model,
-        "--enable" if arm == "official_healer_guarded" else "--disable",
-        "multi_agent",
-        "-",
     ]
+    if arm == "official_healer_direct_guarded":
+        command.extend(
+            [
+                "-c",
+                "developer_instructions=" + json.dumps(generated_healer_instructions(root)),
+                "-c",
+                'mcp_servers.playwright-test.command="npx"',
+                "-c",
+                'mcp_servers.playwright-test.args=["playwright","run-test-mcp-server"]',
+                "-c",
+                'mcp_servers.playwright-test.enabled_tools=["browser_console_messages","browser_evaluate","browser_generate_locator","browser_network_request","browser_network_requests","browser_snapshot","test_debug","test_list","test_run"]',
+            ]
+        )
+    command.extend(["--disable", "multi_agent", "-"])
     return command
 
 
@@ -525,7 +540,7 @@ def invoke_codex(
         environment["PWD"] = str(root)
         with fixture_server(root) as base_url:
             environment["FIXTURE_BASE_URL"] = base_url
-            command = codex_command(executable, model, arm)
+            command = codex_command(executable, model, arm, root)
             started = time.monotonic()
             with tempfile.TemporaryFile() as prompt_stream:
                 prompt_stream.write(prompt.encode())
@@ -842,10 +857,12 @@ def red_gate(execute: bool) -> int:
     if not execute:
         raise ContractError("red gate requires --execute")
     if RED_GATE_PATH.exists() or RED_GATE_ARTIFACTS_DIR.exists():
-        raise ContractError("red-gate evidence already exists")
+        raise ContractError("revision-3 red-gate evidence already exists")
     report: dict[str, Any] = {
         "schema_version": 1,
         "protocol_id": "healer-perturbation-v1",
+        "protocol_revision": load_json(PROTOCOL_PATH)["protocol_revision"],
+        "protocol_sha256": sha256_file(PROTOCOL_PATH),
         "host": "codex",
         "started_at": utc_now(),
         "rows": [],
@@ -1203,9 +1220,24 @@ def self_test() -> int:
             "parent_tool_use_id": "call-1",
         },
     ]
-    assert delegation_attestation(official_events, "official_healer_guarded")["ok"]
+    assert not delegation_attestation(official_events, "official_healer_direct_guarded")["ok"]
     assert delegation_attestation([], "ours_step7")["ok"]
-    assert not delegation_attestation(official_events, "ours_step7")["ok"]
+    assert delegation_attestation([], "official_healer_direct_guarded")["ok"]
+    with tempfile.TemporaryDirectory(prefix="healer-command-test-") as parent:
+        root = Path(parent)
+        agent_dir = root / ".codex/agents"
+        agent_dir.mkdir(parents=True)
+        (agent_dir / "playwright_test_healer.toml").write_text(
+            'developer_instructions = """official healer probe"""\n',
+            encoding="utf-8",
+        )
+        command = codex_command(
+            Path("/absolute/codex"), "gpt-5.6-sol", "official_healer_direct_guarded", root
+        )
+        assert any("developer_instructions=" in part for part in command)
+        assert "official healer probe" in " ".join(command)
+        assert command[command.index("--disable") + 1] == "image_generation"
+        assert command[-3:] == ["--disable", "multi_agent", "-"]
     assert len(build_cells(False)) == 30
     assert len({cell["cell_id"] for cell in build_cells(False)}) == 30
     assert {cell["arm"] for cell in build_cells(False)} == set(ARMS)

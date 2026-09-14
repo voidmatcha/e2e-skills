@@ -1,0 +1,84 @@
+{
+  "cells": [
+    {
+      "arm": "official_healer_guarded",
+      "artifact_dir": "smoke-artifacts-codex/SMOKE-official_healer_guarded/attempt-1",
+      "cell_id": "SMOKE-official_healer_guarded",
+      "changed_paths": [],
+      "classification": {
+        "classification": "SMOKE_FAIL",
+        "reason": "smoke contract failed"
+      },
+      "completed_at": "2026-09-14T16:23:00+00:00",
+      "model": {
+        "credential_material_detected": false,
+        "elapsed_s": 45.167,
+        "final_report": "NOFIX \u2014 no files changed. `playwright/tests/counter.spec.mjs` remains byte-identical. Verification was blocked by a missing Playwright Chromium executable.",
+        "output_capped": false,
+        "returncode": 0,
+        "route_attestation": {
+          "delegation_events": 0,
+          "expected_delegation": true,
+          "observed_identity_counts": {},
+          "ok": false
+        },
+        "surviving_pids": [],
+        "timed_out": false,
+        "usage": {
+          "actual_requests": 1,
+          "input_tokens": 36825,
+          "output_tokens": 397
+        }
+      },
+      "native": {
+        "fault_kill_returncode": null,
+        "healed_returncode": 0,
+        "red_returncode": null
+      },
+      "preparation": {
+        "generated_agent": {
+          "healer_sha256": "71763806b1029f8bed9f6d9433c8c8b7887d05beb3aec21336e0fef26773f5f1",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "c1cb98e2ca145fdde8a9362d6c035c686cd88a8eaa410bce2077d5f251ab176b"
+        },
+        "neutralization": {
+          "after": "466ed8b018fa045ffd9cc106f0651b713b4b599ad30475bccf5dfc7db3ddd5a0",
+          "before": "6dedc475dec8bd159ad9b1e52bfcf7999a3d6770ccc94a96745169def86c3102",
+          "changed_files": [
+            "playwright/app/index.html",
+            "playwright/tests/aria-snapshot-name.spec.mjs",
+            "playwright/tests/conditional-assertion.spec.mjs",
+            "playwright/tests/counter.spec.mjs",
+            "playwright/tests/discarded-boolean.spec.mjs",
+            "playwright/tests/error-swallow.spec.mjs",
+            "playwright/tests/locator-truthiness.spec.mjs",
+            "playwright/tests/missing-auth.spec.mjs",
+            "playwright/tests/optimistic-call-proof.spec.mjs"
+          ]
+        }
+      },
+      "status": "FAIL",
+      "workspace": {
+        "after_sha256": "fc6f0a4dc4c62841d50bc187ecfcb5096c7019896f1d515036e31914bfb70721",
+        "baseline_sha256": "fc6f0a4dc4c62841d50bc187ecfcb5096c7019896f1d515036e31914bfb70721"
+      }
+    },
+    {
+      "arm": "ours_step7",
+      "cell_id": "SMOKE-ours_step7",
+      "status": "PENDING"
+    }
+  ],
+  "freeze_sha256": null,
+  "host": "codex",
+  "model": "gpt-5.6-sol",
+  "protocol_id": "healer-perturbation-v1",
+  "protocol_revision": 2,
+  "protocol_sha256": "93b1312f8d662df73cef45b773b7f5eb7f83aedde72ee46c611fd22e6399763b",
+  "runner_identity": "codex-cli 0.154.0",
+  "runner_sha256": "616812e683ab54a2be830312c4713f92ff0449e46a5a2f6da2f5dc5a35822573",
+  "schema_version": 1,
+  "stage": "smoke",
+  "started_at": "2026-09-14T16:22:04+00:00",
+  "status": "PAUSED"
+}
