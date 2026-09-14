@@ -31,6 +31,7 @@ import sys
 import tempfile
 import time
 from typing import Any, Iterator
+from urllib.parse import urlsplit
 
 
 BENCHMARK_DIR = Path(__file__).resolve().parent
@@ -38,12 +39,12 @@ ROOT = BENCHMARK_DIR.parents[1]
 PROTOCOL_PATH = BENCHMARK_DIR / "protocol.json"
 FREEZE_PATH = BENCHMARK_DIR / "freeze-record.json"
 AUTHORIZATION_PATH = BENCHMARK_DIR / "execution-authorization-codex.json"
-RED_GATE_PATH = BENCHMARK_DIR / "red-gate-codex-r4.json"
-SMOKE_RESULTS_PATH = BENCHMARK_DIR / "smoke-results-codex-r4.json"
+RED_GATE_PATH = BENCHMARK_DIR / "red-gate-codex-r5.json"
+SMOKE_RESULTS_PATH = BENCHMARK_DIR / "smoke-results-codex-r5.json"
 RESULTS_PATH = BENCHMARK_DIR / "healer-results-codex.json"
 ARTIFACTS_DIR = BENCHMARK_DIR / "healer-artifacts-codex"
-SMOKE_ARTIFACTS_DIR = BENCHMARK_DIR / "smoke-artifacts-codex-r4"
-RED_GATE_ARTIFACTS_DIR = BENCHMARK_DIR / "red-gate-artifacts-codex-r4"
+SMOKE_ARTIFACTS_DIR = BENCHMARK_DIR / "smoke-artifacts-codex-r5"
+RED_GATE_ARTIFACTS_DIR = BENCHMARK_DIR / "red-gate-artifacts-codex-r5"
 MAX_OUTPUT_BYTES = 1_048_576
 RUNTIME_DIRS = {
     "node_modules",
@@ -141,13 +142,29 @@ def public(text: str) -> str:
     return text.replace(home, "<HOME>").replace(username, "<USER>")
 
 
-def project_browser_cache(runner_home: Path) -> None:
-    source = Path.home() / "Library/Caches/ms-playwright"
-    if not source.is_dir():
-        raise ContractError("trusted Playwright browser cache is missing")
-    destination = runner_home / "Library/Caches/ms-playwright"
-    destination.parent.mkdir(parents=True)
-    destination.symlink_to(source, target_is_directory=True)
+def prepare_browser_connection(root: Path) -> dict[str, str]:
+    nested = root / "playwright/playwright.config.mjs"
+    original = nested.read_text(encoding="utf-8")
+    marker = '    headless: true,\n'
+    replacement = (
+        marker
+        + '    connectOptions: process.env.PLAYWRIGHT_WS_ENDPOINT\n'
+        + '      ? { wsEndpoint: process.env.PLAYWRIGHT_WS_ENDPOINT }\n'
+        + '      : undefined,\n'
+    )
+    if original.count(marker) != 1:
+        raise ContractError("Playwright config browser marker is not unique")
+    nested.write_text(original.replace(marker, replacement), encoding="utf-8")
+    wrapper = root / "playwright.config.mjs"
+    wrapper.write_text(
+        'import config from "./playwright/playwright.config.mjs";\n\n'
+        'export default { ...config, testDir: "./playwright/tests" };\n',
+        encoding="utf-8",
+    )
+    return {
+        "nested_config_sha256": sha256_file(nested),
+        "root_config_sha256": sha256_file(wrapper),
+    }
 
 
 def checked_run(
@@ -217,6 +234,7 @@ def prepare_workspace(destination: Path, arm: str | None) -> dict[str, Any]:
     neutral = PERTURBATIONS.neutralize_honesty_surface(destination)
     node_modules = destination / "node_modules"
     node_modules.symlink_to(PERTURBATIONS.FIXTURES / "node_modules", target_is_directory=True)
+    browser_connection = prepare_browser_connection(destination)
     generated: dict[str, Any] | None = None
     if arm == "official_healer_direct_guarded":
         result = checked_run(
@@ -251,6 +269,7 @@ def prepare_workspace(destination: Path, arm: str | None) -> dict[str, Any]:
             shutil.copy2(source, skill / name, follow_symlinks=False)
             (skill / name).chmod(0o444)
     return {
+        "browser_connection": browser_connection,
         "neutralization": {
             "before": neutral.sha256_before,
             "after": neutral.sha256_after,
@@ -293,6 +312,61 @@ def fixture_server(root: Path) -> Iterator[str]:
         if not isinstance(port, int) or not 1 <= port <= 65535:
             raise ContractError("fixture server returned invalid port")
         yield f"http://127.0.0.1:{port}"
+    finally:
+        if process.poll() is None:
+            os.killpg(process.pid, signal.SIGTERM)
+            try:
+                process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                os.killpg(process.pid, signal.SIGKILL)
+                process.wait(timeout=5)
+        if process.stdout:
+            process.stdout.close()
+        if process.stderr:
+            process.stderr.close()
+
+
+@contextlib.contextmanager
+def browser_server(root: Path) -> Iterator[str]:
+    script = r'''
+const { chromium } = require("playwright");
+(async () => {
+  const server = await chromium.launchServer({ headless: true });
+  process.stdout.write(JSON.stringify({ wsEndpoint: server.wsEndpoint() }) + "\n");
+  const stop = async () => { await server.close(); process.exit(0); };
+  process.on("SIGTERM", stop);
+  process.on("SIGINT", stop);
+})().catch((error) => { console.error(error); process.exit(1); });
+'''
+    process = subprocess.Popen(
+        ["node", "-e", script],
+        cwd=root,
+        env=trusted_environment(),
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        start_new_session=True,
+    )
+    try:
+        if process.stdout is None:
+            raise ContractError("browser server stdout unavailable")
+        ready, _, _ = select.select([process.stdout], [], [], 20)
+        if not ready:
+            raise ContractError("browser server did not report its endpoint")
+        line = process.stdout.readline()
+        try:
+            endpoint = json.loads(line)["wsEndpoint"]
+        except (json.JSONDecodeError, KeyError, TypeError) as exc:
+            raise ContractError("browser server returned malformed readiness") from exc
+        parsed = urlsplit(endpoint) if isinstance(endpoint, str) else None
+        if (
+            parsed is None
+            or parsed.scheme != "ws"
+            or parsed.hostname not in {"127.0.0.1", "::1", "localhost"}
+            or parsed.port is None
+        ):
+            raise ContractError("browser server returned a non-loopback endpoint")
+        yield endpoint
     finally:
         if process.poll() is None:
             os.killpg(process.pid, signal.SIGTERM)
@@ -546,45 +620,48 @@ def invoke_codex(
         runner_home = Path(home_name)
         runner_home.chmod(0o700)
         codex_home = REVIEWER.stage_codex_auth(runner_home)
-        project_browser_cache(runner_home)
         environment = trusted_environment(runner_home)
         environment["CODEX_HOME"] = str(codex_home)
         environment["PWD"] = str(root)
-        with fixture_server(root) as base_url:
-            environment["FIXTURE_BASE_URL"] = base_url
-            command = codex_command(executable, model, arm, root)
-            started = time.monotonic()
-            with tempfile.TemporaryFile() as prompt_stream:
-                prompt_stream.write(prompt.encode())
-                prompt_stream.seek(0)
-                process = subprocess.Popen(
-                    command,
-                    cwd=root,
-                    env=environment,
-                    stdin=prompt_stream,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    start_new_session=True,
-                )
-                timed_out = False
-                output_capped = False
-                raw_stdout = ""
-                raw_stderr = ""
-                try:
-                    raw_stdout, raw_stderr = REVIEWER.communicate_bounded(
-                        process, command, timeout_s
+        with browser_server(root) as ws_endpoint:
+            environment["PLAYWRIGHT_WS_ENDPOINT"] = ws_endpoint
+            with fixture_server(root) as base_url:
+                environment["FIXTURE_BASE_URL"] = base_url
+                command = codex_command(executable, model, arm, root)
+                started = time.monotonic()
+                with tempfile.TemporaryFile() as prompt_stream:
+                    prompt_stream.write(prompt.encode())
+                    prompt_stream.seek(0)
+                    process = subprocess.Popen(
+                        command,
+                        cwd=root,
+                        env=environment,
+                        stdin=prompt_stream,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        start_new_session=True,
                     )
-                except subprocess.TimeoutExpired as exc:
-                    timed_out = True
-                    raw_stdout = exc.stdout or ""
-                    raw_stderr = exc.stderr or ""
-                except ValueError:
-                    output_capped = True
-                finally:
-                    survivors = stop_group(process)
-                    for stream in (process.stdout, process.stderr):
-                        if stream is not None:
-                            stream.close()
+                    timed_out = False
+                    output_capped = False
+                    raw_stdout = ""
+                    raw_stderr = ""
+                    try:
+                        raw_stdout, raw_stderr = REVIEWER.communicate_bounded(
+                            process, command, timeout_s
+                        )
+                    except subprocess.TimeoutExpired as exc:
+                        timed_out = True
+                        raw_stdout = exc.stdout or ""
+                        raw_stderr = exc.stderr or ""
+                    except ValueError:
+                        output_capped = True
+                    finally:
+                        survivors = stop_group(process)
+                        for stream in (process.stdout, process.stderr):
+                            if stream is not None:
+                                stream.close()
+        raw_stdout = raw_stdout.replace(ws_endpoint, "<LOOPBACK_WS_ENDPOINT>")
+        raw_stderr = raw_stderr.replace(ws_endpoint, "<LOOPBACK_WS_ENDPOINT>")
         stdout, stdout_credential = EVAL_SECURITY.sanitize_model_output(raw_stdout, {})
         stderr, stderr_credential = EVAL_SECURITY.sanitize_model_output(raw_stderr, {})
     events = extract_events(raw_stdout)
@@ -813,7 +890,7 @@ def run_cell(
                 and not changed_paths
                 and healed_run["returncode"] == 0
                 and not re.search(
-                    r"\b(?:blocked|could not complete|missing (?:browser|chromium)|verification failed|tests? failed|command failed)\b",
+                    r"\b(?:blocked|could not complete|missing (?:browser|chromium)|verification failed|tests? failed|command failed|sandbox launch denial|launch permission error|permission denied|environment(?:al)? (?:issue|error))\b",
                     model["final_report"],
                     re.IGNORECASE,
                 )
@@ -1226,6 +1303,30 @@ def self_test() -> int:
     assert str(Path.home()) not in sanitized
     assert username not in sanitized
     assert sanitized == "<HOME>/fixture owned by <USER>"
+    with tempfile.TemporaryDirectory(prefix="healer-browser-test-") as parent:
+        root = Path(parent) / "fixture"
+        preparation = prepare_workspace(root, None)
+        nested = (root / "playwright/playwright.config.mjs").read_text(encoding="utf-8")
+        assert "PLAYWRIGHT_WS_ENDPOINT" in nested
+        assert (root / "playwright.config.mjs").is_file()
+        assert set(preparation["browser_connection"]) == {
+            "nested_config_sha256",
+            "root_config_sha256",
+        }
+        with browser_server(root) as endpoint:
+            environment = trusted_environment()
+            environment["PLAYWRIGHT_WS_ENDPOINT"] = endpoint
+            probe = checked_run(
+                [
+                    "node",
+                    "-e",
+                    'const {chromium}=require("playwright"); chromium.connect(process.env.PLAYWRIGHT_WS_ENDPOINT).then(async b=>{await b.close()}).catch(()=>process.exit(1));',
+                ],
+                cwd=root,
+                environment=environment,
+                timeout=20,
+            )
+            assert probe.returncode == 0, public(probe.stderr)
     official_events = [
         {
             "type": "item.completed",
