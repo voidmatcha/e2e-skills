@@ -340,15 +340,20 @@ class DisposableCopy(unittest.TestCase):
 
 
 class ProtocolContract(unittest.TestCase):
-    def test_protocol_is_strict_json_and_preregistered_not_frozen(self) -> None:
+    def test_protocol_is_strict_json_and_codex_only_not_frozen(self) -> None:
         protocol = load_strict(PROTOCOL_PATH)
         self.assertEqual(protocol["protocol_id"], "healer-perturbation-v1")
         self.assertEqual(protocol["status"], "NOT_RUN")
-        self.assertEqual(protocol["decision_state"], "PREREGISTERED_NOT_FROZEN")
+        self.assertEqual(
+            protocol["decision_state"], "PREREGISTERED_CODEX_ONLY_NOT_FROZEN"
+        )
         self.assertEqual(protocol["result"], "INCONCLUSIVE")
-        self.assertTrue(protocol["design_only"])
+        self.assertFalse(protocol["design_only"])
         self.assertFalse(protocol["execution_authorized_by_this_file"])
         self.assertFalse(protocol["evaluated_snapshot"]["freeze_record_exists"])
+        self.assertEqual(protocol["execution_identity"]["host"], "codex")
+        self.assertEqual(protocol["execution_identity"]["model"], "gpt-5.6-sol")
+        self.assertIn("EXCLUDED", protocol["execution_identity"]["claude"])
 
     def test_protocol_perturbation_set_matches_the_catalog(self) -> None:
         protocol = load_strict(PROTOCOL_PATH)
@@ -407,19 +412,8 @@ class ProtocolContract(unittest.TestCase):
         protocol = load_strict(PROTOCOL_PATH)
         snapshot = protocol["evaluated_snapshot"]
         digests = snapshot["sha256_at_preparation"]
-        invalidated = set(
-            snapshot.get("sha256_at_preparation_invalidated", {}).get("files", [])
-        )
         for relative, expected in digests.items():
-            if relative == "benchmarks/healer-perturbation-v1/perturbations.py":
-                continue  # self-referential; recomputed at freeze
             actual = sha256_file(ROOT / relative)
-            if relative in invalidated:
-                # A documented, deliberate invalidation (e.g. a version bump)
-                # must actually have changed the file -- otherwise the
-                # invalidation record itself is stale and should be removed.
-                self.assertNotEqual(actual, expected, relative)
-                continue
             self.assertEqual(actual, expected, relative)
 
     def test_readme_declares_not_run_and_points_at_the_protocol(self) -> None:

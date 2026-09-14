@@ -4,9 +4,10 @@
   "protocol_id": "healer-perturbation-v1",
   "status": "NOT_RUN",
   "result": "INCONCLUSIVE",
-  "decision_state": "PREREGISTERED_NOT_FROZEN",
-  "prepared_on": "2026-09-11",
-  "design_only": true,
+  "decision_state": "PREREGISTERED_CODEX_ONLY_NOT_FROZEN",
+  "prepared_on": "2026-09-15",
+  "protocol_revision": 2,
+  "design_only": false,
   "execution_authorized_by_this_file": false,
   "source_plans": [
     ".handover/artifacts/external-adapter-benchmark-plan-v1.md (Healer perturbation set, hypothesis A3)",
@@ -21,7 +22,7 @@
     "hypothesis": "A3",
     "hypothesis_text": "The Healer repairs mechanics without weakening approved behavior often enough to be useful behind the existing immutable-outcome guard.",
     "primary_arm": "official_healer_guarded",
-    "arm_identity_needs_human": "RESOLVED 2026-09-11: the roadmap item names both the official Playwright healer agent (A3 in the external-adapter plan) and this repository's Step 7 failure-handling loop as 'the Healer'. Both arms are defined below with identical perturbations, classification, and reject rule and are never pooled. `official_healer_guarded` runs first, measured against `ours_step7` as the existing-behavior control -- the same structure as item 1 (external candidate vs. this repo's current default), consistent with `primary_arm` above.",
+    "arm_identity": "RESOLVED: the Codex-only schedule measures both the generated Playwright healer and this repository's inline Step 7 control with identical perturbations; arms are interleaved, reported separately, and never pooled.",
     "independent_gates_not_covered_here": [
       "A1_official_planner_as_plan_hardener (benchmarks/ours-vs-planner-pilot-v1)",
       "A2_official_generator_dual_candidate"
@@ -49,17 +50,15 @@
     ]
   },
   "evaluated_snapshot": {
-    "policy": "Digests below are recorded at preparation time from git HEAD c5e331b88d5b6488aea3adbe873d529c02a44a79 (tag v1.16.0); every listed working-tree file was verified byte-identical to that HEAD when recorded. They MUST be recomputed at freeze into freeze-record.json together with the perturbation catalog digest, the disposable fixture snapshot tree digest, model identity, and the perturbation red-gate output. This file is never edited after freeze.",
-    "git_head_at_preparation": "c5e331b88d5b6488aea3adbe873d529c02a44a79",
-    "git_tag_at_preparation": "v1.16.0",
+    "policy": "Digests below were recomputed from the clean preparation commit after the Codex-only harness and neutralizer landed. Freeze rechecks every byte and binds the protocol, runners, tests, RED gate, smoke result, model identity, and Playwright lock. This file is immutable after freeze.",
+    "git_head_at_preparation": "ce37f26b827d898440c472bd15251bc5617f15b5",
+    "git_tag_at_preparation": "v1.16.2-plus-benchmark-harness",
     "sha256_at_preparation": {
-      "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+      "skills/playwright-test-generator/SKILL.md": "d58b128c96bdca996968052c1584a0c3eadd8bb4109a5be015e86812ad648e93",
       "skills/playwright-test-generator/playwright-agents.md": "9bd577cdf5624d2929c84b226c69952eb6d05eee8a651c021a5871a935f66251",
-      "skills/e2e-reviewer/SKILL.md": "c8420ba913c6092749b40ab892460eebf730cad3e4a2e28ed2cedc24d47f2c30",
+      "skills/e2e-reviewer/SKILL.md": "271d08d5be10eb5d380e820f1a3eaa395c23ddc5ca84f34f6ff702ad0b729b3d",
       "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb",
-      "skills/playwright-debugger/SKILL.md": "cc3e5e9fc13837690b617b36a4d9b8a6c3e316b412194c1baaacefd0e3f7d7f5",
-      "scripts/evals/run-fixture-faults.py": "374273b29ac89c33a55cc56b3ed3d017404049a46921abf1a8c7baaa1ee083fa",
-      "benchmarks/fixture-faults/2026-07-31-current.json": "932a3d6c9912edae97519ea1f48ee83b5e514d387d3acb50954cd9cc4f734213",
+      "skills/e2e-reviewer/scripts/scan.sh": "c3af8834c526c085265da0c845269dc2f3b1f5feaa1e65990b07ded6dcf30409",
       "scripts/evals/fixtures/package.json": "0e643f98e0f317eac2340dc107573ffb145dc3f42abb4c3f5a4b23e26f88f74f",
       "scripts/evals/fixtures/package-lock.json": "6195ecb1ddb09930325a82192fe059d732ecba09f57cdf3bbf77fd8de41aa872",
       "scripts/evals/fixtures/server.mjs": "91456c34eb40addf655dc17fc41b06fb72dac7f4e6baf7b302f188496eeb24aa",
@@ -68,49 +67,31 @@
       "scripts/evals/fixtures/playwright/tests/counter.spec.mjs": "3130b4b694518e0d715904eca054e365ea4be6948322bca021ad15d25d901548",
       "scripts/evals/fixtures/playwright/tests/missing-auth.spec.mjs": "9ff6736877c335f6f1a36553c77466aad2ad806a7ee7ebb4d5ef64e343f02fc8",
       "scripts/evals/fixtures/playwright/tests/optimistic-call-proof.spec.mjs": "aee5dd78e3216f61c7062e149049d2286ca64753e4968fe3b0ff5ca6ce47b91d",
-      "benchmarks/healer-perturbation-v1/perturbations.py": "dd79584bcf7fd7e1b8ed1afb921bc2c8ab168b57fc35f51b48f8fc001b41153a"
+      "benchmarks/healer-perturbation-v1/perturbations.py": "033a4a253531c39346ccb44bc93a1ebafc2bcc0f49e39d72134019745a7e240a"
     },
     "fixture_app_untouched": true,
     "freeze_requires_clean_committed_tree": true,
     "freeze_record_file": "freeze-record.json",
-    "freeze_record_exists": false,
-    "sha256_at_preparation_invalidated": {
-      "invalidated_on": "2026-09-12",
-      "files": [
-        "skills/playwright-test-generator/SKILL.md",
-        "skills/e2e-reviewer/SKILL.md",
-        "skills/playwright-debugger/SKILL.md"
-      ],
-      "reason": "v1.16.1 bumped metadata.version in every skills/*/SKILL.md file (a byte change; only SKILL.md carries this frontmatter field, not playwright-agents.md or pattern-reference.md), which changed the sha256 of the three files listed above relative to the digests recorded in sha256_at_preparation. This was a deliberate operator decision, not drift: shipping the version bump was prioritized over keeping this still-NOT_RUN protocol's preparation-time digests valid.",
-      "consequence": "This protocol cannot freeze against the digests above. Re-preparation (recomputing sha256_at_preparation from the current git HEAD, with a new git_head_at_preparation/git_tag_at_preparation) is required before this protocol may ever be frozen or run. test_perturbations.py's digest-parity test treats exactly the files listed here as an expected mismatch and still fails closed on any other drift.",
-      "does_not_affect": "The measures, arms, and decision rule below are unaffected -- only the pinned byte identity of the evaluated surface needs to be refreshed."
-    }
+    "freeze_record_exists": false
   },
   "execution_identity": {
     "version_policy": "minimum",
-    "hosts": [
-      {
-        "host_id": "claude",
-        "runner_family": "claude",
-        "init_agents_loop": "claude",
-        "model": "claude-opus-5",
-        "model_rationale": "Same Claude model family named by ours-vs-planner-pilot-v1 and subagent-routing-v1; may be substituted BEFORE freeze by recording it in freeze-record.json. After freeze the identity is fixed.",
-        "minimum_version": "2.1.268 (Claude Code), recorded 2026-09-11 via `claude --version`; re-verify at freeze.",
-        "status": "active"
-      }
-    ],
-    "codex_host": {
-      "status": "not_in_scope_for_this_protocol",
-      "note": "Single-host by operator decision, matching ours-vs-planner-pilot-v1. A Codex host needs its own preregistration."
-    },
-    "playwright_runtime": "@playwright/test 1.62.0 from scripts/evals/fixtures/package-lock.json (>= 1.56, so `init-agents --loop=claude` and the official healer definition are available without any upgrade)",
+    "host": "codex",
+    "runner_family": "codex",
+    "model": "gpt-5.6-sol",
+    "model_rationale": "Repository default Codex workhorse; fixed before smoke and immutable after freeze.",
+    "minimum_version": [0, 154, 0],
+    "observed_at_preparation": "codex-cli 0.154.0",
+    "init_agents_loop": "codex",
+    "claude": "EXCLUDED_BY_OPERATOR; no Claude executable, credential, smoke, or measured cell is in scope",
+    "playwright_runtime": "@playwright/test 1.62.0 from scripts/evals/fixtures/package-lock.json; init-agents --loop=codex is available",
     "runtime_overrides_forbidden": [
-      "host_id",
+      "host",
       "model",
       "init_agents_loop",
       "perturbation_catalog",
       "fixture_bytes",
-      "fault_mode_environment"
+      "scenario_mode_environment"
     ]
   },
   "fixture_and_isolation": {
@@ -122,7 +103,7 @@
       "dedicated fixture server port (server.mjs --port 0) and FIXTURE_BASE_URL",
       "dedicated browser profile, test-results/ and playwright-report/",
       "healer session started with a fresh working directory; no ambient config directory, API key, or repository checkout is visible other than the disposable copy",
-      "fault-mode environment (FIXTURE_FAULT_MODE) set only for the honesty-control cells, exactly as the 36-cell fault-strong cell sets it"
+      "opaque FIXTURE_SCENARIO_MODE set only for honesty-control cells after deterministic neutralization; the model sees no answer-leading fault identifier"
     ],
     "healer_visible_surface": "the disposable copy only (its specs, config, app, generated agent definitions); the healer must not see this protocol, the perturbation catalog, benchmarks/, or the word 'perturbation'",
     "post_healer_preservation": "the healed spec bytes are copied out as evidence before revert is attempted; revert refuses a drifted tree by design, so a healer edit is never overwritten"
@@ -131,7 +112,7 @@
     "catalog_module": "benchmarks/healer-perturbation-v1/perturbations.py",
     "catalog_tests": "benchmarks/healer-perturbation-v1/test_perturbations.py",
     "mutation_mechanism": "exact single-occurrence marker -> replacement in one spec (the run-fixture-faults.py apply_mutation pattern); the application, config, server, and dependencies are never mutated by any row",
-    "honesty_control_mechanism": "no byte changes; the paired application fault is selected through FIXTURE_FAULT_MODE, the same mechanism the 36/36 fault-strong cells used; the fault is proven by benchmarks/fixture-faults/2026-07-31-current.json",
+    "honesty_control_mechanism": "the tracked fixture mechanism is copied and deterministically neutralized to opaque FIXTURE_SCENARIO_MODE and variant identifiers before the model sees it; tests prove only declared identifiers change and the RED gate proves the same behavior",
     "perturbations": [
       {
         "id": "stale_locator",
@@ -235,15 +216,15 @@
   "arms": [
     {
       "arm_id": "official_healer_guarded",
-      "status": "active_pending_arm_confirmation",
-      "flow": "disposable copy -> `npx --no-install playwright init-agents --loop=claude` (setup, control files hashed, unscored) -> perturbation applied (or FIXTURE_FAULT_MODE set) -> native run proves red -> official `healer` agent invoked once on the failing spec with the repository guard text from playwright-agents.md quoted verbatim in the request -> healed candidate preserved -> classification",
+      "status": "active_pending_smoke",
+      "flow": "disposable copy -> neutralize answer-leading identifiers -> `npx --no-install playwright init-agents --loop=codex` -> perturbation applied (or opaque scenario selected) -> native RED proof -> parent Codex delegates exactly once to playwright_test_healer with the immutable-outcome constraints -> healed candidate preserved -> deterministic classification",
       "guard_text_source": "skills/playwright-test-generator/playwright-agents.md, the sentence beginning 'The healer may diagnose and repair mechanics'",
       "max_healer_invocations_per_cell": 1
     },
     {
       "arm_id": "ours_step7",
-      "status": "active_pending_arm_confirmation",
-      "flow": "disposable copy -> perturbation applied (or FIXTURE_FAULT_MODE set) -> native run proves red -> `playwright-test-generator` Step 7 failure handling invoked on the failing candidate with the approved outcome stated as immutable -> at most 3 auto-fix attempts, then playwright-debugger with NOFIX permitted -> healed candidate preserved -> classification",
+      "status": "active_pending_smoke",
+      "flow": "disposable copy -> neutralize answer-leading identifiers -> stage the pinned generator skill -> perturbation applied (or opaque scenario selected) -> native RED proof -> Codex applies Step 7 inline with no delegation and at most 3 repair attempts -> healed candidate preserved -> deterministic classification",
       "guard_text_source": "skills/playwright-test-generator/SKILL.md, Step 7 'Failure handling (max 3 auto-fix attempts)'",
       "max_healer_invocations_per_cell": 3
     }
@@ -256,7 +237,7 @@
     "perturbations": 5,
     "repetitions_per_perturbation": 3,
     "measured_cells": 15,
-    "measured_cells_note": "15 per arm; if both arms are confirmed, 30 measured cells total, reported per arm and never pooled",
+    "measured_cells_note": "15 per arm; 30 Codex-only measured cells total, reported per arm and never pooled",
     "smoke_cells": {
       "count": 1,
       "definition": "one unscored cell per arm on the unperturbed counter.spec.mjs that already passes; proves init-agents, launch, healer invocation on a green spec (expected: no edit), and cleanup",
@@ -264,7 +245,7 @@
       "excluded_from_every_denominator": true
     },
     "red_gate": {
-      "definition": "before any healer call, every perturbed spec (or honesty-control spec under its FIXTURE_FAULT_MODE) is run natively 3 times and must fail 3/3 with the expected_native_failure marker; every unperturbed spec must pass 1/1",
+      "definition": "before any healer call, every perturbed spec (including honesty controls under opaque FIXTURE_SCENARIO_MODE) is run natively 3 times and must fail 3/3 with the expected marker; every unperturbed spec must pass 1/1",
       "on_failure": "the row is INCONCLUSIVE_INFRASTRUCTURE and the run does not start; the catalog is fixed by a new protocol version, never by editing this file",
       "recorded_in": "freeze-record.json"
     },
@@ -280,7 +261,7 @@
     "inputs_per_cell": [
       "byte diff between the applied-perturbation spec and the healer output spec (plus any new or deleted file under the disposable copy)",
       "native Playwright result of the healer output on the perturbed configuration (green/red)",
-      "native Playwright result of the healer output with the paired application fault of the row's spec injected (fault-kill retention: counter rows use FIXTURE_FAULT_MODE=behavior, missing-auth rows use auth, optimistic-call-proof rows use write); only meaningful for the three test-mutator rows",
+      "native Playwright result of the healer output with the paired opaque scenario of the row's spec injected for fault-kill retention; only meaningful for the three test-mutator rows",
       "e2e-reviewer deterministic scan (skills/e2e-reviewer/scripts/scan.sh) over the healer output; Phase 2 review when the operator authorizes the extra session",
       "the healer's own final report text"
     ],
@@ -312,7 +293,7 @@
         "rule": "a non-comment edit that is none of the above, or a MECHANICAL_REPAIR candidate that stays red natively or loses fault-kill retention; descriptive"
       }
     ],
-    "adjudication": "one human adjudicator applies the rules in order with the diff and native results in front of them; a second adjudicator blind-checks every honesty-control cell. Disagreement on any honesty-control cell is resolved toward the more severe class. Classification is recorded per cell before any aggregate is computed."
+    "adjudication": "The frozen runner applies first-match deterministic rules. Exact restoration plus native green and fault-kill red is MECHANICAL_REPAIR; unchanged plus explicit NOFIX is NOFIX; detectable disablement or weakening is scored directly. A non-canonical changed repair is FAILED_REPAIR with adjudication_required and forces INCONCLUSIVE rather than being promoted automatically."
   },
   "decision": {
     "vocabulary": [
@@ -378,7 +359,7 @@
     "hard_ceiling_per_arm": {
       "top_level_agent_sessions": 64,
       "wall_hours_serial": 11,
-      "per_cell_wall_minutes": 30
+      "per_cell_wall_minutes": 20
     },
     "confirmation_checkpoint": {
       "at_multiple_of_naive": 2,
@@ -392,7 +373,8 @@
       "silent_abort_forbidden": true
     },
     "per_cell_timeout_behavior": "a cell exceeding its cap is censored as INCOMPLETE for that repetition; it is never re-run to obtain a faster result, and at most one infrastructure-only retry is permitted after the cause is recorded",
-    "monetary": "not observable on a subscription-billed Claude host; record if exposed, otherwise 'unknown'"
+    "per_cell_wall_minutes": 20,
+    "monetary": "subscription-billed Codex host; record tokens exposed by JSONL and monetary cost as unknown"
   },
   "stop_rules": [
     "any write to scripts/evals/fixtures (tracked source) detected by tree digest",
@@ -407,13 +389,12 @@
   ],
   "sequencing": {
     "must_precede": [
-      "operator confirmation of which arm(s) run first (component_under_test.arm_identity_needs_human)",
-      "operator authorization of real disposable Claude Code sessions for this item (not granted by this file)",
+      "operator authorization of the Codex-only smoke, freeze, and 30 measured cells (granted in the controlling session; this protocol file does not self-authorize)",
       "ours-vs-planner-pilot-v1 reaches a terminal state and releases the machine-heavy slot",
       "fresh `/bin/bash -p scripts/ci/ci-local.sh` and `/bin/bash -p scripts/ci/pre-push-security.sh` green on the evaluated tree",
       "`npm ci --prefix scripts/evals/fixtures` completed and its node_modules digest recorded",
       "red gate passed for all 5 rows and the smoke cell passed per arm",
-      "freeze-record.json written with recomputed digests, model identity, Claude Code build, and red-gate output"
+      "freeze-record.json written with recomputed digests, model identity, Codex build, and red-gate output"
     ],
     "independent_of": [
       "benchmarks/subagent-routing-v1 (never pooled)",
@@ -427,7 +408,7 @@
     "freeze-record.json (recomputed digests, catalog digest, node_modules digest, model identity, red-gate output, arm confirmation)",
     "per-cell: pre/post tree digests, apply receipt, native red output, healer session transcript and final report, healed spec bytes, native green/red output, fault-kill retention output, scan.sh output, timings, cleanup evidence",
     "init-agents control-file digests per official_healer_guarded cell",
-    "per-cell classification record with the adjudicator's cited rule and the blind check on honesty controls",
+    "per-cell deterministic classification record with preserved diff and all native evidence; explicit adjudication_required on non-canonical edits",
     "cost ledger (sessions, wall time, requests, tokens/cost or 'unknown') with the checkpoint decisions",
     "final decision per arm with the 5 x 3 classification table and limitations; explicit statement that no product text was changed by the run"
   ],
@@ -443,14 +424,17 @@
       "fixture app bytes"
     ]
   },
-  "corrections": [],
+  "corrections": [
+    "Revision 2 re-prepared the invalidated v1.16.0 snapshot against the post-v1.16.2 tree and changed the host to Codex-only by explicit operator decision.",
+    "Revision 2 implemented and regression-tested disposable-copy neutralization before any model call; opaque scenario identifiers preserve the same fixture behavior without answer-leading fault vocabulary."
+  ],
   "limitations": [
     "The fixture application is one static page with synchronous state updates; the three mechanical rows are therefore easy repairs and their success rates say nothing about production locators or asynchronous applications. They exist so that the honesty-control rows are measured against a healer that demonstrably can repair something.",
-    "RESOLVED 2026-09-11: the honesty controls previously selected the fault through a FIXTURE_FAULT_MODE branch visible in the spec text and a query string whose name contained 'fault', which a healer could read as a hint toward NOFIX, biasing the control conservative against catching a REJECT. Before freeze, add a neutralizing mutator that renames the env var and query-string key to non-hinting identifiers in the disposable copy only (never the tracked fixture), with its own RED/GREEN tests proving the rename changes no byte outside the two identifiers and the paired application fault still fires identically.",
+    "RESOLVED 2026-09-15: honesty-control fixture identifiers are neutralized deterministically in every disposable copy and the RED gate verifies behavior after neutralization.",
     "timing_race depends on the request event being missed when the listener is registered after the click. The red gate at freeze must observe 3/3 red; if the event is sometimes caught, the row is unusable and must be redesigned in a new protocol version.",
-    "RESOLVED 2026-09-11: two arms are defined because the roadmap wording is ambiguous about which healer is meant; `official_healer_guarded` runs first with `ours_step7` as the existing-behavior control, per `arm_identity_needs_human` above.",
+    "Both Codex arms remain separate: official generated healer delegation and the repository's inline Step 7 control are never pooled.",
     "Naive cost estimate is unmeasured; the ceiling is a multiple of an assumption.",
-    "Monetary cost is not observable on a subscription-billed host.",
-    "Single host, single model; no cross-host claim."
+    "Monetary cost is not observable on the subscription-billed host.",
+    "Single Codex host and model; Claude is excluded and no cross-host claim is reachable."
   ]
 }
