@@ -21,6 +21,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import pwd
 import re
 import select
 import shutil
@@ -37,12 +38,12 @@ ROOT = BENCHMARK_DIR.parents[1]
 PROTOCOL_PATH = BENCHMARK_DIR / "protocol.json"
 FREEZE_PATH = BENCHMARK_DIR / "freeze-record.json"
 AUTHORIZATION_PATH = BENCHMARK_DIR / "execution-authorization-codex.json"
-RED_GATE_PATH = BENCHMARK_DIR / "red-gate-codex-r3.json"
-SMOKE_RESULTS_PATH = BENCHMARK_DIR / "smoke-results-codex-r3.json"
+RED_GATE_PATH = BENCHMARK_DIR / "red-gate-codex-r4.json"
+SMOKE_RESULTS_PATH = BENCHMARK_DIR / "smoke-results-codex-r4.json"
 RESULTS_PATH = BENCHMARK_DIR / "healer-results-codex.json"
 ARTIFACTS_DIR = BENCHMARK_DIR / "healer-artifacts-codex"
-SMOKE_ARTIFACTS_DIR = BENCHMARK_DIR / "smoke-artifacts-codex-r3"
-RED_GATE_ARTIFACTS_DIR = BENCHMARK_DIR / "red-gate-artifacts-codex-r3"
+SMOKE_ARTIFACTS_DIR = BENCHMARK_DIR / "smoke-artifacts-codex-r4"
+RED_GATE_ARTIFACTS_DIR = BENCHMARK_DIR / "red-gate-artifacts-codex-r4"
 MAX_OUTPUT_BYTES = 1_048_576
 RUNTIME_DIRS = {
     "node_modules",
@@ -136,7 +137,17 @@ def write_json_atomic(path: Path, value: Any) -> None:
 
 def public(text: str) -> str:
     home = str(Path.home())
-    return text.replace(home, "<HOME>")
+    username = pwd.getpwuid(os.getuid()).pw_name
+    return text.replace(home, "<HOME>").replace(username, "<USER>")
+
+
+def project_browser_cache(runner_home: Path) -> None:
+    source = Path.home() / "Library/Caches/ms-playwright"
+    if not source.is_dir():
+        raise ContractError("trusted Playwright browser cache is missing")
+    destination = runner_home / "Library/Caches/ms-playwright"
+    destination.parent.mkdir(parents=True)
+    destination.symlink_to(source, target_is_directory=True)
 
 
 def checked_run(
@@ -535,6 +546,7 @@ def invoke_codex(
         runner_home = Path(home_name)
         runner_home.chmod(0o700)
         codex_home = REVIEWER.stage_codex_auth(runner_home)
+        project_browser_cache(runner_home)
         environment = trusted_environment(runner_home)
         environment["CODEX_HOME"] = str(codex_home)
         environment["PWD"] = str(root)
@@ -800,6 +812,11 @@ def run_cell(
                 and model["route_attestation"]["ok"]
                 and not changed_paths
                 and healed_run["returncode"] == 0
+                and not re.search(
+                    r"\b(?:blocked|could not complete|missing (?:browser|chromium)|verification failed|tests? failed|command failed)\b",
+                    model["final_report"],
+                    re.IGNORECASE,
+                )
             )
             classification = {
                 "classification": "SMOKE_PASS" if passed else "SMOKE_FAIL",
@@ -1204,6 +1221,11 @@ def run_stage(
 
 
 def self_test() -> int:
+    username = pwd.getpwuid(os.getuid()).pw_name
+    sanitized = public(f"{Path.home()}/fixture owned by {username}")
+    assert str(Path.home()) not in sanitized
+    assert username not in sanitized
+    assert sanitized == "<HOME>/fixture owned by <USER>"
     official_events = [
         {
             "type": "item.completed",

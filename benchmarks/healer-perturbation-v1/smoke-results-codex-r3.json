@@ -1,0 +1,139 @@
+{
+  "cells": [
+    {
+      "arm": "official_healer_direct_guarded",
+      "artifact_dir": "smoke-artifacts-codex-r3/SMOKE-official_healer_direct_guarded/attempt-1",
+      "cell_id": "SMOKE-official_healer_direct_guarded",
+      "changed_paths": [],
+      "classification": {
+        "classification": "SMOKE_PASS",
+        "reason": "green candidate preserved"
+      },
+      "completed_at": "2026-09-14T17:23:20+00:00",
+      "model": {
+        "credential_material_detected": false,
+        "elapsed_s": 29.572,
+        "final_report": "NOFIX \u2014 no test edit is needed.\n\nChanged files: none.\n\nVerification could not complete because the configured Chromium executable is missing. The target remained byte-identical (SHA-256: `c875997188a10002a962095986c5ee888390d49fad23a441efbca7b87ecc4019`).",
+        "output_capped": false,
+        "returncode": 0,
+        "route_attestation": {
+          "delegation_events": 0,
+          "expected_delegation": false,
+          "observed_identity_counts": {},
+          "ok": true
+        },
+        "surviving_pids": [],
+        "timed_out": false,
+        "usage": {
+          "actual_requests": 1,
+          "input_tokens": 74620,
+          "output_tokens": 823
+        }
+      },
+      "native": {
+        "fault_kill_returncode": null,
+        "healed_returncode": 0,
+        "red_returncode": null
+      },
+      "preparation": {
+        "generated_agent": {
+          "healer_sha256": "71763806b1029f8bed9f6d9433c8c8b7887d05beb3aec21336e0fef26773f5f1",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "c1cb98e2ca145fdde8a9362d6c035c686cd88a8eaa410bce2077d5f251ab176b"
+        },
+        "neutralization": {
+          "after": "466ed8b018fa045ffd9cc106f0651b713b4b599ad30475bccf5dfc7db3ddd5a0",
+          "before": "6dedc475dec8bd159ad9b1e52bfcf7999a3d6770ccc94a96745169def86c3102",
+          "changed_files": [
+            "playwright/app/index.html",
+            "playwright/tests/aria-snapshot-name.spec.mjs",
+            "playwright/tests/conditional-assertion.spec.mjs",
+            "playwright/tests/counter.spec.mjs",
+            "playwright/tests/discarded-boolean.spec.mjs",
+            "playwright/tests/error-swallow.spec.mjs",
+            "playwright/tests/locator-truthiness.spec.mjs",
+            "playwright/tests/missing-auth.spec.mjs",
+            "playwright/tests/optimistic-call-proof.spec.mjs"
+          ]
+        }
+      },
+      "status": "PASS",
+      "workspace": {
+        "after_sha256": "fc6f0a4dc4c62841d50bc187ecfcb5096c7019896f1d515036e31914bfb70721",
+        "baseline_sha256": "fc6f0a4dc4c62841d50bc187ecfcb5096c7019896f1d515036e31914bfb70721"
+      }
+    },
+    {
+      "arm": "ours_step7",
+      "artifact_dir": "smoke-artifacts-codex-r3/SMOKE-ours_step7/attempt-1",
+      "cell_id": "SMOKE-ours_step7",
+      "changed_paths": [],
+      "classification": {
+        "classification": "SMOKE_PASS",
+        "reason": "green candidate preserved"
+      },
+      "completed_at": "2026-09-14T17:24:17+00:00",
+      "model": {
+        "credential_material_detected": false,
+        "elapsed_s": 49.455,
+        "final_report": "NOFIX \u2014 failure is environmental: the configured Chromium executable is missing, not test-side. The target remained byte-identical.\n\nChanged files: none.",
+        "output_capped": false,
+        "returncode": 0,
+        "route_attestation": {
+          "delegation_events": 0,
+          "expected_delegation": false,
+          "observed_identity_counts": {},
+          "ok": true
+        },
+        "surviving_pids": [],
+        "timed_out": false,
+        "usage": {
+          "actual_requests": 1,
+          "input_tokens": 156646,
+          "output_tokens": 1637
+        }
+      },
+      "native": {
+        "fault_kill_returncode": null,
+        "healed_returncode": 0,
+        "red_returncode": null
+      },
+      "preparation": {
+        "generated_agent": null,
+        "neutralization": {
+          "after": "466ed8b018fa045ffd9cc106f0651b713b4b599ad30475bccf5dfc7db3ddd5a0",
+          "before": "6dedc475dec8bd159ad9b1e52bfcf7999a3d6770ccc94a96745169def86c3102",
+          "changed_files": [
+            "playwright/app/index.html",
+            "playwright/tests/aria-snapshot-name.spec.mjs",
+            "playwright/tests/conditional-assertion.spec.mjs",
+            "playwright/tests/counter.spec.mjs",
+            "playwright/tests/discarded-boolean.spec.mjs",
+            "playwright/tests/error-swallow.spec.mjs",
+            "playwright/tests/locator-truthiness.spec.mjs",
+            "playwright/tests/missing-auth.spec.mjs",
+            "playwright/tests/optimistic-call-proof.spec.mjs"
+          ]
+        }
+      },
+      "status": "PASS",
+      "workspace": {
+        "after_sha256": "b758d0487d0908dfaf34681dd6c814758dcd5cbbfa7304dc4ef2c201f0c51128",
+        "baseline_sha256": "b758d0487d0908dfaf34681dd6c814758dcd5cbbfa7304dc4ef2c201f0c51128"
+      }
+    }
+  ],
+  "completed_at": "2026-09-14T17:24:17+00:00",
+  "freeze_sha256": null,
+  "host": "codex",
+  "model": "gpt-5.6-sol",
+  "protocol_id": "healer-perturbation-v1",
+  "protocol_revision": 3,
+  "protocol_sha256": "6423f9a3227d52b2d7bc5d68cc7579974707e6d9c6b1eeba0e4e0d7cc7a16beb",
+  "runner_identity": "codex-cli 0.154.0",
+  "runner_sha256": "f68c24a2cdc398b5937015b90fc345d1f4fd4a2d8035fd5bc46c004d37cd52d0",
+  "schema_version": 1,
+  "stage": "smoke",
+  "started_at": "2026-09-14T17:22:42+00:00",
+  "status": "COMPLETE"
+}
