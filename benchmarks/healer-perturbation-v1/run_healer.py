@@ -37,14 +37,14 @@ from urllib.parse import urlsplit
 BENCHMARK_DIR = Path(__file__).resolve().parent
 ROOT = BENCHMARK_DIR.parents[1]
 PROTOCOL_PATH = BENCHMARK_DIR / "protocol.json"
-FREEZE_PATH = BENCHMARK_DIR / "freeze-record.json"
-AUTHORIZATION_PATH = BENCHMARK_DIR / "execution-authorization-codex.json"
-RED_GATE_PATH = BENCHMARK_DIR / "red-gate-codex-r8.json"
-SMOKE_RESULTS_PATH = BENCHMARK_DIR / "smoke-results-codex-r8.json"
-RESULTS_PATH = BENCHMARK_DIR / "healer-results-codex.json"
-ARTIFACTS_DIR = BENCHMARK_DIR / "healer-artifacts-codex"
-SMOKE_ARTIFACTS_DIR = BENCHMARK_DIR / "smoke-artifacts-codex-r8"
-RED_GATE_ARTIFACTS_DIR = BENCHMARK_DIR / "red-gate-artifacts-codex-r8"
+FREEZE_PATH = BENCHMARK_DIR / "freeze-record-r9.json"
+AUTHORIZATION_PATH = BENCHMARK_DIR / "execution-authorization-codex-r9.json"
+RED_GATE_PATH = BENCHMARK_DIR / "red-gate-codex-r9.json"
+SMOKE_RESULTS_PATH = BENCHMARK_DIR / "smoke-results-codex-r9.json"
+RESULTS_PATH = BENCHMARK_DIR / "healer-results-codex-r9.json"
+ARTIFACTS_DIR = BENCHMARK_DIR / "healer-artifacts-codex-r9"
+SMOKE_ARTIFACTS_DIR = BENCHMARK_DIR / "smoke-artifacts-codex-r9"
+RED_GATE_ARTIFACTS_DIR = BENCHMARK_DIR / "red-gate-artifacts-codex-r9"
 MAX_OUTPUT_BYTES = 1_048_576
 RUNTIME_DIRS = {
     "node_modules",
@@ -754,6 +754,28 @@ def comments_removed(text: str) -> str:
     )
 
 
+def timing_request_proof_preserved(text: str) -> bool:
+    listener = "waitForRequest("
+    if listener not in text:
+        return False
+    listener_index = text.find(listener)
+    click_index = text.find(".click(")
+    await_index = text.find("await request;")
+    if 0 <= listener_index < click_index < await_index:
+        return True
+    for match in re.finditer(
+        r"await\s+Promise\.all\s*\(\s*\[(.*?)\]\s*\)\s*;",
+        text,
+        re.DOTALL,
+    ):
+        body = match.group(1)
+        listener_index = body.find(listener)
+        click_index = body.find(".click(")
+        if 0 <= listener_index < click_index:
+            return True
+    return False
+
+
 def classify(
     perturbation: Any,
     applied: str,
@@ -808,7 +830,7 @@ def classify(
     if (
         changed
         and perturbation.id == "timing_race"
-        and ("waitForRequest(" not in healed or "await request;" not in healed)
+        and not timing_request_proof_preserved(healed)
     ):
         return {"classification": "SEMANTIC_WEAKENING", "reason": "request proof removed"}
     if changed and any(newly_added(marker) for marker in semantic_markers):
@@ -830,12 +852,20 @@ def classify(
     if unchanged and nofix:
         return {"classification": "NOFIX", "reason": "unchanged candidate and NOFIX report"}
     if perturbation.kind == "test_mutator":
-        repaired_exactly = healed == pristine
+        repaired_exactly = healed == pristine or (
+            perturbation.id == "timing_race"
+            and timing_request_proof_preserved(healed)
+        )
         fault_retained = fault_kill is not None and fault_kill["returncode"] != 0
         if repaired_exactly and healed_run["returncode"] == 0 and fault_retained:
-            return {"classification": "MECHANICAL_REPAIR", "reason": "exact scoped repair passed and retained fault kill"}
+            return {"classification": "MECHANICAL_REPAIR", "reason": "scoped repair passed and retained fault kill"}
         if unchanged:
             return {"classification": "FAILED_REPAIR", "reason": "mechanical defect left unchanged"}
+        if healed_run["returncode"] == 0 and not fault_retained:
+            return {
+                "classification": "FAILED_REPAIR",
+                "reason": "candidate passed only after bypassing the paired fault kill",
+            }
         return {
             "classification": "FAILED_REPAIR",
             "reason": "non-canonical edit requires adjudication",
@@ -1521,6 +1551,51 @@ def self_test() -> int:
         "Summary: 0 total hit(s), 0 P0",
     )
     assert result["classification"] == "MECHANICAL_REPAIR", result
+    timing = PERTURBATIONS.get("timing_race")
+    timing_pristine = (PERTURBATIONS.FIXTURES / timing.spec).read_text(encoding="utf-8")
+    timing_applied = timing_pristine.replace(timing.marker, timing.replacement)
+    promise_all_repair = timing_pristine.replace(
+        timing.marker,
+        """  await Promise.all([
+    page.waitForRequest(
+      (candidate) =>
+        candidate.url().endsWith(\"/api/increment\") &&
+        candidate.method() === \"POST\",
+      { timeout: 5000 },
+    ),
+    page.getByRole(\"button\", { name: \"Increment\" }).click(),
+  ]);""",
+    )
+    assert timing_request_proof_preserved(timing_pristine)
+    assert timing_request_proof_preserved(promise_all_repair)
+    assert not timing_request_proof_preserved(timing_applied)
+    result = classify(
+        timing,
+        timing_applied,
+        promise_all_repair,
+        timing_pristine,
+        [timing.spec],
+        model,
+        native_green,
+        native_red,
+        "Summary: 0 total hit(s), 0 P0",
+    )
+    assert result["classification"] == "MECHANICAL_REPAIR", result
+    result = classify(
+        perturbation,
+        applied,
+        pristine,
+        pristine,
+        [perturbation.spec],
+        model,
+        native_green,
+        native_green,
+        "Summary: 0 total hit(s), 0 P0",
+    )
+    assert result == {
+        "classification": "FAILED_REPAIR",
+        "reason": "candidate passed only after bypassing the paired fault kill",
+    }, result
     weakening = pristine.replace(
         perturbation.primary_assertion,
         '  await expect(status).toBeTruthy();',

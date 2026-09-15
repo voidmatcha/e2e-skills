@@ -1,8 +1,8 @@
 # Healer perturbation v1
 
-**Status: `INCONCLUSIVE_ORACLE_DEFECT`; the prior `NOT_RUN` state has ended. Codex-only revision 8 completed 30/30 measured cells, but its frozen classifier incorrectly treated the valid `Promise.all([waitForRequest, click])` repair as removed request proof in five cells. The complete revision-8 evidence is preserved and must not be reinterpreted in place. Revision 9 will correct the oracle, repeat RED and smoke, refreeze, and restart all 30 measured cells. Claude is explicitly excluded. No healer result is claimed and product text is unchanged.**
+**Status: `NOT_RUN` / Codex-only revision 9 preregistered, not yet frozen. Revision 8 completed 30/30 measured cells but is preserved as `INCONCLUSIVE_ORACLE_DEFECT`: its frozen classifier incorrectly treated the valid `Promise.all([waitForRequest, click])` repair as removed request proof in five cells. Revision 9 accepts that narrowly defined equivalent only when native green and paired fault-kill red also hold, and deterministically rejects a green candidate that bypasses the paired fault. Claude is explicitly excluded. No healer result is claimed and product text is unchanged.**
 
-The machine-readable contract is [`protocol.json`](protocol.json). If this README and that file differ, the JSON controls. The perturbation catalog and neutralizer live in [`perturbations.py`](perturbations.py), their model-free tests in [`test_perturbations.py`](test_perturbations.py), and the fail-closed Codex runner in [`run_healer.py`](run_healer.py). Authorization comes from the controlling operator session and is bound into `execution-authorization-codex.json` at freeze; this directory never self-authorizes execution.
+The machine-readable contract is [`protocol.json`](protocol.json). If this README and that file differ, the JSON controls. The perturbation catalog and neutralizer live in [`perturbations.py`](perturbations.py), their model-free tests in [`test_perturbations.py`](test_perturbations.py), and the fail-closed Codex runner in [`run_healer.py`](run_healer.py). Authorization comes from the controlling operator session and is bound into the active revision's execution-authorization JSON at freeze; this directory never self-authorizes execution.
 
 ## What is being tested
 
@@ -33,7 +33,7 @@ Every row targets a spec in `scripts/evals/fixtures/playwright/tests/` on a disp
 5. `MECHANICAL_REPAIR`: primary assertion byte-identical, diff confined to the row's repair surface, green on the perturbed configuration, and still red under the paired application fault (fault-kill retention).
 6. `FAILED_REPAIR`: anything else.
 
-The primary assertion is the exact line named per row in `protocol.json`. The frozen runner applies these first-match rules deterministically. Exact restoration is required for automatic `MECHANICAL_REPAIR`; a non-canonical changed repair is `FAILED_REPAIR` with `adjudication_required`, forcing the aggregate to `INCONCLUSIVE` rather than promoting it automatically.
+The primary assertion is the exact line named per row in `protocol.json`. The frozen runner applies these first-match rules deterministically. Exact restoration is required for automatic `MECHANICAL_REPAIR` except for the preregistered timing-race equivalent: an awaited `Promise.all` with `waitForRequest` before the click is accepted only when native green and paired fault-kill red also hold. A candidate that goes green by bypassing the paired fault is deterministically `FAILED_REPAIR`; any other non-canonical changed repair remains `FAILED_REPAIR` with `adjudication_required` and forces `INCONCLUSIVE`.
 
 ## Decision rule (frozen)
 
