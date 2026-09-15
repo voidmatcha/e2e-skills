@@ -1,0 +1,9 @@
+{
+  "authorized_by": "operator",
+  "authorized_on": "2026-09-15T02:44:19+00:00",
+  "freeze_sha256": "0fc6f5b7f32f12578f463264b44004517d9a6e28396a6f8cba9a5a65585988a3",
+  "host": "codex",
+  "protocol_id": "healer-perturbation-v1",
+  "protocol_sha256": "463521ee0752a7e649e41c1d2b88eaff01d8a377ef0ee3e28b6d4ae2f0239271",
+  "scope": "smoke_freeze_and_30_measured_cells_no_claude"
+}

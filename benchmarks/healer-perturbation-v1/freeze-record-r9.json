@@ -1,0 +1,45 @@
+{
+  "arms": [
+    "official_healer_direct_guarded",
+    "ours_step7"
+  ],
+  "evaluated_snapshot": {
+    "benchmarks/healer-perturbation-v1/perturbations.py": "033a4a253531c39346ccb44bc93a1ebafc2bcc0f49e39d72134019745a7e240a",
+    "scripts/evals/fixtures/package-lock.json": "6195ecb1ddb09930325a82192fe059d732ecba09f57cdf3bbf77fd8de41aa872",
+    "scripts/evals/fixtures/package.json": "0e643f98e0f317eac2340dc107573ffb145dc3f42abb4c3f5a4b23e26f88f74f",
+    "scripts/evals/fixtures/playwright/app/index.html": "22d3226a55ea5b368a540417c7b1cd995f272738abdcbadfa4fd27595eef5166",
+    "scripts/evals/fixtures/playwright/playwright.config.mjs": "f5d7879ba553a5fbb03abab8ecedeb3356cd366589ec34aa8722a5b5f121050e",
+    "scripts/evals/fixtures/playwright/tests/counter.spec.mjs": "3130b4b694518e0d715904eca054e365ea4be6948322bca021ad15d25d901548",
+    "scripts/evals/fixtures/playwright/tests/missing-auth.spec.mjs": "9ff6736877c335f6f1a36553c77466aad2ad806a7ee7ebb4d5ef64e343f02fc8",
+    "scripts/evals/fixtures/playwright/tests/optimistic-call-proof.spec.mjs": "aee5dd78e3216f61c7062e149049d2286ca64753e4968fe3b0ff5ca6ce47b91d",
+    "scripts/evals/fixtures/server.mjs": "91456c34eb40addf655dc17fc41b06fb72dac7f4e6baf7b302f188496eeb24aa",
+    "skills/e2e-reviewer/SKILL.md": "271d08d5be10eb5d380e820f1a3eaa395c23ddc5ca84f34f6ff702ad0b729b3d",
+    "skills/e2e-reviewer/references/pattern-reference.md": "0d1e4c7931d0a9ec50672b47ddd33c3b0b8baa5ef4938f937ed48ec6d041bfbb",
+    "skills/e2e-reviewer/scripts/scan.sh": "c3af8834c526c085265da0c845269dc2f3b1f5feaa1e65990b07ded6dcf30409",
+    "skills/playwright-test-generator/SKILL.md": "d58b128c96bdca996968052c1584a0c3eadd8bb4109a5be015e86812ad648e93",
+    "skills/playwright-test-generator/playwright-agents.md": "9bd577cdf5624d2929c84b226c69952eb6d05eee8a651c021a5871a935f66251"
+  },
+  "frozen_on": "2026-09-15T02:44:12+00:00",
+  "git_head": "eeb50520e8907e6496ebdcce841741070907113c",
+  "host": "codex",
+  "minimum_version": [
+    0,
+    154,
+    0
+  ],
+  "model": "gpt-5.6-sol",
+  "node_modules_sha256": "d951881938f21489082bd8a78e757b6d603cf9b892a23e7ae015251c3d851d80",
+  "perturbations_sha256": "033a4a253531c39346ccb44bc93a1ebafc2bcc0f49e39d72134019745a7e240a",
+  "playwright_lock_sha256": "6195ecb1ddb09930325a82192fe059d732ecba09f57cdf3bbf77fd8de41aa872",
+  "protocol_id": "healer-perturbation-v1",
+  "protocol_revision": 9,
+  "protocol_sha256": "463521ee0752a7e649e41c1d2b88eaff01d8a377ef0ee3e28b6d4ae2f0239271",
+  "red_gate_artifacts_sha256": "be00de268d28f96e6d062af7613c917338128a433fae2de44c94ccee16525e87",
+  "red_gate_sha256": "4c71a7291f10381325d3532c18a71ba7a4bcea2cf75df2a2eeb67947b3e8006b",
+  "runner_identity": "codex-cli 0.154.0",
+  "runner_sha256": "ebe08241c2fe6579e55244355292bd582c7ec815a76d85e753058586dc483cff",
+  "schema_version": 1,
+  "smoke_results_sha256": "f3eb13e4dcad6831238046f7e240e24b04c0b7106574e319c60f1ae4bae71627",
+  "smoke_runner_sha256": "e1a23515f001211533ba44e615fe80b993e222b7e59a3c95c0eb89b51800d2fa",
+  "tests_sha256": "bdf1dfe6fe34daa24541878bf8b7ea372aad637a7a01197bf4434067c3211eeb"
+}
