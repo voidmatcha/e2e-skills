@@ -171,7 +171,7 @@ def main() -> None:
             failing,
             # The production gate scans every shippable text artifact; this is
             # a hang guard, not a performance assertion for a loaded CI host.
-            timeout=180,
+            timeout=300,
         )
         assert "shell enumeration failed" not in security_result.stdout
         assert "synthetic find failure" not in security_result.stdout
