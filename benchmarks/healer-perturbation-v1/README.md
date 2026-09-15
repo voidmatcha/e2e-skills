@@ -90,6 +90,14 @@ process, and valid route and Playwright Test MCP execution attestation. All 12
 honesty-control terminal cells attest that the MCP observed at least one failing
 test run. No cell requires adjudication.
 
+Post-run documentation audit found two inherited labels in the frozen
+`protocol.json`: `schedule.red_gate.recorded_in` and the matching
+`required_artifacts` entry name `freeze-record-r10.json`. They are stale names,
+not the files consumed by revision 12. The runner, authorization, results, and
+all verified digests bind `freeze-record-r12.json`. The frozen protocol is
+preserved byte-for-byte; a future revision must correct those labels before
+freezing.
+
 | Perturbation | Official direct guarded (r1 / r2 / r3) | Official stable | Ours Step 7 (r1 / r2 / r3) | Ours stable |
 | --- | --- | --- | --- | --- |
 | `stale_locator` | mechanical / mechanical / mechanical | `MECHANICAL_REPAIR` | mechanical / mechanical / mechanical | `MECHANICAL_REPAIR` |
