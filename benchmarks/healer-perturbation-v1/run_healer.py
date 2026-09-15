@@ -37,14 +37,14 @@ from urllib.parse import urlsplit
 BENCHMARK_DIR = Path(__file__).resolve().parent
 ROOT = BENCHMARK_DIR.parents[1]
 PROTOCOL_PATH = BENCHMARK_DIR / "protocol.json"
-FREEZE_PATH = BENCHMARK_DIR / "freeze-record-r11.json"
-AUTHORIZATION_PATH = BENCHMARK_DIR / "execution-authorization-codex-r11.json"
-RED_GATE_PATH = BENCHMARK_DIR / "red-gate-codex-r11.json"
-SMOKE_RESULTS_PATH = BENCHMARK_DIR / "smoke-results-codex-r11.json"
-RESULTS_PATH = BENCHMARK_DIR / "healer-results-codex-r11.json"
-ARTIFACTS_DIR = BENCHMARK_DIR / "healer-artifacts-codex-r11"
-SMOKE_ARTIFACTS_DIR = BENCHMARK_DIR / "smoke-artifacts-codex-r11"
-RED_GATE_ARTIFACTS_DIR = BENCHMARK_DIR / "red-gate-artifacts-codex-r11"
+FREEZE_PATH = BENCHMARK_DIR / "freeze-record-r12.json"
+AUTHORIZATION_PATH = BENCHMARK_DIR / "execution-authorization-codex-r12.json"
+RED_GATE_PATH = BENCHMARK_DIR / "red-gate-codex-r12.json"
+SMOKE_RESULTS_PATH = BENCHMARK_DIR / "smoke-results-codex-r12.json"
+RESULTS_PATH = BENCHMARK_DIR / "healer-results-codex-r12.json"
+ARTIFACTS_DIR = BENCHMARK_DIR / "healer-artifacts-codex-r12"
+SMOKE_ARTIFACTS_DIR = BENCHMARK_DIR / "smoke-artifacts-codex-r12"
+RED_GATE_ARTIFACTS_DIR = BENCHMARK_DIR / "red-gate-artifacts-codex-r12"
 MAX_OUTPUT_BYTES = 1_048_576
 RUNTIME_DIRS = {
     "node_modules",
@@ -54,6 +54,7 @@ RUNTIME_DIRS = {
     "screenshots",
     "videos",
     ".playwright-cli",
+    ".playwright-mcp",
 }
 ARMS = ("official_healer_direct_guarded", "ours_step7")
 FAULT_KILL_MODE = {
@@ -1560,6 +1561,16 @@ def self_test() -> int:
     assert failing_attestation["passing_test_runs"] == 0
     assert failing_attestation["failing_test_runs"] == 1
     assert failing_attestation["ok"]
+    with tempfile.TemporaryDirectory(prefix="healer-runtime-test-") as parent:
+        root = Path(parent)
+        (root / "kept.txt").write_text("kept\n", encoding="utf-8")
+        runtime_log = root / ".playwright-mcp" / "console-probe.log"
+        runtime_log.parent.mkdir()
+        runtime_log.write_text("runtime only\n", encoding="utf-8")
+        assert snapshot_tree(root) == {"kept.txt": sha256_file(root / "kept.txt")}
+        cleanup_runtime(root)
+        assert not runtime_log.parent.exists()
+        assert (root / "kept.txt").is_file()
     with tempfile.TemporaryDirectory(prefix="healer-command-test-") as parent:
         root = Path(parent)
         agent_dir = root / ".codex/agents"

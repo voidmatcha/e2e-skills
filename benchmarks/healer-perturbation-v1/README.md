@@ -1,6 +1,6 @@
 # Healer perturbation v1
 
-**Status: `NOT_RUN` / Codex-only revision 12 pending preregistration. Revision 11 is preserved as `INCONCLUSIVE_RUNTIME_ARTIFACT_DEFECT`: Playwright MCP created a `.playwright-mcp/` console-log directory that the runner misclassified as a model edit outside the target file. Revision 12 must exclude and clean that runtime-only directory, then rerun every gate and measured cell from the beginning. Claude is explicitly excluded, no valid healer result is claimed, and product text remains unchanged.**
+**Status: `NOT_RUN` / Codex-only revision 12 preregistered, not yet frozen. Revision 11 is preserved as `INCONCLUSIVE_RUNTIME_ARTIFACT_DEFECT`: Playwright MCP created a `.playwright-mcp/` console-log directory that the runner misclassified as a model edit outside the target file. Revision 12 excludes and cleans that runtime-only directory and must rerun every gate and measured cell from the beginning. Claude is explicitly excluded, no valid healer result is claimed, and product text remains unchanged.**
 
 The machine-readable contract is [`protocol.json`](protocol.json). If this README and that file differ, the JSON controls. The perturbation catalog and neutralizer live in [`perturbations.py`](perturbations.py), their model-free tests in [`test_perturbations.py`](test_perturbations.py), and the fail-closed Codex runner in [`run_healer.py`](run_healer.py). Authorization comes from the controlling operator session and is bound into the active revision's execution-authorization JSON at freeze; this directory never self-authorizes execution.
 
@@ -149,4 +149,7 @@ the full measured schedule from cell 1. The missing-server failure did not recur
 in any revision 10 smoke or measured cell. Revision 11 keeps that fix, injects
 the same opaque honesty-control environment into Codex and its Playwright MCP,
 requires the MCP itself to observe a failing control run, and marks any
-persisted transcript truncation `INCOMPLETE`.
+persisted transcript truncation `INCOMPLETE`. Revision 12 additionally treats
+`.playwright-mcp/` as runtime-only output in both tree snapshots and cleanup;
+its self-test creates that directory, proves it cannot affect the workspace
+digest, removes it, and preserves an ordinary neighboring file.
