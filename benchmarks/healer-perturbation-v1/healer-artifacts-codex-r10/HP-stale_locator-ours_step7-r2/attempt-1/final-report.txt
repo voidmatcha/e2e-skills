@@ -1,0 +1,7 @@
+REPAIRED — updated the button’s accessible-name locator. Approved assertion unchanged.
+
+Test result: 1 passed.
+
+Changed file:
+
+- `playwright/tests/counter.spec.mjs`

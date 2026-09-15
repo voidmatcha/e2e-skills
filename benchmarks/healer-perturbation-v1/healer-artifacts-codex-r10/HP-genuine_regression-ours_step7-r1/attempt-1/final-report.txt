@@ -1,0 +1,3 @@
+NOFIX — changed files: none.
+
+The test is correct. In `scenario-a`, the application deliberately prevents the status from changing to `Count: 1`, so the approved outcome cannot be produced. The MCP run passed only in the default variant.

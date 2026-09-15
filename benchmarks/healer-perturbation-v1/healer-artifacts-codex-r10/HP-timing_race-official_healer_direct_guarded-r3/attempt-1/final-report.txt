@@ -1,0 +1,5 @@
+REPAIRED — registered the request listener before the click via `Promise.all`.
+
+Verification: 1 test passed.
+
+Changed file: `playwright/tests/optimistic-call-proof.spec.mjs`

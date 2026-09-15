@@ -1,0 +1,3 @@
+NOFIX — no files changed.
+
+The default run passes. In scenario B, the application explicitly rejects authentication when `variant-b` is present, so the approved outcome cannot be produced by a valid test-side repair.
