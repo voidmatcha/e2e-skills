@@ -1,0 +1,33 @@
+
+Running 1 test using 1 worker
+
+[1/1] playwright/tests/counter.spec.mjs:3:1 › increments the counter
+  1) playwright/tests/counter.spec.mjs:3:1 › increments the counter ────────────────────────────────
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  getByRole('status')
+    Expected: "Count: 1"
+    Received: "Count: 0"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveText" with timeout 5000ms
+      - waiting for getByRole('status')
+        14 × locator resolved to <p role="status">Count: 0</p>
+           - unexpected value "Count: 0"
+
+
+      10 |   await expect(status).toHaveText("Count: 0");
+      11 |   await button.click();
+    > 12 |   await expect(status).toHaveText("Count: 1");
+         |                        ^
+      13 | });
+      14 |
+        at /private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/healer-red-48y941qb/fixture/playwright/tests/counter.spec.mjs:12:24
+
+    Error Context: test-results/counter-increments-the-counter/error-context.md
+
+
+  1 failed
+    playwright/tests/counter.spec.mjs:3:1 › increments the counter ─────────────────────────────────
