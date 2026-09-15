@@ -37,14 +37,14 @@ from urllib.parse import urlsplit
 BENCHMARK_DIR = Path(__file__).resolve().parent
 ROOT = BENCHMARK_DIR.parents[1]
 PROTOCOL_PATH = BENCHMARK_DIR / "protocol.json"
-FREEZE_PATH = BENCHMARK_DIR / "freeze-record-r9.json"
-AUTHORIZATION_PATH = BENCHMARK_DIR / "execution-authorization-codex-r9.json"
-RED_GATE_PATH = BENCHMARK_DIR / "red-gate-codex-r9.json"
-SMOKE_RESULTS_PATH = BENCHMARK_DIR / "smoke-results-codex-r9.json"
-RESULTS_PATH = BENCHMARK_DIR / "healer-results-codex-r9.json"
-ARTIFACTS_DIR = BENCHMARK_DIR / "healer-artifacts-codex-r9"
-SMOKE_ARTIFACTS_DIR = BENCHMARK_DIR / "smoke-artifacts-codex-r9"
-RED_GATE_ARTIFACTS_DIR = BENCHMARK_DIR / "red-gate-artifacts-codex-r9"
+FREEZE_PATH = BENCHMARK_DIR / "freeze-record-r10.json"
+AUTHORIZATION_PATH = BENCHMARK_DIR / "execution-authorization-codex-r10.json"
+RED_GATE_PATH = BENCHMARK_DIR / "red-gate-codex-r10.json"
+SMOKE_RESULTS_PATH = BENCHMARK_DIR / "smoke-results-codex-r10.json"
+RESULTS_PATH = BENCHMARK_DIR / "healer-results-codex-r10.json"
+ARTIFACTS_DIR = BENCHMARK_DIR / "healer-artifacts-codex-r10"
+SMOKE_ARTIFACTS_DIR = BENCHMARK_DIR / "smoke-artifacts-codex-r10"
+RED_GATE_ARTIFACTS_DIR = BENCHMARK_DIR / "red-gate-artifacts-codex-r10"
 MAX_OUTPUT_BYTES = 1_048_576
 RUNTIME_DIRS = {
     "node_modules",
@@ -658,6 +658,8 @@ def codex_command(
         [
             "-c",
             'mcp_servers.playwright-test.command="npx"',
+            "-c",
+            "mcp_servers.playwright-test.required=true",
             "-c",
             'mcp_servers.playwright-test.args=["playwright","run-test-mcp-server","--headless","--config","playwright.config.mjs"]',
             "-c",
@@ -1508,6 +1510,7 @@ def self_test() -> int:
         assert "official healer probe" in " ".join(command)
         assert "playwright.config.mjs" in " ".join(command)
         assert "PLAYWRIGHT_WS_ENDPOINT" in " ".join(command)
+        assert "mcp_servers.playwright-test.required=true" in command
         assert command[command.index("--disable") + 1] == "image_generation"
         assert command[-3:] == ["--disable", "multi_agent", "-"]
         inline_command = codex_command(
@@ -1519,6 +1522,7 @@ def self_test() -> int:
             "http://127.0.0.1:5678",
         )
         assert "playwright-test" in " ".join(inline_command)
+        assert "mcp_servers.playwright-test.required=true" in inline_command
         assert not any("developer_instructions=" in part for part in inline_command)
     assert len(build_cells(False)) == 30
     assert len({cell["cell_id"] for cell in build_cells(False)}) == 30

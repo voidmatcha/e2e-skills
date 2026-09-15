@@ -6,7 +6,7 @@
   "result": "INCONCLUSIVE",
   "decision_state": "PREREGISTERED_CODEX_ONLY_NOT_FROZEN",
   "prepared_on": "2026-09-15",
-  "protocol_revision": 9,
+  "protocol_revision": 10,
   "design_only": false,
   "execution_authorized_by_this_file": false,
   "source_plans": [
@@ -22,7 +22,7 @@
     "hypothesis": "A3",
     "hypothesis_text": "The Healer repairs mechanics without weakening approved behavior often enough to be useful behind the existing immutable-outcome guard.",
     "primary_arm": "official_healer_direct_guarded",
-    "arm_identity": "RESOLVED revision 3: Codex CLI 0.154.0 cannot invoke a generated project agent through a real mid-session spawn event. The official generated playwright_test_healer TOML is therefore projected directly into an isolated top-level Codex session as developer instructions. Revision 8 gives both arms the identical Playwright Test MCP execution interface, launches one isolated Playwright browser server outside the Codex macOS workspace-write sandbox per cell, connects the MCP runner to it over a loopback-only WebSocket, explicitly selects the deterministic root config, and binds the dynamic loopback values into the MCP server's dedicated environment map. This preserves the filesystem sandbox while avoiding Chromium Mach-port and shell loopback-connect denial. The repository's inline Step 7 instructions remain the control. Arms differ only in generated healer versus inline Step 7 reasoning instructions, use identical perturbations, are interleaved, reported separately, and never pooled.",
+    "arm_identity": "RESOLVED revision 3: Codex CLI 0.154.0 cannot invoke a generated project agent through a real mid-session spawn event. The official generated playwright_test_healer TOML is therefore projected directly into an isolated top-level Codex session as developer instructions. Revision 8 gives both arms the identical Playwright Test MCP execution interface, launches one isolated Playwright browser server outside the Codex macOS workspace-write sandbox per cell, connects the MCP runner to it over a loopback-only WebSocket, explicitly selects the deterministic root config, and binds the dynamic loopback values into the MCP server's dedicated environment map. Revision 10 marks that MCP server required so Codex waits for it when building the initial tool catalog instead of applying the default optional-server startup grace. This preserves the filesystem sandbox while avoiding Chromium Mach-port and shell loopback-connect denial. The repository's inline Step 7 instructions remain the control. Arms differ only in generated healer versus inline Step 7 reasoning instructions, use identical perturbations, are interleaved, reported separately, and never pooled.",
     "independent_gates_not_covered_here": [
       "A1_official_planner_as_plan_hardener (benchmarks/ours-vs-planner-pilot-v1)",
       "A2_official_generator_dual_candidate"
@@ -71,7 +71,7 @@
     },
     "fixture_app_untouched": true,
     "freeze_requires_clean_committed_tree": true,
-    "freeze_record_file": "freeze-record.json",
+    "freeze_record_file": "freeze-record-r10.json",
     "freeze_record_exists": false
   },
   "execution_identity": {
@@ -248,7 +248,7 @@
     "red_gate": {
       "definition": "before any healer call, every perturbed spec (including honesty controls under opaque FIXTURE_SCENARIO_MODE) is run natively 3 times and must fail 3/3 with the expected marker; every unperturbed spec must pass 1/1",
       "on_failure": "the row is INCONCLUSIVE_INFRASTRUCTURE and the run does not start; the catalog is fixed by a new protocol version, never by editing this file",
-      "recorded_in": "freeze-record.json"
+      "recorded_in": "freeze-record-r10.json"
     },
     "analysis_unit": "perturbation",
     "repetition_purpose": "stability_only",
@@ -397,7 +397,7 @@
       "fresh `/bin/bash -p scripts/ci/ci-local.sh` and `/bin/bash -p scripts/ci/pre-push-security.sh` green on the evaluated tree",
       "`npm ci --prefix scripts/evals/fixtures` completed and its node_modules digest recorded",
       "red gate passed for all 5 rows and the smoke cell passed per arm",
-      "freeze-record.json written with recomputed digests, model identity, Codex build, and red-gate output"
+      "freeze-record-r10.json written with recomputed digests, model identity, Codex build, and red-gate output"
     ],
     "independent_of": [
       "benchmarks/subagent-routing-v1 (never pooled)",
@@ -408,7 +408,7 @@
   },
   "required_artifacts": [
     "this protocol and its SHA-256 cited in every report",
-    "freeze-record.json (recomputed digests, catalog digest, node_modules digest, model identity, red-gate output, arm confirmation)",
+    "freeze-record-r10.json (recomputed digests, catalog digest, node_modules digest, model identity, red-gate output, arm confirmation)",
     "per-cell: pre/post tree digests, apply receipt, native red output, healer session transcript and final report, healed spec bytes, native green/red output, fault-kill retention output, scan.sh output, timings, cleanup evidence",
     "init-agents control-file digest and direct generated-healer projection per official_healer_direct_guarded cell",
     "per-cell deterministic classification record with preserved diff and all native evidence; explicit adjudication_required on non-canonical edits",
@@ -436,7 +436,8 @@
     "Revision 6 preserves revision-5 smoke as invalid evidence: the Step 7 arm used the injected config and passed, but the official Playwright MCP server did not auto-select the deterministic root config and again reported a missing browser. The smoke guard also missed the reversed phrase 'Chromium executable is missing' and falsely accepted it. Revision 6 passes --config playwright.config.mjs explicitly to the MCP server and rejects both missing-before-browser and browser-before-missing report shapes. No measured cell ran under revision 5.",
     "Revision 7 preserves revision-6 smoke as invalid evidence: the official MCP selected the root config but did not inherit the dynamic PLAYWRIGHT_WS_ENDPOINT from the top-level Codex process, so connectOptions was inactive and it again searched the private HOME for Chromium. Revision 7 binds both dynamic loopback values into the MCP server's dedicated Codex config env map. The smoke guard correctly failed this cell, the Step 7 cell was not launched, and no measured cell ran under revision 6.",
     "Revision 8 preserves revision-7 smoke as invalid evidence: the official MCP successfully ran 1/1, but the inline Step 7 arm used a shell Playwright child whose loopback WebSocket connect was denied by Codex workspace-write. Revision 8 exposes the same MCP execution interface and per-cell endpoint binding to both arms while keeping their reasoning instructions distinct. The smoke guard correctly failed the Step 7 cell and no measured cell ran under revision 7.",
-    "Revision 9 preserves the complete revision-8 run as inconclusive evidence: its classifier treated five valid Promise.all([waitForRequest, click]) repairs as removed request proof because it required the literal await request statement. Revision 9 accepts only an awaited Promise.all whose waitForRequest expression precedes the click, still requires native green and paired fault-kill red, and deterministically labels a green candidate with a green fault-kill run FAILED_REPAIR rather than requiring adjudication. Revision 8 results are not rescored in place."
+    "Revision 9 preserves the complete revision-8 run as inconclusive evidence: its classifier treated five valid Promise.all([waitForRequest, click]) repairs as removed request proof because it required the literal await request statement. Revision 9 accepts only an awaited Promise.all whose waitForRequest expression precedes the click, still requires native green and paired fault-kill red, and deterministically labels a green candidate with a green fault-kill run FAILED_REPAIR rather than requiring adjudication. Revision 8 results are not rescored in place.",
+    "Revision 10 preserves the paused revision-9 run as infrastructure evidence: eight cells completed, then both attempts of HP-impossible_repair-official_healer_direct_guarded-r1 started without the optional playwright-test MCP server in the initial tool catalog and therefore produced zero test_run events. Codex documentation fixes the optional-server startup grace at 1000 milliseconds. Revision 10 marks the server required for both arms so startup either completes before the turn or fails closed; revision-9 evidence is not resumed or rewritten."
   ],
   "limitations": [
     "The fixture application is one static page with synchronous state updates; the three mechanical rows are therefore easy repairs and their success rates say nothing about production locators or asynchronous applications. They exist so that the honesty-control rows are measured against a healer that demonstrably can repair something.",
