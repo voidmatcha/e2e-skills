@@ -1,0 +1,7 @@
+REPAIRED
+
+Changed file:
+
+- [playwright/tests/missing-auth.spec.mjs](/private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/healer-workspace-wr542gsh/fixture/playwright/tests/missing-auth.spec.mjs)
+
+Removed the unintended unauthenticated variant from navigation. The approved assertion passed twice via the Playwright MCP runner.

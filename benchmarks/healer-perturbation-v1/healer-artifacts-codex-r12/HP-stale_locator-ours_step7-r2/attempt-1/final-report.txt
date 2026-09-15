@@ -1,0 +1,5 @@
+REPAIRED
+
+Changed file: `playwright/tests/counter.spec.mjs`
+
+Updated the button’s accessible name from “Add one” to “Increment”. The target test now passes with the approved `Count: 1` assertion unchanged.

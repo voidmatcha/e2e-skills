@@ -1,0 +1,7 @@
+REPAIRED — removed the `variant-b` parameter that forced signed-out state.
+
+Verification: 1 test passed.
+
+Changed file:
+
+- `playwright/tests/missing-auth.spec.mjs`

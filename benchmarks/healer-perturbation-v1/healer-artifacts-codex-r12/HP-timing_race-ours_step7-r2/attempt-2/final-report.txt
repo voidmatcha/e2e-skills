@@ -1,0 +1,5 @@
+REPAIRED — registered the request listener before the click to eliminate the race.
+
+MCP test result: 1 passed.
+
+Changed file: `playwright/tests/optimistic-call-proof.spec.mjs`

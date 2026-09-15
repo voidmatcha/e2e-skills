@@ -1,0 +1,5 @@
+REPAIRED — corrected navigation to the root account-view route.
+
+Test result: 1 passed.
+
+Changed file: `playwright/tests/missing-auth.spec.mjs`

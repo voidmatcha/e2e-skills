@@ -1,0 +1,5 @@
+REPAIRED — Registered `waitForRequest` before clicking, eliminating the request-listener race. The approved assertion is unchanged.
+
+Changed file: `playwright/tests/optimistic-call-proof.spec.mjs`
+
+Verification: 1 test passed.

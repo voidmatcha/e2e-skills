@@ -1,0 +1,3 @@
+NOFIX — the application’s `variant-a` path deliberately prevents the status from changing, so the approved outcome is impossible.
+
+Changed files: none.
