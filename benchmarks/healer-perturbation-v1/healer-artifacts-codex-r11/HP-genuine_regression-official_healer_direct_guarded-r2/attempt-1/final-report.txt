@@ -1,0 +1,3 @@
+NOFIX — changed files: none.
+
+The test correctly clicks “Increment,” but the application’s `variant-a` handler intentionally prevents the status from changing and its `/api/increment` request returns 404. The approved `Count: 1` outcome cannot be produced without changing application behavior.

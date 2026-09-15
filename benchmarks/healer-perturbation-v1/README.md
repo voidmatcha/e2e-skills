@@ -1,6 +1,6 @@
 # Healer perturbation v1
 
-**Status: `NOT_RUN` / Codex-only revision 11 preregistered, not yet frozen. Revision 10 is preserved as `INCONCLUSIVE_ENVIRONMENT_AND_EVIDENCE_DEFECT`: the model-side MCP missed the honesty-control environment and one persisted transcript was truncated without failing closed. Revision 11 fixes both defects and must rerun every gate and measured cell from the beginning. Claude is explicitly excluded, no valid healer result is claimed, and product text remains unchanged.**
+**Status: `NOT_RUN` / Codex-only revision 12 pending preregistration. Revision 11 is preserved as `INCONCLUSIVE_RUNTIME_ARTIFACT_DEFECT`: Playwright MCP created a `.playwright-mcp/` console-log directory that the runner misclassified as a model edit outside the target file. Revision 12 must exclude and clean that runtime-only directory, then rerun every gate and measured cell from the beginning. Claude is explicitly excluded, no valid healer result is claimed, and product text remains unchanged.**
 
 The machine-readable contract is [`protocol.json`](protocol.json). If this README and that file differ, the JSON controls. The perturbation catalog and neutralizer live in [`perturbations.py`](perturbations.py), their model-free tests in [`test_perturbations.py`](test_perturbations.py), and the fail-closed Codex runner in [`run_healer.py`](run_healer.py). Authorization comes from the controlling operator session and is bound into the active revision's execution-authorization JSON at freeze; this directory never self-authorizes execution.
 
@@ -79,6 +79,26 @@ The measured run edits nothing. If the outcome is `REJECT` and the user asks: RE
 3. Run `run_smoke.py --runner-path /absolute/path/to/codex --execute`; both arms must pass. The official arm must use the freshly generated healer definition directly, and neither arm may delegate.
 4. Freeze the exact protocol, harness, tests, RED evidence, smoke evidence, evaluated snapshot, Codex identity, and fixture lock.
 5. Run the 30 serial measured cells. An interrupted cell requires an explicit targeted `--rerun --cells ... --rerun-reason ...`; a systemic issue requires a new protocol revision.
+
+## Invalidated revision 11 evidence
+
+Revision 11 fixed the honesty-control environment and persisted-transcript
+defects found in revision 10, passed the model-free RED gate (18/18), and passed
+both live smoke cells (2/2). Its measured schedule stopped after 13 terminal
+cells. On `HP-genuine_regression-official_healer_direct_guarded-r2`, Playwright
+MCP wrote a runtime console log under `.playwright-mcp/`. The runner excluded
+`.playwright-cli/` but not the MCP server's actual runtime directory, so it
+incorrectly classified that runtime file as an edit outside the target spec and
+marked the cell `INVALID`. This is a harness defect rather than healer behavior;
+revision 11 is therefore `INCONCLUSIVE_RUNTIME_ARTIFACT_DEFECT` and no cells are
+rescored or resumed.
+
+One earlier revision-11 attempt was also safely redacted and marked `INVALID`
+when the credential scanner treated a model-authored `browser_evaluate` code
+expression as a credential-shaped assignment. A bounded source scan found no
+credential-shaped string in the fixture or perturbation inputs. The preserved
+single retry completed without redaction. This did not cause the revision
+invalidation; the unexcluded MCP runtime directory did.
 
 ## Invalidated revision 10 evidence
 
