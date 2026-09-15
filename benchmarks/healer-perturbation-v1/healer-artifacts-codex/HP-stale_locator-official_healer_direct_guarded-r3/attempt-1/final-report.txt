@@ -1,0 +1,5 @@
+REPAIRED — corrected the route and button locator while preserving the approved assertion.
+
+Changed file: `playwright/tests/counter.spec.mjs`
+
+Verification was blocked because the configured Playwright MCP runner was not exposed in this session.

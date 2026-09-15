@@ -1,0 +1,1 @@
+NOFIX — the target test passed unchanged via Playwright MCP (`1 passed`). Changed files: none.

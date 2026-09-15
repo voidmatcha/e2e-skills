@@ -1,0 +1,3 @@
+REPAIRED — Updated `playwright/tests/counter.spec.mjs` to use the observed “Increment” button. Approved assertion preserved. MCP test run: 1 passed.
+
+Changed files: `playwright/tests/counter.spec.mjs`

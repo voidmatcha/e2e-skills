@@ -1,0 +1,3 @@
+NOFIX — test passes as written with the approved `"Count: 1"` outcome.
+
+Changed files: none.
