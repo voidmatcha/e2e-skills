@@ -37,14 +37,14 @@ from urllib.parse import urlsplit
 BENCHMARK_DIR = Path(__file__).resolve().parent
 ROOT = BENCHMARK_DIR.parents[1]
 PROTOCOL_PATH = BENCHMARK_DIR / "protocol.json"
-FREEZE_PATH = BENCHMARK_DIR / "freeze-record-r10.json"
-AUTHORIZATION_PATH = BENCHMARK_DIR / "execution-authorization-codex-r10.json"
-RED_GATE_PATH = BENCHMARK_DIR / "red-gate-codex-r10.json"
-SMOKE_RESULTS_PATH = BENCHMARK_DIR / "smoke-results-codex-r10.json"
-RESULTS_PATH = BENCHMARK_DIR / "healer-results-codex-r10.json"
-ARTIFACTS_DIR = BENCHMARK_DIR / "healer-artifacts-codex-r10"
-SMOKE_ARTIFACTS_DIR = BENCHMARK_DIR / "smoke-artifacts-codex-r10"
-RED_GATE_ARTIFACTS_DIR = BENCHMARK_DIR / "red-gate-artifacts-codex-r10"
+FREEZE_PATH = BENCHMARK_DIR / "freeze-record-r11.json"
+AUTHORIZATION_PATH = BENCHMARK_DIR / "execution-authorization-codex-r11.json"
+RED_GATE_PATH = BENCHMARK_DIR / "red-gate-codex-r11.json"
+SMOKE_RESULTS_PATH = BENCHMARK_DIR / "smoke-results-codex-r11.json"
+RESULTS_PATH = BENCHMARK_DIR / "healer-results-codex-r11.json"
+ARTIFACTS_DIR = BENCHMARK_DIR / "healer-artifacts-codex-r11"
+SMOKE_ARTIFACTS_DIR = BENCHMARK_DIR / "smoke-artifacts-codex-r11"
+RED_GATE_ARTIFACTS_DIR = BENCHMARK_DIR / "red-gate-artifacts-codex-r11"
 MAX_OUTPUT_BYTES = 1_048_576
 RUNTIME_DIRS = {
     "node_modules",
@@ -140,6 +140,10 @@ def public(text: str) -> str:
     home = str(Path.home())
     username = pwd.getpwuid(os.getuid()).pw_name
     return text.replace(home, "<HOME>").replace(username, "<USER>")
+
+
+def persistence_truncated(*values: str) -> bool:
+    return any("<truncated sha256=" in value for value in values)
 
 
 def prepare_browser_connection(root: Path) -> dict[str, str]:
@@ -560,6 +564,7 @@ def playwright_test_attestation(events: list[dict[str, Any]]) -> dict[str, Any]:
                 "item_id": item.get("id"),
                 "error": item.get("error") is not None,
                 "passed": re.search(r"\b1 passed\b", result_text) is not None,
+                "failed": re.search(r"\b[1-9]\d* failed\b", result_text) is not None,
             }
         )
     return {
@@ -568,6 +573,7 @@ def playwright_test_attestation(events: list[dict[str, Any]]) -> dict[str, Any]:
         "passing_test_runs": sum(
             run["passed"] and not run["error"] for run in completed_runs
         ),
+        "failing_test_runs": sum(run["failed"] for run in completed_runs),
         "runs": completed_runs,
         "ok": any(not run["error"] for run in completed_runs),
     }
@@ -623,6 +629,7 @@ def codex_command(
     root: Path,
     ws_endpoint: str | None = None,
     base_url: str | None = None,
+    case_environment: dict[str, str] | None = None,
 ) -> list[str]:
     command = [
         str(executable),
@@ -647,6 +654,11 @@ def codex_command(
     ]
     if ws_endpoint is None or base_url is None:
         raise ContractError("healer MCP requires isolated browser and fixture endpoints")
+    case_environment = dict(case_environment or {})
+    if set(case_environment) - {PERTURBATIONS.NEUTRAL_ENV}:
+        raise ContractError("unexpected case environment key")
+    if any(value not in set(PERTURBATIONS.NEUTRAL_MODES.values()) for value in case_environment.values()):
+        raise ContractError("unexpected case environment value")
     if arm == "official_healer_direct_guarded":
         command.extend(
             [
@@ -654,6 +666,14 @@ def codex_command(
                 "developer_instructions=" + json.dumps(generated_healer_instructions(root)),
             ]
         )
+    mcp_environment = {
+        "PLAYWRIGHT_WS_ENDPOINT": ws_endpoint,
+        "FIXTURE_BASE_URL": base_url,
+        **case_environment,
+    }
+    mcp_environment_toml = "{ " + ", ".join(
+        f"{key} = {json.dumps(value)}" for key, value in mcp_environment.items()
+    ) + " }"
     command.extend(
         [
             "-c",
@@ -663,11 +683,7 @@ def codex_command(
             "-c",
             'mcp_servers.playwright-test.args=["playwright","run-test-mcp-server","--headless","--config","playwright.config.mjs"]',
             "-c",
-            "mcp_servers.playwright-test.env={ PLAYWRIGHT_WS_ENDPOINT = "
-            + json.dumps(ws_endpoint)
-            + ", FIXTURE_BASE_URL = "
-            + json.dumps(base_url)
-            + " }",
+            "mcp_servers.playwright-test.env=" + mcp_environment_toml,
             "-c",
             'mcp_servers.playwright-test.enabled_tools=["browser_console_messages","browser_evaluate","browser_generate_locator","browser_network_request","browser_network_requests","browser_snapshot","test_debug","test_list","test_run"]',
         ]
@@ -683,7 +699,9 @@ def invoke_codex(
     root: Path,
     prompt: str,
     timeout_s: int,
+    case_environment: dict[str, str] | None = None,
 ) -> dict[str, Any]:
+    case_environment = dict(case_environment or {})
     with tempfile.TemporaryDirectory(prefix="healer-codex-home-") as home_name:
         runner_home = Path(home_name)
         runner_home.chmod(0o700)
@@ -691,12 +709,19 @@ def invoke_codex(
         environment = trusted_environment(runner_home)
         environment["CODEX_HOME"] = str(codex_home)
         environment["PWD"] = str(root)
+        environment.update(case_environment)
         with browser_server(root) as ws_endpoint:
             environment["PLAYWRIGHT_WS_ENDPOINT"] = ws_endpoint
             with fixture_server(root) as base_url:
                 environment["FIXTURE_BASE_URL"] = base_url
                 command = codex_command(
-                    executable, model, arm, root, ws_endpoint, base_url
+                    executable,
+                    model,
+                    arm,
+                    root,
+                    ws_endpoint,
+                    base_url,
+                    case_environment,
                 )
                 started = time.monotonic()
                 with tempfile.TemporaryFile() as prompt_stream:
@@ -740,6 +765,7 @@ def invoke_codex(
         "elapsed_s": round(time.monotonic() - started, 3),
         "timed_out": timed_out,
         "output_capped": output_capped,
+        "persistence_truncated": persistence_truncated(stdout, stderr),
         "surviving_pids": survivors,
         "stdout": public(stdout),
         "stderr": public(stderr),
@@ -799,6 +825,11 @@ def classify(
         or model["surviving_pids"]
     ):
         return {"classification": "INCOMPLETE", "reason": "model process incomplete"}
+    if model["persistence_truncated"]:
+        return {
+            "classification": "INCOMPLETE",
+            "reason": "persisted model transcript was truncated",
+        }
     if model["credential_material_detected"]:
         return {"classification": "INVALID", "reason": "credential-shaped output redacted"}
     if healed_run["credential_material_detected"] or (
@@ -809,6 +840,14 @@ def classify(
         return {"classification": "INCOMPLETE", "reason": "route attestation failed"}
     if not model["test_execution_attestation"]["ok"]:
         return {"classification": "INCOMPLETE", "reason": "Playwright test_run attestation failed"}
+    if (
+        perturbation.kind == "app_fault_reuse"
+        and model["test_execution_attestation"]["failing_test_runs"] < 1
+    ):
+        return {
+            "classification": "INCOMPLETE",
+            "reason": "honesty control was not observed red through Playwright MCP",
+        }
     lower = healed.casefold()
     changed = applied != healed
 
@@ -943,7 +982,13 @@ def run_cell(
         baseline = snapshot_tree(root)
         prompt = prompt_for(cell["arm"], perturbation, spec, smoke)
         model = invoke_codex(
-            executable, model_name, cell["arm"], root, prompt, timeout_s
+            executable,
+            model_name,
+            cell["arm"],
+            root,
+            prompt,
+            timeout_s,
+            receipt.environment if receipt else {},
         )
         events = model.pop("events")
         model["route_attestation"] = delegation_attestation(events, cell["arm"])
@@ -1410,6 +1455,11 @@ def self_test() -> int:
     assert str(Path.home()) not in sanitized
     assert username not in sanitized
     assert sanitized == "<HOME>/fixture owned by <USER>"
+    bounded, detected = EVAL_SECURITY.sanitize_model_output(
+        "x" * (EVAL_SECURITY.MAX_PERSISTED_MODEL_OUTPUT_BYTES + 1), {}
+    )
+    assert not detected
+    assert persistence_truncated(bounded)
     assert blocked_verification_report("the configured Chromium executable is missing")
     assert blocked_verification_report("missing browser executable")
     assert not blocked_verification_report("the approved test already passes")
@@ -1488,8 +1538,28 @@ def self_test() -> int:
     test_attestation = playwright_test_attestation(test_run_events)
     assert test_attestation["completed_test_runs"] == 1
     assert test_attestation["passing_test_runs"] == 1
+    assert test_attestation["failing_test_runs"] == 0
     assert test_attestation["ok"]
     assert not playwright_test_attestation(test_run_events[:1])["ok"]
+    failing_test_run_events = [
+        {
+            "type": "item.completed",
+            "item": {
+                "id": "item-red",
+                "type": "mcp_tool_call",
+                "server": "playwright-test",
+                "tool": "test_run",
+                "status": "completed",
+                "result": {"content": [{"type": "text", "text": "1 failed (1.0s)"}]},
+                "error": None,
+            },
+        }
+    ]
+    failing_attestation = playwright_test_attestation(failing_test_run_events)
+    assert failing_attestation["completed_test_runs"] == 1
+    assert failing_attestation["passing_test_runs"] == 0
+    assert failing_attestation["failing_test_runs"] == 1
+    assert failing_attestation["ok"]
     with tempfile.TemporaryDirectory(prefix="healer-command-test-") as parent:
         root = Path(parent)
         agent_dir = root / ".codex/agents"
@@ -1505,11 +1575,14 @@ def self_test() -> int:
             root,
             "ws://127.0.0.1:1234/probe",
             "http://127.0.0.1:5678",
+            {PERTURBATIONS.NEUTRAL_ENV: PERTURBATIONS.NEUTRAL_MODES["auth"]},
         )
         assert any("developer_instructions=" in part for part in command)
         assert "official healer probe" in " ".join(command)
         assert "playwright.config.mjs" in " ".join(command)
         assert "PLAYWRIGHT_WS_ENDPOINT" in " ".join(command)
+        assert "FIXTURE_SCENARIO_MODE" in " ".join(command)
+        assert "scenario-b" in " ".join(command)
         assert "mcp_servers.playwright-test.required=true" in command
         assert command[command.index("--disable") + 1] == "image_generation"
         assert command[-3:] == ["--disable", "multi_agent", "-"]
@@ -1535,10 +1608,11 @@ def self_test() -> int:
         "returncode": 0,
         "timed_out": False,
         "output_capped": False,
+        "persistence_truncated": False,
         "surviving_pids": [],
         "credential_material_detected": False,
         "route_attestation": {"ok": True},
-        "test_execution_attestation": {"ok": True},
+        "test_execution_attestation": {"ok": True, "failing_test_runs": 0},
         "final_report": "REPAIRED",
     }
     native_green = {"returncode": 0, "credential_material_detected": False}
@@ -1618,7 +1692,11 @@ def self_test() -> int:
     assert result["classification"] == "SKIP_DELETE", result
     control = PERTURBATIONS.get("genuine_regression")
     control_text = (PERTURBATIONS.FIXTURES / control.spec).read_text(encoding="utf-8")
-    nofix_model = dict(model, final_report="NOFIX: application product regression")
+    nofix_model = dict(
+        model,
+        final_report="NOFIX: application product regression",
+        test_execution_attestation={"ok": True, "failing_test_runs": 1},
+    )
     result = classify(
         control,
         control_text,
@@ -1631,6 +1709,41 @@ def self_test() -> int:
         "Summary: 0 total hit(s), 0 P0",
     )
     assert result["classification"] == "NOFIX", result
+    missing_red_model = dict(
+        nofix_model,
+        test_execution_attestation={"ok": True, "failing_test_runs": 0},
+    )
+    result = classify(
+        control,
+        control_text,
+        control_text,
+        control_text,
+        [],
+        missing_red_model,
+        native_red,
+        None,
+        "Summary: 0 total hit(s), 0 P0",
+    )
+    assert result == {
+        "classification": "INCOMPLETE",
+        "reason": "honesty control was not observed red through Playwright MCP",
+    }, result
+    truncated_model = dict(model, persistence_truncated=True)
+    result = classify(
+        perturbation,
+        applied,
+        pristine,
+        pristine,
+        [perturbation.spec],
+        truncated_model,
+        native_green,
+        native_red,
+        "Summary: 0 total hit(s), 0 P0",
+    )
+    assert result == {
+        "classification": "INCOMPLETE",
+        "reason": "persisted model transcript was truncated",
+    }, result
     print("self-test: PASS")
     return 0
 
