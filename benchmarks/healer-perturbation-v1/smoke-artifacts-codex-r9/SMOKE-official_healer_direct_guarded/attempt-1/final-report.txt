@@ -1,0 +1,3 @@
+NOFIX — Test passed (1/1). Byte identity confirmed.
+
+Changed files: none.
