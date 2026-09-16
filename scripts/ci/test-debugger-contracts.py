@@ -50,8 +50,8 @@ def assert_readme_f11_contract() -> None:
         ),
         "README.ko.md": (
             "| F11 | **비동기/명령 순서 경합** | Playwright의 `Promise.all` "
-            "순서·병렬 실행 경합, Cypress의 요청 이후 intercept 등록·명령 체인 "
-            "순서 뒤바뀜·visit/request 경합 |"
+            "순서 및 병렬 실행 경합, Cypress의 요청 이후 intercept 등록, 명령 흐름 "
+            "순서 뒤바뀜, visit/request 경합 |"
         ),
         "README.ja.md": (
             "| F11 | **非同期/コマンド順序の競合** | Playwright の `Promise.all` "

@@ -1668,7 +1668,7 @@ errors = []
 intro_contracts = {
     canonical_path: ("Merged upstream fixes", "See a false-green test"),
     pathlib.Path("README.ko.md"): (
-        "업스트림에 병합된 수정 사례",
+        "upstream에 merge된 수정 사례",
         "false-green 테스트 살펴보기",
     ),
     pathlib.Path("README.ja.md"): (
@@ -1713,7 +1713,7 @@ contract_re = re.compile(
 )
 contract_hashes = {
     "README.md": "ac9a9be1d95d6519bb06901a8c29c997dfad01a03909fe890c28cc629ffd15da",
-    "README.ko.md": "f19905f0c7c30b90f7b1ab447d0c65dedd957a433b0eab582d61716cf3defb36",
+    "README.ko.md": "2672a2493936395827f324378d305605c23b09ac7976e505f8b30de884274426",
     "README.ja.md": "53ba87e9d0211ebbd56d8ab6c86a587f5003be4167ca171e7fdfde9c37c4857f",
     "README.zh-cn.md": "5f1646eeff6d91174af04e396eabf2a4eb954bbe16b373f43c1fb6e70e89efb0",
 }

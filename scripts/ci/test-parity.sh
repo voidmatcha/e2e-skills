@@ -989,7 +989,7 @@ path = pathlib.Path(sys.argv[1])
 text = path.read_text(encoding="utf-8")
 match = re.search(
     r'^<a id="merged-upstream-fixes"></a>\n\n'
-    r'## 업스트림에 병합된 수정 사례\n.*?(?=^## )',
+    r'## upstream에 merge된 수정 사례\n.*?(?=^## )',
     text,
     re.M | re.S,
 )
@@ -1004,7 +1004,7 @@ path.write_text(text.replace(marker, block + marker, 1), encoding="utf-8")
 PY_MOVE_MERGED_FIXES_KO
 assert_fails \
   "README i18n parity — localized merged fixes stay above first reviewer example" \
-  "README i18n parity: README.ko.md 업스트림에 병합된 수정 사례 must appear before false-green 테스트 살펴보기"
+  "README i18n parity: README.ko.md upstream에 merge된 수정 사례 must appear before false-green 테스트 살펴보기"
 restore "$file"
 
 # Case 16: subagent parity SP1 — dropping the absolute-path contract from an
