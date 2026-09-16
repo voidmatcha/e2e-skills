@@ -1,0 +1,5 @@
+REPAIRED — corrected navigation to the fixture’s root route.
+
+Verification: 1 test passed.
+
+Changed file: `playwright/tests/missing-auth.spec.mjs`

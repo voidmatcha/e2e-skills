@@ -1,0 +1,18 @@
+
+[ESLint] Tier 1 disabled by default because local ESLint config/plugins execute project code. Set E2E_SMELL_ALLOW_PROJECT_ESLINT=1 to opt in; this is not a sandbox. Tier 3 still runs; Tier 2 runs only when available/enabled.
+
+--- Tier 2: AST-grep checks (Tree-sitter; covers FP-prone patterns more accurately) ---
+
+  ast-grep total: 0 hit(s)
+
+--- Tier 3: Bundled regex checks (universal fallback for grep-detectable patterns and gaps eslint/ast-grep miss) ---
+
+[P1?][LLM-TRIAGE] #10c Unscoped accessible-name substring match (1 hit)
+  /private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/healer-workspace-ltle8ev0/fixture/playwright/tests/counter.spec.mjs:9:  const button = page.getByRole("button", { name: "Increment" });
+
+Scope filter: 0 out-of-scope file(s) skipped (pattern hits in files without Playwright/Cypress markers).
+
+Summary: 1 total hit(s), 0 P0, 0 P1/P2 heuristic, 1 LLM-triage, 0 P0 candidate; 0 AST-origin hit(s), exact cross-tier dedupe applied.
+
+No ESLint rule expresses these — they need this review (or a human) every time:
+  #10c

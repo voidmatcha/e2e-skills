@@ -1,0 +1,1 @@
+NOFIX — `playwright/tests/counter.spec.mjs` passed twice via the configured Playwright MCP runner. No reproducible test-side failure; no files changed.

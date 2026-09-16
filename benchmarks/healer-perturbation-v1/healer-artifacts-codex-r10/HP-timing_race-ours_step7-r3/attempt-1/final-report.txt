@@ -1,0 +1,3 @@
+REPAIRED — changed `playwright/tests/optimistic-call-proof.spec.mjs`.
+
+Subscribed to the request before clicking, eliminating the race. Playwright MCP result: **1 passed**.

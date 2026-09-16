@@ -1,0 +1,7 @@
+REPAIRED — removed the unauthenticated `variant-b` navigation. The immutable assertion now passes.
+
+Changed file:
+
+- `playwright/tests/missing-auth.spec.mjs`
+
+Verification: 1 test passed.

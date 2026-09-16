@@ -1,0 +1,1 @@
+NOFIX — the application’s `variant-a` cannot produce the approved `Count: 1` outcome. Changed files: none.

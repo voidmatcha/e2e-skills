@@ -1,0 +1,5 @@
+REPAIRED — corrected the button locator from `Add one` to `Increment`.
+
+Changed file: `playwright/tests/counter.spec.mjs`
+
+Verification was unavailable because the required Playwright MCP runner was not exposed in this session.

@@ -1,0 +1,5 @@
+NOFIX — target remained byte-identical (SHA-256 unchanged).
+
+Verification was blocked by a missing Playwright Chromium executable; no test logic ran. Debug mode also rejected the test fixture setup.
+
+Changed files: none.

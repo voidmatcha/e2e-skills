@@ -1,0 +1,3 @@
+REPAIRED — updated the stale button locator to `Increment`; the approved assertion remains unchanged. Targeted test passes.
+
+Changed file: `playwright/tests/counter.spec.mjs`

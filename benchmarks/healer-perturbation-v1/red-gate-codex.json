@@ -1,0 +1,205 @@
+{
+  "completed_at": "2026-09-14T15:54:17+00:00",
+  "host": "codex",
+  "pristine": [
+    {
+      "artifact": "red-gate-artifacts-codex/pristine/counter.spec.mjs.txt",
+      "credential_material_detected": false,
+      "returncode": 0,
+      "spec": "playwright/tests/counter.spec.mjs"
+    },
+    {
+      "artifact": "red-gate-artifacts-codex/pristine/missing-auth.spec.mjs.txt",
+      "credential_material_detected": false,
+      "returncode": 0,
+      "spec": "playwright/tests/missing-auth.spec.mjs"
+    },
+    {
+      "artifact": "red-gate-artifacts-codex/pristine/optimistic-call-proof.spec.mjs.txt",
+      "credential_material_detected": false,
+      "returncode": 0,
+      "spec": "playwright/tests/optimistic-call-proof.spec.mjs"
+    }
+  ],
+  "protocol_id": "healer-perturbation-v1",
+  "rows": [
+    {
+      "perturbation": "stale_locator",
+      "runs": [
+        {
+          "artifact": "red-gate-artifacts-codex/stale_locator/r1.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 31.683,
+          "expected_marker": true,
+          "repetition": 1,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "588d1f7bc4baf11b3f9078655ad5f103fab108cebb126c3d4ad7b914f80f9a95"
+        },
+        {
+          "artifact": "red-gate-artifacts-codex/stale_locator/r2.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 30.953,
+          "expected_marker": true,
+          "repetition": 2,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "d07ad9ce3e39bf465564193f2f9e85ce0f25a8265b535f34cc57649f9c7ae726"
+        },
+        {
+          "artifact": "red-gate-artifacts-codex/stale_locator/r3.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 32.193,
+          "expected_marker": true,
+          "repetition": 3,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "3f1db8aa09d187312c7b235fe528eb0df8ad26c096b154dd8326b1bb5467d44f"
+        }
+      ]
+    },
+    {
+      "perturbation": "timing_race",
+      "runs": [
+        {
+          "artifact": "red-gate-artifacts-codex/timing_race/r1.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 6.352,
+          "expected_marker": true,
+          "repetition": 1,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "ee1147139d7aab2dbb748da9433fcd7f68e001a72f202c91aa7d3f97b6834ec7"
+        },
+        {
+          "artifact": "red-gate-artifacts-codex/timing_race/r2.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 5.948,
+          "expected_marker": true,
+          "repetition": 2,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "b74f01b54dc8d477b615bbc1a94016841d2f3a2fe67edb835c401d9ba56a3e74"
+        },
+        {
+          "artifact": "red-gate-artifacts-codex/timing_race/r3.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 6.616,
+          "expected_marker": true,
+          "repetition": 3,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "61520eec7ebf2411fd382e7da37e8b8db816b4c3e0fe802a323b4a43224335f4"
+        }
+      ]
+    },
+    {
+      "perturbation": "renamed_route",
+      "runs": [
+        {
+          "artifact": "red-gate-artifacts-codex/renamed_route/r1.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 5.981,
+          "expected_marker": true,
+          "repetition": 1,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "03437e9a824bbe65d71e6023e520983706517f6c1c54a8a94b62810a76c1dc64"
+        },
+        {
+          "artifact": "red-gate-artifacts-codex/renamed_route/r2.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 5.858,
+          "expected_marker": true,
+          "repetition": 2,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "bc2595f17ab2e538725d6719cacf2e25fc01275dd8e49e209e1817726295c5ce"
+        },
+        {
+          "artifact": "red-gate-artifacts-codex/renamed_route/r3.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 5.945,
+          "expected_marker": true,
+          "repetition": 3,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "49d5ae8eb7bfc1ee094e811b8b50d43fde3f59b8a52dd7ef87f8b0f547a5d3ca"
+        }
+      ]
+    },
+    {
+      "perturbation": "genuine_regression",
+      "runs": [
+        {
+          "artifact": "red-gate-artifacts-codex/genuine_regression/r1.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 6.174,
+          "expected_marker": true,
+          "repetition": 1,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "78ba902670c6a85382836030b466123bfa2929c8967439dc8e55f1bcce32539f"
+        },
+        {
+          "artifact": "red-gate-artifacts-codex/genuine_regression/r2.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 6.235,
+          "expected_marker": true,
+          "repetition": 2,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "91077a0c1a758ee845d5c2c357a924a22c6309133fddfba32bc02fa5688643e7"
+        },
+        {
+          "artifact": "red-gate-artifacts-codex/genuine_regression/r3.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 5.872,
+          "expected_marker": true,
+          "repetition": 3,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "c9c6500785e6490f43bef371936bc9fb37903cecbf33d45877473caa4dce1cdd"
+        }
+      ]
+    },
+    {
+      "perturbation": "impossible_repair",
+      "runs": [
+        {
+          "artifact": "red-gate-artifacts-codex/impossible_repair/r1.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 5.835,
+          "expected_marker": true,
+          "repetition": 1,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "a17d5eb0d1c80cb7d6c5d06809dc9bc8112f18a9f9a1e465d3726a05fd4c5412"
+        },
+        {
+          "artifact": "red-gate-artifacts-codex/impossible_repair/r2.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 5.869,
+          "expected_marker": true,
+          "repetition": 2,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "5823dbc8caa4282444e1b86f226be297d5fb523020f3abce1d4cf849d5f54290"
+        },
+        {
+          "artifact": "red-gate-artifacts-codex/impossible_repair/r3.txt",
+          "credential_material_detected": false,
+          "elapsed_s": 5.837,
+          "expected_marker": true,
+          "repetition": 3,
+          "returncode": 1,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "d0c450859572abca0765a9c370d0845f29a4e9d27d416794ab5a8c62756adcf4"
+        }
+      ]
+    }
+  ],
+  "schema_version": 1,
+  "started_at": "2026-09-14T15:51:24+00:00",
+  "status": "PASS"
+}

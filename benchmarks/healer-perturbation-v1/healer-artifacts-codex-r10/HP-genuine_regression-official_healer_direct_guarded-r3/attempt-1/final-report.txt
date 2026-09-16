@@ -1,0 +1,3 @@
+NOFIX — changed files: none.
+
+The configured runner passed, but the target’s `scenario-a` path intentionally prevents the application from changing the status to `Count: 1`. No valid test-only repair can guarantee the immutable outcome without bypassing application behavior.

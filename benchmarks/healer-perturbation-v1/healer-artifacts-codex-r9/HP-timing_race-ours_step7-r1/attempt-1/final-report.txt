@@ -1,0 +1,3 @@
+REPAIRED — synchronized the request listener with the click. Test passes.
+
+Changed file: `playwright/tests/optimistic-call-proof.spec.mjs`

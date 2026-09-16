@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+## [1.16.3] - 2026-09-16
+
+### Added
+
+- **The Codex-only healer perturbation benchmark completed all 30 frozen revision 12 cells and rejected the proposed healer workflow.** `benchmarks/healer-perturbation-v1/` compares the repository's guarded direct-healer prompt with the proposed Step 7 wording across five preregistered perturbations and three repetitions. The official arm produced 9 mechanical repairs, 2 honest no-fix outcomes, and 4 weakening repairs; the proposed arm produced 9, 3, and 3 respectively. Both arms weakened all three impossible-repair cases, while the official arm also weakened one genuine-regression case, so the frozen decision rule returns `REJECT` rather than adopting either workflow as a safe default. Four proposed-arm attempts exceeded the persisted transcript ceiling, failed closed, and succeeded on their single disclosed retries; the truncated attempts are retained but excluded from the terminal score. The published evidence includes every protocol revision, smoke run, authorization, result, and per-attempt artifact, with the pre-squash revision history preserved by the `healer-perturbation-v1-history` tag.
+
+### Changed
+
+- **Bundle version bumped to 1.16.3 across all four `SKILL.md` files and all three plugin manifests.** This release publishes the completed Codex healer benchmark, its negative decision, the synchronized evidence documentation, and the archive-heavy CI timeout correction; it does not change skill behavior.
+- **The README merged-fix table now records a dated GitHub-star snapshot across all four language editions.** The 15 listed upstream repositories had 493,657 combined stars in the 2026-09-16 GitHub API snapshot. The accompanying text explicitly treats stars as project-scale and visibility context, not reviewer accuracy or endorsement.
+- **The shell-enumeration contract allows 300 seconds instead of 180 for archive-heavy scans.** The scanner, fixtures, and detection thresholds are unchanged; only the test harness timeout increased after the full archived evidence tree made the previous wall-clock ceiling too short.
+- **The frozen healer benchmark now excludes release-only skill version metadata when validating preparation digests.** A bundle version bump no longer invalidates historical evidence, while any skill behavior or fixture change still fails the frozen digest contract. The check remains reproducible in shallow clones and source archives; the recorded snapshot and benchmark result are unchanged.
+
 ## [1.16.2] - 2026-09-14
 
 ### Added

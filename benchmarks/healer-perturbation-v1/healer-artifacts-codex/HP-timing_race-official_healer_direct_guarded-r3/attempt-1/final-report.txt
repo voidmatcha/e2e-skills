@@ -1,0 +1,3 @@
+REPAIRED — registered the request listener before clicking, eliminating the race. Test passes.
+
+Changed file: `playwright/tests/optimistic-call-proof.spec.mjs`

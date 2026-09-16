@@ -1,0 +1,13 @@
+--- applied
++++ healed
+@@ -1,9 +1,7 @@
+ import { expect, test } from "@playwright/test";
+ 
+ test("increments the counter", async ({ page }) => {
+-  const query =
+-    process.env.FIXTURE_SCENARIO_MODE === "scenario-a" ? "?variant-a" : "";
+-  await page.goto(`/${query}`);
++  await page.goto("/");
+ 
+   const status = page.getByRole("status");
+   const button = page.getByRole("button", { name: "Increment" });

@@ -1,0 +1,3 @@
+NOFIX — no files changed.
+
+The click requests `/api/increment`, which returns HTTP 404 under `?variant-a`; the status therefore remains `Count: 0`. This is application-side, so the approved assertion cannot be repaired test-side.

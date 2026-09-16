@@ -1,0 +1,5 @@
+REPAIRED
+
+Changed file: `playwright/tests/missing-auth.spec.mjs`
+
+Corrected navigation from the nonexistent `/account` route to the fixture root scenario. The targeted Playwright test passed twice.

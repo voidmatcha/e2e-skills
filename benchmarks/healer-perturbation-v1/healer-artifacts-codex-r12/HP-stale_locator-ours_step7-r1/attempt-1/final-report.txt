@@ -1,0 +1,6 @@
+REPAIRED
+
+Changed file:
+- [playwright/tests/counter.spec.mjs](/private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/healer-workspace-lc645ayb/fixture/playwright/tests/counter.spec.mjs)
+
+Updated the button locator from “Add one” to the observed accessible name “Increment.” Test passes with the approved `Count: 1` assertion.

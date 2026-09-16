@@ -1,0 +1,7 @@
+REPAIRED
+
+Changed file:
+
+- `playwright/tests/optimistic-call-proof.spec.mjs`
+
+Registered `waitForRequest` before triggering the click via `Promise.all`, eliminating the race. Verified: **1 test passed**.

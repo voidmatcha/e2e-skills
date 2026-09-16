@@ -1,0 +1,5 @@
+REPAIRED
+
+Changed: [playwright/tests/missing-auth.spec.mjs](/private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/healer-workspace-s96ihnrz/fixture/playwright/tests/missing-auth.spec.mjs)
+
+Fixed navigation from the nonexistent `/account` path to the root account-view route. Verification: **1 test passed**.

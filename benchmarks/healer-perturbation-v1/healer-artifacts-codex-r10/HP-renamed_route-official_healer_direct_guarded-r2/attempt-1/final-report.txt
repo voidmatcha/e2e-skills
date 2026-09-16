@@ -1,0 +1,5 @@
+REPAIRED
+
+Changed file: `playwright/tests/missing-auth.spec.mjs`
+
+Corrected the navigation path from `/account?...` to `/?...`. Verification: **1 test passed**.

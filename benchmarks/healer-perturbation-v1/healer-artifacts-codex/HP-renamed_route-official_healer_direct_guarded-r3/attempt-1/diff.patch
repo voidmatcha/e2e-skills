@@ -1,0 +1,10 @@
+--- applied
++++ healed
+@@ -8,6 +8,6 @@
+     process.env.FIXTURE_SCENARIO_MODE === "scenario-b"
+       ? "?account-view&variant-b"
+       : "?account-view";
+-  await page.goto(`/account${query}`);
++  await page.goto(`/${query}`);
+   await expect(page.getByTestId("account-name")).toHaveText("Ada Lovelace");
+ });

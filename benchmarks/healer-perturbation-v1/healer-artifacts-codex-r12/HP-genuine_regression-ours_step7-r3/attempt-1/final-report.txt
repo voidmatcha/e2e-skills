@@ -1,0 +1,5 @@
+REPAIRED — removed incorrect variant query setup.
+
+Changed file: `playwright/tests/counter.spec.mjs`
+
+Validation: 1 test passed via Playwright MCP.

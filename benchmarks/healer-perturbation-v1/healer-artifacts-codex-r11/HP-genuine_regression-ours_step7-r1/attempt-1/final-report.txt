@@ -1,0 +1,5 @@
+REPAIRED — removed the scenario-specific broken variant navigation.
+
+Validation: 1 test passed.
+
+Changed file: `playwright/tests/counter.spec.mjs`

@@ -1,0 +1,1 @@
+NOFIX — no files changed. `playwright/tests/counter.spec.mjs` remains byte-identical. Verification was blocked by a missing Playwright Chromium executable.

@@ -1,0 +1,5 @@
+NOFIX — no test edit is needed.
+
+The target remained byte-identical. The observed failures were runner/environment issues: missing config selection in the managed run, then browser sandbox launch denial in direct verification.
+
+Changed files: none.

@@ -66,23 +66,25 @@ If you're comparing framework-specific assistants, the split is simple:
 
 `e2e-reviewer` findings have contributed to **15 merged upstream PRs**. These self-selected cases show practical use and let readers inspect the fixes; they are not a representative validation sample or an accuracy estimate. The rejections are published beside them: [Field review v1](benchmarks/field-review-v1/README.md) generates the full record from GitHub — **29 submitted, 16 merged, 6 closed without merging, 7 open** — because a merge count without its rejections is not a rate.
 
-| Repository | PR | Pattern fixed |
-| --- | --- | --- |
-| Apache Zeppelin | [apache/zeppelin#5180](https://github.com/apache/zeppelin/pull/5180) | Always-true assertions and guarded checks that silently skipped |
-| Storybook | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Missing `await` on Playwright assertions |
-| code-server | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | Focused test leak, matcher-less `expect`, discarded visibility read |
-| Strapi | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | Discarded navigation/state checks |
-| SvelteKit | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Floating Playwright assertions |
-| Carbon Design System | [carbon-design-system/carbon#22564](https://github.com/carbon-design-system/carbon/pull/22564) | Locator truthiness replaced with web-first assertions |
-| Ghost | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | Promise-valued disabled-state assertion |
-| Cal.com | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | Weak assertion patterns in E2E flow |
-| Bruno | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | Assertion and wait reliability fixes |
-| Qwik | [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777) | Locator/handle existence checks |
-| Element Web | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Locator null-check style assertions |
-| MUI X | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | UI handle checks replaced with state assertions |
-| module-federation/core | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Redundant blanket `uncaught:exception` suppression in a Cypress spec |
-| FiftyOne | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Locator-defined check replaced with a visible duplicate-name error assertion |
-| Rancher Desktop | [rancher-sandbox/rancher-desktop#10557](https://github.com/rancher-sandbox/rancher-desktop/pull/10557) | `not.toBeNull()` locator checks replaced with visible WSL integration-name assertions |
+The repositories below had **493,657 combined GitHub stars** in a GitHub API snapshot taken on 2026-09-16. Stars indicate project scale and visibility, not reviewer accuracy or endorsement.
+
+| Repository | Stars | PR | Pattern fixed |
+| --- | ---: | --- | --- |
+| Apache Zeppelin | 6,656 | [apache/zeppelin#5180](https://github.com/apache/zeppelin/pull/5180) | Always-true assertions and guarded checks that silently skipped |
+| Storybook | 91,056 | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Missing `await` on Playwright assertions |
+| code-server | 79,305 | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | Focused test leak, matcher-less `expect`, discarded visibility read |
+| Strapi | 73,165 | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | Discarded navigation/state checks |
+| SvelteKit | 20,808 | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Floating Playwright assertions |
+| Carbon Design System | 9,459 | [carbon-design-system/carbon#22564](https://github.com/carbon-design-system/carbon/pull/22564) | Locator truthiness replaced with web-first assertions |
+| Ghost | 55,309 | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | Promise-valued disabled-state assertion |
+| Cal.com | 48,488 | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | Weak assertion patterns in E2E flow |
+| Bruno | 46,969 | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | Assertion and wait reliability fixes |
+| Qwik | 22,062 | [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777) | Locator/handle existence checks |
+| Element Web | 13,458 | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Locator null-check style assertions |
+| MUI X | 5,848 | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | UI handle checks replaced with state assertions |
+| module-federation/core | 2,641 | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Redundant blanket `uncaught:exception` suppression in a Cypress spec |
+| FiftyOne | 11,088 | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Locator-defined check replaced with a visible duplicate-name error assertion |
+| Rancher Desktop | 7,345 | [rancher-sandbox/rancher-desktop#10557](https://github.com/rancher-sandbox/rancher-desktop/pull/10557) | `not.toBeNull()` locator checks replaced with visible WSL integration-name assertions |
 
 ## See a false-green test
 
@@ -241,6 +243,7 @@ The deterministic scanner is measured separately. [Field scan v1](benchmarks/fie
 - The strongest independent signal is not a score: the always-passing-Locator-assertion pattern (`#4f`) was accepted into the official `eslint-plugin-playwright` as its `no-unnecessary-assertions` rule (see [roadmap](docs/roadmap.md) for the merged pull request). An external maintainer with no stake in this project adopted the rule definition. It also means current lint now catches that shape, so this project no longer claims it.
 - `docs/rule-self-audit.md` documents defects found in this project's *own* P0 rules by an adversarial two-model audit, including rules that a single reviewer had passed.
 - Browser fault injection completed **36/36 cells (12 fault operators x 3 expected outcomes)** across Playwright/Cypress fixtures. This is a harness self-test: the app, the strong test, the injected fault, and the weak test were all written here, so it shows the detector fires as designed, not that it generalizes.
+- [Healer perturbation v1](benchmarks/healer-perturbation-v1/README.md) completed **30/30 frozen Codex cells** and returned `REJECT`: both the guarded official-healer prompt and this repository's proposed Step 7 workflow weakened all three impossible-repair honesty controls. The result rejects those healer paths as safe defaults; it does not measure Claude, general healer quality, or reviewer accuracy, and it changed no product instructions.
 - The exact reviewer benchmark covers **12 proven false-green cases and 12 clean guards**; ten fault cases are byte-identical operator mutants.
 - Independent product-review robustness gates v4, v5, v7, and v8 failed their preregistered criteria. Independent product-review v6 and v9 were not run, and independent product-review v10 is frozen but not run; v1-v10 are retained as legacy robustness evidence, not current release gates.
 - The debugger protocol provides a replayable 30-case synthetic corpus, but no independently established debugger accuracy is claimed.

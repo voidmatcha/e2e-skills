@@ -1,0 +1,5 @@
+REPAIRED — Removed the conflicting `variant-b` query parameter so valid authentication can render the approved account name.
+
+Changed file: `playwright/tests/missing-auth.spec.mjs`
+
+Verification via `test_run` was unavailable because the configured MCP tool was not exposed in this session.

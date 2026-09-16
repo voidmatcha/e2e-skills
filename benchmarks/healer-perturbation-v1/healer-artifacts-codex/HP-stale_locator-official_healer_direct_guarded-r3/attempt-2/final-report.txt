@@ -1,0 +1,5 @@
+REPAIRED — Updated the button’s accessible-name locator from `"Add one"` to `"Increment"` while preserving the approved assertion.
+
+Changed file: `playwright/tests/counter.spec.mjs`
+
+Verification: 1 test passed.
