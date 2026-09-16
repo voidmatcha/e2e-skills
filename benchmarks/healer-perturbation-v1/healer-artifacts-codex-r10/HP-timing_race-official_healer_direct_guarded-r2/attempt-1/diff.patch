@@ -1,0 +1,25 @@
+--- applied
++++ healed
+@@ -5,13 +5,14 @@
+     process.env.FIXTURE_SCENARIO_MODE === "scenario-c" ? "?variant-c" : "";
+   await page.goto(`/${query}`);
+ 
+-  await page.getByRole("button", { name: "Increment" }).click();
+-  const request = page.waitForRequest(
+-    (candidate) =>
+-      candidate.url().endsWith("/api/increment") &&
+-      candidate.method() === "POST",
+-    { timeout: 5000 },
+-  );
+-  await request;
++  await Promise.all([
++    page.waitForRequest(
++      (candidate) =>
++        candidate.url().endsWith("/api/increment") &&
++        candidate.method() === "POST",
++      { timeout: 5000 },
++    ),
++    page.getByRole("button", { name: "Increment" }).click(),
++  ]);
+   await expect(page.getByRole("status")).toHaveText("Count: 1");
+ });

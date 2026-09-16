@@ -1,0 +1,5 @@
+REPAIRED — removed the query variant that disabled authentication. Approved assertion preserved.
+
+Test result: 1 passed.
+
+Changed file: [playwright/tests/missing-auth.spec.mjs](/private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/healer-workspace-nao6mgh8/fixture/playwright/tests/missing-auth.spec.mjs)

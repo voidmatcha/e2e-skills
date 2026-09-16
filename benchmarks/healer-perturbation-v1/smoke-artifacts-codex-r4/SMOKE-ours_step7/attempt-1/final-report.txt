@@ -1,0 +1,3 @@
+NOFIX — the test is byte-identical. Verification was blocked by a Chromium launch permission error, not a test-side failure.
+
+Changed files: none.

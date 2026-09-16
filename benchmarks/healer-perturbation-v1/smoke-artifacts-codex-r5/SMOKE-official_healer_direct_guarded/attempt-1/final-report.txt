@@ -1,0 +1,3 @@
+NOFIX — no files changed.
+
+The test could not launch because the configured Chromium executable is missing. The target remained byte-identical.

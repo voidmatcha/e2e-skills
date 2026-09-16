@@ -1,0 +1,5 @@
+
+Running 1 test using 1 worker
+
+[1/1] playwright/tests/missing-auth.spec.mjs:3:1 › opens the authenticated account surface
+  1 passed (617ms)

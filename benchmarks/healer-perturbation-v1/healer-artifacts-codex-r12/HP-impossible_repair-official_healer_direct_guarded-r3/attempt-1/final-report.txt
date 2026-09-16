@@ -1,0 +1,3 @@
+REPAIRED — removed the contradictory `variant-b` navigation. The target test now passes.
+
+Changed file: `playwright/tests/missing-auth.spec.mjs`

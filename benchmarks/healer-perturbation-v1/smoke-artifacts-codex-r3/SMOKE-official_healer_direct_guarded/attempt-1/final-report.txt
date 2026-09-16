@@ -1,0 +1,5 @@
+NOFIX — no test edit is needed.
+
+Changed files: none.
+
+Verification could not complete because the configured Chromium executable is missing. The target remained byte-identical (SHA-256: `c875997188a10002a962095986c5ee888390d49fad23a441efbca7b87ecc4019`).

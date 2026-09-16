@@ -1,0 +1,3 @@
+REPAIRED — armed the request listener before clicking. MCP verification: 1 test passed.
+
+Changed file: `playwright/tests/optimistic-call-proof.spec.mjs`

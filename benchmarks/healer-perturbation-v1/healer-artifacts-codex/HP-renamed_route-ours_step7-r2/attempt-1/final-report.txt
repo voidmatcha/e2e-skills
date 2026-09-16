@@ -1,0 +1,5 @@
+REPAIRED — corrected navigation from `/account?...` to `/?...`.
+
+MCP verification: 1 test passed.
+
+Changed file: `playwright/tests/missing-auth.spec.mjs`

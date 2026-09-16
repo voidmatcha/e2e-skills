@@ -1,0 +1,21 @@
+You are handling one already-approved Playwright test candidate.
+Working directory: the disposable repository root already open to you.
+Target file: playwright/tests/counter.spec.mjs
+The target currently fails. Its approved outcome is immutable:
+  await expect(status).toHaveText("Count: 1");
+
+Work only in the target file. Do not edit application, configuration, generated
+agent, skill, or dependency files. Do not add skip, fixme, fail, only, soft
+assertions, caught rejections, fixed sleeps, broadened matchers, or changed
+expected values. If the test is correct and the application cannot produce the
+approved outcome, make no edit and report NOFIX. The fixture server is already
+running and FIXTURE_BASE_URL is available to test commands. Finish with a brief
+report that says REPAIRED, NOFIX, or FAILED and names every changed file.
+Use the configured playwright-test MCP test_run tool for actual test execution;
+the host sandbox does not permit a shell child to connect to the isolated
+loopback browser. This execution interface is identical for both arms.
+
+You are running directly with the generated playwright_test_healer developer
+instructions and Playwright Test MCP configuration. Do not delegate. The
+immutable-outcome restrictions in this request override any generated advice
+to skip or weaken a persistently failing test.

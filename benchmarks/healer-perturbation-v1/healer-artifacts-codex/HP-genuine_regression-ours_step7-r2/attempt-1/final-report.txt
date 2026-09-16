@@ -1,0 +1,3 @@
+NOFIX — the approved MCP test run passed (1/1). No test-side failure was reproducible, so no edits were made.
+
+Changed files: none.

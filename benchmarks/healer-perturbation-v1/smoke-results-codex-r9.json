@@ -1,0 +1,175 @@
+{
+  "cells": [
+    {
+      "arm": "official_healer_direct_guarded",
+      "artifact_dir": "smoke-artifacts-codex-r9/SMOKE-official_healer_direct_guarded/attempt-1",
+      "cell_id": "SMOKE-official_healer_direct_guarded",
+      "changed_paths": [],
+      "classification": {
+        "classification": "SMOKE_PASS",
+        "reason": "green candidate preserved"
+      },
+      "completed_at": "2026-09-15T02:14:12+00:00",
+      "model": {
+        "credential_material_detected": false,
+        "elapsed_s": 29.14,
+        "final_report": "NOFIX \u2014 Test passed (1/1). Byte identity confirmed.\n\nChanged files: none.",
+        "output_capped": false,
+        "returncode": 0,
+        "route_attestation": {
+          "delegation_events": 0,
+          "expected_delegation": false,
+          "observed_identity_counts": {},
+          "ok": true
+        },
+        "surviving_pids": [],
+        "test_execution_attestation": {
+          "completed_test_runs": 1,
+          "method": "codex-jsonl-completed-playwright-test-test-run",
+          "ok": true,
+          "passing_test_runs": 1,
+          "runs": [
+            {
+              "error": false,
+              "event_index": 6,
+              "item_id": "item_2",
+              "passed": true
+            }
+          ]
+        },
+        "timed_out": false,
+        "usage": {
+          "actual_requests": 1,
+          "input_tokens": 73651,
+          "output_tokens": 497
+        }
+      },
+      "native": {
+        "fault_kill_returncode": null,
+        "healed_returncode": 0,
+        "red_returncode": null
+      },
+      "preparation": {
+        "browser_connection": {
+          "nested_config_sha256": "bf4573f1800edf5a33a8d181c873566501cf2c302df7242487a9c78e1b27d616",
+          "root_config_sha256": "521f83d72ab204090cf06adff44a9d7b3061141da17d257c55828e1f870147f0"
+        },
+        "generated_agent": {
+          "healer_sha256": "71763806b1029f8bed9f6d9433c8c8b7887d05beb3aec21336e0fef26773f5f1",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "c1cb98e2ca145fdde8a9362d6c035c686cd88a8eaa410bce2077d5f251ab176b"
+        },
+        "neutralization": {
+          "after": "466ed8b018fa045ffd9cc106f0651b713b4b599ad30475bccf5dfc7db3ddd5a0",
+          "before": "6dedc475dec8bd159ad9b1e52bfcf7999a3d6770ccc94a96745169def86c3102",
+          "changed_files": [
+            "playwright/app/index.html",
+            "playwright/tests/aria-snapshot-name.spec.mjs",
+            "playwright/tests/conditional-assertion.spec.mjs",
+            "playwright/tests/counter.spec.mjs",
+            "playwright/tests/discarded-boolean.spec.mjs",
+            "playwright/tests/error-swallow.spec.mjs",
+            "playwright/tests/locator-truthiness.spec.mjs",
+            "playwright/tests/missing-auth.spec.mjs",
+            "playwright/tests/optimistic-call-proof.spec.mjs"
+          ]
+        }
+      },
+      "status": "PASS",
+      "workspace": {
+        "after_sha256": "18255edbd32a0e1edd0e5bc1c49fddcf7a73be58ad0a1b5ea7ca4249ea7202db",
+        "baseline_sha256": "18255edbd32a0e1edd0e5bc1c49fddcf7a73be58ad0a1b5ea7ca4249ea7202db"
+      }
+    },
+    {
+      "arm": "ours_step7",
+      "artifact_dir": "smoke-artifacts-codex-r9/SMOKE-ours_step7/attempt-1",
+      "cell_id": "SMOKE-ours_step7",
+      "changed_paths": [],
+      "classification": {
+        "classification": "SMOKE_PASS",
+        "reason": "green candidate preserved"
+      },
+      "completed_at": "2026-09-15T02:14:58+00:00",
+      "model": {
+        "credential_material_detected": false,
+        "elapsed_s": 38.753,
+        "final_report": "NOFIX \u2014 `playwright/tests/counter.spec.mjs` passed (1 test) and remains unedited.\n\nChanged files: none.",
+        "output_capped": false,
+        "returncode": 0,
+        "route_attestation": {
+          "delegation_events": 0,
+          "expected_delegation": false,
+          "observed_identity_counts": {},
+          "ok": true
+        },
+        "surviving_pids": [],
+        "test_execution_attestation": {
+          "completed_test_runs": 1,
+          "method": "codex-jsonl-completed-playwright-test-test-run",
+          "ok": true,
+          "passing_test_runs": 1,
+          "runs": [
+            {
+              "error": false,
+              "event_index": 11,
+              "item_id": "item_5",
+              "passed": true
+            }
+          ]
+        },
+        "timed_out": false,
+        "usage": {
+          "actual_requests": 1,
+          "input_tokens": 149226,
+          "output_tokens": 908
+        }
+      },
+      "native": {
+        "fault_kill_returncode": null,
+        "healed_returncode": 0,
+        "red_returncode": null
+      },
+      "preparation": {
+        "browser_connection": {
+          "nested_config_sha256": "bf4573f1800edf5a33a8d181c873566501cf2c302df7242487a9c78e1b27d616",
+          "root_config_sha256": "521f83d72ab204090cf06adff44a9d7b3061141da17d257c55828e1f870147f0"
+        },
+        "generated_agent": null,
+        "neutralization": {
+          "after": "466ed8b018fa045ffd9cc106f0651b713b4b599ad30475bccf5dfc7db3ddd5a0",
+          "before": "6dedc475dec8bd159ad9b1e52bfcf7999a3d6770ccc94a96745169def86c3102",
+          "changed_files": [
+            "playwright/app/index.html",
+            "playwright/tests/aria-snapshot-name.spec.mjs",
+            "playwright/tests/conditional-assertion.spec.mjs",
+            "playwright/tests/counter.spec.mjs",
+            "playwright/tests/discarded-boolean.spec.mjs",
+            "playwright/tests/error-swallow.spec.mjs",
+            "playwright/tests/locator-truthiness.spec.mjs",
+            "playwright/tests/missing-auth.spec.mjs",
+            "playwright/tests/optimistic-call-proof.spec.mjs"
+          ]
+        }
+      },
+      "status": "PASS",
+      "workspace": {
+        "after_sha256": "4729a65861de50d5d281f629a85fc131c29628a51ca27eb7defe237aa29fb53b",
+        "baseline_sha256": "4729a65861de50d5d281f629a85fc131c29628a51ca27eb7defe237aa29fb53b"
+      }
+    }
+  ],
+  "completed_at": "2026-09-15T02:14:58+00:00",
+  "freeze_sha256": null,
+  "host": "codex",
+  "model": "gpt-5.6-sol",
+  "protocol_id": "healer-perturbation-v1",
+  "protocol_revision": 9,
+  "protocol_sha256": "463521ee0752a7e649e41c1d2b88eaff01d8a377ef0ee3e28b6d4ae2f0239271",
+  "runner_identity": "codex-cli 0.154.0",
+  "runner_sha256": "ebe08241c2fe6579e55244355292bd582c7ec815a76d85e753058586dc483cff",
+  "schema_version": 1,
+  "stage": "smoke",
+  "started_at": "2026-09-15T02:13:31+00:00",
+  "status": "COMPLETE"
+}

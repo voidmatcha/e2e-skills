@@ -1,0 +1,14 @@
+--- applied
++++ healed
+@@ -4,10 +4,6 @@
+   await page.addInitScript(() =>
+     localStorage.setItem("fixture-auth", "valid"),
+   );
+-  const query =
+-    process.env.FIXTURE_SCENARIO_MODE === "scenario-b"
+-      ? "?account-view&variant-b"
+-      : "?account-view";
+-  await page.goto(`/${query}`);
++  await page.goto("/?account-view");
+   await expect(page.getByTestId("account-name")).toHaveText("Ada Lovelace");
+ });

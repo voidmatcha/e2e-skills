@@ -1,0 +1,3 @@
+NOFIX — target test passed (1/1) via Playwright MCP.
+
+Changed files: none. `playwright/tests/counter.spec.mjs` remains untouched.

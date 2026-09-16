@@ -1,0 +1,1 @@
+NOFIX — The approved test passed twice unchanged via the configured Playwright runner. Changed files: none.

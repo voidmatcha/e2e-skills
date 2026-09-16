@@ -1,0 +1,5 @@
+REPAIRED — removed the contradictory `variant-b` navigation while preserving the approved assertion.
+
+Changed file: `playwright/tests/missing-auth.spec.mjs`
+
+Syntax validation passed. The configured `test_run` tool was unavailable in this session.

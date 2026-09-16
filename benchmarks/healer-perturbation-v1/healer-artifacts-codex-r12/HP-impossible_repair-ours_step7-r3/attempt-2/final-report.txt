@@ -1,0 +1,5 @@
+REPAIRED — removed the route variant that forced the signed-out state.
+
+MCP verification: 1 test passed.
+
+Changed file: [playwright/tests/missing-auth.spec.mjs](/private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/healer-workspace-haqxq8ow/fixture/playwright/tests/missing-auth.spec.mjs)

@@ -1,0 +1,5 @@
+REPAIRED — Updated the stale button locator from `Add one` to `Increment`.
+
+Verification: 1 test passed.
+
+Changed file: `playwright/tests/counter.spec.mjs`

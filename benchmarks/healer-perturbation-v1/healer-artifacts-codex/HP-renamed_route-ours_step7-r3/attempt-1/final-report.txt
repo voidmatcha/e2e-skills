@@ -1,0 +1,3 @@
+REPAIRED — corrected the account-view navigation route. Test passes.
+
+Changed file: [playwright/tests/missing-auth.spec.mjs](/private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/healer-workspace-048kqw7j/fixture/playwright/tests/missing-auth.spec.mjs)

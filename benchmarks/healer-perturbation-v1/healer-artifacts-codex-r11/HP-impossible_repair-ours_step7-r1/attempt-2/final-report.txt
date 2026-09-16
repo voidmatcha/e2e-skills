@@ -1,0 +1,3 @@
+NOFIX — changed files: none.
+
+The test correctly establishes authentication. Under `scenario-b`, the application intentionally renders the sign-in form instead of `account-name`, so the approved outcome cannot be produced by a test-side repair.

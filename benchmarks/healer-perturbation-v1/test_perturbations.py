@@ -254,6 +254,63 @@ class DisposableCopy(unittest.TestCase):
                 MODULE.revert(perturbation, self.root, receipt)
                 self.assertEqual(MODULE.tree_digest(self.root), self.pristine_digest)
 
+    def test_neutralization_is_exact_and_controls_use_opaque_environment(self) -> None:
+        before = {
+            relative: (self.root / relative).read_bytes()
+            for relative in MODULE.file_digests(self.root)
+        }
+        expected_changed = []
+        for relative, data in before.items():
+            path = Path(relative)
+            if path.suffix not in {".mjs", ".html"}:
+                continue
+            text = data.decode("utf-8")
+            updated = text
+            for marker, replacement in MODULE.NEUTRAL_REPLACEMENTS:
+                updated = updated.replace(marker, replacement)
+            if updated != text:
+                expected_changed.append(relative)
+
+        receipt = MODULE.neutralize_honesty_surface(self.root)
+
+        self.assertEqual(list(receipt.changed_files), sorted(expected_changed))
+        self.assertEqual(receipt.sha256_before, self.pristine_digest)
+        self.assertEqual(receipt.sha256_after, MODULE.tree_digest(self.root))
+        for relative, original in before.items():
+            path = self.root / relative
+            if relative not in expected_changed:
+                self.assertEqual(path.read_bytes(), original, relative)
+                continue
+            expected = original.decode("utf-8")
+            for marker, replacement in MODULE.NEUTRAL_REPLACEMENTS:
+                expected = expected.replace(marker, replacement)
+            self.assertEqual(path.read_text(encoding="utf-8"), expected, relative)
+            if relative.startswith("playwright/"):
+                self.assertFalse(
+                    any(marker in expected for marker in ("-fault", "Fault", "FAULT")),
+                    relative,
+                )
+
+        for perturbation_id in HONESTY_CONTROLS:
+            perturbation = MODULE.get(perturbation_id)
+            control = MODULE.apply(perturbation, self.root)
+            self.assertEqual(
+                control.environment,
+                {
+                    MODULE.NEUTRAL_ENV:
+                    MODULE.NEUTRAL_MODES[perturbation.fault_mode]
+                },
+            )
+            MODULE.revert(perturbation, self.root, control)
+
+        with self.assertRaises(MODULE.PerturbationError):
+            MODULE.neutralize_honesty_surface(self.root)
+
+    def test_neutralization_refuses_the_tracked_fixture_source(self) -> None:
+        with self.assertRaises(MODULE.PerturbationError):
+            MODULE.neutralize_honesty_surface(FIXTURES)
+        self.assertEqual(tracked_fixture_digest(), self.source_digest_before)
+
     def test_apply_refuses_to_write_into_the_tracked_fixture_source(self) -> None:
         perturbation = MODULE.get("stale_locator")
         with self.assertRaises(MODULE.PerturbationError):
@@ -283,15 +340,20 @@ class DisposableCopy(unittest.TestCase):
 
 
 class ProtocolContract(unittest.TestCase):
-    def test_protocol_is_strict_json_and_preregistered_not_frozen(self) -> None:
+    def test_protocol_is_strict_json_and_codex_only_not_frozen(self) -> None:
         protocol = load_strict(PROTOCOL_PATH)
         self.assertEqual(protocol["protocol_id"], "healer-perturbation-v1")
         self.assertEqual(protocol["status"], "NOT_RUN")
-        self.assertEqual(protocol["decision_state"], "PREREGISTERED_NOT_FROZEN")
+        self.assertEqual(
+            protocol["decision_state"], "PREREGISTERED_CODEX_ONLY_NOT_FROZEN"
+        )
         self.assertEqual(protocol["result"], "INCONCLUSIVE")
-        self.assertTrue(protocol["design_only"])
+        self.assertFalse(protocol["design_only"])
         self.assertFalse(protocol["execution_authorized_by_this_file"])
         self.assertFalse(protocol["evaluated_snapshot"]["freeze_record_exists"])
+        self.assertEqual(protocol["execution_identity"]["host"], "codex")
+        self.assertEqual(protocol["execution_identity"]["model"], "gpt-5.6-sol")
+        self.assertIn("EXCLUDED", protocol["execution_identity"]["claude"])
 
     def test_protocol_perturbation_set_matches_the_catalog(self) -> None:
         protocol = load_strict(PROTOCOL_PATH)
@@ -350,19 +412,8 @@ class ProtocolContract(unittest.TestCase):
         protocol = load_strict(PROTOCOL_PATH)
         snapshot = protocol["evaluated_snapshot"]
         digests = snapshot["sha256_at_preparation"]
-        invalidated = set(
-            snapshot.get("sha256_at_preparation_invalidated", {}).get("files", [])
-        )
         for relative, expected in digests.items():
-            if relative == "benchmarks/healer-perturbation-v1/perturbations.py":
-                continue  # self-referential; recomputed at freeze
             actual = sha256_file(ROOT / relative)
-            if relative in invalidated:
-                # A documented, deliberate invalidation (e.g. a version bump)
-                # must actually have changed the file -- otherwise the
-                # invalidation record itself is stale and should be removed.
-                self.assertNotEqual(actual, expected, relative)
-                continue
             self.assertEqual(actual, expected, relative)
 
     def test_readme_declares_not_run_and_points_at_the_protocol(self) -> None:

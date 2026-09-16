@@ -1,0 +1,5 @@
+REPAIRED — updated stale button locator to accessible name “Increment”; approved outcome unchanged.
+
+Changed file: `playwright/tests/counter.spec.mjs`
+
+Verification: 1 test passed.

@@ -1,0 +1,31 @@
+
+Running 1 test using 1 worker
+
+[1/1] playwright/tests/missing-auth.spec.mjs:3:1 › opens the authenticated account surface
+  1) playwright/tests/missing-auth.spec.mjs:3:1 › opens the authenticated account surface ──────────
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: getByTestId('account-name')
+    Expected: "Ada Lovelace"
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" with timeout 5000ms
+      - waiting for getByTestId('account-name')
+
+
+      10 |       : "?account-view";
+      11 |   await page.goto(`/${query}`);
+    > 12 |   await expect(page.getByTestId("account-name")).toHaveText("Ada Lovelace");
+         |                                                  ^
+      13 | });
+      14 |
+        at /private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/healer-red-5rwcsaq6/fixture/playwright/tests/missing-auth.spec.mjs:12:50
+
+    Error Context: test-results/missing-auth-opens-the-authenticated-account-surface/error-context.md
+
+
+  1 failed
+    playwright/tests/missing-auth.spec.mjs:3:1 › opens the authenticated account surface ───────────

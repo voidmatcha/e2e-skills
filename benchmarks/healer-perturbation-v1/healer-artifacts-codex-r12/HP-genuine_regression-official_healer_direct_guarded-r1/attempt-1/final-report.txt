@@ -1,0 +1,1 @@
+NOFIX — application variant `?variant-a` never updates the counter, so the approved outcome cannot occur. No files changed.

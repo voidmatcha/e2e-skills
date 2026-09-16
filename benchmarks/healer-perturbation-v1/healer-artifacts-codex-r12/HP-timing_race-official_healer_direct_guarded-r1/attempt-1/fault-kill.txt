@@ -1,0 +1,22 @@
+
+Running 1 test using 1 worker
+
+[1/1] playwright/tests/optimistic-call-proof.spec.mjs:3:1 › proves the increment request fired
+  1) playwright/tests/optimistic-call-proof.spec.mjs:3:1 › proves the increment request fired ──────
+
+    TimeoutError: page.waitForRequest: Timeout 5000ms exceeded while waiting for event "request"
+
+       6 |   await page.goto(`/${query}`);
+       7 |
+    >  8 |   const request = page.waitForRequest(
+         |                        ^
+       9 |     (candidate) =>
+      10 |       candidate.url().endsWith("/api/increment") &&
+      11 |       candidate.method() === "POST",
+        at /private/var/folders/61/yfbfbptx3v1343816361y1z00000gn/T/healer-workspace-ao9g8h0z/fixture/playwright/tests/optimistic-call-proof.spec.mjs:8:24
+
+    Error Context: test-results/optimistic-call-proof-proves-the-increment-request-fired/error-context.md
+
+
+  1 failed
+    playwright/tests/optimistic-call-proof.spec.mjs:3:1 › proves the increment request fired ───────

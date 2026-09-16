@@ -1,0 +1,3 @@
+REPAIRED — corrected the account route; the approved assertion now passes.
+
+Changed file: `playwright/tests/missing-auth.spec.mjs`

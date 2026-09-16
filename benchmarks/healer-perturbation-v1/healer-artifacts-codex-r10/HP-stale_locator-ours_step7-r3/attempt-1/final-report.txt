@@ -1,0 +1,5 @@
+REPAIRED — updated the button’s accessible-name locator to `Increment`.
+
+Test result: 1 passed.
+
+Changed file: `playwright/tests/counter.spec.mjs`
