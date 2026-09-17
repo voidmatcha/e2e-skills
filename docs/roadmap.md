@@ -9,6 +9,7 @@ This page tracks self-selected upstream contributions and future candidates. Mer
 - **Merged:** 15 upstream PRs accepted in real projects.
 - **In review:** 6 active/open upstream PRs.
 - **Closed without merge:** 5. Recorded below rather than dropped; the merge count above is meaningless without them.
+- **Generated ledger:** the counts above cover this hand-curated page. [Field review v1](../benchmarks/field-review-v1/README.md) is generated from GitHub for every pull request whose body names the skill and currently records more submissions, merges, and rejections than this page lists. Neither is complete: this page omits some marked pull requests, and the ledger cannot see an unmarked one such as [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486).
 - **Upstream tooling:** the always-passing-Locator-assertion smell (`#4f`) was contributed to the official [`eslint-plugin-playwright`](https://github.com/mskelton/eslint-plugin-playwright) as the `no-unnecessary-assertions` rule ([#470](https://github.com/mskelton/eslint-plugin-playwright/pull/470), merged) — tracked separately from the test-fix count below.
 - **Queue policy:** prefer high-signal P0 silent-pass fixes; accept concrete P1 sequencing or diagnostics fixes without relabeling them as P0 evidence, and avoid padding with subjective P1/P2 style findings.
 - **Submission policy:** one narrow anti-pattern per PR where possible, local verification first, and an `e2e-reviewer` footer only when it is useful context.

@@ -64,7 +64,7 @@ If you're comparing framework-specific assistants, the split is simple:
 
 ## Merged upstream fixes
 
-`e2e-reviewer` findings have contributed to **15 merged upstream PRs**. These self-selected cases show practical use and let readers inspect the fixes; they are not a representative validation sample or an accuracy estimate. The rejections are published beside them: [Field review v1](benchmarks/field-review-v1/README.md) generates the full record from GitHub — **29 submitted, 16 merged, 6 closed without merging, 7 open** — because a merge count without its rejections is not a rate.
+`e2e-reviewer` findings have contributed to **15 merged upstream PRs**. These self-selected cases show practical use and let readers inspect the fixes; they are not a representative validation sample or an accuracy estimate. The rejections are published beside them: [Field review v1](benchmarks/field-review-v1/README.md) generates the record of every pull request that names the skill from GitHub — **29 submitted, 16 merged, 6 closed without merging, 7 open** — because a merge count without its rejections is not a rate.
 
 The repositories below had **493,657 combined GitHub stars** in a GitHub API snapshot taken on 2026-09-16. Stars indicate project scale and visibility, not reviewer accuracy or endorsement.
 
@@ -185,12 +185,22 @@ Keep the checkout outside `~/.claude/skills/`, then link each public skill direc
 git clone https://github.com/voidmatcha/e2e-skills.git "$HOME/.claude/e2e-skills"
 mkdir -p "$HOME/.claude/skills"
 
+skip_link=
 for skill in playwright-test-generator e2e-reviewer playwright-debugger cypress-debugger; do
-  ln -s "$HOME/.claude/e2e-skills/skills/$skill" "$HOME/.claude/skills/$skill"
+  if [ -e "$HOME/.claude/skills/$skill" ] || [ -L "$HOME/.claude/skills/$skill" ]; then
+    echo "Already exists, nothing linked: $HOME/.claude/skills/$skill" >&2
+    skip_link=1
+  fi
 done
+
+if [ -z "$skip_link" ]; then
+  for skill in playwright-test-generator e2e-reviewer playwright-debugger cypress-debugger; do
+    ln -s "$HOME/.claude/e2e-skills/skills/$skill" "$HOME/.claude/skills/$skill"
+  done
+fi
 ```
 
-The links fail rather than replacing existing same-named skills. Run `/skills` in Claude Code and confirm all four names appear.
+If any of the four names already exists under `~/.claude/skills/`, the commands print that path and link nothing, so an existing skill is never replaced and no link is nested inside it. Run `/skills` in Claude Code and confirm all four names appear.
 
 ### First prompts
 
@@ -234,7 +244,7 @@ A scanner match is a candidate, not a verdict. Cross-file findings such as missi
 
 The current evidence supports a narrow claim: the project has behavior-backed development evidence and 15 merged upstream fixes, but it does not claim generalized reviewer accuracy.
 
-The merge count now has its denominator. [Field review v1](benchmarks/field-review-v1/README.md) sweeps every pull request this account opened that names the skill and reports whatever GitHub says: 29 submitted across 26 repositories, 16 merged, 6 closed without merging, 7 open. Generating it from GitHub rather than from a hand-kept list found seven the roadmap had omitted — two merges and three rejections among them.
+The merge count now has a published denominator, with one known limit. [Field review v1](benchmarks/field-review-v1/README.md) sweeps every pull request this account opened that names the skill and reports whatever GitHub says: 29 submitted across 26 repositories, 16 merged, 6 closed without merging, 7 open. Generating it from GitHub rather than from a hand-kept list found seven the roadmap had omitted — two merges and three rejections among them. A pull request that does not name the skill is invisible to the sweep, so the denominator is a lower bound: [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486), merged and listed above, is one such pull request.
 
 That is still not a precision figure. A merge means a maintainer accepted a patch, not that a finding's severity was classified correctly, and the submission footer is optional, so an unmarked rejection would bias the rate upward. What it does give is adjudication this project does not control.
 

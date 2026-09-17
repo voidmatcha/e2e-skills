@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=e1d20fc00ea7684a00158f148e389abbf12c5dd6505c6a2dc5975a92e0cb70b3; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=2b37dca3399f6bb0c44f2abb2bbc763832eca8e2b9fb40cae6a0e030bba7bf6d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 AI 코딩 에이전트가 Playwright와 Cypress E2E 테스트를 생성하고 리뷰하며 실패 원인을 분석할 때 쓰는 네 종류의 Agent Skills 모음입니다. 새 테스트 생성은 Playwright를 지원하고, 기존 테스트나 PR/diff 범위의 변경 사항 리뷰와 실패 분석은 Playwright와 Cypress를 지원합니다. 리뷰 목록 가운데 규칙만으로 판별할 수 있는 항목을 찾는 `deterministic scanner`도 포함합니다.
 
@@ -196,12 +196,22 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
 git clone https://github.com/voidmatcha/e2e-skills.git "$HOME/.claude/e2e-skills"
 mkdir -p "$HOME/.claude/skills"
 
+skip_link=
 for skill in playwright-test-generator e2e-reviewer playwright-debugger cypress-debugger; do
-  ln -s "$HOME/.claude/e2e-skills/skills/$skill" "$HOME/.claude/skills/$skill"
+  if [ -e "$HOME/.claude/skills/$skill" ] || [ -L "$HOME/.claude/skills/$skill" ]; then
+    echo "Already exists, nothing linked: $HOME/.claude/skills/$skill" >&2
+    skip_link=1
+  fi
 done
+
+if [ -z "$skip_link" ]; then
+  for skill in playwright-test-generator e2e-reviewer playwright-debugger cypress-debugger; do
+    ln -s "$HOME/.claude/e2e-skills/skills/$skill" "$HOME/.claude/skills/$skill"
+  done
+fi
 ```
 
-같은 이름의 스킬이 이미 있으면 링크 생성은 기존 파일을 덮어쓰지 않고 실패합니다. Claude Code에서 `/skills`를 실행해 네 스킬이 모두 표시되는지 확인합니다.
+`~/.claude/skills/` 아래에 네 이름 중 하나라도 이미 있으면 그 경로를 출력하고 아무것도 연결하지 않으므로, 기존 스킬을 덮어쓰거나 그 안에 링크를 만들지 않습니다. Claude Code에서 `/skills`를 실행해 네 스킬이 모두 표시되는지 확인합니다.
 
 ### 첫 요청
 
@@ -245,7 +255,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 현재 근거로 뒷받침할 수 있는 주장은 제한적입니다. 이 프로젝트에는 동작 검증을 거친 개발 근거와 upstream에 merge된 수정 15건이 있지만, 이를 바탕으로 일반적인 리뷰 정확도를 주장하지는 않습니다.
 
-merge 건수를 전체 제출 건수와 함께 볼 수 있습니다. [Field review v1](benchmarks/field-review-v1/README.md)은 이 계정이 연 PR 중 스킬 이름이 본문에 들어간 것을 모두 훑어 GitHub이 보고하는 결과를 그대로 적습니다. 26개 저장소에 29건 제출, merge 16건, merge 없이 닫힘 6건, 진행 중 7건입니다. 손으로 관리하던 목록 대신 GitHub에서 생성하자 로드맵에 없던 7건이 드러났고, 그중 merge가 2건, 거절이 3건이었습니다.
+merge 건수를 전체 제출 건수와 함께 볼 수 있습니다. [Field review v1](benchmarks/field-review-v1/README.md)은 이 계정이 연 PR 중 스킬 이름이 본문에 들어간 것을 모두 훑어 GitHub이 보고하는 결과를 그대로 적습니다. 26개 저장소에 29건 제출, merge 16건, merge 없이 닫힘 6건, 진행 중 7건입니다. 손으로 관리하던 목록 대신 GitHub에서 생성하자 로드맵에 없던 7건이 드러났고, 그중 merge가 2건, 거절이 3건이었습니다. 본문에 스킬 이름이 없는 PR은 이 수집에 보이지 않으므로 분모는 하한값입니다. 위 표에 있는 merge된 [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486)이 그런 경우입니다.
 
 이것도 정밀도 수치는 아닙니다. merge는 관리자가 패치를 받아들였다는 뜻일 뿐, 지적의 심각도를 올바르게 판단했다는 의미는 아닙니다. 제출할 때 서명을 남기는 것은 선택 사항이므로, 서명이 없는 거절 사례는 집계에서 빠져 비율이 실제보다 높게 나타날 수 있습니다. 다만 이 판정은 프로젝트가 통제할 수 없습니다.
 

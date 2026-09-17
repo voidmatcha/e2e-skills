@@ -127,7 +127,7 @@ PY
     err "eval convention check failed"
   fi
 else
-  warn "python3 not available; skipped eval convention check"
+  err "python3 not available; cannot run eval convention check"
 fi
 
 section "Security"
@@ -360,7 +360,7 @@ PY
     fi
   fi
 else
-  warn "python3 not available; skipped skill description budget check"
+  err "python3 not available; cannot run skill description budget check"
 fi
 
 section "Reviewer taxonomy parity"
@@ -880,7 +880,7 @@ PY
     err "reviewer taxonomy parity check failed"
   fi
 else
-  warn "python3 not available; skipped reviewer taxonomy parity check"
+  err "python3 not available; cannot run reviewer taxonomy parity check"
 fi
 
 section "Framework scope"
@@ -1105,7 +1105,7 @@ PY
     err "skill trigger boundary check failed"
   fi
 else
-  warn "python3 not available; skipped skill trigger boundary check"
+  err "python3 not available; cannot run skill trigger boundary check"
 fi
 
 section "Subagent parity"
@@ -1305,7 +1305,7 @@ PY
     err "subagent parity check failed"
   fi
 else
-  warn "python3 not available; skipped subagent parity check"
+  err "python3 not available; cannot run subagent parity check"
 fi
 
 section "Markdown links"
@@ -1359,7 +1359,7 @@ PY
     err "broken local markdown links found"
   fi
 else
-  warn "python3 not available; skipped markdown link check"
+  err "python3 not available; cannot run markdown link check"
 fi
 
 section "Docs orphan check"
@@ -1425,7 +1425,7 @@ PY
     err "orphan doc files found — link from README.md or remove"
   fi
 else
-  warn "python3 not available; skipped docs orphan check"
+  err "python3 not available; cannot run docs orphan check"
 fi
 
 section "README i18n parity"
@@ -1484,12 +1484,16 @@ def check_manual_clone_contract(path, text, errors):
         "playwright-debugger cypress-debugger; do",
         'ln -s "$HOME/.claude/e2e-skills/skills/$skill" '
         '"$HOME/.claude/skills/$skill"',
+        'if [ -e "$HOME/.claude/skills/$skill" ] || '
+        '[ -L "$HOME/.claude/skills/$skill" ]; then',
+        'if [ -z "$skip_link" ]; then',
         "/skills",
     )
     if any(token not in text for token in required):
         errors.append(
             f"README i18n parity: {path} manual Claude Code clone must expose "
-            "four direct per-skill roots and document /skills verification"
+            "four direct per-skill roots, refuse to link over an existing same-named "
+            "skill, and document /skills verification"
         )
     if "~/.claude/skills/e2e-skills" in text:
         errors.append(

@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <strong>🇯🇵 日本語</strong> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=e1d20fc00ea7684a00158f148e389abbf12c5dd6505c6a2dc5975a92e0cb70b3; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=2b37dca3399f6bb0c44f2abb2bbc763832eca8e2b9fb40cae6a0e030bba7bf6d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、AI コーディングエージェントが Playwright/Cypress の E2E テスト作業に使える 4 つのワークフローを提供します。Playwright カバレッジの生成、既存のテスト仕様または PR/diff 範囲の変更レビュー、失敗した Playwright レポートのデバッグ、失敗した Cypress レポートのデバッグを扱います。レビューカタログのうち、機械的に判定できる部分集合を検出する決定論的スキャナーも含まれます。
 
@@ -187,12 +187,22 @@ checkout は `~/.claude/skills/` の外に置き、各 public skill directory �
 git clone https://github.com/voidmatcha/e2e-skills.git "$HOME/.claude/e2e-skills"
 mkdir -p "$HOME/.claude/skills"
 
+skip_link=
 for skill in playwright-test-generator e2e-reviewer playwright-debugger cypress-debugger; do
-  ln -s "$HOME/.claude/e2e-skills/skills/$skill" "$HOME/.claude/skills/$skill"
+  if [ -e "$HOME/.claude/skills/$skill" ] || [ -L "$HOME/.claude/skills/$skill" ]; then
+    echo "Already exists, nothing linked: $HOME/.claude/skills/$skill" >&2
+    skip_link=1
+  fi
 done
+
+if [ -z "$skip_link" ]; then
+  for skill in playwright-test-generator e2e-reviewer playwright-debugger cypress-debugger; do
+    ln -s "$HOME/.claude/e2e-skills/skills/$skill" "$HOME/.claude/skills/$skill"
+  done
+fi
 ```
 
-同名のスキルがすでにある場合、リンク作成は上書きせずに失敗します。Claude Code で `/skills` を実行し、4 つの名前がすべて表示されることを確認してください。
+`~/.claude/skills/` に 4 つの名前のいずれかがすでにある場合は、そのパスを表示して何もリンクしないため、既存のスキルを上書きしたり、その中にリンクを作ったりしません。Claude Code で `/skills` を実行し、4 つの名前がすべて表示されることを確認してください。
 
 ### 最初のプロンプト
 
@@ -236,7 +246,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 現在の根拠で支えられる主張は限定的です。このプロジェクトには動作で裏付けた開発根拠とアップストリームにマージされた 15 件の修正がありますが、一般化されたレビュー精度は主張しません。
 
-マージ件数に分母がつきました。[Field review v1](benchmarks/field-review-v1/README.md) は、このアカウントが出したプルリクエストのうち本文にスキル名を含むものをすべて走査し、GitHub が報告する結果をそのまま記録します。26 リポジトリに 29 件提出、マージ 16 件、マージなしクローズ 6 件、オープン 7 件です。手作業の一覧ではなく GitHub から生成したことで、ロードマップに載っていなかった 7 件が見つかり、うち 2 件はマージ、3 件は却下でした。
+マージ件数に分母がつきました。[Field review v1](benchmarks/field-review-v1/README.md) は、このアカウントが出したプルリクエストのうち本文にスキル名を含むものをすべて走査し、GitHub が報告する結果をそのまま記録します。26 リポジトリに 29 件提出、マージ 16 件、マージなしクローズ 6 件、オープン 7 件です。手作業の一覧ではなく GitHub から生成したことで、ロードマップに載っていなかった 7 件が見つかり、うち 2 件はマージ、3 件は却下でした。本文にスキル名を含まないプルリクエストはこの走査に現れないため、分母は下限値です。上の表にあるマージ済みの [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) がその例です。
 
 これも精度の数値ではありません。マージはメンテナーがパッチを受け入れたことを意味し、指摘の重大度分類が正しかったことを保証しません。提出署名は任意なので、署名のない却下は比率を上振れさせます。ただしこの判定だけは、このプロジェクトの管理下にありません。
 

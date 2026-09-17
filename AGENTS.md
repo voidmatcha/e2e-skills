@@ -215,7 +215,7 @@ When you bump the bundle version, touch all three manifests in one commit. The d
 
 ## Installation Paths Documented for Users
 
-`README.md` organizes the Install section as per-host subsections (superpowers-style anchor list at the top, one short subsection per host). Keep this list and those subsections in lock-step:
+`README.md` organizes the Install section (`## Install and try it`) as one short `###` subsection per host, with no separate anchor list. Keep this list and those subsections in lock-step:
 
 - **Claude Code**: plugin marketplace — `/plugin marketplace add voidmatcha/e2e-skills` → `/plugin install e2e-skills@voidmatcha` (reads `.claude-plugin/plugin.json` + `marketplace.json`) — or the `skills` CLI with `-a claude-code`.
 - **Codex**: the recommended Codex-only path is `npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a codex`; Claude Code has its own `-a claude-code` command above. The skill copies land in `~/.agents/skills/`, where Codex/omx auto-discovers their `SKILL.md` files. This path does not install the root `.codex-plugin/plugin.json`; that interface manifest belongs to the alternative Codex plugin marketplace path: `codex plugin marketplace add voidmatcha/e2e-skills` → `codex plugin add e2e-skills@voidmatcha`.

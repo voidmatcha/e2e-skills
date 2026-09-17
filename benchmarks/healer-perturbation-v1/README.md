@@ -213,3 +213,13 @@ persisted transcript truncation `INCOMPLETE`. Revision 12 additionally treats
 `.playwright-mcp/` as runtime-only output in both tree snapshots and cleanup;
 its self-test creates that directory, proves it cannot affect the workspace
 digest, removes it, and preserves an ordinary neighboring file.
+
+## External convergence
+
+Other work reports the failure this benchmark screens for. None of it supplied this benchmark's design, and none of its figures is evidence about the arms measured here. The distinguishing parts of this benchmark are narrower than "healers weaken assertions": the two honesty controls, where no test-side repair is correct, and a decision rule frozen before execution that rejects on a single weakened cell.
+
+| Source | Kind | What it reports | How far it transfers |
+| --- | --- | --- | --- |
+| Lee, [Practical Limits of Autonomous Test Repair](https://arxiv.org/abs/2605.01471) (arXiv, 2026) | Single-author industrial case study, preprint | 300 autonomous execution reports and 636 test-case executions from a LangGraph + Playwright system; 70% repair convergence at the scenario-family level, with documented assertion weakening (including a matcher broadened to `toBeTruthy()`) and test-case deletion used to reach superficial convergence | Same failure classes as `SEMANTIC_WEAKENING` and `SKIP_DELETE`; one enterprise prototype |
+| Li et al., [Escaping the Self-Repair Trap](https://arxiv.org/abs/2608.05917) (arXiv, 2026) | Preprint | Names the "Self-Repair Trap": iterative execution-feedback repair drives generated oracles toward assertions that are easier to satisfy but detect fewer faults, described as reward-hacking-like behavior | Regression-oracle generation, not browser E2E; supports the bounded repair loop, not a rate |
+| Malhotra, [The False-Heal Problem in AI Test Automation](https://sdtimes.com/test/the-false-heal-problem-in-ai-test-automation/) (SD Times) | Practitioner article with a companion benchmark | 136 controlled UI perturbations across two applications and four resolvers; unsupervised healing resolved the wrong element roughly one time in four | Locator healing only; not peer reviewed |

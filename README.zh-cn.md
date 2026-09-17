@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=e1d20fc00ea7684a00158f148e389abbf12c5dd6505c6a2dc5975a92e0cb70b3; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=2b37dca3399f6bb0c44f2abb2bbc763832eca8e2b9fb40cae6a0e030bba7bf6d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 为 AI 编程代理提供四个面向 E2E 测试工作的聚焦工作流：生成 Playwright 覆盖、审查现有 spec 或 PR/diff 范围内的测试变更、调试失败的 Playwright 报告，以及调试失败的 Cypress 报告。它还包含一个确定性扫描器，用于发现审查目录中可机械判定的子集。
 
@@ -186,12 +186,22 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
 git clone https://github.com/voidmatcha/e2e-skills.git "$HOME/.claude/e2e-skills"
 mkdir -p "$HOME/.claude/skills"
 
+skip_link=
 for skill in playwright-test-generator e2e-reviewer playwright-debugger cypress-debugger; do
-  ln -s "$HOME/.claude/e2e-skills/skills/$skill" "$HOME/.claude/skills/$skill"
+  if [ -e "$HOME/.claude/skills/$skill" ] || [ -L "$HOME/.claude/skills/$skill" ]; then
+    echo "Already exists, nothing linked: $HOME/.claude/skills/$skill" >&2
+    skip_link=1
+  fi
 done
+
+if [ -z "$skip_link" ]; then
+  for skill in playwright-test-generator e2e-reviewer playwright-debugger cypress-debugger; do
+    ln -s "$HOME/.claude/e2e-skills/skills/$skill" "$HOME/.claude/skills/$skill"
+  done
+fi
 ```
 
-如果已有同名 Skill，这些链接会失败，而不会替换它。在 Claude Code 中运行 `/skills`，确认四个名称都出现。
+如果 `~/.claude/skills/` 下已存在四个名称中的任何一个，命令会打印该路径且不创建任何链接，因此不会替换现有 Skill，也不会在其中嵌套链接。在 Claude Code 中运行 `/skills`，确认四个名称都出现。
 
 ### 首次提示词
 
@@ -235,7 +245,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 当前证据只支持一个窄口径声明：项目拥有行为支持的开发证据和 15 个已合入上游的修复，但不声称具备可泛化的审查准确率。
 
-合并数量现在有了分母。[Field review v1](benchmarks/field-review-v1/README.md) 会扫描该账号提交的、正文中提到本技能的全部 pull request，并按 GitHub 的报告如实记录：在 26 个仓库提交 29 个，合并 16 个，未合并关闭 6 个，仍开启 7 个。改为从 GitHub 生成而非手工维护列表后，发现路线图遗漏了 7 个，其中 2 个是合并，3 个是被拒。
+合并数量现在有了分母。[Field review v1](benchmarks/field-review-v1/README.md) 会扫描该账号提交的、正文中提到本技能的全部 pull request，并按 GitHub 的报告如实记录：在 26 个仓库提交 29 个，合并 16 个，未合并关闭 6 个，仍开启 7 个。改为从 GitHub 生成而非手工维护列表后，发现路线图遗漏了 7 个，其中 2 个是合并，3 个是被拒。正文未提到本技能的 pull request 不会出现在扫描中，因此分母只是下限；上表中已合并的 [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) 就是一例。
 
 这仍然不是精确率。合并意味着维护者接受了补丁，并不证明该指摘的严重级别分类正确；提交署名是可选的，因此未署名的拒绝会把比率往上偏。它真正提供的，是本项目无法控制的裁决。
 
