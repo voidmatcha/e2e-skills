@@ -1,0 +1,207 @@
+{
+  "schema_version": 1,
+  "protocol_id": "independent-product-review-v11",
+  "invocation_id": "eeb39518-0fc7-4f47-acaf-cb9f22b6d1fe",
+  "attempt_id": "claude-v8-remediation-confirmation-v11-r2",
+  "schedule_index": 1,
+  "repetition": 2,
+  "declared_schedule_digest": "d77cec54637c6404b3787c3ec5ade8860fbf4520e2a9d4c2913a9873c3bf16cf",
+  "started_at_utc": "2026-09-17T09:29:03.603Z",
+  "finished_at_utc": "2026-09-17T09:33:41.221Z",
+  "status": "PASS",
+  "status_reason": null,
+  "host": {
+    "model": "claude-fable-5",
+    "provider_family": "anthropic",
+    "runner": "claude"
+  },
+  "runner_identity": {
+    "mode": "live",
+    "path": "/Users/user/.cache/e2e-skills-bench/claude/2.1.220/claude",
+    "sha256": "8addc857f3fe64d5a0368af9ee50321b50afb4a6918ba3ef018ab84f5dbbe081",
+    "version": "2.1.220 (Claude Code)"
+  },
+  "model_tool_surface": "none",
+  "source_read_isolation": "prompt-complete-zero-tools",
+  "credential_environment": "oauth-token-staged-model-tools-disabled",
+  "execution_mode": "live",
+  "local_artifact_integrity_passed": true,
+  "artifact_integrity_eligible": true,
+  "caller_declared_runner_model_provenance": true,
+  "remote_model_attestation": false,
+  "runner_exit_code": 0,
+  "elapsed_ms": 276133,
+  "timeout_seconds": 1800,
+  "workspace_before_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "workspace_after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "credential_shaped_output_detected": false,
+  "packet_path": "/Users/user/.cache/e2e-skills-bench/v11-out/r2/packet.json",
+  "packet_manifest_path": "/Users/user/.cache/e2e-skills-bench/v11-out/r2/packet-manifest.json",
+  "prompt_size_attestation_path": "/Users/user/.cache/e2e-skills-bench/v11-out/r2/prompt-size-attestation.json",
+  "prompt_size_attestation_sha256": "7c347a80a775c980c6778ff7bb9a75dfd41615ec0f02ea895b764300107f9d35",
+  "model_catalog_sha256": "d6e6f3274cd54a776f323b4762863940082f0e0c6805bc125760f74b67f563e9",
+  "reservation_sha256": "3f3167c7b3af2d8441b33e45b4bb8ab7baffb171dba4ae0475e4dd73321fbe70",
+  "raw_output_path": "/Users/user/.cache/e2e-skills-bench/v11-out/r2/raw-claude-v8-remediation-confirmation-v11-r2.json",
+  "raw_output_sha256": "59095bab29ae323aaace1354a12631fde5ea15d4b4699e1637c6ba539870cdee",
+  "raw_output_original_sha256": "59095bab29ae323aaace1354a12631fde5ea15d4b4699e1637c6ba539870cdee",
+  "raw_output_exact": true,
+  "integrity_before": {
+    "protocol_sha256": "716492e19d744c0cad0ae4f3d20534f1917b12507a68708211cdabe9ef7d1a18",
+    "superseded_phase_record_sha256": "9b42486c69d46c5f3d9e5a996dd3a3c2f6bb619e956048981711c4b189b2341d",
+    "inherited_protocol_sha256": "e66523a8af8a763f8ae10edb8c0d099fffd9767ae84771b4599f5401aaaf3541",
+    "inherited_freeze_sha256": "efcd2d6b6564cc79041ab8a773518d7abb7f762dabcc8145dfb0014eeac47ec8",
+    "inherited_superseded_phase_record_sha256": "cdb38542e8d42c75ff41cece3a526fba4c5cbcea19a9b64636d9cc3dd7708c60",
+    "remediation_ledger_sha256": "0896a55a3db94129fd42c228bf3a6f1e57ed9b9ee5b18db92b588bbce406b52b",
+    "model_catalog_sha256": "d6e6f3274cd54a776f323b4762863940082f0e0c6805bc125760f74b67f563e9",
+    "packet_sha256": "7f4be143afbca4671c2df50339ec545b2eb261abac6f27482bd5d203dbeecd83",
+    "packet_manifest_sha256": "11455243f85de0ce42920e29c81aa4f7539ce8d9979d2b410a2d9a2b8ccb527e",
+    "prompt_size_attestation_sha256": "7c347a80a775c980c6778ff7bb9a75dfd41615ec0f02ea895b764300107f9d35",
+    "source_snapshot_sha256": "d01dc69dd0d4f44f406f21c4c6d2f748cc06f27944a2ab43a17f480259e51231",
+    "predecessor_freeze_sha256": "1f8fbab4fa2763b297717ee744dfc96a7f57d7deb92e48e97d6b4941fa9beeae",
+    "predecessor_protocol_sha256": "3e8d2fcdaef315b87407a3af637eb2c834352d589a2606405cb118464de03387",
+    "reference_tokenizer_lock_sha256": "6fbd61316c7988c72ec6023ffa1a0ac38b36ebc0bb9bfd35b89cec3f20f1a536",
+    "reference_tokenizer_bpe_source_sha256": "446a9538cb6c348e3516120d7c08b09f57c36495e2acfffe59a5bf8b0cfb1a2d",
+    "independent_runner_sha256": "892f1d6b4e0a7f8b49f4258319facb99847267fe6f3caa26aea1c60dbb8e0058",
+    "evidence_validator_sha256": "04515595fa36c1df00734abe4a8ae552f543edc6a71e39301ab214db58bebaf7",
+    "shared_zero_tool_runner_sha256": "a25fa410e53025ef27ea95187bcba99c329a97d0e6a5ffaac0e4643a46ea3ee6",
+    "strict_json_sha256": "5fbff804b3b988eff0ef7a714cfc122fc1ab378bb01adc2113f96d8175f6e7fb",
+    "eval_security_sha256": "c0f760ac19fe9d1cb98ccde2682b7bdbb77d00ca699d5cf530256846c137286c",
+    "version_contract_sha256": "68039f66aa480a40ce8a18eb4759644f586d38cbd4479631df5f333591effa26",
+    "selected_sources_sha256": "feb907cefdd8f1f9fc3bb2ac21fece336dac3ec349b24f01ed3f72aa0083e9a5",
+    "selected_sources": {
+      "skills/playwright-debugger/SKILL.md": "cc3e5e9fc13837690b617b36a4d9b8a6c3e316b412194c1baaacefd0e3f7d7f5",
+      "skills/playwright-debugger/scripts/read-playwright-artifact.py": "d2619217872e77b2d0207de518ae7cb48a241441bc9cda8e7c390a399760a93a",
+      "skills/playwright-debugger/scripts/run-artifact-reader.sh": "0035ffef5ee73ff98cc90196b11174b68a9ca7119bf7941ba1624124b6829107",
+      "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+      "skills/e2e-reviewer/scripts/scan.sh": "6e6df9a91c7c74b991c9b1c7e95225070a114c6cfce0dccd008db2953a8e6eef",
+      "skills/cypress-debugger/scripts/read-cypress-artifact.py": "a2f189dc7fc96374ea2dfb3674f304defefc1ab572e1a7b5f40ceb7be129c2c0",
+      "skills/cypress-debugger/scripts/run-artifact-reader.sh": "891a544228404428ce1d66d40c56a4f6e8665267626b47ff0cb965cf4a583703"
+    }
+  },
+  "integrity_after": {
+    "protocol_sha256": "716492e19d744c0cad0ae4f3d20534f1917b12507a68708211cdabe9ef7d1a18",
+    "superseded_phase_record_sha256": "9b42486c69d46c5f3d9e5a996dd3a3c2f6bb619e956048981711c4b189b2341d",
+    "inherited_protocol_sha256": "e66523a8af8a763f8ae10edb8c0d099fffd9767ae84771b4599f5401aaaf3541",
+    "inherited_freeze_sha256": "efcd2d6b6564cc79041ab8a773518d7abb7f762dabcc8145dfb0014eeac47ec8",
+    "inherited_superseded_phase_record_sha256": "cdb38542e8d42c75ff41cece3a526fba4c5cbcea19a9b64636d9cc3dd7708c60",
+    "remediation_ledger_sha256": "0896a55a3db94129fd42c228bf3a6f1e57ed9b9ee5b18db92b588bbce406b52b",
+    "model_catalog_sha256": "d6e6f3274cd54a776f323b4762863940082f0e0c6805bc125760f74b67f563e9",
+    "packet_sha256": "7f4be143afbca4671c2df50339ec545b2eb261abac6f27482bd5d203dbeecd83",
+    "packet_manifest_sha256": "11455243f85de0ce42920e29c81aa4f7539ce8d9979d2b410a2d9a2b8ccb527e",
+    "prompt_size_attestation_sha256": "7c347a80a775c980c6778ff7bb9a75dfd41615ec0f02ea895b764300107f9d35",
+    "source_snapshot_sha256": "d01dc69dd0d4f44f406f21c4c6d2f748cc06f27944a2ab43a17f480259e51231",
+    "predecessor_freeze_sha256": "1f8fbab4fa2763b297717ee744dfc96a7f57d7deb92e48e97d6b4941fa9beeae",
+    "predecessor_protocol_sha256": "3e8d2fcdaef315b87407a3af637eb2c834352d589a2606405cb118464de03387",
+    "reference_tokenizer_lock_sha256": "6fbd61316c7988c72ec6023ffa1a0ac38b36ebc0bb9bfd35b89cec3f20f1a536",
+    "reference_tokenizer_bpe_source_sha256": "446a9538cb6c348e3516120d7c08b09f57c36495e2acfffe59a5bf8b0cfb1a2d",
+    "independent_runner_sha256": "892f1d6b4e0a7f8b49f4258319facb99847267fe6f3caa26aea1c60dbb8e0058",
+    "evidence_validator_sha256": "04515595fa36c1df00734abe4a8ae552f543edc6a71e39301ab214db58bebaf7",
+    "shared_zero_tool_runner_sha256": "a25fa410e53025ef27ea95187bcba99c329a97d0e6a5ffaac0e4643a46ea3ee6",
+    "strict_json_sha256": "5fbff804b3b988eff0ef7a714cfc122fc1ab378bb01adc2113f96d8175f6e7fb",
+    "eval_security_sha256": "c0f760ac19fe9d1cb98ccde2682b7bdbb77d00ca699d5cf530256846c137286c",
+    "version_contract_sha256": "68039f66aa480a40ce8a18eb4759644f586d38cbd4479631df5f333591effa26",
+    "selected_sources_sha256": "feb907cefdd8f1f9fc3bb2ac21fece336dac3ec349b24f01ed3f72aa0083e9a5",
+    "selected_sources": {
+      "skills/playwright-debugger/SKILL.md": "cc3e5e9fc13837690b617b36a4d9b8a6c3e316b412194c1baaacefd0e3f7d7f5",
+      "skills/playwright-debugger/scripts/read-playwright-artifact.py": "d2619217872e77b2d0207de518ae7cb48a241441bc9cda8e7c390a399760a93a",
+      "skills/playwright-debugger/scripts/run-artifact-reader.sh": "0035ffef5ee73ff98cc90196b11174b68a9ca7119bf7941ba1624124b6829107",
+      "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+      "skills/e2e-reviewer/scripts/scan.sh": "6e6df9a91c7c74b991c9b1c7e95225070a114c6cfce0dccd008db2953a8e6eef",
+      "skills/cypress-debugger/scripts/read-cypress-artifact.py": "a2f189dc7fc96374ea2dfb3674f304defefc1ab572e1a7b5f40ceb7be129c2c0",
+      "skills/cypress-debugger/scripts/run-artifact-reader.sh": "891a544228404428ce1d66d40c56a4f6e8665267626b47ff0cb965cf4a583703"
+    }
+  },
+  "review": {
+    "summary": "Packet-only review of two debugger/reviewer skill surfaces, two POSIX launchers, two bounded Python artifact readers, and the multi-tier shell scanner. Contracts and implementations agree closely: every documented ceiling (8 MiB report, 64 MiB archive/image, 512 MiB video, 100-depth/200k-node JSON, 10k records, 100 attempts, 1 MiB output, ZIP entry/ratio limits) matches the code; outcome/stats cross-validation, descriptor-relative no-follow opens with pre/post fingerprint checks, strict JSON (duplicate keys, BOM, non-finite, trailing data), redact-before-truncate with a residual-credential fail-closed gate, and env-allowlisted launchers with root-owned fixed interpreter selection are all implemented as described. The scanner separates gating P0 evidence from LLM-triage candidates, routes JUSTIFIED P0 hits to an external-review ledger instead of silence, never exempts focused tests, and converts limiter/infrastructure failures into INCOMPLETE exits rather than clean summaries. Findings are bounded medium-severity inconsistencies: an isolation-probe example that drops the mandated empty-environment prefix, an over-broad config-discovery extension set in the generator, no defined reporting path for a V6-blocked candidate, a boolean admitted as an attempt index, and a parse-time non-finite-float guard present in one reader but not its sibling.",
+    "scores": {
+      "semantic_correctness": 91,
+      "false_positive_control": 93,
+      "security_trust_boundaries": 91,
+      "verification_design": 90,
+      "scope_contract_consistency": 88,
+      "docs_usability": 90
+    },
+    "findings": [
+      {
+        "severity": "M",
+        "category": "security_trust_boundaries",
+        "file": "skills/playwright-debugger/SKILL.md",
+        "line": 367,
+        "title": "F1/F7 isolation-probe commands bypass the documented empty-environment gate",
+        "evidence": "The probe example runs `npx --no-install playwright test ...` bare, without the `/usr/bin/env -i PATH=\"$PATH\"` prefix that the repository command environment gate (line 113) mandates for every repository-controlled command, and uses npx where Prerequisites prefer the project-local `node_modules/.bin/playwright` binary.",
+        "recommendation": "Rewrite both probe commands with the `/usr/bin/env -i PATH=\"$PATH\" node_modules/.bin/playwright ...` form used by every other repository-controlled example."
+      },
+      {
+        "severity": "M",
+        "category": "scope_contract_consistency",
+        "file": "skills/playwright-test-generator/SKILL.md",
+        "line": 52,
+        "title": "Config discovery uses eight extensions where Playwright loads only six",
+        "evidence": "Step 1 directs searching `playwright.config.<ext>` across the eight-extension set including .tsx/.jsx, while playwright-debugger/SKILL.md names `playwright.config.{ts,js,mts,mjs,cts,cjs}` as Playwright's six default-discovery filenames and scan.sh's has_project_marker checks exactly those six.",
+        "recommendation": "Scope config-file discovery to the six real Playwright config filenames and keep the eight-extension set for spec discovery only."
+      },
+      {
+        "severity": "M",
+        "category": "verification_design",
+        "file": "skills/playwright-test-generator/SKILL.md",
+        "line": 472,
+        "title": "No reporting path for a V6-blocked candidate",
+        "evidence": "The PARTIAL/BLOCKED template admits only `<V4|V5>` as the blocking verification, but the Complete template hardcodes `V6 PASS` and Step 7 states V6 must report CANNOT_VERIFY when host separation is unavailable, leaving a V6-blocked candidate with no defined completion verdict on the included surfaces.",
+        "recommendation": "Extend the blocked template to `<V4|V5|V6>` and state explicitly that V6 CANNOT_VERIFY yields PARTIAL/BLOCKED."
+      },
+      {
+        "severity": "M",
+        "category": "semantic_correctness",
+        "file": "skills/playwright-debugger/scripts/read-playwright-artifact.py",
+        "line": 952,
+        "title": "Boolean retry value admitted as attempt index",
+        "evidence": "`\"attempt\": retry if isinstance(retry, int) else index` accepts JSON booleans because isinstance(True, int) is true, so an untrusted report with `\"retry\": true` emits `\"attempt\": true`, unlike bounded_scalar and validate_report_stats which explicitly exclude booleans.",
+        "recommendation": "Guard with `isinstance(retry, int) and not isinstance(retry, bool)` to match the reader's other integer validations."
+      },
+      {
+        "severity": "M",
+        "category": "semantic_correctness",
+        "file": "skills/cypress-debugger/scripts/read-cypress-artifact.py",
+        "line": 105,
+        "title": "Cypress reader lacks the sibling's parse-time non-finite float rejection",
+        "evidence": "strict_json_loads builds JSONDecoder with parse_constant only, omitting the parse_float finite guard the Playwright reader adds, so an overflowing literal such as 1e999 parses to infinity and is rejected only later at emission by allow_nan=False with a less specific diagnostic.",
+        "recommendation": "Add the same parse_finite_float hook used in read-playwright-artifact.py so both readers reject non-finite numbers at parse time."
+      }
+    ],
+    "limitations": [
+      "Zero-tool packet review: nothing was executed, so fail-closed behavior, redaction efficacy, and scanner tier interactions are assessed from source only.",
+      "Load-bearing sibling modules (residual_credentials.py, redact_artifact.py, parse-ast-grep-json.py) and referenced files (verification-rules.md, code-rules.md, e2e-reviewer SKILL.md, publish/download helpers, preflight and frame-writer scripts, ast-grep rule YAMLs) are omitted, so claims delegated to them are unverifiable here.",
+      "Framework facts postdating reviewer knowledge (Playwright 1.59 trace CLI subcommands, eslint-plugin-playwright 2.11.0 rule inventory including no-unnecessary-assertions and no-unused-locators) could not be independently confirmed or refuted.",
+      "Line numbers are reconstructed from sixteen-line markers and may be off by one within a marker window.",
+      "This subset review is not full product coverage, human or sealed review, independent ground truth, or remote attestation."
+    ],
+    "verdict": "PASS"
+  },
+  "decision": {
+    "overall_score": 90.5,
+    "finding_counts": {
+      "C": 0,
+      "H": 0,
+      "M": 5
+    },
+    "checks": {
+      "overall_score": true,
+      "dimension_floor": true,
+      "critical_findings": true,
+      "high_findings": true,
+      "model_verdict_matches": true,
+      "selected_remediations_not_reopened": true
+    },
+    "reopened_target_ids": []
+  },
+  "limitations": [
+    "This is a fresh-context review of a curated contract/implementation subset in a Claude-only completion of the preregistered v10 schedule, designed after observing the carried v10 attempt's valid FAIL; it is not unbiased defect discovery, remediation confirmation, cross-provider evidence, full product coverage, or skill accuracy.",
+    "Under the FAIL-first rule the carried v10 attempt already fixes any completed aggregate as FAIL; this attempt is a completion and descriptive observation and cannot change that gate.",
+    "The packet, prompt, rubric, remediation ledger, model catalog, and pinned CLI are inherited byte-for-byte from the frozen v10 archive; only the harness differs from the carried attempt.",
+    "The public packet is not human or sealed review, independent ground truth, or remote model attestation.",
+    "The local UUIDv4 invocation ID separates runner invocations but cannot attest that a distinct remote model call occurred.",
+    "This phase runs two Anthropic models, claude-opus-5 twice and claude-fable-5 once. Model coverage is deliberately unbalanced, so no per-model rate is claimed; the aggregate requires every attempt to pass. Both models share one provider family, so this is not cross-provider evidence.",
+    "Prompt size is measured in exact UTF-8 bytes and a pinned OpenAI o200k_base reference count used only as a deterministic size proxy. That count is not the model's own tokenization, and no local source establishes a context window for these models, so no context-window fit is claimed.",
+    "Excluded scorecards, holdouts, reports, prior reviews, chat conclusions, and git history reduce but cannot prove absence of training-data contamination."
+  ]
+}

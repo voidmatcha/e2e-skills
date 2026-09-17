@@ -305,25 +305,34 @@ run_python scripts/ci/test-independent-review-v6.py ||
   fail "test-independent-review-v6.py"
 run_python scripts/ci/test-independent-review-v6-evidence.py ||
   fail "test-independent-review-v6-evidence.py"
-# The v7, v8 and v10 unit suites carry adversarial checks that require the pinned
-# reference tokenizer. run_python's interpreter has never had it, so those checks
-# used to skip themselves silently; the suites now fail closed and run inside
-# one hash-locked replay venv instead.
+# The v7, v8, v10 and v11 unit suites carry adversarial checks that require the
+# pinned reference tokenizer. run_python's interpreter has never had it, so those
+# checks used to skip themselves silently; the suites now fail closed and run
+# inside one hash-locked replay venv instead.
 #
 # v10 was briefly dropped from this list because its freeze integration rebuilt
 # the packet from the working tree and then enforced the caps recorded when the
 # phase froze, which left 61 tokens of headroom and failed unrelated product
 # edits. It now reproduces its packet from the frozen source snapshot, the way
 # v5 and v6 already did, so the archived round no longer budgets live work.
+#
+# v10 stays in this list after its supersession: its runner, validator and
+# canonical archive are frozen byte-for-byte, and its suite still exercises those
+# frozen contracts and replays that archive through its evidence wrapper.
+# v11 completes the v10 schedule with the consumed v10 r1 attempt carried, and
+# reads the inherited v10 packet by digest instead of rebuilding it. Without
+# E2E_SKILLS_V11_PINNED_CLAUDE_PATH the v11 suite prints one explicit SKIP for
+# its strict live-path round trip; every other check runs.
 step "Reference tokenizer contracts"
 /bin/bash -p scripts/ci/run-reference-tokenizer-suites.sh \
   scripts/ci/test-independent-review-v7.py \
   scripts/ci/test-independent-review-v8.py \
-  scripts/ci/test-independent-review-v10.py ||
+  scripts/ci/test-independent-review-v10.py \
+  scripts/ci/test-independent-review-v11.py ||
   fail "run-reference-tokenizer-suites.sh"
 # Each unit suite above also invokes its matching standalone evidence wrapper
 # under a poisoned environment and asserts the canonical result. Repeating the
-# same three wrappers here rebuilt three identical hash-locked venvs without
+# same four wrappers here rebuilt four identical hash-locked venvs without
 # adding coverage. The wrappers remain standalone reproduction commands.
 
 step "Reviewer evidence contracts"

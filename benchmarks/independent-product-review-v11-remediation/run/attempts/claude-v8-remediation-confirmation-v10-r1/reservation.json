@@ -1,0 +1,12 @@
+{
+  "attempt_id": "claude-v8-remediation-confirmation-v10-r1",
+  "declared_schedule_digest": "6288fea98fd62145e370bad7a99231886592b8933c2c95cc605cb606616c8ede",
+  "execution_class": "live-release",
+  "invocation_id": "d0fe7f75-0e9d-497d-9fba-c7a7637b12e3",
+  "model_catalog_sha256": "d6e6f3274cd54a776f323b4762863940082f0e0c6805bc125760f74b67f563e9",
+  "prompt_size_attestation_sha256": "7c347a80a775c980c6778ff7bb9a75dfd41615ec0f02ea895b764300107f9d35",
+  "schedule_index": 0,
+  "schema_version": 1,
+  "started_at_utc": "2026-09-17T01:40:52.063Z",
+  "state": "CONSUMED"
+}

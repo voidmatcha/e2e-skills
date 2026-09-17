@@ -1,0 +1,13 @@
+{
+  "attempt_id": "claude-v8-remediation-confirmation-v11-r2",
+  "declared_schedule_digest": "d77cec54637c6404b3787c3ec5ade8860fbf4520e2a9d4c2913a9873c3bf16cf",
+  "execution_class": "live-release",
+  "invocation_id": "eeb39518-0fc7-4f47-acaf-cb9f22b6d1fe",
+  "model_catalog_sha256": "d6e6f3274cd54a776f323b4762863940082f0e0c6805bc125760f74b67f563e9",
+  "prompt_size_attestation_sha256": "7c347a80a775c980c6778ff7bb9a75dfd41615ec0f02ea895b764300107f9d35",
+  "schedule_index": 1,
+  "schema_version": 1,
+  "started_at_utc": "2026-09-17T09:29:03.603Z",
+  "state": "CONSUMED",
+  "timeout_seconds": 1800
+}

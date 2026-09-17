@@ -99,8 +99,10 @@ bash scripts/ci/test-reviewer-holdout.sh
 python3 scripts/ci/test-reviewer-holdout-v3.py
 /bin/bash -p scripts/ci/run-reference-tokenizer-suites.sh \
   scripts/ci/test-independent-review-v7.py \
-  scripts/ci/test-independent-review-v10.py
+  scripts/ci/test-independent-review-v10.py \
+  scripts/ci/test-independent-review-v11.py
 /bin/bash -p scripts/ci/run-independent-review-v10-evidence.sh
+/bin/bash -p scripts/ci/run-independent-review-v11-evidence.sh
 python3 scripts/ci/test-reviewer-evidence-v3.py
 python3 scripts/ci/test-reviewer-evidence.py
 python3 scripts/ci/test-reviewer-scanner.py

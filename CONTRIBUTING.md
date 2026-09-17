@@ -91,9 +91,11 @@ python3 scripts/ci/test-reviewer-holdout-v4.py # v4 corpus and protocol contract
 python3 scripts/ci/test-reviewer-holdout-v5.py # current preregistered v5 corpus contracts
 /bin/bash -p scripts/ci/run-reference-tokenizer-suites.sh \
   scripts/ci/test-independent-review-v7.py \
-  scripts/ci/test-independent-review-v10.py # v7/v10 preregistration + runner fail-closed contracts
+  scripts/ci/test-independent-review-v10.py \
+  scripts/ci/test-independent-review-v11.py # v7/v10/v11 preregistration + runner fail-closed contracts
                                      # (needs the pinned tokenizer venv; the suites fail closed without it)
 /bin/bash -p scripts/ci/run-independent-review-v10-evidence.sh # v10 archive state + prompt-size replay
+/bin/bash -p scripts/ci/run-independent-review-v11-evidence.sh # v11 archive state + carried v10 r1 + prompt-size replay
 python3 scripts/ci/test-reviewer-scanner.py # P0 gate + missing-await context regression
 python3 scripts/ci/test-debugger-contracts.py # debugger extraction + dedupe contracts
 python3 scripts/ci/test-residual-redos-budget.py # credential-regex linearity budget

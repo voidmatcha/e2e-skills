@@ -886,7 +886,8 @@ def main() -> None:
         "Independent product-review v6",
         "Independent product-review v9",
         "Independent product-review v10",
-        "Archived v1-v10 independent product-review rounds are retained as "
+        "Independent product-review v11",
+        "Archived v1-v11 independent product-review rounds are retained as "
         "legacy robustness evidence, not current release gates.",
         "legacy design evidence rather than an active pending release gate",
     ):

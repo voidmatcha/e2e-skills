@@ -1,0 +1,216 @@
+{
+  "schema_version": 1,
+  "protocol_id": "independent-product-review-v10",
+  "invocation_id": "d0fe7f75-0e9d-497d-9fba-c7a7637b12e3",
+  "attempt_id": "claude-v8-remediation-confirmation-v10-r1",
+  "schedule_index": 0,
+  "repetition": 1,
+  "declared_schedule_digest": "6288fea98fd62145e370bad7a99231886592b8933c2c95cc605cb606616c8ede",
+  "started_at_utc": "2026-09-17T01:40:52.063Z",
+  "finished_at_utc": "2026-09-17T01:50:46.467Z",
+  "status": "FAIL",
+  "status_reason": null,
+  "host": {
+    "model": "claude-opus-5",
+    "provider_family": "anthropic",
+    "runner": "claude"
+  },
+  "runner_identity": {
+    "mode": "live",
+    "path": "/Users/user/.cache/e2e-skills-bench/claude/2.1.220/claude",
+    "sha256": "8addc857f3fe64d5a0368af9ee50321b50afb4a6918ba3ef018ab84f5dbbe081",
+    "version": "2.1.220 (Claude Code)"
+  },
+  "model_tool_surface": "none",
+  "source_read_isolation": "prompt-complete-zero-tools",
+  "credential_environment": "oauth-token-staged-model-tools-disabled",
+  "execution_mode": "live",
+  "local_artifact_integrity_passed": true,
+  "artifact_integrity_eligible": true,
+  "caller_declared_runner_model_provenance": true,
+  "remote_model_attestation": false,
+  "runner_exit_code": 0,
+  "elapsed_ms": 592668,
+  "workspace_before_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "workspace_after_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "credential_shaped_output_detected": false,
+  "packet_path": "/Users/user/.cache/e2e-skills-bench/v10-out/r1/packet.json",
+  "packet_manifest_path": "/Users/user/.cache/e2e-skills-bench/v10-out/r1/packet-manifest.json",
+  "prompt_size_attestation_path": "/Users/user/.cache/e2e-skills-bench/v10-out/r1/prompt-size-attestation.json",
+  "prompt_size_attestation_sha256": "7c347a80a775c980c6778ff7bb9a75dfd41615ec0f02ea895b764300107f9d35",
+  "model_catalog_sha256": "d6e6f3274cd54a776f323b4762863940082f0e0c6805bc125760f74b67f563e9",
+  "reservation_sha256": "2bea7df9ece7701b6ce7c77c37c7ae2f333d55d8e31fe81eea4c15cc13cc96aa",
+  "raw_output_path": "/Users/user/.cache/e2e-skills-bench/v10-out/r1/raw-claude-v8-remediation-confirmation-v10-r1.json",
+  "raw_output_sha256": "8dc3c3771f011d467ffc275d4ff8d1cd3fa32b2ec0c7acc8e10ce95b03732290",
+  "raw_output_original_sha256": "8dc3c3771f011d467ffc275d4ff8d1cd3fa32b2ec0c7acc8e10ce95b03732290",
+  "raw_output_exact": true,
+  "integrity_before": {
+    "protocol_sha256": "e66523a8af8a763f8ae10edb8c0d099fffd9767ae84771b4599f5401aaaf3541",
+    "remediation_ledger_sha256": "0896a55a3db94129fd42c228bf3a6f1e57ed9b9ee5b18db92b588bbce406b52b",
+    "superseded_phase_record_sha256": "cdb38542e8d42c75ff41cece3a526fba4c5cbcea19a9b64636d9cc3dd7708c60",
+    "packet_sha256": "7f4be143afbca4671c2df50339ec545b2eb261abac6f27482bd5d203dbeecd83",
+    "packet_manifest_sha256": "11455243f85de0ce42920e29c81aa4f7539ce8d9979d2b410a2d9a2b8ccb527e",
+    "prompt_size_attestation_sha256": "7c347a80a775c980c6778ff7bb9a75dfd41615ec0f02ea895b764300107f9d35",
+    "predecessor_freeze_sha256": "1f8fbab4fa2763b297717ee744dfc96a7f57d7deb92e48e97d6b4941fa9beeae",
+    "predecessor_protocol_sha256": "3e8d2fcdaef315b87407a3af637eb2c834352d589a2606405cb118464de03387",
+    "reference_tokenizer_lock_sha256": "6fbd61316c7988c72ec6023ffa1a0ac38b36ebc0bb9bfd35b89cec3f20f1a536",
+    "reference_tokenizer_bpe_source_sha256": "446a9538cb6c348e3516120d7c08b09f57c36495e2acfffe59a5bf8b0cfb1a2d",
+    "independent_runner_sha256": "b838f6de8156fa5b190f45f877728e76a854398bbc6783ca03ded9ee6e508507",
+    "shared_zero_tool_runner_sha256": "70724c69dad9b81bb2b5d8b5ed2a98b6ddc1bc7e2c56b8178541d52332fd8698",
+    "selected_sources_sha256": "feb907cefdd8f1f9fc3bb2ac21fece336dac3ec349b24f01ed3f72aa0083e9a5",
+    "selected_sources": {
+      "skills/playwright-debugger/SKILL.md": "cc3e5e9fc13837690b617b36a4d9b8a6c3e316b412194c1baaacefd0e3f7d7f5",
+      "skills/playwright-debugger/scripts/read-playwright-artifact.py": "d2619217872e77b2d0207de518ae7cb48a241441bc9cda8e7c390a399760a93a",
+      "skills/playwright-debugger/scripts/run-artifact-reader.sh": "0035ffef5ee73ff98cc90196b11174b68a9ca7119bf7941ba1624124b6829107",
+      "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+      "skills/e2e-reviewer/scripts/scan.sh": "6e6df9a91c7c74b991c9b1c7e95225070a114c6cfce0dccd008db2953a8e6eef",
+      "skills/cypress-debugger/scripts/read-cypress-artifact.py": "a2f189dc7fc96374ea2dfb3674f304defefc1ab572e1a7b5f40ceb7be129c2c0",
+      "skills/cypress-debugger/scripts/run-artifact-reader.sh": "891a544228404428ce1d66d40c56a4f6e8665267626b47ff0cb965cf4a583703"
+    }
+  },
+  "integrity_after": {
+    "protocol_sha256": "e66523a8af8a763f8ae10edb8c0d099fffd9767ae84771b4599f5401aaaf3541",
+    "remediation_ledger_sha256": "0896a55a3db94129fd42c228bf3a6f1e57ed9b9ee5b18db92b588bbce406b52b",
+    "superseded_phase_record_sha256": "cdb38542e8d42c75ff41cece3a526fba4c5cbcea19a9b64636d9cc3dd7708c60",
+    "packet_sha256": "7f4be143afbca4671c2df50339ec545b2eb261abac6f27482bd5d203dbeecd83",
+    "packet_manifest_sha256": "11455243f85de0ce42920e29c81aa4f7539ce8d9979d2b410a2d9a2b8ccb527e",
+    "prompt_size_attestation_sha256": "7c347a80a775c980c6778ff7bb9a75dfd41615ec0f02ea895b764300107f9d35",
+    "predecessor_freeze_sha256": "1f8fbab4fa2763b297717ee744dfc96a7f57d7deb92e48e97d6b4941fa9beeae",
+    "predecessor_protocol_sha256": "3e8d2fcdaef315b87407a3af637eb2c834352d589a2606405cb118464de03387",
+    "reference_tokenizer_lock_sha256": "6fbd61316c7988c72ec6023ffa1a0ac38b36ebc0bb9bfd35b89cec3f20f1a536",
+    "reference_tokenizer_bpe_source_sha256": "446a9538cb6c348e3516120d7c08b09f57c36495e2acfffe59a5bf8b0cfb1a2d",
+    "independent_runner_sha256": "b838f6de8156fa5b190f45f877728e76a854398bbc6783ca03ded9ee6e508507",
+    "shared_zero_tool_runner_sha256": "70724c69dad9b81bb2b5d8b5ed2a98b6ddc1bc7e2c56b8178541d52332fd8698",
+    "selected_sources_sha256": "feb907cefdd8f1f9fc3bb2ac21fece336dac3ec349b24f01ed3f72aa0083e9a5",
+    "selected_sources": {
+      "skills/playwright-debugger/SKILL.md": "cc3e5e9fc13837690b617b36a4d9b8a6c3e316b412194c1baaacefd0e3f7d7f5",
+      "skills/playwright-debugger/scripts/read-playwright-artifact.py": "d2619217872e77b2d0207de518ae7cb48a241441bc9cda8e7c390a399760a93a",
+      "skills/playwright-debugger/scripts/run-artifact-reader.sh": "0035ffef5ee73ff98cc90196b11174b68a9ca7119bf7941ba1624124b6829107",
+      "skills/playwright-test-generator/SKILL.md": "4ff4ab88e9c9792b701aff66f8a8a092e01e9f5f31f6a2613487ebd71e677ec1",
+      "skills/e2e-reviewer/scripts/scan.sh": "6e6df9a91c7c74b991c9b1c7e95225070a114c6cfce0dccd008db2953a8e6eef",
+      "skills/cypress-debugger/scripts/read-cypress-artifact.py": "a2f189dc7fc96374ea2dfb3674f304defefc1ab572e1a7b5f40ceb7be129c2c0",
+      "skills/cypress-debugger/scripts/run-artifact-reader.sh": "891a544228404428ce1d66d40c56a4f6e8665267626b47ff0cb965cf4a583703"
+    }
+  },
+  "review": {
+    "summary": "Packet-only review of seven curated files (two Playwright/Cypress artifact readers, their two launchers, two SKILL.md contracts, and the e2e-reviewer scanner). Implementation quality is high and largely self-consistent: the readers use POSIX descriptor-relative O_NOFOLLOW traversal with descriptor-fingerprint rechecks, strict JSON parsing (duplicate keys, NaN/Infinity, BOM, trailing data rejected), documented byte/depth/node/record ceilings that match the code constants exactly, ZIP hardening with mode/name agreement and ratio caps, and owner-only read-only media/trace snapshots; the launchers ignore PATH for interpreter selection, bind a root-owned system Python outside the project, refuse launcher/reader paths inside the project, and enforce a closed per-helper --pass-env allowlist that matches the documented table. Documented CLI invocations in playwright-debugger/SKILL.md match read-playwright-artifact.py's argparse subcommands and the launcher's argument grammar. scan.sh is notably disciplined on false-positive control: framework-provenance gating before any P0 enters the exit gate, a separate LLM-triage lane, P0 JUSTIFIED hits routed to an external-review candidate ledger rather than suppressed, a no-exemption contract for focused tests, cross-tier exact dedupe, bounded per-rule capture with INCOMPLETE fail-closed exits, candidate-manifest SHA-256 revalidation before each tier and the Summary, and refusal to emit a Summary after a Tier-2 infrastructure failure. Defects found are all bounded: the debugger SKILL.md's own worked commands contradict its mandatory empty-environment and no-npx rules; the generator SKILL.md instructs running a project package binary before its Step 4 command-approval gate and asserts a Python 3.10+ floor that the sibling skill's documented macOS interpreter (3.9.6) does not meet; the Cypress reader's emission path shows no residual-credential gate equivalent to the Playwright sibling's; one scanner helper discards awk's exit status so a tool failure is indistinguishable from 'no framework reference'; and the Playwright reader hard-fails on any reporter/recomputation mismatch without a declared supported reporter-version range. No critical or high findings; overall score falls just below the packet threshold.",
+    "scores": {
+      "semantic_correctness": 92,
+      "false_positive_control": 90,
+      "security_trust_boundaries": 87,
+      "verification_design": 91,
+      "scope_contract_consistency": 86,
+      "docs_usability": 86
+    },
+    "findings": [
+      {
+        "severity": "M",
+        "category": "security_trust_boundaries",
+        "file": "skills/playwright-debugger/SKILL.md",
+        "line": 139,
+        "title": "Worked commands omit the mandated empty-environment prefix",
+        "evidence": "Lines 112-113 state that every repository-controlled command below must run with an explicit empty environment 'as shown by /usr/bin/env -i PATH=\"$PATH\"', and lines 115-118 forbid forwarding ambient credentials or NODE_OPTIONS/NPM_CONFIG_*/BASH_ENV/PYTHONPATH. The --grep resolution command at line 139 invokes node_modules/.bin/playwright with no env -i prefix; the same omission recurs in the mandatory F1-vs-F7 probe at lines 367 and 371. By contrast lines 243-251, 456-461 and 510-511 do carry the prefix, so an agent copying the examples verbatim executes project-controlled binaries with the full ambient environment the gate exists to strip.",
+        "recommendation": "Prefix the commands at lines 139, 367 and 371 with /usr/bin/env -i PATH=\"$PATH\" so every executable example matches the gate stated at lines 112-118."
+      },
+      {
+        "severity": "M",
+        "category": "scope_contract_consistency",
+        "file": "skills/playwright-debugger/SKILL.md",
+        "line": 367,
+        "title": "Mandatory isolation probe hardcodes npx against the skill's own tooling rules",
+        "evidence": "Lines 96-100 direct the reader to use the repository's existing Playwright script or project-local node_modules/.bin/playwright, and to substitute 'npx --no-install playwright' only 'If package-manager resolution is required'. Line 566 states 'Do not install a verifier or require `npx`. Reuse the repository's existing targeted command and tooling.' The F1-vs-F7 discriminator at lines 367 and 371 \u2014 described at line 361 as the only sound way to separate F1 from F7 \u2014 is written solely as npx --no-install playwright with no project-local or repository-script form, so following the classification procedure requires npx on every host.",
+        "recommendation": "Rewrite the probe at lines 367 and 371 to lead with the repository script / node_modules/.bin/playwright form, keeping npx --no-install as the documented fallback, consistent with lines 96-100 and 566."
+      },
+      {
+        "severity": "M",
+        "category": "security_trust_boundaries",
+        "file": "skills/playwright-test-generator/SKILL.md",
+        "line": 170,
+        "title": "Step 3 executes a project package binary before the Step 4 approval gate",
+        "evidence": "Line 27 requires that 'Before any target-controlled command\u2014including a project script, config loader, package binary, or Node import\u2014require repository trust and explicit approval of the exact command.' Line 331 states 'Treat every command as skipped until explicitly approved', and line 336 scopes that approval gate to entry into Step 5. Line 170 nevertheless instructs Step 3 to run `npx --no-install playwright help cli` \u2014 a resolution and execution of the project's installed Playwright package binary \u2014 during exploration, i.e. before the command table at lines 322-334 has been presented or approved.",
+        "recommendation": "Either add the capability probe at line 170 to the Step 4 proposed-command table as a pre-approved row, or state explicitly at line 168 that this probe requires its own exact-command approval before Step 3 runs it."
+      },
+      {
+        "severity": "M",
+        "category": "scope_contract_consistency",
+        "file": "skills/playwright-test-generator/SKILL.md",
+        "line": 137,
+        "title": "Preflight interpreter floor conflicts with the bundle's documented macOS Python",
+        "evidence": "Line 137 states the preflight launcher 'selects a fixed external Python 3.10+ for isolated `-I -B` execution', and line 112 makes that preflight mandatory before any browser navigation while lines 157-158 make any preflight failure terminal. The sibling contract at skills/playwright-debugger/SKILL.md lines 76-79 documents the bundle's interpreter floor as Python 3.9 precisely because the launcher candidate list is /usr/bin/python3 and /bin/python3 and 'macOS ships 3.9.6 at /usr/bin/python3'. No host prerequisite, candidate list, or fallback is documented for satisfying 3.10+ on that same platform, so the terminal preflight has an unstated and potentially unmet host requirement.",
+        "recommendation": "State at line 137 which absolute interpreter candidates the preflight launcher accepts and what the user must install on a stock macOS host, or lower the helper to the 3.9 floor the sibling skill documents."
+      },
+      {
+        "severity": "M",
+        "category": "security_trust_boundaries",
+        "file": "skills/cypress-debugger/scripts/read-cypress-artifact.py",
+        "line": 922,
+        "title": "Cypress emission path shows no residual-credential gate present in its Playwright sibling",
+        "evidence": "emit_json (lines 921-925) applies redact_for_output at line 922, validates shape, serializes, and enforces only the output-byte ceiling before printing artifact-derived text. The sibling read-playwright-artifact.py encode_json additionally verifies redaction idempotency (lines 1309-1310) and re-scans the serialized payload with has_residual_credential (lines 1319-1320), failing closed on any residual credential shape. The included Cypress surface contains no equivalent verification at the emission boundary; whether redact_artifact.redact_for_output performs it internally is not determinable from the included files, so the two readers offer visibly different, unverifiable guarantees for the same untrusted-artifact class.",
+        "recommendation": "Mirror the Playwright gate in cypress emit_json: re-apply the redactor for an idempotency check and run a residual-credential scan over the serialized payload before printing, or document at the import site that redact_for_output already fails closed."
+      },
+      {
+        "severity": "M",
+        "category": "false_positive_control",
+        "file": "skills/e2e-reviewer/scripts/scan.sh",
+        "line": 756,
+        "title": "Lexer helper discards awk failures, silently narrowing framework scope",
+        "evidence": "source_executable_code terminates with `' \"$f\" 2>/dev/null` at line 756: awk's diagnostics are discarded and its exit status is never inspected. Every provenance predicate built on it (source_has_playwright_module_reference at line 601, source_has_cypress_module_reference, source_imports_playwright_test_binding, source_imports_playwright_expect_binding) consumes its stdout through a pipeline, so an awk failure yields empty output and is indistinguishable from 'this file references no framework'. That silently drops the file out of P0 scope, which is the opposite of the fail-closed posture the same script enforces elsewhere (preflight INCOMPLETE at lines 2124-2128, manifest drift INCOMPLETE at lines 2321-2324, Tier-2 infrastructure abort at lines 5860-5864).",
+        "recommendation": "Capture the lexer output to a temporary file, check awk's exit status, and route a nonzero status to the existing INCOMPLETE fail-closed path instead of letting an empty result imply absence of framework provenance."
+      },
+      {
+        "severity": "M",
+        "category": "semantic_correctness",
+        "file": "skills/playwright-debugger/scripts/read-playwright-artifact.py",
+        "line": 822,
+        "title": "Outcome equality gate reimplements framework semantics with no declared version range",
+        "evidence": "Line 822 hard-rejects any report whose reporter-emitted test status differs from computed_test_outcome (defined at line 718), which re-derives expected/unexpected/flaky/skipped from result statuses and expectedStatus; validate_report_stats applies the same exact-match rule to root stats counters. The packet documents a compatibility fallback only for the nested error.location vs result-level errorLocation shape (SKILL.md lines 285-287) and declares no supported Playwright reporter-version range for the outcome and stats algorithms it mirrors, so any upstream change to that derivation converts every otherwise-valid report into a hard parse error with no documented fallback path.",
+        "recommendation": "Declare the supported reporter version range next to the gate and in SKILL.md, and emit a distinguishable 'reporter-version mismatch' diagnostic (rather than a generic schema contradiction) when the recomputation disagrees, so operators can tell drift from artifact tampering."
+      },
+      {
+        "severity": "M",
+        "category": "docs_usability",
+        "file": "skills/playwright-test-generator/SKILL.md",
+        "line": 447,
+        "title": "Completion verdict criteria are not determinable from the included surface",
+        "evidence": "Line 447 states 'Use this template only when `verification-rules.md` permits `Complete`', and line 427 requires reading verification-rules.md in full before Step 7; line 439 makes the PARTIAL/BLOCKED versus Complete decision depend on those rules. verification-rules.md is not part of the included surface, and the same is true for code-rules.md (line 341), conventions-template.md (line 380), recommended-lint.md (line 384) and playwright-agents.md (line 366). A user acting only on the included files can execute Steps 1-4 but cannot determine when the Step 7 completion report may be emitted.",
+        "recommendation": "Inline the minimum Complete/PARTIAL decision rule (the applicable-V4/V5 PASS requirement already summarized at line 439) into SKILL.md so the verdict criterion is self-contained, keeping verification-rules.md as elaboration."
+      }
+    ],
+    "limitations": [
+      "Packet-only review of seven files; no execution, no repository history, and no observed runtime or benchmark results were used. Scores reflect contract and verification design only.",
+      "Several helpers invoked by the included contracts are absent: publish-json-report.py, download-playwright-report.py, residual_credentials.py, redact_artifact.py, extract-junit-failures.py, publish-mochawesome-report.py, download-cypress-reports.py, write-utf8-frame.sh, run-preflight-target.sh, run-raw-aria-snapshot.sh, the ast-grep rule files, and parse-ast-grep-json.py. Claims that depend on their internals (redaction completeness, downloader ZIP handling, preflight IP classification, Tier-2 rule precision) could not be verified and were not scored as defects.",
+      "No cypress-debugger SKILL.md is included, so the Cypress reader's CLI shape, mode semantics, and mochawesome/run-results stats expectations could not be cross-checked against a documented contract the way the Playwright pair could.",
+      "Upstream Playwright reporter outcome/stat semantics and mochawesome stats semantics were not available in the packet; the equality gates in both readers were assessed for internal consistency and declared compatibility scope, not for agreement with any specific upstream release.",
+      "scan.sh is approximately 266 KB; review focused on trust-boundary setup, tool binding, bounded capture, provenance gating, suppression handling, and the exit gate. Individual regex and lexer rules were sampled, not exhaustively audited, so additional per-rule precision issues may exist.",
+      "Shell and Python behavior was reasoned about statically; platform-specific edge cases (BSD vs GNU stat/awk output, mode strings with leading zeros, SIGPIPE ordering) were not executed and are noted only where the included code makes the outcome determinable."
+    ],
+    "verdict": "FAIL"
+  },
+  "decision": {
+    "overall_score": 88.67,
+    "finding_counts": {
+      "C": 0,
+      "H": 0,
+      "M": 8
+    },
+    "checks": {
+      "overall_score": false,
+      "dimension_floor": true,
+      "critical_findings": true,
+      "high_findings": true,
+      "model_verdict_matches": true,
+      "selected_remediations_not_reopened": false
+    },
+    "reopened_target_ids": [
+      "V8-T4"
+    ]
+  },
+  "limitations": [
+    "This is a fresh-context review of a curated contract/implementation subset for a Claude-only post-hoc confirmation phase designed after the completed v8 failure, its five selected remediations, and the four defect classes closed after that archive; it is not unbiased defect discovery, cross-provider evidence, full product coverage, or skill accuracy.",
+    "The public packet is not human or sealed review, independent ground truth, or remote model attestation.",
+    "The local UUIDv4 invocation ID separates runner invocations but cannot attest that a distinct remote model call occurred.",
+    "This phase runs two Anthropic models, claude-opus-5 twice and claude-fable-5 once. Model coverage is deliberately unbalanced, so no per-model rate is claimed; the aggregate requires every attempt to pass. Both models share one provider family, so this is not cross-provider evidence.",
+    "Prompt size is measured in exact UTF-8 bytes and a pinned OpenAI o200k_base reference count used only as a deterministic size proxy. That count is not the model's own tokenization, and no local source establishes a context window for these models, so no context-window fit is claimed.",
+    "Excluded scorecards, holdouts, reports, prior reviews, chat conclusions, and git history reduce but cannot prove absence of training-data contamination."
+  ]
+}
