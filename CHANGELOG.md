@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- **The scanner is about 4x faster on hit-dense files, with byte-identical output.** `// JUSTIFIED:` resolution ran one awk pass per hit and lexed the file from line 1 each time; it now reports every justified line in one pass per file and looks the hit up. Hit-path resolution is memoized per spelling, and scratch files use a private counter instead of one `mktemp` process each. A pinned 300-hit fixture went from 30.9 s to 7.5 s; stdout and exit code are unchanged on that fixture, on this repository's own trees, and on ten adversarial fixtures. See `benchmarks/scanner-hot-path-v1`.
+
 ### Added
 
 - **`benchmarks/stub-echo-v1` tested a proposed reviewer rule before writing it, and refused it.** The candidate sub-pattern `#4l` would have flagged an assertion whose subject is a response the same test stubbed. Its protocol was frozen first: field-scan-v1's twelve pinned repositories, a deterministic collector, a four-verdict rubric, and four gates with named consequences. Adjudicating all 78 candidates found zero instances of the defect, 71 assertions against a real backend behind a spy or a `route.continue()` pass-through, and 7 stubbed routes observed only for synchronization. G1 failed, so the frozen consequence applies: the shape is documented in the `#4` Phase 2 procedure with its three lookalikes, and no scanner rule is added.

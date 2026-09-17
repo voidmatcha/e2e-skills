@@ -430,14 +430,27 @@ abort_on_scope_signal() {
 }
 trap abort_on_scope_signal USR1
 
+SCANNER_TEMP_SEQUENCE=0
 allocate_temp() {
-  local variable_name="$1" allocated_path="" template=""
+  local variable_name="$1" allocated_path="" template="" _rc=0
   shift
-  template="$SCANNER_TEMP_ROOT/item.XXXXXXXX"
-  allocated_path=$(mktemp "$@" "$template")
-  if [[ "$?" -ne 0 || -z "$allocated_path" ]]; then
-    printf 'error: unable to allocate scanner temporary storage via mktemp\n' >&2
-    exit 2
+  # The root is private and 0700, and this counter is unique within the process,
+  # so a plain create is as safe as mktemp here and costs no process. Directory
+  # requests keep the mktemp path: they are rare and their options vary.
+  if [[ "$#" -eq 0 ]]; then
+    SCANNER_TEMP_SEQUENCE=$((SCANNER_TEMP_SEQUENCE + 1))
+    allocated_path="$SCANNER_TEMP_ROOT/item.$$-$SCANNER_TEMP_SEQUENCE"
+    if [[ -e "$allocated_path" ]] || ! (umask 077 && : > "$allocated_path"); then
+      printf 'error: unable to allocate scanner temporary storage\n' >&2
+      exit 2
+    fi
+  else
+    template="$SCANNER_TEMP_ROOT/item.XXXXXXXX"
+    allocated_path=$(mktemp "$@" "$template") || _rc=1
+    if [[ "$_rc" -ne 0 || -z "$allocated_path" ]]; then
+      printf 'error: unable to allocate scanner temporary storage via mktemp\n' >&2
+      exit 2
+    fi
   fi
   case "$allocated_path" in
     "$SCANNER_TEMP_ROOT"/item.*) ;;
@@ -1982,10 +1995,11 @@ file_in_playwright_scope() {
 # <file>:<line> is covered by a JUSTIFIED marker on the immediately preceding pure
 # //-comment line or the start of the same fluent chain. The #7 no-exemption contract is the
 # caller's responsibility — callers must NOT consult this for focused-test rules.
-_line_is_justified() {
-  local _hf="$1" _hl="$2"
-  [[ -f "$_hf" && "$_hl" =~ ^[0-9]+$ ]] || return 1
-  awk -v target="$_hl" '
+# One pass per file, not one per hit: the same classification, reported for
+# every line, so a file with hundreds of candidates is lexed once.
+_justified_lines_in_file() {
+  local _hf="$1"
+  awk '
     function classify(s,    code, comment, i, c, nchar, trimmed, boundary) {
       code = ""
       comment = ""
@@ -2064,10 +2078,11 @@ _line_is_justified() {
       pure_comment[NR] = (comment != "" && trimmed == "")
       marker[NR] = (comment ~ /^[[:space:]]*JUSTIFIED:[[:space:]]*[^[:space:]]/)
     }
-    NR <= target { classify($0) }
-    NR == target { exit }
+    { classify($0) }
     END {
-      if (target > 1 && pure_comment[target - 1] && marker[target - 1]) exit 0
+      for (target = 1; target <= NR; target++) {
+      justified = 0
+      if (target > 1 && pure_comment[target - 1] && marker[target - 1]) { print target; continue }
       # A marker immediately above an evaluate/waitForFunction callback covers
       # executable hits inside that callback. Require the target to remain
       # inside the same brace-delimited callback so a later sibling expression
@@ -2091,12 +2106,13 @@ _line_is_justified() {
           if (j == target) break
         }
         if (valid && opened && depth > 0 &&
-            header ~ /[.](evaluate|waitForFunction)[[:space:]]*[(]/) exit 0
+            header ~ /[.](evaluate|waitForFunction)[[:space:]]*[(]/) { justified = 1; break }
       }
       # A marker above the start of one fluent expression also covers a later
       # physical-line hit in that same chain. Keep this narrow: the reported
       # line must start with a member continuation, and no intervening line may
       # terminate a statement or open/close a block.
+      if (justified) { print target; continue }
       lower = target > 8 ? target - 8 : 1
       if (code_line[target] ~ /^[.]/) {
         for (i = target - 1; i >= lower; i--) {
@@ -2112,14 +2128,37 @@ _line_is_justified() {
               if (roots > 1) valid = 0
               if (j < target && statement_boundary[j]) valid = 0
             }
-            if (valid && saw_code) exit 0
+            if (valid && saw_code) { justified = 1; break }
           }
           if (statement_boundary[i]) break
         }
       }
-      exit 1
+      if (justified) print target
+      }
     }
-  ' "$_hf" >/dev/null 2>&1
+  ' "$_hf" 2>/dev/null
+}
+
+JUSTIFIED_CACHE_KEYS=()
+JUSTIFIED_CACHE_VALUES=()
+_line_is_justified() {
+  local _hf="$1" _hl="$2" _cached="" _index
+  [[ -f "$_hf" && "$_hl" =~ ^[0-9]+$ ]] || return 1
+  for ((_index = 0; _index < ${#JUSTIFIED_CACHE_KEYS[@]}; _index++)); do
+    if [[ "${JUSTIFIED_CACHE_KEYS[_index]}" == "$_hf" ]]; then
+      _cached="${JUSTIFIED_CACHE_VALUES[_index]}"
+      break
+    fi
+  done
+  if [[ -z "$_cached" ]]; then
+    _cached=" $(_justified_lines_in_file "$_hf" | tr '\n' ' ')"
+    JUSTIFIED_CACHE_KEYS+=("$_hf")
+    JUSTIFIED_CACHE_VALUES+=("$_cached")
+  fi
+  case "$_cached" in
+    *" $_hl "*) return 0 ;;
+  esac
+  return 1
 }
 
 if [[ ! -e "$ROOT" ]]; then
@@ -2603,22 +2642,58 @@ dedupe_class_for_pattern() {
   esac
 }
 
+ABSOLUTE_HIT_CACHE_KEYS=()
+ABSOLUTE_HIT_CACHE_VALUES=()
+_remember_absolute_hit() {
+  ABSOLUTE_HIT_CACHE_KEYS+=("$1")
+  ABSOLUTE_HIT_CACHE_VALUES+=("$2")
+}
 absolute_hit_file() {
-  local file="$1" resolved
+  local file="$1" resolved cached _index
+  # Every filtered hit resolves its file, so the same few paths were re-resolved
+  # hundreds of times per scan, each one a subshell. Cache the decision, failure
+  # included, keyed by the caller's spelling. Parallel arrays and a linear walk:
+  # bash 3.2 has no associative arrays, and `eval` is refused in shipped scripts.
+  for ((_index = 0; _index < ${#ABSOLUTE_HIT_CACHE_KEYS[@]}; _index++)); do
+    if [[ "${ABSOLUTE_HIT_CACHE_KEYS[_index]}" == "$1" ]]; then
+      cached="${ABSOLUTE_HIT_CACHE_VALUES[_index]}"
+      [[ "$cached" == "!" ]] && return 1
+      printf '%s\n' "$cached"
+      return 0
+    fi
+  done
   [[ -f "$file" ]] || file="$ROOT/$file"
-  [[ -f "$file" && ! -L "$file" ]] || return 1
+  if [[ ! -f "$file" || -L "$file" ]]; then
+    _remember_absolute_hit "$1" "!"
+    return 1
+  fi
   resolved=$(cd "$(dirname "$file")" 2>/dev/null &&
-    printf '%s/%s\n' "$(pwd -P)" "$(basename "$file")") || return 1
+    printf '%s/%s\n' "$(pwd -P)" "$(basename "$file")") || {
+    _remember_absolute_hit "$1" "!"
+    return 1
+  }
   case "$REQUESTED_ROOT_KIND" in
     directory)
       case "$resolved" in
         "$REQUESTED_ROOT_REAL"/*) ;;
-        *) return 1 ;;
+        *)
+          _remember_absolute_hit "$1" "!"
+          return 1
+          ;;
       esac
       ;;
-    file) [[ "$resolved" == "$REQUESTED_ROOT_REAL" ]] || return 1 ;;
-    *) return 1 ;;
+    file)
+      if [[ "$resolved" != "$REQUESTED_ROOT_REAL" ]]; then
+        _remember_absolute_hit "$1" "!"
+        return 1
+      fi
+      ;;
+    *)
+      _remember_absolute_hit "$1" "!"
+      return 1
+      ;;
   esac
+  _remember_absolute_hit "$1" "$resolved"
   printf '%s\n' "$resolved"
 }
 
