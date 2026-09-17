@@ -179,11 +179,11 @@ bash scripts/dev/install-codex-agents.sh
 # description into each session just to deliver these two agents.
 bash scripts/dev/install-claude-agents.sh
 
-# Wire `git push` to refresh the installed copies via `skills update` (one-time, opt-in)
+# Wire pushes of HEAD to main to refresh the installed copies (one-time, opt-in)
 bash scripts/dev/install-hooks.sh
 ```
 
-The reinstall script executes a verified `skills@1.5.21` artifact from an exact dependency lock, then replaces only the four e2e-skills as real copies. It verifies the canonical store, the requested Claude Code projection, and any Codex shadow before accepting the install; other installed skills are untouched. `--copy` mode snapshots the current working tree at invocation time, including uncommitted edits, so later source edits do not leak into the runtime until the next reinstall. The pre-push hook refreshes that snapshot from the working tree present at push time. `E2E_SKILLS_AGENTS` is restricted to the receiving surfaces this installer verifies (`claude-code` and `codex`; default: both). Named Codex-agent installation remains a separate global opt-in: run `scripts/dev/install-codex-agents.sh` directly, or set `E2E_SKILLS_INSTALL_CODEX_AGENTS=1` for an explicit combined reinstall; the default is `0`.
+The reinstall script executes a verified `skills@1.5.21` artifact from an exact dependency lock, then replaces only the four e2e-skills as real copies. It verifies the canonical store, the requested Claude Code projection, and any Codex shadow before accepting the install; other installed skills are untouched. `--copy` mode snapshots the current working tree at invocation time, including uncommitted edits, so later source edits do not leak into the runtime until the next reinstall. The pre-push hook refreshes that snapshot only when the push sends the checked-out HEAD to `main` and `skills/` has no uncommitted edits, so the installed copy matches what was pushed; other pushes skip the refresh. `E2E_SKILLS_AGENTS` is restricted to the receiving surfaces this installer verifies (`claude-code` and `codex`; default: both). Named Codex-agent installation remains a separate global opt-in: run `scripts/dev/install-codex-agents.sh` directly, or set `E2E_SKILLS_INSTALL_CODEX_AGENTS=1` for an explicit combined reinstall; the default is `0`.
 
 ## When You Edit Skills
 

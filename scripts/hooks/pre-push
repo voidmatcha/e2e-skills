@@ -1,6 +1,8 @@
 #!/bin/bash -p
-# pre-push: refresh the local e2e-skills install from the current working tree,
-# including any uncommitted edits present when the hook runs.
+# pre-push: run the local gates, then refresh the local e2e-skills install.
+# The refresh copies the working tree, not the pushed ref, so it runs only when
+# the push sends the checked-out HEAD to main and skills/ has no uncommitted
+# edits; otherwise the installed copy could differ from what was pushed.
 # Delegates to scripts/dev/reinstall-skills.sh, which runs:
 #   `skills remove` (no-op if not installed) + `skills add --copy` (idempotent).
 # This handles both initial install (first push) and refresh (subsequent pushes).
@@ -17,6 +19,9 @@ builtin shopt -u expand_aliases
 builtin unalias -a 2>/dev/null || true
 
 REPO_ROOT="$(/usr/bin/git rev-parse --show-toplevel)"
+# Git passes one "<local ref> <local sha> <remote ref> <remote sha>" line per
+# pushed ref on stdin. Read it before anything else can consume stdin.
+PUSHED_REFS="$(/bin/cat)"
 
 echo "==> pre-push: README i18n parity guard"
 en_sec=$(grep -c '^## ' "$REPO_ROOT/README.md" || true)
@@ -50,5 +55,19 @@ else
   fi
 fi
 
-echo "==> pre-push: refreshing local e2e-skills install"
-"$REPO_ROOT/scripts/dev/reinstall-skills.sh"
+HEAD_SHA="$(/usr/bin/git -C "$REPO_ROOT" rev-parse HEAD)"
+pushes_head_to_main=0
+while IFS=' ' builtin read -r _local_ref local_sha remote_ref _remote_sha; do
+  if [ "$remote_ref" = "refs/heads/main" ] && [ "$local_sha" = "$HEAD_SHA" ]; then
+    pushes_head_to_main=1
+  fi
+done <<< "$PUSHED_REFS"
+
+if [ "$pushes_head_to_main" != "1" ]; then
+  echo "==> pre-push: local install refresh skipped (this push does not send the checked-out HEAD to main)"
+elif [ -n "$(/usr/bin/git -C "$REPO_ROOT" status --porcelain -- skills)" ]; then
+  echo "==> pre-push: local install refresh skipped (skills/ has uncommitted changes that were not pushed)"
+else
+  echo "==> pre-push: refreshing local e2e-skills install"
+  "$REPO_ROOT/scripts/dev/reinstall-skills.sh"
+fi
