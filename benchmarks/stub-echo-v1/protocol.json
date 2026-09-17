@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "protocol_id": "stub-echo-v1",
+  "status": "NOT_RUN",
+  "frozen_at": "2026-09-18",
+  "question": "Does the proposed reviewer sub-pattern #4l (an assertion whose subject is a response the same test stubbed) earn a scanner rule, and at what severity?",
+  "hypotheses": {
+    "H1_prevalence": "The stub-echo shape occurs in real public Playwright and Cypress suites often enough to justify a scanner rule.",
+    "H2_severity": "A stub-echo assertion stays green under a product fault that a user-visible assertion on the same behavior catches.",
+    "H3_separability": "A mechanical detector can separate stub-echo assertions from assertions on rendered output and from assertions on the request the application sent."
+  },
+  "corpus": {
+    "source": "benchmarks/field-scan-v1/repos.json",
+    "repositories": 12,
+    "pinning": "the sha recorded per repository in that file",
+    "contamination_rule": "inherited from field-scan-v1: no repository this project has opened a pull request against",
+    "mutation_policy": "no repository is added, dropped, or swapped after collection starts"
+  },
+  "collector": {
+    "path": "benchmarks/stub-echo-v1/collect_candidates.py",
+    "model_free": true,
+    "publishes": "every candidate with repository, file, line, and matched snippet",
+    "response_observers": [
+      "page.waitForResponse",
+      "page.waitForEvent('response')",
+      "cy.wait('@alias')"
+    ],
+    "stub_markers": ["page.route(", "cy.intercept("],
+    "scope": "files under the reviewer scanner's spec globs that contain both a response observer and a stub marker"
+  },
+  "adjudication": {
+    "verdicts": ["STUB_ECHO", "APP_MEDIATED", "REAL_BACKEND", "UNDECIDABLE"],
+    "undecidable_policy": "counts against precision; never discarded",
+    "timing": "every candidate judged before any threshold is computed"
+  },
+  "gates": {
+    "G1_prevalence": {
+      "metric": "adjudicated STUB_ECHO instances",
+      "pass": "at least 5 instances in at least 2 distinct repositories"
+    },
+    "G2_separability": {
+      "metric": "Wilson 95% lower bound of STUB_ECHO / adjudicated candidates",
+      "pass": "at least 0.50 for the collector and at least 0.80 for the drafted scanner rule re-run over the same corpus"
+    },
+    "G3_severity": {
+      "metric": "executable fault injection in benchmarks/stub-echo-v1/fixture/",
+      "pass": "the stub-echo spec stays green under the injected product fault, the rendered-output spec turns red under the same fault, and both are green without it"
+    },
+    "G4_guard": {
+      "metric": "drafted rule over benchmarks/stub-echo-v1/fixture/guards/",
+      "pass": "zero hits on route.continue() pass-through, page.request/cy.request, request.postDataJSON(), and rendered-output assertions"
+    }
+  },
+  "decisions": {
+    "all_gates_pass": "implement #4l as a P0 sub-pattern of #4 across the seven taxonomy surfaces with true-positive and false-positive-guard evals",
+    "G3_fails": "do not add a P0 rule; the shape is not an always-pass",
+    "G1_fails_only": "document the shape in the #4 Phase 2 procedure; add no scanner rule",
+    "G2_or_G4_fails": "keep Phase 2 documentation and record why a mechanical rule was refused"
+  },
+  "publication": "a result that misses a gate is published unchanged; no threshold moves after collection"
+}
