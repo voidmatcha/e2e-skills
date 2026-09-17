@@ -40,6 +40,21 @@ PATTERNS = (
             r"(?![A-Za-z0-9_])"
         ),
     ),
+    (
+        "GitHub OAuth, app, or refresh token",
+        re.compile(r"(?<![A-Za-z0-9_])gh[ousr]_[A-Za-z0-9]{36}(?![A-Za-z0-9_])"),
+    ),
+    (
+        "Anthropic API or OAuth token",
+        re.compile(
+            r"(?<![A-Za-z0-9_-])sk-ant-[a-z]+[0-9]{2}-[A-Za-z0-9_-]{32,}"
+            r"(?![A-Za-z0-9_-])"
+        ),
+    ),
+    (
+        "npm access token",
+        re.compile(r"(?<![A-Za-z0-9_])npm_[A-Za-z0-9]{36}(?![A-Za-z0-9_])"),
+    ),
     ("Slack token", re.compile(r"xox[baprs]-[0-9A-Za-z-]{10,}")),
     ("Google API key", re.compile(r"AIza[0-9A-Za-z_-]{35}")),
     (

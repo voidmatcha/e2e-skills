@@ -1804,6 +1804,26 @@ def volatile_output_roots(environ: dict[str, str] | None = None) -> list[Path]:
     return roots
 
 
+def overwrites_run_input(output: Path, inputs: list[Path]) -> bool:
+    """Report whether a report destination is one of the run's own inputs.
+
+    The initial INCOMPLETE report is written before the first model call, so an
+    --output that names the corpus, protocol, a case source, or a skill file
+    would replace that input on disk while the run continued on its snapshot.
+    """
+    try:
+        resolved = output.expanduser().resolve()
+    except OSError:
+        return False
+    for candidate in inputs:
+        try:
+            if resolved == candidate.expanduser().resolve():
+                return True
+        except OSError:
+            continue
+    return False
+
+
 def is_volatile_output_path(
     path: Path,
     *,
@@ -2219,17 +2239,22 @@ def score(case: dict, findings: list[dict]) -> dict:
 
 
 def command_output(command: list[str]) -> str | None:
+    # Identity probes such as `claude --version` run before any staged runner
+    # home exists. Give them an empty private HOME so the "no ambient config
+    # directory" property also covers the probe, not just the model call.
     try:
-        proc = subprocess.run(
-            command,
-            cwd=ROOT,
-            env=clean_env(),
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            timeout=10,
-            check=False,
-        )
+        with tempfile.TemporaryDirectory(prefix="e2e-reviewer-probe-home-") as probe_home:
+            os.chmod(probe_home, 0o700)
+            proc = subprocess.run(
+                command,
+                cwd=ROOT,
+                env=clean_env(runner_home=probe_home),
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                timeout=10,
+                check=False,
+            )
     except (OSError, subprocess.TimeoutExpired):
         return None
     if proc.returncode == 0 and proc.stdout.strip():
@@ -3013,6 +3038,24 @@ def main() -> int:
             f"--output {output_path} resolves under a volatile temp root that "
             "the OS may sweep; write the report to a durable path such as "
             "benchmarks/<protocol>/reports/"
+        )
+    run_inputs = [
+        Path(__file__),
+        args.cases,
+        args.protocol,
+        *(
+            args.cases.parent / source["source"]
+            for case in original_all_cases
+            for source in case["source_files"]
+        ),
+        *skill_files(original_skill_dir),
+        ROOT / "scripts/ci/lib/strict_json.py",
+        ROOT / "scripts/evals/eval_security.py",
+    ]
+    if overwrites_run_input(output_path, run_inputs):
+        parser.error(
+            f"--output {output_path} is an input of this run; write the report "
+            "to a separate path such as benchmarks/<protocol>/reports/"
         )
     runs: list[dict] = []
     started_at = dt.datetime.now(dt.timezone.utc).isoformat()

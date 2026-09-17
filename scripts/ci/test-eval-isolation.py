@@ -784,6 +784,44 @@ def assert_volatile_output_fails_before_runner_launch(temp: Path) -> None:
         assert not marker.exists()
 
 
+def assert_output_cannot_overwrite_run_inputs(temp: Path) -> None:
+    """The initial report write must not replace a corpus, protocol, or skill file."""
+    cases = ROOT / "scripts/evals/reviewer-holdout-v3.json"
+    protocol = ROOT / "scripts/evals/reviewer-validation-protocol-v3.json"
+    skill = ROOT / "skills/e2e-reviewer/SKILL.md"
+    inputs = [cases, protocol, skill]
+    assert HOLDOUT.overwrites_run_input(cases, inputs)
+    assert HOLDOUT.overwrites_run_input(
+        ROOT / "scripts/evals/../evals/reviewer-holdout-v3.json", inputs
+    )
+    link = temp / "skill-link.md"
+    if link.is_symlink() or link.exists():
+        link.unlink()
+    link.symlink_to(skill)
+    assert HOLDOUT.overwrites_run_input(link, inputs)
+    assert not HOLDOUT.overwrites_run_input(
+        ROOT / "benchmarks/reviewer-holdout-v3/reports/new.json", inputs
+    )
+    source = (HOLDOUT_PATH).read_text(encoding="utf-8")
+    assert "if overwrites_run_input(output_path, run_inputs):" in source
+    assert source.index("if overwrites_run_input(output_path, run_inputs):") < source.index(
+        "write_report(\n        output_path,"
+    )
+
+
+def assert_identity_probe_uses_private_home(temp: Path) -> None:
+    """A --version probe must not see the operator's real home directory."""
+    probe = temp / "print-home.sh"
+    probe.write_text('#!/bin/sh\nprintf "%s\\n" "$HOME"\n', encoding="utf-8")
+    probe.chmod(0o700)
+    observed = HOLDOUT.command_output([os.fspath(probe)])
+    assert observed, observed
+    real_home = os.path.realpath(os.path.expanduser("~"))
+    assert os.path.realpath(observed) != real_home, observed
+    assert "e2e-reviewer-probe-home-" in observed, observed
+    assert not Path(observed).exists(), observed
+
+
 def assert_durable_output_is_unaffected(temp: Path) -> None:
     """Ordinary destinations and an explicit durable CLI path remain allowed."""
     assert not HOLDOUT.is_volatile_output_path(
@@ -1300,6 +1338,8 @@ def main() -> None:
         assert_release_scope_fails_before_runner_launch(temp)
         assert_volatile_output_fails_before_runner_launch(temp)
         assert_durable_output_is_unaffected(temp)
+        assert_output_cannot_overwrite_run_inputs(temp)
+        assert_identity_probe_uses_private_home(temp)
         assert_public_live_development_run_is_zero_tool_and_non_release(temp)
         assert_development_status_state_end_to_end(temp)
         assert_credential_output_never_persists(temp)

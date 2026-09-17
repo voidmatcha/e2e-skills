@@ -169,7 +169,11 @@ assert_fails() {
   local status=0
   claim_case || return 0
   run_review_without_duplicate_security output || status=$?
-  if grep -qF "$expected" <<<"$output"; then
+  if [ "$status" -eq 0 ]; then
+    echo "  [FAIL] $name — review.sh exited 0 on the mutation (a warning is not a gate failure)" >&2
+    echo "$output" | sed 's/^/         /' >&2
+    FAIL=$((FAIL + 1))
+  elif grep -qF "$expected" <<<"$output"; then
     echo "  [PASS] $name"
     PASS=$((PASS + 1))
   else

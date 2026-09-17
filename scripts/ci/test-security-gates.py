@@ -304,6 +304,15 @@ def main() -> None:
             "github-fine-grained.toml": "token = {!r}\n".format(
                 "github_pat_" + "Ab_9" * 20 + "Z_"
             ),
+            "anthropic-api.ts": "const key = {!r};\n".format(
+                "sk-ant-" + "api03-" + "Ab_9-" * 18 + "xyzAA"
+            ),
+            "anthropic-oauth.env": "TOKEN={}\n".format(
+                "sk-ant-" + "oat01-" + "Zy-8_" * 18 + "wvuAA"
+            ),
+            "npm-token.toml": "auth = {!r}\n".format("npm_" + "f" * 36),
+            "github-oauth.yml": "token: {}\n".format("gho_" + "g" * 36),
+            "github-app.json": '{{"token": "{}"}}\n'.format("ghs_" + "h" * 36),
             ".env.local": "SLACK={}\n".format("xoxb-" + "c" * 16),
             "sample.xml": "<key>{}</key>\n".format("AIza" + "d" * 35),
             "sample.pem": "-----BEGIN " + "PRIVATE KEY-----\n",
@@ -571,6 +580,12 @@ def main() -> None:
                     "github_pat_" + fine_grained_body[:-1],
                     "github_pat_" + fine_grained_body + "A",
                     "github_pat_" + "A" * 81 + "-",
+                    "sk-ant-" + "api03-" + "short",
+                    "sk-anthropic-" + "A" * 40,
+                    "npm_" + "f" * 35,
+                    "npm_" + "f" * 37,
+                    "gho_" + "g" * 35,
+                    "ghx_" + "h" * 36,
                 )
             )
             + "\n",

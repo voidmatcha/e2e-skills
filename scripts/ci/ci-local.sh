@@ -397,6 +397,21 @@ step "E2E smell scan"
 # manual validation; scanning `.` with --no-ignore would make their findings
 # part of this bundle's release gate. Target-project ESLint is default-off;
 # test-local-eslint-path.sh separately exercises its explicit trust opt-in.
+# scan.sh runs Tier 2 only when ast-grep resolves from E2E_SMELL_AST_GREP_BIN or
+# its fixed candidate paths. Hosted CI installs it; a host without it passes
+# this gate on Tier 3 alone, so make that visible instead of silent.
+SELF_SCAN_AST_GREP=""
+for SELF_SCAN_AST_CANDIDATE in "${E2E_SMELL_AST_GREP_BIN:-}" \
+  /opt/homebrew/bin/ast-grep /usr/local/bin/ast-grep /usr/bin/ast-grep \
+  /opt/homebrew/bin/sg /usr/local/bin/sg /usr/bin/sg; do
+  if [ -n "$SELF_SCAN_AST_CANDIDATE" ] && [ -x "$SELF_SCAN_AST_CANDIDATE" ]; then
+    SELF_SCAN_AST_GREP="$SELF_SCAN_AST_CANDIDATE"
+    break
+  fi
+done
+if [ -z "$SELF_SCAN_AST_GREP" ]; then
+  echo "ci-local: WARNING: ast-grep not found; the self-scan P0 gate below covers Tier 3 only (hosted CI also runs Tier 2)" >&2
+fi
 for SELF_SCAN_ROOT in skills scripts; do
   if [ "$QUIET" = "1" ]; then
     E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_FAIL_ON=p0-candidate /bin/bash -p ./skills/e2e-reviewer/scripts/scan.sh "$SELF_SCAN_ROOT" >/dev/null 2>&1 ||
