@@ -47,12 +47,18 @@ project's Playwright is 1.59 or newer, prefer the supported CLI for questions th
 reader cannot answer:
 
 ```bash
-/usr/bin/env -i PATH="$PATH" node_modules/.bin/playwright trace actions \
-  --errors-only playwright-report/path/to/trace.zip
+/usr/bin/env -i PATH="$PATH" node_modules/.bin/playwright trace open \
+  playwright-report/path/to/trace.zip
+/usr/bin/env -i PATH="$PATH" node_modules/.bin/playwright trace actions --errors-only
 /usr/bin/env -i PATH="$PATH" node_modules/.bin/playwright trace snapshot <id> \
-  --name after playwright-report/path/to/trace.zip -- eval "document.title"
+  --name after -- eval "document.title"
+/usr/bin/env -i PATH="$PATH" node_modules/.bin/playwright trace close
 ```
 
+The subcommands after `open` read the extracted trace and take no trace path;
+`--name` selects the `before`, `input`, or `after` snapshot. This shape was
+checked against Playwright 1.62's `trace --help`; on another version, run the
+approved `playwright trace --help` first rather than guessing flags.
 `actions --errors-only` lists failing steps with ids; `snapshot <id> -- eval`
 queries the frozen DOM at that step, which the bundled reader cannot do and
 which settles "was the element actually there" without a rerun. `requests

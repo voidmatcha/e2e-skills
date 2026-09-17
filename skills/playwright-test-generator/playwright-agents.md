@@ -15,10 +15,10 @@ Playwright v1.56+ ships three first-party AI agents — **planner** (explores th
 
 ```bash
 # Codex support verified with Playwright 1.62.1
-npx playwright init-agents --loop=codex
+npx --no-install playwright init-agents --loop=codex
 
 # Other documented hosts
-npx playwright init-agents --loop=claude   # also: --loop=vscode, --loop=opencode
+npx --no-install playwright init-agents --loop=claude   # also: --loop=vscode, --loop=opencode
 ```
 
 The Codex command produces `playwright_test_planner`,
