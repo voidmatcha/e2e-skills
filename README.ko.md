@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=bf111846180ce8834c14d3b7861e47f77697542dc7852cc323726b03cd118626; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=2e9549e2984735412031c61f14c30c7c9eecb2d1e4a5c996d37b607ba643cefb; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 AI 코딩 에이전트가 Playwright와 Cypress E2E 테스트를 생성하고 리뷰하며 실패 원인을 분석할 때 쓰는 네 종류의 Agent Skills 모음입니다. 새 테스트 생성은 Playwright를 지원하고, 기존 테스트나 PR/diff 범위의 변경 사항 리뷰와 실패 분석은 Playwright와 Cypress를 지원합니다. 리뷰 목록 가운데 규칙만으로 판별할 수 있는 항목을 찾는 `deterministic scanner`도 포함합니다.
 
@@ -72,21 +72,21 @@ false-green 탐지는 테스트 리뷰 기능의 중요한 부분이지만, 프�
 
 | 저장소 | GitHub Stars | PR | 수정한 패턴 |
 | --- | ---: | --- | --- |
-| Storybook | ★ 91,056 | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Playwright 검증문의 `await` 누락 |
-| code-server | ★ 79,305 | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | focused test 유출, matcher 없는 `expect`, 사용하지 않는 가시성 확인 |
-| Strapi | ★ 73,165 | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | 사용하지 않는 탐색 및 상태 확인 |
-| Ghost | ★ 55,309 | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | Promise인 비활성화 상태를 직접 검증 |
-| Cal.com | ★ 48,488 | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | E2E 흐름의 약한 검증 패턴 |
-| Bruno | ★ 46,969 | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | 검증과 대기의 안정성 문제 |
-| Qwik | ★ 22,062 | [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777) | Locator/handle 존재 여부만 확인 |
-| SvelteKit | ★ 20,808 | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | 기다리지 않는 Playwright 검증문 |
-| Element Web | ★ 13,458 | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Locator가 null이 아닌지만 확인 |
-| FiftyOne | ★ 11,088 | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Locator 정의 여부 확인을 화면에 나타난 중복 이름 오류 검증으로 교체 |
-| Carbon Design System | ★ 9,459 | [carbon-design-system/carbon#22564](https://github.com/carbon-design-system/carbon/pull/22564) | Locator의 true/false 판정을 web-first 검증문으로 교체 |
-| Rancher Desktop | ★ 7,345 | [rancher-sandbox/rancher-desktop#10557](https://github.com/rancher-sandbox/rancher-desktop/pull/10557) | `not.toBeNull()` Locator 검증을 화면에 나타난 WSL 통합 이름 검증으로 교체 |
-| Apache Zeppelin | ★ 6,656 | [apache/zeppelin#5180](https://github.com/apache/zeppelin/pull/5180) | 항상 true인 검증문과 조용히 건너뛰던 가드 검사 |
-| MUI X | ★ 5,848 | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | UI handle 확인을 상태 검증으로 교체 |
-| module-federation/core | ★ 2,641 | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Cypress 테스트의 불필요하고 포괄적인 `uncaught:exception` 억제 |
+| Storybook | ★91.1k | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Playwright 검증문의 `await` 누락 |
+| code-server | ★79.3k | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | focused test 유출, matcher 없는 `expect`, 사용하지 않는 가시성 확인 |
+| Strapi | ★73.2k | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | 사용하지 않는 탐색 및 상태 확인 |
+| Ghost | ★55.3k | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | Promise인 비활성화 상태를 직접 검증 |
+| Cal.com | ★48.5k | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | E2E 흐름의 약한 검증 패턴 |
+| Bruno | ★47.0k | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | 검증과 대기의 안정성 문제 |
+| Qwik | ★22.1k | [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777) | Locator/handle 존재 여부만 확인 |
+| SvelteKit | ★20.8k | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | 기다리지 않는 Playwright 검증문 |
+| Element Web | ★13.5k | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Locator가 null이 아닌지만 확인 |
+| FiftyOne | ★11.1k | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Locator 정의 여부 확인을 화면에 나타난 중복 이름 오류 검증으로 교체 |
+| Carbon Design System | ★9.5k | [carbon-design-system/carbon#22564](https://github.com/carbon-design-system/carbon/pull/22564) | Locator의 true/false 판정을 web-first 검증문으로 교체 |
+| Rancher Desktop | ★7.3k | [rancher-sandbox/rancher-desktop#10557](https://github.com/rancher-sandbox/rancher-desktop/pull/10557) | `not.toBeNull()` Locator 검증을 화면에 나타난 WSL 통합 이름 검증으로 교체 |
+| Apache Zeppelin | ★6.7k | [apache/zeppelin#5180](https://github.com/apache/zeppelin/pull/5180) | 항상 true인 검증문과 조용히 건너뛰던 가드 검사 |
+| MUI X | ★5.8k | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | UI handle 확인을 상태 검증으로 교체 |
+| module-federation/core | ★2.6k | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Cypress 테스트의 불필요하고 포괄적인 `uncaught:exception` 억제 |
 
 ## false-green 테스트 살펴보기
 
