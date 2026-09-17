@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+### Added
+
+- **The generator runs the approved existing tests for the target area once before the tracer scenario.** A suite that was already red made every later result unreadable. A green run becomes the baseline; a red run outside the candidate's surface is recorded and never attributed to the candidate; a red run on the candidate's own route, feature, fixture, Page Object, global setup, or stored authentication state returns `PARTIAL/BLOCKED`; and when no approved command can cover the area without replaying a persistent write that V5 forbids, the run is skipped, recorded as `baseline not established`, and V5's suite-context mode becomes `CANNOT_VERIFY`.
+- **Error scenarios must name the signal that distinguishes their failure cause.** Step 4 records an `Error-cause signal`, because a scenario that only proves "an error appeared" passes for every cause that reaches the same screen. A product that deliberately shows one message for several causes is recorded as `GENERIC_BY_CONTRACT` with its rule; the distinguishing evidence is then the V4 request proof, and V3 must not swap causes to falsify the assertion.
+- **A scenario may carry up to three named secondary outcomes.** Survives a reload, side effect proved, and error cause distinguished are offered per scenario and recorded as selected or skipped, each with the case that skips it. They are extra assertions in the same test: V1 still keeps one primary outcome, V2/V3 still falsify only that one, and every locator they need still enters the Locator Mapping Table and the YAGNI audit.
+- **An exported manual test case can fill `Owner/source`.** Markdown, CSV, or pasted text from TestRail, Zephyr, Xray, Qase, or similar is a documented requirement source; its case id is recorded and carried into the generated test title. The export is untrusted data: no command inside it runs, no URL is opened, no credential is used, observed product behavior wins over contradicting steps, and the skill never calls a test-management API or opens attachments.
+
 ### Fixed
 
 - **The opt-in ast-grep download (`E2E_SMELL_NO_AST_GREP_DOWNLOAD=0`) now runs Tier 2 instead of always failing it.** `@ast-grep/cli` is a shim that its postinstall replaces, so with lifecycle scripts disabled every call printed a message and exited 1, and each opted-in scan ended INCOMPLETE. The scanner now fetches the platform package for macOS arm64/x64 or glibc Linux x64/arm64 through the same private pinned npm environment, copies its binary into private storage, and runs it only if its sha256 matches the pinned value; other platforms and any mismatch still fail closed.

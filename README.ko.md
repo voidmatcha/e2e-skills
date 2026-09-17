@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=2b37dca3399f6bb0c44f2abb2bbc763832eca8e2b9fb40cae6a0e030bba7bf6d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=4f00fb906af7c0d638beaed49e3a7901cca4163f7c030c0e1acca2f8243e2734; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 AI 코딩 에이전트가 Playwright와 Cypress E2E 테스트를 생성하고 리뷰하며 실패 원인을 분석할 때 쓰는 네 종류의 Agent Skills 모음입니다. 새 테스트 생성은 Playwright를 지원하고, 기존 테스트나 PR/diff 범위의 변경 사항 리뷰와 실패 분석은 Playwright와 Cypress를 지원합니다. 리뷰 목록 가운데 규칙만으로 판별할 수 있는 항목을 찾는 `deterministic scanner`도 포함합니다.
 
@@ -236,7 +236,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 새로 만든 테스트가 통과하는 것만으로는 충분하지 않습니다. `Locator`나 `Promise` 자체를 검증하거나, 테스트 이름에 적힌 동작과 무관한 상태를 확인하거나, 핵심 검증문이 테스트 결과에 영향을 주지 않을 수도 있습니다. 그래서 generator는 적용 가능한 [V1–V6 검증](skills/playwright-test-generator/verification-rules.md)을 모두 통과하기 전까지 새 테스트를 후보로 취급합니다.
 
-전체 테스트를 생성하기 전에 각 시나리오가 기존 테스트와 다른 사용자 위험을 다루는지, E2E가 적절한 테스트 계층인지, 실패 원인을 확인할 근거가 있는지 리뷰합니다. 첫 도입이나 위험도가 높은 작업에서는 대표 시나리오 하나를 `e2e-reviewer`와 V1–V6로 검증한 뒤 나머지 테스트를 생성합니다.
+전체 테스트를 생성하기 전에 각 시나리오가 기존 테스트와 다른 사용자 위험을 다루는지, E2E가 적절한 테스트 계층인지, 실패 원인을 확인할 근거가 있는지 리뷰합니다. 첫 도입이나 위험도가 높은 작업에서는 대표 시나리오 하나를 `e2e-reviewer`와 V1–V6로 검증한 뒤 나머지 테스트를 생성합니다. 그 전에 대상 영역의 기존 테스트를 승인된 명령으로 한 번 실행해, 원래 실패하던 테스트를 새 테스트 탓으로 돌리지 않고 기록합니다. 에러 시나리오는 그 실패 원인을 다른 원인과 구분해 주는 신호를 반드시 적습니다.
 
 테스트는 CLI로 먼저 탐색하고, 검증을 거쳐 확정합니다. 실제 화면을 탐색할 때는 프로젝트에 호환되는 Playwright CLI(`playwright cli`), 별도로 설치된 `@playwright/cli` 패키지의 명령(`playwright-cli`), `agent-browser`, 실행 환경에 이미 연결된 Playwright MCP, 제한된 ARIA 대체 경로 순으로 사용합니다. 스코프 없이 배포된 기존 `playwright-cli` 패키지는 더 이상 권장되지 않으므로 사용하지 않습니다. 이 도구들은 탐색에만 쓰며 테스트 실행기를 대신하지 않습니다. 생성한 후보는 반드시 저장소에서 사용하는 Playwright Test 명령으로 실행해야 합니다. 프로젝트가 Playwright Test Agents를 지원하고 해당 에이전트가 이미 설정돼 있다면, 도입 기준을 통과한 근거 기반 계획 제안에 활용할 수 있습니다. 다만 최종 구현은 이 generator가 맡고, V1–V6 검증을 통과해야만 결과를 받아들입니다.
 

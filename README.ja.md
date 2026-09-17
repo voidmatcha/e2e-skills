@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <strong>🇯🇵 日本語</strong> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=2b37dca3399f6bb0c44f2abb2bbc763832eca8e2b9fb40cae6a0e030bba7bf6d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=4f00fb906af7c0d638beaed49e3a7901cca4163f7c030c0e1acca2f8243e2734; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、AI コーディングエージェントが Playwright/Cypress の E2E テスト作業に使える 4 つのワークフローを提供します。Playwright カバレッジの生成、既存のテスト仕様または PR/diff 範囲の変更レビュー、失敗した Playwright レポートのデバッグ、失敗した Cypress レポートのデバッグを扱います。レビューカタログのうち、機械的に判定できる部分集合を検出する決定論的スキャナーも含まれます。
 
@@ -227,7 +227,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 生成したテストが通るだけでは不十分です。`Locator` や `Promise` 自体を検証していたり、テスト名に記した動作と無関係な状態を見ていたり、主要な assertion がテストの成否に影響していないことがあります。そのため生成器は、適用可能な [V1–V6 verification](skills/playwright-test-generator/verification-rules.md) をすべて通過するまで、新しい spec を候補として扱います。
 
-テスト一式を生成する前に、各シナリオが既存のテストとは異なるユーザーリスクを扱うか、E2E が適切なテスト層か、失敗原因を特定できる根拠があるかを確認します。初回導入またはリスクの高い作業では、代表シナリオを 1 件だけ `e2e-reviewer` と V1–V6 で検証してから、残りのテストを生成します。
+テスト一式を生成する前に、各シナリオが既存のテストとは異なるユーザーリスクを扱うか、E2E が適切なテスト層か、失敗原因を特定できる根拠があるかを確認します。初回導入またはリスクの高い作業では、代表シナリオを 1 件だけ `e2e-reviewer` と V1–V6 で検証してから、残りのテストを生成します。その前に対象領域の既存テストを承認済みコマンドで 1 度実行し、もともと失敗していたテストを新しいテストのせいにせず記録します。エラーシナリオでは、その失敗原因を他の原因と区別できる signal を必ず記録します。
 
 テスト生成は CLI-first、verification-first のフローに従います。ライブ探索では、互換性のあるプロジェクトローカルの Playwright CLI（`playwright cli`）、別途インストール済みの `@playwright/cli` パッケージが提供するコマンド（`playwright-cli`）、`agent-browser`、実行環境に既に接続されている Playwright MCP、制限付き ARIA fallback の順に使います。非推奨のスコープなし `playwright-cli` パッケージは使用しません。これらは探索手段であり、テストランナーではありません。生成した候補は、必ずリポジトリ標準の Playwright Test コマンドで実行します。プロジェクトが Playwright Test Agents をサポートし、それらが初期化済みであれば、admission gate に応じて根拠付きの計画案を補助できます。ただし、最終実装はこの生成器が担い、V1–V6 verification を合格条件とします。
 

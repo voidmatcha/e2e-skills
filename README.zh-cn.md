@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=2b37dca3399f6bb0c44f2abb2bbc763832eca8e2b9fb40cae6a0e030bba7bf6d; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=4f00fb906af7c0d638beaed49e3a7901cca4163f7c030c0e1acca2f8243e2734; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 为 AI 编程代理提供四个面向 E2E 测试工作的聚焦工作流：生成 Playwright 覆盖、审查现有 spec 或 PR/diff 范围内的测试变更、调试失败的 Playwright 报告，以及调试失败的 Cypress 报告。它还包含一个确定性扫描器，用于发现审查目录中可机械判定的子集。
 
@@ -226,7 +226,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 生成的测试仅仅通过还不够：它可能断言的是 `Locator` 或 `Promise` 本身，观察的状态与测试名称所描述的行为无关，或者主要断言根本不影响测试结果。因此，在所有适用的 [V1–V6 验证](skills/playwright-test-generator/verification-rules.md) 通过之前，生成器始终把新 spec 视为候选项。
 
-在生成完整测试集之前，生成器会确认每个场景是否覆盖与现有测试不同的用户风险、E2E 是否是合适的测试层，以及是否有可用于定位失败原因的证据。首次引入测试或处理高风险工作时，会先通过 `e2e-reviewer` 和 V1–V6 验证一个代表性场景，再生成其余测试。
+在生成完整测试集之前，生成器会确认每个场景是否覆盖与现有测试不同的用户风险、E2E 是否是合适的测试层，以及是否有可用于定位失败原因的证据。首次引入测试或处理高风险工作时，会先通过 `e2e-reviewer` 和 V1–V6 验证一个代表性场景，再生成其余测试。在此之前，会用已批准的命令把目标区域的现有测试运行一次，把原本就失败的测试记录下来，而不是算到新测试头上。错误场景必须写明能把该失败原因与其他原因区分开的信号。
 
 测试生成遵循 CLI-first、verification-first 流程。实时探索依次优先使用与项目兼容的 Playwright CLI（`playwright cli`）、单独安装的 `@playwright/cli` 包所提供的命令（`playwright-cli`）、`agent-browser`、运行环境中已经连接的 Playwright MCP，以及受限的 ARIA fallback。已弃用的无作用域 `playwright-cli` 包不会被使用。这些工具只用于探索，不是测试运行器；生成的候选测试仍必须使用仓库原生的 Playwright Test 命令运行。当项目支持 Playwright Test Agents 且已经完成初始化时，它们可以在满足 admission gate 后提供带证据的规划建议；最终实现仍由本生成器负责，V1–V6 验证仍是验收边界。
 
