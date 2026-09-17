@@ -434,7 +434,16 @@ def validate_provenance(
         and wrapper.get("claim") == "execution-wrapper-only"
         and wrapper.get("isolation_proof") is False
     )
-    if visibility == "public":
+    # The runner permits no-wrapper live runs for its pinned built-in inputs
+    # whatever visibility label the corpus carries (v4 "public-pre-publication",
+    # v5/v6 "public-development"), so accept exactly those digest pairs rather
+    # than only the literal "public" label. External bundles still need a wrapper.
+    pinned_built_in_input = any(
+        pinned["corpus_sha256"] == report["corpus_sha256"]
+        and pinned["protocol_sha256"] == report["protocol_sha256"]
+        for pinned in RUNNER.PINNED_LIVE_INPUTS.values()
+    )
+    if visibility == "public" or pinned_built_in_input:
         if not (
             (isolation == "prompt-complete-zero-tools" and wrapper is None)
             or (isolation == "not-proven" and valid_wrapper)
@@ -1335,9 +1344,9 @@ def compare_arm_reports(
     evaluator_sha256: str | None = None,
 ) -> dict:
     arm_contract = protocol.get("arm_comparison")
-    if protocol.get("protocol_id") != "reviewer-holdout-v5" or not isinstance(
-        arm_contract,
-        dict,
+    if (
+        protocol.get("protocol_id") not in RUNNER.ARM_COMPARISON_PROTOCOL_IDS
+        or not isinstance(arm_contract, dict)
     ):
         raise ValueError("selected protocol has no frozen arm-comparison contract")
     treatment = arm_contract["treatment"]

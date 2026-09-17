@@ -1300,6 +1300,118 @@ class ReviewerHoldoutV5Test(unittest.TestCase):
             result.stdout,
         )
 
+    def no_wrapper_provenance_report(
+        self,
+        corpus_sha256: str,
+        protocol_sha256: str,
+    ) -> dict:
+        report = {
+            field: "7" * 64
+            for field in (
+                "skill_sha256",
+                "snapshot_skill_sha256",
+                "skill_sha256_after",
+                "snapshot_skill_sha256_after",
+                "evaluator_sha256",
+                "prompt_set_sha256",
+                "schedule_sha256",
+            )
+        }
+        report.update(
+            {
+                "corpus_sha256": corpus_sha256,
+                "snapshot_corpus_sha256": corpus_sha256,
+                "corpus_sha256_after": corpus_sha256,
+                "snapshot_corpus_sha256_after": corpus_sha256,
+                "protocol_sha256": protocol_sha256,
+                "protocol_sha256_after": protocol_sha256,
+                "prompt_profile": "full",
+                "runner": "claude",
+                "runner_executable": "/opt/frozen/claude",
+                "input_snapshot": "copy-once-temp",
+                "workspace_integrity": "pre-post-sha256",
+                "corpus_visibility": "public-development",
+                "source_read_isolation": "prompt-complete-zero-tools",
+                "external_wrapper": None,
+                "credential_environment": "not-inherited-by-model-tools",
+                "model_tool_surface": "none",
+                "evidence_scope": "development",
+                "release_eligible": False,
+                "release_isolation_attestation": None,
+            }
+        )
+        return report
+
+    def test_comparator_accepts_pinned_no_wrapper_public_development_reports(
+        self,
+    ) -> None:
+        # The runner allows no-wrapper live runs for these exact pinned inputs,
+        # so the comparator must not discard their reports for lacking a wrapper.
+        comparator = load_module("reviewer_holdout_v5_provenance", COMPARATOR_PATH)
+        v6_protocol_path = ROOT / "scripts/evals/reviewer-validation-protocol-v6.json"
+        for protocol_path in (PROTOCOL_PATH, v6_protocol_path):
+            with self.subTest(protocol=protocol_path.name):
+                comparator.validate_provenance(
+                    self.no_wrapper_provenance_report(
+                        EXPECTED_CORPUS_SHA256,
+                        sha256(protocol_path),
+                    ),
+                    "development",
+                )
+
+    def test_comparator_still_requires_wrapper_for_unpinned_non_public_reports(
+        self,
+    ) -> None:
+        comparator = load_module("reviewer_holdout_v5_unpinned", COMPARATOR_PATH)
+        for corpus_digest, protocol_digest in (
+            ("8" * 64, EXPECTED_PROTOCOL_SHA256),
+            (EXPECTED_CORPUS_SHA256, "9" * 64),
+        ):
+            with self.subTest(corpus=corpus_digest[:4], protocol=protocol_digest[:4]):
+                with self.assertRaisesRegex(
+                    ValueError,
+                    "non-public corpus must declare source isolation not-proven",
+                ):
+                    comparator.validate_provenance(
+                        self.no_wrapper_provenance_report(
+                            corpus_digest,
+                            protocol_digest,
+                        ),
+                        "development",
+                    )
+        pinned_without_wrapper_proof = self.no_wrapper_provenance_report(
+            EXPECTED_CORPUS_SHA256,
+            EXPECTED_PROTOCOL_SHA256,
+        )
+        pinned_without_wrapper_proof["source_read_isolation"] = "not-proven"
+        with self.assertRaisesRegex(
+            ValueError,
+            "invalid isolation provenance",
+        ):
+            comparator.validate_provenance(
+                pinned_without_wrapper_proof,
+                "development",
+            )
+
+    def test_arm_comparison_accepts_v6_identical_arm_contract(self) -> None:
+        comparator = load_module("reviewer_holdout_v6_arm_pass", COMPARATOR_PATH)
+        reports, cases, protocol = self.synthetic_arm_matrix(comparator)
+        v6_protocol = json.loads(
+            (ROOT / "scripts/evals/reviewer-validation-protocol-v6.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(protocol["arm_comparison"], v6_protocol["arm_comparison"])
+        protocol["protocol_id"] = v6_protocol["protocol_id"]
+        result = self.compare_synthetic_arm_matrix(
+            comparator,
+            reports,
+            cases,
+            protocol,
+        )
+        self.assertEqual("PASS", result["status"])
+        self.assertTrue(result["skill_lift_claim_eligible"])
+
     def test_protocol_requires_explicit_runner_path_before_live_execution(self) -> None:
         result = subprocess.run(
             [
