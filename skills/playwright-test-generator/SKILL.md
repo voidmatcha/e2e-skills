@@ -45,11 +45,11 @@ Step 7: V1–V6 Verification     (project-native runner; constrained debugging)
 
 Read project files to build a project profile before doing anything else.
 
-Use this complete JavaScript/TypeScript source-extension set for both config and spec discovery: `.js`, `.jsx`, `.mjs`, `.cjs`, `.ts`, `.tsx`, `.mts`, `.cts`. Do not stop after finding only the common `.ts`/`.js` forms.
+Use this complete JavaScript/TypeScript source-extension set for spec discovery: `.js`, `.jsx`, `.mjs`, `.cjs`, `.ts`, `.tsx`, `.mts`, `.cts`. Do not stop after finding only the common `.ts`/`.js` forms.
 
 | What | Where to look |
 |------|--------------|
-| Playwright config | `playwright.config.<ext>` for every extension in the eight-extension set above |
+| Playwright config | Playwright's six default-discovery filenames, `playwright.config.{ts,js,mts,mjs,cts,cjs}`, in that order. When an existing repository script passes `--config`/`-c`, resolve its value from the directory where Playwright runs: a file loads as is, and a directory loads the first of the six names inside that directory (no match means no config file). Otherwise use the first of the six names in the directory where Playwright runs. A `.tsx` or `.jsx` config loads only when passed explicitly as a file |
 | Base URL | `baseURL` in playwright config → fallback: `PLAYWRIGHT_BASE_URL` env var → if neither exists, ask user |
 | Test directory | config `testDir` → fallback scan: `e2e/`, `tests/`, `playwright/` |
 | POM pattern | Check for `models/`, `pages/`, `page-objects/` directories |
@@ -112,7 +112,9 @@ session from code.
 **Exact-target preflight (run first—fail fast):** after the safety gate, validate the approved `baseURL` plus route before any browser navigation. Require an explicit `http://` or `https://` URL whose scheme, host, and effective port equal the exact user-approved origin. Reject credentials, fragments, any cloud-metadata or link-local address, arbitrary private-network hosts, shared or production services. Ordinary non-secret route query parameters may remain; reject duplicates, sensitive names, and credential/token-shaped values before curl or any other child command can receive the URL as an argument. Keep raw URLs out of argv until validated.
 
 Use the bundled deterministic validator rather than judging IP ranges from
-prose:
+prose. `$SKILL_ROOT` is the absolute path of the directory that contains this
+SKILL.md. `BASE_URL` is the approved `baseURL` from Step 1, and `TARGET_URL` is
+the exact `<baseURL>/<target-path>` URL selected for exploration:
 
 ```bash
 # LOGIN_URL is empty unless it was separately approved as the exact same-origin
@@ -134,7 +136,14 @@ payload. Use it for every framed request; shell character counts are not valid
 frame lengths for non-ASCII URLs.
 
 The `/bin/bash -p` launcher ignores ambient `PATH`, shell/Python injection, and
-selects a fixed external Python 3.10+ for isolated `-I -B` execution. It verifies
+selects a fixed external Python 3.10+ for isolated `-I -B` execution. It considers
+only `/usr/bin/python3`, `/usr/local/bin/python3`, and
+`/opt/homebrew/bin/python3`, in that order, and selects the first 3.10+ one; an
+older system `/usr/bin/python3` (macOS ships 3.9) is rejected, so that host
+needs a Python 3.10+ at one of the other two paths. If none qualifies, the
+launcher exits 126: treat that as a terminal preflight failure, launch no
+browser, and ask for a user-provided snapshot; never substitute ambient
+`python3` or start the helper directly. It verifies
 its sibling helper, rejects malformed frames, and argument vectors contain only the
 fixed `--framed-stdin` switch; values remain in the length-prefixed stdin request.
 The helper rejects alternate numeric host literals, scoped/unspecified IPv6,
@@ -158,7 +167,8 @@ Validate URL, authority, query, and same-origin before normalizing; any failure
 is terminal before browser launch and never enters `webServer` recovery.
 
 Only after a pinned-probe connection failure for an approved local fixture may
-you inspect `playwright.config.*` for `webServer` and quote its source. Do not run `webServer.command` until the repository and local/disposable stack are approved and that exact command is explicitly approved; run it without shell interpolation and
+you inspect the loaded Playwright config identified in Step 1 for `webServer`
+and quote its source. Do not run `webServer.command` until the repository and local/disposable stack are approved and that exact command is explicitly approved; run it without shell interpolation and
 re-probe. Without `webServer`, stop; never explore a dead origin.
 
 For `auth-required` or `auth-redirect`, establish authentication only after the preflight succeeds. Check credentials for presence only, retain all guards, use
@@ -168,7 +178,18 @@ Use the official **Playwright CLI** as the primary browser automation source.
 Prefer the project-local `playwright cli` entry point only when
 `npx --no-install playwright help cli` confirms that the installed project
 version exposes the `cli` subcommand; otherwise use the already-installed
-standalone `@playwright/cli` package through its `playwright-cli` command. Do
+standalone `@playwright/cli` package through its `playwright-cli` command.
+That probe and the project-local entry point execute the project's installed
+Playwright package binary, so each is a target-controlled command: run it only
+after repository trust and explicit approval of that exact command. Without
+that approval, skip the probe and the project-local entry point. Exploration
+runs the entry point once per browser action, so request its approval as one
+unit: the exact `npx --no-install playwright cli` prefix plus the named
+exploration subcommands (for example `open`, `snapshot`, `click`, `fill`,
+`press`, `screenshot`, and `close`) on the preflighted exact target for the
+current exploration session. That approval covers only those subcommands on
+that target in that session; any other subcommand, added flag or config, or
+other URL needs its own exact-command approval. Do
 not install the deprecated unscoped `playwright-cli` package. A successful
 `playwright --version`, `playwright cli --version`, or
 `playwright cli --help` check is insufficient because older Playwright
@@ -320,7 +341,12 @@ approved or skipped.
 ### Proposed target-controlled commands
 
 List every command discovered from `webServer.command`, `package.json`, project
-docs, or repository scripts that later steps may execute:
+docs, or repository scripts that later steps may execute, plus every project
+package-binary command this skill prescribes for a later step: the
+`npx --no-install playwright help init-agents` probe and, for any first-party
+agent a later step may invoke, the exact server launch its initialized agent
+definitions run (such as `npx playwright run-test-mcp-server`), quoted from
+those definitions:
 
 ```
 | Exact command | Source | Purpose |
@@ -361,6 +387,11 @@ first-party agent support, those agents are already initialized, and either the
 user asks to use them or an approved high-risk scenario still has uncertain
 failure conditions or locators, read `playwright-agents.md` and apply its
 admission gate before invoking an agent.
+That probe executes the project's installed Playwright package binary: run it
+only as an exact command approved in Step 4; otherwise skip this auxiliary path.
+Invoking an agent also starts the server launch its initialized definitions
+run, which executes the same binary: invoke no agent unless that exact launch
+was approved in Step 4. Approval of a scenario is not approval of that command.
 The auxiliary planner proposes evidence-labelled plan deltas; this skill
 remains the final implementer. Do not treat source-only inference as live
 browser evidence, and route any material scope or command change back through
@@ -436,7 +467,7 @@ persistent boundary. UI double-click protection or a loopback frontend is not
 sufficient. Without one of those proofs, do not replay the persistent write:
 record V5 `CANNOT_VERIFY` and return `PARTIAL/BLOCKED`.
 
-Report `CANNOT_VERIFY` with a concrete reason when a safe probe is impossible. Never convert verifier `ERROR` into a product/test finding. Before completion, prove the source candidate is unchanged and no temporary verifier spec remains. An applicable V4 or V5 must be `PASS` (`V4: N/A` is allowed only for a read-only scenario). If either applicable rule is `CANNOT_VERIFY` or `ERROR`, the result is `PARTIAL/BLOCKED`, never `Complete`; a `FAIL` remains `BLOCKED` until repaired and reverified.
+Report `CANNOT_VERIFY` with a concrete reason when a safe probe is impossible. Never convert verifier `ERROR` into a product/test finding. Before completion, prove the source candidate is unchanged and no temporary verifier spec remains. An applicable V4 or V5 must be `PASS` (`V4: N/A` is allowed only for a read-only scenario), and V6 must be `PASS`. If any of these is `CANNOT_VERIFY` or `ERROR`, the result is `PARTIAL/BLOCKED`, never `Complete`; a `FAIL` remains `BLOCKED` until repaired and reverified.
 
 ### Failure handling (max 3 auto-fix attempts)
 
@@ -463,13 +494,13 @@ Runner: <repository-native commands used>
 Source cleanup: candidate unchanged; no temporary mutation files
 ```
 
-For applicable V4/V5 `CANNOT_VERIFY` or `ERROR`, use:
+For applicable V4/V5, or V6, `CANNOT_VERIFY` or `ERROR`, use:
 
 ```
 ## playwright-test-generator — PARTIAL/BLOCKED
 
 Generated candidate: <paths>
-Blocking verification: <V4|V5> <CANNOT_VERIFY|ERROR> — <exact reason>
+Blocking verification: <V4|V5|V6> <CANNOT_VERIFY|ERROR> — <exact reason>
 Completed evidence: <other V-rule results>
 Next requirement: <specific capability, environment, or verifier recovery needed>
 ```

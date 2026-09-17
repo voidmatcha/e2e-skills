@@ -838,7 +838,7 @@ file_uses_playwright_fixture_module() {
 # but importing a `test` API is enough to conservatively scan an unsuppressible
 # focused-test call. Known unit-test frameworks remain out of scope.
 source_has_unresolved_test_import() {
-  awk '
+  run_source_lexer '
     function executable_source(s, want_output,    out, i, c, nchar) {
       out = ""
       # A line this long is generated or vendored, never test source. The
@@ -881,7 +881,7 @@ source_has_unresolved_test_import() {
       return out
     }
     { print executable_source($0, 1) }
-  ' "$1" 2>/dev/null |
+  ' "$1" |
     tr '\n' ' ' |
     scanner_rg -o "(?:(?:import|export)[^;]*\\btest\\b[^;]*from[[:space:]]*|import[[:space:]]+[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]+from[[:space:]]*|(?:const|let|var)[[:space:]]*\\{[^}]*\\btest\\b[^}]*\\}[[:space:]]*=[[:space:]]*require[[:space:]]*\\([[:space:]]*)__E2E_STR__.*?__E2E_END__" 2>/dev/null |
     scanner_rg -qv '__E2E_STR__(\.{1,2}/|@playwright/test|vitest|jest|@jest/globals|node:test|bun:test|@wdio/globals)'
@@ -900,7 +900,7 @@ source_imports_playwright_test_binding() {
   printf '%s\n' "$code" |
     scanner_rg -qP "(?:(?:import|export)[[:space:]]*\\{[^}]*\\b$import_binding\\b[^}]*\\}[[:space:]]*from[[:space:]]*['\"\`]@playwright/test['\"\`]|(?:const|let|var)[[:space:]]*\\{[^}]*\\b$require_binding\\b[^}]*\\}[[:space:]]*=[[:space:]]*(?:require|(?:await[[:space:]]+)?import)[[:space:]]*\\([[:space:]]*['\"\`]@playwright/test['\"\`][[:space:]]*\\)|(?:const|let|var)[[:space:]]+$binding[[:space:]]*=[[:space:]]*(?:require|(?:await[[:space:]]+)?import)[[:space:]]*\\([[:space:]]*['\"\`]@playwright/test['\"\`][[:space:]]*\\)[[:space:]]*[.][[:space:]]*test\\b|(?:const|let|var)[[:space:]]+(?<pw_test_ns>[A-Za-z_$][A-Za-z0-9_$]*)[[:space:]]*=[[:space:]]*require[[:space:]]*\\([[:space:]]*['\"\`]@playwright/test['\"\`][[:space:]]*\\)[[:space:]]*;[[:space:]]*(?:const|let|var)[[:space:]]+$binding[[:space:]]*=[[:space:]]*\\k<pw_test_ns>[[:space:]]*[.][[:space:]]*test\\b)" &&
     return 0
-  awk '
+  run_source_lexer '
     function executable_source(s, want_output,    out, i, c, nchar) {
       out = ""
       # A line this long is generated or vendored, never test source. The
@@ -943,7 +943,7 @@ source_imports_playwright_test_binding() {
       return out
     }
     { print executable_source($0, 1) }
-  ' "$f" 2>/dev/null |
+  ' "$f" |
     tr '\n' ' ' |
     scanner_rg -qP "(?:import[[:space:]]*\\{[^}]*\\b$import_binding\\b[^}]*\\}[[:space:]]*from[[:space:]]*__E2E_STR__@playwright/test__E2E_END__|(?:const|let|var)[[:space:]]*\\{[^}]*\\b$require_binding\\b[^}]*\\}[[:space:]]*=[[:space:]]*(?:require|(?:await[[:space:]]+)?import)[[:space:]]*\\([[:space:]]*__E2E_STR__@playwright/test__E2E_END__)"
 }
@@ -957,7 +957,7 @@ source_imports_playwright_namespace_binding() {
   printf '%s\n' "$code" |
     scanner_rg -qP "(?:import[[:space:]]*\\*[[:space:]]+as[[:space:]]+$binding\\b[[:space:]]*from[[:space:]]*['\"\`]@playwright/test['\"\`]|import[[:space:]]+$binding\\b[[:space:]]*=[[:space:]]*require[[:space:]]*\\([[:space:]]*['\"\`]@playwright/test['\"\`][[:space:]]*\\)|(?:const|let|var)[[:space:]]+$binding\\b[[:space:]]*=[[:space:]]*require[[:space:]]*\\([[:space:]]*['\"\`]@playwright/test['\"\`][[:space:]]*\\))" &&
     return 0
-  awk '
+  run_source_lexer '
     function executable_source(s, want_output,    out, i, c, nchar) {
       out = ""
       # A line this long is generated or vendored, never test source. The
@@ -1000,7 +1000,7 @@ source_imports_playwright_namespace_binding() {
       return out
     }
     { print executable_source($0, 1) }
-  ' "$f" 2>/dev/null |
+  ' "$f" |
     tr '\n' ' ' |
     scanner_rg -qP "(?:import[[:space:]]*\\*[[:space:]]+as[[:space:]]+$binding\\b[[:space:]]*from[[:space:]]*__E2E_STR__@playwright/test__E2E_END__|import[[:space:]]+$binding\\b[[:space:]]*=[[:space:]]*require[[:space:]]*\\([[:space:]]*__E2E_STR__@playwright/test__E2E_END__|(?:const|let|var)[[:space:]]+$binding\\b[[:space:]]*=[[:space:]]*require[[:space:]]*\\([[:space:]]*__E2E_STR__@playwright/test__E2E_END__)"
 }
@@ -1024,7 +1024,7 @@ source_imports_playwright_expect_binding() {
   printf '%s\n' "$code" |
     scanner_rg -qP "import[[:space:]]*\\*[[:space:]]+as[[:space:]]+(?<pw_expect_import_ns>[A-Za-z_$][A-Za-z0-9_$]*)[[:space:]]*from[[:space:]]*['\"\`]@playwright/test['\"\`][[:space:]]*;?[[:space:]]*(?:export[[:space:]]+)?(?:const|let|var)[[:space:]]*\\{[^}]*\\b$require_binding\\b[^}]*\\}[[:space:]]*=[[:space:]]*\\k<pw_expect_import_ns>\\b" &&
     return 0
-  awk '
+  run_source_lexer '
     function executable_source(s, want_output,    out, i, c, nchar) {
       out = ""
       # A line this long is generated or vendored, never test source. The
@@ -1067,14 +1067,14 @@ source_imports_playwright_expect_binding() {
       return out
     }
     { print executable_source($0, 1) }
-  ' "$f" 2>/dev/null |
+  ' "$f" |
     tr '\n' ' ' |
     scanner_rg -qP "(?:(?:import|export)[[:space:]]*\\{[^}]*\\b$import_binding\\b[^}]*\\}[[:space:]]*from[[:space:]]*__E2E_STR__@playwright/test__E2E_END__|(?:const|let|var)[[:space:]]*\\{[^}]*\\b$require_binding\\b[^}]*\\}[[:space:]]*=[[:space:]]*(?:require|(?:await[[:space:]]+)?import)[[:space:]]*\\([[:space:]]*__E2E_STR__@playwright/test__E2E_END__)"
 }
 
 source_imports_relative_binding() {
   local f="$1" binding="$2"
-  awk '
+  run_source_lexer '
     function executable_source(s, want_output,    out, i, c, nchar) {
       out = ""
       # A line this long is generated or vendored, never test source. The
@@ -1117,14 +1117,14 @@ source_imports_relative_binding() {
       return out
     }
     { print executable_source($0, 1) }
-  ' "$f" 2>/dev/null |
+  ' "$f" |
     tr '\n' ' ' |
     scanner_rg -qP "(?:(?:import[[:space:]]*\\{[^}]*\\b(?:[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]+as[[:space:]]+)?$binding\\b[^}]*\\}|import[[:space:]]+$binding\\b)[[:space:]]*from[[:space:]]*__E2E_STR__\\.\\.?/|(?:const|let|var)[[:space:]]*\\{[^}]*\\b(?:[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*:[[:space:]]*)?$binding\\b[^}]*\\}[[:space:]]*=[[:space:]]*require[[:space:]]*\\([[:space:]]*__E2E_STR__\\.\\.?/)"
 }
 
 source_relative_module_references_for_binding() {
   local f="$1" binding="$2"
-  awk '
+  run_source_lexer '
     function executable_source(s, want_output,    out, i, c, nchar) {
       out = ""
       # A line this long is generated or vendored, never test source. The
@@ -1167,7 +1167,7 @@ source_relative_module_references_for_binding() {
       return out
     }
     { print executable_source($0, 1) }
-  ' "$f" 2>/dev/null |
+  ' "$f" |
     tr '\n' ' ' |
     scanner_rg -oP "(?:(?:import[[:space:]]*(?:\\{[^}]*\\b(?:[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]+as[[:space:]]+)?$binding\\b[^}]*\\}|$binding\\b)[[:space:]]*from[[:space:]]*)|(?:(?:const|let|var)[[:space:]]*\\{[^}]*\\b(?:[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*:[[:space:]]*)?$binding\\b[^}]*\\}[[:space:]]*=[[:space:]]*require[[:space:]]*\\([[:space:]]*))__E2E_STR__\\K\\.\\.?/.*?(?=__E2E_END__)" 2>/dev/null
 }
@@ -1181,7 +1181,7 @@ source_relative_module_references_for_named_binding() {
     import_member="$source_name[[:space:]]+as[[:space:]]+$binding"
     require_member="$source_name[[:space:]]*:[[:space:]]*$binding"
   fi
-  awk '
+  run_source_lexer '
     function executable_source(s, want_output,    out, i, c, nchar) {
       out = ""
       # A line this long is generated or vendored, never test source. The
@@ -1224,7 +1224,7 @@ source_relative_module_references_for_named_binding() {
       return out
     }
     { print executable_source($0, 1) }
-  ' "$f" 2>/dev/null |
+  ' "$f" |
     tr '\n' ' ' |
     scanner_rg -oP "(?:(?:import[[:space:]]*\\{[^}]*\\b$import_member\\b[^}]*\\}[[:space:]]*from[[:space:]]*)|(?:(?:const|let|var)[[:space:]]*\\{[^}]*\\b$require_member\\b[^}]*\\}[[:space:]]*=[[:space:]]*require[[:space:]]*\\([[:space:]]*))__E2E_STR__\\K\\.\\.?/.*?(?=__E2E_END__)" 2>/dev/null
 }
@@ -1234,7 +1234,7 @@ source_relative_binding_lineage_edges() {
   case "$binding" in
     *[!A-Za-z0-9_$]*|'') return 1 ;;
   esac
-  awk -v target="$binding" -v mode="$mode" '
+  run_source_lexer -v target="$binding" -v mode="$mode" '
     function executable_source(s, want_output,    out, i, c, nchar) {
       out = ""
       # A line this long is generated or vendored, never test source. The
@@ -1362,7 +1362,7 @@ source_relative_binding_lineage_edges() {
         pending = ""
       }
     }
-  ' "$f" 2>/dev/null
+  ' "$f"
 }
 
 binding_reaches_playwright_expect() {
@@ -2001,6 +2001,17 @@ preflight_scanner_tree() {
     if [[ "$_omitted" -gt 0 ]]; then
       printf '  %s additional unsupported entries omitted\n' "$_omitted" >&2
     fi
+    # Guidance only: there is deliberately no allowlist or override knob, so
+    # the abort, exit status, and missing Summary stay unchanged. The reruns
+    # are a coverage plan, not alternatives: any one of them alone scans only
+    # part of the requested tree and can still end in a clean Summary.
+    printf '%s\n' \
+      'Remediation: no setting overrides this check. Following these entries could scan outside the requested root, and skipping them could hide source behind a clean result. Report this run as incomplete, then cover the requested tree with reruns; each rerun covers only its own root:' \
+      '  - rerun on the largest directories inside the requested root that contain none of the listed entries, and on each regular file outside those directories as a file root;' \
+      '  - scan the target of each listed symbolic link as its own root by its real path (symbolic-link scan roots are rejected);' \
+      '  - until those reruns cover the whole requested tree, name each part left unscanned, such as a FIFO, socket, or device, and keep the review marked incomplete.' \
+      'Alternatively, with approval from the repository owner, replace the symbolic link with a regular file or directory, or remove the FIFO, socket, or device, then rerun on the requested root.' \
+      >&2
     rm -f "$_diagnostics"
     exit 2
   fi
@@ -2285,9 +2296,19 @@ scanner_rg() {
 
 abort_on_rg_error() {
   # The worker also records a scope failure when its lexical helper fails.
-  # Preserve the underlying ripgrep diagnostic instead of masking its cause.
+  # Preserve the underlying ripgrep or awk lexer diagnostic instead of masking
+  # its cause. run_source_lexer records awk failures as `awk <status>`.
   if [[ -s "$RG_RUNTIME_ERROR_FILE" ]]; then
-    printf 'error: ripgrep helper invocation failed (exit %s)\n' "$(tail -1 "$RG_RUNTIME_ERROR_FILE")" >&2
+    local helper_failure
+    helper_failure=$(tail -1 "$RG_RUNTIME_ERROR_FILE")
+    case "$helper_failure" in
+      'awk '*)
+        printf 'error: source lexer invocation failed (awk exit %s)\n' "${helper_failure#awk }" >&2
+        ;;
+      *)
+        printf 'error: ripgrep helper invocation failed (exit %s)\n' "$helper_failure" >&2
+        ;;
+    esac
     exit 2
   fi
   if [[ -s "$SCANNER_TEMP_ROOT/scope-errors" ]]; then

@@ -16,11 +16,13 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path
-import re
 import shutil
+import subprocess
 import sys
 import tempfile
+from typing import Any
 import unittest
 
 HERE = Path(__file__).resolve().parent
@@ -29,12 +31,38 @@ CI_LIB = ROOT / "scripts/ci/lib"
 if str(CI_LIB) not in sys.path:
     sys.path.insert(0, str(CI_LIB))
 
-from strict_json import load_strict  # noqa: E402
+from strict_json import StrictJsonError, load_strict, loads_strict  # noqa: E402
 
 MODULE_PATH = HERE / "perturbations.py"
 PROTOCOL_PATH = HERE / "protocol.json"
 README_PATH = HERE / "README.md"
 FIXTURES = ROOT / "scripts/evals/fixtures"
+
+# The protocol pins 14 surfaces at the preparation commit. Five are product
+# files that later releases are expected to change; the other nine belong to
+# this benchmark. Hashing the live product files against the preparation
+# digests failed every product edit forever, and hosted CI checks out one
+# commit, so git history cannot stand in for them. The preparation bytes of the
+# product surfaces are archived in a canonical, content-addressed source
+# snapshot instead (the independent-review v5/v6/v10 precedent), and only the
+# benchmark-owned surfaces are still compared with the working tree.
+SOURCE_SNAPSHOT_DIR = HERE / "source-snapshots"
+PREPARATION_SNAPSHOT_SHA256 = (
+    "0fc0e0687ab31d7e4d652578b947114cf1f472639b037fc6c9b37b1d8404a8e2"
+)
+PREPARATION_SNAPSHOT_ID = "healer-perturbation-v1-preparation-product-sources"
+PREPARATION_SNAPSHOT_EXTRACTION = "git-cat-file-blob-at-preparation-commit-v1"
+PREPARATION_SNAPSHOT_MAX_BYTES = 1_048_576
+PRODUCT_SURFACES = (
+    "skills/playwright-test-generator/SKILL.md",
+    "skills/playwright-test-generator/playwright-agents.md",
+    "skills/e2e-reviewer/SKILL.md",
+    "skills/e2e-reviewer/references/pattern-reference.md",
+    "skills/e2e-reviewer/scripts/scan.sh",
+)
+BENCHMARK_OWNED_PREFIX = "scripts/evals/fixtures/"
+BENCHMARK_OWNED_FILES = ("benchmarks/healer-perturbation-v1/perturbations.py",)
+HEX64_CHARS = frozenset("0123456789abcdef")
 
 SPEC = importlib.util.spec_from_file_location("healer_perturbations", MODULE_PATH)
 if SPEC is None or SPEC.loader is None:
@@ -55,6 +83,168 @@ def sha256_file(path: Path) -> str:
 def tracked_fixture_digest() -> str:
     """Digest of the tracked fixture source, excluding ignored runtime dirs."""
     return MODULE.tree_digest(FIXTURES)
+
+
+def canonical_json_bytes(value: object) -> bytes:
+    return json.dumps(
+        value, ensure_ascii=True, separators=(",", ":"), sort_keys=True
+    ).encode("ascii")
+
+
+def is_hex64(value: object) -> bool:
+    return isinstance(value, str) and len(value) == 64 and set(value) <= HEX64_CHARS
+
+
+def partition_pinned_surfaces(
+    digests: dict[str, str],
+) -> tuple[dict[str, str], dict[str, str], list[str]]:
+    """Split the protocol digests into product and benchmark-owned surfaces."""
+    product: dict[str, str] = {}
+    owned: dict[str, str] = {}
+    errors: list[str] = []
+    for relative, expected in digests.items():
+        if not is_hex64(expected):
+            errors.append(f"{relative}: protocol digest is not lowercase sha256 hex")
+        if relative.startswith("skills/"):
+            product[relative] = expected
+        elif relative.startswith(BENCHMARK_OWNED_PREFIX) or relative in BENCHMARK_OWNED_FILES:
+            owned[relative] = expected
+        else:
+            errors.append(f"{relative}: pinned surface is neither product nor benchmark-owned")
+    if tuple(product) != PRODUCT_SURFACES:
+        errors.append(f"product surfaces differ from the pinned set: {list(product)}")
+    return product, owned, errors
+
+
+def benchmark_owned_surface_errors(root: Path, owned: dict[str, str]) -> list[str]:
+    """Benchmark-owned surfaces must still match their preparation bytes live."""
+    errors: list[str] = []
+    for relative, expected in owned.items():
+        path = root / relative
+        if path.is_symlink() or not path.is_file():
+            errors.append(f"{relative}: benchmark-owned surface is missing or not a regular file")
+            continue
+        actual = sha256_file(path)
+        if actual != expected:
+            errors.append(
+                f"{relative}: live bytes {actual} differ from preparation digest {expected}"
+            )
+    return errors
+
+
+def preparation_snapshot_errors(
+    payload: bytes,
+    file_name: str,
+    protocol: dict[str, Any],
+    protocol_sha256: str,
+    *,
+    pinned_sha256: str = PREPARATION_SNAPSHOT_SHA256,
+) -> list[str]:
+    """Validate the archived preparation bytes of the product surfaces."""
+    errors: list[str] = []
+    digest = hashlib.sha256(payload).hexdigest()
+    if digest != pinned_sha256:
+        errors.append(f"snapshot sha256 {digest} differs from pinned {pinned_sha256}")
+    if file_name != f"{digest}.json":
+        errors.append(f"snapshot file name {file_name} is not content-addressed")
+    if len(payload) > PREPARATION_SNAPSHOT_MAX_BYTES:
+        return errors + ["snapshot exceeds its byte limit"]
+    try:
+        snapshot = loads_strict(payload.decode("utf-8"), context="preparation snapshot")
+    except (UnicodeError, StrictJsonError) as exc:
+        return errors + [f"snapshot is not strict UTF-8 JSON: {exc}"]
+    if canonical_json_bytes(snapshot) != payload:
+        errors.append("snapshot bytes are not canonical JSON")
+    if not isinstance(snapshot, dict) or set(snapshot) != {
+        "schema_version",
+        "snapshot_id",
+        "source_files",
+        "tool_provenance",
+    }:
+        return errors + ["snapshot top-level keys changed"]
+    if snapshot["schema_version"] != 1 or snapshot["snapshot_id"] != PREPARATION_SNAPSHOT_ID:
+        errors.append("snapshot identity changed")
+    evaluated = protocol["evaluated_snapshot"]
+    product, _, partition_errors = partition_pinned_surfaces(evaluated["sha256_at_preparation"])
+    errors.extend(partition_errors)
+    expected_provenance = {
+        "extraction": PREPARATION_SNAPSHOT_EXTRACTION,
+        "git_head_at_preparation": evaluated["git_head_at_preparation"],
+        "git_tag_at_preparation": evaluated["git_tag_at_preparation"],
+        "protocol_sha256": protocol_sha256,
+    }
+    if snapshot["tool_provenance"] != expected_provenance:
+        errors.append("snapshot tool_provenance does not bind this protocol and preparation commit")
+    files = snapshot["source_files"]
+    if not isinstance(files, list) or [
+        item.get("path") if isinstance(item, dict) else None for item in files
+    ] != list(product):
+        return errors + ["snapshot source_files must list exactly the product surfaces in protocol order"]
+    for item in files:
+        relative = item["path"]
+        if set(item) != {"path", "bytes", "line_count", "sha256", "content"} or not isinstance(
+            item["content"], str
+        ):
+            errors.append(f"{relative}: snapshot entry shape changed")
+            continue
+        try:
+            encoded = item["content"].encode("utf-8")
+        except UnicodeError:
+            errors.append(f"{relative}: snapshot content is not encodable UTF-8")
+            continue
+        actual = hashlib.sha256(encoded).hexdigest()
+        if (
+            type(item["bytes"]) is not int
+            or item["bytes"] != len(encoded)
+            or item["sha256"] != actual
+            or type(item["line_count"]) is not int
+            or item["line_count"] != len(item["content"].splitlines())
+        ):
+            errors.append(f"{relative}: snapshot metadata differs from its content bytes")
+        if actual != product[relative]:
+            errors.append(
+                f"{relative}: snapshot content {actual} differs from protocol digest {product[relative]}"
+            )
+    return errors
+
+
+def pinned_surface_errors(
+    root: Path,
+    protocol_path: Path = PROTOCOL_PATH,
+    snapshot_dir: Path = SOURCE_SNAPSHOT_DIR,
+    *,
+    pinned_sha256: str = PREPARATION_SNAPSHOT_SHA256,
+) -> list[str]:
+    """Every protocol digest, split into the live and the archived checks."""
+    protocol_bytes = protocol_path.read_bytes()
+    protocol = loads_strict(protocol_bytes.decode("utf-8"), context=str(protocol_path))
+    _, owned, errors = partition_pinned_surfaces(
+        protocol["evaluated_snapshot"]["sha256_at_preparation"]
+    )
+    errors.extend(benchmark_owned_surface_errors(root, owned))
+    if snapshot_dir.is_symlink() or not snapshot_dir.is_dir():
+        return errors + ["source-snapshots is missing or not a real directory"]
+    names = sorted(entry.name for entry in snapshot_dir.iterdir())
+    if names != [f"{pinned_sha256}.json"]:
+        return errors + [f"source-snapshots must hold exactly {pinned_sha256}.json, found {names}"]
+    snapshot_path = snapshot_dir / names[0]
+    if snapshot_path.is_symlink() or not snapshot_path.is_file():
+        return errors + ["preparation snapshot is not a regular file"]
+    errors.extend(
+        preparation_snapshot_errors(
+            snapshot_path.read_bytes(),
+            snapshot_path.name,
+            protocol,
+            hashlib.sha256(protocol_bytes).hexdigest(),
+            pinned_sha256=pinned_sha256,
+        )
+    )
+    return errors
+
+
+def git_environment() -> dict[str, str]:
+    """A pre-push hook exports GIT_DIR and friends; never let them redirect git."""
+    return {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
 
 
 class CatalogContract(unittest.TestCase):
@@ -410,28 +600,268 @@ class ProtocolContract(unittest.TestCase):
         self.assertEqual(protocol["classification"]["evaluation_order"], "first_match_wins")
 
     def test_protocol_records_preparation_digests_of_every_pinned_surface(self) -> None:
+        """Product surfaces verify against the archive; benchmark surfaces live."""
         protocol = load_strict(PROTOCOL_PATH)
-        snapshot = protocol["evaluated_snapshot"]
-        digests = snapshot["sha256_at_preparation"]
-        preparation_tag = snapshot["git_tag_at_preparation"]
-        preparation_version = preparation_tag.removeprefix("v").split("-plus-", 1)[0]
-        for relative, expected in digests.items():
-            prepared_bytes = (ROOT / relative).read_bytes()
-            if relative.endswith("/SKILL.md"):
-                prepared_bytes, replacements = re.subn(
-                    rb'(?m)^  version: "[^"]+"$',
-                    f'  version: "{preparation_version}"'.encode(),
-                    prepared_bytes,
-                )
-                self.assertEqual(replacements, 1, relative)
-            actual = hashlib.sha256(prepared_bytes).hexdigest()
-            self.assertEqual(actual, expected, relative)
+        digests = protocol["evaluated_snapshot"]["sha256_at_preparation"]
+        product, owned, errors = partition_pinned_surfaces(digests)
+        self.assertEqual(errors, [])
+        self.assertEqual(tuple(product), PRODUCT_SURFACES)
+        self.assertEqual(len(owned), 9)
+        self.assertEqual(set(product) | set(owned), set(digests))
+        self.assertEqual(pinned_surface_errors(ROOT), [])
+
+    def test_preparation_snapshot_bytes_equal_the_preparation_commit_blobs(self) -> None:
+        """Extra provenance check; a shallow clone skips it and keeps the digest checks."""
+        protocol = load_strict(PROTOCOL_PATH)
+        head = protocol["evaluated_snapshot"]["git_head_at_preparation"]
+        git = shutil.which("git")
+        if git is None:
+            self.skipTest("git is unavailable; the snapshot digest checks still ran")
+        environment = git_environment()
+
+        def run_git(*args: str) -> subprocess.CompletedProcess[bytes]:
+            return subprocess.run(
+                [git, "-C", str(ROOT), *args],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                env=environment,
+                check=False,
+                timeout=60,
+            )
+
+        if run_git("rev-parse", "--git-dir").returncode != 0:
+            self.skipTest("not a git checkout; the snapshot digest checks still ran")
+        if run_git("cat-file", "-e", f"{head}^{{commit}}").returncode != 0:
+            shallow = run_git("rev-parse", "--is-shallow-repository").stdout.decode().strip()
+            self.skipTest(
+                f"preparation commit {head} is not available locally "
+                f"(shallow={shallow or 'unknown'}); the snapshot digest checks still ran"
+            )
+        snapshot_path = SOURCE_SNAPSHOT_DIR / f"{PREPARATION_SNAPSHOT_SHA256}.json"
+        snapshot = loads_strict(snapshot_path.read_text(encoding="utf-8"))
+        self.assertEqual(
+            [item["path"] for item in snapshot["source_files"]], list(PRODUCT_SURFACES)
+        )
+        for item in snapshot["source_files"]:
+            with self.subTest(path=item["path"]):
+                blob = run_git("cat-file", "blob", f"{head}:{item['path']}")
+                self.assertEqual(blob.returncode, 0, blob.stderr.decode(errors="replace"))
+                self.assertEqual(blob.stdout, item["content"].encode("utf-8"))
 
     def test_readme_declares_not_run_and_points_at_the_protocol(self) -> None:
         text = README_PATH.read_text(encoding="utf-8")
         self.assertIn("`NOT_RUN`", text)
         self.assertIn("protocol.json", text)
         self.assertIn("REJECT", text)
+
+
+class PreparationSnapshotRegression(unittest.TestCase):
+    """RED guards for the split between archived product bytes and live benchmark bytes."""
+
+    def setUp(self) -> None:
+        self.protocol_bytes = PROTOCOL_PATH.read_bytes()
+        self.protocol = loads_strict(self.protocol_bytes.decode("utf-8"))
+        self.protocol_sha256 = hashlib.sha256(self.protocol_bytes).hexdigest()
+        self.digests = self.protocol["evaluated_snapshot"]["sha256_at_preparation"]
+        self.snapshot_name = f"{PREPARATION_SNAPSHOT_SHA256}.json"
+        self.payload = (SOURCE_SNAPSHOT_DIR / self.snapshot_name).read_bytes()
+        self.temp = tempfile.TemporaryDirectory(prefix="healer-preparation-snapshot-test-")
+        self.addCleanup(self.temp.cleanup)
+        self.work = Path(self.temp.name)
+
+    def errors_for(self, snapshot: object) -> list[str]:
+        """Validate a re-encoded snapshot under its own content address."""
+        payload = canonical_json_bytes(snapshot)
+        digest = hashlib.sha256(payload).hexdigest()
+        return preparation_snapshot_errors(
+            payload, f"{digest}.json", self.protocol, self.protocol_sha256, pinned_sha256=digest
+        )
+
+    def isolated_root(self, product_suffix: bytes) -> Path:
+        """A working tree with pristine benchmark surfaces and edited product surfaces."""
+        root = self.work / "root"
+        _, owned, errors = partition_pinned_surfaces(self.digests)
+        self.assertEqual(errors, [])
+        for relative in owned:
+            target = root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(ROOT / relative, target)
+        snapshot = loads_strict(self.payload.decode("utf-8"))
+        for item in snapshot["source_files"]:
+            target = root / item["path"]
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(item["content"].encode("utf-8") + product_suffix)
+        return root
+
+    def test_the_real_snapshot_passes_under_its_pinned_content_address(self) -> None:
+        self.assertEqual(hashlib.sha256(self.payload).hexdigest(), PREPARATION_SNAPSHOT_SHA256)
+        self.assertEqual(
+            preparation_snapshot_errors(
+                self.payload, self.snapshot_name, self.protocol, self.protocol_sha256
+            ),
+            [],
+        )
+
+    def test_live_product_edits_no_longer_fail_the_preparation_digest_check(self) -> None:
+        root = self.isolated_root(b"\n# post-preparation product edit\n")
+        for relative in PRODUCT_SURFACES:
+            # The pre-snapshot live check would have failed on every one of these.
+            self.assertNotEqual(sha256_file(root / relative), self.digests[relative], relative)
+        self.assertEqual(pinned_surface_errors(root), [])
+        for relative in PRODUCT_SURFACES:
+            (root / relative).unlink()
+        self.assertEqual(pinned_surface_errors(root), [])
+
+    def test_live_benchmark_owned_edits_still_fail(self) -> None:
+        root = self.isolated_root(b"")
+        self.assertEqual(pinned_surface_errors(root), [])
+        for relative in (
+            "scripts/evals/fixtures/playwright/tests/counter.spec.mjs",
+            "benchmarks/healer-perturbation-v1/perturbations.py",
+        ):
+            with self.subTest(path=relative):
+                path = root / relative
+                original = path.read_bytes()
+                path.write_bytes(original + b"\n")
+                errors = pinned_surface_errors(root)
+                self.assertTrue(
+                    any(e.startswith(f"{relative}: live bytes") for e in errors), errors
+                )
+                path.write_bytes(original)
+        missing = root / "scripts/evals/fixtures/server.mjs"
+        missing.unlink()
+        self.assertTrue(
+            any("server.mjs: benchmark-owned surface is missing" in e for e in pinned_surface_errors(root))
+        )
+
+    def test_a_tampered_snapshot_byte_fails(self) -> None:
+        marker = b'"content":"'
+        position = self.payload.index(marker) + len(marker)
+        tampered = bytearray(self.payload)
+        self.assertEqual(tampered[position : position + 1], b"-")
+        tampered[position : position + 1] = b"+"
+        errors = preparation_snapshot_errors(
+            bytes(tampered), self.snapshot_name, self.protocol, self.protocol_sha256
+        )
+        first = PRODUCT_SURFACES[0]
+        self.assertTrue(any("differs from pinned" in e for e in errors), errors)
+        self.assertTrue(any("not content-addressed" in e for e in errors), errors)
+        self.assertIn(f"{first}: snapshot metadata differs from its content bytes", errors)
+        self.assertTrue(
+            any(e.startswith(f"{first}: snapshot content") and "protocol digest" in e for e in errors),
+            errors,
+        )
+
+    def test_a_consistently_rewritten_product_surface_still_fails_the_protocol_digest(self) -> None:
+        """Recomputed metadata and a fresh content address cannot launder new bytes."""
+        snapshot = loads_strict(self.payload.decode("utf-8"))
+        item = snapshot["source_files"][-1]
+        self.assertEqual(item["path"], "skills/e2e-reviewer/scripts/scan.sh")
+        content = item["content"] + "# laundered\n"
+        encoded = content.encode("utf-8")
+        item.update(
+            content=content,
+            bytes=len(encoded),
+            sha256=hashlib.sha256(encoded).hexdigest(),
+            line_count=len(content.splitlines()),
+        )
+        errors = self.errors_for(snapshot)
+        self.assertEqual(len(errors), 1, errors)
+        self.assertTrue(
+            errors[0].startswith("skills/e2e-reviewer/scripts/scan.sh: snapshot content"), errors
+        )
+        self.assertIn(self.digests["skills/e2e-reviewer/scripts/scan.sh"], errors[0])
+
+    def test_a_tampered_snapshot_digest_fails(self) -> None:
+        snapshot = loads_strict(self.payload.decode("utf-8"))
+        snapshot["source_files"][1]["sha256"] = "0" * 64
+        self.assertEqual(
+            self.errors_for(snapshot),
+            [f"{PRODUCT_SURFACES[1]}: snapshot metadata differs from its content bytes"],
+        )
+        errors = preparation_snapshot_errors(
+            self.payload,
+            self.snapshot_name,
+            self.protocol,
+            self.protocol_sha256,
+            pinned_sha256="f" * 64,
+        )
+        self.assertTrue(any("differs from pinned" in e for e in errors), errors)
+
+    def test_snapshot_shape_binding_and_inventory_tampering_fails(self) -> None:
+        pristine = loads_strict(self.payload.decode("utf-8"))
+        self.assertEqual(self.errors_for(pristine), [])
+
+        def mutated(change) -> object:
+            snapshot = json.loads(self.payload)
+            change(snapshot)
+            return snapshot
+
+        cases = {
+            "entry removed": (
+                lambda s: s["source_files"].pop(2),
+                "snapshot source_files must list exactly the product surfaces in protocol order",
+            ),
+            "entries reordered": (
+                lambda s: s["source_files"].reverse(),
+                "snapshot source_files must list exactly the product surfaces in protocol order",
+            ),
+            "extra entry key": (
+                lambda s: s["source_files"][0].update(normalized=True),
+                f"{PRODUCT_SURFACES[0]}: snapshot entry shape changed",
+            ),
+            "line count": (
+                lambda s: s["source_files"][3].update(line_count=s["source_files"][3]["line_count"] + 1),
+                f"{PRODUCT_SURFACES[3]}: snapshot metadata differs from its content bytes",
+            ),
+            "protocol binding": (
+                lambda s: s["tool_provenance"].update(protocol_sha256="0" * 64),
+                "snapshot tool_provenance does not bind this protocol and preparation commit",
+            ),
+            "preparation commit": (
+                lambda s: s["tool_provenance"].update(git_head_at_preparation="0" * 40),
+                "snapshot tool_provenance does not bind this protocol and preparation commit",
+            ),
+            "identity": (
+                lambda s: s.update(snapshot_id="another-snapshot"),
+                "snapshot identity changed",
+            ),
+            "top-level key": (
+                lambda s: s.update(normalized=True),
+                "snapshot top-level keys changed",
+            ),
+        }
+        for label, (change, expected) in cases.items():
+            with self.subTest(case=label):
+                self.assertIn(expected, self.errors_for(mutated(change)))
+
+        pretty = json.dumps(pristine, indent=2, sort_keys=True).encode()
+        digest = hashlib.sha256(pretty).hexdigest()
+        self.assertIn(
+            "snapshot bytes are not canonical JSON",
+            preparation_snapshot_errors(
+                pretty, f"{digest}.json", self.protocol, self.protocol_sha256, pinned_sha256=digest
+            ),
+        )
+
+        root = self.isolated_root(b"")
+        inventory = self.work / "source-snapshots"
+        inventory.mkdir()
+        (inventory / self.snapshot_name).write_bytes(self.payload)
+        self.assertEqual(pinned_surface_errors(root, snapshot_dir=inventory), [])
+        (inventory / "extra.json").write_bytes(b"{}")
+        self.assertTrue(
+            any("must hold exactly" in e for e in pinned_surface_errors(root, snapshot_dir=inventory))
+        )
+        (inventory / "extra.json").unlink()
+        (inventory / self.snapshot_name).write_bytes(self.payload + b" ")
+        errors = pinned_surface_errors(root, snapshot_dir=inventory)
+        self.assertTrue(any("differs from pinned" in e for e in errors), errors)
+        self.assertIn("snapshot bytes are not canonical JSON", errors)
+        self.assertIn(
+            "source-snapshots is missing or not a real directory",
+            pinned_surface_errors(root, snapshot_dir=self.work / "absent"),
+        )
 
 
 if __name__ == "__main__":

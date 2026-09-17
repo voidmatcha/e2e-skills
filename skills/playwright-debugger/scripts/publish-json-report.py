@@ -30,6 +30,12 @@ MAX_COMMAND_SECONDS = 5 * 60
 STREAM_CHUNK_BYTES = 64 * 1024
 TERMINATION_GRACE_SECONDS = 1
 ENVIRONMENT_NAME = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
+# `playwright test` exits 1 when the run finished with failing tests (130 when
+# interrupted), so a complete report of a still-failing run arrives with status
+# 1. That status is accepted only when the captured report then passes
+# validate_report_json; every other non-zero status is rejected before
+# validation.
+TESTS_FAILED_EXIT_STATUS = 1
 
 
 def fail(message: str) -> NoReturn:
@@ -213,7 +219,7 @@ def capture_stdout(
     file_descriptor: int,
     command: list[str],
     environment: dict[str, str],
-) -> None:
+) -> int:
     process = subprocess.Popen(
         command,
         env=environment,
@@ -262,11 +268,12 @@ def capture_stdout(
         except subprocess.TimeoutExpired:
             cleaned = True
             fail_after_cleanup(process, f"command timed out after {MAX_COMMAND_SECONDS} seconds")
-        if returncode != 0:
+        if returncode not in (0, TESTS_FAILED_EXIT_STATUS):
             raise subprocess.CalledProcessError(returncode, command)
         if process_group_exists(process.pid):
             cleaned = True
             fail_after_cleanup(process, "command left live descendants")
+        return returncode
     except BaseException as error:
         if not cleaned:
             cleanup_error = cleanup_process_group(process)
@@ -291,8 +298,16 @@ def run_and_publish(output: str, command: list[str], pass_env: list[str]) -> Non
         temporary_fd, temporary_name = create_temporary(parent_fd, destination)
         validator = load_report_validator()
 
-        capture_stdout(temporary_fd, command, environment)
-        validate_report(temporary_fd, validator)
+        returncode = capture_stdout(temporary_fd, command, environment)
+        try:
+            validate_report(temporary_fd, validator)
+        except ValueError as error:
+            if returncode == 0:
+                raise
+            fail(
+                f"command exited with status {returncode} and its report "
+                f"failed validation: {error}"
+            )
         os.fsync(temporary_fd)
 
         # Recheck for an unsafe destination created while the command ran.

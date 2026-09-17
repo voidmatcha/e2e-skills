@@ -7,7 +7,7 @@ Condensed from [playwright.dev/docs/best-practices](https://playwright.dev/docs/
 | Rule | Detail |
 |------|--------|
 | User-facing first | Prefer `getByRole`, `getByLabel`, `getByText` over CSS/XPath — they survive redesigns and carry auto-wait semantics. |
-| Test ids when configured | If `playwright.config.*` sets `use: { testIdAttribute: 'data-test' }` (or test ids are pervasive), `getByTestId` is a tier-1 locator alongside role+name — not a last resort. |
+| Test ids when configured | If the loaded Playwright config (Step 1) sets `use: { testIdAttribute: 'data-test' }` (or test ids are pervasive), `getByTestId` is a tier-1 locator alongside role+name — not a last resort. |
 | Chain + filter | `getByRole('listitem').filter({ hasText: 'X' }).getByRole('button')` to scope without positional `.nth()`. |
 | No XPath / styling CSS | XPath locators still participate in Playwright's locator auto-waiting, but they are brittle because they couple tests to DOM structure; styling-class chains similarly break on redesign. |
 

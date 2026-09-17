@@ -7,9 +7,34 @@ source_has_playwright_module_reference() {
     scanner_rg -q "(import|export)[^;]*from[[:space:]]*['\"\`]@playwright/test['\"\`]|require[[:space:]]*\\([[:space:]]*['\"\`]@playwright/test['\"\`][[:space:]]*\\)|import[[:space:]]*\\([[:space:]]*['\"\`]@playwright/test['\"\`][[:space:]]*\\)"
 }
 
+# Run one source lexer awk program. Callers read empty lexer output as "no
+# framework reference", so a failed awk (unreadable file, runtime error, killed
+# process) must never pass for a clean negative. A failure is recorded in the
+# runtime error file, where abort_on_rg_error and the scope worker already fail
+# closed. Output streams exactly as before, and the lexer status is returned
+# unchanged, so readable sources keep their pipeline verdicts and a reader that
+# stops early (rg -q, head) still ends the lexer early. That closed pipe is not
+# a lexer failure: SIGPIPE (141) is never recorded, and when SIGPIPE was
+# inherited as ignored, awk reports the same closed pipe as an ordinary write
+# error, so a non-signal status is recorded only if the lexer also fails with
+# its output discarded.
+run_source_lexer() {
+  local lexer_rc
+  awk "$@" 2>/dev/null
+  lexer_rc=$?
+  case "$lexer_rc" in
+    0|141) return "$lexer_rc" ;;
+  esac
+  if [[ "$lexer_rc" -gt 128 ]] || ! awk "$@" >/dev/null 2>&1; then
+    [[ -n "${RG_RUNTIME_ERROR_FILE:-}" ]] &&
+      printf 'awk %s\n' "$lexer_rc" >> "$RG_RUNTIME_ERROR_FILE"
+  fi
+  return "$lexer_rc"
+}
+
 source_executable_code() {
   local f="$1" retained_string="${2:-}"
-  awk -v retained="$retained_string" '
+  run_source_lexer -v retained="$retained_string" '
     # A JavaScript string literal is not its own source text: `\u0040pkg` and
     # `@pkg` are the same module specifier. Decode escapes so an obfuscated
     # import cannot make a real framework reference invisible (or an unrelated
@@ -160,11 +185,11 @@ source_executable_code() {
       return out
     }
     { print executable_source($0, 1) }
-  ' "$f" 2>/dev/null
+  ' "$f"
 }
 
 source_relative_module_references() {
-  awk '
+  run_source_lexer '
     function executable_source(s, want_output,    out, i, c, nchar) {
       out = ""
       # A line this long is generated or vendored, never test source. The
@@ -207,7 +232,7 @@ source_relative_module_references() {
       return out
     }
     { print executable_source($0, 1) }
-  ' "$1" 2>/dev/null |
+  ' "$1" |
     tr '\n' ' ' |
     scanner_rg -o "(?:(?:import|export)[^;]*?from[[:space:]]*|require[[:space:]]*\\([[:space:]]*|import[[:space:]]*\\([[:space:]]*|import[[:space:]]+)__E2E_STR__\\.\\.?/.*?__E2E_END__" 2>/dev/null |
     sed -E 's/^.*__E2E_STR__(.*)__E2E_END__.*$/\1/'

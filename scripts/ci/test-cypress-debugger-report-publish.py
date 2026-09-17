@@ -477,6 +477,26 @@ class MochawesomePublisherTests(unittest.TestCase):
         self.assertEqual(destination.read_text(), '{"old":true}')
         self.assert_no_temporary()
 
+    def test_overflow_float_preserves_prior_report(self) -> None:
+        # A schema-valid report whose unvalidated extra field overflows to
+        # inf must be rejected by strict parsing, not published.
+        destination = self.root / "cypress/reports/merged.json"
+        destination.parent.mkdir(parents=True)
+        destination.write_text('{"old":true}', encoding="utf-8")
+
+        for literal in ("1e999", "-1e999"):
+            with self.subTest(literal=literal):
+                document = json.dumps(VALID_REPORT)[:-1] + f',"extra":{literal}}}'
+                result = self.run_helper(
+                    f"import sys; sys.stdout.write({document!r})"
+                )
+
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("json", result.stderr.lower())
+                self.assertIn("non-finite", result.stderr.lower())
+                self.assertEqual(destination.read_text(), '{"old":true}')
+                self.assert_no_temporary()
+
     def test_merger_cannot_replace_validator_before_validation(self) -> None:
         trusted_scripts = self.root / "trusted-scripts"
         trusted_scripts.mkdir()
@@ -519,15 +539,23 @@ class MochawesomePublisherTests(unittest.TestCase):
     def test_nonzero_merger_preserves_prior_report(self) -> None:
         destination = self.root / "cypress/reports/merged.json"
         destination.parent.mkdir(parents=True)
-        destination.write_text('{"old":true}', encoding="utf-8")
 
-        result = self.run_helper(
-            f"print({json.dumps(VALID_REPORT)!r}); raise SystemExit(23)"
-        )
+        # The child here is mochawesome-merge over report files `cypress run`
+        # already wrote, never `cypress run` itself, so no test-failure exit
+        # status reaches this publisher. Unlike the Playwright JSON publisher,
+        # it keeps rejecting every non-zero exit, including 1, even when the
+        # captured report is schema-valid.
+        for status in (1, 2, 23):
+            with self.subTest(status=status):
+                destination.write_text('{"old":true}', encoding="utf-8")
+                result = self.run_helper(
+                    f"print({json.dumps(VALID_REPORT)!r}); raise SystemExit({status})"
+                )
 
-        self.assertNotEqual(result.returncode, 0)
-        self.assertEqual(destination.read_text(), '{"old":true}')
-        self.assert_no_temporary()
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(f"non-zero exit status {status}", result.stderr)
+                self.assertEqual(destination.read_text(), '{"old":true}')
+                self.assert_no_temporary()
 
     def test_rejects_symlinked_report_root_before_running_merger(self) -> None:
         outside = self.root / "outside"

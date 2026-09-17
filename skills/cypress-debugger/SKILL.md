@@ -261,9 +261,9 @@ find cypress/screenshots -name "*(attempt *"               # retries happened at
 # requires at least one attempt per test, and rejects a final test state that
 # contradicts the last attempt. Earlier attempts may contain any valid state
 # because Cypress retry strategies can require multiple passing attempts.
-# JSON parsing also rejects duplicate keys, NaN/positive or negative Infinity,
-# a UTF-8 BOM, and trailing non-whitespace data; output disables non-finite
-# numbers.
+# JSON parsing also rejects duplicate keys, NaN/positive or negative Infinity
+# (including an overflowing literal such as 1e999), a UTF-8 BOM, and trailing
+# non-whitespace data; output disables non-finite numbers.
 
 Every artifact-derived string from mochawesome, run-results, or JUnit is
 recursively sanitized before any per-field or output truncation. The sanitizer
@@ -344,14 +344,27 @@ Classification steps:
 5. First `.click()` after `cy.visit()` succeeded but the next assertion timed out on an SSR page → F15
 6. **F1 vs F7 is decided by an isolation probe, not by the error text.** Both surface as
    `Timed out retrying` and both "pass sometimes", so classifying from the message alone assigns
-   the wrong code roughly half the time. Cypress has no `--repeat-each`, so repeat the spec run:
+   the wrong code roughly half the time. Run the probe only after the execution safety gate and the
+   repository execution gate's trust checks have passed (see Prerequisites): the whole target
+   stack is `local/disposable` or an approved non-production test environment, the user
+   explicitly trusts this repository, and both exact commands are approved. The probe replays the
+   test, so the safety gate's rule on replaying non-idempotent writes applies to each repetition
+   as it does to retries. Until both gates pass, or while the failing test performs a
+   non-idempotent write whose system-boundary idempotence is not proven, present the commands as
+   `recommended`; in either case, or if the suite cannot be run, say the probe was not performed
+   and report `CANNOT_VERIFY` between F1 and F7 rather than guessing. Once both gates pass and no
+   unproven non-idempotent write would be replayed, run the probe; Cypress has no
+   `--repeat-each`, so repeat the spec run:
 
    ```bash
    # (a) the spec alone, repeated — is it non-deterministic by itself?
-   for i in 1 2 3 4 5; do npx --no-install cypress run --spec 'cypress/e2e/path/to.cy.ts'; done
+   for i in 1 2 3 4 5; do
+     /usr/bin/env -i PATH="$PATH" node_modules/.bin/cypress run \
+       --spec 'cypress/e2e/path/to.cy.ts' --config retries=0
+   done
 
    # (b) the whole suite in its real order — does it only break with neighbours?
-   npx --no-install cypress run
+   /usr/bin/env -i PATH="$PATH" node_modules/.bin/cypress run --config retries=0
    ```
 
    | (a) alone ×5 | (b) full suite | Code |
@@ -362,9 +375,8 @@ Classification steps:
 
    Cypress clears cookies and `localStorage` between *tests* but not always between *specs*, and
    `cy.session` caches across a run, so a 5/5-pass-alone result points at cross-spec leakage more
-   often than at ordering inside one file. Both commands need the same approval as any other
-   target-controlled run (see Prerequisites). If the suite cannot be run, say the probe was not
-   performed and report `CANNOT_VERIFY` between F1 and F7 rather than guessing.
+   often than at ordering inside one file. Both commands disable retries: a configured `retries`
+   value would report a fail-then-pass spec as passed and hide the per-run result the table reads.
 
 **Setup-level signals (check before classifying individual tests):**
 
@@ -523,7 +535,7 @@ Prioritize product regressions by impact and confirmed test defects by their
 independent test-quality severity. After satisfying the execution safety gate,
 run the repository's
 existing narrowest Cypress script in headed mode with retries disabled, or
-`node_modules/.bin/cypress run --spec <file> --headed --config retries=0`, to
+`/usr/bin/env -i PATH="$PATH" node_modules/.bin/cypress run --spec <file> --headed --config retries=0`, to
 reproduce locally. A bounded retry probe is allowed only after repository
 evidence proves system-boundary idempotence.
 ```

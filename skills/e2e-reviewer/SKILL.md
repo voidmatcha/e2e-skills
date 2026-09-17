@@ -140,6 +140,24 @@ explicit absolute `E2E_SMELL_*_BIN` overrides, never from arbitrary inherited
 when a host's preinstalled binary must not affect a portability check. Relative
 scan roots are canonicalized after clearing `CDPATH`.
 
+Before discovery, a no-follow preflight checks the requested tree outside the
+scanner's vendor/build/report exclusions. A symbolic link that could stand in
+for scanned source (a JS/TS file extension, a directory link, or a link named
+like a source root such as `src`, `e2e`, or `tests`), or a FIFO, socket, or
+device with a JS/TS file extension, makes the scanner print `INCOMPLETE`, list
+at most 20 entries plus a `Remediation:` block, exit 2, and emit no Summary.
+Asset links such as `public/logo-current.png` do not trigger it. There is no
+override setting: following a link could scan outside the root, and skipping it
+would hide source behind a clean result. Report the run as incomplete, never as
+clean. Each rerun covers only its own root, so one rerun is never the whole
+review: rerun on the largest directories that contain none of the listed entries
+and on each regular file outside them as a file root, and scan each link's
+target as its own root by its real path, because symbolic-link scan roots are
+rejected. Until the reruns cover the whole requested tree, name each part left
+unscanned and keep the review marked incomplete. Replacing a link or removing a
+special file changes the reviewed repository, so suggest it to the user instead
+of doing it.
+
 Tier 3 has a fail-closed workload ceiling: a single rule may produce at most
 1,000 raw candidates by default. `E2E_SMELL_MAX_RULE_HITS` can set a value from
 1 through the hard maximum of 10,000. Every Tier 1, Tier 2, and Tier 3 tool

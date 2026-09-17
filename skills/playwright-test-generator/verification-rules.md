@@ -101,9 +101,11 @@ Every applicable V-rule needs one of the four verdicts. Use `reason`, not invent
 
 | Condition | Allowed final status |
 |---|---|
-| Applicable V4 is `PASS` (or explicitly `N/A` only for a read-only scenario), applicable V5 is `PASS`, and the other completion gates pass | `Complete` |
+| Applicable V4 is `PASS` (or explicitly `N/A` only for a read-only scenario), applicable V5 is `PASS`, V6 is `PASS`, and the other completion gates pass | `Complete` |
 | Applicable V4 or V5 is `CANNOT_VERIFY` | `PARTIAL/BLOCKED` with the exact missing capability or evidence |
 | Applicable V4 or V5 is `ERROR` | `PARTIAL/BLOCKED` with the verifier error; never reinterpret it as product evidence |
 | Applicable V4 or V5 is `FAIL` | `BLOCKED` until the candidate is repaired and reverified |
+| V6 is `CANNOT_VERIFY` or `ERROR` | `PARTIAL/BLOCKED` with the missing reviewer separation or the verifier error |
+| V6 is `FAIL` | `BLOCKED` until the candidate is repaired and independently re-reviewed |
 
-`CANNOT_VERIFY` and `ERROR` are honest outcomes, but they are not successful completion evidence for write proof or repeat/isolation. Never emit a `Complete` heading when an applicable V4 or V5 has either status.
+`CANNOT_VERIFY` and `ERROR` are honest outcomes, but they are not successful completion evidence for write proof, repeat/isolation, or independent re-review. Never emit a `Complete` heading when an applicable V4 or V5, or V6, has either status.

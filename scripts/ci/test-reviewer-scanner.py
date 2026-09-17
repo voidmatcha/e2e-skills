@@ -8,6 +8,7 @@ import concurrent.futures
 from collections.abc import Callable
 import os
 from pathlib import Path
+import re
 import resource
 import shutil
 import subprocess
@@ -22,6 +23,28 @@ SCANNER = ROOT / "skills/e2e-reviewer/scripts/scan.sh"
 EVAL_FILES = ROOT / "skills/e2e-reviewer/evals/files"
 WORKFLOW = ROOT / ".github/workflows/e2e-smell-scan.yml"
 CI_LOCAL = ROOT / "scripts/ci/ci-local.sh"
+REVIEWER_SKILL = ROOT / "skills/e2e-reviewer/SKILL.md"
+PREFLIGHT_ABORT_PREFIX = "INCOMPLETE: scanner tree preflight found "
+# The preflight abort stays fail-closed with no override knob; these lines only
+# tell the operator how to get a complete scan. The reruns form one coverage
+# plan: each covers only its own root, so none of them is offered as a choice.
+PREFLIGHT_ABORT_REMEDIATION = (
+    "Remediation: no setting overrides this check. Following these entries "
+    "could scan outside the requested root, and skipping them could hide "
+    "source behind a clean result. Report this run as incomplete, then cover "
+    "the requested tree with reruns; each rerun covers only its own root:",
+    "  - rerun on the largest directories inside the requested root that "
+    "contain none of the listed entries, and on each regular file outside "
+    "those directories as a file root;",
+    "  - scan the target of each listed symbolic link as its own root by its "
+    "real path (symbolic-link scan roots are rejected);",
+    "  - until those reruns cover the whole requested tree, name each part "
+    "left unscanned, such as a FIFO, socket, or device, and keep the review "
+    "marked incomplete.",
+    "Alternatively, with approval from the repository owner, replace the "
+    "symbolic link with a regular file or directory, or remove the FIFO, "
+    "socket, or device, then rerun on the requested root.",
+)
 SCANNER_HANG_TIMEOUT_SECONDS = 180
 SCANNER_PERFORMANCE_HANG_TIMEOUT_SECONDS = 900
 
@@ -2510,6 +2533,81 @@ def assert_ripgrep_fail_closed() -> None:
         assert helper_no_match_result.returncode == 0, helper_no_match_result.stdout
 
 
+def assert_unreadable_fixture_module_fails_closed() -> None:
+    """A source lexer that cannot read a fixture module must not drop scope.
+
+    The fixture module sits outside the scan root, so the candidate manifest
+    never fingerprints it; only the scope graph and binding lineage read it.
+    Both lexer backends are covered: an explicit E2E_SMELL_RG_BIN keeps the
+    awk backend in the scope worker, and an empty one lets the default C-locale
+    Python lexer run there. The binding-lineage lexers in the main scanner
+    shell run under both, and the expect-helper shape reaches them through
+    source_imports_playwright_expect_binding.
+    """
+    if os.geteuid() == 0:
+        return  # root ignores file modes, so the unreadable case cannot exist
+    shapes = {
+        "fixture module": (
+            "base.ts",
+            "import { test as base } from '@playwright/test';\n"
+            "export const test = base.extend({});\n"
+            "export { expect } from '@playwright/test';\n",
+            "import { test, expect } from '../fixtures/base';\n",
+        ),
+        "expect helper": (
+            "expect.ts",
+            "export { expect } from '@playwright/test';\n",
+            "import { test } from '@playwright/test';\n"
+            "import { expect } from '../fixtures/expect';\n",
+        ),
+    }
+    backends = {
+        "awk lexer": {},
+        "default lexer": {"E2E_SMELL_RG_BIN": ""},
+    }
+    for shape, (module_name, module_source, imports) in shapes.items():
+        with tempfile.TemporaryDirectory(prefix="e2e-reviewer-unreadable-fixture-") as temp:
+            project = Path(temp) / "project"
+            (project / "fixtures").mkdir(parents=True)
+            (project / "e2e").mkdir()
+            (project / "package.json").write_text(
+                '{"name":"unreadable-fixture","private":true}\n', encoding="utf-8"
+            )
+            module = project / "fixtures" / module_name
+            module.write_text(module_source, encoding="utf-8")
+            (project / "e2e" / "login.spec.ts").write_text(
+                imports
+                + "test('login', async ({ page }) => {\n"
+                "  expect(page.locator('.banner')).toBeTruthy();\n"
+                "});\n",
+                encoding="utf-8",
+            )
+            hit_line = imports.count("\n") + 2
+
+            for backend, overrides in backends.items():
+                label = (shape, backend)
+                readable = scan_path(project / "e2e", overrides)
+                assert readable.returncode == 1, (label, readable.stdout)
+                assert "[P0] #4f" in readable.stdout, (label, readable.stdout)
+                assert f"login.spec.ts:{hit_line}:" in readable.stdout, (
+                    label,
+                    readable.stdout,
+                )
+                assert "source lexer invocation failed" not in readable.stdout, label
+
+                module.chmod(0)
+                try:
+                    blocked = scan_path(project / "e2e", overrides)
+                finally:
+                    module.chmod(0o644)
+                assert blocked.returncode == 2, (label, blocked.stdout)
+                assert "Summary:" not in blocked.stdout, (label, blocked.stdout)
+                assert "source lexer invocation failed (awk exit" in blocked.stdout, (
+                    label,
+                    blocked.stdout,
+                )
+
+
 def assert_filename_transport_boundaries() -> None:
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-filenames-") as temp:
         root = Path(temp)
@@ -3544,6 +3642,228 @@ def assert_nested_nonregular_entries_fail_closed() -> None:
         assert "nested/events.spec.ts [FIFO]" in result.stdout
         assert "nested/runtime.spec.ts [socket]" in result.stdout
         assert "Summary:" not in result.stdout
+        assert_preflight_abort_is_actionable(result, entry_count=3)
+
+
+def assert_preflight_abort_is_actionable(
+    result: subprocess.CompletedProcess[str], *, entry_count: int
+) -> None:
+    """The abort names a remediation after its bounded entry list, and nothing else changes."""
+    assert result.returncode == 2, result.stdout
+    assert "Summary" not in result.stdout, result.stdout
+    lines = result.stdout.splitlines()
+    starts = [
+        index
+        for index, line in enumerate(lines)
+        if line.startswith(PREFLIGHT_ABORT_PREFIX)
+    ]
+    assert len(starts) == 1, result.stdout
+    start = starts[0]
+    assert lines[start] == (
+        f"{PREFLIGHT_ABORT_PREFIX}{entry_count} unsupported filesystem entries "
+        "(showing at most 20); no scan was run."
+    ), result.stdout
+    shown = min(entry_count, 20)
+    entries = lines[start + 1 : start + 1 + shown]
+    assert len(entries) == shown, result.stdout
+    assert all(
+        line.startswith("  ") and line.endswith("]") for line in entries
+    ), result.stdout
+    cursor = start + 1 + shown
+    if entry_count > 20:
+        assert lines[cursor] == (
+            f"  {entry_count - 20} additional unsupported entries omitted"
+        ), result.stdout
+        cursor += 1
+    remediation = tuple(
+        lines[cursor : cursor + len(PREFLIGHT_ABORT_REMEDIATION)]
+    )
+    assert remediation == PREFLIGHT_ABORT_REMEDIATION, result.stdout
+    # Remediation is the last thing printed before exit 2, and it must not
+    # advertise an environment override for the fail-closed preflight.
+    assert cursor + len(PREFLIGHT_ABORT_REMEDIATION) == len(lines), result.stdout
+    assert "E2E_SMELL_" not in "\n".join(lines[start:]), result.stdout
+
+
+def assert_preflight_symlink_abort_remediation_is_actionable() -> None:
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-preflight-fix-") as temp:
+        workspace = Path(temp) / "workspace"
+        shared_source = workspace / "shared/src"
+        shared_source.mkdir(parents=True)
+        (shared_source / "index.ts").write_text(
+            "export const shared = 1;\n", encoding="utf-8"
+        )
+        app = workspace / "packages/app"
+        e2e = app / "e2e"
+        e2e.mkdir(parents=True)
+        (e2e / "a.spec.ts").write_text(
+            "import { test, expect } from '@playwright/test';\n"
+            "test('clean', async ({ page }) => {\n"
+            "  await expect(page.getByRole('main')).toBeVisible();\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        linked_source = app / "src"
+        linked_source.symlink_to(
+            Path("../../shared/src"), target_is_directory=True
+        )
+        # A loose spec beside the link: only a file-root rerun reaches it.
+        (app / "smoke.spec.ts").write_text(
+            "import { test, expect } from '@playwright/test';\n"
+            "test('smoke', async ({ page }) => {\n"
+            "  expect(page.locator('.banner')).toBeTruthy();\n"
+            "});\n",
+            encoding="utf-8",
+        )
+
+        aborted = scan_path(app)
+        assert "  src [symbolic link]" in aborted.stdout.splitlines()
+        assert_preflight_abort_is_actionable(aborted, entry_count=1)
+
+        # The largest link-free directory scans completely, but on its own it
+        # misses the loose P0 and still ends in a clean Summary. This is why
+        # the remediation is a coverage plan rather than a list of choices.
+        narrowed = scan_path(e2e)
+        assert narrowed.returncode == 0, narrowed.stdout
+        assert "Summary: 0 total hit(s), 0 P0" in narrowed.stdout
+        assert "unsupported filesystem entries" not in narrowed.stdout
+        assert "Remediation:" not in narrowed.stdout
+        assert "smoke.spec.ts" not in narrowed.stdout
+
+        # The regular file outside that directory, scanned as a file root,
+        # reports the P0 the directory rerun could not see.
+        loose = scan_path(app / "smoke.spec.ts")
+        assert loose.returncode == 1, loose.stdout
+        assert "[P0] #4f" in loose.stdout, loose.stdout
+        assert "smoke.spec.ts:3:" in loose.stdout, loose.stdout
+
+        # The link target by its real path completes the plan, while the link
+        # itself remains a rejected root.
+        target = scan_path(linked_source.resolve())
+        assert target.returncode == 0, target.stdout
+        assert "Summary:" in target.stdout
+        through_link = scan_path(linked_source)
+        assert through_link.returncode == 2, through_link.stdout
+        assert "symbolic-link scan roots are not supported" in through_link.stdout
+        assert "Summary" not in through_link.stdout
+
+    assert_tree_preflight_has_no_override()
+
+    skill = " ".join(REVIEWER_SKILL.read_text(encoding="utf-8").split())
+    for phrase in (
+        "exit 2, and emit no Summary",
+        "`Remediation:` block",
+        "There is no override setting",
+        "Report the run as incomplete, never as clean",
+        "Each rerun covers only its own root, so one rerun is never the whole "
+        "review",
+        "rerun on the largest directories that contain none of the listed "
+        "entries and on each regular file outside them as a file root",
+        "scan each link's target as its own root by its real path, because "
+        "symbolic-link scan roots are rejected",
+        "Until the reruns cover the whole requested tree, name each part left "
+        "unscanned and keep the review marked incomplete",
+        "so suggest it to the user instead of doing it",
+    ):
+        assert phrase in skill, phrase
+    for retired in ("choose one", "usually the E2E test directory itself"):
+        assert retired not in skill, retired
+        assert retired not in SCANNER.read_text(encoding="utf-8"), retired
+
+
+# Globals each preflight function may read. Anything else it expands, such as a
+# variable derived from an environment setting, is a possible override path.
+PREFLIGHT_FUNCTION_GLOBALS = {
+    "preflight_scanner_tree": {"ROOT", "FIND_BIN", "EVAL_FIXTURE_EXCLUDES"},
+    "file_is_scanner_excluded": {"EVAL_FIXTURE_EXCLUDES"},
+    "special_entry_can_hide_scanner_source": {"CODE_EXTENSIONS"},
+}
+
+
+def reprinted_scanner_source(scanner: Path | None = None) -> list[str]:
+    """Return scan.sh as bash parses it, reprinted inside one wrapper function.
+
+    Parsing is done by bash itself, without running the scanner. The reprint
+    drops comments and uses canonical indentation: a top-level command inside
+    the wrapper has four spaces, and a command nested in `if`, `||`, a loop, or
+    a subshell does not appear as a bare four-space statement.
+    """
+    result = subprocess.run(
+        [
+            "/bin/bash",
+            "-p",
+            "-c",
+            'shopt -s extglob\n'
+            'body=$(cat -- "$1") || exit 3\n'
+            'eval "__e2e_scanner_body() {\n$body\n}" || exit 4\n'
+            "declare -f __e2e_scanner_body\n",
+            "reprint",
+            str(scanner or SCANNER),
+        ],
+        env={"PATH": "/usr/bin:/bin", "LC_ALL": "C"},
+        capture_output=True,
+        text=True,
+        timeout=60,
+        check=False,
+    )
+    assert result.returncode == 0, (result.returncode, result.stderr)
+    return [line.rstrip() for line in result.stdout.splitlines()]
+
+
+def assert_tree_preflight_has_no_override() -> None:
+    """No setting can skip or loosen the fail-closed tree preflight.
+
+    A name-based check misses a bypass under an unrelated name, so this checks
+    structure instead: scan.sh calls the preflight exactly once, unconditionally,
+    at top level and before discovery, and the functions that decide what the
+    preflight reports read no `E2E_SMELL_` setting and no global beyond the
+    pinned ones.
+    """
+    lines = reprinted_scanner_source()
+    mentions = [
+        (index, line)
+        for index, line in enumerate(lines)
+        if re.search(r"\bpreflight_scanner_tree\b", line)
+    ]
+    assert [line for _, line in mentions] == [
+        "    function preflight_scanner_tree ()",
+        "    preflight_scanner_tree;",
+    ], mentions
+    call_index = mentions[1][0]
+    discovery = [
+        index
+        for index, line in enumerate(lines)
+        if line == '    discover_candidate_files "$_filename_list";'
+    ]
+    assert len(discovery) == 1 and call_index < discovery[0], discovery
+
+    for function, allowed_globals in PREFLIGHT_FUNCTION_GLOBALS.items():
+        headers = [
+            index
+            for index, line in enumerate(lines)
+            if line == f"    function {function} ()"
+        ]
+        assert len(headers) == 1, (function, headers)
+        start = headers[0]
+        end = next(
+            index
+            for index in range(start + 1, len(lines))
+            if lines[index] in ("    }", "    };")
+        )
+        body = "\n".join(lines[start + 1 : end])
+        assert "E2E_SMELL_" not in body, (function, body)
+        local_names: set[str] = set()
+        for declaration in re.findall(r"^\s*local\s+([^;\n]*)", body, re.MULTILINE):
+            local_names.update(
+                re.findall(
+                    r"(?:^|\s)([A-Za-z_][A-Za-z0-9_]*)(?==|\s|$)", declaration
+                )
+            )
+        expanded = set(
+            re.findall(r"\$\{?[#!]?([A-Za-z_][A-Za-z0-9_]*)", body)
+        )
+        unexpected = sorted(expanded - local_names - allowed_globals)
+        assert not unexpected, (function, unexpected)
 
 
 def assert_tree_preflight_diagnostics_are_bounded() -> None:
@@ -3565,6 +3885,7 @@ def assert_tree_preflight_diagnostics_are_bounded() -> None:
         )
         assert result.stdout.count("[symbolic link]") == 20
         assert "5 additional unsupported entries omitted" in result.stdout
+        assert_preflight_abort_is_actionable(result, entry_count=25)
 
 
 def assert_excluded_trees_are_pruned_before_preflight() -> None:
@@ -6204,6 +6525,7 @@ def main() -> None:
         assert_justified_p0_remains_candidate_gating,
         assert_positive_to_be_attached_arguments_and_negation,
         assert_ripgrep_fail_closed,
+        assert_unreadable_fixture_module_fails_closed,
         assert_filename_transport_boundaries,
         assert_private_temp_storage_ignores_ambient_tmpdir,
         assert_python3_prerequisite_binding,
@@ -6228,6 +6550,7 @@ def main() -> None:
         assert_promise_and_control_flow_triage,
         assert_swallowed_assertion_triage,
         assert_nested_nonregular_entries_fail_closed,
+        assert_preflight_symlink_abort_remediation_is_actionable,
         assert_tree_preflight_diagnostics_are_bounded,
         assert_excluded_trees_are_pruned_before_preflight,
         assert_candidate_type_race_fails_closed,
@@ -6279,6 +6602,7 @@ def main() -> None:
 if __name__ == "__main__":
     if sys.argv[1:] == ["--preflight-only"]:
         assert_nested_nonregular_entries_fail_closed()
+        assert_preflight_symlink_abort_remediation_is_actionable()
         assert_tree_preflight_diagnostics_are_bounded()
         assert_excluded_trees_are_pruned_before_preflight()
         assert_candidate_type_race_fails_closed()

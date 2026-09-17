@@ -9,6 +9,8 @@ import tempfile
 import unittest
 import importlib.util
 import shutil
+import signal
+import threading
 from types import SimpleNamespace
 from unittest import mock
 
@@ -137,6 +139,156 @@ print('dense fallback and 64-token boundaries passed')
                                 capture_output=True,text=True,timeout=5)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn('64-token boundaries passed', result.stdout)
+
+
+# scan.sh provenance lexers that carry their own awk program, with the
+# arguments after the source path that make each one reach that program.
+SCAN_PROVENANCE_LEXERS = (
+    ('source_has_unresolved_test_import', ()),
+    ('source_imports_playwright_test_binding', ('test',)),
+    ('source_imports_playwright_namespace_binding', ('pw',)),
+    ('source_imports_playwright_expect_binding', ('expect',)),
+    ('source_imports_relative_binding', ('test',)),
+    ('source_relative_module_references_for_binding', ('test',)),
+    ('source_relative_module_references_for_named_binding', ('check', 'expect')),
+    ('source_relative_binding_lineage_edges', ('test',)),
+)
+
+
+def scan_function(name):
+    scanner = (BASE/'scan.sh').read_text()
+    start = scanner.index('\n' + name + '() {\n') + 1
+    return scanner[start:scanner.index('\n}\n', start) + 3]
+
+
+class LexerFailure(unittest.TestCase):
+    """A failed lexer awk is a recorded runtime failure, never a clean negative."""
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory(prefix='lexer-failure-', dir=str(Path('/tmp').resolve()))
+        self.addCleanup(tmp.cleanup)
+        self.base = Path(tmp.name)
+        self.errors = self.base/'errors'
+        self.errors.write_bytes(b'')
+
+    # scan.sh runs under `set -uo pipefail`. A caller may also start it with
+    # SIGPIPE inherited as ignored, where awk reports a closed pipe as an
+    # ordinary write error (exit 2) instead of dying from SIGPIPE (141).
+    MODES = {
+        'plain': (False, False),
+        'pipefail': (True, False),
+        'pipefail, SIGPIPE ignored': (True, True),
+    }
+
+    def run_shell(self, script, path, pipefail=False, sigpipe_ignored=False, timeout=60):
+        prelude = 'source "$1"\nscanner_rg() { "$RG_BIN" "$@"; }\n'
+        if pipefail:
+            prelude = 'set -uo pipefail\n' + prelude
+
+        def ignore_sigpipe():
+            signal.signal(signal.SIGPIPE, signal.SIG_IGN)
+
+        return subprocess.run(['/bin/bash', '-p', '-c', prelude + script, 'bash', str(BASE/'scope-source.sh'), str(path)],
+                              env={'PATH': '/usr/bin:/bin', 'LC_ALL': 'C', 'RG_BIN': RG,
+                                   'RG_RUNTIME_ERROR_FILE': str(self.errors)},
+                              capture_output=True, timeout=timeout,
+                              preexec_fn=ignore_sigpipe if sigpipe_ignored else None,
+                              restore_signals=not sigpipe_ignored)
+
+    def assert_awk_failures(self, count):
+        records = self.errors.read_text().splitlines()
+        self.assertEqual(len(records), count, records)
+        for record in records:
+            self.assertRegex(record, r'^awk [1-9][0-9]*$')
+
+    def test_scope_source_lexers_record_unreadable_source(self):
+        script = '''if source_has_playwright_module_reference "$2"; then printf '1\\n'; else printf '0\\n'; fi
+source_relative_module_references "$2"
+'''
+        for mode, (pipefail, sigpipe_ignored) in self.MODES.items():
+            with self.subTest(mode=mode):
+                self.errors.write_bytes(b'')
+                result = self.run_shell(script, self.base/'missing.spec.ts', pipefail, sigpipe_ignored)
+                self.assertEqual(result.stdout, b'0\n')
+                self.assertEqual(result.stderr, b'')
+                self.assert_awk_failures(2)
+
+    def test_scan_provenance_lexers_record_unreadable_source(self):
+        # Silence the shared lexer so each record can only come from the
+        # function's own awk program.
+        functions = ''.join(scan_function(name) for name, _ in SCAN_PROVENANCE_LEXERS)
+        functions += 'source_executable_code() { :; }\n'
+        for name, arguments in SCAN_PROVENANCE_LEXERS:
+            with self.subTest(function=name):
+                self.errors.write_bytes(b'')
+                call = ' '.join((name, '"$2"') + arguments)
+                result = self.run_shell(functions + call + ' >/dev/null\n', self.base/'missing.spec.ts')
+                self.assertEqual(result.stderr, b'')
+                self.assert_awk_failures(1)
+
+    def test_reader_that_stops_early_is_not_a_lexer_failure(self):
+        # rg -q and head stop reading at their first answer. The rest of a
+        # large lexer output then meets a closed pipe, which is not an awk
+        # failure and must not abort the scan, whether awk dies from SIGPIPE
+        # or, with SIGPIPE ignored, exits on the write error.
+        path = self.base/'large.spec.ts'
+        path.write_bytes(b"import { test } from '@playwright/test';\n" +
+                         b"import './relative';\n" * 20000)
+        verdict = '''if source_has_playwright_module_reference "$2"; then printf '1\\n'; else printf '0\\n'; fi
+'''
+        script = '''source_executable_code "$2" | head -n 1
+source_relative_module_references "$2" | head -n 1
+source_has_unresolved_test_import "$2" && printf 'unresolved\\n'
+source_relative_binding_lineage_edges "$2" test | head -n 1 >/dev/null
+'''
+        functions = scan_function('source_has_unresolved_test_import') + \
+            scan_function('source_relative_binding_lineage_edges')
+        for mode, (pipefail, sigpipe_ignored) in self.MODES.items():
+            with self.subTest(mode=mode):
+                self.errors.write_bytes(b'')
+                if pipefail:
+                    # Under pipefail a Boolean verdict on a large source still
+                    # depends on pipe transport, as it did before failures were
+                    # recorded; only the failure record is pinned here.
+                    result = self.run_shell(functions + script, path, pipefail, sigpipe_ignored)
+                    self.assertEqual(result.stdout, b'import { test } from ;\n./relative\n')
+                else:
+                    result = self.run_shell(functions + verdict + script, path)
+                    self.assertEqual(result.stdout, b'1\nimport { test } from ;\n./relative\n')
+                    self.assertEqual(result.stderr, b'')
+                self.assertNotIn(b'awk', result.stderr)
+                self.assert_awk_failures(0)
+
+    def test_reader_that_stops_early_ends_the_lexer_early(self):
+        # The lexer streams its output. Once head has its line, the next lexer
+        # write meets the closed pipe and ends awk before it reads the rest of
+        # the source. This FIFO never reaches end of input, so a lexer that
+        # buffered its whole output before writing would hang here.
+        fifo = self.base/'streaming.spec.ts'
+        os.mkfifo(fifo)
+        done = threading.Event()
+
+        def feed():
+            descriptor = os.open(fifo, os.O_WRONLY)
+            try:
+                chunk = b"import './relative';\n" * 4096
+                for _ in range(64):
+                    os.write(descriptor, chunk)
+            except BrokenPipeError:
+                pass
+            finally:
+                done.wait(120)
+                os.close(descriptor)
+
+        writer = threading.Thread(target=feed, daemon=True)
+        writer.start()
+        try:
+            result = self.run_shell('source_executable_code "$2" | head -n 1\n', fifo, pipefail=True, timeout=60)
+        finally:
+            done.set()
+            writer.join(10)
+        self.assertEqual(result.stdout, b'import ;\n')
+        self.assert_awk_failures(0)
 
 
 class GraphGuards(unittest.TestCase):

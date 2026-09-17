@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=2e9549e2984735412031c61f14c30c7c9eecb2d1e4a5c996d37b607ba643cefb; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=e1d20fc00ea7684a00158f148e389abbf12c5dd6505c6a2dc5975a92e0cb70b3; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 为 AI 编程代理提供四个面向 E2E 测试工作的聚焦工作流：生成 Playwright 覆盖、审查现有 spec 或 PR/diff 范围内的测试变更、调试失败的 Playwright 报告，以及调试失败的 Cypress 报告。它还包含一个确定性扫描器，用于发现审查目录中可机械判定的子集。
 
@@ -246,7 +246,7 @@ Debug the failed Cypress report in cypress/reports/.
 - 浏览器故障注入已完成 **12 个故障算子与 3 种预期结果组合形成的全部 36 个 Playwright/Cypress 单元**。这是对测试台自身的检验：应用、健壮的测试、注入的故障和脆弱的测试都由本仓库编写，因此它只能说明检测器按设计触发，并不代表可以泛化。
 - [Healer perturbation v1](benchmarks/healer-perturbation-v1/README.md) 已完成**全部 30 个冻结的 Codex 单元**并返回 `REJECT`：带保护约束的官方 healer prompt 与本仓库提议的 Step 7 工作流，都削弱了全部 3 个不可修复的诚实性对照项。该结果否决了把这两条 healer 路径作为安全默认值；它没有测量 Claude、通用 healer 质量或审查准确率，也没有修改产品指令。
 - Exact reviewer benchmark 覆盖 **12 个已证实的 false-green cases 和 12 个 clean guards**；其中 10 个 fault cases 是 byte-identical operator mutants。
-- Independent product-review robustness gates v4、v5、v7 和 v8 未达到其预注册标准。v6 和 v9 未运行，v10 已冻结但未运行；v1 至 v10 仅作为既有的 robustness evidence 保留，不是当前的 release gates。
+- Independent product-review robustness gates v4、v5、v7、v8 和 v11 未达到其预注册标准。v6 和 v9 未运行，v10 在 3 次尝试中仅运行 1 次后，被复用其冻结评审输入的 v11 取代；v1 至 v11 仅作为既有的 robustness evidence 保留，不是当前的 release gates。
 - Debugger protocol 提供可重放的 30-case synthetic corpus，但不声称已独立建立调试器准确率。
 
 查看 [基准状态](benchmarks/STATUS.md) 了解分数、失败的 gates、被取代的 runs 和声明边界。[研究证据台账](docs/llm-generated-e2e-test-evidence.md) 审计了 59 个外部来源，避免把相邻的 unit-test 或 custom-agent 研究当作本项目的测量结果。

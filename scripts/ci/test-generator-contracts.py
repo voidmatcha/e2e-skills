@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 import importlib.util
 import os
+import re
 import shutil
 import socket
 import subprocess
@@ -44,6 +45,8 @@ UTF8_FRAME_WRITER = (
     ROOT
     / "skills/playwright-test-generator/scripts/write-utf8-frame.sh"
 )
+PLAYWRIGHT_DEBUGGER_SKILL = ROOT / "skills/playwright-debugger/SKILL.md"
+REVIEWER_SCANNER = ROOT / "skills/e2e-reviewer/scripts/scan.sh"
 OPENAI_AGENT = ROOT / "skills/playwright-test-generator/agents/openai.yaml"
 CLAUDE_PLUGIN = ROOT / ".claude-plugin/plugin.json"
 CLAUDE_MARKETPLACE = ROOT / ".claude-plugin/marketplace.json"
@@ -1164,6 +1167,310 @@ def exercise_failure_handling_mutation_guard(text: str) -> None:
     raise AssertionError("failure-handling deletion mutation survived")
 
 
+def eval_contract(evals_by_id: dict, eval_id: int) -> str:
+    assert eval_id in evals_by_id, f"missing generator eval {eval_id}"
+    case = evals_by_id[eval_id]
+    return " ".join(
+        " ".join(
+            [case["prompt"], case["expected_output"], *case["assertions"]]
+        ).split()
+    )
+
+
+def assert_config_discovery_contract(
+    text: str,
+    debugger_skill: str,
+    scanner: str,
+    evals_by_id: dict,
+) -> None:
+    # Playwright's loader tries exactly these default config names, in order.
+    # The eight-extension set applies to spec discovery only.
+    loader_order = ("ts", "js", "mts", "mjs", "cts", "cjs")
+    six_names = "`playwright.config.{" + ",".join(loader_order) + "}`"
+    step_1 = section(
+        text,
+        "## Step 1: Environment Detection",
+        "**Output (project profile):**",
+    )
+    compact_step_1 = " ".join(step_1.split())
+    assert "playwright.config.<ext>" not in step_1
+    assert "for both config and spec discovery" not in step_1
+    assert "source-extension set for spec discovery:" in step_1
+    config_rows = [
+        line for line in step_1.splitlines()
+        if line.startswith("| Playwright config |")
+    ]
+    assert len(config_rows) == 1, config_rows
+    config_row = config_rows[0]
+    assert "`--config`/`-c`" in config_row
+    assert (
+        f"six default-discovery filenames, {six_names}, in that order"
+        in config_row
+    )
+    # `--config` accepts a directory too; Playwright then searches the same
+    # six names inside it (resolveConfigFile in playwright/lib/common).
+    assert (
+        "a file loads as is, and a directory loads the first of the six names "
+        "inside that directory"
+    ) in config_row
+    assert (
+        "A `.tsx` or `.jsx` config loads only when passed explicitly"
+        in compact_step_1
+    )
+    assert six_names in debugger_skill
+    # scan.sh checks these names as one OR-joined project-marker test, where
+    # order carries no meaning; only the set must match the loader.
+    scanner_names = re.findall(
+        r'-f "\$directory/playwright\.config\.(\w+)"', scanner
+    )
+    assert len(scanner_names) == len(loader_order), scanner_names
+    assert sorted(scanner_names) == sorted(loader_order), scanner_names
+    step_3 = " ".join(
+        section(
+            text,
+            "## Step 3: Browser Exploration",
+            "## Step 4: Scenario Design + User Approval",
+        ).split()
+    )
+    assert "playwright.config.*" not in step_3
+    assert (
+        "inspect the loaded Playwright config identified in Step 1 for "
+        "`webServer`"
+    ) in step_3
+    discovery_eval = eval_contract(evals_by_id, 20)
+    assert "profiles playwright.config.mjs as the loaded config" in discovery_eval
+    assert "does not treat playwright.config.tsx" in discovery_eval
+    assert "e2e/checkout.spec.tsx and e2e/login.test.mts" in discovery_eval
+    directory_eval = eval_contract(evals_by_id, 21)
+    assert '"playwright test -c tests/e2e"' in directory_eval
+    assert (
+        "True positive: profiles tests/e2e/playwright.config.mjs as the loaded "
+        "config"
+    ) in directory_eval
+    assert (
+        "False-positive guard: does not profile the root playwright.config.ts"
+        in directory_eval
+    )
+    assert (
+        "False-positive guard: does not treat tests/e2e/playwright.config.tsx"
+        in directory_eval
+    )
+
+
+def assert_preflight_interpreter_contract(text: str, launcher: str) -> None:
+    step_3 = section(
+        text,
+        "## Step 3: Browser Exploration",
+        "## Step 4: Scenario Design + User Approval",
+    )
+    compact_step_3 = " ".join(step_3.split())
+    marker = "for candidate in \\\n"
+    assert marker in launcher
+    candidate_block = launcher.split(marker, 1)[1].split("\ndo\n", 1)[0]
+    candidates = [
+        line.strip().rstrip("\\").strip()
+        for line in candidate_block.splitlines()
+        if line.strip()
+    ]
+    assert candidates and all(path.startswith("/") for path in candidates)
+    documented_positions = []
+    for candidate in candidates:
+        token = f"`{candidate}`"
+        assert token in compact_step_3, f"undocumented interpreter {candidate}"
+        documented_positions.append(compact_step_3.index(token))
+    assert documented_positions == sorted(documented_positions)
+    floors = set(re.findall(r"sys\.version_info >= \(3, (\d+)\)", launcher))
+    assert len(floors) == 1, floors
+    floor = floors.pop()
+    assert f"Python 3.{floor}+" in compact_step_3
+    assert (
+        f"in that order, and selects the first 3.{floor}+ one" in compact_step_3
+    )
+    assert f"no trusted Python 3.{floor}+ interpreter is available" in launcher
+    assert "If none qualifies, the launcher exits 126" in compact_step_3
+    assert (
+        "treat that as a terminal preflight failure, launch no browser"
+        in compact_step_3
+    )
+    assert (
+        "never substitute ambient `python3` or start the helper directly"
+        in compact_step_3
+    )
+
+
+def assert_cli_probe_approval_contract(text: str, evals_by_id: dict) -> None:
+    step_3 = section(
+        text,
+        "## Step 3: Browser Exploration",
+        "## Step 4: Scenario Design + User Approval",
+    )
+    cli_selection = " ".join(
+        section(
+            step_3,
+            "Use the official **Playwright CLI** as the primary",
+            "Treat Playwright CLI as a separate exploration browser",
+        ).split()
+    )
+    assert "npx --no-install playwright help cli" in cli_selection
+    for clause in (
+        "That probe and the project-local entry point execute the project's "
+        "installed Playwright package binary, so each is a target-controlled "
+        "command",
+        "run it only after repository trust and explicit approval of that "
+        "exact command",
+        "Without that approval, skip the probe and the project-local entry point",
+        # Exploration is many invocations; one approval must have a defined
+        # scope rather than silently covering every later call.
+        "request its approval as one unit: the exact `npx --no-install "
+        "playwright cli` prefix plus the named exploration subcommands",
+        "on the preflighted exact target for the current exploration session",
+        "any other subcommand, added flag or config, or other URL needs its "
+        "own exact-command approval",
+    ):
+        assert clause in cli_selection, f"missing Step 3 probe gate: {clause}"
+    commands = " ".join(
+        section(
+            text,
+            "### Proposed target-controlled commands",
+            "**Approval gate:**",
+        ).split()
+    )
+    assert (
+        "plus every project package-binary command this skill prescribes for "
+        "a later step: the `npx --no-install playwright help init-agents` "
+        "probe and, for any first-party agent a later step may invoke, the "
+        "exact server launch its initialized agent definitions run (such as "
+        "`npx playwright run-test-mcp-server`), quoted from those definitions"
+    ) in commands
+    step_5 = " ".join(
+        section(text, "## Step 5: Code Generation", "## Step 5b:").split()
+    )
+    assert (
+        "That probe executes the project's installed Playwright package "
+        "binary: run it only as an exact command approved in Step 4; "
+        "otherwise skip this auxiliary path."
+    ) in step_5
+    # The initialized agent definitions start the project-local MCP server,
+    # so invoking an agent is itself a target-controlled command.
+    assert (
+        "invoke no agent unless that exact launch was approved in Step 4. "
+        "Approval of a scenario is not approval of that command."
+    ) in step_5
+    step_5_gate = step_5.index("invoke no agent unless that exact launch")
+    assert step_5_gate < step_5.index("The auxiliary planner proposes")
+    probe_eval = eval_contract(evals_by_id, 19)
+    assert (
+        "does not run npx --no-install playwright help cli before repository "
+        "trust and explicit approval of that exact command"
+    ) in probe_eval
+    assert (
+        "skips the probe and the project-local playwright cli entry point"
+        in probe_eval
+    )
+    assert "npx --no-install playwright help init-agents in the Step 4" in probe_eval
+    assert (
+        "Lists the exact server launch the initialized first-party agent "
+        "definitions run (such as npx playwright run-test-mcp-server) in the "
+        "Step 4 target-controlled command table"
+    ) in probe_eval
+    assert (
+        "States that one approval of the project-local entry point covers "
+        "only the exact npx --no-install playwright cli prefix"
+    ) in probe_eval
+    assert (
+        "False-positive guard: reading "
+        "evals/files/project-pom/playwright.config.ts"
+    ) in probe_eval
+
+
+def assert_v6_completion_contract(
+    text: str, verification_rules: str, evals_by_id: dict
+) -> None:
+    step_7 = section(
+        text,
+        "## Step 7: V1–V6 Verification + Failure Handling",
+        "### Failure handling (max 3 auto-fix attempts)",
+    )
+    assert (
+        "An applicable V4 or V5 must be `PASS` (`V4: N/A` is allowed only for "
+        "a read-only scenario), and V6 must be `PASS`. If any of these is "
+        "`CANNOT_VERIFY` or `ERROR`, the result is `PARTIAL/BLOCKED`, never "
+        "`Complete`"
+    ) in " ".join(step_7.split())
+    completion_matrix = section(
+        verification_rules,
+        "### Completion status matrix",
+        "`CANNOT_VERIFY` and `ERROR` are honest outcomes",
+    )
+    rows = {}
+    for line in completion_matrix.splitlines():
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if len(cells) == 2 and cells[0] not in ("Condition", "---"):
+            rows[cells[0]] = cells[1]
+    complete_conditions = [
+        condition for condition, status in rows.items() if status == "`Complete`"
+    ]
+    assert len(complete_conditions) == 1, complete_conditions
+    assert "V6 is `PASS`" in complete_conditions[0]
+    v6_blocked = rows.get("V6 is `CANNOT_VERIFY` or `ERROR`", "")
+    assert v6_blocked.startswith("`PARTIAL/BLOCKED`"), rows
+    assert rows.get("V6 is `FAIL`") == (
+        "`BLOCKED` until the candidate is repaired and independently re-reviewed"
+    ), rows
+    closing = verification_rules.split(
+        "`CANNOT_VERIFY` and `ERROR` are honest outcomes", 1
+    )[1].split("\n\n", 1)[0]
+    assert (
+        "Never emit a `Complete` heading when an applicable V4 or V5, or V6, "
+        "has either status."
+    ) in " ".join(closing.split())
+    completion_templates = section(
+        text,
+        "### Completion report (on full pass)",
+        "## Reference",
+    )
+    assert "V5 <verdict>; V6 PASS" in completion_templates
+    assert (
+        "For applicable V4/V5, or V6, `CANNOT_VERIFY` or `ERROR`, use:"
+        in completion_templates
+    )
+    assert (
+        "Blocking verification: <V4|V5|V6> <CANNOT_VERIFY|ERROR>"
+        in completion_templates
+    )
+    blocked_eval = eval_contract(evals_by_id, 10)
+    assert "Blocking verification: V6 CANNOT_VERIFY" in blocked_eval
+    assert "never emits the Complete heading" in blocked_eval
+    assert "does not report V6 FAIL or a test defect" in blocked_eval
+
+
+def assert_bash_snippet_variables_defined(text: str) -> None:
+    # Every shell variable an executable snippet expands must be assigned
+    # earlier in that snippet, carry a `-`/`:-` default, or be defined in the
+    # prose before the snippet ("`$NAME` is ..." or "`NAME` is ...").
+    blocks = list(re.finditer(r"```bash\n(.*?)```", text, re.S))
+    assert blocks, "no executable bash snippets found"
+    reference = re.compile(
+        r"\$(?:\{([A-Za-z_][A-Za-z0-9_]*)(:?-)?|([A-Za-z_][A-Za-z0-9_]*))"
+    )
+    for block in blocks:
+        prose = " ".join(text[: block.start()].split())
+        assigned: set[str] = set()
+        for line in block.group(1).splitlines():
+            if line.lstrip().startswith("#"):
+                continue
+            for match in reference.finditer(line):
+                name = match.group(1) or match.group(3)
+                if name in assigned or match.group(2):
+                    continue
+                assert (
+                    f"`${name}` is " in prose or f"`{name}` is " in prose
+                ), f"bash snippet uses undefined variable {name}"
+            assigned.update(
+                re.findall(r"^\s*([A-Za-z_][A-Za-z0-9_]*)=", line)
+            )
+
+
 def main() -> None:
     exercise_utf8_frame_writer()
     exercise_framed_preflight_argv_boundary()
@@ -1231,7 +1538,13 @@ def main() -> None:
         if f"`{match}`" in step_1
     }
     assert documented_extensions == extensions
-    assert "playwright.config.<ext>" in step_1
+    assert_config_discovery_contract(
+        text,
+        PLAYWRIGHT_DEBUGGER_SKILL.read_text(encoding="utf-8"),
+        REVIEWER_SCANNER.read_text(encoding="utf-8"),
+        evals_by_id,
+    )
+    assert_bash_snippet_variables_defined(text)
     assert "Both `*.spec.<ext>` and `*.test.<ext>`" in step_1
     assert "recursively within the test dir" in step_1
     assert "Do not stop after finding only the common `.ts`/`.js` forms" in step_1
@@ -1319,6 +1632,8 @@ def main() -> None:
     )
     assert "deprecated unscoped `playwright-cli` package" in step_3
     assert "npx --no-install playwright help cli" in step_3
+    assert_cli_probe_approval_contract(text, evals_by_id)
+    assert_preflight_interpreter_contract(text, launcher)
     assert "`playwright --version`, `playwright cli --version`, or" in step_3
     assert "printing root output" in step_3
     assert "Treat Playwright CLI as a separate exploration browser" in step_3
@@ -1838,7 +2153,7 @@ def main() -> None:
     )
     assert "Applicable V4 or V5 is `CANNOT_VERIFY`" in completion_matrix
     assert "Applicable V4 or V5 is `ERROR`" in completion_matrix
-    assert completion_matrix.count("`PARTIAL/BLOCKED`") == 2
+    assert completion_matrix.count("`PARTIAL/BLOCKED`") == 3
     assert "Applicable V4 or V5 is `FAIL`" in completion_matrix
     assert "`BLOCKED` until the candidate is repaired and reverified" in completion_matrix
 
@@ -1850,19 +2165,18 @@ def main() -> None:
     assert "permits `Complete`" in completion_templates
     assert "## playwright-test-generator — Complete" in completion_templates
     assert "## playwright-test-generator — PARTIAL/BLOCKED" in completion_templates
-    assert (
-        "Blocking verification: <V4|V5> <CANNOT_VERIFY|ERROR>"
-        in completion_templates
-    )
+    assert_v6_completion_contract(text, verification_rules, evals_by_id)
 
     print(
         "generator contracts: pass "
-        "(eight-extension config/spec discovery, safe exploration and "
+        "(six-name config and eight-extension spec discovery, defined snippet "
+        "variables, documented preflight interpreter candidates, approved "
+        "project package-binary probes, safe exploration and "
         "exact-target preflight with pinned DNS peers and drift rejection, "
         "full-request interception plus remote egress enforcement, untrusted "
         "command/URL boundaries, settled-state falsification, independent "
         "fresh-context review, replay-safe write repetition, fail-closed "
-        "V4/V5 completion, accurate "
+        "V4/V5/V6 completion, accurate "
         "Playwright guidance, approved control files, usage-aware YAGNI, "
         "fail-closed P0 gate)"
     )

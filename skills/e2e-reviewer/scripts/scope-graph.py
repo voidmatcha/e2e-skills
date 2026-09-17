@@ -156,7 +156,7 @@ class Graph:
         self.changed = False
         with open(args.helper, 'rb') as stream:
             self.paired_paths = hashlib.sha256(stream.read()).hexdigest() == (
-                'bcc4fc3bf2bedcc257f143e567c4aeff917efe90bf26a166e0718cba497f0947')
+                '4d49abb39ebbdeb50d81eaac4c655d8f750c1a3344160edcdd2a0431064c0b65')
         self.witnesses.watch(args.helper)
         self.lexer = self.load_lexer()
         if getattr(args, 'strict_watch', False):
@@ -188,7 +188,7 @@ class Graph:
         with open(self.args.helper, 'rb') as stream:
             paired = hashlib.sha256(stream.read()).hexdigest()
         self.witnesses.watch(self.args.helper)
-        if paired != 'bcc4fc3bf2bedcc257f143e567c4aeff917efe90bf26a166e0718cba497f0947':
+        if paired != '4d49abb39ebbdeb50d81eaac4c655d8f750c1a3344160edcdd2a0431064c0b65':
             return None
         path = os.path.join(os.path.dirname(__file__), 'scope-lexer.py')
         self.witnesses.watch(path)

@@ -207,7 +207,9 @@ class DiscoveryTests(unittest.TestCase):
     @unittest.skipUnless(shutil.which('rg'), 'rg required')
     def test_original_classifier_accepted_candidates_survive(self):
         shell = 'scanner_rg() { ' + shlex.quote(shutil.which('rg')) + ' "$@"; }\n'
-        shell += function((ROOT / 'skills/e2e-reviewer/scripts/scope-source.sh').read_text(), 'source_executable_code')
+        scope_source = (ROOT / 'skills/e2e-reviewer/scripts/scope-source.sh').read_text()
+        for name in ('run_source_lexer', 'source_executable_code'):
+            shell += function(scope_source, name)
         for name in ('source_has_unresolved_test_import', 'source_binding_shadowed_at', 'conditional_assertion_hit_matches'):
             shell += function(SOURCE, name)
         controls = [

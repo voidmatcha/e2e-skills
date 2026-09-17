@@ -136,7 +136,7 @@ Playwright applies `--grep` to the full title path, not only the test title.
 Resolve the filter before every targeted run:
 
 ```bash
-node_modules/.bin/playwright test path/to/spec.spec.ts \
+/usr/bin/env -i PATH="$PATH" node_modules/.bin/playwright test path/to/spec.spec.ts \
   --list --grep 'escaped unique title fragment'
 ```
 
@@ -189,6 +189,9 @@ PROJECT_ROOT=$(/bin/pwd -P)
 The helper rejects absolute/traversing output paths, symlinked report-directory
 components, symlink/non-file destinations, non-zero commands, and reports that
 fail the bounded reader's strict JSON, schema, outcome, or stats validation.
+The one accepted non-zero exit is status 1, which `playwright test` returns
+when tests fail, and only when the captured report then passes that same
+validation, so a still-failing test's report can be published.
 Its child environment contains only a fixed system `PATH` plus variables named
 by repeated `--pass-env NAME` options; names must be valid environment-variable
 identifiers, set, and non-duplicate. A bare child executable is resolved only
@@ -222,10 +225,12 @@ attempt keeps its own `status`, `duration`, `error`, and `errorLocation`
 together. Preserve both failed and passing attempts: a failed attempt followed
 by a passing attempt is the evidence for a flaky classification. Never combine
 the final attempt's status/duration with an earlier attempt's error/location.
-An `interrupted` attempt is unexpected, not skipped: an interrupted-only test
-has outcome `unexpected`, while an interrupted attempt followed by an expected
-retry has outcome `flaky`. Preserve the interrupted attempt and its cancellation
-diagnostic in the emitted record.
+An `interrupted` attempt does not count toward the outcome, matching
+Playwright's reporter: an interrupted-only test has outcome `skipped`, and an
+interrupted attempt followed by an expected retry has outcome `expected`. The
+reader still emits every test with an interrupted attempt, preserving that
+attempt and its cancellation diagnostic, so a run cut short by `maxFailures`
+never looks clean. An interrupted attempt is not an unexpected product failure.
 `line` is where the test was registered; report a failed attempt's
 location as its failure site. The reader preserves the reporter's nested
 `error.location` and falls back to the compatible result-level
@@ -267,7 +272,13 @@ structure and spec-shaped objects outside that hierarchy are errors, never a
 silent empty result.
 Root `stats.expected`, `stats.skipped`, `stats.unexpected`, and `stats.flaky`
 must be nonnegative integers and must exactly match the parsed test outcomes;
-malformed or contradictory stats fail closed. JSON parsing is strict: duplicate
+malformed or contradictory stats fail closed. The outcome, `spec.ok`, and stats
+checks recompute the JSON reporter's own semantics, source-checked in
+Playwright 1.55.1, 1.60.0, and 1.62.1: the supported reporter range is 1.55.1
+through 1.62.1. Any disagreement rejects the whole report with a
+`Playwright reporter outcome mismatch` diagnostic that names this range; report
+the mismatch and the project's Playwright version instead of reading the JSON
+another way. JSON parsing is strict: duplicate
 object keys, `NaN`, positive or negative
 `Infinity`, a UTF-8 BOM, and trailing non-whitespace data are rejected. Output
 also disables non-finite JSON numbers.
@@ -305,15 +316,24 @@ Classification steps:
 5. Action succeeded but the *next* assertion timed out, SSR app, first interaction after `goto` → F15
 6. **F1 vs F7 is decided by an isolation probe, not by the error text.** Both surface as
    `TimeoutError` and both "pass sometimes", so classifying from the message alone assigns the
-   wrong code roughly half the time. Run the approved command twice on the failing test:
+   wrong code roughly half the time. Run the probe only after the execution safety gate and the
+   repository execution gate's trust checks have passed (see Prerequisites): the whole target
+   stack is `local/disposable` or an approved non-production test environment, the user
+   explicitly trusts this repository, and both exact commands are approved. The probe replays the
+   test, so the safety gate's rule on replaying non-idempotent writes applies to each repetition
+   as it does to retries. Until both gates pass, or while the failing test performs a
+   non-idempotent write whose system-boundary idempotence is not proven, present the commands as
+   `recommended`; in either case, or if the suite cannot be run, say the probe was not performed
+   and report `CANNOT_VERIFY` between F1 and F7 rather than guessing. Once both gates pass and no
+   unproven non-idempotent write would be replayed, run:
 
    ```bash
    # (a) alone, repeated — is the test non-deterministic by itself?
-   npx --no-install playwright test path/to/spec.spec.ts --grep 'escaped unique title fragment' \
-     --retries=0 --repeat-each=10 --workers=1
+   /usr/bin/env -i PATH="$PATH" node_modules/.bin/playwright test path/to/spec.spec.ts \
+     --grep 'escaped unique title fragment' --retries=0 --repeat-each=10 --workers=1
 
    # (b) at the suite's real parallelism — does it only break with neighbours?
-   npx --no-install playwright test --retries=0
+   /usr/bin/env -i PATH="$PATH" node_modules/.bin/playwright test --retries=0
    ```
 
    | (a) alone ×10 | (b) full suite | Code |
@@ -322,10 +342,7 @@ Classification steps:
    | 10/10 pass | fails | **F7** — shared state or ordering; the test is fine in isolation |
    | 10/10 fail | fails | not flaky at all — re-classify against the F-table (F2/F4/F5/F9/F10/F12) |
 
-   Both commands need the same approval as any other target-controlled run (see Prerequisites);
    `--repeat-each` multiplies runtime, so scope it to the single failing test, never the suite.
-   If the suite cannot be run, say the probe was not performed and report the F-code as
-   `CANNOT_VERIFY` between F1 and F7 rather than guessing.
 
 **Setup-level signals (check before classifying individual tests):**
 

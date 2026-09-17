@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <strong>🇯🇵 日本語</strong> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=2e9549e2984735412031c61f14c30c7c9eecb2d1e4a5c996d37b607ba643cefb; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=e1d20fc00ea7684a00158f148e389abbf12c5dd6505c6a2dc5975a92e0cb70b3; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、AI コーディングエージェントが Playwright/Cypress の E2E テスト作業に使える 4 つのワークフローを提供します。Playwright カバレッジの生成、既存のテスト仕様または PR/diff 範囲の変更レビュー、失敗した Playwright レポートのデバッグ、失敗した Cypress レポートのデバッグを扱います。レビューカタログのうち、機械的に判定できる部分集合を検出する決定論的スキャナーも含まれます。
 
@@ -247,7 +247,7 @@ Debug the failed Cypress report in cypress/reports/.
 - ブラウザー障害注入は、**12 個の障害演算子と 3 種類の期待結果を組み合わせた Playwright/Cypress セル 36 件すべて**で完了しています。これはハーネスの自己テストです。アプリケーション、堅牢なテスト、注入した障害、脆弱なテストのすべてをこのリポジトリで書いているため、検出器が設計どおりに動作することを示すだけであり、一般化を意味しません。
 - [Healer perturbation v1](benchmarks/healer-perturbation-v1/README.md) は、**凍結済みの Codex セル 30 件すべて**を完了し、`REJECT` を返しました。ガード付きの公式 healer prompt と、このリポジトリが提案した Step 7 workflow は、どちらも修復不可能な honesty control 3 件すべてを弱めました。この結果は両 healer 経路を安全なデフォルトとして採用しないことを意味しますが、Claude、一般的な healer 品質、reviewer 精度を測定したものではなく、product instructions も変更していません。
 - exact レビューベンチマークは **証明済みの false-green 事例 12 件と正常コードの保護事例 12 件**を対象にしています。10 件の障害事例は byte-identical operator mutants です。
-- Independent product-review robustness gates v4、v5、v7、v8 は事前登録した基準を満たしませんでした。v6 と v9 は未実行で、v10 は凍結済みですが未実行です。v1 から v10 は、現在のリリースゲートではなく、過去の robustness evidence として保持しています。
+- Independent product-review robustness gates v4、v5、v7、v8、v11 は事前登録した基準を満たしませんでした。v6 と v9 は未実行で、v10 は 3 回の試行のうち 1 回を実行した時点で、凍結済みのレビュー入力を再利用する v11 に置き換えました。v1 から v11 は、現在のリリースゲートではなく、過去の robustness evidence として保持しています。
 - デバッガー protocol は再実行可能な 30-case synthetic corpus を提供しますが、独立に確立されたデバッガー精度は主張しません。
 
 スコア、失敗したゲート、置き換えられた実行、主張の境界については [ベンチマーク状況](benchmarks/STATUS.md) を参照してください。[研究根拠台帳](docs/llm-generated-e2e-test-evidence.md) は、隣接する unit-test や custom-agent studies をこのプロジェクトの測定値として扱わず、59 件の外部 source を監査しています。

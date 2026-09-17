@@ -88,11 +88,23 @@ PLAYWRIGHT_RESULT_STATUSES = {
     "interrupted",
 }
 PLAYWRIGHT_STAT_COUNTERS = ("expected", "skipped", "unexpected", "flaky")
+# The outcome, spec.ok, and stats gates recompute the JSON reporter's own
+# semantics (computeTestCaseOutcome, test.ok(), ++stats[test.outcome()]), which
+# were source-checked in Playwright 1.55.1, 1.60.0, and 1.62.1. SKILL.md
+# documents the same range; widen both only after checking another release.
+SUPPORTED_PLAYWRIGHT_REPORTER_RANGE = "1.55.1 through 1.62.1"
 SECURE_OPEN_PLATFORM_ERROR = (
     "secure artifact reading requires POSIX descriptor-relative no-follow "
     "filesystem APIs (macOS/Linux); on Windows run this reader inside WSL "
     "against artifacts stored under a trusted WSL filesystem root"
 )
+
+
+def reporter_mismatch(detail: str) -> ValueError:
+    return ValueError(
+        f"Playwright reporter outcome mismatch: {detail}; supported Playwright "
+        f"reporter range: {SUPPORTED_PLAYWRIGHT_REPORTER_RANGE}"
+    )
 
 
 def require_secure_descriptor_support() -> None:
@@ -740,7 +752,11 @@ def computed_test_outcome(test: dict[str, object]) -> str:
                 "report result status contradicts the Playwright JSON schema"
             )
         if status == "interrupted":
-            unexpected += 1
+            # Playwright's computeTestCaseOutcome counts an interrupted result
+            # on its own and never as unexpected, so a run cut short by
+            # maxFailures reports that test as skipped (interrupted only) or
+            # expected (interrupted, then passed). report_records still emits
+            # the interrupted attempt.
             continue
         if status == "skipped" and expected_status == "skipped":
             skipped += 1
@@ -820,7 +836,7 @@ def report_specs(report: object) -> list[dict[str, object]]:
                         )
                 computed_outcome = computed_test_outcome(test)
                 if outcome != computed_outcome:
-                    raise ValueError(
+                    raise reporter_mismatch(
                         f"report test status={outcome} contradicts results "
                         f"outcome={computed_outcome}"
                     )
@@ -829,7 +845,7 @@ def report_specs(report: object) -> list[dict[str, object]]:
                 for test in spec["tests"]
             )
             if spec["ok"] != expected_ok:
-                raise ValueError(
+                raise reporter_mismatch(
                     f"report spec.ok={spec['ok']} contradicts test statuses"
                 )
 
@@ -892,7 +908,7 @@ def validate_report_stats(
             parsed[outcome] += 1
     for field in PLAYWRIGHT_STAT_COUNTERS:
         if counters[field] != parsed[field]:
-            raise ValueError(
+            raise reporter_mismatch(
                 # Explanation before the numbers, deliberately: the shared
                 # redactor treats `passes=2` as a credential assignment and
                 # its value extent runs to the end of the line, so a reason
@@ -927,9 +943,14 @@ def report_records(report: object) -> list[dict[str, object]]:
             if not isinstance(test, dict):
                 continue
             outcome = test.get("status")
-            if outcome in {"expected", "skipped"}:
-                continue
             raw_attempts = test.get("results")
+            interrupted = isinstance(raw_attempts, list) and any(
+                isinstance(result, dict)
+                and result.get("status") == "interrupted"
+                for result in raw_attempts
+            )
+            if outcome in {"expected", "skipped"} and not interrupted:
+                continue
             attempts: list[dict[str, object]] = []
             if isinstance(raw_attempts, list):
                 for index, result in enumerate(raw_attempts):
@@ -949,7 +970,13 @@ def report_records(report: object) -> list[dict[str, object]]:
                     )
                     attempts.append(
                         {
-                            "attempt": retry if isinstance(retry, int) else index,
+                            # bool is an int subclass; a JSON true/false or a
+                            # negative number is not a retry index.
+                            "attempt": (
+                                retry
+                                if type(retry) is int and retry >= 0
+                                else index
+                            ),
                             "status": bounded_string(result.get("status")),
                             "duration": bounded_scalar(result.get("duration")),
                             "error": error_message(error),

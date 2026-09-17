@@ -141,6 +141,240 @@ def assert_no_unguarded_npx(text: str, executable: str) -> None:
     assert not unguarded, f"unguarded npx {executable} may install dependencies"
 
 
+# Every launcher that starts a project Playwright/Cypress binary: the local
+# binary path, npx, and the package-manager runners (pnpm, yarn, bunx,
+# npm exec) with any options between the runner and the framework name.
+LAUNCHER_OPTIONS = r"(?:--?[A-Za-z][\w-]*(?:=\S+)?\s+)*"
+FRAMEWORK_LAUNCHER = (
+    r"(?:node_modules/\.bin/"
+    rf"|\bnpx\s+{LAUNCHER_OPTIONS}"
+    rf"|\bbunx\s+{LAUNCHER_OPTIONS}"
+    rf"|\bnpm\s+{LAUNCHER_OPTIONS}exec\s+{LAUNCHER_OPTIONS}(?:--\s+)?"
+    rf"|\bpnpm\s+{LAUNCHER_OPTIONS}(?:(?:exec|dlx)\s+{LAUNCHER_OPTIONS})?"
+    rf"|\byarn\s+{LAUNCHER_OPTIONS}(?:(?:exec|run|dlx)\s+{LAUNCHER_OPTIONS})?)"
+)
+FRAMEWORK_INVOCATION = re.compile(FRAMEWORK_LAUNCHER + r"(?:playwright|cypress)\b")
+EMPTY_ENVIRONMENT_INVOCATION = re.compile(
+    r'/usr/bin/env\s+-i\s+PATH="\$PATH"(?:\s+[A-Za-z_][A-Za-z0-9_]*=\S+)*\s+'
+    r"node_modules/\.bin/(?:playwright|cypress)\b"
+)
+SHELL_FENCE = re.compile(r"^[ \t]*```(?:bash|sh)[ \t]*\n(.*?)^[ \t]*```", re.M | re.S)
+INLINE_CODE = re.compile(r"`([^`\n]+)`")
+
+
+def empty_environment_violations(label: str, command_lines: list[str]) -> list[str]:
+    violations = []
+    for command in command_lines:
+        if command.lstrip().startswith("#"):
+            continue
+        prefixed_ends = {
+            match.end() for match in EMPTY_ENVIRONMENT_INVOCATION.finditer(command)
+        }
+        for invocation in FRAMEWORK_INVOCATION.finditer(command):
+            # The bundled publisher starts this child itself, with a fixed
+            # system PATH plus explicit --pass-env names.
+            if "run-artifact-reader.sh" in command[: invocation.start()]:
+                continue
+            if invocation.end() not in prefixed_ends:
+                violations.append(f"{label}: {command.strip()[:160]}")
+    return violations
+
+
+def assert_debugger_repository_commands_use_empty_environment() -> None:
+    """Documented Playwright/Cypress runs pass the empty-environment gate.
+
+    Both debugger skills require repository-controlled commands to start from
+    `/usr/bin/env -i PATH="$PATH"` with the project-local binary. A command
+    shown without that prefix (or through npx, pnpm, yarn, bunx, or npm exec)
+    forwards ambient NODE_OPTIONS, NPM_CONFIG_*, and credentials into
+    checkout-controlled code. The check covers commands in ```bash/```sh
+    fences and inline code spans that pass arguments to a launched framework
+    binary; it does not parse other fence languages or prose without code
+    spans.
+    """
+    violations: list[str] = []
+    checked = {"playwright-debugger": 0, "cypress-debugger": 0}
+    for skill in checked:
+        for document in sorted((ROOT / "skills" / skill).glob("**/*.md")):
+            text = document.read_text(encoding="utf-8")
+            relative = document.relative_to(ROOT).as_posix()
+            for fence in SHELL_FENCE.finditer(text):
+                logical = re.sub(r"\\\n[ \t]*", " ", fence.group(1)).splitlines()
+                checked[skill] += sum(
+                    len(FRAMEWORK_INVOCATION.findall(line)) for line in logical
+                )
+                violations.extend(
+                    empty_environment_violations(f"{relative} fence", logical)
+                )
+            # Inline commands appear in prose and inside the Markdown output
+            # templates the agent reproduces for the user.
+            prose = SHELL_FENCE.sub("", text)
+            spans = [
+                span
+                for span in INLINE_CODE.findall(prose)
+                # A bare binary name in prose names the prefix; a span with
+                # arguments is a runnable command.
+                if re.search(
+                    FRAMEWORK_LAUNCHER + r"(?:playwright|cypress)\s+\S",
+                    span,
+                )
+            ]
+            checked[skill] += len(spans)
+            violations.extend(
+                empty_environment_violations(f"{relative} inline code", spans)
+            )
+    assert all(count >= 3 for count in checked.values()), checked
+    assert not violations, (
+        "repository-controlled Playwright/Cypress commands must use "
+        '/usr/bin/env -i PATH="$PATH" node_modules/.bin/<framework>:\n'
+        + "\n".join(violations)
+    )
+
+    for skill, framework, eval_id, retries_off in (
+        ("playwright-debugger", "playwright", 14, "--retries=0"),
+        ("cypress-debugger", "cypress", 16, "--config retries=0"),
+    ):
+        # The F1/F7 isolation probe reads one result per run, so both probe
+        # commands must also disable retries: a retried pass hides a failure.
+        text = (ROOT / "skills" / skill / "SKILL.md").read_text(encoding="utf-8")
+        probe_fence = SHELL_FENCE.search(
+            text, text.index("decided by an isolation probe")
+        )
+        assert probe_fence is not None, skill
+        probe_commands = [
+            line
+            for line in re.sub(r"\\\n[ \t]*", " ", probe_fence.group(1)).splitlines()
+            if FRAMEWORK_INVOCATION.search(line)
+        ]
+        assert len(probe_commands) == 2, (skill, probe_commands)
+        for command in probe_commands:
+            assert retries_off in command, (skill, command)
+
+        evals = json.loads(
+            (ROOT / "skills" / skill / "evals/evals.json").read_text(encoding="utf-8")
+        )["evals"]
+        for entry in evals:
+            for value in (entry["prompt"], entry["expected_output"], *entry["assertions"]):
+                assert_no_unguarded_npx(value, framework)
+        probe = next(entry for entry in evals if entry["id"] == eval_id)
+        prefixed = f'/usr/bin/env -i PATH="$PATH" node_modules/.bin/{framework}'
+        assert probe["expected_output"].count(prefixed) == 2, (skill, eval_id)
+        assert probe["expected_output"].count(retries_off) == 2, (skill, eval_id)
+        # The skill allows the repository's script or `npx --no-install` under
+        # the same empty-environment prefix, so the grading assertion must
+        # accept them rather than only the project-local binary.
+        assert any(
+            '/usr/bin/env -i PATH="$PATH"' in assertion
+            and f"node_modules/.bin/{framework}" in assertion
+            and f"npx --no-install {framework}" in assertion
+            and "existing" in assertion
+            for assertion in probe["assertions"]
+        ), (skill, eval_id)
+
+
+PROBE_GATE_ORDER = (
+    "Run the probe only after the execution safety gate and the repository "
+    "execution gate's trust checks have passed (see Prerequisites): the whole "
+    "target stack is `local/disposable` or an approved non-production test "
+    "environment, the user explicitly trusts this repository, and both exact "
+    "commands are approved. The probe replays the test, so the safety gate's rule "
+    "on replaying non-idempotent writes applies to each repetition as it does to "
+    "retries. Until both gates pass, or while the failing test performs a "
+    "non-idempotent write whose system-boundary idempotence is not proven, present "
+    "the commands as `recommended`; in either case, or if the suite cannot be run, "
+    "say the probe was not performed and report `CANNOT_VERIFY` between F1 and F7 "
+    "rather than guessing. Once both gates pass and no unproven non-idempotent "
+    "write would be replayed, run"
+)
+
+
+def assert_isolation_probe_waits_for_safety_and_trust_gates() -> None:
+    """The F1/F7 isolation probe never runs ahead of the documented gates.
+
+    The probe replays the failing test and runs the whole suite, so both
+    debugger skills must state, before the probe commands, that it runs only
+    after the execution safety gate and the repository execution gate's trust
+    checks pass, and must name the gated fallback. The gate names must be the
+    Prerequisites headings, and the probe evals must grade the gated run, the
+    blocked case, and a test whose non-idempotent write keeps the probe
+    unperformed even after both gates pass.
+    """
+    for skill, framework, gated_eval_id, blocked_eval_id, write_eval_id in (
+        ("playwright-debugger", "Playwright", 14, 17, 20),
+        ("cypress-debugger", "Cypress", 16, 18, 19),
+    ):
+        text = (ROOT / "skills" / skill / "SKILL.md").read_text(encoding="utf-8")
+        probe_start = text.index("decided by an isolation probe")
+        probe_fence = SHELL_FENCE.search(text, probe_start)
+        assert probe_fence is not None, skill
+        for heading in (
+            f"**Execution safety gate (before any {framework} test command):**",
+            "**Repository execution gate:**",
+        ):
+            assert -1 < text.find(heading) < probe_start, (skill, heading)
+        preamble = " ".join(text[probe_start : probe_fence.start()].split())
+        assert PROBE_GATE_ORDER in preamble, (skill, preamble)
+        # review.sh SP3b requires this phrase, and test-parity.sh proves it by
+        # replacing its first occurrence; a second copy would mask that mutation.
+        assert text.count("between F1 and F7") == 1, skill
+
+        evals = {
+            entry["id"]: entry
+            for entry in json.loads(
+                (ROOT / "skills" / skill / "evals/evals.json").read_text(
+                    encoding="utf-8"
+                )
+            )["evals"]
+        }
+        gated = evals[gated_eval_id]
+        assert "explicitly trusted this repository" in gated["prompt"], skill
+        # Without this, the gated run would be ambiguous under the rule that an
+        # unproven non-idempotent write keeps the probe unperformed.
+        assert "The failing test performs no writes." in gated["prompt"], skill
+        assert "only after the execution safety gate" in gated["expected_output"]
+        assert any(
+            assertion.startswith("Runs the isolation probe only after confirming")
+            and "execution safety gate" in assertion
+            and "trust checks" in assertion
+            for assertion in gated["assertions"]
+        ), (skill, gated_eval_id)
+        blocked = evals[blocked_eval_id]
+        assert "shared staging API" in blocked["prompt"], skill
+        assert "Must not run the isolation probe" in blocked["expected_output"]
+        assert any(
+            assertion.startswith("Does not run either probe command")
+            for assertion in blocked["assertions"]
+        ), (skill, blocked_eval_id)
+        assert any(
+            "recommended" in assertion and "CANNOT_VERIFY between F1 and F7" in assertion
+            for assertion in blocked["assertions"]
+        ), (skill, blocked_eval_id)
+        write = evals[write_eval_id]
+        for phrase in (
+            "explicitly trusted this repository and approved both exact probe commands",
+            "nothing shows that the payment submission is idempotent",
+        ):
+            assert phrase in write["prompt"], (skill, write_eval_id, phrase)
+        assert write["expected_output"].startswith(
+            "Must not run the isolation probe. Both gates pass"
+        ), (skill, write_eval_id)
+        assert any(
+            assertion.startswith("Does not run either probe command")
+            and "idempotence is not proven" in assertion
+            and "even though both gates pass" in assertion
+            for assertion in write["assertions"]
+        ), (skill, write_eval_id)
+        assert any(
+            "recommended" in assertion and "CANNOT_VERIFY between F1 and F7" in assertion
+            for assertion in write["assertions"]
+        ), (skill, write_eval_id)
+        assert any(
+            assertion.startswith("Does NOT treat")
+            and "exact command approval" in assertion
+            for assertion in write["assertions"]
+        ), (skill, write_eval_id)
+
+
 def assert_artifact_reader_launcher_boundary() -> None:
     playwright_skill = ROOT / "skills/playwright-debugger"
     cases = (
@@ -2128,6 +2362,8 @@ def assert_bundled_scripts_match_the_launcher_minimum_python() -> None:
 
 def main() -> None:
     assert_readme_f11_contract()
+    assert_debugger_repository_commands_use_empty_environment()
+    assert_isolation_probe_waits_for_safety_and_trust_gates()
     assert_artifact_reader_launcher_boundary()
     assert_bundled_helpers_never_resolve_python_through_path()
     assert_bundled_scripts_match_the_launcher_minimum_python()
@@ -2951,6 +3187,43 @@ def main() -> None:
             )
             assert rejected.returncode != 0, name
             assert "json" in rejected.stderr.lower(), rejected.stderr
+
+        # The cases above are schema-invalid anyway. Isolate parser
+        # strictness: an overflowing float literal in an otherwise valid,
+        # never-emitted root field must still be rejected at parse time,
+        # exactly as the Playwright reader does. mochawesome-retries.json
+        # guards the other side: finite fractional stats (passPercent 66.66)
+        # stay valid.
+        assert '"passPercent": 66.66' in (
+            CYPRESS_SKILL / "evals/files/mochawesome-retries.json"
+        ).read_text(encoding="utf-8")
+        for mode, fixture_name in (
+            ("mochawesome", "mochawesome-selector-timeout.json"),
+            ("mochawesome", "mochawesome-retries.json"),
+            ("run-results", "cypress-run-results-retries.json"),
+        ):
+            fixture_text = (
+                CYPRESS_SKILL / "evals/files" / fixture_name
+            ).read_text(encoding="utf-8")
+            baseline = reports / f"finite-{fixture_name}"
+            baseline.write_text(fixture_text, encoding="utf-8")
+            accepted = run_cypress_reader(cypress_reader, mode, reports, baseline)
+            assert accepted.returncode == 0, (mode, accepted.stderr)
+            opening = fixture_text.index("{")
+            for literal in ("1e999", "-1e999"):
+                overflowing = reports / f"overflow-{literal}-{fixture_name}"
+                overflowing.write_text(
+                    fixture_text[: opening + 1]
+                    + f'"extra": {literal}, '
+                    + fixture_text[opening + 1 :],
+                    encoding="utf-8",
+                )
+                rejected = run_cypress_reader(
+                    cypress_reader, mode, reports, overflowing
+                )
+                assert rejected.returncode != 0, (mode, literal)
+                assert rejected.stdout == "", (mode, literal)
+                assert "non-finite" in rejected.stderr, (mode, rejected.stderr)
 
         valid_merged = reports / "valid-merged.json"
         valid_merged.write_text(
@@ -4401,6 +4674,35 @@ def main() -> None:
             },
         ]
 
+        # A JSON boolean or negative `retry` is not an attempt index. The
+        # reporter always writes a nonnegative integer; anything else falls
+        # back to the result's position. Compare types explicitly because
+        # True == 1 in Python would let a plain equality check pass.
+        malformed_retry_report = reports / "malformed-retry-results.json"
+        malformed_retry_body = json.loads(retry_report.read_text(encoding="utf-8"))
+        malformed_retry_results = malformed_retry_body["suites"][0]["specs"][0][
+            "tests"
+        ][0]["results"]
+        malformed_retry_results[0]["retry"] = True
+        malformed_retry_results[1]["retry"] = -1
+        malformed_retry_report.write_text(
+            json.dumps(malformed_retry_body),
+            encoding="utf-8",
+        )
+        malformed_retry_result = run_playwright_reader(
+            playwright_reader, "report", reports, malformed_retry_report
+        )
+        assert malformed_retry_result.returncode == 0, malformed_retry_result.stderr
+        malformed_retry_attempts = json.loads(malformed_retry_result.stdout)[0][
+            "attempts"
+        ]
+        assert [
+            type(attempt["attempt"]) for attempt in malformed_retry_attempts
+        ] == [int, int], malformed_retry_attempts
+        assert [
+            attempt["attempt"] for attempt in malformed_retry_attempts
+        ] == [0, 1], malformed_retry_attempts
+
         playwright_secret_text, playwright_secrets = (
             adversarial_credentials(4000)
         )
@@ -4462,64 +4764,103 @@ def main() -> None:
             playwright_secrets,
         )
 
+        # Shapes Playwright's JSON reporter really emits for a run cut short
+        # by maxFailures: computeTestCaseOutcome never counts an interrupted
+        # result as unexpected (verified in 1.55.1, 1.60.0, and 1.62.1), so
+        # an interrupted-only test is `skipped` and an interrupted attempt
+        # followed by a pass is `expected`. The reader must still emit those
+        # tests with the interrupted attempt, next to the real failure, and
+        # must not emit an ordinary passing test.
+        def interrupted_run_report(
+            outcome: str,
+            results: list[dict[str, object]],
+            stats: dict[str, int],
+        ) -> str:
+            def spec(
+                title: str,
+                line: int,
+                test_status: str,
+                spec_results: list[dict[str, object]],
+            ) -> dict[str, object]:
+                return {
+                    "title": title,
+                    "file": "interrupted.spec.ts",
+                    "line": line,
+                    "ok": test_status != "unexpected",
+                    "tests": [
+                        {
+                            "expectedStatus": "passed",
+                            "projectName": "chromium",
+                            "status": test_status,
+                            "results": spec_results,
+                        }
+                    ],
+                }
+
+            return json.dumps(
+                {
+                    "stats": stats,
+                    "suites": [
+                        {
+                            "specs": [
+                                spec(
+                                    "fails first",
+                                    1,
+                                    "unexpected",
+                                    [
+                                        {
+                                            "status": "failed",
+                                            "retry": 0,
+                                            "error": {"message": "boom"},
+                                        }
+                                    ],
+                                ),
+                                spec(
+                                    "passes cleanly",
+                                    2,
+                                    "expected",
+                                    [{"status": "passed", "retry": 0}],
+                                ),
+                                spec("cut short", 3, outcome, results),
+                            ]
+                        }
+                    ],
+                }
+            )
+
         interrupted_reports = (
             (
                 "interrupted-only.json",
-                "unexpected",
-                False,
-                {
-                    "expected": 0,
-                    "skipped": 0,
-                    "unexpected": 1,
-                    "flaky": 0,
-                },
-                [{"status": "interrupted", "error": {"message": "cancelled"}}],
-            ),
-            (
-                "interrupted-then-passed.json",
-                "flaky",
-                True,
-                {
-                    "expected": 0,
-                    "skipped": 0,
-                    "unexpected": 0,
-                    "flaky": 1,
-                },
+                "skipped",
                 [
                     {
                         "status": "interrupted",
+                        "retry": 0,
+                        "error": {"message": "cancelled"},
+                    }
+                ],
+                {"expected": 1, "skipped": 1, "unexpected": 1, "flaky": 0},
+                ["interrupted"],
+            ),
+            (
+                "interrupted-then-passed.json",
+                "expected",
+                [
+                    {
+                        "status": "interrupted",
+                        "retry": 0,
                         "error": {"message": "worker interrupted"},
                     },
-                    {"status": "passed"},
+                    {"status": "passed", "retry": 1},
                 ],
+                {"expected": 2, "skipped": 0, "unexpected": 1, "flaky": 0},
+                ["interrupted", "passed"],
             ),
         )
-        for name, outcome, spec_ok, stats, results in interrupted_reports:
+        for name, outcome, results, stats, statuses in interrupted_reports:
             interrupted_report = reports / name
             interrupted_report.write_text(
-                json.dumps(
-                    {
-                        "stats": stats,
-                        "suites": [
-                            {
-                                "specs": [
-                                    {
-                                        "title": name,
-                                        "file": "interrupted.spec.ts",
-                                        "line": 1,
-                                        "ok": spec_ok,
-                                        "tests": [
-                                            {
-                                                "status": outcome,
-                                                "results": results,
-                                            }
-                                        ],
-                                    }
-                                ]
-                            }
-                        ],
-                    }
-                ),
+                interrupted_run_report(outcome, results, stats),
                 encoding="utf-8",
             )
             interrupted_result = run_playwright_reader(
@@ -4528,14 +4869,100 @@ def main() -> None:
                 reports,
                 interrupted_report,
             )
-            assert interrupted_result.returncode == 0, interrupted_result.stderr
-            interrupted_rows = json.loads(interrupted_result.stdout)
-            assert interrupted_rows[0]["outcome"] == outcome
-            assert interrupted_rows[0]["attempts"][0]["status"] == "interrupted"
-            assert interrupted_rows[0]["attempts"][0]["error"] in {
-                "cancelled",
-                "worker interrupted",
+            assert interrupted_result.returncode == 0, (
+                name,
+                interrupted_result.stderr,
+            )
+            interrupted_rows = {
+                row["title"]: row for row in json.loads(interrupted_result.stdout)
             }
+            assert sorted(interrupted_rows) == ["cut short", "fails first"], (
+                name,
+                interrupted_rows,
+            )
+            assert interrupted_rows["fails first"]["outcome"] == "unexpected"
+            assert interrupted_rows["fails first"]["attempts"][0]["error"] == "boom"
+            cut_short = interrupted_rows["cut short"]
+            assert cut_short["outcome"] == outcome, (name, cut_short)
+            assert [
+                attempt["status"] for attempt in cut_short["attempts"]
+            ] == statuses, (name, cut_short)
+            assert cut_short["attempts"][0]["error"] == results[0]["error"][
+                "message"
+            ], (name, cut_short)
+
+        # The pre-fix synthetic shape counted an interrupted result as
+        # unexpected. Playwright never emits it, and the outcome gate still
+        # fails closed on the disagreement.
+        miscounted_interrupt = reports / "interrupted-counted-unexpected.json"
+        miscounted_interrupt.write_text(
+            interrupted_run_report(
+                "unexpected",
+                [
+                    {
+                        "status": "interrupted",
+                        "retry": 0,
+                        "error": {"message": "cancelled"},
+                    }
+                ],
+                {"expected": 1, "skipped": 0, "unexpected": 2, "flaky": 0},
+            ),
+            encoding="utf-8",
+        )
+        miscounted_result = run_playwright_reader(
+            playwright_reader,
+            "report",
+            reports,
+            miscounted_interrupt,
+        )
+        assert miscounted_result.returncode != 0
+        assert miscounted_result.stdout == ""
+        assert "contradicts" in miscounted_result.stderr, miscounted_result.stderr
+        # The fail-closed outcome gate names the disagreement and the reporter
+        # range whose semantics it recomputes, and SKILL.md documents the same
+        # range, so a version-drift rejection is diagnosable without bypassing it.
+        reporter_range = "1.55.1 through 1.62.1"
+        reporter_mismatch_diagnostic = (
+            "Playwright reporter outcome mismatch: report test status=unexpected "
+            "contradicts results outcome=skipped; supported Playwright reporter "
+            f"range: {reporter_range}"
+        )
+        assert reporter_mismatch_diagnostic in miscounted_result.stderr, (
+            miscounted_result.stderr
+        )
+        assert reader_module.SUPPORTED_PLAYWRIGHT_REPORTER_RANGE == reporter_range
+        assert (
+            "The outcome, `spec.ok`, and stats checks recompute the JSON reporter's "
+            "own semantics, source-checked in Playwright 1.55.1, 1.60.0, and "
+            f"1.62.1: the supported reporter range is {reporter_range}. Any "
+            "disagreement rejects the whole report with a `Playwright reporter "
+            "outcome mismatch` diagnostic that names this range; report the "
+            "mismatch and the project's Playwright version instead of reading the "
+            "JSON another way."
+        ) in playwright_flat
+        playwright_evals = {
+            entry["id"]: entry
+            for entry in json.loads(
+                (PLAYWRIGHT_SKILL.parent / "evals/evals.json").read_text(
+                    encoding="utf-8"
+                )
+            )["evals"]
+        }
+        range_eval = playwright_evals[19]
+        assert f"supported Playwright reporter range: {reporter_range}" in (
+            range_eval["prompt"]
+        )
+        assert any(
+            reporter_range in assertion and "Playwright version" in assertion
+            for assertion in range_eval["assertions"]
+        )
+        assert any(
+            assertion.startswith("Does not bypass the rejection")
+            for assertion in range_eval["assertions"]
+        )
+        reporter_mismatch_marker = (
+            f"; supported Playwright reporter range: {reporter_range}"
+        )
 
         contradictory_stats_reports = {
             "negative-stats.json": {
@@ -4571,6 +4998,11 @@ def main() -> None:
             )
             assert rejected.returncode != 0, name
             assert "stats" in rejected.stderr.lower(), rejected.stderr
+            # Only a disagreement with recomputed reporter semantics names the
+            # reporter range; a malformed counter is a schema error.
+            assert (reporter_mismatch_marker in rejected.stderr) == (
+                name == "hidden-unexpected.json"
+            ), (name, rejected.stderr)
 
         contradictory_playwright_reports = {
             "wrong-spec-ok.json": {
@@ -4625,6 +5057,9 @@ def main() -> None:
             )
             assert rejected.returncode != 0, name
             assert "contradict" in rejected.stderr.lower(), rejected.stderr
+            assert (reporter_mismatch_marker in rejected.stderr) == (
+                name in {"wrong-spec-ok.json", "wrong-test-status.json"}
+            ), (name, rejected.stderr)
 
         valid_expected_statuses = reports / "valid-expected-statuses.json"
         valid_expected_statuses.write_text(

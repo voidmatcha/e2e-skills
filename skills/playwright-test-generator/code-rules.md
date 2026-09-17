@@ -38,7 +38,7 @@ Non-negotiable for every generated spec, regardless of project shape:
 8. CSS class — **POM files only**, stable structural classes only (not styling classes)
 9. `.nth()` / `.first()` / `.last()` — **forbidden** without `// JUSTIFIED:` on the line above
 
-**Project-configured test ids rank with role+name.** When `playwright.config.*` sets `use: { testIdAttribute: '...' }`, or `data-testid` (or the project's equivalent) is pervasive in the components under test, treat `getByTestId` as a **tier-1 locator alongside role+name** — not a fixed lower-tier fallback. A deliberate, stable test hook beats reaching past it for brittle text/placeholder locators. Keep `getByText`/`getByPlaceholder` as the fallback when no role or test id fits.
+**Project-configured test ids rank with role+name.** When the loaded Playwright config (Step 1) sets `use: { testIdAttribute: '...' }`, or `data-testid` (or the project's equivalent) is pervasive in the components under test, treat `getByTestId` as a **tier-1 locator alongside role+name** — not a fixed lower-tier fallback. A deliberate, stable test hook beats reaching past it for brittle text/placeholder locators. Keep `getByText`/`getByPlaceholder` as the fallback when no role or test id fits.
 
 Never use XPath. Never use CSS class chains that couple to styling.
 

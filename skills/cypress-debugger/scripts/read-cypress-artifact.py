@@ -9,6 +9,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import stat
@@ -87,6 +88,15 @@ def reject_nonfinite_number(token: str) -> object:
     raise ValueError(f"non-finite JSON number is forbidden: {token}")
 
 
+def parse_finite_float(token: str) -> float:
+    # parse_constant only sees the NaN/Infinity literals. An overflowing
+    # literal such as 1e999 reaches parse_float and would become inf.
+    value = float(token)
+    if not math.isfinite(value):
+        raise ValueError(f"non-finite JSON number is forbidden: {token}")
+    return value
+
+
 def strict_json_loads(data: bytes | str) -> object:
     if isinstance(data, bytes):
         if data.startswith(b"\xef\xbb\xbf"):
@@ -105,6 +115,7 @@ def strict_json_loads(data: bytes | str) -> object:
     decoder = json.JSONDecoder(
         object_pairs_hook=reject_duplicate_keys,
         parse_constant=reject_nonfinite_number,
+        parse_float=parse_finite_float,
     )
     try:
         value, end = decoder.raw_decode(text, start)

@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=2e9549e2984735412031c61f14c30c7c9eecb2d1e4a5c996d37b607ba643cefb; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=e1d20fc00ea7684a00158f148e389abbf12c5dd6505c6a2dc5975a92e0cb70b3; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 AI 코딩 에이전트가 Playwright와 Cypress E2E 테스트를 생성하고 리뷰하며 실패 원인을 분석할 때 쓰는 네 종류의 Agent Skills 모음입니다. 새 테스트 생성은 Playwright를 지원하고, 기존 테스트나 PR/diff 범위의 변경 사항 리뷰와 실패 분석은 Playwright와 Cypress를 지원합니다. 리뷰 목록 가운데 규칙만으로 판별할 수 있는 항목을 찾는 `deterministic scanner`도 포함합니다.
 
@@ -256,7 +256,7 @@ merge 건수를 전체 제출 건수와 함께 볼 수 있습니다. [Field revi
 - 브라우저 결함 주입은 **12개 결함 연산자와 3개 예상 결과를 조합한 Playwright/Cypress 셀 36개 중 36개**에서 완료했습니다. 이는 하네스 자체 검사입니다. 애플리케이션, 견고한 테스트, 주입한 결함, 취약한 테스트를 모두 이 저장소에서 작성했으므로, 탐지기가 설계대로 동작한다는 것을 보여줄 뿐 일반화를 뜻하지 않습니다.
 - [Healer perturbation v1](benchmarks/healer-perturbation-v1/README.md)은 **동결된 Codex 셀 30개 중 30개**를 완료하고 `REJECT`를 반환했습니다. 보호 문구를 적용한 공식 healer prompt와 이 저장소가 제안한 Step 7 흐름 모두 수리가 불가능한 `honesty control` 3개를 전부 약화했습니다. 이 결과는 두 healer 경로를 안전한 기본값으로 채택하지 않는다는 뜻이며, Claude나 일반적인 healer 품질 또는 리뷰 정확도를 측정한 결과가 아닙니다. 제품 지침도 변경하지 않았습니다.
 - 정밀 리뷰어 벤치마크는 **입증된 허위 통과 사례 12개와 정상 코드 보호 사례 12개**를 다룹니다. 결함 사례 중 10개에는 바이트 단위로 동일한 연산자 변경을 적용했습니다.
-- 독립 제품 리뷰의 견고성 게이트 v4, v5, v7, v8은 사전 등록 기준에 실패했습니다. v6와 v9은 실행하지 않았고, v10은 실행 조건을 확정해 두었지만 아직 실행하지 않았습니다. v1부터 v10까지는 현재 릴리스 게이트가 아니라 이전 견고성 근거로 보존합니다.
+- 독립 제품 리뷰의 견고성 게이트 v4, v5, v7, v8, v11은 사전 등록 기준에 실패했습니다. v6와 v9은 실행하지 않았고, v10은 시도 3회 중 1회만 실행한 상태에서 같은 동결 리뷰 입력을 그대로 쓰는 v11로 대체했습니다. v1부터 v11까지는 현재 릴리스 게이트가 아니라 이전 견고성 근거로 보존합니다.
 - `debugger` 프로토콜은 다시 실행할 수 있는 합성 사례 30개를 제공하지만, 독립적으로 확립된 `debugger` 정확도를 주장하지는 않습니다.
 
 점수, 실패한 게이트, 대체된 실행, 주장 범위는 [벤치마크 현황](benchmarks/STATUS.md)을 참고하세요. [연구 근거 원장](docs/llm-generated-e2e-test-evidence.md)은 인접 분야의 단위 테스트나 맞춤형 에이전트 연구를 이 프로젝트가 직접 측정한 결과처럼 취급하지 않고, 외부 출처 59개를 구분해 리뷰합니다.

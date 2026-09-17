@@ -29,6 +29,39 @@ OLD_VALID_REPORT = {
     **MINIMAL_VALID_REPORT,
     "metadata": {"sentinel": "preserve-these-bytes"},
 }
+# The shape `playwright test --reporter=json` writes for a still-failing test.
+FAILING_RUN_REPORT = {
+    "suites": [
+        {
+            "title": "checkout.spec.ts",
+            "file": "checkout.spec.ts",
+            "specs": [
+                {
+                    "title": "submits the order",
+                    "file": "checkout.spec.ts",
+                    "line": 3,
+                    "ok": False,
+                    "tests": [
+                        {
+                            "expectedStatus": "passed",
+                            "status": "unexpected",
+                            "projectName": "chromium",
+                            "results": [
+                                {
+                                    "status": "failed",
+                                    "retry": 0,
+                                    "duration": 12,
+                                    "error": {"message": "locator not found"},
+                                }
+                            ],
+                        }
+                    ],
+                }
+            ],
+        }
+    ],
+    "stats": {"expected": 0, "skipped": 0, "unexpected": 1, "flaky": 0},
+}
 
 
 def load_helper_module():
@@ -441,6 +474,35 @@ class SafeReportPublishTests(unittest.TestCase):
         self.assertIn("--pass-env PATH", skill)
         self.assertIn("/usr/bin/env -i PATH=\"$PATH\"", skill)
         self.assertIn("name and current value of every variable", skill)
+        self.assertIn(
+            "The one accepted non-zero exit is status 1, which `playwright test` "
+            "returns when tests fail, and only when the captured report then passes "
+            "that same validation",
+            " ".join(skill.split()),
+        )
+
+    def test_publish_eval_grades_the_exit_status_one_contract(self) -> None:
+        evals = json.loads(
+            (ROOT / "skills/playwright-debugger/evals/evals.json").read_text(
+                encoding="utf-8"
+            )
+        )["evals"]
+        publish_eval = next(entry for entry in evals if entry["id"] == 18)
+
+        self.assertIn("exited with status 1", publish_eval["prompt"])
+        self.assertTrue(
+            any(
+                assertion.startswith("Says a status-1 run whose captured report passes")
+                for assertion in publish_eval["assertions"]
+            )
+        )
+        self.assertTrue(
+            any(
+                assertion.startswith("Does not accept any other non-zero exit")
+                and "fails strict JSON, schema, outcome, or stats" in assertion
+                for assertion in publish_eval["assertions"]
+            )
+        )
 
     def test_publishes_valid_json_and_replaces_regular_destination(self) -> None:
         destination = self.root / "playwright-report/results.json"
@@ -757,6 +819,151 @@ class SafeReportPublishTests(unittest.TestCase):
 
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(destination.read_text(), '{"old": true}')
+
+    def test_failing_run_exit_status_one_publishes_validated_report(self) -> None:
+        destination = self.root / "playwright-report/results.json"
+        destination.parent.mkdir()
+        destination.write_text(json.dumps(OLD_VALID_REPORT), encoding="utf-8")
+
+        result = self.run_helper(
+            "playwright-report/results.json",
+            (
+                "import json, sys; "
+                f"sys.stdout.write(json.dumps({FAILING_RUN_REPORT!r})); "
+                "raise SystemExit(1)"
+            ),
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            json.loads(destination.read_text(encoding="utf-8")),
+            FAILING_RUN_REPORT,
+        )
+        self.assertEqual(list(destination.parent.glob(".*.tmp")), [])
+
+    def test_exit_status_one_with_invalid_report_preserves_destination(self) -> None:
+        destination = self.root / "playwright-report/results.json"
+        destination.parent.mkdir()
+        original = json.dumps(OLD_VALID_REPORT, separators=(",", ":"))
+        contradictory = json.loads(json.dumps(FAILING_RUN_REPORT))
+        contradictory["suites"][0]["specs"][0]["ok"] = True
+        contradictory["suites"][0]["specs"][0]["tests"][0]["status"] = "expected"
+        contradictory["stats"] = {
+            "expected": 1,
+            "skipped": 0,
+            "unexpected": 0,
+            "flaky": 0,
+        }
+        invalid_stdout = {
+            "empty": "",
+            "not-json": "Error: playwright.config.ts failed to load",
+            "schema-invalid": "{}",
+            "contradictory-outcome": json.dumps(contradictory),
+            "trailing-data": json.dumps(FAILING_RUN_REPORT) + " trailing",
+        }
+
+        for name, stdout in invalid_stdout.items():
+            with self.subTest(name=name):
+                destination.write_text(original, encoding="utf-8")
+                result = self.run_helper(
+                    "playwright-report/results.json",
+                    f"import sys; sys.stdout.write({stdout!r}); raise SystemExit(1)",
+                )
+
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(
+                    "command exited with status 1 and its report failed validation",
+                    result.stderr,
+                )
+                self.assertEqual(destination.read_text(encoding="utf-8"), original)
+                self.assertEqual(list(destination.parent.glob(".*.tmp")), [])
+                if name == "contradictory-outcome":
+                    self.assertIn(
+                        "Playwright reporter outcome mismatch", result.stderr
+                    )
+                    self.assertIn(
+                        "supported Playwright reporter range: 1.55.1 through 1.62.1",
+                        result.stderr,
+                    )
+
+    def test_other_nonzero_exits_reject_a_valid_failing_report(self) -> None:
+        destination = self.root / "playwright-report/results.json"
+        destination.parent.mkdir()
+        original = json.dumps(OLD_VALID_REPORT, separators=(",", ":"))
+        write_report = (
+            "import json, os, signal, sys; "
+            f"sys.stdout.write(json.dumps({FAILING_RUN_REPORT!r})); "
+            "sys.stdout.flush(); "
+        )
+        exits = {
+            "status-2": ("raise SystemExit(2)", "non-zero exit status 2"),
+            "status-23": ("raise SystemExit(23)", "non-zero exit status 23"),
+            "interrupted-130": ("raise SystemExit(130)", "non-zero exit status 130"),
+            "status-255": ("os._exit(255)", "non-zero exit status 255"),
+            "sigterm": ("os.kill(os.getpid(), signal.SIGTERM)", "died with"),
+        }
+
+        for name, (ending, diagnostic) in exits.items():
+            with self.subTest(name=name):
+                destination.write_text(original, encoding="utf-8")
+                result = self.run_helper(
+                    "playwright-report/results.json",
+                    write_report + ending,
+                )
+
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(diagnostic, result.stderr)
+                self.assertEqual(destination.read_text(encoding="utf-8"), original)
+                self.assertEqual(list(destination.parent.glob(".*.tmp")), [])
+
+    def test_exit_status_one_with_live_group_fails_closed(self) -> None:
+        module = load_helper_module()
+        report = self.root / "temporary.json"
+        marker = self.root / "ready"
+        descriptor = os.open(report, os.O_RDWR | os.O_CREAT | os.O_EXCL, 0o600)
+        original_cleanup = module.cleanup_process_group
+        cleanup_calls = 0
+        try:
+            def cleanup(process) -> str:
+                nonlocal cleanup_calls
+                cleanup_calls += 1
+                try:
+                    os.killpg(process.pid, module.signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                return "process group remained alive after leader exit"
+
+            module.cleanup_process_group = cleanup
+            with self.assertRaises(ValueError) as caught:
+                module.capture_stdout(
+                    descriptor,
+                    [
+                        sys.executable,
+                        "-c",
+                        "import json, os, sys, time\n"
+                        "marker = sys.argv[1]\n"
+                        "if os.fork() == 0:\n"
+                        "    open(marker, 'w').close()\n"
+                        "    os.close(1)\n"
+                        "    time.sleep(5)\n"
+                        "    sys.exit(0)\n"
+                        "while not os.path.exists(marker):\n"
+                        "    time.sleep(0.01)\n"
+                        f"print(json.dumps({FAILING_RUN_REPORT!r}))\n"
+                        "sys.stdout.flush()\n"
+                        "os._exit(1)\n",
+                        str(marker),
+                    ],
+                    {"PATH": os.defpath},
+                )
+        finally:
+            module.cleanup_process_group = original_cleanup
+            os.close(descriptor)
+
+        message = str(caught.exception)
+        self.assertIn("command left live descendants", message)
+        self.assertEqual(message.count("cleanup failed"), 1)
+        self.assertEqual(cleanup_calls, 1)
 
     def test_rejects_symlinked_report_root_without_running_command(self) -> None:
         outside = self.root / "outside"
