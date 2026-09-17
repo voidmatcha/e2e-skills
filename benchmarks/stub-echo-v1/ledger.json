@@ -1,0 +1,704 @@
+[
+ {
+  "repository": "open-mercato/open-mercato",
+  "sha": "8b492325d3db29c431cca43674dcc93f894110be",
+  "file": "apps/mercato/src/modules/example/__integration__/TC-EXAMPLE-017-bound-extension-ui.spec.ts",
+  "line": 238,
+  "snippet": "const createResponsePromise = page.waitForResponse(",
+  "verdict": "APP_MEDIATED",
+  "reason": "the response observer is a synchronization wait; no assertion reads the response object"
+ },
+ {
+  "repository": "open-mercato/open-mercato",
+  "sha": "8b492325d3db29c431cca43674dcc93f894110be",
+  "file": "apps/mercato/src/modules/example/__integration__/TC-EXAMPLE-017-bound-extension-ui.spec.ts",
+  "line": 347,
+  "snippet": "page.waitForResponse((response) => response.url().includes(TODOS_API) && response.request().method() === 'PUT'),",
+  "verdict": "REAL_BACKEND",
+  "reason": "the route handler passes the request through with route.continue(); the asserted response is the server's"
+ },
+ {
+  "repository": "open-mercato/open-mercato",
+  "sha": "8b492325d3db29c431cca43674dcc93f894110be",
+  "file": "apps/mercato/src/modules/example/__integration__/TC-EXAMPLE-017-bound-extension-ui.spec.ts",
+  "line": 435,
+  "snippet": "const successResponsePromise = page.waitForResponse((response) =>",
+  "verdict": "REAL_BACKEND",
+  "reason": "the route handler passes the request through with route.continue(); the asserted response is the server's"
+ },
+ {
+  "repository": "open-mercato/open-mercato",
+  "sha": "8b492325d3db29c431cca43674dcc93f894110be",
+  "file": "apps/mercato/src/modules/example/__integration__/TC-EXAMPLE-017-bound-extension-ui.spec.ts",
+  "line": 457,
+  "snippet": "const staleResponsePromise = page.waitForResponse((response) =>",
+  "verdict": "REAL_BACKEND",
+  "reason": "the route handler passes the request through with route.continue(); the asserted response is the server's"
+ },
+ {
+  "repository": "open-mercato/open-mercato",
+  "sha": "8b492325d3db29c431cca43674dcc93f894110be",
+  "file": "packages/ai-assistant/src/modules/ai_assistant/__integration__/TC-AI-TOKEN-USAGE-001-005.spec.ts",
+  "line": 127,
+  "snippet": "const initialDailyRequest = page.waitForResponse(",
+  "verdict": "APP_MEDIATED",
+  "reason": "the response observer is a synchronization wait; no assertion reads the response object"
+ },
+ {
+  "repository": "open-mercato/open-mercato",
+  "sha": "8b492325d3db29c431cca43674dcc93f894110be",
+  "file": "packages/ai-assistant/src/modules/ai_assistant/__integration__/TC-AI-TOKEN-USAGE-001-005.spec.ts",
+  "line": 131,
+  "snippet": "const initialSessionsRequest = page.waitForResponse(",
+  "verdict": "APP_MEDIATED",
+  "reason": "the response observer is a synchronization wait; no assertion reads the response object"
+ },
+ {
+  "repository": "open-mercato/open-mercato",
+  "sha": "8b492325d3db29c431cca43674dcc93f894110be",
+  "file": "packages/ai-assistant/src/modules/ai_assistant/__integration__/TC-AI-TOKEN-USAGE-001-005.spec.ts",
+  "line": 148,
+  "snippet": "const updatedDailyRequest = page.waitForResponse(",
+  "verdict": "APP_MEDIATED",
+  "reason": "the response observer is a synchronization wait; no assertion reads the response object"
+ },
+ {
+  "repository": "open-mercato/open-mercato",
+  "sha": "8b492325d3db29c431cca43674dcc93f894110be",
+  "file": "packages/core/src/modules/sales/__integration__/TC-LOCK-OSS-029.spec.ts",
+  "line": 284,
+  "snippet": "const refusedDelete = page.waitForResponse(",
+  "verdict": "APP_MEDIATED",
+  "reason": "the response observer is a synchronization wait; no assertion reads the response object"
+ },
+ {
+  "repository": "open-mercato/open-mercato",
+  "sha": "8b492325d3db29c431cca43674dcc93f894110be",
+  "file": "packages/core/src/modules/sales/__integration__/TC-LOCK-OSS-029.spec.ts",
+  "line": 384,
+  "snippet": "const putPromise = page.waitForResponse(",
+  "verdict": "APP_MEDIATED",
+  "reason": "the response observer is a synchronization wait; no assertion reads the response object"
+ },
+ {
+  "repository": "open-mercato/open-mercato",
+  "sha": "8b492325d3db29c431cca43674dcc93f894110be",
+  "file": "packages/create-app/template/src/modules/example/__integration__/TC-EXAMPLE-017-bound-extension-ui.spec.ts",
+  "line": 238,
+  "snippet": "const createResponsePromise = page.waitForResponse(",
+  "verdict": "APP_MEDIATED",
+  "reason": "the response observer is a synchronization wait; no assertion reads the response object"
+ },
+ {
+  "repository": "open-mercato/open-mercato",
+  "sha": "8b492325d3db29c431cca43674dcc93f894110be",
+  "file": "packages/create-app/template/src/modules/example/__integration__/TC-EXAMPLE-017-bound-extension-ui.spec.ts",
+  "line": 347,
+  "snippet": "page.waitForResponse((response) => response.url().includes(TODOS_API) && response.request().method() === 'PUT'),",
+  "verdict": "REAL_BACKEND",
+  "reason": "the route handler passes the request through with route.continue(); the asserted response is the server's"
+ },
+ {
+  "repository": "open-mercato/open-mercato",
+  "sha": "8b492325d3db29c431cca43674dcc93f894110be",
+  "file": "packages/create-app/template/src/modules/example/__integration__/TC-EXAMPLE-017-bound-extension-ui.spec.ts",
+  "line": 435,
+  "snippet": "const successResponsePromise = page.waitForResponse((response) =>",
+  "verdict": "REAL_BACKEND",
+  "reason": "the route handler passes the request through with route.continue(); the asserted response is the server's"
+ },
+ {
+  "repository": "open-mercato/open-mercato",
+  "sha": "8b492325d3db29c431cca43674dcc93f894110be",
+  "file": "packages/create-app/template/src/modules/example/__integration__/TC-EXAMPLE-017-bound-extension-ui.spec.ts",
+  "line": 457,
+  "snippet": "const staleResponsePromise = page.waitForResponse((response) =>",
+  "verdict": "REAL_BACKEND",
+  "reason": "the route handler passes the request through with route.continue(); the asserted response is the server's"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/account/login-page.cy.ts",
+  "line": 40,
+  "snippet": "cy.wait('@authenticate').then(({ response }) => expect(response?.statusCode).to.equal(400));",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/account/login-page.cy.ts",
+  "line": 48,
+  "snippet": "cy.wait('@authenticate').then(({ response }) => expect(response?.statusCode).to.equal(400));",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/account/login-page.cy.ts",
+  "line": 56,
+  "snippet": "cy.wait('@authenticate').then(({ response }) => expect(response?.statusCode).to.equal(401));",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/account/login-page.cy.ts",
+  "line": 64,
+  "snippet": "cy.wait('@authenticate').then(({ response }) => expect(response?.statusCode).to.equal(200));",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/account/password-page.cy.ts",
+  "line": 62,
+  "snippet": "cy.wait('@passwordSave').then(({ response }) => expect(response?.statusCode).to.equal(400));",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/account/password-page.cy.ts",
+  "line": 70,
+  "snippet": "cy.wait('@passwordSave').then(({ response }) => expect(response?.statusCode).to.equal(200));",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/account/register-page.cy.ts",
+  "line": 87,
+  "snippet": "cy.wait('@registerSave').then(({ response }) => expect(response?.statusCode).to.equal(201));",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/account/reset-password-page.cy.ts",
+  "line": 39,
+  "snippet": "cy.wait('@initResetPassword').then(({ response }) => expect(response?.statusCode).to.equal(200));",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/account/settings-page.cy.ts",
+  "line": 60,
+  "snippet": "cy.wait('@settingsSave').then(({ response }) => expect(response?.statusCode).to.equal(200));",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/account/settings-page.cy.ts",
+  "line": 68,
+  "snippet": "cy.wait('@settingsSave').then(({ response }) => expect(response?.statusCode).to.equal(200));",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/account/settings-page.cy.ts",
+  "line": 76,
+  "snippet": "cy.wait('@settingsSave').then(({ response }) => expect(response?.statusCode).to.equal(200));",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/account/settings-page.cy.ts",
+  "line": 105,
+  "snippet": "cy.wait('@settingsSave').then(({ response }) => expect(response?.statusCode).to.equal(400));",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/authority.cy.ts",
+  "line": 50,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/authority.cy.ts",
+  "line": 70,
+  "snippet": "cy.wait('@entitiesRequest');",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/authority.cy.ts",
+  "line": 79,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/authority.cy.ts",
+  "line": 110,
+  "snippet": "cy.wait('@entitiesRequestInternal');",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/authority.cy.ts",
+  "line": 117,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/authority.cy.ts",
+  "line": 127,
+  "snippet": "cy.wait('@deleteEntityRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/authority.cy.ts",
+  "line": 130,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/authority.cy.ts",
+  "line": 153,
+  "snippet": "cy.wait('@postEntityRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/authority.cy.ts",
+  "line": 157,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/bank-account.cy.ts",
+  "line": 51,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/bank-account.cy.ts",
+  "line": 71,
+  "snippet": "cy.wait('@entitiesRequest');",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/bank-account.cy.ts",
+  "line": 80,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/bank-account.cy.ts",
+  "line": 111,
+  "snippet": "cy.wait('@entitiesRequestInternal');",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/bank-account.cy.ts",
+  "line": 118,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/bank-account.cy.ts",
+  "line": 129,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/bank-account.cy.ts",
+  "line": 139,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/bank-account.cy.ts",
+  "line": 149,
+  "snippet": "cy.wait('@deleteEntityRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/bank-account.cy.ts",
+  "line": 152,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/bank-account.cy.ts",
+  "line": 178,
+  "snippet": "cy.wait('@postEntityRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/bank-account.cy.ts",
+  "line": 182,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/label.cy.ts",
+  "line": 51,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/label.cy.ts",
+  "line": 71,
+  "snippet": "cy.wait('@entitiesRequest');",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/label.cy.ts",
+  "line": 80,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/label.cy.ts",
+  "line": 111,
+  "snippet": "cy.wait('@entitiesRequestInternal');",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/label.cy.ts",
+  "line": 118,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/label.cy.ts",
+  "line": 129,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/label.cy.ts",
+  "line": 139,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/label.cy.ts",
+  "line": 149,
+  "snippet": "cy.wait('@deleteEntityRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/label.cy.ts",
+  "line": 152,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/label.cy.ts",
+  "line": 175,
+  "snippet": "cy.wait('@postEntityRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/label.cy.ts",
+  "line": 179,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/operation.cy.ts",
+  "line": 51,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/operation.cy.ts",
+  "line": 71,
+  "snippet": "cy.wait('@entitiesRequest');",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/operation.cy.ts",
+  "line": 80,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/operation.cy.ts",
+  "line": 114,
+  "snippet": "cy.wait('@entitiesRequestInternal');",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/operation.cy.ts",
+  "line": 121,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/operation.cy.ts",
+  "line": 132,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/operation.cy.ts",
+  "line": 142,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/operation.cy.ts",
+  "line": 152,
+  "snippet": "cy.wait('@deleteEntityRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/operation.cy.ts",
+  "line": 155,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/operation.cy.ts",
+  "line": 185,
+  "snippet": "cy.wait('@postEntityRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/operation.cy.ts",
+  "line": 189,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/user-management.cy.ts",
+  "line": 51,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/user-management.cy.ts",
+  "line": 71,
+  "snippet": "cy.wait('@entitiesRequest');",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/user-management.cy.ts",
+  "line": 80,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/user-management.cy.ts",
+  "line": 114,
+  "snippet": "cy.wait('@entitiesRequestInternal');",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/user-management.cy.ts",
+  "line": 121,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/user-management.cy.ts",
+  "line": 132,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/user-management.cy.ts",
+  "line": 142,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/user-management.cy.ts",
+  "line": 152,
+  "snippet": "cy.wait('@deleteEntityRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/user-management.cy.ts",
+  "line": 155,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/user-management.cy.ts",
+  "line": 193,
+  "snippet": "cy.wait('@postEntityRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ },
+ {
+  "repository": "jhipster/jhipster-sample-app",
+  "sha": "e06e87abe0be8a3a194381ce651164a734811b3f",
+  "file": "src/test/javascript/cypress/e2e/entity/user-management.cy.ts",
+  "line": 197,
+  "snippet": "cy.wait('@entitiesRequest').then(({ response }) => {",
+  "verdict": "REAL_BACKEND",
+  "reason": "cy.intercept registers a spy with no canned reply; the observed response comes from the server"
+ }
+]

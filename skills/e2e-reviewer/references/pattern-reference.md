@@ -207,6 +207,22 @@ expect(page.locator('.selector')).toBeDefined();
 
 **Sub-IDs:** `#4a` numeric invariant candidate (LLM-TRIAGE), `#4b` vacuous `toBeAttached()` (LLM-TRIAGE — see below), `#4c-4e` one-shot state/content reads (one combined scanner check), `#4f` Locator truthiness/nullness, `#4g` `timeout: 0` (dedicated block below), `#4h` one-shot `page.url()`, `#4i` absence assertion on a locator never proven able to match (LLM-TRIAGE), `#4j` under-specified ARIA snapshot accessible names (LLM-only), and `#4k` assertion loop over an unproven collection (LLM-TRIAGE). The scanner does not emit `#4j`.
 
+**Assertion on a stubbed response (Phase 2 only, no scanner rule).** An
+assertion whose subject is a response the same test fulfilled proves nothing
+about the product: `await page.route(url, r => r.fulfill({ body }))` followed by
+`expect((await page.waitForResponse(url)).status()).toBe(200)`, or
+`cy.intercept(url, { statusCode: 200 }).as('a')` followed by
+`cy.wait('@a').its('response.statusCode').should('eq', 200)`, reads the fixture
+back. Report it as #4 when Phase 2 sees it. Three lookalikes are correct and
+must not be reported: an assertion on rendered output after a stub (the #20
+fix), an assertion on the request the application sent
+(`request.postDataJSON()`), and an assertion on a response that reached the real
+server through `route.continue()`, `page.request`, or `cy.request`. This stays a
+human-judgement item on purpose: `benchmarks/stub-echo-v1` adjudicated 78
+candidates from twelve public repositories and found zero instances of the
+defect and 78 of the lookalikes, so a mechanical rule would have been all false
+positives.
+
 **#4a helper-invariant semantics:** Syntax alone is not enough: `value > 0` can
 be a meaningful assertion. When the asserted value comes from a helper supplied
 in scope, read that implementation. Flag #4a only if the implementation itself

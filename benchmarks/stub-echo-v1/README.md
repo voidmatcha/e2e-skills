@@ -98,6 +98,61 @@ Outcomes:
 A result that misses a gate is published here unchanged. No threshold moves
 after collection.
 
-## Status
+## Result: no scanner rule
 
-`NOT_RUN`. Collection has not started; this page exists to fix the rules first.
+`COMPLETE`, decided by **G1**. Collection ran on 2026-09-18 over the twelve
+pinned checkouts. The collector found **78 candidates in 2 of 12 repositories**;
+ten repositories contain no spec file that both installs a stub and observes a
+response object.
+
+| Verdict | Candidates |
+| --- | ---: |
+| `STUB_ECHO` | 0 |
+| `APP_MEDIATED` | 7 |
+| `REAL_BACKEND` | 71 |
+| `UNDECIDABLE` | 0 |
+
+Per repository: `jhipster/jhipster-sample-app` 65, `open-mercato/open-mercato`
+13. Every candidate, with its verdict and the reason, is in
+[`ledger.json`](ledger.json); the raw collection, including the surrounding
+window for each hit, is in [`candidates.json`](candidates.json).
+
+### What the corpus actually contains
+
+- **71 `REAL_BACKEND`.** jhipster's generated Cypress specs register
+  `cy.intercept('GET', '/api/labels+(?*|)').as('entitiesRequest')` — a spy with
+  no canned reply — and then assert `expect(response?.statusCode).to.equal(200)`.
+  The observed response is the server's, so the assertion tests the real
+  backend. open-mercato's `page.route` handlers call `route.continue()` for the
+  methods they observe, including the one behind
+  `expect((await staleResponsePromise).status()).toBe(409)`: the 409 comes from
+  the application, not from the test.
+- **7 `APP_MEDIATED`.** open-mercato's stubbed specs use `page.waitForResponse`
+  as a synchronization wait with a URL/status predicate and then assert on
+  rendered rows. That is the shape this bundle's `#20` guidance recommends.
+- **0 `STUB_ECHO`.** No candidate asserted a field of a response the test itself
+  fulfilled.
+
+### Decision
+
+G1 required at least 5 `STUB_ECHO` instances in at least 2 repositories; the
+corpus has none, so G2's separability bound is undefined on zero positives.
+The frozen consequence applies: **document the shape in the `#4` Phase 2
+procedure and add no scanner rule.** G3 (severity) and G4 (guards) were not run,
+because the decision no longer depends on them; nothing about them was measured
+and nothing about them is claimed.
+
+### What this does and does not support
+
+- **Supported:** in this frozen 12-repository sample, an assertion that reads
+  back a stubbed response does not appear, while two shapes that superficially
+  resemble it — a spy over a real backend, and a stubbed route observed only for
+  synchronization — account for all 78 candidates. A rule keyed on the collector surface alone —
+  a stub in the file and an observed response — would have fired on 78 correct
+  tests here.
+- **Not supported:** any claim that the shape never occurs. This is 12
+  repositories chosen by popularity, not a census, and the collector only sees
+  specs that install a stub and observe a response object in the same file.
+- **Reproduce:** check each repository out at the sha in
+  `../field-scan-v1/repos.json`, then run
+  `python3 benchmarks/stub-echo-v1/collect_candidates.py --checkouts <dir>`.
