@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=4f00fb906af7c0d638beaed49e3a7901cca4163f7c030c0e1acca2f8243e2734; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=54ceb11293dcb2af85af10dc6ade05fd828d3502448c33408511dc0d893a902b; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 AI 코딩 에이전트가 Playwright와 Cypress E2E 테스트를 생성하고 리뷰하며 실패 원인을 분석할 때 쓰는 네 종류의 Agent Skills 모음입니다. 새 테스트 생성은 Playwright를 지원하고, 기존 테스트나 PR/diff 범위의 변경 사항 리뷰와 실패 분석은 Playwright와 Cypress를 지원합니다. 리뷰 목록 가운데 규칙만으로 판별할 수 있는 항목을 찾는 `deterministic scanner`도 포함합니다.
 
@@ -269,7 +269,7 @@ merge 건수를 전체 제출 건수와 함께 볼 수 있습니다. [Field revi
 - 독립 제품 리뷰의 견고성 게이트 v4, v5, v7, v8, v11은 사전 등록 기준에 실패했습니다. v6와 v9은 실행하지 않았고, v10은 시도 3회 중 1회만 실행한 상태에서 같은 동결 리뷰 입력을 그대로 쓰는 v11로 대체했습니다. v1부터 v11까지는 현재 릴리스 게이트가 아니라 이전 견고성 근거로 보존합니다.
 - `debugger` 프로토콜은 다시 실행할 수 있는 합성 사례 30개를 제공하지만, 독립적으로 확립된 `debugger` 정확도를 주장하지는 않습니다.
 
-점수, 실패한 게이트, 대체된 실행, 주장 범위는 [벤치마크 현황](benchmarks/STATUS.md)을 참고하세요. [연구 근거 원장](docs/llm-generated-e2e-test-evidence.md)은 인접 분야의 단위 테스트나 맞춤형 에이전트 연구를 이 프로젝트가 직접 측정한 결과처럼 취급하지 않고, 외부 출처 59개를 구분해 리뷰합니다.
+점수, 실패한 게이트, 대체된 실행, 주장 범위는 [벤치마크 현황](benchmarks/STATUS.md)을 참고하세요. [연구 근거 원장](docs/llm-generated-e2e-test-evidence.md)은 인접 분야의 단위 테스트나 맞춤형 에이전트 연구를 이 프로젝트가 직접 측정한 결과처럼 취급하지 않고, 외부 출처 62개를 구분해 리뷰합니다.
 
 ## E2E 리뷰 목록
 

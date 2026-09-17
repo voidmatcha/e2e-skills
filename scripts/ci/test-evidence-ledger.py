@@ -106,13 +106,13 @@ def main() -> None:
         assert number not in rows, f"duplicate source row {number}"
         rows[number] = (match.group(2), match.group(3), match.group(4))
 
-    assert list(sorted(rows)) == list(range(1, 60)), (
-        "source ledger must contain exactly the numbered rows 1-59"
+    assert list(sorted(rows)) == list(range(1, 63)), (
+        "source ledger must contain exactly the numbered rows 1-62"
     )
     statuses = Counter(status for _, status, _ in rows.values())
     assert statuses == {
-        "Verified primary": 21,
-        "Qualified": 14,
+        "Verified primary": 22,
+        "Qualified": 16,
         "Not cleared": 24,
     }, f"unexpected evidence status counts: {statuses}"
 
@@ -171,7 +171,7 @@ def main() -> None:
 
     print(
         "evidence ledger: pass "
-        "(59 sources; 21 verified, 14 qualified, 24 not cleared; 6 claim audits)"
+        "(62 sources; 22 verified, 16 qualified, 24 not cleared; 6 claim audits)"
     )
 
 

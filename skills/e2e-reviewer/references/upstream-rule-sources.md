@@ -37,7 +37,7 @@ Correctness families map to focused tests (#7), arbitrary waits (#9), forced int
 - [Cypress conditional testing](https://docs.cypress.io/app/guides/conditional-testing) requires stabilized state and a non-mutable source of truth — the upstream contract behind treating DOM-dependent runtime gates as bypass risks rather than ordinary branching.
 - [Playwright MCP versus CLI](https://github.com/microsoft/playwright-mcp/blob/55679f5f3d4b4f3e2534ec0ce2fc5683ba2eaf3f/README.md#playwright-mcp-vs-playwright-cli) suggests coding agents may benefit from CLI plus skills for token efficiency while retaining MCP for persistent, exploratory loops. Vendor guidance, not a universal benchmark.
 
-The repository's full [59-source evidence ledger](https://github.com/voidmatcha/e2e-skills/blob/main/docs/llm-generated-e2e-test-evidence.md) records verified, qualified, and not-cleared claims with denominators and E2E extrapolation limits. Use that evidence to choose falsification rules, never to claim a model accuracy rate.
+The repository's full [62-source evidence ledger](https://github.com/voidmatcha/e2e-skills/blob/main/docs/llm-generated-e2e-test-evidence.md) records verified, qualified, and not-cleared claims with denominators and E2E extrapolation limits. Use that evidence to choose falsification rules, never to claim a model accuracy rate.
 
 ## Post-hoc convergences and planning inputs
 

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- **The research evidence ledger covers three sources on self-repair and healing (rows 60-62), and now audits 62 sources.** A 2026 industrial preprint documenting assertion weakening and test deletion during autonomous repair is Verified primary; the Self-Repair Trap preprint and the practitioner false-heal article are Qualified, because the first studies unit-level regression oracles and the second does not publish its benchmark data. The healer benchmark links them as external convergence without importing their figures.
+
 ### Changed
 
 - **The scanner is about 4x faster on hit-dense files, with byte-identical output.** `// JUSTIFIED:` resolution ran one awk pass per hit and lexed the file from line 1 each time; it now reports every justified line in one pass per file and looks the hit up. Hit-path resolution is memoized per spelling, and scratch files use a private counter instead of one `mktemp` process each. A pinned 300-hit fixture went from 30.9 s to 7.5 s; stdout and exit code are unchanged on that fixture, on this repository's own trees, and on ten adversarial fixtures. See `benchmarks/scanner-hot-path-v1`.

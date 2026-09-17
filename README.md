@@ -258,7 +258,7 @@ The deterministic scanner is measured separately. [Field scan v1](benchmarks/fie
 - Independent product-review robustness gates v4, v5, v7, v8, and v11 failed their preregistered criteria. Independent product-review v6 and v9 were not run, and independent product-review v10 was superseded after one of its three attempts by v11, which reused its frozen review input; v1-v11 are retained as legacy robustness evidence, not current release gates.
 - The debugger protocol provides a replayable 30-case synthetic corpus, but no independently established debugger accuracy is claimed.
 
-See [benchmark status](benchmarks/STATUS.md) for scores, failed gates, superseded runs, and claim boundaries. The [research evidence ledger](docs/llm-generated-e2e-test-evidence.md) audits 59 external sources instead of treating adjacent unit-test or custom-agent studies as measurements of this project.
+See [benchmark status](benchmarks/STATUS.md) for scores, failed gates, superseded runs, and claim boundaries. The [research evidence ledger](docs/llm-generated-e2e-test-evidence.md) audits 62 external sources instead of treating adjacent unit-test or custom-agent studies as measurements of this project.
 
 ## E2E review catalog
 

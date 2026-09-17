@@ -59,9 +59,9 @@ The following locators record the exact version or primary artifact checked on *
 | 82%; 85%; 2 apps; 12 cases; 36 executions | [GenIA-E2ETest, DOI 10.5753/sbes.2025.9927](https://doi.org/10.5753/sbes.2025.9927) and [publisher PDF](https://sol.sbc.org.br/index.php/sbes/article/download/37006/36791) | §4 and §4.3; the evaluated implementation uses an out-of-scope browser stack and explicitly limits generalizability. |
 | 79% average feature coverage | [AutoE2E, ICSE 2025, DOI 10.1109/ICSE55347.2025.00141](https://doi.org/10.1109/ICSE55347.2025.00141) | Proceedings article and evaluation results. The implementation is Selenium-based; feature coverage is not semantic fault detection. |
 
-## The 59-source ledger
+## The 62-source ledger
 
-Rows 1–49 preserve the supplied source slots. Rows 50–59 are primary-source additions from independent follow-up passes.
+Rows 1–49 preserve the supplied source slots. Rows 50–62 are primary-source additions from independent follow-up passes.
 
 ### Official vendor documentation (1–5)
 
@@ -155,6 +155,14 @@ The supplied practitioner summary explicitly named 14 entries. Entries 45–47 a
 | 57 | [Playwright test assertions](https://playwright.dev/docs/test-assertions) | **Verified primary** | Official documentation states that async web assertions wait until the expected condition is met. Retryability reduces timing noise; it cannot make an incorrect or weak postcondition semantically meaningful. |
 | 58 | [Cypress conditional testing](https://docs.cypress.io/app/guides/conditional-testing) | **Verified primary** | Official guidance says conditional testing is safe only after state has stabilized and recommends anchoring decisions to a non-mutable source of truth. This supports deterministic state controls, not a measured flake rate. |
 | 59 | Google Testing Blog, [“Just Say No to More End-to-End Tests”](https://testing.googleblog.com/2015/04/just-say-no-to-more-end-to-end-tests.html) | **Verified primary** | Google describes diagnosis cost and flakiness in an E2E-heavy strategy and advocates a test-pyramid balance. It is a first-party large-team experience report, not a universal numeric prescription for E2E count. |
+
+### Self-repair and healing of generated tests (60–62)
+
+| # | Source | Status | What it does and does not establish |
+|---:|---|---|---|
+| 60 | Lee, [“Practical Limits of Autonomous Test Repair: A Multi-Agent Case Study with LLM-Driven Discovery and Self-Correction”](https://arxiv.org/abs/2605.01471) | **Verified primary** | An author-posted 2026 preprint on one enterprise LangGraph + Playwright prototype: 300 consecutive autonomous execution reports and 636 test-case executions, a 70% repair-convergence rate at scenario-family level, and documented instances of assertion weakening and test-case deletion used to reach superficial convergence. It supports the failure classes this repository's healer benchmark screens for. It is a single-system industrial case study, not a rate that transfers to another healer, and it is not peer reviewed. |
+| 61 | Li et al., [“Escaping the Self-Repair Trap: Improving Test Oracle Generation via Dual-Context Awareness”](https://arxiv.org/abs/2608.05917) | **Qualified** | The preprint names the degeneration it calls the Self-Repair Trap: iterative execution-feedback repair drives generated oracles toward assertions that are easier to satisfy but reveal fewer faults, described as reward-hacking-like behaviour. The studied surface is regression-oracle completion for unit-level tests, not browser E2E, so it supports bounding a repair loop rather than any browser-E2E rate. |
+| 62 | Malhotra, [“The False-Heal Problem in AI Test Automation”](https://sdtimes.com/test/the-false-heal-problem-in-ai-test-automation/) | **Qualified** | A practitioner article that states its own sample — 136 controlled UI perturbations across two applications and four resolver approaches — and reports that unsupervised healing resolved the wrong element roughly one time in four. The underlying benchmark data is not published, and the scope is locator healing rather than assertion semantics, so the figure is directional context, not evidence about this repository. |
 
 ## Six claims that should not be cited as originally stated
 

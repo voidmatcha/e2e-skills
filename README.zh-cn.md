@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=4f00fb906af7c0d638beaed49e3a7901cca4163f7c030c0e1acca2f8243e2734; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=54ceb11293dcb2af85af10dc6ade05fd828d3502448c33408511dc0d893a902b; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 为 AI 编程代理提供四个面向 E2E 测试工作的聚焦工作流：生成 Playwright 覆盖、审查现有 spec 或 PR/diff 范围内的测试变更、调试失败的 Playwright 报告，以及调试失败的 Cypress 报告。它还包含一个确定性扫描器，用于发现审查目录中可机械判定的子集。
 
@@ -259,7 +259,7 @@ Debug the failed Cypress report in cypress/reports/.
 - Independent product-review robustness gates v4、v5、v7、v8 和 v11 未达到其预注册标准。v6 和 v9 未运行，v10 在 3 次尝试中仅运行 1 次后，被复用其冻结评审输入的 v11 取代；v1 至 v11 仅作为既有的 robustness evidence 保留，不是当前的 release gates。
 - Debugger protocol 提供可重放的 30-case synthetic corpus，但不声称已独立建立调试器准确率。
 
-查看 [基准状态](benchmarks/STATUS.md) 了解分数、失败的 gates、被取代的 runs 和声明边界。[研究证据台账](docs/llm-generated-e2e-test-evidence.md) 审计了 59 个外部来源，避免把相邻的 unit-test 或 custom-agent 研究当作本项目的测量结果。
+查看 [基准状态](benchmarks/STATUS.md) 了解分数、失败的 gates、被取代的 runs 和声明边界。[研究证据台账](docs/llm-generated-e2e-test-evidence.md) 审计了 62 个外部来源，避免把相邻的 unit-test 或 custom-agent 研究当作本项目的测量结果。
 
 ## E2E 审查目录
 

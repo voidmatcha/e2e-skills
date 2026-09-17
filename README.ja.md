@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <strong>🇯🇵 日本語</strong> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=4f00fb906af7c0d638beaed49e3a7901cca4163f7c030c0e1acca2f8243e2734; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=54ceb11293dcb2af85af10dc6ade05fd828d3502448c33408511dc0d893a902b; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、AI コーディングエージェントが Playwright/Cypress の E2E テスト作業に使える 4 つのワークフローを提供します。Playwright カバレッジの生成、既存のテスト仕様または PR/diff 範囲の変更レビュー、失敗した Playwright レポートのデバッグ、失敗した Cypress レポートのデバッグを扱います。レビューカタログのうち、機械的に判定できる部分集合を検出する決定論的スキャナーも含まれます。
 
@@ -260,7 +260,7 @@ Debug the failed Cypress report in cypress/reports/.
 - Independent product-review robustness gates v4、v5、v7、v8、v11 は事前登録した基準を満たしませんでした。v6 と v9 は未実行で、v10 は 3 回の試行のうち 1 回を実行した時点で、凍結済みのレビュー入力を再利用する v11 に置き換えました。v1 から v11 は、現在のリリースゲートではなく、過去の robustness evidence として保持しています。
 - デバッガー protocol は再実行可能な 30-case synthetic corpus を提供しますが、独立に確立されたデバッガー精度は主張しません。
 
-スコア、失敗したゲート、置き換えられた実行、主張の境界については [ベンチマーク状況](benchmarks/STATUS.md) を参照してください。[研究根拠台帳](docs/llm-generated-e2e-test-evidence.md) は、隣接する unit-test や custom-agent studies をこのプロジェクトの測定値として扱わず、59 件の外部 source を監査しています。
+スコア、失敗したゲート、置き換えられた実行、主張の境界については [ベンチマーク状況](benchmarks/STATUS.md) を参照してください。[研究根拠台帳](docs/llm-generated-e2e-test-evidence.md) は、隣接する unit-test や custom-agent studies をこのプロジェクトの測定値として扱わず、62 件の外部 source を監査しています。
 
 ## E2E レビューカタログ
 
