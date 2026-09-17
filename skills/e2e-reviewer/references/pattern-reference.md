@@ -20,7 +20,7 @@ Navigation aid only — the SKILL.md Quick Reference table and the per-pattern s
 | Severity | Pattern IDs |
 |----------|-------------|
 | **P0 — Must Fix** (silent always-pass) | #1 name-assertion mismatch, #2 missing Then, #3 error swallowing, #3b Cypress uncaught:exception, #4 invariant/vacuous-object assertions (#4a/#4f), #5a conditional bypass (in #5), #7 focused-test leak, #8 missing assertion (#8a/#8b), #12 missing auth |
-| **P1 — Should Fix** (poor diagnostics or retry robustness) | #4 non-retrying/weak assertions (#4b–#4e/#4g–#4k), #5b force:true (in #5), #6 raw DOM query, #9 hard-coded sleep (#9b/#9c), #10 flaky patterns (#10a/#10b/#10c), #13 inconsistent POM, #14 hardcoded creds, #15 missing await on expect, #16 missing await on action, #17 discouraged direct Page selector API, #18 expect.soft overuse, #19 module-level state, #20 unmocked writes, #22 optimistic UI |
+| **P1 — Should Fix** (poor diagnostics or retry robustness) | #4 non-retrying/weak assertions (#4b–#4e/#4g–#4k), #5b force:true (in #5), #6 raw DOM query, #9 hard-coded sleep (#9b/#9c), #10 flaky patterns (#10a–#10f), #13 inconsistent POM, #14 hardcoded creds, #15 missing await on expect, #16 missing await on action, #17 discouraged direct Page selector API, #18 expect.soft overuse, #19 module-level state, #20 unmocked writes, #22 optimistic UI |
 | **P2 — Nice to Fix** (maintenance) | #11 YAGNI + zombie specs (#11a/#11b) + reason-less skips (#11c), #21 manual session file, #23 fixture render guards |
 
 ### P0 — Must Fix (silent always-pass)
@@ -284,7 +284,9 @@ with an explicit finite matcher timeout unless the assertion deliberately
 shares a documented, bounded enclosing deadline. In Cypress, remove it unless
 an immediate current-state check is the explicit intent. Put a concrete
 `// JUSTIFIED:` on the line above for either exceptional case; the scanner
-suppresses justified hits.
+suppresses justified hits. The scanner anchors only Playwright assertion/action
+context, so a Cypress `timeout: 0` never appears in Phase 1 output; the Phase 2
+opening-token sweep in SKILL.md is the only path to a Cypress #4g finding.
 
 <!-- 4i is a bold sub-block, NOT a "#### 4i." header — see the 4g note above (CI Check 3c). -->
 **4i. Absence assertion never proven able to match** `[grep-detectable + LLM-TRIAGE]` `[P1]` — an absence assertion is satisfied by a locator that matches *nothing*, so a selector that rotted keeps the test green forever while proving nothing.
@@ -313,7 +315,7 @@ await expect(spinner).toBeHidden();
 - **SKIP** — the same locator (or an alias of it) is asserted present, or is clicked/filled/hovered, anywhere in that test's execution path — before or after the absence assertion, or in its `beforeEach`. Direction does not matter: a later assertion or action on the same locator fails when the selector stops matching, so the absence assertion cannot pass on a rotted selector either. What matters is that the locator is consumed by a real assertion or action somewhere, not where that use sits relative to the absence check.
 - **SKIP** — the test is an empty-state / no-results case that also asserts a positive counterpart (empty-state message visible, "0 results" text). This is the dominant legitimate shape; expect it to account for most raw hits. It does not cover the `#23` case: when a render guard suppresses seeded items, the empty-state message renders for the wrong reason and the positive counterpart proves nothing. Check that the fixture can actually satisfy the component's guards before skipping on this ground.
 - **SKIP** — `// JUSTIFIED:` on the preceding line.
-- **FLAG P1** — the locator appears nowhere else and nothing positive is asserted alongside. Report it as an assertion that can pass without proving the locator ever matched, and propose either proving the locator first or deleting the assertion.
+- **FLAG P1** — the locator appears nowhere else on that test's execution path (a use in a sibling test does not count) and nothing positive is asserted alongside. Report it as an assertion that can pass without proving the locator ever matched, and propose either proving the locator first or deleting the assertion.
 
 **Fix:** assert the positive state before the action that removes it, then assert absence on the *same* locator object — binding it to a variable makes the pairing checkable at a glance.
 

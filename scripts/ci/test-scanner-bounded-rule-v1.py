@@ -180,6 +180,35 @@ class BoundedRuleTests(unittest.TestCase):
             int(label.group(1)), len(named),
             "the label's count must equal the number of rules listed below it",
         )
+        self.assertEqual(
+            len(named), len(set(named)),
+            "a rule id checked by several patterns is still one suppressed rule",
+        )
+
+    def test_a_rule_id_shared_by_several_checks_is_counted_once(self) -> None:
+        shapes = ("toBeTruthy()", "toBeDefined()", "not.toBeNull()", "not.toBeUndefined()")
+        body = "\n".join(
+            f"test('always true {n}', async ({{ page }}) => {{\n"
+            f"  expect(page.locator('#a{n}')).{shape};\n"
+            f"  expect(page.locator('#b{n}')).{shape};\n}});"
+            for n, shape in enumerate(shapes)
+        )
+        files = {
+            "tests/truthy.spec.ts": "import { test, expect } from '@playwright/test';\n\n" + body
+        }
+        result = scan(files, {"E2E_SMELL_MAX_RULE_HITS": "1"})
+        out = result.stdout + result.stderr
+        listed = re.search(
+            r"INCOMPLETE: these rules hit a bounded limit and reported nothing:(.*)",
+            out,
+        )
+        self.assertIsNotNone(listed, out)
+        named = listed.group(1).split()
+        self.assertIn("#4f", named, out)
+        self.assertEqual(len(named), len(set(named)), out)
+        label = re.search(r"Summary \[INCOMPLETE — (\d+) rule\(s\) suppressed\]", out)
+        self.assertIsNotNone(label, out)
+        self.assertEqual(int(label.group(1)), len(named), out)
 
     def test_the_truncated_rule_is_named(self) -> None:
         result = scan(noisy_tree(6, 10), {"E2E_SMELL_MAX_RULE_HITS": "5"})

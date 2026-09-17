@@ -102,7 +102,9 @@ class DiscoveryTests(unittest.TestCase):
                   'if(x) "\\한글 expect(x)"; assert.ok(x);\n'
                   'if(x) "한\\\n글"; expect(x);\n'
                   '`é\nif(x) expect(x);\n`\n'
-                  '// 한글\nif(x) cy.get(x).should(x);\n').encode()
+                  '// 한글\nif(x) cy.get(x).should(x);\n'
+                  'const 한 = /it\'s "한"/; if(x) expect(x);\n'
+                  'if(x) 한 / 2; "expect(x)";\n').encode()
         self.path.write_bytes(source)
         available = subprocess.check_output(['locale', '-a'], text=True).splitlines()
         utf8 = [value for value in available if value.lower().replace('-', '').endswith('.utf8')]
@@ -193,7 +195,9 @@ class DiscoveryTests(unittest.TestCase):
         lexer = fn[fn.index('    function executable_source'):fn.index('    NR < target')]
         rng = random.Random(59041)
         fragments = [b'abc', b'ex/**/pect(x)', b'/*', b'*/', b'//', b'"', b"'", b'`',
-                     b'\\', b' ', b'assert', b'.should', b'if(x)', b'\t', b'\r']
+                     b'\\', b' ', b'assert', b'.should', b'if(x)', b'\t', b'\r',
+                     b'/', b"/don't/", b'=', b'(', b'return ', b'=>', b'[', b']',
+                     b'a / b', b'\xed\x95\x9c']
         source = b'\n'.join(b''.join(rng.choice(fragments) for _ in range(12)) for _ in range(200))
         source += b'\n' + b'x' * 65537 + b'/*\n*/ expect(x);\n'
         self.path.write_bytes(source)

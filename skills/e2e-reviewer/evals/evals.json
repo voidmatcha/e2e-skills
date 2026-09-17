@@ -16,7 +16,7 @@
         "Detects one-shot boolean: isVisible() piped to toBeTruthy() on lines 17-18 (#4, P1)",
         "Detects conditional bypass: if(await page.locator..isVisible()) gates assertion on line 42 (#5a, P0)",
         "Detects force:true on page.click('.logout-btn') line 36 without JUSTIFIED comment (#5b, P1)",
-        "Phase 2 LLM review detects .catch(() => {}) in POM goto() line 33 swallowing networkidle failure (#3, P0) — POM files are outside the Tier 3 spec globs, so this is a Phase 2 finding",
+        "Phase 2 LLM review detects .catch(() => {}) in POM goto() line 33 swallowing networkidle failure (#3, P0) — Tier 3 surfaces it only as a [P0?][LLM-TRIAGE] #3 candidate at pages/login-page.ts:33, so Phase 2 must confirm the swallowed failure before reporting P0",
         "Detects raw DOM query document.querySelector in POM waitForDashboard() line 48 (#6, P1)",
         "Flags name-assertion mismatch: 'should show user profile' only checks .user-avatar visibility, not profile info (#1, P0)",
         "Flags missing then: 'should logout' doesn't verify session cleared or dashboard gone (#2, P0)",
@@ -253,8 +253,8 @@
         "evals/files/misplaced-await.spec.ts"
       ],
       "assertions": [
-        "Detects expect(await page.getByTestId('run-dialog')).toBeVisible() on line 9 as #15 (P1) — await on the locator is a no-op and the async matcher Promise is unobserved",
-        "Detects expect(await page.getByText('Saved')).toHaveText('Saved') on line 10 as #15 (P1)",
+        "Detects expect(await page.getByTestId('run-dialog')).toBeVisible() on line 10 as #15 (P1) — await on the locator is a no-op and the async matcher Promise is unobserved",
+        "Detects expect(await page.getByText('Saved')).toHaveText('Saved') on line 11 as #15 (P1)",
         "Does NOT flag await expect(page.getByTestId('run-dialog')).toBeVisible() (line 17) as #15 — await is correctly on expect",
         "Does NOT flag await expect(page.getByText('Saved')).toHaveText('Saved') (line 18) as #15",
         "Classifies expect(await page.locator('.row').isVisible()).toBe(true) (line 24) as #4c-4e one-shot read, not the #15 awaited-locator variant",

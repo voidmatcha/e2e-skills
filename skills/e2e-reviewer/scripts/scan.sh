@@ -23,6 +23,10 @@ ROOT="${1:-.}"
 REQUESTED_ROOT="$ROOT"
 FAIL_ON="${E2E_SMELL_FAIL_ON:-p0}"
 SCOPE_WATCH_MODE="${E2E_SMELL_SCOPE_WATCH:-off}"
+case "$FAIL_ON" in
+  p0|p0-candidate|any|none) ;;
+  *) printf 'error: E2E_SMELL_FAIL_ON must be one of: p0, p0-candidate, any, none\n' >&2; exit 2 ;;
+esac
 case "$SCOPE_WATCH_MODE" in
   off|strict) ;;
   *) printf 'error: E2E_SMELL_SCOPE_WATCH must be off or strict\n' >&2; exit 2 ;;
@@ -846,11 +850,20 @@ source_has_unresolved_test_import() {
       # holding the awk path to the same contract also stops the character loop
       # below from going quadratic on a minified bundle.
       if (length(s) > 65536) want_output = 0
+      rx_active = 0
       for (i = 1; i <= length(s); i++) {
         c = substr(s, i, 1)
         nchar = substr(s, i + 1, 1)
         if (lex_block) {
           if (c == "*" && nchar == "/") { lex_block = 0; i++ }
+          continue
+        }
+        if (rx_active) {
+          if (rx_escape) rx_escape = 0
+          else if (c == "\\") rx_escape = 1
+          else if (c == "[") rx_class = 1
+          else if (c == "]") rx_class = 0
+          else if (c == "/" && !rx_class) { rx_active = 0; rx_div = 1; rx_tail = rx_tail "/" }
           continue
         }
         if (lex_quote != "") {
@@ -869,6 +882,22 @@ source_has_unresolved_test_import() {
           }
           continue
         }
+        # A regex literal whose body holds a quote character must not open a string
+        # that swallows the rest of the file. Only index/== touch a raw character
+        # here: a UTF-8 awk splits multibyte characters, and ~ on a split byte aborts.
+        if (c == "/" && substr(s, i + 1, 1) != "/" && substr(s, i + 1, 1) != "*" &&
+            (!rx_div ||
+             rx_tail ~ /(^|[^A-Za-z0-9_$])(return|throw|case|yield)[[:space:]]*$/ ||
+             rx_tail ~ /=>[[:space:]]*$/)) {
+          rx_active = 1
+          rx_class = 0
+          rx_escape = 0
+          continue
+        }
+        if (c != " " && c != "\t" && c != "\r" && c != "\v" && c != "\f")
+          rx_div = !index("=(:,!{[;?&|", c)
+        rx_tail = rx_tail (index("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$=> \t\r\v\f", c) ? c : "#")
+        if (length(rx_tail) > 16) rx_tail = substr(rx_tail, length(rx_tail) - 15)
         if (c == "\"" || c == "\047" || c == "`") {
           lex_quote = c
           lex_value = ""
@@ -908,11 +937,20 @@ source_imports_playwright_test_binding() {
       # holding the awk path to the same contract also stops the character loop
       # below from going quadratic on a minified bundle.
       if (length(s) > 65536) want_output = 0
+      rx_active = 0
       for (i = 1; i <= length(s); i++) {
         c = substr(s, i, 1)
         nchar = substr(s, i + 1, 1)
         if (lex_block) {
           if (c == "*" && nchar == "/") { lex_block = 0; i++ }
+          continue
+        }
+        if (rx_active) {
+          if (rx_escape) rx_escape = 0
+          else if (c == "\\") rx_escape = 1
+          else if (c == "[") rx_class = 1
+          else if (c == "]") rx_class = 0
+          else if (c == "/" && !rx_class) { rx_active = 0; rx_div = 1; rx_tail = rx_tail "/" }
           continue
         }
         if (lex_quote != "") {
@@ -931,6 +969,22 @@ source_imports_playwright_test_binding() {
           }
           continue
         }
+        # A regex literal whose body holds a quote character must not open a string
+        # that swallows the rest of the file. Only index/== touch a raw character
+        # here: a UTF-8 awk splits multibyte characters, and ~ on a split byte aborts.
+        if (c == "/" && substr(s, i + 1, 1) != "/" && substr(s, i + 1, 1) != "*" &&
+            (!rx_div ||
+             rx_tail ~ /(^|[^A-Za-z0-9_$])(return|throw|case|yield)[[:space:]]*$/ ||
+             rx_tail ~ /=>[[:space:]]*$/)) {
+          rx_active = 1
+          rx_class = 0
+          rx_escape = 0
+          continue
+        }
+        if (c != " " && c != "\t" && c != "\r" && c != "\v" && c != "\f")
+          rx_div = !index("=(:,!{[;?&|", c)
+        rx_tail = rx_tail (index("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$=> \t\r\v\f", c) ? c : "#")
+        if (length(rx_tail) > 16) rx_tail = substr(rx_tail, length(rx_tail) - 15)
         if (c == "\"" || c == "\047" || c == "`") {
           lex_quote = c
           lex_value = ""
@@ -965,11 +1019,20 @@ source_imports_playwright_namespace_binding() {
       # holding the awk path to the same contract also stops the character loop
       # below from going quadratic on a minified bundle.
       if (length(s) > 65536) want_output = 0
+      rx_active = 0
       for (i = 1; i <= length(s); i++) {
         c = substr(s, i, 1)
         nchar = substr(s, i + 1, 1)
         if (lex_block) {
           if (c == "*" && nchar == "/") { lex_block = 0; i++ }
+          continue
+        }
+        if (rx_active) {
+          if (rx_escape) rx_escape = 0
+          else if (c == "\\") rx_escape = 1
+          else if (c == "[") rx_class = 1
+          else if (c == "]") rx_class = 0
+          else if (c == "/" && !rx_class) { rx_active = 0; rx_div = 1; rx_tail = rx_tail "/" }
           continue
         }
         if (lex_quote != "") {
@@ -988,6 +1051,22 @@ source_imports_playwright_namespace_binding() {
           }
           continue
         }
+        # A regex literal whose body holds a quote character must not open a string
+        # that swallows the rest of the file. Only index/== touch a raw character
+        # here: a UTF-8 awk splits multibyte characters, and ~ on a split byte aborts.
+        if (c == "/" && substr(s, i + 1, 1) != "/" && substr(s, i + 1, 1) != "*" &&
+            (!rx_div ||
+             rx_tail ~ /(^|[^A-Za-z0-9_$])(return|throw|case|yield)[[:space:]]*$/ ||
+             rx_tail ~ /=>[[:space:]]*$/)) {
+          rx_active = 1
+          rx_class = 0
+          rx_escape = 0
+          continue
+        }
+        if (c != " " && c != "\t" && c != "\r" && c != "\v" && c != "\f")
+          rx_div = !index("=(:,!{[;?&|", c)
+        rx_tail = rx_tail (index("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$=> \t\r\v\f", c) ? c : "#")
+        if (length(rx_tail) > 16) rx_tail = substr(rx_tail, length(rx_tail) - 15)
         if (c == "\"" || c == "\047" || c == "`") {
           lex_quote = c
           lex_value = ""
@@ -1032,11 +1111,20 @@ source_imports_playwright_expect_binding() {
       # holding the awk path to the same contract also stops the character loop
       # below from going quadratic on a minified bundle.
       if (length(s) > 65536) want_output = 0
+      rx_active = 0
       for (i = 1; i <= length(s); i++) {
         c = substr(s, i, 1)
         nchar = substr(s, i + 1, 1)
         if (lex_block) {
           if (c == "*" && nchar == "/") { lex_block = 0; i++ }
+          continue
+        }
+        if (rx_active) {
+          if (rx_escape) rx_escape = 0
+          else if (c == "\\") rx_escape = 1
+          else if (c == "[") rx_class = 1
+          else if (c == "]") rx_class = 0
+          else if (c == "/" && !rx_class) { rx_active = 0; rx_div = 1; rx_tail = rx_tail "/" }
           continue
         }
         if (lex_quote != "") {
@@ -1055,6 +1143,22 @@ source_imports_playwright_expect_binding() {
           }
           continue
         }
+        # A regex literal whose body holds a quote character must not open a string
+        # that swallows the rest of the file. Only index/== touch a raw character
+        # here: a UTF-8 awk splits multibyte characters, and ~ on a split byte aborts.
+        if (c == "/" && substr(s, i + 1, 1) != "/" && substr(s, i + 1, 1) != "*" &&
+            (!rx_div ||
+             rx_tail ~ /(^|[^A-Za-z0-9_$])(return|throw|case|yield)[[:space:]]*$/ ||
+             rx_tail ~ /=>[[:space:]]*$/)) {
+          rx_active = 1
+          rx_class = 0
+          rx_escape = 0
+          continue
+        }
+        if (c != " " && c != "\t" && c != "\r" && c != "\v" && c != "\f")
+          rx_div = !index("=(:,!{[;?&|", c)
+        rx_tail = rx_tail (index("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$=> \t\r\v\f", c) ? c : "#")
+        if (length(rx_tail) > 16) rx_tail = substr(rx_tail, length(rx_tail) - 15)
         if (c == "\"" || c == "\047" || c == "`") {
           lex_quote = c
           lex_value = ""
@@ -1082,11 +1186,20 @@ source_imports_relative_binding() {
       # holding the awk path to the same contract also stops the character loop
       # below from going quadratic on a minified bundle.
       if (length(s) > 65536) want_output = 0
+      rx_active = 0
       for (i = 1; i <= length(s); i++) {
         c = substr(s, i, 1)
         nchar = substr(s, i + 1, 1)
         if (lex_block) {
           if (c == "*" && nchar == "/") { lex_block = 0; i++ }
+          continue
+        }
+        if (rx_active) {
+          if (rx_escape) rx_escape = 0
+          else if (c == "\\") rx_escape = 1
+          else if (c == "[") rx_class = 1
+          else if (c == "]") rx_class = 0
+          else if (c == "/" && !rx_class) { rx_active = 0; rx_div = 1; rx_tail = rx_tail "/" }
           continue
         }
         if (lex_quote != "") {
@@ -1105,6 +1218,22 @@ source_imports_relative_binding() {
           }
           continue
         }
+        # A regex literal whose body holds a quote character must not open a string
+        # that swallows the rest of the file. Only index/== touch a raw character
+        # here: a UTF-8 awk splits multibyte characters, and ~ on a split byte aborts.
+        if (c == "/" && substr(s, i + 1, 1) != "/" && substr(s, i + 1, 1) != "*" &&
+            (!rx_div ||
+             rx_tail ~ /(^|[^A-Za-z0-9_$])(return|throw|case|yield)[[:space:]]*$/ ||
+             rx_tail ~ /=>[[:space:]]*$/)) {
+          rx_active = 1
+          rx_class = 0
+          rx_escape = 0
+          continue
+        }
+        if (c != " " && c != "\t" && c != "\r" && c != "\v" && c != "\f")
+          rx_div = !index("=(:,!{[;?&|", c)
+        rx_tail = rx_tail (index("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$=> \t\r\v\f", c) ? c : "#")
+        if (length(rx_tail) > 16) rx_tail = substr(rx_tail, length(rx_tail) - 15)
         if (c == "\"" || c == "\047" || c == "`") {
           lex_quote = c
           lex_value = ""
@@ -1132,11 +1261,20 @@ source_relative_module_references_for_binding() {
       # holding the awk path to the same contract also stops the character loop
       # below from going quadratic on a minified bundle.
       if (length(s) > 65536) want_output = 0
+      rx_active = 0
       for (i = 1; i <= length(s); i++) {
         c = substr(s, i, 1)
         nchar = substr(s, i + 1, 1)
         if (lex_block) {
           if (c == "*" && nchar == "/") { lex_block = 0; i++ }
+          continue
+        }
+        if (rx_active) {
+          if (rx_escape) rx_escape = 0
+          else if (c == "\\") rx_escape = 1
+          else if (c == "[") rx_class = 1
+          else if (c == "]") rx_class = 0
+          else if (c == "/" && !rx_class) { rx_active = 0; rx_div = 1; rx_tail = rx_tail "/" }
           continue
         }
         if (lex_quote != "") {
@@ -1155,6 +1293,22 @@ source_relative_module_references_for_binding() {
           }
           continue
         }
+        # A regex literal whose body holds a quote character must not open a string
+        # that swallows the rest of the file. Only index/== touch a raw character
+        # here: a UTF-8 awk splits multibyte characters, and ~ on a split byte aborts.
+        if (c == "/" && substr(s, i + 1, 1) != "/" && substr(s, i + 1, 1) != "*" &&
+            (!rx_div ||
+             rx_tail ~ /(^|[^A-Za-z0-9_$])(return|throw|case|yield)[[:space:]]*$/ ||
+             rx_tail ~ /=>[[:space:]]*$/)) {
+          rx_active = 1
+          rx_class = 0
+          rx_escape = 0
+          continue
+        }
+        if (c != " " && c != "\t" && c != "\r" && c != "\v" && c != "\f")
+          rx_div = !index("=(:,!{[;?&|", c)
+        rx_tail = rx_tail (index("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$=> \t\r\v\f", c) ? c : "#")
+        if (length(rx_tail) > 16) rx_tail = substr(rx_tail, length(rx_tail) - 15)
         if (c == "\"" || c == "\047" || c == "`") {
           lex_quote = c
           lex_value = ""
@@ -1189,11 +1343,20 @@ source_relative_module_references_for_named_binding() {
       # holding the awk path to the same contract also stops the character loop
       # below from going quadratic on a minified bundle.
       if (length(s) > 65536) want_output = 0
+      rx_active = 0
       for (i = 1; i <= length(s); i++) {
         c = substr(s, i, 1)
         nchar = substr(s, i + 1, 1)
         if (lex_block) {
           if (c == "*" && nchar == "/") { lex_block = 0; i++ }
+          continue
+        }
+        if (rx_active) {
+          if (rx_escape) rx_escape = 0
+          else if (c == "\\") rx_escape = 1
+          else if (c == "[") rx_class = 1
+          else if (c == "]") rx_class = 0
+          else if (c == "/" && !rx_class) { rx_active = 0; rx_div = 1; rx_tail = rx_tail "/" }
           continue
         }
         if (lex_quote != "") {
@@ -1212,6 +1375,22 @@ source_relative_module_references_for_named_binding() {
           }
           continue
         }
+        # A regex literal whose body holds a quote character must not open a string
+        # that swallows the rest of the file. Only index/== touch a raw character
+        # here: a UTF-8 awk splits multibyte characters, and ~ on a split byte aborts.
+        if (c == "/" && substr(s, i + 1, 1) != "/" && substr(s, i + 1, 1) != "*" &&
+            (!rx_div ||
+             rx_tail ~ /(^|[^A-Za-z0-9_$])(return|throw|case|yield)[[:space:]]*$/ ||
+             rx_tail ~ /=>[[:space:]]*$/)) {
+          rx_active = 1
+          rx_class = 0
+          rx_escape = 0
+          continue
+        }
+        if (c != " " && c != "\t" && c != "\r" && c != "\v" && c != "\f")
+          rx_div = !index("=(:,!{[;?&|", c)
+        rx_tail = rx_tail (index("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$=> \t\r\v\f", c) ? c : "#")
+        if (length(rx_tail) > 16) rx_tail = substr(rx_tail, length(rx_tail) - 15)
         if (c == "\"" || c == "\047" || c == "`") {
           lex_quote = c
           lex_value = ""
@@ -1242,11 +1421,20 @@ source_relative_binding_lineage_edges() {
       # holding the awk path to the same contract also stops the character loop
       # below from going quadratic on a minified bundle.
       if (length(s) > 65536) want_output = 0
+      rx_active = 0
       for (i = 1; i <= length(s); i++) {
         c = substr(s, i, 1)
         nchar = substr(s, i + 1, 1)
         if (lex_block) {
           if (c == "*" && nchar == "/") { lex_block = 0; i++ }
+          continue
+        }
+        if (rx_active) {
+          if (rx_escape) rx_escape = 0
+          else if (c == "\\") rx_escape = 1
+          else if (c == "[") rx_class = 1
+          else if (c == "]") rx_class = 0
+          else if (c == "/" && !rx_class) { rx_active = 0; rx_div = 1; rx_tail = rx_tail "/" }
           continue
         }
         if (lex_quote != "") {
@@ -1265,6 +1453,22 @@ source_relative_binding_lineage_edges() {
           }
           continue
         }
+        # A regex literal whose body holds a quote character must not open a string
+        # that swallows the rest of the file. Only index/== touch a raw character
+        # here: a UTF-8 awk splits multibyte characters, and ~ on a split byte aborts.
+        if (c == "/" && substr(s, i + 1, 1) != "/" && substr(s, i + 1, 1) != "*" &&
+            (!rx_div ||
+             rx_tail ~ /(^|[^A-Za-z0-9_$])(return|throw|case|yield)[[:space:]]*$/ ||
+             rx_tail ~ /=>[[:space:]]*$/)) {
+          rx_active = 1
+          rx_class = 0
+          rx_escape = 0
+          continue
+        }
+        if (c != " " && c != "\t" && c != "\r" && c != "\v" && c != "\f")
+          rx_div = !index("=(:,!{[;?&|", c)
+        rx_tail = rx_tail (index("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$=> \t\r\v\f", c) ? c : "#")
+        if (length(rx_tail) > 16) rx_tail = substr(rx_tail, length(rx_tail) - 15)
         if (c == "\"" || c == "\047" || c == "`") {
           lex_quote = c
           lex_value = ""
@@ -1505,11 +1709,20 @@ awaited_locator_value_read_at() {
       # holding the awk path to the same contract also stops the character loop
       # below from going quadratic on a minified bundle.
       if (length(s) > 65536) want_output = 0
+      rx_active = 0
       for (i = 1; i <= length(s); i++) {
         c = substr(s, i, 1)
         nchar = substr(s, i + 1, 1)
         if (lex_block) {
           if (c == "*" && nchar == "/") { lex_block = 0; i++ }
+          continue
+        }
+        if (rx_active) {
+          if (rx_escape) rx_escape = 0
+          else if (c == "\\") rx_escape = 1
+          else if (c == "[") rx_class = 1
+          else if (c == "]") rx_class = 0
+          else if (c == "/" && !rx_class) { rx_active = 0; rx_div = 1; rx_tail = rx_tail "/" }
           continue
         }
         if (lex_quote != "") {
@@ -1518,6 +1731,22 @@ awaited_locator_value_read_at() {
           else if (c == lex_quote) { if (want_output) out = out "__STR__"; lex_quote = "" }
           continue
         }
+        # A regex literal whose body holds a quote character must not open a string
+        # that swallows the rest of the file. Only index/== touch a raw character
+        # here: a UTF-8 awk splits multibyte characters, and ~ on a split byte aborts.
+        if (c == "/" && substr(s, i + 1, 1) != "/" && substr(s, i + 1, 1) != "*" &&
+            (!rx_div ||
+             rx_tail ~ /(^|[^A-Za-z0-9_$])(return|throw|case|yield)[[:space:]]*$/ ||
+             rx_tail ~ /=>[[:space:]]*$/)) {
+          rx_active = 1
+          rx_class = 0
+          rx_escape = 0
+          continue
+        }
+        if (c != " " && c != "\t" && c != "\r" && c != "\v" && c != "\f")
+          rx_div = !index("=(:,!{[;?&|", c)
+        rx_tail = rx_tail (index("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$=> \t\r\v\f", c) ? c : "#")
+        if (length(rx_tail) > 16) rx_tail = substr(rx_tail, length(rx_tail) - 15)
         if (c == "\"" || c == "\047" || c == "`") { lex_quote = c; continue }
         if (c == "/" && nchar == "*") { lex_block = 1; i++; continue }
         if (c == "/" && nchar == "/") break
@@ -1757,9 +1986,11 @@ _line_is_justified() {
   local _hf="$1" _hl="$2"
   [[ -f "$_hf" && "$_hl" =~ ^[0-9]+$ ]] || return 1
   awk -v target="$_hl" '
-    function classify(s,    code, comment, i, c, nchar, trimmed) {
+    function classify(s,    code, comment, i, c, nchar, trimmed, boundary) {
       code = ""
       comment = ""
+      boundary = 0
+      rx_active = 0
       for (i = 1; i <= length(s); i++) {
         c = substr(s, i, 1)
         nchar = substr(s, i + 1, 1)
@@ -1768,6 +1999,14 @@ _line_is_justified() {
             lex_block = 0
             i++
           }
+          continue
+        }
+        if (rx_active) {
+          if (rx_escape) rx_escape = 0
+          else if (c == "\\") rx_escape = 1
+          else if (c == "[") rx_class = 1
+          else if (c == "]") rx_class = 0
+          else if (c == "/" && !rx_class) { rx_active = 0; rx_div = 1; rx_tail = rx_tail "/" }
           continue
         }
         if (lex_quote != "") {
@@ -1781,6 +2020,22 @@ _line_is_justified() {
           }
           continue
         }
+        # A regex literal whose body holds a quote character must not open a string
+        # that swallows the rest of the file. Only index/== touch a raw character
+        # here: a UTF-8 awk splits multibyte characters, and ~ on a split byte aborts.
+        if (c == "/" && substr(s, i + 1, 1) != "/" && substr(s, i + 1, 1) != "*" &&
+            (!rx_div ||
+             rx_tail ~ /(^|[^A-Za-z0-9_$])(return|throw|case|yield)[[:space:]]*$/ ||
+             rx_tail ~ /=>[[:space:]]*$/)) {
+          rx_active = 1
+          rx_class = 0
+          rx_escape = 0
+          continue
+        }
+        if (c != " " && c != "\t" && c != "\r" && c != "\v" && c != "\f")
+          rx_div = !index("=(:,!{[;?&|", c)
+        rx_tail = rx_tail (index("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$=> \t\r\v\f", c) ? c : "#")
+        if (length(rx_tail) > 16) rx_tail = substr(rx_tail, length(rx_tail) - 15)
         if (c == "\"" || c == "\047" || c == "`") {
           lex_quote = c
           code = code c
@@ -1795,11 +2050,17 @@ _line_is_justified() {
           comment = substr(s, i + 2)
           break
         }
+        # Braces and semicolons inside call parentheses belong to option
+        # objects or callbacks, not to a statement boundary between lines.
+        if (c == "(" || c == "[") lex_paren++
+        else if (c == ")" || c == "]") { if (lex_paren > 0) lex_paren-- }
+        else if ((c == ";" || c == "{" || c == "}") && lex_paren == 0) boundary = 1
         code = code c
       }
       trimmed = code
       gsub(/^[[:space:]]+|[[:space:]]+$/, "", trimmed)
       code_line[NR] = trimmed
+      statement_boundary[NR] = boundary
       pure_comment[NR] = (comment != "" && trimmed == "")
       marker[NR] = (comment ~ /^[[:space:]]*JUSTIFIED:[[:space:]]*[^[:space:]]/)
     }
@@ -1849,11 +2110,11 @@ _line_is_justified() {
               saw_code = 1
               if (code_line[j] !~ /^[.]/) roots++
               if (roots > 1) valid = 0
-              if (j < target && code_line[j] ~ /[;{}]/) valid = 0
+              if (j < target && statement_boundary[j]) valid = 0
             }
             if (valid && saw_code) exit 0
           }
-          if (code_line[i] ~ /[;{}]/) break
+          if (statement_boundary[i]) break
         }
       }
       exit 1
@@ -3322,6 +3583,7 @@ missing_await_action_hit_matches() {
       # holding the awk path to the same contract also stops the character loop
       # below from going quadratic on a minified bundle.
       if (length(s) > 65536) want_output = 0
+      rx_active = 0
       for (i = 1; i <= length(s); i++) {
         c = substr(s, i, 1)
         nextc = substr(s, i + 1, 1)
@@ -3330,6 +3592,14 @@ missing_await_action_hit_matches() {
             lex_block = 0
             i++
           }
+          continue
+        }
+        if (rx_active) {
+          if (rx_escape) rx_escape = 0
+          else if (c == "\\") rx_escape = 1
+          else if (c == "[") rx_class = 1
+          else if (c == "]") rx_class = 0
+          else if (c == "/" && !rx_class) { rx_active = 0; rx_div = 1; rx_tail = rx_tail "/" }
           continue
         }
         if (lex_quote != "") {
@@ -3342,6 +3612,22 @@ missing_await_action_hit_matches() {
           }
           continue
         }
+        # A regex literal whose body holds a quote character must not open a string
+        # that swallows the rest of the file. Only index/== touch a raw character
+        # here: a UTF-8 awk splits multibyte characters, and ~ on a split byte aborts.
+        if (c == "/" && substr(s, i + 1, 1) != "/" && substr(s, i + 1, 1) != "*" &&
+            (!rx_div ||
+             rx_tail ~ /(^|[^A-Za-z0-9_$])(return|throw|case|yield)[[:space:]]*$/ ||
+             rx_tail ~ /=>[[:space:]]*$/)) {
+          rx_active = 1
+          rx_class = 0
+          rx_escape = 0
+          continue
+        }
+        if (c != " " && c != "\t" && c != "\r" && c != "\v" && c != "\f")
+          rx_div = !index("=(:,!{[;?&|", c)
+        rx_tail = rx_tail (index("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$=> \t\r\v\f", c) ? c : "#")
+        if (length(rx_tail) > 16) rx_tail = substr(rx_tail, length(rx_tail) - 15)
         if (c == "\"" || c == "\047" || c == "`") {
           lex_quote = c
           continue
@@ -3550,7 +3836,7 @@ lexical_target_line() {
         }
         if (c == "/" && nchar == "/") break
         if (c == "/" && (prev_sig == "" ||
-            prev_sig ~ /[=(:,!{\[;?&|]/ ||
+            index("=(:,!{[;?&|", prev_sig) ||
             out ~ /(^|[^A-Za-z0-9_$])(return|throw|case|yield)[[:space:]]*$/ ||
             out ~ /=>[[:space:]]*$/ ||
             out ~ /(^|[^A-Za-z0-9_$])(if|while|for|with)[[:space:]]*\([^)]*\)[[:space:]]*$/)) {
@@ -3559,7 +3845,7 @@ lexical_target_line() {
           continue
         }
         if (want_output) out = out c
-        if (c !~ /[[:space:]]/) prev_sig = c
+        if (c != " " && c != "\t" && c != "\r" && c != "\v" && c != "\f") prev_sig = c
       }
       if (NR == target) print out
     }
@@ -3576,7 +3862,7 @@ focused_test_hit_matches() {
   raw_line=${rest#*:}
   target_code=$(lexical_target_line "$hit")
   namespace=$(printf '%s\n' "$target_code" |
-    scanner_rg -oP '(?<![A-Za-z0-9_$.])\K[A-Za-z_$][A-Za-z0-9_$]*(?=[[:space:]]*\.[[:space:]]*test(?:[[:space:]]*\.[[:space:]]*describe)?[[:space:]]*(?:\.[[:space:]]*only|\[[[:space:]]*(?:__STR_only__|__ONLY__)[[:space:]]*\]))' |
+    scanner_rg -oP '(?<![A-Za-z0-9_$.])\K[A-Za-z_$][A-Za-z0-9_$]*(?=[[:space:]]*\.[[:space:]]*test(?:[[:space:]]*\.[[:space:]]*describe(?:[[:space:]]*\.[[:space:]]*(?:serial|parallel))?)?[[:space:]]*(?:\.[[:space:]]*only|\[[[:space:]]*(?:__STR_only__|__ONLY__)[[:space:]]*\]))' |
     head -1)
   if [[ -n "$namespace" ]] &&
     { source_imports_playwright_namespace_binding "$file" "$namespace" ||
@@ -3584,11 +3870,11 @@ focused_test_hit_matches() {
       return 0
   fi
   receiver=$(printf '%s\n' "$target_code" |
-    scanner_rg -oP '(?<![A-Za-z0-9_$.])\K[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*\.[[:space:]]*describe)?[[:space:]]*(?:\?[[:space:]]*)?(?:\.[[:space:]]*only|\[[[:space:]]*(?:__STR_only__|__STR_on__[[:space:]]*\+[[:space:]]*__STR_ly__)[[:space:]]*\])[[:space:]]*(?:\?[[:space:]]*\.)?[[:space:]]*(?:\)[[:space:]]*)?\(' |
+    scanner_rg -oP '(?<![A-Za-z0-9_$.])\K[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*\.[[:space:]]*describe(?:[[:space:]]*\.[[:space:]]*(?:serial|parallel))?)?[[:space:]]*(?:\?[[:space:]]*)?(?:\.[[:space:]]*only|\[[[:space:]]*(?:__STR_only__|__STR_on__[[:space:]]*\+[[:space:]]*__STR_ly__)[[:space:]]*\])[[:space:]]*(?:\?[[:space:]]*\.)?[[:space:]]*(?:\)[[:space:]]*)?\(' |
     head -1 |
-    sed -E 's/([[:space:]]*\.[[:space:]]*describe)?[[:space:]]*(\?[[:space:]]*)?(\.[[:space:]]*only|\[[^]]+\])[[:space:]]*(\?[[:space:]]*\.)?[[:space:]]*(\)[[:space:]]*)?\($//; s/[[:space:]]//g')
+    sed -E 's/([[:space:]]*\.[[:space:]]*describe([[:space:]]*\.[[:space:]]*(serial|parallel))?)?[[:space:]]*(\?[[:space:]]*)?(\.[[:space:]]*only|\[[^]]+\])[[:space:]]*(\?[[:space:]]*\.)?[[:space:]]*(\)[[:space:]]*)?\($//; s/[[:space:]]//g')
   printf '%s\n' "$target_code" |
-    scanner_rg -q '\.[[:space:]]*test([[:space:]]*\.[[:space:]]*describe)?[[:space:]]*(\.[[:space:]]*only|\[)' &&
+    scanner_rg -q '\.[[:space:]]*test([[:space:]]*\.[[:space:]]*describe([[:space:]]*\.[[:space:]]*(serial|parallel))?)?[[:space:]]*(\.[[:space:]]*only|\[)' &&
     return 1
   if [[ -z "$receiver" ]] &&
     ! printf '%s\n' "$target_code" |
@@ -3650,7 +3936,16 @@ focused_test_hit_matches() {
         }
         if (c == "/" && nchar == "*") { lex_block = 1; i++; continue }
         if (c == "/" && nchar == "/") break
+        if (c == "/" && (prev_sig == "" ||
+            index("=(:,!{[;?&|", prev_sig) ||
+            out ~ /(^|[^A-Za-z0-9_$])(return|throw|case|yield)[[:space:]]*$/ ||
+            out ~ /=>[[:space:]]*$/)) {
+          lex_regex = 1
+          regex_class = 0
+          continue
+        }
         if (want_output) out = out c
+        if (c != " " && c != "\t" && c != "\r" && c != "\v" && c != "\f") prev_sig = c
       }
       return out
     }
@@ -3661,9 +3956,9 @@ focused_test_hit_matches() {
   ' "$file" 2>/dev/null | tr '\n' ' ')
   if [[ -z "$receiver" ]]; then
     receiver=$(printf '%s\n' "$code" |
-      scanner_rg -oP '(?<![A-Za-z0-9_$.])\K[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*\.[[:space:]]*describe)?[[:space:]]*(?:\.[[:space:]]*only|\[[[:space:]]*__ONLY__[[:space:]]*\])[[:space:]]*(?:\?[[:space:]]*\.)?[[:space:]]*(?:\)[[:space:]]*)?\(' |
+      scanner_rg -oP '(?<![A-Za-z0-9_$.])\K[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*\.[[:space:]]*describe(?:[[:space:]]*\.[[:space:]]*(?:serial|parallel))?)?[[:space:]]*(?:\.[[:space:]]*only|\[[[:space:]]*__ONLY__[[:space:]]*\])[[:space:]]*(?:\?[[:space:]]*\.)?[[:space:]]*(?:\)[[:space:]]*)?\(' |
       tail -1 |
-      sed -E 's/([[:space:]]*\.[[:space:]]*describe)?[[:space:]]*(\.[[:space:]]*only|\[[[:space:]]*__ONLY__[[:space:]]*\])[[:space:]]*(\?[[:space:]]*\.)?[[:space:]]*(\)[[:space:]]*)?\($//; s/[[:space:]]//g')
+      sed -E 's/([[:space:]]*\.[[:space:]]*describe([[:space:]]*\.[[:space:]]*(serial|parallel))?)?[[:space:]]*(\.[[:space:]]*only|\[[[:space:]]*__ONLY__[[:space:]]*\])[[:space:]]*(\?[[:space:]]*\.)?[[:space:]]*(\)[[:space:]]*)?\($//; s/[[:space:]]//g')
   fi
   [[ -n "$receiver" ]] || return 1
   source_binding_shadowed_at "$file" "$receiver" "$line" && return 1
@@ -3914,11 +4209,20 @@ source_declares_shadowing_test_binding_before() {
       # holding the awk path to the same contract also stops the character loop
       # below from going quadratic on a minified bundle.
       if (length(s) > 65536) want_output = 0
+      rx_active = 0
       for (i = 1; i <= length(s); i++) {
         c = substr(s, i, 1)
         nchar = substr(s, i + 1, 1)
         if (lex_block) {
           if (c == "*" && nchar == "/") { lex_block = 0; i++ }
+          continue
+        }
+        if (rx_active) {
+          if (rx_escape) rx_escape = 0
+          else if (c == "\\") rx_escape = 1
+          else if (c == "[") rx_class = 1
+          else if (c == "]") rx_class = 0
+          else if (c == "/" && !rx_class) { rx_active = 0; rx_div = 1; rx_tail = rx_tail "/" }
           continue
         }
         if (lex_quote != "") {
@@ -3927,6 +4231,22 @@ source_declares_shadowing_test_binding_before() {
           else if (c == lex_quote) lex_quote = ""
           continue
         }
+        # A regex literal whose body holds a quote character must not open a string
+        # that swallows the rest of the file. Only index/== touch a raw character
+        # here: a UTF-8 awk splits multibyte characters, and ~ on a split byte aborts.
+        if (c == "/" && substr(s, i + 1, 1) != "/" && substr(s, i + 1, 1) != "*" &&
+            (!rx_div ||
+             rx_tail ~ /(^|[^A-Za-z0-9_$])(return|throw|case|yield)[[:space:]]*$/ ||
+             rx_tail ~ /=>[[:space:]]*$/)) {
+          rx_active = 1
+          rx_class = 0
+          rx_escape = 0
+          continue
+        }
+        if (c != " " && c != "\t" && c != "\r" && c != "\v" && c != "\f")
+          rx_div = !index("=(:,!{[;?&|", c)
+        rx_tail = rx_tail (index("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$=> \t\r\v\f", c) ? c : "#")
+        if (length(rx_tail) > 16) rx_tail = substr(rx_tail, length(rx_tail) - 15)
         if (c == "\"" || c == "\047" || c == "`") { lex_quote = c; continue }
         if (c == "/" && nchar == "*") { lex_block = 1; i++; continue }
         if (c == "/" && nchar == "/") break
@@ -4421,7 +4741,7 @@ locator_assertion_source() {
         }
         if (c == "/" && nchar == "/") break
         if (c == "/" && (prev_sig == "" ||
-            prev_sig ~ /[=(:,!{\[;?&|]/ ||
+            index("=(:,!{[;?&|", prev_sig) ||
             out ~ /(^|[^A-Za-z0-9_$])(return|throw|case|yield)[[:space:]]*$/ ||
             out ~ /=>[[:space:]]*$/ ||
             out ~ /(^|[^A-Za-z0-9_$])(if|while|for|with)[[:space:]]*\([^)]*\)[[:space:]]*$/)) {
@@ -4430,7 +4750,7 @@ locator_assertion_source() {
           continue
         }
         if (want_output) out = out c
-        if (c !~ /[[:space:]]/) prev_sig = c
+        if (c != " " && c != "\t" && c != "\r" && c != "\v" && c != "\f") prev_sig = c
       }
       return out
     }
@@ -4496,11 +4816,20 @@ expect_in_observed_promise_aggregate_at() {
       # holding the awk path to the same contract also stops the character loop
       # below from going quadratic on a minified bundle.
       if (length(s) > 65536) want_output = 0
+      rx_active = 0
       for (i = 1; i <= length(s); i++) {
         c = substr(s, i, 1)
         nchar = substr(s, i + 1, 1)
         if (lex_block) {
           if (c == "*" && nchar == "/") { lex_block = 0; i++ }
+          continue
+        }
+        if (rx_active) {
+          if (rx_escape) rx_escape = 0
+          else if (c == "\\") rx_escape = 1
+          else if (c == "[") rx_class = 1
+          else if (c == "]") rx_class = 0
+          else if (c == "/" && !rx_class) { rx_active = 0; rx_div = 1; rx_tail = rx_tail "/" }
           continue
         }
         if (lex_quote != "") {
@@ -4509,6 +4838,22 @@ expect_in_observed_promise_aggregate_at() {
           else if (c == lex_quote) lex_quote = ""
           continue
         }
+        # A regex literal whose body holds a quote character must not open a string
+        # that swallows the rest of the file. Only index/== touch a raw character
+        # here: a UTF-8 awk splits multibyte characters, and ~ on a split byte aborts.
+        if (c == "/" && substr(s, i + 1, 1) != "/" && substr(s, i + 1, 1) != "*" &&
+            (!rx_div ||
+             rx_tail ~ /(^|[^A-Za-z0-9_$])(return|throw|case|yield)[[:space:]]*$/ ||
+             rx_tail ~ /=>[[:space:]]*$/)) {
+          rx_active = 1
+          rx_class = 0
+          rx_escape = 0
+          continue
+        }
+        if (c != " " && c != "\t" && c != "\r" && c != "\v" && c != "\f")
+          rx_div = !index("=(:,!{[;?&|", c)
+        rx_tail = rx_tail (index("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$=> \t\r\v\f", c) ? c : "#")
+        if (length(rx_tail) > 16) rx_tail = substr(rx_tail, length(rx_tail) - 15)
         if (c == "\"" || c == "\047" || c == "`") { lex_quote = c; continue }
         if (c == "/" && nchar == "*") { lex_block = 1; i++; continue }
         if (c == "/" && nchar == "/") break
@@ -4591,11 +4936,20 @@ proven_locator_binding() {
       # holding the awk path to the same contract also stops the character loop
       # below from going quadratic on a minified bundle.
       if (length(s) > 65536) want_output = 0
+      rx_active = 0
       for (i = 1; i <= length(s); i++) {
         c = substr(s, i, 1)
         nchar = substr(s, i + 1, 1)
         if (lex_block) {
           if (c == "*" && nchar == "/") { lex_block = 0; i++ }
+          continue
+        }
+        if (rx_active) {
+          if (rx_escape) rx_escape = 0
+          else if (c == "\\") rx_escape = 1
+          else if (c == "[") rx_class = 1
+          else if (c == "]") rx_class = 0
+          else if (c == "/" && !rx_class) { rx_active = 0; rx_div = 1; rx_tail = rx_tail "/" }
           continue
         }
         if (lex_quote != "") {
@@ -4604,6 +4958,22 @@ proven_locator_binding() {
           else if (c == lex_quote) { if (want_output) out = out "__STR__"; lex_quote = "" }
           continue
         }
+        # A regex literal whose body holds a quote character must not open a string
+        # that swallows the rest of the file. Only index/== touch a raw character
+        # here: a UTF-8 awk splits multibyte characters, and ~ on a split byte aborts.
+        if (c == "/" && substr(s, i + 1, 1) != "/" && substr(s, i + 1, 1) != "*" &&
+            (!rx_div ||
+             rx_tail ~ /(^|[^A-Za-z0-9_$])(return|throw|case|yield)[[:space:]]*$/ ||
+             rx_tail ~ /=>[[:space:]]*$/)) {
+          rx_active = 1
+          rx_class = 0
+          rx_escape = 0
+          continue
+        }
+        if (c != " " && c != "\t" && c != "\r" && c != "\v" && c != "\f")
+          rx_div = !index("=(:,!{[;?&|", c)
+        rx_tail = rx_tail (index("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$=> \t\r\v\f", c) ? c : "#")
+        if (length(rx_tail) > 16) rx_tail = substr(rx_tail, length(rx_tail) - 15)
         if (c == "\"" || c == "\047" || c == "`") { lex_quote = c; continue }
         if (c == "/" && nchar == "*") { lex_block = 1; i++; continue }
         if (c == "/" && nchar == "/") break
@@ -4715,11 +5085,20 @@ conditional_assertion_hit_matches() {
       # holding the awk path to the same contract also stops the character loop
       # below from going quadratic on a minified bundle.
       if (length(s) > 65536) want_output = 0
+      rx_active = 0
       for (i = 1; i <= length(s); i++) {
         c = substr(s, i, 1)
         nchar = substr(s, i + 1, 1)
         if (lex_block) {
           if (c == "*" && nchar == "/") { lex_block = 0; i++ }
+          continue
+        }
+        if (rx_active) {
+          if (rx_escape) rx_escape = 0
+          else if (c == "\\") rx_escape = 1
+          else if (c == "[") rx_class = 1
+          else if (c == "]") rx_class = 0
+          else if (c == "/" && !rx_class) { rx_active = 0; rx_div = 1; rx_tail = rx_tail "/" }
           continue
         }
         if (lex_quote != "") {
@@ -4728,6 +5107,22 @@ conditional_assertion_hit_matches() {
           else if (c == lex_quote) { if (want_output) out = out "__STR__"; lex_quote = "" }
           continue
         }
+        # A regex literal whose body holds a quote character must not open a string
+        # that swallows the rest of the file. Only index/== touch a raw character
+        # here: a UTF-8 awk splits multibyte characters, and ~ on a split byte aborts.
+        if (c == "/" && substr(s, i + 1, 1) != "/" && substr(s, i + 1, 1) != "*" &&
+            (!rx_div ||
+             rx_tail ~ /(^|[^A-Za-z0-9_$])(return|throw|case|yield)[[:space:]]*$/ ||
+             rx_tail ~ /=>[[:space:]]*$/)) {
+          rx_active = 1
+          rx_class = 0
+          rx_escape = 0
+          continue
+        }
+        if (c != " " && c != "\t" && c != "\r" && c != "\v" && c != "\f")
+          rx_div = !index("=(:,!{[;?&|", c)
+        rx_tail = rx_tail (index("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$=> \t\r\v\f", c) ? c : "#")
+        if (length(rx_tail) > 16) rx_tail = substr(rx_tail, length(rx_tail) - 15)
         if (c == "\"" || c == "\047" || c == "`") { lex_quote = c; continue }
         if (c == "/" && nchar == "*") { lex_block = 1; i++; continue }
         if (c == "/" && nchar == "/") break
@@ -4950,11 +5345,20 @@ swallowed_assertion_hit_matches() {
       # holding the awk path to the same contract also stops the character loop
       # below from going quadratic on a minified bundle.
       if (length(s) > 65536) want_output = 0
+        rx_active = 0
         for (i = 1; i <= length(s); i++) {
           c = substr(s, i, 1)
           nchar = substr(s, i + 1, 1)
           if (lex_block) {
             if (c == "*" && nchar == "/") { lex_block = 0; i++ }
+            continue
+          }
+          if (rx_active) {
+            if (rx_escape) rx_escape = 0
+            else if (c == "\\") rx_escape = 1
+            else if (c == "[") rx_class = 1
+            else if (c == "]") rx_class = 0
+            else if (c == "/" && !rx_class) { rx_active = 0; rx_div = 1; rx_tail = rx_tail "/" }
             continue
           }
           if (lex_quote != "") {
@@ -4963,6 +5367,22 @@ swallowed_assertion_hit_matches() {
             else if (c == lex_quote) lex_quote = ""
             continue
           }
+          # A regex literal whose body holds a quote character must not open a string
+          # that swallows the rest of the file. Only index/== touch a raw character
+          # here: a UTF-8 awk splits multibyte characters, and ~ on a split byte aborts.
+          if (c == "/" && substr(s, i + 1, 1) != "/" && substr(s, i + 1, 1) != "*" &&
+              (!rx_div ||
+               rx_tail ~ /(^|[^A-Za-z0-9_$])(return|throw|case|yield)[[:space:]]*$/ ||
+               rx_tail ~ /=>[[:space:]]*$/)) {
+            rx_active = 1
+            rx_class = 0
+            rx_escape = 0
+            continue
+          }
+          if (c != " " && c != "\t" && c != "\r" && c != "\v" && c != "\f")
+            rx_div = !index("=(:,!{[;?&|", c)
+          rx_tail = rx_tail (index("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$=> \t\r\v\f", c) ? c : "#")
+          if (length(rx_tail) > 16) rx_tail = substr(rx_tail, length(rx_tail) - 15)
           if (c == "\"" || c == "\047" || c == "`") { lex_quote = c; continue }
           if (c == "/" && nchar == "*") { lex_block = 1; i++; continue }
           if (c == "/" && nchar == "/") break
@@ -5633,9 +6053,12 @@ run_check() {
   fi
 
   # `// JUSTIFIED: <reason>` handling (mechanical part): accept only a lexical
-  # line comment with a non-empty rationale on the hit line or in the contiguous
-  # comment block above it. String/template text, empty markers, `NOT JUSTIFIED`,
-  # and block comments never suppress a finding.
+  # line comment with a non-empty rationale on the line immediately above the
+  # hit, above the start of the fluent chain the hit continues, or directly above
+  # a page.evaluate()/waitForFunction() callback that contains it. A same-line
+  # trailing marker and a marker higher in a comment block do not count.
+  # String/template text, empty markers, `NOT JUSTIFIED`, and block comments
+  # never suppress a finding.
   # P1/P2 findings are suppressed; P0 findings move to the candidate gate until
   # externally verified. No-exemption contract for #7: a committed focused test is never justifiable
   # (grep-patterns.md / pattern-reference.md), so JUSTIFIED must not silence it.
@@ -5710,6 +6133,7 @@ run_check() {
       # holding the awk path to the same contract also stops the character loop
       # below from going quadratic on a minified bundle.
       if (length(s) > 65536) want_output = 0
+          rx_active = 0
           for (i = 1; i <= length(s); i++) {
             c = substr(s, i, 1)
             nchar = substr(s, i + 1, 1)
@@ -5718,6 +6142,14 @@ run_check() {
                 promise_block = 0
                 i++
               }
+              continue
+            }
+            if (rx_active) {
+              if (rx_escape) rx_escape = 0
+              else if (c == "\\") rx_escape = 1
+              else if (c == "[") rx_class = 1
+              else if (c == "]") rx_class = 0
+              else if (c == "/" && !rx_class) { rx_active = 0; rx_div = 1; rx_tail = rx_tail "/" }
               continue
             }
             if (promise_quote != "") {
@@ -5731,6 +6163,22 @@ run_check() {
               }
               continue
             }
+            # A regex literal whose body holds a quote character must not open a string
+            # that swallows the rest of the file. Only index/== touch a raw character
+            # here: a UTF-8 awk splits multibyte characters, and ~ on a split byte aborts.
+            if (c == "/" && substr(s, i + 1, 1) != "/" && substr(s, i + 1, 1) != "*" &&
+                (!rx_div ||
+                 rx_tail ~ /(^|[^A-Za-z0-9_$])(return|throw|case|yield)[[:space:]]*$/ ||
+                 rx_tail ~ /=>[[:space:]]*$/)) {
+              rx_active = 1
+              rx_class = 0
+              rx_escape = 0
+              continue
+            }
+            if (c != " " && c != "\t" && c != "\r" && c != "\v" && c != "\f")
+              rx_div = !index("=(:,!{[;?&|", c)
+            rx_tail = rx_tail (index("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$=> \t\r\v\f", c) ? c : "#")
+            if (length(rx_tail) > 16) rx_tail = substr(rx_tail, length(rx_tail) - 15)
             if (c == "\"" || c == "\047" || c == "`") {
               promise_quote = c
               continue
@@ -5810,8 +6258,10 @@ run_check() {
 
   # Continuation filter (flag "cont"): drop a hit when the previous non-blank line ends
   # with '(' or ',' — the matched line is an argument inside a multi-line expect(...) call,
-  # not a dangling statement. Restores detection of semicolonless dangling locators without
-  # re-admitting the multi-line continuation false positives.
+  # not a dangling statement. Also drop a semicolonless hit whose next code line starts a
+  # member continuation (`.click()`): no ASI occurs before `.`, so the locator is the head
+  # of a fluent chain, not a dangling statement. Restores detection of semicolonless
+  # dangling locators without re-admitting either continuation false positive.
   if [[ "$flags" == *",cont,"* && -n "$output" ]]; then
     output=$(printf '%s\n' "$output" | while IFS= read -r _hit; do
       _hf=${_hit%%:*}
@@ -5822,9 +6272,25 @@ run_check() {
         _prev=$(sed -n "$((_hl - 1))p" "$_hf" 2>/dev/null | sed 's/[[:space:]]*$//')
       fi
       case "$_prev" in
-        (*\(|*,) : ;;  # continuation — drop  (leading paren: bash-3.2 case-in-$() parser quirk)
-        (*) printf '%s\n' "$_hit" ;;
+        (*\(|*,) continue ;;  # continuation — drop  (leading paren: bash-3.2 case-in-$() parser quirk)
       esac
+      _tail=$(printf '%s\n' "${_rest#*:}" | sed -E 's#([;)])[[:space:]]*//.*$#\1#; s/[[:space:]]*$//')
+      if [[ "$_tail" != *";" ]]; then
+        _next=$(awk -v n="$_hl" '
+          NR > n + 5 { exit }
+          NR > n {
+            line = $0
+            sub(/^[[:space:]]+/, "", line)
+            if (line == "" || substr(line, 1, 2) == "//") next
+            print substr(line, 1, 2)
+            exit
+          }
+        ' "$_hf" 2>/dev/null)
+        case "$_next" in
+          (.*|\?.) continue ;;  # head of a multi-line member chain — drop
+        esac
+      fi
+      printf '%s\n' "$_hit"
     done)
   fi
 
@@ -6113,6 +6579,10 @@ if [[ "$TIER2_INFRA_FAILURE" -eq 1 ]]; then
   printf '\nINCOMPLETE: Tier 2 infrastructure failed (%s); Tier 3 completed and its findings are reported below, but Tier 2 contributed nothing.\n' \
     "$TIER2_INFRA_DETAIL" >&2
   SUPPRESSED_RULES="${SUPPRESSED_RULES}${SUPPRESSED_RULES:+ }tier2"
+fi
+if [[ -n "$SUPPRESSED_RULES" ]]; then
+  # Several run_check calls share one id (#4f has five); name each rule once.
+  SUPPRESSED_RULES=$(printf '%s\n' $SUPPRESSED_RULES | awk '!seen[$0]++' | paste -sd' ' -)
 fi
 unique_mechanical_hits=$((total_hits + ${ast_total:-0}))
 unique_p0_hits=$((p0_hits + ast_p0_hits))

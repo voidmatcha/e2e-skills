@@ -1482,6 +1482,143 @@ def assert_parent_project_ast_grep_rejected() -> None:
         assert not marker.exists()
 
 
+def assert_focused_serial_and_parallel_suites_are_reported() -> None:
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-focused-mode-") as temp:
+        root = Path(temp)
+        (root / "modes.spec.ts").write_text(
+            "import { test, expect } from '@playwright/test';\n"
+            "test.describe.serial.only('serial focus', () => {\n"
+            "  test('a', async ({ page }) => { await expect(page).toHaveURL('/'); });\n"
+            "});\n"
+            "test.describe.parallel.only('parallel focus', () => {\n"
+            "  test('b', async ({ page }) => { await expect(page).toHaveURL('/'); });\n"
+            "});\n"
+            "test.describe.serial('unfocused serial', () => {\n"
+            "  test('c', async ({ page }) => { await expect(page).toHaveURL('/'); });\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        result = scan_path(root)
+        assert result.returncode == 1, result.stdout
+        focused = section(result.stdout, "[P0] #7 Focused test committed")
+        assert "modes.spec.ts:2:" in focused, result.stdout
+        assert "modes.spec.ts:5:" in focused, result.stdout
+        assert "modes.spec.ts:8:" not in focused, result.stdout
+
+
+def assert_regex_literal_quotes_do_not_open_strings() -> None:
+    # One unbalanced quote inside a regex literal; a second one would re-pair
+    # the quotes and hide the lexer defect this guards.
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-regex-quote-") as temp:
+        root = Path(temp)
+        (root / "regex.spec.ts").write_text(
+            "import { test, expect } from '@playwright/test';\n"
+            "test('regex literal with a quote', async ({ page }) => {\n"
+            "  await expect(page.getByText(/don't/)).toBeVisible();\n"
+            "  // JUSTIFIED: third-party iframe has no ready event\n"
+            "  await page.waitForTimeout(300);\n"
+            "  page.locator('c').click();\n"
+            "  expect(page.locator('a')).toBeTruthy();\n"
+            "});\n"
+            "test.only('focused after a quote regex', async ({ page }) => {\n"
+            "  await expect(page.locator('k')).toBeVisible();\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        result = scan_path(root)
+        assert result.returncode == 1, result.stdout
+        assert "[P1] #9 Playwright hard-coded sleep" not in result.stdout, result.stdout
+        assert "regex.spec.ts:5" in section(result.stdout, "Suppressed by JUSTIFIED"), result.stdout
+        assert "regex.spec.ts:6:" in section(
+            result.stdout, "[P1] #16 Missing await on Playwright action"
+        ), result.stdout
+        assert "regex.spec.ts:7:" in section(
+            result.stdout, "[P0] #4f Locator always-true assertion"
+        ), result.stdout
+        assert "regex.spec.ts:9:" in section(
+            result.stdout, "[P0] #7 Focused test committed"
+        ), result.stdout
+
+
+def assert_justified_chain_covers_option_object_lines() -> None:
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-justified-chain-") as temp:
+        root = Path(temp)
+        (root / "chain.spec.ts").write_text(
+            "import { test, expect } from '@playwright/test';\n"
+            "test('chains with option objects', async ({ page }) => {\n"
+            "  // JUSTIFIED: first Save button is the primary form action by design\n"
+            "  const save = page.getByRole('button', { name: 'Save' })\n"
+            "    .first();\n"
+            "  await save.click();\n"
+            "  // JUSTIFIED: rows ordered by API contract\n"
+            "  const row = page.locator('tr')\n"
+            "    .filter({ hasText: 'x' })\n"
+            "    .first();\n"
+            "  await row.click();\n"
+            "  const other = page.locator('td')\n"
+            "    .first();\n"
+            "  await other.click();\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        result = scan_path(root)
+        justified = section(result.stdout, "Suppressed by JUSTIFIED")
+        assert "chain.spec.ts:5" in justified, result.stdout
+        assert "chain.spec.ts:10" in justified, result.stdout
+        positional = section(result.stdout, "[P1?][LLM-TRIAGE] #10a Positional selector")
+        assert "chain.spec.ts:13:" in positional, result.stdout
+        assert "chain.spec.ts:5:" not in positional, result.stdout
+        assert "chain.spec.ts:10:" not in positional, result.stdout
+
+
+def assert_dangling_locator_ignores_multiline_chain_heads() -> None:
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-chain-head-") as temp:
+        root = Path(temp)
+        (root / "dangle.spec.ts").write_text(
+            "import { test, expect } from '@playwright/test';\n"
+            "test('8a chain continuation and real dangling', async ({ page }) => {\n"
+            "  page.locator('b')\n"
+            "    .click();\n"
+            "  await page.locator('c')\n"
+            "    .first()\n"
+            "    .click();\n"
+            "  page.getByRole('button', { name: 'x' })\n"
+            "\n"
+            "    // comment between\n"
+            "    ?.click();\n"
+            "  page.locator('dangling-no-semicolon')\n"
+            "  await page.locator('d').click();\n"
+            "  page.locator('dangling-with-semicolon');\n"
+            "  .5;\n"
+            "  page.getByText('last-line-dangling')\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        result = scan_path(root)
+        dangling = section(
+            result.stdout, "[P0?][LLM-TRIAGE] #8a Dangling Playwright locator statement"
+        )
+        for head in (3, 5, 8):
+            assert f"dangle.spec.ts:{head}:" not in dangling, result.stdout
+        for real in (12, 14, 16):
+            assert f"dangle.spec.ts:{real}:" in dangling, result.stdout
+
+
+def assert_invalid_fail_on_is_rejected_before_scanning() -> None:
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-fail-on-") as temp:
+        root = Path(temp)
+        (root / "only.spec.ts").write_text(
+            "import { test } from '@playwright/test';\n"
+            "test.only('focused', async () => {});\n",
+            encoding="utf-8",
+        )
+        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "bogus"})
+        assert result.returncode == 2, result.stdout
+        assert "E2E_SMELL_FAIL_ON must be one of" in result.stdout, result.stdout
+        assert "Tier 3" not in result.stdout, result.stdout
+        assert "Summary" not in result.stdout, result.stdout
+
+
 def assert_module_extension_scope() -> None:
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-module-ext-") as temp:
         root = Path(temp)
@@ -6503,6 +6640,11 @@ def main() -> None:
         assert_invalid_inherited_locale_preserves_evidence,
         assert_parent_project_ast_grep_rejected,
         assert_module_extension_scope,
+        assert_focused_serial_and_parallel_suites_are_reported,
+        assert_regex_literal_quotes_do_not_open_strings,
+        assert_justified_chain_covers_option_object_lines,
+        assert_dangling_locator_ignores_multiline_chain_heads,
+        assert_invalid_fail_on_is_rejected_before_scanning,
         assert_focused_test_lexical_filter,
         assert_expression_wrapped_expect_and_serial_configure,
         assert_playwright_test_aliases_cannot_bypass_focus_check,

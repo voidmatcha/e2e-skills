@@ -17,6 +17,12 @@ ALIAS = re.compile(rb'import[^\n]*expect[^\n]*as')
 TOKEN = re.compile(rb'expect|assert|should')
 SPECIAL = re.compile(rb'[\x22\x27`/]')
 QUOTE_SPECIAL = re.compile(rb'[\x22\x27`\\]')
+AWK_BLANK = b' \t\r\x0b\x0c'
+REGEX_OPENERS = b'=(:,!{[;?&|'
+TAIL_KEEP = b'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$=> \t\r\x0b\x0c'
+TAIL_FOLD = bytes(value if value in TAIL_KEEP else 35 for value in range(256))
+REGEX_KEYWORD = re.compile(rb'(?:^|[^A-Za-z0-9_$])(?:return|throw|case|yield)[ \t\r\x0b\x0c]*$')
+REGEX_ARROW = re.compile(rb'=>[ \t\r\x0b\x0c]*$')
 IDENTITY = re.compile(rb'(?:-?[0-9]+:){6}[0-9a-f]{64}')
 
 
@@ -56,13 +62,22 @@ def executable_lines(source):
 
     Output suppression on long rows still advances quote/comment state. Lexing
     before each target only changes output, so one forward pass is sufficient.
+    Regex literals follow the AWK rule: a slash starts one unless the last
+    significant byte implies division, or the ASCII-folded tail ends in a
+    return/throw/case/yield keyword or ``=>``. Its body is dropped, and an
+    unterminated literal ends at the row boundary.
     """
     block = False
     quote = None
     escaped = False
+    division = False
+    tail = b''
     for line in source.split(b'\n'):
         output = []
         emit = len(line) <= 65536
+        regex = False
+        regex_class = False
+        regex_escaped = False
         i = 0
         while i < len(line):
             if block:
@@ -71,6 +86,21 @@ def executable_lines(source):
                     break
                 block = False
                 i = end + 2
+            elif regex:
+                char = line[i]
+                if regex_escaped:
+                    regex_escaped = False
+                elif char == 92:
+                    regex_escaped = True
+                elif char == 91:
+                    regex_class = True
+                elif char == 93:
+                    regex_class = False
+                elif char == 47 and not regex_class:
+                    regex = False
+                    division = True
+                    tail += b'/'
+                i += 1
             elif quote is not None:
                 if escaped:
                     escaped = False
@@ -91,19 +121,34 @@ def executable_lines(source):
             else:
                 match = SPECIAL.search(line, i)
                 end = match.start() if match else len(line)
+                segment = line[i:end]
                 if emit:
-                    output.append(line[i:end])
+                    output.append(segment)
+                significant = segment.rstrip(AWK_BLANK)
+                if significant:
+                    division = significant[-1] not in REGEX_OPENERS
+                tail = (tail + segment.translate(TAIL_FOLD))[-16:]
                 i = end
                 if i == len(line):
                     break
                 char = line[i]
+                pair = line[i:i + 2]
+                if (char == 47 and pair not in (b'//', b'/*') and
+                        (not division or REGEX_KEYWORD.search(tail) or REGEX_ARROW.search(tail))):
+                    regex = True
+                    regex_class = False
+                    regex_escaped = False
+                    i += 1
+                    continue
+                division = char not in REGEX_OPENERS
+                tail = (tail + line[i:i + 1].translate(TAIL_FOLD))[-16:]
                 if char in (34, 39, 96):
                     quote = char
                     i += 1
-                elif line[i:i + 2] == b'/*':
+                elif pair == b'/*':
                     block = True
                     i += 2
-                elif line[i:i + 2] == b'//':
+                elif pair == b'//':
                     break
                 else:
                     if emit:
