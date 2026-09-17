@@ -147,11 +147,13 @@ fi
 ast_grep_workflow=".github/workflows/e2e-smell-scan.yml"
 if [ ! -f "$ast_grep_workflow" ]; then
   err "missing ast-grep workflow: $ast_grep_workflow"
-elif grep -qF "npm i -g '@ast-grep/cli@0.39.7'" "$ast_grep_workflow" &&
-     [ "$(grep -cF "@ast-grep/cli@" "$ast_grep_workflow")" -eq 1 ]; then
-  ok "workflow pins @ast-grep/cli exactly to 0.39.7"
+elif grep -qF "npm pack '@ast-grep/cli-linux-x64-gnu@0.39.7' --ignore-scripts" "$ast_grep_workflow" &&
+     grep -qF "expected='sha512-S+h5eUR5084y79njxn6NH9RpDpPU2TjdEdUUR+1ncb6j1Rk1pe19ozXEgN0Px81hKK9EOoA2dvYItlOv8kbpwA=='" "$ast_grep_workflow" &&
+     [ "$(grep -cF "@ast-grep/cli" "$ast_grep_workflow")" -eq 2 ] &&
+     ! grep -qF "npm i -g" "$ast_grep_workflow"; then
+  ok "workflow installs ast-grep 0.39.7 from an integrity-pinned platform package without lifecycle scripts"
 else
-  err "workflow ast-grep install must use exact @ast-grep/cli@0.39.7"
+  err "workflow ast-grep install must pack @ast-grep/cli-linux-x64-gnu@0.39.7 with --ignore-scripts and check its pinned sha512"
 fi
 
 section "Public skill surface"

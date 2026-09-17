@@ -688,7 +688,8 @@ def assert_ast_scope() -> None:
         assert "ast-grep total: 4 hit(s)" in result.stdout
         assert "Summary: 4 total hit(s), 0 P0, 3 P1/P2 heuristic" in result.stdout
         assert (
-            "npx --yes --ignore-scripts --package @ast-grep/cli@0.39.7 ast-grep"
+            "npx --yes --ignore-scripts --package @ast-grep/cli-<platform>@0.39.7 "
+            "(sha256-pinned binary)"
             in SCANNER.read_text(encoding="utf-8")
         )
         assert (
@@ -944,8 +945,8 @@ def assert_ast_grep_npx_fallback_is_sanitized() -> None:
             "const args = process.argv.slice(2);\n"
             "if (args[0] !== '--yes' || args[1] !== '--ignore-scripts' || "
             "args[2] !== '--package' || "
-            "args[3] !== '@ast-grep/cli@0.39.7' || args[4] !== 'ast-grep' || "
-            "args[5] !== 'scan') process.exit(92);\n"
+            "!/^@ast-grep\\/cli-(darwin-arm64|darwin-x64|linux-x64-gnu|linux-arm64-gnu)@0\\.39\\.7$/"
+            ".test(args[3]) || args[4] !== '-c') process.exit(92);\n"
             "const required = {\n"
             "  npm_config_registry: 'https://registry.npmjs.org/',\n"
             "  npm_config_ignore_scripts: 'true',\n"
@@ -973,7 +974,16 @@ def assert_ast_grep_npx_fallback_is_sanitized() -> None:
             "for (const name of ['AWS_SECRET_ACCESS_KEY', 'HTTP_PROXY', "
             "'HTTPS_PROXY', 'ALL_PROXY', 'NODE_OPTIONS', 'NPM_CONFIG_REGISTRY']) {\n"
             "  if (Object.hasOwn(process.env, name)) process.exit(95);\n"
-            "}\n",
+            "}\n"
+            "const path = require('node:path');\n"
+            "const pkg = args[3].slice(0, args[3].lastIndexOf('@'));\n"
+            "const modules = path.join(process.env.HOME, '..', 'xdg-cache', "
+            "'_npx', 'fake', 'node_modules');\n"
+            "fs.mkdirSync(path.join(modules, '.bin'), { recursive: true });\n"
+            "fs.mkdirSync(path.join(modules, pkg), { recursive: true });\n"
+            "fs.writeFileSync(path.join(modules, pkg, 'ast-grep'), "
+            "'#!/bin/sh\\nexit 0\\n', { mode: 0o755 });\n"
+            "process.stdout.write(path.join(modules, '.bin') + ':/usr/bin\\n');\n",
             encoding="utf-8",
         )
         fake_npx.chmod(0o755)
@@ -1000,8 +1010,11 @@ def assert_ast_grep_npx_fallback_is_sanitized() -> None:
                 "NODE_OPTIONS": "--require=/tmp/ambient.js",
             },
         )
-        assert result.returncode == 0, result.stdout
-        assert "Summary: 0 total hit(s)" in result.stdout
+        # The fake package binary cannot match the pinned digest, so the tier
+        # must refuse it loudly rather than run unverified bytes.
+        assert result.returncode == 2, result.stdout
+        assert "does not match the pinned" in result.stdout, result.stdout
+        assert "INCOMPLETE: Tier 2 infrastructure failed" in result.stdout, result.stdout
         assert selected_node_marker.exists()
         assert not hostile_node_marker.exists(), (
             "npx's env shebang executed the hostile sibling node instead of "
@@ -1009,13 +1022,9 @@ def assert_ast_grep_npx_fallback_is_sanitized() -> None:
         )
         invocations = argv_log.read_text(encoding="utf-8").splitlines()
         assert invocations
-        assert all(
-            line.startswith(
-                "<--yes><--ignore-scripts><--package>"
-                "<@ast-grep/cli@0.39.7><ast-grep><scan>"
-            )
-            for line in invocations
-        ), invocations
+        assert len(invocations) == 1, invocations
+        assert invocations[0].startswith("<--yes><--ignore-scripts><--package><@ast-grep/cli-")
+        assert "@0.39.7><-c>" in invocations[0], invocations
         private_cwds = cwd_log.read_text(encoding="utf-8").splitlines()
         assert private_cwds
         assert all(Path(cwd).name == "work" for cwd in private_cwds)
@@ -1066,9 +1075,19 @@ def assert_ast_grep_download_path_delegates_every_npx_call() -> None:
         "pinned_npm_config_env, which lets the two tiers drift apart"
     )
     assert "run_pinned_npx" in executable
-    assert "'@ast-grep/cli@0.39.7'" in executable, (
+    assert '"@ast-grep/cli-$1@0.39.7"' in executable, (
         "the ast-grep download must stay pinned to the exact reviewed version"
     )
+    scanner_text = SCANNER.read_text(encoding="utf-8")
+    for digest in (
+        "0241e0a18562c22788ec81196125d618e6d94d1f63f2d13375dd270af197e049",
+        "08022ae90f40e59b02ce93a919b59a12d86c4fcae655e9e93227e580d14ea4e5",
+        "d957480cd7b8ea23c6ad96bbb332b73f46a15ed27caf44132546330f603fdcb3",
+        "fac08fdba65060ada9592bef82c1826ceabf47e6c7f0e2ad2eecf7a9ed7dcce4",
+    ):
+        assert digest in scanner_text, (
+            "each downloaded ast-grep platform binary must stay pinned by sha256"
+        )
     assert "--ignore-scripts" in executable, (
         "the ast-grep download must refuse package lifecycle scripts, matching "
         "the ESLint download step"

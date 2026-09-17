@@ -3263,7 +3263,7 @@ if [[ -n "$_ast_candidate" ]]; then
   AST_GREP_CMD=("$_ast_candidate")
 elif [[ "${E2E_SMELL_NO_AST_GREP_DOWNLOAD:-}" == "1" ]]; then AST_GREP=""
 elif [[ -n "$NPX_BIN" && -n "$NODE_BIN" ]]; then
-  AST_GREP="npx --yes --ignore-scripts --package @ast-grep/cli@0.39.7 ast-grep"
+  AST_GREP="npx --yes --ignore-scripts --package @ast-grep/cli-<platform>@0.39.7 (sha256-pinned binary)"
   # Tier 2 downloads through the SAME private pinned npm environment as Tier 1
   # (see setup_pinned_npm_env / run_pinned_npx). It used to build a second,
   # hand-rolled environment here, and that copy drifted: it pointed BOTH
@@ -3282,14 +3282,100 @@ fi
 run_ast_grep_npx() {
   # Match the ESLint download boundary: exact pin, no lifecycle scripts, and a
   # private pinned npm environment that ignores the audited repository's .npmrc.
+  # @ast-grep/cli itself is only a shim that its postinstall replaces, so with
+  # scripts disabled it prints a message and exits 1. Fetch the platform
+  # package, which ships the native binary directly, and report where npx put
+  # it; resolve_verified_ast_grep_download pins the binary's bytes.
   run_pinned_npx --yes --ignore-scripts \
-    --package '@ast-grep/cli@0.39.7' ast-grep "$@"
+    --package "@ast-grep/cli-$1@0.39.7" -c 'printf "%s\n" "$PATH"'
+}
+
+# One exact binary digest per supported platform package of @ast-grep/cli 0.39.7,
+# taken from registry tarballs whose sha512 matched the registry integrity.
+ast_grep_download_pin() {
+  local _uname=/usr/bin/uname _os _arch
+  [[ -x "$_uname" ]] || _uname=/bin/uname
+  _os=$("$_uname" -s) || return 1
+  _arch=$("$_uname" -m) || return 1
+  case "$_os:$_arch" in
+    Darwin:arm64) printf '%s\n' 'darwin-arm64 0241e0a18562c22788ec81196125d618e6d94d1f63f2d13375dd270af197e049' ;;
+    Darwin:x86_64) printf '%s\n' 'darwin-x64 08022ae90f40e59b02ce93a919b59a12d86c4fcae655e9e93227e580d14ea4e5' ;;
+    Linux:x86_64|Linux:aarch64|Linux:arm64)
+      # The pinned Linux packages are glibc builds; a musl host has no pin.
+      compgen -G '/lib/ld-musl-*' >/dev/null && return 1
+      if [[ "$_arch" == x86_64 ]]; then
+        printf '%s\n' 'linux-x64-gnu d957480cd7b8ea23c6ad96bbb332b73f46a15ed27caf44132546330f603fdcb3'
+      else
+        printf '%s\n' 'linux-arm64-gnu fac08fdba65060ada9592bef82c1826ceabf47e6c7f0e2ad2eecf7a9ed7dcce4'
+      fi
+      ;;
+    *) return 1 ;;
+  esac
+}
+
+AST_GREP_DOWNLOADED_BIN=""
+AST_GREP_DOWNLOAD_DETAIL=""
+resolve_verified_ast_grep_download() {
+  local _pin _platform _expected _path_lines _bin_dir _root_real _candidate _dest _digest
+  if ! _pin=$(ast_grep_download_pin); then
+    AST_GREP_DOWNLOAD_DETAIL="no pinned ast-grep binary for this OS, CPU, or libc"
+    return 1
+  fi
+  _platform=${_pin%% *}
+  _expected=${_pin#* }
+  if ! _path_lines=$(run_ast_grep_npx "$_platform" 2>/dev/null); then
+    AST_GREP_DOWNLOAD_DETAIL="npx could not fetch @ast-grep/cli-$_platform@0.39.7"
+    return 1
+  fi
+  _bin_dir=$(printf '%s\n' "$_path_lines" | tr ':' '\n' |
+    grep -m1 '/_npx/[^/]*/node_modules/\.bin$' || true)
+  _root_real=$(cd "$PINNED_NPM_ROOT" 2>/dev/null && pwd -P) || _root_real="$PINNED_NPM_ROOT"
+  case "$_bin_dir" in
+    "$PINNED_NPM_ROOT"/*|"$_root_real"/*) ;;
+    *)
+      AST_GREP_DOWNLOAD_DETAIL="npx did not report a package directory inside the private npm environment"
+      return 1
+      ;;
+  esac
+  _candidate="${_bin_dir%/.bin}/@ast-grep/cli-$_platform/ast-grep"
+  if [[ ! -f "$_candidate" || -L "$_candidate" ]]; then
+    AST_GREP_DOWNLOAD_DETAIL="@ast-grep/cli-$_platform@0.39.7 has no regular ast-grep binary"
+    return 1
+  fi
+  mkdir -m 700 "$PINNED_NPM_ROOT/ast-grep" 2>/dev/null || true
+  _dest="$PINNED_NPM_ROOT/ast-grep/ast-grep"
+  # Hash the private copy that will run, not the npx cache entry, so nothing can
+  # swap the bytes between the check and the use.
+  if ! cp "$_candidate" "$_dest" 2>/dev/null || ! chmod 700 "$_dest"; then
+    AST_GREP_DOWNLOAD_DETAIL="could not copy the ast-grep binary into private storage"
+    return 1
+  fi
+  _digest=$("$PYTHON3_BIN" -I -B -c 'import hashlib, sys
+with open(sys.argv[1], "rb") as handle:
+    print(hashlib.sha256(handle.read()).hexdigest())' "$_dest" 2>/dev/null) || _digest=""
+  if [[ "$_digest" != "$_expected" ]]; then
+    rm -f "$_dest"
+    AST_GREP_DOWNLOAD_DETAIL="ast-grep binary sha256 ${_digest:-unavailable} does not match the pinned $_expected"
+    return 1
+  fi
+  AST_GREP_DOWNLOADED_BIN="$_dest"
 }
 
 record_tier2_infrastructure_failure() {
   TIER2_INFRA_FAILURE=1
   TIER2_INFRA_DETAIL="$1"
 }
+
+if [[ "${#AST_GREP_CMD[@]}" -eq 1 && "${AST_GREP_CMD[0]}" == run_ast_grep_npx ]]; then
+  if resolve_verified_ast_grep_download; then
+    AST_GREP_CMD=("$AST_GREP_DOWNLOADED_BIN")
+  else
+    printf 'error: Tier 2 ast-grep download could not be verified (%s); the tier did not run\n' \
+      "$AST_GREP_DOWNLOAD_DETAIL" >&2
+    record_tier2_infrastructure_failure "ast-grep download: $AST_GREP_DOWNLOAD_DETAIL"
+    AST_GREP_CMD=()
+  fi
+fi
 
 if [[ "${#AST_GREP_CMD[@]}" -gt 0 && -d "$ASTGREP_RULES_DIR" &&
       -n "$PYTHON3_BIN" && -f "$ASTGREP_JSON_PARSER" ]]; then

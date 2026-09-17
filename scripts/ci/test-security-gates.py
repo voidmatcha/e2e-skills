@@ -106,12 +106,19 @@ def main() -> None:
     )
 
     workflow = WORKFLOW.read_text(encoding="utf-8")
-    assert workflow.count("@ast-grep/cli@") == 1
-    assert "npm i -g '@ast-grep/cli@0.39.7'" in workflow
-    assert "@ast-grep/cli@^" not in workflow
+    assert workflow.count("@ast-grep/cli-linux-x64-gnu@0.39.7") == 1
+    assert (
+        "npm pack '@ast-grep/cli-linux-x64-gnu@0.39.7' --ignore-scripts" in workflow
+    )
+    assert (
+        "expected='sha512-S+h5eUR5084y79njxn6NH9RpDpPU2TjdEdUUR+1ncb6j1Rk1pe19ozXEgN0Px81hKK9EOoA2dvYItlOv8kbpwA=='"
+        in workflow
+    )
+    assert "npm i -g" not in workflow
+    assert "@ast-grep/cli@" not in workflow
     assert workflow.count(
         "shell: /bin/bash --noprofile --norc -p -e -o pipefail {0}"
-    ) == 3
+    ) == 4
     assert 'hosted_node="$(command -v node)"' in workflow
     assert 'hosted_node="$(realpath "$hosted_node")"' in workflow
     assert 'if [[ "$hosted_node" != /usr/local/bin/node ]]; then' in workflow

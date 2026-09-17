@@ -42,16 +42,31 @@ jobs:
       - name: Install ripgrep
         run: sudo apt-get update && sudo apt-get install -y ripgrep
 
-      - name: Install ast-grep
-        run: npm i -g '@ast-grep/cli@0.39.7'
-
+      # @ast-grep/cli is a shim whose postinstall links the native binary from a
+      # platform package, so installing it either runs lifecycle scripts or
+      # leaves a shim that exits 1. Fetch the platform package without scripts,
+      # check it against the registry integrity pinned here, and use its binary.
       # scan.sh binds ast-grep only from a fixed absolute candidate list, on
       # purpose: PATH is attacker-controllable for a tool that runs over a
-      # reviewed repository. npm -g installs outside that list on hosted
-      # runners, so point the documented override at the binary we just pinned
-      # rather than widening the search.
-      - name: Export the pinned ast-grep path
-        run: echo "E2E_SMELL_AST_GREP_BIN=$(command -v ast-grep)" >> "$GITHUB_ENV"
+      # reviewed repository. Point the documented override at the verified
+      # binary rather than widening the search.
+      - name: Install pinned ast-grep
+        shell: /bin/bash --noprofile --norc -p -e -o pipefail {0}
+        run: |
+          dest="$RUNNER_TEMP/ast-grep"
+          mkdir -p "$dest"
+          npm pack '@ast-grep/cli-linux-x64-gnu@0.39.7' --ignore-scripts --pack-destination "$dest" >/dev/null
+          tarball="$dest/ast-grep-cli-linux-x64-gnu-0.39.7.tgz"
+          expected='sha512-S+h5eUR5084y79njxn6NH9RpDpPU2TjdEdUUR+1ncb6j1Rk1pe19ozXEgN0Px81hKK9EOoA2dvYItlOv8kbpwA=='
+          actual="sha512-$(openssl dgst -sha512 -binary "$tarball" | base64 -w0)"
+          if [ "$actual" != "$expected" ]; then
+            echo "ast-grep tarball integrity mismatch: $actual" >&2
+            exit 1
+          fi
+          tar -xzf "$tarball" -C "$dest" package/ast-grep
+          chmod 0755 "$dest/package/ast-grep"
+          "$dest/package/ast-grep" --version
+          echo "E2E_SMELL_AST_GREP_BIN=$dest/package/ast-grep" >> "$GITHUB_ENV"
 
       - name: Run convention and security checks
         shell: /bin/bash --noprofile --norc -p -e -o pipefail {0}
