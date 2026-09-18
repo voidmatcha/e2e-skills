@@ -72,3 +72,16 @@ record, not a distribution. Real repositories are dominated by file discovery
 and rule startup as much as by per-hit work, so a 4.1x gain here does not
 predict a 4.1x gain on an arbitrary repository. Nothing here measures review
 quality.
+
+## Addendum 2026-09-18: one real repository
+
+A descriptive check of the Limits section above, not a new acceptance test: one machine (Apple silicon, macOS), one run per version, the same ast-grep 0.45.3 binary pinned through `E2E_SMELL_AST_GREP_BIN`, ESLint download off. Target: `apps/web/playwright` in `calcom/cal.com` at `e91bb0c`, the directory that holds most of its Playwright specs; the repository root itself was refused by both versions' symbolic-link preflight, as designed.
+
+| Scanner | Wall time | Summary line |
+|---|---:|---|
+| v1.16.3 | 212 s | 812 hits, 2 P0, 33 P0 candidates |
+| 1.18.0 working tree | 192 s | 813 hits, 2 P0, 34 P0 candidates |
+
+About 10% faster, which is what the Limits section predicts for a repository whose time is not dominated by per-hit JUSTIFIED resolution. The outputs differ by exactly one hit: the newer scanner reports a `#5a` candidate at `embed-code-generator.e2e.ts:471` that v1.16.3 missed, because the regex literal `/.*Cal\.ns[^(]+\("ui/` on line 410 contains a double quote that the older lexer read as the start of a string. That is the regex-literal fix in 1.17.0 working on real code.
+
+A second repository, `ever-gauzy` at `54b537b`, was not measured: v1.16.3 was stopped after more than 64 minutes, with nearly all of its CPU time in the `scope-worker.py` scope-graph helper rather than in the code this benchmark changed. That helper is unchanged in 1.18.0, so its cost on large monorepos is an open performance question, not a result.
