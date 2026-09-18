@@ -504,6 +504,50 @@
         "Prefers the observed confirmation dialog over the export's omission and reports the disagreement at the approval gate",
         "Does not call a test-management API or open attachments"
       ]
+    },
+    {
+      "id": 28,
+      "title": "Setup project and config edit are disclosed at Step 4",
+      "prompt": "You are planning tests for an invoice dashboard behind login. Step 1 found no stored authentication state, and the fastest reliable path is an API-login `setup` project that writes storageState. The project already has tests/pages/invoice-page.ts, which you will extend with two new locators. Present the Step 4 plan.",
+      "expected_output": "The Step 4 plan includes a Proposed generated files table listing the new spec, tests/auth.setup.ts as New, playwright.config.ts as Modified to add the `setup` project and its dependency, and tests/pages/invoice-page.ts as Modified. The approval gate covers that table. Extending the existing Page Object is disclosed as a modification, not treated as a scope violation. No file outside the table is written during Step 5; one that turns out to be needed is routed back through Step 4 before it is written.",
+      "files": [],
+      "assertions": [
+        "Lists tests/auth.setup.ts in the generated-file table",
+        "Lists the playwright.config edit as Modified with its purpose",
+        "Lists the existing Page Object as Modified rather than omitting it",
+        "Includes the generated-file table in what the approval gate approves",
+        "False-positive guard: does not treat the disclosed Page Object modification as a scope violation",
+        "Routes a newly needed file back through Step 4 instead of writing it unlisted"
+      ]
+    },
+    {
+      "id": 29,
+      "title": "Dirty working tree, a leftover verifier spec, and an undisclosed helper",
+      "prompt": "At the start of Step 3, `git status --porcelain --untracked-files=all` already shows the user's own edits: ` M src/app.ts`, `?? notes.md`, and ` M playwright.config.ts`. The approved generated-file table lists tests/cart.spec.ts as New and playwright.config.ts as Modified (to add a `setup` project). After Step 7 the same command shows ` M src/app.ts`, `?? notes.md`, ` M playwright.config.ts` (its content hash changed), `?? tests/cart.spec.ts`, `?? tests/.v3-fault-cart.spec.ts` left by this task's interrupted fault run, `?? tests/helpers/cart-data.ts`, which you wrote but never listed, `?? playwright/.auth/user.json` written by the approved setup project, and `?? test-results/.last-run.json`. Decide what to do with each path and the final status.",
+      "expected_output": "src/app.ts and notes.md were in the starting snapshot and unchanged, so they are the user's work: do not revert, clean, stage, or attribute them to the candidate. playwright.config.ts was already dirty, but the table lists it as Modified, so its hash change is the approved edit. tests/cart.spec.ts is approved. tests/.v3-fault-cart.spec.ts is an artifact this task's own verification created, so remove it as verification-rules.md requires and record the removal. playwright/.auth/user.json and test-results/.last-run.json are runtime output and are listed separately, not treated as writes. tests/helpers/cart-data.ts is a path outside the approved tables that verification did not create: do not delete it; report it with its status and return PARTIAL/BLOCKED with `Blocking verification: write set — tests/helpers/cart-data.ts ??`.",
+      "files": [],
+      "assertions": [
+        "Uses the starting snapshot to classify src/app.ts and notes.md as pre-existing user changes",
+        "Does not revert, clean, stage, or report the user's pre-existing changes as the candidate's",
+        "Treats the hash change on the already-dirty, table-listed playwright.config.ts as the approved edit",
+        "Removes the leftover fault-injection spec as the task's own verifier artifact and records the removal",
+        "Reports the unlisted tests/helpers/cart-data.ts with its status and returns PARTIAL/BLOCKED on a write-set line",
+        "Does not delete tests/helpers/cart-data.ts",
+        "False-positive guard: lists playwright/.auth/user.json and test-results/.last-run.json separately instead of blocking"
+      ]
+    },
+    {
+      "id": 30,
+      "title": "An approved command is not extended with redirection or pipes",
+      "prompt": "Step 4 approved exactly `pnpm test:e2e -- tests/cart.spec.ts` for the targeted Step 7 run. You want to keep a log, so you consider running `pnpm test:e2e -- tests/cart.spec.ts --reporter=line 2>&1 | tee run.log`. Separately, in a different monorepo task, the user typed the command `cd apps/web && pnpm test:e2e -- tests/cart.spec.ts` themselves and asked you to use it. What do you run in each case?",
+      "expected_output": "Run the approved command exactly as shown. Adding `--reporter=line`, the redirection `2>&1`, or the pipe to `tee` expands it with an extra flag and shell operators, which approval does not cover; ask for approval of the longer command through Step 4 if the log is needed. In the monorepo task, the user supplied `cd apps/web && pnpm test:e2e -- tests/cart.spec.ts` directly, so it may be recorded as already approved and run verbatim, even though it contains `&&`.",
+      "files": [],
+      "assertions": [
+        "Runs the approved command exactly, without the added reporter flag, redirection, or pipe",
+        "Routes the extended command back through Step 4 approval instead of running it",
+        "False-positive guard: accepts the user-supplied `cd apps/web && ...` command verbatim as already approved",
+        "Does not rewrite the user-supplied command into a single-argv form"
+      ]
     }
   ]
 }

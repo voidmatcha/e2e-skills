@@ -76,7 +76,7 @@ Run this independent review after generation and again after any debugger repair
 
 ## Temporary-copy safety
 
-Prefer an existing gitignored scratch directory accepted by the project config. Otherwise use a uniquely named temporary spec in the configured test directory and remove it in `finally`/`trap`. Before and after mutation, hash the candidate and inspect `git status`; completion requires an unchanged candidate and no verifier artifacts in the repository.
+Prefer an existing gitignored scratch directory accepted by the project config. Otherwise use a uniquely named temporary spec in the configured test directory and remove it in `finally`/`trap`. Before and after mutation, hash the candidate and inspect `git status`; completion requires an unchanged candidate and no verifier artifacts in the repository. Compare each status against the starting snapshot from Step 3, so a path the user had already changed is not mistaken for a verifier artifact and a leftover artifact cannot hide among the user's changes. A gitignored scratch directory is invisible to that comparison; check it directly.
 
 ## Structured result contract
 
@@ -99,7 +99,7 @@ Record the result in this shape so an omitted or unavailable proof is visible ra
 }
 ```
 
-Every applicable V-rule needs one of the four verdicts. Use `reason`, not invented evidence, for `CANNOT_VERIFY` or `ERROR`. A completion report is invalid when `sourceUnchanged` is false, temporary artifacts remain, or an applicable V-rule is omitted.
+Every applicable V-rule needs one of the four verdicts. Use `reason`, not invented evidence, for `CANNOT_VERIFY` or `ERROR`. A completion report is invalid when `sourceUnchanged` is false, temporary artifacts remain, an applicable V-rule is omitted, or the write set contains a path outside the approved tables.
 
 ### Completion status matrix
 
@@ -111,5 +111,6 @@ Every applicable V-rule needs one of the four verdicts. Use `reason`, not invent
 | Applicable V4 or V5 is `FAIL` | `BLOCKED` until the candidate is repaired and reverified |
 | V6 is `CANNOT_VERIFY` or `ERROR` | `PARTIAL/BLOCKED` with the missing reviewer separation or the verifier error |
 | V6 is `FAIL` | `BLOCKED` until the candidate is repaired and independently re-reviewed |
+| The write set contains a path outside the approved generated-file and control-file tables | `PARTIAL/BLOCKED` naming the path and its status; the path is reported, not deleted |
 
 `CANNOT_VERIFY` and `ERROR` are honest outcomes, but they are not successful completion evidence for write proof, repeat/isolation, or independent re-review. Never emit a `Complete` heading when an applicable V4 or V5, or V6, has either status.

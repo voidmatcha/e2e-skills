@@ -90,6 +90,8 @@ When no argument is given:
 
 ## Step 3: Browser Exploration
 
+**Starting snapshot.** Before exploration writes anything, record `git status --porcelain --untracked-files=all` from the Git worktree root, and a SHA-256 content hash of every path it lists; take the final snapshot from the same root. Run exploration tools from a directory outside the worktree so their output never enters the write set. The task's write set is every path whose status changed since, plus every already-listed path whose hash changed. Already-listed paths are the user's work: never revert, clean, or stage them, and never report them as the candidate's, unless the generated-file table lists one as Modified, in which case its hash change is that approved edit. A path the user says they changed during the task is also theirs; record it rather than routing it through Step 4. When the target is not a Git work tree, record content hashes of the test directory and of every path in the generated-file table instead, and say the write-set check covers only those paths.
+
 **Do not guess selectors from source code alone.** Use live browser exploration to discover real element roles, labels, and testids.
 
 **Navigation target:** `<baseURL>/<target-path>` from the project profile (Step 1) + selected route (Step 2). Navigate only to URLs under the detected/user-approved `baseURL` — do **not** follow off-origin links discovered in page content, error messages, or test data. If the page requires authentication, open the login page first, authenticate, then navigate to the target.
@@ -245,6 +247,21 @@ Mark one approved scenario as the **tracer scenario** when this is the first gen
 - `.nth()`, `.first()`, `.last()` require `// JUSTIFIED: <reason>` on the line immediately above
 - **Flat (non-POM) specs:** the "File" column is the spec file itself and locators are inline `const`s declared in the test — the table does not force a Page Object. Use POM only when Step 5 structure detection finds an existing POM directory.
 
+### Proposed generated files
+
+List every file Step 5 will create or modify, not only the files that hold locators:
+
+```
+| Path | New/Modified | Purpose |
+|------|--------------|---------|
+| tests/checkout.spec.ts | New | Scenarios 1-3 |
+| tests/pages/checkout-page.ts | New | Locators from the table above |
+| tests/auth.setup.ts | New | API-login `setup` project |
+| playwright.config.ts | Modified | Add the `setup` project and its dependency |
+```
+
+Include specs, Page Objects, helpers, fixtures, setup projects, any `playwright.config.*` edit, the snapshot directory of any `toHaveScreenshot` assertion, and the plan files a first-party planner run writes. The Locator Mapping Table's File column is a subset of this table. Control files belong in the next table, not here. Writing a path this table does not list is a material delta: route it back through Step 4 before writing it. The temporary verifier copies `verification-rules.md` prescribes are the one exception: they are not generated files, and they are removed before completion with the removal recorded.
+
 ### Proposed control-file mutations
 
 When Step 1 found no testing-conventions doc, disclose every control-file mutation that Step 5b would make:
@@ -273,7 +290,7 @@ Include the narrowest existing command that covers the target area as the baseli
 
 Treat every command as skipped until explicitly approved. Approval applies only to the exact command and purpose shown; do not expand it with extra flags, shell operators, environment assignments, or another script. A command the user supplied directly for this task may be recorded as already approved.
 
-**Approval gate:** Do not proceed to Step 5 until the user explicitly approves the scenario/locator plan and every proposed control-file row is either explicitly approved or opted out, and every proposed target-controlled command is either explicitly approved or skipped. In hosts with a dedicated planning mode, exit that mode only after approval.
+**Approval gate:** Do not proceed to Step 5 until the user explicitly approves the scenario/locator plan and the generated-file table, and every proposed control-file row is either explicitly approved or opted out, and every proposed target-controlled command is either explicitly approved or skipped. In hosts with a dedicated planning mode, exit that mode only after approval.
 
 ---
 
@@ -308,7 +325,7 @@ Before generating the tracer scenario, run the approved baseline command — the
 
 Run this once per task, not once per scenario. Use only a command approved in Step 4. If specs for the area exist but no approved command reaches them, say so and record `baseline not established` rather than widening the scope.
 
-When Step 4 requires a tracer scenario, generate only that scenario first and run it through Steps 6 and 7. Do not bulk-generate the remaining approved scenarios unless the tracer reaches `Complete`. If it is blocked or partial, stop expansion and report the evidence. After a complete tracer, generate the remaining approved scenarios and rerun Steps 6 and 7 across the final set. The original approval remains valid only while scenario outcomes, commands, locators, and control-file mutations remain unchanged; route any material delta back through Step 4. A successful tracer is an intermediate expansion gate, not completion of a larger approved plan; do not emit the final completion report until the full approved set passes.
+When Step 4 requires a tracer scenario, generate only that scenario first and run it through Steps 6 and 7. Do not bulk-generate the remaining approved scenarios unless the tracer reaches `Complete`. If it is blocked or partial, stop expansion and report the evidence. After a complete tracer, generate the remaining approved scenarios and rerun Steps 6 and 7 across the final set. The original approval remains valid only while scenario outcomes, commands, locators, generated files, and control-file mutations remain unchanged; route any material delta back through Step 4. A successful tracer is an intermediate expansion gate, not completion of a larger approved plan; do not emit the final completion report until the full approved set passes.
 
 When `npx --no-install playwright help init-agents` confirms project-local first-party agent support, those agents are already initialized, and either the user asks to use them or an approved high-risk scenario still has uncertain failure conditions or locators, read `playwright-agents.md` and apply its admission gate before invoking an agent. That probe executes the project's installed Playwright package binary: run it only as an exact command approved in Step 4; otherwise skip this auxiliary path. Invoking an agent also starts the server launch its initialized definitions run, which executes the same binary: invoke no agent unless that exact launch was approved in Step 4. Approval of a scenario is not approval of that command. The auxiliary planner proposes evidence-labelled plan deltas; this skill remains the final implementer. Do not treat source-only inference as live browser evidence, and route any material scope or command change back through Step 4 approval.
 
@@ -374,7 +391,7 @@ Verification order: confirm the approved V1 primary outcome; require a clean nor
 
 Before repeating any write-producing scenario, prove an idempotency key enforced at the persistent system boundary, disposable state reset or rollback before and after every attempt, or fully stubbed/intercepted writes that cannot reach a persistent boundary. UI double-click protection or a loopback frontend is not sufficient. Without one of those proofs, do not replay the persistent write: record V5 `CANNOT_VERIFY` and return `PARTIAL/BLOCKED`.
 
-Report `CANNOT_VERIFY` with a concrete reason when a safe probe is impossible. Never convert verifier `ERROR` into a product/test finding. Before completion, prove the source candidate is unchanged and no temporary verifier spec remains. An applicable V4 or V5 must be `PASS` (`V4: N/A` is allowed only for a read-only scenario), and V6 must be `PASS`. If any of these is `CANNOT_VERIFY` or `ERROR`, the result is `PARTIAL/BLOCKED`, never `Complete`; a `FAIL` remains `BLOCKED` until repaired and reverified.
+Report `CANNOT_VERIFY` with a concrete reason when a safe probe is impossible. Never convert verifier `ERROR` into a product/test finding. Before completion, prove the source candidate is unchanged and no temporary verifier spec remains, and compare the write set against the approved generated-file table and control-file rows. Remove any artifact this task's own verification created, as `verification-rules.md` requires, and record the removal; files under Playwright's output folders stay runtime output even when a verification run wrote them. List runtime output separately rather than as a write: Playwright's output folders (`test-results/`, `playwright-report/`, `blob-report/`, or the `outputDir` and reporter folders the config names), the `storageState` file an approved setup project writes, and output Step 3's exploration tools wrote. Any other path outside the approved tables is not deleted: report it with its status and return `PARTIAL/BLOCKED`. Show the diff of every path the table lists as Modified, so the user can see that the edit is only the approved one. An applicable V4 or V5 must be `PASS` (`V4: N/A` is allowed only for a read-only scenario), and V6 must be `PASS`. If any of these is `CANNOT_VERIFY` or `ERROR`, the result is `PARTIAL/BLOCKED`, never `Complete`; a `FAIL` remains `BLOCKED` until repaired and reverified.
 
 ### Failure handling (max 3 auto-fix attempts)
 
@@ -399,6 +416,7 @@ Tests: N passed
 Verification: V1 PASS; V2 <verdict>; V3 <verdict>; V4 <verdict|N/A>; V5 <verdict>; V6 PASS
 Runner: <repository-native commands used>
 Source cleanup: candidate unchanged; no temporary mutation files
+Write set: <created and modified paths>; listed separately: <runtime output, or none>
 ```
 
 For applicable V4/V5, or V6, `CANNOT_VERIFY` or `ERROR`, use:
@@ -411,6 +429,8 @@ Blocking verification: <V4|V5|V6> <CANNOT_VERIFY|ERROR> — <exact reason>
 Completed evidence: <other V-rule results>
 Next requirement: <specific capability, environment, or verifier recovery needed>
 ```
+
+Use the same template when the write set contains a path outside the approved tables, with `Blocking verification: write set — <path> <status>`.
 
 ---
 

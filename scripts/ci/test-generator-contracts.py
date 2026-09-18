@@ -1319,6 +1319,104 @@ def assert_imported_test_case_contract(text: str) -> None:
     assert "Do not call a test-management API, open attachments, or fetch a case yourself" in compact
 
 
+def assert_write_scope_contract(text: str, verification_rules: str) -> None:
+    """Every file the task writes is disclosed, and the write set is checked."""
+    generated = section(text, "### Proposed generated files", "### Proposed control-file mutations")
+    generated_compact = " ".join(generated.split())
+    assert "| Path | New/Modified | Purpose |" in generated
+    assert "playwright.config.ts | Modified |" in generated
+    assert "Include specs, Page Objects, helpers, fixtures, setup projects, any `playwright.config.*` edit" in generated_compact
+    assert "The Locator Mapping Table's File column is a subset of this table" in generated_compact
+    assert "Writing a path this table does not list is a material delta" in generated_compact
+    assert "The temporary verifier copies `verification-rules.md` prescribes are the one exception" in generated_compact
+    compact = " ".join(text.split())
+    assert "explicitly approves the scenario/locator plan and the generated-file table" in compact
+    step_3 = " ".join(section(text, "## Step 3: Browser Exploration", "**Do not guess selectors").split())
+    assert "Before exploration writes anything, record `git status --porcelain --untracked-files=all` from the Git worktree root" in step_3
+    assert "take the final snapshot from the same root" in step_3
+    assert "a SHA-256 content hash of every path it lists" in step_3
+    assert "Run exploration tools from a directory outside the worktree" in step_3
+    assert "plus every already-listed path whose hash changed" in step_3
+    assert "never revert, clean, or stage them, and never report them as the candidate's" in step_3
+    assert "in which case its hash change is that approved edit" in step_3
+    assert "A path the user says they changed during the task is also theirs" in step_3
+    assert "say the write-set check covers only those paths" in step_3
+    assert "the snapshot directory of any `toHaveScreenshot` assertion, and the plan files a first-party planner run writes" in generated_compact
+    assert "scenario outcomes, commands, locators, generated files, and control-file mutations remain unchanged" in compact
+    step_7 = " ".join(section(text, "## Step 7: V1–V6 Verification + Failure Handling", "### Failure handling").split())
+    assert "compare the write set against the approved generated-file table and control-file rows" in step_7
+    assert "Remove any artifact this task's own verification created, as `verification-rules.md` requires, and record the removal" in step_7
+    assert "the `storageState` file an approved setup project writes" in step_7
+    assert "files under Playwright's output folders stay runtime output even when a verification run wrote them" in step_7
+    assert "Show the diff of every path the table lists as Modified" in step_7
+    assert "Any other path outside the approved tables is not deleted: report it with its status and return `PARTIAL/BLOCKED`" in step_7
+    templates = section(text, "### Completion report (on full pass)", "## Reference")
+    assert "Write set: <created and modified paths>; listed separately: <runtime output, or none>" in templates
+    assert "`Blocking verification: write set — <path> <status>`" in templates
+    rules_compact = " ".join(verification_rules.split())
+    assert "Compare each status against the starting snapshot from Step 3" in rules_compact
+    assert "A gitignored scratch directory is invisible to that comparison; check it directly" in rules_compact
+    assert "or the write set contains a path outside the approved tables" in rules_compact
+    assert "| The write set contains a path outside the approved generated-file and control-file tables | `PARTIAL/BLOCKED` naming the path" in verification_rules
+    assert "a leftover artifact cannot hide among the user's changes" in rules_compact
+
+
+def assert_command_approval_scope_contract(text: str) -> None:
+    """Approval covers the exact command shown, nothing appended to it."""
+    commands = " ".join(section(text, "### Proposed target-controlled commands", "**Approval gate:**").split())
+    assert "Treat every command as skipped until explicitly approved" in commands
+    assert "Approval applies only to the exact command and purpose shown" in commands
+    assert "do not expand it with extra flags, shell operators, environment assignments, or another script" in commands
+    assert "A command the user supplied directly for this task may be recorded as already approved" in commands
+
+
+def exercise_write_scope_mutation_guards(text: str, verification_rules: str) -> None:
+    generated = section(text, "### Proposed generated files", "### Proposed control-file mutations")
+    mutations = (
+        (assert_write_scope_contract, text.replace(generated, "\n\n", 1), verification_rules),
+        (
+            assert_write_scope_contract,
+            text.replace("never revert, clean, or stage them", "revert them", 1),
+            verification_rules,
+        ),
+        (
+            assert_write_scope_contract,
+            text.replace("report it with its status and return `PARTIAL/BLOCKED`", "report it with its status and return `Complete`", 1),
+            verification_rules,
+        ),
+        (
+            assert_write_scope_contract,
+            text.replace("Remove any artifact this task's own verification created", "Keep any artifact this task's own verification created", 1),
+            verification_rules,
+        ),
+        (
+            assert_write_scope_contract,
+            text,
+            verification_rules.replace("`PARTIAL/BLOCKED` naming the path and its status", "`Complete`", 1),
+        ),
+        (
+            assert_write_scope_contract,
+            text,
+            verification_rules.replace("Compare each status against the starting snapshot from Step 3", "", 1),
+        ),
+    )
+    for check, mutated_text, mutated_rules in mutations:
+        try:
+            check(mutated_text, mutated_rules)
+        except AssertionError:
+            continue
+        raise AssertionError(f"{check.__name__} survived a mutation")
+    for mutated in (
+        text.replace("do not expand it with extra flags", "you may expand it with extra flags", 1),
+        text.replace("Approval applies only to the exact command and purpose shown; ", "", 1),
+    ):
+        try:
+            assert_command_approval_scope_contract(mutated)
+        except AssertionError:
+            continue
+        raise AssertionError("assert_command_approval_scope_contract survived a mutation")
+
+
 def exercise_secondary_outcome_and_import_mutation_guards(text: str) -> None:
     scenarios = section(text, "### Scenarios", "### Locator Mapping Table")
     admission = section(text, "### Scenario admission", "### Scenarios")
@@ -1628,6 +1726,13 @@ def assert_v6_completion_contract(
         in completion_templates
     )
     blocked_eval = eval_contract(evals_by_id, 10)
+    setup_scope_eval = eval_contract(evals_by_id, 28)
+    assert "auth.setup.ts" in setup_scope_eval and "playwright.config" in setup_scope_eval
+    dirty_tree_eval = eval_contract(evals_by_id, 29)
+    assert "starting snapshot" in dirty_tree_eval and "PARTIAL/BLOCKED" in dirty_tree_eval
+    assert "remove it as verification-rules.md requires" in dirty_tree_eval and "do not delete it" in dirty_tree_eval
+    command_scope_eval = eval_contract(evals_by_id, 30)
+    assert "2>&1 | tee" in command_scope_eval and "cd apps/web" in command_scope_eval
     assert "Blocking verification: V6 CANNOT_VERIFY" in blocked_eval
     assert "never emits the Complete heading" in blocked_eval
     assert "does not report V6 FAIL or a test defect" in blocked_eval
@@ -2178,6 +2283,9 @@ def main() -> None:
     assert_secondary_outcome_contract(text)
     assert_imported_test_case_contract(text)
     exercise_secondary_outcome_and_import_mutation_guards(text)
+    assert_write_scope_contract(text, verification_rules)
+    assert_command_approval_scope_contract(text)
+    exercise_write_scope_mutation_guards(text, verification_rules)
     exercise_failure_handling_mutation_guard(text)
     assert "Tracer: <scenario and PASS before expansion | N/A>" in text
 
@@ -2348,7 +2456,7 @@ def main() -> None:
     )
     assert "Applicable V4 or V5 is `CANNOT_VERIFY`" in completion_matrix
     assert "Applicable V4 or V5 is `ERROR`" in completion_matrix
-    assert completion_matrix.count("`PARTIAL/BLOCKED`") == 3
+    assert completion_matrix.count("`PARTIAL/BLOCKED`") == 4
     assert "Applicable V4 or V5 is `FAIL`" in completion_matrix
     assert "`BLOCKED` until the candidate is repaired and reverified" in completion_matrix
 
