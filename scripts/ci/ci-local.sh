@@ -402,8 +402,7 @@ step "E2E smell scan"
 # this gate on Tier 3 alone, so make that visible instead of silent.
 SELF_SCAN_AST_GREP=""
 for SELF_SCAN_AST_CANDIDATE in "${E2E_SMELL_AST_GREP_BIN:-}" \
-  /opt/homebrew/bin/ast-grep /usr/local/bin/ast-grep /usr/bin/ast-grep \
-  /opt/homebrew/bin/sg /usr/local/bin/sg /usr/bin/sg; do
+  /opt/homebrew/bin/ast-grep /usr/local/bin/ast-grep /usr/bin/ast-grep; do
   if [ -n "$SELF_SCAN_AST_CANDIDATE" ] && [ -x "$SELF_SCAN_AST_CANDIDATE" ]; then
     SELF_SCAN_AST_GREP="$SELF_SCAN_AST_CANDIDATE"
     break

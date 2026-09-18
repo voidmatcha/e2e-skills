@@ -3329,9 +3329,13 @@ if [[ "$E2E_SMELL_IGNORE_HOST_AST_GREP" == "1" ]]; then
   fi
   _ast_candidate=""
 else
+# No `sg` candidates: on Linux /usr/bin/sg is the shadow-utils group command,
+# and every ast-grep installer that ships `sg` also ships `ast-grep` beside it.
+# E2E_SMELL_AST_GREP_BIN still accepts an explicit path; point it at ast-grep
+# itself, because a current Homebrew `sg` is a shim that looks up ast-grep on
+# PATH, which this script pins to system directories.
 _ast_candidate=$(bind_optional_tool E2E_SMELL_AST_GREP_BIN "${E2E_SMELL_AST_GREP_BIN:-}" \
-  /opt/homebrew/bin/ast-grep /usr/local/bin/ast-grep /usr/bin/ast-grep \
-  /opt/homebrew/bin/sg /usr/local/bin/sg /usr/bin/sg)
+  /opt/homebrew/bin/ast-grep /usr/local/bin/ast-grep /usr/bin/ast-grep)
 fi
 if [[ -n "$_ast_candidate" ]]; then
   AST_GREP="$_ast_candidate"

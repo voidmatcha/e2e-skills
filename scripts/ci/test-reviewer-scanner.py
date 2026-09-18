@@ -725,6 +725,16 @@ def assert_ast_grep_can_be_disabled_even_when_installed() -> None:
         assert "Summary:" in result.stdout
 
 
+def assert_ast_grep_fixed_candidates_exclude_system_sg() -> None:
+    """Linux /usr/bin/sg is shadow-utils' group command, not ast-grep."""
+    source = SCANNER.read_text(encoding="utf-8")
+    call = re.search(r"bind_optional_tool E2E_SMELL_AST_GREP_BIN [^)]*\)", source)
+    assert call, "ast-grep fixed candidate list not found"
+    candidates = re.findall(r"(/[\w/.-]+)", call.group(0))
+    assert candidates, call.group(0)
+    assert all(path.endswith("/ast-grep") for path in candidates), candidates
+
+
 def assert_ast_grep_fail_closed() -> None:
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-ast-failure-") as temp:
         root = Path(temp) / "project"
@@ -6645,6 +6655,7 @@ def main() -> None:
         assert_eslint_download_failure_falls_through_loudly,
         assert_foreign_cy_basename_requires_executable_cypress_provenance,
         assert_ast_grep_can_be_disabled_even_when_installed,
+        assert_ast_grep_fixed_candidates_exclude_system_sg,
         assert_ast_grep_fail_closed,
         assert_explicit_tool_binds_canonical_resolved_path,
         assert_default_versioned_tool_symlink_executes,
