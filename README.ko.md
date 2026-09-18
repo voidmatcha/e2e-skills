@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=54ceb11293dcb2af85af10dc6ade05fd828d3502448c33408511dc0d893a902b; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=20a8fd8a8a49ebae6d225a93accb88f54262b56eba10c2972d5354435927ca68; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 AI 코딩 에이전트가 Playwright와 Cypress E2E 테스트를 생성하고 리뷰하며 실패 원인을 분석할 때 쓰는 네 종류의 Agent Skills 모음입니다. 새 테스트 생성은 Playwright를 지원하고, 기존 테스트나 PR/diff 범위의 변경 사항 리뷰와 실패 분석은 Playwright와 Cypress를 지원합니다. 리뷰 목록 가운데 규칙만으로 판별할 수 있는 항목을 찾는 `deterministic scanner`도 포함합니다.
 
@@ -259,7 +259,7 @@ merge 건수를 전체 제출 건수와 함께 볼 수 있습니다. [Field revi
 
 이것도 정밀도 수치는 아닙니다. merge는 관리자가 패치를 받아들였다는 뜻일 뿐, 지적의 심각도를 올바르게 판단했다는 의미는 아닙니다. 제출할 때 서명을 남기는 것은 선택 사항이므로, 서명이 없는 거절 사례는 집계에서 빠져 비율이 실제보다 높게 나타날 수 있습니다. 다만 이 판정은 프로젝트가 통제할 수 없습니다.
 
-결정론적 스캐너는 별도로 측정합니다. [Field scan v1](benchmarks/field-scan-v1/README.md)은 동일한 공개 저장소 12개를 고정된 커밋에서 다시 스캔하며, 기존의 30분 제한과 기본 후보 수 제한을 적용합니다. **12개 중 10개는 억제된 규칙 없이 스캔을 완료했고 P0 0건을 보고했습니다**. 나머지 2개는 시간 제한에 걸렸습니다. 결과 목록은 리뷰가 필요한 후보를 별도로 표시하며, 재현율이나 정밀도를 입증하지는 않습니다. 이전에 `#3` 294건을 확정된 결함으로 보고한 것은 스캐너의 분류 결함이었습니다. 정정 내용과 당시 변경 전후 비교 근거는 링크된 문서에 있습니다. 이후 별도로 공개된 프로토콜(30분 제한 없음, 스캐너 한도를 문서화된 상한까지 상향)을 적용한 [완료 확장 작업](benchmarks/field-scan-v1-extension/README.md)이 원래 설계된 12개 표본을 마저 완성했습니다. 시간 초과였던 두 저장소 모두 억제된 규칙 없이 정상 종료했고 P0 0건을 보고했습니다. 이 확장 작업은 고정된 v1 ledger를 다시 쓰지 않습니다.
+결정론적 스캐너는 별도로 측정합니다. [Field scan v1](benchmarks/field-scan-v1/README.md)은 동일한 공개 저장소 12개를 고정된 커밋에서 다시 스캔하며, 기존의 30분 제한과 기본 후보 수 제한을 적용합니다. **12개 중 10개는 억제된 규칙 없이 스캔을 완료했고 P0 0건을 보고했습니다**. 나머지 2개는 시간 제한에 걸렸습니다. 이 수치는 2026-09-18 hot path 개선([scanner hot path v1](benchmarks/scanner-hot-path-v1/README.md), 밀집 fixture 기준 지적당 비용 약 4분의 1) 이전에 측정한 것이며, 여기서 다시 측정하지는 않았습니다. 결과 목록은 리뷰가 필요한 후보를 별도로 표시하며, 재현율이나 정밀도를 입증하지는 않습니다. 이전에 `#3` 294건을 확정된 결함으로 보고한 것은 스캐너의 분류 결함이었습니다. 정정 내용과 당시 변경 전후 비교 근거는 링크된 문서에 있습니다. 이후 별도로 공개된 프로토콜(30분 제한 없음, 스캐너 한도를 문서화된 상한까지 상향)을 적용한 [완료 확장 작업](benchmarks/field-scan-v1-extension/README.md)이 원래 설계된 12개 표본을 마저 완성했습니다. 시간 초과였던 두 저장소 모두 억제된 규칙 없이 정상 종료했고 P0 0건을 보고했습니다. 이 확장 작업은 고정된 v1 ledger를 다시 쓰지 않습니다.
 
 - 가장 강한 독립적 신호는 점수가 아닙니다. 항상 통과하는 Locator 단언 패턴(`#4f`)이 공식 `eslint-plugin-playwright`의 `no-unnecessary-assertions` 규칙으로 채택됐습니다(merge된 PR은 [로드맵](docs/roadmap.md) 참고). 이 프로젝트와 이해관계가 없는 외부 관리자가 규칙 정의를 받아들인 것입니다. 동시에 이제는 lint가 그 형태를 잡는다는 뜻이므로, 이 프로젝트는 더 이상 그 사례를 자기 성과로 주장하지 않습니다.
 - `docs/rule-self-audit.md`는 두 모델 계열이 수행한 adversarial audit을 통해 이 프로젝트 **자신의** P0 규칙에서 발견한 결함을 기록합니다. 단일 리뷰어라면 통과시켰을 규칙들이 포함돼 있습니다.

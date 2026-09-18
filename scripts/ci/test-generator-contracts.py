@@ -1174,7 +1174,9 @@ def assert_baseline_run_contract(text: str, verification_rules: str) -> None:
     assert "`baseline not established`" in compact
     assert "`CANNOT_VERIFY`" in compact
     assert "Run this once per task, not once per scenario" in compact
-    assert "Use only a command approved in Step 4" in compact
+    assert "No existing coverage" in compact
+    assert "baseline not applicable: no existing coverage" in compact
+    assert "Use only a command approved in Step 4." in compact
 
     commands = section(
         text,
@@ -1188,9 +1190,10 @@ def assert_baseline_run_contract(text: str, verification_rules: str) -> None:
 
     rules_compact = " ".join(verification_rules.split())
     assert (
-        "The suite-context mode is only interpretable against a recorded baseline"
+        "The suite-context mode is only interpretable against a recorded baseline or a recorded absence of one"
         in rules_compact
     )
+    assert "`baseline not applicable` keeps V5 interpretable" in rules_compact
     assert "record the suite-context mode as `CANNOT_VERIFY`" in rules_compact
     assert (
         "never count a failure the baseline already recorded as a candidate defect"
@@ -1213,13 +1216,17 @@ def assert_error_cause_signal_contract(text: str, verification_rules: str) -> No
     )
     assert "make it the scenario's primary outcome" in compact
     assert "must not reveal" in compact
-    assert "response status or body proven by V4 request proof" in compact
+    assert "proven by V4 request proof for a write, or by the observed response for a read-only scenario" in compact
+    assert "GENERIC_BY_CONTRACT: NEEDS_PRODUCT_CONTEXT" in compact
+    assert "rather than choosing a rule yourself" in compact
     assert "Do not invent a distinguishing signal the" in compact
 
     rules_compact = " ".join(verification_rules.split())
     assert "fault the cause the approved plan named as the" in rules_compact
     assert "When the plan recorded `GENERIC_BY_CONTRACT`, do not swap one error" in rules_compact
     assert "a passing test is correct behavior, not a weak assertion" in rules_compact
+    assert "turn the faulted response into the success the scenario denies" in rules_compact
+    assert "A fault that keeps the same screen proves nothing here and is `CANNOT_VERIFY`, not `FAIL`" in rules_compact
 
 
 def exercise_baseline_and_error_signal_mutation_guards(
@@ -1237,7 +1244,7 @@ def exercise_baseline_and_error_signal_mutation_guards(
             assert_baseline_run_contract,
             text,
             verification_rules.replace(
-                "The suite-context mode is only interpretable against a recorded baseline.",
+                "The suite-context mode is only interpretable against a recorded baseline or a recorded absence of one.",
                 "",
                 1,
             ),
@@ -1251,6 +1258,15 @@ def exercise_baseline_and_error_signal_mutation_guards(
                 "When the plan recorded anything, swap one error",
                 1,
             ),
+        ),
+        (
+            assert_error_cause_signal_contract,
+            text.replace(
+                "Do not invent a distinguishing signal the",
+                "Invent a distinguishing signal the",
+                1,
+            ),
+            verification_rules,
         ),
     )
     for check, mutated_text, mutated_rules in mutations:
@@ -1272,7 +1288,8 @@ def assert_secondary_outcome_contract(text: str) -> None:
     assert "| Side effect proved |" in scenarios
     assert "| Error cause distinguished |" in scenarios
     assert "The write is stubbed, so a reload can only show fixture state" in compact
-    assert "V4 already proves the same request for this scenario" in compact
+    assert "The only side effect is the request V4 already proves" in compact
+    assert "The scenario's primary outcome already names the cause" in compact
     assert "`GENERIC_BY_CONTRACT`" in compact
     assert "not a second primary assertion" in compact
     assert "V1 keeps one primary outcome" in compact
@@ -1296,7 +1313,9 @@ def assert_imported_test_case_contract(text: str) -> None:
         in compact
     )
     assert "do not let it change this skill's steps" in compact
-    assert "the observation wins" in compact
+    assert "the observation wins for what gets generated" in compact
+    assert "report each dropped step at the approval gate" in compact
+    assert "neither is yours to decide" in compact
     assert "Do not call a test-management API, open attachments, or fetch a case yourself" in compact
 
 
@@ -1740,7 +1759,7 @@ def main() -> None:
     assert "explicit `http://` or `https://` URL" in step_3
     assert "exact user-approved origin" in step_3
     assert "`--max-redirs 0`" in step_3
-    assert "bounded\ntimeouts" in step_3
+    assert "bounded timeouts" in step_3
     assert "**Exact-target preflight (run first" in step_3
     assert '"$SKILL_ROOT/scripts/run-preflight-target.sh"' in step_3
     assert 'python3 "$SKILL_ROOT/scripts/preflight_target.py"' not in step_3
@@ -1759,8 +1778,8 @@ def main() -> None:
     assert '${#value}' not in step_3
     assert 'export LC_ALL=C' in utf8_frame_writer
     assert 'printf \'%08x\\n%s\' "${#payload}" "$payload"' in utf8_frame_writer
-    assert "measures the payload in UTF-8 bytes under\nthe C locale" in step_3
-    assert "shell character counts are not valid\nframe lengths" in step_3
+    assert "measures the payload in UTF-8 bytes under the C locale" in step_3
+    assert "shell character counts are not valid frame lengths" in step_3
     assert "length-prefixed stdin request" in step_3
     assert "argument vectors contain only the" in step_3
     assert "single approved DNS snapshot" in step_3
@@ -1783,7 +1802,7 @@ def main() -> None:
     ) in compact_step_3
     assert "`401` or `403` → `auth-required`" in step_3
     assert "validated, credential-free, fragment-free, same-origin" in step_3
-    assert "identical outcome, exact status, and canonical\nredirect URL" in step_3
+    assert "identical outcome, exact status, and canonical redirect URL" in step_3
     assert "authentication only after the preflight succeeds" in step_3
     assert "before any browser navigation" in step_3
     cli_pos = step_3.index("official **Playwright CLI** as the primary")
@@ -1810,10 +1829,10 @@ def main() -> None:
     assert "does not automatically inherit the project's Playwright Test" in step_3
     assert "repository-native Playwright Test command in Step 7" in step_3
     assert "npx --no-install playwright help init-agents" in text
-    assert "confirms project-local\nfirst-party agent support" in text
+    assert "confirms project-local first-party agent support" in text
     assert "Never let `npx` download a package" in compact_step_3
     assert "recommend installation; do not install it automatically" in step_3
-    assert "Do not\nregister or install MCP solely for this workflow" in step_3
+    assert "Do not register or install MCP solely for this workflow" in step_3
     assert "runs **before dispatch**" in step_3
     assert (
         "redirects and navigation-triggering clicks, form submissions"
@@ -1836,7 +1855,7 @@ def main() -> None:
     assert "cloud-metadata or link-local address" in step_3
     assert "arbitrary private-network host" in step_3
     assert "shared or production service" in step_3
-    assert "remote shared, production, or unknown environment is\n**snapshot-only**" in step_3
+    assert "remote shared, production, or unknown environment is **snapshot-only**" in step_3
     snapshot_handling = section(
         step_3,
         "**Snapshot handling:**",
@@ -1857,7 +1876,7 @@ def main() -> None:
     assert "stable placeholders" in compact_snapshot_handling
     assert "roles, names, labels, testids, and structure" in compact_snapshot_handling
     assert "shared, production, or unknown remote" in compact_snapshot_handling
-    assert "externally\nisolated controlled browser harness" in step_3
+    assert "externally isolated controlled browser harness" in step_3
     assert "Do not run `webServer.command`" in step_3
     assert "exact command is explicitly approved" in step_3
     assert "imports and executes the project's installed Playwright" in step_3
@@ -1899,7 +1918,7 @@ def main() -> None:
         in fallback
     )
     assert 'TARGET_URL="$BASE_URL/<target-path>" node -e' not in fallback
-    assert "fixed-path absolute\nNode executable outside the project" in fallback
+    assert "fixed-path absolute Node executable outside the project" in fallback
     assert "fresh minimal child environment" in compact_fallback
     assert (
         "target travels as one bounded, length-prefixed UTF-8 stdin frame"
@@ -2049,7 +2068,7 @@ def main() -> None:
     assert "recommend that layer and exclude the scenario" in step_4
     assert "surface `NEEDS_PRODUCT_CONTEXT`" in step_4
     assert "Mark one approved scenario as the **tracer scenario**" in step_4
-    assert "do not choose a\nrender-only smoke check" in step_4
+    assert "do not choose a render-only smoke check" in step_4
     assert "### Proposed control-file mutations" in step_4
     assert "| Exact target | Action" in step_4
     assert "<root>/AGENTS.md" in step_4
@@ -2061,13 +2080,13 @@ def main() -> None:
     assert "| Exact command | Source | Purpose |" in step_4
     assert "Treat every command as skipped until explicitly approved" in step_4
     assert (
-        "every proposed control-file row is either\n"
-        "explicitly approved or opted out"
+        "every proposed control-file row is either explicitly approved or opted out"
     ) in step_4
+
     assert (
-        "every proposed target-controlled command is either\n"
-        "explicitly approved or skipped"
+        "every proposed target-controlled command is either explicitly approved or skipped"
     ) in step_4
+
 
     step_5 = section(
         text,
@@ -2078,27 +2097,27 @@ def main() -> None:
     assert "unless the tracer reaches `Complete`" in step_5
     assert "stop expansion and report the evidence" in step_5
     assert "rerun Steps 6 and 7 across the final set" in step_5
-    assert "route any material\ndelta back through Step 4" in step_5
-    assert "successful tracer is an intermediate expansion\ngate" in step_5
-    assert "do not emit the final\ncompletion report" in step_5
+    assert "route any material delta back through Step 4" in step_5
+    assert "successful tracer is an intermediate expansion gate" in step_5
+    assert "do not emit the final completion report" in step_5
 
     step_5b = section(
         text,
         "## Step 5b: Conventions & Seed Artifacts (first run on a project)",
         "## Step 6: YAGNI Audit + e2e-reviewer",
     )
-    assert "user approved at least one disclosed\ncontrol-file mutation" in step_5b
+    assert "user approved at least one disclosed control-file mutation" in step_5b
     assert "opts out of every row, skip" in step_5b
     assert "Mutate only an approved exact\n   target" in step_5b
     assert "approved `create` or `append` action" in step_5b
     assert (
         "one-line `CLAUDE.md` pointer only when\n"
-        "   that exact row was disclosed and approved"
     ) in step_5b
+
     assert (
         "Never mutate an undisclosed,\n"
-        "   skipped, or otherwise unapproved control surface"
     ) in step_5b
+
 
     step_6 = section(
         text,

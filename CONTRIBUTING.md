@@ -25,7 +25,7 @@ Not every change needs the same amount of process. Which tier a change falls int
 | --- | --- | --- |
 | **0 — Docs & typos** | README/CHANGELOG wording, comments, typo fixes, anything that isn't inside `skills/*/SKILL.md` or the reviewer taxonomy | Nothing beyond `scripts/ci/review.sh`'s Markdown/link checks passing |
 | **1 — Skill instruction wording** | Editing prose inside a `skills/*/SKILL.md` that doesn't add/remove/renumber a pattern ID, F-code, or verdict term | A RED/GREEN contract test proving the old wording violated your intent and the new wording satisfies it (see `scripts/ci/test-routing-contract.py` for a worked example), then `ci-local.sh` green — `scripts/dev/tier1-check.sh` runs that gate for you |
-| **2 — Taxonomy / decision-surface change** | New or renumbered pattern IDs, F-codes, verdict vocabulary, or a delegation-routing decision not yet backed by measured evidence | A preregistered benchmark protocol under `benchmarks/`, per the pattern in `benchmarks/subagent-routing-v1/` — the heavy path below, reserved for changes that make a new correctness claim about the skills themselves |
+| **2 — Taxonomy / decision-surface change** | New or renumbered pattern IDs, F-codes, verdict vocabulary, or a delegation-routing decision not yet backed by measured evidence | A preregistered benchmark protocol under `benchmarks/`, per the pattern in `benchmarks/subagent-routing-v1/` (or `benchmarks/stub-echo-v1/`, where the same process refused a proposed rule) — the heavy path below, reserved for changes that make a new correctness claim about the skills themselves |
 
 Most contributions are Tier 0 or Tier 1. Tier 2 is rare by design and most
 contributors will never need it. Issues labeled `good first issue` are Tier

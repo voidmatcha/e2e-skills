@@ -46,12 +46,7 @@ Use `page.route()` or an existing project fixture to corrupt a product input tha
 
 Before applying the fault, record both (1) the exact unchanged primary assertion expected to fail and (2) the observable mismatch that its matcher is expected to report under that fault. First require the unfaulted candidate to pass. The unchanged primary assertion must turn red. The fault kills the test only when the faulted run turns red at that exact primary assertion and its diagnostics match the declared observable difference. A red run with a different failure location or mismatch is `ERROR` when the verifier or run infrastructure failed, or `CANNOT_VERIFY` when causal attribution cannot be established; it is never `PASS`.
 
-For an error scenario, fault the cause the approved plan named as the
-distinguishing signal, and check that the unchanged primary assertion reports
-that cause. When the plan recorded `GENERIC_BY_CONTRACT`, do not swap one error
-cause for another: the product renders the same screen for both, so a passing
-test is correct behavior, not a weak assertion. Fault the proven request or
-response evidence instead.
+For an error scenario, fault the cause the approved plan named as the distinguishing signal, and check that the unchanged primary assertion reports that cause. When the plan recorded `GENERIC_BY_CONTRACT`, do not swap one error cause for another: the product renders the same screen for both, so a passing test is correct behavior, not a weak assertion. Fault the failure itself instead — turn the faulted response into the success the scenario denies — so the generic message must disappear for the unchanged primary assertion to fail. A fault that keeps the same screen proves nothing here and is `CANNOT_VERIFY`, not `FAIL`.
 
 Do not invent endpoints or mutate third-party/production traffic. Return `CANNOT_VERIFY` when no safe, local, interceptable dependency is evidenced. This per-scenario runtime declaration is not the `generator-faultkill-v1` planning DSL and does not change that benchmark's frozen plan language.
 
@@ -69,7 +64,7 @@ Before repeating a write-producing scenario, prove at least one replay-safe boun
 2. every attempt uses disposable state that is reset or rolled back before and after that attempt; or
 3. every write is fully stubbed or intercepted, with evidence that no persistent boundary is reached.
 
-The suite-context mode is only interpretable against a recorded baseline. When the Step 5 baseline run was not established, record the suite-context mode as `CANNOT_VERIFY` with that reason rather than reading its result as isolation evidence, and never count a failure the baseline already recorded as a candidate defect.
+The suite-context mode is only interpretable against a recorded baseline or a recorded absence of one. A repository with no existing coverage of the target area has nothing to run, so `baseline not applicable` keeps V5 interpretable and does not block completion. When specs exist but the baseline could not be run, record the suite-context mode as `CANNOT_VERIFY` with that reason rather than reading its result as isolation evidence, and never count a failure the baseline already recorded as a candidate defect.
 
 A disabled button, double-click guard, unique UI value, or loopback frontend alone does not prove replay safety. If none of the three boundaries is proven, do not replay the persistent write. Record V5 as `CANNOT_VERIFY` and return `PARTIAL/BLOCKED` under the completion matrix. A single normal run may still provide V1/V4 evidence, but it cannot substitute for V5 repetition.
 

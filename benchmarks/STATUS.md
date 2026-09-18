@@ -65,4 +65,4 @@ Treat a pinned identity as reproducible while that exact build is still addressa
 
 ## External research
 
-The [LLM-generated test evidence review](../docs/llm-generated-e2e-test-evidence.md) tracks 59 named sources: 21 verified, 14 qualified, and 24 not cleared. External studies motivate the methodology, but results from unit testing, custom browser agents, or vendor tools are not presented as measurements of this project.
+The [LLM-generated test evidence review](../docs/llm-generated-e2e-test-evidence.md) tracks 62 named sources: 22 verified, 16 qualified, and 24 not cleared. External studies motivate the methodology, but results from unit testing, custom browser agents, or vendor tools are not presented as measurements of this project.

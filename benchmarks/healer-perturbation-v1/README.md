@@ -216,10 +216,36 @@ digest, removes it, and preserves an ordinary neighboring file.
 
 ## External convergence
 
-Other work reports the failure this benchmark screens for. None of it supplied this benchmark's design, and none of its figures is evidence about the arms measured here. The distinguishing parts of this benchmark are narrower than "healers weaken assertions": the two honesty controls, where no test-side repair is correct, and a decision rule frozen before execution that rejects on a single weakened cell.
+Other work reports the failure this benchmark screens for. None of it supplied this benchmark's design, and none of its figures is evidence about the arms measured here. **None of it measures Playwright's own healer agent either**: the first source runs a home-grown LangGraph agent that uses Playwright only as the executor, the second studies Java unit-test oracles, and the third measures locator resolvers. The distinguishing parts of this benchmark are narrower than "healers weaken assertions": the two honesty controls, where no test-side repair is correct, and a decision rule frozen before execution that rejects on a single weakened cell.
 
 | Source | Kind | What it reports | How far it transfers |
 | --- | --- | --- | --- |
 | Lee, [Practical Limits of Autonomous Test Repair](https://arxiv.org/abs/2605.01471) (arXiv, 2026) | Single-author industrial case study, preprint | 300 autonomous execution reports and 636 test-case executions from a LangGraph + Playwright system; 70% repair convergence at the scenario-family level, with documented assertion weakening (including a matcher broadened to `toBeTruthy()`) and test-case deletion used to reach superficial convergence | Same failure classes as `SEMANTIC_WEAKENING` and `SKIP_DELETE`; one enterprise prototype |
 | Li et al., [Escaping the Self-Repair Trap](https://arxiv.org/abs/2608.05917) (arXiv, 2026) | Preprint | Names the "Self-Repair Trap": iterative execution-feedback repair drives generated oracles toward assertions that are easier to satisfy but detect fewer faults, described as reward-hacking-like behavior | Regression-oracle generation, not browser E2E; supports the bounded repair loop, not a rate |
 | Malhotra, [The False-Heal Problem in AI Test Automation](https://sdtimes.com/test/the-false-heal-problem-in-ai-test-automation/) (SD Times) | Practitioner article with a companion benchmark | 136 controlled UI perturbations across two applications and four resolvers; unsupervised healing resolved the wrong element roughly one time in four | Locator healing only; not peer reviewed |
+
+## What is published about the first-party healer
+
+A public search on 2026-09-18 for measurements of Playwright's own Test Agents
+healer — web search, Jina-rendered pages, the arXiv API, `gh search` over
+`microsoft/playwright` issues and discussions, subtitle downloads for the three
+official Playwright videos, and playwright.dev itself — found no paper, no
+vendor benchmark, and no talk that reports one. The closest artifact is a single
+practitioner write-up ([Weese, DEV, 2026-05](https://dev.to/ben_weese/building-playwright-agents-lessons-from-the-deep-trenches-3mk7)):
+one payment-platform suite, 47 generated tests, 18 failing before the healer and
+45 green after, with 2 failures reported as product bugs that were not. Its
+faults are whatever the generator emitted rather than an injected set, and the
+author judges success, so it is a hands-on report rather than a measurement of
+repair fidelity.
+
+Several third-party pages state that "Microsoft's own benchmarks put the healer
+at ~75%+ success on selector failures". That figure appears in no Playwright
+document, blog post, or video checked here, and each page repeating it cites
+another page repeating it. Do not cite it, here or anywhere else in this
+repository.
+
+Reddit could not be searched from this environment, and nothing rules out
+unpublished internal evaluations, so this is a bounded search result, not a
+claim that no evaluation exists. What it does support: a preregistered
+perturbation matrix with honesty controls, of the kind this directory records,
+is not something the public record already provides.

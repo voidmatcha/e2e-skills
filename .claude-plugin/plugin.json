@@ -1,6 +1,6 @@
 {
   "name": "e2e-skills",
-  "version": "1.16.3",
+  "version": "1.17.0",
   "description": "Four agent skills for Playwright and Cypress end-to-end tests: generate new Playwright coverage with live exploration only on local/disposable or externally isolated approved non-production targets, review existing specs or PR diffs, and debug failed runs.",
   "license": "Apache-2.0",
   "author": {

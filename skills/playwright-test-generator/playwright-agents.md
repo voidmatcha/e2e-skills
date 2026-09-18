@@ -21,22 +21,11 @@ npx --no-install playwright init-agents --loop=codex
 npx --no-install playwright init-agents --loop=claude   # also: --loop=vscode, --loop=opencode
 ```
 
-The Codex command produces `playwright_test_planner`,
-`playwright_test_generator`, and `playwright_test_healer` definitions under
-`.codex/agents/`, plus the plan/seed scaffolding. Those definitions run the
-project-local `npx playwright run-test-mcp-server`; they do not require users to
-register generic `@playwright/mcp` globally. Regenerate them after updating
-Playwright so their instructions and tool allowlists do not drift.
+The Codex command produces `playwright_test_planner`, `playwright_test_generator`, and `playwright_test_healer` definitions under `.codex/agents/`, plus the plan/seed scaffolding. Those definitions run the project-local `npx playwright run-test-mcp-server`; they do not require users to register generic `@playwright/mcp` globally. Regenerate them after updating Playwright so their instructions and tool allowlists do not drift.
 
-The seed test is executable context bootstrap. Point it at the selected
-Playwright project and its existing fixtures, authentication, setup, and hooks
-rather than letting an agent invent a parallel harness. A passing seed proves
-only that setup works; it is not product-behavior evidence.
+The seed test is executable context bootstrap. Point it at the selected Playwright project and its existing fixtures, authentication, setup, and hooks rather than letting an agent invent a parallel harness. A passing seed proves only that setup works; it is not product-behavior evidence.
 
-Pass the selected Playwright project explicitly when setting up the seed. Do
-not rely on the configuration's first project: it may be a dependency-only
-authentication or environment setup project rather than the browser project
-that owns the approved scenario.
+Pass the selected Playwright project explicitly when setting up the seed. Do not rely on the configuration's first project: it may be a dependency-only authentication or environment setup project rather than the browser project that owns the approved scenario.
 
 ## Admission gate
 
@@ -51,18 +40,9 @@ Use this optional path only when all of the following are already true:
 - the extra model/browser cost is justified by an approved high-risk flow or
   an explicit comparison.
 
-Do not infer delegated-agent readiness from a successful parent-session MCP
-probe: some hosts can expose the project-local Playwright MCP server to the
-parent without forwarding the agent-scoped tools to a child. On Codex, confirm
-that the delegated planner can see both `planner_setup_page` and
-`planner_save_plan` before paying for live exploration. Treat a missing tool as
-an unavailable auxiliary path, not as evidence about the application.
+Do not infer delegated-agent readiness from a successful parent-session MCP probe: some hosts can expose the project-local Playwright MCP server to the parent without forwarding the agent-scoped tools to a child. On Codex, confirm that the delegated planner can see both `planner_setup_page` and `planner_save_plan` before paying for live exploration. Treat a missing tool as an unavailable auxiliary path, not as evidence about the application.
 
-Do not install a newer standalone Playwright, patch generated agent commands,
-or upgrade the project solely to make this auxiliary path available. If an
-agent browser has already failed to launch in the current host/session, skip
-the auxiliary path instead of spending a full planner call on source-only
-advice. Continue with this skill's normal live-browser pipeline.
+Do not install a newer standalone Playwright, patch generated agent commands, or upgrade the project solely to make this auxiliary path available. If an agent browser has already failed to launch in the current host/session, skip the auxiliary path instead of spending a full planner call on source-only advice. Continue with this skill's normal live-browser pipeline.
 
 ## Division of labor with this skill
 
@@ -77,10 +57,7 @@ advice. Continue with this skill's normal live-browser pipeline.
 
 ## Recommended auxiliary mode: harden the plan
 
-Use the first-party planner as a second set of browser-grounded eyes when the
-approved scenario is high-risk, its failure conditions are incomplete, or its
-locator mapping remains uncertain. This is cheaper and safer than always
-running two full generators:
+Use the first-party planner as a second set of browser-grounded eyes when the approved scenario is high-risk, its failure conditions are incomplete, or its locator mapping remains uncertain. This is cheaper and safer than always running two full generators:
 
 1. Freeze the user-approved scenario, target, permissions, conventions, and
    seed. Ask the planner to preserve that scope and return plan deltas only.
@@ -102,27 +79,13 @@ running two full generators:
 5. Let this skill implement the hardened plan in the repository's established
    POM/spec style, then run `e2e-reviewer` and V1–V6 normally.
 
-If the planner could not perform live exploration, its output is still useful
-as a checklist, but it cannot promote locator or application-state guesses to
-evidence. Record that limitation and keep the existing observed Locator Mapping
-Table authoritative. If no durable observed mapping exists, return to this
-skill's normal Step 2 exploration and do not write a candidate yet; a planner
-checklist alone does not authorize source-inferred locators.
+If the planner could not perform live exploration, its output is still useful as a checklist, but it cannot promote locator or application-state guesses to evidence. Record that limitation and keep the existing observed Locator Mapping Table authoritative. If no durable observed mapping exists, return to this skill's normal Step 2 exploration and do not write a candidate yet; a planner checklist alone does not authorize source-inferred locators.
 
-The first-party generator becomes an optional second candidate only after the
-planner produced live browser evidence for the states and locators it relies
-on. Generate into an isolated workspace and use the selection procedure below.
-The healer may diagnose and repair mechanics in that candidate, but it may not
-weaken the approved outcome, expected value, request proof, scenario count, or
-test enablement. Re-review and rerun applicable V-rules after every heal.
+The first-party generator becomes an optional second candidate only after the planner produced live browser evidence for the states and locators it relies on. Generate into an isolated workspace and use the selection procedure below. The healer may diagnose and repair mechanics in that candidate, but it may not weaken the approved outcome, expected value, request proof, scenario count, or test enablement. Re-review and rerun applicable V-rules after every heal.
 
 ## Optional dual-candidate trial
 
-Use two generators only when the extra model and browser work is justified by a
-high-risk flow or an explicit evaluation. Give both arms the same frozen,
-approved scenario plan, project snapshot, and tool permissions. Use separate
-workspaces and separate disposable state, ports, caches, and browser profiles.
-Run the arms sequentially unless those boundaries are proven independent.
+Use two generators only when the extra model and browser work is justified by a high-risk flow or an explicit evaluation. Give both arms the same frozen, approved scenario plan, project snapshot, and tool permissions. Use separate workspaces and separate disposable state, ports, caches, and browser profiles. Run the arms sequentially unless those boundaries are proven independent.
 
 ```mermaid
 flowchart TD
@@ -141,9 +104,4 @@ flowchart TD
     M -->|Yes| R[Treat the blend as a new candidate<br/>and rerun reviewer + V1-V6]
 ```
 
-Do not average gate results or let a stronger candidate hide the other
-candidate's failure. If both are complete, prefer the candidate that matches
-the approved behavior and existing project conventions with the smaller
-necessary change surface. If that comparison is still tied, report the tie
-instead of manufacturing an automatic winner. This is an opt-in selection
-procedure, not evidence that either generator is generally more accurate.
+Do not average gate results or let a stronger candidate hide the other candidate's failure. If both are complete, prefer the candidate that matches the approved behavior and existing project conventions with the smaller necessary change surface. If that comparison is still tied, report the tie instead of manufacturing an automatic winner. This is an opt-in selection procedure, not evidence that either generator is generally more accurate.

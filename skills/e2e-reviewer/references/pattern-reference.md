@@ -1,10 +1,6 @@
 # Pattern Reference
 
-Read on demand from SKILL.md Phase 2: the exact contract for each of the 24 patterns —
-detection semantics, severity rationale, false-positive exclusions, JUSTIFIED handling.
-The Quick Reference table in SKILL.md is the at-a-glance ID/severity index; this file is the
-authority for per-pattern behavior. CI parity (scripts/ci/review.sh Checks 3b/3c) validates the
-`### P0/P1/P2 —` section placement and `#### <id>.` headers in THIS file against that table.
+Read on demand from SKILL.md Phase 2: the exact contract for each of the 24 patterns — detection semantics, severity rationale, false-positive exclusions, JUSTIFIED handling. The Quick Reference table in SKILL.md is the at-a-glance ID/severity index; this file is the authority for per-pattern behavior. CI parity (scripts/ci/review.sh Checks 3b/3c) validates the `### P0/P1/P2 —` section placement and `#### <id>.` headers in THIS file against that table.
 
 Detailed specification for the 24 anti-patterns that Phase 1, Phase 2, and Phase 2.5 execute. Do **not** re-run these checks as a separate pass — the phases above already cover them. When emitting a finding, consult the matching section here for the canonical Symptom / Rule / Fix wording. Grouped by severity: P0 items are silent always-pass bugs, P1 items waste CI time or mislead developers, P2 items are maintenance concerns.
 
@@ -38,15 +34,9 @@ test('should display user status', async ({ page }) => {
 });
 ```
 
-**Rule:** Every explicit promised outcome, state transition, or acceptance
-clause in the test name must have corresponding evidence. Add it or narrow the
-title.
+**Rule:** Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence. Add it or narrow the title.
 
-Interpret nouns by the user-visible contract, not as isolated implementation
-tokens. A success confirmation can substantiate that a submit action completed;
-do not also report #1 merely because the test does not inspect the request
-directly. Missing route isolation or request proof belongs to #20/#22 unless the
-title explicitly promises a specific payload, status, or request shape.
+Interpret nouns by the user-visible contract, not as isolated implementation tokens. A success confirmation can substantiate that a submit action completed; do not also report #1 merely because the test does not inspect the request directly. Missing route isolation or request proof belongs to #20/#22 unless the title explicitly promises a specific payload, status, or request shape.
 
 **Procedure:**
 1. Parse the title into user-visible promises.
@@ -55,9 +45,7 @@ title explicitly promises a specific payload, status, or request shape.
 3. A promise with no evidence is a finding; implementation nouns and helper
    steps that are not promised outcomes are not.
 
-**Primary line:** Anchor #1 to the test/setup declaration whose title contains
-the unverified promise. A constant or unrelated assertion that fails to prove
-the noun is supporting evidence, not a second #1 finding.
+**Primary line:** Anchor #1 to the test/setup declaration whose title contains the unverified promise. A constant or unrelated assertion that fails to prove the noun is supporting evidence, not a second #1 finding.
 
 **Common patterns:** "should display X" with only `toBeVisible()` (no content check), "should update X and Y" with assertion for X but not Y, "should validate form" with only happy-path assertion.
 
@@ -75,10 +63,7 @@ test('should cancel edit on Escape', async ({ page }) => {
 });
 ```
 
-**Rule:** For toggle/cancel/close actions that the title or acceptance contract
-promises, verify both the restored state AND the dismissed state. Helper actions
-used only to reach another asserted outcome do not each create a separate Then
-obligation.
+**Rule:** For toggle/cancel/close actions that the title or acceptance contract promises, verify both the restored state AND the dismissed state. Helper actions used only to reach another asserted outcome do not each create a separate Then obligation.
 
 **Procedure:**
 1. Identify the action verb (toggle, cancel, close, delete, submit, undo)
@@ -164,19 +149,11 @@ Cypress.on('uncaught:exception', (err) => {
 });
 ```
 
-**Rule:** Blanket `() => false` is P0 — equivalent to `.catch(() => {})`.
-Safe handlers conditionally allowlist one named, documented regression and
-rethrow every other error. Mere `expect(err).to.exist` or another generic
-assertion does not excuse a later unconditional `return false`: it still
-suppresses every application error. A negative-regression handler is exempt
-only when its assertion is regression-specific and non-matching errors are
-explicitly rethrown.
+**Rule:** Blanket `() => false` is P0 — equivalent to `.catch(() => {})`. Safe handlers conditionally allowlist one named, documented regression and rethrow every other error. Mere `expect(err).to.exist` or another generic assertion does not excuse a later unconditional `return false`: it still suppresses every application error. A negative-regression handler is exempt only when its assertion is regression-specific and non-matching errors are explicitly rethrown.
 
 #### 4. Vacuous and Non-Retrying Assertions `[grep-detectable + LLM confirmation]` `[P0/P1]`
 
-**Symptom:** An assertion is logically unable to fail, samples asynchronous
-state once instead of retrying until the expected state settles, or uses a
-partial match that omits a user-visible contract the scenario promises.
+**Symptom:** An assertion is logically unable to fail, samples asynchronous state once instead of retrying until the expected state settles, or uses a partial match that omits a user-visible contract the scenario promises.
 
 ```typescript
 // BAD — count >= 0 is always true
@@ -207,45 +184,13 @@ expect(page.locator('.selector')).toBeDefined();
 
 **Sub-IDs:** `#4a` numeric invariant candidate (LLM-TRIAGE), `#4b` vacuous `toBeAttached()` (LLM-TRIAGE — see below), `#4c-4e` one-shot state/content reads (one combined scanner check), `#4f` Locator truthiness/nullness, `#4g` `timeout: 0` (dedicated block below), `#4h` one-shot `page.url()`, `#4i` absence assertion on a locator never proven able to match (LLM-TRIAGE), `#4j` under-specified ARIA snapshot accessible names (LLM-only), and `#4k` assertion loop over an unproven collection (LLM-TRIAGE). The scanner does not emit `#4j`.
 
-**Assertion on a stubbed response (Phase 2 only, no scanner rule).** An
-assertion whose subject is a response the same test fulfilled proves nothing
-about the product: `await page.route(url, r => r.fulfill({ body }))` followed by
-`expect((await page.waitForResponse(url)).status()).toBe(200)`, or
-`cy.intercept(url, { statusCode: 200 }).as('a')` followed by
-`cy.wait('@a').its('response.statusCode').should('eq', 200)`, reads the fixture
-back. Report it as #4 when Phase 2 sees it. Three lookalikes are correct and
-must not be reported: an assertion on rendered output after a stub (the #20
-fix), an assertion on the request the application sent
-(`request.postDataJSON()`), and an assertion on a response that reached the real
-server through `route.continue()`, `page.request`, or `cy.request`. This stays a
-human-judgement item on purpose: `benchmarks/stub-echo-v1` adjudicated 78
-candidates from twelve public repositories and found zero instances of the
-defect and 78 of the lookalikes, so a mechanical rule would have been all false
-positives.
+**Assertion on a stubbed response (Phase 2 only, no scanner rule).** An assertion whose subject is a response the same test fulfilled proves nothing about the product: `await page.route(url, r => r.fulfill({ body }))` followed by `expect((await page.waitForResponse(url)).status()).toBe(200)`, or `cy.intercept(url, { statusCode: 200 }).as('a')` followed by `cy.wait('@a').its('response.statusCode').should('eq', 200)`, reads the fixture back. Report it as #4 when Phase 2 sees it. Three lookalikes are correct and must not be reported: an assertion on rendered output after a stub (the #20 fix), an assertion on the request the application sent (`request.postDataJSON()`), and an assertion on a response that reached the real server through `route.continue()`, `page.request`, or `cy.request`. This stays a human-judgement item on purpose: `benchmarks/stub-echo-v1` adjudicated 78 candidates from twelve public repositories and found zero instances of the defect and 78 of the lookalikes, so a mechanical rule would have been all false positives.
 
-**#4a helper-invariant semantics:** Syntax alone is not enough: `value > 0` can
-be a meaningful assertion. When the asserted value comes from a helper supplied
-in scope, read that implementation. Flag #4a only if the implementation itself
-proves the predicate for every call independently of product behavior (for
-example, module state starts at zero, increments before returning, and the test
-asserts only that the result is positive). Anchor the assertion line. If the
-helper can return a value that violates the predicate, keep the assertion.
-Imports of `test` from unresolved package/workspace fixtures retain the raw
-candidate as LLM triage rather than proving Playwright scope; known unit-test
-framework imports do not establish E2E scope.
+**#4a helper-invariant semantics:** Syntax alone is not enough: `value > 0` can be a meaningful assertion. When the asserted value comes from a helper supplied in scope, read that implementation. Flag #4a only if the implementation itself proves the predicate for every call independently of product behavior (for example, module state starts at zero, increments before returning, and the test asserts only that the result is positive). Anchor the assertion line. If the helper can return a value that violates the predicate, keep the assertion. Imports of `test` from unresolved package/workspace fixtures retain the raw candidate as LLM triage rather than proving Playwright scope; known unit-test framework imports do not establish E2E scope.
 
-**Severity rule:** #4a and #4f are P0 because their predicates are true
-independently of product behavior. #4b–#4e and #4g–#4k are P1: they can fail,
-but provide weak, non-retrying, or under-specified evidence and therefore create
-timing, diagnostic, selector-rot, or accessibility-contract risk. Do not call a
-one-shot or partial-match assertion "always-passing."
+**Severity rule:** #4a and #4f are P0 because their predicates are true independently of product behavior. #4b–#4e and #4g–#4k are P1: they can fail, but provide weak, non-retrying, or under-specified evidence and therefore create timing, diagnostic, selector-rot, or accessibility-contract risk. Do not call a one-shot or partial-match assertion "always-passing."
 
-**Rule:** `toBeAttached()` is meaningful when the promised contract is DOM
-attachment itself: for example, a conditionally rendered node, a dynamically
-injected resource, or a CSS-hidden element that must remain in the DOM. It is
-weak after an action when attachment adds no evidence for the promised
-user-visible or removed state → P1. Judge the test title, action, and expected
-outcome; do not treat every positive attachment assertion as vacuous.
+**Rule:** `toBeAttached()` is meaningful when the promised contract is DOM attachment itself: for example, a conditionally rendered node, a dynamically injected resource, or a CSS-hidden element that must remain in the DOM. It is weak after an action when attachment adds no evidence for the promised user-visible or removed state → P1. Judge the test title, action, and expected outcome; do not treat every positive attachment assertion as vacuous.
 
 **#4b scanner semantics (LLM-TRIAGE):** grep alone cannot confirm the context that makes a `toBeAttached()` hit real. The scanner matches the positive form only (`.not.toBeAttached()` is never flagged) and tags each hit `[P1?][LLM-TRIAGE]`. Phase 2 confirms destructive-action context (the element should have been removed) before reporting P1 — on client-rendered apps a positive `toBeAttached()` is usually a legitimate render-gate (field data: ~90% FP).
 
@@ -292,17 +237,7 @@ await expect(el).toHaveCount(0, { timeout: 0 });
 await expect(el).toHaveCount(0, { timeout: 5_000 });
 ```
 
-**Rule:** flag `timeout: 0` (including quoted keys and whitespace before `:`)
-only when bounded call context ties it to a Playwright
-assertion/action or Cypress command/configuration API (P1). A standalone options
-object or an unrelated `apiClient.request({ timeout: 0 })` is not this pattern. In Playwright, replace it
-with an explicit finite matcher timeout unless the assertion deliberately
-shares a documented, bounded enclosing deadline. In Cypress, remove it unless
-an immediate current-state check is the explicit intent. Put a concrete
-`// JUSTIFIED:` on the line above for either exceptional case; the scanner
-suppresses justified hits. The scanner anchors only Playwright assertion/action
-context, so a Cypress `timeout: 0` never appears in Phase 1 output; the Phase 2
-opening-token sweep in SKILL.md is the only path to a Cypress #4g finding.
+**Rule:** flag `timeout: 0` (including quoted keys and whitespace before `:`) only when bounded call context ties it to a Playwright assertion/action or Cypress command/configuration API (P1). A standalone options object or an unrelated `apiClient.request({ timeout: 0 })` is not this pattern. In Playwright, replace it with an explicit finite matcher timeout unless the assertion deliberately shares a documented, bounded enclosing deadline. In Cypress, remove it unless an immediate current-state check is the explicit intent. Put a concrete `// JUSTIFIED:` on the line above for either exceptional case; the scanner suppresses justified hits. The scanner anchors only Playwright assertion/action context, so a Cypress `timeout: 0` never appears in Phase 1 output; the Phase 2 opening-token sweep in SKILL.md is the only path to a Cypress #4g finding.
 
 <!-- 4i is a bold sub-block, NOT a "#### 4i." header — see the 4g note above (CI Check 3c). -->
 **4i. Absence assertion never proven able to match** `[grep-detectable + LLM-TRIAGE]` `[P1]` — an absence assertion is satisfied by a locator that matches *nothing*, so a selector that rotted keeps the test green forever while proving nothing.
@@ -389,11 +324,7 @@ for (const row of await rows.all()) {
 }
 ```
 
-Cypress `.each()` has the same hazard, with one difference: `cy.get()` retries
-until at least one element matches, so a genuinely empty selector fails the
-`cy.get()` itself. The silent shape appears when the chain cannot fail that way
-— `cy.get('body').find('.row').each(...)` after a passing parent, or `.filter()`
-narrowing an already-resolved set to nothing.
+Cypress `.each()` has the same hazard, with one difference: `cy.get()` retries until at least one element matches, so a genuinely empty selector fails the `cy.get()` itself. The silent shape appears when the chain cannot fail that way — `cy.get('body').find('.row').each(...)` after a passing parent, or `.filter()` narrowing an already-resolved set to nothing.
 
 **Why it matters:** `expect-expect` and every "test has no assertion" check see the `expect` in the source and pass it, because the assertion is syntactically present. Only its execution count is zero. That is why this survives lint and review alike, and why it belongs with the silent-always-pass family rather than with `#8`.
 
@@ -412,10 +343,7 @@ narrowing an already-resolved set to nothing.
 
 Two sub-patterns that suppress what the framework would normally catch — making tests pass when they should fail. Listed under P0 because 5a is a silent-pass bug; 5b is a P1 actionability issue documented in the same section for proximity.
 
-**5a. Conditional assertion bypass** — a load-bearing assertion for the
-scenario's promised outcome is gated behind a runtime condition. If the branch
-is false, that outcome is never verified and no independent unconditional
-meaningful postcondition or failure-producing action can fail the test.
+**5a. Conditional assertion bypass** — a load-bearing assertion for the scenario's promised outcome is gated behind a runtime condition. If the branch is false, that outcome is never verified and no independent unconditional meaningful postcondition or failure-producing action can fail the test.
 
 ```typescript
 // BAD — if spinner never appears, assertion never runs
@@ -424,26 +352,15 @@ if (await spinner.isVisible()) {
 }
 ```
 
-**Rule:** Flag P0 only when the conditional assertion is load-bearing for the
-title/action's promised outcome and the false branch has no independent
-unconditional meaningful postcondition or failure-producing action. Do not flag
-a conditional diagnostic or optional-state assertion when the scenario still
-has an unconditional assertion or action that meaningfully proves or enforces
-the promised outcome. Move environment- or feature-flag gates for a required
-outcome to `beforeEach` / declaration-level `test.skip()` so unsupported runs
-are skipped explicitly rather than passing silently.
+**Rule:** Flag P0 only when the conditional assertion is load-bearing for the title/action's promised outcome and the false branch has no independent unconditional meaningful postcondition or failure-producing action. Do not flag a conditional diagnostic or optional-state assertion when the scenario still has an unconditional assertion or action that meaningfully proves or enforces the promised outcome. Move environment- or feature-flag gates for a required outcome to `beforeEach` / declaration-level `test.skip()` so unsupported runs are skipped explicitly rather than passing silently.
 
 **5b. Force true bypass** — `{ force: true }` skips actionability checks (visibility, enabled state, pointer-events), hiding real UX problems that real users would encounter.
 
-**Rule:** Each `{ force: true }` (including quoted keys and whitespace before
-the colon) on a Playwright/Cypress action must have `// JUSTIFIED:` on the line
-above explaining why the element is not normally actionable. Unrelated APIs such as `fs.rm(..., { force: true })` or `apiClient.request({ force: true })` are not findings. Without a comment, flag P1 and anchor the finding at the line containing the action option.
+**Rule:** Each `{ force: true }` (including quoted keys and whitespace before the colon) on a Playwright/Cypress action must have `// JUSTIFIED:` on the line above explaining why the element is not normally actionable. Unrelated APIs such as `fs.rm(..., { force: true })` or `apiClient.request({ force: true })` are not findings. Without a comment, flag P1 and anchor the finding at the line containing the action option.
 
 #### 7. Focused Test Leak (`test.only` / `it.only`) `[grep-detectable]`
 
-**Symptom:** A `.only` modifier left in committed code. Test focus applies to
-the invoked project/run, so tests in other files can be silently excluded even
-when the focused file contains only one test.
+**Symptom:** A `.only` modifier left in committed code. Test focus applies to the invoked project/run, so tests in other files can be silently excluded even when the focused file contains only one test.
 
 ```typescript
 // CRITICAL SILENT-SKIP — file has multiple tests; the others never run
@@ -454,32 +371,15 @@ test('should show settings', ...);   // ← never runs in CI
 test.only('the only test in this file', ...);
 ```
 
-**Rule** (Playwright & Cypress best practices): `.only` is a development-time
-focus tool. It must never be committed. Search `.spec.*/.test.*/.cy.*` for
-direct and optional-call focus modifiers, then trace immutable one-hop aliases:
-`const focused = test.only`, `const focused = test.only.bind(test)`, and
-`const { only } = test` / `const { only: focused } = test`. Report the alias
-call (for example, `focused(...)`) as P0. Accept Playwright-proven receivers and
-Cypress `it` / `test` / `describe` globals only in Cypress-proven spec context.
-For Playwright, follow the exact named, default, CommonJS, or namespace `test`
-binding through relative re-exports. A barrel that exports Playwright `test`
-beside an unrelated `scenario` does not make `scenario.only()` a finding.
-Reject aliases that are reassigned, shadowed, imported from a foreign test
-framework, bound to a different receiver, or derived from an unrelated
-application method named `only`.
+**Rule** (Playwright & Cypress best practices): `.only` is a development-time focus tool. It must never be committed. Search `.spec.*/.test.*/.cy.*` for direct and optional-call focus modifiers, then trace immutable one-hop aliases: `const focused = test.only`, `const focused = test.only.bind(test)`, and `const { only } = test` / `const { only: focused } = test`. Report the alias call (for example, `focused(...)`) as P0. Accept Playwright-proven receivers and Cypress `it` / `test` / `describe` globals only in Cypress-proven spec context. For Playwright, follow the exact named, default, CommonJS, or namespace `test` binding through relative re-exports. A barrel that exports Playwright `test` beside an unrelated `scenario` does not make `scenario.only()` a finding. Reject aliases that are reassigned, shadowed, imported from a foreign test framework, bound to a different receiver, or derived from an unrelated application method named `only`.
 
-**Fix:** Delete the `.only` modifier. If the test is intentionally isolated,
-use `test.skip()` with a reason on the others, or run a single file via the CLI
-(`--grep` / `--spec`). Audit CI history for skipped runs.
+**Fix:** Delete the `.only` modifier. If the test is intentionally isolated, use `test.skip()` with a reason on the others, or run a single file via the CLI (`--grep` / `--spec`). Audit CI history for skipped runs.
 
 No `// JUSTIFIED:` exemption exists for either tier — there are no legitimate committed uses.
 
 #### 8. Missing Assertion `[grep + LLM confirmation]`
 
-Two candidate sub-patterns where a discarded expression may be standing in for
-the scenario's only verification. The standalone expression is always dead
-code, but it is P0 #8 only when the test otherwise has no independent
-meaningful postcondition or failure-producing action for the promised behavior.
+Two candidate sub-patterns where a discarded expression may be standing in for the scenario's only verification. The standalone expression is always dead code, but it is P0 #8 only when the test otherwise has no independent meaningful postcondition or failure-producing action for the promised behavior.
 
 **8a. Dangling locator** `[Playwright only, grep-detectable]` — a Playwright locator created as a standalone statement, not assigned to a variable, not passed to `expect()`, and not chained with an action. The statement is a complete no-op.
 
@@ -498,28 +398,11 @@ await el.isEnabled();
 await page.isVisible('[data-testid="foo"]'); // page-level shorthand with a selector arg — same discard
 ```
 
-**Rule:** Every Playwright locator expression and every Playwright boolean
-state call must either feed into `expect()`, be assigned and used later, or be
-chained with an action. Standalone Playwright expressions are dead code, but
-report P0 #8 only when the discarded expression is the scenario's intended
-verification and removing it leaves no independent meaningful verification or
-failure evidence. Skip a leftover read in a test that already has real
-assertions. Also skip a discarded pre-check immediately followed by an action
-on the same locator: the action can fail on absence/actionability, while a
-missing outcome assertion is #2 anchored at the action. Do not generalize this
-rule to Cypress: `cy.get(...)` is a retrying query that requires the element to
-exist even without a `.should(...)` chain.
+**Rule:** Every Playwright locator expression and every Playwright boolean state call must either feed into `expect()`, be assigned and used later, or be chained with an action. Standalone Playwright expressions are dead code, but report P0 #8 only when the discarded expression is the scenario's intended verification and removing it leaves no independent meaningful verification or failure evidence. Skip a leftover read in a test that already has real assertions. Also skip a discarded pre-check immediately followed by an action on the same locator: the action can fail on absence/actionability, while a missing outcome assertion is #2 anchored at the action. Do not generalize this rule to Cypress: `cy.get(...)` is a retrying query that requires the element to exist even without a `.should(...)` chain.
 
 **Fix:** Replace with web-first assertion — `await expect(locator).toBeVisible()` / `toBeEnabled()` etc. These also auto-retry. Or delete the line if it's leftover debug code.
 
-**Detection note:** the scanner sends both the empty-parens form and the
-page-level selector-argument shorthand (`await page.isVisible('sel')`), with or
-without a trailing semicolon, to `[P0?][LLM-TRIAGE]`; grep alone never enters
-these hits into the P0 exit gate. The end-of-statement anchor means
-handled/chained forms are not candidates:
-`await el.isVisible().catch(() => false)` (covered by `#3` error-swallow),
-`&& ...`, ternaries, and assigned reads
-(`const v = await el.isVisible()`) all pass.
+**Detection note:** the scanner sends both the empty-parens form and the page-level selector-argument shorthand (`await page.isVisible('sel')`), with or without a trailing semicolon, to `[P0?][LLM-TRIAGE]`; grep alone never enters these hits into the P0 exit gate. The end-of-statement anchor means handled/chained forms are not candidates: `await el.isVisible().catch(() => false)` (covered by `#3` error-swallow), `&& ...`, ternaries, and assigned reads (`const v = await el.isVisible()`) all pass.
 
 #### 12. Missing Auth Setup `[LLM-only]`
 
@@ -539,9 +422,7 @@ Tests work but mislead developers, waste CI time, or set up future regressions. 
 
 #### 15. Missing `await` on `expect()` `[grep-detectable]`
 
-**Symptom:** An async Playwright Locator/Page web-first matcher or retry
-assertion (`expect.poll(...).toX()`, `expect(fn).toPass()`) is called without
-observing its Promise.
+**Symptom:** An async Playwright Locator/Page web-first matcher or retry assertion (`expect.poll(...).toX()`, `expect(fn).toPass()`) is called without observing its Promise.
 
 ```typescript
 // BAD — matcher starts, but later work is not sequenced after it
@@ -556,12 +437,7 @@ await expect(page.locator('.toast')).toBeVisible();
 
 **Why it matters:** The matcher runs outside the test's intended sequence. Under Playwright 1.62, a rejection normally fails the current test or worker through `unhandledRejection`, often after teardown has started and with degraded attribution. A matcher that resolves can still race later work.
 
-**Rule:** Report P1 when an async Locator/Page web-first matcher,
-`expect.poll(...).toX()`, or `expect(fn).toPass()` is not `await`ed or returned.
-Awaited/returned retry assertions are explicit guards. Prove the called
-`expect` binding through its own local declaration/import/re-export lineage;
-the presence of a Playwright `test` export elsewhere in a mixed fixture/barrel
-does not make a custom `expect` Playwright-owned.
+**Rule:** Report P1 when an async Locator/Page web-first matcher, `expect.poll(...).toX()`, or `expect(fn).toPass()` is not `await`ed or returned. Awaited/returned retry assertions are explicit guards. Prove the called `expect` binding through its own local declaration/import/re-export lineage; the presence of a Playwright `test` export elsewhere in a mixed fixture/barrel does not make a custom `expect` Playwright-owned.
 
 **Boundary with #4c-4e (the #15/#4 split):** Sync value matchers are excluded. `expect(await x.isVisible()).toBe(true)`, `expect(Number(await getRowCount(page))).toBe(4)`, and other value-resolving reads (including wrapped forms) resolve a real value and are #4c-4e, not #15. Matcher-on-next-line splits are covered by Tier 2 (`sg-15`).
 
@@ -590,10 +466,7 @@ await page.locator('#submit').click();
 
 **Locator/POM receiver sweep:** Direct `page.locator(...).click()` is only one shape. Scan Playwright-proven specs, POMs, and support TS/JS, then inspect action statements on local Locator variables and POM properties, such as `saveButton.click()` and `this.submitButton.click()`. Walk bounded multiline chains back to their receiver and report the physical action line. Trace non-`page` receivers to a Playwright `Locator`; do not classify arbitrary application objects by method name alone. A logical chain led by `await` or `return` is already consumed and must not be reported.
 
-Unawaited `page.goto(...)`, `page.reload(...)`, `page.waitForURL(...)`,
-`page.waitForNavigation(...)`, `page.goBack(...)`, `page.goForward(...)`, and
-`locator.waitFor(...)` follow the same #16
-Promise-observation contract; their awaited/returned forms are excluded.
+Unawaited `page.goto(...)`, `page.reload(...)`, `page.waitForURL(...)`, `page.waitForNavigation(...)`, `page.goBack(...)`, `page.goForward(...)`, and `locator.waitFor(...)` follow the same #16 Promise-observation contract; their awaited/returned forms are excluded.
 
 **Escalation/dedupe:** If code catches or otherwise swallows the action rejection, report #3 P0. If the flow lacks an independent postcondition after the action, #2 P0 may also apply. Keep #16 as the P1 action-ordering defect.
 
@@ -724,15 +597,9 @@ await page.fill('#password', '<literal-secret>');
 
 When grep flags a literal, read 2–3 lines below to confirm a login/auth call follows. If none, skip.
 
-The bundled scanner emits these as `[P1?][LLM-TRIAGE]` candidates. Its lexical
-filter requires a credential-shaped field/auth call plus a literal-shaped
-value and drops `process.env`, `import.meta.env`, `Cypress.env()`, `Deno.env`,
-and `Bun.env` values. This reduces obvious false positives but does not replace
-the authentication-context check above.
+The bundled scanner emits these as `[P1?][LLM-TRIAGE]` candidates. Its lexical filter requires a credential-shaped field/auth call plus a literal-shaped value and drops `process.env`, `import.meta.env`, `Cypress.env()`, `Deno.env`, and `Bun.env` values. This reduces obvious false positives but does not replace the authentication-context check above.
 
-API auth payloads and reusable positive fixtures such as `validUser` and
-`testAdmin` are included in this candidate sweep. They remain triage because
-negative-path dummy credentials and form-input test data are legitimate.
+API auth payloads and reusable positive fixtures such as `validUser` and `testAdmin` are included in this candidate sweep. They remain triage because negative-path dummy credentials and form-input test data are legitimate.
 
 #### 17. Discouraged Direct Page Selector API `[grep-detectable, Playwright only]`
 
@@ -756,11 +623,7 @@ await page.locator('#email').fill('user@test.com');
 
 #### 18. `expect.soft()` Overuse `[grep-detectable + LLM]`
 
-**Symptom:** A scenario-critical `expect.soft()` (including a provenance-backed alias of Playwright `expect`) is a prerequisite for a later
-action or check, so the test continues into that dependent work when the
-prerequisite is broken.
-Playwright still records each soft assertion error and fails the test at the
-end; this is a diagnostic/control-flow problem, not error swallowing.
+**Symptom:** A scenario-critical `expect.soft()` (including a provenance-backed alias of Playwright `expect`) is a prerequisite for a later action or check, so the test continues into that dependent work when the prerequisite is broken. Playwright still records each soft assertion error and fails the test at the end; this is a diagnostic/control-flow problem, not error swallowing.
 
 ```typescript
 // BAD — edit depends on the profile form that was only soft-checked
@@ -780,12 +643,7 @@ test('should display profile', async ({ page }) => {
 });
 ```
 
-**Rule:** Flag P1 only when a scenario-critical soft assertion is a prerequisite
-for a later action or check and that dependent work runs without an intervening
-hard assertion proving the prerequisite. Independent terminal details are
-legitimate even when every detail assertion is soft. Do not use a numeric
-soft-assertion count or ratio as the verdict. Anchor the finding at the soft
-prerequisite line.
+**Rule:** Flag P1 only when a scenario-critical soft assertion is a prerequisite for a later action or check and that dependent work runs without an intervening hard assertion proving the prerequisite. Independent terminal details are legitimate even when every detail assertion is soft. Do not use a numeric soft-assertion count or ratio as the verdict. Anchor the finding at the soft prerequisite line.
 
 #### 19. Module-Level Mutable State In Test Utilities `[grep-detectable + LLM]`
 
@@ -836,25 +694,11 @@ await signUpPage.fillForm('user@example.com', 'hunter22!');
 await signUpPage.submitButton.click();
 ```
 
-**Rule:** A write test must prove that its backend boundary is controlled. A
-route stub is one valid strategy, but documented disposable containers,
-transaction rollback fixtures, isolated test tenants/databases, and dedicated
-ephemeral backends are also valid. Flag only when repository evidence shows the
-write can reach shared, persistent, chargeable, rate-limited, or otherwise
-uncontrolled state. Mark intentional full-stack strategies with a concrete
-`// JUSTIFIED:` rationale or repository-level test-environment documentation.
+**Rule:** A write test must prove that its backend boundary is controlled. A route stub is one valid strategy, but documented disposable containers, transaction rollback fixtures, isolated test tenants/databases, and dedicated ephemeral backends are also valid. Flag only when repository evidence shows the write can reach shared, persistent, chargeable, rate-limited, or otherwise uncontrolled state. Mark intentional full-stack strategies with a concrete `// JUSTIFIED:` rationale or repository-level test-environment documentation.
 
-**Detection (LLM):** In each spec, list actions that submit forms or trigger
-mutation-shaped requests (signup/login/checkout/save/delete). Confirm from the
-component, handler, helper, request assertion, or fixture contract that the
-action really fires a backend write; an action name alone is insufficient. Then
-trace the isolation strategy across route helpers, fixtures, configs, container
-setup, tenant/database lifecycle, and cleanup/rollback hooks. Flag only when the
-available repository evidence establishes an uncontrolled boundary.
+**Detection (LLM):** In each spec, list actions that submit forms or trigger mutation-shaped requests (signup/login/checkout/save/delete). Confirm from the component, handler, helper, request assertion, or fixture contract that the action really fires a backend write; an action name alone is insufficient. Then trace the isolation strategy across route helpers, fixtures, configs, container setup, tenant/database lifecycle, and cleanup/rollback hooks. Flag only when the available repository evidence establishes an uncontrolled boundary.
 
-**Primary line:** Anchor #20 to the submit/click/action that triggers the
-unstubbed write. The missing route is repository context, not a source line to
-invent.
+**Primary line:** Anchor #20 to the submit/click/action that triggers the unstubbed write. The missing route is repository context, not a source line to invent.
 
 #### 22. Optimistic UI Without Call Proof `[LLM-only]`
 
@@ -879,8 +723,7 @@ await expect(likeToggle).toHaveAttribute('aria-pressed', 'true');
 
 **Detection (LLM):** For each test that clicks a control whose handler issues a mutation, confirm from the component, handler, helper, or fixture contract that the UI updates optimistically before or regardless of the request. If the only assertions are on that optimistic DOM/UI state and the spec awaits no request evidence, flag. Do not infer optimistic behavior from a write-shaped action name when the supplied scope lacks implementation evidence. Tests of pure client-side state (no request in the handler) are not hits.
 
-**Primary line:** Anchor #22 to the write-control action. The following UI-only
-assertion explains why the test is insufficient but is not the causal line.
+**Primary line:** Anchor #22 to the write-control action. The following UI-only assertion explains why the test is insufficient but is not the causal line.
 
 ---
 
@@ -892,13 +735,7 @@ Weak but not wrong. Address when refactoring or before adopting wider convention
 
 Three sub-patterns: unused code in Page Objects, zombie spec files, and skips that record no reason.
 
-**11a. YAGNI in Page Objects and Utility Modules** — POM or utility/helper file
-has locators, methods, or exported functions never referenced by any spec or
-other module. A single-use member is only a review candidate: report it when
-inlining clearly removes indirection without duplicating meaningful setup,
-erasing stable domain vocabulary, or violating an established repository
-boundary. Or a POM class extends a parent with zero additional members and no
-documented convention justifies the type boundary.
+**11a. YAGNI in Page Objects and Utility Modules** — POM or utility/helper file has locators, methods, or exported functions never referenced by any spec or other module. A single-use member is only a review candidate: report it when inlining clearly removes indirection without duplicating meaningful setup, erasing stable domain vocabulary, or violating an established repository boundary. Or a POM class extends a parent with zero additional members and no documented convention justifies the type boundary.
 
 **Procedure:**
 1. List all public members of each changed POM file AND all exported symbols of each changed utility module (`utils.ts`, `helpers.ts`, `fixtures.ts`, etc.)
@@ -911,18 +748,9 @@ documented convention justifies the type boundary.
 
 **Common patterns:** Convenience wrappers (`clickEdit()` when specs use `editButton.click()`), getter methods (`getCount()` when specs use `toHaveCount()`), state checkers (`isVisible()` when specs assert on locators directly), pre-built "just in case" locators, empty subclass created for future expansion. In utility modules: single-use auth helpers (`isLoginPageVisible()` called by exactly one other utility), single-use REST helpers (`getDefaultInterpreterGroup()` called by exactly one create function), single-use waits (`waitForNotebookParagraphVisible()` invoked from one navigation helper).
 
-**Single-use Util wrappers** — a separate `*Util` / `*Helper` class OR a
-standalone exported function called from only one place warrants inspection,
-not automatic deletion. Inline only when the wrapper adds no stable domain
-vocabulary, reusable validation, non-trivial setup boundary, or documented
-architectural role.
+**Single-use Util wrappers** — a separate `*Util` / `*Helper` class OR a standalone exported function called from only one place warrants inspection, not automatic deletion. Inline only when the wrapper adds no stable domain vocabulary, reusable validation, non-trivial setup boundary, or documented architectural role.
 
-**Rule:** Delete unused members and exports. Make internal-only POM members
-`private`; drop the `export` keyword from utility functions used only inside
-their own module. Treat usage count as evidence, not the verdict: recommend
-inlining a single-use helper only when the resulting code is simpler and the
-boundary carries no independent meaning. Flag empty wrapper classes for review
-when no documented convention explains them.
+**Rule:** Delete unused members and exports. Make internal-only POM members `private`; drop the `export` keyword from utility functions used only inside their own module. Treat usage count as evidence, not the verdict: recommend inlining a single-use helper only when the resulting code is simpler and the boundary carries no independent meaning. Flag empty wrapper classes for review when no documented convention explains them.
 
 **11b. Zombie spec files** — An entire spec file whose tests are all subsets of tests in another spec file covering the same feature. The file adds no coverage that isn't already verified elsewhere.
 

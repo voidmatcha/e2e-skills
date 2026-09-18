@@ -31,7 +31,7 @@ configuration, same machine and same fixture.
 
 | Configuration | 300-hit fixture | Per hit |
 | --- | ---: | ---: |
-| Before (v1.17.0, `fbcee47`) | 30.9 s | 103 ms |
+| Before (the 1.17.0 scanner, before this change) | 30.9 s | 103 ms |
 | After all three changes | 7.5 s | 25 ms |
 
 **4.1x faster.** A separate 100-hit run moved 12.3 s to about 4 s, so the gain
@@ -69,6 +69,6 @@ all pass.
 
 One machine, one dense synthetic shape, single runs — this is a before/after
 record, not a distribution. Real repositories are dominated by file discovery
-and rule startup as much as by per-hit work, so a 3.4x gain here does not
-predict a 3.4x gain on an arbitrary repository. Nothing here measures review
+and rule startup as much as by per-hit work, so a 4.1x gain here does not
+predict a 4.1x gain on an arbitrary repository. Nothing here measures review
 quality.

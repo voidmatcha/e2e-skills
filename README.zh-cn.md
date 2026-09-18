@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=54ceb11293dcb2af85af10dc6ade05fd828d3502448c33408511dc0d893a902b; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=20a8fd8a8a49ebae6d225a93accb88f54262b56eba10c2972d5354435927ca68; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 为 AI 编程代理提供四个面向 E2E 测试工作的聚焦工作流：生成 Playwright 覆盖、审查现有 spec 或 PR/diff 范围内的测试变更、调试失败的 Playwright 报告，以及调试失败的 Cypress 报告。它还包含一个确定性扫描器，用于发现审查目录中可机械判定的子集。
 
@@ -249,7 +249,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 这仍然不是精确率。合并意味着维护者接受了补丁，并不证明该指摘的严重级别分类正确；提交署名是可选的，因此未署名的拒绝会把比率往上偏。它真正提供的，是本项目无法控制的裁决。
 
-确定性扫描器单独测量。[Field scan v1](benchmarks/field-scan-v1/README.md) 在固定提交上重新扫描同一组 12 个公开仓库，沿用原有的 30 分钟时限和默认候选数上限。**其中 10/12 个仓库在没有规则被抑制的情况下完成扫描，并报告了 0 个 P0 命中**；另外 2 个扫描超时。结果清单单独列出待审查的候选项，并不能证明召回率或精确率。此前关于 294 个已确认 `#3` 命中的说法源于扫描器的分类缺陷；更正说明及当时的修改前后对比证据均记录在链接页面中。随后，一项采用另行公开协议（取消 30 分钟时限，并将扫描器的限制提高到其文档规定的硬上限）的[完成扩展工作](benchmarks/field-scan-v1-extension/README.md)补齐了最初设计的 12 个样本：此前超时的两个仓库均在没有规则被抑制的情况下正常结束，并报告了 0 个 P0 命中。该扩展工作不会改写已冻结的 v1 台账。
+确定性扫描器单独测量。[Field scan v1](benchmarks/field-scan-v1/README.md) 在固定提交上重新扫描同一组 12 个公开仓库，沿用原有的 30 分钟时限和默认候选数上限。**其中 10/12 个仓库在没有规则被抑制的情况下完成扫描，并报告了 0 个 P0 命中**；另外 2 个扫描超时。这些耗时是在 2026-09-18 的 hot path 改进（[scanner hot path v1](benchmarks/scanner-hot-path-v1/README.md)，在密集 fixture 上每个命中的开销约降为四分之一）之前测得的，本处并未重新测量。结果清单单独列出待审查的候选项，并不能证明召回率或精确率。此前关于 294 个已确认 `#3` 命中的说法源于扫描器的分类缺陷；更正说明及当时的修改前后对比证据均记录在链接页面中。随后，一项采用另行公开协议（取消 30 分钟时限，并将扫描器的限制提高到其文档规定的硬上限）的[完成扩展工作](benchmarks/field-scan-v1-extension/README.md)补齐了最初设计的 12 个样本：此前超时的两个仓库均在没有规则被抑制的情况下正常结束，并报告了 0 个 P0 命中。该扩展工作不会改写已冻结的 v1 台账。
 
 - 最强的独立信号不是分数：始终通过的 Locator 断言模式（`#4f`）已被官方 `eslint-plugin-playwright` 采纳为 `no-unnecessary-assertions` 规则（已合并的 pull request 见[路线图](docs/roadmap.md)）。这是一位与本项目没有利害关系的外部维护者接受了该规则定义。同时这也意味着当前的 lint 已能检出这种形状，因此本项目不再将其作为自己的成果来声称。
 - `docs/rule-self-audit.md` 记录了由两个模型系列进行的对抗性审计在本项目**自身** P0 规则中发现的缺陷，其中包括单一审查者会放行的规则。

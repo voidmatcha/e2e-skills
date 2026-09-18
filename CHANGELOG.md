@@ -2,53 +2,41 @@
 
 ## [Unreleased]
 
+## [1.17.0] - 2026-09-18
+
+Two interim version bumps, 1.16.4 and 1.17.1, were made while this work was split across phases and were never published; their content ships here, in one release. All four `SKILL.md` files and all three plugin manifests carry 1.17.0.
+
 ### Added
 
 - **A reviewer eval judges eleven `.catch(() => {})` candidates in one file.** `catch-outcome-boundaries.spec.ts` holds the shapes Phase 1 cannot separate: a sole swallowed assertion, the same shape split across lines, a swallowed half of a two-part promise, and eight lookalikes — an independent assertion alongside a caught `page.title()`, a custom `toBuffer()`, a shadowed local `expect`, an `expect.soft` whose failure is recorded rather than thrown, a synchronous matcher that throws first, a repeat of the same assertion unswallowed, and a `finally` that throws unconditionally. Three are P0; the rest must not be reported.
-
-## [1.17.0] - 2026-09-18
-
-Versions 1.16.4 and 1.17.1 exist only in this repository's history: their
-content ships here, in one published release. All four `SKILL.md` files and
-all three plugin manifests carry 1.17.0.
-
-### Added
-
 - **The research evidence ledger covers three sources on self-repair and healing (rows 60-62), and now audits 62 sources.** A 2026 industrial preprint documenting assertion weakening and test deletion during autonomous repair is Verified primary; the Self-Repair Trap preprint and the practitioner false-heal article are Qualified, because the first studies unit-level regression oracles and the second does not publish its benchmark data. The healer benchmark links them as external convergence without importing their figures.
 
 ### Changed
+
 - **The healer benchmark records what the public record does and does not contain.** A bounded 2026-09-18 search — web, arXiv, `microsoft/playwright` issues and discussions, official video subtitles, playwright.dev — found no paper, vendor benchmark, or talk measuring Playwright's own Test Agents healer; the closest artifact is one practitioner write-up with 47 generated tests and author-judged outcomes. The widely repeated "Microsoft benchmarks put the healer at ~75%" figure appears in no Playwright source and is not cited here. The three convergence sources are also marked as not measuring the first-party healer.
 - **Sources are recorded for what was refused as well as what shipped.** `upstream-rule-sources.md` now carries the tautological-test and vendor-mocking sources behind the Phase 2 stub-echo item that `stub-echo-v1` refused as a rule, and records the two 2026 self-repair papers as convergence with the generator's three-attempt repair cap. The transferable-patterns table marks the recorded-trace idea partially adopted through imported manual cases, and the non-isolated-green principle adopted through the Step 5 baseline run.
 
 - **The scanner is about 4x faster on hit-dense files, with byte-identical output.** `// JUSTIFIED:` resolution ran one awk pass per hit and lexed the file from line 1 each time; it now reports every justified line in one pass per file and looks the hit up. Hit-path resolution is memoized per spelling, and scratch files use a private counter instead of one `mktemp` process each. A pinned 300-hit fixture went from 30.9 s to 7.5 s; stdout and exit code are unchanged on that fixture, on this repository's own trees, and on ten adversarial fixtures. See `benchmarks/scanner-hot-path-v1`.
 
-
 - **`benchmarks/stub-echo-v1` tested a proposed reviewer rule before writing it, and refused it.** The candidate sub-pattern `#4l` would have flagged an assertion whose subject is a response the same test stubbed. Its protocol was frozen first: field-scan-v1's twelve pinned repositories, a deterministic collector, a four-verdict rubric, and four gates with named consequences. Adjudicating all 78 candidates found zero instances of the defect, 71 assertions against a real backend behind a spy or a `route.continue()` pass-through, and 7 stubbed routes observed only for synchronization. G1 failed, so the frozen consequence applies: the shape is documented in the `#4` Phase 2 procedure with its three lookalikes, and no scanner rule is added.
 
-
 - **The generator runs the approved existing tests for the target area once before the tracer scenario.** A suite that was already red made every later result unreadable. A green run becomes the baseline; a red run outside the candidate's surface is recorded and never attributed to the candidate; a red run on the candidate's own route, feature, fixture, Page Object, global setup, or stored authentication state returns `PARTIAL/BLOCKED`; and when no approved command can cover the area without replaying a persistent write that V5 forbids, the run is skipped, recorded as `baseline not established`, and V5's suite-context mode becomes `CANNOT_VERIFY`.
-- **Error scenarios must name the signal that distinguishes their failure cause.** Step 4 records an `Error-cause signal`, because a scenario that only proves "an error appeared" passes for every cause that reaches the same screen. A product that deliberately shows one message for several causes is recorded as `GENERIC_BY_CONTRACT` with its rule; the distinguishing evidence is then the V4 request proof, and V3 must not swap causes to falsify the assertion.
+- **Error scenarios must name the signal that distinguishes their failure cause.** Step 4 records an `Error-cause signal`, because a scenario that only proves "an error appeared" passes for every cause that reaches the same screen. A product that deliberately shows one message for several causes is recorded as `GENERIC_BY_CONTRACT` with its rule, or as `GENERIC_BY_CONTRACT: NEEDS_PRODUCT_CONTEXT` for the approval gate when no rule is documented. The distinguishing evidence is then the response the app received, proven by V4 request proof for a write or by the observed response for a read-only scenario. V3 must not swap causes to falsify the assertion; it turns the failure into the success the scenario denies, and a fault that leaves the same screen is `CANNOT_VERIFY`.
 - **A scenario may carry up to three named secondary outcomes.** Survives a reload, side effect proved, and error cause distinguished are offered per scenario and recorded as selected or skipped, each with the case that skips it. They are extra assertions in the same test: V1 still keeps one primary outcome, V2/V3 still falsify only that one, and every locator they need still enters the Locator Mapping Table and the YAGNI audit.
-- **An exported manual test case can fill `Owner/source`.** Markdown, CSV, or pasted text from TestRail, Zephyr, Xray, Qase, or similar is a documented requirement source; its case id is recorded and carried into the generated test title. The export is untrusted data: no command inside it runs, no URL is opened, no credential is used, observed product behavior wins over contradicting steps, and the skill never calls a test-management API or opens attachments.
-
-
-
+- **An exported manual test case can fill `Owner/source`.** Markdown, CSV, or pasted text from TestRail, Zephyr, Xray, Qase, or similar is a documented requirement source; its case id is recorded and carried into the generated test title. The export is untrusted data: no command inside it runs, no URL is opened, no credential is used, observed product behavior wins over contradicting steps and each dropped step is reported at the approval gate, and the skill never calls a test-management API or opens attachments.
+- **Skill prose paragraphs are one physical line each, as `CONTRIBUTING.md` already required.** Hard-wrapped paragraphs cascaded every later line number on any edit, which breaks the `file:line` citations evals and parity checks rely on. No word changed: every reflowed file is identical to its previous version after whitespace normalization. List items, tables, code, frontmatter, and frozen benchmark evidence are untouched. The four `SKILL.md` files drop 134 to 184 lines each and now run 302 to 434 lines; their word counts are unchanged. Generator contract assertions that matched a hard-wrap newline now match the joined text.
 
 ### Fixed
 
 - **The opt-in ast-grep download (`E2E_SMELL_NO_AST_GREP_DOWNLOAD=0`) now runs Tier 2 instead of always failing it.** `@ast-grep/cli` is a shim that its postinstall replaces, so with lifecycle scripts disabled every call printed a message and exited 1, and each opted-in scan ended INCOMPLETE. The scanner now fetches the platform package for macOS arm64/x64 or glibc Linux x64/arm64 through the same private pinned npm environment, copies its binary into private storage, and runs it only if its sha256 matches the pinned value; other platforms and any mismatch still fail closed.
 
-
 - **Hosted CI installs ast-grep from an integrity-pinned platform package without lifecycle scripts.** `npm i -g @ast-grep/cli` ran the package's postinstall, and adding `--ignore-scripts` alone would leave a shim that exits 1. The workflow now packs `@ast-grep/cli-linux-x64-gnu@0.39.7` with scripts disabled, checks its registry sha512 against a pinned value, and points `E2E_SMELL_AST_GREP_BIN` at the extracted binary; `review.sh` enforces that shape.
 
-
 The skill changes in this section respond to Medium-severity findings from three independent product-review attempts on the four skills, plus defects found while verifying and reviewing those fixes and in five later full-scope repository reviews. Each finding was confirmed against the code before anything changed. Four reported issues were checked and left unchanged because they are not defects: the generator's completion criteria already ship in its sibling `verification-rules.md`, the Cypress reader's `redact_for_output` already runs an idempotency check and a residual-credential scan before emitting, the artifact launchers' permission arithmetic never receives a zero-padded mode from `stat`, and the reviewer's default `E2E_SMELL_FAIL_ON=p0` gate deliberately leaves `JUSTIFIED` P0 candidates to `p0-candidate`, as documented. Pattern IDs, severities, and F1-F15 codes are unchanged.
-
 
 - **Independent product-review v11 completes the v10 schedule with the consumed v10 attempt carried, and fails as its FAIL-first rule had already determined.** `scripts/evals/independent-review-protocol-v11.json` inherits every model-facing and scoring artifact from the frozen v10 archive by SHA-256: packet, 452,239-byte prompt, rubric, thresholds, remediation ledger, model catalog, host matrix, model order, and the exact `Claude Code 2.1.220` pin. Only harness bytes change. Schedule index 0 is the consumed v10 attempt `claude-v8-remediation-confirmation-v10-r1`, a valid `FAIL`, carried byte-for-byte except that its report replaces the operator account's home-directory prefix with the `/Users/user/` placeholder in five path fields; its review, decision, and status are unchanged, and both the original and normalized report digests are bound. The two never-reserved slots run as fresh attempts `claude-v8-remediation-confirmation-v11-r2` (`claude-fable-5`) and `-v11-r3` (`claude-opus-5`). `benchmarks/independent-product-review-v11-remediation/` was frozen at 1 of 3 attempts with `fail_first_determined=true`, so the fresh attempts could only add completion and descriptive observations. Both then ran on the pinned CLI: v11-r2 (`claude-fable-5`) passed individually at 90.5 with 0 Critical, 0 High, and 5 Medium findings and no reopened target, and v11-r3 (`claude-opus-5`) failed at 87.67 with 0 Critical, 0 High, and 8 Medium findings, again reopening V8-T4 mechanically through a Medium `false_positive_control` finding at `skills/e2e-reviewer/scripts/scan.sh:5919`. The evidence wrapper now reports `FAIL, 3/3`: the archive is complete and the gate is `FAIL`. The protocol was preregistered after observing r1 and before any v11 model call, and its claim boundary discloses every departure from v10, including a revision of the shared zero-tool runner between r1 and the fresh attempts and a per-call timeout that v10 never bound. It is not unbiased defect discovery, remediation confirmation, cross-provider evidence, or skill accuracy.
 - **`ci-local.sh` runs the v11 unit suite in the shared reference-tokenizer venv.** `scripts/ci/test-independent-review-v11.py` joins the v7, v8, and v10 suites in `run-reference-tokenizer-suites.sh`; the v10 suite stays in the list and still passes against the frozen v10 bytes. The v11 suite drives every fresh attempt through the real v11 runner and the real validator integrity comparison, invokes `scripts/ci/run-independent-review-v11-evidence.sh` under a poisoned environment, and prints one explicit SKIP for its strict live-path round trip unless `E2E_SKILLS_V11_PINNED_CLAUDE_PATH` names the pinned CLI binary. `AGENTS.md` and `CONTRIBUTING.md` list the suite and wrapper.
 - **The healer perturbation README records external convergence** from two 2026 preprints and one practitioner benchmark on assertion weakening and false heals, with the scope of each and without importing their figures as evidence for this benchmark.
-
 
 - **Independent product-review v10 is superseded after one measured attempt.** V10 reserved its first scheduled attempt and called `claude-opus-5` once: it scored 88.67 with 0 Critical, 0 High, and 8 Medium findings, and failed on the overall score and on a mechanical reopening of target V8-T4 by the protocol's category/file/severity rule, through a Medium finding at `skills/e2e-reviewer/scripts/scan.sh:756` that is not a recurrence of the historical V8-T4 defect. The remaining attempts could never reserve (see Fixed), and repairing either frozen file would change a digest the v10 freeze binds, so `scripts/evals/independent-review-v10-supersession.json` records v10 as `SUPERSEDED_AFTER_MEASURED_INFRASTRUCTURE_FINDING` / `INCOMPLETE`. The v10 attempt IDs `-v10-r2` and `-v10-r3` are permanently unusable. The r1 call ran in an off-repository reconstructed tree, so the canonical v10 archive stays `FROZEN` with no attempts and every frozen v10 file is byte-identical. The record also discloses a history that no earlier changelog entry stated: the v10 freeze first shipped in release 1.11.0 and was replaced in place at commit 679f2c4 before any reservation, with the protocol's freeze-policy text, all seven reviewed files, the packet, and the runner, validator, and shared-runner digests changed under the same protocol ID, schedule digest, and attempt IDs. `benchmarks/STATUS.md` now records the v10 attempt, the supersession, and the v11 freeze.
 - **Both debugger skills now run the F1/F7 isolation probe only after the execution safety gate and the repository trust checks pass, and never when it would replay an unproven non-idempotent write.** The probe replays the failing test (`--repeat-each=10` in Playwright, five spec runs in Cypress) and then runs the whole suite, but both skills presented it as the way to decide F1 vs F7 with only a general approval note, which contradicted the safety gate's rule against replaying non-idempotent writes. The probe now runs only when the whole target stack is `local/disposable` or an approved non-production test environment, the user has explicitly trusted the repository, both exact probe commands are approved, and the failing test performs no non-idempotent write whose system-boundary idempotence is unproven. Otherwise the skills present the commands as `recommended` and report `CANNOT_VERIFY` between F1 and F7, as they already did when the suite could not run, so a shared stack or an unproven write now yields `CANNOT_VERIFY` instead of a probe result. Playwright eval 14 and Cypress eval 16 cover the gated run (their prompts now state that the failing test performs no writes), Playwright eval 17 and Cypress eval 18 cover a blocked shared-staging case, and Playwright eval 20 and Cypress eval 19 cover a payment-submitting test on a trusted, disposable, approved stack, where neither trust nor approval proves that the write can be replayed.
@@ -68,7 +56,6 @@ The skill changes in this section respond to Medium-severity findings from three
 - **`install-hooks.sh` refuses to replace an existing `core.hooksPath`,** which previously disabled husky, lefthook, or global hooks without a word.
 - **`ci-local.sh` warns when ast-grep is unavailable,** because its self-scan P0 gate then covers Tier 3 only while hosted CI also runs Tier 2.
 - **Seven `review.sh` checks fail instead of warning when `python3` is unavailable,** matching the Language check.
-
 
 - **The independent-review runner and evidence validator now share one integrity key set.** The frozen v10 runner wrote `superseded_phase_record_sha256` into every report's pre- and post-call integrity snapshots, while the frozen v10 validator built its expectation without that key and compared the whole dictionary. The runner validates the archive before every reservation, so after r1 each later attempt was rejected before it could reserve, and because the runner's command-line entry point did not catch the validator's `AssertionError`, the rejection surfaced as a traceback. The v10 unit suite missed it because it built the live-attempt integrity dictionary by hand from the validator's key list, and its only runner-produced report was rejected before reaching that comparison. In v11 the runner's integrity snapshot emits exactly the validator's `INTEGRITY_KEYS` tuple and refuses to run if its producers differ; the pre-call snapshot and start-time chronology are checked against the freeze before reservation; validator rejections become clean errors that consume no attempt; the per-call timeout is fixed at 1800 seconds and recorded in every reservation and report; post-raw recovery preserves an empty canonical raw by digest; and every fresh report in the v11 suite comes from the runner rather than from a hand-built integrity dictionary. The frozen v10 files are not modified.
 - **The reviewer scanner no longer treats a source lexer that cannot run as a file without framework references.** The executable-source lexers in `scope-source.sh` and the binding-lineage lexers in `scan.sh` discarded awk's exit status. When awk could not read a source, such as a Playwright fixture module or an `expect` helper outside the scan root that a spec imports, the empty output silently dropped the spec's findings from P0 scope and the scan exited 0 with a clean Summary. The `expect`-helper shape escaped in every lexer backend, including the default C-locale Python lexer, because the binding-lineage lexers always run in the scanner shell. An unreadable or vanished source, an awk runtime error, or a killed lexer is now recorded as a runtime error, and the scan stops with `error: source lexer invocation failed (awk exit N)` and exit 2 instead of printing a Summary. Lexer output still streams: the eval corpus scans identically in the shell, Python, and UTF-8 backends, and a reader that stops early (`rg -q`, `head`) still ends the lexer early without being recorded as a failure, whether the closed pipe arrives as SIGPIPE or, when SIGPIPE was inherited as ignored, as an awk write error. A separate, older limit is unchanged: under the scanner's `pipefail`, a large source whose lexer output outlasts an early-exit reader can still be read as having no framework reference.
@@ -528,6 +515,7 @@ The skill changes in this section respond to Medium-severity findings from three
 ## [1.7.0] - 2026-06-27
 
 ### Added
+
 - **Companion ESLint plugins — published and dogfooded.** Shipped [`eslint-plugin-playwright-silent-pass`](https://github.com/voidmatcha/eslint-plugin-playwright-silent-pass) and [`eslint-plugin-cypress-silent-pass`](https://github.com/voidmatcha/eslint-plugin-cypress-silent-pass) (Apache-2.0, on npm): autofixable rules for the mechanical always-pass class (`#4f` — `expect(locator).toBeDefined()` / `.toBeTruthy()` / `.not.toBeNull()`) that the official `eslint-plugin-playwright` / `-cypress` do not cover. The scanner's Tier 1 now runs them via npx when available — best-effort, so a missing/offline package never breaks Tier 1 and Tier 2/3 still cover `#4f`. `e2e-reviewer` SKILL.md (Phase 1) positions them as the commit/CI-time companion to this agent-time review and recommends installing the matching plugin on `#4f` hits.
 
 ### Docs
@@ -539,12 +527,14 @@ The skill changes in this section respond to Medium-severity findings from three
 ## [1.6.0] - 2026-06-26
 
 ### Changed
+
 - **All three generation/debugging skills hardened after a cross-skill audit, then empirically verified on both Claude and Codex (no pattern ID or failure-category change).** A cross-host run confirmed Claude and Codex reach the same diagnosis on the same input, and the cypress parser fix below was confirmed real (the old query returned nothing on a realistic report; the new one returns the screenshot path).
   - `cypress-debugger`: Phase-3 screenshot extraction now parses mochawesome's JSON-stringified `context` (`fromjson`) instead of treating it as a nested object. Phase-1 now carries the spec `file`/`fullFile` and the retry `attempts[]` so "passes on retry" is verifiable from the data, and the skill gained a `cypress.config` `retries`/`testIsolation` reference, a Cypress "heal by intent" note, a `mochawesome-merge` step for split `mochawesome*.json`, and a `cy.intercept` alias-ordering example. New eval fixtures: `mochawesome-screenshot-context.json`, `mochawesome-retries.json`.
   - `playwright-debugger`: report handling now detects the reporter in use (HTML report directory vs `results.json` vs `blob-report/`) instead of assuming `results.json`; the Phase-1 projection surfaces `errorLocation` (the failing call's file:line, distinct from the spec line); added first-class signals for fixture/`beforeEach` setup failures and unmerged-shard artifacts, a "real product bug vs test bug" decision gate before any test fix, and `playwright show-trace` as the primary trace path. Output format aligned with `cypress-debugger` for cross-host parity.
   - `playwright-test-generator`: the live-exploration step now names its tool source and adds a deterministic ARIA-snapshot fallback plus an app-reachability probe (read and await the configured `webServer`) so the pipeline no longer stalls when the dev server is down; the verification run emits `--trace on-first-retry --reporter=html` for the debugger handoff; selector priority raises `getByTestId` when a project standardizes on it; `best-practices.md` and `code-rules.md` were refreshed (storageState/projects/test-id/ARIA snapshot) with a top-of-file hard-rules checklist.
 
 ### Added
+
 - **`e2e-reviewer` #2 (Missing Then) accept-criteria guards.** `pattern-reference.md` documents the contexts that must not be flagged (API-404 negative checks, cleanup/teardown, success-toast-only flows, helper-embedded assertions, non-entity removes). New evals: a delete-verification case (one true positive plus false-positive guards) and an always-true-locator fixture; minor scanner and grep-pattern touch-ups.
 - **AI-reviewer benchmark cross-model re-judge.** The contestable unique catches were re-judged by an independent cross-model judge (OpenAI gpt-5.5 via Codex), which agreed on 13/15 (87%); recorded in `docs/ai-reviewer-benchmark.md` and surfaced in the README.
 - **Hero banner (`docs/assets/hero.png`).** A liquid-glass hero image for the README.
@@ -560,21 +550,25 @@ The skill changes in this section respond to Medium-severity findings from three
 - **Added `docs/roadmap.md` (contribution roadmap) and removed `docs/case-studies.md`.** The roadmap folds in the merged-PR lessons and adds the live contribution plan: merged, in review, 21 prepared candidates, and 29 backlog candidates (50 total), plus the cadence (about 10 PRs open at a time, replenished as each merges) and the goal of at least 25 merged PRs as real-world validation. README and the drift smoke test (`test-parity.sh` Case 7 orphan check) repointed from case-studies to roadmap.
 
 ### Changed
+
 - **`e2e-reviewer` scanner — two detection-coverage fixes surfaced during an upstream-PR campaign (no pattern ID or severity change).** (1) **Legacy Cypress layout** `cypress/integration/**/*.js` (plain `.js`, no `.cy.`/`.spec.`/`.test.` suffix) was invisible to the suffix-globbed checks, so a committed `it.only` and other smells in that classic layout were silently missed. `run_check` now supports a `;`-separated multi-glob include, and the Cypress-intended checks (#3, #7, #9b, #5a, #8b, #10a, #14) additionally scan `**/cypress/integration/**/*.{js,ts}`. (2) **Misplaced-await variant of #15**: `expect(await locator).toBeVisible()` placed the `await` on the locator (a no-op, since a Locator is not thenable) instead of on `expect`, so the web-first matcher promise still floated and the base #15 check skipped it by design. A second #15 detection now catches the awaited-locator form, bounded to web-first matchers so value-resolving one-shot reads (`expect(await x.isVisible()).toBe(true)`, which is #4c-4e) are not double-flagged. New evals: id 11 (legacy `cypress/integration` `it.only` true positive) and id 12 (awaited-locator true positives plus valid-`await expect` and `#4c-4e` false-positive guards).
 
 ## [1.5.5] - 2026-06-16
 
 ### Added
+
 - **`playwright-test-generator/code-rules.md` — two harness patterns distilled from production E2E practice (no pattern ID or reviewer change).** `## Network Determinism` gains a "the mock layer is decided by where the call originates" rule: `page.route()` only intercepts browser-issued requests, so server-side traffic (Next.js SSR/RSC, route handlers, a BFF, `getServerSideProps`) silently bypasses it and hits the real backend — mock those at a server-side seam (an E2E-only env var that returns canned payloads) and detect the origin by whether the data appears in the initial SSR HTML. New `## Branch State Seeding` section: for multi-step funnels, seed the user to the branch's starting state through a test-only API instead of re-driving the shared prefix (consent → phone-auth → …) through the UI in every spec — faster, and one prefix change no longer breaks every downstream test; drive the prefix via UI only in the single spec that verifies it, and record seeding endpoints in the conventions doc (Step 5b).
 
 ## [1.5.4] - 2026-06-13
 
 ### Fixed
+
 - **Documentation and eval-precision polish (no detection-behavior change).** README F14 "Animation Race" signal cells (both Playwright and Cypress rows) updated to the bidirectional wording shipped in 1.5.3. `sg-4f-locator-as-truthy.yml` drops `getByName` from its method whitelist — it is neither a Playwright Locator method nor an RTL query (it was the documented n8n ~2200-FP culprit). Eval id 2's false-positive-guard line citations corrected (unit-helpers.test.ts 10/15 to 11/16). cypress-debugger eval id 2 severity assertion reworded to match the SKILL.md P0 rubric (P0 is reserved for silent-pass F6/F13, not a loud uncaught TypeError). `scan.sh` dedup comment clarified: the Tier-2/Tier-3 skip is eslint-conditional and LINT_COVERS-scoped, and the ast-grep rules are TypeScript-only by design with `.js`/`.jsx`/`.tsx` delegated to the always-on Tier-3 regex net.
 
 ## [1.5.3] - 2026-06-13
 
 ### Fixed
+
 - **playwright-debugger Phase 1 extraction was broken.** The documented `jq` selected at result-level, which dropped the flaky-vs-unexpected signal the classification step depends on and returned `title`/`file` as null on a standard Playwright JSON report. Rewritten to select at the spec level (preserving `title`/`file`/`line`, the per-test `outcome`, the `final` result, and `retries`); validated against all five debugger fixtures. Also added `mkdir -p playwright-report` before the reporter redirect (prerequisites case 2), and broadened the F14 ("Animation Race") signal to cover both the not-yet-rendered and removed-before-observed directions, reconciled with the F14-vs-F15 distinguisher and mirrored into cypress-debugger for cross-skill parity.
 - **cypress-debugger JUnit extraction captured the wrong test name.** The regex matched `name="..."` inside `classname="..."`; it now requires an attribute boundary (`\sname=` / `\smessage=`). Eval id 3 relabeled (it leaked the playwright debugger's F11 name "Async Order"; cypress F11 is "Command Queue / Intercept Race", and the postMessage/DOM race is F1 with F14 as the secondary).
 - **`scripts/pr-preflight.sh`** — committed the previously-uncommitted stage-7 authoring-hygiene block (AI-tell punctuation guard, added-comment cap, test-rename guard) and added a `PREFLIGHT_ALLOW_SLOP=1` override so the punctuation check does not false-positive on intended string-literal content.
@@ -582,10 +576,12 @@ The skill changes in this section respond to Medium-severity findings from three
 ## [1.5.2] - 2026-06-13
 
 ### Fixed
+
 - **Scanner false positives in three Tier-3 rules (no pattern ID or severity change).** `#15` (missing-await on expect) no longer flags non-Locator expects: `getBy[A-Za-z]+` is tightened to `getBy[A-Z]` (so `getByteLength`/`getBytes` are excluded) and the bare `page)` alternative is anchored with a negative lookbehind, so a dotted `.page` member such as `expect(response.body.page).toBe(2)` or `expect(config.page).toEqual(x)` is no longer a P0. `#5a` (conditional bypass) now requires the `.isVisible(` call form, so a bare boolean variable `if (isVisible)` is not flagged. `#8a` (dangling locator) gains the trailing-line-comment tolerance `#8b` already had, so `page.locator('.x'); // note` is detected. New eval `id 10` (`evals/files/fp-guards.spec.ts`) locks in a true-positive and a false-positive guard for each; `references/grep-patterns.md` synced.
 
 ## [1.5.1] - 2026-06-13
 ### Changed
+
 - **`skills/e2e-reviewer/scripts/scan.sh` — widened Tier-3 detection for two existing P0 patterns (IDs and severity unchanged).** `#8b` (discarded boolean) now matches the selector-argument shorthand (`await page.isVisible('sel');`) and the no-semicolon form, with an end-of-statement anchor so handled reads like `await x.isVisible().catch(() => false)` and chained expressions are not flagged. `#4c-4e` (one-shot read) adds `allTextContents` to its method list, so `expect(await locator.allTextContents()).toContain(v)` is caught in the deterministic Tier-3 baseline. (`count` was intentionally NOT added to Tier-3: a bare regex `.count()` over-flags ORM/array idioms such as `expect(await prisma.user.count()).toBe(n)`; one-shot locator `count` detection stays with the Tier-2 ast-grep `sg-4ce-count` rule.) `references/grep-patterns.md` synced to match. New eval `id 9` (`evals/files/widened-reads.spec.ts`) adds true-positive assertions plus two false-positive guards (`.catch()` chain, assigned-and-used read). Out of scope by design: two-statement read-then-assert (`const t = await x.textContent(); expect(t)...`) and `new URL(page.url()).searchParams.get()` reads remain Phase 2 manual findings — unsafe for line-based Tier-3 regex.
 
 ## [1.5.0] - 2026-06-11
@@ -593,17 +589,20 @@ The skill changes in this section respond to Medium-severity findings from three
 Progressive-disclosure restructure of the flagship skill, a new failure category, and the PR-preflight harness that gates the upstream-contribution campaign.
 
 ### Added
+
 - **F15 Hydration Race** — new failure category in both debuggers (`playwright-debugger`, `cypress-debugger`): action reported success but had no effect because the first interaction after `goto`/`cy.visit()` landed on a server-rendered page before the framework attached event listeners. Distinguished explicitly from F14 (F14: element not rendered yet; F15: rendered but inert). Classification step, fix guidance (hydration marker gate → self-verifying click; never a blind sleep), README tables, and one new eval per debugger with committed fixtures (`results-hydration-race.json`, `mochawesome-hydration-race.json`) including a false-positive guard case each.
 - **`playwright-test-generator/code-rules.md` — SSR & Hydration section.** Gate the first interaction on hydration for SSR apps (marker first, self-verifying `.toPass()` action second, never `waitForTimeout` after `goto`); Qwik resumability and Astro per-island nuances noted.
 - **`scripts/pr-preflight.sh`** — six-stage preflight for upstream E2E-fix PRs prepared in `testbed/` clones: smell delta (baseline-vs-working-tree scan), sed-artifact AST check, nearest-tsconfig targeted `tsc`, the repo's own lint on changed files, best-effort headless run of changed specs (env failures classified as SKIP, not FAIL), and diff hygiene (stray tracked-file changes, whitespace-only churn). Every SKIP is reported so the PR body can disclose what was not verified locally — adding the previously missing "run the affected specs before submitting upstream" verification step.
 - **`skills/e2e-reviewer/references/pattern-reference.md`** and **`references/applying-fixes.md`** — the 522-line Pattern Reference and the 266-line Phase 4 contract moved out of the SKILL.md body verbatim, read on demand.
 
 ### Changed
+
 - **`e2e-reviewer/SKILL.md` body cut from 1,066 to 291 lines (~22k → ~7k tokens per invocation).** The body now holds the executable workflow (Phases 0–3, output format, Quick Reference, suppression); per-pattern contracts and the Phase 4 fix tables live in `references/` with explicit read-on-demand pointers (the three regression-prone Phase 4 rules stay inline). CI parity Checks 3b/3c and drift-smoke Case 4 now validate `references/pattern-reference.md`.
 - **`scripts/verify-fixes.sh`** — accepts an explicit changed-file list (`verify-fixes.sh <repo> -- <file>...`) so the postfix AST rules no longer fail on pre-existing upstream artifacts outside the diff; `VERIFY_FIXES_SKIP_TSC=1` lets callers that own typechecking (pr-preflight) skip the root-level `tsc`.
 - **`e2e-reviewer/references/grep-patterns.md`** — retitled to "Pattern ID Reference" and stripped of the retired 6-batch Grep dispatch imperatives that contradicted the scanner-based Phase 1 since 1.3.0; ID → regex → meaning tables unchanged.
 
 ### Fixed
+
 - README documented the wrong Codex install location (`~/.codex/skills/` → `~/.agents/skills/`), completing the v1.4.2 correction that had only been applied to AGENTS.md.
 - AGENTS.md drift: nonexistent `scripts/ci/validate-evals.sh` path, "20 pattern phrases" (actual: 24), "10 drift smoke checks" (actual: 14), failure-code range F1–F14 → F1–F15.
 
@@ -612,9 +611,11 @@ Progressive-disclosure restructure of the flagship skill, a new failure category
 Follow-up patch to v1.4.4 from the same production suite (71 tests): the inverse of "prove the call".
 
 ### Added
+
 - **`playwright-test-generator/code-rules.md` — Prove the call HAPPENS before asserting it.** Companion rule to "prove the call, not just the pixels": call-proof assertions only apply to calls the app actually makes at runtime. Unmount-cleanup API calls are the canonical trap — an empty-deps effect's cleanup captures guard variables as a stale closure from mount time, so a guard that's empty at mount (e.g. an id that arrives with the fetch response) makes the cleanup call a dead path forever, and a `waitForRequest` assertion times out against correct test code. Verify the request fires at least once before shipping the assertion; otherwise assert the user-visible outcome, file the stale closure as an app defect, and leave a file:line comment for when it's fixed.
 
 ### Changed
+
 - Version metadata bumped to 1.4.5 across plugin manifests and all four skill frontmatters.
 
 ## [1.4.4] - 2026-06-06
@@ -622,10 +623,12 @@ Follow-up patch to v1.4.4 from the same production suite (71 tests): the inverse
 Production-feedback patch from extending the same Pages-Router functional suite to 68 tests (quiz solve loops, logout, password change, modal-gated entry flows): two failure modes that survived a clean v1.4.3 review and only surfaced at runtime, fed back into the debugger playbook and generator rules.
 
 ### Added
+
 - **`playwright-debugger/SKILL.md` — Visible-but-unmatchable elements (`aria-hidden` ancestor).** New F2-family diagnosis: a role+name locator stuck at "waiting for" while the screenshot plainly shows the element means an ancestor `aria-hidden="true"` removed the subtree from the accessibility tree — `getByRole` can never match, `getByText` still can. Covers the nastier same-name variant where the role query silently resolves to a control *outside* the hidden subtree and the click is then blocked by the modal overlay. Fix pattern: text locator scoped to a stable container inside the hidden subtree (e.g. `locator('#modalBox').getByText(...)`) + report the root upstream as an app accessibility defect.
 - **`playwright-test-generator/code-rules.md` — Wire evidence before `when.params` narrowing.** Third hard rule for request-aware mocks: prove the app actually sends a param at that point in time before keying a rule on it. A `router.query` read in a first-render initializer fires the initial fetch during hydration (before `router.isReady`), silently dropping the param from the wire — a param-narrowed rule then never matches and a previously-green test fails for a contract the app never honors. If the param is best-effort in practice, keep the broad rule and record the WHY with a file:line citation.
 
 ### Changed
+
 - Version metadata bumped to 1.4.4 across plugin manifests and all four skill frontmatters.
 
 ## [1.4.3] - 2026-06-05
@@ -633,6 +636,7 @@ Production-feedback patch from extending the same Pages-Router functional suite 
 Production-feedback update: patterns proven during a 38-test Wave 1–4 functional suite build on a Next.js Pages-Router app (proxy-cmd API, member-area mocking, write interactions), fed back into the generator rules, reviewer catalog, and debugger playbook.
 
 ### Added
+
 - **`code-rules.md` — Request-aware mock rules.** Ordered `MockRule[]` per endpoint (`when: { method, params }`, first match wins; params compare only listed keys — URL query for GET/DELETE, urlencoded body for POST with body precedence). Two hard rules: a registered-but-unmatched rule array must answer empty-success + loud warning, never fall through to the network (param typos must not become real-backend writes); pagination contracts via per-page `start`/`offset` rules — seed page 1 at exactly the page size so the client's "loaded end" flag doesn't suppress the page-2 request, then assert append-not-replace.
 - **`code-rules.md` — "Prove the call, not just the pixels."** Write interactions with optimistic UI must pair the UI assertion with request proof (`waitForRequest` armed before the click).
 - **`code-rules.md` Auth & Session — login-success hybrid.** Route mocks can't mint server-issued session cookies; mock the login POST for form behavior, seed cookies through the project's sanctioned test seam, then assert the full post-login redirect chain — with a WHY comment in the spec.
@@ -641,14 +645,17 @@ Production-feedback update: patterns proven during a 38-test Wave 1–4 function
 - **`playwright-debugger` — accessible-name collision guidance.** On role+name strict-mode violations between semantically different controls (tab vs toggle sharing a name), disambiguate by the semantic attribute (`[aria-pressed]` / `:not([aria-pressed])`) instead of downgrading to `.nth()`.
 
 ### Changed
+
 - Catalog count 22 → 24 across SKILL.md Quick Reference, README, and plugin description.
 
 ## [1.4.2] - 2026-06-05
 
 ### Added
+
 - **Cross-host convergence contract** (motivated by a 10-repo Claude-vs-Codex comparison where verdicts agreed 9/10 but `Real P0` counts varied by host discretion): Phase 1 "Deterministic mode" — canonical scanner invocation with download tiers pinned off and a mandatory tier-coverage statement in the report; Phase 2 "Counting contract" — `Real P0 = N` is the number of distinct surviving `file:line` entries after FP elimination and consolidation; Phase 2 "Bounded opening-token sweep" — the scanner-missed-shape hunt is a fixed 5-family token checklist instead of open-ended exploration.
 
 ### Fixed
+
 - **`scan.sh` `#3b` matches every `uncaught:exception` handler opening** (single- or multi-line body). The old `.*false` suffix only caught one-line `() => false` and missed 51 multi-line blanket suppressors in one OSS Cypress suite — Phase 1 reported 0 P0 on the corpus's richest #3b surface. Blanket-vs-scoped classification stays with Phase 2 (handler containing `expect()` is exempt). Cross-host verification (Codex/omx, 10 repos) surfaced the gap: a host that trusted the mechanical zero stopped early and returned the only verdict mismatch of the run.
 - **`e2e-reviewer/SKILL.md` Phase 2 zero-P0 floor.** Explicit MANDATORY rule: Phase 1 reporting 0 P0 does not end the review — LLM-only checks and a scanner-missed-shape sweep always run.
 - **`AGENTS.md` Codex install path corrected** to `~/.agents/skills/` (empirically verified discovery path; was documented as `~/.codex/skills/`).
@@ -658,6 +665,7 @@ Production-feedback update: patterns proven during a 38-test Wave 1–4 function
 Research-driven update: folds 2025–2026 community/official findings on AI-generated E2E tests (Playwright Agents planner/generator/healer model, seed-spec + conventions-doc leverage, network determinism, storageState auth) into the generator pipeline and reviewer catalog.
 
 ### Added
+
 - **`playwright-test-generator` Step 5b — Conventions & Seed Artifacts.** On first run in a project (no testing-conventions doc detected in Step 1), the pipeline now scaffolds a project-adapted E2E section into root `AGENTS.md` (+ `CLAUDE.md` pointer) and designates the best generated spec as the seed to copy. Rationale: across practitioner reports, a conventions doc + seed spec is the highest-leverage artifact for keeping AI-generated tests consistent across sessions and agents — without one, every session re-derives locator/auth/mocking decisions and drifts. New `conventions-template.md` carries the fill-from-observed-reality template.
 - **`playwright-test-generator` — `playwright-agents.md` interop reference.** When to keep this pipeline vs hand off to Playwright ≥ 1.56 first-party agents (`npx playwright init-agents --loop=claude`), how Step 5b artifacts feed the planner/generator, and why projects pinned below 1.56 (e.g. pixel-perfect visual baselines that an upgrade would invalidate) should not upgrade just for agents.
 - **`code-rules.md` — Network Determinism section.** Per-endpoint strategy table: write/credential paths must be stubbed (`page.route()`) — generated tests must never create real accounts or hit real payment providers; stable first-party reads may stay real; at most one designated real-backend smoke spec. Includes the shared proxy route-mock helper pattern (match on decoded routing param, e.g. `/api/request?cmd=`) and the fall-through write-leak caveat.
@@ -666,6 +674,7 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 - **`e2e-reviewer` #21 — Manually-Captured Session-File Dependency (P2, LLM).** `storageState` JSON produced only by a manual capture script — absent on fresh clones/CI, silently expires. Session state must be reproducible from code.
 
 ### Changed
+
 - **`playwright-test-generator` selector priority** — added `getByPlaceholder` as tier 3 and a label-existence precondition on `getByLabel`: label-less inputs (placeholder/title only) are common in real apps and `getByLabel` on them matches nothing. Step 3 now includes an accessible-name reality check against the live snapshot before locators enter the mapping table.
 - **`playwright-test-generator` Step 3 — programmatic-auth guidance** for generated tests (API login / setup project + `storageState`), aligned with reviewer #21.
 - **`playwright-test-generator` Step 7 / `playwright-debugger` F2·F12 — heal by intent.** Selector-failure fixes now re-resolve the element a step semantically targets from a fresh snapshot at the highest stable locator tier, instead of patching the old selector string (the approach Playwright's healer agent uses).
@@ -674,6 +683,7 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 ## [1.4.0] - 2026-06-04
 
 ### Added
+
 - **`scan.sh` — E2E content scoping for FP-prone patterns.** Tier 3 hits for `#3`, `#4a`, `#4b`, `#4f`, `#4g`, `#15` (P0) and `#9`, `#6`, `#5b`, `#19` (P1) are now kept only when the containing file carries a real Playwright/Cypress marker (`@playwright/test` import, `async ({ page` fixture destructure, direct `page.<api>` usage, or `cy.<cmd>(`). Eliminates Vitest/Jest/RTL unit-test bleed-through — the dominant false-positive root cause observed across a 110-repo OSS validation corpus (52/77 review reports flagged it). Measured: one design-system repo's `#4f` dropped 107 → 0, a component library's `#4g` token collisions (`<Tooltip timeout={0}>` props) 3 → 0, with zero loss of confirmed real P0 signals on control repos.
 - **`scan.sh` — ESLint watchdog.** The Tier 1 `npx eslint` invocation now runs under a kill-after-timeout guard (`E2E_SMELL_ESLINT_TIMEOUT_SECS`, default 300s; pure bash — macOS has no `timeout(1)`). The npx auto-download could previously hang indefinitely on large repos or constrained networks, stalling the whole scan.
 - **ast-grep rules — vendored/build-artifact `ignores`.** All five detection rules now skip `node_modules`, `dist`, `build`, `.next`, `out`, `coverage`, `public`, minified bundles, and `evals/files` — mirroring Tier 3's rg glob excludes (previously Tier 2 had no such scoping and could report hits in vendored `dist/` bundles).
@@ -682,6 +692,7 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 - **Committed eval fixtures — all four skills.** `skills/*/evals/files/**` (28 files: 12 e2e-reviewer specs/POMs, 4 Playwright-reporter JSON and 4 mochawesome JSON debugger reports, 8 generator project-scaffold files) now exist in-repo so every `evals.json` assertion's exact `file:line` reference is reproducible from a fresh clone. The previous `.gitignore` rule treating fixtures as local-only mock data is reversed; the scanner excludes `**/evals/files/**` in all three tiers so the intentional anti-patterns cannot fail the repo's own smell-scan CI gate.
 
 ### Fixed
+
 - **`scan.sh` — Tier 1 ESLint never worked via npx and its failure silently disabled Tier 2/3 coverage.** Two stacked bugs: (1) the invocation used `--no-eslintrc`/`--ext`/inline-JSON `-c`, all removed in ESLint v9+, so the npx path always exited 2; (2) the success check only grepped stdout for `error|warning` and set the `*_lint_done` coverage flags unconditionally — a crashed Tier 1 therefore reported "no findings" AND made Tier 2/3 skip `#7 #9 #15 #16` (`#7 #9b` Cypress). Rewritten: generated flat `eslint.config.mjs` with absolute plugin paths resolved inside the npx env (npm ≥9 sets no NODE_PATH), `@typescript-eslint/parser` for TS specs, and an exit-code gate — coverage flags are only set when eslint exits 0/1; any rc ≥ 2 falls through loudly to Tier 2/3. Verified end-to-end on Playwright (`no-focused-test`, `missing-playwright-await`, `no-wait-for-timeout`) and Cypress (`mocha/no-exclusive-tests`, `cypress/no-unnecessary-waiting`).
 - **`scan.sh` — `// JUSTIFIED:` suppression implemented in Tier 3** (was documented in SKILL.md/README but never implemented). A hit is dropped when the marker is on the hit line or anywhere in the contiguous `//`-comment block immediately above it (≤5 lines). Block-level placements remain Phase 2 responsibility.
 - **`scan.sh` — Cypress framework detection over-match.** The bare `cy\.` alternation matched `agency.`/`privacy.` etc., triggering spurious eslint-plugin-cypress downloads on non-Cypress repos; now anchored to real Cypress commands (`cy.visit|get|contains|…(`).
@@ -690,6 +701,7 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 - **`scan.sh` — rg glob precedence bug.** ripgrep gives precedence to later globs; the basename include glob was declared last, silently re-including files inside the `!dist/**`-style excluded directories whenever the target repo did not gitignore its build output (the long-standing "vendored `dist/cli.js` hits" symptom). The include glob now comes first so every negation wins.
 
 ### Changed
+
 - **`scan.sh` `#8a` — previous-line continuation filter.** A hit is dropped at scan time when the preceding non-blank line ends with `(` or `,` — the matched line is an argument inside a multi-line `await expect(\n  page.locator(...)\n).toBeVisible();`, not a dangling statement. Kills the single biggest FP source (measured: 520 → 3, 323 → 0, 71 → 0 on three monorepos) while still catching semicolonless dangling locators. The argument matcher also accepts one level of nested parentheses (`getByRole('button', { name: 'Save (draft)' })`). The Phase 2 previous-line backstop remains for residual shapes.
 - **`scan.sh` `#15` regex excludes `expect(await …)`** — those are one-shot reads (`#4c-4e` territory), not missing-await-on-expect; previously both patterns could claim the same line. Uses a possessive `\s*+` before the negative lookahead so whitespace variants (`expect( await …)`) cannot backtrack around it.
 - **`scan.sh` — eval-fixture exclusion is conditional.** `**/evals/files/**` is excluded from normal scans but re-included automatically when the scan root itself is inside an `evals/files` tree, so the bundled fixtures can be self-tested directly.
@@ -699,13 +711,14 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 ### Security
 - No security-relevant changes; scanner still performs no writes to the target repo.
 
-
 ## [1.3.4] - 2026-06-01
 
 ### Added
+
 - **`e2e-reviewer/SKILL.md` — new anti-pattern `#19` Module-Level Mutable State In Test Utilities** (`P1`, grep + LLM). Catches top-level `let X = …` declarations in test utilities, helpers, and POMs — state that survives across tests within a long-lived worker, while independent worker copies can generate the same supposedly unique counter-based identifiers. Playwright replaces the worker before retrying a failed test, so retry survival is not part of this rule. Surfaced by the Zeppelin `fix/e2e-flaky-final` review where `let testNotebookNameSequence = 0;` collided under `workers > 1`. Phase 1 grep (`^let\s+`, glob `*.{ts,js,tsx,jsx,cy.ts,cy.js}`) flags every column-0 `let`; Phase 2 LLM filter SKIPS pure type declarations (`let page: Page;` reassigned in `beforeEach` — idiomatic Playwright fixture) and only confirms hits that carry an initializer. Suppress with `// JUSTIFIED: [reason]` for intentionally shared worker-scoped state. Fix pattern documented inline: derive uniqueness from `Date.now()` + `Math.random().toString(36).slice(2, 8)`, use `testInfo.workerIndex`, or move state into `test.beforeEach`.
 
 ### Changed
+
 - **`e2e-reviewer/SKILL.md` — extended `#11` YAGNI scope from Page Objects to Page Objects + Utility Modules.** The procedure now lists exported symbols of `utils.ts` / `helpers.ts` / `fixtures.ts` alongside POM members and applies the 2+ call-site threshold uniformly. The rationalization for the extension is the same one as the original POM scope — single-use indirection adds maintenance cost without reuse benefit. Common new patterns explicitly enumerated: single-use auth helpers, single-use REST helpers, single-use waits. The `Rule` row clarifies that utility-module helpers used only inside their own module should drop the `export` keyword.
 - **Pattern count `19 → 20` across all parity surfaces** — frontmatter description ("Reviews 20 anti-patterns"), Quick Reference table (now 20 rows), Pattern Reference text, `docs/e2e-test-smells.md` P1 table, `README.md` Skill 2 description + Standalone Scanner blurb + P1 quick-reference table, `AGENTS.md` (pattern IDs `#1`–`#19` plus `#3b`; `20 Patterns table` in the editor guidance), `scripts/ci/review.sh` Check 3c QR row-count guard, `scripts/ci/review.sh` Check 5 frontmatter phrase-count guard, `scripts/ci/test-parity.sh` Case 3c expected substring, `skills/e2e-reviewer/scripts/scan.sh` Tier 3 banner. The `module-level mutable state in test utilities` phrase is appended to the P1 section of every manifest description (`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.codex-plugin/plugin.json`) so the severity-grouped parity check stays green.
 - **`evals.json` — added eval id `8`** covering `#19` true-positive flagging plus four false-positive guards: pure type declarations, JUSTIFIED-marked worker-scoped state, indented locals inside function bodies, and the canonical fix suggestion. Eval count `7 → 8`.
@@ -731,21 +744,25 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 - **`e2e-reviewer/SKILL.md` — removed external-action suggestion** in the cycle-decision section ("file an issue against the upstream repo" → "document them in the review report"); avoids encouraging out-of-band state changes during a review pass.
 
 ### Changed
+
 - All four skill `SKILL.md` files and the three manifests (`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.codex-plugin/plugin.json`) bumped to `1.3.3` in lock-step per the cross-host parity contract.
 
 ## [1.3.2] - 2026-05-20
 
 ### Changed
+
 - **Discovery metadata refresh** — README, Claude plugin, Codex plugin, and Claude marketplace surfaces now describe the bundle as an AI agent testing toolkit for E2E test automation, Playwright test generation, Cypress test review, flaky test root-cause analysis, false-positive detection, and test smell scanning. Added matching discovery keywords to the Codex and Claude marketplace manifests.
 - **`e2e-reviewer` frontmatter description length** — shortened the `SKILL.md` description to stay under the 1024-character skill-loader limit while preserving the P0/P1/P2 pattern phrase order required by CI.
 - All four skill `SKILL.md` files and the three manifests (`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.codex-plugin/plugin.json`) bumped to `1.3.2` in lock-step per the cross-host parity contract.
 
 ### Fixed
+
 - **Installed skill loader warning** — `e2e-reviewer` no longer exceeds the loader description limit after reinstalling from this release.
 
 ## [1.3.1] - 2026-05-20
 
 ### Added
+
 - **Codex plugin `interface` schema validation** — `scripts/ci/review.sh` and `scripts/ci/pre-push-security.sh` now enforce the Codex-specific block in `.codex-plugin/plugin.json`: `displayName`, `shortDescription`, `longDescription`, `developerName`, `category`, `websiteURL`, `brandColor` must be non-empty strings; `capabilities` must be a non-empty string array; `defaultPrompt` must contain 1–3 prompts of 1–128 characters each (matches Codex's display limits). `skills` must be a relative path starting with `./` and must expose exactly the four `skills/<name>` directories. Catches drift where one host's manifest is bumped without the other. The validator lives in `scripts/ci/lib/validate_codex.py` and is imported by both shells (single source of truth — no copy-paste drift between the two CI gates).
 - **SKILL.md ↔ manifest version parity check** — `scripts/ci/review.sh` now reads each skill's `metadata.version` from its YAML frontmatter and fails if it does not match `.claude-plugin/plugin.json` `version`. Closes the gap that let `skills/playwright-test-generator/SKILL.md` stay on `1.3.0` while the other three SKILL.md files and all three manifests were bumped to `1.3.1`. Without this check, lock-step bumps could silently miss individual SKILL.md files.
 - **Drift smoke Case 10 (defaultPrompt) and Case 12 (SKILL.md version)** — `scripts/ci/test-parity.sh` now mutates the Codex `defaultPrompt` array to 4 entries (confirms the `≤3` guard fires) and bumps a SKILL.md frontmatter version out of sync with the manifest (confirms the new parity check above fires).
@@ -753,6 +770,7 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 - **Prompt-injection safety section in all three browsing/reporting skills** — `playwright-debugger/SKILL.md`, `cypress-debugger/SKILL.md`, and `playwright-test-generator/SKILL.md` add an explicit "untrusted data" section. Test titles, error messages, DOM snapshots, AT-SPI trees, console output, network responses, screenshots, videos, and target-project source code may contain attacker-controlled text and must not be executed or followed as instructions. The generator's block covers Step 3 (browser exploration via agent-browser) and Step 6 (e2e-reviewer + YAGNI audit reading target source code) in addition to the report-reading surface the two debuggers already had.
 
 ### Fixed
+
 - **`cypress-debugger` F11 README drift** — `README.md` Skill 4 table still listed F11 as "Async Order Assumption" with a `Promise.all`-flavored signal, contradicting v1.3.0's redefinition to "Command Queue / Intercept Race" (`cy.intercept` registered after the request fires, `.then()` chain order swap, parallel `cy.request()` race against an unfinished `cy.visit()`). README updated to match `cypress-debugger/SKILL.md:74`.
 - **`e2e-reviewer/SKILL.md` Suppression section consistency** — the standalone `## Suppression` block at the end of the file said "Each individual flagged line needs its own `// JUSTIFIED:` — a comment higher up in the block does not count", contradicting Phase 1 (which explicitly allows JUSTIFIED above the enclosing call/block or above a multi-line chain's starting expression). Rewrote the standalone block to enumerate the same three positions Phase 1 uses, with the wording "enclosing call/block" aligned word-for-word with Phase 1.
 - **`skills/playwright-test-generator/SKILL.md` left behind on v1.3.0** — the lock-step bump claim in v1.3.1's `### Changed` section was previously false for this file. Now `1.3.1` like the other three SKILL.md files and the three manifests. Caught by the new parity check above; absent the check, this would have shipped as a silent CHANGELOG lie.
@@ -765,11 +783,13 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 - **`.github/workflows/e2e-smell-scan.yml` ast-grep version pin** — `npm i -g @ast-grep/cli` was unversioned and would silently break Tier 2 on a major release. Pinned to `^0.39` (the 0.x line ast-grep is currently on).
 
 ### Changed
+
 - All four skill `SKILL.md` files and the three manifests (`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.codex-plugin/plugin.json`) bumped to `1.3.1` in lock-step per the cross-host parity contract.
 
 ## [1.3.0] - 2026-05-16
 
 ### Added
+
 - **Bundled scanner inside the skill** — moved `e2e-smell-scan.sh` and the `ast-grep-rules/` directory from `scripts/` to `skills/e2e-reviewer/scripts/`. Now installed via `npx skills add` automatically — no separate clone needed for users to invoke the scanner from the agent runtime.
 - **3-tier scanner integration** — `skills/e2e-reviewer/scripts/scan.sh` now runs in priority order: (1) `eslint-plugin-playwright` / `eslint-plugin-cypress` when locally installed in the target project (AST-based, lowest FP rate), (2) `ast-grep` Tree-sitter rules for FP-prone patterns (`#15`, `#4ce-state-bool/text/count`, `#4f`), (3) bundled `ripgrep` regex as universal fallback covering all 19 patterns including gaps the eslint plugins miss (`#3b` Cypress `uncaught:exception` blanket, `#4g` `{timeout:0}.should("not.exist")`). Output groups results per tier with framework auto-detection.
 - **Phase 4 (Applying Fixes) in `e2e-reviewer/SKILL.md`** — `4.1` Canonical Replacements table (Playwright + Cypress + RTL/Vitest sub-tables with jest-dom prereq check), `4.2` Band-Aid Awareness with HIGH/MEDIUM/LOW likelihood per pattern + mandatory pre-removal procedure for `force:true` after readiness check, `4.2` PR-culture cross-check section (8 numbered points: when to invoke, CI execution check, canonical form discipline, one mental migration per PR, attribution verification, etc.), `4.3` Cascade cleanups, `4.4` Empirical cycle-count rule (default 2, condition-based STOP), `4.5` Avoid scope creep with budget interpretation rule.
@@ -783,6 +803,7 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 - **`playwright-debugger` Prereq #3 — CI artifact local repro** — concrete `gh run download` + `--trace=retain-on-failure --video=retain-on-failure` recipe, `PLAYWRIGHT_BASE_URL` env mirroring, and short-circuit hypothesis (locally pass + CI fail → F7/F8) so debuggers don't waste cycles trying to repro environment-specific failures.
 - **README — "Quick Example" section** — real findings from a typebot.io scan showing exact `[P0] file:line — # rule` output shape so first-time visitors see what the skill produces.
 ### Changed
+
 - **`e2e-reviewer/SKILL.md` Phase 1 simplified** — replaced the 50-line `Grep tool` 5-batch parallel dispatch instruction (referencing `references/grep-patterns.md`) with a 12-line `bash <skill-base>/scripts/scan.sh <test-dir>` invocation. Scanner is now the runtime source of truth; `references/grep-patterns.md` becomes an ID-meaning reference for Phase 2 / debugger lookup. Reduces dispatch errors and makes scanner improvements (eslint integration, ast-grep tier) automatic from the agent's perspective.
 - **README structure** — Install moved up to right under the 4-skill bullet (was 4th major section); FAQ and Compatibility sections removed (FAQ content was redundant with the rest of the doc; Compatibility duplicated the per-skill descriptions). 437 → ~310 lines.
 - **`e2e-reviewer/SKILL.md` anonymized internal references** — replaced specific repo names (posthog, typebot, rocket-chat, affine, etc.) with generic descriptors ("a SQL editor scene in an analytics product", "an OSS Playwright suite", "two large monorepos"). The empirical numbers (cycle convergence %, before/after counts) preserved as evidence; only the provenance labels (v1/v3/v4 trial markers) anonymized.
@@ -791,6 +812,7 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 - **`.github/workflows/e2e-smell-scan.yml`** — collapsed to a single scanner step (was eslint + ripgrep + ast companion in 3 separate steps); the bundled scanner now invokes all 3 tiers internally.
 
 ### Removed
+
 - **README FAQ section** — 7 questions, mostly redundant with the body content. ESLint-complement positioning absorbed into Standalone Scanner; suppression guidance also moved there; framework-scope answer moved to `docs/framework-scope.md`.
 - **README Compatibility section** — duplicated the per-skill "When to Use" / "Usage" sections and the framework-detection details.
 - **`docs/agent-compatibility.md`** — duplicated the README Install section after the cleanup; the Compatibility Rule sentence (host-agnostic skill phrasing) moved into the Skills Conventions block in `AGENTS.md`.
@@ -802,6 +824,7 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 - **Mandatory pre-removal Procedures 2 + 3** — `waitForTimeout` `git blame` cascade procedure and `if (await x.isVisible())` rg-context procedure were never used in the 13-repo OSS validation runs (subagents reliably distinguished band-aids via Phase 2 LLM judgment alone). Procedure 1 (`force:true` after readiness check) retained because it explicitly references the SQL-editor anti-example that recurred in two trial rounds.
 
 ### Fixed
+
 - **Historical `#7 Focused Test Leak` severity tier (superseded in 1.10.0).** This release temporarily treated singleton `.only` as P1. The current contract reports every committed focus modifier as P0 because it silently narrows test discovery and becomes load-bearing as soon as a sibling is added; no `JUSTIFIED` exemption exists.
 - **`e2e-reviewer/SKILL.md` `#15`/`#16` Locator/Page subject confirmation** — Phase 1 grep flagged any line starting with `expect(` or `page.locator(...).action(`. Phase 2 now confirms the subject is a Locator/Page before flagging P0; non-Locator subjects (booleans, primitives, custom service methods like `expect(await myService.isEnabled()).toBe(true)`) explicitly skipped.
 - **`e2e-reviewer/SKILL.md` Phase 2 multi-line continuation skip for `#8a`** — the regex `^\s*page\.(locator|getBy*)(...)` flags continuation lines inside multi-line `await expect(\n  page.locator(...)\n).toBeVisible()` chains as dangling locators. Phase 2 now skips when the previous non-empty line ends with `(` or `,`.
@@ -839,12 +862,14 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 - **Open-source docs** — added E2E smell taxonomy, OSS case studies, eval guidance, framework scope, and agent compatibility.
 
 ### Changed
+
 - **Namespace rename `dididy` → `voidmatcha`** — replaced legacy GitHub namespace with `voidmatcha` across `.claude-plugin/marketplace.json` (`name`), README install commands, and `docs/agent-compatibility.md`. Author display field `YONGJAE LEE` preserved across the three `author` entries (plugin.json, marketplace.json, .codex-plugin/plugin.json).
 - **README installation docs** — added Codex/OpenCode user-skill installation commands.
 - **`playwright-test-generator` approval gate wording** — replaced Claude-only planning-mode wording with Claude Code, Codex, and OpenCode-compatible approval instructions.
 - **`marketplace.json` keywords** — removed a stale unsupported automation keyword after scope was narrowed to Playwright and Cypress.
 
 ### Fixed
+
 - **`e2e-reviewer` JUSTIFIED scope extended to enclosing block and chained calls** — the Phase 1 interpretation rule and `references/grep-patterns.md` both said "Lines where the **immediately preceding line** contains `// JUSTIFIED:` are intentional — skip them". A real-world Zeppelin Angular review surfaced two routine false-positive shapes the rule did not cover: (1) `document.querySelector` inside a `page.evaluate(() => { ... })` or `page.waitForFunction(() => { ... })` callback where the JUSTIFIED comment sits above the *enclosing call*, not above each `querySelector` line; (2) chained Playwright calls split across lines (`page.locator(...)\n  .filter(...)\n  .first()`) where the JUSTIFIED comment sits above the chain's starting expression, not above the `.first()` line. Extended the rule (in `SKILL.md` Phase 1 and the `references/grep-patterns.md` header) to recognize `// JUSTIFIED:` in three positions: immediately preceding the hit, immediately preceding the enclosing callback/block, or immediately preceding a multi-line chain's starting expression. Added a "read 1–3 lines of surrounding context before flagging" reminder so grep-only review output does not become the source of false positives.
 - **`e2e-reviewer` #4 multi-URL substring fix guidance** — Fix list said `expect(page.url()).toContain(x)` → `await expect(page).toHaveURL(x)`. A real fix pass converted *consecutive* `expect(page.url()).toContain('A'); expect(page.url()).toContain('B');` calls into a single `await expect(page).toHaveURL(/A.*B/)` — which silently introduces an ordering constraint not in the original substring checks (passes only when A precedes B in the URL). Added explicit guidance to replace each call with its own `await expect(page).toHaveURL(/.../)` and not combine them into one regex with `.*`.
 - **`e2e-reviewer` #4 compound boolean expression variant** — the #4 anti-pattern catalogue covered `expect(await el.isVisible()).toBe(true)` but not the equivalent compound form `expect(visible1 || visible2).toBe(true)` where two boolean variables are or'd together inside `expect()`. Added the compound boolean case to the fix list with guidance: prefer locator-level `expect(page.locator('.a, .b')).toBeVisible()` or gate the test with `test.skip()` on the unsupported branch rather than collapsing into a one-shot boolean check.
@@ -881,6 +906,7 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 ## [1.2.1] - 2026-04-12
 
 ### Changed
+
 - **`e2e-reviewer` unsupported automation scope removed** — the description previously listed an automation target with zero grep patterns and zero eval coverage. Scope narrowed to Playwright and Cypress with full grep + LLM analysis. General principles (name-assertion alignment, missing Then, YAGNI) still apply to any framework.
 - **`e2e-reviewer` Phase 1 grep tables extracted** to `references/grep-patterns.md` — SKILL.md reduced from 625 to 571 lines. Patterns loaded on demand, not always in context.
 - **`e2e-reviewer` test directory auto-detection** — Phase 1 no longer hardcodes `e2e/`; instructs auto-detection from project structure (`tests/`, `__tests__/`, `spec/`, `cypress/e2e/`, etc.).
@@ -892,6 +918,7 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 ## [1.2.0] - 2026-03-30
 
 ### Added
+
 - **`e2e-reviewer` #18 `expect.soft()` overuse** (P1, grep+LLM) — Phase 1 grep detects all `expect.soft()` hits; Phase 2 LLM confirms if >50% of assertions in a single test are soft. Tests with only soft assertions never fail early, functionally equivalent to error swallowing.
 - **`e2e-reviewer` #3b Cypress `uncaught:exception` suppression** (P0, grep) — detects `cy.on('uncaught:exception', () => false)` in both spec files and `cypress/support/` directory. Blanket suppression is P0; scoped handlers with `// JUSTIFIED:` are acceptable.
 - **`playwright-test-generator` forbidden patterns expanded** — `toBeAttached()`, `expect(locator).toBeTruthy()`, direct `page.click(selector)`, `{ force: true }`, `waitUntil: 'networkidle'`, `expect(page.url()).toContain(x)` added to code-rules.md forbidden table.
@@ -900,6 +927,7 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 - **`best-practices.md` anti-patterns expanded** — `networkidle`, direct `page.click(selector)`, missing `await` added.
 
 ### Changed
+
 - **`e2e-reviewer` selector priority (#10a)** — updated from `data-testid → role/label` to Playwright official order: `getByRole` → `getByLabel` → `getByTestId` → `getByText` → attribute → class → generic. Now consistent with `playwright-test-generator` code-rules.md.
 - **`e2e-reviewer` Phase 0 framework skip** — expanded to include new checks: Playwright skips `#3b`; Cypress skips `#18`, `#15/#16`, `#17`.
 - **`e2e-reviewer` pattern count** — 11 → 13 (description, README, Quick Reference updated).
@@ -910,6 +938,7 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 ## [1.1.3] - 2026-03-22
 
 ### Added
+
 - **`e2e-reviewer` supplementary grep checks** — 6 additional patterns for general code quality (missing auth setup, inconsistent POM usage, hardcoded credentials, missing await on expect/action, direct page action API usage, networkidle). These supplement the core 11 anti-patterns during review.
 - **Evals for all 4 skills** — `e2e-reviewer` (7 evals), `playwright-debugger` (4 evals), `cypress-debugger` (4 evals), `playwright-test-generator` (3 evals)
 - **`.gitignore`** — eval fixture files and workspace dirs excluded from git
@@ -917,10 +946,12 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 ## [1.1.2] - 2026-03-19
 
 ### Fixed
+
 - **`playwright-test-generator` Step 3 — browser exploration method corrected**: `playwright-cli` (non-existent package) removed entirely. Agent-browser tools (`browser_navigate`, `browser_snapshot`, `browser_click`, `browser_type`, `browser_close`) are now the primary exploration method. `npx playwright codegen` documented as a manual reference only — interactive, not automatable in an agent pipeline.
 - **README Compatibility** — `playwright-test-generator` Compatibility section updated to reflect agent-browser as primary exploration method.
 
 ### Changed
+
 - **`e2e-reviewer` renumbered to 11 checks** — #8 Missing Assertion inserted (Tier 1, P0); Flaky Test Patterns reordered to #10, YAGNI to #11. Final order: #1–#8 Tier 1, #9 Hard-coded Sleeps, #10 Flaky, #11 YAGNI.
 - **`e2e-reviewer` #4 Always-Passing expanded** — four new sub-cases: one-shot DOM reads (`textContent/getAttribute`), Locator-as-truthy (`toBeTruthy()` on Locator), assertion retry disabled (`{ timeout: 0 }`), and explicit `toBeAttached\(\)` grep pattern added to Phase 1.
 - **`e2e-reviewer` #8 Missing Assertion** (new, P0) — merged from former #11/#12: 8a dangling locator `[Playwright grep]`, 8b boolean result discarded `[all frameworks grep]`. Cypress dangling selectors require Phase 2 manual check.
@@ -936,6 +967,7 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 ## [1.1.1] - 2026-03-18
 
 ### Changed
+
 - **`e2e-reviewer` #4 Always-Passing — expanded with three new sub-cases**:
   - Non-retrying state snapshot: `expect(await el.isDisabled()).toBe(true)` resolves a one-shot boolean with no auto-retry; use web-first assertions (`toBeDisabled()`, `toBeEnabled()`, `toBeChecked()`, `toBeHidden()`) instead. New grep pattern: `expect\(await.*\.(isDisabled|isEnabled|isChecked|isHidden)\(\)\)`.
   - Assertion weakening — `toBeDefined()` passes for `null`; `not.toBeNull()` passes for `""`. Use `not.toBeNull()` when `null` is the sole invalid case; use `toBeTruthy()` when empty string is also invalid (OAuth codes, secrets, slugs).
@@ -944,6 +976,7 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 ## [1.1.0] - 2026-03-17
 
 ### Added
+
 - **`playwright-test-generator`** — new skill for generating Playwright E2E tests from scratch
   - 7-step pipeline: environment detection → coverage gap analysis → live browser exploration (Playwright CLI / agent-browser) → scenario design with an approval gate → code generation → YAGNI audit + e2e-reviewer → TS compile + test run
   - Structure-aware: auto-detects POM vs flat spec pattern, extends existing POMs when present
@@ -958,12 +991,14 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 ## [1.0.1] - 2026-03-15
 
 ### Added
+
 - **`e2e-reviewer` References**: Added Playwright and Cypress best-practices links at top of SKILL.md.
 - **`e2e-reviewer` #4 Always-Passing — `isVisible()` boolean trap**: Added `expect(await.*\.isVisible\(\))` as a new grep-detectable variant. `isVisible()` resolves a one-shot boolean with no auto-retry; a transiently absent element can cause a silent pass. Rule extended to flag these and direct to `expect(locator).toBeVisible()` (web-first, auto-retries). Fix line and Quick Reference Detection Signal updated accordingly.
 - **`e2e-reviewer` #7 Focused Test Leak** (new check, P0, grep): `test.only` / `it.only` / `describe.only` committed to source silently skips the entire suite in CI — all other tests show as "not run" but the step passes. No `// JUSTIFIED:` exemption. Pattern: `\.(only)\(` in spec files. Added to Phase 1 grep, Tier 1 section, and Quick Reference.
 - **`e2e-reviewer` #8a Positional selectors — selector priority ranking**: Added one-line selector priority guide. Priority order (best → worst): `data-testid`/`data-cy` → role/label → `name` attr → `id` → class → generic. Class and generic selectors are "Never."
 
 ### Changed
+
 - **`e2e-reviewer` Duplicate Scenarios removed**: Dropped the fuzzy per-test 70% overlap check — subjective threshold, expensive cross-file comparison, high false positive rate. Zombie spec file detection (entire file covered by another) absorbed into #10 YAGNI as sub-pattern 10b.
 - **`e2e-reviewer` Renumbered to 10 checks**: #7 Focused Test Leak inserted (Tier 1, P0); Flaky Test Patterns (P1) reordered before Hard-coded Sleeps (P2). Final order: #1–#7 Tier 1, #8 Flaky, #9 Hard-coded Sleeps, #10 YAGNI.
 - **`e2e-reviewer` #10 YAGNI expanded**: Added sub-pattern 10b zombie spec files + single-use Util wrapper rule (2+ threshold). Section renamed to "YAGNI — Dead Test Code."
@@ -975,6 +1010,7 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 ## [1.0.0] - 2026-03-14
 
 ### Added
+
 - **`e2e-reviewer` #5 expanded → "Bypass Patterns"**: Added `{ force: true }` detection (P1, grep) as sub-pattern 5b alongside existing conditional assertion bypass (5a). `force: true` without `// JUSTIFIED:` hides real actionability failures that real users would encounter.
 - **`e2e-reviewer` #9 expanded → "Flaky Test Patterns"**: Added `test.describe.serial()` detection (P1, grep) `[Playwright only]` as sub-pattern 9b alongside existing positional selectors (9a). `describe.serial` creates order-dependent tests that break parallel sharding.
 - **`e2e-reviewer` trigger phrases expanded**: Added "my tests are fragile", "tests break on every UI change", "test suite is hard to maintain", "we have coverage but bugs still slip through" to SKILL.md frontmatter description
@@ -982,6 +1018,7 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 - **README Key Insight** moved to top (after workflow section) for GEO discoverability
 
 ### Changed
+
 - **`e2e-reviewer` reduced to 10 patterns** — removed 3 more checks that weren't reliably detectable via static analysis:
   - **#5 Boolean Trap removed** — `expect(locator).toBeTruthy()` is rare in practice among Playwright/Cypress users; low ROI
   - **#10b Animation Race removed** from Flaky Patterns — cannot be detected statically; requires running the tests to confirm
@@ -1000,22 +1037,26 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 ## [0.8.2] - 2026-03-14
 
 ### Added
+
 - **`e2e-reviewer` #9 Zombie spec file detection**: Added "zombie spec file" pattern — if ALL tests in a spec file are subsets of tests in another file covering the same feature, flag the entire file for deletion. Previously only individual test-level overlap was detected; whole-file redundancy (e.g., a 1-test file that duplicates a test in a larger suite) was missed.
 - **`e2e-reviewer` #14 Empty wrapper class detection**: Added check for POM classes that extend a parent but declare zero additional members (`class Foo extends Bar` with constructor-only body). Flags these for review (P2) — may be intentional convention or future-extension placeholder, so automatic deletion is not prescribed. Previously YAGNI only checked individual unused members, not the class itself.
 
 ## [0.8.1] - 2026-03-14
 
 ### Fixed
+
 - **`e2e-reviewer` #4 toBeAttached() grep scope**: Extended search target from spec files only to `.ts/.js/.cy.*` (all files including POM/util) — `toBeAttached()` in POM helper methods was previously invisible to Phase 1 grep
 - **`e2e-reviewer` #6 Conditional Bypass POM gap**: Added explicit note that the Phase 1 grep only covers spec files; POM/util methods with `if (await el.isVisible())` guards must be reviewed manually in Phase 2
 
 ## [0.8.0] - 2026-03-13
 
 ### Added
+
 - **`e2e-reviewer` #4 Always-Passing — `toBeAttached()` detection**: Added grep + LLM template check for `toBeAttached()` on unconditionally rendered elements (elements always present in DOM regardless of app state). Decision tree: unconditionally rendered or in static HTML shell → flag P0; CSS `visibility:hidden` variant or conditionally rendered → skip (meaningful assertion).
 - **`e2e-reviewer` Suppression — same-line rule**: `// JUSTIFIED:` comment must appear on the **same line** as `.catch(` — a comment on the next line is invisible to grep. Added BAD/GOOD examples and a note that named function wrappers don't help (each inner `.catch(` still needs its own `// JUSTIFIED:` comment).
 
 ### Changed
+
 - **`e2e-reviewer` #3 Error Swallowing grep pattern**: Updated to `\.catch\(\s*(async\s*)?\(\)\s*=>` — now detects both sync (`() => {}`) and async (`async () => {}`) silent catch variants.
 - **`e2e-reviewer` #7 Raw DOM Queries scope expanded**: Now explicitly covers `document.querySelector` inside `waitForFunction()` in addition to `evaluate()`. Rule updated: `locator.waitFor({ state: 'attached' })` replaces single-condition `waitForFunction(() => querySelector(...) !== null)`. Exception list expanded: multi-condition AND/OR, `children.length`, `body.textContent`, `getComputedStyle` — add `// JUSTIFIED:` explaining why.
 - **`e2e-reviewer` framework-agnostic cleanup**: Replaced project-specific examples (`nz-tree`, `zeppelin-root`, `app-root`, Angular `*ngIf`) with generic ones (`.sidebar`, `#app`, "conditional rendering directive") — skill no longer assumes Angular or any specific framework/component library.
@@ -1028,14 +1069,17 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 - **`playwright-debugger` Unverifiable External Dependency (W012)**: Removed `gh run download` artifact fetching entirely — reports must now be provided as a local path by the user; eliminates the external data ingestion attack surface
 
 ### Changed
+
 - **`playwright-debugger` Prerequisites**: Removed GitHub PR URL / `gh` CLI download flow; report source is now always a user-provided local path or existing `playwright-report/` directory
 
 ## [0.7.3] - 2026-03-11
 
 ### Fixed
+
 - **`e2e-reviewer` YAML parse error**: colon in frontmatter description (`naming-assertion mismatch, missing Then, error swallowing, always-passing assertions, boolean traps, conditional bypass, raw DOM queries, render-only tests, duplicate scenarios, misleading names, over-broad assertions, subject-inversion`) caused a `YAMLException` in gray-matter, making the skills CLI skip the skill entirely — replaced colon with em dash
 
 ### Changed
+
 - **`playwright-debugger`**: replaced dense inline `node -e` one-liners in Phase 1–3 with natural language instructions — LLM reads trace events directly instead of running shell scripts
 - **`e2e-reviewer`**: replaced Phase 1 bash grep block with a prose checklist — LLM uses the Grep tool per anti-pattern instead of running a shell script
 - **README**: updated `playwright-debugger` debug workflow description to reflect trace analysis approach
@@ -1045,17 +1089,20 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 ## [0.7.2] - 2026-03-11
 
 ### Changed
+
 - **`skills/e2e-test-reviewer/` renamed to `skills/e2e-reviewer/`** — shorter skill name for CLI discoverability
 - **`name: e2e-test-reviewer` → `name: e2e-reviewer`** in SKILL.md frontmatter
 
 ## [0.7.1] - 2026-03-11
 
 ### Changed
+
 - **`skills/review/` renamed to `skills/e2e-test-reviewer/`** — folder name matches skill name
 
 ## [0.7.0] - 2026-03-11
 
 ### Added
+
 - **`cypress-debugger`** — new skill for diagnosing Cypress test failures from mochawesome/JUnit report files
   - Phase 1: parses `mochawesome.json` or JUnit XML for failed tests, error messages, duration
   - Phase 2: classifies each failure into F1–F14 root cause categories
@@ -1064,6 +1111,7 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 - **`playwright-debugger` GitHub PR integration** — given a PR URL, automatically finds the failed CI run and downloads the playwright-report artifact via `gh`; reuses PR URL from conversation context when user says "failed again"
 
 ### Changed
+
 - **`e2e-test-debugger` renamed to `playwright-debugger`** — reflects Playwright-only scope
 - **`skills/debug/` renamed to `skills/playwright-debug/`** — consistent naming with new `cypress-debug/`
 - **`playwright-debugger` title** updated to "Playwright Failed Test Debugger" — removes ambiguous "E2E" prefix
@@ -1076,17 +1124,20 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 ## [0.6.1] - 2026-03-11
 
 ### Changed
+
 - **Skill names** renamed to `e2e-test-reviewer` and `e2e-test-debugger` — shorter, more intuitive
 
 ## [0.6.0] - 2026-03-10
 
 ### Changed
+
 - **Plugin renamed** from `e2e-test-reviewer` to `e2e-test-skill` — reflects expanded scope
 - **Mono-skill structure**: skills now live in `skills/review/` and `skills/debug/` subdirectories
 - **Skill names** updated to `e2e-test-skill-review` and `e2e-test-skill-debug`
 - **plugin.json** skills array updated to `["./skills/review", "./skills/debug"]`
 
 ### Added
+
 - **`e2e-test-skill-debug`** — new skill for diagnosing Playwright test failures
   - Phase 1: parses `results.json` to extract failed tests, error messages, duration
   - Phase 2: classifies each failure into F1–F14 root cause categories using error signals
@@ -1098,6 +1149,7 @@ Research-driven update: folds 2025–2026 community/official findings on AI-gene
 ## [0.5.3] - 2026-03-07
 
 ### Added
+
 - **#11b Subject-Inversion** (P1): Detects `expect([expected]).toContain(actual)` where expected values are placed as the subject instead of the actual value — produces confusing failure messages like "Expected [200, 202] to contain 204"
 
 ### Context
@@ -1106,6 +1158,7 @@ Discovered during n8n (177k stars) review.
 ## [0.5.2] - 2026-03-06
 
 ### Changed
+
 - **#5 Boolean Trap**: No longer flags `toBeTruthy()` on actual boolean return values (`response.ok()`, `isVisible()`, `isChecked()`, etc.). Only flags when used on non-boolean objects (Locator, ElementHandle) that are always truthy — the real bug. Phase 1 grep now excludes known boolean-returning methods via `grep -v`.
 - **Quick Reference** updated to clarify boolean trap scope
 
@@ -1115,12 +1168,14 @@ Validated against 5 major open-source projects (Cal.com, Ghost, Grafana, Documen
 ## [0.5.1] - 2026-03-06
 
 ### Changed
+
 - **SKILL.md moved to repo root** — eliminates redundant `e2e-test-reviewer/skills/e2e-test-reviewer/` nesting when installed as a plugin
 - **plugin.json skills path** updated from `./skills/e2e-test-reviewer` to `./`
 
 ## [0.5.0] - 2026-03-06
 
 ### Added
+
 - **P0/P1/P2 severity classification** for all 14 checks — P0 (must fix), P1 (should fix), P2 (nice to fix)
 - **Phase 3: Coverage Gap Analysis** — identifies missing error paths, edge cases, accessibility, and auth boundary tests after review
 - **Review Summary table** in output format — aggregates findings by severity with affected file list
@@ -1129,6 +1184,7 @@ Validated against 5 major open-source projects (Cal.com, Ghost, Grafana, Documen
 - **Network mock grep** in Phase 1 — detects `page.goto`/`cy.visit` without nearby route/intercept setup
 
 ### Changed
+
 - **#13 renamed** from "Flaky Selectors" to "Flaky Patterns" — now covers positional selectors, network mocks, and animation timing
 - **Tier headers** updated to show severity range (P0/P1 for Tier 1, P1/P2 for Tier 2)
 - **Severity guide** changed from HIGH/MEDIUM/LOW to P0/P1/P2 with clearer definitions
@@ -1137,11 +1193,13 @@ Validated against 5 major open-source projects (Cal.com, Ghost, Grafana, Documen
 ## [0.4.1] - 2026-03-02
 
 ### Fixed
+
 - **#14 YAGNI in POM**: Clarified scope of "2+ specs" rule — it applies when **creating** new shared utils, not as grounds for deleting existing util files/classes that are actively imported and used. The rule now explicitly states: only flag unused individual members within util files, do not delete entire files that specs depend on.
 
 ## [0.4.0] - 2026-02-27
 
 ### Added
+
 - **Phase 1: Automated Grep Checks** — deterministic pattern detection via `grep` before LLM analysis. Covers checks #3 (Error Swallowing), #4 (Always-Passing), #5 (Boolean Trap), #6 (Conditional Bypass), #7 (Raw DOM), #12 (Hard-coded Timeout), and `page.isClosed()` guards
 - **Phase 2: LLM-only Checks** — LLM now only performs subjective checks (#1, #2, #8-11, #13, #14) that require semantic interpretation
 - **`[grep-detectable]` / `[LLM-only]` tags** on each checklist item for quick classification
@@ -1150,12 +1208,14 @@ Validated against 5 major open-source projects (Cal.com, Ghost, Grafana, Documen
 - **Installer CLI method** in README (historical; current docs use one-command global installs with `npx skills add --skill '*' -g -a claude-code -a codex -a opencode`, include `--agent '*'` for every supported agent, and show `skills add` when the CLI is already installed)
 
 ### Changed
+
 - Review workflow is now two-phase: mechanical grep first, LLM second — reduces token usage and ensures deterministic results for pattern-based checks
 - **Framework-agnostic grep patterns** — Phase 1 covered Playwright (`toBeGreaterThanOrEqual`, `waitForTimeout`), Cypress (`should('be.gte')`, `cy.wait()`), and an additional automation target in a single command using `-E` extended regex (historical; current supported automation scope is Playwright and Cypress)
 
 ## [0.3.0] - 2026-02-27
 
 ### Added
+
 - **Raw DOM Queries** check (#7, Tier 1): Detects `document.querySelector*` / `getElementById` inside `evaluate()` / `waitForFunction()` that bypass framework element APIs
 - **Hard-coded Timeouts** check (#12, Tier 2): Detects `waitForTimeout()` / `cy.wait(ms)` and magic timeout numbers without explanation
 - **POM error swallowing** detection in #3: `.catch(() => {})` / `.catch(() => false)` on POM wait/assertion methods
@@ -1166,6 +1226,7 @@ Validated against 5 major open-source projects (Cal.com, Ghost, Grafana, Documen
 - **Skip protection** rule: `test.skip()` with a reason comment or string is intentional — do not flag
 
 ### Changed
+
 - **Framework-agnostic**: Principles were documented as framework-independent with specific guidance for Playwright, Cypress, and another automation target where they differ (#5, #7, #12) (historical; current supported automation scope is Playwright and Cypress)
 - **POM files in scope**: Review checklist now explicitly covers Page Object Model files, not just spec files
 - Renumbered all checks (1-7 Tier 1, 8-14 Tier 2) to accommodate new items
@@ -1173,21 +1234,25 @@ Validated against 5 major open-source projects (Cal.com, Ghost, Grafana, Documen
 - Updated plugin.json and marketplace.json descriptions and keywords
 
 ### Removed
+
 - Playwright-only assumptions from rules and examples
 
 ## [0.2.0] - 2026-02-26
 
 ### Added
+
 - **Tier structure**: Checks split into Tier 1 (high-impact bugs, always check) and Tier 2 (quality improvements, check when time permits)
 - **Flaky Selectors** check (#11): Detects positional selectors (`nth()`, `first()`) and unstable raw text matching that break across environments or i18n changes
 
 ### Changed
+
 - Merged "Conditional Assertions" and "Conditional Skip" into a single **Conditional Bypass** check (#6) — both are symptoms of the same root cause
 - Trimmed examples for obvious patterns (Always-Passing, Boolean Trap) — kept only BAD examples where the anti-pattern is self-evident
 - Renumbered all checks to reflect tier ordering (1-6 Tier 1, 7-12 Tier 2)
 - Updated README pattern tables to match new tier structure
 
 ### Removed
+
 - Quick Reference table (redundant with detailed check sections)
 - Verification section (too generic to be useful)
 - "When to Use" section (redundant with frontmatter description)
@@ -1196,6 +1261,7 @@ Validated against 5 major open-source projects (Cal.com, Ghost, Grafana, Documen
 ## [0.1.0] - 2025-06-15
 
 ### Added
+
 - Initial release with 12-point checklist
 - Detects: name-assertion mismatch, missing Then, render-only tests, duplicate scenarios, misleading names, over-broad assertions, always-passing assertions, conditional assertions, error swallowing, boolean traps, conditional skips, YAGNI in Page Objects
 - Framework-agnostic design with Playwright examples
