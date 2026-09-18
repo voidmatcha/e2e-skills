@@ -694,6 +694,27 @@
         "Does NOT flag the try/catch around the optional survey dismissal — the prompt renders only for sampled sessions, nothing below depends on it, and both promised outcomes are hard-asserted afterwards",
         "Does NOT report the swallows as P1 or lower — #3 is P0 because the test passes while the behaviour it promises went unverified"
       ]
+    },
+    {
+      "id": 40,
+      "prompt": "Review evals/files/catch-outcome-boundaries.spec.ts. Phase 1 reports eleven `#3` candidates, one per `.catch(() => {})`, all as [P0?][LLM-TRIAGE]. Resolve each one: say which catches leave the test unable to fail on its promised outcome, and which do not.",
+      "expected_output": "Report #3 P0 for the three catches that swallow the test's only proof of its promised outcome: line 5 (the sole assertion), lines 9-11 (the same shape split across lines), and line 54, where the swallowed visibility assertion is one half of a title promising both main visibility and the heading text, and the surviving heading assertion cannot prove the other half. Do not report the remaining eight. Line 15 and line 19 catch a page.title() call while an independent unswallowed assertion proves the outcome; line 25 catches a custom toBuffer() that is not an assertion; line 31 catches a locally shadowed expect helper that is not the Playwright matcher; line 35 is expect.soft, whose failure is recorded on the test result rather than thrown, so catching the returned promise cannot hide it; line 39 is a synchronous matcher that throws before any .catch can run; line 43's swallowed assertion is repeated unswallowed on line 44; and line 49's catch sits inside a try whose finally throws unconditionally. Judge each catch by whether the test can still fail on its promised outcome, not by the presence of the catch.",
+      "files": [
+        "evals/files/catch-outcome-boundaries.spec.ts"
+      ],
+      "assertions": [
+        "Reports #3 P0 on line 5, where the swallowed assertion is the test's only outcome proof",
+        "Reports #3 P0 for the multi-line form on lines 9-11, not only the single-line one",
+        "Reports #3 P0 on line 54 because the surviving heading assertion proves only half of the title's promise",
+        "Does NOT report lines 15 and 19: an independent unswallowed assertion proves the outcome and the caught call is page.title()",
+        "Does NOT report line 25: toBuffer() is a custom method, not an assertion",
+        "Does NOT report line 31: expect is a locally shadowed helper, not the Playwright matcher",
+        "Does NOT report line 35: an expect.soft failure is recorded on the test result and cannot be hidden by catching the returned promise",
+        "Does NOT report line 39: the synchronous matcher throws before .catch can attach",
+        "Does NOT report line 43: line 44 repeats the same assertion unswallowed",
+        "Does NOT report line 49: the enclosing finally throws unconditionally, so the test cannot pass",
+        "Resolves every Phase 1 candidate rather than leaving any unjudged"
+      ]
     }
   ]
 }
