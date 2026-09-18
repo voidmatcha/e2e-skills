@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Todos</title></head>
+<body>
+  <main>
+    <h1>Todos</h1>
+    <form id="add">
+      <label for="title">New todo</label>
+      <input id="title" name="title" autocomplete="off">
+      <button type="submit">Add</button>
+    </form>
+    <p id="error" role="alert"></p>
+    <ul aria-label="Todo list" id="list"></ul>
+    <p id="count" aria-live="polite"></p>
+  </main>
+  <script>
+    const list = document.getElementById('list');
+    const error = document.getElementById('error');
+    const count = document.getElementById('count');
+
+    function render(todos) {
+      list.innerHTML = '';
+      for (const todo of todos) {
+        const li = document.createElement('li');
+        const box = document.createElement('input');
+        box.type = 'checkbox';
+        box.checked = todo.done;
+        box.id = `todo-${todo.id}`;
+        box.addEventListener('change', async () => {
+          await fetch(`/api/todos/${todo.id}`, {
+            method: 'PATCH',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ done: box.checked }),
+          });
+          load();
+        });
+        const label = document.createElement('label');
+        label.htmlFor = box.id;
+        label.textContent = todo.title;
+        if (todo.done) label.style.textDecoration = 'line-through';
+        li.append(box, label);
+        list.append(li);
+      }
+      const open = todos.filter((t) => !t.done).length;
+      count.textContent = `${open} remaining`;
+    }
+
+    async function load() {
+      render(await (await fetch('/api/todos')).json());
+    }
+
+    document.getElementById('add').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const input = document.getElementById('title');
+      const response = await fetch('/api/todos', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ title: input.value }),
+      });
+      if (!response.ok) {
+        error.textContent = (await response.json()).error;
+        return;
+      }
+      error.textContent = '';
+      input.value = '';
+      load();
+    });
+
+    load();
+  </script>
+</body>
+</html>

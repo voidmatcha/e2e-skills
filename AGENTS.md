@@ -114,6 +114,9 @@ python3 scripts/ci/test-playwright-semantic-probes.py
 python3 scripts/ci/test-playwright-timeout-zero-probe.py
 python3 scripts/ci/test-cypress-timeout-zero-probe.py
 /bin/bash -p scripts/ci/pre-push-security.sh
+python3 scripts/dev/refresh-reviewer-evidence-digest.py  # after any skills/e2e-reviewer byte change
+/bin/bash -p scripts/dev/linux-script-check.sh           # shipped-script suites on Linux (needs Docker)
+# generator behavior changes: live run per scripts/evals/generator-live/writescope-demo/RUNBOOK.md (manual; needs a model + browser)
 bash scripts/ci/codex-smoke.sh      # manual Codex cross-host smoke (skips if codex absent)
 /bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests   # standalone scanner
 
@@ -183,7 +186,7 @@ bash scripts/dev/install-claude-agents.sh
 bash scripts/dev/install-hooks.sh
 ```
 
-The reinstall script executes a verified `skills@1.5.21` artifact from an exact dependency lock, then replaces only the four e2e-skills as real copies. It verifies the canonical store, the requested Claude Code projection, and any Codex shadow before accepting the install; other installed skills are untouched. `--copy` mode snapshots the current working tree at invocation time, including uncommitted edits, so later source edits do not leak into the runtime until the next reinstall. The pre-push hook refreshes that snapshot only when the push sends the checked-out HEAD to `main` and `skills/` has no uncommitted edits, so the installed copy matches what was pushed; other pushes skip the refresh. `E2E_SKILLS_AGENTS` is restricted to the receiving surfaces this installer verifies (`claude-code` and `codex`; default: both). Named Codex-agent installation remains a separate global opt-in: run `scripts/dev/install-codex-agents.sh` directly, or set `E2E_SKILLS_INSTALL_CODEX_AGENTS=1` for an explicit combined reinstall; the default is `0`.
+The reinstall script executes a verified `skills@1.5.21` artifact from an exact dependency lock, then replaces only the four e2e-skills as real copies. It verifies the canonical store, the requested Claude Code projection, and any Codex shadow before accepting the install; other installed skills are untouched. `--copy` mode snapshots the current working tree at invocation time, including uncommitted edits, so later source edits do not leak into the runtime until the next reinstall. The pre-push hook refreshes that snapshot only when the push sends the checked-out HEAD to `main` and `skills/` has no uncommitted edits, so the installed copy matches what was pushed; other pushes skip the refresh. When a pushed range touches `skills/*/scripts/` or their test suites, the hook also runs `scripts/dev/linux-script-check.sh` on the pushed commit, because `ci-local.sh` runs on macOS and the scripts also ship to Linux: a suite failure blocks the push, and a missing Docker daemon only warns. `E2E_SKILLS_SKIP_LINUX_CHECK=1` bypasses it; hosted CI still runs on Linux. `E2E_SKILLS_AGENTS` is restricted to the receiving surfaces this installer verifies (`claude-code` and `codex`; default: both). Named Codex-agent installation remains a separate global opt-in: run `scripts/dev/install-codex-agents.sh` directly, or set `E2E_SKILLS_INSTALL_CODEX_AGENTS=1` for an explicit combined reinstall; the default is `0`.
 
 ## When You Edit Skills
 

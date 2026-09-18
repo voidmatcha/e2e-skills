@@ -55,6 +55,56 @@ else
   fi
 fi
 
+# Local ci-local.sh runs on macOS; the skills' scripts also ship to Linux. When
+# a pushed range touches them, run their suites in a pinned Ubuntu image.
+# No Docker is a warning, not a failure, so local gates stay dependency-free.
+# Set E2E_SKILLS_SKIP_LINUX_CHECK=1 to bypass (hosted CI still runs Linux).
+ZERO_SHA="0000000000000000000000000000000000000000"
+linux_check_revs=""
+while IFS=' ' builtin read -r _local_ref local_sha _remote_ref remote_sha; do
+  [ -n "${local_sha:-}" ] && [ "$local_sha" != "$ZERO_SHA" ] || continue
+  if [ "$remote_sha" = "$ZERO_SHA" ] ||
+     ! /usr/bin/git -C "$REPO_ROOT" cat-file -e "$remote_sha^{commit}" 2>/dev/null; then
+    base="$(/usr/bin/git -C "$REPO_ROOT" merge-base "$local_sha" origin/main 2>/dev/null || true)"
+  else
+    base="$remote_sha"
+  fi
+  # Capture instead of piping into grep -q: under pipefail an early grep exit
+  # can kill git diff with SIGPIPE and silently skip the check.
+  changed=""
+  if [ -n "$base" ]; then
+    changed="$(/usr/bin/git -C "$REPO_ROOT" diff --name-only "$base" "$local_sha" -- \
+      'skills/*/scripts/*' scripts/ci/test-reviewer-scanner.py scripts/ci/test-debugger-contracts.py \
+      'scripts/ci/test-*-debugger-*.py')" || changed="unknown"
+  fi
+  if [ -z "$base" ] || [ -n "$changed" ]; then
+    case " $linux_check_revs " in
+      *" $local_sha "*) ;;
+      *) linux_check_revs="$linux_check_revs $local_sha" ;;
+    esac
+  fi
+done <<< "$PUSHED_REFS"
+
+if [ -z "$linux_check_revs" ]; then
+  :
+elif [ "${E2E_SKILLS_SKIP_LINUX_CHECK:-}" = "1" ]; then
+  echo "==> pre-push: Linux script check skipped by E2E_SKILLS_SKIP_LINUX_CHECK=1"
+else
+  for linux_check_rev in $linux_check_revs; do
+    echo "==> pre-push: shipped scripts changed; running Linux script check on ${linux_check_rev:0:7}"
+    set +e
+    "$REPO_ROOT/scripts/dev/linux-script-check.sh" "$linux_check_rev"
+    linux_status=$?
+    set -e
+    if [ "$linux_status" -eq 1 ]; then
+      echo "pre-push: a shipped-script suite fails on Linux — fix it or re-run with E2E_SKILLS_SKIP_LINUX_CHECK=1." >&2
+      exit 1
+    elif [ "$linux_status" -ne 0 ]; then
+      echo "pre-push: WARNING: Linux script check could not run (exit $linux_status); hosted CI will still run it." >&2
+    fi
+  done
+fi
+
 HEAD_SHA="$(/usr/bin/git -C "$REPO_ROOT" rev-parse HEAD)"
 pushes_head_to_main=0
 while IFS=' ' builtin read -r _local_ref local_sha remote_ref _remote_sha; do

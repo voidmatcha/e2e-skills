@@ -51,6 +51,13 @@
 # rule-definition false positive already suppressed for scan.sh above. The
 # snapshot is digest-pinned evidence and must not be edited; suppress only
 # that exact file.
+# Correction to the 2026-09-11 note: the action commit pinned in
+# hol-plugin-scanner.yml reads plugin-scanner==2.0.864 from its own
+# scanner-version.txt and verifies PyPI provenance before installing, so the
+# scanner version does not drift between runs.
+# Any new benchmark source snapshot that embeds a byte copy of scan.sh trips
+# the same #14 finding; add its exact path here and to the pin in
+# scripts/ci/test-security-gates.py when creating it.
 [scanner]
 ignore_paths = [
   "skills/cypress-debugger/scripts/publish-mochawesome-report.py",

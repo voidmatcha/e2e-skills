@@ -377,8 +377,9 @@ def validate_evidence_status(
     if status["current_skill_sha256"] != current_skill_sha256:
         raise ValueError(
             "evidence status current skill digest mismatch; "
-            f"expected={current_skill_sha256}, "
-            f"actual={status['current_skill_sha256']}"
+            f"computed={current_skill_sha256}, "
+            f"recorded={status['current_skill_sha256']}; "
+            "run scripts/dev/refresh-reviewer-evidence-digest.py"
         )
     actual_missing = missing_complete_artifacts(evidence)
     if status["missing_required_artifacts"] != actual_missing:

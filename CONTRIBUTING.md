@@ -163,6 +163,7 @@ These are enforced by CI. Breaking one fails the build.
 - **English-only public surface.** `README.md`, `SKILL.md`, and `docs/` are English; CI enforces this. The sanctioned exception is root-level `README.<lang>.md` translations and the language-switcher line that links to them.
 - **Severity-first ordering.** Tables in `SKILL.md`, `README.md`, and `docs/e2e-test-smells.md` group by P0/P1/P2 in the same order.
 - **`// JUSTIFIED: <reason>` comments** suppress a scanner finding on the line (or block) below. Use them for documented intent, never to hide a real finding. `#7` (focused tests) has no exemption.
+- **A benchmark snapshot that copies a shipped script needs a HOL scanner exemption.** The hosted HOL Plugin Scanner reports the `#14` credential rule definitions inside any byte copy of `scan.sh` as a hardcoded secret. List the snapshot's exact path in `.plugin-scanner.toml` and in the pinned set in `scripts/ci/test-security-gates.py` in the same commit; that test fails when the two lists differ.
 
 ## Changing an anti-pattern or skill behavior
 
@@ -181,6 +182,13 @@ Then:
 1. **Re-run the drift smoke test** (`scripts/ci/test-parity.sh`) and keep it green.
 2. **Add or update evals.** Each behavior change needs at least two assertions in the skill's `evals/evals.json`: one true positive that must be flagged, and one false-positive guard that names the exact line and why it must not be flagged.
 3. **Respect the severity contract.** P0 entries are silent-always-pass smells; do not downgrade them or promote P1/P2 into P0 just because they are easier to grep.
+4. **Record the new reviewer digest.** Any byte change under `skills/e2e-reviewer/`, including a version bump or a whitespace-only reflow, changes the digest `scripts/ci/test-reviewer-evidence-v3.py` checks. Run `python3 scripts/dev/refresh-reviewer-evidence-digest.py` rather than editing `benchmarks/reviewer-holdout-v3/evidence-status.json` by hand.
+5. **Run the shipped scripts on Linux.** `ci-local.sh` runs on macOS; when you change anything under `skills/*/scripts/`, run `/bin/bash -p scripts/dev/linux-script-check.sh` (the pre-push hook does this when Docker is available).
+6. **Rerun the live generator fixture** after changing `playwright-test-generator`'s exploration, approval tables, write-set check, verification rules, or completion status: follow [`scripts/evals/generator-live/writescope-demo/RUNBOOK.md`](scripts/evals/generator-live/writescope-demo/RUNBOOK.md). It needs a model and a browser, so it is not part of CI.
+
+## Releases
+
+A push to `main` that changes `skills/` is a release. `skills update` offers an update to existing installs whenever the skill folder's content hash on `main` (or `master`) changes, whatever the version says, while Claude Code plugin installs update only when the plugin `version` changes (see the [plugin version management docs](https://code.claude.com/docs/en/plugins-reference#version-management)). Unbumped changes on `main` therefore reach one install path and not the other. Bump the version in all three manifests and all four `SKILL.md` files in the same push, and keep unfinished work on a branch rather than on `main`. Outside user-visible bug fixes and security fixes, aim for at most about one release a week.
 
 ## Translations
 

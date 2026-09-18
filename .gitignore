@@ -52,3 +52,7 @@ benchmarks/.*.state.lock
 # leftover carries a deliberate `test.only` fixture the repo's own scan cannot
 # flag, so an orphan must never become a committable file.
 /.e2e-reviewer-nested-project-*/
+
+# Live generator fixture: run it from a copy; never keep its runner output here.
+scripts/evals/generator-live/*/test-results/
+scripts/evals/generator-live/*/playwright-report/
