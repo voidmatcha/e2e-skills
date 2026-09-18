@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- **The HOL Plugin Scanner no longer fails on a frozen healer benchmark snapshot.** `benchmarks/healer-perturbation-v1/source-snapshots/0fc0e068….json` embeds a byte copy of `scan.sh`, so it tripped the same `HARDCODED_SECRET` false positive on the #14 rule definitions that `.plugin-scanner.toml` already suppresses for `scan.sh`. That exact file is now listed too, in both the config and the exact-set pin in `test-security-gates.py`; the snapshot is digest-pinned evidence and is unchanged. Reproduced and verified locally with `plugin-scanner==2.0.864` against `git archive HEAD`. Skill behavior is unchanged.
+
 ## [1.17.0] - 2026-09-18
 
 Two interim version bumps, 1.16.4 and 1.17.1, were made while this work was split across phases and were never published; their content ships here, in one release. All four `SKILL.md` files and all three plugin manifests carry 1.17.0.

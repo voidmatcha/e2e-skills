@@ -43,6 +43,14 @@
 # keep re-confirming the same known false positive after every push,
 # .github/workflows/hol-plugin-scanner.yml now sets `cisco_skill_scan: off`
 # directly, with its own dated comment explaining why.
+#
+# 2026-09-18: push a8b9381 failed on HARDCODED_SECRET in one frozen
+# healer-perturbation-v1 source snapshot, reproduced locally with
+# plugin-scanner==2.0.864 against `git archive HEAD`. The snapshot embeds a
+# byte copy of skills/e2e-reviewer/scripts/scan.sh, so this is the same #14
+# rule-definition false positive already suppressed for scan.sh above. The
+# snapshot is digest-pinned evidence and must not be edited; suppress only
+# that exact file.
 [scanner]
 ignore_paths = [
   "skills/cypress-debugger/scripts/publish-mochawesome-report.py",
@@ -65,4 +73,5 @@ ignore_paths = [
   "skills/cypress-debugger/SKILL.md",
   "skills/playwright-test-generator/SKILL.md",
   "skills/playwright-test-generator/scripts/preflight_target.py",
+  "benchmarks/healer-perturbation-v1/source-snapshots/0fc0e0687ab31d7e4d652578b947114cf1f472639b037fc6c9b37b1d8404a8e2.json",
 ]
