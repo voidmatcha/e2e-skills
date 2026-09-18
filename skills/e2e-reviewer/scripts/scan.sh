@@ -11,6 +11,13 @@ while IFS= builtin read -r imported_function; do
 done < <(builtin compgen -A function)
 builtin shopt -u expand_aliases
 builtin unalias -a 2>/dev/null || true
+# The lexers are byte-oriented: every JavaScript delimiter they track is ASCII,
+# and UTF-8 bytes of other characters never equal one. Under a UTF-8 locale,
+# macOS awk aborted with "towc: multibyte conversion failure" on non-ASCII
+# identifiers such as Angular's U+0275-prefixed exports, failing the whole scan.
+# Pin the C locale for the scanner and every helper it starts; output bytes are
+# unchanged.
+builtin export LANG=C LC_ALL=C LC_CTYPE=C
 
 builtin set -uo pipefail
 

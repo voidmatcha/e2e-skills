@@ -725,6 +725,41 @@ def assert_ast_grep_can_be_disabled_even_when_installed() -> None:
         assert "Summary:" in result.stdout
 
 
+def assert_non_ascii_identifier_scans_under_utf8_locale() -> None:
+    """A UTF-8 locale must not abort the scan on a non-ASCII identifier.
+
+    Every other scanner test pins LC_ALL=C, which hid this: under a UTF-8
+    locale, macOS awk failed with "towc: multibyte conversion failure" on
+    Angular's U+0275-prefixed exports, and the whole scan exited 2.
+    """
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-utf8-") as temp:
+        root = Path(temp) / "project"
+        root.mkdir()
+        (root / "package.json").write_text(
+            '{"name":"p","devDependencies":{"@playwright/test":"1.62.1"}}\n',
+            encoding="utf-8",
+        )
+        (root / "a.spec.ts").write_text(
+            "import { test, expect } from '@playwright/test';\n"
+            "import { ɵDomSanitizerImpl } from '@angular/platform-browser';\n"
+            "const ɵvalue = 1;\n"
+            "test('할 일', async ({ page }) => {\n"
+            "  await page.goto('/');\n"
+            "  await page.waitForTimeout(1000);\n"
+            "  await expect(page.getByText('완료')).toBeVisible();\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        for locale in ("C.UTF-8", "en_US.UTF-8"):
+            result = scan_path(
+                root,
+                {"LC_ALL": locale, "LC_CTYPE": locale, "LANG": locale, "E2E_SMELL_FAIL_ON": "none"},
+            )
+            assert result.returncode == 0, (locale, result.returncode, result.stdout[-2000:])
+            assert "INCOMPLETE" not in result.stdout, (locale, result.stdout[-2000:])
+            assert "#9 Playwright hard-coded sleep" in result.stdout, (locale, result.stdout[-2000:])
+
+
 def assert_ast_grep_fixed_candidates_exclude_system_sg() -> None:
     """Linux /usr/bin/sg is shadow-utils' group command, not ast-grep."""
     source = SCANNER.read_text(encoding="utf-8")
@@ -6656,6 +6691,7 @@ def main() -> None:
         assert_foreign_cy_basename_requires_executable_cypress_provenance,
         assert_ast_grep_can_be_disabled_even_when_installed,
         assert_ast_grep_fixed_candidates_exclude_system_sg,
+        assert_non_ascii_identifier_scans_under_utf8_locale,
         assert_ast_grep_fail_closed,
         assert_explicit_tool_binds_canonical_resolved_path,
         assert_default_versioned_tool_symlink_executes,
