@@ -27,7 +27,7 @@ Playwright config, `baseURL`, `webServer.command`, and `package.json` scripts ar
 
 ```
 Step 1: Environment Detection
-Step 2: Coverage Gap Analysis  (skipped if $ARGUMENT provided)
+Step 2: Coverage Gap Analysis  (skipped if $ARGUMENT provided or the request names the target)
 Step 3: Browser Exploration    (@playwright/cli → agent-browser → existing MCP → ARIA fallback)
 Step 4: Scenario Design        (risk admission → plan → user approval)
 Step 5: Code Generation        (baseline run, then tracer when required; see code-rules.md)
@@ -72,7 +72,7 @@ existingVerification: [mutation | coverage | a11y | visual | fault-injection | n
 
 ## Step 2: Coverage Gap Analysis
 
-**Skipped if `$ARGUMENT` is provided** — jump to Step 3 with that target.
+**Skipped if `$ARGUMENT` is provided, or the request itself names the target route or feature** — jump to Step 3 with that target.
 
 When no argument is given:
 
@@ -100,7 +100,7 @@ When no argument is given:
 
 **Auth for generated tests:** prefer an API-login helper or `setup` project that creates reusable `storageState`; reserve UI login for login-flow specs. Never depend on a manually captured, expiring `auth/*.json`; tests must recreate their session from code.
 
-**Auth & seed data for exploration (detect before navigating):** detect `storageState`, setup/globalSetup, auth files, API-login helpers/fixtures, seed/reset scripts, fixture directories, and test-only seed endpoints. If required credentials or seed data are unavailable, stop and tell the user to set the named environment variables locally or provide an approved seed command. The agent may check only whether each named variable is present and non-empty; never request, read, print, echo, log, or paste credential values, invent/reuse example credentials, register real accounts, or mutate backend data to manufacture state.
+**Auth & seed data for exploration (detect before navigating):** detect `storageState`, setup/globalSetup, auth files, API-login helpers/fixtures, seed/reset scripts, fixture directories, and test-only seed endpoints. If required credentials or seed data are unavailable, stop and tell the user to set the named environment variables locally or provide an approved seed command. The agent may check only whether each named variable is present and non-empty; never request, read, print, echo, log, or paste credential values, invent/reuse example credentials, register real accounts, or mutate backend data to manufacture state beyond the approved seed or reset path; driving a local, disposable stack through its own UI to observe a flow is allowed, but a generated test must not depend on state created this way.
 
 **Exact-target preflight (run first—fail fast):** after the safety gate, validate the approved `baseURL` plus route before any browser navigation. Require an explicit `http://` or `https://` URL whose scheme, host, and effective port equal the exact user-approved origin. Reject credentials, fragments, any cloud-metadata or link-local address, arbitrary private-network hosts, shared or production services. Ordinary non-secret route query parameters may remain; reject duplicates, sensitive names, and credential/token-shaped values before curl or any other child command can receive the URL as an argument. Keep raw URLs out of argv until validated.
 
@@ -129,7 +129,7 @@ Accept only `2xx` → `reachable`; `401` or `403` → `auth-required`; or a non-
 
 Every peer must return the identical outcome, exact status, and canonical redirect URL. Reject unsafe/unexpected redirects, other statuses, effective-URL mismatch, peer disagreement, curl failure, unsafe addresses, or DNS drift. Validate URL, authority, query, and same-origin before normalizing; any failure is terminal before browser launch and never enters `webServer` recovery.
 
-Reading the `webServer` block of the loaded Playwright config identified in Step 1 is not running it. Only after a pinned-probe connection failure for an approved local fixture may you start that server: quote the exact `webServer.command` and its source, and ask the user to approve that exact command before exploration continues. Record the approval so the Step 4 command table lists the command as already approved instead of asking again. Do not run `webServer.command` until the repository and local/disposable stack are approved and that exact command is explicitly approved; run it without shell interpolation and re-probe. Stop it when exploration ends, because a config with `reuseExistingServer: false` makes later runs fail while it still holds the port. Without `webServer`, stop; never explore a dead origin.
+Reading the `webServer` block of the loaded Playwright config identified in Step 1 is not running it. Only after a pinned-probe connection failure for an approved local fixture may you start that server: quote the exact `webServer.command` and its source, and ask the user to approve that exact command before exploration continues; an approval given earlier counts, but still start the server only after that failed probe. Record the approval so the Step 4 command table lists the command as already approved instead of asking again. Do not run `webServer.command` until the repository and local/disposable stack are approved and that exact command is explicitly approved; run it without shell interpolation and re-probe. Stop it when exploration ends, because a config with `reuseExistingServer: false` makes later runs fail while it still holds the port. Without `webServer`, stop; never explore a dead origin.
 
 For `auth-required` or `auth-redirect`, establish authentication only after the preflight succeeds. Check credentials for presence only, retain all guards, use the approved auth seam, then re-run preflight. Never follow an off-origin IdP.
 
@@ -186,7 +186,7 @@ For every proposed scenario, record:
 
 ```
 - Distinct risk: <new user-visible risk and evidence that existing E2E coverage does not already prove it>
-- Right layer: <why browser E2E is required instead of a unit, component, integration, or API test>
+- Right layer: <why browser E2E is required instead of a unit, component, integration, or API test; `NO_LOWER_LAYER` when the repository has none, which is not by itself a reason to generate>
 - Diagnostic handle: <artifact, state, request, or assertion that will identify the failed step later>
 - Owner/source: <documented owner or requirement source; NEEDS_PRODUCT_CONTEXT when absent>
 - Error-cause signal: <error scenarios only: the user-visible signal that tells this failure cause apart from the others that reach the same screen; GENERIC_BY_CONTRACT plus the cited product rule when the product shows one message by design; GENERIC_BY_CONTRACT: NEEDS_PRODUCT_CONTEXT when it does and no rule is documented; N/A for a success-path scenario>
@@ -208,7 +208,7 @@ Do not generate a duplicate journey that existing E2E coverage already proves. I
 - Then: [expected result — what the user sees]
 ```
 
-Cover at minimum: one happy path + one error/edge case per feature.
+Cover at minimum: one happy path + one error/edge case per feature. When the user supplied an exact scenario list, propose no additions; name uncovered error paths at the approval gate instead.
 
 For every scenario, add a **verification contract**:
 
@@ -226,11 +226,11 @@ A written "Then" usually records less than a person checks by hand, so offer exa
 
 | Secondary outcome | Ask | Skip when |
 |---|---|---|
-| Survives a reload | Does the result still hold after reloading the page? | The write is stubbed, so a reload can only show fixture state |
+| Survives a reload | Does the result still hold after reloading the page? | The write is stubbed, so a reload can only show fixture state, or the outcome is transient by design, such as an error message a reload clears |
 | Side effect proved | Does the action produce the stored state or list-count change the user expects, beyond the request itself? | The only side effect is the request V4 already proves |
 | Error cause distinguished | Does a failure branch of this scenario show which cause occurred? | The scenario's primary outcome already names the cause, it has no failure branch, or its plan recorded `GENERIC_BY_CONTRACT` |
 
-For a failure branch whose outcome is that nothing was stored, follow V4's re-read rule in `verification-rules.md`: reload, or wait for the re-fetch, before asserting absence. A selected secondary outcome is an extra assertion in the same test, not a second primary assertion: V1 keeps one primary outcome, and V2/V3 falsify only that one. Any locator a selected outcome needs must appear in the Locator Mapping Table, and Step 6's YAGNI audit still applies to it.
+For a failure branch whose outcome is that nothing was stored, follow V4's re-read rule in `verification-rules.md`: reload, or wait for the re-fetch, before asserting absence. A selected secondary outcome is an extra assertion placed after the primary assertion in the same test, so a V2 or V3 fault turns the run red at the primary first; an assertion that also serves as the V2 settled-state gate stays before the primary and counts as that secondary outcome. It is not a second primary assertion: V1 keeps one primary outcome, and V2/V3 falsify only that one. Any locator a selected outcome needs must appear in the Locator Mapping Table, and Step 6's YAGNI audit still applies to it.
 
 Mark one approved scenario as the **tracer scenario** when this is the first generated test in the repository, the plan contains three or more scenarios, or the work crosses authentication, persistent writes, custom fixtures, or a new project runner. Choose the smallest scenario that exercises the real fixture, navigation, locator, assertion, and runner path; do not choose a render-only smoke check.
 
@@ -273,7 +273,7 @@ When Step 1 found no testing-conventions doc, disclose every control-file mutati
 | Exact target | Action        | Proposed content                         |
 |--------------|---------------|------------------------------------------|
 | <root>/AGENTS.md | `<create or append>` | Project-adapted E2E conventions section |
-| <root>/CLAUDE.md | `<create or append>` | One-line pointer to AGENTS.md (only when the project uses Claude Code) |
+| <root>/CLAUDE.md | `<create or append>` | One-line pointer to AGENTS.md (only when a root `CLAUDE.md` or `.claude/` directory exists) |
 ```
 
 Resolve `create` versus `append` from the current filesystem; do not present both as alternatives. Control-file changes are optional: explicitly offer `skip all control-file changes` and a per-path opt-out. Record each row as approved or skipped.
@@ -289,9 +289,9 @@ List every command discovered from `webServer.command`, `package.json`, project 
 | pnpm test:e2e -- tests/cart | package.json#scripts.test:e2e | Step 5 baseline run of the target area |
 ```
 
-Include the narrowest existing command that covers the target area as the baseline run. Scope it to the specs that already exercise that area rather than the whole suite: a full-suite run can replay persistent writes that V5 forbids.
+List the `init-agents` probe only when an agent definition directory exists or the user asks for first-party agents. Include the narrowest existing command that covers the target area as the baseline run. Scope it to the specs that already exercise that area rather than the whole suite: a full-suite run can replay persistent writes that V5 forbids.
 
-Treat every command as skipped until explicitly approved. Approval applies only to the exact command and purpose shown; do not expand it with extra flags, shell operators, environment assignments, or another script. A command the user supplied directly for this task may be recorded as already approved.
+Treat every command as skipped until explicitly approved. Approval applies only to the exact command and purpose shown; do not expand it with extra flags, shell operators, environment assignments, or another script. A targeted runner row may carry one `<spec>` slot that covers only the candidate and its temporary verifier copies in the configured test directory or the project-accepted scratch directory, so V2-V4 probes reuse that approval, and that targeted runner command may run again within this task. A command the user supplied directly for this task may be recorded as already approved.
 
 **Approval gate:** Do not proceed to Step 5 until the user explicitly approves the scenario/locator plan and the generated-file table, and every proposed control-file row is either explicitly approved or opted out, and every proposed target-controlled command is either explicitly approved or skipped. In hosts with a dedicated planning mode, exit that mode only after approval.
 
@@ -303,7 +303,7 @@ Follow `code-rules.md` for structure detection, selector priority, POM rules, co
 
 ### Baseline run (once, before the tracer)
 
-Before generating the tracer scenario, run the approved baseline command — the narrowest existing command that covers the target area — exactly once. Its result decides how later failures can be read:
+Before generating the tracer scenario, run the approved baseline command — the narrowest existing command that covers the target area — exactly once, before any approved config edit. Its result decides how later failures can be read:
 
 - **Green:** record it as the baseline; any later red is attributable to the
   candidate.
@@ -336,7 +336,7 @@ When `npx --no-install playwright help init-agents` confirms project-local first
 
 ## Step 5b: Conventions & Seed Artifacts (first run on a project)
 
-Runs only when Step 1 found no testing-conventions doc (`hasConventionsDoc: false`) and the user approved at least one disclosed control-file mutation in Step 4. When conventions already exist or the user opts out of every row, skip — never overwrite or duplicate them.
+Runs only when Step 1 found no testing-conventions doc (`hasConventionsDoc: false`) and the user approved at least one disclosed control-file mutation in Step 4. With a tracer scenario, run it once, after the full approved set passes Step 7, because the seed spec comes from the final set. When conventions already exist or the user opts out of every row, skip — never overwrite or duplicate them.
 
 1. Re-read the approved Step 4 control-file table. Mutate only an approved exact
    target, using its approved `create` or `append` action. Generate the
@@ -414,9 +414,9 @@ Generated:
 Coverage added: <route path>
 
 Tracer: <scenario and PASS before expansion | N/A>
-e2e-reviewer: N P0 (fixed), N P1 (listed below)
+e2e-reviewer: N P0 found, N fixed; N P1 (listed below)
 Tests: N passed
-Verification: V1 PASS; V2 <verdict>; V3 <verdict>; V4 <verdict|N/A>; V5 <verdict>; V6 PASS (when scenarios differ, give the most restrictive verdict and the breakdown, e.g. `V2 CANNOT_VERIFY (S2; PASS for S1, S3)`)
+Verification: V1 PASS; V2 <verdict>; V3 <verdict>; V4 <verdict|N/A>; V5 <verdict>; V6 PASS (<reviewer id>) (when scenarios differ, give the most restrictive verdict and the breakdown, e.g. `V2 CANNOT_VERIFY (S2; PASS for S1, S3)`)
 Runner: <repository-native commands used>
 Source cleanup: candidate unchanged; no temporary mutation files
 Write set: <created and modified paths>; listed separately: <runtime output, or none>

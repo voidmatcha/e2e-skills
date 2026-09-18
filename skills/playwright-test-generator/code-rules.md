@@ -121,6 +121,7 @@ test.describe('Login', () => {
 - BDD comments: `// Given:`, `// When:`, `// Then:`
 - Each test fully independent — own storage, session, cookies
 - `beforeEach` for shared navigation setup only — never for shared state
+- `afterEach` or fixture teardown may revert state the test itself wrote, as V5's disposable-state boundary requires; never use it to hide a failure
 - Mock external APIs with Playwright Network API; do not call real third-party services
 - **Use a web-first assertion that matches the approved product contract:** `toBeVisible()`, `toBeHidden()`, `toBeAttached()`, `toHaveText()`, `toContainText()`, `toHaveCount()`, `toHaveURL()`, and equivalent retrying matchers.
 - Use `expect.soft()` for independent, non-critical checks — but ensure at least one hard `expect()` gates on the primary condition per test. A test with only `expect.soft()` assertions never fails early.

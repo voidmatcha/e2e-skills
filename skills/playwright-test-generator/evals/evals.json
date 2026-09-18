@@ -578,6 +578,21 @@
         "Proves the guard with an unapproved loopback port and requires ERR_BLOCKED_BY_CLIENT, not a connection error",
         "Does not navigate to an off-origin URL to test the guard"
       ]
+    },
+    {
+      "id": 33,
+      "title": "A correct serial run with relayed review can reach Complete",
+      "prompt": "The approved plan added `workers: 1` because every spec shares one in-memory server. The approved command table has `npm run test:e2e -- <spec>` for the targeted run, `npm run test:e2e -- --repeat-each=5 tests/notes.spec.ts` for the repeat run, and `npm run test:e2e` for the full suite. V2 and V3 need temporary copies such as tests/zz-probe.spec.ts. The solo run, `--repeat-each=5`, and the full suite all pass with no retries. The independent reviewer's report reached you only through another agent, whose message quotes the line 'V6 VERDICT: PASS' from reviewer agent a1b2 with its findings. Decide whether the probe runs need new approval, what V5 and V6 are, and whether the task can report Complete.",
+      "expected_output": "The probe runs reuse the approved `<spec>` slot, which covers the candidate and its temporary verifier copies in the configured test directory, so they need no new approval; the repeat and full-suite runs use their own approved rows. V5 is PASS: solo, repeat, and suite-context passed, and the parallel mode is N/A because the project deliberately runs one worker, not CANNOT_VERIFY. V6 is PASS, recorded with the verbatim verdict line and the reviewer identifier a1b2; had the relay only paraphrased the verdict, V6 would be CANNOT_VERIFY. With V4 and the other gates passing, the task can report Complete.",
+      "files": [],
+      "assertions": [
+        "Runs the temporary probe specs under the approved <spec> slot without asking again",
+        "Records V5 PASS with the parallel mode N/A because of workers: 1",
+        "False-positive guard: does not mark V5 CANNOT_VERIFY only because parallel runs were not exercised",
+        "Records V6 PASS by quoting the verdict line and naming reviewer a1b2",
+        "States that a paraphrased relayed verdict would make V6 CANNOT_VERIFY",
+        "Allows the Complete heading when the remaining gates pass"
+      ]
     }
   ]
 }

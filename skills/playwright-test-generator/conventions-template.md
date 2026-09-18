@@ -2,7 +2,7 @@
 
 Used by Step 5b when a project has no testing-conventions doc. Fill every `<angle-bracket>` field from what Step 3 exploration **actually observed** — a conventions doc that parrots generic best practices instead of project reality is worse than none, because future agents will trust it.
 
-Append the section below to the project's root `AGENTS.md` (create the file if absent). If the team uses Claude Code and no `CLAUDE.md` exists, create one containing a single pointer: `See AGENTS.md.`
+Append the section below to the project's root `AGENTS.md` (create the file if absent). When the approved control-file table has a `CLAUDE.md` row (a root `CLAUDE.md` or `.claude/` directory exists), add a single pointer there, creating the file only if that row says `create`: `See AGENTS.md.`
 
 ---
 

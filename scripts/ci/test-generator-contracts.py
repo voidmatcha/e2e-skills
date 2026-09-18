@@ -26,6 +26,7 @@ SKILL = ROOT / "skills/playwright-test-generator/SKILL.md"
 CODE_RULES = ROOT / "skills/playwright-test-generator/code-rules.md"
 BEST_PRACTICES = ROOT / "skills/playwright-test-generator/best-practices.md"
 VERIFICATION_RULES = ROOT / "skills/playwright-test-generator/verification-rules.md"
+CONVENTIONS_TEMPLATE = ROOT / "skills/playwright-test-generator/conventions-template.md"
 EVALS = ROOT / "skills/playwright-test-generator/evals/evals.json"
 PREFLIGHT = (
     ROOT / "skills/playwright-test-generator/scripts/preflight_target.py"
@@ -1481,6 +1482,61 @@ def exercise_failed_write_and_guard_mutation_guards(text: str, verification_rule
         raise AssertionError("assert_failed_write_and_guard_contract survived a mutation")
 
 
+def assert_backlog_1190_contract(text: str, verification_rules: str, code_rules: str) -> None:
+    """Clauses that let a correct run reach Complete, plus smaller clarifications."""
+    compact = " ".join(text.split())
+    rules = " ".join(verification_rules.split())
+    code = " ".join(code_rules.split())
+    # blockers
+    assert "A targeted runner row may carry one `<spec>` slot that covers only the candidate and its temporary verifier copies" in compact
+    assert "is `N/A` within V5, including a serial setting the approved plan added; V5 is `CANNOT_VERIFY` only when its solo, repeat, or suite-context run cannot be performed" in rules
+    assert "quote the reviewer's verdict line verbatim with an identifier for the reviewer actor, also when another agent relays it; a paraphrased verdict is `CANNOT_VERIFY`" in rules
+    # clarifications
+    assert "or the request itself names the target route or feature" in compact
+    assert "driving a local, disposable stack through its own UI to observe a flow is allowed" in compact
+    assert "`NO_LOWER_LAYER` when the repository has none, which is not by itself a reason to generate" in compact
+    assert "When the user supplied an exact scenario list, propose no additions" in compact
+    assert "placed after the primary assertion in the same test, so a V2 or V3 fault turns the run red at the primary first" in compact
+    assert "only when a root `CLAUDE.md` or `.claude/` directory exists" in compact
+    assert "List the `init-agents` probe only when an agent definition directory exists or the user asks for first-party agents" in compact
+    assert "an assertion that also serves as the V2 settled-state gate stays before the primary and counts as that secondary outcome" in compact
+    assert "or the outcome is transient by design, such as an error message a reload clears" in compact
+    assert "an approval given earlier counts, but still start the server only after that failed probe" in compact
+    assert "exactly once, before any approved config edit" in compact
+    assert "Design the fault so the declared settled-state gate still passes and the run reaches the primary" in rules
+    assert "including a serial setting the approved plan added" in rules
+    assert "the copy may keep only the scenario under test" in rules
+    assert "Keep repetitions bounded. A parallel mode the repository cannot express, or a mode the project deliberately does not use" in rules
+    assert "report any mode the repository cannot express as" not in rules
+    assert "in the configured test directory or the project-accepted scratch directory" in compact
+    assert "and that targeted runner command may run again within this task" in compact
+    assert "a generated test must not depend on state created this way" in compact
+    conventions = " ".join(CONVENTIONS_TEMPLATE.read_text(encoding="utf-8").split())
+    assert "When the approved control-file table has a `CLAUDE.md` row (a root `CLAUDE.md` or `.claude/` directory exists)" in conventions
+    assert "With a tracer scenario, run it once, after the full approved set passes Step 7" in compact
+    assert "e2e-reviewer: N P0 found, N fixed; N P1 (listed below)" in text
+    assert "A passing web-first assertion on another element produced by the same render as the primary target counts as a terminal UI state" in rules
+    assert "`afterEach` or fixture teardown may revert state the test itself wrote" in code
+
+
+def exercise_backlog_1190_mutation_guards(text: str, verification_rules: str, code_rules: str) -> None:
+    mutations = (
+        (text.replace("covers only the candidate and its temporary verifier copies", "covers any spec", 1), verification_rules),
+        (text, verification_rules.replace("is `N/A` within V5, including a serial setting the approved plan added; V5 is `CANNOT_VERIFY` only when", "is `CANNOT_VERIFY`; V5 is `CANNOT_VERIFY` also when", 1)),
+        (text, verification_rules.replace("a paraphrased verdict is `CANNOT_VERIFY`", "a paraphrased verdict is `PASS`", 1)),
+        (text.replace("placed after the primary assertion", "placed anywhere", 1), verification_rules),
+        (text.replace("only when an agent definition directory exists", "always", 1), verification_rules),
+        (text.replace("and that targeted runner command may run again", "and an approved command may run again", 1), verification_rules),
+        (text, verification_rules.replace("Design the fault so the declared settled-state gate still passes and the run reaches the primary. ", "", 1)),
+    )
+    for mutated_text, mutated_rules in mutations:
+        try:
+            assert_backlog_1190_contract(mutated_text, mutated_rules, code_rules)
+        except AssertionError:
+            continue
+        raise AssertionError("assert_backlog_1190_contract survived a mutation")
+
+
 def exercise_secondary_outcome_and_import_mutation_guards(text: str) -> None:
     scenarios = section(text, "### Scenarios", "### Locator Mapping Table")
     admission = section(text, "### Scenario admission", "### Scenarios")
@@ -1780,7 +1836,7 @@ def assert_v6_completion_contract(
         "### Completion report (on full pass)",
         "## Reference",
     )
-    assert "V5 <verdict>; V6 PASS" in completion_templates
+    assert "V5 <verdict>; V6 PASS (<reviewer id>)" in completion_templates
     assert (
         "For applicable V4/V5, or V6, `CANNOT_VERIFY` or `ERROR`, use:"
         in completion_templates
@@ -1799,6 +1855,8 @@ def assert_v6_completion_contract(
     reread_eval = eval_contract(evals_by_id, 31)
     assert "page.reload()" in reread_eval and "waitForResponse" in reread_eval
     cli_guard_eval = eval_contract(evals_by_id, 32)
+    completion_eval = eval_contract(evals_by_id, 33)
+    assert "<spec>" in completion_eval and "workers: 1" in completion_eval and "V6 VERDICT: PASS" in completion_eval
     assert "allowedOrigins" in cli_guard_eval and "ERR_BLOCKED_BY_CLIENT" in cli_guard_eval and "about:blank" in cli_guard_eval
     assert "2>&1 | tee" in command_scope_eval and "cd apps/web" in command_scope_eval
     assert "Blocking verification: V6 CANNOT_VERIFY" in blocked_eval
@@ -2356,6 +2414,8 @@ def main() -> None:
     exercise_write_scope_mutation_guards(text, verification_rules)
     assert_failed_write_and_guard_contract(text, verification_rules, code_rules)
     exercise_failed_write_and_guard_mutation_guards(text, verification_rules, code_rules)
+    assert_backlog_1190_contract(text, verification_rules, code_rules)
+    exercise_backlog_1190_mutation_guards(text, verification_rules, code_rules)
     exercise_failure_handling_mutation_guard(text)
     assert "Tracer: <scenario and PASS before expansion | N/A>" in text
 
