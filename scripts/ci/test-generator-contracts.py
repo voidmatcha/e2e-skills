@@ -1335,7 +1335,8 @@ def assert_write_scope_contract(text: str, verification_rules: str) -> None:
     assert "Before exploration writes anything, record `git status --porcelain --untracked-files=all` from the Git worktree root" in step_3
     assert "take the final snapshot from the same root" in step_3
     assert "a SHA-256 content hash of every path it lists" in step_3
-    assert "Run exploration tools from a directory outside the worktree" in step_3
+    assert "Run browser exploration tools (Playwright CLI, `agent-browser`) from a directory outside the worktree" in step_3
+    assert "the preflight launcher still runs from the target project directory" in step_3
     assert "plus every already-listed path whose hash changed" in step_3
     assert "never revert, clean, or stage them, and never report them as the candidate's" in step_3
     assert "in which case its hash change is that approved edit" in step_3
@@ -1415,6 +1416,69 @@ def exercise_write_scope_mutation_guards(text: str, verification_rules: str) -> 
         except AssertionError:
             continue
         raise AssertionError("assert_command_approval_scope_contract survived a mutation")
+
+
+def assert_failed_write_and_guard_contract(text: str, verification_rules: str, code_rules: str) -> None:
+    """Failed-write location and re-read, verdict aggregation, Step 3 server approval, CLI guard."""
+    rules_compact = " ".join(verification_rules.split())
+    compact = " ".join(text.split())
+    v4 = " ".join(section(verification_rules, "## V4 — Write Contract Proof", "## V5 — Repeat and Isolation").split())
+    assert "the failed-write run must turn red at the unchanged primary assertion or at a declared settled-state gate" in v4
+    assert "red anywhere else is `CANNOT_VERIFY`, or `ERROR` when the verifier itself failed" in v4
+    assert "A scenario whose action is itself a rejected write needs no separate injection" in v4
+    assert "Files under Playwright's output folders are runtime output, not verifier artifacts" in rules_compact
+    assert "Never emit a `Complete` heading when an applicable V4 or V5, or V6, has either status. The same holds for V1." in rules_compact
+    assert "V1 must be `PASS` as well; a V1, V2, or V3 `FAIL` blocks" in compact
+    assert "for V1 `CANNOT_VERIFY` or `ERROR`, with `Blocking verification: V1 <status>`" in compact
+    assert "reload, or wait for the re-fetch that reads it, before asserting absence" in v4
+    assert "cannot see a server that stored the data anyway" in v4
+    assert "record the most restrictive verdict for that V-rule, in the order `FAIL`, `ERROR`, `CANNOT_VERIFY`, `PASS`" in rules_compact
+    assert "follow V4's re-read rule in `verification-rules.md`" in compact
+    assert "give the most restrictive verdict and the breakdown" in compact
+    assert "**Absence after a failed write.**" in code_rules
+    step_3 = " ".join(section(text, "## Step 3: Browser Exploration", "## Step 4: Scenario Design + User Approval").split())
+    assert "ask the user to approve that exact command before exploration continues" in step_3
+    assert "lists the command as already approved instead of asking again" in step_3
+    assert "**Guard for Playwright CLI.**" in step_3
+    assert "so neither is the guard" in step_3
+    assert "Use the CLI's origin allowlist" in step_3
+    assert '`{"network": {"allowedOrigins": ["<scheme>://<host>:<port>"]}}`' in step_3
+    assert "a bare host would allow every port" in step_3
+    assert "never loads a project-provided `.playwright/cli.config.json`" in step_3
+    assert "use that entry point for guarded exploration only when the project has no such file" in " ".join(step_3.split())
+    assert "`--config` takes effect only when `open` starts a session" in step_3
+    assert "never explore through a session you did not just open with the guard" in step_3
+    assert "Confirm the page is `about:blank` before continuing" in step_3
+    assert "write a config file outside the target worktree" in step_3
+    assert "Prove the guard before navigating: from the page, fetch an unapproved loopback port such as `http://127.0.0.1:9/`" in step_3
+    assert "Then navigate to the preflighted target, and close the session when exploration ends" in step_3
+    assert "ask for that approval before this first run, not after it fails" in " ".join(text.replace("# ", "").split())
+    assert "Stop it when exploration ends" in step_3
+    assert "require `requests` to show it failed with `net::ERR_BLOCKED_BY_CLIENT`, not a connection error" in step_3
+    assert "`-s`, `--config`, `eval`, and `requests` belong to its approved command unit" in step_3
+
+
+def exercise_failed_write_and_guard_mutation_guards(text: str, verification_rules: str, code_rules: str) -> None:
+    mutations = (
+        (text, verification_rules.replace("red anywhere else is `CANNOT_VERIFY`", "red anywhere else is `PASS`", 1), code_rules),
+        (text, verification_rules.replace("reload, or wait for the re-fetch that reads it, before asserting absence", "assert absence", 1), code_rules),
+        (text, verification_rules.replace("in the order `FAIL`, `ERROR`, `CANNOT_VERIFY`, `PASS`", "in any order", 1), code_rules),
+        (text.replace("`--config` takes effect only when `open` starts a session", "`--config` applies to every command", 1), verification_rules, code_rules),
+        (text.replace("Prove the guard before navigating:", "After navigating to the target, prove the guard:", 1), verification_rules, code_rules),
+        (text.replace("fetch an unapproved loopback port such as `http://127.0.0.1:9/`", "fetch `https://example.com/`", 1), verification_rules, code_rules),
+        (text.replace("write a config file outside the target worktree", "write a config file in the target worktree", 1), verification_rules, code_rules),
+        (text.replace("Confirm the page is `about:blank` before continuing.", "", 1), verification_rules, code_rules),
+        (text.replace(", and close the session when exploration ends", "", 1), verification_rules, code_rules),
+        (text.replace("`net::ERR_BLOCKED_BY_CLIENT`, not a connection error", "any error", 1), verification_rules, code_rules),
+        (text.replace("ask the user to approve that exact command before exploration continues", "start it", 1), verification_rules, code_rules),
+        (text, verification_rules, code_rules.replace("**Absence after a failed write.**", "", 1)),
+    )
+    for mutated_text, mutated_rules, mutated_code in mutations:
+        try:
+            assert_failed_write_and_guard_contract(mutated_text, mutated_rules, mutated_code)
+        except AssertionError:
+            continue
+        raise AssertionError("assert_failed_write_and_guard_contract survived a mutation")
 
 
 def exercise_secondary_outcome_and_import_mutation_guards(text: str) -> None:
@@ -1521,8 +1585,8 @@ def assert_config_discovery_contract(
     )
     assert "playwright.config.*" not in step_3
     assert (
-        "inspect the loaded Playwright config identified in Step 1 for "
-        "`webServer`"
+        "Reading the `webServer` block of the loaded Playwright config "
+        "identified in Step 1 is not running it"
     ) in step_3
     discovery_eval = eval_contract(evals_by_id, 20)
     assert "profiles playwright.config.mjs as the loaded config" in discovery_eval
@@ -1732,6 +1796,10 @@ def assert_v6_completion_contract(
     assert "starting snapshot" in dirty_tree_eval and "PARTIAL/BLOCKED" in dirty_tree_eval
     assert "remove it as verification-rules.md requires" in dirty_tree_eval and "do not delete it" in dirty_tree_eval
     command_scope_eval = eval_contract(evals_by_id, 30)
+    reread_eval = eval_contract(evals_by_id, 31)
+    assert "page.reload()" in reread_eval and "waitForResponse" in reread_eval
+    cli_guard_eval = eval_contract(evals_by_id, 32)
+    assert "allowedOrigins" in cli_guard_eval and "ERR_BLOCKED_BY_CLIENT" in cli_guard_eval and "about:blank" in cli_guard_eval
     assert "2>&1 | tee" in command_scope_eval and "cd apps/web" in command_scope_eval
     assert "Blocking verification: V6 CANNOT_VERIFY" in blocked_eval
     assert "never emits the Complete heading" in blocked_eval
@@ -2286,6 +2354,8 @@ def main() -> None:
     assert_write_scope_contract(text, verification_rules)
     assert_command_approval_scope_contract(text)
     exercise_write_scope_mutation_guards(text, verification_rules)
+    assert_failed_write_and_guard_contract(text, verification_rules, code_rules)
+    exercise_failed_write_and_guard_mutation_guards(text, verification_rules, code_rules)
     exercise_failure_handling_mutation_guard(text)
     assert "Tracer: <scenario and PASS before expansion | N/A>" in text
 
@@ -2456,7 +2526,10 @@ def main() -> None:
     )
     assert "Applicable V4 or V5 is `CANNOT_VERIFY`" in completion_matrix
     assert "Applicable V4 or V5 is `ERROR`" in completion_matrix
-    assert completion_matrix.count("`PARTIAL/BLOCKED`") == 4
+    assert completion_matrix.count("`PARTIAL/BLOCKED`") == 5
+    assert "| V1, V2, or V3 is `FAIL` | `BLOCKED` until the candidate is repaired and reverified |" in completion_matrix
+    assert "| V1 is `CANNOT_VERIFY` or `ERROR` | `PARTIAL/BLOCKED`" in completion_matrix
+    assert "| V2 or V3 is `CANNOT_VERIFY` or `ERROR` | Reported with its reason; does not by itself block `Complete` |" in completion_matrix
     assert "Applicable V4 or V5 is `FAIL`" in completion_matrix
     assert "`BLOCKED` until the candidate is repaired and reverified" in completion_matrix
 

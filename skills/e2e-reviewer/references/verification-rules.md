@@ -10,7 +10,7 @@ V-rules are runtime proof recommendations, not new smell IDs. Keep the 24-patter
 | V1 | One primary observable outcome matches the title/actions | one load-bearing web-first assertion | one load-bearing retryable `.should()`/`expect` assertion |
 | V2 | Safely invert the primary assertion in a temporary copy; expect red | `.toBeVisible()` ↔ `.not.toBeVisible()`, text/URL/count equivalents | `'be.visible'` ↔ `'not.be.visible'`, text/value/length equivalents |
 | V3 | Corrupt an evidenced dependency; unchanged assertion must turn red | `page.route()` or existing fixture | `cy.intercept()` or existing fixture |
-| V4 | Prove write method/endpoint/payload/cardinality and failed-write behavior | `waitForRequest`, route-hit capture | alias/intercept plus `cy.wait()` request inspection |
+| V4 | Prove write method/endpoint/payload/cardinality and failed-write behavior; after a failed write, assert absence only after a reload or re-fetch | `waitForRequest`, route-hit capture | alias/intercept plus `cy.wait()` request inspection |
 | V5 | Pass bounded solo, repeat, suite-context, and supported parallel checks | repository-native Playwright script | repository-native Cypress script/repeat facility |
 | V6 | A writer/debugger cannot approve its own output | a distinct fresh-context, read-only e2e-reviewer actor/process that did not write, debug, or repair the candidate reruns review | a distinct fresh-context, read-only e2e-reviewer actor/process that did not write, debug, or repair the candidate reruns review |
 

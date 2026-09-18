@@ -270,6 +270,8 @@ await expect(spinner).toBeHidden();
 
 **Fix:** assert the positive state before the action that removes it, then assert absence on the *same* locator object — binding it to a variable makes the pairing checkable at a glance.
 
+**Absence after a failed write, not re-read (Phase 2 only, no scanner rule).** A separate question from #4i's locator provenance: an absence or zero-count assertion that follows a rejected write (a stubbed or real 4xx/5xx) on the same view, with no `page.reload()`, `page.goto()`, `waitForResponse` on the read, or equivalent re-fetch in the spec in between, cannot detect a server that stored the data while returning the error. Report it as `#4` `[P1]` only when the spec shows no such re-read; do not infer the application's re-fetch behavior from its source. A #4i SKIP for the same line does not clear this: an empty-state positive counterpart read from the same unrefreshed view has the same blind spot. Fix: re-read the state, then assert both the absence and its positive counterpart.
+
 <!-- 4j is a bold sub-block, NOT a "#### 4j." header — see the 4g note above. -->
 **4j. Under-specified ARIA snapshot accessible name** `[LLM-only, Playwright only]` `[P1]` — a `toMatchAriaSnapshot()` template contains a role-only node such as `- button` even though the test title, action, or acceptance contract promises a specific control label or identity.
 

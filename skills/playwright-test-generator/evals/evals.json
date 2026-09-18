@@ -548,6 +548,36 @@
         "False-positive guard: accepts the user-supplied `cd apps/web && ...` command verbatim as already approved",
         "Does not rewrite the user-supplied command into a single-argv form"
       ]
+    },
+    {
+      "id": 31,
+      "title": "Absence after a rejected write is asserted only after a re-read",
+      "prompt": "An approved error scenario submits an empty todo title. The server answers 400 with 'Title is required', and the page shows that message but does not re-fetch the list after a failed POST. The plan selected the 'Side effect proved' secondary outcome: no todo was stored. A first draft asserts `await expect(todoItems).toHaveCount(0)` right after the error message appears. A second scenario in the same spec checks a filter view that always re-fetches the list after every submit and already waits with `page.waitForResponse` for that GET. Decide what each scenario needs.",
+      "expected_output": "The first draft proves nothing about storage: the list was never re-read after the failed request, so it would pass even if the server stored the todo while returning 400. Per V4's re-read rule, call `page.reload()` (or wait for the list re-fetch) and then assert `toHaveCount(0)` together with its positive counterpart, such as '0 remaining'. The filter-view scenario already waits for the re-fetch with `waitForResponse`, so it needs no extra reload. Treat this as a staleness rule, separate from #4i locator provenance.",
+      "files": [],
+      "assertions": [
+        "Rejects the unrefreshed toHaveCount(0) as proof that nothing was stored",
+        "Adds page.reload() or an explicit wait for the list re-fetch before asserting absence",
+        "Pairs the re-read absence with a positive counterpart",
+        "False-positive guard: does not add a reload to the scenario that already waits for the re-fetch with waitForResponse",
+        "Does not treat the problem as #4i locator provenance"
+      ]
+    },
+    {
+      "id": 32,
+      "title": "Playwright CLI exploration uses the origin allowlist in a fresh session",
+      "prompt": "Exploration will use the standalone playwright-cli against the preflighted target http://127.0.0.1:4391/. A previous exploration session named 'default' is still open. The repository contains a .playwright/cli.config.json. You consider installing the guard with `playwright-cli run-code` using `new URL(request.url())`, or with `playwright-cli route`. Describe how to install and prove the guard.",
+      "expected_output": "Neither route (fulfill-only) nor run-code (bare context, no URL global) is the guard. Write a config outside the worktree with network.allowedOrigins set to the exact origin http://127.0.0.1:4391, run the CLI from that outside directory so the repository's .playwright/cli.config.json is never loaded, and open a fresh uniquely named session with -s and --config, because --config takes effect only when open starts a session: commands sent to the still-open default session would keep running in its unguarded browser. Confirm the page is about:blank, then fetch an unapproved loopback port such as http://127.0.0.1:9/ and require requests to show net::ERR_BLOCKED_BY_CLIENT rather than a connection error. Only then navigate to the target, and close the session afterwards.",
+      "files": [],
+      "assertions": [
+        "Rejects run-code and route as the guard mechanism, with the reason for each",
+        "Uses network.allowedOrigins with the exact scheme, host, and port",
+        "Runs the CLI from outside the worktree so the repository's CLI config is not loaded",
+        "Opens a fresh uniquely named session because --config applies only when open starts a session, not to commands sent to a running one",
+        "Confirms about:blank before any navigation",
+        "Proves the guard with an unapproved loopback port and requires ERR_BLOCKED_BY_CLIENT, not a connection error",
+        "Does not navigate to an off-origin URL to test the guard"
+      ]
     }
   ]
 }

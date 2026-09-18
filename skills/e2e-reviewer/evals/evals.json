@@ -715,6 +715,22 @@
         "Does NOT report line 49: the enclosing finally throws unconditionally, so the test cannot pass",
         "Resolves every Phase 1 candidate rather than leaving any unjudged"
       ]
+    },
+    {
+      "id": 41,
+      "prompt": "Review evals/files/failed-write-absence.spec.ts. Phase 1 flags the toHaveCount(0) absence assertions as #4i candidates. Each test submits a write that the server rejects, then asserts that nothing was stored. Decide which tests actually prove that, and report accordingly.",
+      "expected_output": "Report #4 P1 on line 12: the empty-title test asserts toHaveCount(0) on the same view right after the rejected write, with no page.reload(), page.goto(), or waitForResponse on the list re-fetch in between, so it cannot detect a server that stored the todo while returning the error. The '0 remaining' text on line 13 is read from the same unrefreshed view, so the #4i empty-state SKIP does not clear this finding. Fix: re-read the list, then assert both the absence and its positive counterpart. Do not report line 21, which follows page.reload() on line 20, or the duplicate-title test, which sets up waitForResponse for the list GET on lines 29-31 and awaits it on line 33 before its count assertion. Do not infer the application's re-fetch behavior from its source; judge only what the spec shows.",
+      "files": [
+        "evals/files/failed-write-absence.spec.ts"
+      ],
+      "assertions": [
+        "Reports #4 P1 on line 12 for an absence asserted after a rejected write with no re-read in the spec",
+        "Explains that the empty-state positive counterpart on line 13 comes from the same unrefreshed view",
+        "Proposes re-reading the list before asserting absence and its positive counterpart",
+        "False-positive guard: does not report line 21, which follows page.reload() on line 20",
+        "False-positive guard: does not report the duplicate-title test, which awaits the waitForResponse for the list GET (lines 29-31) on line 33",
+        "Does not promote the finding to P0 or invent a new pattern ID"
+      ]
     }
   ]
 }

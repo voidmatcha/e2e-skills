@@ -147,6 +147,8 @@ test.describe('Login', () => {
 
 ---
 
+**Absence after a failed write.** When a scenario proves that a rejected write stored nothing, reload or wait for the re-fetch that reads the stored state before asserting the absence, as `verification-rules.md` V4 requires; asserting it on a view that the failure did not refresh passes even when the server stored the data.
+
 ## Network Determinism
 
 Decide per endpoint, not per suite:

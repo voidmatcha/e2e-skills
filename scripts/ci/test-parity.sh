@@ -1130,6 +1130,14 @@ done
 
 file="skills/e2e-reviewer/references/verification-rules.md"
 backup "$file"
+mutate "$file" "after a failed write, assert absence only after a reload or re-fetch" "after a failed write, assert absence"
+assert_verification_parity_fails \
+  "Verification parity — reviewer V4 failed-write re-read drift" \
+  "reviewer V4 behavior differs"
+restore "$file"
+
+file="skills/e2e-reviewer/references/verification-rules.md"
+backup "$file"
 mutate "$file" '`sourceUnchanged`' '`sourceMayChange`'
 assert_verification_parity_fails "Verification parity — reviewer result schema drift" "result schemas differ or are missing"
 restore "$file"

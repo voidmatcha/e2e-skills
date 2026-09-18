@@ -357,10 +357,44 @@ def verify_pattern_3_swallow_scope() -> None:
     assert "Does NOT flag" in text, "eval 39 lost its false-positive guards"
 
 
+def assert_failed_write_reread_note(pattern_reference: str) -> None:
+    for contract in (
+        "**Absence after a failed write, not re-read (Phase 2 only, no scanner rule).**",
+        "A separate question from #4i's locator provenance",
+        "with no `page.reload()`, `page.goto()`, `waitForResponse` on the read, or equivalent re-fetch in the spec in between",
+        "Report it as `#4` `[P1]` only when the spec shows no such re-read",
+        "do not infer the application's re-fetch behavior from its source",
+        "A #4i SKIP for the same line does not clear this",
+    ):
+        require_normalized_contract(pattern_reference, contract, "pattern-reference.md failed-write re-read note")
+
+
+def verify_failed_write_reread_note() -> None:
+    """Phase 2 mirror of the generator's V4 re-read rule; guarded against deletion and reversal."""
+    pattern_reference = normalized(PATTERN_REFERENCE)
+    assert_failed_write_reread_note(pattern_reference)
+    for mutated in (
+        pattern_reference.replace("Report it as `#4` `[P1]` only when the spec shows no such re-read", "Report it as `#4` `[P0]`", 1),
+        pattern_reference.replace("A #4i SKIP for the same line does not clear this", "A #4i SKIP clears this", 1),
+        pattern_reference.replace("do not infer the application's re-fetch behavior from its source", "", 1),
+    ):
+        try:
+            assert_failed_write_reread_note(mutated)
+        except AssertionError:
+            continue
+        raise AssertionError("failed-write re-read note survived a mutation")
+    evals = {case["id"]: case for case in json.loads(EVALS.read_text(encoding="utf-8"))["evals"]}
+    case = evals[41]
+    assert case["files"] == ["evals/files/failed-write-absence.spec.ts"]
+    assert any("line 12" in a for a in case["assertions"])
+    assert any("line 21" in a and "False-positive guard" in a for a in case["assertions"])
+
+
 def main() -> None:
     verify_ai_reviewer_100_aggregates()
     verify_pattern_4i_direction_neutral()
     verify_pattern_3_swallow_scope()
+    verify_failed_write_reread_note()
 
     security = normalized(SECURITY)
     skill = normalized(SKILL)

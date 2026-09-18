@@ -78,6 +78,7 @@ canonical = {
         (r"payload",),
         (r"cardinality",),
         (r"failed[- ]write", r"failed write"),
+        (r"reload", r"re-?fetch"),
     ),
     "V5": (
         (r"\bsolo\b", r"\balone\b"),
