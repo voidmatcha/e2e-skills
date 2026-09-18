@@ -76,6 +76,18 @@ class Witnesses:
             if stamp(path, expected is not None and len(expected) == 3) != expected:
                 raise ScopeError('scope dependency changed: ' + path)
 
+    def recheck(self, paths):
+        # Re-stamp only the given witnesses: the sources and resolution
+        # candidates one query traversed. Full validation runs at checkpoints.
+        for path in paths:
+            if not os.path.isabs(path):
+                path = os.getcwd() + '/' + path
+            if path not in self.data:
+                continue
+            expected = self.data[path]
+            if stamp(path, expected is not None and len(expected) == 3) != expected:
+                raise ScopeError('scope dependency changed: ' + path)
+
 
 def unique_object(items):
     result = {}
@@ -154,6 +166,8 @@ class Graph:
         self.witnesses.watch(__file__)
         self.helper = None
         self.changed = False
+        self.touched = set()
+        self.edge_candidates = {}
         with open(args.helper, 'rb') as stream:
             self.paired_paths = hashlib.sha256(stream.read()).hexdigest() == (
                 '4d49abb39ebbdeb50d81eaac4c655d8f750c1a3344160edcdd2a0431064c0b65')
@@ -243,6 +257,7 @@ class Graph:
                 return fields
 
     def direct(self, node):
+        self.touched.add(node)
         if node not in self.data['nodes']:
             self.witnesses.watch(node)
             info = os.lstat(node)
@@ -304,7 +319,9 @@ class Graph:
             for candidate in candidates:
                 self.witnesses.watch(candidate)
             self.data['edges'][key] = values
+            self.edge_candidates[key] = candidates
             self.changed = True
+        self.touched.update(self.edge_candidates.get(key, ()))
         return self.data['edges'][key]
 
     def close(self):

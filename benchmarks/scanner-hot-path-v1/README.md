@@ -84,4 +84,17 @@ A descriptive check of the Limits section above, not a new acceptance test: one 
 
 About 10% faster, which is what the Limits section predicts for a repository whose time is not dominated by per-hit JUSTIFIED resolution. The outputs differ by exactly one hit: the newer scanner reports a `#5a` candidate at `embed-code-generator.e2e.ts:471` that v1.16.3 missed, because the regex literal `/.*Cal\.ns[^(]+\("ui/` on line 410 contains a double quote that the older lexer read as the start of a string. That is the regex-literal fix in 1.17.0 working on real code.
 
-A second repository, `ever-gauzy` at `54b537b`, was not measured: v1.16.3 was stopped after more than 64 minutes, with nearly all of its CPU time in the `scope-worker.py` scope-graph helper rather than in the code this benchmark changed. That helper is unchanged in 1.18.0, so its cost on large monorepos is an open performance question, not a result.
+A second repository, `ever-gauzy` at `54b537b`, was not measured: v1.16.3 was stopped after more than 64 minutes, with nearly all of its CPU time in the `scope-worker.py` scope-graph helper rather than in the code this benchmark changed. The hot-path change did not touch that helper, so its cost on large monorepos was left as an open performance question, not a result; the next addendum answers it.
+
+## Addendum 2026-09-19: the scope-worker validation cost
+
+The ever-gauzy question above has an answer. With the C-locale fix a full scan of `ever-gauzy` at `54b537b` completes, and an instrumented copy of the scanner showed where its time went: 5,932 s in total, of which 4,683 s was `scope-worker.py` re-validating every recorded dependency (about 240,000 paths at the end, roughly 0.44 s per pass) before and after each of its 5,568 operations. The queries themselves took 123 s.
+
+The worker now re-stamps only the sources and resolution candidates each query traversed, and validates the full set at every tier checkpoint and before the Summary. Same machine, same revision, one run each:
+
+| Target | Before | After | Output |
+|---|---:|---:|---|
+| `ever-gauzy` full scan | 5,932 s | 1,226 s | byte-identical |
+| cal.com `apps/web/playwright` (7 scope queries) | 171 s | 171 s | byte-identical |
+
+About 4.8x on the repository whose scope graph is large, and no change where the scope worker was already idle. The cal.com pair is a later pair of runs than the 192 s above, with the C-locale fix in both; run-to-run variance on this machine was not measured.

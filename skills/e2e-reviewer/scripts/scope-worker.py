@@ -148,7 +148,7 @@ class Worker:
         operation = request.get('op')
         expected = {'v', 'nonce', 'op'}
         if operation == 'query': expected |= {'node', 'visited', 'depth'}
-        elif operation not in ('ping', 'validate'): raise WorkerError('unknown operation')
+        elif operation not in ('ping', 'checkpoint', 'validate'): raise WorkerError('unknown operation')
         if set(request) != expected: raise WorkerError('invalid operation fields')
         if operation == 'query':
             if (not isinstance(request['node'], str) or not request['node'] or '\0' in request['node']
@@ -185,15 +185,28 @@ class Worker:
     def evaluate(self, request):
         self.identities()
         operation = self.check_request(request)
-        # Retain the original v1 global pre/post checks on every operation.
-        # No closure pruning, metadata serialization, or Boolean memoization.
-        self.graph.witnesses.validate()
+        # A query re-stamps every source and resolution candidate it
+        # traversed, so its answer matches the files it read. A path it did
+        # not re-read, such as an ancestor directory, can change unseen until
+        # the next checkpoint, so some findings may print before the scan
+        # fails there. The complete witness set, including ancestor
+        # directories, is validated at each scanner checkpoint and by the
+        # terminal validate before any Summary.
+        # Re-validating the whole set around every query made large scans
+        # quadratic without adding a guarantee: stamps carry ctime, which a
+        # modify-and-restore cannot reset, and changes that come and go between
+        # operations were never caught deterministically (strict watch mode
+        # remains the transient guarantee). No memoization of answers.
         if operation == 'query':
+            self.graph.touched = set()
             result = self.visited(request)
+            self.graph.witnesses.recheck(self.graph.touched)
             status = 'found' if result else 'absent'
+        elif operation in ('checkpoint', 'validate'):
+            self.graph.witnesses.validate()
+            status = 'ok'
         else:
             status = 'ok'
-        self.graph.witnesses.validate()
         self.identities()
         if os.path.exists(self.args.rg_errors) and os.path.getsize(self.args.rg_errors):
             raise WorkerError('lexical helper recorded a runtime failure')
@@ -318,7 +331,7 @@ def main():
     parser.add_argument('--rg')
     parser.add_argument('--rg-errors')
     parser.add_argument('--timeout', type=int, default=1800)
-    parser.add_argument('--op', choices=['ping', 'query', 'validate'], default='ping')
+    parser.add_argument('--op', choices=['ping', 'query', 'checkpoint', 'validate'], default='ping')
     parser.add_argument('--wait-ready', type=float, default=0)
     parser.add_argument('--repeat', type=int, default=None)
     parser.add_argument('--watch-mode', choices=['off', 'strict'], default='off')
@@ -336,7 +349,7 @@ def main():
             raise WorkerError('--repeat requires client ping and a count from 1 through 64')
         if args.mode == 'client':
             # Each iteration is the original authenticated request, including
-            # fresh client identities and both server witness validations.
+            # fresh client identities; ping itself only proves liveness.
             for _ in range(args.repeat or 1):
                 result = client(args)
                 if result != 0: return result

@@ -821,6 +821,7 @@ scope_graph_call() {
       [[ "$#" -gt 1 ]] && request+=(--repeat "$2")
       ;;
     --validate) request=(--op validate) ;;
+    --checkpoint) request=(--op checkpoint) ;;
     *) request=(--op query --node "$1" --visited "$2" --depth "$3") ;;
   esac
   "$PYTHON3_BIN" -I -B "$SCANNER_DIR_REAL/scope-worker.py" client \
@@ -837,6 +838,10 @@ scope_graph_call() {
     return 2
   fi
   return 0
+}
+
+scope_graph_checkpoint() {
+  scope_graph_call --checkpoint
 }
 
 scope_graph_validate() {
@@ -3275,6 +3280,7 @@ fi
 
 # Detect each framework via actual imports, then opt into eslint-plugin-* if installed.
 validate_candidate_manifest
+scope_graph_checkpoint || exit 2
 pw_imports_found=0
 cy_imports_found=0
 if scanner_rg -lq --no-ignore '@playwright/test' "$ROOT" --glob '!**/node_modules/**' 2>/dev/null; then
@@ -3322,6 +3328,7 @@ AST_GREP_CMD=()
 TIER2_INFRA_FAILURE=0
 TIER2_INFRA_DETAIL=""
 validate_candidate_manifest
+scope_graph_checkpoint || exit 2
 _ast_candidate=""
 if [[ "$E2E_SMELL_DISABLE_AST_GREP" != "1" ]]; then
 # E2E_SMELL_IGNORE_HOST_AST_GREP=1 skips the deterministic host lookup while leaving the pinned
@@ -3683,6 +3690,7 @@ elif [[ "${#AST_GREP_CMD[@]}" -gt 0 && -d "$ASTGREP_RULES_DIR" ]]; then
 fi
 
 validate_candidate_manifest
+scope_graph_checkpoint || exit 2
 printf '\n--- Tier 3: Bundled regex checks (universal fallback for grep-detectable patterns and gaps eslint/ast-grep miss) ---\n'
 
 # Phase-0 file scope filter (Tier 3): pattern checks only apply to files that are actually
@@ -5917,11 +5925,12 @@ run_check() {
         exit 2
       fi
       if [[ "$_conditional_keep" == 0 ]]; then
-        # Preserve fresh validation of already witnessed dependencies without
-        # traversing a new graph for an impossible candidate. Do not call this
-        # file out-of-scope: it was excluded by a rule's necessary condition.
+        # Confirm the worker is still alive without traversing a new graph for
+        # an impossible candidate; dependency validation happens at the tier
+        # checkpoints and before the Summary. Do not call this file
+        # out-of-scope: it was excluded by a rule's necessary condition.
         # Consecutive excluded files require no graph query or output. Reuse
-        # one interpreter for up to 64 original pings, never their validations.
+        # one interpreter for up to 64 pings.
         # Explicit interpreter wrappers retain the original invocation shape.
         if [[ -n "${E2E_SMELL_PYTHON_BIN:-}" ]]; then
           scope_graph_call --ping || exit 2
@@ -6713,6 +6722,7 @@ run_check P0 '#3b' 'Cypress uncaught exception suppression (Phase 2 confirms bla
 run_check P1 '#19' 'Module-level mutable state in test code' '^(?:export\s+)?let\s+' "$ALL_CODE_GLOB" 'e2e,initialized-module-state'
 
 validate_candidate_manifest
+scope_graph_checkpoint || exit 2
 
 # Out-of-scope report: one explicit line so Phase-0 skips are never a silent truncation.
 scope_skipped=$(wc -l < "$SCOPE_STATE_DIR/out" | tr -d ' ')

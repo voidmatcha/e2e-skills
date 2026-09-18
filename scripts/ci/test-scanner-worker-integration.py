@@ -85,7 +85,7 @@ class ScannerWorkerIntegrationTests(unittest.TestCase):
             "E2E_SMELL_NO_ESLINT_DOWNLOAD": "1",
         }
 
-    def interpreter(self, *, crash_query: bool = False, mutation: str = "") -> Path:
+    def interpreter(self, *, crash_query: bool = False, mutation: str = "", mutation_op: str = "validate") -> Path:
         helper = self.directory / "helper-wrapper.sh"
         helper.write_text(
             "#!/bin/sh\n"
@@ -114,9 +114,17 @@ class ScannerWorkerIntegrationTests(unittest.TestCase):
                 if crash_query else ""
             )
             + (
-                "if 'client' in args and '--op' in args and args[args.index('--op') + 1] == 'validate':\n"
-                + "    " + mutation + "\n"
-                + f"    Path({str(self.directory / 'mutation-applied')!r}).touch()\n"
+                # Fire once, on the first matching client call (the second for
+                # a query, so the first query has cached the dependency).
+                "if ('client' in args and '--op' in args and args[args.index('--op') + 1] == "
+                + repr(mutation_op)
+                + f" and not Path({str(self.directory / 'mutation-applied')!r}).exists()):\n"
+                + f"    with Path({str(self.directory / 'op-count')!r}).open('a') as counter:\n"
+                + "        counter.write('x')\n"
+                + f"    if len(Path({str(self.directory / 'op-count')!r}).read_text()) >= "
+                + ("2" if mutation_op == "query" else "1") + ":\n"
+                + "        " + mutation + "\n"
+                + f"        Path({str(self.directory / 'mutation-applied')!r}).touch()\n"
                 if mutation else ""
             )
             + f"os.execv({PYTHON!r}, [{PYTHON!r}, *args])\n",
@@ -128,10 +136,13 @@ class ScannerWorkerIntegrationTests(unittest.TestCase):
     def pids(self, path: Path) -> list[int]:
         return [int(line) for line in path.read_text().splitlines()] if path.exists() else []
 
-    def start(self, *, crash_query: bool = False, mutation: str = "") -> subprocess.Popen[str]:
+    def start(self, *, crash_query: bool = False, mutation: str = "", mutation_op: str = "validate") -> subprocess.Popen[str]:
+        # Each scan gets its own one-shot mutation, even when a test starts several.
+        for marker in ("mutation-applied", "op-count"):
+            (self.directory / marker).unlink(missing_ok=True)
         environment = {
             **self.environment,
-            "E2E_SMELL_PYTHON_BIN": str(self.interpreter(crash_query=crash_query, mutation=mutation)),
+            "E2E_SMELL_PYTHON_BIN": str(self.interpreter(crash_query=crash_query, mutation=mutation, mutation_op=mutation_op)),
         }
         process = subprocess.Popen(
             ["/bin/bash", "-p", str(SCANNER), str(self.scan_root)],
@@ -237,8 +248,8 @@ class ScannerWorkerIntegrationTests(unittest.TestCase):
         self.assertIn("scope", stderr.lower())
         self.assert_reaped(self.worker_pids, expected_count=1)
 
-    def assert_terminal_mutation_rejected(self, mutation: str) -> None:
-        process = self.start(mutation=mutation)
+    def assert_terminal_mutation_rejected(self, mutation: str, mutation_op: str = "validate") -> None:
+        process = self.start(mutation=mutation, mutation_op=mutation_op)
         stdout, stderr = process.communicate(timeout=90)
         self.assertTrue((self.directory / "mutation-applied").exists(), stdout + stderr)
         self.assertEqual(process.returncode, 2, stdout + stderr)
@@ -260,6 +271,24 @@ class ScannerWorkerIntegrationTests(unittest.TestCase):
         missing = self.project / "missing.ts"
         self.assert_terminal_mutation_rejected(
             f"Path({str(missing)!r}).write_text(\"export {{ test }} from '@playwright/test';\\n\")"
+        )
+
+    def test_cached_barrel_mutation_mid_scan_fails_closed(self) -> None:
+        barrel = self.project / "support/base.ts"
+        self.assert_terminal_mutation_rejected(
+            f"Path({str(barrel)!r}).write_text('export const test = null;\\n')",
+            mutation_op="query",
+        )
+
+    def test_cached_missing_resolution_created_mid_scan_fails_closed(self) -> None:
+        (self.project / "tests/unresolved.spec.ts").write_text(
+            "import { test } from '../missing';\n"
+            + "test.only('unresolved', () => {});\n", encoding="utf-8",
+        )
+        missing = self.project / "missing.ts"
+        self.assert_terminal_mutation_rejected(
+            f"Path({str(missing)!r}).write_text(\"export {{ test }} from '@playwright/test';\\n\")",
+            mutation_op="query",
         )
 
     def test_cached_symlink_parent_retargeted_before_summary_fails_closed(self) -> None:

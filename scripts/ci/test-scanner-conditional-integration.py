@@ -190,11 +190,14 @@ class ConditionalIntegrationTests(unittest.TestCase):
         self.assertNotRegex(stdout, r"(?m)^Summary:")
         self.assertIn("changed", stderr)
 
-    def test_excluded_file_ping_detects_previous_missing_dependency(self) -> None:
+    def test_excluded_file_missing_dependency_created_mid_scan_fails_closed(self) -> None:
+        # Excluded-file pings only confirm the worker is alive; the created
+        # dependency is caught at the next checkpoint, by whichever check runs
+        # first there (candidate manifest or scope witnesses), before any Summary.
         code, stdout, stderr = self.run_scanner("witness-mutation")
         self.assertEqual(code, 2, stdout + stderr)
         self.assertNotRegex(stdout, r"(?m)^Summary:")
-        self.assertIn("scope dependency changed", stderr)
+        self.assertRegex(stderr, r"scope dependency changed|scanner candidate changed")
         self.assertIn("missing.ts", stderr)
 
 

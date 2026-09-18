@@ -90,22 +90,20 @@ class WorkerTests(unittest.TestCase):
         if op == 'query': args += ['--node',str(self.source),'--visited',str(self.visited)]
         return subprocess.run(args + list(extra),capture_output=True,text=True,timeout=8)
 
-    def test_repeated_ping_checks_mutation_between_requests(self):
+    def test_ping_is_liveness_only_and_checkpoint_catches_mutation(self):
         self.assertEqual(self.client('query').returncode, 0)
-        original = m.client
-        calls = []
-        def invoke(args):
-            result = original(args)
-            calls.append(result)
-            if len(calls) == 1:
-                self.support.write_text('export const replacement = 1;\n')
-            return result
-        argv = [str(WORKER), 'client', '--socket', str(self.socket),
-                '--control', str(self.control), '--op', 'ping', '--repeat', '3']
-        with mock.patch.object(sys, 'argv', argv), mock.patch.object(m, 'client', side_effect=invoke):
-            self.assertEqual(m.main(), 2)
-        self.assertEqual(calls, [0])
+        self.support.write_text('export const replacement = 1;\n')
+        self.assertEqual(self.client('ping', extra=['--repeat', '3']).returncode, 0)
+        self.assertEqual(self.client('checkpoint').returncode, 2)
         self.assertEqual(self.process.wait(timeout=3), 2)
+
+    def test_checkpoint_is_not_terminal(self):
+        self.assertEqual(self.client('query').returncode, 0)
+        self.assertEqual(self.client('checkpoint').returncode, 0)
+        self.visited.write_text('')
+        self.assertEqual(self.client('query').returncode, 0)
+        self.assertEqual(self.client('validate').returncode, 0)
+        self.assertEqual(self.process.wait(timeout=3), 0)
 
     def test_repeat_count_and_operation_contract(self):
         self.assertEqual(self.client('ping', extra=['--repeat', '64']).returncode, 0)
@@ -270,6 +268,77 @@ class WorkerTests(unittest.TestCase):
         self.assertEqual(self.client('query').returncode, 0)
         with self.helper.open('a') as stream: stream.write('\n# changed\n')
         self.assertEqual(self.client('validate').returncode, 2)
+
+
+class InProcessCostTests(unittest.TestCase):
+    """The per-query cost must track what the query traversed, not the whole witness set."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory(prefix='sw-cost-', dir=str(Path('/tmp').resolve()))
+        base = Path(self.tmp.name).resolve()
+        self.project = base / 'project'; self.project.mkdir()
+        ipc = base / 'ipc'; ipc.mkdir(mode=0o700)
+        rg_errors = ipc / 'rg-errors'; rg_errors.touch(mode=0o600)
+        self.visited = ipc / 'visited'; self.visited.touch(mode=0o600)
+        self.source = self.project / 'entry.ts'; self.source.write_text("import { test } from './support';\n")
+        (self.project / 'support.ts').write_text("export { test } from '@playwright/test';\n")
+        helper = base / 'helper.sh'; shutil.copyfile(BASE / 'scope-source.sh', helper)
+        self.filler = base / 'filler'; self.filler.mkdir()
+        self.worker = m.Worker(SimpleNamespace(
+            control=str(ipc / 'state'), socket=str(ipc / 's'), parent_pid=os.getppid(),
+            engine=str(BASE / 'scope-graph.py'), project=str(self.project), helper=str(helper),
+            rg=resolve_rg(), rg_errors=str(rg_errors), watch_mode='off', timeout=30))
+        self.addCleanup(self.cleanup)
+
+    def cleanup(self):
+        self.worker.close()
+        self.tmp.cleanup()
+
+    def query(self):
+        self.visited.write_text('')
+        return self.worker.evaluate({'v': 1, 'nonce': self.worker.nonce, 'op': 'query',
+                                     'node': str(self.source), 'visited': str(self.visited), 'depth': 0})
+
+    def test_query_and_ping_never_revalidate_the_whole_set(self):
+        calls = []
+        original = self.worker.graph.witnesses.validate
+        self.worker.graph.witnesses.validate = lambda: (calls.append(1), original())[1]
+        for _ in range(3):
+            self.assertEqual(self.query()[1]['status'], 'found')
+        for _ in range(2):
+            self.worker.evaluate({'v': 1, 'nonce': self.worker.nonce, 'op': 'ping'})
+        self.assertEqual(calls, [])
+        self.worker.evaluate({'v': 1, 'nonce': self.worker.nonce, 'op': 'checkpoint'})
+        self.assertEqual(calls, [1])
+
+    def test_query_stat_count_does_not_grow_with_the_witness_set(self):
+        self.query()
+        engine = self.worker.engine
+        witnesses = self.worker.graph.witnesses.data
+        for index in range(3000):
+            path = self.filler / f'f{index}.ts'
+            path.write_text('')
+            witnesses[str(path)] = engine.stamp(str(path))
+        calls = []
+        original = engine.stamp
+        engine.stamp = lambda *args, **kwargs: (calls.append(1), original(*args, **kwargs))[1]
+        try:
+            self.assertEqual(self.query()[1]['status'], 'found')
+        finally:
+            engine.stamp = original
+        self.assertLess(len(calls), 300, len(calls))
+
+    def test_query_rechecks_a_source_it_read_earlier(self):
+        self.assertEqual(self.query()[1]['status'], 'found')
+        self.source.write_text("import { test } from './support';\n// edited\n")
+        with self.assertRaisesRegex(self.worker.engine.ScopeError, 'scope dependency changed: .*entry.ts'):
+            self.query()
+
+    def test_query_rechecks_a_missing_resolution_candidate(self):
+        self.assertEqual(self.query()[1]['status'], 'found')
+        (self.project / 'support').write_text('')
+        with self.assertRaisesRegex(self.worker.engine.ScopeError, 'scope dependency changed: .*/support$'):
+            self.query()
 
 
 class StrictWorkerTests(WorkerTests):
