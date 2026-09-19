@@ -96,6 +96,7 @@ The complete report also includes the required summary table and top priorities.
 | Did generation or healing weaken an assertion? | A specific outcome becomes existence, visibility, a broad substring, or no assertion |
 | Did the tool suppress an error to get green? | Empty catches, blanket Cypress exception handlers, focused tests, or skips hide failures |
 | Does the test prove the side effect it claims? | Optimistic UI is visible but the request, response, or persisted result is not verified |
+| Does "nothing was stored" come from fresh state? | After a rejected write, absence is asserted on a view the failure never refreshed, so it passes even if the server stored the data |
 | Does the test use the project's real context? | Authentication, fixtures, helpers, or configuration are missing or bypassed |
 
 The full reviewer contract contains [24 stable Playwright and Cypress test-smell patterns](e2e-test-smells.md). Some findings require application context; source-only review must not guess when the relevant behavior cannot be observed.
