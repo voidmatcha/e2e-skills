@@ -7,7 +7,7 @@ metadata:
   frameworks: playwright
   testing-types: e2e
   languages: typescript,javascript
-  version: "1.17.0"
+  version: "1.18.0"
 ---
 
 # playwright-test-generator
