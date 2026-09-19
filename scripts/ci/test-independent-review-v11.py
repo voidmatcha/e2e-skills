@@ -1311,6 +1311,12 @@ def assert_carried_attempt_acceptance(carried_parent: Path) -> None:
             expect_raises(AssertionError, lambda: module.validate_archive(exact_replay=False), label=label, contains=V10_DEFECT_MESSAGE)
 
         portable_prefix = (RUNNER.SHARED.portable_host_path(Path.home()) + "/").encode("utf-8")
+        if portable_prefix not in report_bytes:
+            # The carried report was recorded on another host, so this host's
+            # portable home never occurs in it; substitute the recorded one.
+            recorded = re.search(rb"/(?:Users|home)/user/", report_bytes)
+            assert recorded, "carried report records no portable home prefix"
+            portable_prefix = recorded.group(0)
         dropped = json.loads(report_bytes)
         dropped["integrity_before"].pop(CORRECTED_INTEGRITY_KEY)
         dropped_bytes = json.dumps(dropped, indent=2).encode("utf-8") + b"\n"
