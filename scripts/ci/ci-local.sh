@@ -263,6 +263,8 @@ run_python scripts/ci/test-scanner-worker-integration.py ||
   fail "test-scanner-worker-integration.py"
 run_python scripts/ci/test-scanner-catch-discovery.py ||
   fail "test-scanner-catch-discovery.py"
+run_python scripts/ci/test-scanner-try-catch-v1.py ||
+  fail "test-scanner-try-catch-v1.py"
 run_python scripts/ci/test-scanner-conditional-discovery.py ||
   fail "test-scanner-conditional-discovery.py"
 run_python scripts/ci/test-scanner-conditional-integration.py ||

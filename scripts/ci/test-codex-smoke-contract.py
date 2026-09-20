@@ -25,6 +25,9 @@ CYPRESS_READER = (
     ROOT / "skills/cypress-debugger/scripts/read-cypress-artifact.py"
 )
 GENERATOR = ROOT / "skills/playwright-test-generator/SKILL.md"
+GENERATOR_PREFLIGHT = (
+    ROOT / "skills/playwright-test-generator/exploration-preflight.md"
+)
 
 
 def main() -> None:
@@ -32,6 +35,7 @@ def main() -> None:
     ci_local = CI_LOCAL.read_text(encoding="utf-8")
     python_isolation_init = PYTHON_ISOLATION_INIT.read_text(encoding="utf-8")
     generator = GENERATOR.read_text(encoding="utf-8")
+    generator_preflight = GENERATOR_PREFLIGHT.read_text(encoding="utf-8")
 
     current_probe_token = "--framed-stdin"
     assert current_probe_token in generator
@@ -51,7 +55,8 @@ def main() -> None:
         "printf '%s' \"$TARGET_URL\" |\n"
         '  "$SKILL_ROOT/scripts/write-utf8-frame.sh" |\n'
         '  "$SKILL_ROOT/scripts/run-raw-aria-snapshot.sh" --framed-stdin'
-    ) in generator
+    ) in generator_preflight
+    assert '--target "$TARGET_URL"' not in generator_preflight
     assert "four bounded length-prefixed UTF-8 frames on stdin" in smoke
     assert "never raw URL-valued arguments" in smoke
     assert "complete fenced shell command" in smoke

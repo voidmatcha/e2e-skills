@@ -58,6 +58,12 @@
 # Any new benchmark source snapshot that embeds a byte copy of scan.sh trips
 # the same #14 finding; add its exact path here and to the pin in
 # scripts/ci/test-security-gates.py when creating it.
+#
+# 2026-09-19: playwright-test-generator/exploration-preflight.md and
+# imported-test-cases.md hold text moved verbatim out of that skill's
+# SKILL.md (preflight, browser-guard, and imported-case mechanics). They
+# document the same network capability the SKILL.md entry suppresses, so
+# they are listed beside it rather than left to re-trigger the same finding.
 [scanner]
 ignore_paths = [
   "skills/cypress-debugger/scripts/publish-mochawesome-report.py",
@@ -79,6 +85,8 @@ ignore_paths = [
   "skills/playwright-debugger/SKILL.md",
   "skills/cypress-debugger/SKILL.md",
   "skills/playwright-test-generator/SKILL.md",
+  "skills/playwright-test-generator/exploration-preflight.md",
+  "skills/playwright-test-generator/imported-test-cases.md",
   "skills/playwright-test-generator/scripts/preflight_target.py",
   "benchmarks/healer-perturbation-v1/source-snapshots/0fc0e0687ab31d7e4d652578b947114cf1f472639b037fc6c9b37b1d8404a8e2.json",
 ]

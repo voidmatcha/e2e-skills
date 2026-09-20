@@ -41,6 +41,8 @@ HOL_SCANNER_FALSE_POSITIVE_PATHS = {
     "skills/playwright-debugger/SKILL.md",
     "skills/cypress-debugger/SKILL.md",
     "skills/playwright-test-generator/SKILL.md",
+    "skills/playwright-test-generator/exploration-preflight.md",
+    "skills/playwright-test-generator/imported-test-cases.md",
     "skills/playwright-test-generator/scripts/preflight_target.py",
     "benchmarks/healer-perturbation-v1/source-snapshots/0fc0e0687ab31d7e4d652578b947114cf1f472639b037fc6c9b37b1d8404a8e2.json",
 }

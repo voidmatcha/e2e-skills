@@ -5590,6 +5590,106 @@ swallowed_assertion_hit_matches() {
   return 1
 }
 
+swallowed_try_catch_hit_matches() {
+  # A `try/catch` that suppresses an operation the test's later assertions
+  # depend on. Grep alone cannot decide this, so the hit is emitted as
+  # LLM-TRIAGE and Phase 2 applies #3's consequence rule.
+  #
+  # This exists because a controlled ablation showed the reviewer detects the
+  # `.catch(() => {})` form 6/6 but the `try/catch` form 0/6: it was not
+  # missing the rule, it was missing a hit that forced adjudication.
+  local hit="$1" file rest line split body catch_body
+  file=${hit%%:*}
+  rest=${hit#*:}
+  line=${rest%%:*}
+  [[ -r "$file" ]] || return 1
+
+  # Pair this catch with its own try by brace balance, not with the nearest
+  # `try` above it: a nested try inside the suppressed region, a long try
+  # body, and a brace on its own line (Allman) all defeat a nearest-match
+  # search. Print the try region, a \001 separator, then the catch block
+  # itself, so a rethrow is looked for only where it can rethrow.
+  split=$(awk -v L="$line" -v lo="$((line > 400 ? line - 400 : 1))" -v hi="$((line + 400))" '
+    NR >= lo && NR <= hi { buf[NR] = $0; last = NR }
+    NR > hi { exit }
+    END {
+      if (!(L in buf)) exit 1
+      s = buf[L]; cpos = 0
+      for (k = 1; k <= length(s); k++) {
+        if (substr(s, k, 5) == "catch" && (k == 1 || substr(s, k - 1, 1) !~ /[A-Za-z0-9_$.]/) &&
+            substr(s, k + 5) ~ /^[[:space:]]*[({]/) { cpos = k; break }
+      }
+      if (cpos == 0) exit 1
+      depth = 0; seen = 0; found = 0
+      for (i = L; i >= lo && !found; i--) {
+        t = (i == L) ? substr(buf[i], 1, cpos - 1) : buf[i]
+        for (k = length(t); k >= 1; k--) {
+          ch = substr(t, k, 1)
+          if (ch == "}") { depth++; seen = 1 }
+          else if (ch == "{") {
+            depth--
+            if (depth < 0) exit 1
+            if (seen && depth == 0) { found = 1; oline = i; ocol = k; break }
+          }
+        }
+      }
+      if (!found) exit 1
+      pre = substr(buf[oline], 1, ocol - 1); start = oline
+      while (pre ~ /^[[:space:]]*$/ && start > lo) { start--; pre = buf[start] }
+      if (pre !~ /(^|[^A-Za-z0-9_$.])try[[:space:]]*$/) exit 1
+      for (i = start; i < L; i++) print buf[i]
+      print substr(buf[L], 1, cpos - 1)
+      print "\001"
+      depth = 0; opened = 0; closed = 0; paren = 0
+      for (i = L; i <= last && !closed; i++) {
+        t = (i == L) ? substr(buf[i], cpos) : buf[i]; out = ""
+        for (k = 1; k <= length(t); k++) {
+          ch = substr(t, k, 1); out = out ch
+          # Braces inside the catch parameter, as in `catch ({ message })`,
+          # belong to a destructuring pattern, not to the catch block.
+          if (!opened && ch == "(") paren++
+          else if (!opened && ch == ")") paren--
+          else if (ch == "{" && (opened || paren == 0)) { depth++; opened = 1 }
+          else if (ch == "}" && opened) { depth--; if (depth == 0) { closed = 1; break } }
+        }
+        print out
+      }
+    }' "$file" 2>/dev/null) || return 1
+  body=${split%%$'\001'*}
+  catch_body=${split#*$'\001'}
+  [[ -n "$body" ]] || return 1
+
+  # Match on the flattened region: a suppressed `expect.poll(...)` or awaited
+  # matcher is routinely split across lines, and a line-based check misses it.
+  local flat
+  flat=$(printf '%s\n' "$body" | tr '\n' ' ')
+
+  # The suppressed body must contain something the outcome depends on: a
+  # web-first matcher, a readiness or network wait, a poll, or an assertion.
+  # A bare waitForTimeout is a sleep, not a gate, so it does not qualify. A
+  # Page Object helper whose name says it checks something (verifyX,
+  # ensureX, xVisible) usually hides the gate; an isX read never throws.
+  printf '%s\n' "$flat" |
+    scanner_rg -q "[.][[:space:]]*(${PLAYWRIGHT_ASYNC_MATCHERS})[[:space:]]*[(]|\
+[.][[:space:]]*waitFor(Response|Request|LoadState|URL|Function|Event|Selector)?[[:space:]]*[(]|\
+[.][[:space:]]*((verify|assert|expect|ensure|should)([A-Z_\$][A-Za-z0-9_\$]*)?|check[A-Z_\$][A-Za-z0-9_\$]*)[[:space:]]*[(]|\
+[.][[:space:]]*([A-Za-hj-z_\$][A-Za-z0-9_\$]*|i[A-Za-rt-z0-9_\$][A-Za-z0-9_\$]*)(Visible|Present|Exists|Loaded)[[:space:]]*[(]|\
+(^|[^A-Za-z0-9_$.])expect[[:space:]]*[.][[:space:]]*poll[[:space:]]*[(]|\
+(^|[^A-Za-z0-9_$.])expect[[:space:]]*[(]|\
+(^|[^A-Za-z0-9_$.])cy[[:space:]]*[.][[:space:]]*(wait|get|contains)[[:space:]]*[(]|\
+(^|[^A-Za-z0-9_$.])throw[[:space:]]" ||
+    return 1
+
+  # A catch block that rethrows is not swallowing. This is the narrowed-rethrow
+  # shape the contract explicitly exempts. Only the catch block counts: a
+  # `throw` after it, in the test or in another function, does not rethrow.
+  printf '%s\n' "$catch_body" |
+    scanner_rg -q '(^|[^A-Za-z0-9_$.])throw([^A-Za-z0-9_$]|$)' &&
+    return 1
+
+  return 0
+}
+
 filter_hits_by() {
   # Keep the candidates a predicate accepts, in order. Every uniform filter in
   # run_check funnels through here, so this is the one place that sees each
@@ -6061,6 +6161,8 @@ run_check() {
     raw_output=$(filter_hits_by swallowed_assertion_hit_matches all-settled)
   elif [[ "$flags" == *",swallowed-finally-return,"* && -n "$raw_output" ]]; then
     raw_output=$(filter_hits_by swallowed_assertion_hit_matches finally-return)
+  elif [[ "$flags" == *",swallowed-try-catch,"* && -n "$raw_output" ]]; then
+    raw_output=$(filter_hits_by swallowed_try_catch_hit_matches)
   elif [[ "$flags" == *",playwright-wait-timeout,"* && -n "$raw_output" ]]; then
     raw_output=$(filter_hits_by playwright_wait_timeout_hit_matches)
   elif [[ "$flags" == *",zero-timeout,"* && -n "$raw_output" ]]; then
@@ -6584,6 +6686,7 @@ run_check P0 '#3' 'Possible error swallowing via catch fallback' '\.catch([^A-Za
 run_check P0 '#3' 'Possible parameterized catch swallowing' '\.catch([^A-Za-z0-9_$]|$)' "$ALL_CODE_GLOB" 'e2e,triage,catch-parameterized'
 run_check P0 '#3' 'Possible assertion failure swallowed by Promise.allSettled' 'Promise[.]allSettled[[:space:]]*\(' "$ALL_CODE_GLOB" 'e2e,triage,swallowed-all-settled'
 run_check P0 '#3' 'Possible assertion failure masked by finally return' '\bfinally\b' "$ALL_CODE_GLOB" 'e2e,triage,swallowed-finally-return'
+run_check P0 '#3' 'Possible dependent gate or assertion swallowed by try/catch' '(^|[^A-Za-z0-9_$.])catch[[:space:]]*[({]' "$ALL_CODE_GLOB" 'e2e,triage,swallowed-try-catch'
 # The computed-member alternative below requires the bracket to be a member
 # CALL on an identifier or a call result (`test['on' + 'ly'](...)`,
 # `getSuite()['only'](...)`), not any bracket at all.

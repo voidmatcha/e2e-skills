@@ -76,7 +76,7 @@
       "assertions": [
         "Reviews all 3 spec files",
         "Reviews both POM files",
-        "Phase 2 LLM review detects try/catch error swallowing in settings.spec.ts line 8-12: wraps toBeVisible assertion and logs instead of failing (#3, P0) — try/catch shapes are Phase 2 responsibility per SKILL.md (#3 partial)",
+        "Phase 2 LLM review detects try/catch error swallowing in settings.spec.ts line 8-12: wraps toBeVisible assertion and logs instead of failing (#3, P0) — Phase 1 may raise the try/catch as an [LLM-TRIAGE] candidate, and Phase 2 decides it (#3 partial)",
         "Flags name-assertion mismatch: settings 'change password' only checks .password-section visible, not that password actually changed (#1, P0)",
         "Flags missing assertion: settings 'toggle email notifications' clicks toggle with zero assertions (#2, P0)",
         "Detects toBeAttached() in the 'verify avatar visible' test on settings line 48: DOM attachment is weaker than the stated visible UI outcome (#4, P1)",
@@ -730,6 +730,23 @@
         "False-positive guard: does not report line 21, which follows page.reload() on line 20",
         "False-positive guard: does not report the duplicate-title test, which awaits the waitForResponse for the list GET (lines 29-31) on line 33",
         "Does not promote the finding to P0 or invent a new pattern ID"
+      ]
+    },
+    {
+      "id": 42,
+      "prompt": "Review evals/files/swallowed-try-catch.spec.ts. Phase 1 raises five #3 try/catch candidates as [LLM-TRIAGE] at lines 6, 17, 28, 50, and 82. Decide which ones swallow a check the test depends on, and report accordingly.",
+      "expected_output": "Report #3 P0 at line 6: waitForSaved swallows the saved-toast wait, and the test 'saving a profile shows a confirmation' (lines 34-39) has no other assertion, so it passes when no confirmation appears. Report #3 P0 at line 17: openPanel's retry loop returns silently after three failed attempts, and the test 'details panel opens' (lines 41-45) only asserts the URL, which is true before the panel opens. Report #3 P0 at line 50: the catch swallows the expect inside the .then callback on line 49, so 'health endpoint answers' passes when the endpoint fails. For each, the fix is to let the failure propagate (remove the catch, or rethrow) or assert the promised outcome after it. Do not report line 28: loadChart records the failure in result.loaded and the test throws on line 73 when any chart failed. Do not report line 82: the cookie banner is optional and the test's own searchbox and link assertions do not depend on it. Do not report line 60, which rethrows anything but a timeout, or line 93, whose try only parses JSON.",
+      "files": [
+        "evals/files/swallowed-try-catch.spec.ts"
+      ],
+      "assertions": [
+        "Reports #3 P0 at line 6 because the test on lines 34-39 has no assertion besides the swallowed confirmation wait",
+        "Reports #3 P0 at line 17 because the retry loop returns silently and the test's only assertion (line 44) is the URL",
+        "Reports #3 P0 at line 50 for the expect swallowed inside the .then callback on line 49",
+        "False-positive guard: does not report line 28, whose recorded failure the test turns into a throw on line 73",
+        "False-positive guard: does not report line 82, an optional cookie-banner wait no later assertion depends on",
+        "False-positive guard: does not report line 60, whose catch rethrows every error except a timeout",
+        "False-positive guard: does not report line 93, whose try only parses JSON"
       ]
     }
   ]

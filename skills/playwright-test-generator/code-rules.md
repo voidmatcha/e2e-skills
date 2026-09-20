@@ -150,6 +150,8 @@ test.describe('Login', () => {
 
 **Absence after a failed write.** When a scenario proves that a rejected write stored nothing, reload or wait for the re-fetch that reads the stored state before asserting the absence, as `verification-rules.md` V4 requires; asserting it on a view that the failure did not refresh passes even when the server stored the data.
 
+**Secondary outcome placement.** A selected secondary outcome is an extra assertion placed after the primary assertion in the same test, so a V2 or V3 fault turns the run red at the primary first; an assertion that also serves as the V2 settled-state gate stays before the primary and counts as that secondary outcome.
+
 ## Network Determinism
 
 Decide per endpoint, not per suite:
