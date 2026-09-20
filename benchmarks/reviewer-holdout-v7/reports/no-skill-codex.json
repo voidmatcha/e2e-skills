@@ -7,22 +7,22 @@
   "runner_executable": "/Users/user/.codex/packages/standalone/releases/0.154.0-aarch64-apple-darwin/bin/codex",
   "model": "gpt-5.6-sol",
   "reasoning_effort": null,
-  "git_revision": "110f2ea6a6e4876f601fa3b2cb6bd2ead40e48ab",
+  "git_revision": "2ba34237cb0b67e9918cd28c177774c8e5ed0fc9",
   "git_dirty": false,
   "git_dirty_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "evaluator_sha256": "e6c793853e8238fbd044aa9a5b364d55264abbd08860d5987717a7a14988c984",
+  "evaluator_sha256": "4ac60f5679c7aa129faa85598fb9511b8085a8bd75bdea5bfdcaa34b9206d7ef",
   "prompt_set_sha256": "e0fc7b08a4a5a33096c43bff2c497d01458dd9e13cff698fac6d689a17bd548f",
   "prompt_profile": "no-skill",
-  "skill_sha256": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-  "snapshot_skill_sha256": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-  "skill_source_path": "/Users/user/Documents/e2e-skills-v7run/skills/e2e-reviewer",
+  "skill_sha256": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+  "snapshot_skill_sha256": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+  "skill_source_path": "/Users/user/Documents/e2e-skills/skills/e2e-reviewer",
   "corpus_sha256": "745bc765fb6f424abe90d6d3fc9a3b85e921472a4cc1291054879af8002e965f",
   "snapshot_corpus_sha256": "745bc765fb6f424abe90d6d3fc9a3b85e921472a4cc1291054879af8002e965f",
   "corpus_visibility": "public-development",
   "corpus_intended_use": "Frozen public development corpus for balanced cross-provider regression measurement. It is not sealed and does not establish generalization.",
   "corpus_contamination_risk": "The corpus is inspectable. Every result must disclose that exposure and remain development evidence.",
   "protocol_id": "reviewer-holdout-v7",
-  "protocol_path": "/Users/user/Documents/e2e-skills-v7run/scripts/evals/reviewer-validation-protocol-v7.json",
+  "protocol_path": "/Users/user/Documents/e2e-skills/scripts/evals/reviewer-validation-protocol-v7.json",
   "protocol_sha256": "e379edfc7ad04e4ff92134f3f5952bda7f146e0f80667726283a2a60de08daf2",
   "protocol": {
     "schema_version": 1,
@@ -528,7 +528,7 @@
     "repetitions": 3,
     "release_repetitions": 3
   },
-  "started_at": "2026-09-19T19:02:22.949970+00:00",
+  "started_at": "2026-09-20T08:23:20.052804+00:00",
   "complete": true,
   "execution_complete": true,
   "status": "FAIL",
@@ -536,50 +536,50 @@
     {
       "code": "threshold_not_met",
       "metric": "stable_precision_min",
-      "actual": 0.35,
+      "actual": 0.35135135135135137,
       "required": 0.95,
       "comparator": ">=",
-      "message": "stable_precision_min was 0.350000; required >= 0.950000"
+      "message": "stable_precision_min was 0.351351; required >= 0.950000"
     },
     {
       "code": "threshold_not_met",
       "metric": "stable_recall_min",
-      "actual": 0.5833333333333334,
+      "actual": 0.5416666666666666,
       "required": 0.85,
       "comparator": ">=",
-      "message": "stable_recall_min was 0.583333; required >= 0.850000"
+      "message": "stable_recall_min was 0.541667; required >= 0.850000"
     },
     {
       "code": "threshold_not_met",
       "metric": "repeated_precision_min",
-      "actual": 0.3387096774193548,
+      "actual": 0.3089430894308943,
       "required": 0.9,
       "comparator": ">=",
-      "message": "repeated_precision_min was 0.338710; required >= 0.900000"
+      "message": "repeated_precision_min was 0.308943; required >= 0.900000"
     },
     {
       "code": "threshold_not_met",
       "metric": "pattern_macro_recall_min",
-      "actual": 0.5833333333333334,
+      "actual": 0.5416666666666666,
       "required": 0.8,
       "comparator": ">=",
-      "message": "pattern_macro_recall_min was 0.583333; required >= 0.800000"
+      "message": "pattern_macro_recall_min was 0.541667; required >= 0.800000"
     },
     {
       "code": "threshold_not_met",
       "metric": "case_macro_recall_min",
-      "actual": 0.5416666666666666,
+      "actual": 0.513888888888889,
       "required": 0.8,
       "comparator": ">=",
-      "message": "case_macro_recall_min was 0.541667; required >= 0.800000"
+      "message": "case_macro_recall_min was 0.513889; required >= 0.800000"
     },
     {
       "code": "threshold_not_met",
       "metric": "framework_macro_recall_min",
-      "actual": 0.5833333333333333,
+      "actual": 0.5416666666666667,
       "required": 0.8,
       "comparator": ">=",
-      "message": "framework_macro_recall_min was 0.583333; required >= 0.800000"
+      "message": "framework_macro_recall_min was 0.541667; required >= 0.800000"
     },
     {
       "code": "threshold_not_met",
@@ -592,33 +592,33 @@
     {
       "code": "threshold_not_met",
       "metric": "stable_guard_hit_rate_max",
-      "actual": 0.20833333333333334,
+      "actual": 0.16666666666666666,
       "required": 0.05,
       "comparator": "<=",
-      "message": "stable_guard_hit_rate_max was 0.208333; required <= 0.050000"
+      "message": "stable_guard_hit_rate_max was 0.166667; required <= 0.050000"
     },
     {
       "code": "threshold_not_met",
       "metric": "clean_case_specificity_min",
-      "actual": 0.25,
+      "actual": 0.125,
       "required": 0.95,
       "comparator": ">=",
-      "message": "clean_case_specificity_min was 0.250000; required >= 0.950000"
+      "message": "clean_case_specificity_min was 0.125000; required >= 0.950000"
     }
   ],
   "protocol_sha256_after": "e379edfc7ad04e4ff92134f3f5952bda7f146e0f80667726283a2a60de08daf2",
-  "skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+  "skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
   "corpus_sha256_after": "745bc765fb6f424abe90d6d3fc9a3b85e921472a4cc1291054879af8002e965f",
-  "snapshot_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+  "snapshot_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
   "snapshot_corpus_sha256_after": "745bc765fb6f424abe90d6d3fc9a3b85e921472a4cc1291054879af8002e965f",
-  "created_at": "2026-09-19T19:16:43.821953+00:00",
+  "created_at": "2026-09-20T08:37:13.886815+00:00",
   "summary": {
-    "tp": 42,
-    "fp": 82,
-    "fn": 30,
-    "precision": 0.3387096774193548,
-    "recall": 0.5833333333333334,
-    "f1": 0.4285714285714285,
+    "tp": 38,
+    "fp": 85,
+    "fn": 34,
+    "precision": 0.3089430894308943,
+    "recall": 0.5277777777777778,
+    "f1": 0.38974358974358975,
     "runs": 60,
     "successful_runs": 60,
     "infrastructure_errors": 0
@@ -631,43 +631,43 @@
       "required_hits": 2
     },
     "unique": {
-      "tp": 14,
-      "fp": 26,
-      "fn": 10,
-      "precision": 0.35,
-      "recall": 0.5833333333333334,
-      "f1": 0.4375,
+      "tp": 13,
+      "fp": 24,
+      "fn": 11,
+      "precision": 0.35135135135135137,
+      "recall": 0.5416666666666666,
+      "f1": 0.4262295081967213,
       "precision_ci95": {
         "method": "wilson",
         "confidence": 0.95,
-        "successes": 14,
-        "total": 40,
-        "lower": 0.2213452887317629,
-        "upper": 0.5049411916274231
+        "successes": 13,
+        "total": 37,
+        "lower": 0.2182560713392713,
+        "upper": 0.5124097687744917
       },
       "recall_ci95": {
         "method": "wilson",
         "confidence": 0.95,
-        "successes": 14,
+        "successes": 13,
         "total": 24,
-        "lower": 0.3883466586522876,
-        "upper": 0.7553239739018824
+        "lower": 0.3507486535891948,
+        "upper": 0.72108666268789
       },
       "guard_labels": 24,
-      "stable_guard_hits": 5,
-      "stable_guard_hit_rate": 0.20833333333333334,
+      "stable_guard_hits": 4,
+      "stable_guard_hit_rate": 0.16666666666666666,
       "stable_guard_hit_rate_ci95": {
         "method": "wilson",
         "confidence": 0.95,
-        "successes": 5,
+        "successes": 4,
         "total": 24,
-        "lower": 0.09244825352851857,
-        "upper": 0.40470453253188665
+        "lower": 0.06678676328632951,
+        "upper": 0.3585307064969906
       }
     },
     "macro_recall": {
       "pattern": {
-        "value": 0.5833333333333334,
+        "value": 0.5416666666666666,
         "groups": {
           "#1": {
             "detected": 1,
@@ -690,9 +690,9 @@
             "recall": 0.0
           },
           "#13": {
-            "detected": 1,
+            "detected": 0,
             "expected": 1,
-            "recall": 1.0
+            "recall": 0.0
           },
           "#14": {
             "detected": 1,
@@ -765,14 +765,14 @@
             "recall": 0.0
           },
           "#5b": {
-            "detected": 0,
-            "expected": 1,
-            "recall": 0.0
-          },
-          "#6": {
             "detected": 1,
             "expected": 1,
             "recall": 1.0
+          },
+          "#6": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
           },
           "#7": {
             "detected": 1,
@@ -792,7 +792,7 @@
         }
       },
       "case": {
-        "value": 0.5416666666666666,
+        "value": 0.513888888888889,
         "groups": {
           "cy-a01": {
             "detected": 1,
@@ -800,9 +800,9 @@
             "recall": 0.5
           },
           "cy-a02": {
-            "detected": 1,
+            "detected": 2,
             "expected": 2,
-            "recall": 0.5
+            "recall": 1.0
           },
           "cy-a03": {
             "detected": 0,
@@ -830,9 +830,9 @@
             "recall": 1.0
           },
           "pw-a02": {
-            "detected": 1,
+            "detected": 0,
             "expected": 2,
-            "recall": 0.5
+            "recall": 0.0
           },
           "pw-a03": {
             "detected": 0,
@@ -840,9 +840,9 @@
             "recall": 0.0
           },
           "pw-a04": {
-            "detected": 3,
+            "detected": 2,
             "expected": 3,
-            "recall": 1.0
+            "recall": 0.6666666666666666
           },
           "pw-a05": {
             "detected": 3,
@@ -857,17 +857,17 @@
         }
       },
       "framework": {
-        "value": 0.5833333333333333,
+        "value": 0.5416666666666667,
         "groups": {
           "cypress": {
+            "detected": 7,
+            "expected": 12,
+            "recall": 0.5833333333333334
+          },
+          "playwright": {
             "detected": 6,
             "expected": 12,
             "recall": 0.5
-          },
-          "playwright": {
-            "detected": 8,
-            "expected": 12,
-            "recall": 0.6666666666666666
           }
         }
       }
@@ -879,9 +879,9 @@
           "framework": "cypress",
           "finding_id": "V5-016",
           "pattern_id": "#2",
-          "hits": 1,
+          "hits": 0,
           "repetitions": 3,
-          "detection_rate": 0.3333333333333333,
+          "detection_rate": 0.0,
           "required_hits": 2,
           "stable": false
         },
@@ -956,9 +956,9 @@
           "framework": "playwright",
           "finding_id": "V5-014",
           "pattern_id": "#3",
-          "hits": 0,
+          "hits": 1,
           "repetitions": 3,
-          "detection_rate": 0.0,
+          "detection_rate": 0.3333333333333333,
           "required_hits": 2,
           "stable": false
         }
@@ -976,15 +976,15 @@
       }
     },
     "clean_case_specificity": {
-      "value": 0.25,
+      "value": 0.125,
       "clean_cases": 8,
-      "cases_without_stable_predictions": 2,
+      "cases_without_stable_predictions": 1,
       "by_case": {
         "cy-c01": {
           "has_stable_prediction": true
         },
         "cy-c02": {
-          "has_stable_prediction": false
+          "has_stable_prediction": true
         },
         "cy-c03": {
           "has_stable_prediction": true
@@ -1009,12 +1009,12 @@
   },
   "secondary_metrics": {
     "aggregation_unit": "repeated-run",
-    "tp": 42,
-    "fp": 82,
-    "fn": 30,
-    "precision": 0.3387096774193548,
-    "recall": 0.5833333333333334,
-    "f1": 0.4285714285714285,
+    "tp": 38,
+    "fp": 85,
+    "fn": 34,
+    "precision": 0.3089430894308943,
+    "recall": 0.5277777777777778,
+    "f1": 0.38974358974358975,
     "runs": 60,
     "successful_runs": 60,
     "infrastructure_errors": 0
@@ -1022,44 +1022,44 @@
   "by_case": {
     "pw-a01": {
       "tp": 3,
-      "fp": 3,
+      "fp": 2,
       "fn": 0,
-      "precision": 0.5,
+      "precision": 0.6,
       "recall": 1.0,
-      "f1": 0.6666666666666666,
+      "f1": 0.7499999999999999,
       "runs": 3,
       "successful_runs": 3,
       "infrastructure_errors": 0
     },
     "pw-a02": {
-      "tp": 2,
-      "fp": 6,
-      "fn": 4,
-      "precision": 0.25,
-      "recall": 0.3333333333333333,
-      "f1": 0.28571428571428575,
+      "tp": 0,
+      "fp": 9,
+      "fn": 6,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
       "runs": 3,
       "successful_runs": 3,
       "infrastructure_errors": 0
     },
     "pw-a03": {
       "tp": 1,
-      "fp": 2,
+      "fp": 3,
       "fn": 5,
-      "precision": 0.3333333333333333,
+      "precision": 0.25,
       "recall": 0.16666666666666666,
-      "f1": 0.2222222222222222,
+      "f1": 0.2,
       "runs": 3,
       "successful_runs": 3,
       "infrastructure_errors": 0
     },
     "pw-a04": {
-      "tp": 8,
-      "fp": 0,
-      "fn": 1,
-      "precision": 1.0,
-      "recall": 0.8888888888888888,
-      "f1": 0.9411764705882353,
+      "tp": 4,
+      "fp": 3,
+      "fn": 5,
+      "precision": 0.5714285714285714,
+      "recall": 0.4444444444444444,
+      "f1": 0.5,
       "runs": 3,
       "successful_runs": 3,
       "infrastructure_errors": 0
@@ -1076,34 +1076,34 @@
       "infrastructure_errors": 0
     },
     "pw-a06": {
-      "tp": 0,
-      "fp": 3,
-      "fn": 3,
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1": 0.0,
+      "tp": 1,
+      "fp": 2,
+      "fn": 2,
+      "precision": 0.3333333333333333,
+      "recall": 0.3333333333333333,
+      "f1": 0.3333333333333333,
       "runs": 3,
       "successful_runs": 3,
       "infrastructure_errors": 0
     },
     "cy-a01": {
-      "tp": 4,
-      "fp": 2,
-      "fn": 2,
-      "precision": 0.6666666666666666,
-      "recall": 0.6666666666666666,
-      "f1": 0.6666666666666666,
+      "tp": 3,
+      "fp": 3,
+      "fn": 3,
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1": 0.5,
       "runs": 3,
       "successful_runs": 3,
       "infrastructure_errors": 0
     },
     "cy-a02": {
-      "tp": 4,
-      "fp": 2,
-      "fn": 2,
-      "precision": 0.6666666666666666,
-      "recall": 0.6666666666666666,
-      "f1": 0.6666666666666666,
+      "tp": 6,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
       "runs": 3,
       "successful_runs": 3,
       "infrastructure_errors": 0
@@ -1132,11 +1132,11 @@
     },
     "cy-a05": {
       "tp": 5,
-      "fp": 3,
+      "fp": 5,
       "fn": 1,
-      "precision": 0.625,
+      "precision": 0.5,
       "recall": 0.8333333333333334,
-      "f1": 0.7142857142857143,
+      "f1": 0.625,
       "runs": 3,
       "successful_runs": 3,
       "infrastructure_errors": 0
@@ -1154,7 +1154,7 @@
     },
     "pw-c01": {
       "tp": 0,
-      "fp": 3,
+      "fp": 6,
       "fn": 0,
       "precision": 0.0,
       "recall": 0.0,
@@ -1176,7 +1176,7 @@
     },
     "pw-c03": {
       "tp": 0,
-      "fp": 16,
+      "fp": 14,
       "fn": 0,
       "precision": 0.0,
       "recall": 0.0,
@@ -1187,7 +1187,7 @@
     },
     "pw-c04": {
       "tp": 0,
-      "fp": 11,
+      "fp": 10,
       "fn": 0,
       "precision": 0.0,
       "recall": 0.0,
@@ -1220,7 +1220,7 @@
     },
     "cy-c03": {
       "tp": 0,
-      "fp": 4,
+      "fp": 2,
       "fn": 0,
       "precision": 0.0,
       "recall": 0.0,
@@ -1231,7 +1231,7 @@
     },
     "cy-c04": {
       "tp": 0,
-      "fp": 1,
+      "fp": 0,
       "fn": 0,
       "precision": 0.0,
       "recall": 0.0,
@@ -1249,11 +1249,11 @@
       "split": "public-development-v5",
       "repetition": 1,
       "exit_code": 0,
-      "duration_ms": 8561,
-      "workspace_sha256_before": "f5bfcac169ef44cf0f0c9a2ad8ab99ddfaec4ffe144a8d8fea70c2f9233571d9",
-      "workspace_sha256_after": "f5bfcac169ef44cf0f0c9a2ad8ab99ddfaec4ffe144a8d8fea70c2f9233571d9",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 12066,
+      "workspace_sha256_before": "fa7f3aa7ef8f79802a17d10a448f1aec8210e33a65e4dbb1cdb59938e60ea072",
+      "workspace_sha256_after": "fa7f3aa7ef8f79802a17d10a448f1aec8210e33a65e4dbb1cdb59938e60ea072",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
         {
           "pattern_id": "#6",
@@ -1281,23 +1281,23 @@
       "split": "public-development-v5",
       "repetition": 2,
       "exit_code": 0,
-      "duration_ms": 37427,
-      "workspace_sha256_before": "7258b5e6d78df292e10ecaa42c42617e5c2fe3c89722150fb59ca4a501c3f280",
-      "workspace_sha256_after": "7258b5e6d78df292e10ecaa42c42617e5c2fe3c89722150fb59ca4a501c3f280",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 49587,
+      "workspace_sha256_before": "1885d8b02f851aaafbf827cda7d21a50741393d2cf7e4cb22b5f1140b10a0224",
+      "workspace_sha256_after": "1885d8b02f851aaafbf827cda7d21a50741393d2cf7e4cb22b5f1140b10a0224",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
+        {
+          "pattern_id": "#10a",
+          "severity": "P1",
+          "file": "pages/profile-page.ts",
+          "line": 28
+        },
         {
           "pattern_id": "#20",
           "severity": "P1",
           "file": "tests/profile.spec.ts",
           "line": 8
-        },
-        {
-          "pattern_id": "#13",
-          "severity": "P1",
-          "file": "tests/profile.spec.ts",
-          "line": 9
         },
         {
           "pattern_id": "#22",
@@ -1306,27 +1306,33 @@
           "line": 9
         },
         {
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "tests/profile.spec.ts",
+          "line": 9
+        },
+        {
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "tests/profile.spec.ts",
+          "line": 15
+        },
+        {
           "pattern_id": "#2",
           "severity": "P0",
           "file": "tests/profile.spec.ts",
-          "line": 17
-        },
-        {
-          "pattern_id": "#10",
-          "severity": "P1",
-          "file": "pages/profile-page.ts",
-          "line": 28
+          "line": 16
         }
       ],
       "score": {
         "tp": 0,
-        "fp": 5,
+        "fp": 6,
         "fn": 0,
         "matched_finding_ids": [],
         "missed_finding_ids": [],
         "hit_fp_guard_ids": []
       },
-      "output": "{\"findings\":[{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":8},{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":9},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":9},{\"pattern_id\":\"#2\",\"severity\":\"P0\",\"file\":\"tests/profile.spec.ts\",\"line\":17},{\"pattern_id\":\"#10\",\"severity\":\"P1\",\"file\":\"pages/profile-page.ts\",\"line\":28}]}\n",
+      "output": "{\"findings\":[{\"pattern_id\":\"#10a\",\"severity\":\"P1\",\"file\":\"pages/profile-page.ts\",\"line\":28},{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":8},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":9},{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":9},{\"pattern_id\":\"#23\",\"severity\":\"P2\",\"file\":\"tests/profile.spec.ts\",\"line\":15},{\"pattern_id\":\"#2\",\"severity\":\"P0\",\"file\":\"tests/profile.spec.ts\",\"line\":16}]}\n",
       "error": null,
       "cleanup_failures": []
     },
@@ -1337,11 +1343,11 @@
       "split": "public-development-v5",
       "repetition": 2,
       "exit_code": 0,
-      "duration_ms": 12007,
-      "workspace_sha256_before": "e988a7dd0fbd1d3840ea4693c0fa379af4bfb0124108e9013f712a2e4aa5abd3",
-      "workspace_sha256_after": "e988a7dd0fbd1d3840ea4693c0fa379af4bfb0124108e9013f712a2e4aa5abd3",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 11312,
+      "workspace_sha256_before": "3f41c9d39389b7208864d778e403c7ccc5070dd74a2495cf45421e6406f5b384",
+      "workspace_sha256_after": "3f41c9d39389b7208864d778e403c7ccc5070dd74a2495cf45421e6406f5b384",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
         {
           "pattern_id": "#14",
@@ -1371,11 +1377,11 @@
       "split": "public-development-v5",
       "repetition": 1,
       "exit_code": 0,
-      "duration_ms": 11734,
-      "workspace_sha256_before": "2c21840552ba067aeadbc26ebc8047ebd95d927375edf12a9299bf1aaa775e1e",
-      "workspace_sha256_after": "2c21840552ba067aeadbc26ebc8047ebd95d927375edf12a9299bf1aaa775e1e",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 14269,
+      "workspace_sha256_before": "70a886d136acc39bdb9d5d66e479b200893475230e2ebf2f2d2affa6ca131a91",
+      "workspace_sha256_after": "70a886d136acc39bdb9d5d66e479b200893475230e2ebf2f2d2affa6ca131a91",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
         {
           "pattern_id": "#15",
@@ -1414,11 +1420,11 @@
       "split": "public-development-v5",
       "repetition": 3,
       "exit_code": 0,
-      "duration_ms": 13651,
-      "workspace_sha256_before": "a0b0ef1c7e9f06251b19761a315d8fb47bbb1648860395a190190e8682027114",
-      "workspace_sha256_after": "a0b0ef1c7e9f06251b19761a315d8fb47bbb1648860395a190190e8682027114",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 15555,
+      "workspace_sha256_before": "26f0beb9ddbe5ac257d040d7160ed7621c5c5bb06b92036213798d85e3639bea",
+      "workspace_sha256_after": "26f0beb9ddbe5ac257d040d7160ed7621c5c5bb06b92036213798d85e3639bea",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
         {
           "pattern_id": "#1",
@@ -1454,21 +1460,15 @@
       "split": "public-development-v5",
       "repetition": 2,
       "exit_code": 0,
-      "duration_ms": 10162,
-      "workspace_sha256_before": "346585b05199b0a602861de2f508cec72a2b42d6a8d30b023932ee56d9ef43e7",
-      "workspace_sha256_after": "346585b05199b0a602861de2f508cec72a2b42d6a8d30b023932ee56d9ef43e7",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 16374,
+      "workspace_sha256_before": "13df22a72670f54d22e33629707b76f1304da069268a15483be0fcf8c2af0e76",
+      "workspace_sha256_after": "13df22a72670f54d22e33629707b76f1304da069268a15483be0fcf8c2af0e76",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
         {
           "pattern_id": "#4a",
           "severity": "P0",
-          "file": "tests/activity.spec.ts",
-          "line": 7
-        },
-        {
-          "pattern_id": "#15",
-          "severity": "P1",
           "file": "tests/activity.spec.ts",
           "line": 7
         },
@@ -1481,7 +1481,7 @@
       ],
       "score": {
         "tp": 0,
-        "fp": 3,
+        "fp": 2,
         "fn": 2,
         "matched_finding_ids": [],
         "missed_finding_ids": [
@@ -1490,7 +1490,7 @@
         ],
         "hit_fp_guard_ids": []
       },
-      "output": "{\"findings\":[{\"pattern_id\":\"#4a\",\"severity\":\"P0\",\"file\":\"tests/activity.spec.ts\",\"line\":7},{\"pattern_id\":\"#15\",\"severity\":\"P1\",\"file\":\"tests/activity.spec.ts\",\"line\":7},{\"pattern_id\":\"#6\",\"severity\":\"P1\",\"file\":\"tests/activity.spec.ts\",\"line\":13}]}\n",
+      "output": "{\"findings\":[{\"pattern_id\":\"#4a\",\"severity\":\"P0\",\"file\":\"tests/activity.spec.ts\",\"line\":7},{\"pattern_id\":\"#6\",\"severity\":\"P1\",\"file\":\"tests/activity.spec.ts\",\"line\":13}]}\n",
       "error": null,
       "cleanup_failures": []
     },
@@ -1501,29 +1501,23 @@
       "split": "public-development-v5",
       "repetition": 1,
       "exit_code": 0,
-      "duration_ms": 39217,
-      "workspace_sha256_before": "7258b5e6d78df292e10ecaa42c42617e5c2fe3c89722150fb59ca4a501c3f280",
-      "workspace_sha256_after": "7258b5e6d78df292e10ecaa42c42617e5c2fe3c89722150fb59ca4a501c3f280",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 22622,
+      "workspace_sha256_before": "1885d8b02f851aaafbf827cda7d21a50741393d2cf7e4cb22b5f1140b10a0224",
+      "workspace_sha256_after": "1885d8b02f851aaafbf827cda7d21a50741393d2cf7e4cb22b5f1140b10a0224",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
         {
           "pattern_id": "#20",
           "severity": "P1",
           "file": "tests/profile.spec.ts",
-          "line": 8
-        },
-        {
-          "pattern_id": "#22",
-          "severity": "P1",
-          "file": "tests/profile.spec.ts",
-          "line": 9
+          "line": 7
         },
         {
           "pattern_id": "#13",
           "severity": "P1",
           "file": "tests/profile.spec.ts",
-          "line": 9
+          "line": 8
         },
         {
           "pattern_id": "#2",
@@ -1535,18 +1529,18 @@
           "pattern_id": "#10",
           "severity": "P1",
           "file": "pages/profile-page.ts",
-          "line": 28
+          "line": 29
         }
       ],
       "score": {
         "tp": 0,
-        "fp": 5,
+        "fp": 4,
         "fn": 0,
         "matched_finding_ids": [],
         "missed_finding_ids": [],
         "hit_fp_guard_ids": []
       },
-      "output": "{\"findings\":[{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":8},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":9},{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":9},{\"pattern_id\":\"#2\",\"severity\":\"P0\",\"file\":\"tests/profile.spec.ts\",\"line\":17},{\"pattern_id\":\"#10\",\"severity\":\"P1\",\"file\":\"pages/profile-page.ts\",\"line\":28}]}\n",
+      "output": "{\"findings\":[{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":7},{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":8},{\"pattern_id\":\"#2\",\"severity\":\"P0\",\"file\":\"tests/profile.spec.ts\",\"line\":17},{\"pattern_id\":\"#10\",\"severity\":\"P1\",\"file\":\"pages/profile-page.ts\",\"line\":29}]}\n",
       "error": null,
       "cleanup_failures": []
     },
@@ -1557,22 +1551,34 @@
       "split": "public-development-v5",
       "repetition": 1,
       "exit_code": 0,
-      "duration_ms": 27370,
-      "workspace_sha256_before": "6c36b6badc3b620677c958d670c4524f1931b56c91000dc3072186772097ff90",
-      "workspace_sha256_after": "6c36b6badc3b620677c958d670c4524f1931b56c91000dc3072186772097ff90",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 20407,
+      "workspace_sha256_before": "0c5141787a2ae88c4070a389787fb78a17af7c06f073a866fe4a44b6944991ab",
+      "workspace_sha256_after": "0c5141787a2ae88c4070a389787fb78a17af7c06f073a866fe4a44b6944991ab",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
+        {
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "tests/orders.spec.ts",
+          "line": 7
+        },
         {
           "pattern_id": "#3",
           "severity": "P0",
           "file": "tests/orders.spec.ts",
           "line": 13
+        },
+        {
+          "pattern_id": "#4g",
+          "severity": "P1",
+          "file": "tests/orders.spec.ts",
+          "line": 16
         }
       ],
       "score": {
         "tp": 0,
-        "fp": 1,
+        "fp": 3,
         "fn": 0,
         "matched_finding_ids": [],
         "missed_finding_ids": [],
@@ -1580,7 +1586,7 @@
           "V5-G02"
         ]
       },
-      "output": "{\"findings\":[{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"tests/orders.spec.ts\",\"line\":13}]}\n",
+      "output": "{\"findings\":[{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/orders.spec.ts\",\"line\":7},{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"tests/orders.spec.ts\",\"line\":13},{\"pattern_id\":\"#4g\",\"severity\":\"P1\",\"file\":\"tests/orders.spec.ts\",\"line\":16}]}\n",
       "error": null,
       "cleanup_failures": []
     },
@@ -1591,44 +1597,44 @@
       "split": "public-development-v5",
       "repetition": 3,
       "exit_code": 0,
-      "duration_ms": 14594,
-      "workspace_sha256_before": "2c21840552ba067aeadbc26ebc8047ebd95d927375edf12a9299bf1aaa775e1e",
-      "workspace_sha256_after": "2c21840552ba067aeadbc26ebc8047ebd95d927375edf12a9299bf1aaa775e1e",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 9504,
+      "workspace_sha256_before": "70a886d136acc39bdb9d5d66e479b200893475230e2ebf2f2d2affa6ca131a91",
+      "workspace_sha256_after": "70a886d136acc39bdb9d5d66e479b200893475230e2ebf2f2d2affa6ca131a91",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
         {
           "pattern_id": "#13",
           "severity": "P1",
           "file": "tests/profile.spec.ts",
-          "line": 7
+          "line": 6
         },
         {
           "pattern_id": "#15",
           "severity": "P1",
           "file": "tests/profile.spec.ts",
-          "line": 9
+          "line": 8
         },
         {
           "pattern_id": "#16",
           "severity": "P1",
           "file": "tests/profile.spec.ts",
-          "line": 10
+          "line": 9
         }
       ],
       "score": {
-        "tp": 3,
-        "fp": 0,
-        "fn": 0,
-        "matched_finding_ids": [
+        "tp": 0,
+        "fp": 3,
+        "fn": 3,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [
           "V5-008",
           "V5-009",
           "V5-010"
         ],
-        "missed_finding_ids": [],
         "hit_fp_guard_ids": []
       },
-      "output": "{\"findings\":[{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":7},{\"pattern_id\":\"#15\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":9},{\"pattern_id\":\"#16\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":10}]}\n",
+      "output": "{\"findings\":[{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":6},{\"pattern_id\":\"#15\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":8},{\"pattern_id\":\"#16\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":9}]}\n",
       "error": null,
       "cleanup_failures": []
     },
@@ -1639,11 +1645,11 @@
       "split": "public-development-v5",
       "repetition": 2,
       "exit_code": 0,
-      "duration_ms": 8165,
-      "workspace_sha256_before": "fa4709ea013c63e9f6c9e35311e53784520223ca27ef70c8d802315b83ee0738",
-      "workspace_sha256_after": "fa4709ea013c63e9f6c9e35311e53784520223ca27ef70c8d802315b83ee0738",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 7817,
+      "workspace_sha256_before": "4d98866a198807ba27a14391b83929763c4d06c84e8c5ce50bcc672f1756694b",
+      "workspace_sha256_after": "4d98866a198807ba27a14391b83929763c4d06c84e8c5ce50bcc672f1756694b",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
         {
           "pattern_id": "#7",
@@ -1680,1526 +1686,11 @@
       "split": "public-development-v5",
       "repetition": 3,
       "exit_code": 0,
-      "duration_ms": 13373,
-      "workspace_sha256_before": "ed91f39839cc08baa38ba4bdd94a5dca0a8fa6bc0aa76711f88b61d965e31607",
-      "workspace_sha256_after": "ed91f39839cc08baa38ba4bdd94a5dca0a8fa6bc0aa76711f88b61d965e31607",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#17",
-          "severity": "P1",
-          "file": "tests/member.spec.ts",
-          "line": 5
-        },
-        {
-          "pattern_id": "#18",
-          "severity": "P1",
-          "file": "tests/member.spec.ts",
-          "line": 6
-        },
-        {
-          "pattern_id": "#22",
-          "severity": "P1",
-          "file": "tests/member.spec.ts",
-          "line": 7
-        }
-      ],
-      "score": {
-        "tp": 0,
-        "fp": 3,
-        "fn": 0,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": [
-          "V5-G10",
-          "V5-G11"
-        ]
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"tests/member.spec.ts\",\"line\":5},{\"pattern_id\":\"#18\",\"severity\":\"P1\",\"file\":\"tests/member.spec.ts\",\"line\":6},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"tests/member.spec.ts\",\"line\":7}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 12,
-      "case": "cy-a03",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 2,
-      "exit_code": 0,
-      "duration_ms": 6694,
-      "workspace_sha256_before": "5c3dcafbc2a2329318d80ff33b8455ffb67866c776e27153e6afb6f4b79955fd",
-      "workspace_sha256_after": "5c3dcafbc2a2329318d80ff33b8455ffb67866c776e27153e6afb6f4b79955fd",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#9",
-          "severity": "P1",
-          "file": "cypress/e2e/search.cy.ts",
-          "line": 4
-        }
-      ],
-      "score": {
-        "tp": 0,
-        "fp": 1,
-        "fn": 2,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [
-          "V5-020",
-          "V5-021"
-        ],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#9\",\"severity\":\"P1\",\"file\":\"cypress/e2e/search.cy.ts\",\"line\":4}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 13,
-      "case": "pw-a06",
-      "framework": "playwright",
-      "split": "public-development-v5",
-      "repetition": 1,
-      "exit_code": 0,
-      "duration_ms": 5964,
-      "workspace_sha256_before": "5065a3bbd597215032201527aa18d4f4b264df02966432fa61235da4d1073289",
-      "workspace_sha256_after": "5065a3bbd597215032201527aa18d4f4b264df02966432fa61235da4d1073289",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#3",
-          "severity": "P0",
-          "file": "tests/search.spec.ts",
-          "line": 8
-        }
-      ],
-      "score": {
-        "tp": 0,
-        "fp": 1,
-        "fn": 1,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [
-          "V5-014"
-        ],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"tests/search.spec.ts\",\"line\":8}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 14,
-      "case": "cy-a05",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 1,
-      "exit_code": 0,
-      "duration_ms": 20686,
-      "workspace_sha256_before": "e486139e45b89c4fe32de9008fbff29fbc273eaedc19df50a9fa0cf691c4d8bf",
-      "workspace_sha256_after": "e486139e45b89c4fe32de9008fbff29fbc273eaedc19df50a9fa0cf691c4d8bf",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#20",
-          "severity": "P1",
-          "file": "cypress/e2e/contacts.cy.ts",
-          "line": 8
-        },
-        {
-          "pattern_id": "#19",
-          "severity": "P1",
-          "file": "src/contact-service.ts",
-          "line": 1
-        }
-      ],
-      "score": {
-        "tp": 2,
-        "fp": 0,
-        "fn": 0,
-        "matched_finding_ids": [
-          "V5-024",
-          "V5-025"
-        ],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"cypress/e2e/contacts.cy.ts\",\"line\":8},{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"src/contact-service.ts\",\"line\":1}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 15,
-      "case": "cy-a06",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 2,
-      "exit_code": 0,
-      "duration_ms": 13552,
-      "workspace_sha256_before": "b89a9398e86bfb4f1e0341ba4d57e793c1eb7304edc9421f9154a3ecfa885b45",
-      "workspace_sha256_after": "b89a9398e86bfb4f1e0341ba4d57e793c1eb7304edc9421f9154a3ecfa885b45",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#22",
-          "severity": "P1",
-          "file": "cypress/e2e/board.cy.ts",
-          "line": 7
-        },
-        {
-          "pattern_id": "#23",
-          "severity": "P2",
-          "file": "cypress/fixtures/summary.json",
-          "line": 3
-        }
-      ],
-      "score": {
-        "tp": 1,
-        "fp": 1,
-        "fn": 1,
-        "matched_finding_ids": [
-          "V5-027"
-        ],
-        "missed_finding_ids": [
-          "V5-026"
-        ],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/board.cy.ts\",\"line\":7},{\"pattern_id\":\"#23\",\"severity\":\"P2\",\"file\":\"cypress/fixtures/summary.json\",\"line\":3}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 16,
-      "case": "cy-c01",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 2,
-      "exit_code": 0,
-      "duration_ms": 5965,
-      "workspace_sha256_before": "97cfc45278e7069834bda5d83e81f2a0c02372e36ec558d86217afe707693fce",
-      "workspace_sha256_after": "97cfc45278e7069834bda5d83e81f2a0c02372e36ec558d86217afe707693fce",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#3b",
-          "severity": "P0",
-          "file": "cypress/support/e2e.ts",
-          "line": 2
-        }
-      ],
-      "score": {
-        "tp": 0,
-        "fp": 1,
-        "fn": 0,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/e2e.ts\",\"line\":2}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 17,
-      "case": "cy-c01",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 3,
-      "exit_code": 0,
-      "duration_ms": 13412,
-      "workspace_sha256_before": "97cfc45278e7069834bda5d83e81f2a0c02372e36ec558d86217afe707693fce",
-      "workspace_sha256_after": "97cfc45278e7069834bda5d83e81f2a0c02372e36ec558d86217afe707693fce",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#3b",
-          "severity": "P0",
-          "file": "cypress/support/e2e.ts",
-          "line": 2
-        }
-      ],
-      "score": {
-        "tp": 0,
-        "fp": 1,
-        "fn": 0,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/e2e.ts\",\"line\":2}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 18,
-      "case": "cy-a05",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 2,
-      "exit_code": 0,
-      "duration_ms": 18185,
-      "workspace_sha256_before": "e486139e45b89c4fe32de9008fbff29fbc273eaedc19df50a9fa0cf691c4d8bf",
-      "workspace_sha256_after": "e486139e45b89c4fe32de9008fbff29fbc273eaedc19df50a9fa0cf691c4d8bf",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#19",
-          "severity": "P1",
-          "file": "src/contact-service.ts",
-          "line": 1
-        },
-        {
-          "pattern_id": "#20",
-          "severity": "P1",
-          "file": "src/contact-service.ts",
-          "line": 9
-        },
-        {
-          "pattern_id": "#22",
-          "severity": "P1",
-          "file": "cypress/e2e/contacts.cy.ts",
-          "line": 9
-        }
-      ],
-      "score": {
-        "tp": 1,
-        "fp": 2,
-        "fn": 1,
-        "matched_finding_ids": [
-          "V5-024"
-        ],
-        "missed_finding_ids": [
-          "V5-025"
-        ],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"src/contact-service.ts\",\"line\":1},{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"src/contact-service.ts\",\"line\":9},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/contacts.cy.ts\",\"line\":9}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 19,
-      "case": "cy-c03",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 3,
-      "exit_code": 0,
-      "duration_ms": 15417,
-      "workspace_sha256_before": "e988a7dd0fbd1d3840ea4693c0fa379af4bfb0124108e9013f712a2e4aa5abd3",
-      "workspace_sha256_after": "e988a7dd0fbd1d3840ea4693c0fa379af4bfb0124108e9013f712a2e4aa5abd3",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#13",
-          "severity": "P1",
-          "file": "cypress/e2e/account.cy.ts",
-          "line": 12
-        }
-      ],
-      "score": {
-        "tp": 0,
-        "fp": 1,
-        "fn": 0,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"cypress/e2e/account.cy.ts\",\"line\":12}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 20,
-      "case": "pw-c02",
-      "framework": "playwright",
-      "split": "public-development-v5",
-      "repetition": 3,
-      "exit_code": 0,
-      "duration_ms": 11153,
-      "workspace_sha256_before": "f5bfcac169ef44cf0f0c9a2ad8ab99ddfaec4ffe144a8d8fea70c2f9233571d9",
-      "workspace_sha256_after": "f5bfcac169ef44cf0f0c9a2ad8ab99ddfaec4ffe144a8d8fea70c2f9233571d9",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#6",
-          "severity": "P1",
-          "file": "tests/theme.spec.ts",
-          "line": 7
-        }
-      ],
-      "score": {
-        "tp": 0,
-        "fp": 1,
-        "fn": 0,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": [
-          "V5-G04"
-        ]
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#6\",\"severity\":\"P1\",\"file\":\"tests/theme.spec.ts\",\"line\":7}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 21,
-      "case": "cy-a04",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 1,
-      "exit_code": 0,
-      "duration_ms": 9808,
-      "workspace_sha256_before": "cb3fcb69179ae6733a812e6ede056654702873822feeb527674041be71df2e9a",
-      "workspace_sha256_after": "cb3fcb69179ae6733a812e6ede056654702873822feeb527674041be71df2e9a",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#14",
-          "severity": "P1",
-          "file": "cypress/e2e/account.cy.ts",
-          "line": 5
-        }
-      ],
-      "score": {
-        "tp": 1,
-        "fp": 0,
-        "fn": 1,
-        "matched_finding_ids": [
-          "V5-023"
-        ],
-        "missed_finding_ids": [
-          "V5-022"
-        ],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#14\",\"severity\":\"P1\",\"file\":\"cypress/e2e/account.cy.ts\",\"line\":5}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 22,
-      "case": "cy-a06",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 3,
-      "exit_code": 0,
-      "duration_ms": 17982,
-      "workspace_sha256_before": "b89a9398e86bfb4f1e0341ba4d57e793c1eb7304edc9421f9154a3ecfa885b45",
-      "workspace_sha256_after": "b89a9398e86bfb4f1e0341ba4d57e793c1eb7304edc9421f9154a3ecfa885b45",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#22",
-          "severity": "P1",
-          "file": "cypress/e2e/board.cy.ts",
-          "line": 8
-        },
-        {
-          "pattern_id": "#1",
-          "severity": "P0",
-          "file": "cypress/e2e/board.cy.ts",
-          "line": 14
-        },
-        {
-          "pattern_id": "#23",
-          "severity": "P2",
-          "file": "cypress/fixtures/summary.json",
-          "line": 3
-        }
-      ],
-      "score": {
-        "tp": 1,
-        "fp": 2,
-        "fn": 1,
-        "matched_finding_ids": [
-          "V5-027"
-        ],
-        "missed_finding_ids": [
-          "V5-026"
-        ],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/board.cy.ts\",\"line\":8},{\"pattern_id\":\"#1\",\"severity\":\"P0\",\"file\":\"cypress/e2e/board.cy.ts\",\"line\":14},{\"pattern_id\":\"#23\",\"severity\":\"P2\",\"file\":\"cypress/fixtures/summary.json\",\"line\":3}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 23,
-      "case": "pw-c02",
-      "framework": "playwright",
-      "split": "public-development-v5",
-      "repetition": 2,
-      "exit_code": 0,
-      "duration_ms": 9891,
-      "workspace_sha256_before": "f5bfcac169ef44cf0f0c9a2ad8ab99ddfaec4ffe144a8d8fea70c2f9233571d9",
-      "workspace_sha256_after": "f5bfcac169ef44cf0f0c9a2ad8ab99ddfaec4ffe144a8d8fea70c2f9233571d9",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#6",
-          "severity": "P1",
-          "file": "tests/theme.spec.ts",
-          "line": 7
-        }
-      ],
-      "score": {
-        "tp": 0,
-        "fp": 1,
-        "fn": 0,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": [
-          "V5-G04"
-        ]
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#6\",\"severity\":\"P1\",\"file\":\"tests/theme.spec.ts\",\"line\":7}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 24,
-      "case": "cy-c03",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 1,
-      "exit_code": 0,
-      "duration_ms": 13784,
-      "workspace_sha256_before": "e988a7dd0fbd1d3840ea4693c0fa379af4bfb0124108e9013f712a2e4aa5abd3",
-      "workspace_sha256_after": "e988a7dd0fbd1d3840ea4693c0fa379af4bfb0124108e9013f712a2e4aa5abd3",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#14",
-          "severity": "P1",
-          "file": "cypress/e2e/account.cy.ts",
-          "line": 9
-        },
-        {
-          "pattern_id": "#13",
-          "severity": "P1",
-          "file": "cypress/e2e/account.cy.ts",
-          "line": 12
-        }
-      ],
-      "score": {
-        "tp": 0,
-        "fp": 2,
-        "fn": 0,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": [
-          "V5-G20"
-        ]
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#14\",\"severity\":\"P1\",\"file\":\"cypress/e2e/account.cy.ts\",\"line\":9},{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"cypress/e2e/account.cy.ts\",\"line\":12}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 25,
-      "case": "pw-a02",
-      "framework": "playwright",
-      "split": "public-development-v5",
-      "repetition": 3,
-      "exit_code": 0,
-      "duration_ms": 12138,
-      "workspace_sha256_before": "346585b05199b0a602861de2f508cec72a2b42d6a8d30b023932ee56d9ef43e7",
-      "workspace_sha256_after": "346585b05199b0a602861de2f508cec72a2b42d6a8d30b023932ee56d9ef43e7",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#4a",
-          "severity": "P0",
-          "file": "tests/activity.spec.ts",
-          "line": 7
-        },
-        {
-          "pattern_id": "#15",
-          "severity": "P1",
-          "file": "tests/activity.spec.ts",
-          "line": 7
-        },
-        {
-          "pattern_id": "#6",
-          "severity": "P1",
-          "file": "tests/activity.spec.ts",
-          "line": 14
-        }
-      ],
-      "score": {
-        "tp": 1,
-        "fp": 2,
-        "fn": 1,
-        "matched_finding_ids": [
-          "V5-004"
-        ],
-        "missed_finding_ids": [
-          "V5-003"
-        ],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#4a\",\"severity\":\"P0\",\"file\":\"tests/activity.spec.ts\",\"line\":7},{\"pattern_id\":\"#15\",\"severity\":\"P1\",\"file\":\"tests/activity.spec.ts\",\"line\":7},{\"pattern_id\":\"#6\",\"severity\":\"P1\",\"file\":\"tests/activity.spec.ts\",\"line\":14}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 26,
-      "case": "cy-c02",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 2,
-      "exit_code": 0,
-      "duration_ms": 21552,
-      "workspace_sha256_before": "5b76ce3111fbd832cdbbf309bd4d4db0428fa7f991cbc3b619f3c46feac0fcf8",
-      "workspace_sha256_after": "5b76ce3111fbd832cdbbf309bd4d4db0428fa7f991cbc3b619f3c46feac0fcf8",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#13",
-          "severity": "P1",
-          "file": "cypress/e2e/release.cy.ts",
-          "line": 9
-        },
-        {
-          "pattern_id": "#13",
-          "severity": "P1",
-          "file": "cypress/e2e/release.cy.ts",
-          "line": 16
-        }
-      ],
-      "score": {
-        "tp": 0,
-        "fp": 2,
-        "fn": 0,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"cypress/e2e/release.cy.ts\",\"line\":9},{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"cypress/e2e/release.cy.ts\",\"line\":16}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 27,
-      "case": "cy-a01",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 1,
-      "exit_code": 0,
-      "duration_ms": 15788,
-      "workspace_sha256_before": "2547ab6a3c71de04680d3be14a921b37a37b1df301cd6523d070af9099471b72",
-      "workspace_sha256_after": "2547ab6a3c71de04680d3be14a921b37a37b1df301cd6523d070af9099471b72",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#2",
-          "severity": "P0",
-          "file": "cypress/e2e/archive.cy.ts",
-          "line": 4
-        },
-        {
-          "pattern_id": "#3b",
-          "severity": "P0",
-          "file": "cypress/support/e2e.ts",
-          "line": 1
-        }
-      ],
-      "score": {
-        "tp": 2,
-        "fp": 0,
-        "fn": 0,
-        "matched_finding_ids": [
-          "V5-016",
-          "V5-017"
-        ],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#2\",\"severity\":\"P0\",\"file\":\"cypress/e2e/archive.cy.ts\",\"line\":4},{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/e2e.ts\",\"line\":1}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 28,
-      "case": "pw-c01",
-      "framework": "playwright",
-      "split": "public-development-v5",
-      "repetition": 2,
-      "exit_code": 0,
-      "duration_ms": 18363,
-      "workspace_sha256_before": "6c36b6badc3b620677c958d670c4524f1931b56c91000dc3072186772097ff90",
-      "workspace_sha256_after": "6c36b6badc3b620677c958d670c4524f1931b56c91000dc3072186772097ff90",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#3",
-          "severity": "P0",
-          "file": "tests/orders.spec.ts",
-          "line": 13
-        }
-      ],
-      "score": {
-        "tp": 0,
-        "fp": 1,
-        "fn": 0,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": [
-          "V5-G02"
-        ]
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"tests/orders.spec.ts\",\"line\":13}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 29,
-      "case": "cy-c02",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 3,
-      "exit_code": 0,
-      "duration_ms": 14404,
-      "workspace_sha256_before": "5b76ce3111fbd832cdbbf309bd4d4db0428fa7f991cbc3b619f3c46feac0fcf8",
-      "workspace_sha256_after": "5b76ce3111fbd832cdbbf309bd4d4db0428fa7f991cbc3b619f3c46feac0fcf8",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#22",
-          "severity": "P1",
-          "file": "cypress/e2e/release.cy.ts",
-          "line": 10
-        }
-      ],
-      "score": {
-        "tp": 0,
-        "fp": 1,
-        "fn": 0,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/release.cy.ts\",\"line\":10}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 30,
-      "case": "pw-c03",
-      "framework": "playwright",
-      "split": "public-development-v5",
-      "repetition": 3,
-      "exit_code": 0,
-      "duration_ms": 19382,
-      "workspace_sha256_before": "7258b5e6d78df292e10ecaa42c42617e5c2fe3c89722150fb59ca4a501c3f280",
-      "workspace_sha256_after": "7258b5e6d78df292e10ecaa42c42617e5c2fe3c89722150fb59ca4a501c3f280",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#1",
-          "severity": "P0",
-          "file": "tests/profile.spec.ts",
-          "line": 9
-        },
-        {
-          "pattern_id": "#2",
-          "severity": "P0",
-          "file": "tests/profile.spec.ts",
-          "line": 18
-        },
-        {
-          "pattern_id": "#10",
-          "severity": "P1",
-          "file": "pages/profile-page.ts",
-          "line": 28
-        },
-        {
-          "pattern_id": "#13",
-          "severity": "P1",
-          "file": "tests/profile.spec.ts",
-          "line": 9
-        },
-        {
-          "pattern_id": "#20",
-          "severity": "P1",
-          "file": "tests/profile.spec.ts",
-          "line": 8
-        },
-        {
-          "pattern_id": "#22",
-          "severity": "P1",
-          "file": "tests/profile.spec.ts",
-          "line": 9
-        }
-      ],
-      "score": {
-        "tp": 0,
-        "fp": 6,
-        "fn": 0,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#1\",\"severity\":\"P0\",\"file\":\"tests/profile.spec.ts\",\"line\":9},{\"pattern_id\":\"#2\",\"severity\":\"P0\",\"file\":\"tests/profile.spec.ts\",\"line\":18},{\"pattern_id\":\"#10\",\"severity\":\"P1\",\"file\":\"pages/profile-page.ts\",\"line\":28},{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":9},{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":8},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":9}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 31,
-      "case": "cy-a01",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 3,
-      "exit_code": 0,
-      "duration_ms": 7744,
-      "workspace_sha256_before": "2547ab6a3c71de04680d3be14a921b37a37b1df301cd6523d070af9099471b72",
-      "workspace_sha256_after": "2547ab6a3c71de04680d3be14a921b37a37b1df301cd6523d070af9099471b72",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#8",
-          "severity": "P0",
-          "file": "cypress/e2e/archive.cy.ts",
-          "line": 2
-        },
-        {
-          "pattern_id": "#3b",
-          "severity": "P0",
-          "file": "cypress/support/e2e.ts",
-          "line": 1
-        }
-      ],
-      "score": {
-        "tp": 1,
-        "fp": 1,
-        "fn": 1,
-        "matched_finding_ids": [
-          "V5-017"
-        ],
-        "missed_finding_ids": [
-          "V5-016"
-        ],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#8\",\"severity\":\"P0\",\"file\":\"cypress/e2e/archive.cy.ts\",\"line\":2},{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/e2e.ts\",\"line\":1}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 32,
-      "case": "cy-a02",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 3,
-      "exit_code": 0,
-      "duration_ms": 8486,
-      "workspace_sha256_before": "fa4709ea013c63e9f6c9e35311e53784520223ca27ef70c8d802315b83ee0738",
-      "workspace_sha256_after": "fa4709ea013c63e9f6c9e35311e53784520223ca27ef70c8d802315b83ee0738",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#7",
-          "severity": "P0",
-          "file": "cypress/e2e/labels.cy.ts",
-          "line": 1
-        },
-        {
-          "pattern_id": "#5a",
-          "severity": "P0",
-          "file": "cypress/e2e/labels.cy.ts",
-          "line": 4
-        }
-      ],
-      "score": {
-        "tp": 1,
-        "fp": 1,
-        "fn": 1,
-        "matched_finding_ids": [
-          "V5-019"
-        ],
-        "missed_finding_ids": [
-          "V5-018"
-        ],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#7\",\"severity\":\"P0\",\"file\":\"cypress/e2e/labels.cy.ts\",\"line\":1},{\"pattern_id\":\"#5a\",\"severity\":\"P0\",\"file\":\"cypress/e2e/labels.cy.ts\",\"line\":4}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 33,
-      "case": "pw-a03",
-      "framework": "playwright",
-      "split": "public-development-v5",
-      "repetition": 1,
-      "exit_code": 0,
-      "duration_ms": 5652,
-      "workspace_sha256_before": "5488dcee5e1a9dca60efba5de6b5e5c134bfde2bfb0f87cd90bbe520116c1a85",
-      "workspace_sha256_after": "5488dcee5e1a9dca60efba5de6b5e5c134bfde2bfb0f87cd90bbe520116c1a85",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#8",
-          "severity": "P0",
-          "file": "tests/billing.spec.ts",
-          "line": 9
-        }
-      ],
-      "score": {
-        "tp": 0,
-        "fp": 1,
-        "fn": 2,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [
-          "V5-006",
-          "V5-007"
-        ],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#8\",\"severity\":\"P0\",\"file\":\"tests/billing.spec.ts\",\"line\":9}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 34,
-      "case": "pw-a06",
-      "framework": "playwright",
-      "split": "public-development-v5",
-      "repetition": 2,
-      "exit_code": 0,
-      "duration_ms": 7455,
-      "workspace_sha256_before": "5065a3bbd597215032201527aa18d4f4b264df02966432fa61235da4d1073289",
-      "workspace_sha256_after": "5065a3bbd597215032201527aa18d4f4b264df02966432fa61235da4d1073289",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#3",
-          "severity": "P0",
-          "file": "tests/search.spec.ts",
-          "line": 7
-        }
-      ],
-      "score": {
-        "tp": 0,
-        "fp": 1,
-        "fn": 1,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [
-          "V5-014"
-        ],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"tests/search.spec.ts\",\"line\":7}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 35,
-      "case": "pw-a03",
-      "framework": "playwright",
-      "split": "public-development-v5",
-      "repetition": 3,
-      "exit_code": 0,
-      "duration_ms": 16911,
-      "workspace_sha256_before": "5488dcee5e1a9dca60efba5de6b5e5c134bfde2bfb0f87cd90bbe520116c1a85",
-      "workspace_sha256_after": "5488dcee5e1a9dca60efba5de6b5e5c134bfde2bfb0f87cd90bbe520116c1a85",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#8a",
-          "severity": "P0",
-          "file": "tests/billing.spec.ts",
-          "line": 9
-        }
-      ],
-      "score": {
-        "tp": 1,
-        "fp": 0,
-        "fn": 1,
-        "matched_finding_ids": [
-          "V5-006"
-        ],
-        "missed_finding_ids": [
-          "V5-007"
-        ],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#8a\",\"severity\":\"P0\",\"file\":\"tests/billing.spec.ts\",\"line\":9}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 36,
-      "case": "cy-c01",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 1,
-      "exit_code": 0,
-      "duration_ms": 8121,
-      "workspace_sha256_before": "97cfc45278e7069834bda5d83e81f2a0c02372e36ec558d86217afe707693fce",
-      "workspace_sha256_after": "97cfc45278e7069834bda5d83e81f2a0c02372e36ec558d86217afe707693fce",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#3b",
-          "severity": "P0",
-          "file": "cypress/support/e2e.ts",
-          "line": 2
-        }
-      ],
-      "score": {
-        "tp": 0,
-        "fp": 1,
-        "fn": 0,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/e2e.ts\",\"line\":2}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 37,
-      "case": "cy-c04",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 3,
-      "exit_code": 0,
-      "duration_ms": 6793,
-      "workspace_sha256_before": "96796f7603848f9fd2defa8990bd0f27fb8ffa7e31debf8c6a24353a5e35cde7",
-      "workspace_sha256_after": "96796f7603848f9fd2defa8990bd0f27fb8ffa7e31debf8c6a24353a5e35cde7",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [],
-      "score": {
-        "tp": 0,
-        "fp": 0,
-        "fn": 0,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 38,
-      "case": "cy-c04",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 2,
-      "exit_code": 0,
-      "duration_ms": 8762,
-      "workspace_sha256_before": "96796f7603848f9fd2defa8990bd0f27fb8ffa7e31debf8c6a24353a5e35cde7",
-      "workspace_sha256_after": "96796f7603848f9fd2defa8990bd0f27fb8ffa7e31debf8c6a24353a5e35cde7",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [],
-      "score": {
-        "tp": 0,
-        "fp": 0,
-        "fn": 0,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 39,
-      "case": "cy-a04",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 3,
-      "exit_code": 0,
-      "duration_ms": 9349,
-      "workspace_sha256_before": "cb3fcb69179ae6733a812e6ede056654702873822feeb527674041be71df2e9a",
-      "workspace_sha256_after": "cb3fcb69179ae6733a812e6ede056654702873822feeb527674041be71df2e9a",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#14",
-          "severity": "P1",
-          "file": "cypress/e2e/account.cy.ts",
-          "line": 5
-        }
-      ],
-      "score": {
-        "tp": 1,
-        "fp": 0,
-        "fn": 1,
-        "matched_finding_ids": [
-          "V5-023"
-        ],
-        "missed_finding_ids": [
-          "V5-022"
-        ],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#14\",\"severity\":\"P1\",\"file\":\"cypress/e2e/account.cy.ts\",\"line\":5}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 40,
-      "case": "pw-c01",
-      "framework": "playwright",
-      "split": "public-development-v5",
-      "repetition": 3,
-      "exit_code": 0,
-      "duration_ms": 34650,
-      "workspace_sha256_before": "6c36b6badc3b620677c958d670c4524f1931b56c91000dc3072186772097ff90",
-      "workspace_sha256_after": "6c36b6badc3b620677c958d670c4524f1931b56c91000dc3072186772097ff90",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#1",
-          "severity": "P0",
-          "file": "tests/orders.spec.ts",
-          "line": 16
-        }
-      ],
-      "score": {
-        "tp": 0,
-        "fp": 1,
-        "fn": 0,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#1\",\"severity\":\"P0\",\"file\":\"tests/orders.spec.ts\",\"line\":16}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 41,
-      "case": "pw-a01",
-      "framework": "playwright",
-      "split": "public-development-v5",
-      "repetition": 1,
-      "exit_code": 0,
-      "duration_ms": 11091,
-      "workspace_sha256_before": "a0b0ef1c7e9f06251b19761a315d8fb47bbb1648860395a190190e8682027114",
-      "workspace_sha256_after": "a0b0ef1c7e9f06251b19761a315d8fb47bbb1648860395a190190e8682027114",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#1",
-          "severity": "P0",
-          "file": "tests/ledger.spec.ts",
-          "line": 4
-        },
-        {
-          "pattern_id": "#13",
-          "severity": "P1",
-          "file": "tests/ledger.spec.ts",
-          "line": 11
-        }
-      ],
-      "score": {
-        "tp": 1,
-        "fp": 1,
-        "fn": 0,
-        "matched_finding_ids": [
-          "V5-001"
-        ],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#1\",\"severity\":\"P0\",\"file\":\"tests/ledger.spec.ts\",\"line\":4},{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/ledger.spec.ts\",\"line\":11}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 42,
-      "case": "cy-a06",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 1,
-      "exit_code": 0,
-      "duration_ms": 12230,
-      "workspace_sha256_before": "b89a9398e86bfb4f1e0341ba4d57e793c1eb7304edc9421f9154a3ecfa885b45",
-      "workspace_sha256_after": "b89a9398e86bfb4f1e0341ba4d57e793c1eb7304edc9421f9154a3ecfa885b45",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#22",
-          "severity": "P1",
-          "file": "cypress/e2e/board.cy.ts",
-          "line": 8
-        },
-        {
-          "pattern_id": "#23",
-          "severity": "P2",
-          "file": "cypress/fixtures/summary.json",
-          "line": 3
-        }
-      ],
-      "score": {
-        "tp": 1,
-        "fp": 1,
-        "fn": 1,
-        "matched_finding_ids": [
-          "V5-027"
-        ],
-        "missed_finding_ids": [
-          "V5-026"
-        ],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/board.cy.ts\",\"line\":8},{\"pattern_id\":\"#23\",\"severity\":\"P2\",\"file\":\"cypress/fixtures/summary.json\",\"line\":3}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 43,
-      "case": "pw-a04",
-      "framework": "playwright",
-      "split": "public-development-v5",
-      "repetition": 2,
-      "exit_code": 0,
-      "duration_ms": 9252,
-      "workspace_sha256_before": "2c21840552ba067aeadbc26ebc8047ebd95d927375edf12a9299bf1aaa775e1e",
-      "workspace_sha256_after": "2c21840552ba067aeadbc26ebc8047ebd95d927375edf12a9299bf1aaa775e1e",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#13",
-          "severity": "P1",
-          "file": "tests/profile.spec.ts",
-          "line": 7
-        },
-        {
-          "pattern_id": "#15",
-          "severity": "P1",
-          "file": "tests/profile.spec.ts",
-          "line": 9
-        },
-        {
-          "pattern_id": "#16",
-          "severity": "P1",
-          "file": "tests/profile.spec.ts",
-          "line": 10
-        }
-      ],
-      "score": {
-        "tp": 3,
-        "fp": 0,
-        "fn": 0,
-        "matched_finding_ids": [
-          "V5-008",
-          "V5-009",
-          "V5-010"
-        ],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":7},{\"pattern_id\":\"#15\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":9},{\"pattern_id\":\"#16\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":10}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 44,
-      "case": "pw-a02",
-      "framework": "playwright",
-      "split": "public-development-v5",
-      "repetition": 1,
-      "exit_code": 0,
-      "duration_ms": 17510,
-      "workspace_sha256_before": "346585b05199b0a602861de2f508cec72a2b42d6a8d30b023932ee56d9ef43e7",
-      "workspace_sha256_after": "346585b05199b0a602861de2f508cec72a2b42d6a8d30b023932ee56d9ef43e7",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#4a",
-          "severity": "P0",
-          "file": "tests/activity.spec.ts",
-          "line": 7
-        },
-        {
-          "pattern_id": "#6",
-          "severity": "P1",
-          "file": "tests/activity.spec.ts",
-          "line": 14
-        }
-      ],
-      "score": {
-        "tp": 1,
-        "fp": 1,
-        "fn": 1,
-        "matched_finding_ids": [
-          "V5-004"
-        ],
-        "missed_finding_ids": [
-          "V5-003"
-        ],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#4a\",\"severity\":\"P0\",\"file\":\"tests/activity.spec.ts\",\"line\":7},{\"pattern_id\":\"#6\",\"severity\":\"P1\",\"file\":\"tests/activity.spec.ts\",\"line\":14}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 45,
-      "case": "cy-a05",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 3,
-      "exit_code": 0,
-      "duration_ms": 22832,
-      "workspace_sha256_before": "e486139e45b89c4fe32de9008fbff29fbc273eaedc19df50a9fa0cf691c4d8bf",
-      "workspace_sha256_after": "e486139e45b89c4fe32de9008fbff29fbc273eaedc19df50a9fa0cf691c4d8bf",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#20",
-          "severity": "P1",
-          "file": "cypress/e2e/contacts.cy.ts",
-          "line": 8
-        },
-        {
-          "pattern_id": "#22",
-          "severity": "P1",
-          "file": "cypress/e2e/contacts.cy.ts",
-          "line": 9
-        },
-        {
-          "pattern_id": "#19",
-          "severity": "P1",
-          "file": "src/contact-service.ts",
-          "line": 1
-        }
-      ],
-      "score": {
-        "tp": 2,
-        "fp": 1,
-        "fn": 0,
-        "matched_finding_ids": [
-          "V5-024",
-          "V5-025"
-        ],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"cypress/e2e/contacts.cy.ts\",\"line\":8},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/contacts.cy.ts\",\"line\":9},{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"src/contact-service.ts\",\"line\":1}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 46,
-      "case": "pw-c04",
-      "framework": "playwright",
-      "split": "public-development-v5",
-      "repetition": 1,
-      "exit_code": 0,
-      "duration_ms": 15003,
-      "workspace_sha256_before": "ed91f39839cc08baa38ba4bdd94a5dca0a8fa6bc0aa76711f88b61d965e31607",
-      "workspace_sha256_after": "ed91f39839cc08baa38ba4bdd94a5dca0a8fa6bc0aa76711f88b61d965e31607",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#17",
-          "severity": "P1",
-          "file": "tests/member.spec.ts",
-          "line": 5
-        },
-        {
-          "pattern_id": "#18",
-          "severity": "P1",
-          "file": "tests/member.spec.ts",
-          "line": 6
-        },
-        {
-          "pattern_id": "#20",
-          "severity": "P1",
-          "file": "tests/member.spec.ts",
-          "line": 5
-        },
-        {
-          "pattern_id": "#22",
-          "severity": "P1",
-          "file": "tests/member.spec.ts",
-          "line": 7
-        }
-      ],
-      "score": {
-        "tp": 0,
-        "fp": 4,
-        "fn": 0,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": [
-          "V5-G10",
-          "V5-G11"
-        ]
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"tests/member.spec.ts\",\"line\":5},{\"pattern_id\":\"#18\",\"severity\":\"P1\",\"file\":\"tests/member.spec.ts\",\"line\":6},{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"tests/member.spec.ts\",\"line\":5},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"tests/member.spec.ts\",\"line\":7}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 47,
-      "case": "cy-c04",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 1,
-      "exit_code": 0,
-      "duration_ms": 21843,
-      "workspace_sha256_before": "96796f7603848f9fd2defa8990bd0f27fb8ffa7e31debf8c6a24353a5e35cde7",
-      "workspace_sha256_after": "96796f7603848f9fd2defa8990bd0f27fb8ffa7e31debf8c6a24353a5e35cde7",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#2",
-          "severity": "P0",
-          "file": "cypress/e2e/profile.cy.ts",
-          "line": 11
-        }
-      ],
-      "score": {
-        "tp": 0,
-        "fp": 1,
-        "fn": 0,
-        "matched_finding_ids": [],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#2\",\"severity\":\"P0\",\"file\":\"cypress/e2e/profile.cy.ts\",\"line\":11}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 48,
-      "case": "cy-a01",
-      "framework": "cypress",
-      "split": "public-development-v5",
-      "repetition": 2,
-      "exit_code": 0,
-      "duration_ms": 16324,
-      "workspace_sha256_before": "2547ab6a3c71de04680d3be14a921b37a37b1df301cd6523d070af9099471b72",
-      "workspace_sha256_after": "2547ab6a3c71de04680d3be14a921b37a37b1df301cd6523d070af9099471b72",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#8",
-          "severity": "P0",
-          "file": "cypress/e2e/archive.cy.ts",
-          "line": 2
-        },
-        {
-          "pattern_id": "#3b",
-          "severity": "P0",
-          "file": "cypress/support/e2e.ts",
-          "line": 1
-        }
-      ],
-      "score": {
-        "tp": 1,
-        "fp": 1,
-        "fn": 1,
-        "matched_finding_ids": [
-          "V5-017"
-        ],
-        "missed_finding_ids": [
-          "V5-016"
-        ],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#8\",\"severity\":\"P0\",\"file\":\"cypress/e2e/archive.cy.ts\",\"line\":2},{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/e2e.ts\",\"line\":1}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 49,
-      "case": "pw-a01",
-      "framework": "playwright",
-      "split": "public-development-v5",
-      "repetition": 2,
-      "exit_code": 0,
-      "duration_ms": 13167,
-      "workspace_sha256_before": "a0b0ef1c7e9f06251b19761a315d8fb47bbb1648860395a190190e8682027114",
-      "workspace_sha256_after": "a0b0ef1c7e9f06251b19761a315d8fb47bbb1648860395a190190e8682027114",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "findings": [
-        {
-          "pattern_id": "#1",
-          "severity": "P0",
-          "file": "tests/ledger.spec.ts",
-          "line": 4
-        },
-        {
-          "pattern_id": "#13",
-          "severity": "P1",
-          "file": "tests/ledger.spec.ts",
-          "line": 10
-        }
-      ],
-      "score": {
-        "tp": 1,
-        "fp": 1,
-        "fn": 0,
-        "matched_finding_ids": [
-          "V5-001"
-        ],
-        "missed_finding_ids": [],
-        "hit_fp_guard_ids": []
-      },
-      "output": "{\"findings\":[{\"pattern_id\":\"#1\",\"severity\":\"P0\",\"file\":\"tests/ledger.spec.ts\",\"line\":4},{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/ledger.spec.ts\",\"line\":10}]}\n",
-      "error": null,
-      "cleanup_failures": []
-    },
-    {
-      "schedule_ordinal": 50,
-      "case": "pw-c04",
-      "framework": "playwright",
-      "split": "public-development-v5",
-      "repetition": 2,
-      "exit_code": 0,
-      "duration_ms": 16779,
-      "workspace_sha256_before": "ed91f39839cc08baa38ba4bdd94a5dca0a8fa6bc0aa76711f88b61d965e31607",
-      "workspace_sha256_after": "ed91f39839cc08baa38ba4bdd94a5dca0a8fa6bc0aa76711f88b61d965e31607",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 22660,
+      "workspace_sha256_before": "faa0fe6b56e4f73fb54340828278f6a9ad6c575b6148309bd0e1b59104b0ad2a",
+      "workspace_sha256_after": "faa0fe6b56e4f73fb54340828278f6a9ad6c575b6148309bd0e1b59104b0ad2a",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
         {
           "pattern_id": "#17",
@@ -3242,17 +1733,1509 @@
       "cleanup_failures": []
     },
     {
+      "schedule_ordinal": 12,
+      "case": "cy-a03",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 7157,
+      "workspace_sha256_before": "a92da1930aa61944502be1ec6069de900c42fba2656a213ed5064ebcec691a78",
+      "workspace_sha256_after": "a92da1930aa61944502be1ec6069de900c42fba2656a213ed5064ebcec691a78",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#9",
+          "severity": "P1",
+          "file": "cypress/e2e/search.cy.ts",
+          "line": 4
+        }
+      ],
+      "score": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 2,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [
+          "V5-020",
+          "V5-021"
+        ],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#9\",\"severity\":\"P1\",\"file\":\"cypress/e2e/search.cy.ts\",\"line\":4}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 13,
+      "case": "pw-a06",
+      "framework": "playwright",
+      "split": "public-development-v5",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 6731,
+      "workspace_sha256_before": "784a77fafe327e4a05e03703ccc25cb3556a93f621267eb515f602c571a2bda6",
+      "workspace_sha256_after": "784a77fafe327e4a05e03703ccc25cb3556a93f621267eb515f602c571a2bda6",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "tests/search.spec.ts",
+          "line": 5
+        }
+      ],
+      "score": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [
+          "V5-014"
+        ],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"tests/search.spec.ts\",\"line\":5}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 14,
+      "case": "cy-a05",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 22771,
+      "workspace_sha256_before": "c9e1baf27d9129b6609ec25fbfa66ff7eab7e34a832e82887e5c4b85fea23102",
+      "workspace_sha256_after": "c9e1baf27d9129b6609ec25fbfa66ff7eab7e34a832e82887e5c4b85fea23102",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "cypress/e2e/contacts.cy.ts",
+          "line": 8
+        },
+        {
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "cypress/e2e/contacts.cy.ts",
+          "line": 9
+        },
+        {
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "src/contact-service.ts",
+          "line": 1
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 1,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V5-024",
+          "V5-025"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"cypress/e2e/contacts.cy.ts\",\"line\":8},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/contacts.cy.ts\",\"line\":9},{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"src/contact-service.ts\",\"line\":1}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 15,
+      "case": "cy-a06",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 10646,
+      "workspace_sha256_before": "d6b9237c9022cd1d65d867c1fa50f6167fe053875089272879c91a75c291f924",
+      "workspace_sha256_after": "d6b9237c9022cd1d65d867c1fa50f6167fe053875089272879c91a75c291f924",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "cypress/e2e/board.cy.ts",
+          "line": 8
+        },
+        {
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "cypress/fixtures/summary.json",
+          "line": 3
+        }
+      ],
+      "score": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 1,
+        "matched_finding_ids": [
+          "V5-027"
+        ],
+        "missed_finding_ids": [
+          "V5-026"
+        ],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/board.cy.ts\",\"line\":8},{\"pattern_id\":\"#23\",\"severity\":\"P2\",\"file\":\"cypress/fixtures/summary.json\",\"line\":3}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 16,
+      "case": "cy-c01",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 9994,
+      "workspace_sha256_before": "db2eb64ae158240cde3cdfd099784205f20236d561df923f71f89aa7a99487dc",
+      "workspace_sha256_after": "db2eb64ae158240cde3cdfd099784205f20236d561df923f71f89aa7a99487dc",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/e2e.ts",
+          "line": 2
+        }
+      ],
+      "score": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 0,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/e2e.ts\",\"line\":2}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 17,
+      "case": "cy-c01",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 13983,
+      "workspace_sha256_before": "db2eb64ae158240cde3cdfd099784205f20236d561df923f71f89aa7a99487dc",
+      "workspace_sha256_after": "db2eb64ae158240cde3cdfd099784205f20236d561df923f71f89aa7a99487dc",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/e2e.ts",
+          "line": 2
+        }
+      ],
+      "score": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 0,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/e2e.ts\",\"line\":2}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 18,
+      "case": "cy-a05",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 14132,
+      "workspace_sha256_before": "c9e1baf27d9129b6609ec25fbfa66ff7eab7e34a832e82887e5c4b85fea23102",
+      "workspace_sha256_after": "c9e1baf27d9129b6609ec25fbfa66ff7eab7e34a832e82887e5c4b85fea23102",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "cypress/e2e/contacts.cy.ts",
+          "line": 8
+        },
+        {
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "cypress/e2e/contacts.cy.ts",
+          "line": 9
+        },
+        {
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "src/contact-service.ts",
+          "line": 1
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 1,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V5-024",
+          "V5-025"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"cypress/e2e/contacts.cy.ts\",\"line\":8},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/contacts.cy.ts\",\"line\":9},{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"src/contact-service.ts\",\"line\":1}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 19,
+      "case": "cy-c03",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 10500,
+      "workspace_sha256_before": "3f41c9d39389b7208864d778e403c7ccc5070dd74a2495cf45421e6406f5b384",
+      "workspace_sha256_after": "3f41c9d39389b7208864d778e403c7ccc5070dd74a2495cf45421e6406f5b384",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#14",
+          "severity": "P1",
+          "file": "cypress/e2e/account.cy.ts",
+          "line": 9
+        }
+      ],
+      "score": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 0,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": [
+          "V5-G20"
+        ]
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#14\",\"severity\":\"P1\",\"file\":\"cypress/e2e/account.cy.ts\",\"line\":9}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 20,
+      "case": "pw-c02",
+      "framework": "playwright",
+      "split": "public-development-v5",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 11468,
+      "workspace_sha256_before": "fa7f3aa7ef8f79802a17d10a448f1aec8210e33a65e4dbb1cdb59938e60ea072",
+      "workspace_sha256_after": "fa7f3aa7ef8f79802a17d10a448f1aec8210e33a65e4dbb1cdb59938e60ea072",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "tests/theme.spec.ts",
+          "line": 7
+        }
+      ],
+      "score": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 0,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": [
+          "V5-G04"
+        ]
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#6\",\"severity\":\"P1\",\"file\":\"tests/theme.spec.ts\",\"line\":7}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 21,
+      "case": "cy-a04",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 9875,
+      "workspace_sha256_before": "dc43bc0b0a979d22acff70a686b6ba6cb4c526cc8c8bd781cac4409c09b88794",
+      "workspace_sha256_after": "dc43bc0b0a979d22acff70a686b6ba6cb4c526cc8c8bd781cac4409c09b88794",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#14",
+          "severity": "P1",
+          "file": "cypress/e2e/account.cy.ts",
+          "line": 5
+        }
+      ],
+      "score": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "matched_finding_ids": [
+          "V5-023"
+        ],
+        "missed_finding_ids": [
+          "V5-022"
+        ],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#14\",\"severity\":\"P1\",\"file\":\"cypress/e2e/account.cy.ts\",\"line\":5}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 22,
+      "case": "cy-a06",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 14437,
+      "workspace_sha256_before": "d6b9237c9022cd1d65d867c1fa50f6167fe053875089272879c91a75c291f924",
+      "workspace_sha256_after": "d6b9237c9022cd1d65d867c1fa50f6167fe053875089272879c91a75c291f924",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "cypress/e2e/board.cy.ts",
+          "line": 7
+        },
+        {
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/board.cy.ts",
+          "line": 14
+        },
+        {
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "cypress/fixtures/summary.json",
+          "line": 3
+        }
+      ],
+      "score": {
+        "tp": 1,
+        "fp": 2,
+        "fn": 1,
+        "matched_finding_ids": [
+          "V5-027"
+        ],
+        "missed_finding_ids": [
+          "V5-026"
+        ],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/board.cy.ts\",\"line\":7},{\"pattern_id\":\"#1\",\"severity\":\"P0\",\"file\":\"cypress/e2e/board.cy.ts\",\"line\":14},{\"pattern_id\":\"#23\",\"severity\":\"P2\",\"file\":\"cypress/fixtures/summary.json\",\"line\":3}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 23,
+      "case": "pw-c02",
+      "framework": "playwright",
+      "split": "public-development-v5",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 8841,
+      "workspace_sha256_before": "fa7f3aa7ef8f79802a17d10a448f1aec8210e33a65e4dbb1cdb59938e60ea072",
+      "workspace_sha256_after": "fa7f3aa7ef8f79802a17d10a448f1aec8210e33a65e4dbb1cdb59938e60ea072",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "tests/theme.spec.ts",
+          "line": 6
+        }
+      ],
+      "score": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 0,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#6\",\"severity\":\"P1\",\"file\":\"tests/theme.spec.ts\",\"line\":6}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 24,
+      "case": "cy-c03",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 12445,
+      "workspace_sha256_before": "3f41c9d39389b7208864d778e403c7ccc5070dd74a2495cf45421e6406f5b384",
+      "workspace_sha256_after": "3f41c9d39389b7208864d778e403c7ccc5070dd74a2495cf45421e6406f5b384",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [],
+      "score": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 25,
+      "case": "pw-a02",
+      "framework": "playwright",
+      "split": "public-development-v5",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 17472,
+      "workspace_sha256_before": "13df22a72670f54d22e33629707b76f1304da069268a15483be0fcf8c2af0e76",
+      "workspace_sha256_after": "13df22a72670f54d22e33629707b76f1304da069268a15483be0fcf8c2af0e76",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#4a",
+          "severity": "P0",
+          "file": "tests/activity.spec.ts",
+          "line": 8
+        },
+        {
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "tests/activity.spec.ts",
+          "line": 13
+        }
+      ],
+      "score": {
+        "tp": 0,
+        "fp": 2,
+        "fn": 2,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [
+          "V5-003",
+          "V5-004"
+        ],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#4a\",\"severity\":\"P0\",\"file\":\"tests/activity.spec.ts\",\"line\":8},{\"pattern_id\":\"#6\",\"severity\":\"P1\",\"file\":\"tests/activity.spec.ts\",\"line\":13}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 26,
+      "case": "cy-c02",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 15451,
+      "workspace_sha256_before": "ee42c39f82ab6ac185247c2ace66d93623229b8746ec8f87cdc26f4e3bca936f",
+      "workspace_sha256_after": "ee42c39f82ab6ac185247c2ace66d93623229b8746ec8f87cdc26f4e3bca936f",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "cypress/e2e/release.cy.ts",
+          "line": 10
+        },
+        {
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "cypress/e2e/release.cy.ts",
+          "line": 17
+        }
+      ],
+      "score": {
+        "tp": 0,
+        "fp": 2,
+        "fn": 0,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"cypress/e2e/release.cy.ts\",\"line\":10},{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"cypress/e2e/release.cy.ts\",\"line\":17}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 27,
+      "case": "cy-a01",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 16228,
+      "workspace_sha256_before": "138ccd730c7121b87bbaaf8e50b8a412e3d4608eb10689e455f14368b00078d6",
+      "workspace_sha256_after": "138ccd730c7121b87bbaaf8e50b8a412e3d4608eb10689e455f14368b00078d6",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#8",
+          "severity": "P0",
+          "file": "cypress/e2e/archive.cy.ts",
+          "line": 2
+        },
+        {
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/e2e.ts",
+          "line": 1
+        }
+      ],
+      "score": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 1,
+        "matched_finding_ids": [
+          "V5-017"
+        ],
+        "missed_finding_ids": [
+          "V5-016"
+        ],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#8\",\"severity\":\"P0\",\"file\":\"cypress/e2e/archive.cy.ts\",\"line\":2},{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/e2e.ts\",\"line\":1}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 28,
+      "case": "pw-c01",
+      "framework": "playwright",
+      "split": "public-development-v5",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 21359,
+      "workspace_sha256_before": "0c5141787a2ae88c4070a389787fb78a17af7c06f073a866fe4a44b6944991ab",
+      "workspace_sha256_after": "0c5141787a2ae88c4070a389787fb78a17af7c06f073a866fe4a44b6944991ab",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "tests/orders.spec.ts",
+          "line": 13
+        },
+        {
+          "pattern_id": "#4c-4e",
+          "severity": "P1",
+          "file": "tests/orders.spec.ts",
+          "line": 16
+        }
+      ],
+      "score": {
+        "tp": 0,
+        "fp": 2,
+        "fn": 0,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": [
+          "V5-G02"
+        ]
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"tests/orders.spec.ts\",\"line\":13},{\"pattern_id\":\"#4c-4e\",\"severity\":\"P1\",\"file\":\"tests/orders.spec.ts\",\"line\":16}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 29,
+      "case": "cy-c02",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 16515,
+      "workspace_sha256_before": "ee42c39f82ab6ac185247c2ace66d93623229b8746ec8f87cdc26f4e3bca936f",
+      "workspace_sha256_after": "ee42c39f82ab6ac185247c2ace66d93623229b8746ec8f87cdc26f4e3bca936f",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [],
+      "score": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 30,
+      "case": "pw-c03",
+      "framework": "playwright",
+      "split": "public-development-v5",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 21122,
+      "workspace_sha256_before": "1885d8b02f851aaafbf827cda7d21a50741393d2cf7e4cb22b5f1140b10a0224",
+      "workspace_sha256_after": "1885d8b02f851aaafbf827cda7d21a50741393d2cf7e4cb22b5f1140b10a0224",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "tests/profile.spec.ts",
+          "line": 8
+        },
+        {
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "tests/profile.spec.ts",
+          "line": 9
+        },
+        {
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/profile.spec.ts",
+          "line": 17
+        },
+        {
+          "pattern_id": "#10",
+          "severity": "P1",
+          "file": "pages/profile-page.ts",
+          "line": 28
+        }
+      ],
+      "score": {
+        "tp": 0,
+        "fp": 4,
+        "fn": 0,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":8},{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":9},{\"pattern_id\":\"#2\",\"severity\":\"P0\",\"file\":\"tests/profile.spec.ts\",\"line\":17},{\"pattern_id\":\"#10\",\"severity\":\"P1\",\"file\":\"pages/profile-page.ts\",\"line\":28}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 31,
+      "case": "cy-a01",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 11663,
+      "workspace_sha256_before": "138ccd730c7121b87bbaaf8e50b8a412e3d4608eb10689e455f14368b00078d6",
+      "workspace_sha256_after": "138ccd730c7121b87bbaaf8e50b8a412e3d4608eb10689e455f14368b00078d6",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#8",
+          "severity": "P0",
+          "file": "cypress/e2e/archive.cy.ts",
+          "line": 2
+        },
+        {
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/e2e.ts",
+          "line": 1
+        }
+      ],
+      "score": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 1,
+        "matched_finding_ids": [
+          "V5-017"
+        ],
+        "missed_finding_ids": [
+          "V5-016"
+        ],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#8\",\"severity\":\"P0\",\"file\":\"cypress/e2e/archive.cy.ts\",\"line\":2},{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/e2e.ts\",\"line\":1}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 32,
+      "case": "cy-a02",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 6982,
+      "workspace_sha256_before": "4d98866a198807ba27a14391b83929763c4d06c84e8c5ce50bcc672f1756694b",
+      "workspace_sha256_after": "4d98866a198807ba27a14391b83929763c4d06c84e8c5ce50bcc672f1756694b",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#7",
+          "severity": "P0",
+          "file": "cypress/e2e/labels.cy.ts",
+          "line": 1
+        },
+        {
+          "pattern_id": "#5b",
+          "severity": "P1",
+          "file": "cypress/e2e/labels.cy.ts",
+          "line": 4
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V5-018",
+          "V5-019"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#7\",\"severity\":\"P0\",\"file\":\"cypress/e2e/labels.cy.ts\",\"line\":1},{\"pattern_id\":\"#5b\",\"severity\":\"P1\",\"file\":\"cypress/e2e/labels.cy.ts\",\"line\":4}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 33,
+      "case": "pw-a03",
+      "framework": "playwright",
+      "split": "public-development-v5",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 7198,
+      "workspace_sha256_before": "8384d6272d38ba7d0ec43604b3162e6629cbf15f92f73123d33e2ea9af8f0cda",
+      "workspace_sha256_after": "8384d6272d38ba7d0ec43604b3162e6629cbf15f92f73123d33e2ea9af8f0cda",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#8",
+          "severity": "P0",
+          "file": "tests/billing.spec.ts",
+          "line": 9
+        },
+        {
+          "pattern_id": "#12",
+          "severity": "P0",
+          "file": "tests/billing.spec.ts",
+          "line": 13
+        }
+      ],
+      "score": {
+        "tp": 0,
+        "fp": 2,
+        "fn": 2,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [
+          "V5-006",
+          "V5-007"
+        ],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#8\",\"severity\":\"P0\",\"file\":\"tests/billing.spec.ts\",\"line\":9},{\"pattern_id\":\"#12\",\"severity\":\"P0\",\"file\":\"tests/billing.spec.ts\",\"line\":13}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 34,
+      "case": "pw-a06",
+      "framework": "playwright",
+      "split": "public-development-v5",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 7872,
+      "workspace_sha256_before": "784a77fafe327e4a05e03703ccc25cb3556a93f621267eb515f602c571a2bda6",
+      "workspace_sha256_after": "784a77fafe327e4a05e03703ccc25cb3556a93f621267eb515f602c571a2bda6",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "tests/search.spec.ts",
+          "line": 6
+        }
+      ],
+      "score": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V5-014"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"tests/search.spec.ts\",\"line\":6}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 35,
+      "case": "pw-a03",
+      "framework": "playwright",
+      "split": "public-development-v5",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 10327,
+      "workspace_sha256_before": "8384d6272d38ba7d0ec43604b3162e6629cbf15f92f73123d33e2ea9af8f0cda",
+      "workspace_sha256_after": "8384d6272d38ba7d0ec43604b3162e6629cbf15f92f73123d33e2ea9af8f0cda",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#8",
+          "severity": "P0",
+          "file": "tests/billing.spec.ts",
+          "line": 9
+        }
+      ],
+      "score": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 2,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [
+          "V5-006",
+          "V5-007"
+        ],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#8\",\"severity\":\"P0\",\"file\":\"tests/billing.spec.ts\",\"line\":9}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 36,
+      "case": "cy-c01",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 9737,
+      "workspace_sha256_before": "db2eb64ae158240cde3cdfd099784205f20236d561df923f71f89aa7a99487dc",
+      "workspace_sha256_after": "db2eb64ae158240cde3cdfd099784205f20236d561df923f71f89aa7a99487dc",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/e2e.ts",
+          "line": 2
+        }
+      ],
+      "score": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 0,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/e2e.ts\",\"line\":2}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 37,
+      "case": "cy-c04",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 7939,
+      "workspace_sha256_before": "cfec8cf700c8badbee22ab348664cfec61dac0f552600d29aac04cd02a56b4d8",
+      "workspace_sha256_after": "cfec8cf700c8badbee22ab348664cfec61dac0f552600d29aac04cd02a56b4d8",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [],
+      "score": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 38,
+      "case": "cy-c04",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 10702,
+      "workspace_sha256_before": "cfec8cf700c8badbee22ab348664cfec61dac0f552600d29aac04cd02a56b4d8",
+      "workspace_sha256_after": "cfec8cf700c8badbee22ab348664cfec61dac0f552600d29aac04cd02a56b4d8",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [],
+      "score": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 39,
+      "case": "cy-a04",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 8033,
+      "workspace_sha256_before": "dc43bc0b0a979d22acff70a686b6ba6cb4c526cc8c8bd781cac4409c09b88794",
+      "workspace_sha256_after": "dc43bc0b0a979d22acff70a686b6ba6cb4c526cc8c8bd781cac4409c09b88794",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#14",
+          "severity": "P1",
+          "file": "cypress/e2e/account.cy.ts",
+          "line": 5
+        }
+      ],
+      "score": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "matched_finding_ids": [
+          "V5-023"
+        ],
+        "missed_finding_ids": [
+          "V5-022"
+        ],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#14\",\"severity\":\"P1\",\"file\":\"cypress/e2e/account.cy.ts\",\"line\":5}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 40,
+      "case": "pw-c01",
+      "framework": "playwright",
+      "split": "public-development-v5",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 16681,
+      "workspace_sha256_before": "0c5141787a2ae88c4070a389787fb78a17af7c06f073a866fe4a44b6944991ab",
+      "workspace_sha256_after": "0c5141787a2ae88c4070a389787fb78a17af7c06f073a866fe4a44b6944991ab",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "tests/orders.spec.ts",
+          "line": 13
+        }
+      ],
+      "score": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 0,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": [
+          "V5-G02"
+        ]
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#3\",\"severity\":\"P0\",\"file\":\"tests/orders.spec.ts\",\"line\":13}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 41,
+      "case": "pw-a01",
+      "framework": "playwright",
+      "split": "public-development-v5",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 13078,
+      "workspace_sha256_before": "26f0beb9ddbe5ac257d040d7160ed7621c5c5bb06b92036213798d85e3639bea",
+      "workspace_sha256_after": "26f0beb9ddbe5ac257d040d7160ed7621c5c5bb06b92036213798d85e3639bea",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/ledger.spec.ts",
+          "line": 4
+        }
+      ],
+      "score": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V5-001"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#1\",\"severity\":\"P0\",\"file\":\"tests/ledger.spec.ts\",\"line\":4}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 42,
+      "case": "cy-a06",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 13426,
+      "workspace_sha256_before": "d6b9237c9022cd1d65d867c1fa50f6167fe053875089272879c91a75c291f924",
+      "workspace_sha256_after": "d6b9237c9022cd1d65d867c1fa50f6167fe053875089272879c91a75c291f924",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "cypress/e2e/board.cy.ts",
+          "line": 8
+        },
+        {
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "cypress/fixtures/summary.json",
+          "line": 3
+        }
+      ],
+      "score": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 1,
+        "matched_finding_ids": [
+          "V5-027"
+        ],
+        "missed_finding_ids": [
+          "V5-026"
+        ],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/board.cy.ts\",\"line\":8},{\"pattern_id\":\"#23\",\"severity\":\"P2\",\"file\":\"cypress/fixtures/summary.json\",\"line\":3}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 43,
+      "case": "pw-a04",
+      "framework": "playwright",
+      "split": "public-development-v5",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 9425,
+      "workspace_sha256_before": "70a886d136acc39bdb9d5d66e479b200893475230e2ebf2f2d2affa6ca131a91",
+      "workspace_sha256_after": "70a886d136acc39bdb9d5d66e479b200893475230e2ebf2f2d2affa6ca131a91",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#15",
+          "severity": "P1",
+          "file": "tests/profile.spec.ts",
+          "line": 9
+        },
+        {
+          "pattern_id": "#16",
+          "severity": "P1",
+          "file": "tests/profile.spec.ts",
+          "line": 10
+        }
+      ],
+      "score": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 1,
+        "matched_finding_ids": [
+          "V5-009",
+          "V5-010"
+        ],
+        "missed_finding_ids": [
+          "V5-008"
+        ],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#15\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":9},{\"pattern_id\":\"#16\",\"severity\":\"P1\",\"file\":\"tests/profile.spec.ts\",\"line\":10}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 44,
+      "case": "pw-a02",
+      "framework": "playwright",
+      "split": "public-development-v5",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 20761,
+      "workspace_sha256_before": "13df22a72670f54d22e33629707b76f1304da069268a15483be0fcf8c2af0e76",
+      "workspace_sha256_after": "13df22a72670f54d22e33629707b76f1304da069268a15483be0fcf8c2af0e76",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#4a",
+          "severity": "P0",
+          "file": "tests/activity.spec.ts",
+          "line": 7
+        },
+        {
+          "pattern_id": "#15",
+          "severity": "P1",
+          "file": "tests/activity.spec.ts",
+          "line": 7
+        },
+        {
+          "pattern_id": "#17",
+          "severity": "P1",
+          "file": "tests/activity.spec.ts",
+          "line": 7
+        },
+        {
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "tests/activity.spec.ts",
+          "line": 12
+        },
+        {
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "tests/activity.spec.ts",
+          "line": 13
+        }
+      ],
+      "score": {
+        "tp": 0,
+        "fp": 5,
+        "fn": 2,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [
+          "V5-003",
+          "V5-004"
+        ],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#4a\",\"severity\":\"P0\",\"file\":\"tests/activity.spec.ts\",\"line\":7},{\"pattern_id\":\"#15\",\"severity\":\"P1\",\"file\":\"tests/activity.spec.ts\",\"line\":7},{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"tests/activity.spec.ts\",\"line\":7},{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/activity.spec.ts\",\"line\":12},{\"pattern_id\":\"#6\",\"severity\":\"P1\",\"file\":\"tests/activity.spec.ts\",\"line\":13}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 45,
+      "case": "cy-a05",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 3,
+      "exit_code": 0,
+      "duration_ms": 20531,
+      "workspace_sha256_before": "c9e1baf27d9129b6609ec25fbfa66ff7eab7e34a832e82887e5c4b85fea23102",
+      "workspace_sha256_after": "c9e1baf27d9129b6609ec25fbfa66ff7eab7e34a832e82887e5c4b85fea23102",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/contacts.cy.ts",
+          "line": 4
+        },
+        {
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "cypress/e2e/contacts.cy.ts",
+          "line": 9
+        },
+        {
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "cypress/e2e/contacts.cy.ts",
+          "line": 10
+        },
+        {
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "src/contact-service.ts",
+          "line": 1
+        }
+      ],
+      "score": {
+        "tp": 1,
+        "fp": 3,
+        "fn": 1,
+        "matched_finding_ids": [
+          "V5-024"
+        ],
+        "missed_finding_ids": [
+          "V5-025"
+        ],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#1\",\"severity\":\"P0\",\"file\":\"cypress/e2e/contacts.cy.ts\",\"line\":4},{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"cypress/e2e/contacts.cy.ts\",\"line\":9},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"cypress/e2e/contacts.cy.ts\",\"line\":10},{\"pattern_id\":\"#19\",\"severity\":\"P1\",\"file\":\"src/contact-service.ts\",\"line\":1}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 46,
+      "case": "pw-c04",
+      "framework": "playwright",
+      "split": "public-development-v5",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 15356,
+      "workspace_sha256_before": "faa0fe6b56e4f73fb54340828278f6a9ad6c575b6148309bd0e1b59104b0ad2a",
+      "workspace_sha256_after": "faa0fe6b56e4f73fb54340828278f6a9ad6c575b6148309bd0e1b59104b0ad2a",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#17",
+          "severity": "P1",
+          "file": "tests/member.spec.ts",
+          "line": 5
+        },
+        {
+          "pattern_id": "#18",
+          "severity": "P1",
+          "file": "tests/member.spec.ts",
+          "line": 6
+        },
+        {
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "tests/member.spec.ts",
+          "line": 7
+        }
+      ],
+      "score": {
+        "tp": 0,
+        "fp": 3,
+        "fn": 0,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": [
+          "V5-G10",
+          "V5-G11"
+        ]
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"tests/member.spec.ts\",\"line\":5},{\"pattern_id\":\"#18\",\"severity\":\"P1\",\"file\":\"tests/member.spec.ts\",\"line\":6},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"tests/member.spec.ts\",\"line\":7}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 47,
+      "case": "cy-c04",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 1,
+      "exit_code": 0,
+      "duration_ms": 8113,
+      "workspace_sha256_before": "cfec8cf700c8badbee22ab348664cfec61dac0f552600d29aac04cd02a56b4d8",
+      "workspace_sha256_after": "cfec8cf700c8badbee22ab348664cfec61dac0f552600d29aac04cd02a56b4d8",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [],
+      "score": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 48,
+      "case": "cy-a01",
+      "framework": "cypress",
+      "split": "public-development-v5",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 13483,
+      "workspace_sha256_before": "138ccd730c7121b87bbaaf8e50b8a412e3d4608eb10689e455f14368b00078d6",
+      "workspace_sha256_after": "138ccd730c7121b87bbaaf8e50b8a412e3d4608eb10689e455f14368b00078d6",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#8",
+          "severity": "P0",
+          "file": "cypress/e2e/archive.cy.ts",
+          "line": 2
+        },
+        {
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/e2e.ts",
+          "line": 1
+        }
+      ],
+      "score": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 1,
+        "matched_finding_ids": [
+          "V5-017"
+        ],
+        "missed_finding_ids": [
+          "V5-016"
+        ],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#8\",\"severity\":\"P0\",\"file\":\"cypress/e2e/archive.cy.ts\",\"line\":2},{\"pattern_id\":\"#3b\",\"severity\":\"P0\",\"file\":\"cypress/support/e2e.ts\",\"line\":1}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 49,
+      "case": "pw-a01",
+      "framework": "playwright",
+      "split": "public-development-v5",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 14969,
+      "workspace_sha256_before": "26f0beb9ddbe5ac257d040d7160ed7621c5c5bb06b92036213798d85e3639bea",
+      "workspace_sha256_after": "26f0beb9ddbe5ac257d040d7160ed7621c5c5bb06b92036213798d85e3639bea",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/ledger.spec.ts",
+          "line": 4
+        },
+        {
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "tests/ledger.spec.ts",
+          "line": 11
+        }
+      ],
+      "score": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 0,
+        "matched_finding_ids": [
+          "V5-001"
+        ],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": []
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#1\",\"severity\":\"P0\",\"file\":\"tests/ledger.spec.ts\",\"line\":4},{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"tests/ledger.spec.ts\",\"line\":11}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 50,
+      "case": "pw-c04",
+      "framework": "playwright",
+      "split": "public-development-v5",
+      "repetition": 2,
+      "exit_code": 0,
+      "duration_ms": 14612,
+      "workspace_sha256_before": "faa0fe6b56e4f73fb54340828278f6a9ad6c575b6148309bd0e1b59104b0ad2a",
+      "workspace_sha256_after": "faa0fe6b56e4f73fb54340828278f6a9ad6c575b6148309bd0e1b59104b0ad2a",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "findings": [
+        {
+          "pattern_id": "#17",
+          "severity": "P1",
+          "file": "tests/member.spec.ts",
+          "line": 5
+        },
+        {
+          "pattern_id": "#18",
+          "severity": "P1",
+          "file": "tests/member.spec.ts",
+          "line": 6
+        },
+        {
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "tests/member.spec.ts",
+          "line": 7
+        }
+      ],
+      "score": {
+        "tp": 0,
+        "fp": 3,
+        "fn": 0,
+        "matched_finding_ids": [],
+        "missed_finding_ids": [],
+        "hit_fp_guard_ids": [
+          "V5-G10",
+          "V5-G11"
+        ]
+      },
+      "output": "{\"findings\":[{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"tests/member.spec.ts\",\"line\":5},{\"pattern_id\":\"#18\",\"severity\":\"P1\",\"file\":\"tests/member.spec.ts\",\"line\":6},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"tests/member.spec.ts\",\"line\":7}]}\n",
+      "error": null,
+      "cleanup_failures": []
+    },
+    {
       "schedule_ordinal": 51,
       "case": "cy-a03",
       "framework": "cypress",
       "split": "public-development-v5",
       "repetition": 1,
       "exit_code": 0,
-      "duration_ms": 9512,
-      "workspace_sha256_before": "5c3dcafbc2a2329318d80ff33b8455ffb67866c776e27153e6afb6f4b79955fd",
-      "workspace_sha256_after": "5c3dcafbc2a2329318d80ff33b8455ffb67866c776e27153e6afb6f4b79955fd",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 8404,
+      "workspace_sha256_before": "a92da1930aa61944502be1ec6069de900c42fba2656a213ed5064ebcec691a78",
+      "workspace_sha256_after": "a92da1930aa61944502be1ec6069de900c42fba2656a213ed5064ebcec691a78",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
         {
           "pattern_id": "#9",
@@ -3283,11 +3266,11 @@
       "split": "public-development-v5",
       "repetition": 2,
       "exit_code": 0,
-      "duration_ms": 13838,
-      "workspace_sha256_before": "cb3fcb69179ae6733a812e6ede056654702873822feeb527674041be71df2e9a",
-      "workspace_sha256_after": "cb3fcb69179ae6733a812e6ede056654702873822feeb527674041be71df2e9a",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 9605,
+      "workspace_sha256_before": "dc43bc0b0a979d22acff70a686b6ba6cb4c526cc8c8bd781cac4409c09b88794",
+      "workspace_sha256_after": "dc43bc0b0a979d22acff70a686b6ba6cb4c526cc8c8bd781cac4409c09b88794",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
         {
           "pattern_id": "#14",
@@ -3319,11 +3302,11 @@
       "split": "public-development-v5",
       "repetition": 1,
       "exit_code": 0,
-      "duration_ms": 16217,
-      "workspace_sha256_before": "b50034ab9f76d90a6b95bbbae5d7652432b82b63cef495d0105e66736b357410",
-      "workspace_sha256_after": "b50034ab9f76d90a6b95bbbae5d7652432b82b63cef495d0105e66736b357410",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 20488,
+      "workspace_sha256_before": "b26d4d6d00ecfef096654c1b99ba535248aedbbd59733a0fc653ada8322511a9",
+      "workspace_sha256_after": "b26d4d6d00ecfef096654c1b99ba535248aedbbd59733a0fc653ada8322511a9",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
         {
           "pattern_id": "#21",
@@ -3385,31 +3368,32 @@
       "split": "public-development-v5",
       "repetition": 2,
       "exit_code": 0,
-      "duration_ms": 8322,
-      "workspace_sha256_before": "5488dcee5e1a9dca60efba5de6b5e5c134bfde2bfb0f87cd90bbe520116c1a85",
-      "workspace_sha256_after": "5488dcee5e1a9dca60efba5de6b5e5c134bfde2bfb0f87cd90bbe520116c1a85",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 11225,
+      "workspace_sha256_before": "8384d6272d38ba7d0ec43604b3162e6629cbf15f92f73123d33e2ea9af8f0cda",
+      "workspace_sha256_after": "8384d6272d38ba7d0ec43604b3162e6629cbf15f92f73123d33e2ea9af8f0cda",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
         {
-          "pattern_id": "#8",
+          "pattern_id": "#8a",
           "severity": "P0",
           "file": "tests/billing.spec.ts",
           "line": 9
         }
       ],
       "score": {
-        "tp": 0,
-        "fp": 1,
-        "fn": 2,
-        "matched_finding_ids": [],
+        "tp": 1,
+        "fp": 0,
+        "fn": 1,
+        "matched_finding_ids": [
+          "V5-006"
+        ],
         "missed_finding_ids": [
-          "V5-006",
           "V5-007"
         ],
         "hit_fp_guard_ids": []
       },
-      "output": "{\"findings\":[{\"pattern_id\":\"#8\",\"severity\":\"P0\",\"file\":\"tests/billing.spec.ts\",\"line\":9}]}\n",
+      "output": "{\"findings\":[{\"pattern_id\":\"#8a\",\"severity\":\"P0\",\"file\":\"tests/billing.spec.ts\",\"line\":9}]}\n",
       "error": null,
       "cleanup_failures": []
     },
@@ -3420,11 +3404,11 @@
       "split": "public-development-v5",
       "repetition": 3,
       "exit_code": 0,
-      "duration_ms": 5751,
-      "workspace_sha256_before": "5065a3bbd597215032201527aa18d4f4b264df02966432fa61235da4d1073289",
-      "workspace_sha256_after": "5065a3bbd597215032201527aa18d4f4b264df02966432fa61235da4d1073289",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 6073,
+      "workspace_sha256_before": "784a77fafe327e4a05e03703ccc25cb3556a93f621267eb515f602c571a2bda6",
+      "workspace_sha256_after": "784a77fafe327e4a05e03703ccc25cb3556a93f621267eb515f602c571a2bda6",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
         {
           "pattern_id": "#3",
@@ -3454,11 +3438,11 @@
       "split": "public-development-v5",
       "repetition": 3,
       "exit_code": 0,
-      "duration_ms": 5409,
-      "workspace_sha256_before": "5c3dcafbc2a2329318d80ff33b8455ffb67866c776e27153e6afb6f4b79955fd",
-      "workspace_sha256_after": "5c3dcafbc2a2329318d80ff33b8455ffb67866c776e27153e6afb6f4b79955fd",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 6361,
+      "workspace_sha256_before": "a92da1930aa61944502be1ec6069de900c42fba2656a213ed5064ebcec691a78",
+      "workspace_sha256_after": "a92da1930aa61944502be1ec6069de900c42fba2656a213ed5064ebcec691a78",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
         {
           "pattern_id": "#9",
@@ -3489,11 +3473,11 @@
       "split": "public-development-v5",
       "repetition": 2,
       "exit_code": 0,
-      "duration_ms": 17070,
-      "workspace_sha256_before": "b50034ab9f76d90a6b95bbbae5d7652432b82b63cef495d0105e66736b357410",
-      "workspace_sha256_after": "b50034ab9f76d90a6b95bbbae5d7652432b82b63cef495d0105e66736b357410",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 17663,
+      "workspace_sha256_before": "b26d4d6d00ecfef096654c1b99ba535248aedbbd59733a0fc653ada8322511a9",
+      "workspace_sha256_after": "b26d4d6d00ecfef096654c1b99ba535248aedbbd59733a0fc653ada8322511a9",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
         {
           "pattern_id": "#21",
@@ -3555,11 +3539,11 @@
       "split": "public-development-v5",
       "repetition": 3,
       "exit_code": 0,
-      "duration_ms": 15810,
-      "workspace_sha256_before": "b50034ab9f76d90a6b95bbbae5d7652432b82b63cef495d0105e66736b357410",
-      "workspace_sha256_after": "b50034ab9f76d90a6b95bbbae5d7652432b82b63cef495d0105e66736b357410",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 20301,
+      "workspace_sha256_before": "b26d4d6d00ecfef096654c1b99ba535248aedbbd59733a0fc653ada8322511a9",
+      "workspace_sha256_after": "b26d4d6d00ecfef096654c1b99ba535248aedbbd59733a0fc653ada8322511a9",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
         {
           "pattern_id": "#21",
@@ -3589,13 +3573,13 @@
           "pattern_id": "#20",
           "severity": "P1",
           "file": "tests/preferences.spec.ts",
-          "line": 8
+          "line": 7
         },
         {
           "pattern_id": "#22",
           "severity": "P1",
           "file": "tests/preferences.spec.ts",
-          "line": 9
+          "line": 8
         }
       ],
       "score": {
@@ -3610,7 +3594,7 @@
         "missed_finding_ids": [],
         "hit_fp_guard_ids": []
       },
-      "output": "{\"findings\":[{\"pattern_id\":\"#21\",\"severity\":\"P2\",\"file\":\"playwright.config.ts\",\"line\":7},{\"pattern_id\":\"#12\",\"severity\":\"P0\",\"file\":\"scripts/session.ts\",\"line\":7},{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":5},{\"pattern_id\":\"#18\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":7},{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":8},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":9}]}\n",
+      "output": "{\"findings\":[{\"pattern_id\":\"#21\",\"severity\":\"P2\",\"file\":\"playwright.config.ts\",\"line\":7},{\"pattern_id\":\"#12\",\"severity\":\"P0\",\"file\":\"scripts/session.ts\",\"line\":7},{\"pattern_id\":\"#17\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":5},{\"pattern_id\":\"#18\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":7},{\"pattern_id\":\"#20\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":7},{\"pattern_id\":\"#22\",\"severity\":\"P1\",\"file\":\"tests/preferences.spec.ts\",\"line\":8}]}\n",
       "error": null,
       "cleanup_failures": []
     },
@@ -3621,11 +3605,11 @@
       "split": "public-development-v5",
       "repetition": 1,
       "exit_code": 0,
-      "duration_ms": 7017,
-      "workspace_sha256_before": "fa4709ea013c63e9f6c9e35311e53784520223ca27ef70c8d802315b83ee0738",
-      "workspace_sha256_after": "fa4709ea013c63e9f6c9e35311e53784520223ca27ef70c8d802315b83ee0738",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 11242,
+      "workspace_sha256_before": "4d98866a198807ba27a14391b83929763c4d06c84e8c5ce50bcc672f1756694b",
+      "workspace_sha256_after": "4d98866a198807ba27a14391b83929763c4d06c84e8c5ce50bcc672f1756694b",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
         {
           "pattern_id": "#7",
@@ -3634,25 +3618,24 @@
           "line": 1
         },
         {
-          "pattern_id": "#5a",
-          "severity": "P0",
+          "pattern_id": "#5b",
+          "severity": "P1",
           "file": "cypress/e2e/labels.cy.ts",
           "line": 4
         }
       ],
       "score": {
-        "tp": 1,
-        "fp": 1,
-        "fn": 1,
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
         "matched_finding_ids": [
+          "V5-018",
           "V5-019"
         ],
-        "missed_finding_ids": [
-          "V5-018"
-        ],
+        "missed_finding_ids": [],
         "hit_fp_guard_ids": []
       },
-      "output": "{\"findings\":[{\"pattern_id\":\"#7\",\"severity\":\"P0\",\"file\":\"cypress/e2e/labels.cy.ts\",\"line\":1},{\"pattern_id\":\"#5a\",\"severity\":\"P0\",\"file\":\"cypress/e2e/labels.cy.ts\",\"line\":4}]}\n",
+      "output": "{\"findings\":[{\"pattern_id\":\"#7\",\"severity\":\"P0\",\"file\":\"cypress/e2e/labels.cy.ts\",\"line\":1},{\"pattern_id\":\"#5b\",\"severity\":\"P1\",\"file\":\"cypress/e2e/labels.cy.ts\",\"line\":4}]}\n",
       "error": null,
       "cleanup_failures": []
     },
@@ -3663,28 +3646,34 @@
       "split": "public-development-v5",
       "repetition": 1,
       "exit_code": 0,
-      "duration_ms": 27990,
-      "workspace_sha256_before": "5b76ce3111fbd832cdbbf309bd4d4db0428fa7f991cbc3b619f3c46feac0fcf8",
-      "workspace_sha256_after": "5b76ce3111fbd832cdbbf309bd4d4db0428fa7f991cbc3b619f3c46feac0fcf8",
-      "staged_skill_sha256_before": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
-      "staged_skill_sha256_after": "d7b8db93d5369bce70c14091dfbd3bd10864936350167ffe5c52cc8184faf78a",
+      "duration_ms": 14889,
+      "workspace_sha256_before": "ee42c39f82ab6ac185247c2ace66d93623229b8746ec8f87cdc26f4e3bca936f",
+      "workspace_sha256_after": "ee42c39f82ab6ac185247c2ace66d93623229b8746ec8f87cdc26f4e3bca936f",
+      "staged_skill_sha256_before": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
+      "staged_skill_sha256_after": "e8b2855c8df8dcba9cd45a2a5799f1cec0694f67ec1628d56ff57fb2594d175d",
       "findings": [
         {
-          "pattern_id": "#2",
-          "severity": "P0",
+          "pattern_id": "#13",
+          "severity": "P1",
           "file": "cypress/e2e/release.cy.ts",
-          "line": 15
+          "line": 10
+        },
+        {
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "cypress/e2e/release.cy.ts",
+          "line": 17
         }
       ],
       "score": {
         "tp": 0,
-        "fp": 1,
+        "fp": 2,
         "fn": 0,
         "matched_finding_ids": [],
         "missed_finding_ids": [],
         "hit_fp_guard_ids": []
       },
-      "output": "{\"findings\":[{\"pattern_id\":\"#2\",\"severity\":\"P0\",\"file\":\"cypress/e2e/release.cy.ts\",\"line\":15}]}\n",
+      "output": "{\"findings\":[{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"cypress/e2e/release.cy.ts\",\"line\":10},{\"pattern_id\":\"#13\",\"severity\":\"P1\",\"file\":\"cypress/e2e/release.cy.ts\",\"line\":17}]}\n",
       "error": null,
       "cleanup_failures": []
     }

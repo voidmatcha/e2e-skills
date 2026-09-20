@@ -23,26 +23,31 @@ README_PATH = ROOT / "benchmarks/reviewer-holdout-v7/README.md"
 STATUS_PATH = ROOT / "benchmarks/STATUS.md"
 EVIDENCE_PATH = ROOT / "benchmarks/reviewer-holdout-v7"
 REPORTS_PATH = EVIDENCE_PATH / "reports"
-ADDENDUM_PATH = EVIDENCE_PATH / "addenda/trim-cb9aca2"
+ATTEMPT4_PATH = EVIDENCE_PATH / "attempts/4"
+TRIM_RERUN_PATH = EVIDENCE_PATH / "attempts/trim-cb9aca2"
 
 EXPECTED_CASES_FILE_SHA256 = "50c828c5e267a683ced73a161a645af0b73f305f6391b6fe0e8ee150ec419849"
 EXPECTED_CORPUS_SHA256 = "745bc765fb6f424abe90d6d3fc9a3b85e921472a4cc1291054879af8002e965f"
 EXPECTED_PROTOCOL_SHA256 = "e379edfc7ad04e4ff92134f3f5952bda7f146e0f80667726283a2a60de08daf2"
 EXPECTED_ARTIFACT_SHA256 = {
-    "reports/arm-comparison.json": "41b31d9f57ff052a37077902c9ec7719d838fda9aae3bb4cd91f790736a08ab3",
-    "reports/catalog-only-codex.json": "94ee295973d81eca5d2dffb7fcd7e93788e40790049a01715930ae0a75466ca4",
-    "reports/full-codex.json": "cb79b2622076bc72397baed97f9fd8710231b363d6a7526425bbdcea9ca38e2c",
-    "reports/no-skill-codex.json": "72af18536f24b475d2bcc11404e5956fb0a34e98ae08a1a21659f779fe264541",
+    "reports/arm-comparison.json": "06476d932d5b432ecc3c374353b8e304a37aee9a363cfc11fcb0f600c05aaa48",
+    "reports/catalog-only-codex.json": "64d34e18849804235e33069dc1cd58d62b304ce43a08e859ced800bc60f2b4b9",
+    "reports/full-codex.json": "07e411b4dca26c16b91b2e2e6abb1b81337d3910aa78b6f96c1de8dc57b1845d",
+    "reports/no-skill-codex.json": "096bddd264ae7332cff6232701d1390df82d1caeef473d3960a1fd448b1047ae",
     "attempts/1/full-codex.json": "715bf63664d6cb45c875c0a7fe46ecbc64fcc384a74fab6f93d064dc96060e32",
     "attempts/2/full-codex.json": "2d02b9ebb60a67cd53658b6873481ca6cd85d2909fead1016a475ebac48d4b26",
     "attempts/3/arm-comparison.json": "14dedcd6b0bf56afee40e049729c0069a74fcbc922f4f8257f616f3c7a8e99ff",
     "attempts/3/catalog-only-codex.json": "805c6053170e2c2dfc62b632762aa80d7adb8fe3540e86d0c802d84843fd74bc",
     "attempts/3/full-codex.json": "07c15c87f620737bafb3ca20b1ed88e760d845b387b01d8179a33c0f6fd70468",
     "attempts/3/no-skill-codex.json": "a62634be45edbdcd27a6cf2c78d6827a83caf378fe3af8633f45369ead70c83c",
-    "addenda/trim-cb9aca2/arm-comparison.json": "df618823f467dd4ead9208b83e5197ef60284def40c02f3ee7056861647d1baf",
-    "addenda/trim-cb9aca2/catalog-only-codex.json": "bdacd3396b5a42480d0e42d29b4a402c19d36107aa2c1a98eae6b3ad82215a61",
-    "addenda/trim-cb9aca2/full-codex.json": "8cfb41433fc57f31120abe4f49812471f21b0ab5f1e37c60e831262a42ebba42",
-    "addenda/trim-cb9aca2/no-skill-codex.json": "d59b400cca70e3f69a8ac17b41f35f5a95044fc8586c7dfa26daf23c7384425c",
+    "attempts/4/arm-comparison.json": "41b31d9f57ff052a37077902c9ec7719d838fda9aae3bb4cd91f790736a08ab3",
+    "attempts/4/catalog-only-codex.json": "94ee295973d81eca5d2dffb7fcd7e93788e40790049a01715930ae0a75466ca4",
+    "attempts/4/full-codex.json": "cb79b2622076bc72397baed97f9fd8710231b363d6a7526425bbdcea9ca38e2c",
+    "attempts/4/no-skill-codex.json": "72af18536f24b475d2bcc11404e5956fb0a34e98ae08a1a21659f779fe264541",
+    "attempts/trim-cb9aca2/arm-comparison.json": "df618823f467dd4ead9208b83e5197ef60284def40c02f3ee7056861647d1baf",
+    "attempts/trim-cb9aca2/catalog-only-codex.json": "bdacd3396b5a42480d0e42d29b4a402c19d36107aa2c1a98eae6b3ad82215a61",
+    "attempts/trim-cb9aca2/full-codex.json": "8cfb41433fc57f31120abe4f49812471f21b0ab5f1e37c60e831262a42ebba42",
+    "attempts/trim-cb9aca2/no-skill-codex.json": "d59b400cca70e3f69a8ac17b41f35f5a95044fc8586c7dfa26daf23c7384425c",
 }
 
 
@@ -151,6 +156,12 @@ class ReviewerHoldoutV7Test(unittest.TestCase):
         self.assertIn("v5/v6 Claude Fable plan-mode failures", readme)
         self.assertIn("Complete; `FAIL`; no skill-lift claim", status)
         self.assertFalse(comparison["skill_lift_claim_eligible"])
+        self.assertIn(
+            "the paired-bootstrap 95% CI lower bound was `-0.003205` against "
+            "the required `>= +0.010000`",
+            readme,
+        )
+        self.assertIn("The result is `FAIL`", readme)
         mutated = readme.replace("Status: **FAIL**.", "Status: **PASS**.", 1)
         self.assertNotIn(f"Status: **{comparison['status']}**.", mutated)
         for contract in (
@@ -178,40 +189,32 @@ class ReviewerHoldoutV7Test(unittest.TestCase):
         self.assertEqual(EXPECTED_CORPUS_SHA256, comparison["corpus_sha256"])
         self.assertEqual(EXPECTED_PROTOCOL_SHA256, comparison["protocol_sha256"])
 
-    def test_addendum_artifacts_and_docs_match_exploratory_result(self) -> None:
+    def test_archived_runs_and_history_are_preserved(self) -> None:
         readme = README_PATH.read_text(encoding="utf-8")
-        status = STATUS_PATH.read_text(encoding="utf-8")
-        comparison = read_json(ADDENDUM_PATH / "arm-comparison.json")
-        self.assertIn("Addendum: exploratory rerun", readme)
-        self.assertIn(
-            "uncounted addendum on the trimmed reviewer plus the pattern `#3` fix "
-            "within the same release",
-            status,
-        )
-        self.assertIn(
-            "the trimmed reviewer plus the pattern `#3` swallowed-assertion wording "
-            "fix within the same release",
-            readme,
-        )
-        self.assertNotIn("next/1.20.0", readme)
-        self.assertEqual("FAIL", comparison["status"])
-        self.assertFalse(comparison["skill_lift_claim_eligible"])
-        self.assertFalse(comparison["release_eligible"])
-        self.assertEqual("development", comparison["evidence_scope"])
-        self.assertEqual(EXPECTED_CORPUS_SHA256, comparison["corpus_sha256"])
-        self.assertEqual(EXPECTED_PROTOCOL_SHA256, comparison["protocol_sha256"])
-        stated = "The exploratory comparator returned `FAIL`"
-        self.assertIn(stated, readme)
-        self.assertNotIn(
-            stated,
-            readme.replace(stated, "The exploratory comparator returned `PASS`", 1),
-        )
+        self.assertIn("### Run history", readme)
+        self.assertEqual(5, sum(
+            f"| {attempt} | 2026-09-20 |" in readme
+            for attempt in range(1, 6)
+        ))
+        self.assertIn("`INCONCLUSIVE` (`arm_provenance_mismatch`)", readme)
+        self.assertIn("no longer reachable on this branch", readme)
+        self.assertIn("cannot be checked out from this history", readme)
+        self.assertIn("attempts/trim-cb9aca2/", readme)
+        self.assertNotIn("## Addendum:", readme)
+        for path in (ATTEMPT4_PATH, TRIM_RERUN_PATH):
+            comparison = read_json(path / "arm-comparison.json")
+            self.assertEqual("FAIL", comparison["status"])
+            self.assertFalse(comparison["skill_lift_claim_eligible"])
+            self.assertFalse(comparison["release_eligible"])
+            self.assertEqual("development", comparison["evidence_scope"])
+            self.assertEqual(EXPECTED_CORPUS_SHA256, comparison["corpus_sha256"])
+            self.assertEqual(EXPECTED_PROTOCOL_SHA256, comparison["protocol_sha256"])
 
     def test_counted_arm_provenance_is_complete_and_clean(self) -> None:
         readme = README_PATH.read_text(encoding="utf-8")
         self.assertIn(
-            "the pre-trim reviewer as it stood before the trim and the pattern `#3` "
-            "fix in the same release",
+            "measuring the skills as shipped: the trimmed bodies, the pattern `#3` "
+            "swallowed-assertion fix, the conditional-rethrow triage rule, and the lexer fix",
             readme,
         )
         self.assertNotIn("(`v1.19.0`)", readme)
@@ -220,13 +223,18 @@ class ReviewerHoldoutV7Test(unittest.TestCase):
             Path(item["path"]).name: item["sha256"]
             for item in comparison["report_inputs"]
         }
-        revision = "110f2ea6a6e4876f601fa3b2cb6bd2ead40e48ab"
-        for profile in ("full", "catalog-only", "no-skill"):
+        revision = "2ba34237cb0b67e9918cd28c177774c8e5ed0fc9"
+        expected_status = {
+            "full": "PASS",
+            "catalog-only": "FAIL",
+            "no-skill": "FAIL",
+        }
+        for profile, status in expected_status.items():
             name = f"{profile}-codex.json"
             report = read_json(REPORTS_PATH / name)
             self.assertEqual(EXPECTED_ARTIFACT_SHA256[f"reports/{name}"], input_digests[name])
             self.assertEqual(profile, report["prompt_profile"])
-            self.assertEqual("FAIL", report["status"])
+            self.assertEqual(status, report["status"])
             self.assertTrue(report["complete"])
             self.assertTrue(report["execution_complete"])
             self.assertEqual((60, 60, 0), (
@@ -240,15 +248,15 @@ class ReviewerHoldoutV7Test(unittest.TestCase):
                 report["runner"], report["model"], report["runner_identity"],
             ))
 
-    def test_addendum_arm_provenance_is_complete_and_clean(self) -> None:
+    def test_archived_trim_rerun_provenance_is_complete_and_clean(self) -> None:
         expected_names = {
             "arm-comparison.json",
             "catalog-only-codex.json",
             "full-codex.json",
             "no-skill-codex.json",
         }
-        self.assertEqual(expected_names, {path.name for path in ADDENDUM_PATH.iterdir()})
-        comparison = read_json(ADDENDUM_PATH / "arm-comparison.json")
+        self.assertEqual(expected_names, {path.name for path in TRIM_RERUN_PATH.iterdir()})
+        comparison = read_json(TRIM_RERUN_PATH / "arm-comparison.json")
         input_digests = {
             Path(item["path"]).name: item["sha256"]
             for item in comparison["report_inputs"]
@@ -261,8 +269,8 @@ class ReviewerHoldoutV7Test(unittest.TestCase):
         revision = "cb9aca231fc413876d5169c1617978c8a9a3ced2"
         for profile, status in expected_status.items():
             name = f"{profile}-codex.json"
-            report = read_json(ADDENDUM_PATH / name)
-            digest_key = f"addenda/trim-cb9aca2/{name}"
+            report = read_json(TRIM_RERUN_PATH / name)
+            digest_key = f"attempts/trim-cb9aca2/{name}"
             self.assertEqual(EXPECTED_ARTIFACT_SHA256[digest_key], input_digests[name])
             self.assertEqual(
                 (profile, status),
@@ -278,12 +286,12 @@ class ReviewerHoldoutV7Test(unittest.TestCase):
             self.assertEqual(revision, report["git_revision"])
             self.assertFalse(report["git_dirty"])
 
-    def test_committed_decision_matches_absolute_failure(self) -> None:
+    def test_committed_full_arm_passes_absolute_gate(self) -> None:
         full = read_json(REPORTS_PATH / "full-codex.json")
         self.assertEqual(1, len(full["status_reasons"]))
         reason = full["status_reasons"][0]
-        self.assertEqual("p0_stable_label_recall_min", reason["metric"])
-        self.assertEqual((0.875, 0.9), (reason["actual"], reason["required"]))
+        self.assertEqual("all_thresholds_met", reason["code"])
+        self.assertNotIn("metric", reason)
 
     def test_committed_lift_decision(self) -> None:
         comparison = read_json(REPORTS_PATH / "arm-comparison.json")
@@ -295,34 +303,36 @@ class ReviewerHoldoutV7Test(unittest.TestCase):
             for row in lifts["catalog-only"]["decision_checks"]
             if not row["passed"]
         }
-        self.assertEqual({
-            "stable_f1_delta_min",
-            "stable_f1_delta_ci95_lower_min",
-            "stable_recall_delta_min",
-        }, failed)
+        self.assertEqual({"stable_f1_delta_ci95_lower_min"}, failed)
+        self.assertEqual(1, len(comparison["status_reasons"]))
+        reason = comparison["status_reasons"][0]
+        self.assertEqual("catalog-only", reason["control"])
+        self.assertEqual("stable_f1_delta_ci95_lower_min", reason["metric"])
+        self.assertEqual((-0.0032051282051280827, 0.01), (
+            reason["actual"], reason["required"]
+        ))
 
-    def test_systematic_pw_a06_miss(self) -> None:
-        for relative in (
-            "reports/full-codex.json",
-            "reports/catalog-only-codex.json",
-            "attempts/3/full-codex.json",
-        ):
+    def test_pw_a06_recovery_is_disclosed_as_contaminated(self) -> None:
+        readme = README_PATH.read_text(encoding="utf-8")
+        p0_metric_index = readme.index("P0 stable-label recall was `1.000000`")
+        contamination_index = readme.index("`pw-a06` is therefore contaminated")
+        self.assertLess(p0_metric_index, contamination_index)
+        self.assertLess(contamination_index - p0_metric_index, 400)
+        self.assertIn("not evidence of generalization", readme)
+
+        for relative in ("reports/full-codex.json", "reports/catalog-only-codex.json"):
             report = read_json(EVIDENCE_PATH / relative)
             runs = [run for run in report["runs"] if run["case"] == "pw-a06"]
             self.assertEqual(3, len(runs), relative)
-            self.assertTrue(all(run["output"] == '{"findings":[]}\n' for run in runs))
             self.assertTrue(all(
-                run["score"]["missed_finding_ids"] == ["V5-014"]
+                run["score"]["matched_finding_ids"] == ["V5-014"]
                 for run in runs
             ))
 
-        no_skill = read_json(REPORTS_PATH / "no-skill-codex.json")
-        runs = [run for run in no_skill["runs"] if run["case"] == "pw-a06"]
+        prior = read_json(ATTEMPT4_PATH / "full-codex.json")
+        runs = [run for run in prior["runs"] if run["case"] == "pw-a06"]
         self.assertEqual(3, len(runs))
-        self.assertTrue(all(
-            run["score"]["missed_finding_ids"] == ["V5-014"]
-            for run in runs
-        ))
+        self.assertTrue(all(run["output"] == '{"findings":[]}\n' for run in runs))
 
     def test_full_run_keeps_outputs_outside_clean_checkout_until_arm_comparison(self) -> None:
         readme = README_PATH.read_text(encoding="utf-8")

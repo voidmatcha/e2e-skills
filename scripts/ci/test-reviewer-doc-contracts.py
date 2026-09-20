@@ -655,9 +655,9 @@ def verify_release_candidate_docs() -> None:
 
     holdout = normalized(REVIEWER_HOLDOUT_V7_README)
     for contract in (
-        "Aggregate full-arm metrics improved",
-        "fell from 2/3 hits in attempt 4 to 1/3 and lost stable-true-positive status",
-        "cannot isolate the trim's effect",
+        "is therefore contaminated in this run, and its recovery is not evidence of generalization",
+        "cleared its `+0.050000` bar for the first time",
+        "are no longer reachable on this branch",
     ):
         require_normalized_contract(holdout, contract, "reviewer-holdout-v7 README")
     assert "did not regress the full arm" not in holdout
