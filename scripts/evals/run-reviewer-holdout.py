@@ -42,6 +42,10 @@ V5_PROTOCOL = ROOT / "scripts/evals/reviewer-validation-protocol-v5.json"
 # v6 reuses the frozen v5 corpus unchanged; only the pinned CLI identity
 # differs, so the cases and corpus digests below are identical to v5's.
 V6_PROTOCOL = ROOT / "scripts/evals/reviewer-validation-protocol-v6.json"
+# v7 also reuses the frozen v5 corpus unchanged. It narrows the host matrix to
+# Codex and uses a minimum CLI version floor so ordinary installer rotation does
+# not strand the protocol again.
+V7_PROTOCOL = ROOT / "scripts/evals/reviewer-validation-protocol-v7.json"
 FAULT_CAUSAL_CASES = ROOT / "scripts/evals/reviewer-fault-causal-v1.json"
 FAULT_CAUSAL_PROTOCOL = (
     ROOT / "scripts/evals/reviewer-validation-protocol-fault-causal-v1.json"
@@ -141,6 +145,7 @@ SUPPORTED_PROTOCOL_IDS = {
     "reviewer-holdout-v4",
     "reviewer-holdout-v5",
     "reviewer-holdout-v6",
+    "reviewer-holdout-v7",
     "reviewer-fault-causal-v1",
     "reviewer-fault-causal-v2",
     "reviewer-fault-causal-v3",
@@ -150,6 +155,7 @@ STRICT_MAJORITY_PROTOCOL_IDS = {
     "reviewer-holdout-v4",
     "reviewer-holdout-v5",
     "reviewer-holdout-v6",
+    "reviewer-holdout-v7",
     "reviewer-fault-causal-v1",
     "reviewer-fault-causal-v2",
     "reviewer-fault-causal-v3",
@@ -158,6 +164,7 @@ PROMPT_ARM_PROTOCOL_IDS = {
     "reviewer-holdout-v4",
     "reviewer-holdout-v5",
     "reviewer-holdout-v6",
+    "reviewer-holdout-v7",
 }
 FULL_ONLY_PROTOCOL_IDS = {
     "reviewer-fault-causal-v3",
@@ -171,6 +178,7 @@ PROVIDER_BALANCED_PROTOCOL_IDS = {
 ARM_COMPARISON_PROTOCOL_IDS = {
     "reviewer-holdout-v5",
     "reviewer-holdout-v6",
+    "reviewer-holdout-v7",
 }
 # Each version declares the CLI identity it was cut against. Two policies exist
 # because exact pinning stranded two protocols in a row: v5 pinned Claude Code
@@ -188,9 +196,11 @@ ARM_COMPARISON_PROTOCOL_IDS = {
 # (arm_runner_identity_mismatch, arm_runner_binding_mismatch) together with the
 # 12-hour matrix window, and does not depend on the cut-time constant.
 EXECUTION_IDENTITY_VERSION_POLICIES = {"exact", "minimum"}
+CLAUDE_PERMISSION_MODES = {"plan", "off"}
 FROZEN_EXECUTION_IDENTITY_POLICIES = {
     "reviewer-holdout-v5": "exact",
     "reviewer-holdout-v6": "exact",
+    "reviewer-holdout-v7": "minimum",
 }
 FROZEN_EXECUTION_IDENTITIES = {
     "reviewer-holdout-v5": {
@@ -200,6 +210,9 @@ FROZEN_EXECUTION_IDENTITIES = {
     "reviewer-holdout-v6": {
         "codex": "codex-cli 0.149.0",
         "claude": "Claude Code 2.1.239",
+    },
+    "reviewer-holdout-v7": {
+        "codex": "codex-cli 0.154.0",
     },
 }
 HISTORICAL_DIAGNOSTIC_PROTOCOL_IDS = {
@@ -236,6 +249,11 @@ PINNED_LIVE_INPUTS = {
         "cases_file_sha256": "50c828c5e267a683ced73a161a645af0b73f305f6391b6fe0e8ee150ec419849",
         "corpus_sha256": "745bc765fb6f424abe90d6d3fc9a3b85e921472a4cc1291054879af8002e965f",
         "protocol_sha256": "342249121b8aaf4af43918552c6b4c5b568949e88a5e4b3892790e367bd43a82",
+    },
+    (V5_CASES, V7_PROTOCOL): {
+        "cases_file_sha256": "50c828c5e267a683ced73a161a645af0b73f305f6391b6fe0e8ee150ec419849",
+        "corpus_sha256": "745bc765fb6f424abe90d6d3fc9a3b85e921472a4cc1291054879af8002e965f",
+        "protocol_sha256": "e379edfc7ad04e4ff92134f3f5952bda7f146e0f80667726283a2a60de08daf2",
     },
     (FAULT_CAUSAL_V2_CASES, FAULT_CAUSAL_V2_PROTOCOL): {
         "cases_file_sha256": "30633a02eb134bed1d57f8c21c11e5938a284f56a1a7f2e14406b175b6481a6f",
@@ -500,8 +518,11 @@ def load_protocol(path: Path) -> dict:
                 f"{path}: cross-host threshold {name} must be between 0 and 1"
             )
     host_matrix = data.get("host_matrix")
-    if not isinstance(host_matrix, list) or len(host_matrix) < 2:
-        raise ValueError(f"{path}: host_matrix must preregister at least two hosts")
+    minimum_hosts = 1 if protocol_id == "reviewer-holdout-v7" else 2
+    if not isinstance(host_matrix, list) or len(host_matrix) < minimum_hosts:
+        raise ValueError(
+            f"{path}: host_matrix must preregister at least {minimum_hosts} host(s)"
+        )
     host_pairs: set[tuple[str, str]] = set()
     for entry in host_matrix:
         if not isinstance(entry, dict) or set(entry) != {"runner", "model"}:
@@ -573,9 +594,20 @@ def load_protocol(path: Path) -> dict:
         )
         if identity_policy != "exact":
             expected_execution_identity["version_policy"] = identity_policy
+        declared_claude_permission_mode = data.get("execution_identity", {}).get(
+            "claude_permission_mode"
+        )
+        if declared_claude_permission_mode is not None:
+            if declared_claude_permission_mode not in CLAUDE_PERMISSION_MODES:
+                raise ValueError(
+                    f"{path}: unsupported claude_permission_mode"
+                )
+            expected_execution_identity["claude_permission_mode"] = (
+                declared_claude_permission_mode
+            )
         if data.get("execution_identity") != expected_execution_identity:
             raise ValueError(
-                f"{path}: {protocol_id} execution identity must be exact"
+                f"{path}: {protocol_id} execution identity must match its frozen contract"
             )
         arm_comparison = data.get("arm_comparison")
         require_exact_keys(
@@ -601,33 +633,54 @@ def load_protocol(path: Path) -> dict:
             },
             context=f"{path}: arm_comparison",
         )
+        codex_only = protocol_id == "reviewer-holdout-v7"
+        expected_required_matrix = (
+            "exact-three-profiles-by-one-host"
+            if codex_only
+            else "exact-three-profiles-by-three-hosts"
+        )
+        expected_provider_aggregation = (
+            "single-host-direct"
+            if codex_only
+            else "mean-within-provider-family-then-equal-weight-families"
+        )
+        expected_order_design = (
+            "single-host-three-arm-sequential"
+            if codex_only
+            else "three-sequence-cyclic-latin-square-interleaved-by-round"
+        )
+        expected_temporal_limit = (
+            "Reported start/completion timestamps, fixed order, non-overlap, and "
+            "a 12-hour first-start-to-last-completion window reduce arm-position "
+            "and time-drift confounding but do not cryptographically attest time "
+            "or identify or freeze provider backend revisions."
+            if codex_only
+            else (
+                "Reported start/completion timestamps, cyclic order, non-overlap, "
+                "and a 12-hour first-start-to-last-completion window reduce "
+                "arm-position and time-drift confounding but do not cryptographically "
+                "attest time or identify or freeze provider backend revisions."
+            )
+        )
         if (
             arm_comparison["treatment"] != "full"
             or arm_comparison["controls"] != ["catalog-only", "no-skill"]
-            or arm_comparison["required_matrix"]
-            != "exact-three-profiles-by-three-hosts"
+            or arm_comparison["required_matrix"] != expected_required_matrix
             or arm_comparison["requires_all_reports_execution_complete"] is not True
             or arm_comparison["requires_treatment_report_status"] != "PASS"
             or arm_comparison["requires_each_control_comparison_pass"] is not True
             or arm_comparison["provider_aggregation"]
-            != "mean-within-provider-family-then-equal-weight-families"
+            != expected_provider_aggregation
             or arm_comparison["stability_basis"]
             != "strict-majority-stable-predictions"
-            or arm_comparison["execution_order_design"]
-            != "three-sequence-cyclic-latin-square-interleaved-by-round"
+            or arm_comparison["execution_order_design"] != expected_order_design
             or arm_comparison[
                 "requires_sequential_non_overlapping_execution"
             ] is not True
             or arm_comparison["matrix_elapsed_basis"]
             != "first-start-to-last-completion"
             or arm_comparison["maximum_matrix_elapsed_seconds"] != 43_200
-            or arm_comparison["temporal_validity_limit"]
-            != (
-                "Reported start/completion timestamps, cyclic order, non-overlap, "
-                "and a 12-hour first-start-to-last-completion window reduce "
-                "arm-position and time-drift confounding but do not cryptographically "
-                "attest time or identify or freeze provider backend revisions."
-            )
+            or arm_comparison["temporal_validity_limit"] != expected_temporal_limit
         ):
             raise ValueError(
                 f"{path}: {protocol_id} arm comparison must be exact"
@@ -688,6 +741,18 @@ def load_protocol(path: Path) -> dict:
                 "model": "claude-fable-5",
             },
         ]
+        if codex_only:
+            expected_execution_order = [
+                {
+                    "ordinal": ordinal,
+                    "prompt_profile": profile,
+                    "runner": "codex",
+                    "model": "gpt-5.6-sol",
+                }
+                for ordinal, profile in enumerate(
+                    ("full", "catalog-only", "no-skill"), start=1
+                )
+            ]
         if arm_comparison["execution_order"] != expected_execution_order:
             raise ValueError(
                 f"{path}: {protocol_id} execution order must be exact"
@@ -1644,7 +1709,9 @@ def resolve_runner_executable(
             else:
                 ranked = []
                 for path in found:
-                    identity = command_output([str(path), "--version"])
+                    identity = runner_identity_output(
+                        runner, [str(path), "--version"]
+                    )
                     version = parse_cli_version(runner, identity, declared=False)
                     ranked.append((version is not None, version or (), str(path), path))
                 ranked.sort(reverse=True)
@@ -1870,6 +1937,7 @@ def runner_invocation(
     prompt: str,
     model: str | None,
     reasoning_effort: str | None = None,
+    claude_permission_mode: str = "plan",
 ) -> tuple[list[str], str]:
     """Build a prompt-complete invocation with no model-callable tool surface."""
     validate_reasoning_effort(runner, reasoning_effort)
@@ -1906,6 +1974,8 @@ def runner_invocation(
         command.append("-")
         return command, prompt
     if runner == "claude":
+        if claude_permission_mode not in CLAUDE_PERMISSION_MODES:
+            raise ValueError("unsupported Claude permission mode")
         command = [
             executable,
             "-p",
@@ -1916,9 +1986,9 @@ def runner_invocation(
             "--no-session-persistence",
             "--tools",
             "",
-            "--permission-mode",
-            "plan",
         ]
+        if claude_permission_mode == "plan":
+            command.extend(["--permission-mode", "plan"])
         if model:
             command.extend(["--model", model])
         return command, prompt
@@ -2089,6 +2159,7 @@ def run_once(
     runner_executable: str | None = None,
     runner_credentials: dict[str, str] | None = None,
     reasoning_effort: str | None = None,
+    claude_permission_mode: str = "plan",
 ) -> tuple[int, str, int]:
     started = time.monotonic()
     executable = runner_executable or resolve_runner_executable(runner)
@@ -2098,6 +2169,7 @@ def run_once(
         prompt,
         model,
         reasoning_effort,
+        claude_permission_mode,
     )
     command = [*(isolation_prefix or []), *command]
     runner_home = tempfile.TemporaryDirectory(prefix="e2e-reviewer-runner-home-")
@@ -2238,7 +2310,7 @@ def score(case: dict, findings: list[dict]) -> dict:
     }
 
 
-def command_output(command: list[str]) -> str | None:
+def command_output_lines(command: list[str]) -> list[str]:
     # Identity probes such as `claude --version` run before any staged runner
     # home exists. Give them an empty private HOME so the "no ambient config
     # directory" property also covers the probe, not just the model call.
@@ -2256,10 +2328,16 @@ def command_output(command: list[str]) -> str | None:
                 check=False,
             )
     except (OSError, subprocess.TimeoutExpired):
-        return None
+        return []
     if proc.returncode == 0 and proc.stdout.strip():
-        return proc.stdout.strip().splitlines()[0]
-    return None
+        return [line.strip() for line in proc.stdout.splitlines() if line.strip()]
+    return []
+
+
+def command_output(command: list[str]) -> str | None:
+    """Return the first non-empty line from an ordinary diagnostic command."""
+    lines = command_output_lines(command)
+    return lines[0] if lines else None
 
 
 ACTUAL_CLI_VERSION_PATTERNS = {
@@ -2270,6 +2348,17 @@ EXPECTED_CLI_VERSION_PATTERNS = {
     "codex": re.compile(r"codex-cli ([0-9]+(?:\.[0-9]+)*)"),
     "claude": re.compile(r"Claude Code ([0-9]+(?:\.[0-9]+)*)"),
 }
+
+
+def runner_identity_output(runner: str, command: list[str]) -> str | None:
+    """Return one unambiguous CLI identity line, ignoring other diagnostics."""
+    pattern = ACTUAL_CLI_VERSION_PATTERNS.get(runner)
+    if pattern is None:
+        return None
+    matches = [
+        line for line in command_output_lines(command) if pattern.fullmatch(line)
+    ]
+    return matches[0] if len(matches) == 1 else None
 
 
 def parse_cli_version(
@@ -2897,6 +2986,11 @@ def main() -> int:
     if args.runner_path is not None and args.runner not in {"codex", "claude"}:
         parser.error("--runner-path is only valid with --runner codex or claude")
     execution_identity = protocol.get("execution_identity")
+    claude_permission_mode = (
+        execution_identity.get("claude_permission_mode", "plan")
+        if isinstance(execution_identity, dict)
+        else "plan"
+    )
     if (
         isinstance(execution_identity, dict)
         and execution_identity["require_explicit_runner_path"]
@@ -2990,7 +3084,9 @@ def main() -> int:
     except ValueError as exc:
         parser.error(str(exc))
     if args.runner in {"codex", "claude"}:
-        runner_identity = command_output([runner_exec, "--version"])
+        runner_identity = runner_identity_output(
+            args.runner, [runner_exec, "--version"]
+        )
     else:
         runner_identity = runner_exec
     # Left as None when no identity check ran — a custom runner, or a protocol
@@ -3179,6 +3275,7 @@ def main() -> int:
                     runner_exec,
                     runner_credentials,
                     args.reasoning_effort,
+                    claude_permission_mode,
                 )
                 findings = parse_findings(output) if rc == 0 else []
                 error = None if rc == 0 else f"runner exited {rc}"

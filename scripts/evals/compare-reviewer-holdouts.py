@@ -503,7 +503,9 @@ def repeated_summary(runs: list[dict]) -> dict:
     }
 
 
-def provider_family_aggregation(reports: list[dict]) -> dict:
+def provider_family_aggregation(
+    reports: list[dict], *, require_both_families: bool = True
+) -> dict:
     families: dict[str, list[dict]] = {"openai": [], "anthropic": []}
     for report in reports:
         if report["runner"] == "codex":
@@ -513,8 +515,9 @@ def provider_family_aggregation(reports: list[dict]) -> dict:
         else:
             raise ValueError("unknown runner in provider-family aggregation")
         families[family].append(report)
-    if any(not members for members in families.values()):
+    if require_both_families and any(not members for members in families.values()):
         raise ValueError("provider-family aggregation requires OpenAI and Anthropic")
+    families = {family: members for family, members in families.items() if members}
 
     family_rows = {}
     for family, members in families.items():
@@ -561,9 +564,13 @@ def provider_family_aggregation(reports: list[dict]) -> dict:
             },
         }
 
-    metric_names = tuple(family_rows["openai"]["metrics"])
+    metric_names = tuple(next(iter(family_rows.values()))["metrics"])
     return {
-        "method": "mean-within-provider-family-then-equal-weight-families",
+        "method": (
+            "mean-within-provider-family-then-equal-weight-families"
+            if require_both_families
+            else "single-host-direct"
+        ),
         "provider_family_denominator": len(family_rows),
         "families": family_rows,
         "equal_weighted_metrics": {
@@ -663,6 +670,8 @@ def provider_weighted_sample_metrics(
     reports: list[dict],
     rows_by_configuration: dict[tuple[str, str, str], dict[str, dict]],
     sampled_case_ids: list[str],
+    *,
+    require_both_families: bool = True,
 ) -> dict[str, float]:
     families: dict[str, list[dict[str, float]]] = {
         "openai": [],
@@ -710,8 +719,15 @@ def provider_weighted_sample_metrics(
                 ),
             }
         )
-    if any(not configurations for configurations in families.values()):
+    if require_both_families and any(
+        not configurations for configurations in families.values()
+    ):
         raise ValueError("arm metrics require OpenAI and Anthropic reports")
+    families = {
+        family: configurations
+        for family, configurations in families.items()
+        if configurations
+    }
     family_values = {
         family: {
             metric: (
@@ -766,11 +782,16 @@ def paired_stratified_arm_bootstrap(
         for report in reports
     }
     all_case_ids = [*finding_case_ids, *clean_case_ids]
+    require_both_families = (
+        arm_contract["provider_aggregation"]
+        == "mean-within-provider-family-then-equal-weight-families"
+    )
     point_metrics = {
         profile: provider_weighted_sample_metrics(
             reports,
             rows_by_configuration,
             all_case_ids,
+            require_both_families=require_both_families,
         )
         for profile, reports in reports_by_profile.items()
     }
@@ -792,6 +813,7 @@ def paired_stratified_arm_bootstrap(
                 reports,
                 rows_by_configuration,
                 sampled_case_ids,
+                require_both_families=require_both_families,
             )
             for profile, reports in reports_by_profile.items()
         }
@@ -1243,8 +1265,15 @@ def compare_reports(
                     "stable_prediction_union": len(pair_union),
                 }
             )
-    recall_gap = max(item["stable_recall_gap"] for item in pairwise)
-    jaccard = min(item["stable_prediction_jaccard"] for item in pairwise)
+    # A Codex-only protocol has no pairwise host comparison. Its agreement
+    # values are the neutral singleton identities; the absolute report-status
+    # gate remains load-bearing.
+    recall_gap = max(
+        (item["stable_recall_gap"] for item in pairwise), default=0.0
+    )
+    jaccard = min(
+        (item["stable_prediction_jaccard"] for item in pairwise), default=1.0
+    )
     metrics = {
         "stable_recall_gap": recall_gap,
         "stable_prediction_jaccard": jaccard,
@@ -1664,7 +1693,13 @@ def compare_arm_reports(
         evaluator_sha256,
     )
     arm_aggregations = {
-        profile: provider_family_aggregation(profile_reports)
+        profile: provider_family_aggregation(
+            profile_reports,
+            require_both_families=(
+                arm_contract["provider_aggregation"]
+                == "mean-within-provider-family-then-equal-weight-families"
+            ),
+        )
         for profile, profile_reports in normalized_by_profile.items()
     }
     bootstrap = paired_stratified_arm_bootstrap(
@@ -1777,7 +1812,7 @@ def compare_arm_reports(
         }
 
     metrics = {
-        "comparison_unit": "exact-three-profiles-by-three-hosts",
+        "comparison_unit": arm_contract["required_matrix"],
         "provider_aggregation": arm_contract["provider_aggregation"],
         "stability_basis": arm_contract["stability_basis"],
         "execution_order": {

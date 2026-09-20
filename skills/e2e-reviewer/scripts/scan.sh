@@ -5383,12 +5383,21 @@ hardcoded_credential_hit_matches() {
     # is not an input action at all.
     printf '%s\n' "$target_line" |
       scanner_rg -q '\.(fill|type)\s*\(\s*__STR_[A-Za-z0-9_$]*[A-Za-z0-9$]' || return 1
-    local chain=""
+    local chain="" chain_count chain_line
     if printf '%s\n' "$target_line" | scanner_rg -q '^[[:space:]]*\.'; then
       chain=$(fluent_chain_source_at "$file" "$line")
+      # The chain source drops string contents, so a head such as
+      # `cy.get('[name=password]')` or `.getByLabel('Password')` on an earlier
+      # line would lose its only credential evidence. Re-read those lines with
+      # inert string tokens kept.
+      chain_count=$(printf '%s\n' "$chain" | grep -c '')
+      for ((chain_line = line - chain_count + 1; chain_line < line; chain_line++)); do
+        chain+=$'\n'$(lexical_target_line "$file:$chain_line:")
+      done
     fi
+    # `auth` must not match `author`, and `token` must not match `tokenizer`.
     printf '%s\n' "$target_line" "$code" "$chain" |
-      scanner_rg -qi '(password|passwd|passcode|passphrase|pwd|secret|credential|token|api[_-]?key|username|user[_-]?name|userid|login|sign[_-]?in|auth|email|otp)'
+      scanner_rg -qi '(password|passwd|passcode|passphrase|pwd|secret|credential|token([^i]|i[^z]|$)|api[_-]?key|username|user[_-]?name|user[_-]?id|login|sign[_-]?in|auth([^o]|o[^r]|$)|authoriz|email|otp)'
     return $?
   fi
   if printf '%s\n' "$code" |

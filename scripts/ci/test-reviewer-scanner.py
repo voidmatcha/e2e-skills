@@ -2317,6 +2317,32 @@ def assert_form_literal_credential_filter() -> None:
             "});\n",
             encoding="utf-8",
         )
+        (root / "chains.cy.ts").write_text(
+            "describe('chains', () => {\n"
+            "  it('keeps string selectors at the head of a chain', () => {\n"
+            "    cy.get('[name=password]')\n"
+            "      .type('y');\n"
+            "    cy.get('#pwd')\n"
+            "      .should('be.visible')\n"
+            "      .type('z');\n"
+            "    cy.get('[data-cy=title]')\n"
+            "      .type('New title');\n"
+            "  });\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        (root / "tokens.spec.ts").write_text(
+            "import { test } from '@playwright/test';\n"
+            "test('token boundaries', async ({ page }) => {\n"
+            "  await page\n"
+            "    .getByLabel('Password')\n"
+            "    .fill('hunter2');\n"
+            "  await page.getByLabel('Author').fill('Jane');\n"
+            "  await tokenizer.fill('abc');\n"
+            "  await page.getByLabel('Authorization').fill('Bearer x');\n"
+            "});\n",
+            encoding="utf-8",
+        )
 
         result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
         assert result.returncode == 0, result.stdout
@@ -2324,6 +2350,16 @@ def assert_form_literal_credential_filter() -> None:
             result.stdout,
             "[P1?][LLM-TRIAGE] #14 Hardcoded credential candidate",
         )
+        # A string selector at the head of a multi-line chain is credential
+        # evidence too; the chain source alone drops string contents.
+        for line in (4, 7):
+            assert f"chains.cy.ts:{line}:" in credentials, (line, credentials)
+        assert "chains.cy.ts:9:" not in credentials, credentials
+        for line in (5, 8):
+            assert f"tokens.spec.ts:{line}:" in credentials, (line, credentials)
+        # `author` is not `auth`, and `tokenizer` is not `token`.
+        for line in (6, 7):
+            assert f"tokens.spec.ts:{line}:" not in credentials, (line, credentials)
         # A credential-shaped field, selector, variable, helper, or value.
         for line in range(4, 10):
             assert f"form-data.spec.ts:{line}:" in credentials, (line, credentials)

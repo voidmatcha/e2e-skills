@@ -1301,7 +1301,7 @@ def assert_secondary_outcome_contract(text: str) -> None:
     assert "not a second primary assertion" in compact
     assert "V1 keeps one primary outcome" in compact
     assert "V2/V3 falsify only that one" in compact
-    assert "A V2 settled-state gate is recorded under Falsification (V2) and needs no secondary-outcome slot; its locator still enters the Locator Mapping Table" in compact
+    assert "A V2 settled-state gate is recorded under Falsification (V2) and needs no secondary-outcome slot; when it also proves one of the three outcomes, it counts as that selected outcome" in compact
     assert "must appear in the Locator Mapping Table" in compact
     assert "Step 6's YAGNI audit still applies" in compact
 
@@ -1557,7 +1557,7 @@ def assert_backlog_1190_contract(text: str, verification_rules: str, code_rules:
     assert "a generated test must not depend on state created this way" in compact
     conventions = " ".join(CONVENTIONS_TEMPLATE.read_text(encoding="utf-8").split())
     assert "When the approved control-file table has a `CLAUDE.md` row (a root `CLAUDE.md` or `.claude/` directory exists)" in conventions
-    assert "With a tracer scenario, run it once, after Step 7 records the final set's V1–V6 verdicts and before its write-set comparison and completion report" in compact
+    assert "With a tracer scenario, run it once, after Step 7 records the final set's V1–V6 verdicts, only when those verdicts allow `Complete`, and before its write-set comparison and completion report" in compact
     assert "e2e-reviewer: N P0 found, N fixed; N P1 (listed below)" in text
     assert "A passing web-first assertion on another element produced by the same render as the primary target counts as a terminal UI state" in rules
     assert "`afterEach` or fixture teardown may revert state the test itself wrote" in code
@@ -1575,12 +1575,12 @@ def assert_backlog_1191_contract(
     # intermediate state that satisfies it.
     assert "A weaker passing assertion on the primary element itself (`not.toBeEmpty()` before `toHaveText(x)`) counts only when exploration observed no intermediate state of that element that also satisfies it; otherwise gate on another element or return `CANNOT_VERIFY`" in rules
     # A2: no fault can pass the gate and fail the primary on the same data.
-    assert "When the gate and the primary render the same faulted data, no such fault exists: record V3 `CANNOT_VERIFY` with that reason, and never remove, move, or weaken the gate assertion to reach the primary" in rules
+    assert "When the gate and the primary render the same faulted data, so that every fault the primary would catch also breaks the gate, no such fault exists: record V3 `CANNOT_VERIFY` with that reason, and never remove, move, or weaken the gate assertion to reach the primary" in rules
     assert "Without a DOM gate, V2 is `CANNOT_VERIFY` for a DOM primary and V3 carries the evidence; a terminal response gates V2 only for a primary that observes that response" in rules
     # A3: tracer completion includes V6; carry-over is narrow.
     assert "unless the tracer reaches `Complete` (the completion matrix applied to the tracer alone, including V6; see `verification-rules.md` § Tracer carry-over)" in compact
     assert "## Tracer carry-over" in verification_rules
-    assert "A tracer's V2–V4 results carry over to the final set only when its test body, its fixtures, and the file's shared setup (imports, hooks, config edits) are byte-identical and the same approved command runs it; V5 suite-context and V6 always rerun on the final set" in rules
+    assert "A tracer's V2–V4 results carry over to the final set only when its test body, its fixtures, and the file's shared setup (imports, hooks), and the project config are byte-identical and the same approved command runs it; V1, V5 (solo, repeat, and suite-context), and V6 always rerun on the final set" in rules
     # A4: Step 5b runs inside Step 7's write-set check.
     assert "so the seed spec comes from the final set and the control-file writes fall inside that check" in compact
     assert "The conventions doc is not a candidate and gets no V6 review; Step 7 shows its diff instead" in compact
@@ -1604,7 +1604,7 @@ def exercise_backlog_1191_mutation_guards(
     mutations = (
         (text, verification_rules.replace("counts only when exploration observed no intermediate state", "always counts, even when exploration observed an intermediate state", 1), conventions, preflight),
         (text, verification_rules.replace("never remove, move, or weaken the gate assertion", "remove or move the gate assertion if needed", 1), conventions, preflight),
-        (text, verification_rules.replace("V5 suite-context and V6 always rerun on the final set", "V5 and V6 also carry over", 1), conventions, preflight),
+        (text, verification_rules.replace("V1, V5 (solo, repeat, and suite-context), and V6 always rerun on the final set", "V5 and V6 also carry over", 1), conventions, preflight),
         (text.replace("the completion matrix applied to the tracer alone, including V6", "V1-V5 on the tracer", 1), verification_rules, conventions, preflight),
         (text.replace("and of every approved control-file path", "", 1), verification_rules, conventions, preflight),
         (text, verification_rules, conventions.replace("real, against the disposable server", "real, against any server", 1), preflight),

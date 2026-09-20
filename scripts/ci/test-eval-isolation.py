@@ -822,6 +822,35 @@ def assert_identity_probe_uses_private_home(temp: Path) -> None:
     assert not Path(observed).exists(), observed
 
 
+def assert_identity_probe_tolerates_leading_diagnostics(temp: Path) -> None:
+    probe = temp / "diagnostic-version.sh"
+    write_executable(
+        probe,
+        """#!/bin/sh
+echo "WARNING: temporary runner home disabled PATH aliases"
+echo "codex-cli 0.154.0"
+""",
+    )
+    assert HOLDOUT.runner_identity_output(
+        "codex", [os.fspath(probe), "--version"]
+    ) == "codex-cli 0.154.0"
+
+    missing = temp / "missing-version.sh"
+    write_executable(missing, "#!/bin/sh\necho 'WARNING: no identity follows'\n")
+    assert HOLDOUT.runner_identity_output(
+        "codex", [os.fspath(missing), "--version"]
+    ) is None
+
+    ambiguous = temp / "ambiguous-version.sh"
+    write_executable(
+        ambiguous,
+        "#!/bin/sh\necho 'codex-cli 0.154.0'\necho 'codex-cli 0.155.0'\n",
+    )
+    assert HOLDOUT.runner_identity_output(
+        "codex", [os.fspath(ambiguous), "--version"]
+    ) is None
+
+
 def assert_durable_output_is_unaffected(temp: Path) -> None:
     """Ordinary destinations and an explicit durable CLI path remain allowed."""
     assert not HOLDOUT.is_volatile_output_path(
@@ -1340,6 +1369,7 @@ def main() -> None:
         assert_durable_output_is_unaffected(temp)
         assert_output_cannot_overwrite_run_inputs(temp)
         assert_identity_probe_uses_private_home(temp)
+        assert_identity_probe_tolerates_leading_diagnostics(temp)
         assert_public_live_development_run_is_zero_tool_and_non_release(temp)
         assert_development_status_state_end_to_end(temp)
         assert_credential_output_never_persists(temp)

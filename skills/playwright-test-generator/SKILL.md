@@ -7,7 +7,7 @@ metadata:
   frameworks: playwright
   testing-types: e2e
   languages: typescript,javascript
-  version: "1.18.0"
+  version: "1.19.0"
 ---
 
 # playwright-test-generator
@@ -217,7 +217,7 @@ A written "Then" usually records less than a person checks by hand, so offer exa
 | Side effect proved | Does the action produce the stored state or list-count change the user expects, beyond the request itself? | The only side effect is the request V4 already proves |
 | Error cause distinguished | Does a failure branch of this scenario show which cause occurred? | The scenario's primary outcome already names the cause, it has no failure branch, or its plan recorded `GENERIC_BY_CONTRACT` |
 
-For a failure branch whose outcome is that nothing was stored, follow V4's re-read rule in `verification-rules.md`: reload, or wait for the re-fetch, before asserting absence. A selected secondary outcome is an extra assertion in the same test, not a second primary assertion: V1 keeps one primary outcome, and V2/V3 falsify only that one. A V2 settled-state gate is recorded under Falsification (V2) and needs no secondary-outcome slot; its locator still enters the Locator Mapping Table. Any locator it needs must appear in the Locator Mapping Table, and Step 6's YAGNI audit still applies to it; placement rules are in `code-rules.md` § Spec Rules, under **Secondary outcome placement.**
+For a failure branch whose outcome is that nothing was stored, follow V4's re-read rule in `verification-rules.md`: reload, or wait for the re-fetch, before asserting absence. A selected secondary outcome is an extra assertion in the same test, not a second primary assertion: V1 keeps one primary outcome, and V2/V3 falsify only that one. A V2 settled-state gate is recorded under Falsification (V2) and needs no secondary-outcome slot; when it also proves one of the three outcomes, it counts as that selected outcome. The locators a gate or a selected outcome needs must appear in the Locator Mapping Table, and Step 6's YAGNI audit still applies to them; placement rules are in `code-rules.md` § Spec Rules, under **Secondary outcome placement.**
 
 Mark one approved scenario as the **tracer scenario** when this is the first generated test in the repository, the plan contains three or more scenarios, or the work crosses authentication, persistent writes, custom fixtures, or a new project runner. Choose the smallest scenario that exercises the real fixture, navigation, locator, assertion, and runner path; do not choose a render-only smoke check.
 
@@ -325,7 +325,7 @@ When `npx --no-install playwright help init-agents` confirms project-local first
 
 ## Step 5b: Conventions & Seed Artifacts (first run on a project)
 
-Runs only when Step 1 found no testing-conventions doc (`hasConventionsDoc: false`) and the user approved at least one disclosed control-file mutation in Step 4. With a tracer scenario, run it once, after Step 7 records the final set's V1–V6 verdicts and before its write-set comparison and completion report, so the seed spec comes from the final set and the control-file writes fall inside that check. The conventions doc is not a candidate and gets no V6 review; Step 7 shows its diff instead. When conventions already exist or the user opts out of every row, skip — never overwrite or duplicate them.
+Runs only when Step 1 found no testing-conventions doc (`hasConventionsDoc: false`) and the user approved at least one disclosed control-file mutation in Step 4. With a tracer scenario, run it once, after Step 7 records the final set's V1–V6 verdicts, only when those verdicts allow `Complete`, and before its write-set comparison and completion report, so the seed spec comes from the final set and the control-file writes fall inside that check. The conventions doc is not a candidate and gets no V6 review; Step 7 shows its diff instead. When conventions already exist or the user opts out of every row, skip — never overwrite or duplicate them.
 
 1. Re-read the approved Step 4 control-file table. Mutate only an approved exact
    target, using its approved `create` or `append` action. Generate the

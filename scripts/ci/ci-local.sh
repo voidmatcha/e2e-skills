@@ -287,6 +287,8 @@ run_python scripts/ci/test-reviewer-fault-causal-v2.py ||
   fail "test-reviewer-fault-causal-v2.py"
 run_python scripts/ci/test-reviewer-holdout-v5.py ||
   fail "test-reviewer-holdout-v5.py"
+run_python scripts/ci/test-reviewer-holdout-v7.py ||
+  fail "test-reviewer-holdout-v7.py"
 run_python scripts/ci/test-reviewer-fault-causal-v3.py ||
   fail "test-reviewer-fault-causal-v3.py"
 run_python scripts/ci/test-debugger-holdout-v1.py ||
