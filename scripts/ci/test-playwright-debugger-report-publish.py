@@ -464,21 +464,21 @@ class SafeReportPublishTests(unittest.TestCase):
         self.assertEqual(cleanup_calls, 1)
 
     def test_skill_routes_json_writes_through_publisher(self) -> None:
-        skill = (ROOT / "skills/playwright-debugger/SKILL.md").read_text(
-            encoding="utf-8"
-        )
+        acquisition = (
+            ROOT / "skills/playwright-debugger/references/report-acquisition.md"
+        ).read_text(encoding="utf-8")
 
-        self.assertNotIn("> playwright-report/results.json", skill)
-        self.assertGreaterEqual(skill.count("publish-json-report.py"), 3)
-        self.assertIn("do not replace it with `mkdir` plus shell", skill)
-        self.assertIn("--pass-env PATH", skill)
-        self.assertIn("/usr/bin/env -i PATH=\"$PATH\"", skill)
-        self.assertIn("name and current value of every variable", skill)
+        self.assertNotIn("> playwright-report/results.json", acquisition)
+        self.assertGreaterEqual(acquisition.count("publish-json-report.py"), 2)
+        self.assertIn("do not replace it with `mkdir` plus shell", acquisition)
+        self.assertIn("--pass-env PATH", acquisition)
+        self.assertIn("/usr/bin/env -i PATH=\"$PATH\"", acquisition)
+        self.assertIn("name and current value of every variable", acquisition)
         self.assertIn(
             "The one accepted non-zero exit is status 1, which `playwright test` "
             "returns when tests fail, and only when the captured report then passes "
             "that same validation",
-            " ".join(skill.split()),
+            " ".join(acquisition.split()),
         )
 
     def test_publish_eval_grades_the_exit_status_one_contract(self) -> None:

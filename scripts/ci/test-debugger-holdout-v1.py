@@ -363,7 +363,7 @@ class DebuggerHoldoutV1Test(unittest.TestCase):
                 self.runner.FRAMEWORK_SKILLS,
                 Path(temporary),
             )
-            self.assertEqual(34, len(snapshot["manifest"]))
+            self.assertEqual(42, len(snapshot["manifest"]))
             self.assertEqual(
                 self.runner.sha256(snapshot["cases_path"]),
                 snapshot["manifest"]["corpus"]["sha256"],
@@ -377,9 +377,12 @@ class DebuggerHoldoutV1Test(unittest.TestCase):
                     self.runner.sha256(path),
                     snapshot["manifest"][f"skill:{framework}"]["sha256"],
                 )
+                for reference in self.runner.prompt_skill_files(path)[1:]:
+                    relative = reference.relative_to(path.parent).as_posix()
+                    self.assertIn(f"skill:{framework}:{relative}", snapshot["manifest"])
             self.runner.verify_snapshot(snapshot)
             post = self.runner.snapshot_post_digests(snapshot)
-            self.assertEqual(34, len(post))
+            self.assertEqual(42, len(post))
             for name, entry in snapshot["manifest"].items():
                 self.assertEqual(entry["sha256"], entry["source_pre_sha256"])
                 self.assertEqual(entry["sha256"], entry["snapshot_pre_sha256"])
@@ -422,12 +425,14 @@ class DebuggerHoldoutV1Test(unittest.TestCase):
         prompt = self.runner.render_prompt(
             case["framework"],
             artifact.read_text(encoding="utf-8"),
-            (ROOT / "skills/playwright-debugger/SKILL.md").read_text(encoding="utf-8"),
+            self.runner.read_prompt_skill(ROOT / "skills/playwright-debugger/SKILL.md"),
         )
         self.assertIn(artifact.read_text(encoding="utf-8"), prompt)
         self.assertNotIn(json.dumps(case["expected"], sort_keys=True), prompt)
         self.assertNotIn("case-004", prompt)
         self.assertIn('"f_code"', prompt)
+        for name in self.runner.PROMPT_REFERENCE_NAMES:
+            self.assertIn(f"BEGIN_DEBUGGER_SKILL references/{name}", prompt)
 
     def test_runner_uses_shared_prompt_complete_no_tool_invocations(self) -> None:
         shared = self.runner.load_shared_runner()
@@ -942,6 +947,11 @@ class DebuggerHoldoutComparatorTest(unittest.TestCase):
                 for framework, path in self.runner.FRAMEWORK_SKILLS.items()
             },
             **{
+                f"skill:{framework}:{reference.relative_to(path.parent).as_posix()}": reference
+                for framework, path in self.runner.FRAMEWORK_SKILLS.items()
+                for reference in self.runner.prompt_skill_files(path)[1:]
+            },
+            **{
                 f"artifact:{case['id']}": CASES_PATH.parent
                 / case["artifact"]["source"]
                 for case in self.corpus["cases"]
@@ -969,7 +979,9 @@ class DebuggerHoldoutComparatorTest(unittest.TestCase):
             "input_post_digests": post,
             "input_integrity_verified": True,
             "prompt_skill_sha256": {
-                framework: sha256(path)
+                framework: hashlib.sha256(
+                    self.runner.read_prompt_skill(path).encode("utf-8")
+                ).hexdigest()
                 for framework, path in self.runner.FRAMEWORK_SKILLS.items()
             },
             "prompt_set_sha256": self.runner.prompt_set_digest(

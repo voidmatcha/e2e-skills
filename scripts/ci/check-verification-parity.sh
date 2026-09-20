@@ -10,13 +10,15 @@ REPO_ROOT="$ROOT"
 source "$REPO_ROOT/scripts/ci/lib/init-python-isolation.sh" || exit 2
 GEN="$ROOT/skills/playwright-test-generator/verification-rules.md"
 REV="$ROOT/skills/e2e-reviewer/references/verification-rules.md"
+PW_DBG="$ROOT/skills/playwright-debugger/references/fix-verification.md"
+CY_DBG="$ROOT/skills/cypress-debugger/references/fix-verification.md"
 
 if ! command -v python3 >/dev/null 2>&1; then
   echo "verification parity: python3 unavailable; semantic contract check did not run" >&2
   exit 1
 fi
 
-python3 - "$GEN" "$REV" <<'PY'
+python3 - "$GEN" "$REV" "$PW_DBG" "$CY_DBG" <<'PY'
 import json
 import pathlib
 import re
@@ -24,9 +26,13 @@ import sys
 
 generator_path = pathlib.Path(sys.argv[1])
 reviewer_path = pathlib.Path(sys.argv[2])
+playwright_debugger_path = pathlib.Path(sys.argv[3])
+cypress_debugger_path = pathlib.Path(sys.argv[4])
 try:
     generator = generator_path.read_text(encoding="utf-8")
     reviewer = reviewer_path.read_text(encoding="utf-8")
+    playwright_debugger = playwright_debugger_path.read_text(encoding="utf-8")
+    cypress_debugger = cypress_debugger_path.read_text(encoding="utf-8")
 except (OSError, UnicodeError) as exc:
     print(f"verification parity: cannot read contract files: {exc}", file=sys.stderr)
     raise SystemExit(1)
@@ -184,5 +190,37 @@ if not schema_fields.issubset(gen_fields) or reviewer_fields != schema_fields:
     print("verification parity: generator/reviewer result schemas differ or are missing", file=sys.stderr)
     raise SystemExit(1)
 
-print("verification parity: V1-V6 semantic contract aligned")
+
+def debugger_handoff(label, text):
+    normalized = re.sub(r"\s+", " ", text).lower()
+    required = {
+        "V2": (r"assertion",),
+        "V3": (r"fault injection",),
+        "V4": (r"method", r"(?:endpoint|url)", r"(?:payload|body)", r"cardinality"),
+        "V5": (r"solo", r"repeat", r"suite[- ]context"),
+        "V6": (r"independent re-review", r"repair"),
+    }
+    for rule_id, clauses in required.items():
+        if not re.search(rf"- {rule_id}\b", text):
+            print(f"verification parity: {label} missing {rule_id}", file=sys.stderr)
+            raise SystemExit(1)
+        if not all(re.search(clause, normalized) for clause in clauses):
+            print(
+                f"verification parity: {label} {rule_id} handoff behavior differs",
+                file=sys.stderr,
+            )
+            raise SystemExit(1)
+    for clause in ("recommended", "CANNOT_VERIFY", "Do not install a verifier"):
+        if clause not in text:
+            print(
+                f"verification parity: {label} missing proof boundary {clause}",
+                file=sys.stderr,
+            )
+            raise SystemExit(1)
+
+
+debugger_handoff("Playwright debugger", playwright_debugger)
+debugger_handoff("Cypress debugger", cypress_debugger)
+
+print("verification parity: V1-V6 semantic contract and debugger handoffs aligned")
 PY

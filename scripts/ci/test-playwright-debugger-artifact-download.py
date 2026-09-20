@@ -1095,7 +1095,9 @@ def main() -> None:
         assert not (project_home_workspace / "playwright-report").exists()
 
     skill_root = ROOT / "skills/playwright-debugger"
-    skill_core = (skill_root / "SKILL.md").read_text(encoding="utf-8")
+    skill_core = (skill_root / "references/report-acquisition.md").read_text(
+        encoding="utf-8"
+    )
     download_reference = (skill_root / "references/ci-artifact-download.md").read_text(
         encoding="utf-8"
     )

@@ -29,6 +29,8 @@ Pass the selected Playwright project explicitly when setting up the seed. Do not
 
 ## Admission gate
 
+When `npx --no-install playwright help init-agents` confirms project-local first-party agent support, those agents are already initialized, and either the user asks to use them or an approved high-risk scenario still has uncertain failure conditions or locators, read `playwright-agents.md` and apply its admission gate before invoking an agent. That probe executes the project's installed Playwright package binary: run it only as an exact command approved in Step 4; otherwise skip this auxiliary path. Invoking an agent also starts the server launch its initialized definitions run, which executes the same binary: invoke no agent unless that exact launch was approved in Step 4. Approval of a scenario is not approval of that command. The auxiliary planner proposes plan deltas only; `playwright-agents.md` governs the rest.
+
 Use this optional path only when all of the following are already true:
 
 - `npx --no-install playwright help init-agents` confirms that the target

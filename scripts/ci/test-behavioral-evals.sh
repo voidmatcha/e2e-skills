@@ -375,6 +375,57 @@ assert "You have no shell, filesystem, network, app, image, or subagent tools" i
 assert "BEGIN_TRUSTED_SKILL_SNAPSHOT" not in without_skill_prompt
 assert "BEGIN_UNTRUSTED_TASK_ARTIFACT" in without_skill_prompt
 
+cypress_case = {
+    "id": "cypress-reference-snapshot",
+    "skill": "cypress-debugger",
+    "task": "Diagnose {repo}/scripts/ci/fixtures/codex-smoke/mochawesome.json",
+    "assertions": [{"type": "contains", "value": "F2"}],
+}
+with tempfile.TemporaryDirectory() as prompt_dir:
+    prompt_workspace = pathlib.Path(prompt_dir)
+    module.prepare_workspace(cypress_case, prompt_workspace)
+    cypress_prompt = module.render_prompt(
+        cypress_case, "with_skill", prompt_workspace
+    )
+for reference in (
+    "artifact-extraction.md",
+    "classification-procedure.md",
+    "fix-verification.md",
+    "report-acquisition.md",
+):
+    assert (
+        "BEGIN_TRUSTED_SKILL_SNAPSHOT "
+        f"cypress-debugger/references/{reference}"
+    ) in cypress_prompt
+
+generator_case = {
+    "id": "generator-reference-snapshot",
+    "skill": "playwright-test-generator",
+    "task": "Generate coverage for {repo}/scripts/ci/fixtures/codex-smoke/silent.spec.ts",
+    "assertions": [{"type": "contains", "value": "Step 4"}],
+}
+with tempfile.TemporaryDirectory() as prompt_dir:
+    prompt_workspace = pathlib.Path(prompt_dir)
+    module.prepare_workspace(generator_case, prompt_workspace)
+    generator_prompt = module.render_prompt(
+        generator_case, "with_skill", prompt_workspace
+    )
+for reference in (
+    "best-practices.md",
+    "code-rules.md",
+    "conventions-template.md",
+    "exploration-preflight.md",
+    "imported-test-cases.md",
+    "playwright-agents.md",
+    "recommended-lint.md",
+    "scenario-design.md",
+    "verification-rules.md",
+):
+    assert (
+        "BEGIN_TRUSTED_SKILL_SNAPSHOT "
+        f"playwright-test-generator/{reference}"
+    ) in generator_prompt
+
 # resolve_runner_executable delegates bare runner names to the shared,
 # version-aware resolver, so the trusted search path is the patch point that
 # actually governs lookup (it no longer calls shutil.which). Point the trusted

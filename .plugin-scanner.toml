@@ -68,6 +68,13 @@
 # text moved verbatim from that skill's SKILL.md. They inherit its scanner,
 # network, credential, and untrusted-input examples, so keep their exact paths
 # beside the original entry and the matching security-gate pin.
+# 2026-09-20: debugger report acquisition, extraction, classification, and fix
+# verification text moved verbatim into parallel on-demand references. They
+# inherit the debugger entrypoints' command, credential, and artifact examples.
+# 2026-09-20: generator environment, exploration, scenario, code, convention,
+# agent-interoperability, and verification detail moved verbatim into its
+# root-level point-of-use references. They inherit the entrypoint's command,
+# network, credential, and untrusted-input examples.
 [scanner]
 ignore_paths = [
   "skills/cypress-debugger/scripts/publish-mochawesome-report.py",
@@ -91,10 +98,24 @@ ignore_paths = [
   "skills/e2e-reviewer/references/semantic-review.md",
   "skills/e2e-reviewer/references/reporting.md",
   "skills/playwright-debugger/SKILL.md",
+  "skills/playwright-debugger/references/report-acquisition.md",
+  "skills/playwright-debugger/references/artifact-extraction.md",
+  "skills/playwright-debugger/references/classification-procedure.md",
+  "skills/playwright-debugger/references/fix-verification.md",
   "skills/cypress-debugger/SKILL.md",
+  "skills/cypress-debugger/references/report-acquisition.md",
+  "skills/cypress-debugger/references/artifact-extraction.md",
+  "skills/cypress-debugger/references/classification-procedure.md",
+  "skills/cypress-debugger/references/fix-verification.md",
   "skills/playwright-test-generator/SKILL.md",
+  "skills/playwright-test-generator/best-practices.md",
+  "skills/playwright-test-generator/code-rules.md",
+  "skills/playwright-test-generator/conventions-template.md",
   "skills/playwright-test-generator/exploration-preflight.md",
   "skills/playwright-test-generator/imported-test-cases.md",
+  "skills/playwright-test-generator/playwright-agents.md",
+  "skills/playwright-test-generator/scenario-design.md",
+  "skills/playwright-test-generator/verification-rules.md",
   "skills/playwright-test-generator/scripts/preflight_target.py",
   "benchmarks/healer-perturbation-v1/source-snapshots/0fc0e0687ab31d7e4d652578b947114cf1f472639b037fc6c9b37b1d8404a8e2.json",
 ]

@@ -30,6 +30,12 @@ FRAMEWORK_SKILLS = {
     "playwright": ROOT / "skills/playwright-debugger/SKILL.md",
     "cypress": ROOT / "skills/cypress-debugger/SKILL.md",
 }
+PROMPT_REFERENCE_NAMES = (
+    "report-acquisition.md",
+    "artifact-extraction.md",
+    "classification-procedure.md",
+    "fix-verification.md",
+)
 CORPUS_KEYS = {"schema_version", "corpus_id", "status", "description", "cases"}
 CASE_KEYS = {"id", "framework", "artifact", "expected"}
 ARTIFACT_KEYS = {"source", "sha256"}
@@ -86,6 +92,22 @@ def require_exact_keys(value: object, keys: set[str], context: str) -> dict:
 
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def prompt_skill_files(skill_path: Path) -> list[Path]:
+    return [skill_path, *(skill_path.parent / "references" / name for name in PROMPT_REFERENCE_NAMES)]
+
+
+def read_prompt_skill(skill_path: Path) -> str:
+    chunks = []
+    for path in prompt_skill_files(skill_path):
+        relative = path.relative_to(skill_path.parent).as_posix()
+        chunks.append(
+            f"BEGIN_DEBUGGER_SKILL {relative}\n"
+            f"{path.read_text(encoding='utf-8')}"
+            f"END_DEBUGGER_SKILL {relative}\n"
+        )
+    return "\n".join(chunks)
 
 
 def exact_canonical_path(requested: Path, expected: Path) -> bool:
@@ -401,6 +423,12 @@ def snapshot_inputs(
     for framework, source in sorted(skill_paths.items()):
         destination = snapshot_root / "skills" / framework / "SKILL.md"
         manifest[f"skill:{framework}"] = copy_snapshot_file(source, destination)
+        for reference in prompt_skill_files(source)[1:]:
+            relative = reference.relative_to(source.parent)
+            staged_reference = destination.parent / relative
+            manifest[f"skill:{framework}:{relative.as_posix()}"] = copy_snapshot_file(
+                reference, staged_reference
+            )
         snapshot_skills[framework] = destination
     for case in original_corpus["cases"]:
         relative = case["artifact"]["source"]
@@ -540,10 +568,7 @@ def prompt_set_digest(
     skill_paths: dict[str, Path],
 ) -> str:
     prompts = {}
-    skill_texts = {
-        framework: path.read_text(encoding="utf-8")
-        for framework, path in skill_paths.items()
-    }
+    skill_texts = {framework: read_prompt_skill(path) for framework, path in skill_paths.items()}
     for case in cases:
         artifact = cases_path.parent / case["artifact"]["source"]
         prompts[case["id"]] = render_prompt(
@@ -906,7 +931,7 @@ def run_case(
     prompt = render_prompt(
         case["framework"],
         artifact_text,
-        skill_path.read_text(encoding="utf-8"),
+        read_prompt_skill(skill_path),
     )
     with tempfile.TemporaryDirectory(prefix="e2e-debugger-holdout-") as temporary:
         workspace = Path(temporary)
@@ -1255,7 +1280,9 @@ def main() -> int:
                 "input_post_digests": input_post_digests,
                 "input_integrity_verified": input_integrity_verified,
                 "prompt_skill_sha256": {
-                    framework: snapshot["manifest"][f"skill:{framework}"]["sha256"]
+                    framework: hashlib.sha256(
+                        read_prompt_skill(snapshot["skill_paths"][framework]).encode("utf-8")
+                    ).hexdigest()
                     for framework in sorted(snapshot["skill_paths"])
                 },
                 "prompt_set_sha256": prompt_sha256,

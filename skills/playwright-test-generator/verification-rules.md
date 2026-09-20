@@ -76,6 +76,37 @@ The writer or debugger cannot approve its own output. Run `e2e-reviewer` through
 
 Run this independent review after generation and again after any debugger repair. During repair, expected values, primary outcome, assertion target, scenario count, and request proof are immutable. The debugger may fix only evidenced mechanics such as locator, wait strategy, navigation, fixture, setup order, or test data. It must not delete/skip a test or weaken an assertion to manufacture green; return `NOFIX` when behavior and approved intent disagree.
 
+### Baseline run (once, before the tracer)
+
+Before generating the tracer scenario, run the approved baseline command — the narrowest existing command that covers the target area — exactly once, before any approved config edit. Its result decides how later failures can be read:
+
+- **Green:** record it as the baseline; any later red is attributable to the
+  candidate.
+- **Red, and every failure is outside the candidate's surface:** record each
+  failing test and continue. Never attribute a recorded pre-existing failure to
+  the candidate, and never repair it silently to make the suite green.
+- **Red on the candidate's own surface:** stop and report. Overlap means the
+  same route or feature, or a fixture, Page Object, global setup, or stored
+  authentication state the candidate depends on. Return `PARTIAL/BLOCKED` and
+  name the failing test; a broken dependency cannot verify anything.
+- **Not runnable safely:** when no approved command can cover the area without
+  replaying a persistent write that V5 forbids, do not run it. Record
+  `baseline not established` with the reason, treat the V5 suite-context mode as
+  `CANNOT_VERIFY`, and return `PARTIAL/BLOCKED` under the completion matrix.
+
+- **No existing coverage:** when the repository has no spec for the target area
+  — the first generated test, or a feature nothing touches yet — there is no
+  baseline to run. Record `baseline not applicable: no existing coverage of
+  <area>` and continue. This is not a missing baseline: V5's suite-context mode
+  stays interpretable, because every later failure in that area is the
+  candidate's by construction.
+
+Run this once per task, not once per scenario. Use only a command approved in Step 4. If specs for the area exist but no approved command reaches them, say so and record `baseline not established` rather than widening the scope.
+
+### Failure handling (max 3 auto-fix attempts)
+
+Per attempt, diagnose the actual failure and apply the matching fix: heal selectors by re-snapshotting and using user intent at the highest stable tier (role+name > placeholder > testid), never by string tweaking; classify assertion failures as product regression, stale requirement, or timing issue without changing the approved expected value or primary assertion just to go green; fix structural issues such as missing `await`, wrong setup, or incorrect `beforeEach`. Hydration recovery may repeat only an action proven idempotent; never replay submit/delete/payment/purchase/message-send or other non-idempotent actions because UI did not appear. Re-establish clean disposable state and a hydration/readiness gate, or stop and report uncertainty. After 3 failed attempts, **invoke `playwright-debugger` skill** on repository-native artifacts and do not attempt a 4th fix; the debugger may repair mechanics only and must return `NOFIX` rather than alter the primary outcome, expected value, request proof, scenario count, or test enablement. After any repair, repeat V6 independent review.
+
 ## Tracer carry-over
 
 A tracer's V2–V4 results carry over to the final set only when its test body, its fixtures, and the file's shared setup (imports, hooks), and the project config are byte-identical and the same approved command runs it; V1, V5 (solo, repeat, and suite-context), and V6 always rerun on the final set.
@@ -89,6 +120,12 @@ Prefer an existing gitignored scratch directory accepted by the project config. 
 `SKILL.md` Step 3 records the starting snapshot. The task's write set is every path whose status changed since that snapshot, plus every already-listed path whose hash changed. Already-listed paths are the user's work: never revert, clean, or stage them, and never report them as the candidate's, unless the generated-file table lists one as Modified, in which case its hash change is that approved edit. A path the user says they changed during the task is also theirs; record it rather than routing it through Step 4. When the target is not a Git work tree, record content hashes of the test directory and of every path in the generated-file table instead, and say the write-set check covers only those paths.
 
 ## Structured result contract
+
+## Completion and write-set reconciliation
+
+Verification order: the approved V1 primary outcome; a clean normal candidate run; V2 only from an evidenced deterministic settled-state gate; V3 after declaring the exact unchanged primary assertion and observable mismatch; V4 for writes and failed-write behavior; V5 solo, repeat, suite-context, and supported parallel runs; and V6 through a distinct fresh-context, read-only reviewer actor or process after generation and any repair. Inline self-review cannot produce V6 `PASS`; report `CANNOT_VERIFY` when host separation is unavailable.
+
+Report `CANNOT_VERIFY` with a concrete reason when a safe probe is impossible. Never convert verifier `ERROR` into a product/test finding. Before completion, prove the source candidate is unchanged and no temporary verifier spec remains, and compare the write set against the approved generated-file table and control-file rows. Remove any artifact this task's own verification created, as `verification-rules.md` requires, and record the removal; files under Playwright's output folders stay runtime output even when a verification run wrote them. List runtime output separately rather than as a write: Playwright's output folders (`test-results/`, `playwright-report/`, `blob-report/`, or the `outputDir` and reporter folders the config names), the `storageState` file an approved setup project writes, and output Step 3's exploration tools wrote. Any other path outside the approved tables is not deleted: report it with its status and return `PARTIAL/BLOCKED`. Show the diff of every path the table lists as Modified, and of every approved control-file path, so the user can see that the edit is only the approved one. An applicable V4 or V5 must be `PASS` (`V4: N/A` is allowed only for a read-only scenario), and V6 must be `PASS`. If any of these is `CANNOT_VERIFY` or `ERROR`, the result is `PARTIAL/BLOCKED`, never `Complete`; a `FAIL` remains `BLOCKED` until repaired and reverified. V1 must be `PASS` as well; a V1, V2, or V3 `FAIL` blocks, and V2 or V3 `CANNOT_VERIFY` is reported without blocking.
 
 Record the result in this shape so an omitted or unavailable proof is visible rather than silently treated as a pass:
 

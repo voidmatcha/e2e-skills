@@ -38,19 +38,20 @@ def main() -> None:
     generator_preflight = GENERATOR_PREFLIGHT.read_text(encoding="utf-8")
 
     current_probe_token = "--framed-stdin"
-    assert current_probe_token in generator
+    assert current_probe_token in generator_preflight
     assert f'check "test-generator" "{current_probe_token}"' in smoke
-    assert '--target "$TARGET_URL"' not in generator
-    assert '--approved-origin "$BASE_URL"' not in generator
-    assert "| \"$SKILL_ROOT/scripts/run-preflight-target.sh\" --framed-stdin" in generator
-    assert 'write_frame="$SKILL_ROOT/scripts/write-utf8-frame.sh"' in generator
+    assert "Before running the exact-target preflight, read `exploration-preflight.md`" in generator
+    assert '--target "$TARGET_URL"' not in generator_preflight
+    assert '--approved-origin "$BASE_URL"' not in generator_preflight
+    assert "| \"$SKILL_ROOT/scripts/run-preflight-target.sh\" --framed-stdin" in generator_preflight
+    assert 'write_frame="$SKILL_ROOT/scripts/write-utf8-frame.sh"' in generator_preflight
     for framed_value in (
         '"$TARGET_URL"',
         '"$BASE_URL"',
         '"${LOGIN_URL-}"',
         '"${ALLOW_LOOPBACK:-0}"',
     ):
-        assert f"printf '%s' {framed_value} | \"$write_frame\"" in generator
+        assert f"printf '%s' {framed_value} | \"$write_frame\"" in generator_preflight
     assert (
         "printf '%s' \"$TARGET_URL\" |\n"
         '  "$SKILL_ROOT/scripts/write-utf8-frame.sh" |\n'
@@ -60,6 +61,7 @@ def main() -> None:
     assert "four bounded length-prefixed UTF-8 frames on stdin" in smoke
     assert "never raw URL-valued arguments" in smoke
     assert "complete fenced shell command" in smoke
+    assert "exploration-preflight.md point-of-use reference" in smoke
     assert "curl -fsS -o /dev/null -w" not in smoke
     assert "CODEX_ISOLATION=(--ephemeral --ignore-user-config)" in smoke
     assert "CODEX_ISOLATION=(-c 'mcp_servers={}')" not in smoke

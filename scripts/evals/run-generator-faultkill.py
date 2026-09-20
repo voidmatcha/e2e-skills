@@ -45,6 +45,10 @@ SKILL_FILES = {
         "code-rules.md",
         "verification-rules.md",
         "best-practices.md",
+        "conventions-template.md",
+        "exploration-preflight.md",
+        "playwright-agents.md",
+        "scenario-design.md",
     ),
     "rules-only": (
         "code-rules.md",

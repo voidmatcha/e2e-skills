@@ -615,14 +615,14 @@ class MochawesomePublisherTests(unittest.TestCase):
         self.assert_no_temporary()
 
     def test_skill_never_uses_raw_merge_redirection(self) -> None:
-        skill = (ROOT / "skills/cypress-debugger/SKILL.md").read_text(
-            encoding="utf-8"
-        )
-        self.assertNotIn("> cypress/reports/merged.json", skill)
-        self.assertIn("publish-mochawesome-report.py", skill)
-        self.assertIn("--pass-env PATH", skill)
-        self.assertIn("/usr/bin/env -i PATH=\"$PATH\"", skill)
-        self.assertIn("name and current value of every variable", skill)
+        acquisition = (
+            ROOT / "skills/cypress-debugger/references/report-acquisition.md"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("> cypress/reports/merged.json", acquisition)
+        self.assertIn("publish-mochawesome-report.py", acquisition)
+        self.assertIn("--pass-env PATH", acquisition)
+        self.assertIn("/usr/bin/env -i PATH=\"$PATH\"", acquisition)
+        self.assertIn("name and current value of every variable", acquisition)
 
 
 if __name__ == "__main__":

@@ -41,6 +41,45 @@ CYPRESS_SKILL = ROOT / "skills/cypress-debugger"
 PLAYWRIGHT_SKILL = ROOT / "skills/playwright-debugger/SKILL.md"
 
 
+def debugger_markdown(skill_dir: Path) -> str:
+    return "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in sorted(skill_dir.glob("**/*.md"))
+    )
+
+
+def assert_debugger_reference_routing() -> None:
+    routes = {
+        "report-acquisition.md": (
+            "Before acquiring, regenerating, merging, or downloading a report, read "
+            "`references/report-acquisition.md`.",
+            "## Prerequisites: Get the Report",
+        ),
+        "artifact-extraction.md": (
+            "Before extracting failures, read `references/artifact-extraction.md`",
+            "## Phase 1: Extract Failures",
+        ),
+        "classification-procedure.md": (
+            "Before resolving an F-code, read `references/classification-procedure.md`",
+            "Classification steps:",
+        ),
+        "fix-verification.md": (
+            "Before proposing or reporting a fix, read `references/fix-verification.md`",
+            "### Verification-rule handoff",
+        ),
+    }
+    for skill in ("playwright-debugger", "cypress-debugger"):
+        skill_dir = ROOT / "skills" / skill
+        core = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
+        for name, (pointer, destination_anchor) in routes.items():
+            reference = (skill_dir / "references" / name).read_text(encoding="utf-8")
+            assert pointer in core, (skill, pointer)
+            assert destination_anchor in reference, (skill, name, destination_anchor)
+            mutated = core.replace(pointer, "Reference routing removed", 1)
+            assert mutated != core, (skill, pointer)
+            assert pointer not in mutated, (skill, pointer)
+
+
 def assert_readme_f11_contract() -> None:
     expected_rows = {
         "README.md": (
@@ -236,7 +275,9 @@ def assert_debugger_repository_commands_use_empty_environment() -> None:
     ):
         # The F1/F7 isolation probe reads one result per run, so both probe
         # commands must also disable retries: a retried pass hides a failure.
-        text = (ROOT / "skills" / skill / "SKILL.md").read_text(encoding="utf-8")
+        text = (
+            ROOT / "skills" / skill / "references/classification-procedure.md"
+        ).read_text(encoding="utf-8")
         probe_fence = SHELL_FENCE.search(
             text, text.index("decided by an isolation probe")
         )
@@ -303,20 +344,21 @@ def assert_isolation_probe_waits_for_safety_and_trust_gates() -> None:
         ("playwright-debugger", "Playwright", 14, 17, 20),
         ("cypress-debugger", "Cypress", 16, 18, 19),
     ):
-        text = (ROOT / "skills" / skill / "SKILL.md").read_text(encoding="utf-8")
-        probe_start = text.index("decided by an isolation probe")
-        probe_fence = SHELL_FENCE.search(text, probe_start)
+        core = (ROOT / "skills" / skill / "SKILL.md").read_text(encoding="utf-8")
+        procedure = (
+            ROOT / "skills" / skill / "references/classification-procedure.md"
+        ).read_text(encoding="utf-8")
+        probe_start = procedure.index("decided by an isolation probe")
+        probe_fence = SHELL_FENCE.search(procedure, probe_start)
         assert probe_fence is not None, skill
         for heading in (
             f"**Execution safety gate (before any {framework} test command):**",
             "**Repository execution gate:**",
         ):
-            assert -1 < text.find(heading) < probe_start, (skill, heading)
-        preamble = " ".join(text[probe_start : probe_fence.start()].split())
+            assert heading in core, (skill, heading)
+        preamble = " ".join(procedure[probe_start : probe_fence.start()].split())
         assert PROBE_GATE_ORDER in preamble, (skill, preamble)
-        # review.sh SP3b requires this phrase, and test-parity.sh proves it by
-        # replacing its first occurrence; a second copy would mask that mutation.
-        assert text.count("between F1 and F7") == 1, skill
+        assert core.count("between F1 and F7") == 1, skill
 
         evals = {
             entry["id"]: entry
@@ -2025,6 +2067,7 @@ def assert_bundled_helpers_never_resolve_python_through_path() -> None:
             (
                 PLAYWRIGHT_SKILL,
                 PLAYWRIGHT_SKILL.parent / "references/ci-artifact-download.md",
+                PLAYWRIGHT_SKILL.parent / "references/report-acquisition.md",
             ),
             ("publish-json-report.py", "download-playwright-report.py"),
         ),
@@ -2032,6 +2075,7 @@ def assert_bundled_helpers_never_resolve_python_through_path() -> None:
             (
                 CYPRESS_SKILL / "SKILL.md",
                 CYPRESS_SKILL / "references/ci-artifact-download.md",
+                CYPRESS_SKILL / "references/report-acquisition.md",
             ),
             ("publish-mochawesome-report.py", "download-cypress-reports.py"),
         ),
@@ -2361,6 +2405,7 @@ def assert_bundled_scripts_match_the_launcher_minimum_python() -> None:
 
 
 def main() -> None:
+    assert_debugger_reference_routing()
     assert_readme_f11_contract()
     assert_debugger_repository_commands_use_empty_environment()
     assert_isolation_probe_waits_for_safety_and_trust_gates()
@@ -3984,17 +4029,15 @@ def main() -> None:
     cypress_ci_reference_text = (
         CYPRESS_SKILL / "references/ci-artifact-download.md"
     ).read_text(encoding="utf-8")
+    cypress_text = debugger_markdown(CYPRESS_SKILL)
     cypress_core_flat = " ".join(cypress_core_text.split())
+    cypress_flat = " ".join(cypress_text.split())
     assert "<skill-dir>/references/screenshot-video-analysis.md" in cypress_core_text
-    assert "<skill-dir>/references/ci-artifact-download.md" in cypress_core_text
+    assert "<skill-dir>/references/ci-artifact-download.md" in cypress_text
     assert "pass only the returned path to a viewer" in cypress_core_flat
     assert "never reopen the original screenshot/video path" in cypress_core_flat
     assert "delete the exact `snapshot_directory`" in cypress_core_flat
-    assert "Never download from forked-PR runs or arbitrary URLs" in cypress_core_flat
-    cypress_text = "\n".join(
-        (cypress_core_text, cypress_media_reference_text, cypress_ci_reference_text)
-    )
-    cypress_flat = " ".join(cypress_text.split())
+    assert "Never download from forked-PR runs or arbitrary URLs" in cypress_flat
     for module_name, script_name in (
         (
             "extract_junit_failures_contract",
@@ -4128,22 +4171,20 @@ def main() -> None:
     playwright_ci_reference_text = (
         PLAYWRIGHT_SKILL.parent / "references/ci-artifact-download.md"
     ).read_text(encoding="utf-8")
+    playwright_text = debugger_markdown(PLAYWRIGHT_SKILL.parent)
     playwright_core_flat = " ".join(playwright_core_text.split())
+    playwright_flat = " ".join(playwright_text.split())
     playwright_trace_reference_flat = " ".join(playwright_trace_reference_text.split())
     assert "<skill-dir>/references/trace-media-analysis.md" in playwright_core_text
-    assert "<skill-dir>/references/ci-artifact-download.md" in playwright_core_text
+    assert "<skill-dir>/references/ci-artifact-download.md" in playwright_text
     assert "HTML/trace-only" in playwright_core_flat
     assert "never reopen the original media path" in playwright_core_flat
     assert "delete the emitted `snapshot_directory`" in playwright_core_flat
-    assert "Never download from forked-PR runs or arbitrary URLs" in playwright_core_flat
+    assert "Never download from forked-PR runs or arbitrary URLs" in playwright_flat
     assert "HTML/trace-only report" in playwright_trace_reference_flat
     assert "F1-F15 table" in playwright_trace_reference_flat
     assert "genuine race (F3)" not in playwright_trace_reference_text
     assert "deterministic product change (F1)" not in playwright_trace_reference_text
-    playwright_text = "\n".join(
-        (playwright_core_text, playwright_trace_reference_text, playwright_ci_reference_text)
-    )
-    playwright_flat = " ".join(playwright_text.split())
     playwright_reader = (
         ROOT / "skills/playwright-debugger/scripts/read-playwright-artifact.py"
     )

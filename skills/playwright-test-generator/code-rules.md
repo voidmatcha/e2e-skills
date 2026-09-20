@@ -241,6 +241,25 @@ await expect(likeToggle).toHaveAttribute('aria-pressed', 'true');
 
 ---
 
+## YAGNI audit (run immediately after writing code)
+
+1. List every locator defined in the generated/modified POM file(s).
+2. Search each locator name across the relevant specs, POMs, and test
+   utilities/helpers. Include same-file and cross-file internal method usage;
+   a spec may call a POM method without referencing its locator property
+   directly.
+3. Delete a locator only when that complete search finds zero usages. Never
+   delete a locator used by a POM or utility method merely because no spec
+   references the locator property directly.
+4. Output the audit table:
+
+```
+| Locator        | File           | Used in          | Status  |
+|----------------|----------------|------------------|---------|
+| submitButton   | login-page.ts  | login.spec.ts:18 | IN USE  |
+| unusedLocator  | login-page.ts  | (none)           | DELETED |
+```
+
 ## Suppression Convention
 
 When a forbidden pattern is genuinely unavoidable, add `// JUSTIFIED: <reason>` on the **line immediately above**. This tells the `e2e-reviewer` to skip the hit during grep checks.

@@ -1142,6 +1142,22 @@ mutate "$file" '`sourceUnchanged`' '`sourceMayChange`'
 assert_verification_parity_fails "Verification parity — reviewer result schema drift" "result schemas differ or are missing"
 restore "$file"
 
+file="skills/playwright-debugger/references/fix-verification.md"
+backup "$file"
+mutate "$file" "independent re-review" "self-review"
+assert_verification_parity_fails \
+  "Verification parity — Playwright debugger V6 handoff drift" \
+  "Playwright debugger V6 handoff behavior differs"
+restore "$file"
+
+file="skills/cypress-debugger/references/fix-verification.md"
+backup "$file"
+mutate "$file" "CANNOT_VERIFY" "CANNOTVERIFY"
+assert_verification_parity_fails \
+  "Verification parity — Cypress debugger proof boundary drift" \
+  "Cypress debugger missing proof boundary CANNOT_VERIFY"
+restore "$file"
+
 # Case 23: named custom agents are optional; standard Codex native roles must
 # remain the delegation bridge before the inline fallback.
 file="skills/e2e-reviewer/SKILL.md"

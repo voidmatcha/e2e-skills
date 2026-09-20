@@ -151,6 +151,11 @@ def expected_sources(corpus: dict) -> dict[str, Path]:
             for framework, path in RUNNER.FRAMEWORK_SKILLS.items()
         },
         **{
+            f"skill:{framework}:{reference.relative_to(path.parent).as_posix()}": reference
+            for framework, path in RUNNER.FRAMEWORK_SKILLS.items()
+            for reference in RUNNER.prompt_skill_files(path)[1:]
+        },
+        **{
             f"artifact:{case['id']}": DEFAULT_CASES.parent / case["artifact"]["source"]
             for case in corpus["cases"]
         },
@@ -275,7 +280,9 @@ def validate_report(report: dict, corpus: dict, protocol: dict) -> tuple[dict, d
         raise ValueError("benchmark limitation disclosure drift")
     validate_input_provenance(report, corpus)
     expected_skill_digests = {
-        framework: RUNNER.sha256(path)
+        framework: hashlib.sha256(
+            RUNNER.read_prompt_skill(path).encode("utf-8")
+        ).hexdigest()
         for framework, path in RUNNER.FRAMEWORK_SKILLS.items()
     }
     if report["prompt_skill_sha256"] != expected_skill_digests:

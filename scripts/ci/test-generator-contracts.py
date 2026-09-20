@@ -33,6 +33,8 @@ EXPLORATION_PREFLIGHT = (
 IMPORTED_TEST_CASES = (
     ROOT / "skills/playwright-test-generator/imported-test-cases.md"
 )
+SCENARIO_DESIGN = ROOT / "skills/playwright-test-generator/scenario-design.md"
+PLAYWRIGHT_AGENTS = ROOT / "skills/playwright-test-generator/playwright-agents.md"
 EVALS = ROOT / "skills/playwright-test-generator/evals/evals.json"
 PREFLIGHT = (
     ROOT / "skills/playwright-test-generator/scripts/preflight_target.py"
@@ -52,7 +54,9 @@ UTF8_FRAME_WRITER = (
     ROOT
     / "skills/playwright-test-generator/scripts/write-utf8-frame.sh"
 )
-PLAYWRIGHT_DEBUGGER_SKILL = ROOT / "skills/playwright-debugger/SKILL.md"
+PLAYWRIGHT_DEBUGGER_CLASSIFICATION = (
+    ROOT / "skills/playwright-debugger/references/classification-procedure.md"
+)
 REVIEWER_SCANNER = ROOT / "skills/e2e-reviewer/scripts/scan.sh"
 OPENAI_AGENT = ROOT / "skills/playwright-test-generator/agents/openai.yaml"
 CLAUDE_PLUGIN = ROOT / ".claude-plugin/plugin.json"
@@ -1131,7 +1135,7 @@ def assert_failure_handling_contract(text: str) -> None:
     failure_handling = section(
         text,
         "### Failure handling (max 3 auto-fix attempts)",
-        "### Completion report (on full pass)",
+        "## Tracer carry-over",
     )
     compact = " ".join(failure_handling.split())
     assert "Per attempt, diagnose the actual failure" in compact
@@ -1165,7 +1169,7 @@ def assert_baseline_run_contract(text: str, verification_rules: str) -> None:
     baseline = section(
         text,
         "### Baseline run (once, before the tracer)",
-        "When Step 4 requires a tracer scenario",
+        "### Failure handling",
     )
     compact = " ".join(baseline.split())
     assert "run the approved baseline command" in compact
@@ -1185,12 +1189,8 @@ def assert_baseline_run_contract(text: str, verification_rules: str) -> None:
     assert "baseline not applicable: no existing coverage" in compact
     assert "Use only a command approved in Step 4." in compact
 
-    commands = section(
-        text,
-        "### Proposed target-controlled commands",
-        "**Approval gate:**",
-    )
-    commands_compact = " ".join(commands.split())
+    commands = " ".join(verification_rules.split())
+    commands_compact = commands
     assert "baseline run of the target area" in commands_compact
     assert "as the baseline run" in commands_compact
     assert "a full-suite run can replay persistent writes that V5 forbids" in commands_compact
@@ -1237,29 +1237,29 @@ def assert_error_cause_signal_contract(text: str, verification_rules: str) -> No
 
 
 def exercise_baseline_and_error_signal_mutation_guards(
-    text: str, verification_rules: str
+    scenario_design: str, verification_rules: str, approval_text: str
 ) -> None:
     baseline = section(
-        text,
+        verification_rules,
         "### Baseline run (once, before the tracer)",
-        "When Step 4 requires a tracer scenario",
+        "### Failure handling",
     )
-    admission = section(text, "### Scenario admission", "### Scenarios")
+    admission = section(scenario_design, "### Scenario admission", "### Scenarios")
     mutations = (
-        (assert_baseline_run_contract, text.replace(baseline, "\n\n", 1), verification_rules),
+        (assert_baseline_run_contract, verification_rules.replace(baseline, "\n\n", 1), verification_rules + approval_text),
         (
             assert_baseline_run_contract,
-            text,
+            verification_rules,
             verification_rules.replace(
                 "The suite-context mode is only interpretable against a recorded baseline or a recorded absence of one.",
                 "",
                 1,
-            ),
+            ) + approval_text,
         ),
-        (assert_error_cause_signal_contract, text.replace(admission, "\n\n", 1), verification_rules),
+        (assert_error_cause_signal_contract, scenario_design.replace(admission, "\n\n", 1), verification_rules),
         (
             assert_error_cause_signal_contract,
-            text,
+            scenario_design,
             verification_rules.replace(
                 "When the plan recorded `GENERIC_BY_CONTRACT`, do not swap one error",
                 "When the plan recorded anything, swap one error",
@@ -1268,7 +1268,7 @@ def exercise_baseline_and_error_signal_mutation_guards(
         ),
         (
             assert_error_cause_signal_contract,
-            text.replace(
+            scenario_design.replace(
                 "Do not invent a distinguishing signal the",
                 "Invent a distinguishing signal the",
                 1,
@@ -1362,7 +1362,17 @@ def assert_write_scope_contract(text: str, verification_rules: str) -> None:
     assert "say the write-set check covers only those paths" in write_set
     assert "the snapshot directory of any `toHaveScreenshot` assertion, and the plan files a first-party planner run writes" in generated_compact
     assert "scenario outcomes, commands, locators, generated files, and control-file mutations remain unchanged" in compact
-    step_7 = " ".join(section(text, "## Step 7: V1–V6 Verification + Failure Handling", "### Failure handling").split())
+    step_7 = " ".join(
+        (
+            section(
+                text,
+                "## Step 7: V1–V6 Verification + Failure Handling",
+                "### Completion report (on full pass)",
+            )
+            + "\n"
+            + verification_rules
+        ).split()
+    )
     assert "compare the write set against the approved generated-file table and control-file rows" in step_7
     assert "Remove any artifact this task's own verification created, as `verification-rules.md` requires, and record the removal" in step_7
     assert "the `storageState` file an approved setup project writes" in step_7
@@ -1405,13 +1415,21 @@ def exercise_write_scope_mutation_guards(text: str, verification_rules: str) -> 
         ),
         (
             assert_write_scope_contract,
-            text.replace("report it with its status and return `PARTIAL/BLOCKED`", "report it with its status and return `Complete`", 1),
-            verification_rules,
+            text,
+            verification_rules.replace(
+                "report it with its status and return `PARTIAL/BLOCKED`",
+                "report it with its status and return `Complete`",
+                1,
+            ),
         ),
         (
             assert_write_scope_contract,
-            text.replace("Remove any artifact this task's own verification created", "Keep any artifact this task's own verification created", 1),
-            verification_rules,
+            text,
+            verification_rules.replace(
+                "Remove any artifact this task's own verification created",
+                "Keep any artifact this task's own verification created",
+                1,
+            ),
         ),
         (
             assert_write_scope_contract,
@@ -1461,7 +1479,7 @@ def assert_failed_write_and_guard_contract(
     assert "follow V4's re-read rule in `verification-rules.md`" in compact
     assert "give the most restrictive verdict and the breakdown" in compact
     assert "**Absence after a failed write.**" in code_rules
-    step_3 = " ".join(section(text, "## Step 3: Browser Exploration", "## Step 4: Scenario Design + User Approval").split())
+    step_3 = " ".join(text.split())
     assert "ask the user to approve that exact command before exploration continues" in step_3
     assert "lists the command as already approved instead of asking again" in step_3
     assert "**Guard for Playwright CLI.**" in step_3
@@ -1557,7 +1575,7 @@ def assert_backlog_1190_contract(text: str, verification_rules: str, code_rules:
     assert "a generated test must not depend on state created this way" in compact
     conventions = " ".join(CONVENTIONS_TEMPLATE.read_text(encoding="utf-8").split())
     assert "When the approved control-file table has a `CLAUDE.md` row (a root `CLAUDE.md` or `.claude/` directory exists)" in conventions
-    assert "With a tracer scenario, run it once, after Step 7 records the final set's V1–V6 verdicts, only when those verdicts allow `Complete`, and before its write-set comparison and completion report" in compact
+    assert "Whether or not Step 4 requires a tracer scenario, run it once, after Step 7 records the final set's V1–V6 verdicts, only when those verdicts allow `Complete`, and before its write-set comparison and completion report" in compact
     assert "e2e-reviewer: N P0 found, N fixed; N P1 (listed below)" in text
     assert "A passing web-first assertion on another element produced by the same render as the primary target counts as a terminal UI state" in rules
     assert "`afterEach` or fixture teardown may revert state the test itself wrote" in code
@@ -1588,13 +1606,17 @@ def assert_backlog_1191_contract(
     # A5: the conventions template offers stubbed or disposable real writes.
     assert "MUST be stubbed" not in conv
     assert "stubbed via <mock helper path> — list every write endpoint explicitly; unlisted calls fall through to the real backend" in conv
-    assert "real, against the disposable server reset by <reset seam> before each test; never a shared backend" in conv
+    assert "real, against a disposable server that the approved test run starts and stops and that <reset seam> resets before each test; never a shared or pre-existing backend" in conv
     assert "control every write at the seam named under Network" in conv
     assert "stub every write endpoint" not in conv
     # A6: the CLI's own session output.
     assert "The CLI writes session state and snapshots to `.playwright-cli/` under its working directory, so that outside directory receives them; when the project-local entry point must run from the project directory, `.playwright-cli/` lands in the worktree: list it as exploration output in Step 7 and never stage it" in pre
     # A8: undeclared probes extend, never replace, a declared verdict.
     assert "A probe the plan did not declare is in scope when it runs only approved commands on temporary copies and changes nothing in the candidate; record it under the V-rule it extends with the same verdict rules, and never use it to replace a declared probe's verdict" in rules
+    # A9: exploration evidence has an explicit sufficiency threshold.
+    assert "Treat an exploration observation as sufficient without another probe only when it directly shows the state or transition supporting the scenario's actions, primary outcome, and locators; otherwise run another permitted probe, or record the unresolved assumption under `Confidence and unknowns` when no safe probe is available" in compact
+    # A10: first-run Step 5b ordering does not depend on tracer admission.
+    assert "Whether or not Step 4 requires a tracer scenario, run it once" in compact
 
 
 def exercise_backlog_1191_mutation_guards(
@@ -1607,9 +1629,11 @@ def exercise_backlog_1191_mutation_guards(
         (text, verification_rules.replace("V1, V5 (solo, repeat, and suite-context), and V6 always rerun on the final set", "V5 and V6 also carry over", 1), conventions, preflight),
         (text.replace("the completion matrix applied to the tracer alone, including V6", "V1-V5 on the tracer", 1), verification_rules, conventions, preflight),
         (text.replace("and of every approved control-file path", "", 1), verification_rules, conventions, preflight),
-        (text, verification_rules, conventions.replace("real, against the disposable server", "real, against any server", 1), preflight),
+        (text, verification_rules, conventions.replace("a disposable server that the approved test run starts and stops", "any server", 1), preflight),
         (text, verification_rules, conventions, preflight.replace(" and never stage it", "", 1)),
         (text, verification_rules.replace("never use it to replace a declared probe's verdict", "may use it to replace a declared probe's verdict", 1), conventions, preflight),
+        (text.replace("directly shows the state or transition supporting the scenario's actions, primary outcome, and locators", "suggests the scenario could work", 1), verification_rules, conventions, preflight),
+        (text.replace("Whether or not Step 4 requires a tracer scenario", "With a tracer scenario", 1), verification_rules, conventions, preflight),
     )
     for mutated_text, mutated_rules, mutated_conv, mutated_pre in mutations:
         try:
@@ -1628,6 +1652,13 @@ def assert_backlog_1191_evals(evals_by_id: dict) -> None:
     assert any("does not delete, move, or weaken the count assertion" in a for a in gate["assertions"])
     assert "Requires V6 PASS on the tracer before expansion" in evals_by_id[18]["assertions"]
     assert "Reruns V5/V6 on the final set; may carry over V2–V4 for a byte-identical tracer body" in evals_by_id[18]["assertions"]
+    assert any("directly observed action, primary outcome, and locator sequence" in a for a in evals_by_id[17]["assertions"])
+    assert any(a.startswith("False-positive guard: does not treat the pre-submit snapshot") for a in evals_by_id[17]["assertions"])
+    assert any("after the no-tracer final set's verdicts allow Complete" in a for a in evals_by_id[18]["assertions"])
+    assert any(a.startswith("False-positive guard: skips Step 5b") for a in evals_by_id[18]["assertions"])
+    disposable = evals_by_id[36]
+    assert any("approved test run starts and stops" in a for a in disposable["assertions"])
+    assert any(a.startswith("False-positive guard: does not require a read-only or fully stubbed suite") for a in disposable["assertions"])
     assert any(a.startswith("False-positive guard: does not reject a line-through gate assertion because it is not one of the three") for a in evals_by_id[26]["assertions"])
     assert any(a.startswith("Names .playwright-cli/ as exploration output") for a in evals_by_id[32]["assertions"])
 
@@ -1719,7 +1750,7 @@ def exercise_failure_handling_mutation_guard(text: str) -> None:
     failure_handling = section(
         text,
         "### Failure handling (max 3 auto-fix attempts)",
-        "### Completion report (on full pass)",
+        "## Tracer carry-over",
     )
     mutated = text.replace(failure_handling, "\n\n", 1)
     try:
@@ -1741,6 +1772,7 @@ def eval_contract(evals_by_id: dict, eval_id: int) -> str:
 
 def assert_config_discovery_contract(
     text: str,
+    step_3_material: str,
     debugger_skill: str,
     scanner: str,
     evals_by_id: dict,
@@ -1749,11 +1781,7 @@ def assert_config_discovery_contract(
     # The eight-extension set applies to spec discovery only.
     loader_order = ("ts", "js", "mts", "mjs", "cts", "cjs")
     six_names = "`playwright.config.{" + ",".join(loader_order) + "}`"
-    step_1 = section(
-        text,
-        "## Step 1: Environment Detection",
-        "**Output (project profile):**",
-    )
+    step_1 = section(text, "## Environment Detection", "## Coverage Gap Analysis")
     compact_step_1 = " ".join(step_1.split())
     assert "playwright.config.<ext>" not in step_1
     assert "for both config and spec discovery" not in step_1
@@ -1787,13 +1815,7 @@ def assert_config_discovery_contract(
     )
     assert len(scanner_names) == len(loader_order), scanner_names
     assert sorted(scanner_names) == sorted(loader_order), scanner_names
-    step_3 = " ".join(
-        section(
-            text,
-            "## Step 3: Browser Exploration",
-            "## Step 4: Scenario Design + User Approval",
-        ).split()
-    )
+    step_3 = " ".join(step_3_material.split())
     assert "playwright.config.*" not in step_3
     assert (
         "Reading the `webServer` block of the loaded Playwright config "
@@ -1822,12 +1844,7 @@ def assert_config_discovery_contract(
 def assert_preflight_interpreter_contract(
     text: str, launcher: str, preflight_ref: str
 ) -> None:
-    step_3 = section(
-        text,
-        "## Step 3: Browser Exploration",
-        "## Step 4: Scenario Design + User Approval",
-    )
-    compact_step_3 = " ".join(step_3.split())
+    compact_step_3 = " ".join(text.split())
     compact_launcher_ref = " ".join(
         section(preflight_ref, "## Preflight launcher", "## Frame writer").split()
     )
@@ -1875,12 +1892,10 @@ def assert_preflight_interpreter_contract(
     )
 
 
-def assert_cli_probe_approval_contract(text: str, evals_by_id: dict) -> None:
-    step_3 = section(
-        text,
-        "## Step 3: Browser Exploration",
-        "## Step 4: Scenario Design + User Approval",
-    )
+def assert_cli_probe_approval_contract(
+    text: str, playwright_agents: str, evals_by_id: dict
+) -> None:
+    step_3 = text
     cli_selection = " ".join(
         section(
             step_3,
@@ -1920,7 +1935,11 @@ def assert_cli_probe_approval_contract(text: str, evals_by_id: dict) -> None:
         "`npx playwright run-test-mcp-server`), quoted from those definitions"
     ) in commands
     step_5 = " ".join(
-        section(text, "## Step 5: Code Generation", "## Step 5b:").split()
+        (
+            section(text, "## Step 5: Code Generation", "## Step 5b:")
+            + "\n"
+            + playwright_agents
+        ).split()
     )
     assert (
         "That probe executes the project's installed Playwright package "
@@ -1963,10 +1982,14 @@ def assert_cli_probe_approval_contract(text: str, evals_by_id: dict) -> None:
 def assert_v6_completion_contract(
     text: str, verification_rules: str, evals_by_id: dict
 ) -> None:
-    step_7 = section(
-        text,
-        "## Step 7: V1–V6 Verification + Failure Handling",
-        "### Failure handling (max 3 auto-fix attempts)",
+    step_7 = (
+        section(
+            text,
+            "## Step 7: V1–V6 Verification + Failure Handling",
+            "### Completion report (on full pass)",
+        )
+        + "\n"
+        + verification_rules
     )
     assert (
         "An applicable V4 or V5 must be `PASS` (`V4: N/A` is allowed only for "
@@ -2082,6 +2105,21 @@ def main() -> None:
     best_practices = BEST_PRACTICES.read_text(encoding="utf-8")
     verification_rules = VERIFICATION_RULES.read_text(encoding="utf-8")
     preflight_ref = EXPLORATION_PREFLIGHT.read_text(encoding="utf-8")
+    scenario_design = SCENARIO_DESIGN.read_text(encoding="utf-8")
+    playwright_agents = PLAYWRIGHT_AGENTS.read_text(encoding="utf-8")
+    conventions_template = CONVENTIONS_TEMPLATE.read_text(encoding="utf-8")
+    generator_contract = "\n".join(
+        (
+            text,
+            best_practices,
+            code_rules,
+            verification_rules,
+            preflight_ref,
+            scenario_design,
+            playwright_agents,
+            conventions_template,
+        )
+    )
     evals = json.loads(EVALS.read_text(encoding="utf-8"))["evals"]
     evals_by_id = {case["id"]: case for case in evals}
     unrelated_red = evals_by_id[13]
@@ -2117,11 +2155,7 @@ def main() -> None:
         "`await expect(page).toHaveURL(x)`"
     ) not in compact_code_rules
 
-    step_1 = section(
-        text,
-        "## Step 1: Environment Detection",
-        "**Output (project profile):**",
-    )
+    step_1 = section(best_practices, "## Environment Detection", "## Coverage Gap Analysis")
     extensions = {".js", ".jsx", ".mjs", ".cjs", ".ts", ".tsx", ".mts", ".cts"}
     documented_extensions = {
         match
@@ -2130,23 +2164,38 @@ def main() -> None:
     }
     assert documented_extensions == extensions
     assert_config_discovery_contract(
-        text,
-        PLAYWRIGHT_DEBUGGER_SKILL.read_text(encoding="utf-8"),
+        best_practices + "\n" + preflight_ref + "\n" + text,
+        section(
+            text,
+            "## Step 3: Browser Exploration",
+            "## Step 4: Scenario Design + User Approval",
+        )
+        + "\n"
+        + preflight_ref,
+        PLAYWRIGHT_DEBUGGER_CLASSIFICATION.read_text(encoding="utf-8"),
         REVIEWER_SCANNER.read_text(encoding="utf-8"),
         evals_by_id,
     )
-    assert_bash_snippet_variables_defined(text)
+    # The generator's bash snippets now live in exploration-preflight.md; the
+    # SKILL.md body carries none, so checking it would assert on an empty set.
+    assert "```bash" not in text
     assert_bash_snippet_variables_defined(preflight_ref)
     assert "Both `*.spec.<ext>` and `*.test.<ext>`" in step_1
     assert "recursively within the test dir" in step_1
     assert "Do not stop after finding only the common `.ts`/`.js` forms" in step_1
 
-    step_3 = section(
+    step_3_core = section(
         text,
         "## Step 3: Browser Exploration",
         "## Step 4: Scenario Design + User Approval",
     )
+    scenario_exploration = section(
+        scenario_design, "# Scenario Design", "### Scenario admission"
+    )
+    step_3 = step_3_core + "\n" + preflight_ref + "\n" + scenario_exploration
     compact_step_3 = " ".join(step_3.split())
+    assert "Before running the exact-target preflight, read `exploration-preflight.md`" in step_3_core
+    assert "Before starting `webServer`, authenticating, or choosing/running a browser source" in step_3_core
     assert "**Exploration safety gate (before any network request or browser launch):**" in step_3
     assert "snapshot-only" in step_3
     assert "`local/disposable`" in step_3
@@ -2192,8 +2241,8 @@ def main() -> None:
     assert '--approved-origin "$BASE_URL"' not in step_3
     assert "--framed-stdin" in step_3
     assert 'write_frame="$SKILL_ROOT/scripts/write-utf8-frame.sh"' in step_3
-    assert step_3.count("scripts/write-utf8-frame.sh") == 1
-    assert preflight_ref.count("scripts/write-utf8-frame.sh") == 1
+    assert preflight_launcher.count("scripts/write-utf8-frame.sh") == 1
+    assert preflight_ref.count("scripts/write-utf8-frame.sh") == 2
     assert '${#value}' not in step_3
     assert '${#value}' not in preflight_ref
     assert 'export LC_ALL=C' in utf8_frame_writer
@@ -2242,16 +2291,20 @@ def main() -> None:
     )
     assert "deprecated unscoped `playwright-cli` package" in step_3
     assert "npx --no-install playwright help cli" in step_3
-    assert_cli_probe_approval_contract(text, evals_by_id)
-    assert_preflight_interpreter_contract(text, launcher, preflight_ref)
+    # The CLI-selection gate lives in exploration-preflight.md; the command
+    # approval table it feeds stayed in SKILL.md.
+    assert_cli_probe_approval_contract(
+        preflight_ref + "\n" + text, playwright_agents, evals_by_id
+    )
+    assert_preflight_interpreter_contract(preflight_ref, launcher, preflight_ref)
     assert "`playwright --version`, `playwright cli --version`, or" in why_cli_ref
     assert "printing root output" in why_cli_ref
     assert "Do not claim that this ordering is universally faster" in why_cli_ref
     assert "Treat Playwright CLI as a separate exploration browser" in step_3
     assert "does not automatically inherit the project's Playwright Test" in step_3
     assert "repository-native Playwright Test command in Step 7" in step_3
-    assert "npx --no-install playwright help init-agents" in text
-    assert "confirms project-local first-party agent support" in text
+    assert "npx --no-install playwright help init-agents" in playwright_agents
+    assert "confirms project-local first-party agent support" in playwright_agents
     assert "Never let `npx` download a package" in compact_step_3
     assert "recommend installation; do not install it automatically" in step_3
     assert "Do not register or install MCP solely for this workflow" in step_3
@@ -2303,7 +2356,7 @@ def main() -> None:
     assert "exact command is explicitly approved" in step_3
     fallback_pointer = " ".join(
         section(
-            step_3,
+            step_3_core + "\n" + scenario_design,
             "**Deterministic fallback when no interception-capable browser-automation tool is available**",
             "Parse the ARIA snapshot for roles, names, and structure",
         ).split()
@@ -2493,11 +2546,13 @@ def main() -> None:
         generator_trigger_surfaces + package_descriptions
     )
 
-    step_4 = section(
+    step_4_core = section(
         text,
         "## Step 4: Scenario Design + User Approval",
         "## Step 5: Code Generation",
     )
+    step_4 = step_4_core + "\n" + scenario_design
+    assert "read `scenario-design.md` in full" in step_4_core
     assert "### Scenario admission" in step_4
     assert "- Distinct risk:" in step_4
     assert "- Right layer:" in step_4
@@ -2532,7 +2587,7 @@ def main() -> None:
         text,
         "## Step 5: Code Generation",
         "## Step 5b: Conventions & Seed Artifacts (first run on a project)",
-    )
+    ) + "\n" + playwright_agents
     assert "generate only that scenario first" in step_5
     assert "unless the tracer reaches `Complete`" in step_5
     assert "stop expansion and report the evidence" in step_5
@@ -2541,11 +2596,13 @@ def main() -> None:
     assert "successful tracer is an intermediate expansion gate" in step_5
     assert "do not emit the final completion report" in step_5
 
-    step_5b = section(
+    step_5b_core = section(
         text,
         "## Step 5b: Conventions & Seed Artifacts (first run on a project)",
         "## Step 6: YAGNI Audit + e2e-reviewer",
     )
+    step_5b = step_5b_core + "\n" + conventions_template
+    assert "read `conventions-template.md` from the beginning" in step_5b_core
     assert "user approved at least one disclosed control-file mutation" in step_5b
     assert "opts out of every row, skip" in step_5b
     assert "Mutate only an approved exact\n   target" in step_5b
@@ -2564,11 +2621,7 @@ def main() -> None:
         "## Step 6: YAGNI Audit + e2e-reviewer",
         "## Step 7: V1–V6 Verification + Failure Handling",
     )
-    yagni = section(
-        step_6,
-        "### YAGNI audit (run immediately after writing code)",
-        "### e2e-reviewer (automatic quality gate)",
-    )
+    yagni = section(code_rules, "## YAGNI audit", "## Suppression Convention")
     assert "relevant specs, POMs, and test\n   utilities/helpers" in yagni
     assert "same-file and cross-file internal method usage" in yagni
     assert "complete search finds zero usages" in yagni
@@ -2591,11 +2644,12 @@ def main() -> None:
     assert "do not hand the candidate back as complete" in gate
     assert "proceed to Step 7 with a warning" not in gate
 
-    step_7 = section(
+    step_7_core = section(
         text,
         "## Step 7: V1–V6 Verification + Failure Handling",
-        "### Failure handling (max 3 auto-fix attempts)",
+        "### Completion report (on full pass)",
     )
+    step_7 = step_7_core + "\n" + verification_rules
     assert "Run only the exact target-controlled commands approved in Step 4" in step_7
     assert "Do not infer approval from a command appearing in project files" in step_7
     assert "settled-state gate" in step_7
@@ -2610,28 +2664,29 @@ def main() -> None:
     assert "UI double-click protection or a loopback frontend is not sufficient" in step_7_words
     assert "do not replay the persistent write" in step_7_words
     assert "record V5 `CANNOT_VERIFY` and return `PARTIAL/BLOCKED`" in step_7_words
-    assert_failure_handling_contract(text)
-    assert_baseline_run_contract(text, verification_rules)
-    assert_error_cause_signal_contract(text, verification_rules)
-    exercise_baseline_and_error_signal_mutation_guards(text, verification_rules)
-    assert_secondary_outcome_contract(text)
+    assert_failure_handling_contract(verification_rules)
+    assert_baseline_run_contract(verification_rules, verification_rules + text)
+    assert_error_cause_signal_contract(scenario_design, verification_rules)
+    exercise_baseline_and_error_signal_mutation_guards(
+        scenario_design, verification_rules, text
+    )
+    assert_secondary_outcome_contract(scenario_design)
     imported_cases = IMPORTED_TEST_CASES.read_text(encoding="utf-8")
-    assert_imported_test_case_contract(text, imported_cases)
-    exercise_secondary_outcome_and_import_mutation_guards(text, imported_cases)
+    assert_imported_test_case_contract(scenario_design, imported_cases)
+    exercise_secondary_outcome_and_import_mutation_guards(scenario_design, imported_cases)
     assert_write_scope_contract(text, verification_rules)
     assert_command_approval_scope_contract(text)
     exercise_write_scope_mutation_guards(text, verification_rules)
-    assert_failed_write_and_guard_contract(text, verification_rules, code_rules, preflight_ref)
-    exercise_failed_write_and_guard_mutation_guards(text, verification_rules, code_rules, preflight_ref)
-    assert_backlog_1190_contract(text, verification_rules, code_rules)
-    exercise_backlog_1190_mutation_guards(text, verification_rules, code_rules)
-    conventions_template = CONVENTIONS_TEMPLATE.read_text(encoding="utf-8")
-    assert_backlog_1191_contract(text, verification_rules, conventions_template, preflight_ref)
-    exercise_backlog_1191_mutation_guards(text, verification_rules, conventions_template, preflight_ref)
+    assert_failed_write_and_guard_contract(generator_contract, verification_rules, code_rules, preflight_ref)
+    exercise_failed_write_and_guard_mutation_guards(generator_contract, verification_rules, code_rules, preflight_ref)
+    assert_backlog_1190_contract(generator_contract, verification_rules, code_rules)
+    exercise_backlog_1190_mutation_guards(generator_contract, verification_rules, code_rules)
+    assert_backlog_1191_contract(generator_contract, verification_rules, conventions_template, preflight_ref)
+    exercise_backlog_1191_mutation_guards(generator_contract, verification_rules, conventions_template, preflight_ref)
     assert_backlog_1191_evals(evals_by_id)
-    assert_command_effect_contract(text, verification_rules)
-    exercise_command_effect_mutation_guards(text, verification_rules)
-    exercise_failure_handling_mutation_guard(text)
+    assert_command_effect_contract(generator_contract, verification_rules)
+    exercise_command_effect_mutation_guards(generator_contract, verification_rules)
+    exercise_failure_handling_mutation_guard(verification_rules)
     assert "Tracer: <scenario and PASS before expansion | N/A>" in text
 
     v2 = section(
@@ -2661,7 +2716,7 @@ def main() -> None:
     assert "not the `generator-faultkill-v1` planning DSL" in v3
 
     scenario_contract = section(
-        text,
+        scenario_design,
         "For every scenario, add a **verification contract**:",
         "### Locator Mapping Table",
     )

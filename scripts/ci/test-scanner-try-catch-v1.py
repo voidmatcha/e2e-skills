@@ -246,6 +246,20 @@ test('accepts the terms if offered', async ({ page }) => {
 class TryCatchLexedPairingTests(unittest.TestCase):
     """Pairing and matching run on lexed source: literals and comments are inert."""
 
+    def test_flags_try_after_apostrophe_in_jsx_text(self) -> None:
+        hits, p0, _ = scan({"jsx-apostrophe.spec.tsx": SPEC_HEADER + """test('renders after a warning', async ({ page }) => {
+  const warning = <p>Don't panic</p>;
+  console.log(warning);
+  try {
+    await expect(page.getByTestId('saved')).toBeVisible();
+  } catch (error) {
+    console.warn('not confirmed', error);
+  }
+});
+"""})
+        self.assertGreater(hits, 0, "an apostrophe in JSX text must not hide a swallowed assertion")
+        self.assertEqual(p0, 0)
+
     def test_flags_when_catch_comment_mentions_throw(self) -> None:
         hits, p0, _ = scan({"comment-rethrow.spec.ts": SPEC_HEADER + """test('comment says throw but catch swallows', async ({ page }) => {
   await page.goto('/x');

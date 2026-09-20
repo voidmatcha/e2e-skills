@@ -41,6 +41,7 @@ CASES = [b'', b'const x = 1;\n', b"import {test} from '@playwright/test';",
  b"require('\\u{}playwright/test'); require('\\8playwright/test');",
  b"if (x) /a[b/]c/.test(x); export * from './x';",
  b"const x = `outer ${`inner ${require('@playwright/test')}`} tail`;",
+ b"const warning = <p>Don't panic</p>; import './after';",
  b"import {x}\r\nfrom './a';\r\n",
 ]
 
@@ -79,6 +80,21 @@ CASES.extend([
 ])
 
 class Equivalence(unittest.TestCase):
+    def test_apostrophe_in_same_line_jsx_text_does_not_open_a_string(self):
+        source = b"const warning = <p>Don't panic</p>;\ntry { expect(x); } catch {}\n"
+        output = lexer.executable(source)
+        self.assertIn("Don't panic", output)
+        self.assertIn('try { expect(x); } catch {}', output)
+
+    def test_jsx_recognition_does_not_capture_attributes_or_angle_bracket_assertions(self):
+        source = (b'const warning = <p title="Don\'t panic">Safe</p>;\n'
+                  b"const cast = <Thing>value; const label = 'closed';\n"
+                  b'try { expect(x); } catch {}\n')
+        output = lexer.executable(source)
+        self.assertNotIn("Don't panic", output)
+        self.assertIn('const cast = <Thing>value; const label = ;', output)
+        self.assertIn('try { expect(x); } catch {}', output)
+
     def test_tiny_shell_differential(self):
         for locale in ('C', 'C.UTF-8'):
             with self.subTest(locale=locale): self.shell_differential(locale)

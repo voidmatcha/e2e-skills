@@ -48,9 +48,10 @@ The bundled Cypress readers require POSIX descriptor-relative no-follow APIs, as
 
 Before any command creates or replaces a report artifact, validate the write path separately from the read checks above. Fail closed if `cypress/reports/`, `cypress/screenshots/`, `cypress/videos/`, or any existing component beneath those roots is a symlink. Require the nearest existing parent to be a real directory whose canonical path stays inside the trusted repository, create only missing directories beneath that parent, and revalidate the root and destination immediately before `mkdir`, reporter output, or artifact download. Never publish a report with raw shell redirection. Use the bundled publisher for Mochawesome merge output and the bundled download helper for GitHub Actions artifacts; do not give an external command the final report destination.
 
-## Prerequisites: Get the Report
 
-Determine the report source in this order:
+## Workflow
+
+Before acquiring, regenerating, merging, or downloading a report, read `references/report-acquisition.md`.
 
 Use the repository's existing Cypress script when it already preserves the required reporter and flags. Otherwise use the project-local `node_modules/.bin/cypress` commands below. If package-manager resolution is required, replace that prefix with `npx --no-install cypress`; never use a plain `npx` invocation, which may install a different version.
 
@@ -60,166 +61,15 @@ Use the repository's existing Cypress script when it already preserves the requi
 
 **Execution safety gate (before any Cypress test command):** Generate or reproduce a report only when the whole target stack, including its APIs and data stores, is `local/disposable` or an explicitly approved non-production test environment. A localhost frontend backed by shared or production services does not pass this gate. When the environment is production, shared, or unknown, do not run tests; analyze existing validated artifacts or request a disposable target. Warn that a rerun can replay non-idempotent writes such as submit, payment, delete, registration, message send, or toggle actions. Reset to a known disposable state first and run the narrowest spec once; never use retries to replay those writes unless system-boundary idempotence is proven.
 
-**1. A report already exists locally** → find it (see Phase 1) and check for the multi-spec trap below before trusting it.
-
-**2. No report → run with a structured reporter** (do NOT rely on Cypress stdout):
-
-```bash
-# mochawesome (recommended). overwrite=false is REQUIRED on multi-spec runs:
-# Cypress runs every spec as a separate mocha run, and mochawesome's default
-# overwrite=true makes each spec OVERWRITE cypress/reports/mochawesome.json —
-# a multi-spec run silently keeps only the LAST spec's results.
-/usr/bin/env -i PATH="$PATH" node_modules/.bin/cypress run \
-  --spec path/to/spec.cy.ts --config retries=0 \
-  --reporter mochawesome \
-  --reporter-options "reportDir=cypress/reports,overwrite=false,html=false,json=true"
-
-# Merge only when the project already has mochawesome-merge installed. Never
-# auto-install a changing latest package during diagnosis. If the local binary
-# is absent, inspect the per-spec JSON files independently instead.
-test -x node_modules/.bin/mochawesome-merge &&
-  PROJECT_ROOT=$(/bin/pwd -P) &&
-  <skill-dir>/scripts/run-artifact-reader.sh \
-    --project-root "$PROJECT_ROOT" \
-    --reader publish-mochawesome-report.py --pass-env PATH -- \
-    --pass-env PATH \
-    cypress/reports/merged.json -- \
-    node_modules/.bin/mochawesome-merge "cypress/reports/mochawesome*.json"
-
-# JUnit (CI-friendly) — the [hash] token is required for the same reason:
-# without it each spec overwrites results.xml and only the last spec survives.
-/usr/bin/env -i PATH="$PATH" node_modules/.bin/cypress run \
-  --spec path/to/spec.cy.ts --config retries=0 \
-  --reporter junit --reporter-options "mochaFile=cypress/reports/results-[hash].xml"
-```
-
-The Mochawesome publisher opens `cypress/reports/` descriptor-relatively without following symlinks, captures bounded merger stdout into a private temporary file, requires a successful merger exit, and validates the strict Mochawesome schema through `read-cypress-artifact.py`. It rechecks the destination and atomically replaces a prior regular report only after validation. Do not replace the helper with shell redirection. Its child environment contains only a fixed system `PATH` plus variables named by repeated `--pass-env NAME` options; names must be valid environment-variable identifiers, set, and non-duplicate. A bare child executable is resolved only through that child `PATH`, while an explicit relative/absolute executable is resolved to an executable regular file before launch.
-
-**3. Report exists but is from CI and you need local artifacts (screenshots/videos for Phase 3)** → read `<skill-dir>/references/ci-artifact-download.md` for the full procedure: confirming the repository slug and numeric run ID with the user, routing `--reader download-cypress-reports.py` through the bundled launcher with only the documented `--pass-env HOME`/token allowlist, what it validates and enforces, and reproducing the specific failing spec locally afterward. Never download from forked-PR runs or arbitrary URLs.
-
-If the test passes locally but failed in CI → likely **F7 (test isolation)** or **F8 (environment mismatch)**; jump to Phase 2 with that hypothesis instead of trying to repro further.
-
 ## Phase 1: Extract Failures
 
-```bash
-# Find report if path not specified
-find . -name "mochawesome*.json" -path "*/cypress/*" | head -10
-find . -name "*.xml" -path "*/cypress/*" | head -5
-
-# Multiple mochawesome files (mochawesome.json + mochawesome_NNN.json) = a per-spec
-# run. Merge them FIRST (see Prerequisites), then point the queries below at the
-# merged file. A lone mochawesome.json after a multi-spec run with overwrite=true
-# holds only the LAST spec — regenerate with overwrite=false rather than trusting it.
-
-# Resolve <skill-dir> as the directory containing this SKILL.md. Read a
-# mochawesome or merged JSON report through the bundled standard-library parser.
-# It carries the containing result/suite file into each failed test record and
-# emits a bounded stats summary plus failure title, fullTitle, duration, state,
-# error, stack, and screenshot paths.
-PROJECT_ROOT=$(/bin/pwd -P)
-<skill-dir>/scripts/run-artifact-reader.sh \
-  --project-root "$PROJECT_ROOT" -- mochawesome \
-  --artifact-root cypress/reports \
-  cypress/reports/mochawesome.json
-
-# Flag retried tests — stock mochawesome has NO per-attempt data. Cypress replays
-# only the FINAL attempt to the mocha reporter, so a test that failed twice and
-# passed on attempt 3 appears as a plain `"state": "passed"`; there is no
-# attempts[] or currentRetry field in mochawesome JSON (same for JUnit XML).
-# Recover the retry signal from these real sources instead:
-
-# (a) Failure screenshots on disk — every failed ATTEMPT writes one. Attempt 1 →
-#     "<test> (failed).png"; attempt N → "<test> (failed) (attempt N).png".
-#     Report says PASSED but "(failed)" screenshots exist → passed on retry →
-#     F1/F15 flaky signal. Report says FAILED with "(attempt N)" screenshots →
-#     failed every attempt → consistent failure, NOT flaky.
-find cypress/screenshots -name "*(failed)*.png"            # all failed attempts
-find cypress/screenshots -name "*(attempt *"               # retries happened at all
-
-# (b) Cypress's own run results, if the project saves them — the Module API and
-#     the after:run / after:spec node events DO expose per-attempt data as
-#     runs[].tests[].attempts[] (since Cypress 13, after:run/module-API attempts
-#     carry only {state}; after:spec attempts keep per-attempt error details).
-#     When the trusted project already saves this artifact:
-#     attempts [{state:"failed"},{state:"passed"}] + final "passed" → flaky (F1).
-<skill-dir>/scripts/run-artifact-reader.sh \
-  --project-root "$PROJECT_ROOT" -- run-results \
-  --artifact-root cypress/reports \
-  cypress/reports/run-results.json
-
-# If neither source exists and flakiness is suspected: check `retries` in
-# cypress.config first (runMode 0 → Cypress never retried, so passes-on-retry
-# cannot be diagnosed from this run), then recommend wiring the after:run dump.
-
-# Both JSON modes require --artifact-root, reject symlinks and special files,
-# open every artifact-root component from the filesystem root with
-# descriptor-relative no-follow operations, traverse only from that held root
-# descriptor, verify descriptor identity/size/mtime/ctime after the read, and
-# enforce 8 MiB input, 100-level/200,000-node JSON, 10,000-record,
-# 100-attempt-per-test, bounded-string, and 1 MiB output ceilings. Their schemas
-# are explicit; malformed or empty artifacts fail closed instead of producing a
-# misleading empty result. The smaller input ceiling bounds the JSON decoder's
-# unavoidable parse-time allocation before the post-parse depth/node checks.
-# run-results accepts only passed/failed/pending/skipped test and attempt states,
-# requires at least one attempt per test, and rejects a final test state that
-# contradicts the last attempt. Earlier attempts may contain any valid state
-# because Cypress retry strategies can require multiple passing attempts.
-# JSON parsing also rejects duplicate keys, NaN/positive or negative Infinity
-# (including an overflowing literal such as 1e999), a UTF-8 BOM, and trailing
-# non-whitespace data; output disables non-finite numbers.
-
-Every artifact-derived string from mochawesome, run-results, or JUnit is
-recursively sanitized before any per-field or output truncation. The sanitizer
-removes Bearer/Basic credentials, authorization/cookie/API-key headers,
-password/secret/token/API-key assignments, URL userinfo, and URL query values;
-a non-idempotent residual credential shape fails closed instead of being
-emitted. That gate covers a value on the same line as its
-key and one continuation line; the second and later lines of a multi-line
-value are not classified, so a secret spread over several lines can still be
-emitted.
-
-For mochawesome and merged reports, root `stats` and `results` are required.
-Every result and nested suite requires `tests` and `suites` arrays; direct tests
-on a result and tests in nested suites are both supported. Required stats
-`suites`, `tests`, `passes`, `pending`, `failures`, `skipped`, and `duration`
-must be nonnegative integers (booleans and numeric strings are invalid).
-Optional `testsRegistered`/`other` must also be nonnegative integers,
-`hasOther`/`hasSkipped` must be booleans, percentages must be numeric from
-0–100, and `start`/`end` must be strings. Parsed suite/test/pass/failure/
-pending/skipped counts must match stats; contradictory merged reports fail
-closed. Failed `beforeHooks` and `afterHooks` are emitted as failure rows with
-their hook phase, title, error, stack, duration, and containing file; a
-hook-only failure can never appear as an empty successful extraction.
-
-# Extract failed tests from JUnit XML with the bundled standard-library parser.
-# Resolve <skill-dir> as the directory containing this SKILL.md. Each testcase
-# stays paired with its own classname, suite file, failure, and source report,
-# including mixed pass/fail and multi-suite XML.
-# --report-root is required: the parser rejects a symlink root, symlink path
-# component, non-regular input, or any input outside that canonical root. It
-# reads at most 8 MiB per report, accepts only BOM-free UTF-8 XML (an encoding
-# declaration, when present, must also say UTF-8), rejects DOCTYPE and ENTITY
-# declarations, requires testcase elements to be direct testsuite children and
-# failure/error/skipped elements to be direct testcase children, and enforces
-# 100,000-node and 100-level depth ceilings while streaming the parse.
-# Suite/root counters are reconciled in one postorder pass; the parser does not
-# retain or repeatedly rescan complete nested XML subtrees. One invocation
-# accepts at most 128 reports and 16 MiB total input. It buffers and validates
-# every report before emitting atomic JSONL, so a malformed later report
-# produces no partial stdout. Aggregate output is limited to 10,000 rows and
-# 8 MiB of serialized UTF-8; per-field and message sizes are also bounded.
-PROJECT_ROOT=$(/bin/pwd -P)
-<skill-dir>/scripts/run-artifact-reader.sh \
-  --project-root "$PROJECT_ROOT" --reader extract-junit-failures.py -- \
-  --report-root cypress/reports \
-  cypress/reports/results-*.xml
-```
+Before extracting failures, read `references/artifact-extraction.md` and use its bundled-reader commands and fail-closed interpretation rules.
 
 ## Phase 2: Classify Root Cause
 
 Use Phase 1 output (error message + duration) to classify. **Most failures are identifiable here — only go to Phase 3 if still unclear.**
 
-**Classifier delegation — inline by default:** classify inline with the same F1–F15 table and steps below by default — named delegation showed no stable correctness benefit over inline. The named `e2e-failure-classifier`, when registered by a Claude Code plugin or by a Codex `.codex/agents/` / `~/.codex/agents/` TOML, or the native `debugger` role when Codex exposes native role routing, remain available as an optional second opinion, never a required step; named registration is an optimization, not a correctness dependency. **Delegate only when uncertain** (low confidence, or two F-codes remain plausible after the steps below). **On disagreement, keep the inline verdict** — the measured pilot found no case where delegation corrected an inline error, and one case where it introduced an evidentiary-completeness failure inline did not have. **If delegating**, pass the failing test name, only the sanitized and bounded report excerpt permitted by the output contract below (error, stack, attempt/screenshot signal), repo root, and the **absolute** path to this skill's `SKILL.md` (the directory containing this SKILL.md + `/SKILL.md`; on Codex/`skills` CLI it is under `~/.agents/skills/`). Never pass raw artifact text or an unredacted directly supplied error/stack to a subagent. Every delegated working directory is the project under debug, so a repo-relative `skills/...` path is invalid. Require the F-code with confidence, evidence, and a fix. The F-code must be identical on all three paths.
+**Classifier delegation — inline by default:** classify inline with the same F1–F15 table and steps below by default — named delegation showed no stable correctness benefit over inline. The named `e2e-failure-classifier`, when registered by a Claude Code plugin or by a Codex `.codex/agents/` / `~/.codex/agents/` TOML, or the native `debugger` role when Codex exposes native role routing, remain available as an optional second opinion, never a required step; named registration is an optimization, not a correctness dependency. **Delegate only when uncertain** (low confidence, or two F-codes remain plausible after the steps below). **On disagreement, keep the inline verdict** — the measured pilot found no case where delegation corrected an inline error, and one case where it introduced an evidentiary-completeness failure inline did not have. When delegation is warranted, read `references/classification-procedure.md` and pass the **absolute** path to this skill as specified there.
 
 | # | Category | Signals | Review Pattern |
 |---|----------|---------|----------------|
@@ -239,81 +89,12 @@ Use Phase 1 output (error message + duration) to classify. **Most failures are i
 | F14 | **Animation Race** | Element/content appears or disappears within a window the assertion can miss — content not yet rendered, a transient element removed before it is observed, or a CSS transition not complete | #9 |
 | F15 | **Hydration Race** | First `.click()` after `cy.visit()` on a server-rendered page succeeds but has no effect; element rendered but framework listeners not yet attached; failure surfaces at the next assertion; passes on retry | #9 |
 
-Classification steps:
-1. Match error message to signals above
-2. `duration` near `defaultCommandTimeout` (4s) → F1 or F2
-3. CI-only failure → F7 or F8
-4. Passes on retry (and no SSR first-interaction signature — see step 5) → F1
-5. First `.click()` after `cy.visit()` succeeded but the next assertion timed out on an SSR page → F15
-6. **F1 vs F7 is decided by an isolation probe, not by the error text.** Both surface as
-   `Timed out retrying` and both "pass sometimes", so classifying from the message alone assigns
-   the wrong code roughly half the time. Run the probe only after the execution safety gate and the
-   repository execution gate's trust checks have passed (see Prerequisites): the whole target
-   stack is `local/disposable` or an approved non-production test environment, the user
-   explicitly trusts this repository, and both exact commands are approved. The probe replays the
-   test, so the safety gate's rule on replaying non-idempotent writes applies to each repetition
-   as it does to retries. Until both gates pass, or while the failing test performs a
-   non-idempotent write whose system-boundary idempotence is not proven, present the commands as
-   `recommended`; in either case, or if the suite cannot be run, say the probe was not performed
-   and report `CANNOT_VERIFY` between F1 and F7 rather than guessing. Once both gates pass and no
-   unproven non-idempotent write would be replayed, run the probe; Cypress has no
-   `--repeat-each`, so repeat the spec run:
+Before resolving an F-code, read `references/classification-procedure.md` for the classification steps, required probes, config checks, and framework-specific edge cases.
 
-   ```bash
-   # (a) the spec alone, repeated — is it non-deterministic by itself?
-   for i in 1 2 3 4 5; do
-     /usr/bin/env -i PATH="$PATH" node_modules/.bin/cypress run \
-       --spec 'cypress/e2e/path/to.cy.ts' --config retries=0
-   done
-
-   # (b) the whole suite in its real order — does it only break with neighbours?
-   /usr/bin/env -i PATH="$PATH" node_modules/.bin/cypress run --config retries=0
-   ```
-
-   | (a) alone ×5 | (b) full suite | Code |
-   | --- | --- | --- |
-   | mixed pass/fail | fails | **F1** — the spec is non-deterministic on its own |
-   | 5/5 pass | fails | **F7** — leaked state or ordering; suspect `cy.session`, cookies, `localStorage`, or seeded data left by an earlier spec |
-   | 5/5 fail | fails | not flaky at all — re-classify against the F-table (F2/F4/F5/F9/F10/F12) |
-
-   Cypress clears cookies and `localStorage` between *tests* but not always between *specs*, and
-   `cy.session` caches across a run, so a 5/5-pass-alone result points at cross-spec leakage more
-   often than at ordering inside one file. Both commands disable retries: a configured `retries`
-   value would report a fail-then-pass spec as passed and hide the per-run result the table reads.
-
-**Setup-level signals (check before classifying individual tests):**
-
-- **Hook failure:** when a `before`/`beforeEach` hook throws, Cypress fails the first test and **skips the remaining tests in the suite** ("Because this error occurred during a `before each` hook we are skipping the remaining tests in the current suite"). The tell: one failure whose error names the hook (`"before each" hook for "..."`) plus a block of skipped tests (mochawesome `stats.skipped` > 0). The bug is in the shared hook — fix it once; don't file a finding per skipped test.
-- **Per-spec reports never merged:** specs that appear "missing"/never-run after a multi-spec `cypress run` usually mean the per-spec mochawesome files were never merged — or the default `overwrite=true` let each spec overwrite the last. These are phantom gaps, not real failures. Regenerate with `overwrite=false`; if `node_modules/.bin/mochawesome-merge` already exists, merge into a different output filename, otherwise inspect every per-spec JSON independently. Do not install a merger during diagnosis.
-
-**Click landed but nothing happened (F15 hydration race):** server-rendered pages (Next.js, Nuxt, SvelteKit, Astro, Remix) paint interactive-looking elements before the framework attaches event listeners. The element is visible and actionable, so `.click()` succeeds against the inert pre-hydration DOM and the failure surfaces only at the next assertion — and Cypress retries *assertions*, never the click, so the test stays red for the full timeout once the inert click is consumed. Distinguish from F14: in F14 the element/content is racing render or removal (not yet rendered, or already gone); in F15 it is rendered but inert. Fix, in order of preference: (1) gate the first interaction on an app-provided hydration signal — `cy.get('html[data-hydrated]')` or `cy.window().its('__APP_READY__')` — and if the app exposes none, propose the one-line marker upstream (set an attribute in a root `useEffect`/`onMounted`); it fixes every spec at once. (2) Only when repository evidence proves the action is idempotent, make the first interaction self-verifying with a bounded re-query/effect check. **Never re-click a non-idempotent control** such as submit, payment, delete, registration, or toggle; wait for a readiness signal instead, because replay can duplicate or reverse a write. Do NOT paper over it with a blind `cy.wait(ms)` after `cy.visit()` — that's the #9 band-aid the reviewer flags, and it still races on slow CI.
-
-**For F2 / F12 fixes — heal by intent, not by patching strings:** re-query the live DOM for the element the failing command semantically targets (the role/label/text a user sees), then write a new selector at the highest stable tier — `data-testid` or `cy.contains('text')` over a brittle CSS chain. Update the selector at its source (a custom command or Page Object), not inline in the spec, so every caller heals at once. Tweaking the old CSS string usually re-breaks on the next DOM change.
-
-**Read the matching default config, `cypress.config.{js,ts,mjs,cjs}`, before classifying F1 / F7 / F8.** These are Cypress's four default-discovery filenames. A project may instead select a `.mts` or `.cts` config explicitly with `--config-file`; inspect that selected file when the run command or CI configuration names it, but do not treat those extensions as additional default-discovery names. Three config fields decide whether a failure is even a test bug:
-
-- `retries: { runMode, openMode }` — if `runMode` is 0, a "passes on retry"
-  diagnosis is moot (Cypress never retried). Recommend a bounded run-mode retry
-  probe to confirm an F1 only after repository evidence proves the test and
-  every system-boundary effect are idempotent; otherwise classify from existing
-  evidence without replaying the action.
-- `e2e.testIsolation` — Cypress 12+ resets the browser state (cookies, localStorage, the page) between tests **by default**. A test that passes alone but fails in-suite (F7) usually relies on state a prior test left behind; with `testIsolation: true` that leak is gone, so the fix is to seed the state explicitly (`cy.session()`, fixtures), not to disable isolation.
-- `defaultCommandTimeout` / `baseUrl` — a CI-only failure (F8) often traces to a `baseUrl` or timeout that differs from local.
-
-**cy.intercept ordering (F3 / F11) — declare the stub before the request fires.** The classic race: the alias is registered *after* `cy.visit()`, so the page's request goes out before the interceptor exists and is never caught; or the spec never `cy.wait('@alias')`s, so the assertion races the response.
-
-```javascript
-// before — intercept registered after visit; request already in flight, alias never matches
-cy.visit('/orders');
-cy.intercept('GET', '/api/orders').as('orders');
-cy.get('[data-testid="order-row"]').should('have.length', 3); // races the XHR
-
-// after — stub first, visit, then gate the assertion on the response
-cy.intercept('GET', '/api/orders').as('orders');
-cy.visit('/orders');
-cy.wait('@orders');
-cy.get('[data-testid="order-row"]').should('have.length', 3);
-```
+Until both gates pass, or while the failing test performs a
+non-idempotent write whose system-boundary idempotence is not proven, present the commands as
+`recommended`; in either case, or if the suite cannot be run, say the probe was not performed
+and report `CANNOT_VERIFY` between F1 and F7 rather than guessing.
 
 ## Phase 3: Screenshot & Video Analysis (only if Phase 2 is unclear)
 
@@ -329,17 +110,7 @@ Progressive disclosure: inspect the bounded error/stack first, then a validated 
 
 **Generated-test repair boundary:** when the failure came from a generated candidate or a verification probe, expected values, the approved primary outcome, assertion target, scenario count, request proof, and test enablement are immutable. Repair only evidence-backed mechanics (selector, retryable command/query strategy, navigation, fixture, setup order, or test data). Never delete/skip the test, remove intercept/alias proof, or accept an optimistic toast in place of a write contract. Return `NOFIX: <evidence>` when the approved contract and observed product behavior disagree. Any repaired candidate requires an independent `e2e-reviewer` pass before completion (V6).
 
-### Verification-rule handoff
-
-Preserve the F1–F15 classification and add the smallest relevant proof recommendation; V-rules do not replace F-codes:
-
-- V2 temporary inversion for supported `.should()`/`expect` assertion shapes.
-- V3 `cy.intercept()` fault injection for response/data dependency questions.
-- V4 intercept alias plus `cy.wait()` request method/URL/body/cardinality proof for writes and optimistic UI.
-- V5 repository-native solo/repeat/suite-context runs for timing, isolation, or retry evidence.
-- V6 independent re-review after any generated-test repair.
-
-Do not install a verifier or require `npx`. Reuse the repository's existing targeted Cypress command and tooling. Label a proof `recommended` unless an actual command/result shows it ran; use `CANNOT_VERIFY` with the exact missing evidence when no safe probe exists.
+Before proposing or reporting a fix, read `references/fix-verification.md` for the V2–V6 handoff, proof labels, and no-install boundary.
 
 ### Error excerpt output contract
 

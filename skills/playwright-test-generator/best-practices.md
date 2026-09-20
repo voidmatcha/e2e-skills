@@ -2,6 +2,35 @@
 
 Condensed from [playwright.dev/docs/best-practices](https://playwright.dev/docs/best-practices) and the current Playwright API. This is the *why* reference; the enforceable generation rules (selector priority, forbidden patterns, await rule) live in `code-rules.md`.
 
+## Environment Detection
+
+Use this complete JavaScript/TypeScript source-extension set for spec discovery: `.js`, `.jsx`, `.mjs`, `.cjs`, `.ts`, `.tsx`, `.mts`, `.cts`. Do not stop after finding only the common `.ts`/`.js` forms.
+
+| What | Where to look |
+|------|--------------|
+| Playwright config | Playwright's six default-discovery filenames, `playwright.config.{ts,js,mts,mjs,cts,cjs}`, in that order. When an existing repository script passes `--config`/`-c`, resolve its value from the directory where Playwright runs: a file loads as is, and a directory loads the first of the six names inside that directory (no match means no config file). Otherwise use the first of the six names in the directory where Playwright runs. A `.tsx` or `.jsx` config loads only when passed explicitly as a file |
+| Base URL | `baseURL` in playwright config → fallback: `PLAYWRIGHT_BASE_URL` env var → if neither exists, ask user |
+| Test directory | config `testDir` → fallback scan: `e2e/`, `tests/`, `playwright/` |
+| POM pattern | Check for `models/`, `pages/`, `page-objects/` directories |
+| Existing specs | Both `*.spec.<ext>` and `*.test.<ext>` for every extension in the eight-extension set above, recursively within the test dir |
+| Conventions doc | E2E/testing section in `AGENTS.md`, `CLAUDE.md`, or `CONTRIBUTING.md`; a designated seed spec (`seed.spec.ts` or a spec referenced as the example to copy) |
+| Existing E2E rules | `package.json` scripts, ESLint config, CI workflows, project-local test docs, custom fixtures/reporters, mutation/coverage/a11y/visual tooling |
+| Package runner | Lockfile + existing scripts; reuse the repository-native command and never install a verifier |
+
+## Coverage Gap Analysis
+
+When no argument is given:
+
+1. Scan routing files in priority order: Angular `app-routing.module.ts` / `*-routing.module.ts`; Next.js `app/` and `pages/`; React Router `router.ts`, `routes.ts`, `routes.tsx`; fallback grep for `path:`, `route(`, `<Route `; if none are found, ask the user to list target pages.
+
+2. Map existing spec files to routes:
+   - Match by file name (e.g. `login.spec.ts` → `/login`)
+   - Match by `page.goto()` calls inside spec files
+
+3. Output uncovered routes. Flag auth-related paths (`/login`, `/register`, `/forgot-password`) and form-heavy pages (any page with `<form>` or multiple inputs) as **high priority**.
+
+4. Ask the user which target to start with before continuing.
+
 ## Locators
 
 | Rule | Detail |

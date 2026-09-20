@@ -99,6 +99,17 @@ source_executable_code() {
       if (index("ntrbfv", next_char) > 0) return "__E2E_UNREPRESENTABLE__"
       return next_char
     }
+    # This lexer is intentionally not a JSX parser. Recognize only the
+    # unambiguous, same-line text span between an opening and closing tag so
+    # apostrophes there cannot open a JavaScript string and poison later
+    # lines. Requiring both tags avoids treating TypeScript angle-bracket
+    # assertions or comparisons as JSX that continues through the file.
+    function quote_is_jsx_text(s, i,   before, after) {
+      before = substr(s, 1, i - 1)
+      after = substr(s, i + 1)
+      return before ~ /<[A-Za-z][A-Za-z0-9:._-]*([[:space:]][^<>]*)?>[^<{]*$/ &&
+        after ~ /^[^<{]*<\/[A-Za-z][A-Za-z0-9:._-]*[[:space:]]*>/
+    }
     function executable_source(s, want_output,    out, i, c, nchar) {
       out = ""
       # A line this long is generated or vendored, never test source. The
@@ -161,6 +172,11 @@ source_executable_code() {
           } else {
             if (want_output) out = out c
           }
+          continue
+        }
+        if ((c == "\"" || c == "\047") && quote_is_jsx_text(s, i)) {
+          if (want_output) out = out c
+          prev_sig = c
           continue
         }
         if (c == "\"" || c == "\047" || c == "`") {

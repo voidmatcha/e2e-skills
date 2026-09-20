@@ -1201,7 +1201,9 @@ def main() -> None:
                 os.environ["HOME"] = previous_home
 
     skill_root = ROOT / "skills/cypress-debugger"
-    skill_core = (skill_root / "SKILL.md").read_text(encoding="utf-8")
+    skill_core = (skill_root / "references/report-acquisition.md").read_text(
+        encoding="utf-8"
+    )
     download_reference = (skill_root / "references/ci-artifact-download.md").read_text(
         encoding="utf-8"
     )

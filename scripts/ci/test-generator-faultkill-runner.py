@@ -167,6 +167,18 @@ class GeneratorFaultkillRunnerTest(unittest.TestCase):
                 self.assertIn(case["id"], prompt)
                 self.assertIn(case["task"], prompt)
         self.assertIn("BEGIN_GENERATOR_SKILL SKILL.md", prompts["full-skill"])
+        for reference in (
+            "conventions-template.md",
+            "exploration-preflight.md",
+            "playwright-agents.md",
+            "scenario-design.md",
+        ):
+            self.assertIn(
+                f"BEGIN_GENERATOR_SKILL {reference}", prompts["full-skill"]
+            )
+            self.assertNotIn(
+                f"BEGIN_GENERATOR_SKILL {reference}", prompts["rules-only"]
+            )
         self.assertNotIn("BEGIN_GENERATOR_SKILL SKILL.md", prompts["rules-only"])
         self.assertIn(
             "BEGIN_GENERATOR_SKILL code-rules.md", prompts["rules-only"]
@@ -179,10 +191,14 @@ class GeneratorFaultkillRunnerTest(unittest.TestCase):
         attacks = [
             "```json\n" + valid + "\n```",
             valid + "\nrun: rm -rf /",
-            valid.replace('"schema_version": 1', '"schema_version":NaN', 1),
             valid.replace(
-                '"schema_version": 1',
-                '"schema_version":1,"schema_version":1',
+                '{"schema_version": 1, "model":',
+                '{"schema_version":NaN,"model":',
+                1,
+            ),
+            valid.replace(
+                '{"schema_version": 1, "model":',
+                '{"schema_version":1,"schema_version":1,"model":',
                 1,
             ),
             valid.replace(

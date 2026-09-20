@@ -12,6 +12,8 @@ SENTINEL = '__E2E_UNREPRESENTABLE__'
 DIRECT = re.compile(r'(import|export)[^;]*from'+WS+r'*[\'"`]@playwright/test[\'"`]|require'+WS+r'*\('+WS+r'*[\'"`]@playwright/test[\'"`]'+WS+r'*\)|import'+WS+r'*\('+WS+r'*[\'"`]@playwright/test[\'"`]'+WS+r'*\)')
 RELATIVE = re.compile(r'(?:(?:import|export)[^;]*?from'+WS+r'*|require'+WS+r'*\('+WS+r'*|import'+WS+r'*\('+WS+r'*|import'+WS+r'+)__E2E_STR__\.\.?/.*?__E2E_END__')
 REGEX_CONTEXT = re.compile(r'(^|[^A-Za-z0-9_$])(return|throw|case|yield)'+WS+r'*$|=>'+WS+r'*$|(^|[^A-Za-z0-9_$])(if|while|for|with)'+WS+r'*\([^)]*\)'+WS+r'*$')
+JSX_TEXT_BEFORE = re.compile(r'<[A-Za-z][A-Za-z0-9:._-]*(?:'+WS+r'[^<>]*)?>[^<{]*$')
+JSX_TEXT_AFTER = re.compile(r'^[^<{]*</[A-Za-z][A-Za-z0-9:._-]*'+WS+r'*>')
 
 class Fallback(Exception): pass
 
@@ -35,6 +37,12 @@ def escape(s, i):
         if re.fullmatch('[0-9A-Fa-f]{2}',digits): return point(digits),4
         return 'x',2
     return (SENTINEL if c in '01234567ntrbfv' else c),2
+
+def quote_is_jsx_text(line, i):
+    # Keep this deliberately narrower than a JSX parser. Both tags must be on
+    # this line, which avoids letting a TypeScript angle-bracket assertion
+    # turn the rest of the file into JSX text.
+    return JSX_TEXT_BEFORE.search(line[:i]) is not None and JSX_TEXT_AFTER.match(line[i+1:]) is not None
 
 def executable(source, relative=False, retained='@playwright/test'):
     # latin1 indexing is byte indexing; callers conservatively accept ASCII.
@@ -85,6 +93,10 @@ def executable(source, relative=False, retained='@playwright/test'):
                 depth -= 1
                 if depth == 0: quote = '`'; value = ''
                 elif emit: out.append(c)
+                continue
+            if not relative and c in '\'"' and quote_is_jsx_text(line, i-1):
+                if emit: out.append(c)
+                previous = c
                 continue
             if c in '\'"`': quote = c; value = ''; continue
             if c == '/' and n == '*': block = True; i += 1; continue

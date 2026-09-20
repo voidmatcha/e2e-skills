@@ -246,7 +246,23 @@ def render_prompt(case: dict, variant: str, repo: Path = ROOT) -> str:
     if variant == "with_skill":
         skill_path = repo / "skills" / case["skill"] / "SKILL.md"
         reference_payload = ""
-        if case["skill"] == "e2e-reviewer":
+        if case["skill"] == "playwright-test-generator":
+            reference_sections = []
+            for reference_path in sorted(skill_path.parent.glob("*.md")):
+                if reference_path == skill_path:
+                    continue
+                relative = reference_path.relative_to(skill_path.parent).as_posix()
+                reference_sections.append(
+                    f"BEGIN_TRUSTED_SKILL_SNAPSHOT {case['skill']}/{relative}\n"
+                    f"{reference_path.read_text(encoding='utf-8')}\n"
+                    f"END_TRUSTED_SKILL_SNAPSHOT {case['skill']}/{relative}"
+                )
+            reference_payload = "\n\n" + "\n\n".join(reference_sections)
+        elif case["skill"] in {
+            "cypress-debugger",
+            "e2e-reviewer",
+            "playwright-debugger",
+        }:
             reference_sections = []
             for reference_path in sorted((skill_path.parent / "references").glob("*.md")):
                 relative = reference_path.relative_to(skill_path.parent).as_posix()
