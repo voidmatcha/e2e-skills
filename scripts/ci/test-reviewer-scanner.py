@@ -2271,6 +2271,77 @@ def assert_multiline_auth_helper_literals() -> None:
         assert "hardcoded-secret" not in result.stdout
 
 
+def assert_form_literal_credential_filter() -> None:
+    """A `.fill()`/`.type()` literal is a #14 candidate only when credential-shaped."""
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-form-literal-") as temp:
+        root = Path(temp)
+        (root / "form-data.spec.ts").write_text(
+            "import { test, expect } from '@playwright/test';\n"
+            "\n"
+            "test('credential-shaped fields stay candidates', async ({ page }) => {\n"
+            "  await page.getByLabel('Password').fill('hunter2');\n"
+            "  await page.fill('#password', 'hunter2');\n"
+            "  await passwordInput.fill('hunter2');\n"
+            "  await page.locator('[name=\"api_key\"]').fill('sk-live-123');\n"
+            "  await input.fill('my-secret-token');\n"
+            "  await loginPage.form.emailInput.fill('admin@example.test');\n"
+            "});\n"
+            "\n"
+            "test('ordinary form data is dropped', async ({ page }) => {\n"
+            "  await titleInput.fill('Buy milk');\n"
+            "  await page.fill('#fetcher-input', 'input value');\n"
+            "  await input.fill('');\n"
+            "  await passwordInput.fill('');\n"
+            "  page.on('console', (message) => {\n"
+            "    if (message.type() === 'error') errors.push(message.text());\n"
+            "  });\n"
+            "  await page.getByPlaceholder('Issue title').fill('Playwright Issue');\n"
+            "  await page.getByTestId('ok').fill('}');\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        (root / "login.cy.ts").write_text(
+            "describe('login', () => {\n"
+            "  it('keeps selector variables and multi-line chains', () => {\n"
+            "    cy.get(passwordLoginSelector).should('be.visible').type('a-password');\n"
+            "    cy.get(usernameSelector)\n"
+            "      .type('admin');\n"
+            "    cy.get('[data-cy=\"login\"]').type('Jermey14');\n"
+            "  });\n"
+            "\n"
+            "  it('drops entity form data', () => {\n"
+            "    cy.get('[data-cy=\"firstName\"]').type('Zackary');\n"
+            "    cy.get(`[data-cy=\"${fieldName}\"]`).type('{downarrow}');\n"
+            "    cy.findByRole('textbox', { name: /notes/i }).type('This is an awesome book');\n"
+            "  });\n"
+            "});\n",
+            encoding="utf-8",
+        )
+
+        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
+        assert result.returncode == 0, result.stdout
+        credentials = section(
+            result.stdout,
+            "[P1?][LLM-TRIAGE] #14 Hardcoded credential candidate",
+        )
+        # A credential-shaped field, selector, variable, helper, or value.
+        for line in range(4, 10):
+            assert f"form-data.spec.ts:{line}:" in credentials, (line, credentials)
+        # Line 5 is the `.type(` continuation of a multi-line chain whose
+        # head names the selector variable.
+        for line in (3, 5, 6):
+            assert f"login.cy.ts:{line}:" in credentials, (line, credentials)
+        # Ordinary form data, an empty literal, and `message.type()`.
+        for line in range(13, 22):
+            assert f"form-data.spec.ts:{line}:" not in credentials, (line, credentials)
+        for line in (10, 11, 12):
+            assert f"login.cy.ts:{line}:" not in credentials, (line, credentials)
+        assert "[REDACTED credential candidate]" in credentials
+        # #17 still prints `page.fill(...)` source; #14 evidence is redacted.
+        for value in ("hunter2", "sk-live-123", "my-secret-token", "a-password", "Jermey14"):
+            assert value not in credentials, value
+
+
 def assert_playwright_rules_skip_cypress_only_files_but_allow_mixed_files() -> None:
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-framework-applicability-") as temp:
         root = Path(temp)
@@ -6565,7 +6636,7 @@ def main() -> None:
     assert "[P0?][LLM-TRIAGE] #5a" in exclusions.stdout
     assert "[P1] #16 Missing await on Playwright action" not in exclusions.stdout
     assert "documented-exclusions.spec.ts:33:" not in exclusions.stdout
-    assert "Summary: 10 total hit(s), 0 P0" in exclusions.stdout
+    assert "Summary: 9 total hit(s), 0 P0" in exclusions.stdout
 
     contexts = scan("missing-await-contexts.spec.ts")
     assert contexts.returncode == 0, contexts.stdout
@@ -6629,7 +6700,7 @@ def main() -> None:
     )
     for direct_page_line in range(175, 190):
         assert f"missing-await-contexts.spec.ts:{direct_page_line}:" in direct_page_section
-    assert "Summary: 50 total hit(s), 0 P0, 30 P1/P2 heuristic" in contexts.stdout
+    assert "Summary: 48 total hit(s), 0 P0, 30 P1/P2 heuristic" in contexts.stdout
 
     scanner_source = SCANNER.read_text(encoding="utf-8")
     for action in (
@@ -6722,6 +6793,7 @@ def main() -> None:
         assert_generic_page_callback_is_non_gating_without_framework_lineage,
         assert_function_expression_catch_boundaries,
         assert_multiline_auth_helper_literals,
+        assert_form_literal_credential_filter,
         assert_playwright_rules_skip_cypress_only_files_but_allow_mixed_files,
         assert_initialized_module_state_only,
         assert_positional_selector_is_always_triage,

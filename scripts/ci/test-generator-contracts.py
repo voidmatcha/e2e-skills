@@ -1301,6 +1301,7 @@ def assert_secondary_outcome_contract(text: str) -> None:
     assert "not a second primary assertion" in compact
     assert "V1 keeps one primary outcome" in compact
     assert "V2/V3 falsify only that one" in compact
+    assert "A V2 settled-state gate is recorded under Falsification (V2) and needs no secondary-outcome slot; its locator still enters the Locator Mapping Table" in compact
     assert "must appear in the Locator Mapping Table" in compact
     assert "Step 6's YAGNI audit still applies" in compact
 
@@ -1556,10 +1557,79 @@ def assert_backlog_1190_contract(text: str, verification_rules: str, code_rules:
     assert "a generated test must not depend on state created this way" in compact
     conventions = " ".join(CONVENTIONS_TEMPLATE.read_text(encoding="utf-8").split())
     assert "When the approved control-file table has a `CLAUDE.md` row (a root `CLAUDE.md` or `.claude/` directory exists)" in conventions
-    assert "With a tracer scenario, run it once, after the full approved set passes Step 7" in compact
+    assert "With a tracer scenario, run it once, after Step 7 records the final set's V1–V6 verdicts and before its write-set comparison and completion report" in compact
     assert "e2e-reviewer: N P0 found, N fixed; N P1 (listed below)" in text
     assert "A passing web-first assertion on another element produced by the same render as the primary target counts as a terminal UI state" in rules
     assert "`afterEach` or fixture teardown may revert state the test itself wrote" in code
+
+
+def assert_backlog_1191_contract(
+    text: str, verification_rules: str, conventions: str, preflight: str
+) -> None:
+    """1.19.0 follow-up clauses: gates, tracer carry-over, Step 5b timing, and scope."""
+    compact = " ".join(text.split())
+    rules = " ".join(verification_rules.split())
+    conv = " ".join(conventions.split())
+    pre = " ".join(preflight.split())
+    # A1: a weaker assertion on the primary element gates V2 only without an
+    # intermediate state that satisfies it.
+    assert "A weaker passing assertion on the primary element itself (`not.toBeEmpty()` before `toHaveText(x)`) counts only when exploration observed no intermediate state of that element that also satisfies it; otherwise gate on another element or return `CANNOT_VERIFY`" in rules
+    # A2: no fault can pass the gate and fail the primary on the same data.
+    assert "When the gate and the primary render the same faulted data, no such fault exists: record V3 `CANNOT_VERIFY` with that reason, and never remove, move, or weaken the gate assertion to reach the primary" in rules
+    assert "Without a DOM gate, V2 is `CANNOT_VERIFY` for a DOM primary and V3 carries the evidence; a terminal response gates V2 only for a primary that observes that response" in rules
+    # A3: tracer completion includes V6; carry-over is narrow.
+    assert "unless the tracer reaches `Complete` (the completion matrix applied to the tracer alone, including V6; see `verification-rules.md` § Tracer carry-over)" in compact
+    assert "## Tracer carry-over" in verification_rules
+    assert "A tracer's V2–V4 results carry over to the final set only when its test body, its fixtures, and the file's shared setup (imports, hooks, config edits) are byte-identical and the same approved command runs it; V5 suite-context and V6 always rerun on the final set" in rules
+    # A4: Step 5b runs inside Step 7's write-set check.
+    assert "so the seed spec comes from the final set and the control-file writes fall inside that check" in compact
+    assert "The conventions doc is not a candidate and gets no V6 review; Step 7 shows its diff instead" in compact
+    assert "Show the diff of every path the table lists as Modified, and of every approved control-file path" in compact
+    # A5: the conventions template offers stubbed or disposable real writes.
+    assert "MUST be stubbed" not in conv
+    assert "stubbed via <mock helper path> — list every write endpoint explicitly; unlisted calls fall through to the real backend" in conv
+    assert "real, against the disposable server reset by <reset seam> before each test; never a shared backend" in conv
+    assert "control every write at the seam named under Network" in conv
+    assert "stub every write endpoint" not in conv
+    # A6: the CLI's own session output.
+    assert "The CLI writes session state and snapshots to `.playwright-cli/` under its working directory, so that outside directory receives them; when the project-local entry point must run from the project directory, `.playwright-cli/` lands in the worktree: list it as exploration output in Step 7 and never stage it" in pre
+    # A8: undeclared probes extend, never replace, a declared verdict.
+    assert "A probe the plan did not declare is in scope when it runs only approved commands on temporary copies and changes nothing in the candidate; record it under the V-rule it extends with the same verdict rules, and never use it to replace a declared probe's verdict" in rules
+
+
+def exercise_backlog_1191_mutation_guards(
+    text: str, verification_rules: str, conventions: str, preflight: str
+) -> None:
+    assert "counts only when exploration observed no intermediate state" in verification_rules
+    mutations = (
+        (text, verification_rules.replace("counts only when exploration observed no intermediate state", "always counts, even when exploration observed an intermediate state", 1), conventions, preflight),
+        (text, verification_rules.replace("never remove, move, or weaken the gate assertion", "remove or move the gate assertion if needed", 1), conventions, preflight),
+        (text, verification_rules.replace("V5 suite-context and V6 always rerun on the final set", "V5 and V6 also carry over", 1), conventions, preflight),
+        (text.replace("the completion matrix applied to the tracer alone, including V6", "V1-V5 on the tracer", 1), verification_rules, conventions, preflight),
+        (text.replace("and of every approved control-file path", "", 1), verification_rules, conventions, preflight),
+        (text, verification_rules, conventions.replace("real, against the disposable server", "real, against any server", 1), preflight),
+        (text, verification_rules, conventions, preflight.replace(" and never stage it", "", 1)),
+        (text, verification_rules.replace("never use it to replace a declared probe's verdict", "may use it to replace a declared probe's verdict", 1), conventions, preflight),
+    )
+    for mutated_text, mutated_rules, mutated_conv, mutated_pre in mutations:
+        try:
+            assert_backlog_1191_contract(mutated_text, mutated_rules, mutated_conv, mutated_pre)
+        except AssertionError:
+            continue
+        raise AssertionError("assert_backlog_1191_contract survived a mutation")
+
+
+def assert_backlog_1191_evals(evals_by_id: dict) -> None:
+    gate = evals_by_id[35]
+    joined = " ".join(gate["assertions"])
+    assert "not.toBeEmpty()" in joined
+    assert any(a.startswith("False-positive guard:") for a in gate["assertions"])
+    assert any("intermediate" in a for a in gate["assertions"])
+    assert any("does not delete, move, or weaken the count assertion" in a for a in gate["assertions"])
+    assert "Requires V6 PASS on the tracer before expansion" in evals_by_id[18]["assertions"]
+    assert "Reruns V5/V6 on the final set; may carry over V2–V4 for a byte-identical tracer body" in evals_by_id[18]["assertions"]
+    assert any(a.startswith("False-positive guard: does not reject a line-through gate assertion because it is not one of the three") for a in evals_by_id[26]["assertions"])
+    assert any(a.startswith("Names .playwright-cli/ as exploration output") for a in evals_by_id[32]["assertions"])
 
 
 def assert_command_effect_contract(text: str, verification_rules: str) -> None:
@@ -2555,6 +2625,10 @@ def main() -> None:
     exercise_failed_write_and_guard_mutation_guards(text, verification_rules, code_rules, preflight_ref)
     assert_backlog_1190_contract(text, verification_rules, code_rules)
     exercise_backlog_1190_mutation_guards(text, verification_rules, code_rules)
+    conventions_template = CONVENTIONS_TEMPLATE.read_text(encoding="utf-8")
+    assert_backlog_1191_contract(text, verification_rules, conventions_template, preflight_ref)
+    exercise_backlog_1191_mutation_guards(text, verification_rules, conventions_template, preflight_ref)
+    assert_backlog_1191_evals(evals_by_id)
     assert_command_effect_contract(text, verification_rules)
     exercise_command_effect_mutation_guards(text, verification_rules)
     exercise_failure_handling_mutation_guard(text)

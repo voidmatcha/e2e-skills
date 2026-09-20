@@ -243,5 +243,77 @@ test('accepts the terms if offered', async ({ page }) => {
         self.assertEqual(hits, 0, "check() and checkout() are actions, not helpers named for a check")
 
 
+class TryCatchLexedPairingTests(unittest.TestCase):
+    """Pairing and matching run on lexed source: literals and comments are inert."""
+
+    def test_flags_when_catch_comment_mentions_throw(self) -> None:
+        hits, p0, _ = scan({"comment-rethrow.spec.ts": SPEC_HEADER + """test('comment says throw but catch swallows', async ({ page }) => {
+  await page.goto('/x');
+  try {
+    await page.getByTestId('saved').waitFor({ state: 'visible' });
+  } catch (error) {
+    // never throw here
+    console.warn('not confirmed', error);
+  }
+  await expect(page.getByTestId('total')).toHaveText('9');
+});
+"""})
+        self.assertGreater(hits, 0, "`throw` in a catch comment is not a rethrow")
+        self.assertEqual(p0, 0)
+
+    def test_does_not_flag_when_only_a_try_comment_mentions_throw(self) -> None:
+        hits, _, _ = scan({"comment-gate.spec.ts": SPEC_HEADER + """test('comment mentions throw in try', async ({ page }) => {
+  await page.goto('/x');
+  try {
+    // TODO: throw when the widget is missing
+    await page.waitForTimeout(100);
+  } catch (error) {
+    console.warn('ignored', error);
+  }
+  await expect(page.getByTestId('total')).toHaveText('9');
+});
+"""})
+        self.assertEqual(hits, 0, "`throw` in a try comment is not a gate the catch swallows")
+
+    def test_flags_nested_try_with_brace_in_string(self) -> None:
+        hits, p0, _ = scan({"string-brace.spec.ts": SPEC_HEADER + """test('brace inside a string in a nested try', async ({ page }) => {
+  await page.goto('/x');
+  try {
+    await page.getByTestId('saved').waitFor({ state: 'visible' });
+    try {
+      await page.getByTestId('ok').fill('}');
+    } catch (inner) {
+      throw inner;
+    }
+  } catch (error) {
+    console.warn('not confirmed', error);
+  }
+  await expect(page.getByTestId('total')).toHaveText('9');
+});
+"""})
+        self.assertGreater(hits, 0, "a brace in a string must not pair the outer catch with the inner try")
+        self.assertEqual(p0, 0)
+
+    def test_flags_nested_try_with_brace_in_regex(self) -> None:
+        hits, p0, _ = scan({"regex-brace.spec.ts": SPEC_HEADER + """test('brace inside a regex in a nested try', async ({ page }) => {
+  await page.goto('/x');
+  try {
+    await page.getByTestId('saved').waitFor({ state: 'visible' });
+    try {
+      const m = /}/.test(await page.title());
+      console.log(m);
+    } catch (inner) {
+      throw inner;
+    }
+  } catch (error) {
+    console.warn('not confirmed', error);
+  }
+  await expect(page.getByTestId('total')).toHaveText('9');
+});
+"""})
+        self.assertGreater(hits, 0, "a brace in a regex literal must not pair the outer catch with the inner try")
+        self.assertEqual(p0, 0)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

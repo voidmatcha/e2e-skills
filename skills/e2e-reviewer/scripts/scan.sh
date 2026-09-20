@@ -5374,7 +5374,22 @@ hardcoded_credential_hit_matches() {
     scanner_rg -q '(__STR__|__STR_[A-Za-z0-9_$]+__)' || return 1
   if printf '%s\n' "$code" |
     scanner_rg -qi '\.(fill|type)\s*\('; then
-    return 0
+    # A form literal is a credential candidate only when the statement names a
+    # credential-shaped field, variable, helper, or value. The lexed target
+    # line keeps string contents as inert tokens (`getByLabel(__STR_Password__)`),
+    # and the multi-line statement keeps identifiers (`cy.get(passwordSelector)`
+    # above a `.type(` continuation). The first argument must be a non-empty
+    # literal: `input.fill('')` clears a field, and `message.type() === "error"`
+    # is not an input action at all.
+    printf '%s\n' "$target_line" |
+      scanner_rg -q '\.(fill|type)\s*\(\s*__STR_[A-Za-z0-9_$]*[A-Za-z0-9$]' || return 1
+    local chain=""
+    if printf '%s\n' "$target_line" | scanner_rg -q '^[[:space:]]*\.'; then
+      chain=$(fluent_chain_source_at "$file" "$line")
+    fi
+    printf '%s\n' "$target_line" "$code" "$chain" |
+      scanner_rg -qi '(password|passwd|passcode|passphrase|pwd|secret|credential|token|api[_-]?key|username|user[_-]?name|userid|login|sign[_-]?in|auth|email|otp)'
+    return $?
   fi
   if printf '%s\n' "$code" |
     scanner_rg -qi '(^|[^A-Za-z0-9_$])(login|signIn)\s*\('; then
@@ -5609,9 +5624,17 @@ swallowed_try_catch_hit_matches() {
   # body, and a brace on its own line (Allman) all defeat a nearest-match
   # search. Print the try region, a \001 separator, then the catch block
   # itself, so a rethrow is looked for only where it can rethrow.
-  split=$(awk -v L="$line" -v lo="$((line > 400 ? line - 400 : 1))" -v hi="$((line + 400))" '
+  #
+  # Pair and match on executable source, not raw text: the shared lexer drops
+  # comments, string and template contents, and regex literals while keeping
+  # one output line per input line, so a brace inside a literal cannot pair
+  # the catch with the wrong try, and `throw` in a comment neither exempts a
+  # catch nor qualifies a try body. `next`, not `exit`: under pipefail an
+  # early exit would report the lexer's closed pipe as a pairing failure.
+  split=$(source_executable_code "$file" |
+    awk -v L="$line" -v lo="$((line > 400 ? line - 400 : 1))" -v hi="$((line + 400))" '
     NR >= lo && NR <= hi { buf[NR] = $0; last = NR }
-    NR > hi { exit }
+    NR > hi { next }
     END {
       if (!(L in buf)) exit 1
       s = buf[L]; cpos = 0
@@ -5654,7 +5677,7 @@ swallowed_try_catch_hit_matches() {
         }
         print out
       }
-    }' "$file" 2>/dev/null) || return 1
+    }' 2>/dev/null) || return 1
   body=${split%%$'\001'*}
   catch_body=${split#*$'\001'}
   [[ -n "$body" ]] || return 1

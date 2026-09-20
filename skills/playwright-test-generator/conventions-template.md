@@ -24,7 +24,7 @@ Auto-waiting web-first assertions only (`toBeVisible`, `toHaveURL`, `toHaveText`
 
 ### Network
 - API shape: `<e.g. "all calls proxied through /api/request?cmd=<path> — mock by decoded cmd">`
-- Writes/credentials (signup, login, payment, mutations): MUST be stubbed via `<mock helper path>`. List every write endpoint explicitly — unlisted calls fall through to the real backend.
+- Writes/credentials (signup, login, payment, mutations): `<"stubbed via <mock helper path> — list every write endpoint explicitly; unlisted calls fall through to the real backend" | "real, against the disposable server reset by <reset seam> before each test; never a shared backend">`
 - Real backend allowed: `<which read endpoints / the one designated smoke spec>`
 
 ### Auth
@@ -42,4 +42,4 @@ Auto-waiting web-first assertions only (`toBeVisible`, `toHaveURL`, `toHaveText`
 - Dev server: `<"auto-started via playwright webServer (reuses a running one)" | "must be running at <url> first">`
 
 ### Adding tests (AI agents start here)
-To add E2E coverage for feature X: copy the shape of `<seed spec path>`, add locators only via the Locator Mapping Table workflow, stub every write endpoint via `<mock helper>`, then run `<verify command>`. Deferred areas — do not auto-generate without sign-off: `<e.g. payment (external PG redirect), member-session deep flows>`.
+To add E2E coverage for feature X: copy the shape of `<seed spec path>`, add locators only via the Locator Mapping Table workflow, control every write at the seam named under Network, then run `<verify command>`. Deferred areas — do not auto-generate without sign-off: `<e.g. payment (external PG redirect), member-session deep flows>`.

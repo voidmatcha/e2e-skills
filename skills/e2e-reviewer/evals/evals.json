@@ -565,7 +565,7 @@
     {
       "id": 32,
       "prompt": "Review the Playwright E2E tests in evals/files/sweep-recovery.spec.ts. Run the mandatory bounded opening-token sweep, not only the scanner output.",
-      "expected_output": "Phase 1 reports nothing here except one credential candidate. The sweep rows are what must recover the guard-return, the exact:false accessible name, and the awaited soft assertion — and must not turn the intentional test.skip into a finding.",
+      "expected_output": "Phase 1 reports nothing here except the #11c candidate for the reasoned test.skip on line 14; it no longer emits fill('Mina') as a credential candidate. The sweep rows are what must recover the guard-return, the exact:false accessible name, and the awaited soft assertion — and must not turn the intentional test.skip into a finding.",
       "files": [
         "evals/files/sweep-recovery.spec.ts"
       ],
@@ -574,7 +574,7 @@
         "Flags getByRole('link', { name: 'Job', exact: false }) on line 20 — exact: false asks for the substring match the pattern exists to catch, and the scanner's regex exempts any call containing the exact: token (#10c)",
         "Flags await expect.soft(form) on line 25 as a soft prerequisite for the fill on line 26 — the scanner's candidate regex cannot match the awaited spelling at all (#18)",
         "Does NOT flag test.skip(true, 'the settings panel does not exist on mobile') on line 14 — a skip with a reason is intentional, is the documented fix for #5a, and produces a visible skipped result rather than a silent pass",
-        "Does NOT report fill('Mina') on line 26 as a hardcoded credential — a display name is not a credential, and the scanner emits it only as an unconfirmed candidate (#14)"
+        "Does NOT report fill('Mina') on line 26 as a hardcoded credential — a display name is not a credential, and the scanner no longer emits a form literal whose field and value are not credential-shaped (#14)"
       ]
     },
     {

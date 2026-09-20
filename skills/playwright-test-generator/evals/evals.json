@@ -361,7 +361,7 @@
       "id": 18,
       "title": "Tracer scenario gates first-run bulk generation",
       "prompt": "A repository has no generated Playwright seed or conventions and has approved four scenarios that share a new authenticated fixture and project runner. Scenario 1 is the smallest real journey exercising that fixture, navigation, locator, assertion, and runner. It passes normal execution and review but its V3 fault probe remains green. Explain what gets generated next. Separately, consider an established repository adding one low-risk read-only scenario with its existing fixture and runner; explain whether an extra tracer phase is required.",
-      "expected_output": "Mark Scenario 1 as the tracer and generate only it first. Because its V3 fault probe remains green, it has not reached Complete: stop expansion, report the weak-test evidence, and do not generate Scenarios 2-4. Repair and repeat the applicable reviewer and V1-V6 verification within the bounded workflow before expansion. Existing approval remains valid only while outcomes, commands, locators, and control-file mutations do not materially change. For the established repository's single low-risk read-only addition, do not invent a separate tracer phase: the one candidate proceeds through the ordinary Steps 5-7 because none of the tracer triggers applies.",
+      "expected_output": "Mark Scenario 1 as the tracer and generate only it first. Because its V3 fault probe remains green, it has not reached Complete: stop expansion, report the weak-test evidence, and do not generate Scenarios 2-4. Repair and repeat the applicable reviewer and V1-V6 verification within the bounded workflow before expansion. Existing approval remains valid only while outcomes, commands, locators, and control-file mutations do not materially change. For the established repository's single low-risk read-only addition, do not invent a separate tracer phase: the one candidate proceeds through the ordinary Steps 5-7 because none of the tracer triggers applies. The tracer's Complete is the completion matrix applied to the tracer alone, so its V6 independent review must be PASS before expansion. After expansion, V5 suite-context and V6 rerun on the final set; the tracer's V2-V4 results carry over only when its test body, fixtures, and the file's shared setup are byte-identical and the same approved command runs it.",
       "files": [],
       "assertions": [
         "True positive: selects Scenario 1 as the tracer because this is a first run with shared new authentication and runner paths",
@@ -370,7 +370,9 @@
         "Reports the weak-test evidence and reruns review plus applicable V1-V6 after repair",
         "Routes material outcome, command, locator, or control-file changes back through approval",
         "False-positive guard: does not require a separate tracer phase for one low-risk read-only scenario in an established repository",
-        "Does not treat a render-only smoke check or a merely green normal run as tracer completion"
+        "Does not treat a render-only smoke check or a merely green normal run as tracer completion",
+        "Requires V6 PASS on the tracer before expansion",
+        "Reruns V5/V6 on the final set; may carry over V2–V4 for a byte-identical tracer body"
       ]
     },
     {
@@ -477,8 +479,8 @@
     {
       "id": 26,
       "title": "Secondary outcomes stay optional and bounded",
-      "prompt": "You are writing the Step 4 plan for one scenario: a signed-in user renames a saved report, the rename request is stubbed with page.route(), and the renamed report must appear in the sidebar list. The user asks you to 'check everything a manual tester would check'. Decide which secondary outcomes to offer and how they relate to the primary outcome.",
-      "expected_output": "Offer only the fixed three secondary outcomes and mark each selected or skipped. Skip 'Survives a reload' because the rename write is stubbed, so a reload would only show fixture state. Select 'Side effect proved' for the sidebar list change: V4 proves the rename request, but the list update is a separate observable side effect, so the skip condition — the only side effect being the request V4 already proves — does not apply. Skip 'Error cause distinguished' because this scenario has no failure branch. Do not invent extra checks such as focus order, layout, or analytics events just because a manual tester might look at them. Keep one primary outcome for V1; any selected secondary outcome is an extra assertion in the same test, never a second primary assertion for V2 or V3, and any locator it needs must be added to the Locator Mapping Table and survive the Step 6 YAGNI audit.",
+      "prompt": "You are writing the Step 4 plan for one scenario: a signed-in user renames a saved report, the rename request is stubbed with page.route(), and the renamed report must appear in the sidebar list. The user asks you to 'check everything a manual tester would check'. Decide which secondary outcomes to offer and how they relate to the primary outcome. Separately, the rename test waits for the old report title to show line-through styling before its primary assertion, and you plan to use that as the V2 settled-state gate.",
+      "expected_output": "Offer only the fixed three secondary outcomes and mark each selected or skipped. Skip 'Survives a reload' because the rename write is stubbed, so a reload would only show fixture state. Select 'Side effect proved' for the sidebar list change: V4 proves the rename request, but the list update is a separate observable side effect, so the skip condition — the only side effect being the request V4 already proves — does not apply. Skip 'Error cause distinguished' because this scenario has no failure branch. Do not invent extra checks such as focus order, layout, or analytics events just because a manual tester might look at them. Keep one primary outcome for V1; any selected secondary outcome is an extra assertion in the same test, never a second primary assertion for V2 or V3, and any locator it needs must be added to the Locator Mapping Table and survive the Step 6 YAGNI audit. The line-through check is the V2 settled-state gate: record it under Falsification (V2), not as a secondary outcome, even though it is none of the three; its locator still enters the Locator Mapping Table.",
       "files": [],
       "assertions": [
         "Offers only the three documented secondary outcomes and records each as selected or skipped",
@@ -487,7 +489,8 @@
         "Skips the error-cause outcome because the scenario has no failure branch",
         "Does not invent additional secondary outcomes beyond the fixed list",
         "Keeps exactly one primary outcome for V1 and does not promote a secondary outcome for V2/V3",
-        "Requires any new locator to enter the Locator Mapping Table"
+        "Requires any new locator to enter the Locator Mapping Table",
+        "False-positive guard: does not reject a line-through gate assertion because it is not one of the three secondary outcomes; records it under Falsification (V2) and adds its locator to the Locator Mapping Table"
       ]
     },
     {
@@ -567,7 +570,7 @@
       "id": 32,
       "title": "Playwright CLI exploration uses the origin allowlist in a fresh session",
       "prompt": "Exploration will use the standalone playwright-cli against the preflighted target http://127.0.0.1:4391/. A previous exploration session named 'default' is still open. The repository contains a .playwright/cli.config.json. You consider installing the guard with `playwright-cli run-code` using `new URL(request.url())`, or with `playwright-cli route`. Describe how to install and prove the guard.",
-      "expected_output": "Neither route (fulfill-only) nor run-code (bare context, no URL global) is the guard. Write a config outside the worktree with network.allowedOrigins set to the exact origin http://127.0.0.1:4391, run the CLI from that outside directory so the repository's .playwright/cli.config.json is never loaded, and open a fresh uniquely named session with -s and --config, because --config takes effect only when open starts a session: commands sent to the still-open default session would keep running in its unguarded browser. Confirm the page is about:blank, then fetch an unapproved loopback port such as http://127.0.0.1:9/ and require requests to show net::ERR_BLOCKED_BY_CLIENT rather than a connection error. Only then navigate to the target, and close the session afterwards.",
+      "expected_output": "Neither route (fulfill-only) nor run-code (bare context, no URL global) is the guard. Write a config outside the worktree with network.allowedOrigins set to the exact origin http://127.0.0.1:4391, run the CLI from that outside directory so the repository's .playwright/cli.config.json is never loaded, and open a fresh uniquely named session with -s and --config, because --config takes effect only when open starts a session: commands sent to the still-open default session would keep running in its unguarded browser. Confirm the page is about:blank, then fetch an unapproved loopback port such as http://127.0.0.1:9/ and require requests to show net::ERR_BLOCKED_BY_CLIENT rather than a connection error. Only then navigate to the target, and close the session afterwards. The CLI writes session state and snapshots to .playwright-cli/ under its working directory, which is the outside directory here; if the project-local entry point had to run from the project directory, .playwright-cli/ would land in the worktree and must be listed as exploration output in Step 7 and never staged.",
       "files": [],
       "assertions": [
         "Rejects run-code and route as the guard mechanism, with the reason for each",
@@ -576,7 +579,8 @@
         "Opens a fresh uniquely named session because --config applies only when open starts a session, not to commands sent to a running one",
         "Confirms about:blank before any navigation",
         "Proves the guard with an unapproved loopback port and requires ERR_BLOCKED_BY_CLIENT, not a connection error",
-        "Does not navigate to an off-origin URL to test the guard"
+        "Does not navigate to an off-origin URL to test the guard",
+        "Names .playwright-cli/ as exploration output: it lands in the outside directory here, and from the project directory it is listed in Step 7 and never staged"
       ]
     },
     {
@@ -606,6 +610,19 @@
         "Lists the unknown and persistent-write rows first",
         "Refuses an approval addressed to the runs tests label and asks for per-row exact-command approval",
         "False-positive guard: does not label the test:e2e row runs tests alone"
+      ]
+    },
+    {
+      "id": 35,
+      "title": "Settled-state gates on the primary element and on shared faulted data",
+      "prompt": "Step 4 verification contracts for two scenarios. Scenario A: after Save, an alert renders once with the final message 'Saved 3 items'; exploration saw the alert appear only with that text. The primary assertion is `await expect(alert).toHaveText('Saved 3 items')`, and the only other element in that render is the alert itself. You propose `await expect(alert).not.toBeEmpty()` before it as the V2 gate. In a variant, exploration saw the alert first read 'Saving...' and then 'Saved 3 items'. Scenario B: a cart page renders a line-item count and a total from the same /api/cart response; the test gates on `await expect(rows).toHaveCount(3)` and the primary is `await expect(total).toHaveText('$30.00')`. Any V3 fault on /api/cart changes both. Decide V2 and V3 for each.",
+      "expected_output": "Scenario A: `not.toBeEmpty()` on the alert is a weaker assertion on the primary element itself, which counts as the V2 settled-state gate only because exploration observed no intermediate state of the alert that also satisfies it; V2 may mutate `toHaveText` to `not.toHaveText` after it. In the variant, 'Saving...' is an intermediate state that is also non-empty, so the gate does not count: gate on another element or return V2 `CANNOT_VERIFY`. Scenario B: the count gate and the total render the same faulted data, so no fault can pass the gate and still reach the primary. Keep the count assertion before the primary and record V2 from that gate; record V3 `CANNOT_VERIFY` with that reason. Do not delete, move, or weaken the count assertion, and do not fault an unrelated field, to manufacture a red run at the primary.",
+      "files": [],
+      "assertions": [
+        "True positive: accepts not.toBeEmpty() on the once-rendered alert as the V2 gate because exploration saw no intermediate state that satisfies it",
+        "False-positive guard: rejects the same not.toBeEmpty() gate when exploration observed an intermediate 'Saving...' text, and gates on another element or returns V2 CANNOT_VERIFY",
+        "Keeps the count gate in Scenario B and records V3 CANNOT_VERIFY because the gate and the primary render the same faulted data",
+        "False-positive guard: does not delete, move, or weaken the count assertion, or fault a different field, to make the primary fail first"
       ]
     }
   ]
