@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=e2ef25f4f4bf60a7d2c079cb61f4b952601c82293c619ebc1ced425b4b4fc1ef; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=79f4890e4775a2db94f0f1ee0783683d3405754e45a1d7ca7e117ca129fa4ad1; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 为 AI 编程代理提供四个面向 E2E 测试工作的聚焦工作流：生成 Playwright 覆盖、审查现有 spec 或 PR/diff 范围内的测试变更、调试失败的 Playwright 报告，以及调试失败的 Cypress 报告。它还包含一个确定性扫描器，用于发现审查目录中可机械判定的子集。
 
@@ -36,7 +36,7 @@
 | 需求 | Skill | 结果 |
 | --- | --- | --- |
 | 生成新的 Playwright 覆盖 | `playwright-test-generator` | 经过探索、批准和审查的 Playwright spec |
-| 审查 Playwright/Cypress 测试或 PR/diff 变更 | `e2e-reviewer` | 带有具体修复建议及 introduced/worsened/pre-existing 归属的已验证 P0/P1/P2 发现 |
+| 审查 Playwright/Cypress 测试或 PR/diff 变更 | `e2e-reviewer` | 带有具体修复建议及 introduced/worsened/pre-existing 归属的已验证 P0/P1/P2 发现，每项都附带作出判断所依据的证据 |
 | 调试失败的 Playwright 运行 | `playwright-debugger` | F1–F15 根本原因、证据和修复 |
 | 调试失败的 Cypress 运行 | `cypress-debugger` | F1–F15 根本原因、证据和修复 |
 | 运行确定性本地扫描 | `skills/e2e-reviewer/scripts/scan.sh` | 不依赖目标项目 package 的机械候选项 |
@@ -66,6 +66,8 @@ false-green 检测是审查工作流的重要组成部分，但不是整个 bund
 ## 已合入上游的修复
 
 `e2e-reviewer` 的发现已促成 **15 个合入上游的 PR**。这些自选案例展示了实际使用，也让读者可以检查修复；它们不是代表性验证样本，也不是准确率估计。
+
+拒绝结果与合入结果一起公开：[Field review v1](benchmarks/field-review-v1/README.md) 记录了 29 个已提交 PR，其中 16 个已合入、6 个未合入即关闭、7 个仍开放，因为不包含拒绝结果的合入数量不能算作比率。
 
 以下仓库在 2026-09-16 的 GitHub API 快照中共有 **493,657** 个 star。Star 仅用于说明项目规模与知名度，不代表审查准确率或项目方背书。
 
@@ -256,6 +258,7 @@ Debug the failed Cypress report in cypress/reports/.
 - 浏览器故障注入已完成 **12 个故障算子与 3 种预期结果组合形成的全部 36 个 Playwright/Cypress 单元**。这是对测试台自身的检验：应用、健壮的测试、注入的故障和脆弱的测试都由本仓库编写，因此它只能说明检测器按设计触发，并不代表可以泛化。
 - [Healer perturbation v1](benchmarks/healer-perturbation-v1/README.md) 已完成**全部 30 个冻结的 Codex 单元**并返回 `REJECT`：带保护约束的官方 healer prompt 与本仓库提议的 Step 7 工作流，都削弱了全部 3 个不可修复的诚实性对照项。该结果否决了把这两条 healer 路径作为安全默认值；它没有测量 Claude、通用 healer 质量或审查准确率，也没有修改产品指令。
 - Exact reviewer benchmark 覆盖 **12 个已证实的 false-green cases 和 12 个 clean guards**；其中 10 个 fault cases 是 byte-identical operator mutants。
+- Reviewer holdout v7 对 `no-skill` 的 6 项 lift 检查全部通过，但未达到预注册的 `catalog-only` lift 门槛。Full 的 precision（`0.956522` 对 `0.884615`）和 clean specificity（`1.0` 对 `0.75`）更高，但 recall 更低（`0.916667` 对 `0.958333`），因此不作 skill-lift 声明。
 - Independent product-review robustness gates v4、v5、v7、v8 和 v11 未达到其预注册标准。v6 和 v9 未运行，v10 在 3 次尝试中仅运行 1 次后，被复用其冻结评审输入的 v11 取代；v1 至 v11 仅作为既有的 robustness evidence 保留，不是当前的 release gates。
 - Debugger protocol 提供可重放的 30-case synthetic corpus，但不声称已独立建立调试器准确率。
 

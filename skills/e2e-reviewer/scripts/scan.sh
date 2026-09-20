@@ -5622,7 +5622,7 @@ swallowed_try_catch_hit_matches() {
   # This exists because a controlled ablation showed the reviewer detects the
   # `.catch(() => {})` form 6/6 but the `try/catch` form 0/6: it was not
   # missing the rule, it was missing a hit that forced adjudication.
-  local hit="$1" file rest line split body catch_body
+  local hit="$1" file rest line split body catch_body catch_end raw_catch
   file=${hit%%:*}
   rest=${hit#*:}
   line=${rest%%:*}
@@ -5686,9 +5686,15 @@ swallowed_try_catch_hit_matches() {
         }
         print out
       }
+      print "\002" i
     }' 2>/dev/null) || return 1
   body=${split%%$'\001'*}
   catch_body=${split#*$'\001'}
+  catch_end=${catch_body##*$'\002'}
+  catch_body=${catch_body%%$'\002'*}
+  catch_end=$(printf '%s' "$catch_end" | tr -d '[:space:]')
+  [[ "$catch_end" =~ ^[0-9]+$ ]] || return 1
+  raw_catch=$(sed -n "${line},${catch_end}p" "$file" 2>/dev/null | tr '\n' ' ')
   [[ -n "$body" ]] || return 1
 
   # Match on the flattened region: a suppressed `expect.poll(...)` or awaited
@@ -5712,12 +5718,68 @@ swallowed_try_catch_hit_matches() {
 (^|[^A-Za-z0-9_$.])throw[[:space:]]" ||
     return 1
 
-  # A catch block that rethrows is not swallowing. This is the narrowed-rethrow
-  # shape the contract explicitly exempts. Only the catch block counts: a
-  # `throw` after it, in the test or in another function, does not rethrow.
-  printf '%s\n' "$catch_body" |
-    scanner_rg -q '(^|[^A-Za-z0-9_$.])throw([^A-Za-z0-9_$]|$)' &&
+  # A top-level unconditional throw propagates after logging or cleanup. A
+  # conditional throw is nested or follows a control expression, so it is not
+  # a catch-level statement boundary.
+  if ! printf '%s\n' "$catch_body" |
+      scanner_rg -q '(^|[^A-Za-z0-9_$])(return|break|continue)([^A-Za-z0-9_$]|$)' &&
+      printf '%s\n' "$catch_body" |
+      awk '
+      BEGIN { depth = 0; opened = 0; statement = 0; control = 0; paren = 0; found = 0 }
+      {
+        for (i = 1; i <= length($0); i++) {
+          ch = substr($0, i, 1)
+          if (ch == "{") { depth++; if (!opened) { opened = 1; statement = 1 }; continue }
+          if (ch == "}") {
+            depth--
+            if (depth == 1) { statement = 1; control = 0 }
+            continue
+          }
+          if (depth != 1) continue
+          if (ch == "(") { paren++; continue }
+          if (ch == ")") { if (paren > 0) paren--; continue }
+          if (ch == ";" && paren == 0) { statement = 1; control = 0; continue }
+          if (ch ~ /[[:space:]]/) continue
+          if (statement && substr($0, i) ~ /^(if|for|while|with|else)([^A-Za-z0-9_$]|$)/) control = 1
+          if (statement && !control && substr($0, i) ~ /^throw([^A-Za-z0-9_]|$)/) { found = 1; exit }
+          statement = 0
+        }
+        if (depth == 1 && !control) statement = 1
+      }
+        END { exit(found ? 0 : 1) }
+      '; then
     return 1
+  fi
+
+  # Keep the narrow application-error allowlist quiet. Only a single inverse
+  # identity guard with no earlier control-flow escape is proven here; other
+  # conditional propagation shapes stay in triage. Framework timeout and
+  # assertion errors are ordinary failure paths, so their inverse guards stay
+  # in triage instead of being mistaken for application-error allowlists.
+  local flat_catch throw_count
+  flat_catch=$(printf '%s\n' "$catch_body" | tr '\n' ' ')
+  throw_count=$(printf '%s\n' "$flat_catch" |
+    scanner_rg -o '(^|[^A-Za-z0-9_$.])throw([^A-Za-z0-9_$]|$)' |
+    wc -l | tr -d '[:space:]')
+  if [[ "$throw_count" == "1" ]] &&
+      ! printf '%s\n' "$flat_catch" |
+        scanner_rg -q '(^|[^A-Za-z0-9_$])(return|break|continue)([^A-Za-z0-9_$]|$)'; then
+    if printf '%s\n' "$flat_catch" |
+        scanner_rg -q 'if[[:space:]]*\([[:space:]]*![[:space:]]*\([[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]+instanceof[[:space:]]+[A-Za-z_$][A-Za-z0-9_$.]*Error[[:space:]]*\)[[:space:]]*\)[[:space:]]*([{][[:space:]]*)?throw([[:space:]]|$)'; then
+      if ! printf '%s\n' "$flat_catch" |
+          scanner_rg -q 'instanceof[[:space:]]+((([A-Za-z_$][A-Za-z0-9_$.]*)?TimeoutError)|(([A-Za-z_$][A-Za-z0-9_$.]*[.])?AssertionError))([^A-Za-z0-9_$]|$)'; then
+        return 1
+      fi
+    elif printf '%s\n' "$flat_catch" |
+        scanner_rg -q 'if[[:space:]]*\([[:space:]]*([A-Za-z_$][A-Za-z0-9_$]*[.])?(constructor[.])?name[[:space:]]*!==[[:space:]]*\)[[:space:]]*([{][[:space:]]*)?throw([[:space:]]|$)|if[[:space:]]*\([[:space:]]*![[:space:]]*\([[:space:]]*([A-Za-z_$][A-Za-z0-9_$]*[.])?(constructor[.])?name[[:space:]]*===[[:space:]]*\)[[:space:]]*\)[[:space:]]*([{][[:space:]]*)?throw([[:space:]]|$)' &&
+        printf '%s\n' "$raw_catch" |
+          scanner_rg -q "(constructor[.])?name[[:space:]]*(!==[[:space:]]*['\"][A-Za-z_\$][A-Za-z0-9_\$]*Error['\"]|===[[:space:]]*['\"][A-Za-z_\$][A-Za-z0-9_\$]*Error['\"])"; then
+      if ! printf '%s\n' "$raw_catch" |
+          scanner_rg -q "(constructor[.])?name[[:space:]]*(!==|===)[[:space:]]*['\"](([A-Za-z_\$][A-Za-z0-9_\$]*)?TimeoutError|AssertionError)['\"]"; then
+        return 1
+      fi
+    fi
+  fi
 
   return 0
 }

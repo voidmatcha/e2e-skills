@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <strong>🇯🇵 日本語</strong> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=e2ef25f4f4bf60a7d2c079cb61f4b952601c82293c619ebc1ced425b4b4fc1ef; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=79f4890e4775a2db94f0f1ee0783683d3405754e45a1d7ca7e117ca129fa4ad1; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、AI コーディングエージェントが Playwright/Cypress の E2E テスト作業に使える 4 つのワークフローを提供します。Playwright カバレッジの生成、既存のテスト仕様または PR/diff 範囲の変更レビュー、失敗した Playwright レポートのデバッグ、失敗した Cypress レポートのデバッグを扱います。レビューカタログのうち、機械的に判定できる部分集合を検出する決定論的スキャナーも含まれます。
 
@@ -37,7 +37,7 @@
 | 必要なこと | スキル | 結果 |
 | --- | --- | --- |
 | 新しい Playwright カバレッジを生成 | `playwright-test-generator` | 探索、承認、レビューを経た Playwright テスト仕様 |
-| Playwright/Cypress テストまたは PR/diff 変更をレビュー | `e2e-reviewer` | 具体的な修正と introduced/worsened/pre-existing の帰属を伴う検証済み P0/P1/P2 指摘 |
+| Playwright/Cypress テストまたは PR/diff 変更をレビュー | `e2e-reviewer` | 具体的な修正と introduced/worsened/pre-existing の帰属を伴い、各判断の根拠を示す検証済み P0/P1/P2 指摘 |
 | 失敗した Playwright 実行をデバッグ | `playwright-debugger` | F1–F15 の根本原因、根拠、修正 |
 | 失敗した Cypress 実行をデバッグ | `cypress-debugger` | F1–F15 の根本原因、根拠、修正 |
 | 決定論的なローカルスキャンを実行 | `skills/e2e-reviewer/scripts/scan.sh` | 対象プロジェクトの package に依存しない機械的候補 |
@@ -67,6 +67,8 @@ false-green 検出はレビューワークフローの重要な一部ですが�
 ## アップストリームにマージされた修正
 
 `e2e-reviewer` の指摘は **15 件のマージ済み upstream PR** に取り込まれています。これらは実用例を示し、読者が修正内容を確認できるようにするために選んだ事例です。代表的な検証サンプルでも、正確度の推定値でもありません。
+
+マージだけでなく却下も公開しています。[Field review v1](benchmarks/field-review-v1/README.md) では、提出 29 件、マージ 16 件、マージなしクローズ 6 件、オープン 7 件を記録しています。却下を含まないマージ件数は率ではないためです。
 
 以下のリポジトリの GitHub stars は、2026-09-16 の GitHub API スナップショットで合計 **493,657** です。Stars はプロジェクトの規模と認知度を示す参考情報であり、レビュー精度やプロジェクトによる推奨を示すものではありません。
 
@@ -257,6 +259,7 @@ Debug the failed Cypress report in cypress/reports/.
 - ブラウザー障害注入は、**12 個の障害演算子と 3 種類の期待結果を組み合わせた Playwright/Cypress セル 36 件すべて**で完了しています。これはハーネスの自己テストです。アプリケーション、堅牢なテスト、注入した障害、脆弱なテストのすべてをこのリポジトリで書いているため、検出器が設計どおりに動作することを示すだけであり、一般化を意味しません。
 - [Healer perturbation v1](benchmarks/healer-perturbation-v1/README.md) は、**凍結済みの Codex セル 30 件すべて**を完了し、`REJECT` を返しました。ガード付きの公式 healer prompt と、このリポジトリが提案した Step 7 workflow は、どちらも修復不可能な honesty control 3 件すべてを弱めました。この結果は両 healer 経路を安全なデフォルトとして採用しないことを意味しますが、Claude、一般的な healer 品質、reviewer 精度を測定したものではなく、product instructions も変更していません。
 - exact レビューベンチマークは **証明済みの false-green 事例 12 件と正常コードの保護事例 12 件**を対象にしています。10 件の障害事例は byte-identical operator mutants です。
+- Reviewer holdout v7 は `no-skill` に対する 6 件の lift check をすべて通過しましたが、事前登録済みの `catalog-only` lift bar には失敗しました。Full は precision (`0.956522` 対 `0.884615`) と clean specificity (`1.0` 対 `0.75`) が向上した一方、recall は低下 (`0.916667` 対 `0.958333`) したため、skill-lift は主張しません。
 - Independent product-review robustness gates v4、v5、v7、v8、v11 は事前登録した基準を満たしませんでした。v6 と v9 は未実行で、v10 は 3 回の試行のうち 1 回を実行した時点で、凍結済みのレビュー入力を再利用する v11 に置き換えました。v1 から v11 は、現在のリリースゲートではなく、過去の robustness evidence として保持しています。
 - デバッガー protocol は再実行可能な 30-case synthetic corpus を提供しますが、独立に確立されたデバッガー精度は主張しません。
 

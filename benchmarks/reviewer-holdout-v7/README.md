@@ -22,7 +22,7 @@ Everything else is unchanged from v5: the 20 cases, 24 findings, 24 guards, sche
 
 ## Results
 
-Attempt 4 is the counted run. It executed all three arms sequentially from an ordinary host shell against Git revision `110f2ea6a6e4876f601fa3b2cb6bd2ead40e48ab` (`v1.19.0`). Every arm recorded `git_dirty: false`, 60/60 scoreable calls, and zero infrastructure errors. The 180 calls ran from 2026-09-20 03:38:34 to 04:16:43 KST with `codex / gpt-5.6-sol` and `codex-cli 0.154.0`. The comparator returned `FAIL` and `skill_lift_claim_eligible: false`.
+Attempt 4 is the counted run. It executed all three arms sequentially from an ordinary host shell against Git revision `110f2ea6a6e4876f601fa3b2cb6bd2ead40e48ab`, the pre-trim reviewer as it stood before the trim and the pattern `#3` fix in the same release. Every arm recorded `git_dirty: false`, 60/60 scoreable calls, and zero infrastructure errors. The 180 calls ran from 2026-09-20 03:38:34 to 04:16:43 KST with `codex / gpt-5.6-sol` and `codex-cli 0.154.0`. The comparator returned `FAIL` and `skill_lift_claim_eligible: false`.
 
 The protocol's primary unit is unique majority-stable labels and predictions. Repeated precision is the repeated-run safeguard; P0 recall and clean specificity are also preregistered absolute metrics.
 
@@ -64,7 +64,7 @@ This is a single-host, single-model run on an inspectable public development cor
 
 ## Addendum: exploratory rerun after the SKILL.md trim and #3 fix (not counted)
 
-An uncounted exploratory rerun used the same frozen v7 protocol and attempt 4 procedure at Git revision `cb9aca231fc413876d5169c1617978c8a9a3ced2` on `next/1.20.0`: the reviewer `SKILL.md` trim (`0021313`) plus the pattern `#3` swallowed-assertion wording fix (`cb9aca2`). All three arms ran sequentially from the host shell with a clean tree and reports outside the checkout; all 180 calls were scoreable with zero infrastructure errors, from 2026-09-20 05:48 to 06:25 KST. This rerun is a non-regression check, does not replace attempt 4, and is not included in the counted v7 verdict.
+An uncounted exploratory rerun used the same frozen v7 protocol and attempt 4 procedure at Git revision `cb9aca231fc413876d5169c1617978c8a9a3ced2`, the trimmed reviewer plus the pattern `#3` swallowed-assertion wording fix within the same release. All three arms ran sequentially from the host shell with a clean tree and reports outside the checkout; all 180 calls were scoreable with zero infrastructure errors, from 2026-09-20 05:48 to 06:25 KST. This rerun does not replace attempt 4 and is not included in the counted v7 verdict.
 
 | Run | Arm | Status | Stable precision | Stable recall | Stable F1 | P0 recall | Clean specificity |
 | --- | --- | :---: | ---: | ---: | ---: | ---: | ---: |
@@ -83,7 +83,7 @@ The `#3` wording fix was designed after observing the `pw-a06` miss in this same
 
 The catalog-only profile also embeds the edited `SKILL.md` `#3` row, so its recovery of the same label is contaminated too. Excluding `pw-a06` would be the uncontaminated comparison, but the repository comparator has no case-exclusion mode; the per-case changes above are reported instead of introducing a new post-hoc scoring method.
 
-Within this fixed tool-less public holdout, the trim did not regress the full arm; the failed lift-versus-catalog-only outcome is unchanged.
+Aggregate full-arm metrics improved, but `pw-a04` / `V5-008` fell from 2/3 hits in attempt 4 to 1/3 and lost stable-true-positive status. Because the rerun combines the trim, the `#3` fix, and ordinary run variance, it cannot isolate the trim's effect; the failed lift-versus-catalog-only outcome is unchanged.
 
 ## Frozen inputs
 

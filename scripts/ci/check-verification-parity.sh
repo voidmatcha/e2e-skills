@@ -192,7 +192,6 @@ if not schema_fields.issubset(gen_fields) or reviewer_fields != schema_fields:
 
 
 def debugger_handoff(label, text):
-    normalized = re.sub(r"\s+", " ", text).lower()
     required = {
         "V2": (r"assertion",),
         "V3": (r"fault injection",),
@@ -201,10 +200,12 @@ def debugger_handoff(label, text):
         "V6": (r"independent re-review", r"repair"),
     }
     for rule_id, clauses in required.items():
-        if not re.search(rf"- {rule_id}\b", text):
+        bullet = re.search(rf"(?m)^- {rule_id}\b[^\n]*", text)
+        if bullet is None:
             print(f"verification parity: {label} missing {rule_id}", file=sys.stderr)
             raise SystemExit(1)
-        if not all(re.search(clause, normalized) for clause in clauses):
+        normalized_bullet = re.sub(r"\s+", " ", bullet.group(0)).lower()
+        if not all(re.search(clause, normalized_bullet) for clause in clauses):
             print(
                 f"verification parity: {label} {rule_id} handoff behavior differs",
                 file=sys.stderr,

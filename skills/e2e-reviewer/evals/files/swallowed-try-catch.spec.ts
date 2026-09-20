@@ -96,3 +96,42 @@ test('settings page reads the saved theme', async ({ page }) => {
   await page.goto('/settings');
   await expect(page.getByTestId('theme')).toHaveText(theme);
 });
+
+test('allows one named scheduling conflict', async ({ page }) => {
+  try {
+    await page.getByTestId('slot').waitFor({ state: 'visible' });
+  } catch (error) {
+    if (!(error instanceof SlotError)) {
+      throw error;
+    }
+  }
+  await expect(page.getByTestId('notice')).toHaveText('Slot taken');
+});
+
+test('logs diagnostics before propagating', async ({ page }) => {
+  try {
+    await page.getByTestId('receipt').waitFor({ state: 'visible' });
+  } catch (error) {
+    console.error('receipt missing', error);
+    console.error('url', page.url());
+    throw error;
+  }
+});
+
+test('ordinary constructor timeout is not an application allowlist', async ({ page }) => {
+  try {
+    await page.getByTestId('invoice').waitFor({ state: 'visible' });
+  } catch (error) {
+    if (!(error.constructor.name === 'BrowserTimeoutError')) throw error;
+  }
+  await expect(page.getByTestId('invoice')).toBeVisible();
+});
+
+test('allows one named payment failure', async ({ page }) => {
+  try {
+    await page.getByTestId('payment').waitFor({ state: 'visible' });
+  } catch (error) {
+    if (error.name !== 'PaymentError') throw error;
+  }
+  await expect(page.getByTestId('payment-help')).toBeVisible();
+});

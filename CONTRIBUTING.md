@@ -23,8 +23,8 @@ Not every change needs the same amount of process. Which tier a change falls int
 
 | Tier | What it covers | What you need |
 | --- | --- | --- |
-| **0 — Docs & typos** | README/CHANGELOG wording, comments, typo fixes, anything that isn't inside `skills/*/SKILL.md` or the reviewer taxonomy | Nothing beyond `scripts/ci/review.sh`'s Markdown/link checks passing |
-| **1 — Skill instruction wording** | Editing prose inside a `skills/*/SKILL.md` that doesn't add/remove/renumber a pattern ID, F-code, or verdict term | A RED/GREEN contract test proving the old wording violated your intent and the new wording satisfies it (see `scripts/ci/test-routing-contract.py` for a worked example), then `ci-local.sh` green — `scripts/dev/tier1-check.sh` runs that gate for you |
+| **0 — Docs & typos** | Wording, comments, and typo fixes that do not change installed skill behavior, regardless of file location | Nothing beyond `scripts/ci/review.sh`'s Markdown/link checks passing |
+| **1 — Skill behavior wording** | Any behavior-affecting instruction edit that does not change a pattern ID, F-code, or verdict term, including `skills/*/SKILL.md` and point-of-use procedure files such as `classification-procedure.md`, `scenario-design.md`, and `semantic-review.md` | A RED/GREEN contract test proving the old wording violated your intent and the new wording satisfies it (see `scripts/ci/test-routing-contract.py` for a worked example), then `ci-local.sh` green — `scripts/dev/tier1-check.sh` runs that gate for you |
 | **2 — Taxonomy / decision-surface change** | New or renumbered pattern IDs, F-codes, verdict vocabulary, or a delegation-routing decision not yet backed by measured evidence | A preregistered benchmark protocol under `benchmarks/`, per the pattern in `benchmarks/subagent-routing-v1/` (or `benchmarks/stub-echo-v1/`, where the same process refused a proposed rule) — the heavy path below, reserved for changes that make a new correctness claim about the skills themselves |
 
 Most contributions are Tier 0 or Tier 1. Tier 2 is rare by design and most
@@ -88,7 +88,7 @@ bash scripts/validate-evals.sh       # eval JSON schema
 bash scripts/ci/test-reviewer-holdout.sh # labeled TP/FP/FN scorer + isolation
 python3 scripts/ci/test-reviewer-holdout-v3.py # all-family corpus + N-configuration contracts
 python3 scripts/ci/test-reviewer-holdout-v4.py # v4 corpus and protocol contracts
-python3 scripts/ci/test-reviewer-holdout-v5.py # current preregistered v5 corpus contracts
+python3 scripts/ci/test-reviewer-holdout-v5.py # historical v5 corpus contracts
 python3 scripts/ci/test-reviewer-holdout-v7.py # Codex-only v7 protocol + committed-result contracts
 /bin/bash -p scripts/ci/run-reference-tokenizer-suites.sh \
   scripts/ci/test-independent-review-v7.py \
@@ -109,6 +109,8 @@ bash scripts/ci/codex-smoke.sh       # manual Codex cross-host smoke (skips if c
 
 ### Reviewer accuracy and behavior validation
 
+Current validation uses the completed Codex-only v7 three-arm workflow and exact commands in [`benchmarks/reviewer-holdout-v7/README.md`](benchmarks/reviewer-holdout-v7/README.md#exact-rerun-command). That run completed 180/180 calls with zero infrastructure errors and returned `FAIL`; it supports no skill-lift claim. The v3 and v5 commands below are historical reproduction workflows, not the current release-validation route.
+
 `evals/evals.json` defines expected behavior, while the ordinary CI gate checks that those contracts and fixtures remain structurally valid. The labeled development holdout adds exact TP/FP/FN scoring over isolated multi-file Playwright/Cypress cases:
 
 ```bash
@@ -123,7 +125,7 @@ python3 scripts/evals/run-reviewer-holdout.py \
 
 The completed v3 public corpus has eight multi-file cases, 24 findings covering all 24 base pattern families, and 24 explicit false-positive guards. It is public, so it is a reproducible development holdout, not a secret release oracle. The historical v2/r3 corpus has 30 findings and 31 guards, but its performance estimate was oracle-invalidated after post-run adjudication. Pass an external corpus with `--cases` for a sealed run, inside an independently isolated environment supplied through `--isolation-wrapper <executable>`. The current preregistered v5 corpus remains pre-live; see [`benchmarks/STATUS.md`](benchmarks/STATUS.md) before making any accuracy claim. Reports under `benchmarks/reviewer-holdout-v3/reports/` include corpus/model/CLI/Git provenance, the evaluated-skill and protocol digests, seeded schedule, raw outputs, per-case TP/FP/FN, unique majority-stable precision/recall, repeated-run metrics, and Wilson intervals. Public runs use one immutable skill/corpus input snapshot, fresh temporary workspaces, Codex/Claude read-only controls, and pre/post digests of every staged path and original input. A changed digest is an infrastructure error and is not scored. The release gate also enforces repeated precision so rotating one-off false positives cannot disappear under majority aggregation. The runner does not provide a built-in sealed sandbox; non-public corpora fail closed without the external wrapper.
 
-After all three live reports complete, enforce the declared cross-configuration gate:
+The statement above that v5 "remains pre-live" is historical v5 context and is superseded by the completed v7 result. After all three historical v3 live reports complete, enforce that protocol's declared cross-configuration gate:
 
 ```bash
 python3 scripts/evals/compare-reviewer-holdouts.py \
@@ -176,7 +178,7 @@ Pattern and failure-code semantics live in several files that must move together
 - the `README.md` pattern table,
 - `skills/e2e-reviewer/references/grep-patterns.md`,
 - `skills/e2e-reviewer/scripts/scan.sh`,
-- the three plugin manifest descriptions (`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.codex-plugin/plugin.json`).
+- `scripts/ci/lib/reviewer_taxonomy_contract.py` (the stable reviewer ID/title/severity order).
 
 Then:
 

@@ -183,7 +183,17 @@ class ReviewerHoldoutV7Test(unittest.TestCase):
         status = STATUS_PATH.read_text(encoding="utf-8")
         comparison = read_json(ADDENDUM_PATH / "arm-comparison.json")
         self.assertIn("Addendum: exploratory rerun", readme)
-        self.assertIn("uncounted post-trim addendum", status)
+        self.assertIn(
+            "uncounted addendum on the trimmed reviewer plus the pattern `#3` fix "
+            "within the same release",
+            status,
+        )
+        self.assertIn(
+            "the trimmed reviewer plus the pattern `#3` swallowed-assertion wording "
+            "fix within the same release",
+            readme,
+        )
+        self.assertNotIn("next/1.20.0", readme)
         self.assertEqual("FAIL", comparison["status"])
         self.assertFalse(comparison["skill_lift_claim_eligible"])
         self.assertFalse(comparison["release_eligible"])
@@ -198,6 +208,13 @@ class ReviewerHoldoutV7Test(unittest.TestCase):
         )
 
     def test_counted_arm_provenance_is_complete_and_clean(self) -> None:
+        readme = README_PATH.read_text(encoding="utf-8")
+        self.assertIn(
+            "the pre-trim reviewer as it stood before the trim and the pattern `#3` "
+            "fix in the same release",
+            readme,
+        )
+        self.assertNotIn("(`v1.19.0`)", readme)
         comparison = read_json(REPORTS_PATH / "arm-comparison.json")
         input_digests = {
             Path(item["path"]).name: item["sha256"]

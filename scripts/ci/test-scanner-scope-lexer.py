@@ -42,6 +42,8 @@ CASES = [b'', b'const x = 1;\n', b"import {test} from '@playwright/test';",
  b"if (x) /a[b/]c/.test(x); export * from './x';",
  b"const x = `outer ${`inner ${require('@playwright/test')}`} tail`;",
  b"const warning = <p>Don't panic</p>; import './after';",
+ b"const warning = <p>Don't panic</p>; await import('./fixture');",
+ b"const out = parse<Result>('throw error</p>');\ntry { expect(x); } catch {}",
  b"import {x}\r\nfrom './a';\r\n",
 ]
 
@@ -94,6 +96,20 @@ class Equivalence(unittest.TestCase):
         self.assertNotIn("Don't panic", output)
         self.assertIn('const cast = <Thing>value; const label = ;', output)
         self.assertIn('try { expect(x); } catch {}', output)
+
+    def test_generic_call_string_fragment_does_not_poison_following_code(self):
+        source = next(case for case in CASES if b'parse<Result>' in case) + b"\n"
+        output = lexer.executable(source)
+        self.assertIn('try { expect(x); } catch {}', output)
+
+    def test_jsx_apostrophe_preserves_following_relative_import(self):
+        self.assertEqual(
+            lexer.metadata(
+                next(case for case in CASES if b"./fixture" in case),
+                allow_positive_for_differential=True,
+            )[1],
+            ['./fixture'],
+        )
 
     def test_tiny_shell_differential(self):
         for locale in ('C', 'C.UTF-8'):

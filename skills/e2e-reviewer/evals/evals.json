@@ -697,8 +697,8 @@
     },
     {
       "id": 40,
-      "prompt": "Review evals/files/catch-outcome-boundaries.spec.ts. Phase 1 reports eleven `#3` candidates, one per `.catch(() => {})`, all as [P0?][LLM-TRIAGE]. Resolve each one: say which catches leave the test unable to fail on its promised outcome, and which do not.",
-      "expected_output": "Report #3 P0 for the three catches that swallow the test's only proof of its promised outcome: line 5 (the sole assertion), lines 9-11 (the same shape split across lines), and line 54, where the swallowed visibility assertion is one half of a title promising both main visibility and the heading text, and the later heading assertion checks a different fact and does not excuse it. Do not report the remaining eight. Line 15 and line 19 catch a page.title() call while an independent unswallowed assertion proves the outcome; line 25 catches a custom toBuffer() that is not an assertion; line 31 catches a locally shadowed expect helper that is not the Playwright matcher; line 35 is expect.soft, whose failure is recorded on the test result rather than thrown, so catching the returned promise cannot hide it; line 39 is a synchronous matcher that throws before any .catch can run; line 43's swallowed assertion is repeated unswallowed on line 44; and line 49's catch sits inside a try whose finally throws unconditionally. Judge each catch by whether the test can still fail on its promised outcome, not by the presence of the catch.",
+      "prompt": "Review evals/files/catch-outcome-boundaries.spec.ts. Phase 1 reports twelve `#3` candidates: eleven attached `.catch(() => {})` candidates and one surrounding `try/catch` candidate, all as [P0?][LLM-TRIAGE]. Resolve each one: say which catches leave the test unable to fail on its promised outcome, and which do not.",
+      "expected_output": "Report #3 P0 for the four catches that swallow the test's only proof of its promised outcome: line 5 (the sole assertion), lines 9-11 (the same shape split across lines), line 54, where the swallowed visibility assertion is one half of a title promising both main visibility and the heading text, and the later heading assertion checks a different fact and does not excuse it, and line 60, where a surrounding try/catch swallows the synchronous matcher throw. Do not report the remaining eight. Line 15 and line 19 catch a page.title() call while an independent unswallowed assertion proves the outcome; line 25 catches a custom toBuffer() that is not an assertion; line 31 catches a locally shadowed expect helper that is not the Playwright matcher; line 35 is expect.soft, whose failure is recorded on the test result rather than thrown, so catching the returned promise cannot hide it; line 39 is a synchronous matcher that throws before an attached .catch can run; line 43's swallowed assertion is repeated unswallowed on line 44; and line 49's catch sits inside a try whose finally throws unconditionally. Judge each catch by whether the test can still fail on its promised outcome, not by the presence of the catch.",
       "files": [
         "evals/files/catch-outcome-boundaries.spec.ts"
       ],
@@ -713,6 +713,7 @@
         "Does NOT report line 39: the synchronous matcher throws before .catch can attach",
         "Does NOT report line 43: line 44 repeats the same assertion unswallowed",
         "Does NOT report line 49: the enclosing finally throws unconditionally, so the test cannot pass",
+        "Reports #3 P0 on line 60: the synchronous matcher throw is swallowed by the surrounding try/catch",
         "Resolves every Phase 1 candidate rather than leaving any unjudged"
       ]
     },
@@ -734,8 +735,8 @@
     },
     {
       "id": 42,
-      "prompt": "Review evals/files/swallowed-try-catch.spec.ts. Phase 1 raises five #3 try/catch candidates as [LLM-TRIAGE] at lines 6, 17, 28, 50, and 82. Decide which ones swallow a check the test depends on, and report accordingly.",
-      "expected_output": "Report #3 P0 at line 6: waitForSaved swallows the saved-toast wait, and the test 'saving a profile shows a confirmation' (lines 34-39) has no other assertion, so it passes when no confirmation appears. Report #3 P0 at line 17: openPanel's retry loop returns silently after three failed attempts, and the test 'details panel opens' (lines 41-45) only asserts the URL, which is true before the panel opens. Report #3 P0 at line 50: the catch swallows the expect inside the .then callback on line 49, so 'health endpoint answers' passes when the endpoint fails. For each, the fix is to let the failure propagate (remove the catch, or rethrow) or assert the promised outcome after it. Do not report line 28: loadChart records the failure in result.loaded and the test throws on line 73 when any chart failed. Do not report line 82: the cookie banner is optional and the test's own searchbox and link assertions do not depend on it. Do not report line 60, which rethrows anything but a timeout, or line 93, whose try only parses JSON.",
+      "prompt": "Review evals/files/swallowed-try-catch.spec.ts. Phase 1 raises seven #3 try/catch candidates as [LLM-TRIAGE] at lines 6, 17, 28, 50, 60, 82, and 124. Decide which ones swallow a check the test depends on, and report accordingly.",
+      "expected_output": "Report #3 P0 at line 6: waitForSaved swallows the saved-toast wait, and the test 'saving a profile shows a confirmation' (lines 34-39) has no other assertion, so it passes when no confirmation appears. Report #3 P0 at line 17: openPanel's retry loop returns silently after three failed attempts, and the test 'details panel opens' (lines 41-45) only asserts the URL, which is true before the panel opens. Report #3 P0 at line 50: the catch swallows the expect inside the .then callback on line 49, so 'health endpoint answers' passes when the endpoint fails. Report #3 P0 at line 59: the catch only rethrows non-timeout failures, so the assertion's ordinary timeout is swallowed. Do not report line 124: the constructor-name guard swallows an ordinary BrowserTimeoutError, but the identical visibility check is repeated unswallowed on line 127. For the confirmed findings, the fix is to let the failure propagate (remove the catch, or rethrow) or assert the promised outcome after it. Do not report line 28: loadChart records the failure in result.loaded and the test throws on line 73 when any chart failed. Do not report line 82: the cookie banner is optional and the test's own searchbox and link assertions do not depend on it. Do not report line 93, whose try only parses JSON. Phase 1 correctly suppresses the named PaymentError application allowlist at line 133.",
       "files": [
         "evals/files/swallowed-try-catch.spec.ts"
       ],
@@ -745,8 +746,12 @@
         "Reports #3 P0 at line 50 for the expect swallowed inside the .then callback on line 49",
         "False-positive guard: does not report line 28, whose recorded failure the test turns into a throw on line 73",
         "False-positive guard: does not report line 82, an optional cookie-banner wait no later assertion depends on",
-        "False-positive guard: does not report line 60, whose catch rethrows every error except a timeout",
-        "False-positive guard: does not report line 93, whose try only parses JSON"
+        "Reports #3 P0 at line 59 because the conditional rethrow leaves the ordinary timeout path swallowed",
+        "False-positive guard: does not report line 93, whose try only parses JSON",
+        "False-positive guard: does not report line 103, whose catch allowlists named application SlotError and rethrows every other error",
+        "False-positive guard: does not report line 114, whose catch logs diagnostics and then unconditionally rethrows",
+        "Recognizes line 124 as an ordinary BrowserTimeoutError guard candidate but does not report it because line 127 repeats the identical visibility check unswallowed",
+        "False-positive guard: does not treat line 133 as a Phase 1 candidate or final finding because it allowlists named application PaymentError and rethrows every other error"
       ]
     },
     {

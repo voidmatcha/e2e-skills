@@ -54,3 +54,9 @@ test('main is visible and heading says Welcome', async ({ page }) => {
   await expect(page.getByRole('main')).toBeVisible().catch(() => {});
   await expect(page.getByRole('heading')).toHaveText('Welcome');
 });
+
+test('synchronous assertion inside try/catch is swallowed', () => {
+  try {
+    expect(1).toBe(2);
+  } catch {}
+});

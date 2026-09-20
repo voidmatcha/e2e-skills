@@ -3,6 +3,7 @@
 """Static guards for reviewer fix guidance and conditional-bypass scope."""
 
 import json
+import hashlib
 import re
 from pathlib import Path
 
@@ -72,6 +73,15 @@ BENCHMARK_STATUS = ROOT / "benchmarks" / "STATUS.md"
 REVIEWER_HOLDOUT_V6_README = (
     ROOT / "benchmarks" / "reviewer-holdout-v6" / "README.md"
 )
+REVIEWER_HOLDOUT_V7_README = (
+    ROOT / "benchmarks" / "reviewer-holdout-v7" / "README.md"
+)
+CHANGELOG = ROOT / "CHANGELOG.md"
+CONTRIBUTING = ROOT / "CONTRIBUTING.md"
+AGENTS = ROOT / "AGENTS.md"
+GENERATOR_SKILL = ROOT / "skills" / "playwright-test-generator" / "SKILL.md"
+EVIDENCE_DOC = ROOT / "docs" / "llm-generated-e2e-test-evidence.md"
+RULE_SELF_AUDIT = ROOT / "docs" / "rule-self-audit.md"
 AI_REVIEW_DOC = ROOT / "docs" / "review-ai-generated-e2e-tests.md"
 AI_REVIEW_BENCHMARK = ROOT / "docs" / "ai-reviewer-benchmark.md"
 AI_REVIEW_100_RESULTS = ROOT / "docs" / "benchmarks" / "ai-reviewer-100-results.json"
@@ -389,22 +399,34 @@ def assert_pattern_3_assertion_boundary(
         "Non-assertion catches keep the dependency rule",
     ):
         require_normalized_contract(scanner, contract, "scan.sh #3 comment boundary")
+    attached_only = "synchronous matcher followed by an attached Promise `.catch()`"
+    surrounding_try = "synchronous assertion inside a surrounding `try/catch` is swallowed"
+    for text, label in (
+        (skill, "SKILL.md"),
+        (grep_patterns, "grep-patterns.md"),
+        (pattern_reference, "pattern-reference.md"),
+        (semantic_review, "semantic-review.md"),
+    ):
+        require_normalized_contract(text, attached_only, f"{label} attached-catch boundary")
+        require_normalized_contract(text, surrounding_try, f"{label} surrounding-try boundary")
 
 
 def assert_eval_40_boundary(case: dict[str, object]) -> None:
     assert case["prompt"] == (
         "Review evals/files/catch-outcome-boundaries.spec.ts. Phase 1 reports "
-        "eleven `#3` candidates, one per `.catch(() => {})`, all as "
-        "[P0?][LLM-TRIAGE]. Resolve each one: say which catches leave the test "
+        "twelve `#3` candidates: eleven attached `.catch(() => {})` candidates "
+        "and one surrounding `try/catch` candidate, all as [P0?][LLM-TRIAGE]. "
+        "Resolve each one: say which catches leave the test "
         "unable to fail on its promised outcome, and which do not."
     ), "eval 40 prompt drifted from its original consequence boundary"
     expected_output = str(case["expected_output"])
     assertions = set(case["assertions"])
-    assert "Report #3 P0 for the three catches" in expected_output
+    assert "Report #3 P0 for the four catches" in expected_output
     assert "Do not report the remaining eight" in expected_output
     for guard in (
         "Does NOT report line 43: line 44 repeats the same assertion unswallowed",
         "Does NOT report line 49: the enclosing finally throws unconditionally, so the test cannot pass",
+        "Reports #3 P0 on line 60: the synchronous matcher throw is swallowed by the surrounding try/catch",
     ):
         assert guard in assertions, f"eval 40 lost severity guard: {guard}"
     assert (
@@ -557,6 +579,14 @@ def verify_pattern_3_swallow_scope() -> None:
             continue
         raise AssertionError(f"eval 40 guard survived mutation: {old}")
 
+    case_42 = next(item for item in evals if item["id"] == 42)
+    case_42_text = " ".join([case_42["expected_output"], *case_42["assertions"]])
+    assert "Report #3 P0 at line 59" in case_42_text
+    assert "conditional rethrow leaves the ordinary timeout path swallowed" in case_42_text
+    assert "Do not report line 60" not in case_42_text
+    assert "allowlists named application SlotError and rethrows every other error" in case_42_text
+    assert "logs diagnostics and then unconditionally rethrows" in case_42_text
+
     assertion_source = ASSERTION_SWALLOW_FIXTURE.read_text(encoding="utf-8")
     assertion_line = source_line_number(assertion_source, "approval-state")
     cleanup_line = source_line_number(assertion_source, "clearCookies")
@@ -609,6 +639,97 @@ def verify_failed_write_reread_note() -> None:
     assert any("line 21" in a and "False-positive guard" in a for a in case["assertions"])
 
 
+def verify_release_candidate_docs() -> None:
+    """Pin release-candidate corrections that are easy to overstate or drift."""
+    changelog = normalized(CHANGELOG)
+    require_normalized_contract(
+        changelog,
+        "Freeze-time note: the preceding \"180-call run has not been made\" sentence records the state when the protocol was frozen; the completed 180-call `FAIL` above supersedes it.",
+        "CHANGELOG.md v7 supersession",
+    )
+    require_normalized_contract(
+        changelog,
+        "247 lines, 3,075 words, and 21,742 bytes",
+        "CHANGELOG.md final generator size",
+    )
+
+    holdout = normalized(REVIEWER_HOLDOUT_V7_README)
+    for contract in (
+        "Aggregate full-arm metrics improved",
+        "fell from 2/3 hits in attempt 4 to 1/3 and lost stable-true-positive status",
+        "cannot isolate the trim's effect",
+    ):
+        require_normalized_contract(holdout, contract, "reviewer-holdout-v7 README")
+    assert "did not regress the full arm" not in holdout
+
+    benchmark = normalized(AI_REVIEW_BENCHMARK)
+    for contract in (
+        "The v5 corpus and its three-provider nine-report matrix described above are historical",
+        "`references/review-scope.md`, `references/scanner-workflow.md`, `references/semantic-review.md`, `references/reporting.md`, `references/pattern-reference.md`, and `references/verification-rules.md`",
+        "All 180/180 calls were scoreable with zero infrastructure errors",
+        "`skill_lift_claim_eligible: false`",
+        "Exact rerun command",
+    ):
+        require_normalized_contract(benchmark, contract, "docs/ai-reviewer-benchmark.md")
+
+    contributing = normalized(CONTRIBUTING)
+    for contract in (
+        "do not change installed skill behavior, regardless of file location",
+        "`classification-procedure.md`, `scenario-design.md`, and `semantic-review.md`",
+        "Current validation uses the completed Codex-only v7 three-arm workflow",
+        "`scripts/ci/lib/reviewer_taxonomy_contract.py`",
+    ):
+        require_normalized_contract(contributing, contract, "CONTRIBUTING.md")
+    assert "manifest descriptions (both `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json`)" not in contributing
+
+    skill = SKILL.read_text(encoding="utf-8")
+    for reference in (
+        "references/scanner-workflow.md",
+        "references/semantic-review.md",
+        "references/reporting.md",
+    ):
+        assert reference in skill
+
+    agents = normalized(AGENTS)
+    for reference in (
+        "scenario-design.md",
+        "verification-rules.md",
+        "scanner-workflow.md",
+        "classification-procedure.md",
+    ):
+        require_contract(agents, reference, "AGENTS.md layout")
+    require_contract(
+        normalized(GENERATOR_SKILL),
+        "`scenario-design.md` (scenario and locator planning)",
+        "generator sibling list",
+    )
+
+    readme_bytes = README.read_bytes()
+    canonical_hash = hashlib.sha256(readme_bytes).hexdigest()
+    require_normalized_contract(
+        readme_bytes.decode("utf-8"),
+        "decisively beat `no-skill` on all six lift checks but failed the preregistered `catalog-only` lift bar",
+        "README.md v7 result",
+    )
+    for translated in TRANSLATED_READMES:
+        text = translated.read_text(encoding="utf-8")
+        assert canonical_hash in text, f"{translated.name} has a stale canonical README hash"
+        for token in ("29", "16", "6", "7"):
+            assert token in text, f"{translated.name} lacks rejection denominator {token}"
+        assert "evidence" in text.lower() or "근거" in text or "証拠" in text or "证据" in text
+
+    evidence = normalized(EVIDENCE_DOC)
+    require_contract(evidence, "verification-rules.md", "failure-handling pointer")
+    assert 'SKILL.md "Step 7' not in evidence
+    require_contract(
+        normalized(RULE_SELF_AUDIT),
+        "references/semantic-review.md",
+        "rule self-audit #20 pointer",
+    )
+    require_contract(normalized(AI_REVIEW_DOC), "15 merged upstream fixes", "merged-fix count")
+    require_contract(normalized(CASE_STUDIES), "Apache Zeppelin", "case studies")
+
+
 def main() -> None:
     verify_reference_routing_contract()
     verify_upstream_reference_routing_contract()
@@ -616,6 +737,7 @@ def main() -> None:
     verify_pattern_4i_direction_neutral()
     verify_pattern_3_swallow_scope()
     verify_failed_write_reread_note()
+    verify_release_candidate_docs()
 
     security = normalized(SECURITY)
     skill = normalized(SKILL)

@@ -3522,6 +3522,70 @@ def assert_catch_parameter_and_cleanup_boundaries() -> None:
         assert "cleanup.spec.ts:7:" not in result.stdout
 
 
+def assert_try_catch_rethrow_and_jsx_boundaries() -> None:
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-try-catch-rethrow-") as temp:
+        target = Path(temp) / "rethrow.spec.tsx"
+        jsx = "<" + "p>Don" + "'t throw this away</" + "p>"
+        target.write_text(
+            "import { expect, test } from '@playwright/test';\n"
+            "test('rethrow boundaries', async ({ page }) => {\n"
+            "  try {\n"
+            "    expect(500).toBe(200);\n"
+            "  } catch {}\n"
+            "  try { await expect(page.locator('main')).toBeVisible(); }\n"
+            "  catch (error) { if (!(error instanceof TimeoutError)) throw error; }\n"
+            "  try { await expect(page.locator('nav')).toBeVisible(); }\n"
+            "  catch (error) { throw error; }\n"
+            "  try { await expect(page.locator('aside')).toBeVisible(); }\n"
+            "  catch (error) { if (!(error instanceof SlotError)) throw error; }\n"
+            "  try { await expect(page.locator('article')).toBeVisible(); }\n"
+            "  catch (error) { console.error(error); cleanup(); throw error; }\n"
+            "  try { await expect(page.locator('section')).toBeVisible(); }\n"
+            "  catch (error) { if (recover) return; throw error; }\n"
+            "  try { await expect(page.locator('footer')).toBeVisible(); }\n"
+            f"  catch {{ const help = {jsx}; }}\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        result = scan_path(target, {"E2E_SMELL_FAIL_ON": "none"})
+        assert result.returncode == 0, result.stdout
+        candidates = section(result.stdout, "[P0?][LLM-TRIAGE] #3 Possible dependent gate or assertion swallowed by try/catch")
+        for line in (5, 7, 15, 17):
+            assert f"rethrow.spec.tsx:{line}:" in candidates, candidates
+        for line in (9, 11, 13):
+            assert f"rethrow.spec.tsx:{line}:" not in candidates, candidates
+
+
+def assert_try_catch_named_error_identity_boundaries() -> None:
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-error-identity-") as temp:
+        target = Path(temp) / "error-identity.spec.ts"
+        target.write_text(
+            "import { expect, test } from '@playwright/test';\n"
+            "test('named error identities', async ({ page }) => {\n"
+            "  try { await expect(page.locator('main')).toBeVisible(); }\n"
+            "  catch (e) { if (e.name !== 'TimeoutError') throw e; }\n"
+            "  try { await expect(page.locator('nav')).toBeVisible(); }\n"
+            "  catch (e) { if (!(e instanceof PaymentError)) throw e; }\n"
+            "  try { await expect(page.locator('aside')).toBeVisible(); }\n"
+            "  catch (e) {\n"
+            "    if (e.constructor.name !== 'PaymentError') throw e;\n"
+            "  }\n"
+            "  try { await expect(page.locator('article')).toBeVisible(); }\n"
+            "  catch (e) { if (!(e.constructor.name === 'BrowserTimeoutError')) throw e; }\n"
+            "  try { await expect(page.locator('footer')).toBeVisible(); }\n"
+            "  catch (e) { if (!(e instanceof AssertionError)) throw e; }\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        result = scan_path(target, {"E2E_SMELL_FAIL_ON": "none"})
+        assert result.returncode == 0, result.stdout
+        candidates = section(result.stdout, "[P0?][LLM-TRIAGE] #3 Possible dependent gate or assertion swallowed by try/catch")
+        for line in (4, 12, 14):
+            assert f"error-identity.spec.ts:{line}:" in candidates, candidates
+        for line in (6, 8):
+            assert f"error-identity.spec.ts:{line}:" not in candidates, candidates
+
+
 def assert_empty_catch_best_effort_and_lifecycle_exemptions() -> None:
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-empty-catch-gate-") as temp:
         root = Path(temp)
@@ -6858,6 +6922,8 @@ def main() -> None:
         assert_discarded_locator_with_real_assertion_is_triage_only,
         assert_pom_catch_scope,
         assert_catch_parameter_and_cleanup_boundaries,
+        assert_try_catch_rethrow_and_jsx_boundaries,
+        assert_try_catch_named_error_identity_boundaries,
         assert_empty_catch_best_effort_and_lifecycle_exemptions,
         assert_empty_catch_syntax_requires_semantic_confirmation,
         assert_empty_catch_assertions_and_actions_remain_candidates,

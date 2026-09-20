@@ -43,7 +43,7 @@ Run the bundled scanner once per required scan root:
 
 The target repository is untrusted by default. Target-controlled package scripts, local binaries, plugins, parsers, and configs may run only when the user has both explicitly trusted the checkout and approved the exact command, including its environment and flags. Without both, report the command as `recommended/unexecuted`; project documentation is evidence about what to recommend, not execution approval. The same two-part gate applies to a documented project lint command and Tier 1.
 
-A scanner `INCOMPLETE` result or exit 2 is never clean: apply the exact bounded recovery in `scanner-workflow.md`, keep uncovered roots explicit, and do not report a Summary the scanner did not emit. Deduplicate equivalent tier results, state which tiers actually ran, and treat scanner hits as mechanical signals that still require Phase 2 wherever the rule calls for context.
+A scanner `INCOMPLETE` result or exit 2 is never clean: apply the exact bounded recovery in `references/scanner-workflow.md`, keep uncovered roots explicit, and do not report a Summary the scanner did not emit. Deduplicate equivalent tier results, state which tiers actually ran, and treat scanner hits as mechanical signals that still require Phase 2 wherever the rule calls for context.
 
 ---
 
@@ -53,9 +53,9 @@ Before resolving any candidate, read `references/semantic-review.md` and apply e
 
 **Zero-P0 floor (MANDATORY):** Phase 1 reporting 0 P0 does NOT end the review. The LLM-only checks (#1 Name-Assertion, #2 Missing Then, #3 try/catch shapes, #12 Missing Auth, and the #20–#23 write-path checks above) run regardless of mechanical hit counts — multi-line shapes the regexes miss (e.g. blanket multi-line `cy.on('uncaught:exception')` suppressors) have carried a suite's entire P0 surface.
 
-**LLM-only write-path checks (#20–#23) run on EVERY review.** They have no grep signal; execute all four procedures in `semantic-review.md` regardless of scanner hit counts.
+**LLM-only write-path checks (#20–#23) run on EVERY review.** They have no grep signal; execute all four procedures in `references/semantic-review.md` regardless of scanner hit counts.
 
-**Bounded opening-token sweep is MANDATORY.** Run exactly every row in `semantic-review.md` § Bounded opening-token sweep on every review, no more and no less, and deduplicate lines already reported by Phase 1.
+**Bounded opening-token sweep is MANDATORY.** Run exactly every row in `references/semantic-review.md` § Bounded opening-token sweep on every review, no more and no less, and deduplicate lines already reported by Phase 1.
 
 **Counting contract — `Real P0 = N` (MANDATORY definition):** N is the number of DISTINCT flagged source lines (`file:line`) that survive Phase 2 false-positive elimination, after the consolidation rule (a line triggering multiple patterns counts ONCE). Do not count clusters, files, or pattern categories; do not count P1/P2 findings; do not count findings in framework self-test fixtures separately — include them in N but label them per 4.2-9. Compare independently produced N values as a consistency check; investigate disagreements against source evidence instead of assuming parity.
 
@@ -93,7 +93,7 @@ Before emitting any review, read `references/reporting.md` § Output Format and 
 
 Report only confirmed catalog findings. A clean result carries scope and limitations but emits no findings, coverage gaps, or general-improvement advice. Keep one minimal evidence-backed fix per finding, never offer a weaker alternative, and calibrate causal language: use `always` only for an unconditional outcome; otherwise use `can`, `may`, or `when <condition>`.
 
-Severity meanings remain: **P0** silently passes with no real verification when the feature is broken; **P1** works but has poor diagnostics, wasted CI, or misleading proof; **P2** is a maintenance or robustness weakness that is not itself wrong. Use the full P0 boundary in `reporting.md` before raising an instance above its usual catalog severity.
+Severity meanings remain: **P0** silently passes with no real verification when the feature is broken; **P1** works but has poor diagnostics, wasted CI, or misleading proof; **P2** is a maintenance or robustness weakness that is not itself wrong. Use the full P0 boundary in `references/reporting.md` before raising an instance above its usual catalog severity.
 
 ## Quick Reference
 
@@ -103,7 +103,7 @@ This table is a **numerical index for scanning** — pattern # → severity, pha
 |---|-------|-----|-------|-----------------|
 | 1 | Name-Assertion | P0 | LLM | Noun in name with no matching `expect()` |
 | 2 | Missing Then | P0 | LLM | Action without final state verification |
-| 3 | Error Swallowing | P0 | grep+LLM | `.catch(() => {})` in POM (grep); `try/catch` around assertions in spec (LLM). Check any file the spec reaches — an imported helper or support module, a custom command, a `.then(...)` callback body. A real assertion swallowed by a non-rethrowing catch is P0 unless the identical check is re-asserted unswallowed later, control flow makes the test fail regardless, or the documented JUSTIFIED/intent path applies; a later assertion on a different fact does not excuse it. For swallowed non-assertion operations, confirm P0 when a later assertion depends on them without independent verification; best-effort cleanup nothing depends on is exempt |
+| 3 | Error Swallowing | P0 | grep+LLM | `.catch(() => {})` in POM (grep); `try/catch` around assertions in spec (LLM). Check any file the spec reaches — an imported helper or support module, a custom command, a `.then(...)` callback body. A synchronous matcher followed by an attached Promise `.catch()` throws before that `.catch()` can attach, but a synchronous assertion inside a surrounding `try/catch` is swallowed. A catch with all-path propagation or a named application-error allowlist is not a swallow. A real assertion swallowed by a catch is P0 unless the identical check is re-asserted unswallowed later, control flow makes the test fail regardless, or the documented JUSTIFIED/intent path applies; a later assertion on a different fact does not excuse it. For swallowed non-assertion operations, confirm P0 when a later assertion depends on them without independent verification; best-effort cleanup nothing depends on is exempt |
 | 4 | Vacuous / Retry-Weakening Assertions | P0/P1 | grep+LLM | P0: invariant math and Locator truthiness (#4a/#4f). P1: weak attachment proof, one-shot values/URL, zero-timeout retry/deadline hazards, unproven absence, ARIA snapshots that omit a promised accessible name, and assertion loops over an unproven collection (#4b-e/#4g-k) |
 | 5 | Bypass Patterns | P0/P1 | grep | load-bearing promised-outcome assertion inside a conditional with no independent meaningful postcondition/failure-producing action; `force: true` without `// JUSTIFIED:` |
 | 6 | Raw DOM Queries | P1 | grep | `document.querySelector` in `evaluate` |

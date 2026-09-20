@@ -104,11 +104,24 @@ source_executable_code() {
     # apostrophes there cannot open a JavaScript string and poison later
     # lines. Requiring both tags avoids treating TypeScript angle-bracket
     # assertions or comparisons as JSX that continues through the file.
-    function quote_is_jsx_text(s, i,   before, after) {
+    function quote_is_jsx_text(s, i,   before, after, opening, closing, tag, close_tag, prefix) {
       before = substr(s, 1, i - 1)
       after = substr(s, i + 1)
-      return before ~ /<[A-Za-z][A-Za-z0-9:._-]*([[:space:]][^<>]*)?>[^<{]*$/ &&
-        after ~ /^[^<{]*<\/[A-Za-z][A-Za-z0-9:._-]*[[:space:]]*>/
+      if (!match(before, /<[A-Za-z][A-Za-z0-9:._-]*([[:space:]][^<>]*)?>[^<{]*$/)) return 0
+      opening = substr(before, RSTART)
+      tag = opening
+      sub(/^</, "", tag)
+      sub(/[^A-Za-z0-9:._-].*$/, "", tag)
+      prefix = substr(before, 1, RSTART - 1)
+      sub(/[[:space:]]*$/, "", prefix)
+      if (prefix != "" && prefix !~ /[=(:,\[{>?]$/ &&
+          prefix !~ /(^|[^A-Za-z0-9_$])return[[:space:]]*$/ && prefix !~ /=>[[:space:]]*$/) return 0
+      if (!match(after, /^[^<{]*<\/[A-Za-z][A-Za-z0-9:._-]*[[:space:]]*>/)) return 0
+      closing = substr(after, RSTART, RLENGTH)
+      close_tag = closing
+      sub(/^.*<\//, "", close_tag)
+      sub(/[[:space:]]*>$/, "", close_tag)
+      return tag == close_tag
     }
     function executable_source(s, want_output,    out, i, c, nchar) {
       out = ""
@@ -206,6 +219,25 @@ source_executable_code() {
 
 source_relative_module_references() {
   run_source_lexer '
+    function quote_is_jsx_text(s, i,   before, after, opening, closing, tag, close_tag, prefix) {
+      before = substr(s, 1, i - 1)
+      after = substr(s, i + 1)
+      if (!match(before, /<[A-Za-z][A-Za-z0-9:._-]*([[:space:]][^<>]*)?>[^<{]*$/)) return 0
+      opening = substr(before, RSTART)
+      tag = opening
+      sub(/^</, "", tag)
+      sub(/[^A-Za-z0-9:._-].*$/, "", tag)
+      prefix = substr(before, 1, RSTART - 1)
+      sub(/[[:space:]]*$/, "", prefix)
+      if (prefix != "" && prefix !~ /[=(:,\[{>?]$/ &&
+          prefix !~ /(^|[^A-Za-z0-9_$])return[[:space:]]*$/ && prefix !~ /=>[[:space:]]*$/) return 0
+      if (!match(after, /^[^<{]*<\/[A-Za-z][A-Za-z0-9:._-]*[[:space:]]*>/)) return 0
+      closing = substr(after, RSTART, RLENGTH)
+      close_tag = closing
+      sub(/^.*<\//, "", close_tag)
+      sub(/[[:space:]]*>$/, "", close_tag)
+      return tag == close_tag
+    }
     function executable_source(s, want_output,    out, i, c, nchar) {
       out = ""
       # A line this long is generated or vendored, never test source. The
@@ -234,6 +266,10 @@ source_relative_module_references() {
           } else {
             lex_value = lex_value c
           }
+          continue
+        }
+        if ((c == "\"" || c == sprintf("%c", 39)) && quote_is_jsx_text(s, i)) {
+          if (want_output) out = out c
           continue
         }
         if (c == "\"" || c == "\047" || c == "`") {

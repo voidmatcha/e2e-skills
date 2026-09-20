@@ -1150,6 +1150,19 @@ assert_verification_parity_fails \
   "Playwright debugger V6 handoff behavior differs"
 restore "$file"
 
+file="skills/playwright-debugger/references/fix-verification.md"
+backup "$file"
+mutate "$file" \
+  "assertion falsification for swallowed, conditional, missing-await, or load-bearing-assertion questions" \
+  "assertion falsification for swallowed, conditional, missing-await, or load-bearing-assertion questions with method endpoint payload cardinality context"
+mutate "$file" \
+  "request method/endpoint/payload/cardinality proof" \
+  "request proof"
+assert_verification_parity_fails \
+  "Verification parity — Playwright debugger V4 clauses moved to V2" \
+  "Playwright debugger V4 handoff behavior differs"
+restore "$file"
+
 file="skills/cypress-debugger/references/fix-verification.md"
 backup "$file"
 mutate "$file" "CANNOT_VERIFY" "CANNOTVERIFY"

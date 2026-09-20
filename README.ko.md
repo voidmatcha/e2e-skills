@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=e2ef25f4f4bf60a7d2c079cb61f4b952601c82293c619ebc1ced425b4b4fc1ef; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=79f4890e4775a2db94f0f1ee0783683d3405754e45a1d7ca7e117ca129fa4ad1; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 AI 코딩 에이전트가 Playwright와 Cypress E2E 테스트를 생성하고 리뷰하며 실패 원인을 분석할 때 쓰는 네 종류의 Agent Skills 모음입니다. 새 테스트 생성은 Playwright를 지원하고, 기존 테스트나 PR/diff 범위의 변경 사항 리뷰와 실패 분석은 Playwright와 Cypress를 지원합니다. 리뷰 목록 가운데 규칙만으로 판별할 수 있는 항목을 찾는 `deterministic scanner`도 포함합니다.
 
@@ -41,6 +41,8 @@
 | 실패한 Playwright 실행 분석 | `playwright-debugger` | F1–F15 근본 원인, 근거, 수정안 |
 | 실패한 Cypress 실행 분석 | `cypress-debugger` | F1–F15 근본 원인, 근거, 수정안 |
 | `deterministic local scan` | `skills/e2e-reviewer/scripts/scan.sh` | 대상 프로젝트의 패키지 없이 규칙으로 찾은 후보 |
+
+`e2e-reviewer`의 각 결과에는 그 판단에 사용한 근거가 함께 제공됩니다.
 
 generator는 테스트가 부족한 영역을 분석하고 실제 브라우저에서 대상 흐름을 탐색합니다. 시나리오가 승인되면 테스트를 생성하고 각 후보를 검증합니다. `playwright-debugger`와 `cypress-debugger`는 실패한 실행 산출물을 바탕으로 근본 원인을 분류하고, 판단 근거와 구체적인 수정안을 제시합니다.
 
@@ -65,6 +67,8 @@ false-green 탐지는 테스트 리뷰 기능의 중요한 부분이지만, 프�
 <a id="merged-upstream-fixes"></a>
 
 ## upstream에 merge된 수정 사례
+
+거절된 PR도 merge된 PR과 함께 공개합니다. [Field review v1](benchmarks/field-review-v1/README.md)은 제출 29건, merge 16건, merge 없이 닫힌 6건, 진행 중 7건을 기록합니다. 거절 건수가 빠진 merge 건수는 비율이 아니기 때문입니다.
 
 `e2e-reviewer`가 찾아낸 문제를 고친 PR **15건이 upstream에 merge되었습니다**. 직접 선별한 사례라 실제 활용 방식과 수정 내용은 보여주지만, 전체를 대표하는 표본이나 정확도 추정치로 볼 수는 없습니다.
 
@@ -266,6 +270,7 @@ merge 건수를 전체 제출 건수와 함께 볼 수 있습니다. [Field revi
 - 브라우저 결함 주입은 **12개 결함 연산자와 3개 예상 결과를 조합한 Playwright/Cypress 셀 36개 중 36개**에서 완료했습니다. 이는 하네스 자체 검사입니다. 애플리케이션, 견고한 테스트, 주입한 결함, 취약한 테스트를 모두 이 저장소에서 작성했으므로, 탐지기가 설계대로 동작한다는 것을 보여줄 뿐 일반화를 뜻하지 않습니다.
 - [Healer perturbation v1](benchmarks/healer-perturbation-v1/README.md)은 **동결된 Codex 셀 30개 중 30개**를 완료하고 `REJECT`를 반환했습니다. 보호 문구를 적용한 공식 healer prompt와 이 저장소가 제안한 Step 7 흐름 모두 수리가 불가능한 `honesty control` 3개를 전부 약화했습니다. 이 결과는 두 healer 경로를 안전한 기본값으로 채택하지 않는다는 뜻이며, Claude나 일반적인 healer 품질 또는 리뷰 정확도를 측정한 결과가 아닙니다. 제품 지침도 변경하지 않았습니다.
 - 정밀 리뷰어 벤치마크는 **입증된 허위 통과 사례 12개와 정상 코드 보호 사례 12개**를 다룹니다. 결함 사례 중 10개에는 바이트 단위로 동일한 연산자 변경을 적용했습니다.
+- Reviewer holdout v7은 `no-skill` 검증 6개를 모두 통과했지만 `catalog-only` 기준에는 실패했습니다. Full은 precision `0.956522` 대 `0.884615`, clean specificity `1.0` 대 `0.75`로 높고 recall은 `0.916667` 대 `0.958333`로 낮아, skill-lift를 주장하지 않습니다.
 - 독립 제품 리뷰의 견고성 게이트 v4, v5, v7, v8, v11은 사전 등록 기준에 실패했습니다. v6와 v9은 실행하지 않았고, v10은 시도 3회 중 1회만 실행한 상태에서 같은 동결 리뷰 입력을 그대로 쓰는 v11로 대체했습니다. v1부터 v11까지는 현재 릴리스 게이트가 아니라 이전 견고성 근거로 보존합니다.
 - `debugger` 프로토콜은 다시 실행할 수 있는 합성 사례 30개를 제공하지만, 독립적으로 확립된 `debugger` 정확도를 주장하지는 않습니다.
 

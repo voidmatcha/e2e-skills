@@ -242,6 +242,6 @@ Use the same template when the write set contains a path outside the approved ta
 
 ## Reference
 
-Sibling files in this directory: `best-practices.md` (Playwright best practices), `code-rules.md` (code generation), `verification-rules.md` (V1–V6, write set, completion matrix), `exploration-preflight.md` (Step 3 preflight and browser guards), `imported-test-cases.md` (Step 4 imported cases), `recommended-lint.md` (lint hardening, propose by default), `conventions-template.md` (Step 5b), and `playwright-agents.md` (Playwright ≥ 1.56 planner/generator/healer interop).
+Sibling files in this directory: `best-practices.md` (Playwright best practices), `code-rules.md` (code generation), `scenario-design.md` (scenario and locator planning), `verification-rules.md` (V1–V6, write set, completion matrix), `exploration-preflight.md` (Step 3 preflight and browser guards), `imported-test-cases.md` (Step 4 imported cases), `recommended-lint.md` (lint hardening, propose by default), `conventions-template.md` (Step 5b), and `playwright-agents.md` (Playwright ≥ 1.56 planner/generator/healer interop).
 
 - Third-party PRs: re-read `CONTRIBUTING.md` and PR/issue templates in full; honor issue-first, PR-link, CLA/DCO, commit/signing, target-branch, and AI-disclosure gates. Scanner findings are candidates until verified real silent-pass.

@@ -1164,10 +1164,10 @@ def assert_failure_handling_contract(text: str) -> None:
     assert "After any repair, repeat V6 independent review" in compact
 
 
-def assert_baseline_run_contract(text: str, verification_rules: str) -> None:
+def assert_baseline_run_contract(verification_rules: str, approval_text: str) -> None:
     """A red pre-existing suite must be recorded, never silently attributed."""
     baseline = section(
-        text,
+        verification_rules,
         "### Baseline run (once, before the tracer)",
         "### Failure handling",
     )
@@ -1189,8 +1189,12 @@ def assert_baseline_run_contract(text: str, verification_rules: str) -> None:
     assert "baseline not applicable: no existing coverage" in compact
     assert "Use only a command approved in Step 4." in compact
 
-    commands = " ".join(verification_rules.split())
-    commands_compact = commands
+    commands = section(
+        approval_text,
+        "### Proposed target-controlled commands",
+        "**Approval gate:**",
+    )
+    commands_compact = " ".join(commands.split())
     assert "baseline run of the target area" in commands_compact
     assert "as the baseline run" in commands_compact
     assert "a full-suite run can replay persistent writes that V5 forbids" in commands_compact
@@ -1246,15 +1250,24 @@ def exercise_baseline_and_error_signal_mutation_guards(
     )
     admission = section(scenario_design, "### Scenario admission", "### Scenarios")
     mutations = (
-        (assert_baseline_run_contract, verification_rules.replace(baseline, "\n\n", 1), verification_rules + approval_text),
+        (assert_baseline_run_contract, verification_rules.replace(baseline, "\n\n", 1), approval_text),
         (
             assert_baseline_run_contract,
-            verification_rules,
             verification_rules.replace(
                 "The suite-context mode is only interpretable against a recorded baseline or a recorded absence of one.",
                 "",
                 1,
-            ) + approval_text,
+            ),
+            approval_text,
+        ),
+        (
+            assert_baseline_run_contract,
+            verification_rules,
+            approval_text.replace(
+                "a full-suite run can replay persistent writes that V5 forbids",
+                "a full-suite run can replay writes",
+                1,
+            ) + "\nA full-suite run can replay persistent writes that V5 forbids.\n",
         ),
         (assert_error_cause_signal_contract, scenario_design.replace(admission, "\n\n", 1), verification_rules),
         (
@@ -2665,7 +2678,7 @@ def main() -> None:
     assert "do not replay the persistent write" in step_7_words
     assert "record V5 `CANNOT_VERIFY` and return `PARTIAL/BLOCKED`" in step_7_words
     assert_failure_handling_contract(verification_rules)
-    assert_baseline_run_contract(verification_rules, verification_rules + text)
+    assert_baseline_run_contract(verification_rules, text)
     assert_error_cause_signal_contract(scenario_design, verification_rules)
     exercise_baseline_and_error_signal_mutation_guards(
         scenario_design, verification_rules, text

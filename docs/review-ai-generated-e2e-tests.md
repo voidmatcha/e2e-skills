@@ -134,7 +134,7 @@ Scanner matches are candidates, not final findings. Context-dependent problems s
 
 ## Evidence and claim boundary
 
-This project has behavior-backed development evidence and [14 merged upstream fixes](case-studies.md), but it does not claim generalized reviewer accuracy.
+This project has behavior-backed development evidence and [15 merged upstream fixes](case-studies.md), but it does not claim generalized reviewer accuracy.
 
 - The archived browser fault matrix completed 36/36 cells (12 fault operators x 3 expected outcomes) across Playwright/Cypress fixtures.
 - The exact reviewer benchmark covers 12 proven false-green cases and 12 clean guards.

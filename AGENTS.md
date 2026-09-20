@@ -48,11 +48,16 @@ The repo doubles as a Claude Code plugin (`.claude-plugin/`), a Codex plugin (`.
 │   │   ├── SKILL.md        # Required: skill frontmatter + body
 │   │   ├── best-practices.md
 │   │   ├── code-rules.md
+│   │   ├── scenario-design.md
+│   │   ├── verification-rules.md
 │   │   ├── evals/evals.json
 │   │   └── agents/openai.yaml
 │   ├── e2e-reviewer/
+│   │   └── references/      # e.g. scanner-workflow.md, semantic-review.md
 │   ├── playwright-debugger/
+│   │   └── references/      # e.g. artifact-extraction.md, classification-procedure.md
 │   └── cypress-debugger/
+│       └── references/      # e.g. artifact-extraction.md, classification-procedure.md
 ├── scripts/
 │   ├── ci/                 # CI parity, security, eval-metadata checks
 │   ├── dev/                # contributor reinstall + git hook setup
