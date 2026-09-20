@@ -8,6 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SKILL = ROOT / "skills" / "e2e-reviewer" / "SKILL.md"
 RULES = ROOT / "skills" / "e2e-reviewer" / "references" / "verification-rules.md"
+SCANNER_WORKFLOW = ROOT / "skills" / "e2e-reviewer" / "references" / "scanner-workflow.md"
 
 
 def require(text: str, fragments: tuple[str, ...], source: Path) -> None:
@@ -21,6 +22,7 @@ def require(text: str, fragments: tuple[str, ...], source: Path) -> None:
 def main() -> None:
     skill = SKILL.read_text(encoding="utf-8")
     rules = RULES.read_text(encoding="utf-8")
+    scanner_workflow = SCANNER_WORKFLOW.read_text(encoding="utf-8")
 
     shared = (
         "untrusted by default",
@@ -29,6 +31,7 @@ def main() -> None:
         "`recommended/unexecuted`",
     )
     require(skill, shared, SKILL)
+    require(scanner_workflow, shared, SCANNER_WORKFLOW)
     require(rules, shared, RULES)
     require(
         skill,
@@ -37,6 +40,14 @@ def main() -> None:
             "Target-controlled package scripts, local binaries, plugins, parsers, and configs",
         ),
         SKILL,
+    )
+    require(
+        scanner_workflow,
+        (
+            "The same two-part gate applies to a documented project lint command and Tier 1",
+            "Target-controlled package scripts, local binaries, plugins, parsers, and configs",
+        ),
+        SCANNER_WORKFLOW,
     )
     require(
         rules,

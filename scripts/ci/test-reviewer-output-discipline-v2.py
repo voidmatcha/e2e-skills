@@ -28,6 +28,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SKILL = ROOT / "skills" / "e2e-reviewer" / "SKILL.md"
+REPORTING = ROOT / "skills" / "e2e-reviewer" / "references" / "reporting.md"
 EVALS = ROOT / "skills" / "e2e-reviewer" / "evals" / "evals.json"
 
 
@@ -40,7 +41,9 @@ def require(surface: str, contract: str, name: str) -> None:
 
 
 def verify_output_discipline_contract() -> None:
-    surface = normalized(SKILL.read_text(encoding="utf-8"))
+    surface = normalized(REPORTING.read_text(encoding="utf-8"))
+    skill = normalized(SKILL.read_text(encoding="utf-8"))
+    require(skill, "Before emitting any review, read `references/reporting.md`", "SKILL.md reporting pointer")
 
     require(
         surface,
@@ -136,10 +139,13 @@ def verify_clean_result_eval() -> None:
 
 def verify_detection_is_untouched() -> None:
     """Output discipline must not shrink the catalog or its severities."""
-    surface = SKILL.read_text(encoding="utf-8")
-    for marker in ("| 4i |", "| 4k |", "| 23 |"):
-        assert marker in surface, f"Quick Reference lost row {marker}"
-    assert "P0 (Must fix)" in surface and "P1 (Should fix)" in surface, (
+    skill = SKILL.read_text(encoding="utf-8")
+    semantic_review = (ROOT / "skills/e2e-reviewer/references/semantic-review.md").read_text(encoding="utf-8")
+    reporting = REPORTING.read_text(encoding="utf-8")
+    for marker in ("| 4i |", "| 4k |"):
+        assert marker in semantic_review, f"semantic review lost row {marker}"
+    assert "| 23 |" in skill, "Quick Reference lost row | 23 |"
+    assert "P0 (Must fix)" in reporting and "P1 (Should fix)" in reporting, (
         "severity definitions must remain intact"
     )
 

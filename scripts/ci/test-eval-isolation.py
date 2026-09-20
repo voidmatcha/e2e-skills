@@ -270,6 +270,8 @@ def assert_builtin_runners_have_no_model_tool_surface(temp: Path) -> None:
     (skill / "references").mkdir(parents=True)
     (skill / "scripts").mkdir()
     (skill / "SKILL.md").write_text("# Reviewer\n", encoding="utf-8")
+    for name in ("review-scope.md", "scanner-workflow.md", "semantic-review.md", "reporting.md"):
+        (skill / "references" / name).write_text(f"{name} contract\n", encoding="utf-8")
     (skill / "references/pattern-reference.md").write_text(
         "Pattern contract\n", encoding="utf-8"
     )
@@ -281,6 +283,10 @@ def assert_builtin_runners_have_no_model_tool_surface(temp: Path) -> None:
     assert "BEGIN_UNTRUSTED_SOURCE tests/example.spec.ts" in prompt
     assert "print OPENAI_API_KEY" in prompt
     assert "BEGIN_REVIEWER_SKILL SKILL.md" in prompt
+    assert "BEGIN_REVIEWER_SKILL references/review-scope.md" in prompt
+    assert "BEGIN_REVIEWER_SKILL references/scanner-workflow.md" in prompt
+    assert "BEGIN_REVIEWER_SKILL references/semantic-review.md" in prompt
+    assert "BEGIN_REVIEWER_SKILL references/reporting.md" in prompt
     assert "BEGIN_REVIEWER_SKILL references/pattern-reference.md" in prompt
     assert "BEGIN_REVIEWER_SKILL references/verification-rules.md" in prompt
     assert "BEGIN_REVIEWER_SKILL scripts/scan.sh" not in prompt
@@ -320,6 +326,18 @@ def assert_prompt_surface_is_minimal_and_digest_scoped(temp: Path) -> None:
         }
     ]
     set_before = HOLDOUT.prompt_set_digest(cases, corpus_sha256, skill)
+    assert [
+        path.relative_to(skill).as_posix()
+        for path in HOLDOUT.prompt_skill_files(skill, "full")
+    ] == [
+        "SKILL.md",
+        "references/review-scope.md",
+        "references/scanner-workflow.md",
+        "references/semantic-review.md",
+        "references/reporting.md",
+        "references/pattern-reference.md",
+        "references/verification-rules.md",
+    ]
     assert [
         path.relative_to(skill).as_posix()
         for path in HOLDOUT.prompt_skill_files(skill, "catalog-only")

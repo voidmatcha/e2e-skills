@@ -5439,10 +5439,10 @@ fluent_chain_source_at() {
     '
 }
 
-# Empty-catch syntax cannot prove lost test verification. Assertion-looking
-# receivers may be shadowed, synchronous, or soft; independent postconditions
-# can still fail. Preserve these candidates for Phase 2 rather than promoting
-# a local token match to a confirmed P0.
+# Empty-catch syntax cannot prove that an assertion-looking receiver is real.
+# Phase 2 exempts an identical unswallowed re-check or control flow that fails regardless.
+# It also honors documented intent; a later assertion on a different fact does not excuse it.
+# Non-assertion catches keep the dependency rule. Preserve both as candidates.
 
 empty_catch_unresolved_outcome_hit_matches() {
   catch_callback_hit_matches "$1" empty || return 1

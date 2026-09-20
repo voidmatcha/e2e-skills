@@ -1020,6 +1020,8 @@ with tempfile.TemporaryDirectory() as workspace_dir:
     (skill / "references").mkdir(parents=True)
     (skill / "scripts").mkdir()
     (skill / "SKILL.md").write_text("# Reviewer\n", encoding="utf-8")
+    for name in ("review-scope.md", "scanner-workflow.md", "semantic-review.md", "reporting.md"):
+        (skill / "references" / name).write_text(f"{name} contract\n", encoding="utf-8")
     (skill / "references/pattern-reference.md").write_text(
         "Pattern contract\n", encoding="utf-8"
     )

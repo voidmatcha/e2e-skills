@@ -133,6 +133,10 @@ SKILL_SOURCE_SUFFIXES = {
 PROMPT_SKILL_PROFILES = {
     "full": (
         "SKILL.md",
+        "references/review-scope.md",
+        "references/scanner-workflow.md",
+        "references/semantic-review.md",
+        "references/reporting.md",
         "references/pattern-reference.md",
         "references/verification-rules.md",
     ),

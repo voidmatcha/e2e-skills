@@ -10,6 +10,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SECURITY = ROOT / "SECURITY.md"
 SKILL = ROOT / "skills" / "e2e-reviewer" / "SKILL.md"
+REVIEW_SCOPE = (
+    ROOT / "skills" / "e2e-reviewer" / "references" / "review-scope.md"
+)
+SCANNER_WORKFLOW = (
+    ROOT / "skills" / "e2e-reviewer" / "references" / "scanner-workflow.md"
+)
+SEMANTIC_REVIEW = (
+    ROOT / "skills" / "e2e-reviewer" / "references" / "semantic-review.md"
+)
+REPORTING = ROOT / "skills" / "e2e-reviewer" / "references" / "reporting.md"
 PATTERN_REFERENCE = (
     ROOT / "skills" / "e2e-reviewer" / "references" / "pattern-reference.md"
 )
@@ -36,6 +46,14 @@ SWALLOW_HELPER = (
     / "files"
     / "support"
     / "draft-helper.ts"
+)
+ASSERTION_SWALLOW_FIXTURE = (
+    ROOT
+    / "skills"
+    / "e2e-reviewer"
+    / "evals"
+    / "files"
+    / "invoice-approval.spec.ts"
 )
 ABSENCE_FIXTURE = (
     ROOT
@@ -92,6 +110,68 @@ def require_normalized_contract(surface: str, contract: str, name: str) -> None:
     assert normalized_contract in normalized_surface, (
         f"{name} missing contract: {normalized_contract}"
     )
+
+
+def assert_reference_routing_contract(skill: str) -> None:
+    routes = (
+        ("Before inventorying any files, read `references/review-scope.md`", REVIEW_SCOPE, "## Phase 0: Framework Detection"),
+        ("Before running the scanner, read `references/scanner-workflow.md`", SCANNER_WORKFLOW, "## Phase 1: Mechanical Scan"),
+        ("Before resolving any candidate, read `references/semantic-review.md`", SEMANTIC_REVIEW, "## Phase 2: LLM Review"),
+        ("After individual findings are verified, read `references/reporting.md`", REPORTING, "## Phase 2.5: Systemic Issues"),
+        ("Before emitting any review, read `references/reporting.md`", REPORTING, "## Output Format"),
+        ("Before suppressing any scanner candidate, read `references/scanner-workflow.md`", SCANNER_WORKFLOW, "## Suppression"),
+    )
+    for pointer, destination, heading in routes:
+        require_normalized_contract(skill, pointer, "SKILL.md point-of-use reference")
+        require_contract(destination.read_text(encoding="utf-8"), heading, str(destination))
+
+
+def verify_reference_routing_contract() -> None:
+    skill = SKILL.read_text(encoding="utf-8")
+    assert_reference_routing_contract(skill)
+    for pointer in (
+        "Before inventorying any files, read `references/review-scope.md`",
+        "Before running the scanner, read `references/scanner-workflow.md`",
+        "Before resolving any candidate, read `references/semantic-review.md`",
+        "After individual findings are verified, read `references/reporting.md`",
+        "Before emitting any review, read `references/reporting.md`",
+        "Before suppressing any scanner candidate, read `references/scanner-workflow.md`",
+    ):
+        mutated = skill.replace(pointer, "Reference routing removed", 1)
+        assert mutated != skill, f"pointer mutation was a no-op: {pointer}"
+        try:
+            assert_reference_routing_contract(mutated)
+        except AssertionError:
+            continue
+        raise AssertionError(f"reference routing guard survived mutation: {pointer}")
+
+
+def assert_upstream_reference_routing_contract(review_scope: str) -> None:
+    require_normalized_contract(
+        review_scope,
+        "Read `references/upstream-rule-sources.md` only when a finding's "
+        "upstream provenance or the include/exclude boundary is in question. "
+        "Reimplement semantics under the local taxonomy; never copy or require "
+        "plugin code.",
+        "review-scope.md conditional upstream reference routing",
+    )
+
+
+def verify_upstream_reference_routing_contract() -> None:
+    review_scope = REVIEW_SCOPE.read_text(encoding="utf-8")
+    assert_upstream_reference_routing_contract(review_scope)
+    mutated = review_scope.replace(
+        " only when a finding's upstream provenance or the include/exclude "
+        "boundary is in question",
+        "",
+        1,
+    )
+    assert mutated != review_scope, "upstream routing mutation was a no-op"
+    try:
+        assert_upstream_reference_routing_contract(mutated)
+    except AssertionError:
+        return
+    raise AssertionError("conditional upstream routing guard survived mutation")
 
 
 def verify_ai_reviewer_100_aggregates() -> None:
@@ -211,12 +291,12 @@ def verify_pattern_4i_direction_neutral() -> None:
 
     # Every surface that restates #4i's SKIP criterion must stay direction-
     # neutral too, or the taxonomy contradicts itself across surfaces.
-    skill = normalized(SKILL)
+    semantic_review = normalized(SEMANTIC_REVIEW)
     grep_patterns = normalized(GREP_PATTERNS)
     scanner_source = SCANNER.read_text(encoding="utf-8")
 
     for surface, text, name in (
-        ("skill", skill, "e2e-reviewer/SKILL.md #4i row"),
+        ("semantic review", semantic_review, "semantic-review.md #4i row"),
         ("grep", grep_patterns, "grep-patterns.md #4i row"),
     ):
         assert "acted on earlier in the test" not in text, (
@@ -277,6 +357,68 @@ def verify_pattern_4i_direction_neutral() -> None:
     )
 
 
+def assert_pattern_3_assertion_boundary(
+    pattern_reference: str,
+    skill: str,
+    grep_patterns: str,
+    semantic_review: str,
+    scanner: str,
+) -> None:
+    boundary = (
+        "unless the identical check is re-asserted unswallowed later, control "
+        "flow makes the test fail regardless, or the documented "
+        "JUSTIFIED/intent path applies; a later assertion on a different fact "
+        "does not excuse it"
+    )
+    require_normalized_contract(skill, boundary, "SKILL.md #3 assertion boundary")
+    require_normalized_contract(
+        grep_patterns, boundary, "grep-patterns.md #3 assertion boundary"
+    )
+    require_normalized_contract(
+        semantic_review, boundary, "semantic-review.md #3 assertion boundary"
+    )
+    assert pattern_reference.count(boundary) == 2, (
+        "pattern-reference.md must pin the same #3 assertion boundary in both "
+        "Rule (spec) and Scanner tiering"
+    )
+    for contract in (
+        "identical unswallowed re-check",
+        "control flow that fails regardless",
+        "documented intent",
+        "later assertion on a different fact does not excuse it",
+        "Non-assertion catches keep the dependency rule",
+    ):
+        require_normalized_contract(scanner, contract, "scan.sh #3 comment boundary")
+
+
+def assert_eval_40_boundary(case: dict[str, object]) -> None:
+    assert case["prompt"] == (
+        "Review evals/files/catch-outcome-boundaries.spec.ts. Phase 1 reports "
+        "eleven `#3` candidates, one per `.catch(() => {})`, all as "
+        "[P0?][LLM-TRIAGE]. Resolve each one: say which catches leave the test "
+        "unable to fail on its promised outcome, and which do not."
+    ), "eval 40 prompt drifted from its original consequence boundary"
+    expected_output = str(case["expected_output"])
+    assertions = set(case["assertions"])
+    assert "Report #3 P0 for the three catches" in expected_output
+    assert "Do not report the remaining eight" in expected_output
+    for guard in (
+        "Does NOT report line 43: line 44 repeats the same assertion unswallowed",
+        "Does NOT report line 49: the enclosing finally throws unconditionally, so the test cannot pass",
+    ):
+        assert guard in assertions, f"eval 40 lost severity guard: {guard}"
+    assert (
+        "Reports #3 P0 on line 54 because the later heading assertion checks a "
+        "different fact and does not excuse the swallowed visibility assertion"
+        in assertions
+    ), "eval 40 lost the later-different-fact positive"
+    assert not any(
+        text.startswith("Reports #3 P0 on line 43")
+        or text.startswith("Reports #3 P0 on line 49")
+        for text in assertions
+    ), "eval 40 must not classify lines 43 or 49 as P0"
+
+
 def verify_pattern_3_swallow_scope() -> None:
     """#3's exemption must be stated by consequence, not by code role.
 
@@ -298,6 +440,8 @@ def verify_pattern_3_swallow_scope() -> None:
     pattern_reference = normalized(PATTERN_REFERENCE)
     skill = normalized(SKILL)
     grep_patterns = normalized(GREP_PATTERNS)
+    semantic_review = normalized(SEMANTIC_REVIEW)
+    scanner = normalized(SCANNER)
 
     consequence_rule = (
         "exempt only when the swallowed failure cannot change what the test "
@@ -306,6 +450,45 @@ def verify_pattern_3_swallow_scope() -> None:
     require_normalized_contract(
         pattern_reference, consequence_rule, "pattern-reference.md #3 exemption"
     )
+    assert_pattern_3_assertion_boundary(
+        pattern_reference, skill, grep_patterns, semantic_review, scanner
+    )
+    boundary = (
+        "unless the identical check is re-asserted unswallowed later, control "
+        "flow makes the test fail regardless, or the documented "
+        "JUSTIFIED/intent path applies; a later assertion on a different fact "
+        "does not excuse it"
+    )
+    for index, surface in enumerate(
+        (pattern_reference, skill, grep_patterns, semantic_review)
+    ):
+        mutated = surface.replace(boundary, "when the catch does not rethrow", 1)
+        assert mutated != surface, f"#3 boundary mutation {index} was a no-op"
+        surfaces = [pattern_reference, skill, grep_patterns, semantic_review, scanner]
+        surfaces[index] = mutated
+        try:
+            assert_pattern_3_assertion_boundary(*surfaces)
+        except AssertionError:
+            continue
+        raise AssertionError(f"#3 boundary guard survived mutation {index}")
+    mutated_scanner = scanner.replace(
+        "a later assertion on a different fact does not excuse it",
+        "a later assertion on a different fact excuses it",
+        1,
+    )
+    assert mutated_scanner != scanner, "scan.sh #3 mutation was a no-op"
+    try:
+        assert_pattern_3_assertion_boundary(
+            pattern_reference,
+            skill,
+            grep_patterns,
+            semantic_review,
+            mutated_scanner,
+        )
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("scan.sh #3 boundary guard survived mutation")
     require_normalized_contract(
         pattern_reference,
         "a swallowed wait, gate, or status check that a later assertion "
@@ -356,6 +539,42 @@ def verify_pattern_3_swallow_scope() -> None:
     # False-positive guards must survive: the fix must not become "flag every catch".
     assert "Does NOT flag" in text, "eval 39 lost its false-positive guards"
 
+    case_40 = next(item for item in evals if item["id"] == 40)
+    assert_eval_40_boundary(case_40)
+    for old, new in (
+        ("Does NOT report line 43", "Reports #3 P0 on line 43"),
+        ("Does NOT report line 49", "Reports #3 P0 on line 49"),
+        ("different fact and does not excuse", "promised outcome excuses"),
+    ):
+        mutated_case = json.loads(json.dumps(case_40))
+        mutated_case["assertions"] = [
+            assertion.replace(old, new, 1)
+            for assertion in mutated_case["assertions"]
+        ]
+        try:
+            assert_eval_40_boundary(mutated_case)
+        except AssertionError:
+            continue
+        raise AssertionError(f"eval 40 guard survived mutation: {old}")
+
+    assertion_source = ASSERTION_SWALLOW_FIXTURE.read_text(encoding="utf-8")
+    assertion_line = source_line_number(assertion_source, "approval-state")
+    cleanup_line = source_line_number(assertion_source, "clearCookies")
+    case = next(item for item in evals if item["id"] == 43)
+    text = " ".join([case["expected_output"], *case["assertions"]])
+    assert f"line {assertion_line}" in text, (
+        "eval 43 must anchor the swallowed assertion at its own line"
+    )
+    assert "later heading assertion" in text and "different fact" in text, (
+        "eval 43 must reject a different-fact later-assertion exemption"
+    )
+    assert f"line {cleanup_line}" in text and "Does NOT flag" in text, (
+        "eval 43 must retain the best-effort non-assertion cleanup guard"
+    )
+    assert "evals/files/invoice-approval.spec.ts" in case["files"], (
+        "eval 43 must reference its new fixture"
+    )
+
 
 def assert_failed_write_reread_note(pattern_reference: str) -> None:
     for contract in (
@@ -391,6 +610,8 @@ def verify_failed_write_reread_note() -> None:
 
 
 def main() -> None:
+    verify_reference_routing_contract()
+    verify_upstream_reference_routing_contract()
     verify_ai_reviewer_100_aggregates()
     verify_pattern_4i_direction_neutral()
     verify_pattern_3_swallow_scope()
@@ -398,6 +619,10 @@ def main() -> None:
 
     security = normalized(SECURITY)
     skill = normalized(SKILL)
+    review_scope = normalized(REVIEW_SCOPE)
+    scanner_workflow = normalized(SCANNER_WORKFLOW)
+    semantic_review = normalized(SEMANTIC_REVIEW)
+    reporting = normalized(REPORTING)
     pattern_reference = normalized(PATTERN_REFERENCE)
     grep_patterns = normalized(GREP_PATTERNS)
     applying_fixes = normalized(APPLYING_FIXES)
@@ -490,11 +715,11 @@ def main() -> None:
     conditional_boundary = (
         "load-bearing promised-outcome assertion"
     )
-    assert conditional_boundary in skill
+    assert conditional_boundary in semantic_review
     assert (
         "independent unconditional meaningful postcondition or "
         "failure-producing action"
-    ) in skill
+    ) in semantic_review
     assert conditional_boundary in eval_28_text
     assert "independent unconditional meaningful postcondition" in eval_28_text
     assert "failure-producing action" in eval_28_text
@@ -514,7 +739,7 @@ def main() -> None:
         "verifier confirms the rationale; it still gates "
         "`E2E_SMELL_FAIL_ON=p0-candidate` before that confirmation."
     )
-    for surface in (skill, grep_patterns):
+    for surface in (scanner_workflow, grep_patterns):
         assert suppression_contract in surface
         assert p0_candidate_contract in surface
         assert "Focused Test Leak is never suppressible" in surface
@@ -524,8 +749,8 @@ def main() -> None:
         "one deliberately narrow **position 2** shape: a marker immediately "
         "above a brace-delimited `page.evaluate()` or `page.waitForFunction()` "
         "callback"
-    ) in skill
-    assert "within the scanner's bounded 24-line lexical window" in skill
+    ) in scanner_workflow
+    assert "within the scanner's bounded 24-line lexical window" in scanner_workflow
     assert "`\\btoBeAttached\\b` name candidate" in grep_patterns
     assert "drops quoted/comment-only names" in grep_patterns
     assert "bounded 24-line/500-character whitespace gap" in grep_patterns
@@ -538,13 +763,13 @@ def main() -> None:
     ) in verification_rules
     assert "otherwise V6 cannot be `PASS`" in verification_rules
 
-    assert "Raw DOM query confirmation" in skill
+    assert "Raw DOM query confirmation" in semantic_review
     for allowed_shape in (
         "computed style",
         "child counts",
         "cross-element relationships",
     ):
-        assert allowed_shape in skill
+        assert allowed_shape in semantic_review
     for guard in ("computed-style", "child-count", "cross-element"):
         assert guard in eval_29_text
     assert "exactly one final #6 finding" in eval_29_text
@@ -576,7 +801,7 @@ def main() -> None:
         ".cjs",
     )
     phase_zero_extensions = documented_extensions(
-        SKILL.read_text(encoding="utf-8"),
+        REVIEW_SCOPE.read_text(encoding="utf-8"),
         "extension set:",
         "Inspect **actual import statements**",
     )
@@ -595,7 +820,7 @@ def main() -> None:
         "trace relative imports and re-exports",
         "transitive Playwright/Cypress provenance in scope",
     ):
-        require_contract(skill, contract, "SKILL.md")
+        require_contract(review_scope, contract, "review-scope.md")
         assert contract in eval_30_text
     phase_zero_eval_files = [
         "evals/files/phase0-transitive-unit.spec.ts",
@@ -674,7 +899,7 @@ def main() -> None:
         "rendered or reordered by viewport, feature flags, permissions, or "
         "state, inspect those render conditions before resolving the candidate."
     )
-    for surface in (skill, pattern_reference, grep_patterns):
+    for surface in (semantic_review, pattern_reference, grep_patterns):
         assert positional_scope_contract in surface
         assert positional_pom_contract in surface
         assert positional_name_contract in surface
@@ -847,6 +1072,15 @@ def main() -> None:
         "Review Scope and Evidence",
     ):
         assert contract in eval_36_text
+    reporting_contracts = {
+        "Review Scope and Evidence",
+        "Every field is mandatory",
+        "`Static evidence` records scanner tier coverage and semantic checks",
+        "`Runtime evidence` means target-controlled project runtime, never the bundled scanner",
+        "use `none`, `unavailable`, or `not executed`",
+        "Every diff finding must include the explicit `Attribution (diff mode)` field",
+        "when runtime was not executed, say so and recommend the relevant E2E run",
+    }
     for contract in (
         "Review Scope and Evidence",
         "diff mode",
@@ -877,14 +1111,16 @@ def main() -> None:
         "If a PR changes no in-scope E2E artifact, return `no in-scope E2E diff`",
         "do not perform a general app review",
     ):
-        require_contract(skill, contract, "SKILL.md")
+        surface = reporting if contract in reporting_contracts else review_scope
+        source = "reporting.md" if contract in reporting_contracts else "review-scope.md"
+        require_contract(surface, contract, source)
 
     for contract in (
         "require both Python 3 and `rg` with PCRE2 support",
         "NUL-safe candidate identity records",
         "separate from optional Tier 2 AST tooling",
     ):
-        require_contract(skill, contract, "SKILL.md")
+        require_contract(scanner_workflow, contract, "scanner-workflow.md")
     for contract in (
         "PCRE2-capable `rg` and Python 3",
         "NUL-safe candidate identity records",

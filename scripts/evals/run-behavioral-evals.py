@@ -245,11 +245,23 @@ def render_prompt(case: dict, variant: str, repo: Path = ROOT) -> str:
     artifact_payload = "\n\n".join(artifact_sections)
     if variant == "with_skill":
         skill_path = repo / "skills" / case["skill"] / "SKILL.md"
+        reference_payload = ""
+        if case["skill"] == "e2e-reviewer":
+            reference_sections = []
+            for reference_path in sorted((skill_path.parent / "references").glob("*.md")):
+                relative = reference_path.relative_to(skill_path.parent).as_posix()
+                reference_sections.append(
+                    f"BEGIN_TRUSTED_SKILL_SNAPSHOT {case['skill']}/{relative}\n"
+                    f"{reference_path.read_text(encoding='utf-8')}\n"
+                    f"END_TRUSTED_SKILL_SNAPSHOT {case['skill']}/{relative}"
+                )
+            reference_payload = "\n\n" + "\n\n".join(reference_sections)
         skill_payload = (
             f"Read and follow the embedded {case['skill']} SKILL.md snapshot.\n"
             f"BEGIN_TRUSTED_SKILL_SNAPSHOT {case['skill']}/SKILL.md\n"
             f"{skill_path.read_text(encoding='utf-8')}\n"
             f"END_TRUSTED_SKILL_SNAPSHOT {case['skill']}/SKILL.md"
+            f"{reference_payload}"
         )
     elif variant == "without_skill":
         skill_payload = (

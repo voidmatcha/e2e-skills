@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "comparator_sha256": "41933a8877cb82a398d9c25391b424cdd000a821c10835ddbdbdabee9e147bdb",
+  "evaluator_sha256": "e6c793853e8238fbd044aa9a5b364d55264abbd08860d5987717a7a14988c984",
+  "comparison_mode": "arm-matrix",
+  "skill_lift_claim_eligible": false,
+  "evidence_scope": "development",
+  "release_eligible": false,
+  "protocol_id": "reviewer-holdout-v7",
+  "protocol_sha256": "e379edfc7ad04e4ff92134f3f5952bda7f146e0f80667726283a2a60de08daf2",
+  "corpus_sha256": "745bc765fb6f424abe90d6d3fc9a3b85e921472a4cc1291054879af8002e965f",
+  "reports": [
+    "/Users/user/Documents/e2e-skills-v7run/benchmarks/reviewer-holdout-v7/reports/full-codex.json",
+    "/Users/user/Documents/e2e-skills-v7run/benchmarks/reviewer-holdout-v7/reports/catalog-only-codex.json",
+    "/Users/user/Documents/e2e-skills-v7run/benchmarks/reviewer-holdout-v7/reports/no-skill-codex.json"
+  ],
+  "report_inputs": [
+    {
+      "path": "/Users/user/Documents/e2e-skills-v7run/benchmarks/reviewer-holdout-v7/reports/full-codex.json",
+      "sha256": "07c15c87f620737bafb3ca20b1ed88e760d845b387b01d8179a33c0f6fd70468"
+    },
+    {
+      "path": "/Users/user/Documents/e2e-skills-v7run/benchmarks/reviewer-holdout-v7/reports/catalog-only-codex.json",
+      "sha256": "805c6053170e2c2dfc62b632762aa80d7adb8fe3540e86d0c802d84843fd74bc"
+    },
+    {
+      "path": "/Users/user/Documents/e2e-skills-v7run/benchmarks/reviewer-holdout-v7/reports/no-skill-codex.json",
+      "sha256": "a62634be45edbdcd27a6cf2c78d6827a83caf378fe3af8633f45369ead70c83c"
+    }
+  ],
+  "prompt_profiles": [
+    "catalog-only",
+    "full",
+    "no-skill"
+  ],
+  "status": "INCONCLUSIVE",
+  "status_reasons": [
+    {
+      "code": "arm_provenance_mismatch",
+      "field": "git_dirty_sha256",
+      "message": "arm reports disagree on git_dirty_sha256"
+    }
+  ],
+  "metrics": null,
+  "claim_policy": {
+    "pass": "Development skill-lift evidence is limited to this fixed public corpus, declared model identifiers, captured CLI versions, prompts, and schedule; provider backend snapshots are not attested.",
+    "fail": "No skill-lift claim is allowed.",
+    "inconclusive": "No skill-lift claim is allowed.",
+    "partial_results": "Descriptive arm metrics may be published, but never as a causal or partial skill-lift claim."
+  }
+}

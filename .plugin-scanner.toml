@@ -64,6 +64,10 @@
 # SKILL.md (preflight, browser-guard, and imported-case mechanics). They
 # document the same network capability the SKILL.md entry suppresses, so
 # they are listed beside it rather than left to re-trigger the same finding.
+# 2026-09-20: the four e2e-reviewer references hold Phase 0-3 and reporting
+# text moved verbatim from that skill's SKILL.md. They inherit its scanner,
+# network, credential, and untrusted-input examples, so keep their exact paths
+# beside the original entry and the matching security-gate pin.
 [scanner]
 ignore_paths = [
   "skills/cypress-debugger/scripts/publish-mochawesome-report.py",
@@ -82,6 +86,10 @@ ignore_paths = [
   "scripts/evals/files/holdout-v3/cy-write-credentials/cypress/e2e/profile.cy.ts",
   "skills/e2e-reviewer/scripts/scan.sh",
   "skills/e2e-reviewer/SKILL.md",
+  "skills/e2e-reviewer/references/review-scope.md",
+  "skills/e2e-reviewer/references/scanner-workflow.md",
+  "skills/e2e-reviewer/references/semantic-review.md",
+  "skills/e2e-reviewer/references/reporting.md",
   "skills/playwright-debugger/SKILL.md",
   "skills/cypress-debugger/SKILL.md",
   "skills/playwright-test-generator/SKILL.md",

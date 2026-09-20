@@ -698,14 +698,14 @@
     {
       "id": 40,
       "prompt": "Review evals/files/catch-outcome-boundaries.spec.ts. Phase 1 reports eleven `#3` candidates, one per `.catch(() => {})`, all as [P0?][LLM-TRIAGE]. Resolve each one: say which catches leave the test unable to fail on its promised outcome, and which do not.",
-      "expected_output": "Report #3 P0 for the three catches that swallow the test's only proof of its promised outcome: line 5 (the sole assertion), lines 9-11 (the same shape split across lines), and line 54, where the swallowed visibility assertion is one half of a title promising both main visibility and the heading text, and the surviving heading assertion cannot prove the other half. Do not report the remaining eight. Line 15 and line 19 catch a page.title() call while an independent unswallowed assertion proves the outcome; line 25 catches a custom toBuffer() that is not an assertion; line 31 catches a locally shadowed expect helper that is not the Playwright matcher; line 35 is expect.soft, whose failure is recorded on the test result rather than thrown, so catching the returned promise cannot hide it; line 39 is a synchronous matcher that throws before any .catch can run; line 43's swallowed assertion is repeated unswallowed on line 44; and line 49's catch sits inside a try whose finally throws unconditionally. Judge each catch by whether the test can still fail on its promised outcome, not by the presence of the catch.",
+      "expected_output": "Report #3 P0 for the three catches that swallow the test's only proof of its promised outcome: line 5 (the sole assertion), lines 9-11 (the same shape split across lines), and line 54, where the swallowed visibility assertion is one half of a title promising both main visibility and the heading text, and the later heading assertion checks a different fact and does not excuse it. Do not report the remaining eight. Line 15 and line 19 catch a page.title() call while an independent unswallowed assertion proves the outcome; line 25 catches a custom toBuffer() that is not an assertion; line 31 catches a locally shadowed expect helper that is not the Playwright matcher; line 35 is expect.soft, whose failure is recorded on the test result rather than thrown, so catching the returned promise cannot hide it; line 39 is a synchronous matcher that throws before any .catch can run; line 43's swallowed assertion is repeated unswallowed on line 44; and line 49's catch sits inside a try whose finally throws unconditionally. Judge each catch by whether the test can still fail on its promised outcome, not by the presence of the catch.",
       "files": [
         "evals/files/catch-outcome-boundaries.spec.ts"
       ],
       "assertions": [
         "Reports #3 P0 on line 5, where the swallowed assertion is the test's only outcome proof",
         "Reports #3 P0 for the multi-line form on lines 9-11, not only the single-line one",
-        "Reports #3 P0 on line 54 because the surviving heading assertion proves only half of the title's promise",
+        "Reports #3 P0 on line 54 because the later heading assertion checks a different fact and does not excuse the swallowed visibility assertion",
         "Does NOT report lines 15 and 19: an independent unswallowed assertion proves the outcome and the caught call is page.title()",
         "Does NOT report line 25: toBuffer() is a custom method, not an assertion",
         "Does NOT report line 31: expect is a locally shadowed helper, not the Playwright matcher",
@@ -747,6 +747,20 @@
         "False-positive guard: does not report line 82, an optional cookie-banner wait no later assertion depends on",
         "False-positive guard: does not report line 60, whose catch rethrows every error except a timeout",
         "False-positive guard: does not report line 93, whose try only parses JSON"
+      ]
+    },
+    {
+      "id": 43,
+      "prompt": "Review the Playwright E2E test in evals/files/invoice-approval.spec.ts for #3 error swallowing. Apply the assertion rule separately from the non-assertion dependency rule.",
+      "expected_output": "Report exactly one #3 P0 at invoice-approval.spec.ts line 15: the try/catch swallows the web-first approval-state assertion, and the later heading assertion on line 19 does not excuse swallowing a different check the author wrote. Anchor the finding at the assertion line, not the catch. Do NOT report line 6: clearCookies is a best-effort non-assertion cleanup operation in afterEach, and no later assertion depends on it.",
+      "files": [
+        "evals/files/invoice-approval.spec.ts"
+      ],
+      "assertions": [
+        "Reports invoice-approval.spec.ts line 15 as #3 P0 at the swallowed web-first assertion",
+        "Does not treat the later heading assertion on line 19, which checks a different fact, as independent verification that excuses the swallowed approval-state assertion",
+        "Anchors the confirmed finding at assertion line 15 rather than catch line 16",
+        "Does NOT flag line 6: clearCookies is a non-assertion best-effort cleanup operation that no later assertion depends on"
       ]
     }
   ]

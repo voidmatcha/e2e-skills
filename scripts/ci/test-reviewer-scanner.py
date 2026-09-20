@@ -23,7 +23,7 @@ SCANNER = ROOT / "skills/e2e-reviewer/scripts/scan.sh"
 EVAL_FILES = ROOT / "skills/e2e-reviewer/evals/files"
 WORKFLOW = ROOT / ".github/workflows/e2e-smell-scan.yml"
 CI_LOCAL = ROOT / "scripts/ci/ci-local.sh"
-REVIEWER_SKILL = ROOT / "skills/e2e-reviewer/SKILL.md"
+SCANNER_WORKFLOW = ROOT / "skills/e2e-reviewer/references/scanner-workflow.md"
 PREFLIGHT_ABORT_PREFIX = "INCOMPLETE: scanner tree preflight found "
 # The preflight abort stays fail-closed with no override knob; these lines only
 # tell the operator how to get a complete scan. The reruns form one coverage
@@ -3640,8 +3640,9 @@ def assert_empty_catch_syntax_requires_semantic_confirmation() -> None:
 
 
 def assert_empty_catch_assertions_and_actions_remain_candidates() -> None:
-    """Assertion and action catches require downstream outcome evidence alike.
+    """Assertion and non-assertion catches both remain scanner candidates.
 
+    Phase 2 applies the silent-pass boundary to real catchable assertions.
     An action, navigation, query, or readiness gate whose failure is swallowed
     may still be caught by a later assertion, and that consequence lives outside
     the scanner's local evidence window. Those candidates stay visible as
@@ -4057,7 +4058,7 @@ def assert_preflight_symlink_abort_remediation_is_actionable() -> None:
 
     assert_tree_preflight_has_no_override()
 
-    skill = " ".join(REVIEWER_SKILL.read_text(encoding="utf-8").split())
+    scanner_workflow = " ".join(SCANNER_WORKFLOW.read_text(encoding="utf-8").split())
     for phrase in (
         "exit 2, and emit no Summary",
         "`Remediation:` block",
@@ -4073,9 +4074,9 @@ def assert_preflight_symlink_abort_remediation_is_actionable() -> None:
         "unscanned and keep the review marked incomplete",
         "so suggest it to the user instead of doing it",
     ):
-        assert phrase in skill, phrase
+        assert phrase in scanner_workflow, phrase
     for retired in ("choose one", "usually the E2E test directory itself"):
-        assert retired not in skill, retired
+        assert retired not in scanner_workflow, retired
         assert retired not in SCANNER.read_text(encoding="utf-8"), retired
 
 

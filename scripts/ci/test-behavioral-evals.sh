@@ -364,6 +364,11 @@ with tempfile.TemporaryDirectory() as prompt_dir:
         case, "without_skill", prompt_workspace
     )
 assert "BEGIN_TRUSTED_SKILL_SNAPSHOT e2e-reviewer/SKILL.md" in with_skill_prompt
+assert "BEGIN_TRUSTED_SKILL_SNAPSHOT e2e-reviewer/references/review-scope.md" in with_skill_prompt
+assert "BEGIN_TRUSTED_SKILL_SNAPSHOT e2e-reviewer/references/scanner-workflow.md" in with_skill_prompt
+assert "BEGIN_TRUSTED_SKILL_SNAPSHOT e2e-reviewer/references/semantic-review.md" in with_skill_prompt
+assert "BEGIN_TRUSTED_SKILL_SNAPSHOT e2e-reviewer/references/reporting.md" in with_skill_prompt
+assert "BEGIN_TRUSTED_SKILL_SNAPSHOT e2e-reviewer/references/pattern-reference.md" in with_skill_prompt
 assert "BEGIN_UNTRUSTED_TASK_ARTIFACT scripts/ci/fixtures/codex-smoke/silent.spec.ts" in with_skill_prompt
 assert "expect(page.locator('[data-testid=\"order-summary\"]'))" in with_skill_prompt
 assert "You have no shell, filesystem, network, app, image, or subagent tools" in with_skill_prompt

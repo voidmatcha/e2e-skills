@@ -35,6 +35,7 @@ INVOCATION_CONTRACT_FILES = (
     ROOT / "README.zh-cn.md",
     ROOT / "docs/ai-reviewer-benchmark.md",
     ROOT / "skills/e2e-reviewer/SKILL.md",
+    ROOT / "skills/e2e-reviewer/references/scanner-workflow.md",
     ROOT / ".github/workflows/e2e-smell-scan.yml",
     ROOT / "scripts/ci/ci-local.sh",
     ROOT / "scripts/ci/review.sh",

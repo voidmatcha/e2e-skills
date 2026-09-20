@@ -89,7 +89,7 @@ bash scripts/ci/test-reviewer-holdout.sh # labeled TP/FP/FN scorer + isolation
 python3 scripts/ci/test-reviewer-holdout-v3.py # all-family corpus + N-configuration contracts
 python3 scripts/ci/test-reviewer-holdout-v4.py # v4 corpus and protocol contracts
 python3 scripts/ci/test-reviewer-holdout-v5.py # current preregistered v5 corpus contracts
-python3 scripts/ci/test-reviewer-holdout-v7.py # frozen Codex-only v7 protocol contracts
+python3 scripts/ci/test-reviewer-holdout-v7.py # Codex-only v7 protocol + committed-result contracts
 /bin/bash -p scripts/ci/run-reference-tokenizer-suites.sh \
   scripts/ci/test-independent-review-v7.py \
   scripts/ci/test-independent-review-v10.py \
