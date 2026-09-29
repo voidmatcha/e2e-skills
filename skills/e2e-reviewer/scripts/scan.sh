@@ -6142,7 +6142,7 @@ run_check() {
   local pattern="$4"
   local glob="$5"
   local output="" p0_unproven_output="" p1_unproven_output=""
-  local flags=",${6:-}," assertion_token=""
+  local flags=",${6:-}," assertion_token="" prepass_pattern=""
   local -a context_options=()
 
   # These predicates only accept a matcher reconstructed within the starting
@@ -6167,6 +6167,7 @@ run_check() {
     pattern="^(?=[^\n]*(?:${pattern}))(?=(?:[^\n]*\n){0,12}[^\n]*(?:;|toBeTruthy|toBeDefined|toBeNull|toBeUndefined|not|/\*|//|\*/))[^\n]*"
     context_options=(--multiline)
   fi
+  prepass_pattern="$pattern"
   if [[ -n "$assertion_token" ]]; then
     require_anchored_discovery_pattern "$check_id" "$pattern"
     # Only the lookahead crosses lines. Keep the consuming expression's old
@@ -6225,7 +6226,7 @@ run_check() {
   # until exact file applicability has been decided.
   _prepass_bytes=$(wc -c < "$_filename_list" | tr -d '[:space:]')
   "$RG_BIN" -l0P --color never --hidden --no-ignore --sort path \
-    "${_discovery_options[@]}" "$pattern" -- "$ROOT" 2>&1 |
+    "${_discovery_options[@]}" "$prepass_pattern" -- "$ROOT" 2>&1 |
     head -c "$((_prepass_bytes + 1))" > "$_matched_paths"
   _prepass_status=("${PIPESTATUS[@]}")
   if [[ "${_prepass_status[0]}" -gt 1 || "${_prepass_status[1]}" -ne 0 ||
@@ -7044,7 +7045,7 @@ run_check P1 '#14' 'Hardcoded credential candidate' '(?i)(?:(?:password|passwd|s
 # conflation where sync-matcher one-shot reads (e.g. `expect(Number(await getRowCount(page)))
 # .toBe(4)` — the `page)` substring) were misfiled as #15 (ag-grid field run: 25 of 33 #15
 # hits were really #4c-4e). Matcher-on-next-line splits are covered by Tier 2 (sg-15).
-run_check P1 '#15' 'Missing await on Playwright expect' '^(?:[[:space:]]*\(?[[:space:]]*(?:[0-9]+[[:space:]]*,[[:space:]]*)?[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*\.[[:space:]]*expect)?(?:[[:space:]]|/\*.*?\*/)*\(|[[:space:]]*expect[[:space:]]*\([[:space:]]*page[.](?:locator|getBy[A-Z][A-Za-z]*)[[:space:]]*\()' "$ALL_CODE_GLOB" 'e2e,missing-expect,playwright-only'
+run_check P1 '#15' 'Missing await on Playwright expect' '^[[:space:]]*\(?[[:space:]]*(?:[0-9]+[[:space:]]*,[[:space:]]*)?[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*\.[[:space:]]*expect)?(?:[[:space:]]|/\*.*?\*/)*\(' "$ALL_CODE_GLOB" 'e2e,missing-expect,playwright-only'
 run_check P1 '#15' 'Possible missing await on expect from unresolved test-fixture source' "^[[:space:]]*expect[[:space:]]*\\([^;\\n]*\\)[[:space:]]*[.][[:space:]]*(${PLAYWRIGHT_ASYNC_MATCHERS})[[:space:]]*\\(" "$ALL_CODE_GLOB" 'triage,playwright-only,unresolved-test-source'
 run_check P1 '#15' 'Missing await on Playwright retry assertion' '^[[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*(?:[.][[:space:]]*poll[[:space:]]*[(]|[(])' "$ALL_CODE_GLOB" 'e2e,retry-expect,playwright-only'
 # #15 variant: the await is misplaced INSIDE expect() onto the locator (a no-op, since a Locator
