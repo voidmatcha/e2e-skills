@@ -7044,7 +7044,7 @@ run_check P1 '#14' 'Hardcoded credential candidate' '(?i)(?:(?:password|passwd|s
 # conflation where sync-matcher one-shot reads (e.g. `expect(Number(await getRowCount(page)))
 # .toBe(4)` — the `page)` substring) were misfiled as #15 (ag-grid field run: 25 of 33 #15
 # hits were really #4c-4e). Matcher-on-next-line splits are covered by Tier 2 (sg-15).
-run_check P1 '#15' 'Missing await on Playwright expect' '^[[:space:]]*\(?[[:space:]]*(?:[0-9]+[[:space:]]*,[[:space:]]*)?[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*\.[[:space:]]*expect)?(?:[[:space:]]|/\*.*?\*/)*\(' "$ALL_CODE_GLOB" 'e2e,missing-expect,playwright-only'
+run_check P1 '#15' 'Missing await on Playwright expect' '^(?:[[:space:]]*\(?[[:space:]]*(?:[0-9]+[[:space:]]*,[[:space:]]*)?[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*\.[[:space:]]*expect)?(?:[[:space:]]|/\*.*?\*/)*\(|[[:space:]]*expect[[:space:]]*\([[:space:]]*page[.](?:locator|getBy[A-Z][A-Za-z]*)[[:space:]]*\()' "$ALL_CODE_GLOB" 'e2e,missing-expect,playwright-only'
 run_check P1 '#15' 'Possible missing await on expect from unresolved test-fixture source' "^[[:space:]]*expect[[:space:]]*\\([^;\\n]*\\)[[:space:]]*[.][[:space:]]*(${PLAYWRIGHT_ASYNC_MATCHERS})[[:space:]]*\\(" "$ALL_CODE_GLOB" 'triage,playwright-only,unresolved-test-source'
 run_check P1 '#15' 'Missing await on Playwright retry assertion' '^[[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*(?:[.][[:space:]]*poll[[:space:]]*[(]|[(])' "$ALL_CODE_GLOB" 'e2e,retry-expect,playwright-only'
 # #15 variant: the await is misplaced INSIDE expect() onto the locator (a no-op, since a Locator
