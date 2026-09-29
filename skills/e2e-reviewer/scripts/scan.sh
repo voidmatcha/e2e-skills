@@ -5320,7 +5320,7 @@ proven_locator_binding() {
 }
 
 locator_assertion_hit_matches() {
-  local hit="$1" file rest line code binding expect_binding
+  local hit="$1" file rest line code normalized_code binding expect_binding
   file=${hit%%:*}
   rest=${hit#*:}
   line=${rest%%:*}
@@ -5329,8 +5329,10 @@ locator_assertion_hit_matches() {
   playwright_expect_binding "$file" "$expect_binding" "$line" || return 1
   awaited_locator_value_read_at "$file" "$line" && return 1
   code=$(locator_assertion_source "$file" "$line")
-  printf '%s\n' "$code" |
-    scanner_rg -q '^[[:space:]]*(await[[:space:]]+)?[A-Za-z_$][A-Za-z0-9_$]*(\s*\.\s*expect)?\s*\(\s*page\.(locator|getBy[A-Z][A-Za-z]*)\s*\(.*\)\s*(\.toBeTruthy\s*\(\s*\)|\.toBeDefined\s*\(\s*\)|\.not\.toBeNull\s*\(\s*\)|\.not\.toBeUndefined\s*\(\s*\)|\.not\.to\.equal\s*\(\s*null\s*\)|\.not\.to\.be\.null)' &&
+  normalized_code=$(printf '%s\n' "$code" |
+    sed -E 's/^[[:space:]]*await[[:space:]]+/ /')
+  printf '%s\n' "$normalized_code" |
+    scanner_rg -q '^[[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*(\s*\.\s*expect)?\s*\(\s*page\.(locator|getBy[A-Z][A-Za-z]*)\s*\(.*\)\s*(\.toBeTruthy\s*\(\s*\)|\.toBeDefined\s*\(\s*\)|\.not\.toBeNull\s*\(\s*\)|\.not\.toBeUndefined\s*\(\s*\)|\.not\.to\.equal\s*\(\s*null\s*\)|\.not\.to\.be\.null)' &&
     return 0
   binding=$(printf '%s\n' "$code" |
     scanner_rg -o '[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*\([[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*' |
@@ -7043,6 +7045,10 @@ run_check P1 '#14' 'Hardcoded credential candidate' '(?i)(?:(?:password|passwd|s
 # .toBe(4)` — the `page)` substring) were misfiled as #15 (ag-grid field run: 25 of 33 #15
 # hits were really #4c-4e). Matcher-on-next-line splits are covered by Tier 2 (sg-15).
 run_check P1 '#15' 'Missing await on Playwright expect' '^[[:space:]]*\(?[[:space:]]*(?:[0-9]+[[:space:]]*,[[:space:]]*)?[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*\.[[:space:]]*expect)?(?:[[:space:]]|/\*.*?\*/)*\(' "$ALL_CODE_GLOB" 'e2e,missing-expect,playwright-only'
+# Keep the unambiguous direct Page-Locator form independently discoverable.
+# This also covers semicolonless const-selector calls when a host regex engine
+# cannot retain the broader multiline candidate through its semantic filter.
+run_check P1 '#15' 'Missing await on Playwright expect' "^[[:space:]]*expect[[:space:]]*\\([[:space:]]*page[.](?:locator|getBy[A-Z][A-Za-z]*)[[:space:]]*\\([^;\\n]*\\)[[:space:]]*\\)[[:space:]]*[.][[:space:]]*(${PLAYWRIGHT_ASYNC_MATCHERS})[[:space:]]*\\(" "$ALL_CODE_GLOB" 'e2e,playwright-only'
 run_check P1 '#15' 'Possible missing await on expect from unresolved test-fixture source' "^[[:space:]]*expect[[:space:]]*\\([^;\\n]*\\)[[:space:]]*[.][[:space:]]*(${PLAYWRIGHT_ASYNC_MATCHERS})[[:space:]]*\\(" "$ALL_CODE_GLOB" 'triage,playwright-only,unresolved-test-source'
 run_check P1 '#15' 'Missing await on Playwright retry assertion' '^[[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*(?:[.][[:space:]]*poll[[:space:]]*[(]|[(])' "$ALL_CODE_GLOB" 'e2e,retry-expect,playwright-only'
 # #15 variant: the await is misplaced INSIDE expect() onto the locator (a no-op, since a Locator
