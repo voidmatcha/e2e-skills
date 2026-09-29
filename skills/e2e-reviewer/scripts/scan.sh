@@ -6641,6 +6641,26 @@ run_check() {
     fi
   fi
 
+  # Some semantic rules need a narrower fallback discovery pass for host-regex
+  # portability. Let the primary pass publish its accepted locations before
+  # that fallback runs, so the fallback fills gaps without printing the same
+  # file/line/rule-class twice.
+  if [[ "$flags" == *",record-structural,"* && -n "$output" ]]; then
+    local _rclass _rf _rrest _rl _rabs
+    _rclass=$(dedupe_class_for_pattern "$check_id")
+    if [[ -n "$_rclass" ]]; then
+      while IFS= read -r _hit; do
+        _rf=${_hit%%:*}
+        _rrest=${_hit#*:}
+        _rl=${_rrest%%:*}
+        _rabs=$(absolute_hit_file "$_rf" 2>/dev/null || true)
+        [[ -n "$_rabs" ]] || continue
+        grep -qFx -e "$_rabs|$_rl|$_rclass" "$STRUCTURAL_HITS_FILE" 2>/dev/null ||
+          printf '%s|%s|%s\n' "$_rabs" "$_rl" "$_rclass" >> "$STRUCTURAL_HITS_FILE"
+      done <<< "$output"
+    fi
+  fi
+
   # Optional e2e content scoping (6th arg == "e2e"): keep hits only in files that carry a real
   # Playwright/Cypress marker. The marker set deliberately ERRS TOWARD INCLUSION (fail-open):
   # a unit file mentioning e.g. `router.page.url()` is admitted and its hits flow to Phase 2,
@@ -7044,7 +7064,7 @@ run_check P1 '#14' 'Hardcoded credential candidate' '(?i)(?:(?:password|passwd|s
 # conflation where sync-matcher one-shot reads (e.g. `expect(Number(await getRowCount(page)))
 # .toBe(4)` — the `page)` substring) were misfiled as #15 (ag-grid field run: 25 of 33 #15
 # hits were really #4c-4e). Matcher-on-next-line splits are covered by Tier 2 (sg-15).
-run_check P1 '#15' 'Missing await on Playwright expect' '^[[:space:]]*\(?[[:space:]]*(?:[0-9]+[[:space:]]*,[[:space:]]*)?[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*\.[[:space:]]*expect)?(?:[[:space:]]|/\*.*?\*/)*\(' "$ALL_CODE_GLOB" 'e2e,missing-expect,playwright-only'
+run_check P1 '#15' 'Missing await on Playwright expect' '^[[:space:]]*\(?[[:space:]]*(?:[0-9]+[[:space:]]*,[[:space:]]*)?[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*\.[[:space:]]*expect)?(?:[[:space:]]|/\*.*?\*/)*\(' "$ALL_CODE_GLOB" 'e2e,missing-expect,playwright-only,record-structural'
 # Keep the unambiguous direct Page-Locator form independently discoverable.
 # This also covers semicolonless const-selector calls when a host regex engine
 # cannot retain the broader multiline candidate through its semantic filter.
