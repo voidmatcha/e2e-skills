@@ -5,8 +5,11 @@ import argparse
 import copy
 import hashlib
 import importlib.util
+import io
 import json
 from pathlib import Path
+import subprocess
+import tarfile
 import tempfile
 import unittest
 
@@ -15,6 +18,7 @@ CASES = ROOT / 'scripts/evals/reviewer-holdout-v17.json'
 PROTOCOL = ROOT / 'scripts/evals/reviewer-validation-protocol-v18.json'
 SHA256 = '8691b9f4b93ef67326027e23b707bf25d79e83e9238999eebb452323e6771263'
 REPORTS = ROOT / 'benchmarks/reviewer-holdout-v18/reports'
+FROZEN_SKILL_REVISION = '976c3fae4400a2683bab2c2a015af0bd842e4dd5'
 
 
 def load(name, path):
@@ -22,6 +26,17 @@ def load(name, path):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def export_frozen_skill(destination):
+    archive = subprocess.check_output(
+        ['/usr/bin/git', 'archive', FROZEN_SKILL_REVISION, 'skills/e2e-reviewer'], cwd=ROOT)
+    with tarfile.open(fileobj=io.BytesIO(archive)) as handle:
+        try:
+            handle.extractall(destination, filter='data')
+        except TypeError:  # Python without extraction filters; the archive is our own tree.
+            handle.extractall(destination)
+    return Path(destination) / 'skills/e2e-reviewer'
 
 
 class ReviewerHoldoutV18Test(unittest.TestCase):
@@ -47,7 +62,8 @@ class ReviewerHoldoutV18Test(unittest.TestCase):
                 self.runner.load_protocol(changed)
 
     def test_skill_and_release_decision(self):
-        self.assertEqual(self.runner.skill_digest(self.runner.DEFAULT_SKILL_DIR), self.v18['skill_sha256'])
+        with tempfile.TemporaryDirectory() as temp:
+            self.assertEqual(self.runner.skill_digest(export_frozen_skill(temp)), self.v18['skill_sha256'])
         self.runner.require_protocol_skill_digest(self.v18, self.v18['skill_sha256'])
         with self.assertRaisesRegex(ValueError, 'v18 preregistered skill'):
             self.runner.require_protocol_skill_digest(self.v18, '0' * 64)
@@ -86,6 +102,7 @@ class ReviewerHoldoutV18Test(unittest.TestCase):
         case = cases[0]
         with tempfile.TemporaryDirectory() as temp:
             base = Path(temp)
+            frozen_skill = export_frozen_skill(base / 'frozen')
             counter = base / 'count'
             stub = base / 'stub'
             stub.write_text('#!/bin/sh\n/bin/cat >/dev/null\n'
@@ -101,7 +118,7 @@ class ReviewerHoldoutV18Test(unittest.TestCase):
             for number in (1, 2):
                 record, reason = self.runner.execute_scheduled_attempt(
                     case, {'ordinal': 1, 'repetition': 1}, CASES,
-                    self.runner.DEFAULT_SKILL_DIR, self.v18['skill_sha256'],
+                    frozen_skill, self.v18['skill_sha256'],
                     args, [], str(stub), 'off', True, True,
                     capture_stderr=True, allow_auth_error=True, credential_snapshot={})
                 attempts.append({'attempt': number, 'reason': reason,
@@ -165,7 +182,11 @@ class ReviewerHoldoutV18Test(unittest.TestCase):
             recomputed = self.runner.primary_metrics(
                 cases, report['runs'], 5, 'strict-majority', revised_labels=True)
             unique = recomputed['unique']
-            self.assertEqual(report['primary_metrics'], recomputed, arm)
+            recorded = copy.deepcopy(report['primary_metrics'])
+            recorded_macro_recall = recorded['macro_recall']['case'].pop('value')
+            recomputed_macro_recall = recomputed['macro_recall']['case'].pop('value')
+            self.assertAlmostEqual(recorded_macro_recall, recomputed_macro_recall, places=15)
+            self.assertEqual(recorded, recomputed, arm)
             self.assertEqual(stable, tuple(unique[key] for key in ('tp', 'fp', 'fn')), arm)
             self.assertIn(f'| {arm} | `{status}` | {scored} | '
                           f'{stable[0]} / {stable[1]} / {stable[2]} | '

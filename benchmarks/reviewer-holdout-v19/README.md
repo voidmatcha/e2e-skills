@@ -4,6 +4,8 @@ V19 preregisters a rerun of v18 for 2.0.0 release confirmation. It uses the same
 
 V18 on this same corpus and skill was **INCONCLUSIVE** because three no-skill calls failed the tools-disabled Codex event-stream guard. Descriptive stable F1 was full 0.976, catalog-only 0.930, and no-skill 0.376. V19 is a rerun to obtain a complete matrix, **not fresh independent evidence**. The public model-authored corpus and single host limit generalization. The completed v19 run confirms v18 on the same corpus and skill; it is not fresh evidence.
 
+The recorded run used the reviewer skill before the 2.0.0 scanner fixes (`976c3fa`). Model tools were disabled, so the standalone scanner was not invoked and those later fixes do not alter this result.
+
 Status: **PASS** (`release_confirmation_passed`) at clean commit `1723a34` on Codex `gpt-6-sol`.
 
 ## Result

@@ -984,6 +984,23 @@
         "True positive: each finding heading line starts at the beginning of the line with '## [', including the #7 and #9 findings",
         "Format guard: no finding heading uses '### [P' or sits under a '## Findings' wrapper"
       ]
+    },
+    {
+      "id": 60,
+      "prompt": "Review evals/files/scanner-2.0-regressions.spec.ts for one-shot assertions, Locator truthiness, and missing Playwright awaits. Apply the retry-wrapper and framework-provenance exclusions.",
+      "expected_output": "Report #4h P1 at lines 5, 18, and 23, #4f P0 at line 6, #15 P1 at line 7, and #4c-4e P1 at lines 9 and 10. Do not report the awaited web-first assertions, Locator-derived string value, response.json(), plain string assertion, expect.poll(), or assertions inside the toPass callback.",
+      "files": [
+        "evals/files/scanner-2.0-regressions.spec.ts"
+      ],
+      "assertions": [
+        "True positive: reports the semicolonless expect(page.url()).toBe assertions on lines 5, 18, and 23 as #4h P1, including the assertions adjacent to but outside retry wrappers",
+        "True positive: reports the awaited Locator truthiness assertion on line 6 as #4f P0 because awaiting a synchronous always-true matcher does not make it meaningful",
+        "True positive: reports the const-selector Locator assertion without a leading await on line 7 as #15 P1",
+        "True positive: reports the inline Locator innerText and inputValue reads on lines 9 and 10 as #4c-4e P1",
+        "False-positive guard: does not report the properly awaited web-first assertions on lines 8 and 16 as #15",
+        "False-positive guard: does not report the Locator-derived string on line 12, response.json() on line 13, or the plain string assertion on line 15 as a Locator finding",
+        "False-positive guard: does not report expect.poll on line 17 or the page.url and Locator reads inside the toPass callback on lines 20 and 21 as #4h or #4c-4e"
+      ]
     }
   ]
 }

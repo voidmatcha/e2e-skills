@@ -4,8 +4,11 @@
 import argparse
 import copy
 import importlib.util
+import io
 import json
 from pathlib import Path
+import subprocess
+import tarfile
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -23,9 +26,30 @@ def load(name, path):
 runner = load('stream_retry_runner', ROOT / 'scripts/evals/run-reviewer-holdout.py')
 comparator = load('stream_retry_comparator', ROOT / 'scripts/evals/compare-reviewer-holdouts.py')
 SECRET = 'test-only-private-payload'
+FROZEN_SKILL_REVISION = '976c3fae4400a2683bab2c2a015af0bd842e4dd5'
+
+
+def export_frozen_skill(destination):
+    archive = subprocess.check_output(
+        ['/usr/bin/git', 'archive', FROZEN_SKILL_REVISION, 'skills/e2e-reviewer'], cwd=ROOT)
+    with tarfile.open(fileobj=io.BytesIO(archive)) as handle:
+        try:
+            handle.extractall(destination, filter='data')
+        except TypeError:  # Python without extraction filters; the archive is our own tree.
+            handle.extractall(destination)
+    return Path(destination) / 'skills/e2e-reviewer'
 
 
 class StreamRetryTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.frozen_skill_temp = tempfile.TemporaryDirectory()
+        cls.frozen_skill = export_frozen_skill(cls.frozen_skill_temp.name)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.frozen_skill_temp.cleanup()
+
     def test_diagnostic_carries_names_only_and_guard_remains_closed(self):
         event = {'type': 'item.completed', 'item': {'type': 'tool_call', 'kind': 'function',
                  'text': SECRET, 'arguments': SECRET}}
@@ -75,7 +99,7 @@ class StreamRetryTest(unittest.TestCase):
             for number in (1, 2):
                 record, reason = runner.execute_scheduled_attempt(
                     cases[0], {'ordinal': 1, 'repetition': 1}, runner.V17_CASES,
-                    runner.DEFAULT_SKILL_DIR, protocol['skill_sha256'], args, [], 'codex',
+                    self.frozen_skill, protocol['skill_sha256'], args, [], 'codex',
                     'off', True, True, capture_stderr=True, capture_usage=True,
                     allow_stream_error=True, capture_stream_diagnostic=True)
                 attempts.append({'attempt': number, 'reason': reason,
@@ -129,7 +153,7 @@ class StreamRetryTest(unittest.TestCase):
         with patch.object(runner, 'run_once', side_effect=fake_run_once):
             failed, reason = runner.execute_scheduled_attempt(
                 case, {'ordinal': 1, 'repetition': 1}, runner.V17_CASES,
-                runner.DEFAULT_SKILL_DIR, protocol['skill_sha256'], args, [], 'codex',
+                self.frozen_skill, protocol['skill_sha256'], args, [], 'codex',
                 'off', True, True, capture_stderr=True, capture_usage=True,
                 allow_stream_error=True, capture_stream_diagnostic=True)
             self.assertEqual(runner.CODEX_STREAM_RETRY_REASON, reason)
@@ -139,7 +163,7 @@ class StreamRetryTest(unittest.TestCase):
             self.assertIsNone(failed['score'])
             passed, reason = runner.execute_scheduled_attempt(
                 case, {'ordinal': 1, 'repetition': 1}, runner.V17_CASES,
-                runner.DEFAULT_SKILL_DIR, protocol['skill_sha256'], args, [], 'codex',
+                self.frozen_skill, protocol['skill_sha256'], args, [], 'codex',
                 'off', True, True, capture_stderr=True, capture_usage=True,
                 allow_stream_error=True, capture_stream_diagnostic=True)
         self.assertIsNone(reason)

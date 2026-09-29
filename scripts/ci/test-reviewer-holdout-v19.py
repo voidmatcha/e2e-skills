@@ -3,14 +3,18 @@
 
 import hashlib
 import importlib.util
+import io
 import json
 from pathlib import Path
+import subprocess
+import tarfile
 import tempfile
 import unittest
 from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 PROTOCOL = ROOT / 'scripts/evals/reviewer-validation-protocol-v19.json'
+FROZEN_SKILL_REVISION = '976c3fae4400a2683bab2c2a015af0bd842e4dd5'
 
 
 def load(name, path):
@@ -18,6 +22,17 @@ def load(name, path):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def export_frozen_skill(destination):
+    archive = subprocess.check_output(
+        ['/usr/bin/git', 'archive', FROZEN_SKILL_REVISION, 'skills/e2e-reviewer'], cwd=ROOT)
+    with tarfile.open(fileobj=io.BytesIO(archive)) as handle:
+        try:
+            handle.extractall(destination, filter='data')
+        except TypeError:  # Python without extraction filters; the archive is our own tree.
+            handle.extractall(destination)
+    return Path(destination) / 'skills/e2e-reviewer'
 
 
 class ReviewerHoldoutV19Test(unittest.TestCase):
@@ -32,7 +47,8 @@ class ReviewerHoldoutV19Test(unittest.TestCase):
         self.assertEqual(self.runner.V19_PROTOCOL_SHA256, hashlib.sha256(PROTOCOL.read_bytes()).hexdigest())
         self.assertEqual(self.v18['corpus'], self.v19['corpus'])
         self.assertEqual(self.v18['skill_sha256'], self.v19['skill_sha256'])
-        self.assertEqual(self.runner.skill_digest(self.runner.DEFAULT_SKILL_DIR), self.v19['skill_sha256'])
+        with tempfile.TemporaryDirectory() as temp:
+            self.assertEqual(self.runner.skill_digest(export_frozen_skill(temp)), self.v19['skill_sha256'])
         self.assertEqual('reviewer-holdout-v17', self.runner.SHARED_CORPUS_PROTOCOLS['reviewer-holdout-v19'])
         self.assertEqual(self.runner.PINNED_LIVE_INPUTS[(self.runner.V17_CASES, PROTOCOL)]['protocol_sha256'],
                          self.runner.V19_PROTOCOL_SHA256)

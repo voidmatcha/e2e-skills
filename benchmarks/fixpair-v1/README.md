@@ -8,6 +8,8 @@ Candidates came from local upstream commit histories: commits changing Playwrigh
 
 ## Evaluation
 
+These recorded model-review results used the reviewer skill before the 2.0.0 scanner fixes (`976c3fa`); they were not recomputed after the standalone scanner changed.
+
 The development runs used real-repository sparse checkouts at each commit's first parent (BEFORE) and fix commit (AFTER), with Git metadata removed before review. Codex `gpt-6-sol` ran once on each sample per arm: 24 batch B samples, 14 batch C samples, and 4 batch D samples. The skill and no-skill prompts used the same output format and pattern legend; the no-skill arm received the legend without the skill instructions. Strict recall requires the pattern ID and exact BEFORE line. An AFTER false alarm means the same base pattern appears within two lines of the mapped clean location. The Inspect harness, prompts, and full logs are development infrastructure outside this repository; the B, C, and D score rows are published in [samples.json](scores/samples.json).
 
 | Batch | Arm | Strict BEFORE recall | AFTER false alarms | Input tokens |

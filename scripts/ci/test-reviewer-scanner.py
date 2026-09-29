@@ -3255,7 +3255,7 @@ def assert_arbitrary_conditional_assertions_are_triage() -> None:
         assert "0 P0" in result.stdout
 
 
-def assert_awaited_locator_value_reads_are_triage_only() -> None:
+def assert_awaited_locator_value_reads_are_direct_only() -> None:
     result = scan_path(
         EVAL_FILES / "settings.spec.ts",
         {
@@ -3265,8 +3265,7 @@ def assert_awaited_locator_value_reads_are_triage_only() -> None:
     )
     assert result.returncode == 1, result.stdout
     value_read = section(
-        result.stdout,
-        "[P1?][LLM-TRIAGE] #4c-4e One-shot Playwright state/content assertion",
+        result.stdout, "[P1] #4c-4e One-shot Playwright state/content assertion"
     )
     assert "settings.spec.ts:49:" in value_read
     locator_heading = "[P0] #4f Locator always-true assertion"
@@ -3282,16 +3281,56 @@ def assert_awaited_locator_value_reads_are_triage_only() -> None:
             "});\n",
             encoding="utf-8",
         )
-        triage_only = scan_path(
+        direct_only = scan_path(
             root,
             {
                 "E2E_SMELL_FAIL_ON": "any",
                 "E2E_SMELL_NO_AST_GREP_DOWNLOAD": "1",
             },
         )
-        assert triage_only.returncode == 0, triage_only.stdout
-        assert "[P1?][LLM-TRIAGE] #4c-4e" in triage_only.stdout
-        assert "[P0] #4f" not in triage_only.stdout
+        assert direct_only.returncode == 1, direct_only.stdout
+        assert "[P1] #4c-4e" in direct_only.stdout
+        assert "[P1?][LLM-TRIAGE] #4c-4e" not in direct_only.stdout
+        assert "[P0] #4f" not in direct_only.stdout
+
+
+def assert_scanner_2_0_regression_shapes() -> None:
+    result = scan_path(
+        EVAL_FILES / "scanner-2.0-regressions.spec.ts",
+        {"E2E_SMELL_DISABLE_AST_GREP": "1"},
+    )
+    assert result.returncode == 1, result.stdout
+
+    page_url = section(result.stdout, "[P1] #4h One-shot page.url assertion")
+    assert "scanner-2.0-regressions.spec.ts:5:" in page_url
+    assert "scanner-2.0-regressions.spec.ts:18:" in page_url
+    assert "scanner-2.0-regressions.spec.ts:23:" in page_url
+    assert "scanner-2.0-regressions.spec.ts:17:" not in page_url
+    assert "scanner-2.0-regressions.spec.ts:20:" not in page_url
+
+    locator_truthy = section(
+        result.stdout,
+        "[P0] #4f Locator always-true assertion (truthy/defined/not-null)",
+    )
+    assert "scanner-2.0-regressions.spec.ts:6:" in locator_truthy
+    assert "scanner-2.0-regressions.spec.ts:12:" not in locator_truthy
+    assert "scanner-2.0-regressions.spec.ts:13:" not in locator_truthy
+    assert "scanner-2.0-regressions.spec.ts:15:" not in locator_truthy
+
+    missing_await = section(
+        result.stdout, "[P1] #15 Missing await on Playwright expect"
+    )
+    assert "scanner-2.0-regressions.spec.ts:7:" in missing_await
+    assert "scanner-2.0-regressions.spec.ts:8:" not in missing_await
+    assert "scanner-2.0-regressions.spec.ts:16:" not in missing_await
+
+    one_shot = section(
+        result.stdout, "[P1] #4c-4e One-shot Playwright state/content assertion"
+    )
+    assert "scanner-2.0-regressions.spec.ts:9:" in one_shot
+    assert "scanner-2.0-regressions.spec.ts:10:" in one_shot
+    assert "scanner-2.0-regressions.spec.ts:13:" not in one_shot
+    assert "scanner-2.0-regressions.spec.ts:21:" not in one_shot
 
 
 def assert_static_accessible_name_is_triage_only() -> None:
@@ -6968,7 +7007,8 @@ def main() -> None:
         assert_locator_identifier_requires_provenance,
         assert_pom_member_truthiness_is_triage_only,
         assert_arbitrary_conditional_assertions_are_triage,
-        assert_awaited_locator_value_reads_are_triage_only,
+        assert_awaited_locator_value_reads_are_direct_only,
+        assert_scanner_2_0_regression_shapes,
         assert_static_accessible_name_is_triage_only,
         assert_semantic_triage_boundaries,
         assert_pom_scope,

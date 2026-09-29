@@ -4,9 +4,13 @@
 
 - Preregistered reviewer holdout v19 as a same-corpus, same-skill rerun after v18 was inconclusive; added type-name-only Codex stream diagnostics and an opt-in fresh retry for unexpected event-stream items. Frozen v2–v18 protocols and reports are unchanged.
 
-This is a major version because the evaluation and evidence system was rebuilt with preregistered holdouts v8–v17, schema-enforced output, usage capture and revision comparison, the real-code fixpair-v1 corpus, and a developer-side Lean model of the severity contract; reviewer findings now include pattern IDs in every heading and instance severities for #1 and #23. Installs, pattern IDs, catalog severities, scanner flags, and exit codes are unchanged, so no user action is required. The completed v19 same-corpus release confirmation passed its frozen full-versus-no-skill gate; its single-host, model-authored public corpus limits the claim. Earlier results and their limits are recorded below.
+This is a major version because the evaluation and evidence system was rebuilt with preregistered holdouts v8–v17, schema-enforced output, usage capture and revision comparison, the real-code fixpair-v1 corpus, and a developer-side Lean model of the severity contract; reviewer findings now include pattern IDs in every heading and instance severities for #1 and #23. Installs, pattern IDs, catalog severities, scanner flags, and exit codes are unchanged. The completed v19 same-corpus release confirmation passed its frozen full-versus-no-skill gate; its single-host, model-authored public corpus limits the claim. Earlier results and their limits are recorded below.
 
 - Added evidence-only `claude-sonnet-5-5` field, fixpair B, and semantic-mutant S2/S3 comparisons alongside the `gpt-6-astra` batch-B comparison; skill behavior and frozen records are unchanged.
+
+### Scanner
+
+- Repaired direct detection of semicolonless `#4h` URL assertions, awaited `#4f` Locator truthiness, const-selector `#15` assertions, and provenance-backed inline `#4c-4e` Locator reads. Suites containing the newly detected P0 `#4f` shape may now fail under the default `E2E_SMELL_FAIL_ON=p0`. The recorded v19, fixpair-v1, and semantic-mutant results were measured on the pre-fix skill snapshot `976c3fa`; v19 ran with model tools disabled, so the standalone scanner was not invoked and its result is unaffected.
 
 ### Known issue resolution
 

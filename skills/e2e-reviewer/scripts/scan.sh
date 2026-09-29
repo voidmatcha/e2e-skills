@@ -1894,7 +1894,7 @@ ast_expect_binding_shadowed_at() {
   local file="$1" line="$2" target_code binding prefix
   target_code=$(source_executable_code "$file" | sed -n "${line}p")
   binding=$(printf '%s\n' "$target_code" |
-    scanner_rg -oP '^[[:space:]]*\(?[[:space:]]*\K[A-Za-z_$][A-Za-z0-9_$]*(?=[[:space:]]*[(])' |
+    scanner_rg -oP '^[[:space:]]*\(?[[:space:]]*(?:await[[:space:]]+)?\K[A-Za-z_$][A-Za-z0-9_$]*(?=[[:space:]]*[(])' |
     head -1 |
     sed -E 's/[[:space:]]//g')
   [[ -n "$binding" ]] || return 1
@@ -1927,7 +1927,7 @@ ast_playwright_expect_proven_at() {
   local file="$1" line="$2" target_code binding prefix namespace
   target_code=$(source_executable_code "$file" | sed -n "${line}p")
   binding=$(printf '%s\n' "$target_code" |
-    scanner_rg -oP '^[[:space:]]*\(?[[:space:]]*\K[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*[.][[:space:]]*expect)?(?=[[:space:]]*[(])' |
+    scanner_rg -oP '^[[:space:]]*\(?[[:space:]]*(?:await[[:space:]]+)?\K[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*[.][[:space:]]*expect)?(?=[[:space:]]*[(])' |
     head -1 |
     sed -E 's/[[:space:]]//g')
   [[ -n "$binding" ]] || return 1
@@ -4336,7 +4336,7 @@ expect_call_pattern() {
   if [[ -n "$aliases" ]]; then
     aliases="|$aliases"
   fi
-  printf '^[[:space:]]*(?:(?:expect|assertion%s)|[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*[.][[:space:]]*expect)(?:[[:space:]]|/\\*.*?\\*/)*\\(' \
+  printf '^[[:space:]]*(?:await[[:space:]]+)?(?:(?:expect|assertion%s)|[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*[.][[:space:]]*expect)(?:[[:space:]]|/\\*.*?\\*/)*\\(' \
     "$aliases"
 }
 
@@ -4761,6 +4761,61 @@ playwright_page_receiver_proven_at() {
   fi
 }
 
+# #4c-4e and #4h are retry defects only outside Playwright's retry callbacks.
+# Inspect a bounded, lexed region around the candidate and mark the target line;
+# this covers both inline and block callbacks without treating comments or
+# strings as executable wrappers.
+inside_retrying_expect_callback_at() {
+  local file="$1" line="$2" lo hi window compact
+  lo=$((line > 40 ? line - 40 : 1))
+  hi=$((line + 40))
+  window=$(source_executable_code "$file" |
+    awk -v lo="$lo" -v hi="$hi" -v target="$line" '
+      NR < lo { next }
+      NR > hi { exit }
+      NR == target { print " __E2E_TARGET__ " $0; next }
+      { print }
+    ' |
+    tr '\n' ' ')
+  compact=$(printf '%s\n' "$window" | tr -d '[:space:]')
+  printf '%s\n' "$compact" |
+    awk '
+      function matching_paren(s, open,    depth, i, c) {
+        depth = 0
+        for (i = open; i <= length(s); i++) {
+          c = substr(s, i, 1)
+          if (c == "(") depth++
+          else if (c == ")" && --depth == 0) return i
+        }
+        return 0
+      }
+      {
+        target = index($0, "__E2E_TARGET__")
+        if (!target) exit 1
+        rest = $0
+        offset = 0
+        while ((rel = index(rest, "expect.poll(")) > 0) {
+          open = offset + rel + length("expect.poll")
+          closing = matching_paren($0, open)
+          if (closing && open < target && target < closing) exit 0
+          offset += rel
+          rest = substr($0, offset + 1)
+        }
+        rest = $0
+        offset = 0
+        while ((rel = index(rest, "expect(")) > 0) {
+          open = offset + rel + length("expect")
+          closing = matching_paren($0, open)
+          if (closing && open < target && target < closing &&
+              substr($0, closing + 1, 8) == ".toPass(") exit 0
+          offset += rel
+          rest = substr($0, offset + 1)
+        }
+        exit 1
+      }
+    '
+}
+
 one_shot_page_url_hit_matches() {
   local hit="$1" file rest line binding code receiver
   file=${hit%%:*}
@@ -4773,7 +4828,46 @@ one_shot_page_url_hit_matches() {
     scanner_rg -oP '\([[:space:]]*\K(?:this[.])?[A-Za-z_$][A-Za-z0-9_$]*(?=[[:space:]]*[.][[:space:]]*url[[:space:]]*[(])' |
     head -1)
   [[ -n "$receiver" ]] || return 1
-  playwright_page_receiver_proven_at "$file" "$line" "$receiver"
+  playwright_page_receiver_proven_at "$file" "$line" "$receiver" || return 1
+  inside_retrying_expect_callback_at "$file" "$line" && return 1
+  return 0
+}
+
+# Promote only provenance-backed Locator reads to direct #4c-4e. A method name
+# such as `innerText()` on an application object remains LLM triage.
+one_shot_locator_read_hit_matches() {
+  local hit="$1" file rest line code binding receiver
+  file=${hit%%:*}
+  rest=${hit#*:}
+  line=${rest%%:*}
+  binding=$(expect_call_binding_at "$hit")
+  [[ -n "$binding" ]] || return 1
+  playwright_expect_binding "$file" "$binding" "$line" || return 1
+  inside_retrying_expect_callback_at "$file" "$line" && return 1
+  code=$(locator_assertion_source "$file" "$line")
+  printf '%s\n' "$code" |
+    scanner_rg -q 'expect[[:space:]]*\([[:space:]]*await\b.*[.](isVisible|isDisabled|isEnabled|isChecked|isHidden|isEditable|textContent|innerText|getAttribute|inputValue|allTextContents|allInnerTexts|count)[[:space:]]*\(' ||
+    return 1
+  if printf '%s\n' "$code" |
+      scanner_rg -q 'expect[[:space:]]*\([[:space:]]*await[[:space:]]+page[.](locator|getBy[A-Z][A-Za-z]*)[[:space:]]*\('; then
+    playwright_page_receiver_proven_at "$file" "$line" page
+    return
+  fi
+  receiver=$(printf '%s\n' "$code" |
+    scanner_rg -oP 'expect[[:space:]]*\([[:space:]]*await[[:space:]]+\K[A-Za-z_$][A-Za-z0-9_$]*(?=(?:[.][A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*\([^)]*\))*[.](?:isVisible|isDisabled|isEnabled|isChecked|isHidden|isEditable|textContent|innerText|getAttribute|inputValue|allTextContents|allInnerTexts|count)[[:space:]]*\()' |
+    head -1)
+  [[ -n "$receiver" ]] || return 1
+  proven_locator_binding "$file" "$line" "$receiver"
+}
+
+one_shot_locator_read_triage_hit_matches() {
+  local hit="$1" file rest line
+  file=${hit%%:*}
+  rest=${hit#*:}
+  line=${rest%%:*}
+  inside_retrying_expect_callback_at "$file" "$line" && return 1
+  one_shot_locator_read_hit_matches "$1" && return 1
+  return 0
 }
 
 soft_expect_hit_matches() {
@@ -4979,7 +5073,7 @@ locator_assertion_source() {
     NR > target + 12 { exit }
     {
       code = code " " executable_source($0, 1)
-      if (code ~ /[.](toBeTruthy|toBeDefined|toBeNull|toBeUndefined)[[:space:]]*[(]/ ||
+      if (code ~ /[.](not[.])?to[A-Z][A-Za-z0-9_$]*[[:space:]]*[(]/ ||
           code ~ /[.]not[.]to([.]be)?[.](equal|undefined|null)/ ||
           code ~ /;[[:space:]]*$/) {
         gsub(/[[:space:]]+/, " ", code)
@@ -5017,7 +5111,7 @@ expect_call_binding_at() {
   local hit="$1" code
   code=$(lexical_target_line "$hit")
   printf '%s\n' "$code" |
-    scanner_rg -oP '^[[:space:]]*\(?[[:space:]]*(?:[^,;()]+,[[:space:]]*)?\K[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*\.[[:space:]]*expect)?[[:space:]]*(?=\()' |
+    scanner_rg -oP '^[[:space:]]*\(?[[:space:]]*(?:await[[:space:]]+)?(?:[^,;()]+,[[:space:]]*)?\K[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*\.[[:space:]]*expect)?[[:space:]]*(?=\()' |
     head -1 |
     sed -E 's/[[:space:]]//g'
 }
@@ -5145,11 +5239,12 @@ retry_expect_hit_matches() {
 }
 
 proven_locator_binding() {
-  local file="$1" line="$2" binding="$3"
+  local file="$1" line="$2" binding="$3" depth="${4:-0}" code parent assignment_lines
+  (( depth < 8 )) || return 1
   case "$binding" in
     *[!A-Za-z0-9_$]*|'') return 1 ;;
   esac
-  awk -v last="$line" '
+  code=$(awk -v last="$line" '
     function executable_source(s, want_output,    out, i, c, nchar) {
       out = ""
       # A line this long is generated or vendored, never test source. The
@@ -5203,8 +5298,25 @@ proven_locator_binding() {
       return out
     }
     NR <= last { print executable_source($0, 1) }
-  ' "$file" 2>/dev/null |
-    scanner_rg -qP "(?:\\b(?:const|let|var|readonly)[[:space:]]+$binding[[:space:]]*:[[:space:]]*(?:import[[:space:]]*\\([^)]*\\)[.]?)?Locator\\b|\\bconst[[:space:]]+$binding[[:space:]]*=[[:space:]]*page[.](?:locator|getBy[A-Z][A-Za-z]*)[[:space:]]*\\()"
+  ' "$file" 2>/dev/null)
+  printf '%s\n' "$code" |
+    scanner_rg -qP "(?:^|[^A-Za-z0-9_\$])(?:const|let|var|readonly)[[:space:]]+\\Q$binding\\E[[:space:]]*:[[:space:]]*(?:import[[:space:]]*\\([^)]*\\)[.]?)?Locator\\b" &&
+    return 0
+  assignment_lines=$(printf '%s\n' "$code" |
+    scanner_rg -P "(?:^|[^A-Za-z0-9_\$])const[[:space:]]+\\Q$binding\\E[[:space:]]*=[[:space:]]*(?:await[[:space:]]+)?page[.](?:locator|getBy[A-Z][A-Za-z]*)[[:space:]]*\\(" || true)
+  if [[ -n "$assignment_lines" ]] && ! printf '%s\n' "$assignment_lines" |
+      scanner_rg -q '[.](isVisible|isDisabled|isEnabled|isChecked|isHidden|isEditable|textContent|innerText|getAttribute|inputValue|allTextContents|allInnerTexts|count)[[:space:]]*[(]'; then
+    return 0
+  fi
+  printf '%s\n' "$code" |
+    scanner_rg -qP "for[[:space:]]*[(][[:space:]]*const[[:space:]]+\\Q$binding\\E[[:space:]]+of[[:space:]]+await[[:space:]]+page[.](?:locator|getBy[A-Z][A-Za-z]*)[[:space:]]*\\([^;]*[.]all[[:space:]]*\\(" &&
+    return 0
+  assignment_lines=$(printf '%s\n' "$code" |
+    scanner_rg -oP "(?:^|[^A-Za-z0-9_\$])const[[:space:]]+\\Q$binding\\E[[:space:]]*=[[:space:]]*(?:await[[:space:]]+)?\\K[A-Za-z_$][A-Za-z0-9_$]*(?=[.](?:first|last|nth|filter|locator|getBy[A-Z][A-Za-z]*)[[:space:]]*\\()" |
+    tail -1)
+  parent="$assignment_lines"
+  [[ -n "$parent" && "$parent" != "$binding" ]] || return 1
+  proven_locator_binding "$file" "$line" "$parent" "$((depth + 1))"
 }
 
 locator_assertion_hit_matches() {
@@ -5218,7 +5330,7 @@ locator_assertion_hit_matches() {
   awaited_locator_value_read_at "$file" "$line" && return 1
   code=$(locator_assertion_source "$file" "$line")
   printf '%s\n' "$code" |
-    scanner_rg -q '^[[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*(\s*\.\s*expect)?\s*\(\s*page\.(locator|getBy[A-Z][A-Za-z]*)\s*\(.*\)\s*(\.toBeTruthy\s*\(\s*\)|\.toBeDefined\s*\(\s*\)|\.not\.toBeNull\s*\(\s*\)|\.not\.toBeUndefined\s*\(\s*\)|\.not\.to\.equal\s*\(\s*null\s*\)|\.not\.to\.be\.null)' &&
+    scanner_rg -q '^[[:space:]]*(await[[:space:]]+)?[A-Za-z_$][A-Za-z0-9_$]*(\s*\.\s*expect)?\s*\(\s*page\.(locator|getBy[A-Z][A-Za-z]*)\s*\(.*\)\s*(\.toBeTruthy\s*\(\s*\)|\.toBeDefined\s*\(\s*\)|\.not\.toBeNull\s*\(\s*\)|\.not\.toBeUndefined\s*\(\s*\)|\.not\.to\.equal\s*\(\s*null\s*\)|\.not\.to\.be\.null)' &&
     return 0
   binding=$(printf '%s\n' "$code" |
     scanner_rg -o '[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*\([[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*' |
@@ -6336,6 +6448,10 @@ run_check() {
     raw_output=$(filter_hits_by initialized_module_state_hit_matches)
   elif [[ "$flags" == *",one-shot-page-url,"* && -n "$raw_output" ]]; then
     raw_output=$(filter_hits_by one_shot_page_url_hit_matches)
+  elif [[ "$flags" == *",one-shot-locator-read-direct,"* && -n "$raw_output" ]]; then
+    raw_output=$(filter_hits_by one_shot_locator_read_hit_matches)
+  elif [[ "$flags" == *",one-shot-locator-read-triage,"* && -n "$raw_output" ]]; then
+    raw_output=$(filter_hits_by one_shot_locator_read_triage_hit_matches)
   elif [[ "$flags" == *",soft-expect,"* && -n "$raw_output" ]]; then
     raw_output=$(filter_hits_by soft_expect_hit_matches)
   elif [[ "$flags" == *",direct-page-api,"* && -n "$raw_output" ]]; then
@@ -6851,7 +6967,8 @@ run_check P1 '#4b' 'Vacuous toBeAttached assertion (positive form only; Phase 2 
 # floats. The leading `(?:...)*` group admits wrapped forms (`expect((await ...).trim())`,
 # `expect(Number(await ...))`, `expect(!(await ...))`) that field runs showed being
 # misfiled under #15 by the old locator-substring heuristic.
-run_check P1 '#4c-4e' 'One-shot Playwright state/content assertion' 'expect\((?:[!(\s+-]|[A-Za-z_$][\w$.]*\()*await\b.*\.(isVisible|isDisabled|isEnabled|isChecked|isHidden|isEditable|textContent|innerText|getAttribute|inputValue|allTextContents|allInnerTexts|count)\([^)]*\)\)' "$ALL_CODE_GLOB" 'triage,playwright-only'
+run_check P1 '#4c-4e' 'One-shot Playwright state/content assertion' 'expect\((?:[!(\s+-]|[A-Za-z_$][\w$.]*\()*await\b.*\.(isVisible|isDisabled|isEnabled|isChecked|isHidden|isEditable|textContent|innerText|getAttribute|inputValue|allTextContents|allInnerTexts|count)\([^)]*\)\)' "$ALL_CODE_GLOB" 'playwright-only,one-shot-locator-read-direct'
+run_check P1 '#4c-4e' 'Possible one-shot Playwright state/content assertion' 'expect\((?:[!(\s+-]|[A-Za-z_$][\w$.]*\()*await\b.*\.(isVisible|isDisabled|isEnabled|isChecked|isHidden|isEditable|textContent|innerText|getAttribute|inputValue|allTextContents|allInnerTexts|count)\([^)]*\)\)' "$ALL_CODE_GLOB" 'triage,playwright-only,one-shot-locator-read-triage'
 run_check P0 '#4f' 'Locator always-true assertion (truthy/defined/not-null)' "$EXPECT_CALL_PATTERN" "$ALL_CODE_GLOB" 'e2e,locator-assertion'
 run_check P0 '#4f' 'Possible wrapped Locator truthiness assertion' "$EXPECT_CALL_PATTERN" "$ALL_CODE_GLOB" 'e2e,triage,wrapped-locator-assertion'
 run_check P0 '#4f' 'Possible Locator truthiness in unresolved test-fixture source' "$EXPECT_CALL_PATTERN" "$ALL_CODE_GLOB" 'triage,unresolved-locator-assertion,unresolved-test-source'

@@ -210,7 +210,10 @@ class ReviewerHoldoutV21Test(unittest.TestCase):
                     cwd=ROOT,
                 )
                 with tarfile.open(fileobj=io.BytesIO(archive)) as handle:
-                    handle.extractall(temp, filter="data")
+                    try:
+                        handle.extractall(temp, filter="data")
+                    except TypeError:  # Python without extraction filters; the archive is our own tree.
+                        handle.extractall(temp)
                 self.assertEqual(
                     pin["skill_sha256"],
                     self.runner.skill_digest(Path(temp) / "skills/e2e-reviewer"),

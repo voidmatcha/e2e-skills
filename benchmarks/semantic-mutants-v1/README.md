@@ -6,6 +6,8 @@ The accepted cases cover #1, #2, #20, #22, and #23. S1 contains ten #1/#2 cases.
 
 ## Result
 
+These recorded model-review results used the reviewer skill before the 2.0.0 scanner fixes (`976c3fa`); they were not recomputed after the standalone scanner changed.
+
 | Arm | Strict recall | Lenient recall (±2 lines) | AFTER false alarms | Mean input tokens per sample |
 |---|---:|---:|---:|---:|
 | skill | **7/10** | **7/10** | **1/10** | 558,224 |
