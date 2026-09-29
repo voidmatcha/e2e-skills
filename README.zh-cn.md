@@ -19,7 +19,9 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=79f4890e4775a2db94f0f1ee0783683d3405754e45a1d7ca7e117ca129fa4ad1; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=3d633a5288f3a0de8d86a763b243ffc5f22dfa243a36b1ce6138fad87a1f8d61; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+
+Evidence scope: the 15 merged PRs shown here are curated examples, not a total. Field review v1 separately records 29 submitted / 16 merged / 6 closed / 7 open under its skill-name inclusion rule; do not combine the two denominators. These are recorded snapshots, not current GitHub totals.
 
 `e2e-skills` 为 AI 编程代理提供四个面向 E2E 测试工作的聚焦工作流：生成 Playwright 覆盖、审查现有 spec 或 PR/diff 范围内的测试变更、调试失败的 Playwright 报告，以及调试失败的 Cypress 报告。它还包含一个确定性扫描器，用于发现审查目录中可机械判定的子集。
 
@@ -224,7 +226,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 这套 bundle 用于生成或审查 E2E 测试，以及分析失败的 Playwright/Cypress 运行。它应与应用及其真实 E2E suite 配合使用，而不是替代它们；它也不是通用 lint preset 或框架无关的测试工具。它支持 Playwright 和 Cypress；新测试生成目前只面向 Playwright。
 
-内置 shell scripts 和 artifact readers 面向 macOS/Linux shell。Windows 用户应通过 WSL 运行，并把 scan/report artifacts 保存在 WSL filesystem 内。
+The bundled shell scripts and artifact readers target conventional macOS/Linux layouts with `/bin/bash` and the fixed system executable paths required by their launchers. Windows users need a compatible WSL distribution and artifacts inside the WSL filesystem; native Windows is not supported. NixOS and Nix-, pyenv-, Conda-, or nvm-only tool installations are not universally auto-discovered. The reviewer scanner supports validated absolute `E2E_SMELL_*_BIN` overrides; this does not imply the same overrides exist in the generator or debugger launchers. Missing trusted tools stop the affected operation; do not bypass that boundary with ambient `PATH` lookup. Resolve skill resources from the actual host-provided skill location, including plugin caches and custom installs, not a guessed home directory.
 
 生成的测试仅仅通过还不够：它可能断言的是 `Locator` 或 `Promise` 本身，观察的状态与测试名称所描述的行为无关，或者主要断言根本不影响测试结果。因此，在所有适用的 [V1–V6 验证](skills/playwright-test-generator/verification-rules.md) 通过之前，生成器始终把新 spec 视为候选项。
 
@@ -258,6 +260,12 @@ Debug the failed Cypress report in cypress/reports/.
 - 浏览器故障注入已完成 **12 个故障算子与 3 种预期结果组合形成的全部 36 个 Playwright/Cypress 单元**。这是对测试台自身的检验：应用、健壮的测试、注入的故障和脆弱的测试都由本仓库编写，因此它只能说明检测器按设计触发，并不代表可以泛化。
 - [Healer perturbation v1](benchmarks/healer-perturbation-v1/README.md) 已完成**全部 30 个冻结的 Codex 单元**并返回 `REJECT`：带保护约束的官方 healer prompt 与本仓库提议的 Step 7 工作流，都削弱了全部 3 个不可修复的诚实性对照项。该结果否决了把这两条 healer 路径作为安全默认值；它没有测量 Claude、通用 healer 质量或审查准确率，也没有修改产品指令。
 - Exact reviewer benchmark 覆盖 **12 个已证实的 false-green cases 和 12 个 clean guards**；其中 10 个 fault cases 是 byte-identical operator mutants。
+- [真实代码修复前后配对](benchmarks/fixpair-v1/README.md)的 B+C+D 批次严格召回率为**使用技能 25/33、未使用 13/33**，修复后（AFTER）误报均为 **0/33**。第二个模型 `gpt-6-astra` 在 B 批次得到 **10/15 对 10/15**，两组误报均为 **0/15**。
+- [语义变异样本 v1](benchmarks/semantic-mutants-v1/README.md)记录了模型注入真实测试文件的缺陷：S1 的严格召回率为 **7/10 对 5/10**（原始对照组各有 1 次误报），S2 为 **8/9 对 2/9**（均为 0 次），S3 为 **5/6 对 2/6**（0 次对 2 次）。这些是每个样本运行一次的开发测量；未覆盖 #12。
+- [Reviewer holdout v21](benchmarks/reviewer-holdout-v21/README.md)未支持明确的 #2 措辞：480 次调用中，full 的稳定 F1 从 **1.000 降至 0.980**。保留 2.0.0 措辞；两组已将部分验证的 #2 判为 P1。
+- 加上未公开、仅在本地使用的 AGPL 批次，全部批次的汇总为 **36/44 对 23/44**，修复后（AFTER）误报为 **0 对 1**。[现场模型比较](docs/ai-reviewer-benchmark.md#field-model-comparison)另行报告了对 19 个真实仓库测试文件的本地测量。
+**选哪个模型？** 在这些本地评测中，使用技能时 `gpt-6-sol` 的召回率最高。`claude-sonnet-5-5` 在 19 个真实测试文件上全部遵守流程，测得的输入 token 用量也最低；但在小规模修复前后配对和语义变异批次中，技能几乎没有提高它的召回率，主要收益是减少误报。`gpt-6-astra` 和 Sonnet 5.5 等强模型即使不使用技能，也能发现许多机械性问题。`claude-fable-5` 的得分也较高，但[据 Anthropic 帮助中心说明，Fable 消耗套餐额度更快，且在 Max 套餐中最多只能使用每周额度的 50%](https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan)。这些是每个样本只运行一次、仅适用于所列模型版本的开发测量。
+
 - Reviewer holdout v7 对 `no-skill` 的 6 项 lift 检查全部通过，但未达到预注册的 `catalog-only` lift 门槛。Full 的 precision（`0.956522` 对 `0.884615`）和 clean specificity（`1.0` 对 `0.75`）更高，但 recall 更低（`0.916667` 对 `0.958333`），因此不作 skill-lift 声明。
 - Independent product-review robustness gates v4、v5、v7、v8 和 v11 未达到其预注册标准。v6 和 v9 未运行，v10 在 3 次尝试中仅运行 1 次后，被复用其冻结评审输入的 v11 取代；v1 至 v11 仅作为既有的 robustness evidence 保留，不是当前的 release gates。
 - Debugger protocol 提供可重放的 30-case synthetic corpus，但不声称已独立建立调试器准确率。
@@ -297,7 +305,7 @@ Debug the failed Cypress report in cypress/reports/.
 | 6 | **直接 DOM 查询** | `evaluate()` 中的 `document.querySelector` | 使用框架的 locator/query API（`locator` / `cy.get`） |
 | 9 | **硬编码等待** | `waitForTimeout(2000)` / `cy.wait(2000)` / `waitForLoadState('networkidle')` | 依赖框架自动等待；使用基于条件的等待 |
 | 10 | **不稳定测试模式** | 没有注释的 `items.nth(2)`；`test.describe.serial()`；未限定作用域的 accessible-name substring（10c）；Cypress async callbacks、被赋值的 `cy` commands，或继续串接的 action chains（10d–10f） | 使用稳定且限定作用域的 locators 和自包含测试；让 Cypress 工作留在其 command chain 中，不要把 Chainables 赋值为普通值，并在 actions 后重新查询 |
-| 13 | **POM 使用不一致** | 已导入 POM，但 spec 对 POM-owned actions 使用 raw `page.fill`/`page.click` | 将所有交互路由到 POM，使 UI 变化只需在一个地方更新 |
+| 13 | **POM 使用不一致** | Raw actions bypass a source-established same-page POM boundary; existence alone is insufficient | Reuse the proven boundary; do not invent a wrapper merely because a POM exists |
 | 14 | **硬编码凭据** | 测试代码中的 `loginPage.login('demo-admin', '<literal-password>')` | 使用 `process.env.TEST_USER`、Playwright config secrets 或 test data fixtures |
 | 15 | **`expect()` 缺失 `await`** | Async Locator/Page web-first matcher Promise 没有被排序或观察；rejection 通常稍后才暴露，归因更差 | `await` 或 return matcher Promise；sync value matchers 被排除 |
 | 16 | **action 缺失 `await`** | Actionability、action ordering 或 navigation 可能与后续工作竞态；rejection 通常稍后才暴露，归因更差 | `await` 或 return action Promise |
@@ -420,6 +428,7 @@ Claude Code、Codex，以及 `skills` CLI 支持的 55+ 宿主都可以加载公
 - [调试器基准协议](docs/debugger-benchmark/README.md)
 - [框架范围](docs/framework-scope.md)
 - [路线图](docs/roadmap.md)
+- [Reviewer evidence execution plan and optional Jev experiment](docs/plans/reviewer-evidence-next-steps.md)
 
 计划中的工作包括提升跨模型规则一致性，以及增强确定性检测。在对应的专门验证通过之前，任何路线图条目都不会被描述为已交付。
 

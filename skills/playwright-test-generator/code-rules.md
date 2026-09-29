@@ -22,7 +22,7 @@ Non-negotiable for every generated spec, regardless of project shape:
 | POM directory exists, POM for this page already exists | Extend existing POM — add new locators only + new spec file |
 | No POM directory anywhere | Flat spec file only |
 
-**Extending an existing POM:** Read the file first. Match its existing naming and structural patterns — even if they differ from the rules below. Apply rules below only to newly added code.
+**Local POM style is authoritative:** For every new or modified POM, inspect relevant sibling POMs first. Match the safe dominant pattern for flat versus composed locators, getter methods versus direct `readonly` properties, base classes, constructors, and navigation naming—even when it differs from the fallback below. When styles are mixed, use the closest analogous POM already consumed by a spec and record that choice in the Step 4 plan. Use the fallback template below only when no safe local precedent exists; never copy a pattern that would violate the safety or verification contracts.
 
 ---
 
@@ -44,7 +44,7 @@ Never use XPath. Never use CSS class chains that couple to styling.
 
 ---
 
-## POM Rules (new files only)
+## Fallback POM rules (new files with no safe local precedent)
 
 ```typescript
 import { Page, Locator } from '@playwright/test';
@@ -72,8 +72,8 @@ export class LoginPage {
 }
 ```
 
-- `readonly` locators only — no getter methods
-- Composition pattern: group related locators into named objects
+- Expose locators as direct `readonly` properties rather than getter methods
+- Group related locators into named composition objects
 - `navigate()` uses `page.goto(path)` unless a custom navigation utility exists in the project
 
 ---
@@ -118,9 +118,9 @@ test.describe('Login', () => {
 });
 ```
 
-- BDD comments: `// Given:`, `// When:`, `// Then:`
+- Given/When/Then comments are optional: follow the repository's established test style, and use them only when that style or the approved plan calls for them.
 - Each test fully independent — own storage, session, cookies
-- `beforeEach` for shared navigation setup only — never for shared state
+- `beforeEach` may perform shared navigation or isolated setup or reset that runs independently for every test; use it to create per-test state, never to share mutable state between tests.
 - `afterEach` or fixture teardown may revert state the test itself wrote, as V5's disposable-state boundary requires; never use it to hide a failure
 - Mock external APIs with Playwright Network API; do not call real third-party services
 - **Use a web-first assertion that matches the approved product contract:** `toBeVisible()`, `toBeHidden()`, `toBeAttached()`, `toHaveText()`, `toContainText()`, `toHaveCount()`, `toHaveURL()`, and equivalent retrying matchers.
@@ -136,7 +136,7 @@ test.describe('Login', () => {
 | `expect(await el.isVisible()).toBe(true)` | `await expect(el).toBeVisible()` |
 | `const n = await el.count()` as the sole outcome assertion or readiness gate | `await expect(el).toHaveCount(N)` when cardinality is the contract, or another web-first assertion for the promised user-visible postcondition. Raw `count()` remains valid for evidenced data collection or bounded iteration after readiness when a separate web-first assertion proves the outcome. |
 | `toBeAttached()` when the approved contract promises visibility or removal | Match the promise: use `toBeVisible()` for visibility and `not.toBeAttached()` for removal. Positive `toBeAttached()` is valid when DOM attachment itself is the approved contract, including a CSS-hidden element that must persist or an app-provided hydration marker. |
-| `expect(locator).toBeTruthy()` | `await expect(locator).toBeVisible()` — Locator is always a truthy JS object |
+| `expect(locator).toBeTruthy()` | Replace it with a web-first matcher that expresses the approved contract: `toBeVisible()` only for promised visibility, `toBeAttached()` for promised DOM presence (including a CSS-hidden element), or another matching outcome assertion. Locator is always a truthy JS object, so the original assertion does not reveal intent. Do not infer visibility from the invalid truthiness assertion or change the approved expected value. |
 | `page.click(selector)` / `page.fill(selector, v)` | `page.locator(selector).click()` / `.fill(v)` — locator-first actions are easier to compose and review |
 | `{ force: true }` | Fix the root cause (element not actionable); if unavoidable, add `// JUSTIFIED:` |
 | `waitUntil: 'networkidle'` | `waitUntil: 'domcontentloaded'` or condition-based wait — unreliable on SPAs |
@@ -192,11 +192,11 @@ type MockRule = {
 // urlencoded body for POST (body value wins if a key exists in both).
 ```
 
-Two hard rules learned from production use:
+Request-aware guidance:
 
-- **A registered-but-unmatched rule array must NOT fall through to the network.** If the cmd is in the map but no rule matches, answer with an empty success + a loud warning that includes the method and params — a param typo (`liked: 'True'`) must surface as a warning, never as a real-backend write.
+- **A registered-but-unmatched rule array must NOT fall through or look successful.** If the cmd is in the map but no rule matches, abort that request so it cannot reach any external network and also cause an unconditional hard test failure that includes the method and parameters, even when the UI handles the failed request. Use the repository's native mechanism; for example, a per-test collector checked by a hard fixture teardown or `afterEach`. Aborting alone is insufficient because the application may render a normal fallback state. A param typo (`liked: 'True'`) must remain observable as a test failure.
 - Pagination contracts become testable with a `start`/`offset` param rule per page: seed page 1 at exactly the page size (a short page often sets an internal "loaded end" flag that suppresses the next request), then assert the page-2 item appears after scroll *and* a page-1 item is still attached (append, not replace).
-- **Before narrowing a rule with `when.params`, prove the app actually sends that param at that point in time — wire evidence, not source intent.** A component that reads `router.query` in a first-render `useRef`/initializer fires its initial fetch during hydration, before `router.isReady`, so the query param is silently dropped from the wire even though the source clearly "passes" it. A param-narrowed rule then never matches, the strict fallback answers empty, and a previously-green render test fails for a contract the app never honors. If the param is best-effort in practice, keep the broad rule and record the WHY as a comment citing the file:line of the early read.
+- **Before narrowing a rule with `when.params`, prove the app actually sends that param at that point in time — wire evidence, not source intent.** A component that reads `router.query` in a first-render `useRef`/initializer can fire its initial fetch during hydration before `router.isReady`, so the query parameter is absent from the wire even though the source appears to pass it. If the approved scenario or V4 proof requires that parameter, do not broaden the rule, remove its parameter, or replace request proof with a pixel assertion; return `NOFIX` with the product-defect evidence and require an approved plan change before weakening the contract. A broad rule is acceptable only when the approved contract never required that parameter and the observed wire behavior supports the broader match.
 
 **Prove the call, not just the pixels.** For write interactions with optimistic UI (like toggles, deletes), the UI updates before — and regardless of — the request. Pair every such assertion with request proof:
 
@@ -207,7 +207,7 @@ await call; // without this line the test passes even if the wiring to the API i
 await expect(likeToggle).toHaveAttribute('aria-pressed', 'true');
 ```
 
-**…but prove the call HAPPENS before asserting it (the inverse trap).** "Prove the call" only applies to calls the app actually makes at runtime. Unmount-cleanup API calls are the canonical counterexample: an empty-deps effect's cleanup captures its guard variables as a stale closure from mount time — if the guard (e.g. a `quizSetId` that arrives with the fetch response) was empty at mount, the cleanup's `if (id) api.cancel(id)` is a dead path forever, even though the source reads as an obvious contract. A `waitForRequest` assertion on such a call times out against correct test code. Before shipping a call-proof assertion on exit/unmount/cleanup paths, verify the request fires at least once (solo run, network log); if it never does, assert the user-visible outcome instead, file the stale closure as an app defect, and leave a comment with the file:line so the proof can be added when the defect is fixed.
+**…but prove the call HAPPENS before asserting it (the inverse trap).** Unmount-cleanup API calls are a common counterexample: an empty-deps effect's cleanup can capture its guard variables as a stale closure from mount time, leaving the call unreachable even though the source reads as an intended contract. Before shipping call proof on exit, unmount, or cleanup paths, verify the request fires at least once with a solo run or network log. If an approved scenario or V4 contract requires the call and it never occurs, return `NOFIX` with the product-defect evidence; do not replace that proof with a user-visible assertion. Only use a UI-only assertion when the approved contract never required that call, and record V4 as `N/A` only where the verification rules permit it.
 
 ---
 

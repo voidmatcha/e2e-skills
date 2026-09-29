@@ -1,0 +1,287 @@
+{
+  "schema_version": 1,
+  "comparator_sha256": "b23684badbfbc377963319334dd642338ebefedf28f3c3e90c31241b87c5cfb1",
+  "evaluator_sha256": "3745d09c5c78dab9032ed5f793fc1c494cf825cf67432a7f38a6a47202f2f752",
+  "comparison_mode": "arm-matrix",
+  "skill_lift_claim_eligible": false,
+  "evidence_scope": "development",
+  "release_eligible": false,
+  "protocol_id": "reviewer-holdout-v18",
+  "protocol_sha256": "8691b9f4b93ef67326027e23b707bf25d79e83e9238999eebb452323e6771263",
+  "corpus_sha256": "c74538cdb005ef040428ad25b37c85bb31d432e069246338ee6d437efa214238",
+  "reports": [
+    "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v18-ebd34a2/full.json",
+    "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v18-ebd34a2/catalog-only.json",
+    "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v18-ebd34a2/no-skill.json"
+  ],
+  "report_inputs": [
+    {
+      "path": "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v18-ebd34a2/full.json",
+      "sha256": "6208d605423378abdfa585a8461caa405bb78473762de19f6c2d57c35de422ae"
+    },
+    {
+      "path": "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v18-ebd34a2/catalog-only.json",
+      "sha256": "69edfd5112cde712643857870cb0570eba9f2be486a3739246c0a925c1fdddf5"
+    },
+    {
+      "path": "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v18-ebd34a2/no-skill.json",
+      "sha256": "b0efe595589b1738334b3cf877a4c32c7d95f79dc07a8e3795a93dd9ababa4e8"
+    }
+  ],
+  "prompt_profiles": [
+    "catalog-only",
+    "full",
+    "no-skill"
+  ],
+  "status": "INCONCLUSIVE",
+  "status_reasons": [
+    {
+      "code": "arm_input_incomplete",
+      "profile": "no-skill",
+      "runner": "codex",
+      "model": "gpt-6-sol",
+      "message": "every arm report must finish the exact schedule without infrastructure or integrity errors"
+    }
+  ],
+  "metrics": null,
+  "claim_policy": {
+    "pass": "Development skill-lift evidence is limited to this fixed public corpus, declared model identifiers, captured CLI versions, prompts, and schedule; provider backend snapshots are not attested.",
+    "fail": "No skill-lift claim is allowed.",
+    "inconclusive": "No skill-lift claim is allowed.",
+    "partial_results": "Descriptive arm metrics may be published, but never as a causal or partial skill-lift claim."
+  },
+  "infrastructure_retry": {
+    "policy": {
+      "max_attempts_per_call": 2,
+      "retryable": [
+        "timeout",
+        "runner_nonzero_exit_with_usage_limit_text",
+        "malformed_json_output",
+        "runner_auth_error"
+      ],
+      "contract": "A scheduled call with a v11 retryable failure or a nonzero runner authentication-error envelope is retried once in a freshly prepared identical workspace at the same schedule position. Every attempt and retry reason is recorded; the final attempt is scored. A scoreable output is never retried. Authentication-error output is omitted from reports to avoid credential leakage."
+    },
+    "reports": [
+      {
+        "prompt_profile": "full",
+        "runner": "codex",
+        "model": "gpt-6-sol",
+        "infrastructure_retry_summary": {
+          "scheduled_calls": 180,
+          "total_attempts": 180,
+          "retried_calls": 0,
+          "retries": 0,
+          "retries_by_reason": {
+            "timeout": 0,
+            "runner_nonzero_exit_with_usage_limit_text": 0,
+            "malformed_json_output": 0,
+            "runner_auth_error": 0
+          },
+          "scored_after_retry": 0,
+          "unscoreable_with_retryable_reason": 0
+        }
+      },
+      {
+        "prompt_profile": "catalog-only",
+        "runner": "codex",
+        "model": "gpt-6-sol",
+        "infrastructure_retry_summary": {
+          "scheduled_calls": 180,
+          "total_attempts": 180,
+          "retried_calls": 0,
+          "retries": 0,
+          "retries_by_reason": {
+            "timeout": 0,
+            "runner_nonzero_exit_with_usage_limit_text": 0,
+            "malformed_json_output": 0,
+            "runner_auth_error": 0
+          },
+          "scored_after_retry": 0,
+          "unscoreable_with_retryable_reason": 0
+        }
+      },
+      {
+        "prompt_profile": "no-skill",
+        "runner": "codex",
+        "model": "gpt-6-sol",
+        "infrastructure_retry_summary": {
+          "scheduled_calls": 180,
+          "total_attempts": 180,
+          "retried_calls": 0,
+          "retries": 0,
+          "retries_by_reason": {
+            "timeout": 0,
+            "runner_nonzero_exit_with_usage_limit_text": 0,
+            "malformed_json_output": 0,
+            "runner_auth_error": 0
+          },
+          "scored_after_retry": 0,
+          "unscoreable_with_retryable_reason": 0
+        }
+      }
+    ]
+  },
+  "usage_capture": {
+    "policy": {
+      "enabled": true
+    },
+    "reports": [
+      {
+        "prompt_profile": "full",
+        "runner": "codex",
+        "model": "gpt-6-sol",
+        "usage_summary": {
+          "unit": "one-report-one-arm",
+          "final_attempts": {
+            "records": 180,
+            "records_with_usage": 180,
+            "records_without_usage": 0,
+            "sources": [
+              "codex-json-events"
+            ],
+            "totals": {
+              "input_tokens": 9590242,
+              "cached_input_tokens": 1334144,
+              "cache_write_tokens": null,
+              "output_tokens": 27862,
+              "reasoning_output_tokens": 18977
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 53279.12222222222,
+              "cached_input_tokens": 7411.9111111111115,
+              "cache_write_tokens": null,
+              "output_tokens": 154.7888888888889,
+              "reasoning_output_tokens": 105.42777777777778
+            }
+          },
+          "all_attempts": {
+            "records": 180,
+            "records_with_usage": 180,
+            "records_without_usage": 0,
+            "sources": [
+              "codex-json-events"
+            ],
+            "totals": {
+              "input_tokens": 9590242,
+              "cached_input_tokens": 1334144,
+              "cache_write_tokens": null,
+              "output_tokens": 27862,
+              "reasoning_output_tokens": 18977
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 53279.12222222222,
+              "cached_input_tokens": 7411.9111111111115,
+              "cache_write_tokens": null,
+              "output_tokens": 154.7888888888889,
+              "reasoning_output_tokens": 105.42777777777778
+            }
+          }
+        }
+      },
+      {
+        "prompt_profile": "catalog-only",
+        "runner": "codex",
+        "model": "gpt-6-sol",
+        "usage_summary": {
+          "unit": "one-report-one-arm",
+          "final_attempts": {
+            "records": 180,
+            "records_with_usage": 180,
+            "records_without_usage": 0,
+            "sources": [
+              "codex-json-events"
+            ],
+            "totals": {
+              "input_tokens": 5853955,
+              "cached_input_tokens": 1594368,
+              "cache_write_tokens": null,
+              "output_tokens": 30197,
+              "reasoning_output_tokens": 20261
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 32521.972222222223,
+              "cached_input_tokens": 8857.6,
+              "cache_write_tokens": null,
+              "output_tokens": 167.76111111111112,
+              "reasoning_output_tokens": 112.56111111111112
+            }
+          },
+          "all_attempts": {
+            "records": 180,
+            "records_with_usage": 180,
+            "records_without_usage": 0,
+            "sources": [
+              "codex-json-events"
+            ],
+            "totals": {
+              "input_tokens": 5853955,
+              "cached_input_tokens": 1594368,
+              "cache_write_tokens": null,
+              "output_tokens": 30197,
+              "reasoning_output_tokens": 20261
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 32521.972222222223,
+              "cached_input_tokens": 8857.6,
+              "cache_write_tokens": null,
+              "output_tokens": 167.76111111111112,
+              "reasoning_output_tokens": 112.56111111111112
+            }
+          }
+        }
+      },
+      {
+        "prompt_profile": "no-skill",
+        "runner": "codex",
+        "model": "gpt-6-sol",
+        "usage_summary": {
+          "unit": "one-report-one-arm",
+          "final_attempts": {
+            "records": 180,
+            "records_with_usage": 180,
+            "records_without_usage": 0,
+            "sources": [
+              "codex-json-events"
+            ],
+            "totals": {
+              "input_tokens": 2179790,
+              "cached_input_tokens": 1624192,
+              "cache_write_tokens": null,
+              "output_tokens": 52842,
+              "reasoning_output_tokens": 43280
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 12109.944444444445,
+              "cached_input_tokens": 9023.288888888888,
+              "cache_write_tokens": null,
+              "output_tokens": 293.56666666666666,
+              "reasoning_output_tokens": 240.44444444444446
+            }
+          },
+          "all_attempts": {
+            "records": 180,
+            "records_with_usage": 180,
+            "records_without_usage": 0,
+            "sources": [
+              "codex-json-events"
+            ],
+            "totals": {
+              "input_tokens": 2179790,
+              "cached_input_tokens": 1624192,
+              "cache_write_tokens": null,
+              "output_tokens": 52842,
+              "reasoning_output_tokens": 43280
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 12109.944444444445,
+              "cached_input_tokens": 9023.288888888888,
+              "cache_write_tokens": null,
+              "output_tokens": 293.56666666666666,
+              "reasoning_output_tokens": 240.44444444444446
+            }
+          }
+        }
+      }
+    ]
+  }
+}

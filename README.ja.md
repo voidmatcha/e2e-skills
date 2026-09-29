@@ -20,7 +20,9 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <strong>🇯🇵 日本語</strong> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=79f4890e4775a2db94f0f1ee0783683d3405754e45a1d7ca7e117ca129fa4ad1; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=3d633a5288f3a0de8d86a763b243ffc5f22dfa243a36b1ce6138fad87a1f8d61; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+
+Evidence scope: the 15 merged PRs shown here are curated examples, not a total. Field review v1 separately records 29 submitted / 16 merged / 6 closed / 7 open under its skill-name inclusion rule; do not combine the two denominators. These are recorded snapshots, not current GitHub totals.
 
 `e2e-skills` は、AI コーディングエージェントが Playwright/Cypress の E2E テスト作業に使える 4 つのワークフローを提供します。Playwright カバレッジの生成、既存のテスト仕様または PR/diff 範囲の変更レビュー、失敗した Playwright レポートのデバッグ、失敗した Cypress レポートのデバッグを扱います。レビューカタログのうち、機械的に判定できる部分集合を検出する決定論的スキャナーも含まれます。
 
@@ -225,7 +227,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 このバンドルは、E2E テストの生成・レビューと、失敗した Playwright/Cypress 実行の原因分析に使います。アプリケーションと実際の E2E suite に加えて使うものであり、それらの代替ではありません。汎用 lint preset やフレームワーク非依存のテストツールでもありません。Playwright と Cypress をサポートし、新規テスト生成は現在 Playwright のみを対象にしています。
 
-同梱の shell scripts と artifact readers は macOS/Linux shell を対象にしています。Windows ユーザーは WSL 経由で実行し、scan/report artifacts を WSL filesystem 内に置いてください。
+The bundled shell scripts and artifact readers target conventional macOS/Linux layouts with `/bin/bash` and the fixed system executable paths required by their launchers. Windows users need a compatible WSL distribution and artifacts inside the WSL filesystem; native Windows is not supported. NixOS and Nix-, pyenv-, Conda-, or nvm-only tool installations are not universally auto-discovered. The reviewer scanner supports validated absolute `E2E_SMELL_*_BIN` overrides; this does not imply the same overrides exist in the generator or debugger launchers. Missing trusted tools stop the affected operation; do not bypass that boundary with ambient `PATH` lookup. Resolve skill resources from the actual host-provided skill location, including plugin caches and custom installs, not a guessed home directory.
 
 生成したテストが通るだけでは不十分です。`Locator` や `Promise` 自体を検証していたり、テスト名に記した動作と無関係な状態を見ていたり、主要な assertion がテストの成否に影響していないことがあります。そのため生成器は、適用可能な [V1–V6 verification](skills/playwright-test-generator/verification-rules.md) をすべて通過するまで、新しい spec を候補として扱います。
 
@@ -259,6 +261,12 @@ Debug the failed Cypress report in cypress/reports/.
 - ブラウザー障害注入は、**12 個の障害演算子と 3 種類の期待結果を組み合わせた Playwright/Cypress セル 36 件すべて**で完了しています。これはハーネスの自己テストです。アプリケーション、堅牢なテスト、注入した障害、脆弱なテストのすべてをこのリポジトリで書いているため、検出器が設計どおりに動作することを示すだけであり、一般化を意味しません。
 - [Healer perturbation v1](benchmarks/healer-perturbation-v1/README.md) は、**凍結済みの Codex セル 30 件すべて**を完了し、`REJECT` を返しました。ガード付きの公式 healer prompt と、このリポジトリが提案した Step 7 workflow は、どちらも修復不可能な honesty control 3 件すべてを弱めました。この結果は両 healer 経路を安全なデフォルトとして採用しないことを意味しますが、Claude、一般的な healer 品質、reviewer 精度を測定したものではなく、product instructions も変更していません。
 - exact レビューベンチマークは **証明済みの false-green 事例 12 件と正常コードの保護事例 12 件**を対象にしています。10 件の障害事例は byte-identical operator mutants です。
+- [実コードの修正前後ペア](benchmarks/fixpair-v1/README.md)の B+C+D バッチでは、厳密な再現率が**スキルあり 25/33、なし 13/33**、修正後（AFTER）の誤検出は両群とも **0/33** でした。別モデル `gpt-6-astra` の B バッチでは **10/15 対 10/15**、誤検出は両群とも **0/15** でした。
+- [意味的ミュータント v1](benchmarks/semantic-mutants-v1/README.md) は実際のテストファイルにモデルが注入した欠陥を扱います。厳密な再現率は S1 が **7/10 対 5/10**（元ファイルでの誤検出は各 1 件）、S2 が **8/9 対 2/9**（各 0 件）、S3 が **5/6 対 2/6**（0 件対 2 件）でした。各サンプル 1 回の開発測定であり、#12 は対象外です。
+- [Reviewer holdout v21](benchmarks/reviewer-holdout-v21/README.md) は #2 の明示的な文言を支持しませんでした。480 回の呼び出しで full の安定 F1 は **1.000 → 0.980** に低下しました。2.0.0 の文言を維持します。部分的に検証された #2 は両群ですでに P1 と判定されました。
+- 公開対象から除いたローカル専用の AGPL バッチを含む全バッチの集計は **36/44 対 23/44**、修正後（AFTER）の誤検出は **0 対 1** でした。[フィールドモデル比較](docs/ai-reviewer-benchmark.md#field-model-comparison)では、実リポジトリのテストファイル 19 件について別のローカル測定を報告しています。
+**どのモデルを選ぶべきか。** このローカル評価では、スキル使用時の再現率は `gpt-6-sol` が最も高い結果でした。`claude-sonnet-5-5` は実際のテストファイル 19 件すべてで手順を守り、測定された入力トークン使用量も最少でしたが、小規模な修正前後ペアと意味的ミュータントではスキルによる再現率向上はほとんどなく、主な効果は誤検出の減少でした。`gpt-6-astra` と Sonnet 5.5 のような強力なモデルは、スキルなしでも機械的な問題を多く検出しました。`claude-fable-5` も高得点でしたが、[Anthropic によると Fable はプランの利用枠をより速く消費し、Max では週間上限の 50% に制限されます](https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan)。これらは各サンプル 1 回、記載したモデルのバージョンに限る開発測定です。
+
 - Reviewer holdout v7 は `no-skill` に対する 6 件の lift check をすべて通過しましたが、事前登録済みの `catalog-only` lift bar には失敗しました。Full は precision (`0.956522` 対 `0.884615`) と clean specificity (`1.0` 対 `0.75`) が向上した一方、recall は低下 (`0.916667` 対 `0.958333`) したため、skill-lift は主張しません。
 - Independent product-review robustness gates v4、v5、v7、v8、v11 は事前登録した基準を満たしませんでした。v6 と v9 は未実行で、v10 は 3 回の試行のうち 1 回を実行した時点で、凍結済みのレビュー入力を再利用する v11 に置き換えました。v1 から v11 は、現在のリリースゲートではなく、過去の robustness evidence として保持しています。
 - デバッガー protocol は再実行可能な 30-case synthetic corpus を提供しますが、独立に確立されたデバッガー精度は主張しません。
@@ -298,7 +306,7 @@ Debug the failed Cypress report in cypress/reports/.
 | 6 | **Raw DOM queries** | `evaluate()` 内の `document.querySelector` | フレームワークの locator/query APIs (`locator` / `cy.get`) を使う |
 | 9 | **Hard-coded sleep** | `waitForTimeout(2000)` / `cy.wait(2000)` / `waitForLoadState('networkidle')` | フレームワークの auto-wait に任せ、condition-based waits を使う |
 | 10 | **Flaky test patterns** | comment なしの `items.nth(2)`; `test.describe.serial()`; scope されていない accessible-name substring (10c); Cypress async callbacks、assigned `cy` commands、continued action chains (10d–10f) | stable/scoped locators と self-contained tests を使う。Cypress work は command chain 内に保ち、Chainables を values として代入せず、actions 後は re-query する |
-| 13 | **Inconsistent POM usage** | POM を import しているのに、POM-owned actions に raw `page.fill`/`page.click` を使っている | すべての interactions を POM 経由にし、UI changes の更新箇所を 1 か所にまとめる |
+| 13 | **Inconsistent POM usage** | Raw actions bypass a source-established same-page POM boundary; existence alone is insufficient | Reuse the proven boundary; do not invent a wrapper merely because a POM exists |
 | 14 | **Hardcoded credentials** | test code 内の `loginPage.login('demo-admin', '<literal-password>')` | `process.env.TEST_USER`、Playwright config secrets、または test data fixtures を使う |
 | 15 | **Missing `await` on `expect()`** | Async Locator/Page web-first matcher Promise が sequenced も observed もされず、rejection が後から悪い attribution で表面化しがち | matcher Promise を `await` または return する。sync value matchers は除外 |
 | 16 | **Missing `await` on action** | Actionability、action ordering、navigation が後続処理と race し、rejection が後から悪い attribution で表面化しがち | action Promise を `await` または return する |
@@ -421,6 +429,7 @@ Claude Code、Codex、そして `skills` CLI がサポートする 55+ hosts は
 - [デバッガーベンチマーク手順](docs/debugger-benchmark/README.md)
 - [フレームワークの対象範囲](docs/framework-scope.md)
 - [ロードマップ](docs/roadmap.md)
+- [Reviewer evidence execution plan and optional Jev experiment](docs/plans/reviewer-evidence-next-steps.md)
 
 予定している作業には cross-model convention consistency と stronger deterministic detection が含まれます。専用の verification が pass する前に、roadmap item を shipped とは説明しません。
 

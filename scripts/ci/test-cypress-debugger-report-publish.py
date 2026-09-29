@@ -37,13 +37,13 @@ VALID_REPORT = {
 }
 
 
-def load_helper_module():
+def load_helper_module(helper: Path = HELPER):
     spec = importlib.util.spec_from_file_location(
         "publish_mochawesome_report_under_test",
-        HELPER,
+        helper,
     )
     if spec is None or spec.loader is None:
-        raise AssertionError("could not load publish-mochawesome-report.py")
+        raise AssertionError(f"could not load {helper.name}")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -535,6 +535,69 @@ class MochawesomePublisherTests(unittest.TestCase):
         self.assertIn("mochawesome schema", result.stderr.lower())
         self.assertEqual(destination.read_text(), '{"old":true}')
         self.assert_no_temporary()
+
+    def test_reader_must_be_a_regular_sibling_before_merger_runs(self) -> None:
+        trusted_scripts = self.root / "trusted-scripts"
+        trusted_scripts.mkdir()
+        helper = trusted_scripts / HELPER.name
+        shutil.copy2(HELPER, helper)
+        (trusted_scripts / "read-cypress-artifact.py").symlink_to(HELPER)
+        marker = self.root / "merger-ran"
+
+        result = self.run_helper(
+            (
+                "from pathlib import Path; "
+                f"Path({str(marker)!r}).write_text('yes'); "
+                f"print({json.dumps(VALID_REPORT)!r})"
+            ),
+            helper=helper,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("regular sibling file", result.stderr)
+        self.assertFalse(marker.exists())
+
+    def test_descriptor_swap_executes_only_validated_reader_bytes(self) -> None:
+        trusted_scripts = self.root / "trusted-scripts"
+        trusted_scripts.mkdir()
+        helper = trusted_scripts / HELPER.name
+        reader = trusted_scripts / "read-cypress-artifact.py"
+        original_reader = trusted_scripts / "original-reader.py"
+        marker = self.root / "replacement-executed"
+        shutil.copy2(HELPER, helper)
+        shutil.copy2(HELPER.with_name(reader.name), reader)
+        for dependency in ("redact_artifact.py", "residual_credentials.py"):
+            shutil.copy2(HELPER.with_name(dependency), trusted_scripts / dependency)
+
+        module = load_helper_module(helper)
+        original_open = module.os.open
+        swapped = False
+
+        def swap_after_open(path, flags, *args, **kwargs):
+            nonlocal swapped
+            descriptor = original_open(path, flags, *args, **kwargs)
+            if not swapped and Path(path) == reader:
+                swapped = True
+                reader.rename(original_reader)
+                reader.write_text(
+                    "from pathlib import Path\n"
+                    f"Path({str(marker)!r}).touch()\n"
+                    "def load_json(raw): return {}\n"
+                    "def mochawesome_output(report): return report\n",
+                    encoding="utf-8",
+                )
+            return descriptor
+
+        module.os.open = swap_after_open
+        try:
+            loaded, loaded_source = module.load_reader()
+        finally:
+            module.os.open = original_open
+
+        self.assertTrue(swapped)
+        self.assertFalse(marker.exists())
+        self.assertEqual(loaded.load_json(b'{"safe":true}'), {"safe": True})
+        self.assertEqual(loaded_source, original_reader.read_bytes())
 
     def test_nonzero_merger_preserves_prior_report(self) -> None:
         destination = self.root / "cypress/reports/merged.json"

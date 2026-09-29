@@ -1,0 +1,4 @@
+[P1?][LLM-TRIAGE] #10a Positional selector (1 hit)
+  cypress/e2e/example.cy.ts:3:  it('uses first result', () => cy.contains(label).first().should('be.visible'));
+
+Summary: 1 total hit(s), 0 P0, 1 P1/P2 heuristic, 1 LLM-triage, 0 P0 candidate; 0 AST-origin hit(s), exact cross-tier dedupe applied.

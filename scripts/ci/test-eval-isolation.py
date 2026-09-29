@@ -366,7 +366,7 @@ def assert_prompt_surface_is_minimal_and_digest_scoped(temp: Path) -> None:
             )
             for profile in HOLDOUT.PROMPT_SKILL_PROFILES
         }
-    ) == 3
+    ) == len(HOLDOUT.PROMPT_SKILL_PROFILES) == 4
 
     scanner = skill / "scripts/scan.sh"
     scanner.write_text(
@@ -688,6 +688,71 @@ def assert_development_comparison_never_hides_failed_host() -> None:
         and reason["runner"] == "claude"
         for reason in result["status_reasons"]
     )
+
+
+def assert_legacy_protocol_without_identity_uses_legacy_paths() -> None:
+    primary = {
+        "stability": {"required_hits": 1},
+        "unique": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "stable_guard_hit_rate": 0.0,
+        },
+        "macro_recall": {
+            "pattern": {"value": 1.0},
+            "case": {"value": 1.0},
+            "framework": {"value": 1.0},
+        },
+        "p0_per_label_stability": {"stable_label_recall": 1.0},
+    }
+    shared = {
+        "skill_sha256": "a" * 64,
+        "corpus_sha256": "b" * 64,
+        "schedule_sha256": "c" * 64,
+        "repetitions": 1,
+        "evaluator_sha256": "d" * 64,
+        "prompt_set_sha256": "e" * 64,
+        "prompt_profile": "full",
+        "source_read_isolation": "prompt-complete-zero-tools",
+        "workspace_integrity": "pre-post-sha256",
+        "input_snapshot": "copy-once-temp",
+        "protocol_sha256": "f" * 64,
+        "protocol_sha256_after": "f" * 64,
+        "complete": True,
+        "execution_complete": True,
+        "runs": [],
+        "primary_metrics": primary,
+        "runner": "codex",
+        "model": "model-a",
+        "status": "PASS",
+    }
+    reports = [shared]
+    protocol = {
+        "host_matrix": [{"runner": "claude", "model": "model-b"}],
+    }
+    with mock.patch.object(COMPARATOR, "recompute_report", side_effect=reports):
+        comparison = COMPARATOR.compare_reports(
+            reports,
+            [],
+            "b" * 64,
+            protocol,
+            "f" * 64,
+            comparison_scope="development",
+        )
+    assert comparison["status"] == "INCONCLUSIVE"
+    assert [reason["code"] for reason in comparison["status_reasons"]] == [
+        "host_matrix_mismatch"
+    ]
+
+    status, reasons = HOLDOUT.classify_specificity_status(
+        primary,
+        {"precision": 1.0},
+        {},
+        ([], [], "same", "same", "same", "same", "same", "same"),
+        {"source_read_isolation": "prompt-complete-zero-tools"},
+    )
+    assert status == "PASS"
+    assert [reason["code"] for reason in reasons] == ["all_thresholds_met"]
 
 
 def assert_release_scope_fails_before_runner_launch(temp: Path) -> None:
@@ -1382,6 +1447,7 @@ def main() -> None:
         assert_skill_traversal_is_canonical(temp)
         assert_public_local_runs_are_decisive_but_not_release_evidence()
         assert_development_comparison_never_hides_failed_host()
+        assert_legacy_protocol_without_identity_uses_legacy_paths()
         assert_release_scope_fails_before_runner_launch(temp)
         assert_volatile_output_fails_before_runner_launch(temp)
         assert_durable_output_is_unaffected(temp)

@@ -1,0 +1,855 @@
+{
+  "schema_version": 1,
+  "labeling": {
+    "classifier": "codex-gpt-6-sol",
+    "independent_verifier": "claude-subagent",
+    "human_labels": false,
+    "all_batches_proposed": 31,
+    "all_batches_rejected": 4,
+    "batch_c": {
+      "classifier": "codex-gpt-6-sol",
+      "independent_verifier": "codex-gpt-6-astra",
+      "human_labels": false,
+      "confirmed_instances": 12
+    },
+    "batch_d": {
+      "classifier": "codex-gpt-6-sol",
+      "independent_verifier": "codex-gpt-6-astra",
+      "human_labels": false,
+      "confirmed_instances": 6,
+      "rejected_instances": 14
+    }
+  },
+  "cases": [
+    {
+      "id": "appsmi-b7510d1b",
+      "upstream_repo": "appsmith",
+      "upstream_url": "https://github.com/appsmithorg/appsmith",
+      "license": "Apache-2.0",
+      "commit": "b7510d1bea3db75e7392ccb92766f2a18f7dc97b",
+      "parent": "09394562912588a3bb3fed970512cfe931230c7c",
+      "commit_subject": "fix: JSobject test fixed after generate crud issue fixes (#40954)",
+      "spec_paths": [
+        "app/client/cypress/e2e/Regression/ClientSide/JSObject/JSObject_Tests_spec.ts"
+      ],
+      "instances": [
+        {
+          "spec_path": "app/client/cypress/e2e/Regression/ClientSide/JSObject/JSObject_Tests_spec.ts",
+          "pattern_id": "#11c",
+          "severity": "P2",
+          "before_line": 239,
+          "before_source_line": "  it.skip(\"8. Verify Queries\", () => {",
+          "after_mapped_line": 239,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "#11c: a committed skip needs a reason or revisit anchor.",
+          "claude_verdict": "confirm",
+          "claude_contract_quote": "patterns/11.md 11c: FLAG P2 — nothing in the call, the preceding comment, or the test title explains the skip.",
+          "claude_reason": "`it.skip(\"8. Verify Queries\"` has no reason, preceding comment, or ticket (the neighbouring skips 9 and 10 have `//Bug: <issue URL>` comments). AFTER un-skips it; the remaining skips are reasoned. P2."
+        }
+      ],
+      "labeling_provenance": {
+        "codex_model": "codex-gpt-6-sol",
+        "codex_verdict": "smell_fix",
+        "codex_note": "The commit re-enables the only bare skip; the remaining skips carry issue references.",
+        "claude_verifier": "claude-subagent",
+        "human_labels": false
+      }
+    },
+    {
+      "id": "appsmi-ec4ea27d",
+      "upstream_repo": "appsmith",
+      "upstream_url": "https://github.com/appsmithorg/appsmith",
+      "license": "Apache-2.0",
+      "commit": "ec4ea27d7d39bcfea1e4d11c74332949dc955c09",
+      "parent": "261cf8bfe602d2277cf3eeb294e0c0d910bd2b0b",
+      "commit_subject": "fix: Fix the S3 error case (#39240)",
+      "spec_paths": [
+        "app/client/cypress/e2e/Regression/ServerSide/GenerateCRUD/S3_Spec.js"
+      ],
+      "instances": [
+        {
+          "spec_path": "app/client/cypress/e2e/Regression/ServerSide/GenerateCRUD/S3_Spec.js",
+          "pattern_id": "#13",
+          "severity": "P1",
+          "before_line": 132,
+          "before_source_line": "      cy.get(\".t--test-datasource\").click();",
+          "after_mapped_line": 133,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "#13: reuse the established equivalent same-page POM interaction.",
+          "claude_verdict": "confirm",
+          "claude_contract_quote": "patterns/13.md Rule: Flag P1 only when supplied source proves ownership through an existing equivalent method or locator, duplicated selectors/workflow, or an explicit project convention ... Without ownership evidence, skip #13",
+          "claude_reason": "Same spec, same datasource form after fillAmazonS3DatasourceForm(): test 1 uses `dataSources.TestSaveDatasource()` ('//TestData & save datasource'), while test 3 duplicates that workflow with raw `cy.get(\".t--test-datasource\").click()` + `cy.get(\".t--save-datasource\").click()`. This is duplicated-workflow ownership evidence in supplied source. AFTER uses dataSources.TestDatasource/SaveDatasource with no raw selectors. P1, anchored at the first bypassing action."
+        }
+      ],
+      "labeling_provenance": {
+        "codex_model": "codex-gpt-6-sol",
+        "codex_verdict": "smell_fix",
+        "codex_note": "Two raw datasource editor actions were replaced by the established dataSources POM methods.",
+        "claude_verifier": "claude-subagent",
+        "human_labels": false
+      }
+    },
+    {
+      "id": "backst-02a0f0df",
+      "upstream_repo": "backstage",
+      "upstream_url": "https://github.com/backstage/backstage",
+      "license": "Apache-2.0",
+      "commit": "02a0f0dfa0629cace0356ab0d3bfb3c181ff0927",
+      "parent": "f746ec202a11c24a7e813124953850ec361f8678",
+      "commit_subject": "Use exact match for sidebar link assertions in E2E template test",
+      "spec_paths": [
+        "packages/create-app/templates/default-app/packages/app/e2e-tests/app.test.ts"
+      ],
+      "instances": [
+        {
+          "spec_path": "packages/create-app/templates/default-app/packages/app/e2e-tests/app.test.ts",
+          "pattern_id": "#10c",
+          "severity": "P1",
+          "before_line": 28,
+          "before_source_line": "  await expect(page.getByRole('link', { name: 'APIs' })).toBeVisible();",
+          "after_mapped_line": 31,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "#10c: page-scoped accessible-name substring matches need exact:true on a dynamic surface.",
+          "claude_verdict": "confirm",
+          "claude_contract_quote": "patterns/10.md 10c: a page-scoped Playwright `getByRole` ... with a `name` and no `exact: true` ... a short common word (`\"Job\"`, `\"Run\"`, `\"Save\"`, `\"New\"`) on a page with dynamic content is the real hit.",
+          "claude_reason": "Page-scoped `getByRole('link', { name: 'APIs' })` with no exact after entering the app, whose catalog renders data-driven entity names; short common word. AFTER adds exact: true. P1. (The nav-scoped 'Catalog' line is exempt as already scoped, so it is correctly not labeled.)"
+        }
+      ],
+      "labeling_provenance": {
+        "codex_model": "codex-gpt-6-sol",
+        "codex_verdict": "smell_fix",
+        "codex_note": "The commit makes the unscoped APIs link locator exact; the already container-scoped Catalog locator is exempt.",
+        "claude_verifier": "claude-subagent",
+        "human_labels": false
+      }
+    },
+    {
+      "id": "backst-daaaa72e",
+      "upstream_repo": "backstage",
+      "upstream_url": "https://github.com/backstage/backstage",
+      "license": "Apache-2.0",
+      "commit": "daaaa72ebb477a5e8afbbe50adaf9b145cb6567f",
+      "parent": "d156cf48bb6aeb99aaeb824335950892a436494d",
+      "commit_subject": "e2e: use exact name matching for sidebar link assertions",
+      "spec_paths": [
+        "packages/app/e2e-tests/app.test.ts",
+        "packages/create-app/templates/next-app/packages/app/e2e-tests/app.test.ts"
+      ],
+      "instances": [
+        {
+          "spec_path": "packages/app/e2e-tests/app.test.ts",
+          "pattern_id": "#10c",
+          "severity": "P1",
+          "before_line": 30,
+          "before_source_line": "  await expect(page.getByRole('link', { name: 'APIs' })).toBeVisible();",
+          "after_mapped_line": 33,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "#10c: page-scoped accessible-name substring matches need exact:true on a dynamic surface.",
+          "claude_verdict": "confirm",
+          "claude_contract_quote": "patterns/10.md 10c: a page-scoped Playwright `getByRole` ... with a `name` and no `exact: true` ... a short common word (`\"Job\"`, `\"Run\"`, `\"Save\"`, `\"New\"`) on a page with dynamic content is the real hit.",
+          "claude_reason": "Same shape in packages/app: page-scoped 'APIs' link without exact; AFTER adds exact: true. P1."
+        },
+        {
+          "spec_path": "packages/create-app/templates/next-app/packages/app/e2e-tests/app.test.ts",
+          "pattern_id": "#10c",
+          "severity": "P1",
+          "before_line": 28,
+          "before_source_line": "  await expect(page.getByRole('link', { name: 'APIs' })).toBeVisible();",
+          "after_mapped_line": 31,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "#10c: page-scoped accessible-name substring matches need exact:true on a dynamic surface.",
+          "claude_verdict": "confirm",
+          "claude_contract_quote": "patterns/10.md 10c: a page-scoped Playwright `getByRole` ... with a `name` and no `exact: true` ... a short common word (`\"Job\"`, `\"Run\"`, `\"Save\"`, `\"New\"`) on a page with dynamic content is the real hit.",
+          "claude_reason": "Same shape in next-app template; AFTER adds exact: true. P1."
+        }
+      ],
+      "labeling_provenance": {
+        "codex_model": "codex-gpt-6-sol",
+        "codex_verdict": "smell_fix",
+        "codex_note": "The commit makes two unscoped APIs link locators exact; the container-scoped Catalog locators are exempt.",
+        "claude_verifier": "claude-subagent",
+        "human_labels": false
+      }
+    },
+    {
+      "id": "cypres-d081b173",
+      "upstream_repo": "cypress-realworld-app",
+      "upstream_url": "https://github.com/cypress-io/cypress-realworld-app",
+      "license": "MIT",
+      "commit": "d081b173641c0e3fc549f63d1465065c875e3292",
+      "parent": "02687d325a7272575aa6dbcea468afa273afcdd0",
+      "commit_subject": "fix(tests): remove cypress/tests/ui/transaction-feeds.spec.ts wait workaround (#1642)",
+      "spec_paths": [
+        "cypress/tests/ui/transaction-feeds.spec.ts"
+      ],
+      "instances": [
+        {
+          "spec_path": "cypress/tests/ui/transaction-feeds.spec.ts",
+          "pattern_id": "#9b",
+          "severity": "P1",
+          "before_line": 192,
+          "before_source_line": "          cy.wait(10);",
+          "after_mapped_line": 189,
+          "after_mapping_rule": "delete",
+          "codex_rule": "patterns/9.md: fixed-duration cy.wait(ms) is a hard-coded sleep",
+          "claude_verdict": "confirm",
+          "claude_contract_quote": "patterns/9.md Rule: Never use explicit framework sleep (`Page.waitForTimeout` / `cy.wait(ms)`) — rely on framework auto-wait or condition-based waits.",
+          "claude_reason": "Same candidate as batch A (identical files). Numeric cy.wait(10) removed; AFTER has only alias waits. P1."
+        }
+      ],
+      "labeling_provenance": {
+        "codex_model": "codex-gpt-6-sol",
+        "codex_verdict": "smell_fix",
+        "codex_note": "The commit removes a fixed Cypress sleep from the mobile pagination path.",
+        "claude_verifier": "claude-subagent",
+        "human_labels": false
+      }
+    },
+    {
+      "id": "react--44f7e565",
+      "upstream_repo": "react-router",
+      "upstream_url": "https://github.com/remix-run/react-router",
+      "license": "MIT",
+      "commit": "44f7e565f412db3aad8e943d1816d5b46d638fc2",
+      "parent": "91a7fdc481dfb0105dd812a653eaadfd9c111a8c",
+      "commit_subject": "Fix redirects returned from loader using data (#12021)",
+      "spec_paths": [
+        "integration/defer-loader-test.ts"
+      ],
+      "instances": [
+        {
+          "spec_path": "integration/defer-loader-test.ts",
+          "pattern_id": "#11c",
+          "severity": "P2",
+          "before_line": 85,
+          "before_source_line": "  test.skip(\"deferred response can redirect on document request\", async ({",
+          "after_mapped_line": 87,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "#11c: a committed skip without a reason or revisit anchor is a zombie test.",
+          "claude_verdict": "confirm",
+          "claude_contract_quote": "patterns/11.md 11c: FLAG P2 — nothing in the call, the preceding comment, or the test title explains the skip.",
+          "claude_reason": "Bare `test.skip(\"deferred response can redirect on document request\"` with no reason string, preceding comment, or ticket. AFTER un-skips it; no skip remains. P2."
+        },
+        {
+          "spec_path": "integration/defer-loader-test.ts",
+          "pattern_id": "#11c",
+          "severity": "P2",
+          "before_line": 93,
+          "before_source_line": "  test.skip(\"deferred response can redirect on transition\", async ({",
+          "after_mapped_line": 95,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "#11c: a committed skip without a reason or revisit anchor is a zombie test.",
+          "claude_verdict": "confirm",
+          "claude_contract_quote": "patterns/11.md 11c: FLAG P2 — nothing in the call, the preceding comment, or the test title explains the skip.",
+          "claude_reason": "Second bare test.skip with no reason. Un-skipped in AFTER. P2."
+        }
+      ],
+      "labeling_provenance": {
+        "codex_model": "codex-gpt-6-sol",
+        "codex_verdict": "smell_fix",
+        "codex_note": "The commit re-enables two bare skipped tests that carried no reason or revisit anchor.",
+        "claude_verifier": "claude-subagent",
+        "human_labels": false
+      }
+    },
+    {
+      "id": "storyb-457eeac9",
+      "upstream_repo": "storybook",
+      "upstream_url": "https://github.com/storybookjs/storybook",
+      "license": "MIT",
+      "commit": "457eeac983a5ad358d2e1ccb02776740256920da",
+      "parent": "6bb75e37174807c61784ba51e89aacc4c4c6290e",
+      "commit_subject": "attempt to fix flake",
+      "spec_paths": [
+        "test-storybooks/portable-stories-kitchen-sink/react-vitest-3/e2e-tests/component-testing.spec.ts",
+        "test-storybooks/portable-stories-kitchen-sink/react/e2e-tests/component-testing.spec.ts"
+      ],
+      "instances": [
+        {
+          "spec_path": "test-storybooks/portable-stories-kitchen-sink/react-vitest-3/e2e-tests/component-testing.spec.ts",
+          "pattern_id": "#16",
+          "severity": "P1",
+          "before_line": 164,
+          "before_source_line": "      testStoryElement.click();",
+          "after_mapped_line": 163,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "#16: a Playwright Locator action Promise must be awaited or returned.",
+          "claude_verdict": "confirm",
+          "claude_contract_quote": "patterns/16.md Rule: Report P1 when an action in the supported Playwright Locator subset (`.click()`, ..., `.fill()`, ..., `.blur()`, ...) is not `await`ed or returned.",
+          "claude_reason": "`testStoryElement.click();` unawaited, receiver is page.getByRole(...) Locator (react-vitest-3 copy). AFTER awaits it. P1."
+        },
+        {
+          "spec_path": "test-storybooks/portable-stories-kitchen-sink/react/e2e-tests/component-testing.spec.ts",
+          "pattern_id": "#16",
+          "severity": "P1",
+          "before_line": 160,
+          "before_source_line": "      testStoryElement.click();",
+          "after_mapped_line": 159,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "#16: a Playwright Locator action Promise must be awaited or returned.",
+          "claude_verdict": "confirm",
+          "claude_contract_quote": "patterns/16.md Rule: Report P1 when an action in the supported Playwright Locator subset (`.click()`, ..., `.fill()`, ..., `.blur()`, ...) is not `await`ed or returned.",
+          "claude_reason": "Same unawaited Locator click in the react copy. AFTER awaits it. P1."
+        }
+      ],
+      "labeling_provenance": {
+        "codex_model": "codex-gpt-6-sol",
+        "codex_verdict": "smell_fix",
+        "codex_note": "The diff awaits the conditional Locator click in both Playwright E2E variants.",
+        "claude_verifier": "claude-subagent",
+        "human_labels": false
+      }
+    },
+    {
+      "id": "storyb-613551da",
+      "upstream_repo": "storybook",
+      "upstream_url": "https://github.com/storybookjs/storybook",
+      "license": "MIT",
+      "commit": "613551da53965193cbfa8b3c1b8797845d7aea85",
+      "parent": "87733f1a77f5a0cdb7889ec30eaeedbfb3acf491",
+      "commit_subject": "Stabilize onboarding e2e waits",
+      "spec_paths": [
+        "code/e2e-tests/addon-onboarding.spec.ts"
+      ],
+      "instances": [
+        {
+          "spec_path": "code/e2e-tests/addon-onboarding.spec.ts",
+          "pattern_id": "#10c",
+          "severity": "P1",
+          "before_line": 55,
+          "before_source_line": "    await page.getByRole('button', { name: 'Submit' }).click();",
+          "after_mapped_line": 60,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "#10c: a page-scoped common accessible-name substring on dynamic UI must be exact or container-scoped.",
+          "claude_verdict": "confirm",
+          "claude_contract_quote": "patterns/10.md 10c: a page-scoped Playwright `getByRole` ... with a `name` and no `exact: true` ... a short common word (`\"Job\"`, `\"Run\"`, `\"Save\"`, `\"New\"`) on a page with dynamic content is the real hit.",
+          "claude_reason": "Page-scoped `getByRole('button', { name: 'Submit' })` without exact on the Storybook manager, which paints data-driven story names (the test itself just created a story); 'Submit' is a short common word. AFTER scopes it to the survey dialog (the listed container-scope fix). P1. Lines 52-53 checkbox locators got the same fix but were not labeled."
+        }
+      ],
+      "labeling_provenance": {
+        "codex_model": "codex-gpt-6-sol",
+        "codex_verdict": "smell_fix",
+        "codex_note": "The diff scopes the common Submit button locator to the survey dialog.",
+        "claude_verifier": "claude-subagent",
+        "human_labels": false
+      }
+    },
+    {
+      "id": "storyb-8e8a1d31",
+      "upstream_repo": "storybook",
+      "upstream_url": "https://github.com/storybookjs/storybook",
+      "license": "MIT",
+      "commit": "8e8a1d31b88561e65e579892fe5201fb990972dc",
+      "parent": "ad42215aa67c2fd8b9525809ed7ca1ad54008444",
+      "commit_subject": "Refactor: Remove unnecessary wait time in open-service background tests",
+      "spec_paths": [
+        "code/e2e-internal/open-service-background.spec.ts"
+      ],
+      "instances": [
+        {
+          "spec_path": "code/e2e-internal/open-service-background.spec.ts",
+          "pattern_id": "#9",
+          "severity": "P1",
+          "before_line": 40,
+          "before_source_line": "    await page.waitForTimeout(5_000);",
+          "after_mapped_line": 40,
+          "after_mapping_rule": "delete",
+          "codex_rule": "#9: Page.waitForTimeout is an explicit hard-coded sleep.",
+          "claude_verdict": "confirm",
+          "claude_contract_quote": "patterns/9.md Rule: Never use explicit framework sleep (`Page.waitForTimeout` / `cy.wait(ms)`) — rely on framework auto-wait or condition-based waits.",
+          "claude_reason": "`await page.waitForTimeout(5_000);` removed; AFTER has no waitForTimeout and relies on the web-first toHaveCSS assertions. P1."
+        },
+        {
+          "spec_path": "code/e2e-internal/open-service-background.spec.ts",
+          "pattern_id": "#9",
+          "severity": "P1",
+          "before_line": 56,
+          "before_source_line": "    await page.waitForTimeout(5_000);",
+          "after_mapped_line": 55,
+          "after_mapping_rule": "delete",
+          "codex_rule": "#9: Page.waitForTimeout is an explicit hard-coded sleep.",
+          "claude_verdict": "confirm",
+          "claude_contract_quote": "patterns/9.md Rule: Never use explicit framework sleep (`Page.waitForTimeout` / `cy.wait(ms)`) — rely on framework auto-wait or condition-based waits.",
+          "claude_reason": "Second waitForTimeout(5_000) after reload; removed. P1."
+        }
+      ],
+      "labeling_provenance": {
+        "codex_model": "codex-gpt-6-sol",
+        "codex_verdict": "smell_fix",
+        "codex_note": "The diff removes both explicit Playwright sleeps from the E2E spec.",
+        "claude_verifier": "claude-subagent",
+        "human_labels": false
+      }
+    },
+    {
+      "id": "storyb-efb5d516",
+      "upstream_repo": "storybook",
+      "upstream_url": "https://github.com/storybookjs/storybook",
+      "license": "MIT",
+      "commit": "efb5d5162e0f770fc732d77753c6f0b695b00b39",
+      "parent": "0c0bfc7b782647226a18af2497ad97bdfe9beb97",
+      "commit_subject": "Fix unawaited Playwright actions and non-asserting isVisible() calls in E2E tests",
+      "spec_paths": [
+        "code/e2e-tests/addon-docs.spec.ts"
+      ],
+      "instances": [
+        {
+          "spec_path": "code/e2e-tests/addon-docs.spec.ts",
+          "pattern_id": "#16",
+          "severity": "P1",
+          "before_line": 148,
+          "before_source_line": "    labelControl.fill('Changed');",
+          "after_mapped_line": 148,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "#16: a Playwright Locator action Promise must be awaited or returned.",
+          "claude_verdict": "confirm",
+          "claude_contract_quote": "patterns/16.md Rule: Report P1 when an action in the supported Playwright Locator subset (`.click()`, ..., `.fill()`, ..., `.blur()`, ...) is not `await`ed or returned.",
+          "claude_reason": "`labelControl.fill('Changed');` unawaited; labelControl = root.locator(...). AFTER awaits it. P1."
+        },
+        {
+          "spec_path": "code/e2e-tests/addon-docs.spec.ts",
+          "pattern_id": "#16",
+          "severity": "P1",
+          "before_line": 149,
+          "before_source_line": "    labelControl.blur();",
+          "after_mapped_line": 149,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "#16: a Playwright Locator action Promise must be awaited or returned.",
+          "claude_verdict": "confirm",
+          "claude_contract_quote": "patterns/16.md Rule: Report P1 when an action in the supported Playwright Locator subset (`.click()`, ..., `.fill()`, ..., `.blur()`, ...) is not `await`ed or returned.",
+          "claude_reason": "`labelControl.blur();` unawaited; `.blur()` is in the #16 subset. AFTER awaits it. P1."
+        }
+      ],
+      "labeling_provenance": {
+        "codex_model": "codex-gpt-6-sol",
+        "codex_verdict": "smell_fix",
+        "codex_note": "The diff awaits the previously floating fill and blur actions; changed isVisible reads are excluded because their test already had independent assertions.",
+        "claude_verifier": "claude-subagent",
+        "human_labels": false
+      }
+    },
+    {
+      "id": "payloa-1c4eba41",
+      "upstream_repo": "payload",
+      "upstream_url": "https://github.com/payloadcms/payload",
+      "license": "MIT",
+      "commit": "1c4eba41b771af6bb6d2c7d956b6c03e9ec9493e",
+      "parent": "313ff047dffb8cfd2911f64b4134255cb32180e8",
+      "commit_subject": "fix(ui): allow selectinputs to reset to their initial values if theres no provided value (#11252)",
+      "spec_paths": [
+        "test/admin/e2e/document-view/e2e.spec.ts"
+      ],
+      "instances": [
+        {
+          "spec_path": "test/admin/e2e/document-view/e2e.spec.ts",
+          "pattern_id": "#4c-4e",
+          "severity": "P1",
+          "before_line": 277,
+          "before_source_line": "      expect(await page.locator('.step-nav.app-header__step-nav a').nth(1).innerText()).toBe(",
+          "after_mapped_line": 277,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "patterns/4.md: one-shot Locator innerText assertion lacks retry",
+          "astra_verdict": "confirm",
+          "astra_contract_quote": "**Severity rule:** #4a and #4f are P0 because their predicates are true independently of product behavior. #4b–#4e and #4g–#4k are P1: they can fail, but provide weak, non-retrying, or under-specified evidence and therefore create timing, diagnostic, selector-rot, or accessibility-contract risk. Do not call a one-shot or partial-match assertion \"always-passing.\" **Sub-IDs:** `#4a` numeric invariant candidate (LLM-TRIAGE), `#4b` vacuous `toBeAttached()` (LLM-TRIAGE — see below), `#4c-4e` one-shot state/content reads (one combined scanner check), `#4f` Locator truthiness/nullness, `#4g` `timeout: 0` (dedicated block below), `#4h` one-shot `page.url()`, `#4i` absence assertion on a locator never proven able to match (LLM-TRIAGE), `#4j` under-specified ARIA snapshot accessible names (LLM-only), and `#4k` assertion loop over an unproven collection (LLM-TRIAGE). The scanner does not emit `#4j`.",
+          "astra_reason": "Confirmed #4c-4e P1 at test/admin/e2e/document-view/e2e.spec.ts:277: the typed Playwright Page produces a Locator whose innerText is sampled once for synchronous toBe. The enclosing test has no toPass/poll wrapper; this is non-retrying evidence, not an invariant P0 assertion. AFTER line 277 uses awaited toHaveText on the same Locator."
+        },
+        {
+          "spec_path": "test/admin/e2e/document-view/e2e.spec.ts",
+          "pattern_id": "#4c-4e",
+          "severity": "P1",
+          "before_line": 289,
+          "before_source_line": "      expect(await page.locator('.step-nav.app-header__step-nav a').nth(1).innerText()).toBe(",
+          "after_mapped_line": 287,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "patterns/4.md: one-shot Locator innerText assertion lacks retry",
+          "astra_verdict": "confirm",
+          "astra_contract_quote": "**Severity rule:** #4a and #4f are P0 because their predicates are true independently of product behavior. #4b–#4e and #4g–#4k are P1: they can fail, but provide weak, non-retrying, or under-specified evidence and therefore create timing, diagnostic, selector-rot, or accessibility-contract risk. Do not call a one-shot or partial-match assertion \"always-passing.\" **Sub-IDs:** `#4a` numeric invariant candidate (LLM-TRIAGE), `#4b` vacuous `toBeAttached()` (LLM-TRIAGE — see below), `#4c-4e` one-shot state/content reads (one combined scanner check), `#4f` Locator truthiness/nullness, `#4g` `timeout: 0` (dedicated block below), `#4h` one-shot `page.url()`, `#4i` absence assertion on a locator never proven able to match (LLM-TRIAGE), `#4j` under-specified ARIA snapshot accessible names (LLM-only), and `#4k` assertion loop over an unproven collection (LLM-TRIAGE). The scanner does not emit `#4j`.",
+          "astra_reason": "Confirmed #4c-4e P1 at test/admin/e2e/document-view/e2e.spec.ts:289: after opening the list drawer, the breadcrumb text is sampled once with Locator.innerText and checked synchronously outside any retry wrapper. The earlier breadcrumb assertion checks a different point in the transition and does not supply retry behavior. AFTER line 287 uses awaited toHaveText; the BEFORE assertion at 289 is the correct anchor."
+        },
+        {
+          "spec_path": "test/admin/e2e/document-view/e2e.spec.ts",
+          "pattern_id": "#16",
+          "severity": "P1",
+          "before_line": 403,
+          "before_source_line": "      secondTab.click()",
+          "after_mapped_line": 399,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "patterns/16.md: Locator action Promise must be awaited",
+          "astra_verdict": "confirm",
+          "astra_contract_quote": "**Rule:** Report P1 when an action in the supported Playwright Locator subset (`.click()`, `.dblclick()`, `.tap()`, `.fill()`, `.clear()`, `.type()`, `.press()`, `.pressSequentially()`, `.check()`, `.uncheck()`, `.setChecked()`, `.selectOption()`, `.setInputFiles()`, `.hover()`, `.focus()`, `.blur()`, `.dragTo()`, `.drop()` in Playwright 1.62, `.dispatchEvent()`, `.scrollIntoViewIfNeeded()`, `.selectText()`, `.screenshot()`) is not `await`ed or returned. This is an explicit action subset, not a claim that every asynchronous Locator method is mechanically covered.",
+          "astra_reason": "Confirmed #16 P1 at test/admin/e2e/document-view/e2e.spec.ts:403: secondTab is declared from the typed Playwright Page locator at line 402. Its click Promise is a standalone expression, not awaited, returned, or part of an observed aggregate. AFTER line 399 awaits the click. The physical action line 403 is the required anchor."
+        }
+      ],
+      "labeling_provenance": {
+        "codex_model": "codex-gpt-6-sol",
+        "codex_verdict": "smell_fix",
+        "codex_note": "The tab click is now awaited, along with its subsequent wait.",
+        "astra_verifier": "codex-gpt-6-astra",
+        "human_labels": false
+      }
+    },
+    {
+      "id": "payloa-bda5d0d3",
+      "upstream_repo": "payload",
+      "upstream_url": "https://github.com/payloadcms/payload",
+      "license": "MIT",
+      "commit": "bda5d0d36c4d52bf567558080bd0e3e43d4e89d0",
+      "parent": "d5706ee09b7358401ee99bec592c691291e3d008",
+      "commit_subject": "test: fix flaky localization tests with race conditions (#15777)",
+      "spec_paths": [
+        "test/localization/e2e.spec.ts"
+      ],
+      "instances": [
+        {
+          "spec_path": "test/localization/e2e.spec.ts",
+          "pattern_id": "#17",
+          "severity": "P1",
+          "before_line": 341,
+          "before_source_line": "      await page.fill('#field-nav__layout__0__text', 'test')",
+          "after_mapped_line": 342,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "patterns/17.md: selector-based Page.fill is discouraged",
+          "astra_verdict": "confirm",
+          "astra_contract_quote": "**Rule:** Flag P1 for selector-based `page.click`, `page.dblclick`, `page.tap`, `page.fill`, `page.type`, `page.press`, `page.check`, `page.uncheck`, `page.setChecked`, `page.selectOption`, `page.setInputFiles`, `page.hover`, `page.focus`, `page.dispatchEvent`, and `page.dragAndDrop`. Literal selectors on fixture/type-proven Page receivers can be final. Variable selector arguments, Page-shaped POM receivers, and unresolved package fixtures remain LLM-triage until receiver provenance is confirmed. Suggest migrating to Locator actions. Do not map this finding to `playwright/no-element-handle`; that rule checks a different API shape.\n",
+          "astra_reason": "Confirmed #17 P1 at test/localization/e2e.spec.ts:341: page is explicitly typed Page from @playwright/test (lines 1 and 84), and the literal-selector Page.fill action is the causal line. AFTER lines 341-342 use Locator.waitFor and Locator.fill, removing this direct Page selector action."
+        }
+      ],
+      "labeling_provenance": {
+        "codex_model": "codex-gpt-6-sol",
+        "codex_verdict": "smell_fix",
+        "codex_note": "The direct Page selector action is replaced by a Locator action.",
+        "astra_verifier": "codex-gpt-6-astra",
+        "human_labels": false
+      }
+    },
+    {
+      "id": "payloa-f1b005c4",
+      "upstream_repo": "payload",
+      "upstream_url": "https://github.com/payloadcms/payload",
+      "license": "MIT",
+      "commit": "f1b005c4f5c94918d574ddc003b85f148192433b",
+      "parent": "dc9e8fa6551b4792ce00974e09a8df30226a535c",
+      "commit_subject": "fix(ui): object type field labels not displaying in search filter (#11366)",
+      "spec_paths": [
+        "test/localization/e2e.spec.ts"
+      ],
+      "instances": [
+        {
+          "spec_path": "test/localization/e2e.spec.ts",
+          "pattern_id": "#4c-4e",
+          "severity": "P1",
+          "before_line": 337,
+          "before_source_line": "      expect(localeLabel).not.toEqual('English')",
+          "after_mapped_line": 336,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "patterns/4.md: one-shot Locator text read inside a synchronous assertion lacks retry",
+          "astra_verdict": "confirm",
+          "astra_contract_quote": "**Severity rule:** #4a and #4f are P0 because their predicates are true independently of product behavior. #4b–#4e and #4g–#4k are P1: they can fail, but provide weak, non-retrying, or under-specified evidence and therefore create timing, diagnostic, selector-rot, or accessibility-contract risk. Do not call a one-shot or partial-match assertion \"always-passing.\" **Sub-IDs:** `#4a` numeric invariant candidate (LLM-TRIAGE), `#4b` vacuous `toBeAttached()` (LLM-TRIAGE — see below), `#4c-4e` one-shot state/content reads (one combined scanner check), `#4f` Locator truthiness/nullness, `#4g` `timeout: 0` (dedicated block below), `#4h` one-shot `page.url()`, `#4i` absence assertion on a locator never proven able to match (LLM-TRIAGE), `#4j` under-specified ARIA snapshot accessible names (LLM-only), and `#4k` assertion loop over an unproven collection (LLM-TRIAGE). The scanner does not emit `#4j`.",
+          "astra_reason": "Confirmed #4c-4e P1 at test/localization/e2e.spec.ts:337: localeLabel is the string sampled by the Playwright Locator.innerText call at lines 333-335. The synchronous assertion samples that value without a retry wrapper; it can fail, so P0 does not apply. The assertion line is the finding anchor. AFTER lines 332-336 retain a Locator and await not.toHaveText, removing the one-shot assertion."
+        },
+        {
+          "spec_path": "test/localization/e2e.spec.ts",
+          "pattern_id": "#15",
+          "severity": "P1",
+          "before_line": 354,
+          "before_source_line": "      expect(page.locator(drawerToggler)).toBeEnabled()",
+          "after_mapped_line": 353,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "patterns/15.md: asynchronous Locator matcher must be awaited",
+          "astra_verdict": "confirm",
+          "astra_contract_quote": "**Rule:** Report P1 when an async Locator/Page web-first matcher, `expect.poll(...).toX()`, or `expect(fn).toPass()` is not `await`ed or returned. Awaited/returned retry assertions are explicit guards. Prove the called `expect` binding through its own local declaration/import/re-export lineage; the presence of a Playwright `test` export elsewhere in a mixed fixture/barrel does not make a custom `expect` Playwright-owned.",
+          "astra_reason": "Confirmed #15 P1 at test/localization/e2e.spec.ts:354: expect is imported directly from @playwright/test and page is typed Page. The toBeEnabled matcher Promise is neither awaited nor returned, and subsequent drawer actions proceed independently. AFTER line 353 awaits the same matcher. Anchor remains the unobserved assertion operation, not the test declaration."
+        }
+      ],
+      "labeling_provenance": {
+        "codex_model": "codex-gpt-6-sol",
+        "codex_verdict": "smell_fix",
+        "codex_note": "The previously floating enabled assertion is awaited.",
+        "astra_verifier": "codex-gpt-6-astra",
+        "human_labels": false
+      }
+    },
+    {
+      "id": "react--0a5bb042",
+      "upstream_repo": "react-admin",
+      "upstream_url": "https://github.com/marmelab/react-admin",
+      "license": "MIT",
+      "commit": "0a5bb042df06485ddd0bb24f27e4170831b96654",
+      "parent": "4796eac98ce8b055c0a1d739d4de1e94fad6c851",
+      "commit_subject": "Remove only in tests",
+      "spec_paths": [
+        "cypress/e2e/permissions.cy.js"
+      ],
+      "instances": [
+        {
+          "spec_path": "cypress/e2e/permissions.cy.js",
+          "pattern_id": "#7",
+          "severity": "P0",
+          "before_line": 136,
+          "before_source_line": "    it.only('refreshes permissions after logging out and back in with a different user', () => {",
+          "after_mapped_line": 136,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "patterns/7.md: committed it.only silently excludes other tests",
+          "astra_verdict": "confirm",
+          "astra_contract_quote": "**Rule** (Playwright & Cypress best practices): `.only` is a development-time focus tool. It must never be committed. Search `.spec.*/.test.*/.cy.*` for direct and optional-call focus modifiers, then trace immutable one-hop aliases: `const focused = test.only`, `const focused = test.only.bind(test)`, and `const { only } = test` / `const { only: focused } = test`. Report the alias call (for example, `focused(...)`) as P0. Accept Playwright-proven receivers and Cypress `it` / `test` / `describe` globals only in Cypress-proven spec context. For Playwright, follow the exact named, default, CommonJS, or namespace `test` binding through relative re-exports. A barrel that exports Playwright `test` beside an unrelated `scenario` does not make `scenario.only()` a finding. Reject aliases that are reassigned, shadowed, imported from a foreign test framework, bound to a different receiver, or derived from an unrelated application method named `only`.",
+          "astra_reason": "Confirmed #7 P0 at cypress/e2e/permissions.cy.js:136: the unshadowed Cypress it.only declaration focuses one permissions scenario while sibling tests are present. AFTER line 136 removes only the focus modifier. The declaration is the causal anchor and the catalog assigns P0 with no JUSTIFIED exemption."
+        }
+      ],
+      "labeling_provenance": {
+        "codex_model": "codex-gpt-6-sol",
+        "codex_verdict": "smell_fix",
+        "codex_note": "The focused Cypress test is restored to a regular test.",
+        "astra_verifier": "codex-gpt-6-astra",
+        "human_labels": false
+      }
+    },
+    {
+      "id": "react--6ad48415",
+      "upstream_repo": "react-admin",
+      "upstream_url": "https://github.com/marmelab/react-admin",
+      "license": "MIT",
+      "commit": "6ad48415f302c56a153bbd538a2319e49f0339f5",
+      "parent": "6254dd569c807d76371bd98ef064b340d002bfa8",
+      "commit_subject": "Remove only",
+      "spec_paths": [
+        "cypress/e2e/create.cy.js"
+      ],
+      "instances": [
+        {
+          "spec_path": "cypress/e2e/create.cy.js",
+          "pattern_id": "#7",
+          "severity": "P0",
+          "before_line": 377,
+          "before_source_line": "    it.only('should validate unique fields', () => {",
+          "after_mapped_line": 377,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "patterns/7.md: committed it.only silently excludes other tests",
+          "astra_verdict": "confirm",
+          "astra_contract_quote": "**Rule** (Playwright & Cypress best practices): `.only` is a development-time focus tool. It must never be committed. Search `.spec.*/.test.*/.cy.*` for direct and optional-call focus modifiers, then trace immutable one-hop aliases: `const focused = test.only`, `const focused = test.only.bind(test)`, and `const { only } = test` / `const { only: focused } = test`. Report the alias call (for example, `focused(...)`) as P0. Accept Playwright-proven receivers and Cypress `it` / `test` / `describe` globals only in Cypress-proven spec context. For Playwright, follow the exact named, default, CommonJS, or namespace `test` binding through relative re-exports. A barrel that exports Playwright `test` beside an unrelated `scenario` does not make `scenario.only()` a finding. Reject aliases that are reassigned, shadowed, imported from a foreign test framework, bound to a different receiver, or derived from an unrelated application method named `only`.",
+          "astra_reason": "Confirmed #7 P0 at cypress/e2e/create.cy.js:377: cy.get commands establish Cypress context, it is not imported or shadowed, and the focus modifier can exclude the other tests shown in the same file. AFTER line 377 preserves the test and removes .only. The focused test declaration is the prescribed anchor."
+        }
+      ],
+      "labeling_provenance": {
+        "codex_model": "codex-gpt-6-sol",
+        "codex_verdict": "smell_fix",
+        "codex_note": "The focused Cypress test is restored to a regular test.",
+        "astra_verifier": "codex-gpt-6-astra",
+        "human_labels": false
+      }
+    },
+    {
+      "id": "react--d8e38cb9",
+      "upstream_repo": "react-admin",
+      "upstream_url": "https://github.com/marmelab/react-admin",
+      "license": "MIT",
+      "commit": "d8e38cb93bc95e7a79ca747f4299a9c242f5bf11",
+      "parent": "7f25557de28b43f17195f66e8278cad86dd8d887",
+      "commit_subject": "fix: Adds an exists condition to cypress test to ensure app is ready",
+      "spec_paths": [
+        "cypress/e2e/mobile.cy.js"
+      ],
+      "instances": [
+        {
+          "spec_path": "cypress/e2e/mobile.cy.js",
+          "pattern_id": "#7",
+          "severity": "P0",
+          "before_line": 12,
+          "before_source_line": "        it.only('should load more items when scrolling to the bottom of the page', () => {",
+          "after_mapped_line": 12,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "patterns/7.md: committed it.only silently excludes other tests",
+          "astra_verdict": "confirm",
+          "astra_contract_quote": "**Rule** (Playwright & Cypress best practices): `.only` is a development-time focus tool. It must never be committed. Search `.spec.*/.test.*/.cy.*` for direct and optional-call focus modifiers, then trace immutable one-hop aliases: `const focused = test.only`, `const focused = test.only.bind(test)`, and `const { only } = test` / `const { only: focused } = test`. Report the alias call (for example, `focused(...)`) as P0. Accept Playwright-proven receivers and Cypress `it` / `test` / `describe` globals only in Cypress-proven spec context. For Playwright, follow the exact named, default, CommonJS, or namespace `test` binding through relative re-exports. A barrel that exports Playwright `test` beside an unrelated `scenario` does not make `scenario.only()` a finding. Reject aliases that are reassigned, shadowed, imported from a foreign test framework, bound to a different receiver, or derived from an unrelated application method named `only`.",
+          "astra_reason": "Confirmed #7 P0 at cypress/e2e/mobile.cy.js:12: cy.viewport and cy.contains establish Cypress spec context, and it is an unshadowed test global. The committed it.only declaration matches the catalog even though this supplied file contains one test; the contract explicitly excludes a single-test-file exemption. AFTER line 12 removes .only. This confirms the catalog focus defect without claiming observed CI exclusions."
+        }
+      ],
+      "labeling_provenance": {
+        "codex_model": "codex-gpt-6-sol",
+        "codex_verdict": "smell_fix",
+        "codex_note": "The focused Cypress test is restored to a regular test.",
+        "astra_verifier": "codex-gpt-6-astra",
+        "human_labels": false
+      }
+    },
+    {
+      "id": "router-0b377c2e",
+      "upstream_repo": "router",
+      "upstream_url": "https://github.com/TanStack/router",
+      "license": "MIT",
+      "commit": "0b377c2e5bc73f024140bf697f7f890e8a9bbfdc",
+      "parent": "763ac8b8add670ccb31887dab6509343e4827d5a",
+      "commit_subject": "test: stabilize scroll regression page readiness (#8507)",
+      "spec_paths": [
+        "e2e/react-router/scroll-restoration-sandbox-vite/tests/issue-7040.repro.spec.ts"
+      ],
+      "instances": [
+        {
+          "spec_path": "e2e/react-router/scroll-restoration-sandbox-vite/tests/issue-7040.repro.spec.ts",
+          "pattern_id": "#9c",
+          "severity": "P1",
+          "before_line": 30,
+          "before_source_line": "  await page.waitForLoadState('networkidle')",
+          "after_mapped_line": 30,
+          "after_mapping_rule": "replace-offset",
+          "codex_rule": "patterns/9.md: networkidle is a discouraged readiness wait",
+          "astra_verdict": "confirm",
+          "astra_contract_quote": "Sub-variants share this entry: `#9` Playwright `waitForTimeout`, `#9b` Cypress `cy.wait(ms)` (identifier arguments remain LLM-triage until the value is resolved), `#9c` Playwright `waitForLoadState('networkidle')` — networkidle is explicitly discouraged by Playwright docs as unreliable on modern SPAs; replace with a web-first assertion on the element the test actually needs.",
+          "astra_reason": "Confirmed #9c P1 at e2e/react-router/scroll-restoration-sandbox-vite/tests/issue-7040.repro.spec.ts:30: a helper parameter explicitly typed Page from @playwright/test uses networkidle as readiness after initial source navigation. This is not a timeout bound or an unrelated receiver. AFTER line 30 replaces that wait with an awaited visibility assertion on issue-7040-source-top. The wait operation is the correct BEFORE anchor; helper Page provenance is available without resolving the external test fixture."
+        },
+        {
+          "spec_path": "e2e/react-router/scroll-restoration-sandbox-vite/tests/issue-7040.repro.spec.ts",
+          "pattern_id": "#9c",
+          "severity": "P1",
+          "before_line": 38,
+          "before_source_line": "  await page.waitForLoadState('networkidle')",
+          "after_mapped_line": 38,
+          "after_mapping_rule": "replace-offset",
+          "codex_rule": "patterns/9.md: networkidle is a discouraged readiness wait",
+          "astra_verdict": "confirm",
+          "astra_contract_quote": "Sub-variants share this entry: `#9` Playwright `waitForTimeout`, `#9b` Cypress `cy.wait(ms)` (identifier arguments remain LLM-triage until the value is resolved), `#9c` Playwright `waitForLoadState('networkidle')` — networkidle is explicitly discouraged by Playwright docs as unreliable on modern SPAs; replace with a web-first assertion on the element the test actually needs.",
+          "astra_reason": "Confirmed #9c P1 at e2e/react-router/scroll-restoration-sandbox-vite/tests/issue-7040.repro.spec.ts:38: a helper parameter explicitly typed Page from @playwright/test uses networkidle as readiness after source reload. This is not a timeout bound or an unrelated receiver. AFTER line 38 replaces that wait with an awaited visibility assertion on issue-7040-source-top. The wait operation is the correct BEFORE anchor; helper Page provenance is available without resolving the external test fixture."
+        },
+        {
+          "spec_path": "e2e/react-router/scroll-restoration-sandbox-vite/tests/issue-7040.repro.spec.ts",
+          "pattern_id": "#9c",
+          "severity": "P1",
+          "before_line": 100,
+          "before_source_line": "  await page.waitForLoadState('networkidle')",
+          "after_mapped_line": 100,
+          "after_mapping_rule": "replace-offset",
+          "codex_rule": "patterns/9.md: networkidle is a discouraged readiness wait",
+          "astra_verdict": "confirm",
+          "astra_contract_quote": "Sub-variants share this entry: `#9` Playwright `waitForTimeout`, `#9b` Cypress `cy.wait(ms)` (identifier arguments remain LLM-triage until the value is resolved), `#9c` Playwright `waitForLoadState('networkidle')` — networkidle is explicitly discouraged by Playwright docs as unreliable on modern SPAs; replace with a web-first assertion on the element the test actually needs.",
+          "astra_reason": "Confirmed #9c P1 at e2e/react-router/scroll-restoration-sandbox-vite/tests/issue-7040.repro.spec.ts:100: a helper parameter explicitly typed Page from @playwright/test uses networkidle as readiness after target navigation. This is not a timeout bound or an unrelated receiver. AFTER line 100 replaces that wait with an awaited visibility assertion on issue-7040-target-top. The wait operation is the correct BEFORE anchor; helper Page provenance is available without resolving the external test fixture."
+        }
+      ],
+      "labeling_provenance": {
+        "codex_model": "codex-gpt-6-sol",
+        "codex_verdict": "smell_fix",
+        "codex_note": "All three networkidle waits are replaced with visible-page assertions.",
+        "astra_verifier": "codex-gpt-6-astra",
+        "human_labels": false
+      }
+    },
+    {
+      "id": "payloa-ee4cd616",
+      "upstream_repo": "payload",
+      "upstream_url": "https://github.com/payloadcms/payload",
+      "license": "MIT",
+      "commit": "ee4cd616969a72996bae342f278e24a7867e1a39",
+      "parent": "e9f15c377f1c9a38a804cb3aafd507b36cc169fb",
+      "commit_subject": "chore: enable e2e live preview (#5444)",
+      "spec_paths": [
+        "test/live-preview/e2e.spec.ts"
+      ],
+      "instances": [
+        {
+          "spec_path": "test/live-preview/e2e.spec.ts",
+          "pattern_id": "#4h",
+          "severity": "P1",
+          "before_line": 76,
+          "before_source_line": "    expect(page.url()).toBe(`${url}/preview`)",
+          "after_mapped_line": 79,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "patterns/4.md: one-shot page.url assertion; anchor the assertion",
+          "astra_verdict": "confirm",
+          "astra_contract_quote": "patterns/4.md:33: \"`#4h` one-shot `page.url()`\"; patterns/4.md:39: **Severity rule:** #4a and #4f are P0 because their predicates are true independently of product behavior. #4b–#4e and #4g–#4k are P1: they can fail, but provide weak, non-retrying, or under-specified evidence and therefore create timing, diagnostic, selector-rot, or accessibility-contract risk. Do not call a one-shot or partial-match assertion \"always-passing.\" patterns/4.md:71: **Retry-wrapper skip (false-positive exclusion — applies to #4c-4e and #4h):** when a hit's enclosing function is the callback of `await expect(async () => { … }).toPass({…})` or `await expect.poll(async () => { … }).toX(…)`, Playwright re-runs the callback until it passes or times out. SKIP the P1 finding for those hits. In practice a large share of raw #4h hits sit inside `.toPass(…)` callbacks — always check the enclosing wrapper before counting.",
+          "astra_reason": "test/live-preview/e2e.spec.ts:76 directly samples the proven Playwright Page URL in a synchronous value assertion, outside any retry wrapper. #4h P1 and the assertion-line anchor are correct. AFTER line 79 moves page.url() itself inside an awaited toPass callback with a finite timeout, so each retry reads a fresh URL and the explicit retry-wrapper exclusion clears this instance. Other assertions in the file are outside this instance verdict."
+        },
+        {
+          "spec_path": "test/live-preview/e2e.spec.ts",
+          "pattern_id": "#4h",
+          "severity": "P1",
+          "before_line": 122,
+          "before_source_line": "    expect(page.url()).toBe(`${url}/preview`)",
+          "after_mapped_line": 127,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "patterns/4.md: one-shot page.url assertion; anchor the assertion",
+          "astra_verdict": "confirm",
+          "astra_contract_quote": "patterns/4.md:33: \"`#4h` one-shot `page.url()`\"; patterns/4.md:39: **Severity rule:** #4a and #4f are P0 because their predicates are true independently of product behavior. #4b–#4e and #4g–#4k are P1: they can fail, but provide weak, non-retrying, or under-specified evidence and therefore create timing, diagnostic, selector-rot, or accessibility-contract risk. Do not call a one-shot or partial-match assertion \"always-passing.\" patterns/4.md:71: **Retry-wrapper skip (false-positive exclusion — applies to #4c-4e and #4h):** when a hit's enclosing function is the callback of `await expect(async () => { … }).toPass({…})` or `await expect.poll(async () => { … }).toX(…)`, Playwright re-runs the callback until it passes or times out. SKIP the P1 finding for those hits. In practice a large share of raw #4h hits sit inside `.toPass(…)` callbacks — always check the enclosing wrapper before counting.",
+          "astra_reason": "test/live-preview/e2e.spec.ts:122 directly samples the proven Playwright Page URL in a synchronous value assertion, outside any retry wrapper. #4h P1 and the assertion-line anchor are correct. AFTER line 127 moves page.url() itself inside an awaited toPass callback with a finite timeout, so each retry reads a fresh URL and the explicit retry-wrapper exclusion clears this instance. Other assertions in the file are outside this instance verdict."
+        },
+        {
+          "spec_path": "test/live-preview/e2e.spec.ts",
+          "pattern_id": "#4h",
+          "severity": "P1",
+          "before_line": 147,
+          "before_source_line": "    expect(page.url()).toContain('/preview')",
+          "after_mapped_line": 154,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "patterns/4.md: one-shot page.url assertion; anchor the assertion",
+          "astra_verdict": "confirm",
+          "astra_contract_quote": "patterns/4.md:33: \"`#4h` one-shot `page.url()`\"; patterns/4.md:39: **Severity rule:** #4a and #4f are P0 because their predicates are true independently of product behavior. #4b–#4e and #4g–#4k are P1: they can fail, but provide weak, non-retrying, or under-specified evidence and therefore create timing, diagnostic, selector-rot, or accessibility-contract risk. Do not call a one-shot or partial-match assertion \"always-passing.\" patterns/4.md:71: **Retry-wrapper skip (false-positive exclusion — applies to #4c-4e and #4h):** when a hit's enclosing function is the callback of `await expect(async () => { … }).toPass({…})` or `await expect.poll(async () => { … }).toX(…)`, Playwright re-runs the callback until it passes or times out. SKIP the P1 finding for those hits. In practice a large share of raw #4h hits sit inside `.toPass(…)` callbacks — always check the enclosing wrapper before counting.",
+          "astra_reason": "test/live-preview/e2e.spec.ts:147 directly samples the proven Playwright Page URL in a synchronous value assertion, outside any retry wrapper. #4h P1 and the assertion-line anchor are correct. AFTER line 154 moves page.url() itself inside an awaited toPass callback with a finite timeout, so each retry reads a fresh URL and the explicit retry-wrapper exclusion clears this instance. Other assertions in the file are outside this instance verdict."
+        },
+        {
+          "spec_path": "test/live-preview/e2e.spec.ts",
+          "pattern_id": "#4h",
+          "severity": "P1",
+          "before_line": 182,
+          "before_source_line": "    expect(page.url()).toContain('/preview')",
+          "after_mapped_line": 204,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "patterns/4.md: one-shot page.url assertion; anchor the assertion",
+          "astra_verdict": "confirm",
+          "astra_contract_quote": "patterns/4.md:33: \"`#4h` one-shot `page.url()`\"; patterns/4.md:39: **Severity rule:** #4a and #4f are P0 because their predicates are true independently of product behavior. #4b–#4e and #4g–#4k are P1: they can fail, but provide weak, non-retrying, or under-specified evidence and therefore create timing, diagnostic, selector-rot, or accessibility-contract risk. Do not call a one-shot or partial-match assertion \"always-passing.\" patterns/4.md:71: **Retry-wrapper skip (false-positive exclusion — applies to #4c-4e and #4h):** when a hit's enclosing function is the callback of `await expect(async () => { … }).toPass({…})` or `await expect.poll(async () => { … }).toX(…)`, Playwright re-runs the callback until it passes or times out. SKIP the P1 finding for those hits. In practice a large share of raw #4h hits sit inside `.toPass(…)` callbacks — always check the enclosing wrapper before counting.",
+          "astra_reason": "test/live-preview/e2e.spec.ts:182 directly samples the proven Playwright Page URL in a synchronous value assertion, outside any retry wrapper. #4h P1 and the assertion-line anchor are correct. AFTER line 204 moves page.url() itself inside an awaited toPass callback with a finite timeout, so each retry reads a fresh URL and the explicit retry-wrapper exclusion clears this instance. Other assertions in the file are outside this instance verdict."
+        }
+      ],
+      "labeling_provenance": {
+        "codex_model": "codex-gpt-6-sol",
+        "codex_verdict": "smell_fix",
+        "codex_note": "In 'collection - has route', 'global - has route', and preview-size tests, BEFORE lines 76, 122, 147, and 182 sample page.url once; the diff retries those URL checks.",
+        "astra_verifier": "codex-gpt-6-astra",
+        "human_labels": false
+      }
+    },
+    {
+      "id": "router-db1774b7",
+      "upstream_repo": "router",
+      "upstream_url": "https://github.com/TanStack/router",
+      "license": "MIT",
+      "commit": "db1774b7dc36fc60c86976e7d6d083e1e6f1333a",
+      "parent": "a11986921978d62ef3be7d9dc424bb4f817728a9",
+      "commit_subject": "test(react-start): make basic-tsr-config test more strict (#3611)",
+      "spec_paths": [
+        "e2e/react-start/basic-tsr-config/tests/app.spec.ts"
+      ],
+      "instances": [
+        {
+          "spec_path": "e2e/react-start/basic-tsr-config/tests/app.spec.ts",
+          "pattern_id": "#4f",
+          "severity": "P0",
+          "before_line": 6,
+          "before_source_line": "  await expect(page.getByText('Add 1 to 0?')).toBeTruthy()",
+          "after_mapped_line": 6,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "patterns/4.md: Locator object is always truthy; anchor the assertion",
+          "astra_verdict": "confirm",
+          "astra_contract_quote": "patterns/4.md:22: \"// BAD — Locator is always a truthy JS object regardless of element existence\"; patterns/4.md:39: **Severity rule:** #4a and #4f are P0 because their predicates are true independently of product behavior. #4b–#4e and #4g–#4k are P1: they can fail, but provide weak, non-retrying, or under-specified evidence and therefore create timing, diagnostic, selector-rot, or accessibility-contract risk. Do not call a one-shot or partial-match assertion \"always-passing.\"",
+          "astra_reason": "e2e/react-start/basic-tsr-config/tests/app.spec.ts:6 passes a Playwright getByText Locator directly to toBeTruthy. The leading await does not turn a synchronous object-truthiness matcher into a DOM assertion. Neither counter label is actually checked; the generic button click at BEFORE line 7 cannot verify either counter value. #4f P0 and the assertion-line anchor are correct. AFTER line 6 uses awaited toContainText on the button Locator, removing this vacuous assertion. The new networkidle wait is a separate issue and does not preserve this #4f instance."
+        },
+        {
+          "spec_path": "e2e/react-start/basic-tsr-config/tests/app.spec.ts",
+          "pattern_id": "#4f",
+          "severity": "P0",
+          "before_line": 8,
+          "before_source_line": "  await expect(page.getByText('Add 1 to 1?')).toBeTruthy()",
+          "after_mapped_line": 9,
+          "after_mapping_rule": "replace-similar",
+          "codex_rule": "patterns/4.md: Locator object is always truthy; anchor the assertion",
+          "astra_verdict": "confirm",
+          "astra_contract_quote": "patterns/4.md:22: \"// BAD — Locator is always a truthy JS object regardless of element existence\"; patterns/4.md:39: **Severity rule:** #4a and #4f are P0 because their predicates are true independently of product behavior. #4b–#4e and #4g–#4k are P1: they can fail, but provide weak, non-retrying, or under-specified evidence and therefore create timing, diagnostic, selector-rot, or accessibility-contract risk. Do not call a one-shot or partial-match assertion \"always-passing.\"",
+          "astra_reason": "e2e/react-start/basic-tsr-config/tests/app.spec.ts:8 passes a Playwright getByText Locator directly to toBeTruthy. The leading await does not turn a synchronous object-truthiness matcher into a DOM assertion. Neither counter label is actually checked; the generic button click at BEFORE line 7 cannot verify either counter value. #4f P0 and the assertion-line anchor are correct. AFTER line 9 uses awaited toContainText on the button Locator, removing this vacuous assertion. The new networkidle wait is a separate issue and does not preserve this #4f instance."
+        }
+      ],
+      "labeling_provenance": {
+        "codex_model": "codex-gpt-6-sol",
+        "codex_verdict": "smell_fix",
+        "codex_note": "In 'opening the app', BEFORE lines 6 and 8 assert truthiness of Locator objects for both counter states; the diff replaces each with text assertions.",
+        "astra_verifier": "codex-gpt-6-astra",
+        "human_labels": false
+      }
+    }
+  ]
+}

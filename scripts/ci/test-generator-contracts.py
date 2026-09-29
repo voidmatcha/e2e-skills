@@ -24,6 +24,7 @@ from unittest import mock
 ROOT = Path(__file__).resolve().parents[2]
 SKILL = ROOT / "skills/playwright-test-generator/SKILL.md"
 CODE_RULES = ROOT / "skills/playwright-test-generator/code-rules.md"
+RECOMMENDED_LINT = ROOT / "skills/playwright-test-generator/recommended-lint.md"
 BEST_PRACTICES = ROOT / "skills/playwright-test-generator/best-practices.md"
 VERIFICATION_RULES = ROOT / "skills/playwright-test-generator/verification-rules.md"
 CONVENTIONS_TEMPLATE = ROOT / "skills/playwright-test-generator/conventions-template.md"
@@ -1298,12 +1299,14 @@ def exercise_baseline_and_error_signal_mutation_guards(
 
 
 def assert_secondary_outcome_contract(text: str) -> None:
-    """Secondary outcomes stay a fixed, approved list beside one primary outcome."""
+    """Secondary outcomes use portable defaults and preserve approved domain needs."""
     scenarios = section(text, "### Scenarios", "### Locator Mapping Table")
     compact = " ".join(scenarios.split())
-    assert "- Secondary outcomes: <selected or skipped, from the fixed list below>" in scenarios
-    assert "offer exactly these three secondary outcomes per scenario" in compact
+    assert "- Secondary outcomes: <default checks selected or skipped; approved domain outcomes with their requirement source, or none>" in scenarios
+    assert "offer these three default secondary outcomes per scenario" in compact
     assert "record each as selected or skipped" in compact
+    assert "Additional domain-specific outcomes are allowed only when the user approved them or a documented requirement requires them" in compact
+    assert "Do not invent them from a generic request to check everything" in compact
     assert "| Survives a reload |" in scenarios
     assert "| Side effect proved |" in scenarios
     assert "| Error cause distinguished |" in scenarios
@@ -1317,6 +1320,149 @@ def assert_secondary_outcome_contract(text: str) -> None:
     assert "A V2 settled-state gate is recorded under Falsification (V2) and needs no secondary-outcome slot; when it also proves one of the three outcomes, it counts as that selected outcome" in compact
     assert "must appear in the Locator Mapping Table" in compact
     assert "Step 6's YAGNI audit still applies" in compact
+
+
+def assert_portable_generator_guidance(
+    code_rules: str, scenario_design: str, evals_by_id: dict[int, dict[str, object]]
+) -> None:
+    """Generator guidance fails closed without imposing one project's conventions."""
+    compact_rules = " ".join(code_rules.split())
+    compact_scenarios = " ".join(scenario_design.split())
+
+    assert "abort that request so it cannot reach any external network" in compact_rules
+    assert "cause an unconditional hard test failure" in compact_rules
+    assert "Use the repository's native mechanism" in compact_rules
+    assert "for example, a per-test collector checked by a hard fixture teardown or `afterEach`" in compact_rules
+    assert "Aborting alone is insufficient" in compact_rules
+    assert "empty success" not in compact_rules
+    assert "do not broaden the rule, remove its parameter, or replace request proof with a pixel assertion" in compact_rules
+    assert "return `NOFIX` with the product-defect evidence" in compact_rules
+    assert "Only use a UI-only assertion when the approved contract never required that call" in compact_rules
+
+    assert "isolated setup or reset that runs independently for every test" in compact_rules
+    assert "never to share mutable state between tests" in compact_rules
+    assert "Given/When/Then comments are optional" in compact_rules
+    assert "follow the repository's established test style" in compact_rules
+
+    assert "offer these three default secondary outcomes per scenario" in compact_scenarios
+    assert "Additional domain-specific outcomes are allowed only when the user approved them or a documented requirement requires them" in compact_scenarios
+    assert "Do not invent them from a generic request to check everything" in compact_scenarios
+
+    for case_id in (39, 40, 41, 42):
+        case = evals_by_id[case_id]
+        assertions = case["assertions"]
+        assert isinstance(assertions, list)
+        assert any(str(item).startswith("True positive:") for item in assertions)
+        assert any(str(item).startswith("False-positive guard:") for item in assertions)
+
+
+def assert_pipeline_and_pom_style_contract(
+    skill: str, code_rules: str, evals_by_id: dict[int, dict[str, object]]
+) -> None:
+    """Overview timing and generated POM shape follow the detailed contracts."""
+    overview = section(skill, "## Pipeline Overview", "## Step 1:")
+    step_7_at = overview.index("Step 7: V1–V6 Verification")
+    step_5b_at = overview.index("Step 5b: Conventions & Seed")
+    assert step_7_at < step_5b_at
+    assert "inside Step 7 after final verdicts allow Complete" in overview
+    assert "before write-set comparison and completion report" in overview
+
+    compact = " ".join(code_rules.split())
+    assert "For every new or modified POM" in compact
+    assert "inspect relevant sibling POMs first" in compact
+    assert "flat versus composed locators, getter methods versus direct `readonly` properties" in compact
+    assert "Use the fallback template below only when no safe local precedent exists" in compact
+    assert "Fallback POM rules (new files with no safe local precedent)" in compact
+
+    local_readonly = evals_by_id[2]
+    assert "Does not propose getters for locators (uses readonly properties)" in local_readonly["assertions"]
+    local_getters = evals_by_id[43]
+    joined = " ".join(str(item) for item in local_getters["assertions"])
+    assert "True positive:" in joined
+    assert "getter methods" in joined
+    assert "False-positive guard:" in joined
+    assert "readonly" in joined
+
+
+def exercise_pipeline_and_pom_style_mutation_guards(
+    skill: str, code_rules: str, evals_by_id: dict[int, dict[str, object]]
+) -> None:
+    overview = section(skill, "## Pipeline Overview", "## Step 1:")
+    step_7_line = next(
+        line for line in overview.splitlines() if line.startswith("Step 7:")
+    )
+    step_5b_line = next(
+        line for line in overview.splitlines() if line.startswith("Step 5b:")
+    )
+    reordered = overview.replace(
+        f"{step_7_line}\n{step_5b_line}", f"{step_5b_line}\n{step_7_line}", 1
+    )
+    mutations = (
+        (skill.replace(overview, reordered, 1), code_rules),
+        (
+            skill,
+            code_rules.replace(
+                "Use the fallback template below only when no safe local precedent exists",
+                "Always use the fallback template for a new file",
+                1,
+            ),
+        ),
+    )
+    for mutated_skill, mutated_rules in mutations:
+        try:
+            assert_pipeline_and_pom_style_contract(
+                mutated_skill, mutated_rules, evals_by_id
+            )
+        except (AssertionError, ValueError):
+            continue
+        raise AssertionError("pipeline/POM style contract survived a mutation")
+
+
+def exercise_portable_generator_guidance_mutation_guards(
+    code_rules: str, scenario_design: str, evals_by_id: dict[int, dict[str, object]]
+) -> None:
+    mutations = (
+        (
+            code_rules.replace(
+                "abort that request so it cannot reach any external network",
+                "return an empty response",
+                1,
+            ),
+            scenario_design,
+        ),
+        (
+            code_rules.replace(
+                "do not broaden the rule, remove its parameter, or replace request proof with a pixel assertion",
+                "broaden the rule to match observed behavior",
+                1,
+            ),
+            scenario_design,
+        ),
+        (
+            code_rules.replace(
+                "isolated setup or reset that runs independently for every test",
+                "shared setup",
+                1,
+            ),
+            scenario_design,
+        ),
+        (
+            code_rules,
+            scenario_design.replace(
+                "Additional domain-specific outcomes are allowed only when the user approved them or a documented requirement requires them",
+                "No other outcomes are allowed",
+                1,
+            ),
+        ),
+    )
+    for mutated_rules, mutated_scenarios in mutations:
+        try:
+            assert_portable_generator_guidance(
+                mutated_rules, mutated_scenarios, evals_by_id
+            )
+        except AssertionError:
+            continue
+        raise AssertionError("portable generator guidance survived a mutation")
 
 
 def assert_imported_test_case_contract(text: str, imported: str) -> None:
@@ -2097,7 +2243,29 @@ def assert_bash_snippet_variables_defined(text: str) -> None:
             )
 
 
+def assert_reference_reuse(text: str) -> None:
+    loading = section(text, "### Reference loading", "## Step 1:")
+    for required in (
+        "first required use", "complete, unchanged", "current context",
+        "reuse", "compaction", "truncation", "file changes",
+        "section that was not loaded",
+    ):
+        assert required in loading, f"reference reuse lost {required!r}"
+    step4 = section(text, "## Step 4:", "## Step 5:")
+    assert "Reuse the intact `scenario-design.md` content" in step4
+    assert "read `scenario-design.md` in full" in step4
+
+
 def main() -> None:
+    reuse_text = SKILL.read_text(encoding="utf-8")
+    assert_reference_reuse(reuse_text)
+    for lost_guard in ("complete, unchanged", "compaction", "truncation", "file changes", "section that was not loaded"):
+        try:
+            assert_reference_reuse(reuse_text.replace(lost_guard, ""))
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError(f"reuse guard accepted missing {lost_guard!r}")
     exercise_utf8_frame_writer()
     exercise_framed_preflight_argv_boundary()
     exercise_preflight_helper()
@@ -2115,6 +2283,7 @@ def main() -> None:
     )
     codex_plugin = json.loads(CODEX_PLUGIN.read_text(encoding="utf-8"))
     code_rules = CODE_RULES.read_text(encoding="utf-8")
+    recommended_lint = RECOMMENDED_LINT.read_text(encoding="utf-8")
     best_practices = BEST_PRACTICES.read_text(encoding="utf-8")
     verification_rules = VERIFICATION_RULES.read_text(encoding="utf-8")
     preflight_ref = EXPLORATION_PREFLIGHT.read_text(encoding="utf-8")
@@ -2684,6 +2853,12 @@ def main() -> None:
         scenario_design, verification_rules, text
     )
     assert_secondary_outcome_contract(scenario_design)
+    assert_portable_generator_guidance(code_rules, scenario_design, evals_by_id)
+    assert_pipeline_and_pom_style_contract(text, code_rules, evals_by_id)
+    exercise_pipeline_and_pom_style_mutation_guards(text, code_rules, evals_by_id)
+    exercise_portable_generator_guidance_mutation_guards(
+        code_rules, scenario_design, evals_by_id
+    )
     imported_cases = IMPORTED_TEST_CASES.read_text(encoding="utf-8")
     assert_imported_test_case_contract(scenario_design, imported_cases)
     exercise_secondary_outcome_and_import_mutation_guards(scenario_design, imported_cases)
@@ -2745,8 +2920,19 @@ def main() -> None:
     assert "as the sole outcome assertion or readiness gate" in code_rules
     assert "Raw `count()` remains valid for evidenced data collection" in code_rules
     assert "Positive `toBeAttached()` is valid when DOM attachment itself" in code_rules
+    assert "matcher that expresses the approved contract" in code_rules
+    assert "Do not infer visibility from the invalid truthiness assertion" in code_rules
     assert "Record the idempotence evidence" in code_rules
     assert "`.first()` + `toBeVisible()`" not in code_rules
+
+    assert "Cypress silent-pass precedent" not in recommended_lint
+    assert "Playwright `no-unnecessary-assertions`" in recommended_lint
+
+    repair_eval = " ".join(json.dumps(evals_by_id[8], ensure_ascii=False).split())
+    assert "approved expected value and primary outcome are immutable" in repair_eval
+    assert "True positive:" in repair_eval
+    assert "False-positive guard:" in repair_eval
+    assert "does not change an expected value to match observed product behavior" in repair_eval
 
     v5 = section(
         verification_rules,

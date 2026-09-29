@@ -4,7 +4,7 @@
     {
       "id": 1,
       "prompt": "Review the Playwright E2E tests in evals/files/auth.spec.ts and its POM file pages/login-page.ts. Find any anti-patterns, weak assertions, or quality issues.",
-      "expected_output": "Should detect: test.only (P0), waitForTimeout (P1), one-shot boolean (P1), conditional bypass (P0), force:true (P1), .catch(()=>{}) in POM (P0), raw DOM query in POM (P1), name-assertion mismatch (P0), missing then (P0), YAGNI unused POM members (P2), hardcoded credentials (P1), direct page.click API usage (P1). Should not promote a leftover dangling locator to #8 P0 when the same test already has meaningful URL and heading assertions.",
+      "expected_output": "Should detect: test.only (P0), waitForTimeout (P1), one-shot boolean (P1), conditional bypass (P0), force:true (P1), .catch(()=>{}) in POM as a #3 candidate (not a confirmed P0), raw DOM query in POM (P1), missing then (P0), YAGNI unused POM members (P2), hardcoded credentials (P1), direct page.click API usage (P1). Should not promote a leftover dangling locator to #8 P0 when the same test already has meaningful URL and heading assertions. Should not report #1 for the rendering-only 'should show user profile' title.",
       "files": [
         "evals/files/auth.spec.ts",
         "evals/files/pages/login-page.ts"
@@ -16,9 +16,9 @@
         "Detects one-shot boolean: isVisible() piped to toBeTruthy() on lines 17-18 (#4, P1)",
         "Detects conditional bypass: if(await page.locator..isVisible()) gates assertion on line 42 (#5a, P0)",
         "Detects force:true on page.click('.logout-btn') line 36 without JUSTIFIED comment (#5b, P1)",
-        "Phase 2 LLM review detects .catch(() => {}) in POM goto() line 33 swallowing networkidle failure (#3, P0) — Tier 3 surfaces it only as a [P0?][LLM-TRIAGE] #3 candidate at pages/login-page.ts:33, so Phase 2 must confirm the swallowed failure before reporting P0",
+        "Evaluates the swallowed networkidle wait in POM goto() (pages/login-page.ts:33, a [P0?][LLM-TRIAGE] #3 candidate) under #3's dependency rule and does NOT report it as a confirmed P0: every goto() caller next runs login(), whose fill/click auto-wait for their elements, so no later assertion depends on network idle. Keeping it as a named candidate or lower-severity note is acceptable",
         "Detects raw DOM query document.querySelector in POM waitForDashboard() line 48 (#6, P1)",
-        "Flags name-assertion mismatch: 'should show user profile' only checks .user-avatar visibility, not profile info (#1, P0)",
+        "Does NOT report #1 for 'should show user profile': the title makes a rendering-only promise that visibility can prove. The one-shot isVisible() read on lines 17-18 belongs to #4 (P1), not #1",
         "Flags missing then: 'should logout' doesn't verify session cleared or dashboard gone (#2, P0)",
         "Classifies the logout gap once as #2 at the causal logout action, not as both #1 and #2 merely because the title also promises logout",
         "Identifies YAGNI: rememberMeCheckbox, forgotPasswordLink, socialLoginGoogle, socialLoginGithub, captchaWidget, termsCheckbox unused in auth.spec.ts (#11, P2)",
@@ -82,7 +82,7 @@
         "Detects toBeAttached() in the 'verify avatar visible' test on settings line 48: DOM attachment is weaker than the stated visible UI outcome (#4, P1)",
         "Detects one-shot getAttribute('src').toBeTruthy() in settings line 49 (#4, P1)",
         "Detects one-shot URL: expect(page.url()).toContain on settings line 42 — no auto-retry (#4h, P1)",
-        "Detects inconsistent POM usage in settings: SettingsPage imported but spec uses raw page.fill/page.click for password, toggle, delete (#13, P1)",
+        "Detects inconsistent POM usage at settings.spec.ts line 41: the raw #save-all click duplicates SettingsPage.saveAllButton, which centralizes that exact selector (#13, P1); does not infer ownership for the password, notification, or delete actions without a corresponding POM method, locator, workflow, or explicit project convention",
         "Detects hardcoded credentials in auth lines 8, 33 (#14, P1)",
         "Does NOT infer #12 P0 solely from the /dashboard path: confirm route protection, auth configuration, and a wrong-surface pass before reporting",
         "YAGNI in settings-page.ts: themeSelector, languageDropdown, timezoneDropdown, twoFactorToggle, backupCodesButton, cancelButton and their methods unused (#11, P2)",
@@ -421,7 +421,9 @@
         "Does NOT flag line 25 toHaveCount(0) — empty-state case that asserts a positive counterpart ('No jobs match your search') on line 24",
         "Does NOT flag line 34 toHaveCount(0) — the 'row' locator is the target of a click on line 31, proving it can match",
         "Does NOT flag line 41 toHaveCount(0) — the 'jobRows' locator is proven able to match later in the same test (toHaveCount(1) on line 43 and a Run-button action on line 44), so a rotted selector cannot keep it green",
-        "Reports #4i outside the P0 exit gate (P1, LLM-TRIAGE) rather than as a must-fix silent pass"
+        "Reports #4i outside the P0 exit gate (P1, LLM-TRIAGE) rather than as a must-fix silent pass",
+        "Offers one evidence-preserving fix for line 9's removal transition: prove the same locator present before the removing action and then assert absence; does not offer deleting the assertion as an alternative",
+        "Does not impose that removal-transition fix on line 25's legitimate initial-empty scenario or invent setup/actions merely to make its locator appear"
       ]
     },
     {
@@ -766,6 +768,221 @@
         "Does not treat the later heading assertion on line 19, which checks a different fact, as independent verification that excuses the swallowed approval-state assertion",
         "Anchors the confirmed finding at assertion line 15 rather than catch line 16",
         "Does NOT flag line 6: clearCookies is a non-assertion best-effort cleanup operation that no later assertion depends on"
+      ]
+    },
+    {
+      "id": 44,
+      "prompt": "Review the Playwright E2E tests in evals/files/pom-missing-method.spec.ts and its POM file evals/files/pages/notification-settings-page.ts. Check #13 inconsistent POM usage without treating an imported POM as file-wide ownership.",
+      "expected_output": "Report no #13 finding. NotificationSettingsPage provides navigation only: no equivalent digest-frequency method or locator, duplicated workflow, or explicit project convention establishes ownership of the raw interaction on line 7. Do not invent a new POM method. Lines 12-14 are on a separate incident-lookup page with no POM, and the generic locator assertion on line 8 is not a POM interaction-boundary violation.",
+      "files": [
+        "evals/files/pom-missing-method.spec.ts",
+        "evals/files/pages/notification-settings-page.ts"
+      ],
+      "assertions": [
+        "False-positive guard: does NOT report pom-missing-method.spec.ts line 7 as #13 because a navigation-only POM does not prove ownership of every same-page action",
+        "Does not recommend or invent a digest-frequency POM method without an equivalent method or locator, duplicated centralized workflow, or explicit in-scope project convention",
+        "False-positive guard: does NOT report lines 12-14 as #13 because the incident-lookup interactions are on a different page with no POM",
+        "False-positive guard: does NOT report the generic locator assertion on line 8 as #13",
+        "Does not widen #13 to every raw page or locator call in a file that imports a POM"
+      ]
+    },
+    {
+      "id": 45,
+      "prompt": "Review and propose fixes for evals/files/assertion-contracts.spec.ts. Preserve each test's specified predicate while adding retries where appropriate.",
+      "expected_output": "Report #4 P1 at lines 5, 10, and 17. Preserve raw text equality, exact array membership, and OR visibility with expect.poll. Do not replace array membership with scalar toContainText, normalize the raw receipt text, or collapse the OR into a strict multi-element locator. Skip line 22 because it already polls the exact predicate.",
+      "files": ["evals/files/assertion-contracts.spec.ts"],
+      "assertions": [
+        "Reports line 5 as #4 P1 and proposes expect.poll of textContent with exact spaces preserved",
+        "Reports line 10 as #4 P1 and preserves array toContain membership rather than scalar substring matching",
+        "Reports line 17 as #4 P1 and polls the OR of the two visibility reads without a combined strict locator, .first(), AND, or test.skip",
+        "False-positive guard: does not report line 22 because expect.poll already retries the exact array membership predicate",
+        "Does not promote one-shot reads to P0"
+      ]
+    },
+    {
+      "id": 46,
+      "prompt": "Review evals/files/cypress-query-contracts.cy.ts. Distinguish empty iteration, implicit query assertions, and object assertions. Explain what can fail when the DOM rows are absent.",
+      "expected_output": "Report #4k P1 at line 18 for an empty ordinary array whose callback never verifies a label. Do not report lines 4 or 11 as silent empty iteration: find and filter retain implicit existence checks. The outer assertion on line 25 is redundant but its queued cy.get can fail; do not label that test always-passing. Report line 30 as #4 P0 because the synchronous jQuery object's existence proves no row exists. Recommend the intended DOM presence check without inventing visibility.",
+      "files": ["evals/files/cypress-query-contracts.cy.ts"],
+      "assertions": [
+        "Reports line 18 as #4k P1 because cy.wrap([]).each executes no callback assertion",
+        "False-positive guard: does not report lines 4 and 11 as silent empty iteration because find/filter retry with implicit existence assertions",
+        "False-positive guard: does not claim line 25 or the whole queued-query test always passes when .row is absent",
+        "Reports line 30 as #4 P0 because Cypress.$ returns an object even for zero matching elements",
+        "Does not automatically replace presence with visibility"
+      ]
+    },
+    {
+      "id": 47,
+      "prompt": "Review evals/files/cypress-force-snapshot.cy.ts and propose fixes. You cannot run the target application and have no evidence explaining the forced click. Preserve the stated snapshot contract.",
+      "expected_output": "Report the unexplained force on line 4 as #5b P1, but do not mechanically remove it based on visibility. Identify the actual actionability blocker and validate a proposed default click before accepting removal. Do not report the intentionally justified, causally gated snapshot on line 15 as #4g. It verifies absence at the saved state, not absence at every moment; a retrying negative assertion would not prove continuous absence either.",
+      "files": ["evals/files/cypress-force-snapshot.cy.ts"],
+      "assertions": [
+        "True positive: reports line 4 as #5b P1 while requiring blocker evidence and a relevant runtime test before accepting force removal",
+        "False-positive guard: does not treat visibility of the same button as proof of all actionability checks or invent a JUSTIFIED reason",
+        "False-positive guard: preserves line 15 because its immediately preceding JUSTIFIED comment documents an intentional current-state snapshot after causal gates",
+        "Does not claim that either timeout-zero or ordinary negative assertions prove the element never appeared"
+      ]
+    },
+    {
+      "id": 48,
+      "prompt": "Review evals/files/recovery-oracle.spec.ts for conditional assertion bypasses. Distinguish a similar-looking assertion fallback from an optional blocker cleanup before the required assertion. You have no runtime evidence that the tip appears.",
+      "expected_output": "Report #5a P0 at line 11: when the exact transfer confirmation is absent, the test checks only the generic Transfers link, which can exist without a completed transfer and does not prove the promised destination confirmation. Keep the exact confirmation as an unconditional postcondition; do not substitute a similar or generic UI element. Do not report line 21: the optional tip branch only dismisses a blocker, and line 25 unconditionally asserts the exact transfer confirmation. Do not claim the tip actually appears or that the first transfer fails in a real app without runtime evidence.",
+      "files": ["evals/files/recovery-oracle.spec.ts"],
+      "assertions": [
+        "True positive: reports #5a P0 at line 11 because the fallback link on line 14 does not prove the promised confirmation",
+        "Preserves the exact destination confirmation as the required unconditional postcondition in the proposed fix",
+        "False-positive guard: does not report the optional blocker action-only branch at line 21 because line 25 unconditionally asserts the outcome",
+        "Does not infer that the optional tip appears or claim an observed app failure without runtime evidence",
+        "Does not invent a new pattern ID"
+      ]
+    },
+    {
+      "id": 49,
+      "prompt": "Review only #13 POM consistency in evals/files/pom-evidence-boundaries.spec.ts using its two supplied POM files. Require concrete source evidence for an established same-page interaction boundary.",
+      "expected_output": "Report exactly one #13 P1 at pom-evidence-boundaries.spec.ts line 9. CatalogPage.archiveCurrentItem() centralizes the same Archive item and Confirm archive selectors as one meaningful workflow, but the spec duplicates that workflow raw on lines 9-10. Recommend calling the existing method. Do not report the global cookie overlay on line 8, the assertion on line 11, the display-density action on line 17 when its POM only navigates, or the nearby /catalog/imports route action on line 25.",
+      "files": [
+        "evals/files/pom-evidence-boundaries.spec.ts",
+        "evals/files/pages/catalog-page.ts",
+        "evals/files/pages/display-preferences-page.ts"
+      ],
+      "assertions": [
+        "True positive: reports pom-evidence-boundaries.spec.ts line 9 as #13 P1 because CatalogPage.archiveCurrentItem() at catalog-page.ts lines 10-13 owns the same selectors and meaningful two-step workflow duplicated on spec lines 9-10",
+        "Recommends calling the existing archiveCurrentItem() method instead of creating another wrapper",
+        "False-positive guard: does NOT report the global cookie-consent overlay action on line 8 as a CatalogPage boundary violation",
+        "False-positive guard: does NOT report the generic status assertion on line 11 as #13",
+        "False-positive guard: does NOT report line 17 because DisplayPreferencesPage is navigation-only and supplies no source evidence that it owns the display-density interaction",
+        "False-positive guard: does NOT report line 25 because /catalog/imports is a nearby but separate route outside the established CatalogPage interaction boundary",
+        "Does not invent missing POM methods or infer ownership from an import, constructor call, page name, or nearby route alone"
+      ]
+    },
+    {
+      "id": 50,
+      "prompt": "Review evals/files/cypress-title-contracts.cy.ts for #1 test-name/assertion mismatches. Judge each title by the exact outcome it promises.",
+      "expected_output": "Report exactly one #1 P0 at line 7, the second test's title declaration: it promises the exact renewal date 30 September 2026, but line 9 proves only that a notification card is visible. Do not report the first test: visibility on line 4 directly proves its rendering-only title. Recommend asserting the promised date content without weakening the rendering control.",
+      "files": [
+        "evals/files/cypress-title-contracts.cy.ts"
+      ],
+      "assertions": [
+        "True positive: reports cypress-title-contracts.cy.ts line 7 as #1 P0 because visibility on line 9 does not prove the exact renewal-date content promised by that title; line 9 is evidence, not a second finding",
+        "Recommends an assertion for the exact promised date content rather than treating card presence as equivalent",
+        "False-positive guard: does NOT report line 4 as #1 because visible presence proves the first test's rendering-only promise",
+        "Does not generalize every visibility-only assertion into a test-name mismatch; the title's promised predicate controls the verdict",
+        "Does not invent a missing-action #2 finding for either read-only rendering scenario"
+      ]
+    },
+    {
+      "id": 51,
+      "prompt": "Review only #11b zombie-spec redundancy across evals/files/checkout-nightly-copy.spec.ts, evals/files/checkout-nightly.spec.ts, and evals/files/checkout-release-smoke.spec.ts. Use the execution contracts recorded in those files, not test-body overlap alone.",
+      "expected_output": "Report #11 P2 for checkout-nightly-copy.spec.ts: its only test is covered by checkout-nightly.spec.ts, and both files state the same nightly-regression, Chromium-desktop, test-tenant contract and the same locale/configuration. Recommend deleting the proven duplicate file. Do not report checkout-release-smoke.spec.ts: although its user flow overlaps, it is a per-deploy release gate with a mobile-Safari/canary contract and different configuration, so the nightly suite does not replace its execution role.",
+      "files": [
+        "evals/files/checkout-nightly-copy.spec.ts",
+        "evals/files/checkout-nightly.spec.ts",
+        "evals/files/checkout-release-smoke.spec.ts"
+      ],
+      "assertions": [
+        "True positive: reports checkout-nightly-copy.spec.ts as #11 P2 only after showing that its behavior, nightly purpose, Chromium-desktop/test-tenant contract, and locale/configuration are covered by checkout-nightly.spec.ts",
+        "Recommends deleting the proven operational duplicate rather than deleting a file merely because its test body is a subset",
+        "False-positive guard: does NOT report checkout-release-smoke.spec.ts because its per-deploy release-gate purpose, mobile-Safari/canary contract, and configuration differ from the nightly suite",
+        "Preserves smoke, release, browser, device, project, tag, and cadence variants when repository evidence gives them a distinct execution role",
+        "Does not infer matching execution purpose or cadence when repository metadata is absent"
+      ]
+    },
+    {
+      "id": 52,
+      "prompt": "Review only #22 optimistic UI call proof in evals/files/optimistic-write-contract.spec.ts using evals/files/support/optimistic-profile-handler.ts as the supplied implementation evidence. Judge the outcome each test promises.",
+      "expected_output": "Report exactly one #22 P1 at optimistic-write-contract.spec.ts line 5. The first title explicitly promises PATCH /api/profile, while the supplied handler sets Saved before fetch, so the line 6 UI assertion can pass without proving the promised request. Recommend request/response or mock-capture evidence established before the click. Do not report line 11: that test promises only immediate visible feedback. Do not report line 18: the reload followed by the server-backed value assertion is equivalent persistence evidence for its persistence promise.",
+      "files": [
+        "evals/files/optimistic-write-contract.spec.ts",
+        "evals/files/support/optimistic-profile-handler.ts"
+      ],
+      "assertions": [
+        "True positive: reports #22 P1 at line 5 because the test promises PATCH /api/profile and the supplied handler proves Saved is set optimistically before fetch",
+        "Anchors the finding at the write-control action and treats line 6 only as evidence that the optimistic UI is the sole proof",
+        "False-positive guard: does NOT report line 11 because its test contract promises immediate UI feedback, not a backend call or persisted result",
+        "False-positive guard: does NOT report line 18 because reload plus the server-backed value assertion on line 20 supplies equivalent persistence evidence",
+        "Does not require a request assertion from every write-shaped interaction or infer optimistic behavior without supplied implementation evidence"
+      ]
+    },
+    {
+      "id": 53,
+      "prompt": "Review evals/files/convention-boundaries.spec.ts. Apply project conventions as evidence without allowing them to suppress a confirmed P0, and refute lookalike candidates from actual receiver/context behavior.",
+      "expected_output": "Report exactly one finding: #7 P0 at line 10. The local comment permitting committed focused tests cannot make test.only safe because it silently excludes other tests. Do not report database.only on line 7: it is an unrelated application method, not a Playwright/Cypress focused-test receiver, so this is candidate refutation rather than convention suppression. Do not report the forced click on line 17: its immediately preceding JUSTIFIED comment gives a concrete causal rationale for the canvas proxy's hidden native input, as the #5b contract permits.",
+      "files": [
+        "evals/files/convention-boundaries.spec.ts"
+      ],
+      "assertions": [
+        "True positive: reports test.only on line 10 as #7 P0 even though the project-convention comment says focused tests may be committed",
+        "Explains that a convention cannot downgrade or suppress confirmed silent coverage exclusion",
+        "False-positive guard: does NOT report database.only on line 7 because its receiver is not a Playwright/Cypress test API; this refutes the candidate rather than suppressing a P0",
+        "False-positive guard: does NOT report the line 17 force option because the preceding JUSTIFIED comment provides the concrete causal local rationale required by #5b",
+        "Reports exactly one final finding and does not turn every syntactic .only or force option into P0"
+      ]
+    },
+    {
+      "id": 54,
+      "prompt": "Review #4a and propose fixes for evals/files/count-contracts.spec.ts. Use each title's evidenced count contract; do not assume a collection must be non-empty.",
+      "expected_output": "Report #4a P0 at lines 6 and 12 because both >= 0 predicates are true for every possible element count. For the empty-dashboard scenario, replace the one-shot count assertion with a retrying exact zero-count assertion. For the seeded-dashboard scenario, assert the title's exact expected count of three. Do not propose > 0 for either case: it would invent a non-empty requirement for the valid empty scenario and would under-specify the exact-three scenario.",
+      "files": [
+        "evals/files/count-contracts.spec.ts"
+      ],
+      "assertions": [
+        "True positive: reports #4a P0 at line 6 because count >= 0 cannot fail and replaces it with the title-evidenced exact zero count",
+        "True positive: reports #4a P0 at line 12 because count >= 0 cannot fail and replaces it with the title-evidenced exact count of three",
+        "False-positive repair guard: does not default either fix to toBeGreaterThan(0) or another generic non-empty assertion",
+        "Preserves the legitimate empty-dashboard product state rather than inventing a requirement that at least one card exists",
+        "Uses retrying locator count assertions for the evidenced expected values instead of retaining one-shot count reads"
+      ]
+    },
+    {
+      "id": 55,
+      "prompt": "Review #1 in evals/files/partial-promise.spec.ts and assign each finding's severity from the #1 contract.",
+      "expected_output": "Report #1 P1 at line 3: the test verifies the promised owner through results[0].receiverId but never checks the promised pending status. Report #1 P0 at line 9: a 204 status observes none of the promised outcome, so the test stays green when the request is never marked paid.",
+      "files": [
+        "evals/files/partial-promise.spec.ts"
+      ],
+      "assertions": [
+        "True positive: reports #1 at P1 on line 3 because one promised outcome (the owner) is verified and the promised pending status is not",
+        "Severity guard: does not report line 3 as P0, because the test really verifies part of its title",
+        "True positive: reports #1 at P0 on line 9 because the status code observes none of the promised paid state",
+        "Severity guard: does not lower line 9 to P1 because line 3 is partial; each title is judged separately"
+      ]
+    },
+    {
+      "id": 56,
+      "prompt": "Review evals/files/heading-ids.spec.ts and report every finding in the standard output format.",
+      "expected_output": "Report #7 P0 at line 3 (test.only) and #9 P1 at line 6 (waitForTimeout). Each finding heading names its pattern ID, for example '## [P0] evals/files/heading-ids.spec.ts — #7 Focused test leak'.",
+      "files": [
+        "evals/files/heading-ids.spec.ts"
+      ],
+      "assertions": [
+        "True positive: the #7 finding's heading contains the literal pattern ID '#7'",
+        "True positive: the #9 finding's heading contains the literal pattern ID '#9'",
+        "Format guard: no finding heading consists only of a severity, file, and prose title without a '#<id>' pattern ID"
+      ]
+    },
+    {
+      "id": 58,
+      "prompt": "Review evals/files/login-request.cy.ts and report every finding in the standard output format.",
+      "expected_output": "No #20 finding. Line 3 is a login cy.request in setup; the file shows no backend write that reaches shared or persistent state, and a login action name alone is not evidence of one.",
+      "files": [
+        "evals/files/login-request.cy.ts"
+      ],
+      "assertions": [
+        "False-positive guard: no #20 Unmocked Real-Backend Writes finding at line 3, because a login request with no repository evidence of an uncontrolled write is not a #20 hit",
+        "False-positive guard: no #14 finding at line 3, because the credentials come from Cypress.env"
+      ]
+    },
+    {
+      "id": 59,
+      "prompt": "Review evals/files/heading-ids.spec.ts and report every finding in the standard output format.",
+      "expected_output": "Report #7 P0 at line 3 and #9 P1 at line 6. Each finding heading is a level-2 heading starting at the beginning of its line with '## [', with no nested '### [P' finding heading.",
+      "files": [
+        "evals/files/heading-ids.spec.ts"
+      ],
+      "assertions": [
+        "True positive: each finding heading line starts at the beginning of the line with '## [', including the #7 and #9 findings",
+        "Format guard: no finding heading uses '### [P' or sits under a '## Findings' wrapper"
       ]
     }
   ]

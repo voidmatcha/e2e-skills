@@ -1,16 +1,24 @@
 # Phase 1: Scanner Workflow
 
-Read this file immediately before every Phase 1 scanner run. It contains the scanner mechanics, tier contracts, fail-closed recovery, suppression rules, and false-positive filters; `SKILL.md` retains the command, target-execution trust gate, and required report outcomes.
+Read this file immediately before every Phase 1 scanner run. It contains the scanner command lines, mechanics, tier contracts, fail-closed recovery, suppression rules, and false-positive filters; `SKILL.md` retains the scan-scope rules, target-execution trust gate, and required report outcomes.
 
 ## Phase 1: Mechanical Scan
 
-Run the bundled scanner against the test directory:
+Run the bundled scanner once per scan root. For a named file root:
 
 ```bash
-/bin/bash -p <skill-base>/scripts/scan.sh <test-dir>
+/bin/bash -p <skill-base>/scripts/scan.sh <file>
 ```
 
-`<skill-base>` is the directory that contains this SKILL.md — on Claude Code the Skill tool's "Base directory" output (`~/.claude/skills/e2e-reviewer/`), on Codex or the `skills` CLI `~/.agents/skills/e2e-reviewer/`. Auto-detect `<test-dir>` from project structure (common: `e2e/`, `tests/`, `__tests__/`, `spec/`, `cypress/e2e/`).
+For a directory root, write the full report to a new file:
+
+```bash
+/bin/bash -p <skill-base>/scripts/scan.sh --report-file <new-file> <dir>
+```
+
+The full report goes to `<new-file>` and the output is a digest of headers, per-file hit counts, and the `Summary:` line, as `SKILL.md` § Scan scope and output size describes. The report file and the exit code are the same as a plain run's output and exit code.
+
+`<skill-base>` is the absolute directory of the actual loaded skill: use the host-provided skill file path or Base directory and resolve its `SKILL.md`, including plugin-cache, custom installation, or checkout locations. Do not infer the active copy from a conventional home directory or the target project cwd. Quote the resolved script and target paths as separate arguments. If the skill location cannot be resolved, report the missing location; do not run a guessed copy. Auto-detect `<test-dir>` from project structure (common: `e2e/`, `tests/`, `__tests__/`, `spec/`, `cypress/e2e/`).
 
 The scanner's bundled checks require no package from the reviewed project. They do require both Python 3 and `rg` with PCRE2 support on the host (`rg -P`). Python 3 creates and validates NUL-safe candidate identity records so candidate drift or malformed records fail closed; this mandatory scanner bookkeeping is separate from optional Tier 2 AST tooling. By default the scanner does not execute target-controlled ESLint binaries, plugins, parsers, or configs, and it does not auto-download tools. The target repository is untrusted by default. Target-controlled package scripts, local binaries, plugins, parsers, and configs may run only when the user has both explicitly trusted the checkout and approved the exact command, including its environment and flags. Without both, report the command as `recommended/unexecuted`; project documentation is evidence about what to recommend, not execution approval. The same two-part gate applies to a documented project lint command and Tier 1. When both approvals exist, run the documented E2E lint command separately and merge equivalent results rather than reporting duplicates. For that approved trusted checkout, `E2E_SMELL_ALLOW_PROJECT_ESLINT=1` opts into Tier 1. That mode uses a minimized environment and E2E-scoped file arguments but is not sandboxed.
 
@@ -33,7 +41,7 @@ Deduplicate equivalent results into one finding with both provenance sources. Pr
 
 Verified against `eslint-plugin-playwright@2.11.0` `flat/recommended` (37 rules on by default): `#7`, `#9`, `#9c`, `#15`, `#8a`, `#4c`-`#4e`, `#17`, `#5a`, `#5b`, `#6` and Cypress `#7`, `#9b`, `#10d`-`#10f` already map onto a rule that ships enabled, and `#4f` is covered upstream by `no-unnecessary-assertions` (this skill's detection is broader). `#16` needs type-aware `@typescript-eslint/no-floating-promises`, not `missing-playwright-await`, which only sees matchers. That leaves 12 patterns with no ESLint equivalent — the cross-file and intent-versus-assertion ones (`#1`, `#2`, `#12`, `#20`, `#22`, `#23`) plus a few unclaimed mechanical ones (`#3b`, `#4g`, `#4i`, `#4j`, `#4k`, `#10c`). Read the run's own "Enforceable by a lint rule" line rather than this paragraph: it is computed per run.
 
-**Companion CI enforcement (only when already present or explicitly requested).** The mechanical always-pass class (`#4f`) is also covered for Playwright by [`eslint-plugin-playwright/no-unnecessary-assertions`](https://github.com/mskelton/eslint-plugin-playwright/blob/main/docs/rules/no-unnecessary-assertions.md) and for Cypress by [`eslint-plugin-cypress-silent-pass`](https://github.com/voidmatcha/eslint-plugin-cypress-silent-pass). Reuse those rules when the project already owns them; do not make installation a review prerequisite. The bundled scanner and semantic review remain load-bearing on every host.
+**Companion CI enforcement (only when already present or explicitly requested).** The mechanical always-pass class (`#4f`) is covered for Playwright by [`eslint-plugin-playwright/no-unnecessary-assertions`](https://github.com/mskelton/eslint-plugin-playwright/blob/main/docs/rules/no-unnecessary-assertions.md). Reuse that rule when the project already owns it; do not make installation a review prerequisite. Do not recommend `eslint-plugin-cypress-silent-pass@0.2.2`: it also flags assertions on queued `cy.get(...)` chains, but a missing element still fails when Cypress executes the query, so those hits are not unconditional silent-pass P0s. The bundled `Cypress.$(...)` detector and semantic review remain load-bearing for genuine Cypress synchronous-object cases.
 
 **Tier scoping note:** Tier 2's `sg-4f` deliberately also matches RTL `getBy*().toBeTruthy()` in unit tests — that surface gets the jest-dom canonical fix from 4.1, not a P0 label. Severity classification of #4f stays with Phase 2 (Locator subject = P0; RTL = advisory). Tier 2 skips vendored/build/report/eval artifacts through command globs, per-rule ignores, and record post-filtering.
 

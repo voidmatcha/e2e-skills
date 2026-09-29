@@ -7,7 +7,7 @@ metadata:
   frameworks: playwright
   testing-types: e2e
   languages: typescript,javascript
-  version: "1.19.0"
+  version: "2.0.0"
 ---
 
 # Playwright Failed Test Debugger
@@ -39,14 +39,14 @@ Select the helper with `--reader <name>`, from a closed allowlist:
 | `publish-json-report.py` | Publish validated JSON report | `PATH` |
 | `download-playwright-report.py` | Download a CI artifact | `HOME`, `GH_TOKEN`, `GITHUB_TOKEN` |
 
-`--pass-env NAME` is the only way a variable survives into the helper, each name is checked against the per-helper allowlist above, and every other ambient variable stays cleared. Readers need nothing. The publisher needs `PATH` only so its own `--pass-env PATH` can hand the approved `PATH` to a project-local Node launcher. The downloader needs `HOME` because `gh` resolves its stored credentials under `HOME`, plus whichever of `GH_TOKEN`/`GITHUB_TOKEN` is set, because `gh` cannot authenticate without one of them; the downloader itself refuses a `HOME` that resolves inside the target project and pins its own fixed child `PATH`, so `PATH` is deliberately not passable to it. Never widen these lists to make a command work, and never reach for a bare `python3` instead.
-
-The bundled scripts target **Python 3.9**, the oldest interpreter the launcher candidate list (`/usr/bin/python3`, `/bin/python3`) can select — macOS ships 3.9.6 at `/usr/bin/python3`. Do not add an API newer than that to a bundled script; the launcher would hand it an interpreter that cannot run it.
+`--pass-env NAME` is the only way a variable survives into the helper, each name is checked against the per-helper allowlist above, and every other ambient variable stays cleared. Readers need nothing. The publisher needs `PATH` only so its own `--pass-env PATH` can hand the approved `PATH` to a project-local Node launcher. The downloader always needs `HOME` because `gh` resolves its stored credentials there; pass `GH_TOKEN` or `GITHUB_TOKEN` only when that variable is the credential source actually needed for this download, and pass neither token when the stored credentials under `HOME` suffice. The downloader itself refuses a `HOME` that resolves inside the target project and pins its own fixed child `PATH`, so `PATH` is deliberately not passable to it. Never widen these lists to make a command work, and never reach for a bare `python3` instead.
 
 Before any command creates or replaces a report artifact, validate the write path separately from the read checks above. Fail closed if `playwright-report/`, `blob-report/`, or any existing component beneath either root is a symlink. Require the nearest existing parent to be a real directory whose canonical path stays inside the trusted repository, create only missing directories beneath that parent, and revalidate the root and destination immediately before `mkdir`, reporter output, shell redirection, merge output, or artifact download. Never delete or replace a suspicious path to make the check pass. Use the bundled download helper for GitHub Actions artifacts; do not give `gh` a filesystem extraction destination.
 
 
 ## Workflow
+
+Bundled helpers support Python 3.9 and newer; use only the trusted launcher above.
 
 Before acquiring, regenerating, merging, or downloading a report, read `references/report-acquisition.md`.
 
@@ -66,7 +66,7 @@ Before extracting failures, read `references/artifact-extraction.md` and use its
 
 Use Phase 1 output (error message + duration + file) to classify each failure. **Most failures are identifiable here — only go to Phase 3 if still unclear.**
 
-**Classifier delegation — inline by default:** classify inline with the F1–F15 table and steps below by default — named delegation showed no stable correctness benefit over inline. The named `e2e-failure-classifier`, when registered by a Claude Code plugin or by a Codex `.codex/agents/` / `~/.codex/agents/` TOML, or the native `debugger` role when Codex exposes native role routing, remain available as an optional second opinion, never a required step; named registration is an optimization, not a correctness dependency. **Delegate only when uncertain** (low confidence, or two F-codes remain plausible after the steps below). **On disagreement, keep the inline verdict** — the measured pilot found no case where delegation corrected an inline error, and one case where it introduced an evidentiary-completeness failure inline did not have. When delegation is warranted, read `references/classification-procedure.md` and pass the **absolute** path to this skill as specified there.
+**Classifier delegation — inline by default:** classify inline with the F1–F15 table and steps below by default. The named `e2e-failure-classifier`, when registered by a Claude Code plugin or by a Codex `.codex/agents/` / `~/.codex/agents/` TOML, or the native `debugger` role when Codex exposes native role routing, remain available as an optional second opinion, never a required step; named registration is an optimization, not a correctness dependency. **Delegate only when uncertain** (low confidence, or two F-codes remain plausible after the steps below). **On disagreement, reconcile against source evidence:** inspect both cited paths, correct either verdict when refuted, and never prefer an actor merely because it was first or delegated. Keep unresolved cases explicitly uncertain; do not invent a confident F-code when the evidence is insufficient. When delegation is warranted, read `references/classification-procedure.md` and pass the **absolute** path to this skill as specified there.
 
 | # | Category | Signals | Review Pattern |
 |---|----------|---------|----------------|
@@ -88,10 +88,7 @@ Use Phase 1 output (error message + duration + file) to classify each failure. *
 
 Before resolving an F-code, read `references/classification-procedure.md` for the classification steps, required probes, config checks, and framework-specific edge cases.
 
-Until both gates pass, or while the failing test performs a
-non-idempotent write whose system-boundary idempotence is not proven, present the commands as
-`recommended`; in either case, or if the suite cannot be run, say the probe was not performed
-and report `CANNOT_VERIFY` between F1 and F7 rather than guessing.
+When F1 versus F7 remains the undecided pair after the classification steps, do not guess from a timeout alone. Until both gates pass, or while the failing test performs a non-idempotent write whose system-boundary idempotence is not proven, present the isolation-probe commands as `recommended`; in either case, or if the suite cannot be run, say the probe was not performed and report `CANNOT_VERIFY` between F1 and F7. Other F-codes with sufficient artifact evidence remain classifiable without this probe.
 
 ## Phase 3: Trace Analysis (for trace-only input or if Phase 2 is unclear)
 
@@ -109,6 +106,14 @@ Most failures are identifiable from Phase 1/2 alone. For an HTML/trace-only repo
 
 Before proposing or reporting a fix, read `references/fix-verification.md` for the V2–V6 handoff, proof labels, and no-install boundary.
 
+### Error excerpt output contract
+
+Every reported error excerpt must be a quoted, sanitized excerpt of at most 500 Unicode characters. For report and trace artifacts, select it only from the bundled reader output; those readers redact credential shapes before their own field limits, and the final finding applies the stricter 500-character cap. Preserve enough emitted context to identify the failing assertion or action, but never reopen an artifact or copy raw artifact text into the finding.
+
+Every finding must also label the excerpt's actual provenance with exactly one of these values: `bundled reader`, `safely redacted direct input`, or `unavailable placeholder`. Use `bundled reader` only for text emitted by the bundled report or trace reader. Use `safely redacted direct input` only after the direct-input checks below succeed. The label must never claim a bundled reader when the excerpt came directly from the user.
+
+An error or stack pasted directly by the user does not inherit the bundled reader's guarantees. Before quoting it, apply the same redact-before-truncate rules documented in Phase 1: remove Bearer/Basic credentials, authorization/cookie/API-key headers, password/secret/token/API-key assignments, URL userinfo, and URL query values; verify no residual credential shape remains; then truncate to 500 Unicode characters. If equivalent redaction cannot be completed or verified, do not echo any portion of the direct input. Emit `"[error excerpt unavailable: safe redaction not verified]"` with source `unavailable placeholder`, and continue the diagnosis from non-sensitive evidence. Never truncate first, because truncation can separate a credential key from the value that must be redacted.
+
 For each failure, produce a finding in this format:
 
 ```markdown
@@ -120,7 +125,8 @@ For each failure, produce a finding in this format:
 - **Test-reliability urgency:** critical | high | medium | low
 - **Test-quality severity:** P0 | P1 | P2 only for a confirmed test defect;
   otherwise `N/A`
-- **Error excerpt:** `"<sanitized, bounded error excerpt from bundled artifact-reader output>"`
+- **Error excerpt source:** `bundled reader` | `safely redacted direct input` | `unavailable placeholder`
+- **Error excerpt:** `"<sanitized bounded excerpt or unavailable placeholder, max 500 characters>"`
 - **Root Cause:** one-sentence explanation
 - **Verification:** smallest applicable V2–V6 proof (`recommended` unless an actual command/result proves it ran)
 - **Fix:** before/after code showing the concrete change
@@ -131,8 +137,6 @@ For each failure, produce a finding in this format:
   ...
   ```
 ```
-
-Keep the error excerpt explicitly double-quoted and copy it only from the sanitized, bounded projection emitted by the bundled artifact reader. Never copy direct or raw artifact text into the finding. Preserve enough emitted context to identify the failing assertion or action; if the reader emits no usable error context, write `"unavailable from bounded artifact-reader output"` instead of reopening or quoting the original artifact.
 
 Keep the axes independent. F-codes describe the observed failure mechanism, not whether the product or test is wrong. A consistent F4/F5/F8/F9/F10/F12 may be a serious product regression, so never map those codes to P2 before the diagnosis axis is proven. Product priority follows product impact.
 

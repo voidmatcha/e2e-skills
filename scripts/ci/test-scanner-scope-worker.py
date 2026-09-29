@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 import shutil
 import signal
-import socket
+import fcntl
 import struct
 import subprocess
 import tempfile
@@ -48,7 +48,7 @@ class WorkerTests(unittest.TestCase):
         self.base = Path(self.tmp.name).resolve()
         self.project = self.base / 'project'; self.project.mkdir()
         self.ipc = self.base / 'ipc'; self.ipc.mkdir(mode=0o700)
-        self.socket = self.ipc / 's'; self.control = self.ipc / 'state'
+        self.channel = self.ipc / 's'; self.control = self.ipc / 'state'
         self.rg_errors = self.ipc / 'rg-errors'; self.rg_errors.touch(mode=0o600)
         self.visited = self.ipc / 'visited'; self.visited.touch(mode=0o600)
         self.source = self.project / 'entry.ts'; self.source.write_text("import { test } from './support';\n")
@@ -67,7 +67,7 @@ class WorkerTests(unittest.TestCase):
                 'atexit.register(lambda: os.kill(os.getpid(),signal.SIGTERM)); '
                 'runpy.run_path(script,run_name="__main__")']
         self.process = subprocess.Popen(launcher + [str(WORKER),'serve',
-            '--socket',str(self.socket),'--control',str(self.control),
+            '--channel',str(self.channel),'--control',str(self.control),
             '--parent-pid',str(os.getpid()),'--project',str(self.project),'--helper',str(self.helper),
             '--rg',self.rg,'--rg-errors',str(self.rg_errors), '--timeout','30',
             '--watch-mode',self.watch_mode],
@@ -85,7 +85,7 @@ class WorkerTests(unittest.TestCase):
         self.log.close(); self.tmp.cleanup()
 
     def client(self, op, extra=()):
-        args = [sys.executable,'-I','-B',str(WORKER),'client','--socket',str(self.socket),
+        args = [sys.executable,'-I','-B',str(WORKER),'client','--channel',str(self.channel),
                 '--control',str(self.control),'--op',op,'--timeout','5']
         if op == 'query': args += ['--node',str(self.source),'--visited',str(self.visited)]
         return subprocess.run(args + list(extra),capture_output=True,text=True,timeout=8)
@@ -108,7 +108,7 @@ class WorkerTests(unittest.TestCase):
     def test_repeat_count_and_operation_contract(self):
         self.assertEqual(self.client('ping', extra=['--repeat', '64']).returncode, 0)
         for count in (1, 2, 64):
-            argv = [str(WORKER), 'client', '--socket', str(self.socket),
+            argv = [str(WORKER), 'client', '--channel', str(self.channel),
                     '--control', str(self.control), '--repeat', str(count)]
             with mock.patch.object(sys, 'argv', argv), mock.patch.object(m, 'client', return_value=0) as client:
                 self.assertEqual(m.main(), 0)
@@ -116,7 +116,7 @@ class WorkerTests(unittest.TestCase):
         for mode, op, count in [('client', 'ping', '0'), ('client', 'ping', '-1'),
                                 ('client', 'ping', '65'), ('client', 'query', '1'),
                                 ('client', 'validate', '1'), ('serve', 'ping', '1')]:
-            argv = [str(WORKER), mode, '--socket', str(self.socket),
+            argv = [str(WORKER), mode, '--channel', str(self.channel),
                     '--control', str(self.control), '--op', op, '--repeat', count]
             with mock.patch.object(sys, 'argv', argv), mock.patch.object(m, 'client') as client:
                 self.assertEqual(m.main(), 2)
@@ -169,45 +169,86 @@ class WorkerTests(unittest.TestCase):
         self.assertEqual(self.client('query').returncode, 2)
         self.assertEqual(outside.read_text(), 'unchanged')
 
+    def raw_exchange(self, data):
+        """Send raw bytes as one locked client exchange and return the worker's reply."""
+        paths = m.channel_paths(str(self.channel))
+        lock_fd = os.open(paths['lock'], os.O_RDWR)
+        try:
+            fcntl.flock(lock_fd, fcntl.LOCK_EX)
+            response_fd = os.open(paths['response'], os.O_RDONLY | os.O_NONBLOCK)
+            try:
+                request_fd = os.open(paths['request'], os.O_WRONLY)
+                try: os.write(request_fd, data)
+                finally: os.close(request_fd)
+                return m.read_response(response_fd, time.monotonic() + 10, lambda: True)
+            finally: os.close(response_fd)
+        finally: os.close(lock_fd)
+
+    def test_dead_unreaped_worker_fails_fast(self):
+        # An unreaped (zombie) worker still answers a PID probe; the client must
+        # notice the closed FIFO instead and fail long before its deadline.
+        self.process.send_signal(signal.SIGKILL)
+        time.sleep(0.2)
+        started = time.monotonic()
+        result = subprocess.run([sys.executable, '-I', '-B', str(WORKER), 'client', '--channel', str(self.channel),
+                                 '--control', str(self.control), '--op', 'ping', '--timeout', '60'],
+                                capture_output=True, text=True, timeout=30)
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertLess(time.monotonic() - started, 10)
+
     def test_malformed_frame_poisoned(self):
-        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
-            sock.connect(str(self.socket)); sock.sendall(struct.pack('!I', 100) + b'{')
-            sock.shutdown(socket.SHUT_WR)
-            response = m.receive(sock)
+        response = self.raw_exchange(struct.pack('!I', 100) + b'{')
         self.assertEqual(response['status'], 'error')
-        self.assertEqual(self.process.wait(timeout=3), 2)
+        self.assertEqual(self.process.wait(timeout=8), 2)
 
     def test_duplicate_request_field_poisoned(self):
         state = json.loads(self.control.read_text())
-        payload = ('{"v":1,"v":1,"nonce":"'+state['nonce']+'","op":"ping"}').encode()
-        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
-            sock.connect(str(self.socket)); sock.sendall(struct.pack('!I',len(payload))+payload);sock.shutdown(socket.SHUT_WR)
-            response = m.receive(sock)
+        payload = ('{"v":1,"v":1,"nonce":"'+state['nonce']+'","rid":"'+'0'*32+'","op":"ping"}').encode()
+        response = self.raw_exchange(struct.pack('!I',len(payload))+payload)
         self.assertEqual(response['status'], 'error')
         self.assertEqual(self.process.wait(timeout=3), 2)
 
     def test_oversized_frame_poisoned(self):
-        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
-            sock.connect(str(self.socket)); sock.sendall(struct.pack('!I', 65537)); sock.shutdown(socket.SHUT_WR)
-            self.assertEqual(m.receive(sock)['status'], 'error')
+        self.assertEqual(self.raw_exchange(struct.pack('!I', 65537))['status'], 'error')
         self.assertEqual(self.process.wait(timeout=3), 2)
 
     def test_trailing_frame_bytes_poisoned(self):
         state = json.loads(self.control.read_text())
-        payload = json.dumps({'v': 1, 'nonce': state['nonce'], 'op': 'ping'}).encode()
-        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
-            sock.connect(str(self.socket)); sock.sendall(struct.pack('!I', len(payload)) + payload + b'x'); sock.shutdown(socket.SHUT_WR)
-            self.assertEqual(m.receive(sock)['status'], 'error')
+        payload = json.dumps({'v': 1, 'nonce': state['nonce'], 'rid': '0'*32, 'op': 'ping'}).encode()
+        self.assertEqual(self.raw_exchange(struct.pack('!I', len(payload)) + payload + b'x')['status'], 'error')
         self.assertEqual(self.process.wait(timeout=3), 2)
+
+    def test_request_without_request_id_poisoned(self):
+        state = json.loads(self.control.read_text())
+        payload = json.dumps({'v': 1, 'nonce': state['nonce'], 'op': 'ping'}).encode()
+        self.assertEqual(self.raw_exchange(struct.pack('!I', len(payload)) + payload)['status'], 'error')
+        self.assertEqual(self.process.wait(timeout=3), 2)
+
+    def test_response_echoes_request_id(self):
+        state = json.loads(self.control.read_text())
+        rid = 'ab' * 16
+        payload = json.dumps({'v': 1, 'nonce': state['nonce'], 'rid': rid, 'op': 'ping'}).encode()
+        response = self.raw_exchange(struct.pack('!I', len(payload)) + payload)
+        self.assertEqual((response['status'], response['rid']), ('ok', rid))
+
+    def test_response_for_another_request_is_rejected(self):
+        state = json.loads(self.control.read_text())
+        foreign = {'v': 1, 'nonce': state['nonce'], 'rid': 'cd' * 16, 'status': 'ok'}
+        args = SimpleNamespace(channel=str(self.channel), control=str(self.control), op='ping',
+                               wait_ready=0, timeout=5, node=None, visited=None, depth=0)
+        with mock.patch.object(m, 'read_response', return_value=foreign):
+            with self.assertRaisesRegex(m.WorkerError, 'invalid worker response'):
+                m.client(args)
 
     def test_parent_death_interrupts_blocked_helper(self):
         self.process.terminate(); self.process.wait(timeout=4)
-        self.socket.unlink(); self.control.unlink()
+        for suffix in ('.req', '.resp', '.lock'): Path(str(self.channel) + suffix).unlink()
+        self.control.unlink()
         helper_pid = self.base / 'helper.pid'
         self.helper.write_text('echo $$ > "' + str(helper_pid) + '"\nsleep 30\n')
         launcher = subprocess.Popen([sys.executable, '-c',
             'import subprocess,sys,time,os; subprocess.Popen(sys.argv[1:]+["--parent-pid",str(os.getpid())]); time.sleep(30)',
-            sys.executable, '-I', '-B', str(WORKER), 'serve', '--socket', str(self.socket),
+            sys.executable, '-I', '-B', str(WORKER), 'serve', '--channel', str(self.channel),
             '--control', str(self.control), '--project', str(self.project), '--helper', str(self.helper),
             '--rg', self.rg, '--rg-errors', str(self.rg_errors),
             '--watch-mode', self.watch_mode], stdout=self.log, stderr=self.log)
@@ -216,7 +257,7 @@ class WorkerTests(unittest.TestCase):
             self.assertEqual(self.client('ping', extra=['--wait-ready', '5']).returncode, 0)
             worker_pid = json.loads(self.control.read_text())['pid']
             query = subprocess.Popen([sys.executable, '-I', '-B', str(WORKER), 'client',
-                '--socket', str(self.socket), '--control', str(self.control), '--op', 'query',
+                '--channel', str(self.channel), '--control', str(self.control), '--op', 'query',
                 '--node', str(self.source), '--visited', str(self.visited), '--timeout', '10'],
                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             deadline = time.monotonic() + 5
@@ -238,7 +279,7 @@ class WorkerTests(unittest.TestCase):
     def test_wrong_expected_parent_rejected_before_marker_creation(self):
         control = self.ipc/'other-control'
         result = subprocess.run([sys.executable, '-I', '-B', str(WORKER), 'serve',
-            '--socket', str(self.ipc/'other-socket'), '--control', str(control),
+            '--channel', str(self.ipc/'other-socket'), '--control', str(control),
             '--parent-pid', str(os.getppid()), '--project', str(self.project),
             '--helper', str(self.helper), '--rg', self.rg, '--rg-errors', str(self.rg_errors)],
             capture_output=True, timeout=3)
@@ -285,7 +326,7 @@ class InProcessCostTests(unittest.TestCase):
         helper = base / 'helper.sh'; shutil.copyfile(BASE / 'scope-source.sh', helper)
         self.filler = base / 'filler'; self.filler.mkdir()
         self.worker = m.Worker(SimpleNamespace(
-            control=str(ipc / 'state'), socket=str(ipc / 's'), parent_pid=os.getppid(),
+            control=str(ipc / 'state'), channel=str(ipc / 's'), parent_pid=os.getppid(),
             engine=str(BASE / 'scope-graph.py'), project=str(self.project), helper=str(helper),
             rg=resolve_rg(), rg_errors=str(rg_errors), watch_mode='off', timeout=30))
         self.addCleanup(self.cleanup)
@@ -296,7 +337,7 @@ class InProcessCostTests(unittest.TestCase):
 
     def query(self):
         self.visited.write_text('')
-        return self.worker.evaluate({'v': 1, 'nonce': self.worker.nonce, 'op': 'query',
+        return self.worker.evaluate({'v': 1, 'nonce': self.worker.nonce, 'rid': 'e' * 32, 'op': 'query',
                                      'node': str(self.source), 'visited': str(self.visited), 'depth': 0})
 
     def test_query_and_ping_never_revalidate_the_whole_set(self):
@@ -306,9 +347,9 @@ class InProcessCostTests(unittest.TestCase):
         for _ in range(3):
             self.assertEqual(self.query()[1]['status'], 'found')
         for _ in range(2):
-            self.worker.evaluate({'v': 1, 'nonce': self.worker.nonce, 'op': 'ping'})
+            self.worker.evaluate({'v': 1, 'nonce': self.worker.nonce, 'rid': 'e' * 32, 'op': 'ping'})
         self.assertEqual(calls, [])
-        self.worker.evaluate({'v': 1, 'nonce': self.worker.nonce, 'op': 'checkpoint'})
+        self.worker.evaluate({'v': 1, 'nonce': self.worker.nonce, 'rid': 'e' * 32, 'op': 'checkpoint'})
         self.assertEqual(calls, [1])
 
     def test_query_stat_count_does_not_grow_with_the_witness_set(self):
@@ -347,32 +388,63 @@ class StrictWorkerTests(WorkerTests):
 
 
 class WorkerStartupTests(unittest.TestCase):
-    def test_socket_is_private_before_bind_returns_and_umask_restored(self):
+    def worker_args(self, base):
+        errors = base/'errors'; errors.touch(mode=0o600)
+        return SimpleNamespace(channel=str(base/'channel'), control=str(base/'control'),
+            parent_pid=os.getppid(), engine=str(BASE/'scope-graph.py'), project=str(base),
+            helper=str(BASE/'scope-source.sh'), rg=resolve_rg(), rg_errors=str(errors), timeout=30)
+
+    def test_channel_is_private_on_creation_and_umask_restored(self):
         with tempfile.TemporaryDirectory(prefix='sw-', dir=str(Path('/tmp').resolve())) as tmp:
             base = Path(tmp).resolve()
-            errors = base/'errors'; errors.touch(mode=0o600)
-            args = SimpleNamespace(socket=str(base/'socket'), control=str(base/'control'),
-                parent_pid=os.getppid(), engine=str(BASE/'scope-graph.py'), project=str(base),
-                helper=str(BASE/'scope-source.sh'), rg=resolve_rg(), rg_errors=str(errors), timeout=30)
-            original_bind = socket.socket.bind
+            args = self.worker_args(base)
+            original_mkfifo = os.mkfifo
             observed_modes = []
-            def delayed_bind(sock, address):
-                original_bind(sock, address)
-                # Observe the published socket while bind is still returning,
-                # deterministically before any subsequent chmod can run.
-                observed_modes.append(os.lstat(address).st_mode & 0o077)
-                time.sleep(.05)
+            def observed_mkfifo(path, mode=0o666, *rest, **kwargs):
+                original_mkfifo(path, mode, *rest, **kwargs)
+                observed_modes.append(os.lstat(path).st_mode & 0o077)
             worker = None
             previous_mask = os.umask(0o022)
             try:
-                with mock.patch.object(socket.socket, 'bind', delayed_bind):
+                with mock.patch.object(m.os, 'mkfifo', observed_mkfifo):
                     worker = m.Worker(args)
                 restored_mask = os.umask(0o022)
-                self.assertEqual(observed_modes, [0])
+                self.assertEqual(observed_modes, [0, 0])
                 self.assertEqual(restored_mask, 0o022)
+                self.assertEqual(os.lstat(str(base/'channel') + '.lock').st_mode & 0o077, 0)
             finally:
                 os.umask(previous_mask)
                 if worker is not None: worker.close()
+
+    def test_existing_channel_is_never_adopted(self):
+        with tempfile.TemporaryDirectory(prefix='sw-', dir=str(Path('/tmp').resolve())) as tmp:
+            base = Path(tmp).resolve()
+            args = self.worker_args(base)
+            os.mkfifo(str(base/'channel') + '.req', 0o600)
+            with self.assertRaises(FileExistsError):
+                m.Worker(args)
+
+
+@unittest.skipUnless(shutil.which('sandbox-exec'), 'macOS sandbox-exec is unavailable')
+class SandboxedScannerTests(unittest.TestCase):
+    """Host sandboxes such as the Codex seatbelt deny AF_UNIX sockets; the scanner must still run."""
+
+    def test_scanner_completes_when_socket_networking_is_denied(self):
+        with tempfile.TemporaryDirectory(prefix='sw-sbx-', dir=str(Path('/tmp').resolve())) as tmp:
+            project = Path(tmp).resolve() / 'project'; project.mkdir()
+            (project / 'login.spec.ts').write_text(
+                "import { test, expect } from '@playwright/test';\n"
+                "test('shows the dashboard', async ({ page }) => {\n"
+                "  await page.goto('/');\n"
+                "  await expect(page.getByRole('heading')).toBeVisible();\n"
+                "});\n")
+            env = dict(os.environ, E2E_SMELL_RG_BIN=resolve_rg())
+            result = subprocess.run(['sandbox-exec', '-p', '(version 1)(allow default)(deny network*)',
+                                     '/bin/bash', '-p', str(BASE / 'scan.sh'), str(project)],
+                                    capture_output=True, text=True, timeout=240, env=env)
+            self.assertEqual(result.returncode, 0, result.stderr[-2000:])
+            self.assertIn('Summary:', result.stdout)
+            self.assertNotIn('persistent scope worker', result.stderr)
 
 
 if __name__ == '__main__': unittest.main()

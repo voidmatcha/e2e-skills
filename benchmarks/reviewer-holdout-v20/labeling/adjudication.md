@@ -1,0 +1,2 @@
+v20 blind labeling (2026-09-29): labelers gpt-6-astra and gpt-6-luna, author gpt-6-sol. Both labelers matched 19/21 author findings.
+Disputes: v20-pw-01 and v20-cy-01 — luna reported #1 P1 at the title instead of #2 P1 at the action. Resolved for the author by patterns/2.md ("If the same missing effect also makes the title incomplete, classify it once as #2 at this causal action"); fp_guard #1 P1 added at each title line. astra matched the author on both.

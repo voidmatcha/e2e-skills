@@ -1,0 +1,431 @@
+{
+  "labeler": "gpt-6-astra",
+  "cases": {
+    "v21-pw-01": [
+      {
+        "pattern_id": "#2",
+        "severity": "P1",
+        "file": "tests/v21-pw-01.spec.ts",
+        "line": 7,
+        "rule": "For toggle/cancel/close actions that the title or acceptance contract promises, verify both the restored state AND the dismissed state."
+      }
+    ],
+    "v21-pw-02": [
+      {
+        "pattern_id": "#2",
+        "severity": "P1",
+        "file": "tests/v21-pw-02.spec.ts",
+        "line": 6,
+        "rule": "For toggle/cancel/close actions that the title or acceptance contract promises, verify both the restored state AND the dismissed state."
+      }
+    ],
+    "v21-pw-03": [
+      {
+        "pattern_id": "#2",
+        "severity": "P1",
+        "file": "tests/v21-pw-03.spec.ts",
+        "line": 6,
+        "rule": "For toggle/cancel/close actions that the title or acceptance contract promises, verify both the restored state AND the dismissed state."
+      }
+    ],
+    "v21-pw-04": [
+      {
+        "pattern_id": "#2",
+        "severity": "P1",
+        "file": "tests/v21-pw-04.spec.ts",
+        "line": 6,
+        "rule": "For toggle/cancel/close actions that the title or acceptance contract promises, verify both the restored state AND the dismissed state."
+      }
+    ],
+    "v21-pw-05": [
+      {
+        "pattern_id": "#2",
+        "severity": "P1",
+        "file": "tests/v21-pw-05.spec.ts",
+        "line": 6,
+        "rule": "For toggle/cancel/close actions that the title or acceptance contract promises, verify both the restored state AND the dismissed state."
+      }
+    ],
+    "v21-pw-06": [
+      {
+        "pattern_id": "#2",
+        "severity": "P1",
+        "file": "tests/v21-pw-06.spec.ts",
+        "line": 6,
+        "rule": "For toggle/cancel/close actions that the title or acceptance contract promises, verify both the restored state AND the dismissed state."
+      }
+    ],
+    "v21-pw-07": [
+      {
+        "pattern_id": "#2",
+        "severity": "P0",
+        "file": "tests/v21-pw-07.spec.ts",
+        "line": 7,
+        "rule": "Test acts but doesn't verify the final expected state."
+      }
+    ],
+    "v21-pw-08": [
+      {
+        "pattern_id": "#2",
+        "severity": "P0",
+        "file": "tests/v21-pw-08.spec.ts",
+        "line": 6,
+        "rule": "Test acts but doesn't verify the final expected state."
+      }
+    ],
+    "v21-pw-09": [
+      {
+        "pattern_id": "#2",
+        "severity": "P0",
+        "file": "tests/v21-pw-09.spec.ts",
+        "line": 6,
+        "rule": "Test acts but doesn't verify the final expected state."
+      }
+    ],
+    "v21-pw-10": [
+      {
+        "pattern_id": "#1",
+        "severity": "P1",
+        "file": "tests/v21-pw-10.spec.ts",
+        "line": 4,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      }
+    ],
+    "v21-pw-11": [
+      {
+        "pattern_id": "#1",
+        "severity": "P1",
+        "file": "tests/v21-pw-11.spec.ts",
+        "line": 3,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      }
+    ],
+    "v21-pw-12": [
+      {
+        "pattern_id": "#1",
+        "severity": "P1",
+        "file": "tests/v21-pw-12.spec.ts",
+        "line": 3,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      }
+    ],
+    "v21-pw-13": [
+      {
+        "pattern_id": "#1",
+        "severity": "P1",
+        "file": "tests/v21-pw-13.spec.ts",
+        "line": 3,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      }
+    ],
+    "v21-pw-14": [
+      {
+        "pattern_id": "#1",
+        "severity": "P1",
+        "file": "tests/v21-pw-14.spec.ts",
+        "line": 3,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      }
+    ],
+    "v21-pw-15": [
+      {
+        "pattern_id": "#1",
+        "severity": "P1",
+        "file": "tests/v21-pw-15.spec.ts",
+        "line": 3,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      }
+    ],
+    "v21-pw-16": [
+      {
+        "pattern_id": "#1",
+        "severity": "P0",
+        "file": "tests/v21-pw-16.spec.ts",
+        "line": 4,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      }
+    ],
+    "v21-pw-17": [
+      {
+        "pattern_id": "#1",
+        "severity": "P0",
+        "file": "tests/v21-pw-17.spec.ts",
+        "line": 3,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      }
+    ],
+    "v21-pw-18": [
+      {
+        "pattern_id": "#1",
+        "severity": "P0",
+        "file": "tests/v21-pw-18.spec.ts",
+        "line": 3,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      }
+    ],
+    "v21-pw-19": [
+      {
+        "pattern_id": "#1",
+        "severity": "P1",
+        "file": "tests/v21-pw-19.spec.ts",
+        "line": 4,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      },
+      {
+        "pattern_id": "#2",
+        "severity": "P1",
+        "file": "tests/v21-pw-19.spec.ts",
+        "line": 12,
+        "rule": "For toggle/cancel/close actions that the title or acceptance contract promises, verify both the restored state AND the dismissed state."
+      }
+    ],
+    "v21-pw-20": [
+      {
+        "pattern_id": "#1",
+        "severity": "P1",
+        "file": "tests/v21-pw-20.spec.ts",
+        "line": 3,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      },
+      {
+        "pattern_id": "#2",
+        "severity": "P1",
+        "file": "tests/v21-pw-20.spec.ts",
+        "line": 11,
+        "rule": "For toggle/cancel/close actions that the title or acceptance contract promises, verify both the restored state AND the dismissed state."
+      }
+    ],
+    "v21-pw-21": [
+      {
+        "pattern_id": "#1",
+        "severity": "P1",
+        "file": "tests/v21-pw-21.spec.ts",
+        "line": 3,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      },
+      {
+        "pattern_id": "#2",
+        "severity": "P1",
+        "file": "tests/v21-pw-21.spec.ts",
+        "line": 11,
+        "rule": "For toggle/cancel/close actions that the title or acceptance contract promises, verify both the restored state AND the dismissed state."
+      }
+    ],
+    "v21-pw-22": [],
+    "v21-pw-23": [],
+    "v21-pw-24": [],
+    "v21-cy-01": [
+      {
+        "pattern_id": "#2",
+        "severity": "P1",
+        "file": "tests/v21-cy-01.cy.js",
+        "line": 7,
+        "rule": "For toggle/cancel/close actions that the title or acceptance contract promises, verify both the restored state AND the dismissed state."
+      }
+    ],
+    "v21-cy-02": [
+      {
+        "pattern_id": "#2",
+        "severity": "P1",
+        "file": "tests/v21-cy-02.cy.js",
+        "line": 6,
+        "rule": "For toggle/cancel/close actions that the title or acceptance contract promises, verify both the restored state AND the dismissed state."
+      }
+    ],
+    "v21-cy-03": [
+      {
+        "pattern_id": "#2",
+        "severity": "P1",
+        "file": "tests/v21-cy-03.cy.js",
+        "line": 6,
+        "rule": "For toggle/cancel/close actions that the title or acceptance contract promises, verify both the restored state AND the dismissed state."
+      }
+    ],
+    "v21-cy-04": [
+      {
+        "pattern_id": "#2",
+        "severity": "P1",
+        "file": "tests/v21-cy-04.cy.js",
+        "line": 6,
+        "rule": "For toggle/cancel/close actions that the title or acceptance contract promises, verify both the restored state AND the dismissed state."
+      }
+    ],
+    "v21-cy-05": [
+      {
+        "pattern_id": "#2",
+        "severity": "P1",
+        "file": "tests/v21-cy-05.cy.js",
+        "line": 6,
+        "rule": "For toggle/cancel/close actions that the title or acceptance contract promises, verify both the restored state AND the dismissed state."
+      }
+    ],
+    "v21-cy-06": [
+      {
+        "pattern_id": "#2",
+        "severity": "P1",
+        "file": "tests/v21-cy-06.cy.js",
+        "line": 6,
+        "rule": "For toggle/cancel/close actions that the title or acceptance contract promises, verify both the restored state AND the dismissed state."
+      }
+    ],
+    "v21-cy-07": [
+      {
+        "pattern_id": "#2",
+        "severity": "P0",
+        "file": "tests/v21-cy-07.cy.js",
+        "line": 7,
+        "rule": "Test acts but doesn't verify the final expected state."
+      }
+    ],
+    "v21-cy-08": [
+      {
+        "pattern_id": "#2",
+        "severity": "P0",
+        "file": "tests/v21-cy-08.cy.js",
+        "line": 6,
+        "rule": "Test acts but doesn't verify the final expected state."
+      }
+    ],
+    "v21-cy-09": [
+      {
+        "pattern_id": "#2",
+        "severity": "P0",
+        "file": "tests/v21-cy-09.cy.js",
+        "line": 6,
+        "rule": "Test acts but doesn't verify the final expected state."
+      }
+    ],
+    "v21-cy-10": [
+      {
+        "pattern_id": "#1",
+        "severity": "P1",
+        "file": "tests/v21-cy-10.cy.js",
+        "line": 4,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      }
+    ],
+    "v21-cy-11": [
+      {
+        "pattern_id": "#1",
+        "severity": "P1",
+        "file": "tests/v21-cy-11.cy.js",
+        "line": 3,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      }
+    ],
+    "v21-cy-12": [
+      {
+        "pattern_id": "#1",
+        "severity": "P1",
+        "file": "tests/v21-cy-12.cy.js",
+        "line": 3,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      }
+    ],
+    "v21-cy-13": [
+      {
+        "pattern_id": "#1",
+        "severity": "P1",
+        "file": "tests/v21-cy-13.cy.js",
+        "line": 3,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      }
+    ],
+    "v21-cy-14": [
+      {
+        "pattern_id": "#1",
+        "severity": "P1",
+        "file": "tests/v21-cy-14.cy.js",
+        "line": 3,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      }
+    ],
+    "v21-cy-15": [
+      {
+        "pattern_id": "#1",
+        "severity": "P1",
+        "file": "tests/v21-cy-15.cy.js",
+        "line": 3,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      }
+    ],
+    "v21-cy-16": [
+      {
+        "pattern_id": "#1",
+        "severity": "P0",
+        "file": "tests/v21-cy-16.cy.js",
+        "line": 4,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      }
+    ],
+    "v21-cy-17": [
+      {
+        "pattern_id": "#1",
+        "severity": "P0",
+        "file": "tests/v21-cy-17.cy.js",
+        "line": 3,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      }
+    ],
+    "v21-cy-18": [
+      {
+        "pattern_id": "#1",
+        "severity": "P0",
+        "file": "tests/v21-cy-18.cy.js",
+        "line": 3,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      }
+    ],
+    "v21-cy-19": [
+      {
+        "pattern_id": "#1",
+        "severity": "P1",
+        "file": "tests/v21-cy-19.cy.js",
+        "line": 4,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      },
+      {
+        "pattern_id": "#2",
+        "severity": "P1",
+        "file": "tests/v21-cy-19.cy.js",
+        "line": 12,
+        "rule": "For toggle/cancel/close actions that the title or acceptance contract promises, verify both the restored state AND the dismissed state."
+      }
+    ],
+    "v21-cy-20": [
+      {
+        "pattern_id": "#1",
+        "severity": "P1",
+        "file": "tests/v21-cy-20.cy.js",
+        "line": 3,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      },
+      {
+        "pattern_id": "#2",
+        "severity": "P1",
+        "file": "tests/v21-cy-20.cy.js",
+        "line": 11,
+        "rule": "For toggle/cancel/close actions that the title or acceptance contract promises, verify both the restored state AND the dismissed state."
+      }
+    ],
+    "v21-cy-21": [
+      {
+        "pattern_id": "#1",
+        "severity": "P1",
+        "file": "tests/v21-cy-21.cy.js",
+        "line": 3,
+        "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence."
+      },
+      {
+        "pattern_id": "#2",
+        "severity": "P1",
+        "file": "tests/v21-cy-21.cy.js",
+        "line": 11,
+        "rule": "For toggle/cancel/close actions that the title or acceptance contract promises, verify both the restored state AND the dismissed state."
+      }
+    ],
+    "v21-cy-22": [],
+    "v21-cy-23": [],
+    "v21-cy-24": []
+  }
+}

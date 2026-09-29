@@ -1,0 +1,262 @@
+{
+  "schema_version": 1,
+  "provenance": {
+    "creation": "model-authored semantic mutations of real upstream specs",
+    "verifier": "codex-gpt-6-astra",
+    "human_labels": false,
+    "source_manifest": "fixpair-pilot/semantic-v1/manifest.json",
+    "source_verification": "fixpair-pilot/semantic-v1/verification-astra.json"
+  },
+  "cases": [
+    {
+      "id": "name-static-description",
+      "repo": "payload",
+      "license": "MIT",
+      "source_candidate": "payloa-bd8d8e87",
+      "spec_path": "test/admin/e2e/list-view/e2e.spec.ts",
+      "files": {
+        "mutant": {
+          "path": "cases/name-static-description/mutant/test/admin/e2e/list-view/e2e.spec.ts",
+          "sha256": "8089b6ac7933b6a3776adc82318be32ce9f1aa19c61545a308d0dd1a2cd2aa92"
+        },
+        "original": {
+          "path": "cases/name-static-description/original/test/admin/e2e/list-view/e2e.spec.ts",
+          "sha256": "914f3480b5a7fc7847607bf8d7b7bfd830eeed0aab2260035138339cf396384e"
+        }
+      },
+      "pattern_id": "#1",
+      "severity": "P0",
+      "line": 150,
+      "source_line": "    test('should render static collection descriptions', async () => {",
+      "edit": "Replace promised-value assertion with unrelated visibility.",
+      "quoted_rule": "patterns/1.md: \"Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence. Add it or narrow the title.\" \"Anchor #1 to the test/setup declaration whose title contains the unverified promise.\" patterns/1.md: \"P0 when no promised outcome in the title has evidence: a status code, navigation, or visibility check that observes none of the promised nouns leaves the test green while the feature is broken.\"",
+      "verifier_verdict": "confirm",
+      "verifier_reason": "At mutant line 150 the title promises rendering the static collection description. The sole in-test check now observes body visibility, not the description. Shared setup proves two post rows, not the description. The original checks a visible .custom-view-description containing the exact description. Replacing that single assertion is minimal and realistic. Pattern #1, P0, declaration line 150 are correct."
+    },
+    {
+      "id": "name-dynamic-description",
+      "repo": "payload",
+      "license": "MIT",
+      "source_candidate": "payloa-bd8d8e87",
+      "spec_path": "test/admin/e2e/list-view/e2e.spec.ts",
+      "files": {
+        "mutant": {
+          "path": "cases/name-dynamic-description/mutant/test/admin/e2e/list-view/e2e.spec.ts",
+          "sha256": "bffde4a757f9fc84a7454375cbfa78d079a03b3205f8ec2c0f48cf1e46e0653c"
+        },
+        "original": {
+          "path": "cases/name-dynamic-description/original/test/admin/e2e/list-view/e2e.spec.ts",
+          "sha256": "914f3480b5a7fc7847607bf8d7b7bfd830eeed0aab2260035138339cf396384e"
+        }
+      },
+      "pattern_id": "#1",
+      "severity": "P0",
+      "line": 159,
+      "source_line": "    test('should render dynamic collection description components', async () => {",
+      "edit": "Replace promised-value assertion with unrelated visibility.",
+      "quoted_rule": "patterns/1.md: \"Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence. Add it or narrow the title.\" \"Anchor #1 to the test/setup declaration whose title contains the unverified promise.\" patterns/1.md: \"P0 when no promised outcome in the title has evidence: a status code, navigation, or visibility check that observes none of the promised nouns leaves the test green while the feature is broken.\"",
+      "verifier_verdict": "confirm",
+      "verifier_reason": "At mutant line 159 the title promises the dynamic description component. Body visibility and the shared post-row setup do not observe it. The original checks .custom-view-description with the component description text. This is a minimal, realistic assertion replacement. Pattern #1, P0, declaration line 159 are correct."
+    },
+    {
+      "id": "name-jsx-edit",
+      "repo": "payload",
+      "license": "MIT",
+      "source_candidate": "payloa-c9a1590f",
+      "spec_path": "test/fields/collections/Select/e2e.spec.ts",
+      "files": {
+        "mutant": {
+          "path": "cases/name-jsx-edit/mutant/test/fields/collections/Select/e2e.spec.ts",
+          "sha256": "bb50900bbe1fe9c4225a69f1f2d8782ac00529275e190cd990ebee0a3099db97"
+        },
+        "original": {
+          "path": "cases/name-jsx-edit/original/test/fields/collections/Select/e2e.spec.ts",
+          "sha256": "f1feddfd5e096f92467e4705616152836fb55ada6b4a0cfdb02e5b4a68e7e4fc"
+        }
+      },
+      "pattern_id": "#1",
+      "severity": "P0",
+      "line": 79,
+      "source_line": "  test('should show custom JSX option label in edit', async () => {",
+      "edit": "Replace custom SVG label assertion with visibility of its field container; remove unused SVG locator.",
+      "quoted_rule": "patterns/1.md: \"Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence. Add it or narrow the title.\" \"Anchor #1 to the test/setup declaration whose title contains the unverified promise.\" patterns/1.md: \"P0 when no promised outcome in the title has evidence: a status code, navigation, or visibility check that observes none of the promised nouns leaves the test green while the feature is broken.\"",
+      "verifier_verdict": "confirm",
+      "verifier_reason": "At mutant line 79 the title promises a custom JSX option label in the edit view. Visibility of #field-selectWithJsxLabelOption proves only the containing field, not its custom label. The original checks the nested svg#payload-logo. Replacing the assertion and deleting its now-unused locator is minimal and realistic. No promised label outcome remains verified; #1 P0 at line 79 is correct."
+    },
+    {
+      "id": "name-jsx-list",
+      "repo": "payload",
+      "license": "MIT",
+      "source_candidate": "payloa-c9a1590f",
+      "spec_path": "test/fields/collections/Select/e2e.spec.ts",
+      "files": {
+        "mutant": {
+          "path": "cases/name-jsx-list/mutant/test/fields/collections/Select/e2e.spec.ts",
+          "sha256": "a5c0ba9b53132bd53768161d9259a02d68d40a74a1da12615eed678edd48b119"
+        },
+        "original": {
+          "path": "cases/name-jsx-list/original/test/fields/collections/Select/e2e.spec.ts",
+          "sha256": "f1feddfd5e096f92467e4705616152836fb55ada6b4a0cfdb02e5b4a68e7e4fc"
+        }
+      },
+      "pattern_id": "#1",
+      "severity": "P0",
+      "line": 87,
+      "source_line": "  test('should show custom JSX option label in list', async () => {",
+      "edit": "Replace promised-value assertion with unrelated visibility.",
+      "quoted_rule": "patterns/1.md: \"Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence. Add it or narrow the title.\" \"Anchor #1 to the test/setup declaration whose title contains the unverified promise.\" patterns/1.md: \"P0 when no promised outcome in the title has evidence: a status code, navigation, or visibility check that observes none of the promised nouns leaves the test green while the feature is broken.\"",
+      "verifier_verdict": "confirm",
+      "verifier_reason": "At mutant line 87 the promised custom JSX label in the list has no proof: choosing its column is setup, and body visibility does not observe a list-cell label. The original asserts visibility of .cell-selectWithJsxLabelOption svg#payload-logo. The column-selection action is not itself a separately promised outcome, so #1 at the title is appropriate. The single assertion replacement is minimal and realistic; P0 and line 87 are correct."
+    },
+    {
+      "id": "name-row-accessible",
+      "repo": "payload",
+      "license": "MIT",
+      "source_candidate": "payloa-bd8d8e87",
+      "spec_path": "test/admin/e2e/list-view/e2e.spec.ts",
+      "files": {
+        "mutant": {
+          "path": "cases/name-row-accessible/mutant/test/admin/e2e/list-view/e2e.spec.ts",
+          "sha256": "e59e96634eb8f67aa50f080301c7bea410f235ef5d0fb299fd68befda0eb1b03"
+        },
+        "original": {
+          "path": "cases/name-row-accessible/original/test/admin/e2e/list-view/e2e.spec.ts",
+          "sha256": "914f3480b5a7fc7847607bf8d7b7bfd830eeed0aab2260035138339cf396384e"
+        }
+      },
+      "pattern_id": "#1",
+      "severity": "P1",
+      "line": 182,
+      "source_line": "    test('should render row select checkboxes with accessible names', async () => {",
+      "edit": "Replace promised-value assertion with unrelated visibility.",
+      "quoted_rule": "patterns/1.md: \"Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence. Add it or narrow the title.\" \"Anchor #1 to the test/setup declaration whose title contains the unverified promise.\" reporting.md: \"Passing while the feature is broken is not enough on its own: if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1.\"",
+      "verifier_verdict": "confirm",
+      "verifier_reason": "At mutant line 182 the title promises accessible names for the row-select checkboxes. The count of two and Select post2 accessible-name check remain, while the first row is now checked only for visibility. Thus the title is partly verified and the first name is unproven: #1 P1 at the declaration, not P0. The original explicitly checks both Select post1 and Select post2. This one-line weakening is minimal and realistic."
+    },
+    {
+      "id": "then-action-log",
+      "repo": "storybook",
+      "license": "MIT",
+      "source_candidate": "storyb-04a63b82",
+      "spec_path": "code/e2e-tests/addon-actions.spec.ts",
+      "files": {
+        "mutant": {
+          "path": "cases/then-action-log/mutant/code/e2e-tests/addon-actions.spec.ts",
+          "sha256": "a79c9df267cf8093de2b425397bcb97d3bd3c4f33415b6e4d7360d7ac6b98669"
+        },
+        "original": {
+          "path": "cases/then-action-log/original/code/e2e-tests/addon-actions.spec.ts",
+          "sha256": "2314e483fcb2159d433022671e426ec91869c26a46abf2e1ca96626cf5c75452"
+        }
+      },
+      "pattern_id": "#2",
+      "severity": "P0",
+      "line": 29,
+      "source_line": "    await button.click();",
+      "edit": "Remove post-action final-state verification.",
+      "quoted_rule": "patterns/2.md: \"Test acts but doesn't verify the final expected state.\" \"Anchor the finding to the action line whose promised result lacks proof.\" reporting.md: \"Test silently passes when the feature is broken — no real verification happening. Both halves are required.\"",
+      "verifier_verdict": "confirm",
+      "verifier_reason": "The title should trigger an action is left without effect verification after the direct button click at mutant line 29. Button visibility and story/panel setup precede the trigger and do not prove that it logs an action. The original checks the resulting onClick: log item. Removing that locator and assertion is a minimal, realistic edit. #2 at the causal click takes precedence over #1; P0 and line 29 are correct."
+    },
+    {
+      "id": "then-spy-log",
+      "repo": "storybook",
+      "license": "MIT",
+      "source_candidate": "storyb-04a63b82",
+      "spec_path": "code/e2e-tests/addon-actions.spec.ts",
+      "files": {
+        "mutant": {
+          "path": "cases/then-spy-log/mutant/code/e2e-tests/addon-actions.spec.ts",
+          "sha256": "65e261eef0fd80dba4208fb0933a4f3e9595d4c82c91de8a9218604f6eee6347"
+        },
+        "original": {
+          "path": "cases/then-spy-log/original/code/e2e-tests/addon-actions.spec.ts",
+          "sha256": "2314e483fcb2159d433022671e426ec91869c26a46abf2e1ca96626cf5c75452"
+        }
+      },
+      "pattern_id": "#2",
+      "severity": "P0",
+      "line": 53,
+      "source_line": "    await button.click();",
+      "edit": "Remove post-action final-state verification.",
+      "quoted_rule": "patterns/2.md: \"Test acts but doesn't verify the final expected state.\" \"Anchor the finding to the action line whose promised result lacks proof.\" reporting.md: \"Test silently passes when the feature is broken — no real verification happening. Both halves are required.\"",
+      "verifier_verdict": "confirm",
+      "verifier_reason": "After the direct button click at mutant line 53 there is no spy-output verification. Earlier story/panel setup and button visibility do not prove the triggered spy output. The original checks three console.log: entries and visibility of the first. Removing this final assertion block is minimal and realistic. #2 P0 at the causal click, line 53, is correct."
+    },
+    {
+      "id": "then-reduce-options",
+      "repo": "payload",
+      "license": "MIT",
+      "source_candidate": "payloa-c9a1590f",
+      "spec_path": "test/fields/collections/Select/e2e.spec.ts",
+      "files": {
+        "mutant": {
+          "path": "cases/then-reduce-options/mutant/test/fields/collections/Select/e2e.spec.ts",
+          "sha256": "90d1c4664bc56dd724932ad8b8b53176935730f57b7fde30e3cc9ecd9b385567"
+        },
+        "original": {
+          "path": "cases/then-reduce-options/original/test/fields/collections/Select/e2e.spec.ts",
+          "sha256": "f1feddfd5e096f92467e4705616152836fb55ada6b4a0cfdb02e5b4a68e7e4fc"
+        }
+      },
+      "pattern_id": "#2",
+      "severity": "P0",
+      "line": 109,
+      "source_line": "    await page.locator('#field-disallowOption1').click()",
+      "edit": "Remove post-action final-state verification.",
+      "quoted_rule": "patterns/2.md: \"Test acts but doesn't verify the final expected state.\" \"Anchor the finding to the action line whose promised result lacks proof.\" reporting.md: \"Test silently passes when the feature is broken — no real verification happening. Both halves are required.\"",
+      "verifier_verdict": "confirm",
+      "verifier_reason": "The disallowOption1 click at mutant line 109 causes the promised reduction; reopening the field at line 110 only exposes the result. The preceding assertion proves One was available before reduction, not that options were reduced. The original then verifies One is hidden, with locator provenance supplied by the earlier positive check. Deleting that one assertion is minimal and realistic. #2 P0 at line 109 is correct."
+    },
+    {
+      "id": "then-create-post-nav",
+      "repo": "payload",
+      "license": "MIT",
+      "source_candidate": "payloa-3c402411",
+      "spec_path": "test/base-path/e2e.spec.ts",
+      "files": {
+        "mutant": {
+          "path": "cases/then-create-post-nav/mutant/test/base-path/e2e.spec.ts",
+          "sha256": "184b3e30103e9977c0995ee0174db3f93df7018e4c13bbccc894c00101139f76"
+        },
+        "original": {
+          "path": "cases/then-create-post-nav/original/test/base-path/e2e.spec.ts",
+          "sha256": "d3fd08b30687dbe6882730baac708e4d79512e6abe2854818f5c8f3103bfcbf2"
+        }
+      },
+      "pattern_id": "#2",
+      "severity": "P0",
+      "line": 100,
+      "source_line": "    await createButton.click()",
+      "edit": "Remove post-action final-state verification.",
+      "quoted_rule": "patterns/2.md: \"Test acts but doesn't verify the final expected state.\" \"Anchor the finding to the action line whose promised result lacks proof.\" reporting.md: \"Test silently passes when the feature is broken — no real verification happening. Both halves are required.\"",
+      "verifier_verdict": "confirm",
+      "verifier_reason": "The click at mutant line 100 lacks proof of the promised navigation to the create view. The href selector, visibility check and successful click do not prove the resulting URL or form. The original asserts the /posts/create URL and visible #field-title after clicking. Removing that final verification block is minimal and realistic; #2 P0 at line 100 is correct."
+    },
+    {
+      "id": "then-onboarding-submit",
+      "repo": "storybook",
+      "license": "MIT",
+      "source_candidate": "storyb-5a0470d5",
+      "spec_path": "code/e2e-tests/addon-onboarding.spec.ts",
+      "files": {
+        "mutant": {
+          "path": "cases/then-onboarding-submit/mutant/code/e2e-tests/addon-onboarding.spec.ts",
+          "sha256": "969a19c83fc0da47dd9292b5739f1ee146e2e0e795570740260277bce38e45bb"
+        },
+        "original": {
+          "path": "cases/then-onboarding-submit/original/code/e2e-tests/addon-onboarding.spec.ts",
+          "sha256": "4aa3c8430216c30b3f7074bc29eb208bb3b214d724f9ba864a8d0e55d91ad2a0"
+        }
+      },
+      "pattern_id": "#2",
+      "severity": "P1",
+      "line": 55,
+      "source_line": "    await page.getByRole('button', { name: 'Submit' }).click();",
+      "edit": "Remove post-action final-state verification.",
+      "quoted_rule": "patterns/2.md: \"Test acts but doesn't verify the final expected state.\" \"Anchor the finding to the action line whose promised result lacks proof.\" reporting.md: \"Passing while the feature is broken is not enough on its own: if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1.\"",
+      "verifier_verdict": "correct",
+      "verifier_reason": "The final Submit click at mutant line 55 has no completion postcondition, so #2 and its action anchor are correct. However, the broad title the onboarding flow still has meaningful proof of intermediate screens and the successful story-creation step (You just added your first). The reporting P0 boundary therefore makes the unverified final effect P1. The original checks the resulting story/docs URL and then waits for preview loading; deleting those final checks is minimal and realistic."
+    }
+  ]
+}

@@ -14,8 +14,10 @@ regression (CFV-07) even on the cross-file/config-dependent stratum
 SELECTIVE_DELEGATE was meant to justify. Per the confirmation evidence, both
 tasks are now INLINE_DEFAULT: verify/classify inline by default in every
 stratum, with named/native delegation available only as an optional second
-opinion when the inline result is itself uncertain, and inline authoritative
-on disagreement.
+opinion when the inline result is itself uncertain. The old actor-based
+tie-break is not a universal evidence rule. The prospective development
+protocol in subagent-reconciliation-v1 records the unmeasured correction:
+reconcile source evidence and preserve unresolved uncertainty.
 
 Per the change boundary, a wording change to the three delegation blocks
 requires a RED test proving the current wording doesn't match the decision,
@@ -66,8 +68,8 @@ def _delegation_paragraph(text: str, anchor: str, path: pathlib.Path) -> str:
 # Both tasks are now INLINE_DEFAULT, so reviewer and debugger paragraphs must
 # satisfy the same shape: inline by default (proximity-tied, not just present
 # anywhere), no unconditional preference for the named path, a concrete
-# trigger for when delegation is worth invoking, and an authoritative
-# tie-break on disagreement.
+# trigger for when delegation is worth invoking, and evidence-based
+# reconciliation on disagreement.
 
 
 def _inline_default_error(para: str, label: str, agent_noun: str) -> str | None:
@@ -98,8 +100,10 @@ def _inline_default_error(para: str, label: str, agent_noun: str) -> str | None:
 
     # Reconciliation rule for a named/inline disagreement -- without this,
     # two runs could disagree on which verdict wins with no stated authority.
-    if "keep the inline verdict" not in lower and "inline verdict wins" not in lower:
-        return f"{label}: must state which verdict is authoritative when the delegated and inline results disagree."
+    if any(term in lower for term in ("keep the inline verdict", "inline verdict wins", "named verdict wins", "delegated verdict wins")):
+        return f"{label}: actor identity must not override contradictory source evidence."
+    if "reconcile against source evidence" not in lower or "unresolved" not in lower:
+        return f"{label}: must reconcile evidence and preserve unresolved uncertainty."
 
     return None
 
@@ -107,16 +111,16 @@ def _inline_default_error(para: str, label: str, agent_noun: str) -> str | None:
 def reviewer_paragraph_error(para: str) -> str | None:
     """Return an error message if `para` does not implement INLINE_DEFAULT
     for finding_verification (verify inline by default in every stratum;
-    delegate only when the inline verification is itself uncertain; inline
-    authoritative on disagreement), else None."""
+    delegate only when the inline verification is itself uncertain;
+    evidence-based reconciliation on disagreement), else None."""
     return _inline_default_error(para, str(REVIEWER), "e2e-finding-verifier")
 
 
 def debugger_paragraph_error(para: str, label: str) -> str | None:
     """Return an error message if `para` does not implement INLINE_DEFAULT
     for failure_classification (inline classification by default, named
-    delegation optional and gated on inline uncertainty, with inline
-    authoritative on disagreement), else None."""
+    delegation optional and gated on inline uncertainty, with evidence-based
+    reconciliation on disagreement), else None."""
     return _inline_default_error(para, label, "e2e-failure-classifier")
 
 
@@ -219,6 +223,14 @@ INVERTED_DEBUGGER_WORDING = (
 
 
 def assert_checks_reject_known_bad_wording() -> None:
+    valid = (
+        "Verify inline by default; delegate only when uncertain. Pass the absolute path. "
+        "On disagreement, reconcile against source evidence and retain unresolved uncertainty."
+    )
+    assert reviewer_paragraph_error(valid) is None
+    for authority in ("inline verdict wins", "delegated verdict wins", "named verdict wins"):
+        assert reviewer_paragraph_error(valid + " But " + authority + ".") is not None
+    assert reviewer_paragraph_error(valid.replace("unresolved", "ignored")) is not None
     for label, para in (
         ("pre-change reviewer wording", OLD_REVIEWER_WORDING),
         ("SELECTIVE_DELEGATE-era reviewer wording", OLD_SELECTIVE_DELEGATE_REVIEWER_WORDING),
@@ -241,10 +253,24 @@ def assert_checks_reject_known_bad_wording() -> None:
             )
 
 
+def assert_skill_roots_are_runtime_resolved() -> None:
+    for path in (REVIEWER, ROOT / "skills/e2e-reviewer/references/scanner-workflow.md"):
+        text = _read(path)
+        assert "actual loaded skill" in text, f"{path}: resolve the runtime skill root"
+        assert "~/.agents/skills/e2e-reviewer/" not in text
+        assert "~/.claude/skills/e2e-reviewer/" not in text
+    for name in ("playwright-debugger", "cypress-debugger"):
+        path = ROOT / "skills" / name / "references/classification-procedure.md"
+        text = _read(path)
+        assert "actual loaded skill" in text
+        assert "it is under `~/.agents/skills/`" not in text
+
+
 CHECKS = (
     assert_reviewer_is_inline_default,
     assert_debuggers_are_inline_default,
     assert_checks_reject_known_bad_wording,
+    assert_skill_roots_are_runtime_resolved,
 )
 
 

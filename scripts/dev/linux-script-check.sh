@@ -9,7 +9,10 @@
 # non-root user, because root would make the unreadable-file fail-closed tests
 # pass for the wrong reason.
 #
-# Usage: scripts/dev/linux-script-check.sh [<revision>]   (default: HEAD)
+# Usage: scripts/dev/linux-script-check.sh [--validate-inputs-only] [<revision>]
+# A default HEAD run rejects relevant worktree changes because git archive
+# cannot include them. An explicit revision is intentionally commit-only for
+# pre-push use and ignores the current worktree.
 # Needs a running Docker daemon and network access for apt.
 # Exit 1: a suite failed or is missing. Exit 2: Docker or the revision is
 # unavailable. Any other status is a container or package-install failure.
@@ -21,11 +24,71 @@ builtin unset CDPATH ENV BASH_ENV GLOBIGNORE
 
 IMAGE="ubuntu@sha256:b3cc40b72b93588182b5410f723c7aaf142363311c2aa993d8a453ddcbb3ae15"
 REPO_ROOT="$(/usr/bin/git rev-parse --show-toplevel)"
+VALIDATE_INPUTS_ONLY=0
+if [ "${1:-}" = "--validate-inputs-only" ]; then
+  VALIDATE_INPUTS_ONLY=1
+  shift
+fi
+if [ "$#" -gt 1 ]; then
+  echo "linux-script-check: usage: $0 [--validate-inputs-only] [<revision>]" >&2
+  exit 2
+fi
+EXPLICIT_REVISION=0
+if [ "$#" -eq 1 ]; then
+  EXPLICIT_REVISION=1
+fi
 REV="${1:-HEAD}"
 REV_SHA="$(/usr/bin/git -C "$REPO_ROOT" rev-parse --verify --quiet "$REV^{commit}")" || {
   echo "linux-script-check: not a commit: $REV" >&2
   exit 2
 }
+
+LINUX_INPUT_PATHS=(
+  ':(glob)skills/**'
+  ':(glob)README*.md'
+  .github/workflows/e2e-smell-scan.yml
+  scripts/ci/ci-local.sh
+  scripts/ci/test-reviewer-scanner.py
+  scripts/ci/test-debugger-contracts.py
+  ':(glob)scripts/ci/test-*-debugger-*.py'
+  scripts/dev/linux-script-check.sh
+)
+
+print_input_scope() {
+  echo "linux-script-check: relevant input scope:"
+  echo "  skills/**"
+  echo "  README*.md"
+  echo "  .github/workflows/e2e-smell-scan.yml"
+  echo "  scripts/ci/ci-local.sh"
+  echo "  scripts/ci/test-reviewer-scanner.py"
+  echo "  scripts/ci/test-debugger-contracts.py"
+  echo "  scripts/ci/test-*-debugger-*.py"
+  echo "  scripts/dev/linux-script-check.sh"
+}
+
+if [ "$EXPLICIT_REVISION" -eq 0 ]; then
+  relevant_status="$(/usr/bin/git -c core.quotePath=true -C "$REPO_ROOT" status \
+    --short --untracked-files=all -- "${LINUX_INPUT_PATHS[@]}")" || {
+      echo "linux-script-check: cannot inspect relevant worktree inputs" >&2
+      exit 2
+    }
+  if [ -n "$relevant_status" ]; then
+    echo "linux-script-check: default HEAD snapshot excludes these relevant dirty or untracked worktree inputs:" >&2
+    printf '%s\n' "$relevant_status" >&2
+    print_input_scope >&2
+    echo "linux-script-check: commit the relevant inputs, then rerun; or pass an explicit commit only when intentionally validating that immutable revision" >&2
+    exit 2
+  fi
+  if [ "$VALIDATE_INPUTS_ONLY" -eq 1 ]; then
+    echo "linux-script-check: validated default HEAD snapshot; relevant worktree inputs are clean"
+    print_input_scope
+    exit 0
+  fi
+elif [ "$VALIDATE_INPUTS_ONLY" -eq 1 ]; then
+  echo "linux-script-check: validated explicit commit-only revision $REV_SHA; worktree changes intentionally ignored"
+  print_input_scope
+  exit 0
+fi
 
 DOCKER=""
 for candidate in /usr/local/bin/docker /opt/homebrew/bin/docker /usr/bin/docker; do

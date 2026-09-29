@@ -74,6 +74,26 @@ REPORT_OPTIONAL_KEYS = {
     "started_at",
     "execution_identity_policy",
     "execution_identity_match",
+    "adjudication_ledger_path",
+    "adjudication_ledger_sha256",
+    "repository_walk_path",
+    "repository_walk_sha256",
+    # Only reports under a protocol with a preregistered infrastructure-retry
+    # policy carry these; recompute_report refuses them everywhere else.
+    "infrastructure_retry",
+    "infrastructure_retry_summary",
+    # Only reports under a protocol that opted into usage capture carry these;
+    # recompute_report refuses them everywhere else.
+    "usage_capture",
+    "usage_summary",
+    # Only reports under a protocol that preregistered output normalization
+    # carry these; recompute_report refuses them everywhere else.
+    "output_normalization",
+    "output_normalization_summary",
+    # Only reports under a protocol that preregistered an enforced output
+    # schema carry this (the frozen schema and its sha256); recompute_report
+    # refuses it everywhere else.
+    "output_schema",
 }
 RUN_KEYS = {
     "schedule_ordinal", "case", "framework", "split", "repetition",
@@ -82,6 +102,14 @@ RUN_KEYS = {
     "staged_skill_sha256_after", "findings", "score", "output", "error",
     "cleanup_failures",
 }
+# A retry-policy run additionally records every attempt.
+RETRY_RUN_KEYS = RUN_KEYS | {"attempts"}
+ATTEMPT_KEYS = {"attempt", "reason", "exit_code", "error"}
+# A usage-capture run, and each of its attempts, additionally records usage.
+USAGE_KEY = "usage"
+# An output-normalization run additionally records whether its answer was
+# judged after one whole-answer JSON fence was removed.
+NORMALIZED_KEY = "output_normalized"
 FINDING_KEYS = {"pattern_id", "severity", "file", "line"}
 SCHEDULE_KEYS = {"ordinal", "case", "repetition"}
 
@@ -332,7 +360,36 @@ def load_report(path: Path) -> dict:
     for index, item in enumerate(schedule):
         require_exact_object_keys(item, SCHEDULE_KEYS, f"{path}.schedule[{index}]")
     for index, run in enumerate(runs):
-        require_exact_object_keys(run, RUN_KEYS, f"{path}.runs[{index}]")
+        expected_run_keys = (
+            RETRY_RUN_KEYS if isinstance(run, dict) and "attempts" in run else RUN_KEYS
+        )
+        if isinstance(run, dict) and USAGE_KEY in run:
+            expected_run_keys = expected_run_keys | {USAGE_KEY}
+        if isinstance(run, dict) and NORMALIZED_KEY in run:
+            expected_run_keys = expected_run_keys | {NORMALIZED_KEY}
+        if isinstance(run, dict) and "unexpected_stream_item" in run:
+            if (report.get("protocol_id") not in {"reviewer-holdout-v19", "reviewer-holdout-v20", "reviewer-holdout-v21"}
+                    or run.get("error") != RUNNER.CODEX_STREAM_ERROR
+                    or run.get("score") is not None):
+                raise ValueError("unexpected stream diagnostic is limited to failed v19/v20/v21 runs")
+            names = run["unexpected_stream_item"]
+            require_exact_object_keys(
+                names, {"event_type", "item_type", "item_kind"},
+                f"{path}.runs[{index}].unexpected_stream_item",
+            )
+            if any(
+                value is not None and value != "[invalid type name]"
+                and (not isinstance(value, str)
+                     or re.fullmatch(r"[A-Za-z0-9_.:-]{1,128}", value) is None)
+                for value in names.values()
+            ):
+                raise ValueError("unexpected stream diagnostic must contain only type names")
+            expected_run_keys = expected_run_keys | {"unexpected_stream_item"}
+        require_exact_object_keys(
+            run,
+            expected_run_keys,
+            f"{path}.runs[{index}]",
+        )
         findings = run["findings"]
         if not isinstance(findings, list):
             raise ValueError(f"{path}.runs[{index}].findings must be an array")
@@ -389,6 +446,17 @@ def validate_provenance(
     )
     for field in digest_fields:
         require_sha256(report.get(field), field)
+    if report.get("protocol_id") in RUNNER.ADJUDICATED_SPECIFICITY_PROTOCOL_IDS:
+        require_sha256(
+            report.get("adjudication_ledger_sha256"),
+            "adjudication_ledger_sha256",
+        )
+        if not isinstance(report.get("adjudication_ledger_path"), str):
+            raise ValueError("specificity report is missing its adjudication ledger path")
+    if report.get("protocol_id") in {"reviewer-specificity-v3", "reviewer-specificity-v4"}:
+        require_sha256(report.get("repository_walk_sha256"), "repository_walk_sha256")
+        if not isinstance(report.get("repository_walk_path"), str):
+            raise ValueError("specificity-v3 report is missing its repository walk path")
     if report.get("prompt_profile") not in RUNNER.PROMPT_SKILL_PROFILES:
         raise ValueError("prompt_profile is not a declared evaluator arm")
     if "runner_executable" in report:
@@ -624,6 +692,8 @@ def report_timestamp(report: dict, field: str) -> dt.datetime:
 
 
 def report_case_metric_rows(report: dict, cases: list[dict]) -> dict[str, dict]:
+    if report.get("protocol_id") in RUNNER.REVISED_LABEL_PROTOCOL_IDS:
+        return revised_report_case_metric_rows(report, cases)
     predictions = stable_predictions(report)
     rows: dict[str, dict] = {}
     for case in cases:
@@ -662,6 +732,44 @@ def report_case_metric_rows(report: dict, cases: list[dict]) -> dict[str, dict]:
             },
             "clean": clean,
             "clean_without_prediction": clean and not predicted,
+        }
+    return rows
+
+
+def revised_report_case_metric_rows(
+    report: dict, cases: list[dict]
+) -> dict[str, dict]:
+    """Per-case bootstrap rows under revised (v8) label semantics."""
+    required_hits = report["primary_metrics"]["stability"]["required_hits"]
+    outcomes = RUNNER.revised_stable_case_outcomes(
+        cases, report["runs"], required_hits
+    )
+    rows: dict[str, dict] = {}
+    for case in cases:
+        case_id = case["id"]
+        repeated_runs = [
+            run for run in report["runs"] if run["case"] == case_id
+        ]
+        if not repeated_runs or any(run["score"] is None for run in repeated_runs):
+            raise ValueError(
+                f"{report_configuration_key(report)!r}: incomplete case {case_id}"
+            )
+        outcome = outcomes[case_id]
+        clean = {label["kind"] for label in case["labels"]} == {"fp_guard"}
+        rows[case_id] = {
+            "stable": {
+                "tp": len(outcome["stable_tp"]),
+                "fp": len(outcome["stable_fp"]),
+                "fn": len(outcome["stable_fn"]),
+            },
+            "repeated": {
+                name: sum(run["score"][name] for run in repeated_runs)
+                for name in ("tp", "fp", "fn")
+            },
+            "clean": clean,
+            "clean_without_prediction": (
+                clean and not outcome["stable_predictions"]
+            ),
         }
     return rows
 
@@ -851,6 +959,149 @@ def paired_stratified_arm_bootstrap(
     }
 
 
+def specificity_case_rows(report: dict, cases: list[dict]) -> dict[str, dict]:
+    rows = {}
+    for case in cases:
+        selected = [run for run in report["runs"] if run["case"] == case["id"]]
+        if not selected or any(run["score"] is None for run in selected):
+            raise ValueError(f"incomplete specificity case {case['id']}")
+        clean = sum(not run["findings"] for run in selected)
+        rows[case["id"]] = {
+            "framework": case["framework"],
+            "specificity": float(clean >= (len(selected) // 2 + 1)),
+            "false_positive_count": sum(
+                len({RUNNER.finding_key(item) for item in run["findings"]})
+                for run in selected
+            ),
+        }
+    return rows
+
+
+def specificity_sample_metrics(rows: dict[str, dict], sampled: list[str]) -> dict:
+    return {
+        "per_case_specificity": sum(rows[key]["specificity"] for key in sampled) / len(sampled),
+        "repeated_run_false_positive_count_per_case":
+            sum(rows[key]["false_positive_count"] for key in sampled) / len(sampled),
+    }
+
+
+def paired_specificity_bootstrap(reports_by_profile: dict, cases: list[dict], protocol: dict) -> dict:
+    contract = protocol["arm_comparison"]
+    treatment, controls = contract["treatment"], contract["controls"]
+    rows = {profile: specificity_case_rows(items[0], cases)
+            for profile, items in reports_by_profile.items()}
+    case_ids = [case["id"] for case in cases]
+    point = {profile: specificity_sample_metrics(profile_rows, case_ids)
+             for profile, profile_rows in rows.items()}
+    samples = {control: {"per_case_specificity": [],
+        "repeated_run_false_positive_count_per_case": []} for control in controls}
+    case_stratum = [case["id"] for case in cases]
+    generator = random.Random(contract["uncertainty"]["seed"])
+    for _ in range(contract["uncertainty"]["iterations"]):
+        sampled = generator.choices(case_stratum, k=len(case_stratum))
+        metrics = {profile: specificity_sample_metrics(profile_rows, sampled)
+                   for profile, profile_rows in rows.items()}
+        for control in controls:
+            samples[control]["per_case_specificity"].append(
+                metrics[treatment]["per_case_specificity"]
+                - metrics[control]["per_case_specificity"])
+            samples[control]["repeated_run_false_positive_count_per_case"].append(
+                metrics[control]["repeated_run_false_positive_count_per_case"]
+                - metrics[treatment]["repeated_run_false_positive_count_per_case"])
+    probability = round((1 - contract["uncertainty"]["confidence"]) / 2, 12)
+    intervals = {control: {metric: {
+        "lower": nearest_rank(values, probability),
+        "upper": nearest_rank(values, 1 - probability),
+        **{key: contract["uncertainty"][key] for key in
+           ("method", "confidence", "iterations", "seed", "strata", "percentile_method")},
+    } for metric, values in metrics.items()} for control, metrics in samples.items()}
+    return {"point_metrics": point, "intervals": intervals,
+            "interpretation_limit": contract["uncertainty"]["interpretation_limit"]}
+
+
+def threshold_check(metric, actual, required, comparator):
+    passed = (actual > required if comparator == ">" else
+              actual >= required if comparator == ">=" else actual <= required)
+    return {"metric": metric, "actual": actual, "required": required,
+            "comparator": comparator, "passed": passed}
+
+
+def _specificity_lift_checks(point, intervals, treatment, control, thresholds):
+    return [
+        threshold_check("per_case_specificity_delta_min",
+            point[treatment]["per_case_specificity"] - point[control]["per_case_specificity"],
+            thresholds["per_case_specificity_delta_min"], ">="),
+        threshold_check("per_case_specificity_delta_ci95_lower_min_exclusive",
+            intervals["per_case_specificity"]["lower"],
+            thresholds["per_case_specificity_delta_ci95_lower_min_exclusive"], ">"),
+        threshold_check("repeated_run_false_positive_count_per_case_advantage_min",
+            point[control]["repeated_run_false_positive_count_per_case"]
+            - point[treatment]["repeated_run_false_positive_count_per_case"],
+            thresholds["repeated_run_false_positive_count_per_case_advantage_min"], ">="),
+        threshold_check(
+            "repeated_run_false_positive_count_per_case_advantage_ci95_lower_min_exclusive",
+            intervals["repeated_run_false_positive_count_per_case"]["lower"],
+            thresholds[
+                "repeated_run_false_positive_count_per_case_advantage_ci95_lower_min_exclusive"
+            ], ">"),
+    ]
+
+
+def decide_specificity_matrix(reports_by_profile, cases, protocol):
+    treatment = protocol["arm_comparison"]["treatment"]
+    controls = protocol["arm_comparison"]["controls"]
+    minimum = protocol["corpus"]["case_count_minimum"]
+    framework_counts = Counter(case["framework"] for case in cases)
+    if len(cases) < minimum:
+        return {"status": "INCONCLUSIVE", "specificity_claim_eligible": False,
+                "skill_lift_claim_eligible": False,
+                "status_reasons": [{"code": "specificity_corpus_minimum_not_met",
+                    "case_count": len(cases), "framework_counts": dict(framework_counts)}],
+                "metrics": None, "claim_policy": protocol["claim_policy"]}
+    bootstrap = paired_specificity_bootstrap(reports_by_profile, cases, protocol)
+    point = bootstrap["point_metrics"]
+    absolute = protocol["decision"]["full_arm_absolute_thresholds"]
+    comparative = protocol["decision"]["full_vs_each_control_thresholds"]
+    checks = [
+        threshold_check("per_case_specificity_min",
+            point[treatment]["per_case_specificity"],
+            absolute["per_case_specificity_min"], ">="),
+        threshold_check("repeated_run_false_positive_count_per_case_max",
+            point[treatment]["repeated_run_false_positive_count_per_case"],
+            absolute["repeated_run_false_positive_count_per_case_max"], "<="),
+    ]
+    lift = {}
+    for control in controls:
+        intervals = bootstrap["intervals"][control]
+        control_checks = _specificity_lift_checks(
+            point, intervals, treatment, control, comparative,
+        )
+        checks.extend(control_checks)
+        lift[control] = {"decision_checks": control_checks,
+                         "paired_bootstrap_ci95": intervals}
+    full_pass = reports_by_profile[treatment][0]["status"] == "PASS"
+    if not full_pass:
+        checks.append({"metric": "full_arm_status", "actual":
+            reports_by_profile[treatment][0]["status"], "required": "PASS",
+            "comparator": "==", "passed": False})
+    status = "PASS" if full_pass and all(row["passed"] for row in checks) else "FAIL"
+    return {"status": status, "specificity_claim_eligible": status == "PASS",
+            "skill_lift_claim_eligible": False,
+            "status_reasons": [{"code": "all_specificity_gates_met" if status == "PASS"
+                else "specificity_gate_not_met",
+                "failed_checks": [row for row in checks if not row["passed"]]}],
+            "metrics": {"arm_point_metrics": point, "absolute_checks": checks[:2],
+                        "lift": lift, "uncertainty": bootstrap},
+            "claim_policy": protocol["claim_policy"]}
+
+
+def parse_report_findings(output: str, schema_policy: dict | None) -> list[dict]:
+    """Reparse stored output under the protocol's finding schema, when opted in."""
+    return RUNNER.parse_findings(
+        output, schema_policy["schema"] if schema_policy is not None else None
+    )
+
+
 def recompute_report(
     report: dict,
     all_cases: list[dict],
@@ -860,7 +1111,16 @@ def recompute_report(
     corpus_visibility: str | None = None,
     comparison_scope: str = "development",
     evaluator_sha256: str | None = None,
+    skill_dir: Path | None = None,
 ) -> dict:
+    """Re-derive one report from its raw outputs and the selected inputs.
+
+    skill_dir is the evaluated skill whose files the prompt digest is
+    recomputed from; it defaults to the checkout's skill. Only a
+    revision-comparison protocol passes another directory, the pinned
+    revision the report recorded.
+    """
+    protocol_id = protocol.get("protocol_id")
     validate_provenance(report, comparison_scope)
     if (
         corpus_visibility is not None
@@ -924,7 +1184,6 @@ def recompute_report(
     )
     if report["evaluator_sha256"] != expected_evaluator_sha256:
         raise ValueError("evaluator_sha256 does not match selected evaluator")
-    protocol_id = protocol["protocol_id"]
     if (
         protocol_id in RUNNER.FULL_ONLY_PROTOCOL_IDS
         and report["prompt_profile"] != "full"
@@ -943,8 +1202,11 @@ def recompute_report(
     expected_prompt_set_sha256 = RUNNER.prompt_set_digest(
         cases,
         corpus_sha256,
-        RUNNER.DEFAULT_SKILL_DIR,
+        skill_dir if skill_dir is not None else RUNNER.DEFAULT_SKILL_DIR,
         report["prompt_profile"],
+        numbered_source_lines=(
+            protocol_id in RUNNER.NUMBERED_SOURCE_PROTOCOL_IDS
+        ),
     )
     if report["prompt_set_sha256"] != expected_prompt_set_sha256:
         raise ValueError("prompt_set_sha256 does not match selected cases")
@@ -975,8 +1237,16 @@ def recompute_report(
             )
 
     case_by_id = {case["id"]: case for case in cases}
+    revised_labels = protocol_id in RUNNER.REVISED_LABEL_PROTOCOL_IDS
     if len(report["runs"]) != len(expected_schedule):
         raise ValueError("run count does not match recomputed schedule")
+    retry_policy = RUNNER.infrastructure_retry_policy(protocol)
+    validate_retry_records(report, retry_policy)
+    usage_policy = RUNNER.usage_capture_policy(protocol)
+    validate_usage_records(report, usage_policy)
+    normalization_policy = RUNNER.output_normalization_policy(protocol)
+    validate_output_normalization_records(report, normalization_policy)
+    validate_output_schema_records(report, RUNNER.output_schema_policy(protocol))
     normalized_runs: list[dict] = []
     for scheduled, stored in zip(expected_schedule, report["runs"]):
         identity = (
@@ -1006,11 +1276,30 @@ def recompute_report(
             and stored.get("error") is None
             and workspace_before == workspace_after
         )
-        if scoreable:
-            findings = RUNNER.parse_findings(stored.get("output", ""))
+        if normalization_policy is not None and stored[NORMALIZED_KEY] != (
+            RUNNER.output_normalization_applied(stored)
+        ):
+            raise ValueError("stored output_normalized does not match raw model output")
+        if scoreable and normalization_policy is not None:
+            findings = RUNNER.parse_normalized_findings(stored.get("output", ""))
             if findings != stored.get("findings"):
                 raise ValueError("stored findings do not match raw model output")
-            computed_score = RUNNER.score(case_by_id[stored["case"]], findings)
+            computed_score = RUNNER.score(
+                case_by_id[stored["case"]],
+                findings,
+                revised_labels=revised_labels,
+            )
+        elif scoreable:
+            findings = parse_report_findings(
+                stored.get("output", ""), RUNNER.output_schema_policy(protocol)
+            )
+            if findings != stored.get("findings"):
+                raise ValueError("stored findings do not match raw model output")
+            computed_score = RUNNER.score(
+                case_by_id[stored["case"]],
+                findings,
+                revised_labels=revised_labels,
+            )
         else:
             findings = []
             computed_score = None
@@ -1024,13 +1313,17 @@ def recompute_report(
             }
         )
     summary = repeated_summary(normalized_runs)
-    secondary = {"aggregation_unit": "repeated-run", **summary}
-    primary = RUNNER.primary_metrics(
-        cases,
-        normalized_runs,
-        report["repetitions"],
-        protocol["stability"]["rule"],
-    )
+    if protocol_id in RUNNER.SPECIFICITY_PROTOCOL_IDS:
+        primary, secondary = RUNNER.specificity_metrics(
+            cases, normalized_runs, protocol,
+        )
+    else:
+        secondary = {"aggregation_unit": "repeated-run", **summary}
+        primary = RUNNER.primary_metrics(
+            cases, normalized_runs, report["repetitions"],
+            protocol["stability"]["rule"],
+            revised_labels=revised_labels,
+        )
     by_case = {}
     for case in cases:
         selected = [run for run in normalized_runs if run["case"] == case["id"]]
@@ -1054,22 +1347,26 @@ def recompute_report(
             }
         )
 
-    status, reasons = RUNNER.classify_status(
-        primary,
-        secondary,
-        expected_schedule,
-        normalized_runs,
-        protocol_sha256,
-        report["protocol_sha256_after"],
-        report["skill_sha256"],
-        report["skill_sha256_after"],
-        corpus_sha256,
+    integrity_args = (
+        expected_schedule, normalized_runs, protocol_sha256,
+        report["protocol_sha256_after"], report["skill_sha256"],
+        report["skill_sha256_after"], corpus_sha256,
         report["corpus_sha256_after"],
-        protocol["decision"]["thresholds"],
-        report["source_read_isolation"],
-        expected_case_scope,
-        expected_decision_scope,
     )
+    integrity_kwargs = {
+        "source_read_isolation": report["source_read_isolation"],
+        "case_scope": expected_case_scope,
+        "decision_scope": expected_decision_scope,
+    }
+    if protocol_id in RUNNER.SPECIFICITY_PROTOCOL_IDS:
+        status, reasons = RUNNER.classify_specificity_status(
+            primary, secondary, protocol, integrity_args, integrity_kwargs,
+        )
+    else:
+        status, reasons = RUNNER.classify_status(
+            primary, secondary, *integrity_args,
+            thresholds=protocol["decision"]["thresholds"], **integrity_kwargs,
+        )
     expected_execution_complete = RUNNER.execution_complete(
         expected_schedule,
         normalized_runs,
@@ -1095,6 +1392,18 @@ def recompute_report(
             report["prompt_profile"],
         ),
     }
+    if retry_policy is not None:
+        checks["infrastructure_retry_summary"] = (
+            RUNNER.infrastructure_retry_summary(
+                normalized_runs, tuple(retry_policy["retryable"])
+            )
+        )
+    if usage_policy is not None:
+        checks["usage_summary"] = RUNNER.usage_summary(normalized_runs)
+    if normalization_policy is not None:
+        checks["output_normalization_summary"] = (
+            RUNNER.output_normalization_summary(normalized_runs)
+        )
     for field, expected in checks.items():
         if not equivalent(report.get(field), expected):
             raise ValueError(f"serialized {field} does not match recomputed value")
@@ -1103,6 +1412,252 @@ def recompute_report(
         "runs": normalized_runs,
         **checks,
     }
+
+
+def validate_retry_records(report: dict, retry_policy: dict | None) -> None:
+    """Check per-run attempt records against the protocol's retry policy.
+
+    A protocol without a policy must carry no retry fields at all. Under a
+    policy, every run records 1..max attempts; each non-final attempt names a
+    preregistered retryable reason, the final attempt matches the scored run,
+    and a scoreable final attempt carries no reason.
+    """
+    runs = report["runs"]
+    if retry_policy is None:
+        if (
+            "infrastructure_retry" in report
+            or "infrastructure_retry_summary" in report
+            or any("attempts" in run for run in runs)
+        ):
+            raise ValueError(
+                "report carries retry records but the protocol has no retry policy"
+            )
+        return
+    if report.get("infrastructure_retry") != retry_policy:
+        raise ValueError("report infrastructure_retry does not match the protocol")
+    if "infrastructure_retry_summary" not in report:
+        raise ValueError("report is missing its infrastructure_retry_summary")
+    retryable = set(retry_policy["retryable"])
+    maximum = retry_policy["max_attempts_per_call"]
+    attempt_keys = (
+        ATTEMPT_KEYS | {USAGE_KEY} if "usage_capture" in report else ATTEMPT_KEYS
+    )
+    for index, run in enumerate(runs):
+        attempts = run.get("attempts")
+        if not isinstance(attempts, list) or not 1 <= len(attempts) <= maximum:
+            raise ValueError(f"run {index + 1} attempts exceed the retry policy")
+        for number, attempt in enumerate(attempts, start=1):
+            require_exact_object_keys(
+                attempt, attempt_keys, f"run {index + 1} attempt {number}"
+            )
+            if attempt["attempt"] != number:
+                raise ValueError(f"run {index + 1} attempts are not numbered in order")
+            reason = attempt["reason"]
+            if reason is not None and reason not in retryable:
+                raise ValueError(f"run {index + 1} attempt reason is not retryable")
+            if number < len(attempts) and reason is None:
+                raise ValueError(
+                    f"run {index + 1} retried an attempt with no retryable reason"
+                )
+        final = attempts[-1]
+        if final["exit_code"] != run["exit_code"] or final["error"] != run["error"]:
+            raise ValueError(f"run {index + 1} final attempt does not match the run")
+        if run["error"] is None and final["reason"] is not None:
+            raise ValueError(f"run {index + 1} scoreable attempt carries a retry reason")
+        if len(attempts) < maximum and final["reason"] is not None:
+            raise ValueError(
+                f"run {index + 1} stopped before exhausting a retryable failure"
+            )
+
+
+def validate_usage_records(report: dict, usage_policy: dict | None) -> None:
+    """Check usage records against the protocol's usage-capture opt-in.
+
+    A protocol without the opt-in must carry no usage fields at all, so its
+    report schema is exactly the pre-usage one. Under the opt-in, every run
+    and every attempt records usage (null or a valid record), and a run's
+    usage is its final attempt's usage.
+    """
+    runs = report["runs"]
+    if usage_policy is None:
+        if (
+            "usage_capture" in report
+            or "usage_summary" in report
+            or any(USAGE_KEY in run for run in runs)
+            or any(
+                USAGE_KEY in attempt
+                for run in runs
+                for attempt in run.get("attempts", [])
+                if isinstance(attempt, dict)
+            )
+        ):
+            raise ValueError(
+                "report carries usage records but the protocol has no usage capture"
+            )
+        return
+    if report.get("usage_capture") != usage_policy:
+        raise ValueError("report usage_capture does not match the protocol")
+    if "usage_summary" not in report:
+        raise ValueError("report is missing its usage_summary")
+    for index, run in enumerate(runs):
+        if USAGE_KEY not in run:
+            raise ValueError(f"run {index + 1} is missing its usage record")
+        RUNNER.validate_usage_record(run[USAGE_KEY], f"run {index + 1}")
+        attempts = run.get("attempts")
+        if attempts is None:
+            continue
+        for number, attempt in enumerate(attempts, start=1):
+            if not isinstance(attempt, dict) or USAGE_KEY not in attempt:
+                raise ValueError(
+                    f"run {index + 1} attempt {number} is missing its usage record"
+                )
+            RUNNER.validate_usage_record(
+                attempt[USAGE_KEY], f"run {index + 1} attempt {number}"
+            )
+        if attempts and attempts[-1][USAGE_KEY] != run[USAGE_KEY]:
+            raise ValueError(f"run {index + 1} usage does not match its final attempt")
+
+
+def validate_output_normalization_records(
+    report: dict, normalization_policy: dict | None
+) -> None:
+    """Check output-normalization records against the protocol's opt-in.
+
+    A protocol without the opt-in must carry no normalization fields, so its
+    report schema is exactly the earlier one. Under the opt-in, every run
+    records a boolean output_normalized and the report carries its summary.
+    """
+    runs = report["runs"]
+    if normalization_policy is None:
+        if (
+            "output_normalization" in report
+            or "output_normalization_summary" in report
+            or any(NORMALIZED_KEY in run for run in runs)
+        ):
+            raise ValueError(
+                "report carries output-normalization records but the protocol "
+                "has no output normalization"
+            )
+        return
+    if report.get("output_normalization") != normalization_policy:
+        raise ValueError("report output_normalization does not match the protocol")
+    if "output_normalization_summary" not in report:
+        raise ValueError("report is missing its output_normalization_summary")
+    for index, run in enumerate(runs):
+        if not isinstance(run.get(NORMALIZED_KEY), bool):
+            raise ValueError(f"run {index + 1} is missing its output_normalized flag")
+
+
+def validate_output_schema_records(report: dict, schema_policy: dict | None) -> None:
+    """Check the enforced-output-schema provenance against the protocol's opt-in.
+
+    A protocol without the opt-in must carry no output_schema field. Under it,
+    the report must carry the protocol's exact block, whose schema_sha256 is
+    recomputed from the embedded schema. Run records are unchanged: the
+    stored output is the answer the strict parser judged.
+    """
+    if schema_policy is None:
+        if "output_schema" in report:
+            raise ValueError(
+                "report carries an output_schema but the protocol has no "
+                "enforced output schema"
+            )
+        return
+    recorded = report.get("output_schema")
+    if recorded != schema_policy:
+        raise ValueError("report output_schema does not match the protocol")
+    if RUNNER.output_schema_sha256(recorded["schema"]) != recorded["schema_sha256"]:
+        raise ValueError("report output_schema digest does not match its schema")
+
+
+def output_normalization_rows(reports: list[dict]) -> list[dict]:
+    """Surface each report's (arm's) normalized-run counts, recomputed from its runs."""
+    rows = []
+    for report in reports:
+        try:
+            summary = RUNNER.output_normalization_summary(report["runs"])
+        except (KeyError, TypeError):
+            summary = None
+        rows.append(
+            {
+                "prompt_profile": report.get("prompt_profile"),
+                "runner": report.get("runner"),
+                "model": report.get("model"),
+                "output_normalization_summary": summary,
+            }
+        )
+    return rows
+
+
+def usage_rows(reports: list[dict]) -> list[dict]:
+    """Surface each report's (arm's) usage summary, recomputed from its runs."""
+    rows = []
+    for report in reports:
+        try:
+            summary = RUNNER.usage_summary(report["runs"])
+        except (KeyError, TypeError):
+            summary = None
+        rows.append(
+            {
+                "prompt_profile": report.get("prompt_profile"),
+                "runner": report.get("runner"),
+                "model": report.get("model"),
+                "usage_summary": summary,
+            }
+        )
+    return rows
+
+
+def per_report_sections(protocol: dict, reports: list[dict]) -> dict:
+    """Output sections that list per-report (per-arm) counts for opted-in protocols."""
+    sections: dict = {}
+    retry_policy = RUNNER.infrastructure_retry_policy(protocol)
+    if retry_policy is not None:
+        # Retried-then-scored runs are ordinary scored runs above; the counts
+        # are surfaced here so a reader sees how many calls needed a retry.
+        sections["infrastructure_retry"] = {
+            "policy": retry_policy,
+            "reports": retry_count_rows(reports),
+        }
+    usage_policy = RUNNER.usage_capture_policy(protocol)
+    if usage_policy is not None:
+        # Descriptive cost evidence only: usage enters no threshold or decision.
+        sections["usage_capture"] = {
+            "policy": usage_policy,
+            "reports": usage_rows(reports),
+        }
+    normalization_policy = RUNNER.output_normalization_policy(protocol)
+    if normalization_policy is not None:
+        # Counts of runs judged on a fence-stripped answer, per arm. The rule
+        # is preregistered and identical across arms; the counts let a reader
+        # see how much each arm relied on it.
+        sections["output_normalization"] = {
+            "policy": normalization_policy,
+            "reports": output_normalization_rows(reports),
+        }
+    return sections
+
+
+def retry_count_rows(reports: list[dict]) -> list[dict]:
+    """Surface each report's retry counts, recomputed from its attempt records."""
+    rows = []
+    for report in reports:
+        try:
+            policy = report.get("infrastructure_retry", RUNNER.EXPECTED_INFRASTRUCTURE_RETRY)
+            summary = RUNNER.infrastructure_retry_summary(
+                report["runs"], tuple(policy["retryable"])
+            )
+        except (KeyError, TypeError):
+            summary = None
+        rows.append(
+            {
+                "prompt_profile": report.get("prompt_profile"),
+                "runner": report.get("runner"),
+                "model": report.get("model"),
+                "infrastructure_retry_summary": summary,
+            }
+        )
+    return rows
 
 
 def compare_reports(
@@ -1115,6 +1670,7 @@ def compare_reports(
     comparison_scope: str = "development",
     evaluator_sha256: str | None = None,
 ) -> dict:
+    protocol_id = protocol.get("protocol_id")
     reasons: list[dict] = []
     expected_report_count = len(protocol["host_matrix"])
     if len(reports) != expected_report_count:
@@ -1181,6 +1737,10 @@ def compare_reports(
         "workspace_integrity",
         "input_snapshot",
     )
+    if protocol_id in RUNNER.ADJUDICATED_SPECIFICITY_PROTOCOL_IDS:
+        shared_fields += ("adjudication_ledger_sha256",)
+    if protocol_id in {"reviewer-specificity-v3", "reviewer-specificity-v4"}:
+        shared_fields += ("repository_walk_sha256",)
     for field in shared_fields:
         values = {report[field] for report in reports}
         if len(values) != 1:
@@ -1297,7 +1857,7 @@ def compare_reports(
             for report, predictions in zip(reports, prediction_sets)
         ],
     }
-    if protocol.get("protocol_id") in RUNNER.PROVIDER_BALANCED_PROTOCOL_IDS:
+    if protocol_id in RUNNER.PROVIDER_BALANCED_PROTOCOL_IDS:
         metrics["provider_family_aggregation"] = provider_family_aggregation(
             reports
         )
@@ -1372,14 +1932,19 @@ def compare_arm_reports(
     comparison_scope: str = "development",
     evaluator_sha256: str | None = None,
 ) -> dict:
+    protocol_id = protocol.get("protocol_id")
     arm_contract = protocol.get("arm_comparison")
     if (
-        protocol.get("protocol_id") not in RUNNER.ARM_COMPARISON_PROTOCOL_IDS
+        protocol_id not in RUNNER.ARM_COMPARISON_PROTOCOL_IDS
         or not isinstance(arm_contract, dict)
     ):
         raise ValueError("selected protocol has no frozen arm-comparison contract")
     treatment = arm_contract["treatment"]
     controls = arm_contract["controls"]
+    if protocol_id in RUNNER.SPECIFICITY_PROTOCOL_IDS:
+        claim_policy = protocol["claim_policy"]
+    else:
+        claim_policy = arm_contract["claim_policy"]
     profiles = [treatment, *controls]
     required_hosts = {
         (entry["runner"], entry["model"])
@@ -1414,7 +1979,7 @@ def compare_arm_reports(
                 }
             ],
             "metrics": None,
-            "claim_policy": arm_contract["claim_policy"],
+            "claim_policy": claim_policy,
         }
 
     normalized: list[dict] = []
@@ -1449,7 +2014,7 @@ def compare_arm_reports(
             "skill_lift_claim_eligible": False,
             "status_reasons": integrity_reasons,
             "metrics": None,
-            "claim_policy": arm_contract["claim_policy"],
+            "claim_policy": claim_policy,
         }
 
     completeness_reasons = []
@@ -1599,7 +2164,7 @@ def compare_arm_reports(
                     "required": arm_contract["execution_order"],
                     "message": (
                         "report start timestamps do not match the frozen "
-                        "cyclic Latin-square execution order"
+                        "execution order"
                     ),
                 }
             )
@@ -1663,7 +2228,7 @@ def compare_arm_reports(
             "skill_lift_claim_eligible": False,
             "status_reasons": completeness_reasons,
             "metrics": None,
-            "claim_policy": arm_contract["claim_policy"],
+            "claim_policy": claim_policy,
         }
 
     raw_by_profile = {
@@ -1682,6 +2247,10 @@ def compare_arm_reports(
         ]
         for profile in profiles
     }
+    if protocol_id in RUNNER.SPECIFICITY_PROTOCOL_IDS:
+        return decide_specificity_matrix(
+            normalized_by_profile, all_cases, protocol,
+        )
     treatment_cross_host = compare_reports(
         raw_by_profile[treatment],
         all_cases,
@@ -1728,8 +2297,87 @@ def compare_arm_reports(
                     }
                 ],
                 "metrics": None,
-                "claim_policy": arm_contract["claim_policy"],
+                "claim_policy": claim_policy,
             }
+
+    if protocol_id in {"reviewer-holdout-v18", "reviewer-holdout-v19"}:
+        thresholds = arm_contract["decision"]["thresholds"]
+        control = "no-skill"
+        delta = point_metrics[treatment]["stable_f1"] - point_metrics[control]["stable_f1"]
+        interval = bootstrap["intervals"][control]["stable_f1"]
+        checks = [
+            threshold_check("stable_f1_delta_min", delta, thresholds["stable_f1_delta_min"], ">="),
+            threshold_check("stable_f1_delta_ci95_lower_min_exclusive", interval["lower"],
+                            thresholds["stable_f1_delta_ci95_lower_min_exclusive"], ">"),
+        ]
+        if treatment_cross_host["status"] != "PASS":
+            checks.append({"metric": "full_report_status", "actual": treatment_cross_host["status"],
+                           "required": "PASS", "comparator": "==", "passed": False})
+        passed = all(check["passed"] for check in checks)
+        return {
+            "status": "PASS" if passed else "FAIL",
+            "skill_lift_claim_eligible": passed,
+            "status_reasons": [{"code": "release_confirmation_passed" if passed else "release_confirmation_gate_not_met",
+                                "failed_checks": [check for check in checks if not check["passed"]]}],
+            "metrics": {
+                "arm_point_metrics": point_metrics,
+                "primary": {"delta": delta, "paired_bootstrap_ci95": interval, "decision_checks": checks},
+                "descriptive_full_minus_catalog_only_stable_f1":
+                    point_metrics[treatment]["stable_f1"] - point_metrics["catalog-only"]["stable_f1"],
+                "descriptive_full_minus_catalog_only": {
+                    "point_deltas": {
+                        metric: point_metrics[treatment][metric] - point_metrics["catalog-only"][metric]
+                        for metric in ARM_POINT_METRICS
+                    },
+                    "paired_bootstrap_ci95": bootstrap["intervals"]["catalog-only"],
+                },
+                "historical_v17_full_stable_f1": 0.964,
+            },
+            "claim_policy": claim_policy,
+        }
+
+    if protocol_id == "reviewer-holdout-v17":
+        control = "catalog-only"
+        formal = "catalog-formal"
+        subset_ids = set(protocol["formal_comparison"]["secondary_case_ids"])
+        subset = [case for case in all_cases if case["id"] in subset_ids]
+        secondary = paired_stratified_arm_bootstrap(
+            normalized_by_profile,
+            subset,
+            protocol,
+        )
+        delta = point_metrics[formal]["stable_f1"] - point_metrics[control]["stable_f1"]
+        lower = bootstrap["intervals"][control]["stable_f1"]["lower"]
+        formal_guard = normalized_by_profile[formal][0]["primary_metrics"]["unique"]["stable_guard_hit_rate"]
+        control_guard = normalized_by_profile[control][0]["primary_metrics"]["unique"]["stable_guard_hit_rate"]
+        checks = [
+            threshold_check("stable_f1_delta_min", delta, 0.03, ">="),
+            threshold_check("stable_f1_delta_ci95_lower_min_exclusive", lower, 0, ">"),
+            threshold_check("stable_guard_hit_rate_delta_max", formal_guard - control_guard, 0, "<="),
+        ]
+        if treatment_cross_host["status"] != "PASS":
+            checks.append({"metric": "formal_report_status", "actual": treatment_cross_host["status"],
+                           "required": "PASS", "comparator": "==", "passed": False})
+        passed = all(check["passed"] for check in checks)
+        return {
+            "status": "PASS" if passed else "FAIL",
+            "skill_lift_claim_eligible": passed,
+            "status_reasons": [{"code": "formal_comparison_passed" if passed else "formal_comparison_gate_not_met",
+                                "failed_checks": [check for check in checks if not check["passed"]]}],
+            "metrics": {
+                "arm_point_metrics": point_metrics,
+                "primary": {"delta": delta, "paired_bootstrap_ci95": bootstrap["intervals"][control]["stable_f1"],
+                            "formal_guard_hit_rate": formal_guard, "catalog_guard_hit_rate": control_guard,
+                            "decision_checks": checks},
+                "secondary": {"case_ids": protocol["formal_comparison"]["secondary_case_ids"],
+                              "delta": secondary["point_metrics"][formal]["stable_f1"]
+                              - secondary["point_metrics"][control]["stable_f1"],
+                              "paired_bootstrap_ci95": secondary["intervals"][control]["stable_f1"]},
+                "descriptive_full_minus_catalog_only_stable_f1": point_metrics["full"]["stable_f1"]
+                    - point_metrics[control]["stable_f1"],
+            },
+            "claim_policy": claim_policy,
+        }
 
     thresholds = arm_contract["decision"]["thresholds"]
     decision_reasons: list[dict] = []
@@ -1843,7 +2491,7 @@ def compare_arm_reports(
             "skill_lift_claim_eligible": False,
             "status_reasons": decision_reasons,
             "metrics": metrics,
-            "claim_policy": arm_contract["claim_policy"],
+            "claim_policy": claim_policy,
         }
     return {
         "status": "PASS",
@@ -1858,7 +2506,7 @@ def compare_arm_reports(
             }
         ],
         "metrics": metrics,
-        "claim_policy": arm_contract["claim_policy"],
+        "claim_policy": claim_policy,
     }
 
 
@@ -1905,14 +2553,35 @@ def main() -> int:
     snapshot_protocol_path = snapshot_root / protocol_path.name
     write_snapshot_file(snapshot_protocol_path, protocol_payload)
     protocol = RUNNER.load_protocol(snapshot_protocol_path)
+    protocol_id = protocol.get("protocol_id")
+    adjudication_ledger_path = (
+        RUNNER.specificity_ledger_path(protocol)
+        if protocol_id in RUNNER.ADJUDICATED_SPECIFICITY_PROTOCOL_IDS else None
+    )
+    repository_walk_path = (
+        RUNNER.specificity_repository_walk_path(protocol)
+        if protocol_id in {"reviewer-specificity-v3", "reviewer-specificity-v4"} else None
+    )
     snapshot_cases_path, corpus_input_digests = snapshot_corpus_inputs(
         cases_path,
         snapshot_root,
     )
-    if protocol["protocol_id"] in RUNNER.HISTORICAL_DIAGNOSTIC_PROTOCOL_IDS:
+    if protocol_id in RUNNER.SUPERSEDED_PROTOCOL_IDS:
         parser.error(
-            f"{protocol['protocol_id']} is frozen historical diagnostic evidence "
+            f"{protocol_id} was superseded before run and cannot produce "
+            "benchmark comparisons; use reviewer-specificity-v3"
+        )
+    if protocol_id == "reviewer-specificity-v4":
+        parser.error("specificity-v4 has an infeasible selection contract; no benchmark comparison is permitted")
+    if protocol_id in RUNNER.HISTORICAL_DIAGNOSTIC_PROTOCOL_IDS:
+        parser.error(
+            f"{protocol_id} is frozen historical diagnostic evidence "
             "with a known-invalid oracle and cannot produce a benchmark comparison"
+        )
+    if protocol_id in RUNNER.REVISION_COMPARISON_PROTOCOL_IDS:
+        parser.error(
+            f"{protocol_id} decides on a before/after skill-revision comparison; "
+            "use scripts/evals/compare-reviewer-revisions.py"
         )
     if args.compare_arms and not isinstance(protocol.get("arm_comparison"), dict):
         parser.error("selected protocol has no frozen arm-comparison contract")
@@ -1921,7 +2590,7 @@ def main() -> int:
         "stable_recall_gap_max",
         "stable_prediction_jaccard_min",
     }
-    if (
+    if protocol_id not in RUNNER.SPECIFICITY_PROTOCOL_IDS and (
         not isinstance(decision, dict)
         or decision.get("threshold_basis") != "point-estimate"
         or decision.get("requires_each_report_status") != "PASS"
@@ -1944,6 +2613,8 @@ def main() -> int:
         *(path.resolve() for path in RUNNER.skill_files(RUNNER.DEFAULT_SKILL_DIR)),
         (ROOT / "scripts/ci/lib/strict_json.py").resolve(),
         (ROOT / "scripts/evals/eval_security.py").resolve(),
+        *([adjudication_ledger_path.resolve()] if adjudication_ledger_path else []),
+        *([repository_walk_path.resolve()] if repository_walk_path else []),
     }
     if output_path in protected_output_paths:
         parser.error("comparison output must not overwrite a benchmark input")
@@ -1959,6 +2630,31 @@ def main() -> int:
     if report_sha256s_after != report_sha256s:
         parser.error("an input report changed while the comparison was running")
     metadata, all_cases = RUNNER.load_cases(snapshot_cases_path)
+    try:
+        RUNNER.validate_corpus_protocol_pairing(
+            metadata,
+            protocol,
+            RUNNER.corpus_digest(snapshot_cases_path, all_cases),
+        )
+    except ValueError as exc:
+        parser.error(str(exc))
+    if protocol_id in RUNNER.SPECIFICITY_PROTOCOL_IDS:
+        RUNNER.validate_specificity_cases(
+            all_cases, str(snapshot_cases_path), protocol, snapshot_cases_path,
+        )
+    if protocol_id in RUNNER.ADJUDICATED_SPECIFICITY_PROTOCOL_IDS:
+        RUNNER.validate_specificity_adjudication_ledger(
+            all_cases, snapshot_cases_path, protocol, adjudication_ledger_path,
+        )
+        ledger_sha256 = sha256_file(adjudication_ledger_path)
+        if any(report.get("adjudication_ledger_sha256") != ledger_sha256
+               for report in reports):
+            parser.error("report adjudication ledger digest does not match current ledger")
+    if protocol_id in {"reviewer-specificity-v3", "reviewer-specificity-v4"}:
+        RUNNER.validate_specificity_repository_walk(protocol, repository_walk_path)
+        walk_sha256 = sha256_file(repository_walk_path)
+        if any(report.get("repository_walk_sha256") != walk_sha256 for report in reports):
+            parser.error("report repository walk digest does not match current walk")
     selected_corpus_sha256 = RUNNER.corpus_digest(
         snapshot_cases_path,
         all_cases,
@@ -2008,7 +2704,7 @@ def main() -> int:
         ),
         "evidence_scope": args.evidence_scope,
         "release_eligible": False,
-        "protocol_id": protocol.get("protocol_id"),
+        "protocol_id": protocol_id,
         "protocol_sha256": protocol_sha256,
         "corpus_sha256": selected_corpus_sha256,
         "reports": [RUNNER.portable_host_path(path) for path in report_paths],
@@ -2021,6 +2717,7 @@ def main() -> int:
         ),
         **result,
     }
+    output.update(per_report_sections(protocol, reports))
     if output_path is not None:
         write_json_atomic(output_path, output)
     print(json.dumps(output, sort_keys=True))

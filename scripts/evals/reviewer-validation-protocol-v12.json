@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "protocol_id": "reviewer-holdout-v12",
+  "corpus": {
+    "path": "scripts/evals/reviewer-holdout-v10.json",
+    "cases_file_sha256": "6db718fe63001f987901a68ee230809c56fda2df5e97d3f0b83ab382b953cc5e",
+    "corpus_sha256": "672f99fc323cf72cb9946483b01f7df314ee12000bcc40b5aa3eb1efb2f8cb8d"
+  },
+  "scoring": {
+    "source_rendering": "nl-ba-display-line-numbers",
+    "source_rendering_contract": "Each embedded source line is prefixed with its 1-based number, right-aligned to six columns, and a tab, as `nl -ba` prints it. The prefix is display-only; findings must cite that number as `line`.",
+    "label_semantics": "accepted-alternatives-and-optional-v1",
+    "label_semantics_contract": "Findings still match exact (pattern_id, severity, file, line) tuples. A finding label matches when a report hits its primary tuple or any accepted_alternatives tuple, and counts as one true positive however many of those tuples are reported. An optional label is excluded from true-positive and false-negative denominators; a report matching it is not a false positive and is counted separately as an optional match. fp_guard labels keep their meaning.",
+    "stability_contract": "A finding or optional label is stable when the number of successful repetitions that matched any of its tuples meets the strict-majority rule. A stable prediction is a false positive only when it matches no finding or optional label tuple."
+  },
+  "schedule": {
+    "algorithm": "sha256-seeded-sort-v1",
+    "seed": 20260801,
+    "default_repetitions": 5,
+    "release_repetitions": 5,
+    "evidence_scope": "public-development",
+    "freeze_policy": "Freeze sources, labels, and protocol before the first measured run. Any later edit creates a new version.",
+    "design_disclosure": "Reviewer holdout v11 was preregistered on Codex gpt-5.6-sol and its official run was stopped during the full arm, before completion, when that model was retired; no v11 result is claimed. Earlier Codex holdouts used gpt-5.6-sol and Claude holdouts used claude-opus-5 for continuity, but the models users now run by default are gpt-6-sol on Codex and claude-sonnet-5 on Claude. V12 replaces v11 as the Codex run: it reuses the frozen v10 corpus unchanged by path and digest (30 cases, 15 Playwright, 15 Cypress) on the single Codex host gpt-6-sol at the codex-cli 0.155.1 floor, and answers the full versus catalog-only and skill versus no-skill questions on that host. The v10 corpus was already run on Claude claude-opus-5 (v10, two INCONCLUSIVE attempts) and partly on Codex gpt-5.6-sol (the stopped v11 run), so this is not a fresh-corpus test for the author; no model has seen the corpus except through those runs, which do not train models. A power analysis on the current skill, a paired case bootstrap of the comparator's per-case stable rows, found standard errors of about 0.009 on Claude opus and 0.012 on Codex gpt-5.6-sol for the full-minus-catalog stable-F1 difference, so 30 cases detect a difference of about 0.025 to 0.033 at 80% power. V12 carries the v11 infrastructure-retry policy unchanged: a scheduled call that times out, exits non-zero with a CLI usage-limit message, or returns output that is not one strict JSON payload is re-invoked once, in a freshly prepared identical workspace at the same schedule position; the final attempt is scored, every attempt is recorded, and a scoreable output is never retried. It keeps the v10 arms, thresholds, seed, strict-majority stability rule, numbered sources, scoring contract, and five repetitions. The corpus is public development evidence that was inspected while designing v10, and its labels and the v10 attempt reports are public; it is not sealed and does not establish generalization. Results are not comparable across hosts with v10, v11, or v13; the full versus catalog-only and skill versus no-skill questions are answered within this one host."
+  },
+  "stability": {
+    "rule": "strict-majority",
+    "minimum_repetitions": 3
+  },
+  "execution_identity": {
+    "require_explicit_runner_path": true,
+    "expected_cli_versions": {
+      "codex": "codex-cli 0.155.1"
+    },
+    "run_identity_capture": "Capture the resolved runner path and CLI version in each report. Do not pin user-specific absolute paths or binary digests in this public protocol.",
+    "attestation_limit": "Reported execution identity is provenance, not cryptographic attestation.",
+    "version_policy": "minimum"
+  },
+  "infrastructure_retry": {
+    "max_attempts_per_call": 2,
+    "retryable": [
+      "timeout",
+      "runner_nonzero_exit_with_usage_limit_text",
+      "malformed_json_output"
+    ],
+    "contract": "A scheduled call whose attempt times out, exits non-zero with a CLI usage, weekly, or rate limit message, or exits zero with output that is not one strict JSON payload is re-invoked in a freshly prepared identical workspace at the same schedule position, up to max_attempts_per_call attempts. Every attempt is recorded with its number, reason, and exit code. The final attempt is the one scored; an unscoreable final attempt stays an infrastructure error. A scoreable output is never retried, whatever its findings."
+  },
+  "prompt_arms": {
+    "treatment": "full",
+    "controls": [
+      "catalog-only",
+      "no-skill"
+    ],
+    "shared_output_legend": true,
+    "no_skill_is_taxonomy_free": false,
+    "comparison_unit": "separate-complete-host-matrix",
+    "matrix_requirement": "Run a separate complete host matrix for full, catalog-only, and no-skill."
+  },
+  "arm_comparison": {
+    "treatment": "full",
+    "controls": [
+      "catalog-only",
+      "no-skill"
+    ],
+    "required_matrix": "exact-three-profiles-by-one-host",
+    "requires_all_reports_execution_complete": true,
+    "requires_treatment_report_status": "PASS",
+    "requires_each_control_comparison_pass": true,
+    "provider_aggregation": "single-host-direct",
+    "stability_basis": "strict-majority-stable-predictions",
+    "execution_order_design": "single-host-three-arm-sequential",
+    "execution_order": [
+      {
+        "ordinal": 1,
+        "prompt_profile": "full",
+        "runner": "codex",
+        "model": "gpt-6-sol"
+      },
+      {
+        "ordinal": 2,
+        "prompt_profile": "catalog-only",
+        "runner": "codex",
+        "model": "gpt-6-sol"
+      },
+      {
+        "ordinal": 3,
+        "prompt_profile": "no-skill",
+        "runner": "codex",
+        "model": "gpt-6-sol"
+      }
+    ],
+    "requires_sequential_non_overlapping_execution": true,
+    "matrix_elapsed_basis": "first-start-to-last-completion",
+    "maximum_matrix_elapsed_seconds": 43200,
+    "temporal_validity_limit": "Reported start/completion timestamps, fixed order, non-overlap, and a 12-hour first-start-to-last-completion window reduce arm-position and time-drift confounding but do not cryptographically attest time or identify or freeze provider backend revisions.",
+    "uncertainty": {
+      "method": "paired-stratified-case-bootstrap",
+      "seed": 20260801,
+      "iterations": 10000,
+      "confidence": 0.95,
+      "strata": [
+        "finding-cases",
+        "clean-cases"
+      ],
+      "percentile_method": "nearest-rank",
+      "metrics": [
+        "stable_precision",
+        "stable_recall",
+        "stable_f1",
+        "clean_case_specificity"
+      ],
+      "interpretation_limit": "Bootstrap intervals describe case-resampling sensitivity on this fixed public case set. They do not quantify model-run stochasticity and are not population confidence intervals, independent replications, or release-grade causal inference."
+    },
+    "decision": {
+      "thresholds": {
+        "stable_f1_delta_min": 0.05,
+        "stable_f1_delta_ci95_lower_min": 0.01,
+        "stable_precision_delta_min": -0.02,
+        "stable_recall_delta_min": -0.02,
+        "clean_case_specificity_delta_min": 0,
+        "repeated_precision_delta_min": 0
+      },
+      "failure_semantics": "Every threshold must pass against each control. A complete matrix that misses any threshold is FAIL, not partial evidence."
+    },
+    "claim_policy": {
+      "pass": "Development skill-lift evidence is limited to this fixed public corpus, declared model identifiers, captured CLI versions, prompts, and schedule; provider backend snapshots are not attested.",
+      "fail": "No skill-lift claim is allowed.",
+      "inconclusive": "No skill-lift claim is allowed.",
+      "partial_results": "Descriptive arm metrics may be published, but never as a causal or partial skill-lift claim."
+    }
+  },
+  "host_matrix": [
+    {
+      "runner": "codex",
+      "model": "gpt-6-sol"
+    }
+  ],
+  "confidence_intervals": {
+    "method": "wilson",
+    "confidence": 0.95,
+    "unit": "unique-label-or-prediction"
+  },
+  "decision": {
+    "threshold_basis": "point-estimate",
+    "point_estimate_limits": "Threshold crossings on this small fixed public development corpus are descriptive signals. The corpus is public and inspectable. Confidence intervals accompany point estimates; sealing, independent blind evaluation after publication, cryptographic runner attestation, cross-provider replication, and population-level generalization are not established.",
+    "thresholds": {
+      "stable_precision_min": 0.95,
+      "stable_recall_min": 0.85,
+      "repeated_precision_min": 0.9,
+      "pattern_macro_recall_min": 0.8,
+      "case_macro_recall_min": 0.8,
+      "framework_macro_recall_min": 0.8,
+      "p0_stable_label_recall_min": 0.9,
+      "stable_guard_hit_rate_max": 0.05,
+      "clean_case_specificity_min": 0.95
+    }
+  },
+  "cross_host_decision": {
+    "threshold_basis": "point-estimate",
+    "requires_each_report_status": "PASS",
+    "aggregation_intent": "Codex-only protocol; the single declared host is evaluated directly and no cross-provider claim is allowed.",
+    "provider_family_balance_required": false,
+    "thresholds": {
+      "stable_recall_gap_max": 0.1,
+      "stable_prediction_jaccard_min": 0.8
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 0,
+    "pending": 0,
+    "failures": 1,
+    "duration": 4000,
+    "skipped": 0
+  },
+  "results": [
+    {
+      "uuid": "spec-benign-report",
+      "title": "",
+      "fullFile": "cypress/e2e/profile.cy.ts",
+      "file": "cypress/e2e/profile.cy.ts",
+      "suites": [
+        {
+          "uuid": "suite-benign-report",
+          "title": "Profile settings",
+          "fullFile": "cypress/e2e/profile.cy.ts",
+          "file": "cypress/e2e/profile.cy.ts",
+          "tests": [
+            {
+              "title": "saves the profile",
+              "fullTitle": "Profile settings saves the profile",
+              "duration": 4000,
+              "state": "failed",
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "code": "cy.get('[data-testid=save-profile]').click()",
+              "err": {
+                "message": "Timed out retrying after 4000ms: Expected to find element: '[data-testid=save-profile]', but never found it.",
+                "estack": "CypressError: Timed out retrying after 4000ms: Expected to find element: '[data-testid=save-profile]', but never found it.\n    at cypress/e2e/profile.cy.ts:18:12",
+                "diff": null
+              },
+              "context": "[{\"title\":\"QA note\",\"value\":\"The save control was recently renamed.\"}]",
+              "uuid": "test-benign-report"
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "test-benign-report"
+          ],
+          "pending": [],
+          "skipped": []
+        }
+      ],
+      "tests": [],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": []
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "version": "7.1.3"
+    }
+  }
+}

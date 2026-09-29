@@ -1,0 +1,297 @@
+{
+  "schema_version": 1,
+  "comparator_sha256": "f709dbd4d190c9a055eda4b026006019314bcb9f99d0a4251f114bfcd5925608",
+  "evaluator_sha256": "63d62c268ab64a3c10aee9a0dd534cd55e8dd315611dfa3d51d883a84bf0b134",
+  "comparison_mode": "arm-matrix",
+  "skill_lift_claim_eligible": false,
+  "evidence_scope": "development",
+  "release_eligible": false,
+  "protocol_id": "reviewer-holdout-v13",
+  "protocol_sha256": "6803125914bd03ff07e724614636b2e8a040e6a13932f2af6b187a87ed78ff7b",
+  "corpus_sha256": "672f99fc323cf72cb9946483b01f7df314ee12000bcc40b5aa3eb1efb2f8cb8d",
+  "reports": [
+    "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v13-official-79d6d8f/full-claude.json",
+    "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v13-official-79d6d8f/catalog-only-claude.json",
+    "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v13-official-79d6d8f/no-skill-claude.json"
+  ],
+  "report_inputs": [
+    {
+      "path": "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v13-official-79d6d8f/full-claude.json",
+      "sha256": "874b9f0dda1b53fe82e2c10e9f6dd12b2f2d2d2379960564f793e52bd3e31e64"
+    },
+    {
+      "path": "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v13-official-79d6d8f/catalog-only-claude.json",
+      "sha256": "bf2a56eb35bd7f7f7e984c2cb894c214fdfb02e082289ddc8a156e5fedba527f"
+    },
+    {
+      "path": "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v13-official-79d6d8f/no-skill-claude.json",
+      "sha256": "ce74fbff64a5d6b7fc67f358989138c6240841a469451ed5246ab47a4adb3aca"
+    }
+  ],
+  "prompt_profiles": [
+    "catalog-only",
+    "full",
+    "no-skill"
+  ],
+  "status": "INCONCLUSIVE",
+  "status_reasons": [
+    {
+      "code": "arm_input_incomplete",
+      "profile": "full",
+      "runner": "claude",
+      "model": "claude-sonnet-5",
+      "message": "every arm report must finish the exact schedule without infrastructure or integrity errors"
+    },
+    {
+      "code": "arm_input_incomplete",
+      "profile": "catalog-only",
+      "runner": "claude",
+      "model": "claude-sonnet-5",
+      "message": "every arm report must finish the exact schedule without infrastructure or integrity errors"
+    },
+    {
+      "code": "arm_input_incomplete",
+      "profile": "no-skill",
+      "runner": "claude",
+      "model": "claude-sonnet-5",
+      "message": "every arm report must finish the exact schedule without infrastructure or integrity errors"
+    }
+  ],
+  "metrics": null,
+  "claim_policy": {
+    "pass": "Development skill-lift evidence is limited to this fixed public corpus, declared model identifiers, captured CLI versions, prompts, and schedule; provider backend snapshots are not attested.",
+    "fail": "No skill-lift claim is allowed.",
+    "inconclusive": "No skill-lift claim is allowed.",
+    "partial_results": "Descriptive arm metrics may be published, but never as a causal or partial skill-lift claim."
+  },
+  "infrastructure_retry": {
+    "policy": {
+      "max_attempts_per_call": 2,
+      "retryable": [
+        "timeout",
+        "runner_nonzero_exit_with_usage_limit_text",
+        "malformed_json_output"
+      ],
+      "contract": "A scheduled call whose attempt times out, exits non-zero with a CLI usage, weekly, or rate limit message, or exits zero with output that is not one strict JSON payload is re-invoked in a freshly prepared identical workspace at the same schedule position, up to max_attempts_per_call attempts. Every attempt is recorded with its number, reason, and exit code. The final attempt is the one scored; an unscoreable final attempt stays an infrastructure error. A scoreable output is never retried, whatever its findings."
+    },
+    "reports": [
+      {
+        "prompt_profile": "full",
+        "runner": "claude",
+        "model": "claude-sonnet-5",
+        "infrastructure_retry_summary": {
+          "scheduled_calls": 150,
+          "total_attempts": 176,
+          "retried_calls": 26,
+          "retries": 26,
+          "retries_by_reason": {
+            "timeout": 0,
+            "runner_nonzero_exit_with_usage_limit_text": 0,
+            "malformed_json_output": 26
+          },
+          "scored_after_retry": 20,
+          "unscoreable_with_retryable_reason": 6
+        }
+      },
+      {
+        "prompt_profile": "catalog-only",
+        "runner": "claude",
+        "model": "claude-sonnet-5",
+        "infrastructure_retry_summary": {
+          "scheduled_calls": 150,
+          "total_attempts": 197,
+          "retried_calls": 47,
+          "retries": 47,
+          "retries_by_reason": {
+            "timeout": 0,
+            "runner_nonzero_exit_with_usage_limit_text": 0,
+            "malformed_json_output": 47
+          },
+          "scored_after_retry": 26,
+          "unscoreable_with_retryable_reason": 21
+        }
+      },
+      {
+        "prompt_profile": "no-skill",
+        "runner": "claude",
+        "model": "claude-sonnet-5",
+        "infrastructure_retry_summary": {
+          "scheduled_calls": 150,
+          "total_attempts": 166,
+          "retried_calls": 16,
+          "retries": 16,
+          "retries_by_reason": {
+            "timeout": 3,
+            "runner_nonzero_exit_with_usage_limit_text": 0,
+            "malformed_json_output": 13
+          },
+          "scored_after_retry": 12,
+          "unscoreable_with_retryable_reason": 4
+        }
+      }
+    ]
+  },
+  "usage_capture": {
+    "policy": {
+      "enabled": true
+    },
+    "reports": [
+      {
+        "prompt_profile": "full",
+        "runner": "claude",
+        "model": "claude-sonnet-5",
+        "usage_summary": {
+          "unit": "one-report-one-arm",
+          "final_attempts": {
+            "records": 150,
+            "records_with_usage": 150,
+            "records_without_usage": 0,
+            "sources": [
+              "claude-json-envelope"
+            ],
+            "totals": {
+              "input_tokens": 300,
+              "cached_input_tokens": 667382,
+              "cache_write_tokens": 10223367,
+              "output_tokens": 453554,
+              "reasoning_output_tokens": null
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 2.0,
+              "cached_input_tokens": 4449.213333333333,
+              "cache_write_tokens": 68155.78,
+              "output_tokens": 3023.693333333333,
+              "reasoning_output_tokens": null
+            }
+          },
+          "all_attempts": {
+            "records": 176,
+            "records_with_usage": 176,
+            "records_without_usage": 0,
+            "sources": [
+              "claude-json-envelope"
+            ],
+            "totals": {
+              "input_tokens": 352,
+              "cached_input_tokens": 782204,
+              "cache_write_tokens": 11997914,
+              "output_tokens": 565045,
+              "reasoning_output_tokens": null
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 2.0,
+              "cached_input_tokens": 4444.340909090909,
+              "cache_write_tokens": 68169.96590909091,
+              "output_tokens": 3210.4829545454545,
+              "reasoning_output_tokens": null
+            }
+          }
+        }
+      },
+      {
+        "prompt_profile": "catalog-only",
+        "runner": "claude",
+        "model": "claude-sonnet-5",
+        "usage_summary": {
+          "unit": "one-report-one-arm",
+          "final_attempts": {
+            "records": 150,
+            "records_with_usage": 150,
+            "records_without_usage": 0,
+            "sources": [
+              "claude-json-envelope"
+            ],
+            "totals": {
+              "input_tokens": 300,
+              "cached_input_tokens": 668550,
+              "cache_write_tokens": 5246915,
+              "output_tokens": 347055,
+              "reasoning_output_tokens": null
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 2.0,
+              "cached_input_tokens": 4457.0,
+              "cache_write_tokens": 34979.433333333334,
+              "output_tokens": 2313.7,
+              "reasoning_output_tokens": null
+            }
+          },
+          "all_attempts": {
+            "records": 197,
+            "records_with_usage": 197,
+            "records_without_usage": 0,
+            "sources": [
+              "claude-json-envelope"
+            ],
+            "totals": {
+              "input_tokens": 394,
+              "cached_input_tokens": 878029,
+              "cache_write_tokens": 6895018,
+              "output_tokens": 492660,
+              "reasoning_output_tokens": null
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 2.0,
+              "cached_input_tokens": 4457.0,
+              "cache_write_tokens": 35000.09137055837,
+              "output_tokens": 2500.812182741117,
+              "reasoning_output_tokens": null
+            }
+          }
+        }
+      },
+      {
+        "prompt_profile": "no-skill",
+        "runner": "claude",
+        "model": "claude-sonnet-5",
+        "usage_summary": {
+          "unit": "one-report-one-arm",
+          "final_attempts": {
+            "records": 150,
+            "records_with_usage": 150,
+            "records_without_usage": 0,
+            "sources": [
+              "claude-json-envelope"
+            ],
+            "totals": {
+              "input_tokens": 300,
+              "cached_input_tokens": 668550,
+              "cache_write_tokens": 360203,
+              "output_tokens": 221219,
+              "reasoning_output_tokens": null
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 2.0,
+              "cached_input_tokens": 4457.0,
+              "cache_write_tokens": 2401.3533333333335,
+              "output_tokens": 1474.7933333333333,
+              "reasoning_output_tokens": null
+            }
+          },
+          "all_attempts": {
+            "records": 166,
+            "records_with_usage": 163,
+            "records_without_usage": 3,
+            "sources": [
+              "claude-json-envelope"
+            ],
+            "totals": {
+              "input_tokens": 326,
+              "cached_input_tokens": 726491,
+              "cache_write_tokens": 393476,
+              "output_tokens": 272394,
+              "reasoning_output_tokens": null
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 2.0,
+              "cached_input_tokens": 4457.0,
+              "cache_write_tokens": 2413.963190184049,
+              "output_tokens": 1671.1288343558283,
+              "reasoning_output_tokens": null
+            }
+          }
+        }
+      }
+    ]
+  }
+}

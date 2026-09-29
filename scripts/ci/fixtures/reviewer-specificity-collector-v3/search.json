@@ -1,0 +1,17 @@
+{
+  "total_count": 1,
+  "incomplete_results": false,
+  "items": [{
+    "id": 1,
+    "full_name": "acme/example",
+    "html_url": "https://github.com/acme/example",
+    "stargazers_count": 42,
+    "default_branch": "main",
+    "private": false,
+    "fork": false,
+    "archived": false,
+    "visibility": "public",
+    "license": {"spdx_id": "MIT"},
+    "url": "https://api.github.com/repos/acme/example"
+  }]
+}

@@ -1,0 +1,71 @@
+{
+  "labeler": "gpt-6-luna",
+  "cases": {
+    "v20-pw-01": [
+      { "pattern_id": "#1", "severity": "P1", "file": "tests/v20-pw-01.spec.ts", "line": 3, "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence." }
+    ],
+    "v20-pw-02": [
+      { "pattern_id": "#2", "severity": "P1", "file": "tests/v20-pw-02.spec.ts", "line": 6, "rule": "verify both the restored state AND the dismissed state." }
+    ],
+    "v20-pw-03": [
+      { "pattern_id": "#2", "severity": "P1", "file": "tests/v20-pw-03.spec.ts", "line": 5, "rule": "verify both the restored state AND the dismissed state." }
+    ],
+    "v20-pw-04": [
+      { "pattern_id": "#2", "severity": "P1", "file": "tests/v20-pw-04.spec.ts", "line": 6, "rule": "Test acts but doesn't verify the final expected state." }
+    ],
+    "v20-pw-05": [
+      { "pattern_id": "#2", "severity": "P0", "file": "tests/v20-pw-05.spec.ts", "line": 6, "rule": "Test acts but doesn't verify the final expected state." }
+    ],
+    "v20-pw-06": [
+      { "pattern_id": "#2", "severity": "P0", "file": "tests/v20-pw-06.spec.ts", "line": 6, "rule": "Test acts but doesn't verify the final expected state." }
+    ],
+    "v20-pw-07": [
+      { "pattern_id": "#2", "severity": "P0", "file": "tests/v20-pw-07.spec.ts", "line": 6, "rule": "Test acts but doesn't verify the final expected state." }
+    ],
+    "v20-pw-08": [
+      { "pattern_id": "#1", "severity": "P1", "file": "tests/v20-pw-08.spec.ts", "line": 3, "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence." }
+    ],
+    "v20-pw-09": [
+      { "pattern_id": "#1", "severity": "P1", "file": "tests/v20-pw-09.spec.ts", "line": 3, "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence." }
+    ],
+    "v20-pw-10": [
+      { "pattern_id": "#1", "severity": "P0", "file": "tests/v20-pw-10.spec.ts", "line": 3, "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence." }
+    ],
+    "v20-pw-11": [
+      { "pattern_id": "#1", "severity": "P0", "file": "tests/v20-pw-11.spec.ts", "line": 3, "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence." }
+    ],
+    "v20-pw-12": [],
+    "v20-cy-01": [
+      { "pattern_id": "#1", "severity": "P1", "file": "tests/v20-cy-01.cy.ts", "line": 2, "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence." }
+    ],
+    "v20-cy-02": [
+      { "pattern_id": "#2", "severity": "P1", "file": "tests/v20-cy-02.cy.ts", "line": 5, "rule": "verify both the restored state AND the dismissed state." }
+    ],
+    "v20-cy-03": [
+      { "pattern_id": "#2", "severity": "P1", "file": "tests/v20-cy-03.cy.ts", "line": 4, "rule": "verify both the restored state AND the dismissed state." }
+    ],
+    "v20-cy-04": [
+      { "pattern_id": "#2", "severity": "P1", "file": "tests/v20-cy-04.cy.ts", "line": 4, "rule": "Test acts but doesn't verify the final expected state." }
+    ],
+    "v20-cy-05": [
+      { "pattern_id": "#2", "severity": "P0", "file": "tests/v20-cy-05.cy.ts", "line": 5, "rule": "Test acts but doesn't verify the final expected state." }
+    ],
+    "v20-cy-06": [
+      { "pattern_id": "#2", "severity": "P0", "file": "tests/v20-cy-06.cy.ts", "line": 5, "rule": "Test acts but doesn't verify the final expected state." }
+    ],
+    "v20-cy-07": [
+      { "pattern_id": "#1", "severity": "P1", "file": "tests/v20-cy-07.cy.ts", "line": 2, "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence." }
+    ],
+    "v20-cy-08": [
+      { "pattern_id": "#1", "severity": "P1", "file": "tests/v20-cy-08.cy.ts", "line": 2, "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence." }
+    ],
+    "v20-cy-09": [
+      { "pattern_id": "#1", "severity": "P1", "file": "tests/v20-cy-09.cy.ts", "line": 2, "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence." }
+    ],
+    "v20-cy-10": [
+      { "pattern_id": "#1", "severity": "P0", "file": "tests/v20-cy-10.cy.ts", "line": 2, "rule": "Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence." }
+    ],
+    "v20-cy-11": [],
+    "v20-cy-12": []
+  }
+}

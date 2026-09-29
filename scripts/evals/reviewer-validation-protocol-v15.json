@@ -1,0 +1,264 @@
+{
+  "schema_version": 1,
+  "protocol_id": "reviewer-holdout-v15",
+  "corpus": {
+    "path": "scripts/evals/reviewer-holdout-v10.json",
+    "cases_file_sha256": "6db718fe63001f987901a68ee230809c56fda2df5e97d3f0b83ab382b953cc5e",
+    "corpus_sha256": "672f99fc323cf72cb9946483b01f7df314ee12000bcc40b5aa3eb1efb2f8cb8d"
+  },
+  "scoring": {
+    "source_rendering": "nl-ba-display-line-numbers",
+    "source_rendering_contract": "Each embedded source line is prefixed with its 1-based number, right-aligned to six columns, and a tab, as `nl -ba` prints it. The prefix is display-only; findings must cite that number as `line`.",
+    "label_semantics": "accepted-alternatives-and-optional-v1",
+    "label_semantics_contract": "Findings still match exact (pattern_id, severity, file, line) tuples. A finding label matches when a report hits its primary tuple or any accepted_alternatives tuple, and counts as one true positive however many of those tuples are reported. An optional label is excluded from true-positive and false-negative denominators; a report matching it is not a false positive and is counted separately as an optional match. fp_guard labels keep their meaning.",
+    "stability_contract": "A finding or optional label is stable when the number of successful repetitions that matched any of its tuples meets the strict-majority rule. A stable prediction is a false positive only when it matches no finding or optional label tuple."
+  },
+  "schedule": {
+    "algorithm": "sha256-seeded-sort-v1",
+    "seed": 20260801,
+    "default_repetitions": 5,
+    "release_repetitions": 5,
+    "evidence_scope": "public-development",
+    "freeze_policy": "Freeze sources, labels, and protocol before the first measured run. Any later edit creates a new version.",
+    "design_disclosure": "Reviewer holdout v15 is v13 plus one preregistered enforced output schema, and it carries no output normalization. V13 ran Claude claude-sonnet-5 on the frozen v10 corpus with the v11 infrastructure-retry policy and usage capture, and judged every answer with the strict single-JSON-payload parser. claude-sonnet-5 often wrapped its answer in one Markdown code fence; the retry policy re-invoked the call once, and the model fenced its answer again, so 6 of 150 full-arm calls, 21 of 150 catalog-only calls, and 4 of 150 no-skill calls ended unscoreable. No arm may have unscoreable runs, so v13 ended INCONCLUSIVE: no v13 skill-lift result is claimed, and v13's results are described separately in its own record. V14 answers that with a preregistered single-fence normalization applied after the answer arrives; v15 removes the failure class at the source instead. The output_schema block was fixed in this protocol before any v15 call. The runner passes its JSON schema to the host CLI's native structured-output option (Claude Code --output-format json with --json-schema; Codex --output-schema), and the model answer is Claude's structured_output object, serialized as compact JSON (Codex: the final agent message). That answer goes through the unchanged strict parser and findings validator; no fence or other normalization is applied, and a missing or non-object structured_output is malformed output under the retry policy. The schema admits an object with exactly a findings array of objects with exactly pattern_id, severity, file, and line; pattern_id is limited to the output-legend vocabulary every arm's prompt already shows, which covers every v10 corpus label; severity is P0, P1, or P2; line is an integer of at least 1; file is any string. The schema applies identically to every arm (full, catalog-only, and no-skill), the prompt text is v13's unchanged, and each report records the schema and its schema_sha256. The schema constrains the shape of an answer, never which findings the model reports. Claude Code implements structured output through an internal tool call; the model-callable tool surface stays empty. The Claude Code floor is raised to 2.1.283, the build whose --json-schema behavior was probed before this protocol was frozen. Everything else is v13's: the single Claude host claude-sonnet-5 with claude_permission_mode off, usage capture, the infrastructure-retry policy unchanged (a scoreable output is never retried), the frozen v10 corpus reused unchanged by path and digest (30 cases, 15 Playwright, 15 Cypress), and the v10 arms, thresholds, seed, strict-majority stability rule, numbered sources, scoring contract, and five repetitions. The corpus is public development evidence that was inspected while designing v10, and its labels and the v10 attempt reports are public; it is not sealed and does not establish generalization. It is not a fresh-corpus test for the author: it already ran on Claude claude-opus-5 (v10), partly on Codex gpt-5.6-sol (the stopped v11 run), on Codex gpt-6-sol (v12), and on claude-sonnet-5 under v13; those runs do not train models. Results are not comparable across hosts with v10, v11, or v12, and v13's and v14's reports are not rescored under this protocol; the full versus catalog-only and skill versus no-skill questions are answered within this one host. Usage is descriptive cost evidence only and enters no threshold or decision."
+  },
+  "stability": {
+    "rule": "strict-majority",
+    "minimum_repetitions": 3
+  },
+  "execution_identity": {
+    "require_explicit_runner_path": true,
+    "expected_cli_versions": {
+      "claude": "Claude Code 2.1.283"
+    },
+    "run_identity_capture": "Capture the resolved runner path and CLI version in each report. Do not pin user-specific absolute paths or binary digests in this public protocol.",
+    "attestation_limit": "Reported execution identity is provenance, not cryptographic attestation.",
+    "version_policy": "minimum",
+    "claude_permission_mode": "off"
+  },
+  "infrastructure_retry": {
+    "max_attempts_per_call": 2,
+    "retryable": [
+      "timeout",
+      "runner_nonzero_exit_with_usage_limit_text",
+      "malformed_json_output"
+    ],
+    "contract": "A scheduled call whose attempt times out, exits non-zero with a CLI usage, weekly, or rate limit message, or exits zero with output that is not one strict JSON payload is re-invoked in a freshly prepared identical workspace at the same schedule position, up to max_attempts_per_call attempts. Every attempt is recorded with its number, reason, and exit code. The final attempt is the one scored; an unscoreable final attempt stays an infrastructure error. A scoreable output is never retried, whatever its findings."
+  },
+  "usage_capture": {
+    "enabled": true
+  },
+  "output_schema": {
+    "mode": "enforced",
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "findings"
+      ],
+      "properties": {
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pattern_id",
+              "severity",
+              "file",
+              "line"
+            ],
+            "properties": {
+              "pattern_id": {
+                "type": "string",
+                "enum": [
+                  "#1",
+                  "#10",
+                  "#10a",
+                  "#10b",
+                  "#10c",
+                  "#10d",
+                  "#10e",
+                  "#10f",
+                  "#11",
+                  "#11c",
+                  "#12",
+                  "#13",
+                  "#14",
+                  "#15",
+                  "#16",
+                  "#17",
+                  "#18",
+                  "#19",
+                  "#2",
+                  "#20",
+                  "#21",
+                  "#22",
+                  "#23",
+                  "#3",
+                  "#3b",
+                  "#4a",
+                  "#4b",
+                  "#4c-4e",
+                  "#4f",
+                  "#4g",
+                  "#4h",
+                  "#4i",
+                  "#4j",
+                  "#4k",
+                  "#5a",
+                  "#5b",
+                  "#6",
+                  "#7",
+                  "#8",
+                  "#8a",
+                  "#8b",
+                  "#9",
+                  "#9b",
+                  "#9c"
+                ]
+              },
+              "severity": {
+                "type": "string",
+                "enum": [
+                  "P0",
+                  "P1",
+                  "P2"
+                ]
+              },
+              "file": {
+                "type": "string"
+              },
+              "line": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "schema_sha256": "9bfd806c73c083a2b8af13a2199523651567d4fe4442c392c09174a122139aa3",
+    "contract": "The runner passes the schema, serialized as compact sorted-key JSON whose sha256 is schema_sha256, to the host CLI's native structured-output option: Claude Code with --output-format json and --json-schema, Codex with --output-schema. The model answer is Claude's structured_output object, serialized as compact JSON, or Codex's final agent message. That answer then goes through the unchanged strict single-JSON-payload parser and findings validator. No fence or other output normalization is applied. A Claude result without an object structured_output, or an answer the strict parser refuses, is malformed output under the infrastructure-retry policy. The pattern_id enum is the output-legend vocabulary shown to every arm, the prompt is unchanged, and the schema applies identically to every arm."
+  },
+  "prompt_arms": {
+    "treatment": "full",
+    "controls": [
+      "catalog-only",
+      "no-skill"
+    ],
+    "shared_output_legend": true,
+    "no_skill_is_taxonomy_free": false,
+    "comparison_unit": "separate-complete-host-matrix",
+    "matrix_requirement": "Run a separate complete host matrix for full, catalog-only, and no-skill."
+  },
+  "arm_comparison": {
+    "treatment": "full",
+    "controls": [
+      "catalog-only",
+      "no-skill"
+    ],
+    "required_matrix": "exact-three-profiles-by-one-host",
+    "requires_all_reports_execution_complete": true,
+    "requires_treatment_report_status": "PASS",
+    "requires_each_control_comparison_pass": true,
+    "provider_aggregation": "single-host-direct",
+    "stability_basis": "strict-majority-stable-predictions",
+    "execution_order_design": "single-host-three-arm-sequential",
+    "execution_order": [
+      {
+        "ordinal": 1,
+        "prompt_profile": "full",
+        "runner": "claude",
+        "model": "claude-sonnet-5"
+      },
+      {
+        "ordinal": 2,
+        "prompt_profile": "catalog-only",
+        "runner": "claude",
+        "model": "claude-sonnet-5"
+      },
+      {
+        "ordinal": 3,
+        "prompt_profile": "no-skill",
+        "runner": "claude",
+        "model": "claude-sonnet-5"
+      }
+    ],
+    "requires_sequential_non_overlapping_execution": true,
+    "matrix_elapsed_basis": "first-start-to-last-completion",
+    "maximum_matrix_elapsed_seconds": 43200,
+    "temporal_validity_limit": "Reported start/completion timestamps, fixed order, non-overlap, and a 12-hour first-start-to-last-completion window reduce arm-position and time-drift confounding but do not cryptographically attest time or identify or freeze provider backend revisions.",
+    "uncertainty": {
+      "method": "paired-stratified-case-bootstrap",
+      "seed": 20260801,
+      "iterations": 10000,
+      "confidence": 0.95,
+      "strata": [
+        "finding-cases",
+        "clean-cases"
+      ],
+      "percentile_method": "nearest-rank",
+      "metrics": [
+        "stable_precision",
+        "stable_recall",
+        "stable_f1",
+        "clean_case_specificity"
+      ],
+      "interpretation_limit": "Bootstrap intervals describe case-resampling sensitivity on this fixed public case set. They do not quantify model-run stochasticity and are not population confidence intervals, independent replications, or release-grade causal inference."
+    },
+    "decision": {
+      "thresholds": {
+        "stable_f1_delta_min": 0.05,
+        "stable_f1_delta_ci95_lower_min": 0.01,
+        "stable_precision_delta_min": -0.02,
+        "stable_recall_delta_min": -0.02,
+        "clean_case_specificity_delta_min": 0,
+        "repeated_precision_delta_min": 0
+      },
+      "failure_semantics": "Every threshold must pass against each control. A complete matrix that misses any threshold is FAIL, not partial evidence."
+    },
+    "claim_policy": {
+      "pass": "Development skill-lift evidence is limited to this fixed public corpus, declared model identifiers, captured CLI versions, prompts, and schedule; provider backend snapshots are not attested.",
+      "fail": "No skill-lift claim is allowed.",
+      "inconclusive": "No skill-lift claim is allowed.",
+      "partial_results": "Descriptive arm metrics may be published, but never as a causal or partial skill-lift claim."
+    }
+  },
+  "host_matrix": [
+    {
+      "runner": "claude",
+      "model": "claude-sonnet-5"
+    }
+  ],
+  "confidence_intervals": {
+    "method": "wilson",
+    "confidence": 0.95,
+    "unit": "unique-label-or-prediction"
+  },
+  "decision": {
+    "threshold_basis": "point-estimate",
+    "point_estimate_limits": "Threshold crossings on this small fixed public development corpus are descriptive signals. The corpus is public and inspectable. Confidence intervals accompany point estimates; sealing, independent blind evaluation after publication, cryptographic runner attestation, cross-provider replication, and population-level generalization are not established.",
+    "thresholds": {
+      "stable_precision_min": 0.95,
+      "stable_recall_min": 0.85,
+      "repeated_precision_min": 0.9,
+      "pattern_macro_recall_min": 0.8,
+      "case_macro_recall_min": 0.8,
+      "framework_macro_recall_min": 0.8,
+      "p0_stable_label_recall_min": 0.9,
+      "stable_guard_hit_rate_max": 0.05,
+      "clean_case_specificity_min": 0.95
+    }
+  },
+  "cross_host_decision": {
+    "threshold_basis": "point-estimate",
+    "requires_each_report_status": "PASS",
+    "aggregation_intent": "Single-host Claude protocol; the single declared host is evaluated directly and no cross-provider claim is allowed.",
+    "provider_family_balance_required": false,
+    "thresholds": {
+      "stable_recall_gap_max": 0.1,
+      "stable_prediction_jaccard_min": 0.8
+    }
+  }
+}

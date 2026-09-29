@@ -1,0 +1,373 @@
+{
+ "labeler": "claude-subagent",
+ "cases": {
+  "v17-pw-01": [
+   {
+    "pattern_id": "#1",
+    "severity": "P1",
+    "file": "tests/estuary.spec.ts",
+    "line": 2,
+    "rule": "#1: one promised outcome (height) verified, tide phase unchecked -> P1 at title"
+   },
+   {
+    "pattern_id": "#1",
+    "severity": "P0",
+    "file": "tests/estuary.spec.ts",
+    "line": 6,
+    "rule": "#1: URL check observes no promised noun -> P0 at title"
+   }
+  ],
+  "v17-pw-02": [
+   {
+    "pattern_id": "#23",
+    "severity": "P0",
+    "file": "tests/fixtures/bulbs.ts",
+    "line": 2,
+    "rule": "#23: sprouted:false fails filter guard; toHaveCount(0) passes for wrong reason -> P0 at fixture field"
+   },
+   {
+    "pattern_id": "#4i",
+    "severity": "P1",
+    "file": "tests/bloom.spec.ts",
+    "line": 7,
+    "rule": "#4i: sprout locator never proven able to match, no valid positive counterpart"
+   }
+  ],
+  "v17-pw-03": [
+   {
+    "pattern_id": "#5a",
+    "severity": "P0",
+    "file": "tests/meteor.spec.ts",
+    "line": 5,
+    "rule": "#5a: only promised-outcome assertion gated by isVisible; test 2 action-only branch skipped"
+   }
+  ],
+  "v17-pw-04": [
+   {
+    "pattern_id": "#3",
+    "severity": "P0",
+    "file": "tests/support/compass.ts",
+    "line": 4,
+    "rule": "#3: helper try/catch swallows the only assertion; anchor protected assertion"
+   }
+  ],
+  "v17-pw-05": [
+   {
+    "pattern_id": "#1",
+    "severity": "P0",
+    "file": "tests/kiln.spec.ts",
+    "line": 2,
+    "rule": "#1: constant assertion observes no promised outcome -> P0 at title"
+   },
+   {
+    "pattern_id": "#4a",
+    "severity": "P0",
+    "file": "tests/kiln.spec.ts",
+    "line": 5,
+    "rule": "#4a: bound on local constant no product state can violate"
+   },
+   {
+    "pattern_id": "#4c-4e",
+    "severity": "P1",
+    "file": "tests/kiln.spec.ts",
+    "line": 9,
+    "rule": "#4c-4e: one-shot isVisible read on Locator"
+   },
+   {
+    "pattern_id": "#4f",
+    "severity": "P0",
+    "file": "tests/kiln.spec.ts",
+    "line": 13,
+    "rule": "#4f (+#6 consolidated): `|| page.locator` makes toBeTruthy always pass"
+   }
+  ],
+  "v17-pw-06": [
+   {
+    "pattern_id": "#10a",
+    "severity": "P1",
+    "file": "pages/MineralShelf.ts",
+    "line": 4,
+    "rule": "#10a: nth(1) in POM, method name not positional; .first() at line 5 exempt via adjacent toHaveCount(1)"
+   }
+  ],
+  "v17-pw-07": [
+   {
+    "pattern_id": "#16",
+    "severity": "P1",
+    "file": "tests/aurora.spec.ts",
+    "line": 4,
+    "rule": "#16: unawaited Locator click"
+   },
+   {
+    "pattern_id": "#15",
+    "severity": "P1",
+    "file": "tests/aurora.spec.ts",
+    "line": 5,
+    "rule": "#15: unawaited web-first toBeVisible"
+   }
+  ],
+  "v17-pw-08": [],
+  "v17-pw-09": [
+   {
+    "pattern_id": "#20",
+    "severity": "P1",
+    "file": "tests/tag-forge.spec.ts",
+    "line": 5,
+    "rule": "#20: POST to persistent shared tagging service, unstubbed; anchor action"
+   },
+   {
+    "pattern_id": "#22",
+    "severity": "P1",
+    "file": "tests/tag-forge.spec.ts",
+    "line": 5,
+    "rule": "#22: 'Tag queued' set optimistically before fetch, no request proof; anchor action"
+   }
+  ],
+  "v17-pw-10": [
+   {
+    "pattern_id": "#22",
+    "severity": "P1",
+    "file": "tests/star-pin.spec.ts",
+    "line": 4,
+    "rule": "#22: title promises server persistence; aria-pressed optimistic; no request/reload proof"
+   }
+  ],
+  "v17-pw-11": [
+   {
+    "pattern_id": "#8a",
+    "severity": "P0",
+    "file": "tests/sundial.spec.ts",
+    "line": 4,
+    "rule": "#8a: dangling locator is the test's only verification; isVisible at 9 skipped (followed by action)"
+   }
+  ],
+  "v17-pw-12": [
+   {
+    "pattern_id": "#12",
+    "severity": "P0",
+    "file": "tests/atlas.spec.ts",
+    "line": 3,
+    "rule": "#12: protected route, no auth in config, login surface also renders Welcome heading; anchor navigation"
+   }
+  ],
+  "v17-pw-13": [
+   {
+    "pattern_id": "#19",
+    "severity": "P1",
+    "file": "tests/support/visits.ts",
+    "line": 1,
+    "rule": "#19: module-level const Set mutated by helper; src/ app file not in scope"
+   }
+  ],
+  "v17-pw-14": [],
+  "v17-pw-15": [
+   {
+    "pattern_id": "#4j",
+    "severity": "P1",
+    "file": "tests/chimes.spec.ts",
+    "line": 4,
+    "rule": "#4j: role-only '- button' while title promises the control name"
+   },
+   {
+    "pattern_id": "#4k",
+    "severity": "P1",
+    "file": "tests/chimes.spec.ts",
+    "line": 8,
+    "rule": "#4k: only assertions in loop over unproven .all() collection"
+   }
+  ],
+  "v17-cy-01": [
+   {
+    "pattern_id": "#1",
+    "severity": "P1",
+    "file": "cypress/e2e/salt-marsh.cy.ts",
+    "line": 2,
+    "rule": "#1: oxygen verified, turbidity unchecked -> P1"
+   },
+   {
+    "pattern_id": "#1",
+    "severity": "P0",
+    "file": "cypress/e2e/salt-marsh.cy.ts",
+    "line": 6,
+    "rule": "#1: URL check observes no promised noun -> P0"
+   }
+  ],
+  "v17-cy-02": [
+   {
+    "pattern_id": "#23",
+    "severity": "P2",
+    "file": "cypress/fixtures/seed-packets.json",
+    "line": 2,
+    "rule": "#23: viable:false fails filter guard; positive assertion fails (usual P2)"
+   }
+  ],
+  "v17-cy-03": [
+   {
+    "pattern_id": "#3b",
+    "severity": "P0",
+    "file": "cypress/support/e2e.ts",
+    "line": 1,
+    "rule": "#3b: blanket uncaught:exception () => false"
+   }
+  ],
+  "v17-cy-04": [
+   {
+    "pattern_id": "#4i",
+    "severity": "P1",
+    "file": "cypress/e2e/lichen.cy.ts",
+    "line": 4,
+    "rule": "#4i: not.exist on locator never proven; test 2 has empty-state counterpart (skip)"
+   }
+  ],
+  "v17-cy-05": [
+   {
+    "pattern_id": "#9b",
+    "severity": "P1",
+    "file": "cypress/e2e/glassworks.cy.ts",
+    "line": 4,
+    "rule": "#9b: cy.wait(ms) sleep"
+   },
+   {
+    "pattern_id": "#5b",
+    "severity": "P1",
+    "file": "cypress/e2e/glassworks.cy.ts",
+    "line": 5,
+    "rule": "#5b: force:true without JUSTIFIED"
+   }
+  ],
+  "v17-cy-06": [],
+  "v17-cy-07": [
+   {
+    "pattern_id": "#10d",
+    "severity": "P1",
+    "file": "cypress/e2e/radio-dial.cy.ts",
+    "line": 2,
+    "rule": "#10d: async it callback queuing cy commands"
+   }
+  ],
+  "v17-cy-08": [
+   {
+    "pattern_id": "#10e",
+    "severity": "P1",
+    "file": "cypress/e2e/ink-vats.cy.ts",
+    "line": 4,
+    "rule": "#10e: Chainable assigned to const"
+   }
+  ],
+  "v17-cy-09": [
+   {
+    "pattern_id": "#10f",
+    "severity": "P1",
+    "file": "cypress/e2e/palette.cy.ts",
+    "line": 4,
+    "rule": "#10f: click replaces subject (component replaceWith), then .should on stale chain"
+   }
+  ],
+  "v17-cy-10": [
+   {
+    "pattern_id": "#2",
+    "severity": "P0",
+    "file": "cypress/e2e/terrarium.cy.ts",
+    "line": 5,
+    "rule": "#2: save click with no postcondition; anchor action"
+   }
+  ],
+  "v17-cy-11": [
+   {
+    "pattern_id": "#11c",
+    "severity": "P2",
+    "file": "cypress/e2e/canal-lock.cy.ts",
+    "line": 2,
+    "rule": "#11c: bare it.skip with no reason; line 6 JUSTIFIED with ticket/date"
+   }
+  ],
+  "v17-cy-12": [],
+  "v17-cy-13": [
+   {
+    "pattern_id": "#3",
+    "severity": "P0",
+    "file": "cypress/support/commands.ts",
+    "line": 5,
+    "rule": "#3: custom command try/catch swallows the only assertion; anchor assertion"
+   }
+  ],
+  "v17-cy-14": [],
+  "v17-cy-15": [
+   {
+    "pattern_id": "#1",
+    "severity": "P0",
+    "file": "cypress/e2e/compost.cy.ts",
+    "line": 2,
+    "rule": "#1: constant assertion observes no product mass -> P0 at title"
+   },
+   {
+    "pattern_id": "#4a",
+    "severity": "P0",
+    "file": "cypress/e2e/compost.cy.ts",
+    "line": 5,
+    "rule": "#4a: bound on local constant no product state can violate"
+   }
+  ],
+  "v17-pw-16": [
+   {
+    "pattern_id": "#4k",
+    "severity": "P1",
+    "file": "tests/beacon-readings.spec.ts",
+    "line": 4,
+    "rule": "#4k: only assertions in loop over unproven .all() collection"
+   }
+  ],
+  "v17-cy-16": [
+   {
+    "pattern_id": "#4i",
+    "severity": "P1",
+    "file": "cypress/e2e/map-archive.cy.ts",
+    "line": 5,
+    "rule": "#4i: ribbon locator never proven able to match, nothing positive asserted"
+   }
+  ],
+  "v17-pw-17": [
+   {
+    "pattern_id": "#4f",
+    "severity": "P0",
+    "file": "tests/lantern-signal.spec.ts",
+    "line": 4,
+    "rule": "#4f (+#6 consolidated): Locator toBeTruthy always passes"
+   }
+  ],
+  "v17-cy-17": [
+   {
+    "pattern_id": "#9b",
+    "severity": "P1",
+    "file": "cypress/e2e/sluice-gate.cy.ts",
+    "line": 4,
+    "rule": "#9b: cy.wait(ms) sleep"
+   },
+   {
+    "pattern_id": "#2",
+    "severity": "P0",
+    "file": "cypress/e2e/sluice-gate.cy.ts",
+    "line": 5,
+    "rule": "#2: save click with no postcondition; anchor action"
+   }
+  ],
+  "v17-pw-18": [
+   {
+    "pattern_id": "#1",
+    "severity": "P0",
+    "file": "tests/harbor-receipt.spec.ts",
+    "line": 2,
+    "rule": "#1: URL-only check observes neither fee nor permit number"
+   }
+  ],
+  "v17-cy-18": [
+   {
+    "pattern_id": "#23",
+    "severity": "P2",
+    "file": "cypress/fixtures/specimens.json",
+    "line": 2,
+    "rule": "#23: catalogued:false fails filter guard; positive assertion fails (usual P2)"
+   }
+  ]
+ }
+}

@@ -56,3 +56,6 @@ benchmarks/.*.state.lock
 # Live generator fixture: run it from a copy; never keep its runner output here.
 scripts/evals/generator-live/*/test-results/
 scripts/evals/generator-live/*/playwright-report/
+
+# claude plugin eval run output
+/evals/results/

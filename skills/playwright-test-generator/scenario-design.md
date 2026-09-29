@@ -51,10 +51,10 @@ For every scenario, add a **verification contract**:
 - V3 expected failing assertion: <exact unchanged primary assertion expected to fail under the fault>
 - V3 expected observable mismatch: <expected matcher diagnostic and faulted observable state>
 - Write proof (V4): <request evidence, or N/A for read-only behavior>
-- Secondary outcomes: <selected or skipped, from the fixed list below>
+- Secondary outcomes: <default checks selected or skipped; approved domain outcomes with their requirement source, or none>
 ```
 
-A written "Then" usually records less than a person checks by hand, so offer exactly these three secondary outcomes per scenario and record each as selected or skipped — no others, and never as a replacement for the primary outcome:
+A written "Then" usually records less than a person checks by hand, so offer these three default secondary outcomes per scenario and record each as selected or skipped. Additional domain-specific outcomes are allowed only when the user approved them or a documented requirement requires them; record that source and keep them bounded. Do not invent them from a generic request to check everything, and never use any secondary outcome as a replacement for the primary outcome:
 
 | Secondary outcome | Ask | Skip when |
 |---|---|---|

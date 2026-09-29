@@ -42,7 +42,7 @@ Use `e2e-reviewer` as an independent quality gate for human-written or AI-genera
 
 The generator starts with coverage-gap analysis and live-browser exploration, then generates after scenario approval and verifies each candidate. The debuggers start from failed-run artifacts and return a classified root cause, supporting evidence, and a concrete fix.
 
-False-green detection is one important part of the review workflow, not the bundle's entire purpose. Fixes based on `e2e-reviewer` findings have been merged through [15 merged upstream PRs](#merged-upstream-fixes), including Storybook, SvelteKit, code-server, Strapi, Carbon Design System, Ghost, and MUI X.
+False-green detection is one important part of the review workflow, not the bundle's entire purpose. The curated examples below include [15 merged upstream PRs](#merged-upstream-fixes) based on `e2e-reviewer` findings, including Storybook, SvelteKit, code-server, Strapi, Carbon Design System, Ghost, and MUI X.
 
 > In code-server, a committed `it.only` silently disabled eight tests for seven months. One skipped test was already broken while CI remained green.
 
@@ -64,7 +64,7 @@ If you're comparing framework-specific assistants, the split is simple:
 
 ## Merged upstream fixes
 
-`e2e-reviewer` findings have contributed to **15 merged upstream PRs**. These self-selected cases show practical use and let readers inspect the fixes; they are not a representative validation sample or an accuracy estimate. The rejections are published beside them: [Field review v1](benchmarks/field-review-v1/README.md) generates the record of every pull request that names the skill from GitHub — **29 submitted, 16 merged, 6 closed without merging, 7 open** — because a merge count without its rejections is not a rate.
+The curated list below contains **15 merged upstream PRs**, not the total number of accepted contributions. These self-selected cases show practical use and let readers inspect the fixes; they are not a representative validation sample or an accuracy estimate. Separately, [Field review v1](benchmarks/field-review-v1/README.md) records a snapshot of this account's pull requests that name the skill — **29 submitted, 16 merged, 6 closed without merging, 7 open**. That mechanically selected snapshot and the curated list have different inclusion rules; do not divide one list's merge count by the other's submission count.
 
 The repositories below had **493,657 combined GitHub stars** in a GitHub API snapshot taken on 2026-09-16. Stars indicate project scale and visibility, not reviewer accuracy or endorsement.
 
@@ -221,7 +221,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 This bundle keeps the browser-E2E layer thin and high-value, in line with the standard test-pyramid/hourglass guidance to spend E2E coverage on the checks that matter most rather than on test count. Use it to generate or review E2E tests and to diagnose failed Playwright/Cypress runs. Use it alongside the application and its real E2E suite, not instead of them; it is not a general lint preset or a framework-agnostic test tool. Playwright and Cypress are supported; new-test generation currently targets Playwright only.
 
-The bundled shell scripts and artifact readers target macOS/Linux shells. Windows users should run them through WSL and keep scan/report artifacts inside the WSL filesystem.
+The bundled shell scripts and artifact readers target conventional macOS/Linux layouts with `/bin/bash` and the fixed system executable paths required by their launchers. Windows users need a compatible WSL distribution and artifacts inside the WSL filesystem; native Windows is not supported. NixOS and Nix-, pyenv-, Conda-, or nvm-only tool installations are not universally auto-discovered. The reviewer scanner supports validated absolute `E2E_SMELL_*_BIN` overrides; this does not imply the same overrides exist in the generator or debugger launchers. Missing trusted tools stop the affected operation; do not bypass that boundary with ambient `PATH` lookup. Resolve skill resources from the actual host-provided skill location, including plugin caches and custom installs, not a guessed home directory.
 
 A green generated test is not enough: it may assert a `Locator` or `Promise`, observe state unrelated to the behavior named by the test, or leave its primary assertion non-load-bearing. The generator therefore treats every new spec as a candidate until all applicable [V1–V6 verification](skills/playwright-test-generator/verification-rules.md) passes.
 
@@ -242,9 +242,9 @@ A scanner match is a candidate, not a verdict. Cross-file findings such as missi
 
 ## Evidence and limits
 
-The current evidence supports a narrow claim: the project has behavior-backed development evidence and 15 merged upstream fixes, but it does not claim generalized reviewer accuracy.
+The current evidence supports a narrow claim: the project has behavior-backed development evidence and a curated list of 15 merged upstream fixes, but it does not claim generalized reviewer accuracy.
 
-The merge count now has a published denominator, with one known limit. [Field review v1](benchmarks/field-review-v1/README.md) sweeps every pull request this account opened that names the skill and reports whatever GitHub says: 29 submitted across 26 repositories, 16 merged, 6 closed without merging, 7 open. Generating it from GitHub rather than from a hand-kept list found seven the roadmap had omitted — two merges and three rejections among them. A pull request that does not name the skill is invisible to the sweep, so the denominator is a lower bound: [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486), merged and listed above, is one such pull request.
+The mechanical snapshot publishes its own denominator, with one known limit. [Field review v1](benchmarks/field-review-v1/README.md) sweeps every pull request this account opened that names the skill and reports whatever GitHub says: 29 submitted across 26 repositories, 16 merged, 6 closed without merging, 7 open. Generating it from GitHub rather than from a hand-kept list found seven the roadmap had omitted — two merges and three rejections among them. A pull request that does not name the skill is invisible to the sweep, so the denominator is a lower bound: [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486), merged and listed above, is one such pull request.
 
 That is still not a precision figure. A merge means a maintainer accepted a patch, not that a finding's severity was classified correctly, and the submission footer is optional, so an unmarked rejection would bias the rate upward. What it does give is adjudication this project does not control.
 
@@ -255,6 +255,12 @@ The deterministic scanner is measured separately. [Field scan v1](benchmarks/fie
 - Browser fault injection completed **36/36 cells (12 fault operators x 3 expected outcomes)** across Playwright/Cypress fixtures. This is a harness self-test: the app, the strong test, the injected fault, and the weak test were all written here, so it shows the detector fires as designed, not that it generalizes.
 - [Healer perturbation v1](benchmarks/healer-perturbation-v1/README.md) completed **30/30 frozen Codex cells** and returned `REJECT`: both the guarded official-healer prompt and this repository's proposed Step 7 workflow weakened all three impossible-repair honesty controls. The result rejects those healer paths as safe defaults; it does not measure Claude, general healer quality, or reviewer accuracy, and it changed no product instructions.
 - The exact reviewer benchmark covers **12 proven false-green cases and 12 clean guards**; ten fault cases are byte-identical operator mutants.
+- [Real-code fix pairs](benchmarks/fixpair-v1/README.md) publish B+C+D: **25/33 strict recall with the skill versus 13/33 without it**, with **0/33 AFTER false alarms** in both arms. A second-model `gpt-6-astra` batch-B run scored **10/15 versus 10/15**, also with **0/15** alarms in both arms.
+- [Semantic mutants v1](benchmarks/semantic-mutants-v1/README.md) has model-injected defects in real specs: S1 strict **7/10 versus 5/10** (one original-control alarm each); S2 **8/9 versus 2/9** (zero alarms each); S3 **5/6 versus 2/6** (zero versus two alarms). These are one-run development measurements; #12 is not covered.
+- [Reviewer holdout v21](benchmarks/reviewer-holdout-v21/README.md) did not support explicit #2 wording: full stable F1 **1.000 → 0.980** across 480 calls. The 2.0.0 wording stays; partial #2 verification already graded P1 in both arms.
+- Including a local-only AGPL batch excluded from publication, the all-batch aggregate was **36/44 versus 23/44** and **0 versus 1** AFTER false alarms. The [field model comparison](docs/ai-reviewer-benchmark.md#field-model-comparison) reports separate local measurements across 19 real-repository specs.
+
+**Which model?** `gpt-6-sol` had the best recall with the skill in these local runs. `claude-sonnet-5-5` followed the procedure on all 19 field specs at the lowest measured input-token cost, but the skill added little recall on the small fixpair and semantic batches; its main gain was fewer false alarms. Strong models including `gpt-6-astra` and Sonnet 5.5 already caught many mechanical smells without the skill. `claude-fable-5` also scored strongly, but [Anthropic says Fable uses plan limits faster and is capped at 50% of the weekly Max limit](https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan). These are one-run, version-specific development measurements.
 - Reviewer holdout v7 decisively beat `no-skill` on all six lift checks but failed the preregistered `catalog-only` lift bar. Full improved precision (`0.956522` vs `0.884615`) and clean specificity (`1.0` vs `0.75`) but had lower recall (`0.916667` vs `0.958333`), so no skill-lift claim is made.
 - Independent product-review robustness gates v4, v5, v7, v8, and v11 failed their preregistered criteria. Independent product-review v6 and v9 were not run, and independent product-review v10 was superseded after one of its three attempts by v11, which reused its frozen review input; v1-v11 are retained as legacy robustness evidence, not current release gates.
 - The debugger protocol provides a replayable 30-case synthetic corpus, but no independently established debugger accuracy is claimed.
@@ -294,7 +300,7 @@ Tests work but mislead developers, waste CI time, or set up future regressions.
 | 6 | **Raw DOM queries** | `document.querySelector` in `evaluate()` | Use framework locator/query APIs (`locator` / `cy.get`) |
 | 9 | **Hard-coded sleep** | `waitForTimeout(2000)` / `cy.wait(2000)` / `waitForLoadState('networkidle')` | Rely on framework auto-wait; use condition-based waits |
 | 10 | **Flaky test patterns** | `items.nth(2)` without comment; `test.describe.serial()`; unscoped accessible-name substring (10c); Cypress async callbacks, assigned `cy` commands, or continued action chains (10d–10f) | Use stable/scoped locators and self-contained tests; keep Cypress work in its command chain, do not assign Chainables as values, and re-query after actions |
-| 13 | **Inconsistent POM usage** | POM imported but spec uses raw `page.fill`/`page.click` for POM-owned actions | Route all interactions through the POM so UI changes update in one place |
+| 13 | **Inconsistent POM usage** | Raw actions bypass a source-established same-page POM boundary; existence alone is insufficient | Reuse the proven boundary; do not invent a wrapper merely because a POM exists |
 | 14 | **Hardcoded credentials** | `loginPage.login('demo-admin', '<literal-password>')` in test code | Use `process.env.TEST_USER`, Playwright config secrets, or test data fixtures |
 | 15 | **Missing `await` on `expect()`** | Async Locator/Page web-first matcher Promise is not sequenced or observed; rejection usually surfaces later with worse attribution | `await` or return the matcher Promise; sync value matchers are excluded |
 | 16 | **Missing `await` on action** | Actionability, action ordering, or navigation can race later work; rejection usually surfaces later with worse attribution | `await` or return the action Promise |
@@ -417,6 +423,7 @@ Claude Code, Codex, and the 55+ hosts supported by the `skills` CLI can load the
 - [Debugger benchmark protocol](docs/debugger-benchmark/README.md)
 - [Framework scope](docs/framework-scope.md)
 - [Roadmap](docs/roadmap.md)
+- [Reviewer evidence execution plan and optional Jev experiment](docs/plans/reviewer-evidence-next-steps.md)
 
 Planned work includes cross-model convention consistency and stronger deterministic detection. No roadmap item is described as shipped before its dedicated verification passes.
 

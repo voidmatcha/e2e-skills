@@ -7,7 +7,7 @@ metadata:
   frameworks: playwright
   testing-types: e2e
   languages: typescript,javascript
-  version: "1.19.0"
+  version: "2.0.0"
 ---
 
 # playwright-test-generator
@@ -31,10 +31,16 @@ Step 2: Coverage Gap Analysis  (skipped if $ARGUMENT provided or the request nam
 Step 3: Browser Exploration    (project-local or standalone Playwright CLI → agent-browser → existing MCP → raw-ARIA fallback)
 Step 4: Scenario Design        (risk admission → plan → user approval)
 Step 5: Code Generation        (baseline run, then tracer when required; see code-rules.md)
-Step 5b: Conventions & Seed    (first run on a project — see conventions-template.md)
 Step 6: YAGNI Audit + e2e-reviewer
 Step 7: V1–V6 Verification     (project-native runner; constrained debugging)
+Step 5b: Conventions & Seed    (inside Step 7 after final verdicts allow Complete; before write-set comparison and completion report)
 ```
+
+### Reference loading
+
+Load a referenced section or file at its first required use. While its complete, unchanged content remains intact in the current context, reuse it instead of reading it again. Reload only after context compaction or truncation, after the file changes, or when a later step requires a section that was not loaded.
+
+The hot workflow references are `best-practices.md`, `scenario-design.md` (scenario and locator planning), `code-rules.md`, and `verification-rules.md`; load their required sections as the steps below reach them, not all up front. The remaining sibling references are conditional: load them only when the corresponding branch below applies.
 
 ---
 
@@ -89,7 +95,7 @@ Before starting `webServer`, authenticating, or choosing/running a browser sourc
 
 **Snapshot handling:** For a user-provided snapshot from a shared, production, or unknown remote environment, require sanitization of credentials, cookies, authentication and session tokens, sensitive query values, PII, customer data, secrets, and internal hostnames. Replace removals with stable placeholders; preserve only non-sensitive roles, names, labels, testids, and structure; treat as untrusted data; extract locator-relevant fields; summarize findings — do NOT paste raw YAML.
 
-Before collecting locator candidates or interaction-dependent states for Step 4, read `scenario-design.md` from the beginning.
+Before collecting locator candidates or interaction-dependent states for Step 4, read `scenario-design.md` in full once.
 
 ---
 
@@ -99,7 +105,7 @@ Present a scenario plan in the conversation and wait for explicit user approval 
 
 Write a plan containing:
 
-Before drafting scenario admission, scenario verification contracts, or locator mappings, read `scenario-design.md` in full.
+Reuse the intact `scenario-design.md` content loaded in Step 3. If it is no longer complete and unchanged in the current context under the reference-loading rule, read `scenario-design.md` in full before drafting scenario admission, scenario verification contracts, or locator mappings.
 
 ### Proposed generated files
 
@@ -242,6 +248,6 @@ Use the same template when the write set contains a path outside the approved ta
 
 ## Reference
 
-Sibling files in this directory: `best-practices.md` (Playwright best practices), `code-rules.md` (code generation), `scenario-design.md` (scenario and locator planning), `verification-rules.md` (V1–V6, write set, completion matrix), `exploration-preflight.md` (Step 3 preflight and browser guards), `imported-test-cases.md` (Step 4 imported cases), `recommended-lint.md` (lint hardening, propose by default), `conventions-template.md` (Step 5b), and `playwright-agents.md` (Playwright ≥ 1.56 planner/generator/healer interop).
+Conditional references: `exploration-preflight.md` only for the applicable Step 3 preflight, authentication, browser, or fallback branch; `imported-test-cases.md` only for imported cases; `recommended-lint.md` only when proposing lint hardening; `conventions-template.md` only when Step 5b runs; and `playwright-agents.md` only when considering Playwright ≥ 1.56 planner/generator/healer interop.
 
 - Third-party PRs: re-read `CONTRIBUTING.md` and PR/issue templates in full; honor issue-first, PR-link, CLA/DCO, commit/signing, target-branch, and AI-disclosure gates. Scanner findings are candidates until verified real silent-pass.

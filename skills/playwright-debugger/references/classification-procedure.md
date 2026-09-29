@@ -2,25 +2,14 @@
 
 Classification steps:
 
-**If delegating**, pass the failing test name, report excerpt (error, stack, attempt outcome), repo root, and the **absolute** path to this skill's `SKILL.md` (the directory containing this SKILL.md + `/SKILL.md`; on Codex/`skills` CLI it is under `~/.agents/skills/`). Every delegated working directory is the project under debug, so a repo-relative `skills/...` path is invalid. Require the F-code with confidence, evidence, and a fix. The F-code must be identical on all three paths.
+**If delegating**, pass the failing test name, report excerpt (error, stack, attempt outcome), repo root, and the **absolute** path to this skill's `SKILL.md` (resolve the actual loaded skill from the host-provided file path or Base directory, not a conventional installation directory). Every delegated working directory is the project under debug, so a repo-relative `skills/...` path is invalid. Require the F-code with confidence, evidence, and a fix. All available paths use the same F1–F15 contract; resolve disagreements against source evidence and preserve uncertainty when unresolved.
 
 1. Match error message to signals above
 2. `duration` near timeout → F1 or F3
 3. CI-only failure → F7 or F8
 4. Passes on retry — spec `outcome` is `flaky` (a trailing `passed` result; cross-check `stats.flaky`) and no SSR first-interaction signature (see step 5) → F1. A flaky outcome is an F1 candidate, not a hard failure.
 5. Action succeeded but the *next* assertion timed out, SSR app, first interaction after `goto` → F15
-6. **F1 vs F7 is decided by an isolation probe, not by the error text.** Both surface as
-   `TimeoutError` and both "pass sometimes", so classifying from the message alone assigns the
-   wrong code roughly half the time. Run the probe only after the execution safety gate and the
-   repository execution gate's trust checks have passed (see Prerequisites): the whole target
-   stack is `local/disposable` or an approved non-production test environment, the user
-   explicitly trusts this repository, and both exact commands are approved. The probe replays the
-   test, so the safety gate's rule on replaying non-idempotent writes applies to each repetition
-   as it does to retries. Until both gates pass, or while the failing test performs a
-   non-idempotent write whose system-boundary idempotence is not proven, present the commands as
-   `recommended`; in either case, or if the suite cannot be run, say the probe was not performed
-   and report `CANNOT_VERIFY` between F1 and F7 rather than guessing. Once both gates pass and no
-   unproven non-idempotent write would be replayed, run:
+6. **F1 vs F7 needs an isolation probe plus causal evidence, not the error text alone.** Both can surface as `TimeoutError` and both can "pass sometimes". Run the probe only after the execution safety gate and the repository execution gate's trust checks have passed (see Prerequisites): the whole target stack is `local/disposable` or an approved non-production test environment, the user explicitly trusts this repository, and both exact commands are approved. The probe replays the test, so the safety gate's rule on replaying non-idempotent writes applies to each repetition as it does to retries. Until both gates pass, or while the failing test performs a non-idempotent write whose system-boundary idempotence is not proven, present the commands as `recommended`; in either case, or if the suite cannot be run, say the probe was not performed and report `CANNOT_VERIFY` between F1 and F7 rather than guessing. Once both gates pass and no unproven non-idempotent write would be replayed, run:
 
    ```bash
    # (a) alone, repeated — is the test non-deterministic by itself?
@@ -31,13 +20,13 @@ Classification steps:
    /usr/bin/env -i PATH="$PATH" node_modules/.bin/playwright test --retries=0
    ```
 
-   | (a) alone ×10 | (b) full suite | Code |
+   | (a) alone ×10 | (b) full suite | Interpretation |
    | --- | --- | --- |
-   | mixed pass/fail | fails | **F1** — the test is non-deterministic on its own |
-   | 10/10 pass | fails | **F7** — shared state or ordering; the test is fine in isolation |
-   | 10/10 fail | fails | not flaky at all — re-classify against the F-table (F2/F4/F5/F9/F10/F12) |
+   | mixed pass/fail | fails | Supports **F1**, but still check network, environment, and product-state evidence before resolving the code. |
+   | 10/10 pass | fails | Supports **F7**; resolve F7 only with shared-state, ordering, worker-fixture, serial-chain, or neighbour/subset evidence. Otherwise report `CANNOT_VERIFY` between F1 and F7. |
+   | 10/10 fail | fails | Look first for a consistently reproducible F2/F4/F5/F9/F10/F12 cause, but do not claim that ten failures prove the test cannot be flaky. |
 
-   `--repeat-each` multiplies runtime, so scope it to the single failing test, never the suite.
+   A bounded sample changes confidence; it does not prove that a test is non-flaky or that suite context caused the failure. `--repeat-each` multiplies runtime, so scope it to the single failing test, never the suite.
 
 **Setup-level signals (check before classifying individual tests):**
 

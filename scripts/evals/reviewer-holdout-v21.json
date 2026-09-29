@@ -1,0 +1,2293 @@
+{
+  "schema_version": 1,
+  "corpus_visibility": "public-development",
+  "intended_use": "Public development corpus for testing the #2 partial-effect P1 boundary and guarding #1 arrival-content promises against #2 misclassification.",
+  "contamination_risk": "Synthetic cases and labels authored from the current release-2.0.0 reviewer references; public development evidence, not sealed generalization evidence.",
+  "labeling": {
+    "procedure": "Codex gpt-6-sol authored 48 synthetic cases and labels from BRIEF.txt without access to v16/v20 corpora or results. Blind gpt-6-astra and gpt-6-luna independently matched all 48/48 author findings with no extra findings. Ground-truth rules were fixed in BRIEF.txt before labeling; no human adjudication.",
+    "limitations": "These are compact synthetic suites, not runtime-tested applications; labels cover the specified #1/#2 contract only.",
+    "instance_severities": "#2 partial P1; #2 zero P0; #1 partial P1; #1 zero P0, per reporting.md P0 boundary and semantic-review.md classification/anchor rules."
+  },
+  "cases": [
+    {
+      "id": "v21-pw-01",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "#2 partial: profile editor; one action effect asserted, dismissed state absent",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-01/tests/v21-pw-01.spec.ts",
+          "path": "tests/v21-pw-01.spec.ts"
+        },
+        {
+          "source": "files/holdout-v21/v21-pw-01/tests/route.ts",
+          "path": "tests/route.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-001",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-01.spec.ts",
+          "line": 7,
+          "source_line": "await page.getByTestId(\"Cancel\").click();",
+          "reason": "patterns/2.md: 'Anchor the finding to the action line whose promised result lacks proof'; semantic-review.md: 'use #2 at the causal state-changing action if that action lacks its postcondition'; reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'."
+        },
+        {
+          "finding_id": "V21-002",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-01.spec.ts",
+          "line": 7,
+          "source_line": "await page.getByTestId(\"Cancel\").click();",
+          "reason": "reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'; the shown state is verified."
+        },
+        {
+          "finding_id": "V21-003",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-01.spec.ts",
+          "line": 4,
+          "source_line": "test(\"restores profile summary and dismisses editor\", async ({ page }) => {",
+          "reason": "semantic-review.md: when the missing effect is the action's postcondition, 'use #2 at the causal state-changing action'; do not report both."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-02",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "#2 partial: invoice drawer; one action effect asserted, dismissed state absent",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-02/tests/v21-pw-02.spec.ts",
+          "path": "tests/v21-pw-02.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-011",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-02.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByTestId(\"Close\").click();",
+          "reason": "patterns/2.md: 'Anchor the finding to the action line whose promised result lacks proof'; semantic-review.md: 'use #2 at the causal state-changing action if that action lacks its postcondition'; reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'."
+        },
+        {
+          "finding_id": "V21-012",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-02.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByTestId(\"Close\").click();",
+          "reason": "reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'; the shown state is verified."
+        },
+        {
+          "finding_id": "V21-013",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-02.spec.ts",
+          "line": 3,
+          "source_line": "test(\"restores invoice list and closes drawer\", async ({ page }) => {",
+          "reason": "semantic-review.md: when the missing effect is the action's postcondition, 'use #2 at the causal state-changing action'; do not report both."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-03",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "#2 partial: shipping tab; one action effect asserted, dismissed state absent",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-03/tests/v21-pw-03.spec.ts",
+          "path": "tests/v21-pw-03.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-021",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-03.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByTestId(\"Current rates\").click();",
+          "reason": "patterns/2.md: 'Anchor the finding to the action line whose promised result lacks proof'; semantic-review.md: 'use #2 at the causal state-changing action if that action lacks its postcondition'; reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'."
+        },
+        {
+          "finding_id": "V21-022",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-03.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByTestId(\"Current rates\").click();",
+          "reason": "reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'; the shown state is verified."
+        },
+        {
+          "finding_id": "V21-023",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-03.spec.ts",
+          "line": 3,
+          "source_line": "test(\"shows current rates and hides history\", async ({ page }) => {",
+          "reason": "semantic-review.md: when the missing effect is the action's postcondition, 'use #2 at the causal state-changing action'; do not report both."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-04",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "#2 partial: filter panel; one action effect asserted, dismissed state absent",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-04/tests/v21-pw-04.spec.ts",
+          "path": "tests/v21-pw-04.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-031",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-04.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByTestId(\"Apply filters\").click();",
+          "reason": "patterns/2.md: 'Anchor the finding to the action line whose promised result lacks proof'; semantic-review.md: 'use #2 at the causal state-changing action if that action lacks its postcondition'; reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'."
+        },
+        {
+          "finding_id": "V21-032",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-04.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByTestId(\"Apply filters\").click();",
+          "reason": "reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'; the shown state is verified."
+        },
+        {
+          "finding_id": "V21-033",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-04.spec.ts",
+          "line": 3,
+          "source_line": "test(\"shows filtered results and closes filters\", async ({ page }) => {",
+          "reason": "semantic-review.md: when the missing effect is the action's postcondition, 'use #2 at the causal state-changing action'; do not report both."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-05",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "#2 partial: draft composer; one action effect asserted, dismissed state absent",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-05/tests/v21-pw-05.spec.ts",
+          "path": "tests/v21-pw-05.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-041",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-05.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByTestId(\"Discard\").click();",
+          "reason": "patterns/2.md: 'Anchor the finding to the action line whose promised result lacks proof'; semantic-review.md: 'use #2 at the causal state-changing action if that action lacks its postcondition'; reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'."
+        },
+        {
+          "finding_id": "V21-042",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-05.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByTestId(\"Discard\").click();",
+          "reason": "reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'; the shown state is verified."
+        },
+        {
+          "finding_id": "V21-043",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-05.spec.ts",
+          "line": 3,
+          "source_line": "test(\"restores draft list and dismisses composer\", async ({ page }) => {",
+          "reason": "semantic-review.md: when the missing effect is the action's postcondition, 'use #2 at the causal state-changing action'; do not report both."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-06",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "#2 partial: help overlay; one action effect asserted, dismissed state absent",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-06/tests/v21-pw-06.spec.ts",
+          "path": "tests/v21-pw-06.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-051",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-06.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByTestId(\"Done\").click();",
+          "reason": "patterns/2.md: 'Anchor the finding to the action line whose promised result lacks proof'; semantic-review.md: 'use #2 at the causal state-changing action if that action lacks its postcondition'; reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'."
+        },
+        {
+          "finding_id": "V21-052",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-06.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByTestId(\"Done\").click();",
+          "reason": "reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'; the shown state is verified."
+        },
+        {
+          "finding_id": "V21-053",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-06.spec.ts",
+          "line": 3,
+          "source_line": "test(\"restores help page and closes overlay\", async ({ page }) => {",
+          "reason": "semantic-review.md: when the missing effect is the action's postcondition, 'use #2 at the causal state-changing action'; do not report both."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-07",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "#2 zero: alert dismissal; pre-action presence is not post-action proof",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-07/tests/v21-pw-07.spec.ts",
+          "path": "tests/v21-pw-07.spec.ts"
+        },
+        {
+          "source": "files/holdout-v21/v21-pw-07/tests/route.ts",
+          "path": "tests/route.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-061",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-07.spec.ts",
+          "line": 7,
+          "source_line": "await page.getByTestId(\"Dismiss\").click();",
+          "reason": "patterns/2.md: 'Test acts but doesn't verify the final expected state'; reporting.md: 'P0 ... no real verification happening' when no promised outcome is verified; semantic-review.md anchors the action."
+        },
+        {
+          "finding_id": "V21-062",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-07.spec.ts",
+          "line": 7,
+          "source_line": "await page.getByTestId(\"Dismiss\").click();",
+          "reason": "reporting.md: P1 requires a genuinely verified promised effect; only the pre-action state is checked here."
+        },
+        {
+          "finding_id": "V21-063",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-pw-07.spec.ts",
+          "line": 4,
+          "source_line": "test(\"dismisses the critical alert\", async ({ page }) => {",
+          "reason": "semantic-review.md: the missing promised effect is the postcondition of the action, so classify once as #2 at that action."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-08",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "#2 zero: cart removal; pre-action presence is not post-action proof",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-08/tests/v21-pw-08.spec.ts",
+          "path": "tests/v21-pw-08.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-071",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-08.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByTestId(\"Remove item\").click();",
+          "reason": "patterns/2.md: 'Test acts but doesn't verify the final expected state'; reporting.md: 'P0 ... no real verification happening' when no promised outcome is verified; semantic-review.md anchors the action."
+        },
+        {
+          "finding_id": "V21-072",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-08.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByTestId(\"Remove item\").click();",
+          "reason": "reporting.md: P1 requires a genuinely verified promised effect; only the pre-action state is checked here."
+        },
+        {
+          "finding_id": "V21-073",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-pw-08.spec.ts",
+          "line": 3,
+          "source_line": "test(\"removes the cart item\", async ({ page }) => {",
+          "reason": "semantic-review.md: the missing promised effect is the postcondition of the action, so classify once as #2 at that action."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-09",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "#2 zero: modal closure; pre-action presence is not post-action proof",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-09/tests/v21-pw-09.spec.ts",
+          "path": "tests/v21-pw-09.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-081",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-09.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByTestId(\"Close\").click();",
+          "reason": "patterns/2.md: 'Test acts but doesn't verify the final expected state'; reporting.md: 'P0 ... no real verification happening' when no promised outcome is verified; semantic-review.md anchors the action."
+        },
+        {
+          "finding_id": "V21-082",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-09.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByTestId(\"Close\").click();",
+          "reason": "reporting.md: P1 requires a genuinely verified promised effect; only the pre-action state is checked here."
+        },
+        {
+          "finding_id": "V21-083",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-pw-09.spec.ts",
+          "line": 3,
+          "source_line": "test(\"closes the billing modal\", async ({ page }) => {",
+          "reason": "semantic-review.md: the missing promised effect is the postcondition of the action, so classify once as #2 at that action."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-10",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "#1 partial trap: weather board; arrival content promise, not an action transition",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-10/tests/v21-pw-10.spec.ts",
+          "path": "tests/v21-pw-10.spec.ts"
+        },
+        {
+          "source": "files/holdout-v21/v21-pw-10/tests/route.ts",
+          "path": "tests/route.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-091",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-10.spec.ts",
+          "line": 4,
+          "source_line": "test(\"shows rain forecast and temperature\", async ({ page }) => {",
+          "reason": "patterns/1.md: 'When the test really verifies at least one promised outcome and a further promise goes unchecked ... report #1 at P1'; semantic-review.md: '#1 ... title is the primary source of the unverified promise' and anchors the declaration."
+        },
+        {
+          "finding_id": "V21-092",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-10.spec.ts",
+          "line": 5,
+          "source_line": "await page.goto(route);",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-093",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-10.spec.ts",
+          "line": 5,
+          "source_line": "await page.goto(route);",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-094",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-pw-10.spec.ts",
+          "line": 4,
+          "source_line": "test(\"shows rain forecast and temperature\", async ({ page }) => {",
+          "reason": "patterns/1.md: one title promise has evidence; 'report #1 at P1' when another is unchecked."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-11",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "#1 partial trap: train board; arrival content promise, not an action transition",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-11/tests/v21-pw-11.spec.ts",
+          "path": "tests/v21-pw-11.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-101",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-11.spec.ts",
+          "line": 3,
+          "source_line": "test(\"shows platform and delay\", async ({ page }) => {",
+          "reason": "patterns/1.md: 'When the test really verifies at least one promised outcome and a further promise goes unchecked ... report #1 at P1'; semantic-review.md: '#1 ... title is the primary source of the unverified promise' and anchors the declaration."
+        },
+        {
+          "finding_id": "V21-102",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-11.spec.ts",
+          "line": 4,
+          "source_line": "await page.goto(\"/trains\");",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-103",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-11.spec.ts",
+          "line": 4,
+          "source_line": "await page.goto(\"/trains\");",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-104",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-pw-11.spec.ts",
+          "line": 3,
+          "source_line": "test(\"shows platform and delay\", async ({ page }) => {",
+          "reason": "patterns/1.md: one title promise has evidence; 'report #1 at P1' when another is unchecked."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-12",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "#1 partial trap: stock board; arrival content promise, not an action transition",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-12/tests/v21-pw-12.spec.ts",
+          "path": "tests/v21-pw-12.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-111",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-12.spec.ts",
+          "line": 3,
+          "source_line": "test(\"shows ticker and price\", async ({ page }) => {",
+          "reason": "patterns/1.md: 'When the test really verifies at least one promised outcome and a further promise goes unchecked ... report #1 at P1'; semantic-review.md: '#1 ... title is the primary source of the unverified promise' and anchors the declaration."
+        },
+        {
+          "finding_id": "V21-112",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-12.spec.ts",
+          "line": 4,
+          "source_line": "await page.goto(\"/stocks\");",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-113",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-12.spec.ts",
+          "line": 4,
+          "source_line": "await page.goto(\"/stocks\");",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-114",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-pw-12.spec.ts",
+          "line": 3,
+          "source_line": "test(\"shows ticker and price\", async ({ page }) => {",
+          "reason": "patterns/1.md: one title promise has evidence; 'report #1 at P1' when another is unchecked."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-13",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "#1 partial trap: event page; arrival content promise, not an action transition",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-13/tests/v21-pw-13.spec.ts",
+          "path": "tests/v21-pw-13.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-121",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-13.spec.ts",
+          "line": 3,
+          "source_line": "test(\"shows event title and date\", async ({ page }) => {",
+          "reason": "patterns/1.md: 'When the test really verifies at least one promised outcome and a further promise goes unchecked ... report #1 at P1'; semantic-review.md: '#1 ... title is the primary source of the unverified promise' and anchors the declaration."
+        },
+        {
+          "finding_id": "V21-122",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-13.spec.ts",
+          "line": 4,
+          "source_line": "await page.goto(\"/events\");",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-123",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-13.spec.ts",
+          "line": 4,
+          "source_line": "await page.goto(\"/events\");",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-124",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-pw-13.spec.ts",
+          "line": 3,
+          "source_line": "test(\"shows event title and date\", async ({ page }) => {",
+          "reason": "patterns/1.md: one title promise has evidence; 'report #1 at P1' when another is unchecked."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-14",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "#1 partial trap: library record; arrival content promise, not an action transition",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-14/tests/v21-pw-14.spec.ts",
+          "path": "tests/v21-pw-14.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-131",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-14.spec.ts",
+          "line": 3,
+          "source_line": "test(\"shows book title and author\", async ({ page }) => {",
+          "reason": "patterns/1.md: 'When the test really verifies at least one promised outcome and a further promise goes unchecked ... report #1 at P1'; semantic-review.md: '#1 ... title is the primary source of the unverified promise' and anchors the declaration."
+        },
+        {
+          "finding_id": "V21-132",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-14.spec.ts",
+          "line": 4,
+          "source_line": "await page.goto(\"/library\");",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-133",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-14.spec.ts",
+          "line": 4,
+          "source_line": "await page.goto(\"/library\");",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-134",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-pw-14.spec.ts",
+          "line": 3,
+          "source_line": "test(\"shows book title and author\", async ({ page }) => {",
+          "reason": "patterns/1.md: one title promise has evidence; 'report #1 at P1' when another is unchecked."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-15",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "#1 partial trap: scoreboard; arrival content promise, not an action transition",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-15/tests/v21-pw-15.spec.ts",
+          "path": "tests/v21-pw-15.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-141",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-15.spec.ts",
+          "line": 3,
+          "source_line": "test(\"shows home and away scores\", async ({ page }) => {",
+          "reason": "patterns/1.md: 'When the test really verifies at least one promised outcome and a further promise goes unchecked ... report #1 at P1'; semantic-review.md: '#1 ... title is the primary source of the unverified promise' and anchors the declaration."
+        },
+        {
+          "finding_id": "V21-142",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-15.spec.ts",
+          "line": 4,
+          "source_line": "await page.goto(\"/scores\");",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-143",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-15.spec.ts",
+          "line": 4,
+          "source_line": "await page.goto(\"/scores\");",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-144",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-pw-15.spec.ts",
+          "line": 3,
+          "source_line": "test(\"shows home and away scores\", async ({ page }) => {",
+          "reason": "patterns/1.md: one title promise has evidence; 'report #1 at P1' when another is unchecked."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-16",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "#1 zero: receipt; generic shell visibility does not verify promised value $84.50",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-16/tests/v21-pw-16.spec.ts",
+          "path": "tests/v21-pw-16.spec.ts"
+        },
+        {
+          "source": "files/holdout-v21/v21-pw-16/tests/route.ts",
+          "path": "tests/route.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-151",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-pw-16.spec.ts",
+          "line": 4,
+          "source_line": "test(\"shows receipt total of $84.50\", async ({ page }) => {",
+          "reason": "patterns/1.md: 'P0 when no promised outcome in the title has evidence'; its primary line is the test declaration, also required by semantic-review.md."
+        },
+        {
+          "finding_id": "V21-152",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-16.spec.ts",
+          "line": 5,
+          "source_line": "await page.goto(route);",
+          "reason": "semantic-review.md: navigation is setup; the unverified specific value comes from the title, not a missing action postcondition."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-17",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "#1 zero: calendar; generic shell visibility does not verify promised value 09:30",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-17/tests/v21-pw-17.spec.ts",
+          "path": "tests/v21-pw-17.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-161",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-pw-17.spec.ts",
+          "line": 3,
+          "source_line": "test(\"shows the next appointment at 09:30\", async ({ page }) => {",
+          "reason": "patterns/1.md: 'P0 when no promised outcome in the title has evidence'; its primary line is the test declaration, also required by semantic-review.md."
+        },
+        {
+          "finding_id": "V21-162",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-17.spec.ts",
+          "line": 4,
+          "source_line": "await page.goto(\"/calendar\");",
+          "reason": "semantic-review.md: navigation is setup; the unverified specific value comes from the title, not a missing action postcondition."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-18",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "#1 zero: account; generic shell visibility does not verify promised value Gold",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-18/tests/v21-pw-18.spec.ts",
+          "path": "tests/v21-pw-18.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-171",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-pw-18.spec.ts",
+          "line": 3,
+          "source_line": "test(\"shows Gold membership tier\", async ({ page }) => {",
+          "reason": "patterns/1.md: 'P0 when no promised outcome in the title has evidence'; its primary line is the test declaration, also required by semantic-review.md."
+        },
+        {
+          "finding_id": "V21-172",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-18.spec.ts",
+          "line": 4,
+          "source_line": "await page.goto(\"/account\");",
+          "reason": "semantic-review.md: navigation is setup; the unverified specific value comes from the title, not a missing action postcondition."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-19",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "mixed: museum; independent arrival-content and action-postcondition gaps",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-19/tests/v21-pw-19.spec.ts",
+          "path": "tests/v21-pw-19.spec.ts"
+        },
+        {
+          "source": "files/holdout-v21/v21-pw-19/tests/route.ts",
+          "path": "tests/route.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-181",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-19.spec.ts",
+          "line": 4,
+          "source_line": "test(\"shows Ancient Maps and Room B on the museum page\", async ({ page }) => {",
+          "reason": "patterns/1.md: 'When the test really verifies at least one promised outcome and a further promise goes unchecked ... report #1 at P1'; semantic-review.md: '#1 ... title is the primary source of the unverified promise' and anchors the declaration."
+        },
+        {
+          "finding_id": "V21-182",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-19.spec.ts",
+          "line": 12,
+          "source_line": "await page.getByTestId(\"Close exhibit\").click();",
+          "reason": "patterns/2.md: 'Anchor the finding to the action line whose promised result lacks proof'; semantic-review.md: 'use #2 at the causal state-changing action if that action lacks its postcondition'; reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'."
+        },
+        {
+          "finding_id": "V21-183",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-19.spec.ts",
+          "line": 5,
+          "source_line": "await page.goto(route);",
+          "reason": "semantic-review.md: arrival navigation is setup for the first title; missing content belongs to #1."
+        },
+        {
+          "finding_id": "V21-184",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-19.spec.ts",
+          "line": 9,
+          "source_line": "test(\"restores museum list and closes panel\", async ({ page }) => {",
+          "reason": "semantic-review.md: the second test's missing dismissed-state postcondition is classified once as #2 at the causal action."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-20",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "mixed: support; independent arrival-content and action-postcondition gaps",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-20/tests/v21-pw-20.spec.ts",
+          "path": "tests/v21-pw-20.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-191",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-20.spec.ts",
+          "line": 3,
+          "source_line": "test(\"shows Login help and High on the support page\", async ({ page }) => {",
+          "reason": "patterns/1.md: 'When the test really verifies at least one promised outcome and a further promise goes unchecked ... report #1 at P1'; semantic-review.md: '#1 ... title is the primary source of the unverified promise' and anchors the declaration."
+        },
+        {
+          "finding_id": "V21-192",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-20.spec.ts",
+          "line": 11,
+          "source_line": "await page.getByTestId(\"Cancel edit\").click();",
+          "reason": "patterns/2.md: 'Anchor the finding to the action line whose promised result lacks proof'; semantic-review.md: 'use #2 at the causal state-changing action if that action lacks its postcondition'; reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'."
+        },
+        {
+          "finding_id": "V21-193",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-20.spec.ts",
+          "line": 4,
+          "source_line": "await page.goto(\"/support\");",
+          "reason": "semantic-review.md: arrival navigation is setup for the first title; missing content belongs to #1."
+        },
+        {
+          "finding_id": "V21-194",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-20.spec.ts",
+          "line": 8,
+          "source_line": "test(\"restores support list and closes panel\", async ({ page }) => {",
+          "reason": "semantic-review.md: the second test's missing dismissed-state postcondition is classified once as #2 at the causal action."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-21",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "mixed: courses; independent arrival-content and action-postcondition gaps",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-21/tests/v21-pw-21.spec.ts",
+          "path": "tests/v21-pw-21.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-201",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-21.spec.ts",
+          "line": 3,
+          "source_line": "test(\"shows Geometry and 45 min on the courses page\", async ({ page }) => {",
+          "reason": "patterns/1.md: 'When the test really verifies at least one promised outcome and a further promise goes unchecked ... report #1 at P1'; semantic-review.md: '#1 ... title is the primary source of the unverified promise' and anchors the declaration."
+        },
+        {
+          "finding_id": "V21-202",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-21.spec.ts",
+          "line": 11,
+          "source_line": "await page.getByTestId(\"Close lesson\").click();",
+          "reason": "patterns/2.md: 'Anchor the finding to the action line whose promised result lacks proof'; semantic-review.md: 'use #2 at the causal state-changing action if that action lacks its postcondition'; reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'."
+        },
+        {
+          "finding_id": "V21-203",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-21.spec.ts",
+          "line": 4,
+          "source_line": "await page.goto(\"/courses\");",
+          "reason": "semantic-review.md: arrival navigation is setup for the first title; missing content belongs to #1."
+        },
+        {
+          "finding_id": "V21-204",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-21.spec.ts",
+          "line": 8,
+          "source_line": "test(\"restores courses list and closes panel\", async ({ page }) => {",
+          "reason": "semantic-review.md: the second test's missing dismissed-state postcondition is classified once as #2 at the causal action."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-22",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "clean: playlist; both action effects verified",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-22/tests/v21-pw-22.spec.ts",
+          "path": "tests/v21-pw-22.spec.ts"
+        },
+        {
+          "source": "files/holdout-v21/v21-pw-22/tests/route.ts",
+          "path": "tests/route.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-211",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-22.spec.ts",
+          "line": 7,
+          "source_line": "await page.getByTestId(\"Cancel\").click();",
+          "reason": "patterns/2.md: both restored and dismissed states have post-action assertions; no Missing Then."
+        },
+        {
+          "finding_id": "V21-212",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-22.spec.ts",
+          "line": 7,
+          "source_line": "await page.getByTestId(\"Cancel\").click();",
+          "reason": "patterns/2.md: both sides of the action's state change are asserted, so no partial Missing Then."
+        },
+        {
+          "finding_id": "V21-213",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-22.spec.ts",
+          "line": 4,
+          "source_line": "test(\"restores playlist and closes editor\", async ({ page }) => {",
+          "reason": "patterns/1.md: every title promise has corresponding evidence; no name-assertion gap."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-23",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "clean: orders; both action effects verified",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-23/tests/v21-pw-23.spec.ts",
+          "path": "tests/v21-pw-23.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-221",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-23.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByTestId(\"Close\").click();",
+          "reason": "patterns/2.md: both restored and dismissed states have post-action assertions; no Missing Then."
+        },
+        {
+          "finding_id": "V21-222",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-23.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByTestId(\"Close\").click();",
+          "reason": "patterns/2.md: both sides of the action's state change are asserted, so no partial Missing Then."
+        },
+        {
+          "finding_id": "V21-223",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-23.spec.ts",
+          "line": 3,
+          "source_line": "test(\"restores orders and closes drawer\", async ({ page }) => {",
+          "reason": "patterns/1.md: every title promise has corresponding evidence; no name-assertion gap."
+        }
+      ]
+    },
+    {
+      "id": "v21-pw-24",
+      "split": "public-development-v21",
+      "framework": "playwright",
+      "design_note": "clean: notes; both action effects verified",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-pw-24/tests/v21-pw-24.spec.ts",
+          "path": "tests/v21-pw-24.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-231",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-pw-24.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByTestId(\"Discard\").click();",
+          "reason": "patterns/2.md: both restored and dismissed states have post-action assertions; no Missing Then."
+        },
+        {
+          "finding_id": "V21-232",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-pw-24.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByTestId(\"Discard\").click();",
+          "reason": "patterns/2.md: both sides of the action's state change are asserted, so no partial Missing Then."
+        },
+        {
+          "finding_id": "V21-233",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-pw-24.spec.ts",
+          "line": 3,
+          "source_line": "test(\"restores notes and dismisses editor\", async ({ page }) => {",
+          "reason": "patterns/1.md: every title promise has corresponding evidence; no name-assertion gap."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-01",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "#2 partial: profile editor; one action effect asserted, dismissed state absent",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-01/tests/v21-cy-01.cy.js",
+          "path": "tests/v21-cy-01.cy.js"
+        },
+        {
+          "source": "files/holdout-v21/v21-cy-01/tests/route.js",
+          "path": "tests/route.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-241",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-01.cy.js",
+          "line": 7,
+          "source_line": "cy.get(\"[data-testid=Cancel]\").click();",
+          "reason": "patterns/2.md: 'Anchor the finding to the action line whose promised result lacks proof'; semantic-review.md: 'use #2 at the causal state-changing action if that action lacks its postcondition'; reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'."
+        },
+        {
+          "finding_id": "V21-242",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-01.cy.js",
+          "line": 7,
+          "source_line": "cy.get(\"[data-testid=Cancel]\").click();",
+          "reason": "reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'; the shown state is verified."
+        },
+        {
+          "finding_id": "V21-243",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-01.cy.js",
+          "line": 4,
+          "source_line": "it(\"restores profile summary and dismisses editor\", () => {",
+          "reason": "semantic-review.md: when the missing effect is the action's postcondition, 'use #2 at the causal state-changing action'; do not report both."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-02",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "#2 partial: invoice drawer; one action effect asserted, dismissed state absent",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-02/tests/v21-cy-02.cy.js",
+          "path": "tests/v21-cy-02.cy.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-251",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-02.cy.js",
+          "line": 6,
+          "source_line": "cy.get(\"[data-testid=Close]\").click();",
+          "reason": "patterns/2.md: 'Anchor the finding to the action line whose promised result lacks proof'; semantic-review.md: 'use #2 at the causal state-changing action if that action lacks its postcondition'; reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'."
+        },
+        {
+          "finding_id": "V21-252",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-02.cy.js",
+          "line": 6,
+          "source_line": "cy.get(\"[data-testid=Close]\").click();",
+          "reason": "reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'; the shown state is verified."
+        },
+        {
+          "finding_id": "V21-253",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-02.cy.js",
+          "line": 3,
+          "source_line": "it(\"restores invoice list and closes drawer\", () => {",
+          "reason": "semantic-review.md: when the missing effect is the action's postcondition, 'use #2 at the causal state-changing action'; do not report both."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-03",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "#2 partial: shipping tab; one action effect asserted, dismissed state absent",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-03/tests/v21-cy-03.cy.js",
+          "path": "tests/v21-cy-03.cy.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-261",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-03.cy.js",
+          "line": 6,
+          "source_line": "cy.get(\"[data-testid=Current rates]\").click();",
+          "reason": "patterns/2.md: 'Anchor the finding to the action line whose promised result lacks proof'; semantic-review.md: 'use #2 at the causal state-changing action if that action lacks its postcondition'; reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'."
+        },
+        {
+          "finding_id": "V21-262",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-03.cy.js",
+          "line": 6,
+          "source_line": "cy.get(\"[data-testid=Current rates]\").click();",
+          "reason": "reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'; the shown state is verified."
+        },
+        {
+          "finding_id": "V21-263",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-03.cy.js",
+          "line": 3,
+          "source_line": "it(\"shows current rates and hides history\", () => {",
+          "reason": "semantic-review.md: when the missing effect is the action's postcondition, 'use #2 at the causal state-changing action'; do not report both."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-04",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "#2 partial: filter panel; one action effect asserted, dismissed state absent",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-04/tests/v21-cy-04.cy.js",
+          "path": "tests/v21-cy-04.cy.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-271",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-04.cy.js",
+          "line": 6,
+          "source_line": "cy.get(\"[data-testid=Apply filters]\").click();",
+          "reason": "patterns/2.md: 'Anchor the finding to the action line whose promised result lacks proof'; semantic-review.md: 'use #2 at the causal state-changing action if that action lacks its postcondition'; reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'."
+        },
+        {
+          "finding_id": "V21-272",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-04.cy.js",
+          "line": 6,
+          "source_line": "cy.get(\"[data-testid=Apply filters]\").click();",
+          "reason": "reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'; the shown state is verified."
+        },
+        {
+          "finding_id": "V21-273",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-04.cy.js",
+          "line": 3,
+          "source_line": "it(\"shows filtered results and closes filters\", () => {",
+          "reason": "semantic-review.md: when the missing effect is the action's postcondition, 'use #2 at the causal state-changing action'; do not report both."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-05",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "#2 partial: draft composer; one action effect asserted, dismissed state absent",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-05/tests/v21-cy-05.cy.js",
+          "path": "tests/v21-cy-05.cy.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-281",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-05.cy.js",
+          "line": 6,
+          "source_line": "cy.get(\"[data-testid=Discard]\").click();",
+          "reason": "patterns/2.md: 'Anchor the finding to the action line whose promised result lacks proof'; semantic-review.md: 'use #2 at the causal state-changing action if that action lacks its postcondition'; reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'."
+        },
+        {
+          "finding_id": "V21-282",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-05.cy.js",
+          "line": 6,
+          "source_line": "cy.get(\"[data-testid=Discard]\").click();",
+          "reason": "reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'; the shown state is verified."
+        },
+        {
+          "finding_id": "V21-283",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-05.cy.js",
+          "line": 3,
+          "source_line": "it(\"restores draft list and dismisses composer\", () => {",
+          "reason": "semantic-review.md: when the missing effect is the action's postcondition, 'use #2 at the causal state-changing action'; do not report both."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-06",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "#2 partial: help overlay; one action effect asserted, dismissed state absent",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-06/tests/v21-cy-06.cy.js",
+          "path": "tests/v21-cy-06.cy.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-291",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-06.cy.js",
+          "line": 6,
+          "source_line": "cy.get(\"[data-testid=Done]\").click();",
+          "reason": "patterns/2.md: 'Anchor the finding to the action line whose promised result lacks proof'; semantic-review.md: 'use #2 at the causal state-changing action if that action lacks its postcondition'; reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'."
+        },
+        {
+          "finding_id": "V21-292",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-06.cy.js",
+          "line": 6,
+          "source_line": "cy.get(\"[data-testid=Done]\").click();",
+          "reason": "reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'; the shown state is verified."
+        },
+        {
+          "finding_id": "V21-293",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-06.cy.js",
+          "line": 3,
+          "source_line": "it(\"restores help page and closes overlay\", () => {",
+          "reason": "semantic-review.md: when the missing effect is the action's postcondition, 'use #2 at the causal state-changing action'; do not report both."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-07",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "#2 zero: alert dismissal; pre-action presence is not post-action proof",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-07/tests/v21-cy-07.cy.js",
+          "path": "tests/v21-cy-07.cy.js"
+        },
+        {
+          "source": "files/holdout-v21/v21-cy-07/tests/route.js",
+          "path": "tests/route.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-301",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-07.cy.js",
+          "line": 7,
+          "source_line": "cy.get(\"[data-testid=Dismiss]\").click();",
+          "reason": "patterns/2.md: 'Test acts but doesn't verify the final expected state'; reporting.md: 'P0 ... no real verification happening' when no promised outcome is verified; semantic-review.md anchors the action."
+        },
+        {
+          "finding_id": "V21-302",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-07.cy.js",
+          "line": 7,
+          "source_line": "cy.get(\"[data-testid=Dismiss]\").click();",
+          "reason": "reporting.md: P1 requires a genuinely verified promised effect; only the pre-action state is checked here."
+        },
+        {
+          "finding_id": "V21-303",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-cy-07.cy.js",
+          "line": 4,
+          "source_line": "it(\"dismisses the critical alert\", () => {",
+          "reason": "semantic-review.md: the missing promised effect is the postcondition of the action, so classify once as #2 at that action."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-08",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "#2 zero: cart removal; pre-action presence is not post-action proof",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-08/tests/v21-cy-08.cy.js",
+          "path": "tests/v21-cy-08.cy.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-311",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-08.cy.js",
+          "line": 6,
+          "source_line": "cy.get(\"[data-testid=Remove item]\").click();",
+          "reason": "patterns/2.md: 'Test acts but doesn't verify the final expected state'; reporting.md: 'P0 ... no real verification happening' when no promised outcome is verified; semantic-review.md anchors the action."
+        },
+        {
+          "finding_id": "V21-312",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-08.cy.js",
+          "line": 6,
+          "source_line": "cy.get(\"[data-testid=Remove item]\").click();",
+          "reason": "reporting.md: P1 requires a genuinely verified promised effect; only the pre-action state is checked here."
+        },
+        {
+          "finding_id": "V21-313",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-cy-08.cy.js",
+          "line": 3,
+          "source_line": "it(\"removes the cart item\", () => {",
+          "reason": "semantic-review.md: the missing promised effect is the postcondition of the action, so classify once as #2 at that action."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-09",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "#2 zero: modal closure; pre-action presence is not post-action proof",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-09/tests/v21-cy-09.cy.js",
+          "path": "tests/v21-cy-09.cy.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-321",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-09.cy.js",
+          "line": 6,
+          "source_line": "cy.get(\"[data-testid=Close]\").click();",
+          "reason": "patterns/2.md: 'Test acts but doesn't verify the final expected state'; reporting.md: 'P0 ... no real verification happening' when no promised outcome is verified; semantic-review.md anchors the action."
+        },
+        {
+          "finding_id": "V21-322",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-09.cy.js",
+          "line": 6,
+          "source_line": "cy.get(\"[data-testid=Close]\").click();",
+          "reason": "reporting.md: P1 requires a genuinely verified promised effect; only the pre-action state is checked here."
+        },
+        {
+          "finding_id": "V21-323",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-cy-09.cy.js",
+          "line": 3,
+          "source_line": "it(\"closes the billing modal\", () => {",
+          "reason": "semantic-review.md: the missing promised effect is the postcondition of the action, so classify once as #2 at that action."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-10",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "#1 partial trap: weather board; arrival content promise, not an action transition",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-10/tests/v21-cy-10.cy.js",
+          "path": "tests/v21-cy-10.cy.js"
+        },
+        {
+          "source": "files/holdout-v21/v21-cy-10/tests/route.js",
+          "path": "tests/route.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-331",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-10.cy.js",
+          "line": 4,
+          "source_line": "it(\"shows rain forecast and temperature\", () => {",
+          "reason": "patterns/1.md: 'When the test really verifies at least one promised outcome and a further promise goes unchecked ... report #1 at P1'; semantic-review.md: '#1 ... title is the primary source of the unverified promise' and anchors the declaration."
+        },
+        {
+          "finding_id": "V21-332",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-10.cy.js",
+          "line": 5,
+          "source_line": "cy.visit(route);",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-333",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-10.cy.js",
+          "line": 5,
+          "source_line": "cy.visit(route);",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-334",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-cy-10.cy.js",
+          "line": 4,
+          "source_line": "it(\"shows rain forecast and temperature\", () => {",
+          "reason": "patterns/1.md: one title promise has evidence; 'report #1 at P1' when another is unchecked."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-11",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "#1 partial trap: train board; arrival content promise, not an action transition",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-11/tests/v21-cy-11.cy.js",
+          "path": "tests/v21-cy-11.cy.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-341",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-11.cy.js",
+          "line": 3,
+          "source_line": "it(\"shows platform and delay\", () => {",
+          "reason": "patterns/1.md: 'When the test really verifies at least one promised outcome and a further promise goes unchecked ... report #1 at P1'; semantic-review.md: '#1 ... title is the primary source of the unverified promise' and anchors the declaration."
+        },
+        {
+          "finding_id": "V21-342",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-11.cy.js",
+          "line": 4,
+          "source_line": "cy.visit(\"/trains\");",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-343",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-11.cy.js",
+          "line": 4,
+          "source_line": "cy.visit(\"/trains\");",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-344",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-cy-11.cy.js",
+          "line": 3,
+          "source_line": "it(\"shows platform and delay\", () => {",
+          "reason": "patterns/1.md: one title promise has evidence; 'report #1 at P1' when another is unchecked."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-12",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "#1 partial trap: stock board; arrival content promise, not an action transition",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-12/tests/v21-cy-12.cy.js",
+          "path": "tests/v21-cy-12.cy.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-351",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-12.cy.js",
+          "line": 3,
+          "source_line": "it(\"shows ticker and price\", () => {",
+          "reason": "patterns/1.md: 'When the test really verifies at least one promised outcome and a further promise goes unchecked ... report #1 at P1'; semantic-review.md: '#1 ... title is the primary source of the unverified promise' and anchors the declaration."
+        },
+        {
+          "finding_id": "V21-352",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-12.cy.js",
+          "line": 4,
+          "source_line": "cy.visit(\"/stocks\");",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-353",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-12.cy.js",
+          "line": 4,
+          "source_line": "cy.visit(\"/stocks\");",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-354",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-cy-12.cy.js",
+          "line": 3,
+          "source_line": "it(\"shows ticker and price\", () => {",
+          "reason": "patterns/1.md: one title promise has evidence; 'report #1 at P1' when another is unchecked."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-13",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "#1 partial trap: event page; arrival content promise, not an action transition",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-13/tests/v21-cy-13.cy.js",
+          "path": "tests/v21-cy-13.cy.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-361",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-13.cy.js",
+          "line": 3,
+          "source_line": "it(\"shows event title and date\", () => {",
+          "reason": "patterns/1.md: 'When the test really verifies at least one promised outcome and a further promise goes unchecked ... report #1 at P1'; semantic-review.md: '#1 ... title is the primary source of the unverified promise' and anchors the declaration."
+        },
+        {
+          "finding_id": "V21-362",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-13.cy.js",
+          "line": 4,
+          "source_line": "cy.visit(\"/events\");",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-363",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-13.cy.js",
+          "line": 4,
+          "source_line": "cy.visit(\"/events\");",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-364",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-cy-13.cy.js",
+          "line": 3,
+          "source_line": "it(\"shows event title and date\", () => {",
+          "reason": "patterns/1.md: one title promise has evidence; 'report #1 at P1' when another is unchecked."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-14",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "#1 partial trap: library record; arrival content promise, not an action transition",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-14/tests/v21-cy-14.cy.js",
+          "path": "tests/v21-cy-14.cy.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-371",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-14.cy.js",
+          "line": 3,
+          "source_line": "it(\"shows book title and author\", () => {",
+          "reason": "patterns/1.md: 'When the test really verifies at least one promised outcome and a further promise goes unchecked ... report #1 at P1'; semantic-review.md: '#1 ... title is the primary source of the unverified promise' and anchors the declaration."
+        },
+        {
+          "finding_id": "V21-372",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-14.cy.js",
+          "line": 4,
+          "source_line": "cy.visit(\"/library\");",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-373",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-14.cy.js",
+          "line": 4,
+          "source_line": "cy.visit(\"/library\");",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-374",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-cy-14.cy.js",
+          "line": 3,
+          "source_line": "it(\"shows book title and author\", () => {",
+          "reason": "patterns/1.md: one title promise has evidence; 'report #1 at P1' when another is unchecked."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-15",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "#1 partial trap: scoreboard; arrival content promise, not an action transition",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-15/tests/v21-cy-15.cy.js",
+          "path": "tests/v21-cy-15.cy.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-381",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-15.cy.js",
+          "line": 3,
+          "source_line": "it(\"shows home and away scores\", () => {",
+          "reason": "patterns/1.md: 'When the test really verifies at least one promised outcome and a further promise goes unchecked ... report #1 at P1'; semantic-review.md: '#1 ... title is the primary source of the unverified promise' and anchors the declaration."
+        },
+        {
+          "finding_id": "V21-382",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-15.cy.js",
+          "line": 4,
+          "source_line": "cy.visit(\"/scores\");",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-383",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-15.cy.js",
+          "line": 4,
+          "source_line": "cy.visit(\"/scores\");",
+          "reason": "semantic-review.md: navigation used to arrive at the page is setup; '#1 ... title is the primary source of the unverified promise' when no action postcondition is missing."
+        },
+        {
+          "finding_id": "V21-384",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-cy-15.cy.js",
+          "line": 3,
+          "source_line": "it(\"shows home and away scores\", () => {",
+          "reason": "patterns/1.md: one title promise has evidence; 'report #1 at P1' when another is unchecked."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-16",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "#1 zero: receipt; generic shell visibility does not verify promised value $84.50",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-16/tests/v21-cy-16.cy.js",
+          "path": "tests/v21-cy-16.cy.js"
+        },
+        {
+          "source": "files/holdout-v21/v21-cy-16/tests/route.js",
+          "path": "tests/route.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-391",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-cy-16.cy.js",
+          "line": 4,
+          "source_line": "it(\"shows receipt total of $84.50\", () => {",
+          "reason": "patterns/1.md: 'P0 when no promised outcome in the title has evidence'; its primary line is the test declaration, also required by semantic-review.md."
+        },
+        {
+          "finding_id": "V21-392",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-16.cy.js",
+          "line": 5,
+          "source_line": "cy.visit(route);",
+          "reason": "semantic-review.md: navigation is setup; the unverified specific value comes from the title, not a missing action postcondition."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-17",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "#1 zero: calendar; generic shell visibility does not verify promised value 09:30",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-17/tests/v21-cy-17.cy.js",
+          "path": "tests/v21-cy-17.cy.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-401",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-cy-17.cy.js",
+          "line": 3,
+          "source_line": "it(\"shows the next appointment at 09:30\", () => {",
+          "reason": "patterns/1.md: 'P0 when no promised outcome in the title has evidence'; its primary line is the test declaration, also required by semantic-review.md."
+        },
+        {
+          "finding_id": "V21-402",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-17.cy.js",
+          "line": 4,
+          "source_line": "cy.visit(\"/calendar\");",
+          "reason": "semantic-review.md: navigation is setup; the unverified specific value comes from the title, not a missing action postcondition."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-18",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "#1 zero: account; generic shell visibility does not verify promised value Gold",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-18/tests/v21-cy-18.cy.js",
+          "path": "tests/v21-cy-18.cy.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-411",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v21-cy-18.cy.js",
+          "line": 3,
+          "source_line": "it(\"shows Gold membership tier\", () => {",
+          "reason": "patterns/1.md: 'P0 when no promised outcome in the title has evidence'; its primary line is the test declaration, also required by semantic-review.md."
+        },
+        {
+          "finding_id": "V21-412",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-18.cy.js",
+          "line": 4,
+          "source_line": "cy.visit(\"/account\");",
+          "reason": "semantic-review.md: navigation is setup; the unverified specific value comes from the title, not a missing action postcondition."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-19",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "mixed: museum; independent arrival-content and action-postcondition gaps",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-19/tests/v21-cy-19.cy.js",
+          "path": "tests/v21-cy-19.cy.js"
+        },
+        {
+          "source": "files/holdout-v21/v21-cy-19/tests/route.js",
+          "path": "tests/route.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-421",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-19.cy.js",
+          "line": 4,
+          "source_line": "it(\"shows Ancient Maps and Room B on the museum page\", () => {",
+          "reason": "patterns/1.md: 'When the test really verifies at least one promised outcome and a further promise goes unchecked ... report #1 at P1'; semantic-review.md: '#1 ... title is the primary source of the unverified promise' and anchors the declaration."
+        },
+        {
+          "finding_id": "V21-422",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-19.cy.js",
+          "line": 12,
+          "source_line": "cy.get(\"[data-testid=Close exhibit]\").click();",
+          "reason": "patterns/2.md: 'Anchor the finding to the action line whose promised result lacks proof'; semantic-review.md: 'use #2 at the causal state-changing action if that action lacks its postcondition'; reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'."
+        },
+        {
+          "finding_id": "V21-423",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-19.cy.js",
+          "line": 5,
+          "source_line": "cy.visit(route);",
+          "reason": "semantic-review.md: arrival navigation is setup for the first title; missing content belongs to #1."
+        },
+        {
+          "finding_id": "V21-424",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-19.cy.js",
+          "line": 9,
+          "source_line": "it(\"restores museum list and closes panel\", () => {",
+          "reason": "semantic-review.md: the second test's missing dismissed-state postcondition is classified once as #2 at the causal action."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-20",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "mixed: support; independent arrival-content and action-postcondition gaps",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-20/tests/v21-cy-20.cy.js",
+          "path": "tests/v21-cy-20.cy.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-431",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-20.cy.js",
+          "line": 3,
+          "source_line": "it(\"shows Login help and High on the support page\", () => {",
+          "reason": "patterns/1.md: 'When the test really verifies at least one promised outcome and a further promise goes unchecked ... report #1 at P1'; semantic-review.md: '#1 ... title is the primary source of the unverified promise' and anchors the declaration."
+        },
+        {
+          "finding_id": "V21-432",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-20.cy.js",
+          "line": 11,
+          "source_line": "cy.get(\"[data-testid=Cancel edit]\").click();",
+          "reason": "patterns/2.md: 'Anchor the finding to the action line whose promised result lacks proof'; semantic-review.md: 'use #2 at the causal state-changing action if that action lacks its postcondition'; reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'."
+        },
+        {
+          "finding_id": "V21-433",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-20.cy.js",
+          "line": 4,
+          "source_line": "cy.visit(\"/support\");",
+          "reason": "semantic-review.md: arrival navigation is setup for the first title; missing content belongs to #1."
+        },
+        {
+          "finding_id": "V21-434",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-20.cy.js",
+          "line": 8,
+          "source_line": "it(\"restores support list and closes panel\", () => {",
+          "reason": "semantic-review.md: the second test's missing dismissed-state postcondition is classified once as #2 at the causal action."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-21",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "mixed: courses; independent arrival-content and action-postcondition gaps",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-21/tests/v21-cy-21.cy.js",
+          "path": "tests/v21-cy-21.cy.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-441",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-21.cy.js",
+          "line": 3,
+          "source_line": "it(\"shows Geometry and 45 min on the courses page\", () => {",
+          "reason": "patterns/1.md: 'When the test really verifies at least one promised outcome and a further promise goes unchecked ... report #1 at P1'; semantic-review.md: '#1 ... title is the primary source of the unverified promise' and anchors the declaration."
+        },
+        {
+          "finding_id": "V21-442",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-21.cy.js",
+          "line": 11,
+          "source_line": "cy.get(\"[data-testid=Close lesson]\").click();",
+          "reason": "patterns/2.md: 'Anchor the finding to the action line whose promised result lacks proof'; semantic-review.md: 'use #2 at the causal state-changing action if that action lacks its postcondition'; reporting.md: 'if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1'."
+        },
+        {
+          "finding_id": "V21-443",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-21.cy.js",
+          "line": 4,
+          "source_line": "cy.visit(\"/courses\");",
+          "reason": "semantic-review.md: arrival navigation is setup for the first title; missing content belongs to #1."
+        },
+        {
+          "finding_id": "V21-444",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-21.cy.js",
+          "line": 8,
+          "source_line": "it(\"restores courses list and closes panel\", () => {",
+          "reason": "semantic-review.md: the second test's missing dismissed-state postcondition is classified once as #2 at the causal action."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-22",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "clean: playlist; both action effects verified",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-22/tests/v21-cy-22.cy.js",
+          "path": "tests/v21-cy-22.cy.js"
+        },
+        {
+          "source": "files/holdout-v21/v21-cy-22/tests/route.js",
+          "path": "tests/route.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-451",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-22.cy.js",
+          "line": 7,
+          "source_line": "cy.get(\"[data-testid=Cancel]\").click();",
+          "reason": "patterns/2.md: both restored and dismissed states have post-action assertions; no Missing Then."
+        },
+        {
+          "finding_id": "V21-452",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-22.cy.js",
+          "line": 7,
+          "source_line": "cy.get(\"[data-testid=Cancel]\").click();",
+          "reason": "patterns/2.md: both sides of the action's state change are asserted, so no partial Missing Then."
+        },
+        {
+          "finding_id": "V21-453",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-22.cy.js",
+          "line": 4,
+          "source_line": "it(\"restores playlist and closes editor\", () => {",
+          "reason": "patterns/1.md: every title promise has corresponding evidence; no name-assertion gap."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-23",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "clean: orders; both action effects verified",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-23/tests/v21-cy-23.cy.js",
+          "path": "tests/v21-cy-23.cy.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-461",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-23.cy.js",
+          "line": 6,
+          "source_line": "cy.get(\"[data-testid=Close]\").click();",
+          "reason": "patterns/2.md: both restored and dismissed states have post-action assertions; no Missing Then."
+        },
+        {
+          "finding_id": "V21-462",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-23.cy.js",
+          "line": 6,
+          "source_line": "cy.get(\"[data-testid=Close]\").click();",
+          "reason": "patterns/2.md: both sides of the action's state change are asserted, so no partial Missing Then."
+        },
+        {
+          "finding_id": "V21-463",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-23.cy.js",
+          "line": 3,
+          "source_line": "it(\"restores orders and closes drawer\", () => {",
+          "reason": "patterns/1.md: every title promise has corresponding evidence; no name-assertion gap."
+        }
+      ]
+    },
+    {
+      "id": "v21-cy-24",
+      "split": "public-development-v21",
+      "framework": "cypress",
+      "design_note": "clean: notes; both action effects verified",
+      "source_files": [
+        {
+          "source": "files/holdout-v21/v21-cy-24/tests/v21-cy-24.cy.js",
+          "path": "tests/v21-cy-24.cy.js"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V21-471",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v21-cy-24.cy.js",
+          "line": 6,
+          "source_line": "cy.get(\"[data-testid=Discard]\").click();",
+          "reason": "patterns/2.md: both restored and dismissed states have post-action assertions; no Missing Then."
+        },
+        {
+          "finding_id": "V21-472",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v21-cy-24.cy.js",
+          "line": 6,
+          "source_line": "cy.get(\"[data-testid=Discard]\").click();",
+          "reason": "patterns/2.md: both sides of the action's state change are asserted, so no partial Missing Then."
+        },
+        {
+          "finding_id": "V21-473",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v21-cy-24.cy.js",
+          "line": 3,
+          "source_line": "it(\"restores notes and dismisses editor\", () => {",
+          "reason": "patterns/1.md: every title promise has corresponding evidence; no name-assertion gap."
+        }
+      ]
+    }
+  ]
+}

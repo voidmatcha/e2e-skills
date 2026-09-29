@@ -20,7 +20,9 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=79f4890e4775a2db94f0f1ee0783683d3405754e45a1d7ca7e117ca129fa4ad1; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=3d633a5288f3a0de8d86a763b243ffc5f22dfa243a36b1ce6138fad87a1f8d61; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+
+Evidence scope: the 15 merged PRs shown here are curated examples, not a total. Field review v1 separately records 29 submitted / 16 merged / 6 closed / 7 open under its skill-name inclusion rule; do not combine the two denominators. These are recorded snapshots, not current GitHub totals.
 
 `e2e-skills`는 AI 코딩 에이전트가 Playwright와 Cypress E2E 테스트를 생성하고 리뷰하며 실패 원인을 분석할 때 쓰는 네 종류의 Agent Skills 모음입니다. 새 테스트 생성은 Playwright를 지원하고, 기존 테스트나 PR/diff 범위의 변경 사항 리뷰와 실패 분석은 Playwright와 Cypress를 지원합니다. 리뷰 목록 가운데 규칙만으로 판별할 수 있는 항목을 찾는 `deterministic scanner`도 포함합니다.
 
@@ -236,7 +238,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 새 E2E 테스트를 만들거나 기존 테스트를 리뷰하고, 실패한 Playwright/Cypress 실행의 원인을 분석할 때 이 스킬을 사용하세요. 이 도구는 실제 애플리케이션과 E2E 테스트 모음을 보완하며, 이를 대신하지 않습니다. 범용 `lint` preset도, 프레임워크 독립형 테스트 도구도 아닙니다. Playwright와 Cypress를 지원하되, 새 테스트 생성은 현재 Playwright만 지원합니다.
 
-함께 제공되는 셸 스크립트와 artifact reader는 macOS/Linux 셸을 대상으로 합니다. Windows 사용자는 WSL에서 실행하고 scan/report artifact를 WSL filesystem 안에 두어야 합니다.
+The bundled shell scripts and artifact readers target conventional macOS/Linux layouts with `/bin/bash` and the fixed system executable paths required by their launchers. Windows users need a compatible WSL distribution and artifacts inside the WSL filesystem; native Windows is not supported. NixOS and Nix-, pyenv-, Conda-, or nvm-only tool installations are not universally auto-discovered. The reviewer scanner supports validated absolute `E2E_SMELL_*_BIN` overrides; this does not imply the same overrides exist in the generator or debugger launchers. Missing trusted tools stop the affected operation; do not bypass that boundary with ambient `PATH` lookup. Resolve skill resources from the actual host-provided skill location, including plugin caches and custom installs, not a guessed home directory.
 
 새로 만든 테스트가 통과하는 것만으로는 충분하지 않습니다. `Locator`나 `Promise` 자체를 검증하거나, 테스트 이름에 적힌 동작과 무관한 상태를 확인하거나, 핵심 검증문이 테스트 결과에 영향을 주지 않을 수도 있습니다. 그래서 generator는 적용 가능한 [V1–V6 검증](skills/playwright-test-generator/verification-rules.md)을 모두 통과하기 전까지 새 테스트를 후보로 취급합니다.
 
@@ -270,6 +272,12 @@ merge 건수를 전체 제출 건수와 함께 볼 수 있습니다. [Field revi
 - 브라우저 결함 주입은 **12개 결함 연산자와 3개 예상 결과를 조합한 Playwright/Cypress 셀 36개 중 36개**에서 완료했습니다. 이는 하네스 자체 검사입니다. 애플리케이션, 견고한 테스트, 주입한 결함, 취약한 테스트를 모두 이 저장소에서 작성했으므로, 탐지기가 설계대로 동작한다는 것을 보여줄 뿐 일반화를 뜻하지 않습니다.
 - [Healer perturbation v1](benchmarks/healer-perturbation-v1/README.md)은 **동결된 Codex 셀 30개 중 30개**를 완료하고 `REJECT`를 반환했습니다. 보호 문구를 적용한 공식 healer prompt와 이 저장소가 제안한 Step 7 흐름 모두 수리가 불가능한 `honesty control` 3개를 전부 약화했습니다. 이 결과는 두 healer 경로를 안전한 기본값으로 채택하지 않는다는 뜻이며, Claude나 일반적인 healer 품질 또는 리뷰 정확도를 측정한 결과가 아닙니다. 제품 지침도 변경하지 않았습니다.
 - 정밀 리뷰어 벤치마크는 **입증된 허위 통과 사례 12개와 정상 코드 보호 사례 12개**를 다룹니다. 결함 사례 중 10개에는 바이트 단위로 동일한 연산자 변경을 적용했습니다.
+- [실제 코드 수정 전후 쌍](benchmarks/fixpair-v1/README.md)의 B+C+D 배치에서 엄격한 재현율은 **스킬 사용 시 25/33, 미사용 시 13/33**이고, 수정 후(AFTER) 오탐은 양쪽 모두 **0/33**입니다. 두 번째 모델 `gpt-6-astra`의 B 배치 결과는 **10/15 대 10/15**이며, 양쪽 모두 오탐은 **0/15**입니다.
+- [의미 기반 변이 테스트 v1](benchmarks/semantic-mutants-v1/README.md)은 실제 테스트 파일에 모델이 주입한 결함을 다룹니다. S1의 엄격한 재현율은 **7/10 대 5/10**(원본 대조군 오탐 각 1건), S2는 **8/9 대 2/9**(오탐 각 0건), S3는 **5/6 대 2/6**(오탐 0건 대 2건)입니다. 각각 한 번 실행한 개발 측정이며 #12는 다루지 않았습니다.
+- [Reviewer holdout v21](benchmarks/reviewer-holdout-v21/README.md)은 명시적인 #2 문구를 지지하지 않았습니다. 480회 호출에서 full의 안정 F1이 **1.000 → 0.980**으로 떨어졌습니다. 2.0.0 문구를 유지하며, 부분적으로 검증된 #2는 두 군 모두 이미 P1로 판정했습니다.
+- 공개하지 않은 로컬 전용 AGPL 배치를 포함한 전체 집계는 **36/44 대 23/44**이며, 수정 후(AFTER) 오탐은 **0 대 1**입니다. [현장 모델 비교](docs/ai-reviewer-benchmark.md#field-model-comparison)는 실제 저장소의 테스트 파일 19개에 대한 별도의 로컬 측정 결과를 보고합니다.
+**어떤 모델을 선택할까요?** 이 로컬 평가에서는 스킬을 사용한 `gpt-6-sol`의 재현율이 가장 높았습니다. `claude-sonnet-5-5`는 실제 테스트 파일 19개 모두에서 절차를 지켰고 측정된 입력 토큰 사용량이 가장 적었지만, 작은 수정 전후 쌍과 의미 기반 변이 배치에서 스킬로 얻은 재현율 향상은 거의 없었습니다. 주된 효과는 오탐 감소였습니다. `gpt-6-astra`와 Sonnet 5.5 같은 강한 모델은 스킬 없이도 기계적인 결함을 많이 찾았습니다. `claude-fable-5`도 좋은 점수를 받았지만, [Anthropic에 따르면 Fable은 플랜 한도를 더 빨리 소진하며 Max 플랜에서는 주간 한도의 50%까지만 사용할 수 있습니다](https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan). 이 결과는 각 표본을 한 번 실행한 해당 모델 버전의 개발 측정치입니다.
+
 - Reviewer holdout v7은 `no-skill` 검증 6개를 모두 통과했지만 `catalog-only` 기준에는 실패했습니다. Full은 precision `0.956522` 대 `0.884615`, clean specificity `1.0` 대 `0.75`로 높고 recall은 `0.916667` 대 `0.958333`로 낮아, skill-lift를 주장하지 않습니다.
 - 독립 제품 리뷰의 견고성 게이트 v4, v5, v7, v8, v11은 사전 등록 기준에 실패했습니다. v6와 v9은 실행하지 않았고, v10은 시도 3회 중 1회만 실행한 상태에서 같은 동결 리뷰 입력을 그대로 쓰는 v11로 대체했습니다. v1부터 v11까지는 현재 릴리스 게이트가 아니라 이전 견고성 근거로 보존합니다.
 - `debugger` 프로토콜은 다시 실행할 수 있는 합성 사례 30개를 제공하지만, 독립적으로 확립된 `debugger` 정확도를 주장하지는 않습니다.
@@ -309,7 +317,7 @@ merge 건수를 전체 제출 건수와 함께 볼 수 있습니다. [Field revi
 | 6 | **직접 DOM 쿼리** | `evaluate()` 안에서 `document.querySelector` 사용 | 프레임워크의 locator/query API(`locator` / `cy.get`) 사용 |
 | 9 | **고정 시간 대기** | `waitForTimeout(2000)` / `cy.wait(2000)` / `waitForLoadState('networkidle')` | 프레임워크의 자동 대기를 활용하고 조건 기반 대기 사용 |
 | 10 | **불안정한 테스트 패턴** | 근거 주석 없는 `items.nth(2)`, `test.describe.serial()`, 범위가 정해지지 않은 접근성 이름 부분 문자열(10c), Cypress 비동기 콜백, 변수에 할당한 `cy` 명령, 계속 이어지는 동작 체인(10d–10f) | 안정적이고 범위가 명확한 locator와 독립적인 테스트 사용. Cypress 작업은 명령 흐름 안에 유지하고 Chainable을 값으로 할당하지 않으며 동작 후 다시 쿼리 |
-| 13 | **일관되지 않은 POM 사용** | POM을 import했지만 테스트가 POM이 맡은 동작에 직접 `page.fill`/`page.click` 사용 | 모든 상호작용을 POM으로 보내 UI 변경 지점을 한곳으로 통합 |
+| 13 | **일관되지 않은 POM 사용** | Raw actions bypass a source-established same-page POM boundary; existence alone is insufficient | Reuse the proven boundary; do not invent a wrapper merely because a POM exists |
 | 14 | **하드코딩된 자격 증명** | 테스트 코드에 `loginPage.login('demo-admin', '<literal-password>')` 사용 | `process.env.TEST_USER`, Playwright 설정의 secret, 테스트 데이터 fixture 사용 |
 | 15 | **`expect()`의 `await` 누락** | 비동기 Locator/Page web-first matcher Promise의 실행 순서와 결과를 확인하지 않음. 거부된 Promise는 대개 나중에 엉뚱한 위치의 오류로 나타남 | matcher Promise를 `await`하거나 반환. 동기 값 matcher는 제외 |
 | 16 | **동작의 `await` 누락** | actionability 확인, 동작 순서, 탐색이 뒤따르는 작업과 경합할 수 있음. 거부된 Promise는 대개 나중에 엉뚱한 위치의 오류로 나타남 | 동작 Promise를 `await`하거나 반환 |
@@ -436,6 +444,7 @@ Claude Code와 Codex, 그리고 `skills` CLI가 지원하는 55개 이상의 실
 - [`debugger` 벤치마크 프로토콜](docs/debugger-benchmark/README.md)
 - [지원 프레임워크 범위](docs/framework-scope.md)
 - [로드맵](docs/roadmap.md)
+- [Reviewer evidence execution plan and optional Jev experiment](docs/plans/reviewer-evidence-next-steps.md)
 
 앞으로 모델 간 규칙 적용의 일관성을 높이고 규칙 기반 검사의 범위를 넓힐 계획입니다. 전용 검증을 통과하기 전에는 로드맵의 어떤 항목도 출시된 기능으로 설명하지 않습니다.
 

@@ -482,7 +482,7 @@ restore "$file"
 # Case 5: Quick Reference row count drift (Check 3c)
 file="skills/e2e-reviewer/SKILL.md"
 backup "$file"
-mutate "$file" "| 1 | Name-Assertion | P0 | LLM | Noun in name with no matching \`expect()\` |
+mutate "$file" "| 1 | Name-Assertion | P0 | LLM | Noun in name with no matching \`expect()\`. P1 when the test verifies one promised outcome and misses another |
 " ""
 assert_fails "Check 3c — QR row count drift" "expected 24 rows"
 restore "$file"
@@ -907,8 +907,8 @@ file="README.md"
 backup "$file"
 mutate \
   "$file" \
-  "Windows users should run them through WSL" \
-  "Windows users should run them through a compatible shell"
+  "Windows users need a compatible WSL distribution" \
+  "Windows users need a compatible shell"
 assert_fails \
   "README i18n parity — Windows limitation keeps the WSL boundary" \
   "README.md Scope and limits section missing platform-limit tokens ['WSL execution/filesystem boundary']"

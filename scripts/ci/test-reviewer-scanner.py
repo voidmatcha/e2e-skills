@@ -106,6 +106,7 @@ def scan_path(
     privileged: bool = True,
     timeout: int | None = None,
     scanner: Path | None = None,
+    leading_args: tuple[str, ...] = (),
 ) -> subprocess.CompletedProcess[str]:
     ast_grep_policy_keys = {
         "E2E_SMELL_AST_GREP_BIN",
@@ -140,7 +141,7 @@ def scan_path(
     command = ["/bin/bash"]
     if privileged:
         command.append("-p")
-    command.extend((str(scanner or SCANNER), str(path)))
+    command.extend((str(scanner or SCANNER), *leading_args, str(path)))
     return subprocess.run(
         command,
         cwd=ROOT,
@@ -165,7 +166,6 @@ def assert_eslint_registry_fallback_uses_reviewed_exact_pins() -> None:
         "eslint-plugin-cypress": "6.4.3",
         "@typescript-eslint/parser": "8.65.0",
         "typescript": "6.0.3",
-        "eslint-plugin-cypress-silent-pass": "0.2.2",
         "eslint-plugin-mocha": "12.0.1",
     }
     start = source.index("    npx_args=(\n", source.index("try_eslint()"))
@@ -176,6 +176,10 @@ def assert_eslint_registry_fallback_uses_reviewed_exact_pins() -> None:
         assert download_contract.count(exact) == 1, (
             f"optional ESLint registry fallback must request {exact} exactly once"
         )
+    assert "-p 'eslint-plugin-cypress-silent-pass@" not in download_contract, (
+        "the optional registry path must not load the Cypress companion whose "
+        "cy.get findings are not unconditional silent passes"
+    )
     assert "eslint-plugin-$plugin" not in download_contract
     assert "@latest" not in download_contract
     # Only the direct specs above are pinned; npm still resolves the transitive
@@ -228,9 +232,9 @@ def assert_eslint_download_path_delegates_every_npx_call() -> None:
         "try_eslint must reach npx only through run_pinned_npx; a direct "
         "NPX_BIN invocation bypasses the private cwd and the pinned npm config"
     )
-    assert body.count("run_pinned_npx ") >= 2, (
-        "both the plugin/parser resolve and the silent-pass resolve must go "
-        "through run_pinned_npx"
+    assert body.count("run_pinned_npx ") == 1, (
+        "the single plugin/parser/ESLint resolve must go through run_pinned_npx; "
+        "a second companion-plugin download is outside the reviewed boundary"
     )
 
     helper = eslint_download_helper_source("run_pinned_npx")
@@ -758,6 +762,55 @@ def assert_non_ascii_identifier_scans_under_utf8_locale() -> None:
             assert result.returncode == 0, (locale, result.returncode, result.stdout[-2000:])
             assert "INCOMPLETE" not in result.stdout, (locale, result.stdout[-2000:])
             assert "#9 Playwright hard-coded sleep" in result.stdout, (locale, result.stdout[-2000:])
+
+
+def assert_report_file_writes_full_report_and_prints_digest() -> None:
+    """--report-file keeps the full report on disk and prints a bounded digest."""
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-report-") as temp:
+        root = Path(temp) / "project"
+        root.mkdir()
+        (root / "package.json").write_text(
+            '{"name":"p","devDependencies":{"@playwright/test":"1.62.1"}}\n', encoding="utf-8"
+        )
+        for name in ("a", "b"):
+            (root / f"{name}.spec.ts").write_text(
+                "import { test, expect } from '@playwright/test';\n"
+                "test.only('focused', async ({ page }) => {\n"
+                "  await page.waitForTimeout(1000);\n"
+                "  await page.waitForTimeout(2000);\n"
+                "  await expect(page.getByText('ok')).toBeVisible();\n"
+                "});\n",
+                encoding="utf-8",
+            )
+        plain = scan_path(root)
+        report = Path(temp) / "report.txt"
+        digest = scan_path(root, leading_args=("--report-file", str(report)))
+        assert digest.returncode == plain.returncode == 1, (plain.returncode, digest.returncode)
+        full = report.read_text(encoding="utf-8")
+        assert "Summary:" in full and "#7" in full, full[-2000:]
+        hit_lines = [line for line in full.splitlines() if line.startswith("  ") and ".spec.ts:" in line]
+        assert hit_lines, full
+        for line in hit_lines:
+            assert line not in digest.stdout, line
+        assert "Summary:" in digest.stdout, digest.stdout
+        assert f"full report with every hit line: {report}" in digest.stdout, digest.stdout
+        summary = next(line for line in full.splitlines() if line.startswith("Summary:"))
+        assert digest.stdout.rstrip("\n").splitlines()[-1] == summary, digest.stdout[-500:]
+        for name in ("a", "b"):
+            count = sum(1 for line in hit_lines if f"/{name}.spec.ts:" in line)
+            assert f"/{name}.spec.ts: {count}\n" in digest.stdout, (name, count, digest.stdout)
+
+        refused = scan_path(root, leading_args=("--report-file", str(report)))
+        assert refused.returncode == 2 and "already exists" in refused.stdout, refused.stdout
+        assert report.read_text(encoding="utf-8") == full, "an existing report was overwritten"
+        link = Path(temp) / "link.txt"
+        link.symlink_to(Path(temp) / "target.txt")
+        refused = scan_path(root, leading_args=("--report-file", str(link)))
+        assert refused.returncode == 2 and not (Path(temp) / "target.txt").exists(), refused.stdout
+        refused = scan_path(root, leading_args=("--report-file", str(Path(temp) / "missing/r.txt")))
+        assert refused.returncode == 2 and "existing, non-symlink directory" in refused.stdout, refused.stdout
+        usage = scan_path(root, leading_args=("--report-file", ""))
+        assert usage.returncode == 2 and "usage" in usage.stdout, usage.stdout
 
 
 def assert_ast_grep_fixed_candidates_exclude_system_sg() -> None:
@@ -6864,6 +6917,7 @@ def main() -> None:
         assert_ast_grep_can_be_disabled_even_when_installed,
         assert_ast_grep_fixed_candidates_exclude_system_sg,
         assert_non_ascii_identifier_scans_under_utf8_locale,
+        assert_report_file_writes_full_report_and_prints_digest,
         assert_ast_grep_fail_closed,
         assert_explicit_tool_binds_canonical_resolved_path,
         assert_default_versioned_tool_symlink_executes,

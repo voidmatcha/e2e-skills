@@ -2,6 +2,8 @@
 
 Read this file after findings are verified and before synthesizing systemic issues, coverage gaps, or the final review. It contains the full systemic/coverage procedure and every output template and discipline rule; `SKILL.md` retains their non-negotiable outcomes.
 
+**Contents:** Phase 2.5: Systemic Issues · Phase 3: Coverage Gap Analysis (After Review) · Output Format · Output discipline
+
 ## Phase 2.5: Systemic Issues
 
 After individual findings are catalogued, synthesize cross-cutting patterns that affect the test suite as a whole. Check for:
@@ -75,23 +77,28 @@ Every field is mandatory; use `none`, `unavailable`, or `not executed`. `Static 
 Present findings grouped by severity:
 
 ```markdown
-## [P0/P1/P2] [filename] — [issue type]
+## [P0/P1/P2] [filename] — #[pattern ID] [issue type]
 
 ### `[test name or POM method]`
 - **Issue:** [description]
 - **Attribution (diff mode):** [introduced | worsened | pre-existing | N/A in full mode]
 - **Fix:** [name change / assertion addition / merge / deletion]
 - **Verification:** [smallest applicable V1–V6 proof from `references/verification-rules.md`, or `N/A`; state `recommended` unless an actual command/result proves it ran]
-- **§4.1 row:** [REQUIRED whenever **Code:** is present — quote the AVOID → USE row for this pattern verbatim from `references/applying-fixes.md`, or write `no row (judgement call)` if the table has none]
+- **§4.1 row:** [REQUIRED whenever **Code:** is present — quote the AVOID → USE row for this pattern verbatim from `references/fix-replacements.md` or `references/applying-fixes.md` §4.1 (or its conditional `references/rtl-jest-dom-fixes.md` row for RTL #4f), or write `no row (judgement call)` if the table has none]
 - **Code:**
   ```typescript
   // concrete code to add or change
   ```
 ```
 
+Every finding heading names its pattern ID from the Quick Reference, such as `## [P0] tests/login.spec.ts — #5a Conditional assertion bypass`; a heading with only a prose title cannot be matched to the catalog by readers or tools. When one block reports several patterns, list every ID, such as `#9 #10a`.
+Every finding heading is a level-2 heading starting at the beginning of its line with `## [`, exactly as the template shows; never nest it under another heading such as `## Findings` or use `### [P`. Test-case subheadings inside a finding remain `###`.
+
 Every diff finding must include the explicit `Attribution (diff mode)` field; attribution only in a heading is insufficient.
 
-The **§4.1 row** field is a slot, not a reminder: it cannot be filled without opening `references/applying-fixes.md`, which is the point. A fix emitted with that field blank or paraphrased was written without the canonical replacement table and must be redone against it.
+Cite every location as a full `path:line` relative to the repository root, such as `apps/web/playwright/login.e2e.ts:42`. Do not cite absolute paths, which expose the reviewer's local directories when a review is shared, or shortened suffixes such as `tasks/login.ts:42`, which can match more than one file.
+
+The **§4.1 row** field is a slot, not a reminder: it cannot be filled without opening `references/fix-replacements.md` or `references/applying-fixes.md` (or its conditional `references/rtl-jest-dom-fixes.md` row for RTL #4f), which is the point. A fix emitted with that field blank or paraphrased was written without the canonical replacement table and must be redone against it.
 
 **After all findings, append a summary table and top priorities:**
 

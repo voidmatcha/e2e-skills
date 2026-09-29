@@ -1,4 +1,16 @@
-# Upstream Contributions: Track Record and Roadmap
+# Roadmap and Upstream Contributions
+
+## Current reviewer-evidence work
+
+The active goal is to measure clean-case false positives and the full reviewer's added value over no-skill and catalog-only baselines. The [current execution plan](plans/reviewer-evidence-next-steps.md) separates completed development work, unresolved evidence gaps, ordered next steps and an optional Jev shadow experiment. [Benchmark status](../benchmarks/STATUS.md) remains the source of truth for measured outcomes.
+
+**Next:** obtain a complete, auditable setup/caller/reverse-user boundary and independent clean labels before registering another counted feasibility batch. The unresolved-context admission gate is already enforced. Only after feasibility may a new protocol admit a corpus and run the three-arm comparison. Frozen specificity v4 remains blocked; the separate development work has not produced a release corpus or a specificity result. Jev requires separate API-access/cost confirmation and does not block the Codex path.
+
+**Execution update:** the unresolved-context admission gate and an opt-in TypeScript AST diagnostic are implemented and tested. Offline replays on three existing cases now bind staged aliases/re-exports and extract literal setup-project dependencies, without executing target code or promoting static bindings to runtime proof. Bounded source expansion still covers only part of the Mermaid test root, and the earlier sixty-request budget remains exhausted. Complete usage boundaries, setup/runtime evidence and independent labels remain missing; later evaluation stages are not complete. See the current plan for exact replay counts, hashes and verification limits.
+
+## Upstream contribution track
+
+The contribution ledger below is preserved separately from the current benchmark plan. Its PR statuses and counts were not refreshed as part of the 2026-09-22 roadmap consolidation; check upstream before treating them as current.
 
 This page tracks self-selected upstream contributions and future candidates. Merged PRs are adoption and case evidence: they show that maintainers accepted specific fixes, but they are not a representative validation set or a product-accuracy estimate. Open false-green fixes show the next contribution queue; reviewer-informed maintenance that does not repair a false-green test is tracked separately.
 

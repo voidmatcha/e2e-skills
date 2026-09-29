@@ -1,0 +1,12 @@
+[
+  {
+    "id": "s-1",
+    "title": "Harbor Lights",
+    "liked": true
+  },
+  {
+    "id": "s-2",
+    "title": "Paper Moons",
+    "liked": false
+  }
+]

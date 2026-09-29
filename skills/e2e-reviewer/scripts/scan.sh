@@ -21,6 +21,72 @@ builtin export LANG=C LC_ALL=C LC_CTYPE=C
 
 builtin set -uo pipefail
 
+# --report-file PATH writes the full report to PATH and prints a digest: every
+# line except individual hits, then hit counts per file. A directory scan of a
+# real suite can print hundreds of KB, more than an agent host shows in one tool
+# result. PATH is still untrusted here, so this block uses builtins only; the
+# scan itself runs in a fresh invocation that performs every normal check.
+if [[ "${1:-}" == "--report-file" ]]; then
+  if (( $# < 2 || $# > 3 )) || [[ -z "$2" ]]; then
+    printf 'error: usage: scan.sh --report-file <new-file> [scan-root]\n' >&2
+    exit 2
+  fi
+  report_file="$2"
+  report_dir="${report_file%/*}"
+  [[ "$report_dir" == "$report_file" ]] && report_dir="."
+  [[ -z "$report_dir" ]] && report_dir="/"
+  if [[ -e "$report_file" || -L "$report_file" ]]; then
+    printf 'error: --report-file %s already exists; choose a new path\n' "$report_file" >&2
+    exit 2
+  fi
+  if [[ ! -d "$report_dir" || -L "$report_dir" ]]; then
+    printf 'error: --report-file directory %s must be an existing, non-symlink directory\n' "$report_dir" >&2
+    exit 2
+  fi
+  builtin set -o noclobber
+  exec 3> "$report_file" || {
+    printf 'error: cannot create --report-file %s\n' "$report_file" >&2
+    exit 2
+  }
+  builtin set +o noclobber
+  "$BASH" -p "${BASH_SOURCE[0]}" "${@:3}" >&3 3>&-
+  scan_status=$?
+  exec 3>&-
+  report_files=() report_counts=() report_summary=""
+  while IFS= builtin read -r report_line || [[ -n "$report_line" ]]; do
+    [[ "$report_line" == Summary:* ]] && report_summary="$report_line"
+    if [[ "$report_line" =~ ^\ \ (/[^:]+|[^[:space:]:][^:]*):[0-9]+: ]]; then
+      hit_file="${BASH_REMATCH[1]}"
+      found=0
+      for ((i = 0; i < ${#report_files[@]}; i++)); do
+        if [[ "${report_files[i]}" == "$hit_file" ]]; then
+          report_counts[i]=$((report_counts[i] + 1))
+          found=1
+          break
+        fi
+      done
+      if (( !found )); then
+        report_files+=("$hit_file")
+        report_counts+=(1)
+      fi
+    else
+      printf '%s\n' "$report_line"
+    fi
+  done < "$report_file"
+  printf '\nHits per file (full report with every hit line: %s):\n' "$report_file"
+  if (( ${#report_files[@]} == 0 )); then
+    printf '  none\n'
+  fi
+  for ((i = 0; i < ${#report_files[@]}; i++)); do
+    printf '  %s: %s\n' "${report_files[i]}" "${report_counts[i]}"
+  done
+  # Repeat the Summary last so a reader that keeps only the tail still sees it.
+  if [[ -n "$report_summary" ]]; then
+    printf '\n%s\n' "$report_summary"
+  fi
+  exit "$scan_status"
+fi
+
 if (( $# > 1 )); then
   printf 'error: multiple scan roots are not supported; invoke scan.sh once per root\n' >&2
   exit 2
@@ -825,7 +891,7 @@ scope_graph_call() {
     *) request=(--op query --node "$1" --visited "$2" --depth "$3") ;;
   esac
   "$PYTHON3_BIN" -I -B "$SCANNER_DIR_REAL/scope-worker.py" client \
-    --socket "$SCANNER_TEMP_ROOT/scope.sock" \
+    --channel "$SCANNER_TEMP_ROOT/scope" \
     --control "$SCANNER_TEMP_ROOT/scope-worker.json" "${request[@]}"
   rc=$?
   # Exit 3 is a proven negative. An interpreter/helper crash can exit 1,
@@ -2577,7 +2643,7 @@ allocate_temp SUPPRESSED_P0_CANDIDATES_FILE
 # Start once in the main shell after its error sink is ready. A failed worker
 # is never restarted: that would discard historical dependency witnesses.
 "$PYTHON3_BIN" -I -B "$SCANNER_DIR_REAL/scope-worker.py" serve \
-  --socket "$SCANNER_TEMP_ROOT/scope.sock" \
+  --channel "$SCANNER_TEMP_ROOT/scope" \
   --control "$SCANNER_TEMP_ROOT/scope-worker.json" \
   --engine "$SCANNER_DIR_REAL/scope-graph.py" --parent-pid "$$" \
   --project "$PROJECT_ROOT_REAL" --helper "$SCANNER_DIR_REAL/scope-source.sh" \
@@ -2848,15 +2914,15 @@ try_eslint() {
       -p '@typescript-eslint/parser@8.65.0'
       -p 'typescript@6.0.3'
     )
-    # The companion silent-pass plugin is Cypress-only now. Its Playwright counterpart was
-    # upstreamed as `no-unnecessary-assertions`, shipped in eslint-plugin-playwright v2.11.0 and
-    # enabled by that plugin's `recommended` config — so #4f is covered by Tier 1 with no extra
-    # package, and eslint-plugin-playwright-silent-pass is deprecated on npm. Downloading it here
-    # would pull a deprecated package and double-report the same finding.
+    # Playwright #4f is covered by `no-unnecessary-assertions`, shipped in
+    # eslint-plugin-playwright v2.11.0 and enabled by its recommended config.
+    # Do not load a Cypress companion here: eslint-plugin-cypress-silent-pass@0.2.2
+    # also flags assertions on queued `cy.get(...)` chains even though a missing
+    # element still fails when Cypress executes the query. Treating those hits as
+    # silent-pass P0s would overstate the runtime behavior.
     if [[ "$plugin" == "cypress" ]]; then
       npx_args+=(
         -p 'eslint-plugin-cypress@6.4.3'
-        -p 'eslint-plugin-cypress-silent-pass@0.2.2'
         -p 'eslint-plugin-mocha@12.0.1'
       )
     else
@@ -2956,29 +3022,6 @@ EOFRES
     fi
   fi
 
-  # Companion silent-pass plugin — Cypress only. Best-effort: resolved separately so a
-  # missing/offline package NEVER breaks Tier 1, and Tier 2/3 still cover #4f regardless.
-  # Playwright is deliberately excluded: #4f was upstreamed as `no-unnecessary-assertions`
-  # (mskelton/eslint-plugin-playwright#470), shipped in v2.11.0, and enabled by that plugin's
-  # `recommended` config — which the flat/recommended spread below already pulls in. Resolving
-  # the companion here too would load a package now deprecated on npm and double-report #4f.
-  # The rule id still is not hardcoded: it arrives through recommended, so an older
-  # eslint-plugin-playwright simply does not enable it instead of erroring "rule not found".
-  local _sp_abs="" _sp_paths="" _sp_imp="" _sp_plg="" _sp_rul=""
-  if [[ "$plugin" == "cypress" ]]; then
-    if [[ "$mode" == "locally installed" ]]; then
-      _sp_paths=$( (cd "$PROJECT_ROOT_REAL" && "$NODE_BIN" "$_cfgd/resolve.cjs" "eslint-plugin-$plugin-silent-pass") 2>/dev/null | tail -1 )
-    else
-      _sp_paths=$(run_pinned_npx "${npx_args[@]}" "$NODE_BIN" "$_cfgd/resolve.cjs" "eslint-plugin-$plugin-silent-pass" 2>/dev/null | tail -1)
-    fi
-  fi
-  if [[ "$_sp_paths" == "["* ]]; then
-    _sp_abs=$(printf '%s' "$_sp_paths" | sed 's/^\["//; s/"\]$//')
-    _sp_imp="import spp from '$_sp_abs';"
-    _sp_plg=", '$plugin-silent-pass': spp"
-    _sp_rul=", '$plugin-silent-pass/no-silent-pass': 'error'"
-  fi
-
   # Respect the project's own flat config when it has one. ESLint flat config is an array
   # and later entries win, so appending the project's config after ours lets a deliberate
   # `'playwright/no-force': 'off'` actually take effect instead of being overridden by our
@@ -3009,14 +3052,14 @@ EOFRES
     {
       printf "import playwright from '%s';\n" "$_plugin_abs"
       printf "import tsParser from '%s';\n" "$_parser_abs"
-      printf '%s%s\n' "$_sp_imp" "$_localimport"
+      printf '%s\n' "$_localimport"
       printf "export default [\n  { ignores: ['**/node_modules/**','**/dist/**','**/build/**','**/.next/**','**/out/**','**/coverage/**','**/*.min.js',%s] },\n" "$_evalign"
       printf '  {\n    files: [%s],\n' "$ESLINT_FILE_GLOBS"
-      printf '    plugins: { playwright%s },\n' "$_sp_plg"
+      printf '    plugins: { playwright },\n'
       cat <<'EOFCFG'
     languageOptions: { parser: tsParser, ecmaVersion: 'latest', sourceType: 'module', parserOptions: { ecmaFeatures: { jsx: true } } },
 EOFCFG
-      printf "    rules: { ...(playwright.configs['flat/recommended'] ?? playwright.configs.recommended).rules%s },\n" "$_sp_rul"
+      printf "    rules: { ...(playwright.configs['flat/recommended'] ?? playwright.configs.recommended).rules },\n"
       printf '  },\n%s\n];\n' "$_localspread"
     } > "$_cfg"
   else
@@ -3024,17 +3067,17 @@ EOFCFG
       printf "import cypress from '%s';\n" "$_plugin_abs"
       printf "import mocha from '%s';\n" "$_mocha_abs"
       printf "import tsParser from '%s';\n" "$_parser_abs"
-      printf '%s%s\n' "$_sp_imp" "$_localimport"
+      printf '%s\n' "$_localimport"
       cat <<'EOFCFG'
 const cypressRules = (cypress.configs['flat/recommended'] ?? cypress.configs.recommended).rules;
 EOFCFG
       printf "export default [\n  { ignores: ['**/node_modules/**','**/dist/**','**/build/**','**/coverage/**','**/*.min.js',%s] },\n" "$_evalign"
       printf '  {\n    files: [%s],\n' "$ESLINT_FILE_GLOBS"
-      printf '    plugins: { cypress, mocha%s },\n' "$_sp_plg"
+      printf '    plugins: { cypress, mocha },\n'
       cat <<'EOFCFG'
     languageOptions: { parser: tsParser, ecmaVersion: 'latest', sourceType: 'module', parserOptions: { ecmaFeatures: { jsx: true } } },
 EOFCFG
-      printf "    rules: { ...cypressRules, 'mocha/no-exclusive-tests': 'error'%s },\n" "$_sp_rul"
+      printf "    rules: { ...cypressRules, 'mocha/no-exclusive-tests': 'error' },\n"
       printf '  },\n%s\n];\n' "$_localspread"
     } > "$_cfg"
   fi
@@ -3197,7 +3240,7 @@ EOFCFG
   # and deduplicate only the same file/line/rule-class fingerprint.
   # Map covered eslint rule IDs onto the same counters Tier 3 uses:
   #   P0: no-focused-test (#7), mocha no-exclusive-tests (#7 Cypress),
-  #       no-silent-pass (#4f companion plugin)
+  #       Playwright no-unnecessary-assertions (#4f)
   #   P1: missing-playwright-await (#15/#16), no-wait-for-timeout (#9),
   #       no-unnecessary-waiting (#9b)
   # Count Tier-1 hits, routing JUSTIFIED P0 to external-review candidates while
@@ -3225,14 +3268,12 @@ EOFCFG
             case "$_etrim" in
               */no-focused-test|*/no-exclusive-tests)
                 _t1_p0=$((_t1_p0 + 1)); _dclass='focused-test' ;;    # #7 — never JUSTIFIED-exempt
-              */no-silent-pass|*/no-unnecessary-assertions)
+              *" playwright/no-unnecessary-assertions")
                 if _line_is_justified "$_efp" "$_elno"; then
                   record_justified_suppression P0 '#4f' "$_efp" "$_elno"
                 else
                   _t1_p0=$((_t1_p0 + 1))
-                  case "$_etrim" in
-                    */no-silent-pass|*/no-unnecessary-assertions) _dclass='silent-pass' ;;
-                  esac
+                  _dclass='silent-pass'
                 fi ;;
               */missing-playwright-await|*/no-wait-for-timeout|*/no-unnecessary-waiting)
                 if _line_is_justified "$_efp" "$_elno"; then

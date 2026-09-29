@@ -1,0 +1,12 @@
+{
+  "/search/repositories?q=language%3ATypeScript+pushed%3A%3E%3D2025-09-21+size%3A%3E%3D1000&sort=stars&order=desc&per_page=100&page=1": {"body": "search.json"},
+  "/search/repositories?q=language%3AJavaScript+pushed%3A%3E%3D2025-09-21+size%3A%3E%3D1000&sort=stars&order=desc&per_page=100&page=1": {"body": "search.json"},
+  "/repos/acme/example": {"body": "repository.json"},
+  "/repos/acme/example/commits/main": {"body": "commit.json"},
+  "/repos/acme/example/git/trees/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?recursive=1": {"body": "tree.json"},
+  "/repos/acme/example/git/blobs/package": {"body": "blob-package.json"},
+  "/repos/acme/example/git/blobs/playwright": {"body": "blob-playwright.json"},
+  "/repos/acme/example/git/blobs/cypress": {"body": "blob-cypress.json"},
+  "/repos/acme/example/git/blobs/helper": {"body": "blob-helper.json"},
+  "/repos/acme/example/license?ref=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {"body": "license.json"}
+}
