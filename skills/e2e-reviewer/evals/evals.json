@@ -988,7 +988,7 @@
     {
       "id": 60,
       "prompt": "Review evals/files/scanner-2.0-regressions.spec.ts for one-shot assertions, Locator truthiness, and missing Playwright awaits. Apply the retry-wrapper and framework-provenance exclusions.",
-      "expected_output": "Report #4h P1 at lines 5, 18, and 23, #4f P0 at line 6, #15 P1 at line 7, and #4c-4e P1 at lines 9 and 10. Do not report the awaited web-first assertions, Locator-derived string value, response.json(), plain string assertion, expect.poll(), or assertions inside the toPass callback.",
+      "expected_output": "Report #4h P1 at lines 5, 18, and 23, #4f P0 at lines 6, 32, 95, 104, and 115, #15 P1 at line 7, and #4c-4e P1 at lines 9 and 10. Do not report the awaited web-first assertions, Locator-derived string value, response.json(), plain string assertion, expect.poll(), the assertions inside either toPass callback, or the shadowing non-Locator assertions on lines 30, 93, 101, and 111.",
       "files": [
         "evals/files/scanner-2.0-regressions.spec.ts"
       ],
@@ -999,7 +999,9 @@
         "True positive: reports the inline Locator innerText and inputValue reads on lines 9 and 10 as #4c-4e P1",
         "False-positive guard: does not report the properly awaited web-first assertions on lines 8 and 16 as #15",
         "False-positive guard: does not report the Locator-derived string on line 12, response.json() on line 13, or the plain string assertion on line 15 as a Locator finding",
-        "False-positive guard: does not report expect.poll on line 17 or the page.url and Locator reads inside the toPass callback on lines 20 and 21 as #4h or #4c-4e"
+        "False-positive guard: does not report the shadowing non-Locator status on line 30 as #4f while still reporting the active outer Locator on line 32",
+        "False-positive guard: does not report destructured, typed function-parameter, or typed method-parameter shadows on lines 93, 101, and 111 as #4f while still reporting the restored outer Locator on lines 95, 104, and 115",
+        "False-positive guard: does not report expect.poll on line 17, the short toPass callback on lines 20 and 21, the page.url and Locator reads more than 40 lines into the aliased toPass callback on lines 78 and 79, or the namespace-expect toPass read on line 85 as #4h or #4c-4e"
       ]
     }
   ]

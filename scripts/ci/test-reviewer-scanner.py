@@ -3330,6 +3330,12 @@ def assert_scanner_2_0_regression_shapes() -> None:
         "[P0] #4f Locator always-true assertion (truthy/defined/not-null)",
     )
     assert "scanner-2.0-regressions.spec.ts:6:" in locator_truthy
+    assert "scanner-2.0-regressions.spec.ts:30:" not in locator_truthy
+    assert "scanner-2.0-regressions.spec.ts:32:" in locator_truthy
+    for direct_line in (95, 104, 115):
+        assert f"scanner-2.0-regressions.spec.ts:{direct_line}:" in locator_truthy
+    for shadowed_line in (93, 101, 111):
+        assert f"scanner-2.0-regressions.spec.ts:{shadowed_line}:" not in locator_truthy
     assert "scanner-2.0-regressions.spec.ts:12:" not in locator_truthy
     assert "scanner-2.0-regressions.spec.ts:13:" not in locator_truthy
     assert "scanner-2.0-regressions.spec.ts:15:" not in locator_truthy
@@ -3348,6 +3354,81 @@ def assert_scanner_2_0_regression_shapes() -> None:
     assert "scanner-2.0-regressions.spec.ts:10:" in one_shot
     assert "scanner-2.0-regressions.spec.ts:13:" not in one_shot
     assert "scanner-2.0-regressions.spec.ts:21:" not in one_shot
+    assert "scanner-2.0-regressions.spec.ts:79:" not in one_shot
+    assert "scanner-2.0-regressions.spec.ts:78:" not in page_url
+    assert "scanner-2.0-regressions.spec.ts:85:" not in page_url
+
+
+def assert_scanner_2_0_scope_boundary_matrix() -> None:
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-scope-matrix-") as temp:
+        root = Path(temp)
+        lines = [
+            "import { test, expect as verify } from '@playwright/test'",
+            "import * as pw from '@playwright/test'",
+            "",
+            "test('scope boundary matrix', async ({ page }) => {",
+            "  const status = page.locator('#status')",
+            "  const probe = async (status: { ready: boolean }) => {",
+        ]
+        shadowed_line = len(lines) + 1
+        lines.append("    await verify(status).toBeTruthy()")
+        lines.extend(
+            [
+                "  }",
+                "  await probe({ ready: true })",
+                "  if (status) {",
+            ]
+        )
+        direct_locator_line = len(lines) + 1
+        lines.append("    await verify(status).toBeTruthy()")
+        lines.append("  }")
+
+        lines.append("  if (true) { const status = { ready: true }")
+        inline_shadowed_line = len(lines) + 1
+        lines.append("    await verify(status).toBeTruthy()")
+        lines.append("  }")
+        after_inline_block_line = len(lines) + 1
+        lines.append("  await verify(status).toBeTruthy()")
+        lines.append("  for (const status of [{ ready: true }]) {")
+        loop_shadowed_line = len(lines) + 1
+        lines.append("    await verify(status).toBeTruthy()")
+        lines.append("  }")
+        after_loop_line = len(lines) + 1
+        lines.append("  await verify(status).toBeTruthy()")
+
+        retry_lines = []
+        direct_url_lines = []
+        for index, padding in enumerate((0, 41, 100)):
+            wrapper = "pw.expect" if index == 1 else "verify"
+            lines.append(f"  await {wrapper}(async () => {{")
+            lines.extend(f"    // padding {index}-{item}" for item in range(padding))
+            retry_lines.append(len(lines) + 1)
+            lines.append("    verify(page.url()).toBe('/ready')")
+            lines.append("  }).toPass()")
+            direct_url_lines.append(len(lines) + 1)
+            lines.append("  verify(page.url()).toBe('/outside')")
+        lines.append("})")
+
+        (root / "scope-matrix.spec.ts").write_text(
+            "\n".join(lines) + "\n", encoding="utf-8"
+        )
+        result = scan_path(root, {"E2E_SMELL_DISABLE_AST_GREP": "1"})
+        assert result.returncode == 1, result.stdout
+
+        locator_truthy = section(
+            result.stdout,
+            "[P0] #4f Locator always-true assertion (truthy/defined/not-null)",
+        )
+        for line in (direct_locator_line, after_inline_block_line, after_loop_line):
+            assert f"scope-matrix.spec.ts:{line}:" in locator_truthy
+        for line in (shadowed_line, inline_shadowed_line, loop_shadowed_line):
+            assert f"scope-matrix.spec.ts:{line}:" not in locator_truthy
+
+        page_url = section(result.stdout, "[P1] #4h One-shot page.url assertion")
+        for line in retry_lines:
+            assert f"scope-matrix.spec.ts:{line}:" not in page_url
+        for line in direct_url_lines:
+            assert f"scope-matrix.spec.ts:{line}:" in page_url
 
 
 def assert_static_accessible_name_is_triage_only() -> None:
@@ -7026,6 +7107,7 @@ def main() -> None:
         assert_arbitrary_conditional_assertions_are_triage,
         assert_awaited_locator_value_reads_are_direct_only,
         assert_scanner_2_0_regression_shapes,
+        assert_scanner_2_0_scope_boundary_matrix,
         assert_static_accessible_name_is_triage_only,
         assert_semantic_triage_boundaries,
         assert_pom_scope,

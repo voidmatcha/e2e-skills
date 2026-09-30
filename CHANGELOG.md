@@ -4,17 +4,32 @@
 
 - Preregistered reviewer holdout v19 as a same-corpus, same-skill rerun after v18 was inconclusive; added type-name-only Codex stream diagnostics and an opt-in fresh retry for unexpected event-stream items. Frozen v2–v18 protocols and reports are unchanged.
 
-This is a major version because the evaluation and evidence system was rebuilt with preregistered holdouts v8–v17, schema-enforced output, usage capture and revision comparison, the real-code fixpair-v1 corpus, and a developer-side Lean model of the severity contract; reviewer findings now include pattern IDs in every heading and instance severities for #1 and #23. Installs, pattern IDs, catalog severities, scanner flags, and exit codes are unchanged. The completed v19 same-corpus release confirmation passed its frozen full-versus-no-skill gate; its single-host, model-authored public corpus limits the claim. Earlier results and their limits are recorded below.
+This is a major version because some existing reviews and scanner invocations can
+produce different machine-observable outcomes. Reviewer finding headings now
+require a pattern ID and a level-2 `## [P?]` form; documented instance rules can
+grade partial `#1` coverage as P1 and render-guard-caused false greens under
+`#23` as P0. Those review schema and instance-severity changes alter
+machine-observable output. No migration is needed for installation, pattern
+IDs, catalog severities, scanner flags, or exit-code meanings.
+
+The release also rebuilds the evaluation and evidence system with preregistered
+holdouts v8–v17, schema-enforced output, usage capture and revision comparison,
+the real-code fixpair-v1 corpus, and a developer-side Lean model of the severity
+contract. Those evidence changes support the release but are not themselves the
+compatibility reason for the major version. The completed v19 same-corpus
+release confirmation passed its frozen full-versus-no-skill gate; its
+single-host, model-authored public corpus limits the claim. Earlier results and
+their limits are recorded below.
 
 - Added evidence-only `claude-sonnet-5-5` field, fixpair B, and semantic-mutant S2/S3 comparisons alongside the `gpt-6-astra` batch-B comparison; skill behavior and frozen records are unchanged.
-
-### Scanner
-
-- Repaired direct detection of semicolonless `#4h` URL assertions, awaited `#4f` Locator truthiness, const-selector `#15` assertions, and provenance-backed inline `#4c-4e` Locator reads. Suites containing the newly detected P0 `#4f` shape may now fail under the default `E2E_SMELL_FAIL_ON=p0`. The recorded v19, fixpair-v1, and semantic-mutant results were measured on the pre-fix skill snapshot `976c3fa`; v19 ran with model tools disabled, so the standalone scanner was not invoked and its result is unaffected.
 
 ### Known issue resolution
 
 - The #2 partial-verification severity question was measured in [v20](benchmarks/reviewer-holdout-v20/README.md) and [v21](benchmarks/reviewer-holdout-v21/README.md). No wording change is needed: the 2.0.0 wording already grades partial verification as P1 under `reporting.md`; the explicit wording failed v21's improvement gates, and the v20 doc-only clarification would conflict with that observed grading.
+- Repaired direct detection of semicolonless `#4h` URL assertions, awaited `#4f` Locator truthiness, const-selector `#15` assertions, and provenance-backed inline `#4c-4e` Locator reads. Suites containing the newly detected P0 `#4f` shape may now fail under the default `E2E_SMELL_FAIL_ON=p0`. The recorded v19, fixpair-v1, and semantic-mutant results were measured on the pre-fix skill snapshot `976c3fa`; v19 ran with model tools disabled, so the standalone scanner was not invoked and its result is unaffected.
+- Restricted Locator provenance to the nearest active lexical declaration so a same-named non-Locator in an inner scope cannot inherit an outer Locator's P0 classification.
+- Made `expect.poll` and `toPass` exclusions span the bounded source file and resolve Playwright aliases and namespace bindings, instead of relying on a literal `expect` within a 40-line window.
+- Archived the [scanner 2.0.0 release check](benchmarks/scanner-2.0.0/README.md): three pinned real-code targets show final median runtime changes of +0.46% to +0.80% versus the immediate pre-fix tree, while the focused report is 484 `o200k_base` tokens smaller than origin/main. The evidence is bounded and does not claim a general speedup or model-cost distribution.
 
 ### Added
 

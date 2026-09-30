@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "measured_at": "2026-09-30",
+  "environment": {
+    "os": "macOS 26.5.2 (25F84)",
+    "architecture": "arm64",
+    "cpu": "Apple M1 Pro",
+    "scanner_environment": {
+      "E2E_SMELL_DISABLE_AST_GREP": "1",
+      "E2E_SMELL_FAIL_ON": "none",
+      "E2E_SMELL_MAX_RULE_HITS": "10000"
+    }
+  },
+  "scanner_arms": {
+    "origin_main": {
+      "commit": "16463a426fa98e64ae62bfb1d9e24052dc20bb71",
+      "scanner_sha256": "3056aa13c55f337dbd6a24f6a61859fdd47e0b3758e4cb4cbe795d050b04f3de"
+    },
+    "old_v2_tag": {
+      "commit": "ed9489c9d9418e0dd1fd60a5cab6b1bef8006c5f",
+      "scanner_sha256": "02ac1c7672a59f03d12c29db7e2c3a3c8452012a831d9b93e28ecf41b1d3fe10"
+    },
+    "pre_fix": {
+      "commit": "5e0650009505e04a1fb5226adee85854e939bebb",
+      "scanner_sha256": "291df819b262d8e3fca81abd270a2df254db3976656296337173784b1df6d476"
+    },
+    "final": {
+      "base_commit": "5e0650009505e04a1fb5226adee85854e939bebb",
+      "scanner_sha256": "b919d26f8768034104abdd9f3bdc78b96754f66a3194eb8cf3cd5ae822d5936c"
+    }
+  },
+  "targets": {
+    "react_router_sample": {
+      "repository_commit": "7aea711dd1ae2bc5a076d13ff17291829690fa74",
+      "seconds": {
+        "origin_main": [24.59, 24.07, 23.86],
+        "old_v2_tag": [24.32, 24.01, 23.88],
+        "pre_fix": [25.20, 26.18, 24.73],
+        "final": [25.38, 25.37, 25.56]
+      },
+      "final_stdout_sha256": "59aacd2d2447de836b060bef177c58fcefcf38c1e5fe4922a970ae73c3ea760c",
+      "final_hits": 28,
+      "final_bytes": 4905,
+      "final_o200k_tokens": 1411
+    },
+    "medium_zoom": {
+      "repository_commit": "21332eb3c5abc181b48251a06ee19fd7792fab22",
+      "seconds": {
+        "origin_main": [4.18, 4.93, 4.57],
+        "old_v2_tag": [4.20, 4.22, 4.20],
+        "pre_fix": [4.23, 4.38, 4.64],
+        "final": [4.40, 4.46, 4.36]
+      },
+      "final_stdout_sha256": "a68b62c11985bf8e661aaf3f02d29a8698b1e1470da0c05045f01a9cfed4e675",
+      "final_hits": 5,
+      "final_bytes": 1738,
+      "final_o200k_tokens": 503
+    },
+    "livestore": {
+      "repository_commit": "583bf8420b43eb32b2335c22e440d14ad73c1b9c",
+      "seconds": {
+        "origin_main": [10.84, 10.90, 11.36],
+        "old_v2_tag": [10.83, 10.68, 11.53],
+        "pre_fix": [11.14, 11.27, 11.29],
+        "final": [11.34, 11.42, 11.36]
+      },
+      "final_stdout_sha256": "24f9f930f854dbc10d190dca11502bfb43f37f8146b510c2c02c5957c85a50e1",
+      "final_hits": 14,
+      "final_bytes": 4133,
+      "final_o200k_tokens": 1138
+    }
+  },
+  "focused_report_tokens": {
+    "tokenizer": "tiktoken 0.11.0 o200k_base",
+    "origin_main": {"bytes": 4025, "tokens": 1263},
+    "old_v2_tag": {"bytes": 4025, "tokens": 1263},
+    "pre_fix": {"bytes": 3029, "tokens": 944},
+    "final": {"bytes": 2519, "tokens": 779}
+  },
+  "model_diagnostic": {
+    "model": "gpt-6-sol",
+    "repetitions_per_arm": 1,
+    "tools_enabled": false,
+    "origin_main": {
+      "input_tokens": 16967,
+      "cached_input_tokens": 0,
+      "output_tokens": 222,
+      "reasoning_output_tokens": 165,
+      "actionable_count": 8,
+      "triage_count": 8,
+      "p0_count": 0
+    },
+    "final": {
+      "input_tokens": 16483,
+      "cached_input_tokens": 9600,
+      "output_tokens": 111,
+      "reasoning_output_tokens": 55,
+      "actionable_count": 8,
+      "triage_count": 0,
+      "p0_count": 2
+    }
+  }
+}

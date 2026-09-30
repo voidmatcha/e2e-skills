@@ -4762,58 +4762,69 @@ playwright_page_receiver_proven_at() {
 }
 
 # #4c-4e and #4h are retry defects only outside Playwright's retry callbacks.
-# Inspect a bounded, lexed region around the candidate and mark the target line;
-# this covers both inline and block callbacks without treating comments or
-# strings as executable wrappers.
+# Parse the bounded source file instead of a fixed line window: a valid toPass
+# callback can contain arbitrarily many setup lines. Candidate wrappers are
+# returned with their binding and accepted only when that binding resolves to
+# Playwright expect, including named aliases and namespace imports.
 inside_retrying_expect_callback_at() {
-  local file="$1" line="$2" lo hi window compact
-  lo=$((line > 40 ? line - 40 : 1))
-  hi=$((line + 40))
-  window=$(source_executable_code "$file" |
-    awk -v lo="$lo" -v hi="$hi" -v target="$line" '
-      NR < lo { next }
-      NR > hi { exit }
-      NR == target { print " __E2E_TARGET__ " $0; next }
-      { print }
-    ' |
-    tr '\n' ' ')
-  compact=$(printf '%s\n' "$window" | tr -d '[:space:]')
-  printf '%s\n' "$compact" |
-    awk '
-      function matching_paren(s, open,    depth, i, c) {
-        depth = 0
-        for (i = open; i <= length(s); i++) {
-          c = substr(s, i, 1)
-          if (c == "(") depth++
-          else if (c == ")" && --depth == 0) return i
+  local file="$1" line="$2" wrapper
+  while IFS= read -r wrapper; do
+    [[ -n "$wrapper" ]] || continue
+    playwright_expect_binding "$file" "$wrapper" "$line" && return 0
+  done < <(
+    source_executable_code "$file" |
+      awk -v target="$line" '
+        NR == target {
+          print "__E2E_TARGET_START__" $0 "__E2E_TARGET_END__"
+          next
         }
-        return 0
-      }
-      {
-        target = index($0, "__E2E_TARGET__")
-        if (!target) exit 1
-        rest = $0
-        offset = 0
-        while ((rel = index(rest, "expect.poll(")) > 0) {
-          open = offset + rel + length("expect.poll")
-          closing = matching_paren($0, open)
-          if (closing && open < target && target < closing) exit 0
-          offset += rel
-          rest = substr($0, offset + 1)
+        { print }
+      ' |
+      tr -d '[:space:]' |
+      awk '
+        function binding_before(s, open,    i, c, result) {
+          i = open - 1
+          while (i > 0) {
+            c = substr(s, i, 1)
+            if (c !~ /[A-Za-z0-9_$.]/) break
+            result = c result
+            i--
+          }
+          sub(/^(await|return)/, "", result)
+          return result
         }
-        rest = $0
-        offset = 0
-        while ((rel = index(rest, "expect(")) > 0) {
-          open = offset + rel + length("expect")
-          closing = matching_paren($0, open)
-          if (closing && open < target && target < closing &&
-              substr($0, closing + 1, 8) == ".toPass(") exit 0
-          offset += rel
-          rest = substr($0, offset + 1)
+        {
+          start = index($0, "__E2E_TARGET_START__")
+          finish = index($0, "__E2E_TARGET_END__")
+          if (!start || !finish) exit
+          depth = 0
+          for (i = 1; i <= length($0); i++) {
+            c = substr($0, i, 1)
+            if (c == "(") {
+              depth++
+              opens[depth] = i
+              bindings[depth] = binding_before($0, i)
+            } else if (c == ")" && depth > 0) {
+              open = opens[depth]
+              binding = bindings[depth]
+              overlaps = (open < finish && i > start)
+              if (overlaps && binding ~ /[.]poll$/) {
+                sub(/[.]poll$/, "", binding)
+                if (binding != "") print binding
+              } else if (overlaps && binding != "" &&
+                         substr($0, i + 1, 8) == ".toPass(") {
+                print binding
+              }
+              delete opens[depth]
+              delete bindings[depth]
+              depth--
+            }
+          }
         }
-        exit 1
-      }
-    '
+      ' |
+      LC_ALL=C sort -u
+  )
+  return 1
 }
 
 one_shot_page_url_hit_matches() {
@@ -5238,12 +5249,113 @@ retry_expect_hit_matches() {
     scanner_rg -qP "(?:^[[:space:]]*$binding[[:space:]]*[.][[:space:]]*poll[[:space:]]*[(].*[.][A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*[(]|^[[:space:]]*$binding[[:space:]]*[(].*[.]toPass[[:space:]]*[(])"
 }
 
+active_binding_declaration_at() {
+  local file="$1" line="$2" binding="$3"
+  source_executable_code "$file" |
+    awk -v last="$line" -v name="$binding" '
+      function has_name(list,    normalized) {
+        normalized = list
+        gsub(/[^A-Za-z0-9_$]+/, " ", normalized)
+        return (" " normalized " ") ~ (" " name " ")
+      }
+      function declaration_position(source,    rest, lhs, start) {
+        if (!match(source, /(^|[;{}()[:space:]])(const|let|var)[[:space:]]+/))
+          return 0
+        start = RSTART
+        rest = substr(source, RSTART + RLENGTH)
+        lhs = rest
+        sub(/[=;].*$/, "", lhs)
+        sub(/[[:space:]]+(of|in)[[:space:]].*$/, "", lhs)
+        return has_name(lhs) ? start : 0
+      }
+      NR > last { exit }
+      NR == last {
+        for (d = depth; d >= 0; d--)
+          if (declaration[d] != "") {
+            print declaration[d]
+            exit
+          }
+        exit
+      }
+      {
+        source = $0
+        parameter_body_after = 0
+        declaration_at = declaration_position(source)
+        loop_declaration = 0
+        if (declaration_at) {
+          before_declaration = substr(source, 1, declaration_at)
+          if (before_declaration ~ /for[[:space:]]*[(][^)]*$/) {
+            loop_declaration = 1
+            loop_paren_depth = paren_depth
+          }
+        }
+        if (match(source, /function[[:space:]]*[A-Za-z_$]*[[:space:]]*\([^)]*\)/)) {
+          params = substr(source, RSTART, RLENGTH)
+          if (has_name(params)) parameter_body_after = RSTART + RLENGTH
+        } else if (match(source, /\([^)]*\)[[:space:]]*=>/)) {
+          params = substr(source, RSTART, RLENGTH)
+          if (has_name(params)) parameter_body_after = RSTART + RLENGTH
+        } else if (source ~ ("(^|[^A-Za-z0-9_$])" name "[[:space:]]*=>")) {
+          parameter_body_after = index(source, "=>") + 2
+        } else if (match(source, /catch[[:space:]]*\([^)]*\)/)) {
+          params = substr(source, RSTART, RLENGTH)
+          if (has_name(params)) parameter_body_after = RSTART + RLENGTH
+        } else if (match(source, /(async[[:space:]]+)?[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*\([^)]*\)[^;=]*\{/)) {
+          params = substr(source, RSTART, RLENGTH)
+          method = params
+          sub(/\(.*/, "", method)
+          gsub(/^[[:space:]]+|[[:space:]]+$/, "", method)
+          sub(/^async[[:space:]]+/, "", method)
+          if (method !~ /^(if|for|while|switch|catch|function)$/ && has_name(params)) {
+            for (j = length(params); j > 0; j--)
+              if (substr(params, j, 1) == "{") {
+                parameter_body_after = RSTART + j - 1
+                break
+              }
+          }
+        }
+        for (i = 1; i <= length(source); i++) {
+          c = substr(source, i, 1)
+          if (declaration_at && !loop_declaration && i == declaration_at)
+            declaration[depth] = source
+          if (c == "(") paren_depth++
+          else if (c == ")" && paren_depth > 0) paren_depth--
+          if (c == "{") {
+            depth++
+            if (loop_declaration && i > declaration_at &&
+                paren_depth == loop_paren_depth) {
+              declaration[depth] = source
+              loop_declaration = 0
+            } else if ((parameter_body_after && i >= parameter_body_after) ||
+                (!parameter_body_after && waiting_parameter_body)) {
+              declaration[depth] = "__E2E_PARAMETER__"
+              parameter_body_after = 0
+              waiting_parameter_body = 0
+            }
+          } else if (c == "}") {
+            delete declaration[depth]
+            depth--
+            if (depth < 0) depth = 0
+          }
+        }
+        if (parameter_body_after) waiting_parameter_body = 1
+      }
+    '
+}
+
 proven_locator_binding() {
-  local file="$1" line="$2" binding="$3" depth="${4:-0}" code parent assignment_lines
+  local file="$1" line="$2" binding="$3" depth="${4:-0}" code parent assignment_lines active_declaration
   (( depth < 8 )) || return 1
   case "$binding" in
     *[!A-Za-z0-9_$]*|'') return 1 ;;
   esac
+  active_declaration=$(active_binding_declaration_at "$file" "$line" "$binding")
+  if [[ -n "$active_declaration" ]]; then
+    [[ "$active_declaration" != "__E2E_PARAMETER__" ]] || return 1
+    printf '%s\n' "$active_declaration" |
+      scanner_rg -qP "(?:^|[^A-Za-z0-9_\$])(?:const|let|var)[[:space:]]+\\Q$binding\\E(?:[[:space:]]*:[[:space:]]*(?:import[[:space:]]*\([^)]*\)[.]?)?Locator\\b|[[:space:]]*=[[:space:]]*(?:await[[:space:]]+)?(?:page[.](?:locator|getBy[A-Z][A-Za-z]*)|[A-Za-z_$][A-Za-z0-9_$]*[.](?:first|last|nth|filter|locator|getBy[A-Z][A-Za-z]*))[[:space:]]*\\()" ||
+      return 1
+  fi
   code=$(awk -v last="$line" '
     function executable_source(s, want_output,    out, i, c, nchar) {
       out = ""
