@@ -2832,7 +2832,7 @@ def assert_ripgrep_fail_closed() -> None:
         discovery_error.write_text(
             "#!/usr/bin/env bash\n"
             "for arg in \"$@\"; do\n"
-            "  if [ \"$arg\" = \"-l0P\" ]; then exit 2; fi\n"
+            "  if [ \"$arg\" = \"-Hc0P\" ]; then exit 2; fi\n"
             "done\n"
             f"exec {real_rg!r} \"$@\"\n",
             encoding="utf-8",
@@ -2842,6 +2842,23 @@ def assert_ripgrep_fail_closed() -> None:
         assert discovery_result.returncode == 2, discovery_result.stdout
         assert "Tier 3 filename discovery failed" in discovery_result.stdout
         assert "Summary:" not in discovery_result.stdout
+
+        malformed_discovery = broken_bin / "malformed-discovery-rg"
+        malformed_discovery.write_text(
+            "#!/usr/bin/env bash\n"
+            "for arg in \"$@\"; do\n"
+            "  if [ \"$arg\" = \"-Hc0P\" ]; then printf 'truncated-path'; exit 0; fi\n"
+            "done\n"
+            f"exec {real_rg!r} \"$@\"\n",
+            encoding="utf-8",
+        )
+        malformed_discovery.chmod(0o755)
+        malformed_result = scan_path(
+            root, {"E2E_SMELL_RG_BIN": str(malformed_discovery)}
+        )
+        assert malformed_result.returncode == 2, malformed_result.stdout
+        assert "Tier 3 filename discovery failed" in malformed_result.stdout
+        assert "Summary:" not in malformed_result.stdout
 
         no_match_bin = Path(temp) / "no-match-bin"
         no_match_bin.mkdir()

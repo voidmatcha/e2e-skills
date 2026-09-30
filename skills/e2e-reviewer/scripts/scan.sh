@@ -6142,7 +6142,7 @@ run_check() {
   local pattern="$4"
   local glob="$5"
   local output="" p0_unproven_output="" p1_unproven_output=""
-  local flags=",${6:-}," assertion_token="" prepass_pattern=""
+  local flags=",${6:-}," assertion_token=""
   local -a context_options=()
 
   # These predicates only accept a matcher reconstructed within the starting
@@ -6167,7 +6167,6 @@ run_check() {
     pattern="^(?=[^\n]*(?:${pattern}))(?=(?:[^\n]*\n){0,12}[^\n]*(?:;|toBeTruthy|toBeDefined|toBeNull|toBeUndefined|not|/\*|//|\*/))[^\n]*"
     context_options=(--multiline)
   fi
-  prepass_pattern="$pattern"
   if [[ -n "$assertion_token" ]]; then
     require_anchored_discovery_pattern "$check_id" "$pattern"
     # Only the lookahead crosses lines. Keep the consuming expression's old
@@ -6225,11 +6224,26 @@ run_check() {
   # independently of the raw candidate budget. No candidate lines are emitted
   # until exact file applicability has been decided.
   _prepass_bytes=$(wc -c < "$_filename_list" | tr -d '[:space:]')
-  "$RG_BIN" -l0P --color never --hidden --no-ignore --sort path \
-    "${_discovery_options[@]}" "$prepass_pattern" -- "$ROOT" 2>&1 |
+  # ripgrep 14.1 on Linux can return no paths for a multiline PCRE2 lookahead
+  # under --files-with-matches even though the same expression works under
+  # --line-number and --count. Count with a NUL path separator, then discard
+  # the decimal count so filename discovery retains the exact candidate
+  # expression without widening the scope-graph prepass.
+  "$RG_BIN" -Hc0P --color never --hidden --no-ignore --sort path \
+    "${_discovery_options[@]}" "$pattern" -- "$ROOT" 2>&1 |
+  {
+    while IFS= read -r -d '' _count_path && IFS= read -r _count; do
+      case "$_count" in
+        ''|*[!0-9]*) exit 2 ;;
+      esac
+      printf '%s\0' "$_count_path"
+    done
+    [[ -z "${_count_path:-}" ]] || exit 2
+  } |
     head -c "$((_prepass_bytes + 1))" > "$_matched_paths"
   _prepass_status=("${PIPESTATUS[@]}")
   if [[ "${_prepass_status[0]}" -gt 1 || "${_prepass_status[1]}" -ne 0 ||
+        "${_prepass_status[2]}" -ne 0 ||
         "$(wc -c < "$_matched_paths" | tr -d '[:space:]')" -gt "$_prepass_bytes" ]]; then
     printf 'error: Tier 3 filename discovery failed for %s %s\n' "$check_id" "$title" >&2
     exit 2
