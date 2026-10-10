@@ -27,15 +27,16 @@ Each row is 12 runs. `base` is the 2.0.0 skill; each later round builds on the s
 | r2 + one line per field | $0.113 | 33 s | 7.3 | 3.75 | 92% | 25% |
 | r3 + literal one-line reader command | $0.105 | 29 s | 6.6 | 3.25 | 83% | 25% |
 | r4 (dropped) | $0.111 | 28 s | 6.8 | 3.33 | 100% | 25% |
-| **r5 (shipped in 2.0.1)** | **$0.103** | **26 s** | **6.2** | **2.92** | **100%** | 25% |
+| **r5 (basis of 2.0.1)** | **$0.103** | **26 s** | **6.2** | **2.92** | **100%** | 25% |
 
 ## What it supports
 
-- The reader command with `PROJECT_ROOT=$(...)` and a quoted variable was rejected by the host's exact-command approval in most base runs and cost one or two extra turns; the literal one-line form was not rejected in r5. This is the clearest effect and the likely source of the cost drop.
+- The reader command with `PROJECT_ROOT=$(...)` and a quoted variable was refused by Claude Code's command check (it cannot match commands with `$()` or quoted variables) in most base runs, and the model then spent extra turns retrying; the literal one-line form was not refused in r5. The per-run rejection counts were read from the transcripts, which are not retained here, so the committed evidence for this is only the turn count (7.2 to 6.2). It is the likely source of the cost drop.
 - Fewer unsupported claims and more explicit "not in the report" answers followed the evidence-first wording. The judge saw maintainer background that prescribes hedging, so this measures the targeted behavior.
 
 ## What it does not support
 
+- The shipped text. It was edited after r5 was measured (bounded spec-source path, physical project-root wording, and a Fix code-block exception to the one-line rule); those edits were not run.
 - Better diagnosis. Strict cause match is 3 of 12 in every round, consistent with one scoreable case.
 - Any held-out claim. The wording was tuned on these same four reports over five rounds, one judge model scored them, and 12 runs per row leave the cost difference ($0.111 to $0.103) within about three within-arm standard deviations.
 

@@ -2,12 +2,12 @@
 
 ## [2.0.1] - 2026-10-11
 
-Playwright debugger only. Apart from the version field, the reviewer, generator, Cypress debugger, scanner, installs, pattern IDs, F-codes, and every safety rule are unchanged; the reviewer's evidence digest is refreshed only because that field is part of its bytes.
+Playwright debugger only. Apart from the version field, the reviewer, generator, Cypress debugger, scanner, installs, pattern IDs, F-codes, and every existing safety rule are unchanged (no rule is weakened; one bounded spec-source path rule is added to the Playwright debugger); the reviewer's evidence digest is refreshed only because that field is part of its bytes.
 
 ### Changed
 
 - `playwright-debugger` states a root cause only as far as the artifact evidences it and marks anything beyond that as a hypothesis with the missing evidence named; without the spec source it describes the fix in prose instead of inventing selectors, endpoints, or line numbers. Findings with an `unknown` axis use one line per field.
-- The Phase 1 report-reader command in `references/artifact-extraction.md` is now one line with a literal absolute `--project-root`. The previous `PROJECT_ROOT=$(...)` form could not be matched by an exact-command approval, so a non-interactive run spent one or two turns on rejected attempts before the reader ran. The spec source is read only from a user-supplied path or a relative, non-traversing path under the project root, and it is never searched for. The other reader commands in the debugger references still use the older form and are not changed here.
+- The Phase 1 report-reader command in `references/artifact-extraction.md` is now one line with a literal absolute `--project-root`. The previous `PROJECT_ROOT=$(...)` form could not be matched by Claude Code's command check, so a non-interactive run spent one or two turns on rejected attempts before the reader ran. The spec source is read only from a user-supplied path or a relative, non-traversing path under the project root, and it is never searched for. The other reader commands in the debugger references still use the older form and are not changed here.
 
 ### Evidence
 
