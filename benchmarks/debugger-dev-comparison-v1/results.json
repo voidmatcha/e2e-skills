@@ -1,0 +1,1810 @@
+{
+ "rounds": {
+  "base": {
+   "judged": [
+    {
+     "c": "om-34725",
+     "arm": "noskill",
+     "rep": "1",
+     "cause_score": 0,
+     "unsupported": 8,
+     "hedged_unobservable": false
+    },
+    {
+     "c": "om-34725",
+     "arm": "noskill",
+     "rep": "2",
+     "cause_score": 0,
+     "unsupported": 10,
+     "hedged_unobservable": false
+    },
+    {
+     "c": "om-34725",
+     "arm": "noskill",
+     "rep": "3",
+     "cause_score": 0,
+     "unsupported": 10,
+     "hedged_unobservable": false
+    },
+    {
+     "c": "om-34725",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 0,
+     "unsupported": 7,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34725",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 0,
+     "unsupported": 7,
+     "hedged_unobservable": false
+    },
+    {
+     "c": "om-34725",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 0,
+     "unsupported": 6,
+     "hedged_unobservable": false
+    },
+    {
+     "c": "om-34811",
+     "arm": "noskill",
+     "rep": "1",
+     "cause_score": 1,
+     "unsupported": 10,
+     "hedged_unobservable": false
+    },
+    {
+     "c": "om-34811",
+     "arm": "noskill",
+     "rep": "2",
+     "cause_score": 1,
+     "unsupported": 5,
+     "hedged_unobservable": false
+    },
+    {
+     "c": "om-34811",
+     "arm": "noskill",
+     "rep": "3",
+     "cause_score": 1,
+     "unsupported": 10,
+     "hedged_unobservable": false
+    },
+    {
+     "c": "om-34811",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 1,
+     "unsupported": 7,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34811",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 1,
+     "unsupported": 3,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34811",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 1,
+     "unsupported": 5,
+     "hedged_unobservable": false
+    },
+    {
+     "c": "om-35016",
+     "arm": "noskill",
+     "rep": "1",
+     "cause_score": 2,
+     "unsupported": 10,
+     "hedged_unobservable": false
+    },
+    {
+     "c": "om-35016",
+     "arm": "noskill",
+     "rep": "2",
+     "cause_score": 2,
+     "unsupported": 9,
+     "hedged_unobservable": false
+    },
+    {
+     "c": "om-35016",
+     "arm": "noskill",
+     "rep": "3",
+     "cause_score": 2,
+     "unsupported": 10,
+     "hedged_unobservable": false
+    },
+    {
+     "c": "om-35016",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 2,
+     "unsupported": 6,
+     "hedged_unobservable": false
+    },
+    {
+     "c": "om-35016",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 2,
+     "unsupported": 5,
+     "hedged_unobservable": false
+    },
+    {
+     "c": "om-35016",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 2,
+     "unsupported": 6,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-blob",
+     "arm": "noskill",
+     "rep": "1",
+     "cause_score": 1,
+     "unsupported": 9,
+     "hedged_unobservable": false
+    },
+    {
+     "c": "om-blob",
+     "arm": "noskill",
+     "rep": "2",
+     "cause_score": 0,
+     "unsupported": 10,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-blob",
+     "arm": "noskill",
+     "rep": "3",
+     "cause_score": 1,
+     "unsupported": 10,
+     "hedged_unobservable": false
+    },
+    {
+     "c": "om-blob",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 1,
+     "unsupported": 4,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-blob",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 1,
+     "unsupported": 4,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-blob",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 1,
+     "unsupported": 5,
+     "hedged_unobservable": true
+    }
+   ],
+   "runs": [
+    {
+     "arm": "noskill",
+     "c": "om-34725",
+     "rep": "1",
+     "cost": 0.061181599999999996,
+     "secs": 33,
+     "out": 2423,
+     "inp": 113174,
+     "turns": 5,
+     "skill": 0,
+     "reader": 0,
+     "refs": 0
+    },
+    {
+     "arm": "noskill",
+     "c": "om-34725",
+     "rep": "2",
+     "cost": 0.1044487,
+     "secs": 38,
+     "out": 3540,
+     "inp": 202527,
+     "turns": 12,
+     "skill": 0,
+     "reader": 0,
+     "refs": 0
+    },
+    {
+     "arm": "noskill",
+     "c": "om-34725",
+     "rep": "3",
+     "cost": 0.07087260000000001,
+     "secs": 34,
+     "out": 2195,
+     "inp": 118263,
+     "turns": 6,
+     "skill": 0,
+     "reader": 0,
+     "refs": 0
+    },
+    {
+     "arm": "noskill",
+     "c": "om-34811",
+     "rep": "1",
+     "cost": 0.07334159999999999,
+     "secs": 37,
+     "out": 2954,
+     "inp": 163346,
+     "turns": 7,
+     "skill": 0,
+     "reader": 0,
+     "refs": 0
+    },
+    {
+     "arm": "noskill",
+     "c": "om-34811",
+     "rep": "2",
+     "cost": 0.058597699999999996,
+     "secs": 29,
+     "out": 2208,
+     "inp": 114022,
+     "turns": 5,
+     "skill": 0,
+     "reader": 0,
+     "refs": 0
+    },
+    {
+     "arm": "noskill",
+     "c": "om-34811",
+     "rep": "3",
+     "cost": 0.1066254,
+     "secs": 28,
+     "out": 2371,
+     "inp": 133906,
+     "turns": 7,
+     "skill": 0,
+     "reader": 0,
+     "refs": 0
+    },
+    {
+     "arm": "noskill",
+     "c": "om-35016",
+     "rep": "1",
+     "cost": 0.1282469,
+     "secs": 27,
+     "out": 2262,
+     "inp": 149407,
+     "turns": 6,
+     "skill": 0,
+     "reader": 0,
+     "refs": 0
+    },
+    {
+     "arm": "noskill",
+     "c": "om-35016",
+     "rep": "2",
+     "cost": 0.1125856,
+     "secs": 29,
+     "out": 2483,
+     "inp": 125173,
+     "turns": 6,
+     "skill": 0,
+     "reader": 0,
+     "refs": 0
+    },
+    {
+     "arm": "noskill",
+     "c": "om-35016",
+     "rep": "3",
+     "cost": 0.1025877,
+     "secs": 28,
+     "out": 2363,
+     "inp": 146395,
+     "turns": 7,
+     "skill": 0,
+     "reader": 0,
+     "refs": 0
+    },
+    {
+     "arm": "noskill",
+     "c": "om-blob",
+     "rep": "1",
+     "cost": 0.11526940000000001,
+     "secs": 30,
+     "out": 2691,
+     "inp": 158473,
+     "turns": 7,
+     "skill": 0,
+     "reader": 0,
+     "refs": 0
+    },
+    {
+     "arm": "noskill",
+     "c": "om-blob",
+     "rep": "2",
+     "cost": 0.1036659,
+     "secs": 30,
+     "out": 2475,
+     "inp": 123863,
+     "turns": 6,
+     "skill": 0,
+     "reader": 0,
+     "refs": 0
+    },
+    {
+     "arm": "noskill",
+     "c": "om-blob",
+     "rep": "3",
+     "cost": 0.0652925,
+     "secs": 30,
+     "out": 2610,
+     "inp": 115849,
+     "turns": 6,
+     "skill": 0,
+     "reader": 0,
+     "refs": 0
+    },
+    {
+     "arm": "skill",
+     "c": "om-34725",
+     "rep": "1",
+     "cost": 0.1139005,
+     "secs": 35,
+     "out": 3582,
+     "inp": 128145,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34725",
+     "rep": "2",
+     "cost": 0.1120937,
+     "secs": 34,
+     "out": 3056,
+     "inp": 157491,
+     "turns": 8,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34725",
+     "rep": "3",
+     "cost": 0.1091005,
+     "secs": 40,
+     "out": 3102,
+     "inp": 128145,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34811",
+     "rep": "1",
+     "cost": 0.11372689999999999,
+     "secs": 40,
+     "out": 3543,
+     "inp": 127969,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34811",
+     "rep": "2",
+     "cost": 0.1079344,
+     "secs": 31,
+     "out": 3003,
+     "inp": 127788,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34811",
+     "rep": "3",
+     "cost": 0.1141991,
+     "secs": 34,
+     "out": 3529,
+     "inp": 128514,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-35016",
+     "rep": "1",
+     "cost": 0.1169945,
+     "secs": 33,
+     "out": 3501,
+     "inp": 129121,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-35016",
+     "rep": "2",
+     "cost": 0.1152625,
+     "secs": 34,
+     "out": 3325,
+     "inp": 129128,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-35016",
+     "rep": "3",
+     "cost": 0.1100799,
+     "secs": 29,
+     "out": 2943,
+     "inp": 128411,
+     "turns": 8,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-blob",
+     "rep": "1",
+     "cost": 0.10793139999999998,
+     "secs": 29,
+     "out": 2897,
+     "inp": 128374,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-blob",
+     "rep": "2",
+     "cost": 0.1084854,
+     "secs": 29,
+     "out": 2920,
+     "inp": 128455,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-blob",
+     "rep": "3",
+     "cost": 0.10485710000000001,
+     "secs": 27,
+     "out": 2376,
+     "inp": 156557,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    }
+   ]
+  },
+  "r1": {
+   "judged": [
+    {
+     "c": "om-34725",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 1,
+     "unsupported": 5,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34725",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 0,
+     "unsupported": 4,
+     "hedged_unobservable": false
+    },
+    {
+     "c": "om-34725",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 0,
+     "unsupported": 5,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34811",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 1,
+     "unsupported": 4,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34811",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 1,
+     "unsupported": 3,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34811",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 1,
+     "unsupported": 4,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-35016",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 2,
+     "unsupported": 3,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-35016",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 2,
+     "unsupported": 6,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-35016",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 2,
+     "unsupported": 3,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-blob",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 1,
+     "unsupported": 5,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-blob",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 1,
+     "unsupported": 5,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-blob",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 1,
+     "unsupported": 3,
+     "hedged_unobservable": true
+    }
+   ],
+   "runs": [
+    {
+     "arm": "skill",
+     "c": "om-34725",
+     "rep": "1",
+     "cost": 0.1177183,
+     "secs": 36,
+     "out": 3625,
+     "inp": 130862,
+     "turns": 8,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34725",
+     "rep": "2",
+     "cost": 0.12435820000000002,
+     "secs": 31,
+     "out": 3191,
+     "inp": 135439,
+     "turns": 8,
+     "skill": 1,
+     "reader": 1,
+     "refs": 2
+    },
+    {
+     "arm": "skill",
+     "c": "om-34725",
+     "rep": "3",
+     "cost": 0.1116439,
+     "secs": 31,
+     "out": 3226,
+     "inp": 129206,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34811",
+     "rep": "1",
+     "cost": 0.10769119999999999,
+     "secs": 30,
+     "out": 2983,
+     "inp": 127863,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34811",
+     "rep": "2",
+     "cost": 0.1097212,
+     "secs": 32,
+     "out": 3143,
+     "inp": 128029,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34811",
+     "rep": "3",
+     "cost": 0.1093588,
+     "secs": 30,
+     "out": 2993,
+     "inp": 128992,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-35016",
+     "rep": "1",
+     "cost": 0.1130993,
+     "secs": 29,
+     "out": 2833,
+     "inp": 158686,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-35016",
+     "rep": "2",
+     "cost": 0.11562909999999998,
+     "secs": 32,
+     "out": 3392,
+     "inp": 129175,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-35016",
+     "rep": "3",
+     "cost": 0.11427800000000002,
+     "secs": 33,
+     "out": 3220,
+     "inp": 129471,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-blob",
+     "rep": "1",
+     "cost": 0.10666830000000001,
+     "secs": 26,
+     "out": 2511,
+     "inp": 157113,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-blob",
+     "rep": "2",
+     "cost": 0.1171285,
+     "secs": 31,
+     "out": 2948,
+     "inp": 186387,
+     "turns": 9,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-blob",
+     "rep": "3",
+     "cost": 0.12041779999999999,
+     "secs": 31,
+     "out": 3281,
+     "inp": 186331,
+     "turns": 9,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    }
+   ]
+  },
+  "r2": {
+   "judged": [
+    {
+     "c": "om-34725",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 0,
+     "unsupported": 5,
+     "hedged_unobservable": false
+    },
+    {
+     "c": "om-34725",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 1,
+     "unsupported": 3,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34725",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 1,
+     "unsupported": 3,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34811",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 1,
+     "unsupported": 1,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34811",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 1,
+     "unsupported": 5,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34811",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 1,
+     "unsupported": 2,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-35016",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 2,
+     "unsupported": 2,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-35016",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 2,
+     "unsupported": 7,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-35016",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 2,
+     "unsupported": 3,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-blob",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 1,
+     "unsupported": 6,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-blob",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 1,
+     "unsupported": 3,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-blob",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 1,
+     "unsupported": 5,
+     "hedged_unobservable": true
+    }
+   ],
+   "runs": [
+    {
+     "arm": "skill",
+     "c": "om-34725",
+     "rep": "1",
+     "cost": 0.106548,
+     "secs": 40,
+     "out": 2860,
+     "inp": 128497,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34725",
+     "rep": "2",
+     "cost": 0.11730550000000001,
+     "secs": 36,
+     "out": 3375,
+     "inp": 157741,
+     "turns": 8,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34725",
+     "rep": "3",
+     "cost": 0.1228835,
+     "secs": 34,
+     "out": 3073,
+     "inp": 134988,
+     "turns": 8,
+     "skill": 1,
+     "reader": 1,
+     "refs": 2
+    },
+    {
+     "arm": "skill",
+     "c": "om-34811",
+     "rep": "1",
+     "cost": 0.1215547,
+     "secs": 50,
+     "out": 2887,
+     "inp": 135113,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 2
+    },
+    {
+     "arm": "skill",
+     "c": "om-34811",
+     "rep": "2",
+     "cost": 0.10976100000000001,
+     "secs": 34,
+     "out": 3074,
+     "inp": 128814,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34811",
+     "rep": "3",
+     "cost": 0.1278622,
+     "secs": 32,
+     "out": 3426,
+     "inp": 135747,
+     "turns": 8,
+     "skill": 1,
+     "reader": 1,
+     "refs": 2
+    },
+    {
+     "arm": "skill",
+     "c": "om-35016",
+     "rep": "1",
+     "cost": 0.10836259999999999,
+     "secs": 26,
+     "out": 2369,
+     "inp": 158811,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-35016",
+     "rep": "2",
+     "cost": 0.1151363,
+     "secs": 31,
+     "out": 3203,
+     "inp": 130316,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-35016",
+     "rep": "3",
+     "cost": 0.111507,
+     "secs": 28,
+     "out": 2879,
+     "inp": 130050,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-blob",
+     "rep": "1",
+     "cost": 0.10956350000000001,
+     "secs": 27,
+     "out": 2609,
+     "inp": 159183,
+     "turns": 8,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-blob",
+     "rep": "2",
+     "cost": 0.1060891,
+     "secs": 28,
+     "out": 2629,
+     "inp": 129458,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-blob",
+     "rep": "3",
+     "cost": 0.1048386,
+     "secs": 26,
+     "out": 2542,
+     "inp": 128929,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    }
+   ]
+  },
+  "r3": {
+   "judged": [
+    {
+     "c": "om-34725",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 0,
+     "unsupported": 4,
+     "hedged_unobservable": false
+    },
+    {
+     "c": "om-34725",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 0,
+     "unsupported": 3,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34725",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 1,
+     "unsupported": 5,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34811",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 1,
+     "unsupported": 3,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34811",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 1,
+     "unsupported": 5,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34811",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 1,
+     "unsupported": 5,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-35016",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 2,
+     "unsupported": 3,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-35016",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 2,
+     "unsupported": 1,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-35016",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 2,
+     "unsupported": 3,
+     "hedged_unobservable": false
+    },
+    {
+     "c": "om-blob",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 1,
+     "unsupported": 4,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-blob",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 1,
+     "unsupported": 2,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-blob",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 1,
+     "unsupported": 1,
+     "hedged_unobservable": true
+    }
+   ],
+   "runs": [
+    {
+     "arm": "skill",
+     "c": "om-34725",
+     "rep": "1",
+     "cost": 0.10212109999999999,
+     "secs": 27,
+     "out": 2454,
+     "inp": 129196,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34725",
+     "rep": "2",
+     "cost": 0.1024856,
+     "secs": 30,
+     "out": 2488,
+     "inp": 129441,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34725",
+     "rep": "3",
+     "cost": 0.1001098,
+     "secs": 34,
+     "out": 2541,
+     "inp": 100889,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34811",
+     "rep": "1",
+     "cost": 0.10038289999999998,
+     "secs": 27,
+     "out": 2532,
+     "inp": 100581,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34811",
+     "rep": "2",
+     "cost": 0.09713759999999999,
+     "secs": 24,
+     "out": 2228,
+     "inp": 100517,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34811",
+     "rep": "3",
+     "cost": 0.1175958,
+     "secs": 28,
+     "out": 2864,
+     "inp": 104102,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 2
+    },
+    {
+     "arm": "skill",
+     "c": "om-35016",
+     "rep": "1",
+     "cost": 0.10824539999999999,
+     "secs": 32,
+     "out": 3002,
+     "inp": 101474,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-35016",
+     "rep": "2",
+     "cost": 0.10990539999999999,
+     "secs": 30,
+     "out": 3168,
+     "inp": 101474,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-35016",
+     "rep": "3",
+     "cost": 0.1160803,
+     "secs": 33,
+     "out": 2989,
+     "inp": 158895,
+     "turns": 8,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-blob",
+     "rep": "1",
+     "cost": 0.09956219999999999,
+     "secs": 26,
+     "out": 2091,
+     "inp": 129767,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-blob",
+     "rep": "2",
+     "cost": 0.10820070000000001,
+     "secs": 29,
+     "out": 2474,
+     "inp": 157612,
+     "turns": 8,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-blob",
+     "rep": "3",
+     "cost": 0.0967708,
+     "secs": 26,
+     "out": 2234,
+     "inp": 100266,
+     "turns": 5,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    }
+   ]
+  },
+  "r4": {
+   "judged": [
+    {
+     "c": "om-34725",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 0,
+     "unsupported": 4,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34725",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 1,
+     "unsupported": 4,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34725",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 1,
+     "unsupported": 3,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34811",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 1,
+     "unsupported": 5,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34811",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 1,
+     "unsupported": 6,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34811",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 1,
+     "unsupported": 2,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-35016",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 2,
+     "unsupported": 6,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-35016",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 2,
+     "unsupported": 3,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-35016",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 2,
+     "unsupported": 2,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-blob",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 1,
+     "unsupported": 1,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-blob",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 1,
+     "unsupported": 2,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-blob",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 1,
+     "unsupported": 2,
+     "hedged_unobservable": true
+    }
+   ],
+   "runs": [
+    {
+     "arm": "skill",
+     "c": "om-34725",
+     "rep": "1",
+     "cost": 0.0946756,
+     "secs": 24,
+     "out": 2368,
+     "inp": 72816,
+     "turns": 5,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34725",
+     "rep": "2",
+     "cost": 0.1025095,
+     "secs": 28,
+     "out": 2775,
+     "inp": 100823,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34725",
+     "rep": "3",
+     "cost": 0.1287953,
+     "secs": 31,
+     "out": 3186,
+     "inp": 135070,
+     "turns": 8,
+     "skill": 1,
+     "reader": 1,
+     "refs": 3
+    },
+    {
+     "arm": "skill",
+     "c": "om-34811",
+     "rep": "1",
+     "cost": 0.10668559999999999,
+     "secs": 30,
+     "out": 3026,
+     "inp": 101533,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34811",
+     "rep": "2",
+     "cost": 0.114009,
+     "secs": 29,
+     "out": 3100,
+     "inp": 129616,
+     "turns": 8,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34811",
+     "rep": "3",
+     "cost": 0.1029835,
+     "secs": 31,
+     "out": 2610,
+     "inp": 101588,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-35016",
+     "rep": "1",
+     "cost": 0.1089118,
+     "secs": 28,
+     "out": 2922,
+     "inp": 102293,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-35016",
+     "rep": "2",
+     "cost": 0.1248786,
+     "secs": 29,
+     "out": 2851,
+     "inp": 108108,
+     "turns": 8,
+     "skill": 1,
+     "reader": 1,
+     "refs": 3
+    },
+    {
+     "arm": "skill",
+     "c": "om-35016",
+     "rep": "3",
+     "cost": 0.1075131,
+     "secs": 25,
+     "out": 2801,
+     "inp": 104072,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-blob",
+     "rep": "1",
+     "cost": 0.12119850000000001,
+     "secs": 32,
+     "out": 2967,
+     "inp": 106936,
+     "turns": 8,
+     "skill": 1,
+     "reader": 1,
+     "refs": 2
+    },
+    {
+     "arm": "skill",
+     "c": "om-blob",
+     "rep": "2",
+     "cost": 0.0989035,
+     "secs": 23,
+     "out": 2509,
+     "inp": 73812,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-blob",
+     "rep": "3",
+     "cost": 0.12602159999999998,
+     "secs": 29,
+     "out": 2657,
+     "inp": 169438,
+     "turns": 9,
+     "skill": 1,
+     "reader": 1,
+     "refs": 2
+    }
+   ]
+  },
+  "r5": {
+   "judged": [
+    {
+     "c": "om-34725",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 1,
+     "unsupported": 3,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34725",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 1,
+     "unsupported": 4,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34725",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 1,
+     "unsupported": 3,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34811",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 1,
+     "unsupported": 4,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34811",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 1,
+     "unsupported": 1,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-34811",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 1,
+     "unsupported": 4,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-35016",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 2,
+     "unsupported": 4,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-35016",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 2,
+     "unsupported": 2,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-35016",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 2,
+     "unsupported": 2,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-blob",
+     "arm": "skill",
+     "rep": "1",
+     "cause_score": 1,
+     "unsupported": 3,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-blob",
+     "arm": "skill",
+     "rep": "2",
+     "cause_score": 1,
+     "unsupported": 2,
+     "hedged_unobservable": true
+    },
+    {
+     "c": "om-blob",
+     "arm": "skill",
+     "rep": "3",
+     "cause_score": 1,
+     "unsupported": 3,
+     "hedged_unobservable": true
+    }
+   ],
+   "runs": [
+    {
+     "arm": "skill",
+     "c": "om-34725",
+     "rep": "1",
+     "cost": 0.1006534,
+     "secs": 29,
+     "out": 2651,
+     "inp": 100434,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34725",
+     "rep": "2",
+     "cost": 0.1016115,
+     "secs": 28,
+     "out": 2762,
+     "inp": 100397,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34725",
+     "rep": "3",
+     "cost": 0.0989674,
+     "secs": 27,
+     "out": 2498,
+     "inp": 100395,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34811",
+     "rep": "1",
+     "cost": 0.1038808,
+     "secs": 28,
+     "out": 2814,
+     "inp": 101003,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34811",
+     "rep": "2",
+     "cost": 0.1013361,
+     "secs": 26,
+     "out": 2564,
+     "inp": 100907,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-34811",
+     "rep": "3",
+     "cost": 0.0987815,
+     "secs": 24,
+     "out": 2375,
+     "inp": 100657,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-35016",
+     "rep": "1",
+     "cost": 0.10338159999999999,
+     "secs": 24,
+     "out": 2545,
+     "inp": 101383,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-35016",
+     "rep": "2",
+     "cost": 0.1044768,
+     "secs": 27,
+     "out": 2584,
+     "inp": 101727,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-35016",
+     "rep": "3",
+     "cost": 0.1060488,
+     "secs": 25,
+     "out": 2719,
+     "inp": 102036,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-blob",
+     "rep": "1",
+     "cost": 0.10740759999999999,
+     "secs": 29,
+     "out": 2745,
+     "inp": 128079,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-blob",
+     "rep": "2",
+     "cost": 0.1052552,
+     "secs": 27,
+     "out": 2545,
+     "inp": 128037,
+     "turns": 7,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    },
+    {
+     "arm": "skill",
+     "c": "om-blob",
+     "rep": "3",
+     "cost": 0.09955520000000001,
+     "secs": 23,
+     "out": 2377,
+     "inp": 100979,
+     "turns": 6,
+     "skill": 1,
+     "reader": 1,
+     "refs": 1
+    }
+   ]
+  }
+ },
+ "excerpt_sha256": {
+  "om-34725": "d7f99be7b2bd9be733b6a7fb99d6b083cbf5d35251e80f255b4fe9c9cea690ba",
+  "om-34811": "982eda4913e006f06fac252859fbdfe095a180fb6777bed4161a058f994136af",
+  "om-35016": "06fdf1712e54ad473128ba8d7fe46c5b4f01790f814c85409cc0b45e4310ccb7",
+  "om-blob": "8055b5cb393634e9da0069c5d7583abbda1099dd736645e638c6a3d953e2a6e4"
+ }
+}

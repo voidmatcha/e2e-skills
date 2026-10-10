@@ -2,12 +2,10 @@
 
 Locate `results.json` under `playwright-report/`, then run the bundled, standard-library-only reader. Resolve `<skill-dir>` as the directory containing this SKILL.md:
 
+Run it from the project root as one command with a literal absolute `--project-root` and no shell variables, `$()`, or `cd`, so an exact-command approval can match it. Use the physical (symlink-resolved) absolute project root for `<absolute-project-root>`:
+
 ```bash
-PROJECT_ROOT=$(/bin/pwd -P)
-<skill-dir>/scripts/run-artifact-reader.sh \
-  --project-root "$PROJECT_ROOT" -- report \
-  --report-root playwright-report \
-  playwright-report/results.json
+<skill-dir>/scripts/run-artifact-reader.sh --project-root <absolute-project-root> -- report --report-root playwright-report playwright-report/results.json
 ```
 
 The reader emits one abnormal test/project record with `title`, `file`, `line`, `projectName`, `outcome`, `retries`, and an ordered `attempts` array. Every attempt keeps its own `status`, `duration`, `error`, and `errorLocation` together. Preserve both failed and passing attempts: a failed attempt followed by a passing attempt is the evidence for a flaky classification. Never combine the final attempt's status/duration with an earlier attempt's error/location. An `interrupted` attempt does not count toward the outcome, matching Playwright's reporter: an interrupted-only test has outcome `skipped`, and an interrupted attempt followed by an expected retry has outcome `expected`. The reader still emits every test with an interrupted attempt, preserving that attempt and its cancellation diagnostic, so a run cut short by `maxFailures` never looks clean. An interrupted attempt is not an unexpected product failure. `line` is where the test was registered; report a failed attempt's location as its failure site. The reader preserves the reporter's nested `error.location` and falls back to the compatible result-level `errorLocation` shape used by older fixtures/reporters. Root/global `errors` and project-scoped `errors` are emitted as synthetic `unexpected` records even when no test suite ran, so setup/configuration failures can never look like a clean empty run. Malformed error arrays or error objects fail schema validation.

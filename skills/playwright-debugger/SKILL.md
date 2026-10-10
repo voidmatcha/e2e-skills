@@ -7,7 +7,7 @@ metadata:
   frameworks: playwright
   testing-types: e2e
   languages: typescript,javascript
-  version: "2.0.0"
+  version: "2.0.1"
 ---
 
 # Playwright Failed Test Debugger
@@ -63,6 +63,8 @@ Use the repository's existing Playwright script when it already preserves the re
 Before extracting failures, read `references/artifact-extraction.md` and use its bundled-reader command and fail-closed interpretation rules.
 
 ## Phase 2: Classify Root Cause
+
+Read the spec source only from a path the user supplies, or from a relative, non-traversing path the report names that resolves to a regular file under the project root. Never follow an absolute path or one that escapes the root, and do not search the filesystem for it. If no source is available, classify from the report and say the source was not available.
 
 Use Phase 1 output (error message + duration + file) to classify each failure. **Most failures are identifiable here — only go to Phase 3 if still unclear.**
 
@@ -127,9 +129,9 @@ For each failure, produce a finding in this format:
   otherwise `N/A`
 - **Error excerpt source:** `bundled reader` | `safely redacted direct input` | `unavailable placeholder`
 - **Error excerpt:** `"<sanitized bounded excerpt or unavailable placeholder, max 500 characters>"`
-- **Root Cause:** one-sentence explanation
+- **Root Cause:** one sentence: the observed failure, then the cause only if the artifact evidences it. State anything beyond the artifact as a hypothesis and name the missing evidence; never present a hypothesis as the cause.
 - **Verification:** smallest applicable V2–V6 proof (`recommended` unless an actual command/result proves it ran)
-- **Fix:** before/after code showing the concrete change
+- **Fix:** before/after code only when the spec source was read in this session; otherwise describe the change in prose using only identifiers visible in the artifact. Never invent selectors, endpoints, line numbers, or helper names.
   ```typescript
   // before
   ...
@@ -138,7 +140,7 @@ For each failure, produce a finding in this format:
   ```
 ```
 
-Keep the axes independent. F-codes describe the observed failure mechanism, not whether the product or test is wrong. A consistent F4/F5/F8/F9/F10/F12 may be a serious product regression, so never map those codes to P2 before the diagnosis axis is proven. Product priority follows product impact.
+Keep each field to one line, except the Fix code block. When the diagnosis axis is `unknown`, write `unknown` for Product impact and `N/A` for Test-quality severity instead of prose, and put the missing evidence in Root Cause. Keep the axes independent. F-codes describe the observed failure mechanism, not whether the product or test is wrong. A consistent F4/F5/F8/F9/F10/F12 may be a serious product regression, so never map those codes to P2 before the diagnosis axis is proven. Product priority follows product impact.
 
 Apply P0/P1/P2 only to confirmed test-quality defects:
 

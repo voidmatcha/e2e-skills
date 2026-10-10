@@ -330,6 +330,28 @@
         "Does not label the excerpt as bundled reader or safely redacted direct input",
         "Continues diagnosis from non-sensitive evidence without running the project or inventing a confident F-code"
       ]
+    },
+    {
+      "id": 23,
+      "prompt": "A Playwright CI run left only playwright-report/results.json; no spec source or trace is available. One test timed out in a shared recovery helper while the navigation log shows normal pages, then passed on retry. Diagnose it and propose a fix.",
+      "expected_output": "Reads the report through the bundled reader, classifies from the observed timeout and retry, states the root cause only as far as the report evidences it, labels anything beyond that as a hypothesis and names the missing evidence (for example the failed attempt's DOM snapshot or trace), and describes the fix in prose without invented selectors, endpoints, or line numbers.",
+      "files": [],
+      "assertions": [
+        "Marks any cause the report does not show (auth/session expiry, backend slowness, a specific swallowed click) as a hypothesis and names the missing evidence",
+        "False-positive guard: does not present before/after code containing a selector, endpoint, or line number that appears nowhere in the report",
+        "Does not read the report JSON with Read or another parser instead of the bundled reader"
+      ]
+    },
+    {
+      "id": 24,
+      "prompt": "A Playwright test failed with a Locator timeout. The report is at playwright-report/results.json and the spec is at e2e/checkout.spec.ts in the working tree. Diagnose it and give a concrete fix.",
+      "expected_output": "Reads the spec at the user-supplied path, bases the before/after code on the real locator and surrounding lines, and does not weaken the failing assertion.",
+      "files": [],
+      "assertions": [
+        "Reads the spec at the path the user supplied before proposing code",
+        "Gives before/after code anchored to lines it actually read",
+        "False-positive guard: does not downgrade the answer to prose-only when the spec source was read"
+      ]
     }
   ]
 }

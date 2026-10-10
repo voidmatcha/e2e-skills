@@ -6026,6 +6026,24 @@ def main() -> None:
         assert "URL userinfo" in skill_text
         assert "residual credential shape fails closed" in skill_text
 
+    # 2.0.1 evidence-first contract: cause only as far as evidenced, no invented fix
+    # specifics, bounded spec-source path, and a command an exact approval can match.
+    flat = " ".join(PLAYWRIGHT_SKILL.read_text(encoding="utf-8").split())
+    for clause in (
+        "State anything beyond the artifact as a hypothesis and name the missing evidence",
+        "Never invent selectors, endpoints, line numbers, or helper names",
+        "Never follow an absolute path or one that escapes the root",
+        "do not search the filesystem for it",
+    ):
+        assert clause in flat, clause
+    extraction = " ".join(
+        (ROOT / "skills/playwright-debugger/references/artifact-extraction.md")
+        .read_text(encoding="utf-8")
+        .split()
+    )
+    assert "no shell variables, `$()`, or `cd`" in extraction
+    assert "PROJECT_ROOT=$(" not in extraction
+
     print(
         "debugger contracts: pass "
         "(bounded Playwright/Cypress JSON, ZIP, media, and JUnit artifacts; "

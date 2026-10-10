@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.0.1] - 2026-10-11
+
+Playwright debugger only. Apart from the version field, the reviewer, generator, Cypress debugger, scanner, installs, pattern IDs, F-codes, and every safety rule are unchanged; the reviewer's evidence digest is refreshed only because that field is part of its bytes.
+
+### Changed
+
+- `playwright-debugger` states a root cause only as far as the artifact evidences it and marks anything beyond that as a hypothesis with the missing evidence named; without the spec source it describes the fix in prose instead of inventing selectors, endpoints, or line numbers. Findings with an `unknown` axis use one line per field.
+- The Phase 1 report-reader command in `references/artifact-extraction.md` is now one line with a literal absolute `--project-root`. The previous `PROJECT_ROOT=$(...)` form could not be matched by an exact-command approval, so a non-interactive run spent one or two turns on rejected attempts before the reader ran. The spec source is read only from a user-supplied path or a relative, non-traversing path under the project root, and it is never searched for. The other reader commands in the debugger references still use the older form and are not changed here.
+
+### Evidence
+
+A local development comparison on four real OpenMetadata CI reports (12 runs per arm, `claude -p` with the skill loaded from outside the project, arm-unlabelled Codex `gpt-6-sol` judge, no protocol frozen in advance): unsupported claims per answer fell from 5.4 to 2.9, answers that said the cause is not in the report rose from 58% to 100%, and cost per run fell from $0.111 to $0.103 (a taxonomy-free prompt cost $0.092 and made 9.3 unsupported claims). Strict cause agreement did not change (3 of 12 in every round). The candidate was tuned on those same four reports over five rounds, so this is a development signal, not a held-out result, and it does not show better diagnosis accuracy. The scores and harness are in [debugger-dev-comparison-v1](benchmarks/debugger-dev-comparison-v1/README.md).
+
 ## [2.0.0] - 2026-10-10
 
 This is a major version because the evaluation and evidence system was rebuilt with preregistered holdouts v8–v17, schema-enforced output, usage capture and revision comparison, the real-code fixpair-v1 corpus, and a developer-side Lean model of the severity contract; reviewer findings now include pattern IDs in every heading and instance severities for #1 and #23. Installs, catalog severities, and scanner flags are unchanged, and no existing pattern ID changed (`#8c` is a new sub-ID under `#8`). The scanner no longer exits incomplete because an optional #13 lookup fails; no user action is required. The v18/v19 same-corpus release confirmation measured the pre-release 2.0.0 candidate reviewer (skill digest `aa88145dda8b…`, commit `976c3fa`) and passed its frozen full-versus-no-skill gate; the shipped reviewer differs from that candidate by the later Tier 2 ast-grep config pin, the `#14` `cy.env()` exclusion, the `#4h` fix and four boundary clarifications, `#8c`, and the `#3b` fail-handler contract, none of which any holdout has measured. The single-host, model-authored public corpus further limits the claim. Earlier results and their limits are recorded below.

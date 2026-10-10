@@ -1,0 +1,52 @@
+diff --color -ru plug_base/skills/playwright-debugger/SKILL.md plug_r5/skills/playwright-debugger/SKILL.md
+--- plug_base/skills/playwright-debugger/SKILL.md	2026-10-11 00:24:08
++++ plug_r5/skills/playwright-debugger/SKILL.md	2026-10-11 01:24:47
+@@ -64,6 +64,8 @@
+ 
+ ## Phase 2: Classify Root Cause
+ 
++Read the spec source only when the path the report names resolves in the working tree; do not search the filesystem for it. If it does not resolve, classify from the report and say the source was not available.
++
+ Use Phase 1 output (error message + duration + file) to classify each failure. **Most failures are identifiable here — only go to Phase 3 if still unclear.**
+ 
+ **Classifier delegation — inline by default:** classify inline with the F1–F15 table and steps below by default. The named `e2e-failure-classifier`, when registered by a Claude Code plugin or by a Codex `.codex/agents/` / `~/.codex/agents/` TOML, or the native `debugger` role when Codex exposes native role routing, remain available as an optional second opinion, never a required step; named registration is an optimization, not a correctness dependency. **Delegate only when uncertain** (low confidence, or two F-codes remain plausible after the steps below). **On disagreement, reconcile against source evidence:** inspect both cited paths, correct either verdict when refuted, and never prefer an actor merely because it was first or delegated. Keep unresolved cases explicitly uncertain; do not invent a confident F-code when the evidence is insufficient. When delegation is warranted, read `references/classification-procedure.md` and pass the **absolute** path to this skill as specified there.
+@@ -127,9 +129,9 @@
+   otherwise `N/A`
+ - **Error excerpt source:** `bundled reader` | `safely redacted direct input` | `unavailable placeholder`
+ - **Error excerpt:** `"<sanitized bounded excerpt or unavailable placeholder, max 500 characters>"`
+-- **Root Cause:** one-sentence explanation
++- **Root Cause:** one sentence: the observed failure, then the cause only if the artifact evidences it. State anything beyond the artifact as a hypothesis and name the missing evidence; never present a hypothesis as the cause.
+ - **Verification:** smallest applicable V2–V6 proof (`recommended` unless an actual command/result proves it ran)
+-- **Fix:** before/after code showing the concrete change
++- **Fix:** before/after code only when the spec source was read in this session; otherwise describe the change in prose using only identifiers visible in the artifact. Never invent selectors, endpoints, line numbers, or helper names.
+   ```typescript
+   // before
+   ...
+@@ -138,7 +140,7 @@
+   ```
+ ```
+ 
+-Keep the axes independent. F-codes describe the observed failure mechanism, not whether the product or test is wrong. A consistent F4/F5/F8/F9/F10/F12 may be a serious product regression, so never map those codes to P2 before the diagnosis axis is proven. Product priority follows product impact.
++Keep each field to one line. When the diagnosis axis is `unknown`, write `unknown` for Product impact and `N/A` for Test-quality severity instead of prose, and put the missing evidence in Root Cause. Keep the axes independent. F-codes describe the observed failure mechanism, not whether the product or test is wrong. A consistent F4/F5/F8/F9/F10/F12 may be a serious product regression, so never map those codes to P2 before the diagnosis axis is proven. Product priority follows product impact.
+ 
+ Apply P0/P1/P2 only to confirmed test-quality defects:
+ 
+diff --color -ru plug_base/skills/playwright-debugger/references/artifact-extraction.md plug_r5/skills/playwright-debugger/references/artifact-extraction.md
+--- plug_base/skills/playwright-debugger/references/artifact-extraction.md	2026-10-11 00:24:08
++++ plug_r5/skills/playwright-debugger/references/artifact-extraction.md	2026-10-11 01:24:46
+@@ -2,12 +2,10 @@
+ 
+ Locate `results.json` under `playwright-report/`, then run the bundled, standard-library-only reader. Resolve `<skill-dir>` as the directory containing this SKILL.md:
+ 
++Run it as one command with literal absolute paths and no shell variables, `$()`, or `cd`, so an exact-command approval can match it. Use the project's known absolute root (the working directory) for `<absolute-project-root>`:
++
+ ```bash
+-PROJECT_ROOT=$(/bin/pwd -P)
+-<skill-dir>/scripts/run-artifact-reader.sh \
+-  --project-root "$PROJECT_ROOT" -- report \
+-  --report-root playwright-report \
+-  playwright-report/results.json
++<skill-dir>/scripts/run-artifact-reader.sh --project-root <absolute-project-root> -- report --report-root playwright-report playwright-report/results.json
+ ```
+ 
+ The reader emits one abnormal test/project record with `title`, `file`, `line`, `projectName`, `outcome`, `retries`, and an ordered `attempts` array. Every attempt keeps its own `status`, `duration`, `error`, and `errorLocation` together. Preserve both failed and passing attempts: a failed attempt followed by a passing attempt is the evidence for a flaky classification. Never combine the final attempt's status/duration with an earlier attempt's error/location. An `interrupted` attempt does not count toward the outcome, matching Playwright's reporter: an interrupted-only test has outcome `skipped`, and an interrupted attempt followed by an expected retry has outcome `expected`. The reader still emits every test with an interrupted attempt, preserving that attempt and its cancellation diagnostic, so a run cut short by `maxFailures` never looks clean. An interrupted attempt is not an unexpected product failure. `line` is where the test was registered; report a failed attempt's location as its failure site. The reader preserves the reporter's nested `error.location` and falls back to the compatible result-level `errorLocation` shape used by older fixtures/reporters. Root/global `errors` and project-scoped `errors` are emitted as synthetic `unexpected` records even when no test suite ran, so setup/configuration failures can never look like a clean empty run. Malformed error arrays or error objects fail schema validation.

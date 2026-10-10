@@ -7,7 +7,7 @@ metadata:
   frameworks: playwright,cypress
   testing-types: e2e
   languages: typescript,javascript
-  version: "2.0.0"
+  version: "2.0.1"
 ---
 
 # E2E Test Scenario Quality Review

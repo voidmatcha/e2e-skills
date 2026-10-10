@@ -1,0 +1,1 @@
+{"type":"object","additionalProperties":false,"required":["cause_score","unsupported","hedged_unobservable"],"properties":{"cause_score":{"type":"integer","enum":[0,1,2]},"unsupported":{"type":"integer","minimum":0,"maximum":10},"hedged_unobservable":{"type":"boolean"}}}
