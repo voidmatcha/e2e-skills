@@ -1,0 +1,100 @@
+{
+ "schema_version": 1,
+ "protocol_id": "debugger-skill-effect-v5",
+ "registered_utc": "2026-10-10T00:00:00Z",
+ "evidence_scope": "public-development",
+ "release_eligible": false,
+ "purpose": "Development comparison of a proposed Playwright debugger answer contract (candidate) against the shipped text (current) and a taxonomy-free prompt, on real fixes. NOT a holdout: the 14 Playwright cases come from the v3 corpus, whose results the candidate's author had seen.",
+ "arms": {
+  "candidate": "skill-snapshots/candidate: current text + Default answer section, optional F-code, Not-verifiable field; candidate output schema with cannot_verify and f_code none",
+  "current": "skill-snapshots/current: working-tree playwright-debugger at snapshot time; v1 F-code schema",
+  "free": "taxonomy-free v2 prompt"
+ },
+ "corpus": "benchmarks/debugger-skill-effect-v3/corpus.json, framework == playwright (14 cases)",
+ "repetitions": 3,
+ "seed": 20261010,
+ "timeout_s": 240,
+ "host": {
+  "runner": "claude",
+  "requested_model": "sonnet",
+  "tools": "none"
+ },
+ "judge": {
+  "runner": "codex",
+  "model": "gpt-6-sol",
+  "match": "v2 blind 2/1/0 mechanism rubric on root_cause only",
+  "ground": "blind count of claims in root_cause not supported by the case excerpt; does not see truth or arm"
+ },
+ "infrastructure_retry": {
+  "max_attempts": 2
+ },
+ "decision_rule": {
+  "bootstrap_resamples": 10000,
+  "max_strict_drop": 0.05,
+  "max_diagnosis_drop": 0.05,
+  "ceiling": 0.9,
+  "SUPPORTED_DEVELOPMENT_SIGNAL": "all calls scored; candidate strict >= current - 0.05; diagnosis >= current - 0.05; unsupported-claim mean candidate <= current; current strict < ceiling; AND (candidate strict > current OR unsupported diff 95% CI upper bound < 0)",
+  "NOT_SUPPORTED": "all calls scored and any condition false",
+  "INCONCLUSIVE": "any unscored call, unparsed judge, or digest drift",
+  "note": "A development signal justifies shipping the candidate for Playwright only as a hypothesis; it is not a release claim."
+ },
+ "limits": [
+  "Zero-tool prompts measure interpretation of the text and answer contract, not the downloader/reader workflow.",
+  "Cases overlap v3, which informed the candidate; not independent.",
+  "Judges are models; groundedness judge sees only the excerpt.",
+  "One host, 14 cases, 3 repetitions; schema differs between candidate and current by design.",
+  "Truth is the merged fix, not human adjudication."
+ ],
+ "frozen_digests": {
+  "corpus.json": "23d0dd19fd9fdf46a41949e072f8a928d589c4d3dbfed2ee507f962d5abb2e68",
+  "cases": {
+   "pw-01": "f9133943ae2a620adab7c09a2d63087a877f7e900a4537ee089d768c2bd39fe0",
+   "pw-02": "9e0f7de9bff3ce4c824d19b153f46b989a7b64539acdc010b72c3d1fdc48a1a8",
+   "pw-03": "89cca89e62fc56fe24244f67b528b23aefc477ac15ae5755cca125e936e5d69a",
+   "pw-04": "60a572c79c179ae8376f86ab7e2d10cb14d0f1652ce44b6c700876f731d05886",
+   "pw-05": "67be4bd12d43cec40c082abfb67af99c003b7c699af8d27f7072afd1bf4fee41",
+   "pw-06": "e5d86eadaa4166a121df98ec807eaac6e2d1c67bb6f56965addea997b8481d99",
+   "pw-07": "70da69d91b90295ed7951dcb58e95900e107ac9905b542603c0172d91b2a851c",
+   "pw-08": "0f8d7b768835dc05c758269de4cfb81210a6870fdf02f2a7b769b289a2a08fdf",
+   "pw-09": "4eb84f36720e2782985522493c89d5ea6ed1e42dcf96684adc707b97d31bbc5f",
+   "pw-10": "c320e89d7adbd87a422b783f0d64ee59b59b8ed3a2b6878c106f23e0b8bb014b",
+   "pw-11": "01ed39fa355358b8985a413e21c44ffdcff7c6a25c25bbc92863ae28d8a1310c",
+   "pw-12": "b65aee125a857ecdc061636ca81748d5eede665f14a3d089943346e74aa65249",
+   "pw-13": "6b05d06c3d49dfd7a94ae69b1aa3884c4434d0f95c6c07c0ac19888aa36f8aed",
+   "pw-14": "6ba2c3a2cfbdfd3d72645d349f4627e9091b9c61c9f82368bf9d0fde9421e0d1"
+  },
+  "truth": {
+   "pw-01": "226e34fa83ee6c206e5c85f3137a2aaadfaed564040a1bc461ebdc81f54e9d76",
+   "pw-02": "c713ddee241a390cb269429b438cf97b4b0e2e16ac3293a56d4a94e6bb4911ff",
+   "pw-03": "92036d294daa6dbcd0b88849977150cdd966fdfc42a6d83eb349e94d5e67247e",
+   "pw-04": "7bd082385e47dc538cb423b12f38b263899c5574f489422d7154b9cf2637adde",
+   "pw-05": "10f57e74b841ebd9d23d53f349aceb88604a2418db63de2d0a85eaf1d7c7cd92",
+   "pw-06": "5514799b844421c659efc63bfa2c4581a80854c501d0ec8d2f4fe156938e79f0",
+   "pw-07": "d7877f7c0184bcb436c45a658e6433b0f0d4e01f147af39a246886f394372069",
+   "pw-08": "7d3e1a4137f6c06413f263d65eb38ff403f9d18dce2a25f9670509a7a394fc54",
+   "pw-09": "78bfffa495f612ec80a7aee27b45f64f84b0ddcab3c5416f80a3c880b9e66c53",
+   "pw-10": "1ff413ddcf7fb8eb026dcfafe8c6efdff593dfc7c4ee9b0147e4fbc7a018373c",
+   "pw-11": "aae9ce4b3ae9f2171d1030f952d07d0ff1068b312d56588bd19b6a4b86b514d9",
+   "pw-12": "cfaccb54d6ea8de131e91095f8ad83465f4df8542ab1e512b66a98e581938d86",
+   "pw-13": "c59364d07476ae60683eadf59f92291dab94302a1a0d25ecf7ff27d97f62a104",
+   "pw-14": "3c31bc1ca9e8926d1e3c5ce5bf9f25965fefef56a93ed307433843e1cef1ec69"
+  },
+  "snapshots": {
+   "skill-snapshots/candidate/playwright-debugger/SKILL.md": "bcea89aaab52d808189342cc4d294b8ffe1a0a7183cc2baa64beb6653955dfb7",
+   "skill-snapshots/candidate/playwright-debugger/references/report-acquisition.md": "2a03860a5159511593054a47494b7fb067ff863edd8d2400977952da24e28f0f",
+   "skill-snapshots/candidate/playwright-debugger/references/artifact-extraction.md": "0c89b9b239a0685297ae30b2b25c72ae1caf52abe884c8d8d6e50eac9dd4a3cb",
+   "skill-snapshots/candidate/playwright-debugger/references/classification-procedure.md": "39350b25046feea946d0f64e7d2ec9247fa9fb52886707a91c26247c26e91cf6",
+   "skill-snapshots/candidate/playwright-debugger/references/fix-verification.md": "d8339ce60322a128961350597aebabfbb07e367c49e67e258f9ad39f9353ce97",
+   "skill-snapshots/current/playwright-debugger/SKILL.md": "952a4e34621d1eed587a3cb448c751120b6452c053e038f094759819e9e12dcf",
+   "skill-snapshots/current/playwright-debugger/references/report-acquisition.md": "2a03860a5159511593054a47494b7fb067ff863edd8d2400977952da24e28f0f",
+   "skill-snapshots/current/playwright-debugger/references/artifact-extraction.md": "0c89b9b239a0685297ae30b2b25c72ae1caf52abe884c8d8d6e50eac9dd4a3cb",
+   "skill-snapshots/current/playwright-debugger/references/classification-procedure.md": "39350b25046feea946d0f64e7d2ec9247fa9fb52886707a91c26247c26e91cf6",
+   "skill-snapshots/current/playwright-debugger/references/fix-verification.md": "d8339ce60322a128961350597aebabfbb07e367c49e67e258f9ad39f9353ce97"
+  },
+  "candidate_frame": "263e437b5aefdc8dbb7484d3c7d765e563ccb5c6bed72d8605967521a9f6c6ab",
+  "candidate_schema": "2b95264e303edbcbb1ff06fbf9a5047c11c0f5f857594df8329c1eefd60212c1",
+  "ground_frame": "a4a38a6a3056af635ae1afd2c6cd0e0c97b0ced8b99f3dfae7847b869ce4f1e6",
+  "ground_schema": "7e239d75452d435bacd88ac040e38b7d742e4973b07554a07abbe76fc8a99b9e",
+  "script": "700713626273993dd7a6d29754b3da470da48381bee1bea5e99fb77867e93798"
+ }
+}

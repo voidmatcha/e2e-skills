@@ -458,18 +458,29 @@ def find_artifact_id(
         fail("GitHub artifact listing has no validated artifacts/total_count")
     if total_count != len(artifacts):
         fail("GitHub artifact listing is paginated or inconsistent")
+    # Some workflows append the run ID and attempt to the HTML report name.
+    # Bind that suffix to the already validated run ID; never accept a report
+    # merely because its name starts with "playwright-report".
+    run_report_name = re.compile(
+        rf"{re.escape(ARTIFACT_NAME)}-{re.escape(run_id)}-[1-9][0-9]*\Z"
+    )
     matches = [
         artifact
         for artifact in artifacts
         if isinstance(artifact, dict)
-        and artifact.get("name") == ARTIFACT_NAME
+        and isinstance(artifact.get("name"), str)
+        and (
+            artifact["name"] == ARTIFACT_NAME
+            or run_report_name.fullmatch(artifact["name"]) is not None
+        )
         and artifact.get("expired") is False
         and type(artifact.get("id")) is int
         and artifact["id"] > 0
     ]
     if len(matches) != 1:
         fail(
-            f"expected exactly one unexpired {ARTIFACT_NAME!r} artifact; "
+            f"expected exactly one unexpired {ARTIFACT_NAME!r} or "
+            f"run-bound report artifact; "
             f"found {len(matches)}"
         )
     return matches[0]["id"]

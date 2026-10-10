@@ -13,7 +13,6 @@ mkdir -p "$TMP/project/cypress/e2e" "$TMP/project/node_modules/.bin" \
   "$TMP/project/tests" "$TMP/project/node_modules/eslint-plugin-playwright" \
   "$TMP/project/node_modules/eslint-plugin-cypress" \
   "$TMP/project/node_modules/eslint-plugin-mocha" \
-  "$TMP/project/node_modules/eslint-plugin-cypress-silent-pass" \
   "$TMP/project/node_modules/@typescript-eslint/parser" "$TMP/bin"
 mkdir "$TMP/project/.git"
 PROJECT_REAL="$(cd "$TMP/project" && pwd -P)"
@@ -55,7 +54,7 @@ cat >"$TMP/project/eslint.config.mjs" <<'JS'
 export default [{ rules: { 'mocha/no-exclusive-tests': 'off' } }];
 JS
 
-for package in eslint-plugin-playwright eslint-plugin-cypress eslint-plugin-mocha eslint-plugin-cypress-silent-pass; do
+for package in eslint-plugin-playwright eslint-plugin-cypress eslint-plugin-mocha; do
   cat >"$TMP/project/node_modules/$package/index.js" <<'JS'
 module.exports = { configs: { recommended: { rules: {} } }, rules: {} };
 JS
@@ -167,8 +166,14 @@ if grep -q "import playwright" "\$config"; then
   printf '%s\n' "tests/justified.spec.ts"
   printf '  5:3  error  Locator assertion is always true  playwright/no-unnecessary-assertions\n\n'
 else
+  if grep -q "cypress-silent-pass" "\$config"; then
+    printf 'scanner unexpectedly loaded the Cypress silent-pass companion\n' >&2
+    exit 2
+  fi
   printf '%s\n' "\$PWD/cypress/e2e/local.cy.js"
   printf '  2:3  error  Unexpected exclusive test  mocha/no-exclusive-tests\n\n'
+  printf '  3:3  error  Queued Cypress chain assertion  cypress-silent-pass/no-silent-pass\n\n'
+  printf '  4:3  error  Same basename from a non-Playwright plugin  cypress/no-unnecessary-assertions\n\n'
 fi
 printf '✖ 1 problem (1 error, 0 warnings)\n'
 exit 1

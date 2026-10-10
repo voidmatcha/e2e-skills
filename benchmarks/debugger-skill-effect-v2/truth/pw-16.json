@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "Agent-Clubhouse/Goobers",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/Agent-Clubhouse/Goobers/issues/6692",
+   "https://github.com/Agent-Clubhouse/Goobers/pull/6694"
+  ],
+  "merged": "2026-10-03"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test",
+ "explanation": "The locator uses Playwright's non-exact accessible-name matching. During the loading transition it resolves to both the page h1 'Recovery metadata' and the h2 'Loading recovery metadata', causing a strict-mode violation.",
+ "fix": "Use `exact: true` on the heading locator."
+}

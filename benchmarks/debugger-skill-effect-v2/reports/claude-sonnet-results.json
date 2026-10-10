@@ -1,0 +1,1529 @@
+{
+ "protocol_id": "debugger-skill-effect-v2",
+ "model_report": "benchmarks/debugger-skill-effect-v2/reports/claude-sonnet.json",
+ "judge_report": "benchmarks/debugger-skill-effect-v2/reports/claude-sonnet-judged-by-codex-sol.json",
+ "host": {
+  "runner": "claude",
+  "requested_model": "sonnet",
+  "canonical_model": "claude-sonnet-5-5",
+  "cli": "2.1.289 (Claude Code)"
+ },
+ "judge": {
+  "runner": "codex",
+  "requested_model": "gpt-6-sol",
+  "canonical_model": null,
+  "cli": "codex-cli 0.159.3"
+ },
+ "scheduled_calls": 234,
+ "completed_calls": 234,
+ "infrastructure_errors": 0,
+ "invalid_predictions": 0,
+ "judge_calls": 26,
+ "judge_failures": 0,
+ "unjudged_runs": 0,
+ "decision": {
+  "status": "FAIL",
+  "detail": {
+   "lift_at_least_min": false,
+   "ci_lower_above_zero": false,
+   "diagnosis_not_worse": true
+  },
+  "rule": {
+   "min_lift": 0.1,
+   "ci": "paired case-cluster bootstrap of per-case strict-match differences (skill minus free), stratified by framework",
+   "bootstrap_resamples": 10000,
+   "max_diagnosis_drop": 0.05,
+   "PASS": "skill-minus-free lift >= min_lift AND bootstrap 95% CI lower bound > 0 AND skill diagnosis accuracy >= free diagnosis accuracy - max_diagnosis_drop",
+   "FAIL": "all model calls scored, all judge calls parsed, no input drift, and PASS conditions not met",
+   "INCONCLUSIVE": "any unscored model call after the retry policy, any unparsed judge call, or any input digest drift"
+  }
+ },
+ "arm_metrics": {
+  "skill": {
+   "strict": 0.8717948717948718,
+   "lenient": 1.0,
+   "diag": 1.0,
+   "fcode": 0.7333333333333333
+  },
+  "legend": {
+   "strict": 0.8333333333333334,
+   "lenient": 1.0,
+   "diag": 1.0,
+   "fcode": 0.7777777777777778
+  },
+  "free": {
+   "strict": 0.8974358974358975,
+   "lenient": 1.0,
+   "diag": 1.0,
+   "fcode": 0.0
+  }
+ },
+ "lifts_strict_match": {
+  "skill_minus_free": {
+   "lift": -0.02564102564102564,
+   "ci95": [
+    -0.08974358974358973,
+    0.02564102564102564
+   ],
+   "cases_better": 1,
+   "cases_worse": 2,
+   "cases_tied": 23
+  },
+  "skill_minus_legend": {
+   "lift": 0.038461538461538464,
+   "ci95": [
+    0.0,
+    0.07692307692307693
+   ],
+   "cases_better": 3,
+   "cases_worse": 0,
+   "cases_tied": 23
+  },
+  "legend_minus_free": {
+   "lift": -0.0641025641025641,
+   "ci95": [
+    -0.14102564102564102,
+    0.0
+   ],
+   "cases_better": 0,
+   "cases_worse": 3,
+   "cases_tied": 23
+  }
+ },
+ "f_code_exact": {
+  "labeled_cases": 15,
+  "skill": 0.7333333333333333,
+  "legend": 0.7777777777777778,
+  "skill_minus_legend": -0.04444444444444443
+ },
+ "usage": {
+  "skill": {
+   "calls": 78,
+   "total_input": 2581964,
+   "output": 55175,
+   "elapsed_ms": 757525
+  },
+  "legend": {
+   "calls": 78,
+   "total_input": 357265,
+   "output": 32627,
+   "elapsed_ms": 596686
+  },
+  "free": {
+   "calls": 78,
+   "total_input": 248558,
+   "output": 26641,
+   "elapsed_ms": 526310
+  }
+ },
+ "cases": [
+  {
+   "case_id": "pw-01",
+   "framework": "playwright",
+   "repo": "open-metadata/OpenMetadata",
+   "f_code_label": "F14",
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 1.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 1.0
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F14",
+     "F14",
+     "F14"
+    ],
+    "legend": [
+     "F14",
+     "F14",
+     "F14"
+    ]
+   }
+  },
+  {
+   "case_id": "pw-02",
+   "framework": "playwright",
+   "repo": "open-metadata/OpenMetadata",
+   "f_code_label": null,
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 0.3333333333333333,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "legend": {
+     "strict": 0.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "free": {
+     "strict": 0.6666666666666666,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     1,
+     1,
+     2
+    ],
+    "legend": [
+     1,
+     1,
+     1
+    ],
+    "free": [
+     1,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F14",
+     "F14",
+     "F14"
+    ],
+    "legend": [
+     "F14",
+     "F14",
+     "F14"
+    ]
+   }
+  },
+  {
+   "case_id": "pw-03",
+   "framework": "playwright",
+   "repo": "open-metadata/OpenMetadata",
+   "f_code_label": null,
+   "diagnosis_label": "product_regression",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F1",
+     "F14",
+     "F1"
+    ],
+    "legend": [
+     "F1",
+     "F1",
+     "F11"
+    ]
+   }
+  },
+  {
+   "case_id": "pw-04",
+   "framework": "playwright",
+   "repo": "open-metadata/OpenMetadata",
+   "f_code_label": "F11",
+   "diagnosis_label": "product_regression",
+   "per_arm": {
+    "skill": {
+     "strict": 0.3333333333333333,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 1.0
+    },
+    "legend": {
+     "strict": 0.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 1.0
+    },
+    "free": {
+     "strict": 0.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     1,
+     1
+    ],
+    "legend": [
+     1,
+     1,
+     1
+    ],
+    "free": [
+     1,
+     1,
+     1
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F11",
+     "F11",
+     "F11"
+    ],
+    "legend": [
+     "F11",
+     "F11",
+     "F11"
+    ]
+   }
+  },
+  {
+   "case_id": "pw-05",
+   "framework": "playwright",
+   "repo": "open-metadata/OpenMetadata",
+   "f_code_label": "F3",
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 0.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 0.0
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F7",
+     "F7",
+     "F7"
+    ],
+    "legend": [
+     "F7",
+     "F11",
+     "F7"
+    ]
+   }
+  },
+  {
+   "case_id": "pw-06",
+   "framework": "playwright",
+   "repo": "open-metadata/OpenMetadata",
+   "f_code_label": null,
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F11",
+     "F11",
+     "F7"
+    ],
+    "legend": [
+     "F7",
+     "F7",
+     "F7"
+    ]
+   }
+  },
+  {
+   "case_id": "pw-07",
+   "framework": "playwright",
+   "repo": "open-metadata/OpenMetadata",
+   "f_code_label": null,
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F14",
+     "F14",
+     "F14"
+    ],
+    "legend": [
+     "F11",
+     "F11",
+     "F11"
+    ]
+   }
+  },
+  {
+   "case_id": "pw-08",
+   "framework": "playwright",
+   "repo": "open-metadata/OpenMetadata",
+   "f_code_label": null,
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F11",
+     "F5",
+     "F5"
+    ],
+    "legend": [
+     "F11",
+     "F11",
+     "F11"
+    ]
+   }
+  },
+  {
+   "case_id": "pw-09",
+   "framework": "playwright",
+   "repo": "open-metadata/OpenMetadata",
+   "f_code_label": "F14",
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 1.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 1.0
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F14",
+     "F14",
+     "F14"
+    ],
+    "legend": [
+     "F14",
+     "F14",
+     "F14"
+    ]
+   }
+  },
+  {
+   "case_id": "pw-10",
+   "framework": "playwright",
+   "repo": "open-metadata/OpenMetadata",
+   "f_code_label": "F3",
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 0.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 0.0
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F7",
+     "F7",
+     "F7"
+    ],
+    "legend": [
+     "F7",
+     "F7",
+     "F7"
+    ]
+   }
+  },
+  {
+   "case_id": "pw-11",
+   "framework": "playwright",
+   "repo": "open-metadata/OpenMetadata",
+   "f_code_label": null,
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F1",
+     "F1",
+     "F6"
+    ],
+    "legend": [
+     "F10",
+     "F10",
+     "F10"
+    ]
+   }
+  },
+  {
+   "case_id": "pw-12",
+   "framework": "playwright",
+   "repo": "open-metadata/OpenMetadata",
+   "f_code_label": "F7",
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 1.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 0.6666666666666666
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F7",
+     "F7",
+     "F7"
+    ],
+    "legend": [
+     "F9",
+     "F7",
+     "F7"
+    ]
+   }
+  },
+  {
+   "case_id": "pw-13",
+   "framework": "playwright",
+   "repo": "open-metadata/OpenMetadata",
+   "f_code_label": "F1",
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 0.0
+    },
+    "legend": {
+     "strict": 0.6666666666666666,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 0.6666666666666666
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     1,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F14",
+     "F14",
+     "F14"
+    ],
+    "legend": [
+     "F6",
+     "F1",
+     "F1"
+    ]
+   }
+  },
+  {
+   "case_id": "pw-14",
+   "framework": "playwright",
+   "repo": "parisek/styleguide",
+   "f_code_label": null,
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F1",
+     "F14",
+     "F5"
+    ],
+    "legend": [
+     "F1",
+     "F1",
+     "F1"
+    ]
+   }
+  },
+  {
+   "case_id": "pw-15",
+   "framework": "playwright",
+   "repo": "ExaDev/agent-comms",
+   "f_code_label": "F7",
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 0.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 1.0
+    },
+    "legend": {
+     "strict": 0.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 1.0
+    },
+    "free": {
+     "strict": 0.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     1,
+     1,
+     1
+    ],
+    "legend": [
+     1,
+     1,
+     1
+    ],
+    "free": [
+     1,
+     1,
+     1
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F7",
+     "F7",
+     "F7"
+    ],
+    "legend": [
+     "F7",
+     "F7",
+     "F7"
+    ]
+   }
+  },
+  {
+   "case_id": "pw-16",
+   "framework": "playwright",
+   "repo": "Agent-Clubhouse/Goobers",
+   "f_code_label": "F2",
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 1.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 0.6666666666666666
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F2",
+     "F2",
+     "F2"
+    ],
+    "legend": [
+     "F2",
+     "F1",
+     "F2"
+    ]
+   }
+  },
+  {
+   "case_id": "pw-17",
+   "framework": "playwright",
+   "repo": "anonhym/latelier",
+   "f_code_label": "F2",
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 1.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 1.0
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F2",
+     "F2",
+     "F2"
+    ],
+    "legend": [
+     "F2",
+     "F2",
+     "F2"
+    ]
+   }
+  },
+  {
+   "case_id": "pw-18",
+   "framework": "playwright",
+   "repo": "datahub-project/datahub",
+   "f_code_label": null,
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F1",
+     "F1",
+     "F14"
+    ],
+    "legend": [
+     "F11",
+     "F11",
+     "F11"
+    ]
+   }
+  },
+  {
+   "case_id": "cy-01",
+   "framework": "cypress",
+   "repo": "ChurchCRM/CRM",
+   "f_code_label": "F14",
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 1.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 1.0
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F14",
+     "F14",
+     "F14"
+    ],
+    "legend": [
+     "F14",
+     "F14",
+     "F14"
+    ]
+   }
+  },
+  {
+   "case_id": "cy-02",
+   "framework": "cypress",
+   "repo": "ChurchCRM/CRM",
+   "f_code_label": "F14",
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 1.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 1.0
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F14",
+     "F14",
+     "F14"
+    ],
+    "legend": [
+     "F14",
+     "F14",
+     "F14"
+    ]
+   }
+  },
+  {
+   "case_id": "cy-03",
+   "framework": "cypress",
+   "repo": "bloom-housing/bloom",
+   "f_code_label": "F1",
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 1.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 1.0
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F1",
+     "F1",
+     "F1"
+    ],
+    "legend": [
+     "F1",
+     "F1",
+     "F1"
+    ]
+   }
+  },
+  {
+   "case_id": "cy-04",
+   "framework": "cypress",
+   "repo": "trento-project/web",
+   "f_code_label": null,
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F14",
+     "F11",
+     "F11"
+    ],
+    "legend": [
+     "F11",
+     "F11",
+     "F11"
+    ]
+   }
+  },
+  {
+   "case_id": "cy-05",
+   "framework": "cypress",
+   "repo": "concord-consortium/davai-plugin",
+   "f_code_label": "F13",
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 0.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 0.6666666666666666
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F8",
+     "F8",
+     "F8"
+    ],
+    "legend": [
+     "F8",
+     "F13",
+     "F13"
+    ]
+   }
+  },
+  {
+   "case_id": "cy-06",
+   "framework": "cypress",
+   "repo": "LuxTronic/cvat",
+   "f_code_label": null,
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 0.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "legend": {
+     "strict": 0.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "free": {
+     "strict": 0.6666666666666666,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     1,
+     1,
+     1
+    ],
+    "legend": [
+     1,
+     1,
+     1
+    ],
+    "free": [
+     1,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F5",
+     "F5",
+     "F5"
+    ],
+    "legend": [
+     "F12",
+     "F2",
+     "F2"
+    ]
+   }
+  },
+  {
+   "case_id": "cy-07",
+   "framework": "cypress",
+   "repo": "LuxTronic/cvat",
+   "f_code_label": "F4",
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 1.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0,
+     "fcode": 1.0
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F4",
+     "F4",
+     "F4"
+    ],
+    "legend": [
+     "F4",
+     "F4",
+     "F4"
+    ]
+   }
+  },
+  {
+   "case_id": "cy-08",
+   "framework": "cypress",
+   "repo": "opensearch-project/dashboards-observability",
+   "f_code_label": null,
+   "diagnosis_label": "test_defect",
+   "per_arm": {
+    "skill": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "legend": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    },
+    "free": {
+     "strict": 1.0,
+     "lenient": 1.0,
+     "diag": 1.0
+    }
+   },
+   "judge_scores": {
+    "skill": [
+     2,
+     2,
+     2
+    ],
+    "legend": [
+     2,
+     2,
+     2
+    ],
+    "free": [
+     2,
+     2,
+     2
+    ]
+   },
+   "f_codes": {
+    "skill": [
+     "F1",
+     "F1",
+     "F1"
+    ],
+    "legend": [
+     "F11",
+     "F11",
+     "F11"
+    ]
+   }
+  }
+ ]
+}

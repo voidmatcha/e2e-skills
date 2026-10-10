@@ -1,0 +1,60 @@
+{
+  "task": "Add end-to-end tests for the sign-in portal (`/`). Acceptance criteria: (1) signing in with the demo account (email `ada@example.com`, access code `4471`) replaces the form with the dashboard, which greets `Welcome, Ada`; (2) a wrong access code keeps the sign-in form and shows the error `Invalid email or access code`; (3) submitting without an email shows the error `Email is required`; (4) a signed-in session survives a page reload; (5) Sign out returns to the sign-in form and ends the session on the server, so a reload still shows the form. The test seam `POST /api/reset` drops every session.",
+  "faults": [
+    {
+      "id": "f1-signin-noop",
+      "class": "surface",
+      "criterion": 1,
+      "description": "A successful sign-in leaves the form on screen; the dashboard appears only after a reload.",
+      "find": "      showDashboard(body.user);\n    });\n",
+      "replace": "      void body.user;\n    });\n"
+    },
+    {
+      "id": "f2-any-code-accepted",
+      "class": "precision",
+      "criterion": 2,
+      "description": "Any access code signs the demo account in.",
+      "find": "if (!account || account.code !== String(code))",
+      "replace": "if (!account)"
+    },
+    {
+      "id": "f3-wrong-error-text",
+      "class": "precision",
+      "criterion": 2,
+      "description": "The wrong-code error reads `Sign-in failed` instead of the specified text.",
+      "find": "{ error: \"Invalid email or access code\" }",
+      "replace": "{ error: \"Sign-in failed\" }"
+    },
+    {
+      "id": "f4-session-lost-on-reload",
+      "class": "persistence",
+      "criterion": 4,
+      "description": "The server never recognises the session cookie, so a reload shows the sign-in form again.",
+      "find": "      const current = sessions.get(cookieId(req));\n",
+      "replace": "      const current = undefined;\n"
+    },
+    {
+      "id": "f5-signout-client-only",
+      "class": "persistence",
+      "criterion": 5,
+      "description": "Sign out hides the dashboard but the server keeps the session; a reload shows the dashboard again.",
+      "find": "      sessions.delete(cookieId(req));\n      return json(res, 200, { ok: true }, { \"set-cookie\": \"sid=; Path=/; Max-Age=0\" });\n",
+      "replace": "      void cookieId(req);\n      return json(res, 200, { ok: true });\n"
+    }
+  ],
+  "refactor": [
+    {"find": "<main id=\"si-main\">", "replace": "<main id=\"si-main\" class=\"shell\"><div class=\"shell__inner\">"},
+    {"find": "    </section>\n  </main>", "replace": "    </section></div>\n  </main>"},
+    {"find": "<button type=\"submit\">Sign in</button>", "replace": "<button type=\"submit\" class=\"btn btn-primary\"><span>Sign in</span></button>"},
+    {"find": "<button type=\"button\" id=\"si-signout\">Sign out</button>", "replace": "<button type=\"button\" id=\"si-signout\" class=\"btn btn-link\"><span>Sign out</span></button>"},
+    {"find": "si-form-view", "replace": "auth-panel"},
+    {"find": "si-dashboard", "replace": "home-panel"},
+    {"find": "si-greeting", "replace": "welcome-line"},
+    {"find": "si-signout", "replace": "end-session"},
+    {"find": "si-form", "replace": "auth-form"},
+    {"find": "si-email", "replace": "login-email"},
+    {"find": "si-code", "replace": "login-code"},
+    {"find": "si-error", "replace": "auth-error"},
+    {"find": "si-main", "replace": "app-shell"}
+  ]
+}

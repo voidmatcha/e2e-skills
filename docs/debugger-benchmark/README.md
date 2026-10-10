@@ -59,6 +59,10 @@ python3 scripts/evals/compare-debugger-holdouts.py \
 
 The comparator fails closed on a partial or duplicate matrix, incomplete execution, infrastructure errors, input or schedule drift, workspace mutation, malformed raw output provenance, serialized prediction drift, score drift, or status drift. It reparses raw outputs and re-derives every schedule and score. Cross-host headline metrics first average models within each provider family and then weight the two provider families equally; the two Anthropic models therefore do not outvote the single OpenAI model.
 
+## Live evidence
+
+This v1 protocol has not run: its pinned CLI builds and `gpt-5.6-sol` are no longer available, and it has no no-skill arm. The first live debugger measurement is the separate [debugger skill-effect v1](../../benchmarks/debugger-skill-effect-v1/README.md), a preregistered paired comparison of the model-visible skill text against a legend-only prompt on 30 fresh cases, which returned `PASS` on both a Claude and a Codex host. It is public development evidence for the skill text, not an accuracy estimate for the full workflow. The follow-up [debugger skill-effect v2](../../benchmarks/debugger-skill-effect-v2/README.md) used 26 real upstream fixes as ground truth and a taxonomy-free baseline and returned `FAIL`: no measurable lift of the skill text over a plain diagnose prompt on those cases, and only 15 of 26 real fixes mapped to a single agreed F-code. [Debugger skill-effect v3](../../benchmarks/debugger-skill-effect-v3/README.md) tested a candidate F1/F14/F11/F7 tie-break for both skills on 28 further real fixes: `FAIL` on mechanism match (0.810 versus 0.798), but F-code exact match on blind-agreed labels rose 0.638 → 0.812 and mapper agreement to 23/28. The candidate was not shipped in 2.0.0; both skills keep the `ed9489c` text. A tool-enabled pilot on constructed Playwright failures with raw reports, [debugger skill-effect v4](../../benchmarks/debugger-skill-effect-v4/README.md), was `INCONCLUSIVE` and showed no lift.
+
 ## Remaining limitations
 
 - The cases and expected labels were authored together and have not received a blinded independent oracle audit.

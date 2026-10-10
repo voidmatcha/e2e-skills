@@ -1,0 +1,39 @@
+{
+  "schema": "debugger-ci-artifacts-validation-v1",
+  "status": "PROXIMAL_OBSERVATION_ONLY_NO_FIX_VERIFIED_TRUTH",
+  "source_manifest_sha256": "4ce4c7b9839cefe3db2bf3e7e1b13c3b8a8ccec3ede38fad60de678c5e1775da",
+  "reader_accepted_distinct_tests": 11,
+  "reader_unavailable_distinct_tests": 15,
+  "repeated_mobile_group": {
+    "repository": "apache/superset",
+    "test_id_sha256": "3adf2f688441fd6abc877e44f482516ea305562bf4a01687120568e2e30889aa",
+    "events": 55,
+    "distinct_head_shas": 55,
+    "distinct_error_sha256": 1,
+    "observation": "The latest accepted JSON report has three failed visibility attempts; all three matching trace attempts have no projected failed network requests or browser errors.",
+    "causal_truth": "UNADJUDICATED"
+  },
+  "shared_drill_group": {
+    "repository": "apache/superset",
+    "run_id": 36896024842,
+    "run_url": "https://github.com/apache/superset/actions/runs/36896024842",
+    "head_sha": "ead680e7e7ff5aec747016e8b655c7589dec7199",
+    "artifact_id": 11180752227,
+    "report_sha256": "f209c113b62857160480c13b8d74262adeb954ba076777c328057b0c51ce0c18",
+    "distinct_failed_tests": 7,
+    "observation": "Each initial-attempt trace projects POST /api/v1/chart/data HTTP 500 and the JSON report fails a chart canvas visibility assertion. The run-head test source waits for chart canvas after dashboard load.",
+    "inference": "The seven canvas failures share an upstream chart-data failure symptom; this does not establish why the API returned 500 or a verified fix.",
+    "causal_truth": "UNADJUDICATED",
+    "initial_attempt_trace_sha256": {
+      "14356": "e425857f6bd06bb3efe44d58eb3c43afd95f237bf5d6814fc2d417938903aa5e",
+      "4d92d": "6d62c9453df80d96472199d745dc7484df18ddbbeb53ba59749b31822154bb65",
+      "8bd4e": "a81ac5c94ffd28d6ebdb1a87a6f5c16608759465809a3aecc52aea7b4dc33490",
+      "8c5d6": "e1b44ce918f3b62a96719cc451893fc904f9424e1a54e8583ad4ca905b9b8efa",
+      "cfe55": "dc66a5136c1f6b483a3ea2fe5b448631a813d44f6e1b68e37660f8125440ed36",
+      "e7183": "031ecfa820746f46c803a74d6ac1ad20c1c635fe74bccf10d877dadabc64fe4c",
+      "ee861": "2051f2c196023a933fae2aa21dfadda9f0dae9744176a96988abf6d9b2cf6409"
+    }
+  },
+  "model_arms": "TWO_ARM_PROMPT_COMPLETE_PILOT_RECORDED_SEPARATELY",
+  "diagnostic_accuracy": "UNMEASURED"
+}

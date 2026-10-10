@@ -1,0 +1,1897 @@
+{
+  "protocol": "real-fix-acquisition-v2",
+  "status": "COMPLETE",
+  "repositories": [
+    {
+      "name": "OHIF/Viewers",
+      "cutoff": "f06cf8b309551325038a80d38c2ec94af81d79ae",
+      "path": "tests",
+      "endpoint": "repos/OHIF/Viewers/commits?sha=f06cf8b309551325038a80d38c2ec94af81d79ae&path=tests&per_page=25",
+      "commits": [
+        {
+          "ordinal": 1,
+          "sha": "8f770e695be06932b7ac1b0cf557621071692ebe",
+          "parents": [
+            "d33392798dea0a395da309dbfbc6137619dc09fd"
+          ],
+          "subject": "test(contour): add fill, outline and opacity contour display coverage (#6260)",
+          "changed_files": 7,
+          "spec_files": [
+            {
+              "path": "tests/ContourCombineOperations.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/ContourSegmentationFillOutlineOpacity.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/SegmentationPanel.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 2,
+          "sha": "020a2bf5a650237722d164e1013fcbc66bed0737",
+          "parents": [
+            "a0ab6afded23d107e1f125db9245db360b0e9824"
+          ],
+          "subject": "fix(ui-next): modify numeric and double slider inputs behavior to allow dynamic set of min and max and easier value modification (better UX) (#6273)",
+          "changed_files": 15,
+          "spec_files": [
+            {
+              "path": "tests/SEGDrawingToolsResizing.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/SegmentationPanel.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/ThresholdRange.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 3,
+          "sha": "8d7cb451ebc5916f0683b21d54fcc5171d7933be",
+          "parents": [
+            "2f2d015a87b32f049840ceb1dc300c5ebb3a540b"
+          ],
+          "subject": "fix(report): correct the save of a revision into an existing series (#6261)",
+          "changed_files": 49,
+          "spec_files": [
+            {
+              "path": "tests/Rectangle.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 4,
+          "sha": "7310bcac8b3aaff767e27264bc852066578895a3",
+          "parents": [
+            "154fba95fa598bd1a2d0f4a174c3b27ffe137341"
+          ],
+          "subject": "fix(sorting): order display sets by the creation date/time of their instance, and show it (#6222)",
+          "changed_files": 39,
+          "spec_files": [
+            {
+              "path": "tests/ThumbnailDetails.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 5,
+          "sha": "65588fd78ba048e7ee90847e8c1c65a47beb4d6f",
+          "parents": [
+            "8889c7514574aa837b8f5bc40eee29e8206b0c12"
+          ],
+          "subject": "test(contour): add smooth edges and merge operation E2E tests (#6236)",
+          "changed_files": 6,
+          "spec_files": [
+            {
+              "path": "tests/ContourCombineOperations.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/ContourSmoothOperation.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 6,
+          "sha": "fac6ba3cfac14febdd96fc8f65762d57e13e84c2",
+          "parents": [
+            "6f91ae24c14ac6966ee3027418c6cbc93fdbc845"
+          ],
+          "subject": "docs(tests): add E2E contribution guidelines and require text-free viewport baselines (#6227)",
+          "changed_files": 4,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 7,
+          "sha": "6b367e54207b8f5abd3e8796df976ae50e0d0e1f",
+          "parents": [
+            "cde349f783a5f122966a2af6a043bc723a94f225"
+          ],
+          "subject": "test(contour): Livewire contour draw coverage (#6206)",
+          "changed_files": 6,
+          "spec_files": [
+            {
+              "path": "tests/LivewireContourSegmentation.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 8,
+          "sha": "5fc3f14f7aea1805749633419479d3c1cf068216",
+          "parents": [
+            "42b6231b81808e4fa7b64c262e41d01dc7f90310"
+          ],
+          "subject": "test(contour): add Freehand and Spline contour drawing tool E2E tests (#6117)",
+          "changed_files": 20,
+          "spec_files": [
+            {
+              "path": "tests/FreehandContourSegmentation.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/SplineContourSegmentation.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 9,
+          "sha": "32beb70e2a0dfe11fae56e4eb3c6fe5c68d276b1",
+          "parents": [
+            "e4098bb4b5c86da364cb7f5115a00550fed1c539"
+          ],
+          "subject": "fix(segmentation): drop a removed representation from the panel (#6214)",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "tests/ContourSegmentationCrudInteractions.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 10,
+          "sha": "8eb0a183ce1bfa30fd0f7aa7bb30991546fcc83d",
+          "parents": [
+            "6e155bb13c43d1b3eb480370b3a9049729096a00"
+          ],
+          "subject": "test(segmentation): add labelmap segment color change E2E tests. (#6054)",
+          "changed_files": 7,
+          "spec_files": [
+            {
+              "path": "tests/LabelMapSegmentationColorChange.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 11,
+          "sha": "ef7a7c293e43ded2da911a4113eeff6bbd141bef",
+          "parents": [
+            "cea9b7d42e9f9b8a69f9faab98342a53046638e3"
+          ],
+          "subject": "test(measurements): add DOM assertions for measurement annotation text (#6129)",
+          "changed_files": 22,
+          "spec_files": [
+            {
+              "path": "tests/Angle.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/ArrowAnnotate.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/Bidirectional.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/Circle.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/CobbAngle.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/Ellipse.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/Length.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/Probe.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/Rectangle.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 12,
+          "sha": "f552d9fe35386b63c8d2ed4947b720d70d4018e0",
+          "parents": [
+            "c7adb4939b2610c00560eb4e14ade9cf532801e8"
+          ],
+          "subject": "test(e2e): Add viewport text hiding for screenshot comparisons (#6142)",
+          "changed_files": 4,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 13,
+          "sha": "2ba415380814ec014cbfaec435335996cd145138",
+          "parents": [
+            "6d81d970b0c14385587edf0b49f623c8e12ebd26"
+          ],
+          "subject": "test(segmentation): keep spline contours visible when drawing another one on the same slice (#6198)",
+          "changed_files": 12,
+          "spec_files": [
+            {
+              "path": "tests/CatmullRomSplineContourSegmentation.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 14,
+          "sha": "3c0e245398d07977adeef6fd04619462560a01a6",
+          "parents": [
+            "00bb77d940f9d7837e107f93224a0a4409c196d3"
+          ],
+          "subject": "feat(next): native Generic Viewport migration (useNextViewports) (#6101)",
+          "changed_files": 86,
+          "spec_files": [
+            {
+              "path": "tests/OverlappingSegmentationRendering.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/Scoord3dProbe.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 15,
+          "sha": "01939e2236660e9d14643d3a4136e72fd010cd1e",
+          "parents": [
+            "f0e2f643978f4983e7c099fa8351b90ab3d766cc"
+          ],
+          "subject": "test: add E2E test for contour combine intersect and subtract operations (#6131)",
+          "changed_files": 7,
+          "spec_files": [
+            {
+              "path": "tests/ContourCombineOperations.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 16,
+          "sha": "1eee3e6119cf7d34edac9e9e71cdbd3286dc9bb1",
+          "parents": [
+            "2c54616136e3afe2412c9e67a9edcfebab5a4667"
+          ],
+          "subject": "fix(MetadataProvider): Correctly assign imageId for multiframe images and remove unused frame information retrieval method (#5965)",
+          "changed_files": 7,
+          "spec_files": [
+            {
+              "path": "tests/MultiframeRendering.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 17,
+          "sha": "b266c0a86aee64d181a08c1ee65437650234b847",
+          "parents": [
+            "f79055f98e74e78f9892bf07387e4340dbf8e04a"
+          ],
+          "subject": "feat: Add extensibility for tmtv and segmentation modes (#6128)",
+          "changed_files": 49,
+          "spec_files": [
+            {
+              "path": "tests/Customization.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 18,
+          "sha": "3dd5c70cb24c74580fa71940cfc99b107fa18ccb",
+          "parents": [
+            "3d9a17bc0c6dc871bfeddc64511d065102e20eba"
+          ],
+          "subject": "feat: Add customization URL parameter (#5992)",
+          "changed_files": 58,
+          "spec_files": [
+            {
+              "path": "tests/Customization.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 19,
+          "sha": "f8546ce0e0ab4d377568bcb155f1f9cdca24f5ca",
+          "parents": [
+            "973631b7e8e6cf1fed8f984e7655bffaefb93532"
+          ],
+          "subject": "fix: recipe config cleanup, report-only CSP, logout redirect validation (#6124)",
+          "changed_files": 27,
+          "spec_files": [
+            {
+              "path": "tests/Scoord3dProbe.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 20,
+          "sha": "38214f26de1759a1bb0e54d4b9d51262003b9373",
+          "parents": [
+            "cb6cdafd24991d643e098dec6f6aecc855067d59"
+          ],
+          "subject": "fix(wsi): mount WSI/SM viewports via setDisplaySets (#6107)",
+          "changed_files": 15,
+          "spec_files": [
+            {
+              "path": "tests/WSI.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 21,
+          "sha": "aa1ba771e0fd51b08ba70ae1a118329b7ac43ab4",
+          "parents": [
+            "d4153f12b2c4ef16550381cfaef5363a0ae477e5"
+          ],
+          "subject": "fix(test): stabilize DICOM Tag Browser scrollbar screenshot (#6118)",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "tests/DicomTagBrowser.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 22,
+          "sha": "661ecb5b2e5e6dc02406566ddc42849e70c3dbf5",
+          "parents": [
+            "b7c8b865dd02c0e1d0c5e62fe4c07dddec84ed7f"
+          ],
+          "subject": "fix(hotkeyBindings): consolidate Escape hotkey behavior for contour drawing tools (#6104)",
+          "changed_files": 12,
+          "spec_files": [
+            {
+              "path": "tests/BSplineContourSegmentation.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/CatmullRomSplineContourSegmentation.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/LinearSplineContourSegmentation.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/Livewire.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/LivewireContourSegmentation.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/Spline.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 23,
+          "sha": "ee165b4d8e9e977318bee820b33013acabcd31e3",
+          "parents": [
+            "589d6a1506a1bd4e05c0d617d8a4b951b53fae9e"
+          ],
+          "subject": "Fix: Segmentation Hide All fails when switching from 2D to 3D fourUp (#5995)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "tests/SEGHydrationFrom3DFourUp.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 24,
+          "sha": "95200ec6e896a7e94f0884b9872c4fe1aa36ad7d",
+          "parents": [
+            "8f6947b75d3acfd39b1edcdaefbb459afa9adc3a"
+          ],
+          "subject": "test(segmentation): switch getSegmentCount to expect(rows).toHaveCount in panel specs (#6105)",
+          "changed_files": 5,
+          "spec_files": [
+            {
+              "path": "tests/ContourSegmentColorChange.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/ContourSegmentDelete.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/ContourSegmentDuplicate.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/SEGHydrationDeleteAndReload.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "tests/SEGHydrationThen3DOnly.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 25,
+          "sha": "79cb2356e1711f80dc6f79d7e7779717c0ad2b0a",
+          "parents": [
+            "20632f97cf3795b2606d0b1dda2c9dd80902327b"
+          ],
+          "subject": "chore(testing): Playwright tests for contour segmentation create, update, delete  interactions (#6091)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "tests/ContourSegmentationCrudInteractions.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        }
+      ]
+    },
+    {
+      "name": "ever-co/ever-gauzy",
+      "cutoff": "54b537baf8755924eb11f0505b99c304e6b44c8a",
+      "path": "apps/gauzy-e2e/tests",
+      "endpoint": "repos/ever-co/ever-gauzy/commits?sha=54b537baf8755924eb11f0505b99c304e6b44c8a&path=apps/gauzy-e2e/tests&per_page=25",
+      "commits": [
+        {
+          "ordinal": 1,
+          "sha": "b95b64cf6fdd52e82683eed2b20607d7a86f9541",
+          "parents": [
+            "db2eb96dd245c398d65f2a7b95af1c3c1764e4ed"
+          ],
+          "subject": "fix(e2e): expect.soft still fails the test — the AI-summary check was never \"informational\"",
+          "changed_files": 1,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 2,
+          "sha": "2271571b55fbae945829ba5f822448ddbc3ea948",
+          "parents": [
+            "7fa97c49d050dd81fa086d6f6597054dd0d3d1b3"
+          ],
+          "subject": "fix(docs-ui,e2e): second bot-review round — selection leak, dblclick guard, dead skips",
+          "changed_files": 6,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 3,
+          "sha": "bb0afe7dca029da317c462d4577cbfe30bd37924",
+          "parents": [
+            "82b63ad85b0af6eaf51a1739ff0fe3f1a2dd754e"
+          ],
+          "subject": "fix(e2e): all 11 Playwright failures — two of them real product bugs",
+          "changed_files": 15,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 4,
+          "sha": "0af5fc1bcba5fe53f8422c1ea96cd10daef99e90",
+          "parents": [
+            "066de812d36ac24d166dd17cce2dfdc22f3fa6ec"
+          ],
+          "subject": "feat(ui): working read-only Views on every page + toolbar, filter, date, theme and selector fixes (#9975)",
+          "changed_files": 83,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 5,
+          "sha": "d33305a8dea11145867a3ba2cc1f125d7a537ccd",
+          "parents": [
+            "bc169f3ab9b843bb257ebe6b54bcffbedcc01a96",
+            "1f01c83e5f3d644b5523ae6de3528c7bd6a2a3e8"
+          ],
+          "subject": "Merge remote-tracking branch 'origin/develop' into feat/documents-hub",
+          "changed_files": 20,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 6,
+          "sha": "2b7ef54be2642edfc6de118ea4ffbfc97e037495",
+          "parents": [
+            "02cd9c0175288032412451b17d9cbb4316493aca"
+          ],
+          "subject": "docs(e2e): reword a comment CI cspell rejects",
+          "changed_files": 1,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 7,
+          "sha": "02cd9c0175288032412451b17d9cbb4316493aca",
+          "parents": [
+            "3efec38f79cba4a1b97d328eeb64de7618e0c999"
+          ],
+          "subject": "docs(e2e): correct the await comment; document why the panel confirm is unscoped",
+          "changed_files": 2,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 8,
+          "sha": "3efec38f79cba4a1b97d328eeb64de7618e0c999",
+          "parents": [
+            "bffde3d9b07ebef2140a03446525bf6e8e6c3223"
+          ],
+          "subject": "fix(e2e): confirm the employee dropdown on the panel, not the options",
+          "changed_files": 1,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 9,
+          "sha": "bffde3d9b07ebef2140a03446525bf6e8e6c3223",
+          "parents": [
+            "e7141c78bedaa28e988fc561965d3d2ffdf82da8"
+          ],
+          "subject": "fix(e2e): fail at the click when the confirmed state never appears",
+          "changed_files": 2,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 10,
+          "sha": "e7141c78bedaa28e988fc561965d3d2ffdf82da8",
+          "parents": [
+            "755c40d23a281a79e302ba838d0e78de42e3b9eb"
+          ],
+          "subject": "fix(e2e): confirm five more dialogs/panels opened before acting on them",
+          "changed_files": 6,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 11,
+          "sha": "f14b037052da2f299c0dc348008f5a3d65ef3ab3",
+          "parents": [
+            "e7ac0acad166269d357ff1ff9ed3a5260037987c"
+          ],
+          "subject": "fix(e2e): confirm the equipment dropdowns opened before picking from them",
+          "changed_files": 1,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 12,
+          "sha": "e74cc207bc05801ee0c7df88941122f4247b9c18",
+          "parents": [
+            "4c75c3ebcac4f1ff95431ad1c5cc3fab77ee3de3"
+          ],
+          "subject": "test(docs): end-to-end journeys for the Documents hub",
+          "changed_files": 5,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 13,
+          "sha": "d11231a00934d77bb1eddf4d69920c6d6ad9e424",
+          "parents": [
+            "270d910477023cf017be6e4c5980c2c596b03b0b"
+          ],
+          "subject": "feat(editor): replace CKEditor 4 with TipTap-based ga-rich-text-editor everywhere",
+          "changed_files": 104,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 14,
+          "sha": "362644532641b3873644bb963b103be142f4ea1c",
+          "parents": [
+            "d3fd07f117e426c74b125b831cc96bef97df7ec4"
+          ],
+          "subject": "fix(e2e): confirm the tag Edit dialog opened before typing into it",
+          "changed_files": 1,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 15,
+          "sha": "98c49161a6575a505959edd4464cb8c333429ca4",
+          "parents": [
+            "e2091093f05ea5f4adf4b605d2e6c66f932bd1eb"
+          ],
+          "subject": "fix(timesheet): compose the picked range per-instant, and roll a midnight span",
+          "changed_files": 3,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 16,
+          "sha": "e2091093f05ea5f4adf4b605d2e6c66f932bd1eb",
+          "parents": [
+            "4cb949a20edc90602443dcdda327f7745c3e65b7"
+          ],
+          "subject": "docs(e2e): correct where the Add/Edit Time Log form's validators come from",
+          "changed_files": 1,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 17,
+          "sha": "ba68a60ccad870ae0255787ceb253310f6e59074",
+          "parents": [
+            "a6c93ff6f3ac4e0017b555e0e42187d9e2bda646"
+          ],
+          "subject": "fix(timesheet): assert containment on the converted range; drop an unused import",
+          "changed_files": 2,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 18,
+          "sha": "a6c93ff6f3ac4e0017b555e0e42187d9e2bda646",
+          "parents": [
+            "777f039eb601c711140c0c566d202e2a09d2beba"
+          ],
+          "subject": "fix(timesheet): select the day in the ORGANIZATION's timezone after creating a log",
+          "changed_files": 7,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 19,
+          "sha": "292b8159a6836c8bbf18d0e40149c07e30b5ff2b",
+          "parents": [
+            "af940e4aa059fd5f40df211136cfce6ec5ef60a2"
+          ],
+          "subject": "fix(e2e): wait for Save to be enabled instead of force-clicking a disabled button",
+          "changed_files": 1,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 20,
+          "sha": "af940e4aa059fd5f40df211136cfce6ec5ef60a2",
+          "parents": [
+            "d4806b544cef945a6b129ea49bae85589cb62d5d"
+          ],
+          "subject": "fix(e2e): detect the Add/Edit Time Log dialog's silent save no-ops",
+          "changed_files": 1,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 21,
+          "sha": "d4806b544cef945a6b129ea49bae85589cb62d5d",
+          "parents": [
+            "aff00d3092ba25a721bfb9cd470482f4d6bb2167"
+          ],
+          "subject": "fix(e2e): re-check the toolbar once more before failing selection",
+          "changed_files": 1,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 22,
+          "sha": "aff00d3092ba25a721bfb9cd470482f4d6bb2167",
+          "parents": [
+            "cdb05ba7809efe2be760f6237ee2294d084ec264"
+          ],
+          "subject": "fix(e2e): treat an unreadable row state as unknown, and fail selection loudly",
+          "changed_files": 1,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 23,
+          "sha": "cdb05ba7809efe2be760f6237ee2294d084ec264",
+          "parents": [
+            "fa32fb789608e126969f753df3ea2ed375531cd3"
+          ],
+          "subject": "fix(e2e): make timesheet row selection idempotent instead of toggling",
+          "changed_files": 1,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 24,
+          "sha": "3297e7141ab0e8bf76e252ba8013aa05d3bce1d5",
+          "parents": [
+            "154e0acacc36530b8b963be20daf9284e783496e"
+          ],
+          "subject": "fix(e2e): stop the candidate loop mistaking a slow render for a wrong control",
+          "changed_files": 1,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 25,
+          "sha": "154e0acacc36530b8b963be20daf9284e783496e",
+          "parents": [
+            "9187e800b403230e5789375f785f2edbf9366f23"
+          ],
+          "subject": "fix(e2e): repair the two real failures behind the churning shard",
+          "changed_files": 4,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        }
+      ]
+    },
+    {
+      "name": "harvester/tests",
+      "cutoff": "fe06844ce0f38a4b3a438085c436dad3c51e464c",
+      "path": "cypress/testcases",
+      "endpoint": "repos/harvester/tests/commits?sha=fe06844ce0f38a4b3a438085c436dad3c51e464c&path=cypress/testcases&per_page=25",
+      "commits": [
+        {
+          "ordinal": 1,
+          "sha": "789c36248713263a4a849c37da227b942818c5fb",
+          "parents": [
+            "0edf8437294ef28f44c9ba83becf03dd93631bc2"
+          ],
+          "subject": "Fix failed cypress tests in v1.4.0-rc5 and v1.4.0",
+          "changed_files": 12,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/settings/settings.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/virtualmachines/virtual-machine.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/volume/volumes.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 2,
+          "sha": "b9d3752b0109722ad8a7ce4b1bc23a57642a3ab9",
+          "parents": [
+            "5038deb72cfca308f0e78db375994a5e787d6939"
+          ],
+          "subject": "Fix the failed cypress test for v1.4.0 string changes",
+          "changed_files": 12,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/image/images.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/networks/network.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/settings/settings.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/storageclasses/storageclasses.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/virtualmachines/virtual-machine.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/volume/volumes.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 3,
+          "sha": "ceb811e9615c497fe99004d716f36199d093e4a6",
+          "parents": [
+            "c2bc7fcb6753e4881cdd9d5155fa82ba09435dba"
+          ],
+          "subject": "* [e2e] implement hosts env utils",
+          "changed_files": 5,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/virtualmachines/node-scheduling.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/virtualmachines/scheduling.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 4,
+          "sha": "c2bc7fcb6753e4881cdd9d5155fa82ba09435dba",
+          "parents": [
+            "9e22bcae6eca9143ed49d2eede1290218afe123f"
+          ],
+          "subject": "* [e2e] [Schedule VM on the Node which is Enable Maintenance Mode] - use host.customName to check Volumes VMs; lint fix",
+          "changed_files": 4,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/virtualmachines/scheduling.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 5,
+          "sha": "9e22bcae6eca9143ed49d2eede1290218afe123f",
+          "parents": [
+            "e88447c8bd500bf6a79f014dc6d47124d73ae57e"
+          ],
+          "subject": "* [e2e] [Stop VM Negative] - change node scheduling selector; add host.customName config",
+          "changed_files": 5,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/virtualmachines/node-scheduling.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 6,
+          "sha": "70bf60c11f408394f272d95a874ba3c83cec4dca",
+          "parents": [
+            "f32e0a221f190f55a655daf90c5ba219944a1959"
+          ],
+          "subject": "Handle first time login Harvester scenario",
+          "changed_files": 1,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/rancher/rancher_integration.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 7,
+          "sha": "57d71ad9d9be0edc1dacbb4aabf2c3268bbf63da",
+          "parents": [
+            "b17a40d4d69784a780c860009d44bc74b901fcfd"
+          ],
+          "subject": "fix: use MutationObserver in generate support bundle test case",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/dashboard/support.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 8,
+          "sha": "b17a40d4d69784a780c860009d44bc74b901fcfd",
+          "parents": [
+            "a5f03e4328fa0546157b6a88c5e07643dba09e6e"
+          ],
+          "subject": "fix: the typo in test case description",
+          "changed_files": 6,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/backupAndSnapshot/vmBackup.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/backupAndSnapshot/vmSnapshot.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/backupAndSnapshot/volumeSnapshot.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/dashboard/0_FirstTimeLogin.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/dashboard/support.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/virtualmachines/virtual-machine.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 9,
+          "sha": "0cf7b7829c912ac908444e65d3134afd7c191e65",
+          "parents": [
+            "0738efb0c9a48a6b9c12923b78ca362d5fa535cb"
+          ],
+          "subject": "Added in tests to validate that the Harvester dashboard can be reached from Rancher, and fixed some missing semicolons.",
+          "changed_files": 5,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/rancher/rancher_integration.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 10,
+          "sha": "5b0865b6f5a838426d923fbf0694d3d4cc200878",
+          "parents": [
+            "62f4aa8b4592626ee78c067a233fb28b15925d51"
+          ],
+          "subject": "Fix \"implicitly has `any` type\" lint",
+          "changed_files": 1,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/virtualmachines/scheduling.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 11,
+          "sha": "62f4aa8b4592626ee78c067a233fb28b15925d51",
+          "parents": [
+            "12ef7324d68b1fa29da55b78e403428e5d5bf741"
+          ],
+          "subject": "[CY] VM scheduling on Specific node",
+          "changed_files": 1,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/virtualmachines/scheduling.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 12,
+          "sha": "81692b3797b4ae8438a246bd9ba0c60edc52110f",
+          "parents": [
+            "80a95a42a55fd04f9aef5447678a0908e11ba96b"
+          ],
+          "subject": "[CY] fix s3 case",
+          "changed_files": 1,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/settings/settings.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 13,
+          "sha": "2436425580666404fefacda4d7926dc3b28dab5b",
+          "parents": [
+            "c0cad46dd4f0a879908cdae0d2574905b220fa68"
+          ],
+          "subject": "cypress: fix rancher integration",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/rancher/rancher_integration.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 14,
+          "sha": "c0cad46dd4f0a879908cdae0d2574905b220fa68",
+          "parents": [
+            "46e7c8f33ea9841adfdcdbb69edd6c2b55d5405d"
+          ],
+          "subject": "[CY] Add retry upload report",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/templates/template.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 15,
+          "sha": "46e7c8f33ea9841adfdcdbb69edd6c2b55d5405d",
+          "parents": [
+            "11c23ff9161691e90ef0b603a9426b368c8260f1"
+          ],
+          "subject": "update for review",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/dashboard/hosts.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/virtualmachines/virtual-machine.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 16,
+          "sha": "11c23ff9161691e90ef0b603a9426b368c8260f1",
+          "parents": [
+            "099ebb8813a5ea3af17f427fb838209964be923b"
+          ],
+          "subject": "[CY] Fix VM and template case",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/templates/template.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/virtualmachines/virtual-machine.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 17,
+          "sha": "099ebb8813a5ea3af17f427fb838209964be923b",
+          "parents": [
+            "cd34f0e5006d466d467ab359ac3e26e5b6f0d7e4"
+          ],
+          "subject": "[CY] remove ssh-key skip",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/VM settings/ssh-keys.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/templates/template.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 18,
+          "sha": "f8eed99b7d9602b0dfa06c7e155bd13278b08703",
+          "parents": [
+            "671b66e9177cc6a726540f7ebf619390d89a9ff6"
+          ],
+          "subject": "cypress: fix node name",
+          "changed_files": 14,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/dashboard/hosts.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/dashboard/nav.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/dashboard/support.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/virtualmachines/virtual-machine.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/volume/volumes.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 19,
+          "sha": "671b66e9177cc6a726540f7ebf619390d89a9ff6",
+          "parents": [
+            "4ca196f2bea74079c65a7cf9390361e424833387"
+          ],
+          "subject": "cypress: reduce volume size, befor modify overprovison config",
+          "changed_files": 7,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/backupAndSnapshot/vmSnapshot.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/rancher/rancher_integration.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/templates/template.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/virtualmachines/node-scheduling.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/virtualmachines/virtual-machine.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 20,
+          "sha": "4ca196f2bea74079c65a7cf9390361e424833387",
+          "parents": [
+            "b5894326cf1187108def5a44d0bb390e85e73344"
+          ],
+          "subject": "cypress: reduce volume size, befor modify overprovison config",
+          "changed_files": 4,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/backupAndSnapshot/volumeSnapshot.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/virtualmachines/advanced.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/virtualmachines/virtual-machine.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/volume/volumes.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 21,
+          "sha": "b5894326cf1187108def5a44d0bb390e85e73344",
+          "parents": [
+            "c27d5ba895b48485d5ea205b03c9bfa32d9a2081"
+          ],
+          "subject": "cypress: fix rancher first login",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/rancher/rancher_integration.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 22,
+          "sha": "2b8104848e313690588a92d0b6572cb49c5efdf6",
+          "parents": [
+            "cc11bd60c46df1fcb2aacf0615bfaa50fb45fcbc"
+          ],
+          "subject": "cypress: fix setting ui-source case (remove nuxt)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/settings/settings.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 23,
+          "sha": "485d9d2ac27be01c4fc9f6b8d0de7999ced1f1f5",
+          "parents": [
+            "22053bfac6ae882d4b8f8c28cebfc541cf861a30"
+          ],
+          "subject": "cypress: fix vm snapshot case",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/backupAndSnapshot/vmSnapshot.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 24,
+          "sha": "22053bfac6ae882d4b8f8c28cebfc541cf861a30",
+          "parents": [
+            "8e8605d8a09e39795a650a2e8fad802a2725b37e"
+          ],
+          "subject": "Modify the size of the created VMS and set the download path",
+          "changed_files": 5,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/dashboard/support.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/image/images.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/templates/template.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/volume/volumes.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 25,
+          "sha": "aa3958b4be396090478f7bd15231a48a0e0de076",
+          "parents": [
+            "8fc2099e737bb74069b43221efc677e70c2825d2"
+          ],
+          "subject": "Add backup target",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "cypress/testcases/rancher/rancher_integration.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/testcases/settings/settings.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        }
+      ]
+    },
+    {
+      "name": "omegaup/omegaup",
+      "cutoff": "26730787a588243308602da544f5be2fc009ceff",
+      "path": "cypress/e2e",
+      "endpoint": "repos/omegaup/omegaup/commits?sha=26730787a588243308602da544f5be2fc009ceff&path=cypress/e2e&per_page=25",
+      "commits": [
+        {
+          "ordinal": 1,
+          "sha": "433b3fb80790bf408073507c60d93ff4986645db",
+          "parents": [
+            "0d9ce72de1afdaba243088361a547c89f70a55f3"
+          ],
+          "subject": "Drop experiment gate for problem creator on /problem/new/ (#10243)",
+          "changed_files": 6,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/problem_creator.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 2,
+          "sha": "bb1d5262f7d67839d69d0cc8055c484e3ddc9a9d",
+          "parents": [
+            "fc513346e4a4c33fc50b6ff6ca8e6d8a571223e8"
+          ],
+          "subject": "fix: correct English ordinal suffixes for places >= 100 in getPlaceSuffix (#10191) (#10217)",
+          "changed_files": 4,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/ide.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 3,
+          "sha": "b2b6f74f4abedb0d9697a5788a166851eeaf4fca",
+          "parents": [
+            "5a8ce2878dcb12ce9db965ea8cd0663a630b6f64"
+          ],
+          "subject": "[Milestone 5] Add E2E Cypress tests for Creator submit flow and Introjs tour integration (#10062)",
+          "changed_files": 18,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/problem_creator.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 4,
+          "sha": "5e48281ab384cd064b4e7d26d08fad462e3d040a",
+          "parents": [
+            "504207fb82b555a288b310406878601d51dd405a"
+          ],
+          "subject": "Corrigiendo la navegación en detalles de envíos como Admin (#9886)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/contest.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 5,
+          "sha": "ec38917953a9587f19a7424873e84dca40200258",
+          "parents": [
+            "d68ef23204dcba9af8cb57dcca5a30f7b1d61560"
+          ],
+          "subject": "Fix duplicate polling intervals in Arena (#9507)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/ide.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 6,
+          "sha": "3c822417b81e270de9bb02ac6f0ea8fc8a36e183",
+          "parents": [
+            "61183bf53927046fdc8d901c91c840ce7d4b8723"
+          ],
+          "subject": "Fix: Browser Back/Forward buttons do not update active tab on Edit Course page (#9471)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/ide.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 7,
+          "sha": "a17f45c9c0ca5cd2301d9d3c526822b85a7149d9",
+          "parents": [
+            "e401873289e527c3dcdd00cbd24c4d1966d7387e"
+          ],
+          "subject": "Remove accidental it.only() call (#9103)",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/basic_commands.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 8,
+          "sha": "341d1a6e3c8d4ad7954bc6bb1ec921db570380cf",
+          "parents": [
+            "a9c7434c923edf5769ef486ad1fd4961535a866c"
+          ],
+          "subject": "Feature/markdown live preview (#8931)",
+          "changed_files": 7,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/problem_creator.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 9,
+          "sha": "4284826fa76602334918d28df52a4f733a1c00ce",
+          "parents": [
+            "a04abe7ff9ca286d44790305cbb19a48be278ee8"
+          ],
+          "subject": "fix(cypress): stabilize past assignment submission test #7282 (#8709)",
+          "changed_files": 8,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/course.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/course_2Part.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 10,
+          "sha": "646d84e5a353d79f7c1ed09cb47f52341fbba7a3",
+          "parents": [
+            "5f9242f982f18c61bf663b6acb43b61820ef8be3"
+          ],
+          "subject": "Improve error handling in `ProblemArtifacts` and `GitServerBrowser` for problem downloads (#8404)",
+          "changed_files": 25,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/basic_commands.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 11,
+          "sha": "c0741ab0a29605854def30fb09bdc1922bd096c8",
+          "parents": [
+            "d3e8a875586edd35d75e6ec6341410ca7d680943"
+          ],
+          "subject": "Fix/allow unauthenticated problem creator (#8326)",
+          "changed_files": 16,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/problem_creator.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 12,
+          "sha": "5acbc1b42678afc54a9fa0136a2f37f4a8b6c66a",
+          "parents": [
+            "a3d0488c98f7309d4eb864c78ca4eea19a9c7c07"
+          ],
+          "subject": "Adding a guide to problem creator (#8164)",
+          "changed_files": 19,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/problem_creator.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 13,
+          "sha": "35d012b5c8ceff6e6e8ca909a69028c445604665",
+          "parents": [
+            "9141a1124df72102bced3d481497e869a458513a"
+          ],
+          "subject": "Refactor Markdown.vue: split rendering logic and inject templates (#8143)",
+          "changed_files": 30,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/ide.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/problem_creator.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 14,
+          "sha": "705da23c891427600b0d55b76fd153db4e9f0141",
+          "parents": [
+            "e36b254cdd8d20a78a44cba2e373cb1feaaa82b8"
+          ],
+          "subject": "Flakiness in a Cypress Test \"Should test practice mode in contest (#8150)",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/contest.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 15,
+          "sha": "6ac4cf2d20800322328facb40073942d3120776f",
+          "parents": [
+            "88bb56c9c05dd95ef82dd0d8bcfd8172b055a41a"
+          ],
+          "subject": "Centralised URL update mechanism for all blog links on omeagup (#8115)",
+          "changed_files": 26,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/course.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 16,
+          "sha": "912e28d1dab26769ab3e80de6f4ae07c0d99174c",
+          "parents": [
+            "17ec446575f3ef92f5b7988dcd02aff3c8d870b8"
+          ],
+          "subject": "Fix bug about enrolled contest page (#8019)",
+          "changed_files": 5,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/navigation.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 17,
+          "sha": "dbade12892f6a997a1e5f03cf3c55c7ad4c8f87a",
+          "parents": [
+            "7b3c940db344a4c8a301499297add427a2aa4032"
+          ],
+          "subject": "Agregando la opción de Problem/Creator en el menú principal (#7868)",
+          "changed_files": 21,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/ide.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/problem_creator.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 18,
+          "sha": "4ea4b292a7367aa7b7c923d3219ec97428945a61",
+          "parents": [
+            "630eff1261787aad054de7596fe7ac797a42a110"
+          ],
+          "subject": "use correct variable (#7841)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/ide.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 19,
+          "sha": "9d5494ccb7f1cb30eda80bbbd1ee27f17d26f09c",
+          "parents": [
+            "69786ede32f9d20cf31290f9288cd0a80f898898"
+          ],
+          "subject": "Add linting for `cypress` files (#7845)",
+          "changed_files": 12,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/basic_commands.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/certificate.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/contest.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/course.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/navigation.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/problem_collection.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 20,
+          "sha": "69786ede32f9d20cf31290f9288cd0a80f898898",
+          "parents": [
+            "8da600794869554de64ba5f583501739f13ec061"
+          ],
+          "subject": "Remove old code (#7843)",
+          "changed_files": 36,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/ide.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 21,
+          "sha": "e207af6241a8d180d7d912decf62a70e1e7e0216",
+          "parents": [
+            "72bf7f4b33d93a74c35184c922113050ac309094"
+          ],
+          "subject": "Add cypress test for sidebar and layout (#7840)",
+          "changed_files": 5,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/problem_creator.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 22,
+          "sha": "2a4fe36503f8fab97a227ea1bcee7f2e40520004",
+          "parents": [
+            "bbb7b200b809a6f8175b795ebba59e3d6ad57c51"
+          ],
+          "subject": "Add some tests for the IDE (#7829)",
+          "changed_files": 10,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/course.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/ide.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 23,
+          "sha": "92e13097923909ef509be74d483f7f32e176c688",
+          "parents": [
+            "fc948983d5e3a94d8e066b9cd61d68390ebffcfb"
+          ],
+          "subject": "Add `cypress` tests for creating groups, cases and multiple cases (#7832)",
+          "changed_files": 6,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/problem_creator.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 24,
+          "sha": "5fe1d054b686234af463970e7df4a50798ebf650",
+          "parents": [
+            "144fe3c80c45d18591c74be95bde3bf390fae11d"
+          ],
+          "subject": "add cat lang (#7809)",
+          "changed_files": 5,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/course.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 25,
+          "sha": "e1bd81dcddcabf908c67c3ccbb41890d32dc1bb5",
+          "parents": [
+            "c0260ac7ce1779baba38fae9837b57f00b6b062b"
+          ],
+          "subject": "Write `cypress` test for `code tab` (#7790)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/problem_creator.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        }
+      ]
+    }
+  ]
+}

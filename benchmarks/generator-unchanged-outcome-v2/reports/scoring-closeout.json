@@ -1,0 +1,28 @@
+{
+  "status": "INCOMPLETE_RESOURCE_BLOCKED",
+  "protocol_id": "generator-unchanged-outcome-v2",
+  "generation_completed_calls": 12,
+  "generation_infrastructure_errors": 0,
+  "generation_timeouts": 0,
+  "paid_retries": 0,
+  "scoring_attempts": [
+    {"output": "scores.json", "completed_candidates": 7, "exit": 3, "reason": "4 GiB disk floor reached; retain partial evidence"},
+    {"output": "scores-complete.json", "completed_candidates": 8, "exit": 3, "reason": "4 GiB disk floor reached; retain partial evidence"}
+  ],
+  "audit": "audit.json",
+  "verified_candidates": 8,
+  "unverified_candidates": 4,
+  "observed_primary_causal_kills_in_scored_subset": {"before": 4, "after": 4},
+  "observed_matched_sync_guard_kills": 8,
+  "observed_matched_disabled_guard_kills": 8,
+  "scored_candidates_clean_3_of_3": 8,
+  "scored_candidates_refactor_green": 8,
+  "scored_candidates_zero_p0": 8,
+  "preserved_scope_guard_failure": {"call_id": "response-before-render-before-r1", "out_of_scope_write_count": 4, "paths": "Four .playwright-cli/page-*.yml paths retained exactly in generation and scores."},
+  "analysis_command_exit": 3,
+  "analysis_command_reason": "incomplete matrix",
+  "results_json_created": false,
+  "directional_signal_claim": "UNVERIFIED; incomplete browser score matrix cannot establish the comparison",
+  "process_audit": "process-audit.json",
+  "next_action": "Restore disk capacity with adequate headroom, preserve both scoring attempts, then run the unchanged model-free scorer to a new create-only output. Regenerate bound audit against that complete output and analyze. No additional model call is needed."
+}

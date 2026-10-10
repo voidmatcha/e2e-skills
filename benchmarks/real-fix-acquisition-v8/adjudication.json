@@ -1,0 +1,85 @@
+{
+  "protocol": "real-fix-acquisition-v8",
+  "search_positions": 60,
+  "unique_prs": 60,
+  "rows": [
+    {
+      "label": "PW-await",
+      "A": [],
+      "B": [8, 15],
+      "C": [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14],
+      "D": []
+    },
+    {
+      "label": "PW-retry",
+      "A": [2, 7, 8],
+      "B": [5, 11, 13],
+      "C": [1, 3, 4, 6, 9, 10, 12, 14, 15],
+      "D": []
+    },
+    {
+      "label": "CY-order",
+      "A": [],
+      "B": [],
+      "C": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+      "D": []
+    },
+    {
+      "label": "CY-sleep",
+      "A": [],
+      "B": [1, 5, 11, 12, 13],
+      "C": [2, 3, 4, 6, 7, 8, 9, 10, 14, 15],
+      "D": []
+    }
+  ],
+  "admission_cap": {
+    "contract": "At most three admitted clusters per numbered catalog pattern in frozen row/position API order. #9b is a subvariant of numbered pattern #9, not a separate allowance.",
+    "pattern": "#9",
+    "filled_by": ["PW-retry:2", "PW-retry:7", "PW-retry:8"],
+    "source_eligible_over_cap": [
+      {
+        "position": "CY-order:7",
+        "pull_request": "https://github.com/okTurtles/group-income/pull/3172",
+        "parent": "1f97e2216f4336257bc7ae7306faa6e5db46fb92",
+        "fix": "5551a6d25c305a7ab0b701edb17b5ee285c75370",
+        "source_verdict": "Narrow #9b saved-draft readiness repair independently confirmed; two fixed 1000ms sleeps become actual draft-store polling while channel-return text assertions remain. Deletion-monitoring hunk is excluded because its delayed UI assertion is removed and transient resurrection is not conclusively rejected.",
+        "reason_not_admitted": "Numbered #9 cap filled earlier in API order; C is a cap control, not a refutation of the narrow source repair."
+      },
+      {
+        "position": "CY-sleep:9",
+        "pull_request": "https://github.com/motiondivision/motion/pull/3836",
+        "parent": "5e384b9a77384f3be3b739b2131846b19bdf6f7b",
+        "fix": "51029d50a73235358ea350bf7fca8538aff523be",
+        "source_verdict": "Narrow #9b animation outcome repair independently confirmed; post-click fixed sleeps become fresh retrying queries with the same unit-conversion assertions. Other sleeps and animation changes are not claimed clean.",
+        "reason_not_admitted": "Numbered #9 cap filled earlier in API order; C is a cap control, not a refutation of the narrow source repair."
+      }
+    ]
+  },
+  "independent_challenge": {
+    "PW-retry:2": "A: fixed reader-ready sleep becomes hard-awaited engine readiness and non-null current location; annotation round-trip assertions remain. Optional tolerant helper branch excluded.",
+    "PW-retry:7": "A: specific EU/EOS selector's fixed sleep becomes hard-awaited option attachment; selection and missing-option failure remain. Separate tolerant journalforing helper excluded.",
+    "PW-retry:8": "A: batch test's fixed mount-probe sleep becomes tracking before navigation and expected-probe settlement; same batch and probe-count assertions remain. Other lifecycle/absence changes excluded.",
+    "CY-order:7": "Source-eligible but over #9 cap: two saved-draft sleeps become IndexedDB condition polls with unchanged returned-channel text assertions; deletion-monitoring hunk excluded.",
+    "CY-sleep:5": "B: the first 400ms-sleep replacement is bundled with changed suggestion selection and does not prove the intended site popup target; a subsequent commit replaces that subtree query. Do not call the substring contains selector exact or use the final PR state to validate the first repair.",
+    "CY-sleep:9": "Source-eligible but over #9 cap: representative unit-conversion fixed sleeps become retrying exact animation assertions; the same PR's frame-ordering change is not counted separately."
+  },
+  "B_reasons": [
+    {"position": "PW-await:8", "reason": "Existing DOM harness adds a transport script, but the substantive Playwright transport spec is new; setup/refactor lead outside catalog."},
+    {"position": "PW-await:15", "reason": "Lint migration enables missing-playwright-await prevention, but repairs no natural spec/POM BEFORE defect."},
+    {"position": "PW-retry:5", "reason": "Replaces two 220ms sleeps with fake-clock advancement but introduces another unannotated Playwright waitForTimeout(750) in the same repair."},
+    {"position": "PW-retry:11", "reason": "A dynamic decorative stream is excluded from accessibility checks; real app-specific a11y stabilization outside catalog."},
+    {"position": "PW-retry:13", "reason": "Large wait-discipline overhaul also removes or rewrites many specs, preventing a narrow outcome-preserving pair."},
+    {"position": "CY-sleep:1", "reason": "Anchored dynamic-secret regex and readiness changes are plausible, but no source-backed accessible-name collision or isolated #10c repair is established."},
+    {"position": "CY-sleep:5", "reason": "A 400ms wait is removed amid changed popup selector and input semantics; its immediate replacement is revised in a later commit and does not establish a causally closed #9b repair."},
+    {"position": "CY-sleep:11", "reason": "One-shot localStorage read becomes retrying assertion and live-game guard changes, but neither repairs a current catalog defect."},
+    {"position": "CY-sleep:12", "reason": "External oc delete/wait stabilization is outside the Playwright/Cypress catalog."},
+    {"position": "CY-sleep:13", "reason": "Network/DOM transition stabilization prevents timeouts, but no #22 optimistic-UI proof issue is established."}
+  ],
+  "C_control_groups": [
+    {"positions": ["PW-await:2", "PW-await:5", "PW-await:6", "PW-await:7", "PW-await:9", "PW-await:10", "PW-await:11", "PW-await:13", "PW-await:14", "PW-retry:4", "PW-retry:9", "PW-retry:14", "CY-order:1", "CY-order:2", "CY-order:3", "CY-order:6", "CY-order:8", "CY-order:9", "CY-order:10", "CY-order:11", "CY-order:12", "CY-order:13", "CY-order:14", "CY-order:15", "CY-sleep:3", "CY-sleep:4", "CY-sleep:6"], "reason": "No attributable in-scope existing Playwright/Cypress E2E artifact repair; app, unit, workflow, documentation, package, or unrelated source only."},
+    {"positions": ["PW-await:1", "PW-await:3", "PW-await:4", "PW-await:12", "PW-retry:1", "PW-retry:3", "PW-retry:6", "PW-retry:12", "PW-retry:15", "CY-order:4", "CY-order:5", "CY-sleep:2", "CY-sleep:7", "CY-sleep:8", "CY-sleep:10", "CY-sleep:14", "CY-sleep:15"], "reason": "New test/suite or new feature coverage, no natural source-backed catalog BEFORE-to-AFTER repair."},
+    {"positions": ["PW-retry:10"], "reason": "Existing test adapts to changed reconnect product behavior while retaining a fixed grace-window wait; not a catalog repair."},
+    {"positions": ["CY-order:7", "CY-sleep:9"], "reason": "Narrow source-eligible #9b repairs excluded only by the predeclared numbered-pattern cap, with evidence above."}
+  ],
+  "limits": "Read-only public source review only. No target test execution, natural failure replay, scanner/model selection, prevalence sampling, or reviewer-lift measurement. Search terms matched many unrelated PRs; this is selected discovery, not a representative sample."
+}

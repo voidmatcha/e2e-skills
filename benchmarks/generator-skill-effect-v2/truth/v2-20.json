@@ -1,0 +1,57 @@
+{
+  "task": "Cover the reading list (`/`): 25 articles, `Article 1` to `Article 25`, loaded ten at a time with Load more, and `Showing N of 25` under the list. Load more never repeats an article and is disabled once all 25 are shown. Mark as read toggles an article's read state (the button then reads Mark as unread) and the state is stored on the server, so a reload shows it. Hide read removes read articles from the list and from the `Showing N of 25` count.",
+  "faults": [
+    {
+      "id": "f1-load-more-noop",
+      "class": "surface",
+      "brief_phrase": "loaded ten at a time with Load more",
+      "description": "Load more never adds articles after the first ten.",
+      "find": "    el(\"rl-more\").addEventListener(\"click\", loadMore);\n",
+      "replace": "    el(\"rl-more\").addEventListener(\"click\", render);\n"
+    },
+    {
+      "id": "f2-load-more-repeats",
+      "class": "ordering",
+      "brief_phrase": "Load more never repeats an article",
+      "description": "The second load fetches from the wrong offset, so Article 6 to Article 10 appear twice.",
+      "find": "const data = await api(\"GET\", \"/api/articles?offset=\" + loaded.length + \"&limit=\" + ",
+      "replace": "const data = await api(\"GET\", \"/api/articles?offset=\" + Math.max(0, loaded.length - 5) + \"&limit=\" + "
+    },
+    {
+      "id": "f3-not-disabled-at-end",
+      "class": "boundary",
+      "brief_phrase": "is disabled once all 25 are shown",
+      "description": "Load more stays enabled after the last page.",
+      "find": "      el(\"rl-more\").disabled = loaded.length >= total;\n",
+      "replace": "      el(\"rl-more\").disabled = loaded.length > total;\n"
+    },
+    {
+      "id": "f4-read-not-persisted",
+      "class": "persistence",
+      "brief_phrase": "the state is stored on the server, so a reload shows it",
+      "description": "Mark as read updates the page only; the server keeps the article unread.",
+      "find": "      article.read = match[2] === \"read\";\n      return json(res, 200, article);\n",
+      "replace": "      return json(res, 200, { ...article, read: match[2] === \"read\" });\n"
+    },
+    {
+      "id": "f5-hide-read-count-stale",
+      "class": "precision",
+      "brief_phrase": "and from the `Showing N of 25` count",
+      "description": "Hide read hides the rows but the count still includes them.",
+      "find": "      el(\"rl-count\").textContent = \"Showing \" + shown.length + \" of \" + total;\n",
+      "replace": "      el(\"rl-count\").textContent = \"Showing \" + loaded.length + \" of \" + total;\n"
+    }
+  ],
+  "refactor": [
+    {"find": "<div id=\"rl-toolbar\">", "replace": "<header class=\"toolbar\"><div id=\"rl-toolbar\" class=\"toolbar__row\">"},
+    {"find": "<label for=\"rl-hide-read\">Hide read</label>\n    </div>", "replace": "<label for=\"rl-hide-read\">Hide read</label>\n    </div></header>"},
+    {"find": "<ul id=\"rl-list\" aria-label=\"Articles\"></ul>", "replace": "<section class=\"panel\"><ul id=\"rl-list\" class=\"panel__list\" aria-label=\"Articles\"></ul></section>"},
+    {"find": "<button type=\"button\" id=\"rl-more\">Load more</button>", "replace": "<button type=\"button\" id=\"rl-more\" class=\"btn btn-secondary\"><span>Load more</span></button>"},
+    {"find": "li.className = article.read ? \"article read\" : \"article\";", "replace": "li.className = article.read ? \"entry entry--done\" : \"entry\";"},
+    {"find": "rl-hide-read", "replace": "filter-done"},
+    {"find": "rl-toolbar", "replace": "filters"},
+    {"find": "rl-count", "replace": "tally"},
+    {"find": "rl-list", "replace": "entries"},
+    {"find": "rl-more", "replace": "fetch-next"}
+  ]
+}

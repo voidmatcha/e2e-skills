@@ -1,0 +1,69 @@
+{
+  "task": "Cover the release thread (`/`) for the signed-in user Ada: four seeded messages, the last two unread. The heading reads `Release thread (2 new)` and a `2 new messages` divider sits above the first unread message; Mark as read removes the divider and the count, on the server too, so a reload shows neither. Reply shows the quoted message above the composer; a message sent while replying carries that quote, and Cancel reply removes the quote without sending. Edit on one of Ada's messages changes its text in place and marks it `(edited)`. Messages, edits and read state are stored on the server and survive a reload.",
+  "faults": [
+    {
+      "id": "f1-send-noop",
+      "class": "surface",
+      "brief_phrase": "a message sent while replying carries that quote",
+      "description": "Send stores the message but the page does not show it until a reload.",
+      "find": "      data.messages.push(created);\n      data.lastReadId = created.id;\n      replyTo = null;\n",
+      "replace": "      void created;\n      replyTo = null;\n"
+    },
+    {
+      "id": "f2-quote-dropped",
+      "class": "precision",
+      "brief_phrase": "carries that quote",
+      "description": "The quote box shows the reply target but the sent message carries no quote.",
+      "find": "{ text, quote: replyTo ? replyTo.author + \": \" + replyTo.text : null }",
+      "replace": "{ text, quote: null }"
+    },
+    {
+      "id": "f3-edited-marker-missing",
+      "class": "precision",
+      "brief_phrase": "marks it `(edited)`",
+      "description": "An edited message shows the new text without the `(edited)` marker.",
+      "find": "      text.textContent = m.text + (m.edited ? \" (edited)\" : \"\");\n",
+      "replace": "      text.textContent = m.text;\n"
+    },
+    {
+      "id": "f4-mark-read-not-persisted",
+      "class": "persistence",
+      "brief_phrase": "on the server too, so a reload shows neither",
+      "description": "Mark as read clears the divider on the page but the server keeps the old read position.",
+      "find": "      state.lastReadId = state.messages.length ? state.messages[state.messages.length - 1].id : 0;\n      return json(res, 200, { lastReadId: state.lastReadId });\n",
+      "replace": "      return json(res, 200, { lastReadId: state.messages.length ? state.messages[state.messages.length - 1].id : 0 });\n"
+    },
+    {
+      "id": "f5-cancel-reply-keeps-quote",
+      "class": "interaction",
+      "brief_phrase": "Cancel reply removes the quote without sending",
+      "description": "Cancel reply hides the quote box but the next message still carries the quote.",
+      "find": "    el(\"th-cancel-reply\").addEventListener(\"click\", () => { replyTo = null; render(); });\n",
+      "replace": "    el(\"th-cancel-reply\").addEventListener(\"click\", () => { el(\"th-quote\").hidden = true; });\n"
+    }
+  ],
+  "refactor": [
+    {"find": "<ol id=\"th-messages\" class=\"messages\" aria-label=\"Messages\"></ol>", "replace": "<div class=\"panel\"><ol id=\"th-messages\" class=\"panel__rows\" aria-label=\"Messages\"></ol></div>"},
+    {"find": "<div id=\"th-quote\" class=\"quote-box\" hidden>", "replace": "<div id=\"th-quote\" class=\"reply-context\" hidden>"},
+    {"find": "<span class=\"quote-label\">", "replace": "<span class=\"reply-context__label\">"},
+    {"find": "<span id=\"th-quote-text\" class=\"quote-text\">", "replace": "<span id=\"th-quote-text\" class=\"reply-context__text\">"},
+    {"find": "<div id=\"th-composer\" class=\"composer\">", "replace": "<div id=\"th-composer\" class=\"editor\">"},
+    {"find": "<span id=\"th-composer-label\" class=\"field-label\">", "replace": "<span id=\"th-composer-label\" class=\"editor__label\">"},
+    {"find": "<button type=\"button\" id=\"th-send\">Send</button>", "replace": "<button type=\"button\" id=\"th-send\" class=\"btn btn-primary\"><span>Send</span></button>"},
+    {"find": "li.className = m.author === ME ? \"message mine\" : \"message\";", "replace": "li.className = m.author === ME ? \"bubble bubble--own\" : \"bubble\";"},
+    {"find": "quote.className = \"quoted\";", "replace": "quote.className = \"bubble__quote\";"},
+    {"find": "author.className = \"author\";", "replace": "author.className = \"bubble__who\";"},
+    {"find": "text.className = \"text\";", "replace": "text.className = \"bubble__body\";"},
+    {"find": "divider.className = \"divider\";", "replace": "divider.className = \"separator\";"},
+    {"find": "th-composer-label", "replace": "editor-label"},
+    {"find": "th-cancel-reply", "replace": "drop-context"},
+    {"find": "th-quote-text", "replace": "context-text"},
+    {"find": "th-mark-read", "replace": "seen-all"},
+    {"find": "th-messages", "replace": "conversation"},
+    {"find": "th-composer", "replace": "editor"},
+    {"find": "th-heading", "replace": "title"},
+    {"find": "th-quote", "replace": "context"},
+    {"find": "th-input", "replace": "editor-text"},
+    {"find": "th-send", "replace": "post"}
+  ]
+}

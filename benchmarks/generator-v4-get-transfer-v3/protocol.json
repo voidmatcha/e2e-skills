@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "protocol_id": "generator-v4-get-transfer-v3",
+  "status": "NOT_RUN",
+  "evidence_scope": "public-development-distinct-case-mechanism-screen",
+  "release_eligible": false,
+  "arms": ["before", "after"],
+  "cases": ["stock-claim"],
+  "repetitions": 1,
+  "workers": 1,
+  "seed": 20261012,
+  "model": "gpt-5.5",
+  "reasoning_effort": "medium",
+  "timeout_s": 1500,
+  "per_call_budget_usd": null,
+  "spend_cap_usd": null,
+  "container_image": "sha256:687b18c424d01c3af69efa921eaa824b48eb737d46492da334405e348da73881",
+  "docker_context": "colima",
+  "minimum_free_disk_bytes": 4294967296,
+  "snapshot": "Before is the frozen transfer-v2 after skill. After is the product skill after the response-before-reread ordering rule. Only SKILL.md and verification-rules.md differ; evals are excluded. The distinct stock-claim case, shared approvals, reviewer, model, container, and scorer are identical across arms. Frozen snapshots, not the mutable product directory, are the execution input.",
+  "schedule": "One before/after pair, in that order, on a newly validated side-effectful GET inventory-claim case. Stop on infrastructure error or the 4 GiB disk floor. This is a mechanism screen, not a lift estimate.",
+  "common_prompt_appendix": "Additional explicit command approvals for BOTH arms: the already-approved project-local Playwright CLI prefix may use --browser chromium, --config <outside-worktree guard JSON>, and -s=<fresh unique session> for the skill's origin-guarded exploration only. Its named eval and requests subcommands for the skill's blocked-origin proof are approved, as is goto on the exact preflighted app origin. Creating that guard config outside the target worktree is approved. This does not approve another origin, a package install, changing project controls, skipping the preflight, or terminating a process the invocation did not start. Record these exact command rows as already approved. Follow the unchanged skill safety gate, guard, V4/V5/V6, and completion rules in both arms. If a V4 temporary verifier is created, print its complete source with a read-only command before removing it so the benchmark can audit what ran; do not retain the verifier in the target worktree.",
+  "decision_rule": {
+    "primary": "Independently adjudicate V4 for GET /api/claim?sku=... on the retained candidate. Require normal exact method, endpoint, query and one request per user click, plus the visible per-product stock and claimed-total outcome. Require printed temporary source preserving the candidate's action sequence and unchanged primary assertion or a previously declared settled-state gate. The verifier must arm and await the product-recognized failed GET response before reloading or awaiting an app re-fetch to reread persistent state, then assert the unchanged primary or declared gate. The failed GET must leave the normal state unchanged and make that exact assertion or gate go red for the expected mismatch. Missing evidence is CANNOT_VERIFY, not PASS; self-reported Complete is not proof.",
+    "guards": "Both fresh calls must complete without infrastructure error, out-of-scope writes, or artifact drift. Functional clean 3/3, seeded-fault kill, refactor survival, P0 scan, V6 packet, and final status are reported separately. Manual V4 source/output adjudication is required; an incomplete cell is INCONCLUSIVE.",
+    "secondary": "Elapsed time, usage, and billed cost are descriptive only; no speed or cost threshold is claimed.",
+    "interpretation": "A one-pair public-development case cannot establish generalization, release equivalence, speed gain, or billed-cost savings. Stop rather than extend the pair merely for a favorable result."
+  },
+  "prerequisite_probe": "Reuse the pinned image's passing model-free successor probe for explicit Chromium CLI, pre-dispatch origin rejection, owned cleanup, and clean smoke tests."
+}

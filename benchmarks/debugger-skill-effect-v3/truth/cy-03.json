@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "glaboryp/recetas-ia",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/glaboryp/recetas-ia/issues/4",
+   "https://github.com/glaboryp/recetas-ia/pull/5"
+  ],
+  "merged": "2026-09-17"
+ },
+ "diagnosis": "product_regression",
+ "side": "Product",
+ "explanation": "`saveRecipe()` is the first Realtime Database write in the session. Firebase Auth resolving and the Database connection attaching that auth token to its socket are separate async processes, so the write can race ahead of the token handshake and be rejected as unauthenticated.",
+ "fix": "Product change: `await getAuth().currentUser?.getIdToken()` right before the write, forcing the handshake to settle."
+}

@@ -1,0 +1,14 @@
+{
+ "source": {
+  "repo": "LuxTronic/cvat",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/LuxTronic/cvat/pull/13"
+  ],
+  "merged": "2026-08-22"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test",
+ "explanation": "The app returned `tl, bl, br` where the test wanted `tl, tr, br`; the middle point was the other correct corner. Which corner fills that slot is a tie: the polygon spans two opposite corners of a square and autoborder walks the shorter way round, but on a square both ways are equal, so sub-pixel noise decides it. The assertion was checking one side of a coin flip.",
+ "fix": "Compare as a set: each point must snap to a distinct rotated corner."
+}

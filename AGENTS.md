@@ -111,6 +111,8 @@ python3 scripts/ci/test-reviewer-holdout-v3.py
 python3 scripts/ci/test-reviewer-evidence-v3.py
 python3 scripts/ci/test-reviewer-evidence.py
 python3 scripts/ci/test-reviewer-scanner.py
+python3 scripts/ci/test-fixpair-v1.py
+python3 scripts/ci/test-reviewer-auth-retry.py
 python3 scripts/ci/test-debugger-contracts.py
 python3 scripts/ci/test-residual-redos-budget.py
 python3 scripts/ci/test-fixture-faults.py
@@ -120,9 +122,13 @@ python3 scripts/ci/test-playwright-timeout-zero-probe.py
 python3 scripts/ci/test-cypress-timeout-zero-probe.py
 /bin/bash -p scripts/ci/pre-push-security.sh
 python3 scripts/dev/refresh-reviewer-evidence-digest.py  # after any skills/e2e-reviewer byte change
+python3 scripts/dev/reviewer-contract.py --write --lean   # after a pattern ID or severity change; --lean needs a Lean 4 toolchain
 /bin/bash -p scripts/dev/linux-script-check.sh           # shipped-script suites on Linux (needs Docker)
 # generator behavior changes: live run per scripts/evals/generator-live/writescope-demo/RUNBOOK.md (manual; needs a model + browser)
 bash scripts/ci/codex-smoke.sh      # manual Codex cross-host smoke (skips if codex absent)
+# Claude Code plugin eval (manual; uses Claude usage): skill triggering and routing, with a no-plugin baseline.
+# Run it on a clean export: the checkout's testbed/ and worktrees exceed the 20,000-entry plugin scan limit.
+#   S=$(mktemp -d) && git archive HEAD | tar -x -C "$S" && claude plugin eval "$S" --trust-plugin --no-publish
 /bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests   # standalone scanner
 
 # Plugin manifest sanity
@@ -132,7 +138,7 @@ python3 -m json.tool .claude-plugin/marketplace.json
 
 `ci-local.sh` runs the repository CI mirror, including the security gate through `review.sh`, and must be green before opening a PR. The direct pre-push security rerun, manual Codex smoke, standalone scanner example, and manifest JSON sanity commands above remain separate invocations.
 
-The hosted `main` workflow automatically reruns the pinned 36-cell browser fault matrix on a disposable runner. Pull-request and local CI remain dependency-free; other live browser/model evidence stays opt-in. Use these commands for an explicit local reproduction or the remaining live probes:
+The hosted `main` workflow automatically reruns the pinned 36-cell browser fault matrix on a disposable runner. Pull-request and local CI remain dependency-free; other live browser/model evidence stays opt-in. For reviewer holdouts, follow each benchmark README's frozen protocol and run arms sequentially. For example, v17 used:
 
 ```bash
 npm ci --prefix scripts/evals/fixtures
@@ -140,29 +146,25 @@ python3 scripts/evals/run-fixture-faults.py
 python3 scripts/evals/run-playwright-semantic-probes.py
 python3 scripts/evals/run-playwright-timeout-zero-probe.py
 python3 scripts/evals/run-cypress-timeout-zero-probe.py
-python3 scripts/evals/run-reviewer-holdout.py \
-  --cases scripts/evals/reviewer-holdout-v3.json \
-  --protocol scripts/evals/reviewer-validation-protocol-v3.json \
-  --runner codex --model gpt-5.6-sol --repetitions 3 --allow-live \
-  --report-only --output benchmarks/reviewer-holdout-v3/reports/full-codex.json
-python3 scripts/evals/run-reviewer-holdout.py \
-  --cases scripts/evals/reviewer-holdout-v3.json \
-  --protocol scripts/evals/reviewer-validation-protocol-v3.json \
-  --runner claude --model claude-opus-5 --repetitions 3 --timeout 300 --allow-live \
-  --report-only --output benchmarks/reviewer-holdout-v3/reports/full-opus.json
-python3 scripts/evals/run-reviewer-holdout.py \
-  --cases scripts/evals/reviewer-holdout-v3.json \
-  --protocol scripts/evals/reviewer-validation-protocol-v3.json \
-  --runner claude --model claude-fable-5 --repetitions 3 --timeout 300 --allow-live \
-  --report-only --output benchmarks/reviewer-holdout-v3/reports/full-fable.json
+CODEX_RUNNER=/absolute/path/to/codex
+OUT="${XDG_CACHE_HOME:-$HOME/.cache}/e2e-skills-bench/reviewer-holdout-v17"
+mkdir -p "$OUT"
+for arm in catalog-only catalog-formal full; do
+  python3 scripts/evals/run-reviewer-holdout.py \
+    --cases scripts/evals/reviewer-holdout-v17.json \
+    --protocol scripts/evals/reviewer-validation-protocol-v17.json \
+    --runner codex --runner-path "$CODEX_RUNNER" --model gpt-6-sol \
+    --arm "$arm" --repetitions 5 --allow-live --report-only \
+    --output "$OUT/$arm.json"
+done
 python3 scripts/evals/compare-reviewer-holdouts.py \
-  benchmarks/reviewer-holdout-v3/reports/full-codex.json \
-  benchmarks/reviewer-holdout-v3/reports/full-opus.json \
-  benchmarks/reviewer-holdout-v3/reports/full-fable.json \
-  --cases scripts/evals/reviewer-holdout-v3.json \
-  --protocol scripts/evals/reviewer-validation-protocol-v3.json \
-  --output benchmarks/reviewer-holdout-v3/reports/cross-host.json
+  "$OUT/catalog-only.json" "$OUT/catalog-formal.json" "$OUT/full.json" \
+  --cases scripts/evals/reviewer-holdout-v17.json \
+  --protocol scripts/evals/reviewer-validation-protocol-v17.json \
+  --compare-arms --output "$OUT/arm-comparison.json"
 ```
+
+The v17 comparison is expected to return `FAIL`; see [v17](benchmarks/reviewer-holdout-v17/README.md) for its exact clean-tree reproduction and result. The latest Claude structured-output example is [v15](benchmarks/reviewer-holdout-v15/README.md), run on `claude-sonnet-5` with the v10 corpus, three arms and five repetitions.
 
 The committed labeled corpus is a public development holdout. Use an external `--cases` bundle for a sealed release run; do not describe a public corpus as hidden. Wrapper-free live runs are limited to the exact built-in corpus/protocol paths and pinned digests. Every external `--cases` bundle requires `--isolation-wrapper`, regardless of its self-declared visibility. Built-in public live runs use one start-of-run skill/corpus snapshot, fresh temporary workspaces, prompt-complete Codex/Claude calls with every model tool disabled, and pre/post digests of every staged path and original input; any mutation makes the report incomplete. Corpus workspace paths must not enter runner-controlled surfaces (`.skill/`, `.git/`, `.codex/`, `.claude/`, `.agents/`, `.omx/`, `AGENTS.md`, or `CLAUDE.md`). The staged `.skill/e2e-reviewer` digest is checked against the frozen evaluated skill before and after every call. The runner passes a strict environment allowlist. Codex receives only a private staged copy of the parent `auth.json`; Claude receives one validated `CLAUDE_CODE_OAUTH_TOKEN` snapshot but no ambient config directory or API key; custom executables receive no Codex/Claude credentials. Generic tokens, cloud credentials, proxy variables, and shell/runtime injection variables are removed. There is no built-in sealed sandbox. A non-public corpus requires `--isolation-wrapper <executable>` and an independently isolated release environment; the wrapper receives the runner command as its argument vector. The bundled harness records wrapper isolation as not proven and keeps the report `INCONCLUSIVE`; it never promotes a wrapped run to `PASS` merely because the wrapper is executable. The release protocol declares the host/model matrix and fixes the schedule and thresholds before execution. Local runner/model strings are provenance, not cryptographic attestation. Primary accuracy is computed on unique majority-stable labels and predictions; repeated totals also enforce a precision floor against rotating one-off false positives, but are not additional independent defects. A new protocol should declare `execution_identity.version_policy: "minimum"` and pin a floor rather than a single build. `exact` strands a protocol: v5 and v6 both stopped being runnable from an ordinary checkout once the Claude Code installer rotated the pinned build out of the local install. Those builds are still served by the vendor channel and `--runner-path` accepts a manually re-fetched binary, so the loss is recoverable rather than permanent — but a protocol that needs a manual download before it can start is one nobody reruns. One identity per runner family across a matrix is enforced by the comparator, so `minimum` costs nothing that matters. Never change the policy of an already frozen protocol.
 
@@ -195,7 +197,7 @@ The reinstall script executes a verified `skills@1.5.21` artifact from an exact 
 
 ## When You Edit Skills
 
-1. **Update taxonomy surfaces in lock-step.** Adding or renaming a pattern means touching: the relevant `SKILL.md` (Quick Reference), `skills/e2e-reviewer/references/pattern-reference.md` (per-pattern contract — CI Checks 3b/3c validate this file), `docs/e2e-test-smells.md`, `README.md` 24 Patterns table, `skills/e2e-reviewer/references/grep-patterns.md`, `skills/e2e-reviewer/scripts/scan.sh`, and `scripts/ci/lib/reviewer_taxonomy_contract.py`. `scripts/ci/review.sh` derives the expected Quick Reference row order from the IDs themselves, so it needs no edit for a new pattern. CI fails fast if IDs, titles, order, or severities drift. Plugin descriptions remain concise host-specific package metadata and do not store the reviewer taxonomy.
+1. **Update taxonomy surfaces in lock-step.** Adding or renaming a pattern means touching: the relevant `SKILL.md` (Quick Reference), `skills/e2e-reviewer/references/pattern-reference.md` (per-pattern contract — CI Checks 3b/3c validate this file), `docs/e2e-test-smells.md`, `README.md` 24 Patterns table, `skills/e2e-reviewer/references/grep-patterns.md`, `skills/e2e-reviewer/scripts/scan.sh`, and `scripts/ci/lib/reviewer_taxonomy_contract.py`. `scripts/ci/review.sh` derives the expected Quick Reference row order from the IDs themselves, so it needs no edit for a new pattern. CI fails fast if IDs, titles, order, or severities drift. Regenerate the Lean severity model with `python3 scripts/dev/reviewer-contract.py --write`; CI checks it against the skill without Lean, and a new instance-severity exception must be added to its hand-written rules and the Quick Reference row together. After any `pattern-reference.md` edit, run `python3 scripts/dev/split-pattern-reference.py` to regenerate the per-pattern copies in `references/patterns/`, which the reviewer reads instead of the 90 KB source; CI fails when they drift. Plugin descriptions remain concise host-specific package metadata and do not store the reviewer taxonomy.
 2. **Re-run the drift smoke test.** `scripts/ci/test-parity.sh` mutates known-bad versions of the files and asserts the parity check catches each one — keep it green when you add new parity rules.
 3. **Add or update evals when behavior changes.** Each skill has an `evals/evals.json`. Eval IDs must follow the skill's naming convention (CI validates). Each new smell or behavior change should add at least two assertions: one true positive that must be flagged, and one false-positive guard that names the exact line and why it must not be flagged.
 4. **Respect severity contracts.** P0 entries should be silent-always-pass smells; don't downgrade. P1/P2 should not creep into P0 just because they're easier to grep.

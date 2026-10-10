@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "protocol_id": "generator-environment-pilot-v1",
+  "status": "NOT_RUN",
+  "evidence_scope": "public-development",
+  "release_eligible": false,
+  "arms": ["current", "environment-guided"],
+  "cases": ["v3-02", "v3-03", "v3-05", "v3-07", "v3-13", "v3-14"],
+  "selection": "Functionality-based selection from task strings and fixture READMEs before new generation, without consulting v8 per-case scores. Public spent pool; not an independent release holdout.",
+  "repetitions": 1,
+  "workers": 1,
+  "seed": 20261008,
+  "model": "gpt-5.5",
+  "reasoning_effort": "medium",
+  "timeout_s": 1500,
+  "per_call_budget_usd": null,
+  "spend_cap_usd": null,
+  "container_image": "sha256:687b18c424d01c3af69efa921eaa824b48eb737d46492da334405e348da73881",
+  "docker_context": "colima",
+  "minimum_free_disk_bytes": 4294967296,
+  "snapshot": "Both arms use the exact v3 frozen full-fixed generator and shared reviewer, with unchanged V4, V5, V6, approvals, write scope, origin containment, and scorer.",
+  "schedule": "Shuffle the six tasks with the fixed seed, pair both arms sequentially per task, and balance first-arm order three tasks each. Start each call with a fresh disposable project and no running app. No reuse of v8 generated files.",
+  "common_prompt_appendix": "Additional explicit command approvals for BOTH arms: the already-approved project-local Playwright CLI prefix may use --browser chromium, --config <outside-worktree guard JSON>, and -s=<fresh unique session> for the skill's origin-guarded exploration only. Its named eval and requests subcommands for the skill's blocked-origin proof are approved, as is goto on the exact preflighted app origin. Creating that guard config outside the target worktree is approved. This does not approve another origin, a package install, changing project controls, skipping the preflight, or terminating a process the invocation did not start. Record these exact command rows as already approved. Follow the unchanged skill safety gate, guard, V4/V5/V6, and completion rules in both arms.",
+  "environment_guidance": "Environment-specific guidance only, not a weaker workflow: the pinned image has Playwright's bundled Chromium, not system Chrome. When opening your fresh guarded exploration session, select --browser chromium explicitly with the outside-worktree --config origin allowlist and confirm about:blank. Keep the skill's failed initial pinned preflight before starting the approved node app.mjs; that initial connection failure is expected for this disposable fixture, not a browser defect. Start only one exploration app, retain its own process handle, wait for readiness, and re-run the pinned exact-target preflight before navigating. After exploration close your CLI session and stop/wait for only the app process you started before running ANY Playwright tests. The unchanged test config has webServer.reuseExistingServer=false and owns its own server; do not leave your exploration server running, start another manual app alongside the tests, change the config, or kill an unknown port owner. Do not repeatedly try the unavailable default system Chrome or install it. Keep independent fresh-context review, normal/failed-write verification, and solo/repeated/suite validation unchanged.",
+  "decision_rule": {
+    "minimum_paired_median_time_reduction": 0.25,
+    "quality_guard": "Every guided candidate must pass clean 3/3. No per-case guided-arm regression in refactor score or effective fault-kill score; zero P0 scanner findings, no timeouts or out-of-scope writes, and self-reported complete in both arms (an indicator, not proof of actual workflow compliance). Entire twelve-cell generation and scoring matrix must be valid. Any infrastructure attempt makes this pilot INCOMPLETE, even if its automatic retry produces a deliverable.",
+    "time": "Per-call elapsed time sums every recorded attempt, including infrastructure retries. Primary descriptive time metric is the median of six paired reductions 1-guided/current. No USD conversion or statistical equivalence claim.",
+    "interpretation": "PILOT_PROMISING is only a reason to plan a larger comparison after separate required-workflow audit. PILOT_NOT_PROMISING does not show the skill is unnecessary. Missing, stopped, drifted, invalid, or unscored cells are INCOMPLETE/refused. No public skill change or adoption follows from this pilot alone."
+  },
+  "prerequisite_probe": "reports/environment-successor-probe.json must record PASS for the exact immutable image, explicit Chromium CLI, pre-dispatch origin rejection, readiness, owned cleanup, and three clean tests before freeze or model usage.",
+  "process_audit": "Native spawning, test counts, and scanner aggregates are indicators only. Actual V4 failing-write evidence, restoration, and independent V6 correctness require separate transcript audit; absent audit is UNVERIFIED and prevents adopting a simplified workflow.",
+  "limits": [
+    "Six public tasks and one repetition do not establish non-inferiority, quality equivalence, release readiness, or generalized performance.",
+    "Environment guidance is a bundled intervention; browser choice and ownership guidance effects are not separately identified.",
+    "Both arms receive the same additional exact command approvals; current is v8-style guidance under that common expanded approval scope, not an exact replay of the old v8 experiment.",
+    "No document trimming, reviewer removal, model or effort change, or safety/verification reduction is tested.",
+    "Reported parent token usage may omit independently complete child accounting; billed USD remains unknown.",
+    "The required initial failed preflight is retained and is not waste that this experiment claims to eliminate.",
+    "The model-free single-fixture prerequisite proves only the tested environment setup, not the six generated candidates or their quality."
+  ]
+}

@@ -1,0 +1,1074 @@
+{
+  "status": "COMPLETE",
+  "cases": [
+    {
+      "case": "growi",
+      "before_revision": "f6c5b34d143e27fcf4bc09bac548b3b28eefa79d",
+      "after_revision": "171ace0e5c16d00888b8cc74c6e64b319ecc293a"
+    },
+    {
+      "case": "kibana",
+      "before_revision": "60870b34fedeb56d31c75a81d15289dc0ec65a1a",
+      "after_revision": "777d84c1d99f63d078ddebc529e2a4ef6c87300f"
+    }
+  ],
+  "rows": [
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 40,
+      "pattern_id": "#20",
+      "verdict": "NEEDS_CONTEXT",
+      "reason": "The action may trigger a backend mutation, but the staged spec does not establish whether the backend is shared or isolated.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L40",
+        "references/patterns/20.md: confirm both a real write and an uncontrolled persistent boundary before flagging."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 41,
+      "pattern_id": "#6",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L41",
+        "references/patterns/6.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 49,
+      "pattern_id": "#10a",
+      "verdict": "CONFIRMED",
+      "reason": "The cited Playwright locator uses first() or nth() without a contract exemption or justification.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L49",
+        "references/patterns/10.md: #10a requires a stable selector or a documented positional-access exemption."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 57,
+      "pattern_id": "#10a",
+      "verdict": "CONFIRMED",
+      "reason": "The cited Playwright locator uses first() or nth() without a contract exemption or justification.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L57",
+        "references/patterns/10.md: #10a requires a stable selector or a documented positional-access exemption."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 57,
+      "pattern_id": "#6",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L57",
+        "references/patterns/6.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 58,
+      "pattern_id": "#6",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L58",
+        "references/patterns/6.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 59,
+      "pattern_id": "#10",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L59",
+        "references/patterns/10.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 60,
+      "pattern_id": "#10",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L60",
+        "references/patterns/10.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 61,
+      "pattern_id": "#10a",
+      "verdict": "FALSE_POSITIVE",
+      "reason": "The loop intentionally removes the current first item from a shrinking homogeneous collection until all originally counted close buttons are consumed; DOM order does not select a semantic item, and the following assertion verifies that every toast is gone.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L58-L63",
+        "references/patterns/10.md: #10a requires an order-sensitive positional locator whose meaning can break when DOM order changes."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 63,
+      "pattern_id": "#6",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L63",
+        "references/patterns/6.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 71,
+      "pattern_id": "#10a",
+      "verdict": "CONFIRMED",
+      "reason": "The cited Playwright locator uses first() or nth() without a contract exemption or justification.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L71",
+        "references/patterns/10.md: #10a requires a stable selector or a documented positional-access exemption."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 74,
+      "pattern_id": "#2",
+      "verdict": "CONFIRMED",
+      "reason": "The explicit toaster acceptance comment is followed by an update click, but no positive assertion proves any error toaster appeared; the loop may execute zero times.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L74",
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L73-L82",
+        "references/patterns/2.md: an action promised by an acceptance contract needs an observable postcondition."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 75,
+      "pattern_id": "#6",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L75",
+        "references/patterns/6.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 77,
+      "pattern_id": "#10",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L77",
+        "references/patterns/10.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 78,
+      "pattern_id": "#10",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L78",
+        "references/patterns/10.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 79,
+      "pattern_id": "#10a",
+      "verdict": "CONFIRMED",
+      "reason": "The cited Playwright locator uses first() or nth() without a contract exemption or justification.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L79",
+        "references/patterns/10.md: #10a requires a stable selector or a documented positional-access exemption."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 82,
+      "pattern_id": "#4a",
+      "verdict": "FALSE_POSITIVE",
+      "reason": "The subject is an absence matcher, not an invariant numeric predicate or Locator-object truthiness/nullness assertion; it can fail when the locator matches a visible element.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L82",
+        "references/patterns/4.md: #4a covers invariant numeric predicates and #4f covers Locator-object truthiness/nullness."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 82,
+      "pattern_id": "#4f",
+      "verdict": "FALSE_POSITIVE",
+      "reason": "The subject is an absence matcher, not an invariant numeric predicate or Locator-object truthiness/nullness assertion; it can fail when the locator matches a visible element.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L82",
+        "references/patterns/4.md: #4a covers invariant numeric predicates and #4f covers Locator-object truthiness/nullness."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 82,
+      "pattern_id": "#4i",
+      "verdict": "CONFIRMED",
+      "reason": "The negative assertion uses a test-id locator that is never proven present or acted on in this test, and there is no positive empty-state counterpart.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L82",
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L73-L82",
+        "references/patterns/4.md: #4i requires same-path positive provenance or a positive counterpart."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 90,
+      "pattern_id": "#10a",
+      "verdict": "CONFIRMED",
+      "reason": "The cited Playwright locator uses first() or nth() without a contract exemption or justification.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L90",
+        "references/patterns/10.md: #10a requires a stable selector or a documented positional-access exemption."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 93,
+      "pattern_id": "#20",
+      "verdict": "NEEDS_CONTEXT",
+      "reason": "The action may trigger a backend mutation, but the staged spec does not establish whether the backend is shared or isolated.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L93",
+        "references/patterns/20.md: confirm both a real write and an uncontrolled persistent boundary before flagging."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 94,
+      "pattern_id": "#6",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L94",
+        "references/patterns/6.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 102,
+      "pattern_id": "#10a",
+      "verdict": "CONFIRMED",
+      "reason": "The cited Playwright locator uses first() or nth() without a contract exemption or justification.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L102",
+        "references/patterns/10.md: #10a requires a stable selector or a documented positional-access exemption."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 108,
+      "pattern_id": "#20",
+      "verdict": "NEEDS_CONTEXT",
+      "reason": "The action may trigger a backend mutation, but the staged spec does not establish whether the backend is shared or isolated.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L108",
+        "references/patterns/20.md: confirm both a real write and an uncontrolled persistent boundary before flagging."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 109,
+      "pattern_id": "#6",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L109",
+        "references/patterns/6.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 118,
+      "pattern_id": "#2",
+      "verdict": "FALSE_POSITIVE",
+      "reason": "The delete confirmation is followed by a visible success-toast assertion, which is an allowed success confirmation.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L118",
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L114-L119",
+        "references/patterns/2.md: a post-delete success toast satisfies the Then requirement."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 118,
+      "pattern_id": "#20",
+      "verdict": "NEEDS_CONTEXT",
+      "reason": "The action may trigger a backend mutation, but the staged spec does not establish whether the backend is shared or isolated.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L118",
+        "references/patterns/20.md: confirm both a real write and an uncontrolled persistent boundary before flagging."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 119,
+      "pattern_id": "#6",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L119",
+        "references/patterns/6.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 129,
+      "pattern_id": "#10a",
+      "verdict": "CONFIRMED",
+      "reason": "The cited Playwright locator uses first() or nth() without a contract exemption or justification.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L129",
+        "references/patterns/10.md: #10a requires a stable selector or a documented positional-access exemption."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 133,
+      "pattern_id": "#20",
+      "verdict": "NEEDS_CONTEXT",
+      "reason": "The action may trigger a backend mutation, but the staged spec does not establish whether the backend is shared or isolated.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L133",
+        "references/patterns/20.md: confirm both a real write and an uncontrolled persistent boundary before flagging."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 135,
+      "pattern_id": "#20",
+      "verdict": "NEEDS_CONTEXT",
+      "reason": "The action may trigger a backend mutation, but the staged spec does not establish whether the backend is shared or isolated.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L135",
+        "references/patterns/20.md: confirm both a real write and an uncontrolled persistent boundary before flagging."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 136,
+      "pattern_id": "#6",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L136",
+        "references/patterns/6.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 144,
+      "pattern_id": "#10a",
+      "verdict": "CONFIRMED",
+      "reason": "The cited Playwright locator uses first() or nth() without a contract exemption or justification.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L144",
+        "references/patterns/10.md: #10a requires a stable selector or a documented positional-access exemption."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 147,
+      "pattern_id": "#20",
+      "verdict": "NEEDS_CONTEXT",
+      "reason": "The action may trigger a backend mutation, but the staged spec does not establish whether the backend is shared or isolated.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L147",
+        "references/patterns/20.md: confirm both a real write and an uncontrolled persistent boundary before flagging."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 148,
+      "pattern_id": "#6",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L148",
+        "references/patterns/6.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 40,
+      "pattern_id": "#20",
+      "verdict": "NEEDS_CONTEXT",
+      "reason": "The action may trigger a backend mutation, but the staged spec does not establish whether the backend is shared or isolated.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L40",
+        "references/patterns/20.md: confirm both a real write and an uncontrolled persistent boundary before flagging."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 41,
+      "pattern_id": "#17",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L41",
+        "references/patterns/17.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 49,
+      "pattern_id": "#10a",
+      "verdict": "CONFIRMED",
+      "reason": "The cited Playwright locator uses first() or nth() without a contract exemption or justification.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L49",
+        "references/patterns/10.md: #10a requires a stable selector or a documented positional-access exemption."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 57,
+      "pattern_id": "#10a",
+      "verdict": "CONFIRMED",
+      "reason": "The cited Playwright locator uses first() or nth() without a contract exemption or justification.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L57",
+        "references/patterns/10.md: #10a requires a stable selector or a documented positional-access exemption."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 57,
+      "pattern_id": "#17",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L57",
+        "references/patterns/17.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 58,
+      "pattern_id": "#17",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L58",
+        "references/patterns/17.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 60,
+      "pattern_id": "#10",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L60",
+        "references/patterns/10.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 61,
+      "pattern_id": "#10a",
+      "verdict": "FALSE_POSITIVE",
+      "reason": "The loop intentionally removes the current first item from a shrinking homogeneous collection until all originally counted close buttons are consumed; DOM order does not select a semantic item, and the following assertion verifies that every toast is gone.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L58-L63",
+        "references/patterns/10.md: #10a requires an order-sensitive positional locator whose meaning can break when DOM order changes."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 63,
+      "pattern_id": "#17",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L63",
+        "references/patterns/17.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 71,
+      "pattern_id": "#10a",
+      "verdict": "CONFIRMED",
+      "reason": "The cited Playwright locator uses first() or nth() without a contract exemption or justification.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L71",
+        "references/patterns/10.md: #10a requires a stable selector or a documented positional-access exemption."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 74,
+      "pattern_id": "#2",
+      "verdict": "CONFIRMED",
+      "reason": "The explicit toaster acceptance comment is followed by an update click, but no positive assertion proves any error toaster appeared; the loop may execute zero times.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L74",
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L73-L82",
+        "references/patterns/2.md: an action promised by an acceptance contract needs an observable postcondition."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 75,
+      "pattern_id": "#17",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L75",
+        "references/patterns/17.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 78,
+      "pattern_id": "#10",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L78",
+        "references/patterns/10.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 79,
+      "pattern_id": "#10a",
+      "verdict": "CONFIRMED",
+      "reason": "The cited Playwright locator uses first() or nth() without a contract exemption or justification.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L79",
+        "references/patterns/10.md: #10a requires a stable selector or a documented positional-access exemption."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 82,
+      "pattern_id": "#4a",
+      "verdict": "FALSE_POSITIVE",
+      "reason": "The subject is an absence matcher, not an invariant numeric predicate or Locator-object truthiness/nullness assertion; it can fail when the locator matches a visible element.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L82",
+        "references/patterns/4.md: #4a covers invariant numeric predicates and #4f covers Locator-object truthiness/nullness."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 82,
+      "pattern_id": "#4i",
+      "verdict": "CONFIRMED",
+      "reason": "The negative assertion uses a test-id locator that is never proven present or acted on in this test, and there is no positive empty-state counterpart.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L82",
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L73-L82",
+        "references/patterns/4.md: #4i requires same-path positive provenance or a positive counterpart."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 90,
+      "pattern_id": "#10a",
+      "verdict": "CONFIRMED",
+      "reason": "The cited Playwright locator uses first() or nth() without a contract exemption or justification.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L90",
+        "references/patterns/10.md: #10a requires a stable selector or a documented positional-access exemption."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 93,
+      "pattern_id": "#20",
+      "verdict": "NEEDS_CONTEXT",
+      "reason": "The action may trigger a backend mutation, but the staged spec does not establish whether the backend is shared or isolated.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L93",
+        "references/patterns/20.md: confirm both a real write and an uncontrolled persistent boundary before flagging."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 94,
+      "pattern_id": "#17",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L94",
+        "references/patterns/17.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 102,
+      "pattern_id": "#10a",
+      "verdict": "CONFIRMED",
+      "reason": "The cited Playwright locator uses first() or nth() without a contract exemption or justification.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L102",
+        "references/patterns/10.md: #10a requires a stable selector or a documented positional-access exemption."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 108,
+      "pattern_id": "#20",
+      "verdict": "NEEDS_CONTEXT",
+      "reason": "The action may trigger a backend mutation, but the staged spec does not establish whether the backend is shared or isolated.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L108",
+        "references/patterns/20.md: confirm both a real write and an uncontrolled persistent boundary before flagging."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 109,
+      "pattern_id": "#17",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L109",
+        "references/patterns/17.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 118,
+      "pattern_id": "#2",
+      "verdict": "FALSE_POSITIVE",
+      "reason": "The delete confirmation is followed by a visible success-toast assertion, which is an allowed success confirmation.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L118",
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L114-L119",
+        "references/patterns/2.md: a post-delete success toast satisfies the Then requirement."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 118,
+      "pattern_id": "#20",
+      "verdict": "NEEDS_CONTEXT",
+      "reason": "The action may trigger a backend mutation, but the staged spec does not establish whether the backend is shared or isolated.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L118",
+        "references/patterns/20.md: confirm both a real write and an uncontrolled persistent boundary before flagging."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 119,
+      "pattern_id": "#17",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L119",
+        "references/patterns/17.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 119,
+      "pattern_id": "#4b",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line is toBeVisible(), not a positive toBeAttached() assertion.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L119",
+        "references/patterns/4.md: #4b is limited to positive toBeAttached() weak-attachment checks."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 129,
+      "pattern_id": "#10a",
+      "verdict": "CONFIRMED",
+      "reason": "The cited Playwright locator uses first() or nth() without a contract exemption or justification.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L129",
+        "references/patterns/10.md: #10a requires a stable selector or a documented positional-access exemption."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 133,
+      "pattern_id": "#20",
+      "verdict": "NEEDS_CONTEXT",
+      "reason": "The action may trigger a backend mutation, but the staged spec does not establish whether the backend is shared or isolated.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L133",
+        "references/patterns/20.md: confirm both a real write and an uncontrolled persistent boundary before flagging."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 136,
+      "pattern_id": "#17",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L136",
+        "references/patterns/17.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 144,
+      "pattern_id": "#10a",
+      "verdict": "CONFIRMED",
+      "reason": "The cited Playwright locator uses first() or nth() without a contract exemption or justification.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L144",
+        "references/patterns/10.md: #10a requires a stable selector or a documented positional-access exemption."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 147,
+      "pattern_id": "#20",
+      "verdict": "NEEDS_CONTEXT",
+      "reason": "The action may trigger a backend mutation, but the staged spec does not establish whether the backend is shared or isolated.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L147",
+        "references/patterns/20.md: confirm both a real write and an uncontrolled persistent boundary before flagging."
+      ]
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "file": "apps/app/playwright/60-home/home.spec.ts",
+      "line": 148,
+      "pattern_id": "#17",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line contains no construct covered by this pattern.",
+      "evidence": [
+        "growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L148",
+        "references/patterns/17.md: the reported pattern requires a different source shape."
+      ]
+    },
+    {
+      "case": "kibana",
+      "side": "after",
+      "file": "x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/detection_response/detection_engine/exceptions/alerts_table_flow/rule_exceptions/closing_all_matching_alerts.cy.ts",
+      "line": 97,
+      "pattern_id": "#10",
+      "verdict": "FALSE_POSITIVE",
+      "reason": "The called waitForAlerts helper uses retrying Cypress assertions and a network-idle command; it contains no #10 positional, serial, substring, async-queue, assigned-chain, or continued-action shape.",
+      "evidence": [
+        "elastic/kibana@777d84c1d99f63d078ddebc529e2a4ef6c87300f:x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/detection_response/detection_engine/exceptions/alerts_table_flow/rule_exceptions/closing_all_matching_alerts.cy.ts:L97",
+        "elastic/kibana@777d84c1d99f63d078ddebc529e2a4ef6c87300f:x-pack/solutions/security/test/security_solution_cypress/cypress/tasks/alerts.ts:L465-L475",
+        "references/patterns/10.md: #10 is limited to its documented flaky-test subpatterns."
+      ]
+    },
+    {
+      "case": "kibana",
+      "side": "after",
+      "file": "x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/detection_response/detection_engine/exceptions/alerts_table_flow/rule_exceptions/closing_all_matching_alerts.cy.ts",
+      "line": 101,
+      "pattern_id": "#10",
+      "verdict": "FALSE_POSITIVE",
+      "reason": "The called waitForAlerts helper uses retrying Cypress assertions and a network-idle command; it contains no #10 positional, serial, substring, async-queue, assigned-chain, or continued-action shape.",
+      "evidence": [
+        "elastic/kibana@777d84c1d99f63d078ddebc529e2a4ef6c87300f:x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/detection_response/detection_engine/exceptions/alerts_table_flow/rule_exceptions/closing_all_matching_alerts.cy.ts:L101",
+        "elastic/kibana@777d84c1d99f63d078ddebc529e2a4ef6c87300f:x-pack/solutions/security/test/security_solution_cypress/cypress/tasks/alerts.ts:L465-L475",
+        "references/patterns/10.md: #10 is limited to its documented flaky-test subpatterns."
+      ]
+    },
+    {
+      "case": "kibana",
+      "side": "after",
+      "file": "x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/detection_response/detection_engine/exceptions/alerts_table_flow/rule_exceptions/closing_all_matching_alerts.cy.ts",
+      "line": 105,
+      "pattern_id": "#1",
+      "verdict": "FALSE_POSITIVE",
+      "reason": "The test title promises closing all matching alerts, and the test asserts both zero alert rows and the positive empty-state prompt.",
+      "evidence": [
+        "elastic/kibana@777d84c1d99f63d078ddebc529e2a4ef6c87300f:x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/detection_response/detection_engine/exceptions/alerts_table_flow/rule_exceptions/closing_all_matching_alerts.cy.ts:L105",
+        "elastic/kibana@777d84c1d99f63d078ddebc529e2a4ef6c87300f:x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/detection_response/detection_engine/exceptions/alerts_table_flow/rule_exceptions/closing_all_matching_alerts.cy.ts:L145-L153",
+        "references/patterns/1.md: user-visible promises may be proved by equivalent observable evidence."
+      ]
+    },
+    {
+      "case": "kibana",
+      "side": "after",
+      "file": "x-pack/solutions/security/test/security_solution_cypress/cypress/screens/security_header.ts",
+      "line": 102,
+      "pattern_id": "#11",
+      "verdict": "FALSE_POSITIVE",
+      "reason": "Despite the stale nearby comment, the exported selector is imported and clicked by a pinned-revision navigation spec.",
+      "evidence": [
+        "elastic/kibana@777d84c1d99f63d078ddebc529e2a4ef6c87300f:x-pack/solutions/security/test/security_solution_cypress/cypress/screens/security_header.ts:L102",
+        "elastic/kibana@777d84c1d99f63d078ddebc529e2a4ef6c87300f:x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/explore/navigation/navigation.cy.ts:L30-L34",
+        "elastic/kibana@777d84c1d99f63d078ddebc529e2a4ef6c87300f:x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/explore/navigation/navigation.cy.ts:L276-L280",
+        "references/patterns/11.md: usage across specs makes an export USED, not YAGNI."
+      ]
+    },
+    {
+      "case": "kibana",
+      "side": "after",
+      "file": "x-pack/solutions/security/test/security_solution_cypress/cypress/screens/security_header.ts",
+      "line": 102,
+      "pattern_id": "#11c",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line is a comment or exported constant, not a test.skip/fixme/it.skip/describe.skip call.",
+      "evidence": [
+        "elastic/kibana@777d84c1d99f63d078ddebc529e2a4ef6c87300f:x-pack/solutions/security/test/security_solution_cypress/cypress/screens/security_header.ts:L102",
+        "references/patterns/11.md: #11c applies only to an actual skip without a reason."
+      ]
+    },
+    {
+      "case": "kibana",
+      "side": "before",
+      "file": "x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/detection_response/detection_engine/exceptions/alerts_table_flow/rule_exceptions/closing_all_matching_alerts.cy.ts",
+      "line": 97,
+      "pattern_id": "#10",
+      "verdict": "FALSE_POSITIVE",
+      "reason": "The called waitForAlerts helper uses retrying Cypress assertions and a network-idle command; it contains no #10 positional, serial, substring, async-queue, assigned-chain, or continued-action shape.",
+      "evidence": [
+        "elastic/kibana@60870b34fedeb56d31c75a81d15289dc0ec65a1a:x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/detection_response/detection_engine/exceptions/alerts_table_flow/rule_exceptions/closing_all_matching_alerts.cy.ts:L97",
+        "elastic/kibana@60870b34fedeb56d31c75a81d15289dc0ec65a1a:x-pack/solutions/security/test/security_solution_cypress/cypress/tasks/alerts.ts:L465-L475",
+        "references/patterns/10.md: #10 is limited to its documented flaky-test subpatterns."
+      ]
+    },
+    {
+      "case": "kibana",
+      "side": "before",
+      "file": "x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/detection_response/detection_engine/exceptions/alerts_table_flow/rule_exceptions/closing_all_matching_alerts.cy.ts",
+      "line": 101,
+      "pattern_id": "#4i",
+      "verdict": "FALSE_POSITIVE",
+      "reason": "The spinner absence is immediately followed by a positive alert-count assertion for the promised closed-alert state.",
+      "evidence": [
+        "elastic/kibana@60870b34fedeb56d31c75a81d15289dc0ec65a1a:x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/detection_response/detection_engine/exceptions/alerts_table_flow/rule_exceptions/closing_all_matching_alerts.cy.ts:L101",
+        "elastic/kibana@60870b34fedeb56d31c75a81d15289dc0ec65a1a:x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/detection_response/detection_engine/exceptions/alerts_table_flow/rule_exceptions/closing_all_matching_alerts.cy.ts:L94-L102",
+        "references/patterns/4.md: #4i is skipped when positive same-path evidence accompanies the absence check."
+      ]
+    },
+    {
+      "case": "kibana",
+      "side": "before",
+      "file": "x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/detection_response/detection_engine/exceptions/alerts_table_flow/rule_exceptions/closing_all_matching_alerts.cy.ts",
+      "line": 102,
+      "pattern_id": "#4b",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line is a Cypress contain assertion, not a positive Playwright toBeAttached() assertion.",
+      "evidence": [
+        "elastic/kibana@60870b34fedeb56d31c75a81d15289dc0ec65a1a:x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/detection_response/detection_engine/exceptions/alerts_table_flow/rule_exceptions/closing_all_matching_alerts.cy.ts:L102",
+        "references/patterns/4.md: #4b is limited to positive toBeAttached() checks."
+      ]
+    },
+    {
+      "case": "kibana",
+      "side": "before",
+      "file": "x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/detection_response/detection_engine/exceptions/alerts_table_flow/rule_exceptions/closing_all_matching_alerts.cy.ts",
+      "line": 105,
+      "pattern_id": "#1",
+      "verdict": "FALSE_POSITIVE",
+      "reason": "The test title promises closing all matching alerts, and the test asserts both zero alert rows and the positive empty-state prompt.",
+      "evidence": [
+        "elastic/kibana@60870b34fedeb56d31c75a81d15289dc0ec65a1a:x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/detection_response/detection_engine/exceptions/alerts_table_flow/rule_exceptions/closing_all_matching_alerts.cy.ts:L105",
+        "elastic/kibana@60870b34fedeb56d31c75a81d15289dc0ec65a1a:x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/detection_response/detection_engine/exceptions/alerts_table_flow/rule_exceptions/closing_all_matching_alerts.cy.ts:L145-L153",
+        "references/patterns/1.md: user-visible promises may be proved by equivalent observable evidence."
+      ]
+    },
+    {
+      "case": "kibana",
+      "side": "before",
+      "file": "x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/detection_response/detection_engine/exceptions/alerts_table_flow/rule_exceptions/closing_all_matching_alerts.cy.ts",
+      "line": 112,
+      "pattern_id": "#2",
+      "verdict": "FALSE_POSITIVE",
+      "reason": "The cited API helper is setup inside a chained flow, while the test later verifies the promised final state with zero alerts and a positive empty-state assertion.",
+      "evidence": [
+        "elastic/kibana@60870b34fedeb56d31c75a81d15289dc0ec65a1a:x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/detection_response/detection_engine/exceptions/alerts_table_flow/rule_exceptions/closing_all_matching_alerts.cy.ts:L112",
+        "elastic/kibana@60870b34fedeb56d31c75a81d15289dc0ec65a1a:x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/detection_response/detection_engine/exceptions/alerts_table_flow/rule_exceptions/closing_all_matching_alerts.cy.ts:L105-L153",
+        "references/patterns/2.md: helper actions used to reach another asserted outcome do not each create a Then obligation."
+      ]
+    },
+    {
+      "case": "kibana",
+      "side": "before",
+      "file": "x-pack/solutions/security/test/security_solution_cypress/cypress/screens/security_header.ts",
+      "line": 101,
+      "pattern_id": "#11c",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line is a comment or exported constant, not a test.skip/fixme/it.skip/describe.skip call.",
+      "evidence": [
+        "elastic/kibana@60870b34fedeb56d31c75a81d15289dc0ec65a1a:x-pack/solutions/security/test/security_solution_cypress/cypress/screens/security_header.ts:L101",
+        "references/patterns/11.md: #11c applies only to an actual skip without a reason."
+      ]
+    },
+    {
+      "case": "kibana",
+      "side": "before",
+      "file": "x-pack/solutions/security/test/security_solution_cypress/cypress/screens/security_header.ts",
+      "line": 102,
+      "pattern_id": "#11",
+      "verdict": "FALSE_POSITIVE",
+      "reason": "Despite the stale nearby comment, the exported selector is imported and clicked by a pinned-revision navigation spec.",
+      "evidence": [
+        "elastic/kibana@60870b34fedeb56d31c75a81d15289dc0ec65a1a:x-pack/solutions/security/test/security_solution_cypress/cypress/screens/security_header.ts:L102",
+        "elastic/kibana@60870b34fedeb56d31c75a81d15289dc0ec65a1a:x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/explore/navigation/navigation.cy.ts:L30-L34",
+        "elastic/kibana@60870b34fedeb56d31c75a81d15289dc0ec65a1a:x-pack/solutions/security/test/security_solution_cypress/cypress/e2e/explore/navigation/navigation.cy.ts:L276-L280",
+        "references/patterns/11.md: usage across specs makes an export USED, not YAGNI."
+      ]
+    },
+    {
+      "case": "kibana",
+      "side": "before",
+      "file": "x-pack/solutions/security/test/security_solution_cypress/cypress/screens/security_header.ts",
+      "line": 102,
+      "pattern_id": "#11c",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line is a comment or exported constant, not a test.skip/fixme/it.skip/describe.skip call.",
+      "evidence": [
+        "elastic/kibana@60870b34fedeb56d31c75a81d15289dc0ec65a1a:x-pack/solutions/security/test/security_solution_cypress/cypress/screens/security_header.ts:L102",
+        "references/patterns/11.md: #11c applies only to an actual skip without a reason."
+      ]
+    }
+  ]
+}

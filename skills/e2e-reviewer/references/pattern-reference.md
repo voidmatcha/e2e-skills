@@ -28,13 +28,15 @@ Tests pass when the feature is broken. No real verification is happening. Always
 **Symptom:** Test name promises something the assertions don't verify.
 
 ```typescript
-// BAD — name says "status" but only checks visibility
-test('should display user status', async ({ page }) => {
+// BAD — name promises a specific status value but only checks visibility
+test('should display account status Active', async ({ page }) => {
   await expect(status).toBeVisible();  // no status content check
 });
 ```
 
 **Rule:** Every explicit promised outcome, state transition, or acceptance clause in the test name must have corresponding evidence. Add it or narrow the title.
+
+Visibility can prove a rendering-only promise; require content, identity, or value assertions only when the title or acceptance contract promises them. A fixture that makes an existing rendering assertion fail does not make that assertion absent: report a confirmed render-guard mismatch under #23 without inventing #1.
 
 Interpret nouns by the user-visible contract, not as isolated implementation tokens. A success confirmation can substantiate that a submit action completed; do not also report #1 merely because the test does not inspect the request directly. Missing route isolation or request proof belongs to #20/#22 unless the title explicitly promises a specific payload, status, or request shape.
 
@@ -45,9 +47,11 @@ Interpret nouns by the user-visible contract, not as isolated implementation tok
 3. A promise with no evidence is a finding; implementation nouns and helper
    steps that are not promised outcomes are not.
 
+**Severity:** P0 when no promised outcome in the title has evidence: a status code, navigation, or visibility check that observes none of the promised nouns leaves the test green while the feature is broken. When the test really verifies at least one promised outcome and a further promise goes unchecked, such as "should update X and Y" asserting X only, report #1 at P1, following the P0 boundary in `references/reporting.md`. Judge each title separately; one partial title does not lower another title's P0.
+
 **Primary line:** Anchor #1 to the test/setup declaration whose title contains the unverified promise. A constant or unrelated assertion that fails to prove the noun is supporting evidence, not a second #1 finding.
 
-**Common patterns:** "should display X" with only `toBeVisible()` (no content check), "should update X and Y" with assertion for X but not Y, "should validate form" with only happy-path assertion.
+**Common patterns:** "should display the saved status value" with only `toBeVisible()` (no value check), "should update X and Y" with assertion for X but not Y, "should validate form" with only happy-path assertion. Rendering-only promises can be satisfied by visibility.
 
 #### 2. Missing Then `[LLM-only]`
 
@@ -151,7 +155,22 @@ Cypress.on('uncaught:exception', (err) => {
 });
 ```
 
-**Rule:** Blanket `() => false` is P0 — equivalent to `.catch(() => {})`. Safe handlers conditionally allowlist one named, documented regression and rethrow every other error. Mere `expect(err).to.exist` or another generic assertion does not excuse a later unconditional `return false`: it still suppresses every application error. A negative-regression handler is exempt only when its assertion is regression-specific and non-matching errors are explicitly rethrown.
+**`fail` handlers.** The same contract covers `Cypress.on('fail', …)` / `cy.on('fail', …)`. Cypress documents that binding to `fail` without rethrowing the error prevents the test from having a failed state and is strongly discouraged (Catalog of Events, `fail`). A `fail` handler that logs, screenshots, or returns on any path without `throw`ing the error therefore turns every assertion failure in its scope into a pass; the scanner's `(cy|Cypress)\.on\(` candidate already surfaces it, and Phase 2 reads the event name and the body.
+
+```javascript
+// BAD — every failing test in scope now passes
+Cypress.on('fail', (error, runnable) => {
+  console.log(runnable.title, error.message);
+});
+
+// BETTER — debug, then let the test fail
+Cypress.on('fail', (error, runnable) => {
+  console.log(runnable.title, error.message);
+  throw error;
+});
+```
+
+**Rule:** Blanket `() => false` is P0 — equivalent to `.catch(() => {})`. Safe handlers conditionally allowlist one named, documented regression and rethrow every other error. Mere `expect(err).to.exist` or another generic assertion does not excuse a later unconditional `return false`: it still suppresses every application error. A negative-regression handler is exempt only when its assertion is regression-specific and non-matching errors are explicitly rethrown. A `fail` handler is P0 when any path through it ends without `throw`ing the error; it is exempt when every path rethrows, or when only one named, documented regression is allowlisted and every other error is rethrown.
 
 #### 4. Vacuous and Non-Retrying Assertions `[grep-detectable + LLM confirmation]` `[P0/P1]`
 
@@ -192,35 +211,37 @@ expect(page.locator('.selector')).toBeDefined();
 
 **Severity rule:** #4a and #4f are P0 because their predicates are true independently of product behavior. #4b–#4e and #4g–#4k are P1: they can fail, but provide weak, non-retrying, or under-specified evidence and therefore create timing, diagnostic, selector-rot, or accessibility-contract risk. Do not call a one-shot or partial-match assertion "always-passing."
 
+**Cypress boundary:** an outer `expect(cy.get('.row')).to.exist` inspects a Chainable, but the queued `cy.get()` still fails when the element is missing. Do not infer an always-passing test or apply a visibility fix from that outer assertion alone. Inspect the queued commands and promised outcome; describe a redundant assertion separately from a proven coverage gap. In contrast, synchronous `expect(Cypress.$('.row')).to.exist` checks a jQuery object that exists even for an empty selection; when it is the only verification, it cannot prove DOM presence. Preserve the intended presence contract with a length assertion or retrying query, not an invented visibility requirement.
+
 **Rule:** `toBeAttached()` is meaningful when the promised contract is DOM attachment itself: for example, a conditionally rendered node, a dynamically injected resource, or a CSS-hidden element that must remain in the DOM. It is weak after an action when attachment adds no evidence for the promised user-visible or removed state → P1. Judge the test title, action, and expected outcome; do not treat every positive attachment assertion as vacuous.
 
 **#4b scanner semantics (LLM-TRIAGE):** grep alone cannot confirm the context that makes a `toBeAttached()` hit real. The scanner matches the positive form only (`.not.toBeAttached()` is never flagged) and tags each hit `[P1?][LLM-TRIAGE]`. Phase 2 confirms destructive-action context (the element should have been removed) before reporting P1 — on client-rendered apps a positive `toBeAttached()` is usually a legitimate render-gate (field data: ~90% FP).
 
 **Fix:**
-- `toBeGreaterThanOrEqual(0)` → `toBeGreaterThan(0)`
+- `toBeGreaterThanOrEqual(0)` → replace the vacuous bound with the evidenced expected value or count for that scenario. When zero is valid, assert the expected empty-state outcome (for example, exact zero plus its visible empty-state counterpart). Do not default to `> 0` or invent a non-empty product requirement.
 - weak `toBeAttached()` → `toBeVisible()` when visibility is promised, or remove
   it when another assertion already proves the outcome; keep it when DOM
   attachment is the actual contract
 - `expect(await el.isVisible()).toBe(true)` → `await expect(el).toBeVisible()`
-- `expect(await el.textContent()).toBe(x)` → `await expect(el).toHaveText(x)`
+- `expect(await el.textContent()).toBe(x)` → `await expect.poll(() => el.textContent()).toBe(x)` to preserve raw whitespace and exact equality. Use `toHaveText(x)` only when normalized text is the intended contract.
 - `expect(await el.getAttribute('x')).toBe(y)` → `await expect(el).toHaveAttribute('x', y)`
-- `expect(await el.allTextContents()).toContain(x)` → `await expect(el).toContainText(x)`
-- `expect(locator).toBeTruthy()` → `await expect(locator).toBeVisible()`
+- `expect(await el.allTextContents()).toContain(x)` → `await expect.poll(() => el.allTextContents()).toContain(x)` to preserve exact array membership. A scalar `toContainText(x)` checks a substring on one element, not membership in a multi-element collection.
+- `expect(locator).toBeTruthy()` → `await expect(locator).toBeVisible()` only when visibility is promised; use `toBeAttached()` when DOM attachment is the contract, or assert the specified state. Do not invent a stronger product requirement.
 - Computed matcher access is a candidate only when the key is a literal or an
   immutable `const` bound directly to `toBeTruthy`/`toBeDefined`; arbitrary or
   mutable computed keys remain unresolved and are not mechanically reported.
 - A direct Locator subject can be final #4f. A Locator nested inside an
   arbitrary wrapper call, such as `expect(wrapper(page.locator(...)))`, remains
   LLM-triage because the wrapper may transform the value.
-- `expect(locator).not.toBeNull()` / `.not.toBeUndefined()` / `.not.to.equal(null)` / `.not.to.be.null` / `.toBeDefined()` → `await expect(locator).toBeVisible()` (a Locator is never null/undefined; assert the user-visible state instead)
+- `expect(locator).not.toBeNull()` / `.not.toBeUndefined()` / `.not.to.equal(null)` / `.not.to.be.null` / `.toBeDefined()` → an awaited assertion of the promised state (a Locator is never null/undefined; choose visibility, attachment, or another predicate from the actual contract).
 - `{ timeout: 0 }` on assertions → see the 4g block below
 - `expect(page.url()).toContain(x)` → `await expect.poll(() => page.url()).toContain(x)` (one-shot URL read with no retry). Keep the substring matcher instead of converting `x` into a regex-backed `toHaveURL`; `x` may contain regex metacharacters. The scanner follows provenance-backed aliases of Playwright `expect` and renamed receivers whose type/fixture provenance proves `Page`.
 - **Multiple `expect(page.url()).toContain(...)` in sequence** → replace each call with its **own** `await expect.poll(() => page.url()).toContain(...)`. Do NOT combine them into a single regex with `.*` — that adds an ordering constraint not present in the original substring checks.
-- **Compound boolean expression** like `expect(visible1 || visible2).toBe(true)` is the same one-shot anti-pattern as `expect(await el.isVisible()).toBe(true)`. Prefer a locator-level web-first assertion such as `await expect(page.locator('.a, .b')).toBeVisible()`. If both branches require independent assertions (e.g., different post-actions per branch), gate the test with `test.skip()` on the unsupported branch rather than collapsing into a single boolean check.
+- **Compound boolean expression** like `expect(visible1 || visible2).toBe(true)` needs a retrying predicate that preserves OR: for the original locators `a` and `b`, use `await expect.poll(async () => (await a.isVisible()) || (await b.isVisible())).toBe(true)`. A combined locator can match both elements and violate strictness; `.first()` can pick a hidden element even when the other is visible. Do not skip a supported branch or replace OR with AND to make the test pass.
 
 **Boundary with #15 (one-shot reads vs floating promises):** in #4c-4e the `await` sits INSIDE `expect()` and resolves a real value against a sync matcher — `expect(await el.textContent()).toBe(x)`, including wrapped forms `expect((await …).trim())`, `expect(Number(await …))`, `expect(!(await …))` — nothing floats; the bug is a one-shot read with no auto-retry. The scanner reroutes these shapes here even when they superficially resemble #15. An unawaited web-first matcher (`expect(locator).toBeVisible()` with no leading `await`) is #15, not #4.
 
-**Retry-wrapper skip (false-positive exclusion — applies to #4c-4e and #4h):** when a hit's enclosing function is the callback of `await expect(async () => { … }).toPass({…})` or `await expect.poll(async () => { … }).toX(…)`, Playwright re-runs the callback until it passes or times out. SKIP the P1 finding for those hits. In practice a large share of raw #4h hits sit inside `.toPass(…)` callbacks — always check the enclosing wrapper before counting.
+**Retry-wrapper skip (false-positive exclusion — applies to #4c-4e and #4h):** when a hit's enclosing function is the callback of `await expect(async () => { … }).toPass({…})` or `await expect.poll(async () => { … }).toX(…)`, Playwright re-runs the callback until it passes or times out. SKIP the P1 finding for those hits. In practice a large share of raw #4h hits sit inside `.toPass(…)` callbacks — always check the enclosing wrapper before counting. The scanner applies this exclusion itself only within 24 lines on either side of a #4h hit; a retry callback whose body is longer than that still arrives as a P1 hit, and Phase 2 clears it by the rule above.
 
 <!-- 4g stays a bold sub-block, NOT a "#### 4g." header: CI Check 3c (scripts/ci/review.sh) requires the set of "#### <id>." headers in this file to exactly equal the 24 Quick Reference base IDs. Sub-IDs (4g — like 5a/5b, 8a/8b, 10a/10b) live inside their parent's block. -->
 **4g. Zero timeout weakens retry/deadline control** `[grep-detectable]` — in
@@ -268,9 +289,9 @@ await expect(spinner).toBeHidden();
 - **SKIP** — the same locator (or an alias of it) is asserted present, or is clicked/filled/hovered, anywhere in that test's execution path — before or after the absence assertion, or in its `beforeEach`. Direction does not matter: a later assertion or action on the same locator fails when the selector stops matching, so the absence assertion cannot pass on a rotted selector either. What matters is that the locator is consumed by a real assertion or action somewhere, not where that use sits relative to the absence check.
 - **SKIP** — the test is an empty-state / no-results case that also asserts a positive counterpart (empty-state message visible, "0 results" text). This is the dominant legitimate shape; expect it to account for most raw hits. It does not cover the `#23` case: when a render guard suppresses seeded items, the empty-state message renders for the wrong reason and the positive counterpart proves nothing. Check that the fixture can actually satisfy the component's guards before skipping on this ground.
 - **SKIP** — `// JUSTIFIED:` on the preceding line.
-- **FLAG P1** — the locator appears nowhere else on that test's execution path (a use in a sibling test does not count) and nothing positive is asserted alongside. Report it as an assertion that can pass without proving the locator ever matched, and propose either proving the locator first or deleting the assertion.
+- **FLAG P1** — the locator appears nowhere else on that test's execution path (a use in a sibling test does not count) and nothing positive is asserted alongside. Report it as an assertion that can pass without proving the locator ever matched. Preserve the intended scenario: for a removal transition, prove the same locator present before the removing action and then assert absence; for an intentional initial-empty or negative contract, add the expected positive empty-state counterpart or other supplied evidence that validates the selector/condition. Do not invent setup, an action, or a product state solely to make the locator appear, and do not offer assertion deletion as a fix.
 
-**Fix:** assert the positive state before the action that removes it, then assert absence on the *same* locator object — binding it to a variable makes the pairing checkable at a glance.
+**Fix:** for a removal transition, assert the positive state before the action that removes it, then assert absence on the *same* locator object — binding it to a variable makes the pairing checkable at a glance. For intended initial absence, keep the absence assertion and add a source-backed positive counterpart or selector/fixture evidence appropriate to that contract; do not manufacture a removal flow.
 
 **Absence after a failed write, not re-read (Phase 2 only, no scanner rule).** A separate question from #4i's locator provenance: an absence or zero-count assertion that follows a rejected write (a stubbed or real 4xx/5xx) on the same view, with no `page.reload()`, `page.goto()`, `waitForResponse` on the read, or equivalent re-fetch in the spec in between, cannot detect a server that stored the data while returning the error. Report it as `#4` `[P1]` only when the spec shows no such re-read; do not infer the application's re-fetch behavior from its source. A #4i SKIP for the same line does not clear this: an empty-state positive counterpart read from the same unrefreshed view has the same blind spot. Fix: re-read the state, then assert both the absence and its positive counterpart.
 
@@ -328,7 +349,7 @@ for (const row of await rows.all()) {
 }
 ```
 
-Cypress `.each()` has the same hazard, with one difference: `cy.get()` retries until at least one element matches, so a genuinely empty selector fails the `cy.get()` itself. The silent shape appears when the chain cannot fail that way — `cy.get('body').find('.row').each(...)` after a passing parent, or `.filter()` narrowing an already-resolved set to nothing.
+Cypress `.each()` can skip its callback for a known-empty or possibly empty ordinary array, such as `cy.wrap([]).each(...)`. However, `cy.get()`, `.find()`, and `.filter()` are retryable DOM queries with implicit existence checks; appending `.each()` does not remove those checks. Do not report `cy.get('body').find('.row').each(...)` or `cy.get('.row').filter('.active').each(...)` as silent empty iteration merely because the selector might match nothing. Inspect the actual subject and any explicit assertions that change the query's existence requirement.
 
 **Why it matters:** `expect-expect` and every "test has no assertion" check see the `expect` in the source and pass it, because the assertion is syntactically present. Only its execution count is zero. That is why this survives lint and review alike, and why it belongs with the silent-always-pass family rather than with `#8`.
 
@@ -337,6 +358,7 @@ Cypress `.each()` has the same hazard, with one difference: `cy.get()` retries u
 **Detection (grep + LLM):** the scanner flags `for (const x of await <locator>.all())` and Cypress `.each(` as `[P1?][LLM-TRIAGE]`, because grep cannot see whether a count assertion precedes it. Phase 2 resolves each hit:
 
 - **SKIP** — a `toHaveCount`, `toHaveLength`, `should('have.length'...)`, or an explicit non-empty check on the same collection appears earlier in the test or its `beforeEach`.
+- **SKIP** — Cypress DOM queries retain an implicit existence check on the iterated subject; a missing expected count is not by itself proof of silent empty iteration.
 - **SKIP** — the loop is not carrying the test's verification: it performs setup, collects values for a later assertion, or the test asserts something else that would fail independently.
 - **SKIP** — `// JUSTIFIED:` on the preceding line.
 - **FLAG P1** — the loop body holds the only assertions and nothing constrains the collection size.
@@ -357,6 +379,8 @@ if (await spinner.isVisible()) {
 ```
 
 **Rule:** Flag P0 only when the conditional assertion is load-bearing for the title/action's promised outcome and the false branch has no independent unconditional meaningful postcondition or failure-producing action. Do not flag a conditional diagnostic or optional-state assertion when the scenario still has an unconditional assertion or action that meaningfully proves or enforces the promised outcome. Move environment- or feature-flag gates for a required outcome to `beforeEach` / declaration-level `test.skip()` so unsupported runs are skipped explicitly rather than passing silently.
+
+A fallback assertion against a generic or merely similar UI element does not prove the promised outcome when the primary confirmation is absent. By contrast, conditionally dismissing an optional blocker before an unconditional promised-outcome assertion is an action-only branch, not this bypass. Judge both from code-visible behavior; do not infer that a runtime blocker actually appears.
 
 **5b. Force true bypass** — `{ force: true }` skips actionability checks (visibility, enabled state, pointer-events), hiding real UX problems that real users would encounter.
 
@@ -383,7 +407,7 @@ No `// JUSTIFIED:` exemption exists for either tier — there are no legitimate 
 
 #### 8. Missing Assertion `[grep + LLM confirmation]`
 
-Two candidate sub-patterns where a discarded expression may be standing in for the scenario's only verification. The standalone expression is always dead code, but it is P0 #8 only when the test otherwise has no independent meaningful postcondition or failure-producing action for the promised behavior.
+Two candidate sub-patterns (8a, 8b) where a discarded expression may be standing in for the scenario's only verification, plus one mechanical sub-pattern (8c) where an `expect` statement runs no assertion at all. The standalone expression is always dead code, but 8a/8b are P0 #8 only when the test otherwise has no independent meaningful postcondition or failure-producing action for the promised behavior.
 
 **8a. Dangling locator** `[Playwright only, grep-detectable]` — a Playwright locator created as a standalone statement, not assigned to a variable, not passed to `expect()`, and not chained with an action. The statement is a complete no-op.
 
@@ -402,11 +426,25 @@ await el.isEnabled();
 await page.isVisible('[data-testid="foo"]'); // page-level shorthand with a selector arg — same discard
 ```
 
-**Rule:** Every Playwright locator expression and every Playwright boolean state call must either feed into `expect()`, be assigned and used later, or be chained with an action. Standalone Playwright expressions are dead code, but report P0 #8 only when the discarded expression is the scenario's intended verification and removing it leaves no independent meaningful verification or failure evidence. Skip a leftover read in a test that already has real assertions. Also skip a discarded pre-check immediately followed by an action on the same locator: the action can fail on absence/actionability, while a missing outcome assertion is #2 anchored at the action. Do not generalize this rule to Cypress: `cy.get(...)` is a retrying query that requires the element to exist even without a `.should(...)` chain.
+**8c. Matcher never invoked** `[Playwright only, grep-detectable]` `[P0]` — a Playwright `expect` statement whose matcher is read but never called, or that has no matcher at all. `expect(x).toBeVisible;` evaluates the matcher function and discards it; `expect(x);` builds the matcher object and discards it. Neither runs an assertion, so the statement passes whatever `x` is, and `expect-expect`-style lints count it as an assertion. `eslint-plugin-playwright`'s `valid-expect` reports the same shapes ("Matchers must be called to assert", "Expect must have a corresponding matcher call").
+
+```typescript
+// BAD — nothing is asserted; the test passes with the status missing
+expect(page.getByRole('status')).toBeVisible;
+await expect(page.getByRole('alert')).not.toBeVisible;
+expect(page.locator('.toast'));
+
+// GOOD — the matcher is called
+await expect(page.getByRole('status')).toBeVisible();
+```
+
+Unlike 8a/8b this is P0 on its own: the statement was written as the verification and cannot fail. It is Playwright-only; a Chai property assertion such as `expect(flag).to.be.true` in Cypress is a real assertion and never matches. Not 8c: a called matcher, an assignment (`const check = expect(x).toBeVisible;` is a stored function, review its call site), a statement continued on the next line (`expect(x)` followed by `.toBeVisible()`), or the shape inside a comment or string. Not covered mechanically, so Phase 2 reads them: a statement that does not start with `expect` or `await expect` (`return expect(x).toBeVisible;`, `if (ready) expect(x).toBeVisible;`), a type argument before the call (`expect<string>(value).toBe;`), and an uncalled matcher left on a continuation line. A matcher followed by a line that opens with a backtick (a tagged-template continuation) is a rare technical false positive of the mechanical check; dismiss it in Phase 2.
+
+**Rule:** Every Playwright locator expression and every Playwright boolean state call must either feed into `expect()`, be assigned and used later, or be chained with an action. Standalone Playwright expressions are dead code, but report P0 #8 only when the discarded expression is the scenario's intended verification and removing it leaves no independent meaningful verification or failure evidence. Skip a leftover read in a test that already has real assertions. Also skip a discarded pre-check immediately followed by an action on the same locator: the action can fail on absence/actionability, while a missing outcome assertion is #2 anchored at the action. Do not generalize this rule to Cypress: `cy.get(...)` is a retrying query that requires the element to exist even without a `.should(...)` chain. 8c is reported as P0 whenever its statement is confirmed; the independent-verification test above does not apply to it.
 
 **Fix:** Replace with web-first assertion — `await expect(locator).toBeVisible()` / `toBeEnabled()` etc. These also auto-retry. Or delete the line if it's leftover debug code.
 
-**Detection note:** the scanner sends both the empty-parens form and the page-level selector-argument shorthand (`await page.isVisible('sel')`), with or without a trailing semicolon, to `[P0?][LLM-TRIAGE]`; grep alone never enters these hits into the P0 exit gate. The end-of-statement anchor means handled/chained forms are not candidates: `await el.isVisible().catch(() => false)` (covered by `#3` error-swallow), `&& ...`, ternaries, and assigned reads (`const v = await el.isVisible()`) all pass.
+**Detection note:** the scanner sends both the empty-parens form and the page-level selector-argument shorthand (`await page.isVisible('sel')`), with or without a trailing semicolon, to `[P0?][LLM-TRIAGE]`; grep alone never enters these hits into the P0 exit gate. The end-of-statement anchor means handled/chained forms are not candidates: `await el.isVisible().catch(() => false)` (covered by `#3` error-swallow), `&& ...`, ternaries, and assigned reads (`const v = await el.isVisible()`) all pass. 8c is different: the scanner reports it as a confirmed `[P0]` hit (`#8c Matcher never invoked`, `#8c Bare expect() without matcher`) once the lexed statement ends there, the binding is Playwright's `expect` (aliases and `expect.soft` included), and the next code line does not open with `(` or `.`. A matcher left uncalled on a continuation line (`expect(x)` then `.toBeVisible;`) is not covered mechanically; Phase 2 reads it.
 
 #### 12. Missing Auth Setup `[LLM-only]`
 
@@ -538,7 +576,7 @@ await expect(items.nth(2)).toContainText('expected text');
 - **Fallback selector loops** — `.first()` inside `for (const selector of fallbackSelectors) { … this.page.locator(selector).first() … }`. Here `.first()` means "any match for this candidate selector", not "the first of multiple known elements".
 - **Single-result `toHaveCount(1)` adjacent** — `await expect(items).toHaveCount(1); const only = items.first();` (the count assertion documents that exactly one element exists).
 
-**Selector priority** (best → worst, per [Playwright docs](https://playwright.dev/docs/best-practices#use-locators)): `getByRole` → `getByLabel` → `getByTestId`/`data-cy` → `getByText` → attribute (`[name]`, `[id]`) → class → generic. Class and generic selectors are "Never" — coupled to CSS and DOM structure.
+**Selector guidance** (see [Playwright docs](https://playwright.dev/docs/best-practices#use-locators)): prefer user-facing locators such as `getByRole` and `getByLabel`, or explicit test IDs, when they express the intended target. Class and generic selectors can be DOM-coupled, but are not standalone #10a findings without a positional locator.
 
 **10b. Serial test ordering** `[Playwright only]` — `test.describe.serial()` and `test.describe.configure({ mode: 'serial' })`, including multiline configuration objects, make tests order-dependent: a single failure cascades to all subsequent tests, and the suite can't be sharded.
 
@@ -575,11 +613,17 @@ await page.getByRole('navigation').getByRole('link', { name: 'Job', exact: true 
 
 #### 13. Inconsistent POM Usage `[LLM-only]`
 
-**Symptom:** A POM class is imported and used for some actions, but the spec also uses raw `page.fill()` / `page.click()` for operations the POM should encapsulate.
+**Decision revision:** v2 (2026-09-24). Apply this ownership test before reporting #13; historical evaluations using the broader missing-method rule are not evidence for this revision.
 
-**Why it matters:** Defeats the purpose of the POM pattern — when the UI changes, you must update both the POM and the spec. DRY principle violated.
+**Symptom:** A raw spec action bypasses a source-established interaction boundary for the same page.
 
-**Rule:** If a POM exists for a page, all interactions with that page should go through the POM. Flag P1 if spec bypasses POM with raw `page.*` calls for actions the POM should own. Suggest adding missing methods to the POM.
+**Why it matters:** Duplicating an established interaction or selector makes UI changes require parallel maintenance in the POM and spec. Merely introducing a wrapper does not establish this cost.
+
+**Rule:** Flag P1 only when supplied source proves ownership through an existing equivalent method or locator, duplicated selectors/workflow, or an explicit project convention assigning this interaction to that POM. Cite both the raw action and the ownership evidence. A navigation-only POM, a nearby route, or a missing method alone is not ownership evidence; neither are imports, class names, or construction alone. Without ownership evidence, skip #13 rather than inventing an architectural requirement. Exclude generic assertions, fixture/setup calls, and global overlays outside the demonstrated page boundary.
+
+**Fix:** Reuse an equivalent method; add one only when the established boundary requires it. Do not introduce a new abstraction solely to satisfy #13. Reconcile with #11: a single-use wrapper is not justified by POM existence, while a meaningful existing domain boundary or explicit project convention can justify keeping one.
+
+**Consolidation and primary line:** Report one #13 finding per duplicated interaction workflow, anchored at its first bypassing raw action; later steps are supporting evidence. When a source-equivalent POM member satisfies this ownership test and is the proposed reuse target, do not also emit a competing #11 deletion for that member. Resolve the ownership and maintenance tradeoff once, before proposing either fix.
 
 #### 14. Hardcoded Credentials `[grep-detectable]`
 
@@ -601,7 +645,7 @@ await page.fill('#password', '<literal-secret>');
 
 When grep flags a literal, read 2–3 lines below to confirm a login/auth call follows. If none, skip.
 
-The bundled scanner emits these as `[P1?][LLM-TRIAGE]` candidates. Its lexical filter requires a credential-shaped field/auth call plus a literal-shaped value and drops `process.env`, `import.meta.env`, `Cypress.env()`, `Deno.env`, and `Bun.env` values. For `.fill()`/`.type()` the field, selector, variable, helper, or value must itself be credential-shaped (password, token, secret, api key, username, login, email, otp) and the literal non-empty; other form literals are not candidates. This reduces obvious false positives but does not replace the authentication-context check above.
+The bundled scanner emits these as `[P1?][LLM-TRIAGE]` candidates. Its lexical filter requires a credential-shaped field/auth call plus a literal-shaped value and drops `process.env`, `import.meta.env`, `Cypress.env()`, `cy.env()` (its Cypress 16 replacement for secrets), `Deno.env`, and `Bun.env` values. For `.fill()`/`.type()` the field, selector, variable, helper, or value must itself be credential-shaped (password, token, secret, api key, username, login, email, otp) and the literal non-empty; other form literals are not candidates. This reduces obvious false positives but does not replace the authentication-context check above.
 
 API auth payloads and reusable positive fixtures such as `validUser` and `testAdmin` are included in this candidate sweep. They remain triage because negative-path dummy credentials and form-input test data are legitimate.
 
@@ -672,7 +716,7 @@ export async function createTestNotebook(page: Page) {
 
 **Why it matters:** Playwright/Cypress run specs across multiple worker processes in parallel. Module-level mutable state survives across tests within a long-lived worker but is independent across workers — so the same counter value can appear in two specs running concurrently in different workers, breaking the "unique" contract the variable was supposed to provide. Playwright discards a failed test's worker before retrying in a fresh worker; this rule is about cross-test persistence and cross-worker collisions, not retry survival. These bugs surface as intermittent name collisions or flake.
 
-**Rule:** Flag P1 when a `let` at column 0 has an initializer. The scanner excludes declaration-only bindings such as `let page: Page;` mechanically; they are not final findings awaiting an LLM skip. Suppress initialized state with `// JUSTIFIED: [reason]` when it is intentionally shared (e.g., a worker-scoped cache the framework's parallelism guarantees won't collide).
+**Rule:** Flag P1 for unjustified module-level mutable test state: an initialized `let`, a `var`, or a `const` container mutated after declaration. The scanner emits only initialized `let` candidates; inspect the other forms in Phase 2. Declaration-only bindings such as `let page: Page;` are not findings, and a concrete `// JUSTIFIED: [reason]` can explain intentionally shared worker-scoped state.
 
 **Phase 2 confirmation:** the scanner has already removed pure type declarations such as `let page: Page;` and `let context: BrowserContext;`. For emitted initialized lets such as `let counter = 0;`, `let cache = new Map();`, or `let lastResult: Result | null = null;`, confirm the binding is test-shared mutable state rather than a justified worker-scoped cache.
 
@@ -682,9 +726,9 @@ export async function createTestNotebook(page: Page) {
 
 #### 20. Unmocked Real-Backend Writes `[LLM-only]`
 
-**Symptom:** A spec drives a write or credential path — signup, login, checkout, any data mutation — and no route stub (`page.route()` / `cy.intercept()`) in the spec or its fixtures covers the endpoint, so every run reaches a real backend.
+**Symptom:** A source-confirmed backend write reaches shared or persistent state without a stub or another isolation boundary.
 
-**Why it matters:** Each CI run creates real accounts, real orders, or real charges: shared-environment data pollution, rate-limit and quota flakiness, and PII/credential exposure in backend or third-party logs. The test is also non-deterministic — backend state, not the code under test, decides whether it passes.
+**Why it matters:** On an uncontrolled backend, repeated CI runs can create real accounts, orders, or charges: shared-environment data pollution, rate-limit and quota flakiness, and PII/credential exposure in backend or third-party logs. Backend state can also make the test non-deterministic.
 
 ```typescript
 // BAD — every run registers a real account on the shared backend
@@ -706,7 +750,7 @@ await signUpPage.submitButton.click();
 
 #### 22. Optimistic UI Without Call Proof `[LLM-only]`
 
-**Symptom:** An interaction test clicks a write control (like toggle, delete, save) and asserts only the resulting UI state — but the app updates that UI *optimistically*, before (and regardless of) the network call. The assertion passes even if the wiring to the API is deleted.
+**Symptom:** A test whose stated contract includes a backend write or persisted result clicks a write control and asserts only UI state that supplied implementation evidence shows is updated *optimistically*, before or regardless of the network call. The assertion can pass even if the promised write never occurs.
 
 **Why it matters:** This is a false positive specific to write interactions: the visible behavior under test is produced client-side, so the test proves the click handler ran, not that the write reached the backend contract. A regression that drops the API call (refactor, early return, swallowed promise) ships green.
 
@@ -723,9 +767,9 @@ await call;
 await expect(likeToggle).toHaveAttribute('aria-pressed', 'true');
 ```
 
-**Rule:** Every write-interaction test pairs its UI assertion with proof the request fired: `page.waitForRequest()`, a route-handler hit flag, or an assertion on mocked-request capture. Set up `waitForRequest` *before* the click to avoid racing fast responses.
+**Rule:** Flag P1 only when the test or supplied acceptance contract promises a backend call or persisted result, repository evidence proves the asserted UI state is optimistic, and no assertion proves the promised backend effect. Valid proof includes a request/response observation, a route-handler hit or mocked-request capture, or an equivalent persistence check such as a reload/re-fetch followed by an assertion on server-backed state. Set up a request observer before the click when that is the chosen proof so a fast response cannot race it. Do not require a request assertion from every write-shaped interaction: a test scoped to client-visible UI state may intentionally prove only that state, and request details may be covered by a separate test.
 
-**Detection (LLM):** For each test that clicks a control whose handler issues a mutation, confirm from the component, handler, helper, or fixture contract that the UI updates optimistically before or regardless of the request. If the only assertions are on that optimistic DOM/UI state and the spec awaits no request evidence, flag. Do not infer optimistic behavior from a write-shaped action name when the supplied scope lacks implementation evidence. Tests of pure client-side state (no request in the handler) are not hits.
+**Detection (LLM):** First identify the outcome the test promises. Only for a promised backend call or persisted result, confirm from the component, handler, helper, or fixture contract that the asserted UI state updates optimistically before or regardless of the request. Flag when that optimistic state is the only proof and the spec has neither request evidence nor an equivalent persistence observation. Do not infer a backend contract or optimistic behavior from a write-shaped action name alone. Tests of pure client-side state and UI-only interaction tests that do not claim persistence are not hits.
 
 **Primary line:** Anchor #22 to the write-control action. The following UI-only assertion explains why the test is insufficient but is not the causal line.
 
@@ -750,19 +794,21 @@ Three sub-patterns: unused code in Page Objects, zombie spec files, and skips th
 5. Check if any POM class has zero members beyond what it inherits — empty
    wrappers add no value unless the convention is intentional.
 
+Before emitting an UNUSED deletion, apply #13's consolidation rule: an established source-equivalent interaction selected for reuse must not also receive a competing deletion finding. This does not preserve speculative members without demonstrated ownership.
+
 **Common patterns:** Convenience wrappers (`clickEdit()` when specs use `editButton.click()`), getter methods (`getCount()` when specs use `toHaveCount()`), state checkers (`isVisible()` when specs assert on locators directly), pre-built "just in case" locators, empty subclass created for future expansion. In utility modules: single-use auth helpers (`isLoginPageVisible()` called by exactly one other utility), single-use REST helpers (`getDefaultInterpreterGroup()` called by exactly one create function), single-use waits (`waitForNotebookParagraphVisible()` invoked from one navigation helper).
 
 **Single-use Util wrappers** — a separate `*Util` / `*Helper` class OR a standalone exported function called from only one place warrants inspection, not automatic deletion. Inline only when the wrapper adds no stable domain vocabulary, reusable validation, non-trivial setup boundary, or documented architectural role.
 
 **Rule:** Delete unused members and exports. Make internal-only POM members `private`; drop the `export` keyword from utility functions used only inside their own module. Treat usage count as evidence, not the verdict: recommend inlining a single-use helper only when the resulting code is simpler and the boundary carries no independent meaning. Flag empty wrapper classes for review when no documented convention explains them.
 
-**11b. Zombie spec files** — An entire spec file whose tests are all subsets of tests in another spec file covering the same feature. The file adds no coverage that isn't already verified elsewhere.
+**11b. Zombie spec files** — An entire spec file whose tests are semantically covered by another spec file **and** whose execution purpose, configuration, environment, and cadence are the same. Overlapping assertions alone do not establish redundancy.
 
-**Procedure:** After reviewing all files in scope, cross-check spec files with similar names or feature coverage. If every test in file A is a subset of a test in file B, flag file A for deletion.
+**Procedure:** After reviewing all files in scope, cross-check spec files with similar names or feature coverage. For a deletion finding, show that every test in file A is covered in file B and verify from repository evidence that both files serve the same purpose and run under the same relevant projects/browsers/devices, fixtures/environment, tags/gates, and schedule or trigger. If execution metadata is absent or differs, do not prescribe deletion.
 
-**Common patterns:** `feature-basic.spec.ts` where every case also appears in `feature-full.spec.ts`; a 1–2 test file created as a "quick smoke" that was never expanded while a comprehensive suite grew alongside it.
+**Common patterns:** An accidental copy whose tests, configuration, tags, and scheduled job duplicate a comprehensive suite. A small smoke, release gate, canary, or browser/device matrix remains independently useful when it has a distinct execution purpose or cadence, even if a broader regression suite covers the same user behavior.
 
-**Rule:** Delete the zombie file. If any test in it is not covered elsewhere, migrate it to the comprehensive suite first.
+**Rule:** Delete only proven operational duplicates. Preserve smoke/release checks and browser/device/project variants whose distinct execution contract is evidenced in the repository. If any behavior or execution role is not covered elsewhere, migrate or preserve it before consolidation; uncertainty is not deletion evidence.
 
 **Output:**
 ```
@@ -790,7 +836,7 @@ test.skip('checkout applies the promo code', async ({ page }) => { /* … */ });
 test.skip(({ browserName }) => browserName === 'webkit', 'clipboard API unsupported');
 ```
 
-**Rule:** every committed skip carries a reason and something that makes it revisitable — a ticket reference, a date, or a condition that will stop being true. Do not flag a skip that has one. This does not weaken the standing guidance elsewhere in this file that recommends `test.skip()` as a fix: those recommendations mean a *reasoned* skip.
+**Rule:** A concrete reason is sufficient to avoid a #11c finding; recommend a revisit anchor for long-lived skips, but do not require one to clear #11c. A ticket, date, or condition that can stop being true makes a quarantine easier to revisit. This does not weaken the standing guidance elsewhere in this file that recommends `test.skip()` as a fix: those recommendations mean a *reasoned* skip.
 
 **Detection (grep + LLM):** the scanner flags bare `test.skip(` / `test.fixme(` / `it.skip(` / `describe.skip(` / `xit(` / `xdescribe(` as `[P2?][LLM-TRIAGE]`. Grep cannot see a reason that lives on the preceding line or in a second argument, so Phase 2 resolves each hit:
 
@@ -799,7 +845,7 @@ test.skip(({ browserName }) => browserName === 'webkit', 'clipboard API unsuppor
 - **SKIP** — `// JUSTIFIED:` on the preceding line.
 - **FLAG P2** — nothing in the call, the preceding comment, or the test title explains the skip.
 
-**Fix:** add the reason and a revisit anchor, or delete the test. A test nobody can justify keeping skipped is coverage the suite is not providing; deleting it at least makes the gap honest.
+**Fix:** add a concrete reason; preferably include a revisit anchor for a long-lived skip. If nobody can justify keeping it skipped, delete the test so the coverage gap is honest.
 
 **Note:** `eslint-plugin-playwright`'s `no-skipped-test` flags every skip including reasoned ones, so a project that already enables it does not need this check for Playwright. It has no Cypress equivalent, and it cannot distinguish a reasoned skip from an abandoned one.
 
@@ -825,6 +871,8 @@ test.skip(({ browserName }) => browserName === 'webkit', 'clipboard API unsuppor
 **Rule:** Before seeding a list fixture, read the item component's early returns and filters; seed fields so the item passes every guard for the view under test. Document each discovered guard next to the fixture (e.g. "Like-tab items must seed `liked: true`") so the next generated test doesn't rediscover it.
 
 **Detection (LLM):** For each fixture consumed by a conditionally-rendered component, open the component and collect conditions that suppress rendering (early `return null`, `.filter()`, `.slice()`, a template guard such as `@if`/`v-if`/`{cond && …}` around the whole subtree). Cross-check the seeded values against them. Flag mismatches, and flag negative assertions whose truth could come from a guard-suppressed render rather than the intended state.
+
+**Primary line:** Anchor #23 to the fixture field that violates the render guard. The negative assertion or missing-element failure it causes is supporting evidence, not the causal line.
 
 **Scope note:** the guard need not sit on a list/card item — the same failure appears whenever a *container* is gated on a value the test controls indirectly. A results panel wrapped in `@if (result.type === TABLE)` suppresses every control inside it when the fixture produces a different result type, so a test targeting a toolbar button inside that panel fails with "element not found" and looks like infra flake. When a control the test needs is missing, walk up the template to the nearest guard before suspecting the selector.
 

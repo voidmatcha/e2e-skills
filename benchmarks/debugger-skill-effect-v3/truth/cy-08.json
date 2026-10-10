@@ -1,0 +1,14 @@
+{
+ "source": {
+  "repo": "frappe/release_tests",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/frappe/release_tests/pull/3"
+  ],
+  "merged": "2026-09-30"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test",
+ "explanation": "`.grid-add-row` was appending a new row 2 instead of filling the grid's already-present empty row 1, whose cell has no `<input>` until clicked into edit mode.",
+ "fix": "A `fillGridLink(gridFieldname, rowIdx, cellFieldname, value)` command clicks row 1's own cell open before filling it."
+}

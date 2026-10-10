@@ -23,7 +23,7 @@ The bundled scanner/reviewer owns these correctness families regardless of proje
 | no focused test leaks | `no-focused-test`, Mocha exclusive-test rules | #7 |
 | no arbitrary waits/network-idle crutches | `no-wait-for-timeout`, `no-networkidle`, `no-unnecessary-waiting` | #9 |
 | web-first/retryable assertions | `prefer-web-first-assertions` | #4c–#4e |
-| no locator-as-truthy assertions | `no-unnecessary-assertions`; Cypress silent-pass precedent | #4f |
+| no locator-as-truthy assertions | Playwright `no-unnecessary-assertions` | #4f |
 | no unjustified forced interaction | `no-force-option`, `cypress/no-force` | #5b |
 | no conditional/suppressed verification | `no-conditional-expect`, `no-conditional-in-test` | #3/#5 |
 | no unused/discarded verification | `expect-expect`, `no-unused-locators`, Cypress return-value rules | #8 |

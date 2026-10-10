@@ -1,0 +1,87 @@
+{
+  "task": "Cover the release notes page (`/`) and its language switcher. Choosing Deutsch translates the heading (`Versionshinweise`), the switcher's own label (`Sprache`), the body and the subscribe button (`Updates abonnieren`) into German, and the `<html>` element's `lang` attribute becomes `de`; choosing English switches everything back. The published date is formatted for the chosen language: `Published: October 5, 2026` in English and `Ver\u00f6ffentlicht: 5. Oktober 2026` in German. The choice is stored on the server, so a reload shows the page in the chosen language.",
+  "faults": [
+    {
+      "id": "f1-switch-noop",
+      "class": "surface",
+      "brief_phrase": "Choosing Deutsch translates the heading",
+      "description": "Changing the language sends the request but the page stays in English until a reload.",
+      "find": "      await fetch(\"/api/language\", { method: \"PUT\", headers: { \"content-type\": \"application/json\" }, body: JSON.stringify({ language: code }) });\n      apply(code);\n",
+      "replace": "      await fetch(\"/api/language\", { method: \"PUT\", headers: { \"content-type\": \"application/json\" }, body: JSON.stringify({ language: code }) });\n"
+    },
+    {
+      "id": "f2-lang-attribute-stale",
+      "class": "a11y",
+      "brief_phrase": "the `<html>` element's `lang` attribute becomes `de`",
+      "description": "The text translates but `lang` stays `en`.",
+      "find": "      document.documentElement.lang = code;\n",
+      "replace": ""
+    },
+    {
+      "id": "f3-button-untranslated",
+      "class": "precision",
+      "brief_phrase": "the subscribe button (`Updates abonnieren`)",
+      "description": "The subscribe button keeps its English label in German.",
+      "find": "      el(\"ln-subscribe\").textContent = t.subscribe;\n",
+      "replace": "      el(\"ln-subscribe\").textContent = STRINGS.en.subscribe;\n"
+    },
+    {
+      "id": "f4-date-not-localized",
+      "class": "precision",
+      "brief_phrase": "`Ver\u00f6ffentlicht: 5. Oktober 2026` in German",
+      "description": "The date is always formatted in English.",
+      "find": "const date = new Date(PUBLISHED_AT).toLocaleDateString(code, {",
+      "replace": "const date = new Date(PUBLISHED_AT).toLocaleDateString(\"en\", {"
+    },
+    {
+      "id": "f5-not-persisted",
+      "class": "persistence",
+      "brief_phrase": "a reload shows the page in the chosen language",
+      "description": "The server acknowledges the change but keeps English.",
+      "find": "      language = body.language;\n      return json(res, 200, { language });\n",
+      "replace": "      return json(res, 200, { language: body.language });\n"
+    }
+  ],
+  "refactor": [
+    {
+      "find": "<div id=\"ln-switcher\">",
+      "replace": "<div class=\"toolbar\"><div id=\"ln-switcher\" class=\"toolbar__control\">"
+    },
+    {
+      "find": "      </select>\n    </div>",
+      "replace": "      </select>\n    </div></div>"
+    },
+    {
+      "find": "<button type=\"button\" id=\"ln-subscribe\"></button>",
+      "replace": "<div class=\"actions\"><button type=\"button\" id=\"ln-subscribe\" class=\"btn btn-primary\"></button></div>"
+    },
+    {
+      "find": "ln-language-label",
+      "replace": "locale-label"
+    },
+    {
+      "find": "ln-language",
+      "replace": "locale-select"
+    },
+    {
+      "find": "ln-switcher",
+      "replace": "locale-bar"
+    },
+    {
+      "find": "ln-published",
+      "replace": "article-date"
+    },
+    {
+      "find": "ln-subscribe",
+      "replace": "article-cta"
+    },
+    {
+      "find": "ln-title",
+      "replace": "article-title"
+    },
+    {
+      "find": "ln-body",
+      "replace": "article-body"
+    }
+  ]
+}

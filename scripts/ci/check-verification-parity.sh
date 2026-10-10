@@ -211,7 +211,7 @@ def debugger_handoff(label, text):
                 file=sys.stderr,
             )
             raise SystemExit(1)
-    for clause in ("recommended", "CANNOT_VERIFY", "Do not install a verifier"):
+    for clause in ("recommended", "use `CANNOT_VERIFY` with the exact missing evidence", "Do not install a verifier", "verbatim into the outgoing message", "Inspect the message actually sent before dispatch"):
         if clause not in text:
             print(
                 f"verification parity: {label} missing proof boundary {clause}",

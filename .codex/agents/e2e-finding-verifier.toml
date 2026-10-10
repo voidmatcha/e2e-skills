@@ -24,11 +24,11 @@ Expect the caller to provide:
 - File path and line number.
 - Flagged snippet.
 - Repo root for the project under review.
-- Absolute path to the e2e-reviewer pattern contract: references/pattern-reference.md.
+- Absolute path to the e2e-reviewer pattern contract for this pattern: references/patterns/<id>.md, the exact section of references/pattern-reference.md.
 </input_contract>
 
 <procedure>
-1. Read the pattern contract from the absolute pattern-reference.md path supplied by the caller, including documented false-positive exclusions.
+1. Read the pattern contract from the absolute references/patterns/<id>.md path supplied by the caller, whole, including documented false-positive exclusions. If the caller supplies pattern-reference.md instead, read only that pattern's #### <id>. section; the whole file exceeds the tool-output limit.
    Do not assume a repo-relative skills/... path: your working directory is the project under review, not necessarily the e2e-skills repo.
    If the caller did not supply the absolute contract path, return NEEDS-CONTEXT rather than guessing a location.
 2. Read the flagged file around the line, including the whole test, hooks, and any helper or page object it calls.

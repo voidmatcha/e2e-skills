@@ -1,0 +1,58 @@
+{
+  "task": "Add end-to-end tests for the poll page (`/`), which asks `Which editor do you use?` with the options Vim, Emacs and VS Code. Acceptance criteria: (1) picking an option and pressing Vote shows the results list, with one line per option in the form `Vim: 1 vote (100%)` / `Emacs: 0 votes (0%)`; (2) the results are hidden until the visitor has voted; (3) after voting, the options and the Vote button are disabled and `Thanks for voting` is shown; (4) the vote is stored on the server: after a reload the results still include it and the visitor still cannot vote again. The test seam `POST /api/reset` clears all votes.",
+  "faults": [
+    {
+      "id": "f1-vote-noop",
+      "class": "surface",
+      "criterion": 1,
+      "description": "Pressing Vote changes nothing on the page until a reload.",
+      "find": "      if (res.ok) show(body);\n",
+      "replace": "      void body;\n"
+    },
+    {
+      "id": "f2-percent-wrong",
+      "class": "precision",
+      "criterion": 1,
+      "description": "Percentages are computed over the number of options, so one vote reads 33%.",
+      "find": "Math.round((100 * count) / total)",
+      "replace": "Math.round((100 * count) / data.options.length)"
+    },
+    {
+      "id": "f3-can-vote-again",
+      "class": "interaction",
+      "criterion": 3,
+      "description": "After voting, the options and the Vote button stay enabled.",
+      "find": "      setDisabled(data.voted);\n",
+      "replace": "      setDisabled(false);\n"
+    },
+    {
+      "id": "f4-vote-not-persisted",
+      "class": "persistence",
+      "criterion": 4,
+      "description": "The server answers with the vote counted but does not store it; after a reload the results show zero votes.",
+      "find": "      votes = tally;\n",
+      "replace": "      void tally;\n"
+    },
+    {
+      "id": "f5-results-shown-early",
+      "class": "precision",
+      "criterion": 2,
+      "description": "The results list is visible before the visitor has voted.",
+      "find": "      resultsEl.hidden = !data.voted;\n",
+      "replace": "      resultsEl.hidden = false;\n"
+    }
+  ],
+  "refactor": [
+    {"find": "<section id=\"pl-results\" hidden>", "replace": "<aside class=\"outcome\"><section id=\"pl-results\" class=\"outcome__panel\" hidden>"},
+    {"find": "<ul id=\"pl-tally\" aria-label=\"Results\"></ul>\n    </section>", "replace": "<ul id=\"pl-tally\" aria-label=\"Results\"></ul>\n    </section></aside>"},
+    {"find": "<button type=\"button\" id=\"pl-vote\">Vote</button>", "replace": "<button type=\"button\" id=\"pl-vote\" class=\"btn btn-primary\"><span>Vote</span></button>"},
+    {"find": "wrapper.className = \"option\";", "replace": "wrapper.className = \"choice choice--radio\";"},
+    {"find": "pl-choice-", "replace": "answer-"},
+    {"find": "pl-options", "replace": "answers"},
+    {"find": "pl-results", "replace": "outcome"},
+    {"find": "pl-status", "replace": "feedback"},
+    {"find": "pl-tally", "replace": "breakdown"},
+    {"find": "pl-vote", "replace": "cast"},
+    {"find": "pl-form", "replace": "ballot"}
+  ]
+}

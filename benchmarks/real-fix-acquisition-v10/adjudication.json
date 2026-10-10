@@ -1,0 +1,41 @@
+{
+  "protocol": "real-fix-acquisition-v10",
+  "search_positions": 38,
+  "unique_prs": 38,
+  "rows": [
+    {"label": "PW-await-old", "A": [], "B": [5], "C": [1, 2, 3, 4], "D": []},
+    {"label": "PW-assert-old", "A": [], "B": [], "C": [1, 2, 3], "D": []},
+    {"label": "CY-assert-old", "A": [10], "B": [2, 3, 14, 15], "C": [1, 4, 5, 6, 7, 8, 9, 11, 12, 13], "D": []},
+    {"label": "CY-flaky-recent", "A": [2, 5], "B": [3, 8, 9, 10, 11, 13, 14, 15], "C": [1, 4, 7, 12], "D": [6]}
+  ],
+  "independent_challenge": {
+    "CY-assert-old:10": "A for #2 at the SuperAdmin click only: parent leaves that edit outcome unchecked; fix asserts active before and not active after the same click. P1 instance because other promised user-edit behavior has assertions.",
+    "CY-flaky-recent:2": "A for #10d: direct Cypress support hook queues cy.task inside an async after callback; exact commit parent, not the PR's current base, is pinned. Removal of async leaves the task unchanged.",
+    "CY-flaky-recent:5": "A for one #4i beforeEach absence check only: the global loading indicator was never proven able to match on that execution path and did not prove rule disablement; fix asserts the actual rule-switch state. The second spec-local absence check has a positive alert-count counterpart, so it is not a second #4i hit.",
+    "CY-flaky-recent:8": "B: Cypress one-shot .then(text => expect(...)) becomes retrying .should, but the present #4c-e contract is explicitly Playwright Locator/Page shaped, matching the v9 Eyewall boundary."
+  },
+  "B_reasons": [
+    {"position": "PW-await-old:5", "reason": "Real E2E support repair for deferred video save/delete Promises, but Playwright Video methods are outside the current #15/#16 assertion/action contract."},
+    {"position": "CY-assert-old:2", "reason": "Real selector/readiness flake fix without an exact current catalog BEFORE."},
+    {"position": "CY-assert-old:3", "reason": "Timeout/readiness hardening without a closed non-#9 catalog defect."},
+    {"position": "CY-assert-old:14", "reason": "Real cross-browser CSS-oracle repair outside the catalog."},
+    {"position": "CY-assert-old:15", "reason": "Route/status proof is strengthened, but BEFORE already waits for an intercepted POST and positively finds the file; #22 optimistic UI is not established."},
+    {"position": "CY-flaky-recent:3", "reason": "Dismissal assertion changes class absence to element absence; prior Cypress assertion was already retrying and the alert locator was positively asserted before dismissal, so not #4c-e/#4i."},
+    {"position": "CY-flaky-recent:8", "reason": "One-shot Cypress text assertion becomes retrying, but current #4c-e explicitly covers Playwright Locator/Page reads; not a catalog A."},
+    {"position": "CY-flaky-recent:9", "reason": "Selector scoping, visibility, and teardown repair lacks an exact current #10a/#10c or other catalog BEFORE."},
+    {"position": "CY-flaky-recent:10", "reason": "Finite timeout increase and scrollIntoView fix timing; #4g covers only timeout:0 and no other exact catalog repair is proven."},
+    {"position": "CY-flaky-recent:11", "reason": "Stale selector changes and a reasoned describe.skip is removed; the preceding issue reference exempts the skip from #11c."},
+    {"position": "CY-flaky-recent:13", "reason": "Detached aliased subject is re-queried, but this is not an exact #10f continued action chain; added #9 waits are excluded."},
+    {"position": "CY-flaky-recent:14", "reason": "Dropdown is directly unhidden before logout, bypassing the UI interaction; concrete workaround but not #5a/#5b or another catalog shape."},
+    {"position": "CY-flaky-recent:15", "reason": "List-request and debug-tree readiness guards repair synchronization outside the current catalog subtypes."}
+  ],
+  "C_control_groups": [
+    {"positions": ["PW-await-old:1", "PW-await-old:2", "PW-await-old:3", "PW-await-old:4", "PW-assert-old:1", "PW-assert-old:3", "CY-assert-old:1", "CY-assert-old:4", "CY-assert-old:11", "CY-assert-old:13", "CY-flaky-recent:1", "CY-flaky-recent:4", "CY-flaky-recent:7", "CY-flaky-recent:12"], "reason": "Framework internals, lint/docs/tooling, product code, configuration, or other non-in-scope source only; no natural existing E2E repair pair."},
+    {"positions": ["PW-assert-old:2", "CY-assert-old:5", "CY-assert-old:6", "CY-assert-old:7", "CY-assert-old:8"], "reason": "Generated template, tutorial, or new coverage rather than an existing natural E2E BEFORE repair."},
+    {"positions": ["CY-assert-old:9", "CY-assert-old:12"], "reason": "Product-contract adaptation or #9 wait removal, with no new eligible non-#9 pair."}
+  ],
+  "D_reasons": [
+    {"position": "CY-flaky-recent:6", "reason": "motiondivision/motion#3836 was already source-adjudicated in v8 as #9 overflow; repeated PR URL and #9 excluded here."}
+  ],
+  "limits": "Read-only selected public-source discovery. No upstream test execution, natural failure replay, scanner/model selection, prevalence sampling, or skill-lift measurement. A cases are correlated development examples, not independent sealed evaluation."
+}

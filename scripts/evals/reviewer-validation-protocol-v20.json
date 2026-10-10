@@ -1,0 +1,260 @@
+{
+  "schema_version": 1,
+  "protocol_id": "reviewer-holdout-v20",
+  "corpus": {
+    "path": "scripts/evals/reviewer-holdout-v20.json",
+    "cases_file_sha256": "4c71dc456ec657e6de8affe999c3f6ca27bd246d52d08f084676d4df612bf1fb",
+    "corpus_sha256": "9a73b4b12fa860ace1ba7b2af825c1d3927f135296eca14b3da95a523bcd306b"
+  },
+  "scoring": {
+    "source_rendering": "nl-ba-display-line-numbers",
+    "source_rendering_contract": "Each embedded source line is prefixed with its 1-based number, right-aligned to six columns, and a tab, as `nl -ba` prints it. The prefix is display-only; findings must cite that number as `line`.",
+    "label_semantics": "accepted-alternatives-and-optional-v1",
+    "label_semantics_contract": "Findings still match exact (pattern_id, severity, file, line) tuples. A finding label matches when a report hits its primary tuple or any accepted_alternatives tuple, and counts as one true positive however many of those tuples are reported. An optional label is excluded from true-positive and false-negative denominators; a report matching it is not a false positive and is counted separately as an optional match. fp_guard labels keep their meaning.",
+    "stability_contract": "A finding or optional label is stable when the number of successful repetitions that matched any of its tuples meets the strict-majority rule. A stable prediction is a false positive only when it matches no finding or optional label tuple."
+  },
+  "schedule": {
+    "algorithm": "sha256-seeded-sort-v1",
+    "seed": 20260801,
+    "default_repetitions": 5,
+    "release_repetitions": 5,
+    "evidence_scope": "public-development",
+    "freeze_policy": "Freeze sources, labels, and protocol before the first measured run. Any later edit creates a new version.",
+    "design_disclosure": "Public synthetic 24-case v20 corpus authored by Codex gpt-6-sol, with blind labels from gpt-6-astra and gpt-6-luna (each matched 19/21 author findings), disputes adjudicated before this protocol. Ground truth follows reporting.md: partial verification is P1. Compare only the #2 severity wording restored from 9e73a6c, at one Codex gpt-6-sol host; before and after use identical full-arm prompts except the two changed skill sentences and generated pattern copy. Five repetitions per revision; no live calls have been made for v20. This public development corpus is not sealed or independent human evidence."
+  },
+  "stability": {
+    "rule": "strict-majority",
+    "minimum_repetitions": 3
+  },
+  "execution_identity": {
+    "require_explicit_runner_path": true,
+    "expected_cli_versions": {
+      "codex": "codex-cli 0.155.1"
+    },
+    "run_identity_capture": "Capture the resolved runner path and CLI version in each report. Do not pin user-specific absolute paths or binary digests in this public protocol.",
+    "attestation_limit": "Reported execution identity is provenance, not cryptographic attestation.",
+    "version_policy": "minimum"
+  },
+  "infrastructure_retry": {
+    "max_attempts_per_call": 2,
+    "retryable": [
+      "timeout",
+      "runner_nonzero_exit_with_usage_limit_text",
+      "malformed_json_output",
+      "runner_auth_error",
+      "codex_unexpected_stream_item"
+    ],
+    "contract": "Retry an unscoreable timeout, nonzero CLI usage-limit or authentication failure, malformed JSON output, or unexpected Codex stream item once in a fresh identical workspace at the same schedule position. Record every attempt; score the final attempt only. Never retry a scoreable answer."
+  },
+  "usage_capture": {
+    "enabled": true
+  },
+  "output_schema": {
+    "mode": "enforced",
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "findings"
+      ],
+      "properties": {
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pattern_id",
+              "severity",
+              "file",
+              "line"
+            ],
+            "properties": {
+              "pattern_id": {
+                "type": "string",
+                "enum": [
+                  "#1",
+                  "#10",
+                  "#10a",
+                  "#10b",
+                  "#10c",
+                  "#10d",
+                  "#10e",
+                  "#10f",
+                  "#11",
+                  "#11c",
+                  "#12",
+                  "#13",
+                  "#14",
+                  "#15",
+                  "#16",
+                  "#17",
+                  "#18",
+                  "#19",
+                  "#2",
+                  "#20",
+                  "#21",
+                  "#22",
+                  "#23",
+                  "#3",
+                  "#3b",
+                  "#4a",
+                  "#4b",
+                  "#4c-4e",
+                  "#4f",
+                  "#4g",
+                  "#4h",
+                  "#4i",
+                  "#4j",
+                  "#4k",
+                  "#5a",
+                  "#5b",
+                  "#6",
+                  "#7",
+                  "#8",
+                  "#8a",
+                  "#8b",
+                  "#9",
+                  "#9b",
+                  "#9c"
+                ]
+              },
+              "severity": {
+                "type": "string",
+                "enum": [
+                  "P0",
+                  "P1",
+                  "P2"
+                ]
+              },
+              "file": {
+                "type": "string"
+              },
+              "line": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "schema_sha256": "9bfd806c73c083a2b8af13a2199523651567d4fe4442c392c09174a122139aa3",
+    "contract": "The runner passes the schema, serialized as compact sorted-key JSON whose sha256 is schema_sha256, to the host CLI's native structured-output option: Claude Code with --output-format json and --json-schema, Codex with --output-schema. The model answer is Claude's structured_output object, serialized as compact JSON, or Codex's final agent message. That answer then goes through the unchanged strict single-JSON-payload parser and findings validator. No fence or other output normalization is applied. A Claude result without an object structured_output, or an answer the strict parser refuses, is malformed output under the infrastructure-retry policy. The pattern_id enum is the output-legend vocabulary shown to every arm, the prompt is unchanged, and the schema applies identically to every arm."
+  },
+  "prompt_arms": {
+    "treatment": "full",
+    "controls": [],
+    "shared_output_legend": true,
+    "comparison_unit": "paired-skill-revision",
+    "matrix_requirement": "Run full once for each pinned skill revision; no control arm."
+  },
+  "revision_comparison": {
+    "question": "Does explicit #2 P1 partial-verification wording improve full-arm stable F1 without increasing stable guard hits, including #2 P0 at partially verified actions and #1 P1 at titles?",
+    "revisions": {
+      "before": {
+        "source_commit": "976c3fae4400a2683bab2c2a015af0bd842e4dd5",
+        "skill_tree": "40cbbfeab3f46a96533b1dae3760a8ae96cf0aea",
+        "skill_sha256": "aa88145dda8b95fcd7c59cbf64de28ae4beeafe3451b739a46ae202b3cb0d57f"
+      },
+      "after": {
+        "source_commit": "23267980c7afb74acf128eefee55ee326b5f428a",
+        "skill_tree": "072e4dbbe75fbdb005bfccbf2d852d36615e31f8",
+        "skill_sha256": "818794b3f2e20eec20a716950d25a1273609523b750d1227687fbb01feb15d83"
+      }
+    },
+    "skill_binding": "A run refuses to start unless the evaluated skill directory's skill_sha256 equals one revision's pinned skill_sha256, and each report records that digest. skill_tree is the git tree of skills/e2e-reviewer at source_commit; git archive of source_commit reproduces the directory. The comparison binds each report to the revision whose digest it records and recomputes its prompt digest from that revision's files.",
+    "execution_order": [
+      {
+        "ordinal": 1,
+        "revision": "before",
+        "prompt_profile": "full"
+      },
+      {
+        "ordinal": 2,
+        "revision": "after",
+        "prompt_profile": "full"
+      }
+    ],
+    "requires_all_reports_execution_complete": true,
+    "requires_sequential_non_overlapping_execution": true,
+    "matrix_elapsed_basis": "first-start-to-last-completion",
+    "maximum_matrix_elapsed_seconds": 43200,
+    "uncertainty": {
+      "method": "paired-stratified-case-bootstrap",
+      "seed": 20260801,
+      "iterations": 10000,
+      "confidence": 0.95,
+      "strata": [
+        "finding-cases",
+        "clean-cases"
+      ],
+      "percentile_method": "nearest-rank",
+      "metrics": [
+        "stable_precision",
+        "stable_recall",
+        "stable_f1",
+        "clean_case_specificity"
+      ],
+      "interpretation_limit": "Bootstrap intervals describe case-resampling sensitivity on this fixed public case set. They do not quantify model-run stochasticity and are not population confidence intervals, independent replications, or release-grade causal inference."
+    },
+    "decision": {
+      "primary_arm": "full",
+      "primary_metric": "stable_f1",
+      "delta": "after-minus-before",
+      "thresholds": {
+        "stable_f1_delta_min": 0.05,
+        "stable_f1_delta_ci95_lower_min_exclusive": 0,
+        "stable_guard_hit_rate_delta_max": 0
+      },
+      "secondary_arms": [],
+      "semantics": "Adopt AFTER only when full-arm after-minus-before stable F1 is at least +0.05, its paired-bootstrap 95% lower bound is strictly greater than zero, and stable guard-hit rate does not rise. Otherwise retain 2.0.0 wording and propose a doc-only clarification: #2 keeps its catalog severity; reporting.md boundary governs only where a pattern states an instance rule. Missing, invalid, or incomplete reports are INCONCLUSIVE and do not authorize adoption."
+    },
+    "claim_policy": {
+      "supported": "Adopt the AFTER #2 instance wording on this fixed public development corpus only.",
+      "not_supported": "Keep 2.0.0 wording; propose the preregistered doc-only clarification after the run.",
+      "inconclusive": "No wording decision until a complete valid matrix exists."
+    },
+    "descriptive_metrics": [
+      "severity_accuracy_on_pattern_2_labels",
+      "pattern_1_to_2_misclassifications",
+      "pattern_2_to_1_misclassifications"
+    ]
+  },
+  "host_matrix": [
+    {
+      "runner": "codex",
+      "model": "gpt-6-sol"
+    }
+  ],
+  "confidence_intervals": {
+    "method": "wilson",
+    "confidence": 0.95,
+    "unit": "unique-label-or-prediction"
+  },
+  "decision": {
+    "threshold_basis": "point-estimate",
+    "point_estimate_limits": "Threshold crossings on this small fixed public development corpus are descriptive signals. The corpus is public and inspectable. Confidence intervals accompany point estimates; sealing, independent blind evaluation after publication, cryptographic runner attestation, cross-provider replication, and population-level generalization are not established.",
+    "thresholds": {
+      "stable_precision_min": 0.95,
+      "stable_recall_min": 0.85,
+      "repeated_precision_min": 0.9,
+      "pattern_macro_recall_min": 0.8,
+      "case_macro_recall_min": 0.8,
+      "framework_macro_recall_min": 0.8,
+      "p0_stable_label_recall_min": 0.9,
+      "stable_guard_hit_rate_max": 0.05,
+      "clean_case_specificity_min": 0.95
+    }
+  },
+  "cross_host_decision": {
+    "threshold_basis": "point-estimate",
+    "requires_each_report_status": "PASS",
+    "aggregation_intent": "Codex-only protocol; the single declared host is evaluated directly and no cross-provider claim is allowed.",
+    "provider_family_balance_required": false,
+    "thresholds": {
+      "stable_recall_gap_max": 0.1,
+      "stable_prediction_jaccard_min": 0.8
+    }
+  }
+}

@@ -1,0 +1,4720 @@
+{
+  "protocol": "real-fix-acquisition-v4",
+  "status": "COMPLETE",
+  "repositories": [
+    {
+      "name": "mtlynch/whatgotdone",
+      "cutoff": "ef10be2a9f8a57c35f67d299a4c0ef374e768e04",
+      "path": "e2e",
+      "endpoint": "repos/mtlynch/whatgotdone/commits?sha=ef10be2a9f8a57c35f67d299a4c0ef374e768e04&path=e2e&per_page=25",
+      "returned_commits": 25,
+      "commits": [
+        {
+          "ordinal": 1,
+          "sha": "5a3b9665362dcc70341b7c482858f2bff01131b0",
+          "parents": [
+            "0bb6268bc76ae85ac247e1bbde19764414f2aae2"
+          ],
+          "subject": "Move export page (#968)",
+          "changed_files": 6,
+          "spec_files": [
+            {
+              "path": "e2e/export.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 2,
+          "sha": "ff70458e6e298468bccaf77af9a5c58685970735",
+          "parents": [
+            "72193c1d2675d1676cc365ebd62965b1a54ff0db"
+          ],
+          "subject": "Export as markdown (#963)",
+          "changed_files": 6,
+          "spec_files": [
+            {
+              "path": "e2e/export.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 3,
+          "sha": "864e0df226a978d6407e618c11eaa88d06dffdfe",
+          "parents": [
+            "834900f9e2a3d55912848e3f0a92c8c80a2a5d04"
+          ],
+          "subject": "Remove test IDs for follow/unfollow buttons (#952)",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "e2e/follow.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 4,
+          "sha": "834900f9e2a3d55912848e3f0a92c8c80a2a5d04",
+          "parents": [
+            "a4f88d42d616825a55a237ae951c65aa4af685e7"
+          ],
+          "subject": "Remove test IDs from navbar and e2e tests (#951)",
+          "changed_files": 7,
+          "spec_files": [
+            {
+              "path": "e2e/entry_draft.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/export.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/follow.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/login.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/recent_entries.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/user_profile.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 5,
+          "sha": "b757f3766196fa55bc64475532335cf5a438236a",
+          "parents": [
+            "ddc8ab317c1e4be604603afde554a356ae06a02c"
+          ],
+          "subject": "Rely less on test ID values in e2e tests (#950)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "e2e/entry_template.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/login.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 6,
+          "sha": "ddc8ab317c1e4be604603afde554a356ae06a02c",
+          "parents": [
+            "6104c0064f5d0b61f4229c3c9bbb59ef7e851f64"
+          ],
+          "subject": "Remove rich text editor (#948)",
+          "changed_files": 11,
+          "spec_files": [
+            {
+              "path": "e2e/entry_draft.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/entry_template.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/publish_entry.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/rich_text_editor.spec.ts",
+              "status": "removed",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 7,
+          "sha": "f8340443319015cec4e77ee2826f1c5e4b8530e8",
+          "parents": [
+            "1316eae4f0282379879697e051dd4a5404dedc15"
+          ],
+          "subject": "Use more robust locators in template test (#947)",
+          "changed_files": 1,
+          "spec_files": [
+            {
+              "path": "e2e/entry_template.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 8,
+          "sha": "a900bca70781fe5adc1ba595cdc6ddc07f267441",
+          "parents": [
+            "895405cf85222c16edab512e714b3824a56f324c"
+          ],
+          "subject": "Move user avatars to SQLite (#905)",
+          "changed_files": 26,
+          "spec_files": [
+            {
+              "path": "e2e/recent_entries.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/user_profile.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/view_entry.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 9,
+          "sha": "0517abb452f126982d1306827414eaa54f05571a",
+          "parents": [
+            "8e93d88a165cd61886f462fe0558509cf919bfeb"
+          ],
+          "subject": "Drop data-testid attribute for Edit button (#881)",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "e2e/user_profile.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 10,
+          "sha": "8e93d88a165cd61886f462fe0558509cf919bfeb",
+          "parents": [
+            "2eae98f2fdc05951265f63bafade0c2cbb04d4c2"
+          ],
+          "subject": "Get rid of data-testid attribute for Download button (#882)",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "e2e/export.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 11,
+          "sha": "2eae98f2fdc05951265f63bafade0c2cbb04d4c2",
+          "parents": [
+            "93014a9f42bba60da7efe2fb24a3cea401a790c5"
+          ],
+          "subject": "Select Unpublish button by role in e2e test (#880)",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "e2e/publish_entry.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 12,
+          "sha": "93014a9f42bba60da7efe2fb24a3cea401a790c5",
+          "parents": [
+            "da6f340c53158645dcbbfcc2186fed32a52fd7c7"
+          ],
+          "subject": "Use clearer toBeVisible semantics in e2e tests (#879)",
+          "changed_files": 6,
+          "spec_files": [
+            {
+              "path": "e2e/entry_draft.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/export.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/follow.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/login.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/publish_entry.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/user_profile.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 13,
+          "sha": "e7ad27a3f54bef240ef47c193aaa50043bf4790b",
+          "parents": [
+            "7824e4c7719aafefd8b08d2df9a571833465849e"
+          ],
+          "subject": "Use better semantics for locating elements by test ID (#872)",
+          "changed_files": 11,
+          "spec_files": [
+            {
+              "path": "e2e/entry_draft.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/entry_template.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/export.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/follow.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/login.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/publish_entry.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/recent_entries.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/user_profile.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 14,
+          "sha": "b268ea7fb7ab41904b97e642acaf9520f040b49e",
+          "parents": [
+            "145251ee258a18a37754a819b3364894d41f3371"
+          ],
+          "subject": "Switch from Google Analytics to Plausible Analytics (#869)",
+          "changed_files": 27,
+          "spec_files": [
+            {
+              "path": "e2e/publish_entry.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 15,
+          "sha": "d1547d0b33a7570e1c0646ae2ab2b3f005d73349",
+          "parents": [
+            "5b1ca6d338ce57e2c5a01e9db14b57ae38beac04"
+          ],
+          "subject": "Convert Cypress tests to Playwright (#845)",
+          "changed_files": 57,
+          "spec_files": [
+            {
+              "path": "e2e/entry_draft.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/entry_template.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/export.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/follow.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/homepage.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/login.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/publish_entry.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/reactions.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/recent_entries.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/rich_text_editor.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/seo.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/user_profile.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/view_entry.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 16,
+          "sha": "adb5fc0c4de7d22257ebc8207b557688bf936688",
+          "parents": [
+            "7058e91ae9785707733d3d383787907d023dc2fd"
+          ],
+          "subject": "Adding a test data manager (#489)",
+          "changed_files": 36,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 17,
+          "sha": "7058e91ae9785707733d3d383787907d023dc2fd",
+          "parents": [
+            "822acbb8221ed73fe56e2a478e22281a255b754f"
+          ],
+          "subject": "Deleting e2e tests that are redundant to integration tests (#490)",
+          "changed_files": 1,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 18,
+          "sha": "697590f3b3c07096051d62accb424ec11069be37",
+          "parents": [
+            "6906096505f861eddbc3dd48d605128bc30b2893"
+          ],
+          "subject": "Using 'password' as the implicit password in e2e/integration tests (#470)",
+          "changed_files": 2,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 19,
+          "sha": "beeafe2ad135fa54fb5383e604179e0245e2de57",
+          "parents": [
+            "873f6810a3365fd72a919866c68d6446421b8df8"
+          ],
+          "subject": "Disabling video compression (#457)",
+          "changed_files": 2,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 20,
+          "sha": "851df4cfc4db9b3d40f218a61d2ed44fc5d11429",
+          "parents": [
+            "4a78cd21688f78219da94510406edaef7db6b2f8"
+          ],
+          "subject": "Switching post-login to visit previous page rather than assume edit (#444)",
+          "changed_files": 2,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 21,
+          "sha": "4a78cd21688f78219da94510406edaef7db6b2f8",
+          "parents": [
+            "b7b43dbfcd8ab14d769dbaeac1000fc846bac78b"
+          ],
+          "subject": "Upgrading to Cypress 4.0.1 (#446)",
+          "changed_files": 2,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 22,
+          "sha": "074640d5a2f1c74a50dcba35a25a29cbec5edc94",
+          "parents": [
+            "761f8c5dc3beb4cc8116aa0f387a2430293d704d"
+          ],
+          "subject": "Adding tweet button to posts for author (#423)",
+          "changed_files": 5,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 23,
+          "sha": "011beeeb201c9024c4abb9557244a098c24e57c9",
+          "parents": [
+            "71ca858fde96e3144b177cc668efe25a856bc788"
+          ],
+          "subject": "Redirect bare route to edit entry page for auth'ed users (#421)",
+          "changed_files": 5,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 24,
+          "sha": "abb146f7930cba63ff40b374518a11b96302338b",
+          "parents": [
+            "028b0cb657f0fee11cfcb5de1536712e27014a29"
+          ],
+          "subject": "Switching to more explicit URL checks in integration/e2e tests (#419)",
+          "changed_files": 2,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 25,
+          "sha": "028b0cb657f0fee11cfcb5de1536712e27014a29",
+          "parents": [
+            "e72753ef612ff9c92ed1f707901f128c8809112a"
+          ],
+          "subject": "Formatting some stray JS files with Prettier (#418)",
+          "changed_files": 5,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        }
+      ]
+    },
+    {
+      "name": "RedHatInsights/patchman-ui",
+      "cutoff": "9b6bac02e02373d6a8ad99a1920b19ab1fd23979",
+      "path": "playwright",
+      "endpoint": "repos/RedHatInsights/patchman-ui/commits?sha=9b6bac02e02373d6a8ad99a1920b19ab1fd23979&path=playwright&per_page=25",
+      "returned_commits": 25,
+      "commits": [
+        {
+          "ordinal": 1,
+          "sha": "77d4a8edd9d35ee355c88ce9556264cf7082dc95",
+          "parents": [
+            "e621c43b92b04484e4c3688b3b20e3e059cef37b"
+          ],
+          "subject": "test: fix playwright UI tests (#1785)",
+          "changed_files": 13,
+          "spec_files": [
+            {
+              "path": "playwright/UI/FilterTypePatch.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "playwright/UI/PaginationTests.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "playwright/UI/VerifyExportingFeature.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 2,
+          "sha": "17f586cf1aebb0aeb812618be7fd7ffb4e51fb49",
+          "parents": [
+            "39c9d21577704492e08ebdc2732e7bcd1ac6698a"
+          ],
+          "subject": "fix: locator Details now Overview (#1732)",
+          "changed_files": 1,
+          "spec_files": [
+            {
+              "path": "playwright/UI/AdvisoriesTests.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 3,
+          "sha": "b623cf872c2b1971cc6e3ccb843ece3b87fe8cb2",
+          "parents": [
+            "885b843ad15e64bc2645e6f443292a4508a72dd9"
+          ],
+          "subject": "fix: locator Details now Overview (#1729)",
+          "changed_files": 1,
+          "spec_files": [
+            {
+              "path": "playwright/UI/SystemsTests.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 4,
+          "sha": "5858204b5e7caef6a6853edc927bfb240e7a132e",
+          "parents": [
+            "af9e1cb1f7b92a167185170c1d8a392596b34241"
+          ],
+          "subject": "fix: prevent version-pinned info icon from wrapping (#1688)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "playwright/UI/SystemsTests.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "playwright/UI/VerifyExportingFeature.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 5,
+          "sha": "24922c72f0c3f6e5f0c50182125df3774927f9ae",
+          "parents": [
+            "8fb2cbaca10426def9b729e2794487a7ee527a24"
+          ],
+          "subject": "test: fix flaky pagination test (#1711)",
+          "changed_files": 1,
+          "spec_files": [
+            {
+              "path": "playwright/UI/PaginationTests.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 6,
+          "sha": "0b8731f63b5ca4f512aaeccb533f48929043bb3d",
+          "parents": [
+            "448e07f5f6f049218679a192fd15c8c476377d36"
+          ],
+          "subject": "fix: warnings in ci checks (#1707)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "playwright/UI/PaginationTests.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 7,
+          "sha": "b3f7189dcb217353e3efbd4027e46acec8361b90",
+          "parents": [
+            "63c48d8b363193be16665a7093b545fc39435fa6"
+          ],
+          "subject": "fix: fix advisories about icon (#1683)",
+          "changed_files": 2,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 8,
+          "sha": "c3a6395958a195b0c15ce67136fef68aaca33518",
+          "parents": [
+            "e58242289cfb5358012f6516cfb518f5de89527f"
+          ],
+          "subject": "fix: rename filter-by labels (#1680)",
+          "changed_files": 7,
+          "spec_files": [
+            {
+              "path": "playwright/UI/FilterTypePatch.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 9,
+          "sha": "92f1315ebae5e39f2ef11f6ea6e8930a5d875390",
+          "parents": [
+            "81f748ad226a5f494e76ef46ac30c397d5a33a66"
+          ],
+          "subject": "fix(SystemsTable): correct search by name filter (#1678)",
+          "changed_files": 8,
+          "spec_files": [
+            {
+              "path": "playwright/UI/FilterTypePatch.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "playwright/UI/PaginationTests.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "playwright/UI/VerifyExportingFeature.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 10,
+          "sha": "f8fa683b3452eddf22a0ac1ea0a9e112df673667",
+          "parents": [
+            "4b4cbff289fc6268a7d0fff584b3416fa5d5c9fb"
+          ],
+          "subject": "HMS-10728: add 'Expand All' option to table header (#1642)",
+          "changed_files": 15,
+          "spec_files": [
+            {
+              "path": "playwright/UI/FilterTypePatch.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "playwright/UI/VerifyExportingFeature.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 11,
+          "sha": "8fe875a086c5a9ee1218e16d8c8feff50da3a770",
+          "parents": [
+            "1143e8b0401f2805164b2c2676f6b8d1aa224838"
+          ],
+          "subject": "test: reduce filter test runtime",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "playwright/UI/FilterTypePatch.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 12,
+          "sha": "16b8e0ffcc587eee06da26f393fcaaea3b308868",
+          "parents": [
+            "098cb4621aeaf3e7299f556518d2e2e8e04df4f3"
+          ],
+          "subject": "fix(test): remove workaround for multi user tests",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "playwright/UI/AdvisoriesTests.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 13,
+          "sha": "e5878784a0c2ac34e38957069d52a4c6e39c58bf",
+          "parents": [
+            "4aa5a00602da22b885455ef6a1ef04cec14d31b4"
+          ],
+          "subject": "fix: make filter reset behavior consistent",
+          "changed_files": 23,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 14,
+          "sha": "ae76011a19c7c569b10a09035ee7be80a692f265",
+          "parents": [
+            "391b8128417497b2aeba732dcbeff7dbfc9964ec"
+          ],
+          "subject": "chore: update readme and rules for agents",
+          "changed_files": 10,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 15,
+          "sha": "89b84d97090a083b96744a7e6a251edabb9c45c9",
+          "parents": [
+            "347a8d11fb627470dd1de1cd7a7d788568a3c2a3"
+          ],
+          "subject": "test: split/serialize UI test projects by auth",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "playwright/UI/AdvisoriesTests.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 16,
+          "sha": "3d9bcac1b7853bfc08b42a1470c540922e516cd4",
+          "parents": [
+            "afb41288073af41e9592d35311bde783a3668c79"
+          ],
+          "subject": "fix: add prefix to test names",
+          "changed_files": 1,
+          "spec_files": [
+            {
+              "path": "playwright/UI/FilterTypePatch.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 17,
+          "sha": "993039b1bfc3adbf435f9251c05f31ab18394b9e",
+          "parents": [
+            "25bf4221a2b0644318215377f8315b1378dafc44"
+          ],
+          "subject": "feat: update to new severity icons",
+          "changed_files": 12,
+          "spec_files": [
+            {
+              "path": "playwright/UI/FilterTypePatch.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 18,
+          "sha": "53f619329d3b2cadabdf24e792274d8e48bbe4fa",
+          "parents": [
+            "3264dc54c0c9bed6c09b1ccc9dce0f278a086220"
+          ],
+          "subject": "fix: correct version lock tooltip",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "playwright/UI/SystemsTests.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 19,
+          "sha": "8d243836706b387d3dd7620aeab3e56c663b9f24",
+          "parents": [
+            "f6f89263756baa1f5a4c1bacc777709a7e0db67a"
+          ],
+          "subject": "HMS-10287: Make PR for tag filter test when RHINENG-23546 is resolved (#1547)",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "playwright/UI/FilterTypePatch.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 20,
+          "sha": "f6f89263756baa1f5a4c1bacc777709a7e0db67a",
+          "parents": [
+            "ccc7f0e96fe9300cec6ca6644b09384af2b02530"
+          ],
+          "subject": "chore(deps): bump jest-environment-jsdom and fix UI tests (#1534)",
+          "changed_files": 5,
+          "spec_files": [
+            {
+              "path": "playwright/UI/SystemsTests.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 21,
+          "sha": "f4a7c8284aae975cae5809e77ca8ff8c849f2e50",
+          "parents": [
+            "8c4ac547389a71fc5c3de3209d0cdae20b357d72"
+          ],
+          "subject": "test: add tests for Satellite managed systems",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "playwright/UI/SystemsTests.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 22,
+          "sha": "8c4ac547389a71fc5c3de3209d0cdae20b357d72",
+          "parents": [
+            "5e213d9bb3e8211abc96bd826ad5376d49390397"
+          ],
+          "subject": "test: add a satellite-managed system",
+          "changed_files": 2,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 23,
+          "sha": "940b958db6928aae6d4fc9e5b9c15a89f5cc4d0f",
+          "parents": [
+            "336412abf0e3b35550a1599f977a099658320866"
+          ],
+          "subject": "HMS-9726: Add filter type patch tests (#1491)",
+          "changed_files": 6,
+          "spec_files": [
+            {
+              "path": "playwright/UI/FilterTypePatch.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 24,
+          "sha": "cedc0ca36801773c2b26c53c05cb886027336837",
+          "parents": [
+            "1dc81b924bbb00fcaa78f127bcec28b1a6a50d77"
+          ],
+          "subject": "test(HMS-10052): test pagination on packages page",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "playwright/UI/PaginationTests.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 25,
+          "sha": "1dc81b924bbb00fcaa78f127bcec28b1a6a50d77",
+          "parents": [
+            "955e06800800ecf3f8d463eeaeee78b8ad083473"
+          ],
+          "subject": "test(HMS-10052): refactoring pagination tests",
+          "changed_files": 1,
+          "spec_files": [
+            {
+              "path": "playwright/UI/PaginationTests.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        }
+      ]
+    },
+    {
+      "name": "xmlui-org/xmlui",
+      "cutoff": "e4e2bc10dadb630105fc4d33f4f8b59cf3a30ea3",
+      "path": "xmlui/tests-e2e",
+      "endpoint": "repos/xmlui-org/xmlui/commits?sha=e4e2bc10dadb630105fc4d33f4f8b59cf3a30ea3&path=xmlui/tests-e2e&per_page=25",
+      "returned_commits": 25,
+      "commits": [
+        {
+          "ordinal": 1,
+          "sha": "dbe0a99bf664ea04ea843e9d1eabb20392e61f8d",
+          "parents": [
+            "a032c20eda7e44a3d259e5bfb7b4512caeb8b36b"
+          ],
+          "subject": "feat(Table): rowVariant for per-row styling independent of selection (#3932)",
+          "changed_files": 9,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/highlight-rows-conditionally.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 2,
+          "sha": "a032c20eda7e44a3d259e5bfb7b4512caeb8b36b",
+          "parents": [
+            "55bbdb2f90a1c76f8bad6aaf028a14354cc486b0"
+          ],
+          "subject": "docs(howto): highlight one Table row from code with selection (#3930)",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/highlight-rows-conditionally.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 3,
+          "sha": "f4656787e83cb5b5e90034cfe88ef85bd771a7aa",
+          "parents": [
+            "c0746a1ae1bd1f3063f1a42f180d48a5be03a92e"
+          ],
+          "subject": "feat(PointerLayer): anchors, content placed at picture coordinates (#3923)",
+          "changed_files": 10,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/annotate-a-video-with-pointer-ink.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 4,
+          "sha": "c0746a1ae1bd1f3063f1a42f180d48a5be03a92e",
+          "parents": [
+            "0fa89e887acdeff73c5340fdc0c6efcc0bc6b0a9"
+          ],
+          "subject": "feat(PointerLayer): live ink over content, with pointer, stroke and shape events (#3920)",
+          "changed_files": 19,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/annotate-a-video-with-pointer-ink.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 5,
+          "sha": "0fa89e887acdeff73c5340fdc0c6efcc0bc6b0a9",
+          "parents": [
+            "99e8c74314ac08b32240f242784e148ffe82bc8d"
+          ],
+          "subject": "feat(MediaPlayer): core audio/video player with events, methods and state (#3917)",
+          "changed_files": 18,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/log-a-media-players-playhead-path.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 6,
+          "sha": "99e8c74314ac08b32240f242784e148ffe82bc8d",
+          "parents": [
+            "7360f7984a9f2e47da6e6fbbfad5b5c91b47645b"
+          ],
+          "subject": "docs: how-to for aligned values in collapsible summaries (refs #3895) (#3910)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/align-values-in-collapsible-summaries.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 7,
+          "sha": "7360f7984a9f2e47da6e6fbbfad5b5c91b47645b",
+          "parents": [
+            "d9e00d2e208bb57f1f6390afddfb3a6cadef8882"
+          ],
+          "subject": "docs: how-to for multi-line and formatted tooltips (refs #3908) (#3909)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/show-a-multi-line-or-formatted-tooltip.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 8,
+          "sha": "28fa8d0d2d5b7b9e88bbddf5f5be3b76858379a9",
+          "parents": [
+            "24d5864a2cde01bcb917000256c71da1be2ac551"
+          ],
+          "subject": "docs: explain cross-view Table correlation (#3897)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/correlate-a-table-with-another-view.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 9,
+          "sha": "24d5864a2cde01bcb917000256c71da1be2ac551",
+          "parents": [
+            "c54aa215b73718dfa8676ef04a4eb7a62dc1c1e0"
+          ],
+          "subject": "docs: explain loading served CSV data (#3896)",
+          "changed_files": 5,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/load-a-served-csv-into-a-table.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 10,
+          "sha": "cf138eaa964ecb5254387b433a56c381b6fb05e0",
+          "parents": [
+            "5172b63c00398654270211d4c7283aed1364ca77"
+          ],
+          "subject": "fix(DataSource): nested request params no longer pin the router (#3889) (#3891)",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/datasource-nested-request-params-regression.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 11,
+          "sha": "fd656686677873d4825a109979780ad3ef662b98",
+          "parents": [
+            "79879622249de2c505f310d1438ccc4bf0002af0"
+          ],
+          "subject": "Compile flags simplification (#3884)",
+          "changed_files": 69,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/compiled-declaration-parity.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 12,
+          "sha": "85bec2db54da4034d077d918639b85e5ecbbd165",
+          "parents": [
+            "68b4576af9af6af2d00fdf2ed52c3a0cc54d2465"
+          ],
+          "subject": "docs: improve truncate text how-to (#3883)",
+          "changed_files": 5,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/size-with-font-relative-units.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/truncate-text-with-expand-on-demand.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 13,
+          "sha": "68b4576af9af6af2d00fdf2ed52c3a0cc54d2465",
+          "parents": [
+            "cae757562266293a4d38ea52916d564aad2dbef4"
+          ],
+          "subject": "Add how-to: find the theme variable for a text (#3880)",
+          "changed_files": 4,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/find-the-theme-variable-for-a-text.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 14,
+          "sha": "cae757562266293a4d38ea52916d564aad2dbef4",
+          "parents": [
+            "39a0ecc45b6dfe01c7d68a551572007b6d9906a6"
+          ],
+          "subject": "Add how-to: consume an APICall response (#3881)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/consume-an-apicall-response.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 15,
+          "sha": "39a0ecc45b6dfe01c7d68a551572007b6d9906a6",
+          "parents": [
+            "c1bb22ebcc6497cbe9a0f72fe58b721b48ca7567"
+          ],
+          "subject": "fix: compile the constructs that silently fell back, and report what compilation did (#3879)",
+          "changed_files": 45,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/compiled-declaration-parity.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 16,
+          "sha": "7c7f67a10a72f992e9819fed353851e7294baa43",
+          "parents": [
+            "f25c05c22bb1df15e2716be03e3ad3ed646f48f9"
+          ],
+          "subject": "Fix `Pages`' canonical-URL enforcement corrupting hash-based routing (#3868)",
+          "changed_files": 6,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/canonicalize-application-urls.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 17,
+          "sha": "f5054af3c8750198bce7e9692f5d381d38bede62",
+          "parents": [
+            "0786a1df818cda093b03dcdd283da3da3c85bc87"
+          ],
+          "subject": "Clarify fit-content sizing guidance (#3860)",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/know-when-to-use-fit-content.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 18,
+          "sha": "c84df3520bc0386a79e752eea4d2d85543576271",
+          "parents": [
+            "f05b6352d9c27bc7e6e27ec8c9517b39f54b2686"
+          ],
+          "subject": "Compile XMLUI script declaration functions when event-handler compilation is enabled, covering inline script tags, code-behind files, Globals.xs functions, and imported helpers while preserving interpreted fallback (#3850)",
+          "changed_files": 25,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/compiled-declaration-parity.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 19,
+          "sha": "aa197643ea7d878062709ce16b48d337ae1830dc",
+          "parents": [
+            "8cf3da4d589148603de05b5cacc9cf018763f779"
+          ],
+          "subject": "Add a how-to for preformatted and monospace text (#3846)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/display-preformatted-text.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 20,
+          "sha": "8cf3da4d589148603de05b5cacc9cf018763f779",
+          "parents": [
+            "bf20a6be27f103d5d875c49530c5005d3a616d12"
+          ],
+          "subject": "Add a how-to for customizing a Select's selected value (#3845)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/customize-a-selects-selected-value.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 21,
+          "sha": "a789a3d4f312e1d4597064f5d4b40ac03bb12072",
+          "parents": [
+            "a52ee138e061f6e5e7251d701f52f76aa1f2d6f8"
+          ],
+          "subject": "how-to: Inline one-use action components (#3829)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/inline-one-use-action-components.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 22,
+          "sha": "df69ffe013c7d3d22effc946d592369f9c9c918a",
+          "parents": [
+            "8d9846f60fe9c5c096730dcc8a542c24df2656d4"
+          ],
+          "subject": "Add cancellable data operations with `cancel()` APIs and `onCancel` events for DataSource and APICall, plus abort-aware upload and download actions (#3817)",
+          "changed_files": 35,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/cancel-a-datasource-request.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/cancel-a-deferred-api-operation.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/cancel-an-api-call.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/cancel-an-upload.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 23,
+          "sha": "a4becdb91e38eeb8e85ee0068696db6274f0b46e",
+          "parents": [
+            "b5a2b99924c76c578485039227461809316f1bf8"
+          ],
+          "subject": "Add how-to: share one DataSource fetch across components (#3813)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/share-one-datasource-fetch-across-components.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 24,
+          "sha": "e6ace289ba8d45b91a54ddc2c7895a8455391f71",
+          "parents": [
+            "c31a00d27c2ed6d444ed8a2c5792c0bd2044b020"
+          ],
+          "subject": "Fix Tree, List, and Table preserve-state refresh handling when the data expression returns fresh object identities or temporarily empty data during refetch (#3801)",
+          "changed_files": 10,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/preserve-tree-state-across-data-refreshes.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 25,
+          "sha": "2807bff4afafe5696257b7c53ed848a6808ab29c",
+          "parents": [
+            "f5c47a05dfada70edcb8295e84cb81d1c90d5a9b"
+          ],
+          "subject": "Add `dataRefreshMode=\"preserve-state\"` and `preserveStateOnNextDataRefresh()` support to List and Table refresh flows (#3795)",
+          "changed_files": 21,
+          "spec_files": [
+            {
+              "path": "xmlui/tests-e2e/how-to-examples/preserve-tree-state-across-data-refreshes.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        }
+      ]
+    },
+    {
+      "name": "godotlauncher/launcher",
+      "cutoff": "e26cdb8daf289aada48b9e57e58bdbe02f681c3a",
+      "path": "e2e",
+      "endpoint": "repos/godotlauncher/launcher/commits?sha=e26cdb8daf289aada48b9e57e58bdbe02f681c3a&path=e2e&per_page=25",
+      "returned_commits": 25,
+      "commits": [
+        {
+          "ordinal": 1,
+          "sha": "e26cdb8daf289aada48b9e57e58bdbe02f681c3a",
+          "parents": [
+            "52df70e8452d7750c358f1d763638dd46cae3f79"
+          ],
+          "subject": "feat(updates): add a compact sidebar update popover (#255)",
+          "changed_files": 36,
+          "spec_files": [
+            {
+              "path": "e2e/app-updates.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 2,
+          "sha": "52df70e8452d7750c358f1d763638dd46cae3f79",
+          "parents": [
+            "d13fd0eb37def0e013c9b2e5aab79cbc26b9b2fc"
+          ],
+          "subject": "feat(editors): add multi-select removal and unused editor selection (#253)",
+          "changed_files": 38,
+          "spec_files": [
+            {
+              "path": "e2e/editor-multiselect.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 3,
+          "sha": "0cadec5f8bc5cdcdb32cf3c8862bbc97fb06d775",
+          "parents": [
+            "2d3d5da0648de379782b31ceccbe95a19463f7d9"
+          ],
+          "subject": "feat(projects): run Godot in a terminal (#251)",
+          "changed_files": 49,
+          "spec_files": [
+            {
+              "path": "e2e/project-settings-catalogue.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 4,
+          "sha": "2d3d5da0648de379782b31ceccbe95a19463f7d9",
+          "parents": [
+            "b35a3a430ed652e95353320547106fc101794088"
+          ],
+          "subject": "feat(projects): add single-line project list view (#250)",
+          "changed_files": 52,
+          "spec_files": [
+            {
+              "path": "e2e/project-tags.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/projects-compact-view.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/projects-ordering.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 5,
+          "sha": "b35a3a430ed652e95353320547106fc101794088",
+          "parents": [
+            "ee03de89f457e7421f0b1f72de743caf3325b868"
+          ],
+          "subject": "feat(projects): add coloured tags and filtering (#249)",
+          "changed_files": 68,
+          "spec_files": [
+            {
+              "path": "e2e/manage-project-tags.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/project-tag-deletion.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/project-tag-filter.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/project-tags.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 6,
+          "sha": "98eef30f01663a62ebab92c096da0afc69245944",
+          "parents": [
+            "f77f86aaa65ded67beea25cfc2e04a9bf57d3a49"
+          ],
+          "subject": "feat: add imported export templates and movable storage (#247)",
+          "changed_files": 211,
+          "spec_files": [
+            {
+              "path": "e2e/export-templates.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/imported-template-removal.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/project-settings-catalogue.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/template-migration.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/template-storage-settings.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 7,
+          "sha": "a1bdf5081e33d0a992296068d6777a7611795376",
+          "parents": [
+            "66ef8c78a714ed516115da4e8e4fb57841b6f6e9"
+          ],
+          "subject": "fix(projects): explain import name conflicts (#243)",
+          "changed_files": 18,
+          "spec_files": [
+            {
+              "path": "e2e/project-import-conflicts.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 8,
+          "sha": "7781bf4c11940df2fd2e0f38df0d643b5bb783a0",
+          "parents": [
+            "1b3ecbe30b9da290ad02cfc0a91b86bffee86e05"
+          ],
+          "subject": "feat(connections): add Linux credential storage preference (#241)",
+          "changed_files": 31,
+          "spec_files": [
+            {
+              "path": "e2e/credential-storage.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 9,
+          "sha": "1b3ecbe30b9da290ad02cfc0a91b86bffee86e05",
+          "parents": [
+            "5423e56b630d872a1c054d9ba1b94bb614e3edf7"
+          ],
+          "subject": "fix(projects): save editor selection before downloading (#240)",
+          "changed_files": 21,
+          "spec_files": [
+            {
+              "path": "e2e/project-settings-catalogue.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 10,
+          "sha": "5423e56b630d872a1c054d9ba1b94bb614e3edf7",
+          "parents": [
+            "3264459403b7a2382782daf798a5249f80d3ab2e"
+          ],
+          "subject": "fix(terminal): recover incompatible terminal settings (#239)",
+          "changed_files": 42,
+          "spec_files": [
+            {
+              "path": "e2e/project-terminal.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 11,
+          "sha": "3264459403b7a2382782daf798a5249f80d3ab2e",
+          "parents": [
+            "96a41ea0938e14b5a73ad1a2c887a6dc0d1968dd"
+          ],
+          "subject": "feat(projects): open project folders in a selected terminal (#238)",
+          "changed_files": 82,
+          "spec_files": [
+            {
+              "path": "e2e/project-terminal.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 12,
+          "sha": "53c5042b2bef67564840eaeea8c0181cfe9efeba",
+          "parents": [
+            "0d67535c65582c6f3375a391d205a7568784575d"
+          ],
+          "subject": "feat(import): resolve name conflicts and refresh the interface (#236)",
+          "changed_files": 300,
+          "spec_files": [
+            {
+              "path": "e2e/codeEditorIntegration.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/create-project-session.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/createProjectGithubPublishing.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/gitLfsCreateProject.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/guided-empty-states.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/project-import-conflicts.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/projects-compact-view.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "file-list-possibly-truncated"
+        },
+        {
+          "ordinal": 13,
+          "sha": "0d67535c65582c6f3375a391d205a7568784575d",
+          "parents": [
+            "6a9a8b026102cefa1f3ea3f4f70c6946074a0cfb"
+          ],
+          "subject": "feat(import): choose compatible editors when importing projects (#235)",
+          "changed_files": 35,
+          "spec_files": [
+            {
+              "path": "e2e/guided-empty-states.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 14,
+          "sha": "6a9a8b026102cefa1f3ea3f4f70c6946074a0cfb",
+          "parents": [
+            "956ee24f3bad1553d4ee7f2e44a82e1c1ec53fd9"
+          ],
+          "subject": "fix(connections): make GitHub connection screens consistent (#234)",
+          "changed_files": 22,
+          "spec_files": [
+            {
+              "path": "e2e/createProjectGithubPublishing.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/guided-empty-states.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 15,
+          "sha": "956ee24f3bad1553d4ee7f2e44a82e1c1ec53fd9",
+          "parents": [
+            "288c144e5a8005965770cfe476b8b55c36821971"
+          ],
+          "subject": "fix(installs): show unique editor catalogue versions (#233)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "e2e/mainWindow.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 16,
+          "sha": "288c144e5a8005965770cfe476b8b55c36821971",
+          "parents": [
+            "7ccb59ffcfe6ccc96fb7b0da802ab170f2ed75a1"
+          ],
+          "subject": "feat(installs): show installed editor actions (#232)",
+          "changed_files": 6,
+          "spec_files": [
+            {
+              "path": "e2e/mainWindow.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 17,
+          "sha": "7ccb59ffcfe6ccc96fb7b0da802ab170f2ed75a1",
+          "parents": [
+            "465696f87de47acbf6b4de52b48ea839fdfb0eee"
+          ],
+          "subject": "feat(ui): standardise compact form controls (#231)",
+          "changed_files": 11,
+          "spec_files": [
+            {
+              "path": "e2e/create-project-progress.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/guided-empty-states.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 18,
+          "sha": "465696f87de47acbf6b4de52b48ea839fdfb0eee",
+          "parents": [
+            "77b4771dd47f04b9317a2ad0de5a350700165fb6"
+          ],
+          "subject": "fix(installs): use shared custom editor action menu (#230)",
+          "changed_files": 5,
+          "spec_files": [
+            {
+              "path": "e2e/guided-empty-states.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 19,
+          "sha": "77b4771dd47f04b9317a2ad0de5a350700165fb6",
+          "parents": [
+            "9d30c3cd69b830d4e60316c562a39cd6cbb0b325"
+          ],
+          "subject": "fix(settings): Align Settings location selectors and isolate E2E preferences (#229)",
+          "changed_files": 27,
+          "spec_files": [
+            {
+              "path": "e2e/SettingsView.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/codeEditorIntegration.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/create-project-catalogue-recovery.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/create-project-progress.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/create-project-session.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/createProjectGithubPublishing.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/gitLfsCreateProject.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/guided-empty-states.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/legacy-code-editor-migration.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/mainWindow.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/project-editor-download.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/project-settings-catalogue.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/projects-compact-view.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/projects-ordering.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 20,
+          "sha": "9d30c3cd69b830d4e60316c562a39cd6cbb0b325",
+          "parents": [
+            "a8f843b54829330f3537cf7a68ae9824e73b2b10"
+          ],
+          "subject": "Feat: Add a compact project list with a remembered view preference (#228)",
+          "changed_files": 34,
+          "spec_files": [
+            {
+              "path": "e2e/projects-compact-view.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/projects-ordering.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 21,
+          "sha": "a8f843b54829330f3537cf7a68ae9824e73b2b10",
+          "parents": [
+            "79f829aea3dc110450478df913c38e5ace1d299f"
+          ],
+          "subject": "refactor(projects): retire legacy VS Code persistence flag (#227)",
+          "changed_files": 8,
+          "spec_files": [
+            {
+              "path": "e2e/legacy-code-editor-migration.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 22,
+          "sha": "c7e4644248ac8ca4b49056dd0055d14ed0016284",
+          "parents": [
+            "4ad66933e4ca63d6fae824ffcc2403f3fc2aebcf"
+          ],
+          "subject": "Feat: Improve new-user setup and editor selection (#225)",
+          "changed_files": 146,
+          "spec_files": [
+            {
+              "path": "e2e/SettingsView.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/codeEditorIntegration.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/create-project-catalogue-recovery.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/create-project-progress.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/create-project-session.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/createProjectGithubPublishing.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/gitLfsCreateProject.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/guided-empty-states.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/mainWindow.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/project-editor-download.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/project-settings-catalogue.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 23,
+          "sha": "83c23fef12db2b1fc7bde329c6a0200a2f146189",
+          "parents": [
+            "f0831d8e106c5ded733206bafe8ff099b6b1e954"
+          ],
+          "subject": "refactor(e2e): separate fixture support from screenshots (#224)",
+          "changed_files": 40,
+          "spec_files": [
+            {
+              "path": "e2e/SettingsView.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/codeEditorIntegration.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/createProjectGithubPublishing.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/documentationScreenshot.spec.ts",
+              "status": "removed",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/gitLfsCreateProject.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/guided-empty-states.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/mainWindow.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/projects-ordering.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 24,
+          "sha": "f0831d8e106c5ded733206bafe8ff099b6b1e954",
+          "parents": [
+            "723e4f873d8da4dacddbfe8ccc81988b4cc7aeeb"
+          ],
+          "subject": "chore(e2e): stabilise documentation screenshots (#223)",
+          "changed_files": 4,
+          "spec_files": [],
+          "disposition": "no-spec-change"
+        },
+        {
+          "ordinal": 25,
+          "sha": "723e4f873d8da4dacddbfe8ccc81988b4cc7aeeb",
+          "parents": [
+            "9934db5d5e8ac79fae2bced4186541fec53586ea"
+          ],
+          "subject": "feat(projects): publish new projects to GitHub (#222)",
+          "changed_files": 186,
+          "spec_files": [
+            {
+              "path": "e2e/SettingsView.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/codeEditorIntegration.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/createProjectGithubPublishing.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/documentationScreenshot.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/gitLfsCreateProject.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/guided-empty-states.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/mainWindow.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "e2e/projects-ordering.spec.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        }
+      ]
+    },
+    {
+      "name": "verdaccio/verdaccio",
+      "cutoff": "8f877d52abb8f37f3b4eacd7917dad8299544034",
+      "path": "cypress/e2e",
+      "endpoint": "repos/verdaccio/verdaccio/commits?sha=8f877d52abb8f37f3b4eacd7917dad8299544034&path=cypress/e2e&per_page=25",
+      "returned_commits": 3,
+      "commits": [
+        {
+          "ordinal": 1,
+          "sha": "770ebe4c2c567462f549591dfc3b7a1a7f363128",
+          "parents": [
+            "9dcd20b2cb7c57cf8f6735925ede953d89203f25"
+          ],
+          "subject": "fix(web): web ui review follow-ups (#6213)",
+          "changed_files": 42,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/07-detail.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/08-failure-modes.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/09-manifest-rendering.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/10-session.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/11-i18n-keys.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/12-signup.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/13-change-password.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 2,
+          "sha": "8857b15ac2d33969b3aea8f3e77cd5020161228f",
+          "parents": [
+            "65cd24e7299f07c9e0092e7a992b507fb65f326a"
+          ],
+          "subject": "feat(auth): remove incoming basic auth (#6152)",
+          "changed_files": 21,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/06-publish.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 3,
+          "sha": "bde45928111cb793e8268137ddd86da2fa224742",
+          "parents": [
+            "877329a4a66974eddc00774bc31e9176c3a24136"
+          ],
+          "subject": "chore: refactor ui e2e tests (#5804)",
+          "changed_files": 29,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/01-home.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/02-signin.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/03-layout.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/04-search.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/05-settings.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/06-publish.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        }
+      ]
+    },
+    {
+      "name": "victronenergy/venus-html5-app",
+      "cutoff": "61f4dd8c6f339a4ec025d3af4d39a90cb81c4ea7",
+      "path": "cypress/e2e",
+      "endpoint": "repos/victronenergy/venus-html5-app/commits?sha=61f4dd8c6f339a4ec025d3af4d39a90cb81c4ea7&path=cypress/e2e&per_page=25",
+      "returned_commits": 1,
+      "commits": [
+        {
+          "ordinal": 1,
+          "sha": "f44a7a6de952f697a37ec7027f82ebda8aa0eb77",
+          "parents": [
+            "fb5da04470e66dc79bf58883420957910b7b5686"
+          ],
+          "subject": "Cypress migration.",
+          "changed_files": 11,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/actions.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/pagination.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/rendering.spec.ts",
+              "status": "renamed",
+              "previous_filename": "cypress/integration/rendering.spec.ts"
+            },
+            {
+              "path": "cypress/e2e/values.spec.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        }
+      ]
+    },
+    {
+      "name": "wikimedia/wikidata-query-builder",
+      "cutoff": "d2b960af9b6417ce2c9c32d224671d5988d5ad37",
+      "path": "cypress/e2e",
+      "endpoint": "repos/wikimedia/wikidata-query-builder/commits?sha=d2b960af9b6417ce2c9c32d224671d5988d5ad37&path=cypress/e2e&per_page=25",
+      "returned_commits": 18,
+      "commits": [
+        {
+          "ordinal": 1,
+          "sha": "4a33b72011accad33a4ea08d074cbbdad3891021",
+          "parents": [
+            "2da493a11088fde9b9e8ea8ead70f3ee18cfa1a7"
+          ],
+          "subject": "Update Wikidata Query Builder query string to include MUL",
+          "changed_files": 5,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/component-interaction.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/error-handling.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 2,
+          "sha": "50be35d557026e413f82cde290a7e47b97972233",
+          "parents": [
+            "7ecd4fb74e3ff739cb01f98aa24b7282edb79b70"
+          ],
+          "subject": "Replace sharable link composition by single button",
+          "changed_files": 5,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/component-interaction.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/error-handling.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 3,
+          "sha": "f0361ed3882c718384334bdefc6b074fdb1be28b",
+          "parents": [
+            "693ad464050f7803404166de0b9a8f6a917295e5"
+          ],
+          "subject": "Replace WiKit's Lookup component by Codex's",
+          "changed_files": 13,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/component-interaction.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/error-handling.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/restore-from-url.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 4,
+          "sha": "617babdaf84f6ff28c3d867919ddf50eb9f22f53",
+          "parents": [
+            "2339cac968e80697d926add26f12ad19320d7c43",
+            "dac6eaa3cdfa25641f4d58222bbb8d98eb812e77"
+          ],
+          "subject": "Merge \"Ensure spacing for label is consistent between components\"",
+          "changed_files": 5,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/component-interaction.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 5,
+          "sha": "9982de015d20236d99982f9c36a2bc77785f0e6b",
+          "parents": [
+            "ead4cb9dbebb13f708754494303220cd8c359a19"
+          ],
+          "subject": "Replace WiKit ToggleButton component by Codex's",
+          "changed_files": 7,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/component-interaction.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 6,
+          "sha": "dac6eaa3cdfa25641f4d58222bbb8d98eb812e77",
+          "parents": [
+            "ead4cb9dbebb13f708754494303220cd8c359a19"
+          ],
+          "subject": "Ensure spacing for label is consistent between components",
+          "changed_files": 5,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/component-interaction.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 7,
+          "sha": "d1862999b6b4746c50e8ebacc382a74a5ced77d2",
+          "parents": [
+            "45cbf024c7e707d6c27e909a77363b3cfdaecc7c"
+          ],
+          "subject": "Rewrite input tests to more generic selectors",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/component-interaction.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/error-handling.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/restore-from-url.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 8,
+          "sha": "5b02ed7f257e16f05d737aa298fda7dbb7a729f2",
+          "parents": [
+            "78a75ad152cc10979cf4c197f7f989d6efbd3048"
+          ],
+          "subject": "Replace WiKit's Dropdown component by Codex's Select",
+          "changed_files": 10,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/component-interaction.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 9,
+          "sha": "34ce08c1f1ae06c3a874c3dfdaf94c2884244656",
+          "parents": [
+            "9f7b8aea2c241697553fd26305dab5695be2e44c"
+          ],
+          "subject": "Replace all instances of wikit button with cdx-button",
+          "changed_files": 9,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/component-interaction.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/error-handling.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/language-selector.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 10,
+          "sha": "c67b31d12a75f15adfa725246a362d4e93238b3d",
+          "parents": [
+            "436f96adee43bdd5c355fa668c0eeb6a3a80d568"
+          ],
+          "subject": "Unchain cy.type events to remove cypress/unsafe-to-chain-command",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/component-interaction.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "cypress/e2e/error-handling.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 11,
+          "sha": "5f881b71fb49fe42ff3689c8d090461a62bb6eab",
+          "parents": [
+            "779e7f732ab4e1266f7f2dcda0ec05ac20383114"
+          ],
+          "subject": "Add browser tests for keyboard navigation of Language Selector",
+          "changed_files": 1,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/language-selector.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 12,
+          "sha": "44716c819b884429235f2d0d0f63dad183ec65fe",
+          "parents": [
+            "c3f915963523118ad2b7e8fbf7db34994e1b7323"
+          ],
+          "subject": "Close Language Selector on blur",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/language-selector.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 13,
+          "sha": "221807b0d732e84fb5b61107298e7895573500a3",
+          "parents": [
+            "e1da130b3a717ecab1af6db24a0119f455113881",
+            "db34f58cf960431757cc5df0c035914453a32d48"
+          ],
+          "subject": "Merge \"Add autonym in Language Selector Button\"",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/language-selector.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 14,
+          "sha": "e1da130b3a717ecab1af6db24a0119f455113881",
+          "parents": [
+            "a2fa2158a2105bb66bac27d27835ab95087a2c8d",
+            "1888490244dc24fb28309a50eee0e9c112f56383"
+          ],
+          "subject": "Merge \"Add Button to select language\"",
+          "changed_files": 5,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/language-selector.cy.js",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 15,
+          "sha": "db34f58cf960431757cc5df0c035914453a32d48",
+          "parents": [
+            "1888490244dc24fb28309a50eee0e9c112f56383"
+          ],
+          "subject": "Add autonym in Language Selector Button",
+          "changed_files": 2,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/language-selector.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 16,
+          "sha": "a2fa2158a2105bb66bac27d27835ab95087a2c8d",
+          "parents": [
+            "de12b469ee97cd7bf350e734b64079747dd74ab1"
+          ],
+          "subject": "Fix typo in naming of tests",
+          "changed_files": 1,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/error-handling.cy.js",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 17,
+          "sha": "1888490244dc24fb28309a50eee0e9c112f56383",
+          "parents": [
+            "b3553245c00ceb8ed6b6eb0390a67208191086b0"
+          ],
+          "subject": "Add Button to select language",
+          "changed_files": 5,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/language-selector.cy.js",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 18,
+          "sha": "0a62b51863afc51d2f5505a485afa4435a7402d4",
+          "parents": [
+            "ecf167b9571597ea23fb5ded42799d6de72cc74d"
+          ],
+          "subject": "Upgrade Cypress from v6 to v10",
+          "changed_files": 8,
+          "spec_files": [
+            {
+              "path": "cypress/e2e/component-interaction.cy.js",
+              "status": "renamed",
+              "previous_filename": "cypress/integration/component-interaction.spec.js"
+            },
+            {
+              "path": "cypress/e2e/error-handling.cy.js",
+              "status": "renamed",
+              "previous_filename": "cypress/integration/error-handling.spec.js"
+            },
+            {
+              "path": "cypress/e2e/restore-from-url.cy.js",
+              "status": "renamed",
+              "previous_filename": "cypress/integration/restore-from-url.js"
+            }
+          ],
+          "disposition": "pending-source"
+        }
+      ]
+    },
+    {
+      "name": "ministryofjustice/hmpps-contacts-ui",
+      "cutoff": "aee67b0a2d258ba03d508cea0f4f8372772388eb",
+      "path": "integration_tests/e2e",
+      "endpoint": "repos/ministryofjustice/hmpps-contacts-ui/commits?sha=aee67b0a2d258ba03d508cea0f4f8372772388eb&path=integration_tests/e2e&per_page=25",
+      "returned_commits": 25,
+      "commits": [
+        {
+          "ordinal": 1,
+          "sha": "fe77ccb60a220d89fa483bc2f0bbe131b8497708",
+          "parents": [
+            "8151f2258ccd3bdce9e0a5596d52832386595c7a"
+          ],
+          "subject": "VB-6512 Warn before editing a contact linked to multiple prisoners (#821)",
+          "changed_files": 15,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/batch4/editContactConfirmMultipleLinkedPrisoners.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 2,
+          "sha": "10cb158488b63a82b3dfc6b8b0b0aeefd759d263",
+          "parents": [
+            "2d4f17715d151debbfd1de253da7520d9d6985bf"
+          ],
+          "subject": "Fix incorrect escaping on notification success banner (#778)",
+          "changed_files": 3,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/batch1/changeContactNames.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 3,
+          "sha": "5bdaa809a5911169cb1ac447be3a2f5094ce183a",
+          "parents": [
+            "d60a11d5b4c057fc3fcebe8ac446419a6cc040ae"
+          ],
+          "subject": "Remove full stop from alerts (#773)",
+          "changed_files": 89,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/batch1/ApproveVisitorFromContactDetailsPage.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch1/addAddress.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch1/changeContactDateOfBirth.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch1/changeContactNames.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch1/changeDateOfDeath.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch1/changeRelationshipToPrisoner.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch1/changeRelationshipType.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createAddressPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createContactIdentity.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createContactPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch3/createEmail.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch3/deleteAddressPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch3/deleteContactEmail.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch3/deleteContactIdentity.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch3/deleteContactPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch3/deleteDateOfDeath.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch3/deleteDob.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch3/deleteRelationship.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch4/editAddress.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch4/editAddressPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch4/editContactIdentity.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch4/editContactPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch4/editEmail.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch4/manageEmergencyContactOrNextOfKin.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch4/manageRelationshipComments.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch4/manageRelationshipStatus.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch4/recordDateOfDeath.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch4/saveBackLinks.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch4/selectApprovedVisitor.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch4/selectDomesticStatus.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch4/selectGender.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch4/selectLanguageAndInterpretationRequirements.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch4/selectStaffStatus.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch4/updateContactGlobalRestriction.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch4/updatePrisonerContactRestriction.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 4,
+          "sha": "229153560761282912d6badd47e14e02c236e81c",
+          "parents": [
+            "64ba7b4ce61aaf4be9d8dfae49938c59b16f26e0"
+          ],
+          "subject": "VB-6570: Move to MoJ Frontend v9, gov uk fe v6 (#766)",
+          "changed_files": 15,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/batch1/contactConfirmationPage.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch4/listContactsAsAdmin.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 5,
+          "sha": "c6e49159f3a9e3436a19b52f1a23e6c03fcbf676",
+          "parents": [
+            "512c611a92c9936cf9811f1098180094ec2b0aa7"
+          ],
+          "subject": "Update dependencies 2026-03-24 and replace uuid (#756)",
+          "changed_files": 92,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/batch1/contactConfirmationPage.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 6,
+          "sha": "953e76d38e0b2800aa691c87dbce7d1ec4f10e6f",
+          "parents": [
+            "18b7cdf28428e0de125f188065e7b3abe8aa720f"
+          ],
+          "subject": "VB-6458 Prevent duplicate identity documents being created (#752)",
+          "changed_files": 32,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/batch2/createContactIdentity.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createContactWithIdentityDocuments.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 7,
+          "sha": "4d765eaba62b0da27ebd7367c53ca1be5756e46a",
+          "parents": [
+            "edf015f9d08ba96e8436abf5050b3ac65a297048"
+          ],
+          "subject": "VB-6369 Handle back links to prisoner profile when editing a contact (#741)",
+          "changed_files": 15,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/batch4/saveBackLinks.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 8,
+          "sha": "bf8a8821b6ec0c4c957ef563f02c5318488ed04f",
+          "parents": [
+            "16238db4a4e0913c1edd00a1391dc2b7b187d656"
+          ],
+          "subject": "Tidy up npm modules, fix typechecking (#733)",
+          "changed_files": 56,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/batch3/createEmail.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/batch2/createEmail.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/createNewContactAsAdmin.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/batch2/createNewContactAsAdmin.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/createNewContactAsAuthoriser.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/batch2/createNewContactAsAuthoriser.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/createNewContactCheckAnswers.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/batch2/createNewContactCheckAnswers.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/createNewContactHandlePossibleDupes.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/batch2/createNewContactHandlePossibleDupes.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/createNewContactsCheckAnswersChangeRelationship.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/batch2/createNewContactsCheckAnswersChangeRelationship.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/createPrisonerContactRestriction.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/batch2/createPrisonerContactRestriction.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/directSearchContacts.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/batch3/directSearchContacts.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/directViewContactsDetails.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/batch3/directViewContactsDetails.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/editAddress.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/batch3/editAddress.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/editAddressPhone.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/batch3/editAddressPhone.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/editContactIdentity.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/batch3/editContactIdentity.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/editContactPhone.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/batch3/editContactPhone.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/editEmail.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/batch3/editEmail.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/errorHandler.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/batch3/errorHandler.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/handleDuplicateRelationshipOnEdit.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/batch3/handleDuplicateRelationshipOnEdit.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/health.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/batch3/health.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/listContactsAsAdmin.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/batch3/listContactsAsAdmin.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/listContactsAsReadOnlyUser.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/batch3/listContactsAsReadOnlyUser.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/listPrisonerRestrictionsAsReadOnlyUser.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/batch3/listPrisonerRestrictionsAsReadOnlyUser.cy.ts"
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 9,
+          "sha": "4471ab4ba23c03f9e6eab5a0ad1fae44ae6937b4",
+          "parents": [
+            "25d637ed95c87c863c5508eb80d41481d4a8a4f2"
+          ],
+          "subject": "VB-6371: Move to GHA (#726)",
+          "changed_files": 84,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/batch1/ApproveVisitorFromContactDetailsPage.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/ApproveVisitorFromContactDetailsPage.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch1/addAddress.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/addAddress.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch1/addExistingContactAsAdmin.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/addExistingContactAsAdmin.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch1/addExistingContactAsAuthoriser.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/addExistingContactAsAuthoriser.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch1/addExistingContactCheckAnswers.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/addExistingContactCheckAnswers.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch1/addExistingContactCheckAnswersChangeRelationship.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/addExistingContactCheckAnswersChangeRelationship.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch1/addExistingContactHandleDuplicate.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/addExistingContactHandleDuplicate.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch1/addExistingContactReviewExistingRelationships.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/addExistingContactReviewExistingRelationships.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch1/changeContactDateOfBirth.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/changeContactDateOfBirth.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch1/changeContactNames.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/changeContactNames.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch1/changeDateOfDeath.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/changeDateOfDeath.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch1/changeRelationshipToPrisoner.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/changeRelationshipToPrisoner.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch1/changeRelationshipType.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/changeRelationshipType.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch1/contactConfirmationPage.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/contactConfirmationPage.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createAddressPhone.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/createAddressPhone.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createContactEnterDomesticStatus.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/createContactEnterDomesticStatus.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createContactEnterGender.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/createContactEnterGender.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createContactEnterIsStaff.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/createContactEnterIsStaff.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createContactEnterLanguageAndInterpreter.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/createContactEnterLanguageAndInterpreter.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createContactGlobalRestriction.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/createContactGlobalRestriction.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createContactIdentity.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/createContactIdentity.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createContactPhone.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/createContactPhone.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createContactWithAddresses.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/createContactWithAddresses.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createContactWithEmailAddresses.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/createContactWithEmailAddresses.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createContactWithEmployments.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/createContactWithEmployments.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createContactWithIdentityDocuments.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/createContactWithIdentityDocuments.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createContactWithPhones.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/createContactWithPhones.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createEmail.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/createEmail.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createNewContactAsAdmin.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/createNewContactAsAdmin.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createNewContactAsAuthoriser.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/createNewContactAsAuthoriser.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createNewContactCheckAnswers.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/createNewContactCheckAnswers.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createNewContactHandlePossibleDupes.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/createNewContactHandlePossibleDupes.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createNewContactsCheckAnswersChangeRelationship.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/createNewContactsCheckAnswersChangeRelationship.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch2/createPrisonerContactRestriction.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/createPrisonerContactRestriction.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/deleteAddressPhone.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/deleteAddressPhone.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/deleteContactEmail.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/deleteContactEmail.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/deleteContactIdentity.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/deleteContactIdentity.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/deleteContactPhone.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/deleteContactPhone.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/deleteDateOfDeath.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/deleteDateOfDeath.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/deleteDob.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/deleteDob.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/deleteRelationship.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/deleteRelationship.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/directSearchContacts.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/directSearchContacts.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/directViewContactsDetails.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/directViewContactsDetails.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/editAddress.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/editAddress.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/editAddressPhone.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/editAddressPhone.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/editContactIdentity.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/editContactIdentity.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/editContactPhone.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/editContactPhone.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/editEmail.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/editEmail.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/errorHandler.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/errorHandler.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/handleDuplicateRelationshipOnEdit.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/handleDuplicateRelationshipOnEdit.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/health.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/health.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/listContactsAsAdmin.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/listContactsAsAdmin.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/listContactsAsReadOnlyUser.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/listContactsAsReadOnlyUser.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch3/listPrisonerRestrictionsAsReadOnlyUser.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/listPrisonerRestrictionsAsReadOnlyUser.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/manageContactsRestrictions.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/manageContactsRestrictions.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/manageEmergencyContactOrNextOfKin.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/manageEmergencyContactOrNextOfKin.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/manageRelationshipComments.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/manageRelationshipComments.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/manageRelationshipStatus.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/manageRelationshipStatus.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/manageRelationshipStatusByAuthoriser.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/manageRelationshipStatusByAuthoriser.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/prisonerInCaseload.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/prisonerInCaseload.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/recordDateOfDeath.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/recordDateOfDeath.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/searchContact.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/searchContact.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/selectApprovedVisitor.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/selectApprovedVisitor.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/selectDomesticStatus.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/selectDomesticStatus.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/selectGender.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/selectGender.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/selectLanguageAndInterpretationRequirements.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/selectLanguageAndInterpretationRequirements.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/selectStaffStatus.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/selectStaffStatus.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/signIn.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/signIn.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/updateContactGlobalRestriction.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/updateContactGlobalRestriction.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/updatePrisonerContactEmployments.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/updatePrisonerContactEmployments.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/updatePrisonerContactRestriction.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/updatePrisonerContactRestriction.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/batch4/viewContactNameChangeHistory.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/viewContactNameChangeHistory.cy.ts"
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 10,
+          "sha": "38175d91664d9b9da4dff8046e3624933b0fe330",
+          "parents": [
+            "ba9fb0bfb3085fdafed29ae952235f6ae1738acf"
+          ],
+          "subject": "Revert \"Remove 'uuid' dependency and replace with crypto.randomUUID() (#720)\" (#721)",
+          "changed_files": 89,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/contactConfirmationPage.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 11,
+          "sha": "0df35e8797dd7b2da1768f9bbe0d956ca18aee02",
+          "parents": [
+            "683f40af2a1a0eb237ca4f3b8ba6f7f0c7c4f933"
+          ],
+          "subject": "Remove 'uuid' dependency and replace with crypto.randomUUID() (#720)",
+          "changed_files": 89,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/contactConfirmationPage.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 12,
+          "sha": "5c0b5c98fbb399ba57ed7ca6d00c7f49deedcd0a",
+          "parents": [
+            "f70a4dc657bc28c2096968b949dc06dbbed7a3a9"
+          ],
+          "subject": "PRC-1071 : Remove search v1 api, update ui to use V2 , (#706)",
+          "changed_files": 14,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/directSearchContacts.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/directViewContactsDetails.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/searchContact.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 13,
+          "sha": "b88ca33598149333f3cb1bc5a2e640b2d89fab3f",
+          "parents": [
+            "ccdfe0aa94c7c8dae41f5f2f0f3cfb878152cb98"
+          ],
+          "subject": "PRC-1020 : fixes after further dev testing (#694)",
+          "changed_files": 12,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/directSearchContacts.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/directViewContactsDetails.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 14,
+          "sha": "bdb6e6b164139df1937b5dfa10fe673dc959d003",
+          "parents": [
+            "912ab6e332328ffec84a14a4f2bbaa868ac06203"
+          ],
+          "subject": "PRC 1020 fix some issues (#692)",
+          "changed_files": 14,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/directSearchContacts.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/directViewContactsDetails.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 15,
+          "sha": "aa5a02856e1f6511a572f90a4868c34fb328010b",
+          "parents": [
+            "d3222e69888096c384cae3926a220760c4833f48"
+          ],
+          "subject": "PRC-1025 : increase timeout, fix an error message (#680)",
+          "changed_files": 6,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/searchContact.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 16,
+          "sha": "a4968e575918e0a2806b73da51ec86870002a6c9",
+          "parents": [
+            "4e512c3e1f1e7ec5d97bb181149c9abae7087f98"
+          ],
+          "subject": "Revert \"PRC-1015 : Enhancing Contact search (#657)\" (#666)",
+          "changed_files": 23,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/addExistingContactAsAdmin.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactAsAuthoriser.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactCheckAnswers.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactCheckAnswersChangeRelationship.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactHandleDuplicate.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactReviewExistingRelationships.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/contactConfirmationPage.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/searchContact.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 17,
+          "sha": "4e512c3e1f1e7ec5d97bb181149c9abae7087f98",
+          "parents": [
+            "2100a17054c1f6ac89b05f92246b1f253292b9bc"
+          ],
+          "subject": "PRC-1015 : Enhancing Contact search (#657)",
+          "changed_files": 23,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/addExistingContactAsAdmin.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactAsAuthoriser.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactCheckAnswers.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactCheckAnswersChangeRelationship.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactHandleDuplicate.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactReviewExistingRelationships.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/contactConfirmationPage.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/searchContact.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 18,
+          "sha": "2100a17054c1f6ac89b05f92246b1f253292b9bc",
+          "parents": [
+            "03981662e65b33e2541b47eadd878e82672f0ffb"
+          ],
+          "subject": "PRC-name-change-and-audit-history (#663)",
+          "changed_files": 92,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/ApproveVisitorFromContactDetailsPage.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addAddress.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactAsAdmin.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactAsAuthoriser.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactCheckAnswers.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactCheckAnswersChangeRelationship.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactHandleDuplicate.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactReviewExistingRelationships.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/changeContactDateOfBirth.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/changeContactNames.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/changeContactTitleOrMiddleNames.cy.ts"
+            },
+            {
+              "path": "integration_tests/e2e/changeDateOfDeath.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/changeRelationshipToPrisoner.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/changeRelationshipType.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/contactConfirmationPage.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createAddressPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactEnterDomesticStatus.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactEnterGender.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactEnterIsStaff.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactEnterLanguageAndInterpreter.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactGlobalRestriction.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactIdentity.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactWithAddresses.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactWithEmailAddresses.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactWithEmployments.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactWithIdentityDocuments.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactWithPhones.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createEmail.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createNewContactAsAdmin.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createNewContactAsAuthoriser.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createNewContactHandlePossibleDupes.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createPrisonerContactRestriction.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteAddressPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteContactEmail.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteContactIdentity.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteContactPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteDateOfDeath.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteDob.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteRelationship.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/editAddress.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/editAddressPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/editContactIdentity.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/editContactPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/editEmail.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/handleDuplicateRelationshipOnEdit.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/manageContactsRestrictions.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/manageEmergencyContactOrNextOfKin.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/manageRelationshipComments.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/manageRelationshipStatus.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/manageRelationshipStatusByAuthoriser.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/recordDateOfDeath.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/selectApprovedVisitor.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/selectDomesticStatus.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/selectGender.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/selectLanguageAndInterpretationRequirements.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/selectStaffStatus.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/updateContactGlobalRestriction.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/updatePrisonerContactEmployments.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/updatePrisonerContactRestriction.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/viewContactNameChangeHistory.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 19,
+          "sha": "399acca857a1d18b4a9a480dbba1b2ea7b0ddceb",
+          "parents": [
+            "f33b6ba16de9ec32ac2550ab9b7b7381676e5abb"
+          ],
+          "subject": "Revert \"PRC-950 : Audit history after changing a Contact's name (#648)\" (#659)",
+          "changed_files": 79,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/ApproveVisitorFromContactDetailsPage.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addAddress.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactAsAdmin.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactAsAuthoriser.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactCheckAnswers.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactCheckAnswersChangeRelationship.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactHandleDuplicate.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactReviewExistingRelationships.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/changeContactDateOfBirth.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/changeContactTitleOrMiddleNames.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/changeDateOfDeath.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/changeRelationshipToPrisoner.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/changeRelationshipType.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/contactConfirmationPage.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createAddressPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactEnterDomesticStatus.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactEnterGender.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactEnterIsStaff.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactEnterLanguageAndInterpreter.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactGlobalRestriction.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactIdentity.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactWithAddresses.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactWithEmailAddresses.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactWithEmployments.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactWithIdentityDocuments.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactWithPhones.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createEmail.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createNewContactAsAdmin.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createNewContactAsAuthoriser.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createNewContactHandlePossibleDupes.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createPrisonerContactRestriction.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteAddressPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteContactEmail.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteContactIdentity.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteContactPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteDateOfDeath.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteDob.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteRelationship.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/editAddress.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/editAddressPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/editContactIdentity.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/editContactPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/editEmail.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/handleDuplicateRelationshipOnEdit.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/manageContactsRestrictions.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/manageEmergencyContactOrNextOfKin.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/manageRelationshipComments.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/manageRelationshipStatus.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/manageRelationshipStatusByAuthoriser.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/recordDateOfDeath.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/selectApprovedVisitor.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/selectDomesticStatus.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/selectGender.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/selectLanguageAndInterpretationRequirements.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/selectStaffStatus.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/updateContactGlobalRestriction.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/updatePrisonerContactEmployments.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/updatePrisonerContactRestriction.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/viewContactNameChangeHistory.cy.ts",
+              "status": "removed",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 20,
+          "sha": "f33b6ba16de9ec32ac2550ab9b7b7381676e5abb",
+          "parents": [
+            "5bcf473928b48d94bcfde3967bb677c451134b56"
+          ],
+          "subject": "Revert \"PRC-949 : Change Contact's name (#643)\" (#660)",
+          "changed_files": 15,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/changeContactTitleOrMiddleNames.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/changeContactNames.cy.ts"
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 21,
+          "sha": "4f94a08a226f4a9d38e926d503c2fd7eb767a010",
+          "parents": [
+            "ec17a47a49ecfd1166b72c2cab850599842bd071"
+          ],
+          "subject": "PRC-950 : Audit history after changing a Contact's name (#648)",
+          "changed_files": 79,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/ApproveVisitorFromContactDetailsPage.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addAddress.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactAsAdmin.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactAsAuthoriser.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactCheckAnswers.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactCheckAnswersChangeRelationship.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactHandleDuplicate.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/addExistingContactReviewExistingRelationships.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/changeContactDateOfBirth.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/changeContactNames.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/changeDateOfDeath.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/changeRelationshipToPrisoner.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/changeRelationshipType.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/contactConfirmationPage.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createAddressPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactEnterDomesticStatus.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactEnterGender.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactEnterIsStaff.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactEnterLanguageAndInterpreter.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactGlobalRestriction.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactIdentity.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactWithAddresses.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactWithEmailAddresses.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactWithEmployments.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactWithIdentityDocuments.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createContactWithPhones.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createEmail.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createNewContactAsAdmin.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createNewContactAsAuthoriser.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createNewContactHandlePossibleDupes.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/createPrisonerContactRestriction.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteAddressPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteContactEmail.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteContactIdentity.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteContactPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteDateOfDeath.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteDob.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/deleteRelationship.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/editAddress.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/editAddressPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/editContactIdentity.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/editContactPhone.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/editEmail.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/handleDuplicateRelationshipOnEdit.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/manageContactsRestrictions.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/manageEmergencyContactOrNextOfKin.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/manageRelationshipComments.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/manageRelationshipStatus.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/manageRelationshipStatusByAuthoriser.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/recordDateOfDeath.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/selectApprovedVisitor.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/selectDomesticStatus.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/selectGender.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/selectLanguageAndInterpretationRequirements.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/selectStaffStatus.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/updateContactGlobalRestriction.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/updatePrisonerContactEmployments.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/updatePrisonerContactRestriction.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            },
+            {
+              "path": "integration_tests/e2e/viewContactNameChangeHistory.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 22,
+          "sha": "ec17a47a49ecfd1166b72c2cab850599842bd071",
+          "parents": [
+            "40882e8ac77249ac88f1e5b0d45ec143f174e3cd"
+          ],
+          "subject": "PRC-949 : Change Contact's name (#643)",
+          "changed_files": 15,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/changeContactNames.cy.ts",
+              "status": "renamed",
+              "previous_filename": "integration_tests/e2e/changeContactTitleOrMiddleNames.cy.ts"
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 23,
+          "sha": "317f6d3274f17570c8a49a3d16dd0e94e45a2649",
+          "parents": [
+            "76ddbe2aa0dfd0d5b978ebd302ef2ef21dfe536d"
+          ],
+          "subject": "PRC-981 : fix comments after team review (#621)",
+          "changed_files": 6,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/listPrisonerRestrictionsAsReadOnlyUser.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 24,
+          "sha": "76ddbe2aa0dfd0d5b978ebd302ef2ef21dfe536d",
+          "parents": [
+            "2cf705784ac2f1c385094961eb2fc74288b97817"
+          ],
+          "subject": "PRC-956 : fix int test failure after merge into master (#620)",
+          "changed_files": 1,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/ApproveVisitorFromContactDetailsPage.cy.ts",
+              "status": "modified",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 25,
+          "sha": "2cf705784ac2f1c385094961eb2fc74288b97817",
+          "parents": [
+            "c52337c51ef317c6920114e977de052da2585a79"
+          ],
+          "subject": "PRC-956 : Prioritising info about approval status (#619)",
+          "changed_files": 5,
+          "spec_files": [
+            {
+              "path": "integration_tests/e2e/ApproveVisitorFromContactDetailsPage.cy.ts",
+              "status": "added",
+              "previous_filename": null
+            }
+          ],
+          "disposition": "pending-source"
+        }
+      ]
+    }
+  ]
+}

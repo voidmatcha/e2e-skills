@@ -1,0 +1,60 @@
+{
+  "task": "Cover the budget envelopes page (`/`): three cards (Groceries $120 of $300, Transport $150 of $150, Fun $0 of $100). Adding spending to an envelope raises its `$spent of $limit` line and its progress bar's aria-valuenow (the percentage of the limit, capped at 100), and the Total line (`Total $270 of $550`) sums every envelope. An envelope whose spending exceeds its limit shows the Over budget badge; spending exactly the limit does not. Reset envelope sets its spending back to $0 and removes the badge. Spending is stored on the server and survives a reload.",
+  "faults": [
+    {
+      "id": "f1-add-noop",
+      "class": "surface",
+      "brief_phrase": "Adding spending to an envelope raises its `$spent of $limit` line",
+      "description": "Add sends the request but the card does not change until a reload.",
+      "find": "        const updated = await api(\"POST\", \"/api/envelopes/\" + env.id + \"/spend\", { amount });\n        if (!updated) return;\n        state = state.map((e) => (e.id === updated.id ? updated : e));\n        render();\n",
+      "replace": "        const updated = await api(\"POST\", \"/api/envelopes/\" + env.id + \"/spend\", { amount });\n        void updated;\n"
+    },
+    {
+      "id": "f2-valuenow-stale",
+      "class": "a11y",
+      "brief_phrase": "its progress bar's aria-valuenow",
+      "description": "The progress bar's aria-valuenow is always 0 although the amounts line is right.",
+      "find": "      bar.setAttribute(\"aria-valuenow\", String(Math.min(100, Math.round((100 * env.spent) / env.limit))));\n",
+      "replace": "      bar.setAttribute(\"aria-valuenow\", \"0\");\n"
+    },
+    {
+      "id": "f3-total-stale",
+      "class": "precision",
+      "brief_phrase": "the Total line (`Total $270 of $550`) sums every envelope",
+      "description": "The Total line keeps the numbers from page load.",
+      "find": "      el(\"bg-total\").textContent = \"Total $\" + spent + \" of $\" + limit;\n",
+      "replace": "      if (!el(\"bg-total\").dataset.set) { el(\"bg-total\").dataset.set = \"1\"; el(\"bg-total\").textContent = \"Total $\" + spent + \" of $\" + limit; }\n"
+    },
+    {
+      "id": "f4-badge-at-limit",
+      "class": "boundary",
+      "brief_phrase": "spending exactly the limit does not",
+      "description": "The Over budget badge appears already when spending equals the limit.",
+      "find": "      badge.hidden = !(env.spent > env.limit);\n",
+      "replace": "      badge.hidden = !(env.spent >= env.limit);\n"
+    },
+    {
+      "id": "f5-spending-not-persisted",
+      "class": "persistence",
+      "brief_phrase": "Spending is stored on the server and survives a reload",
+      "description": "The server answers with the raised amount but keeps the old one.",
+      "find": "      env.spent += Math.round(Number(amount));\n      return json(res, 200, env);\n",
+      "replace": "      return json(res, 200, { ...env, spent: env.spent + Math.round(Number(amount)) });\n"
+    }
+  ],
+  "refactor": [
+    {"find": "<div id=\"bg-envelopes\" class=\"envelopes\"></div>", "replace": "<div class=\"grid\"><div id=\"bg-envelopes\" class=\"grid__cells\"></div></div>"},
+    {"find": "<p id=\"bg-total\" class=\"total-line\">", "replace": "<p id=\"bg-total\" class=\"summary\">"},
+    {"find": "article.className = env.spent > env.limit ? \"envelope over\" : \"envelope\";", "replace": "article.className = env.spent > env.limit ? \"tile tile--alert\" : \"tile\";"},
+    {"find": "amounts.className = \"amounts\";", "replace": "amounts.className = \"tile__figures\";"},
+    {"find": "bar.className = \"bar\";", "replace": "bar.className = \"meter\";"},
+    {"find": "fill.className = \"bar-fill\";", "replace": "fill.className = \"meter__fill\";"},
+    {"find": "badge.className = \"badge-over\";", "replace": "badge.className = \"pill pill--alert\";"},
+    {"find": "form.className = \"spend\";", "replace": "form.className = \"tile__composer\";"},
+    {"find": "label.className = \"field-label\";", "replace": "label.className = \"composer__label\";"},
+    {"find": "bg-spend-label-", "replace": "outlay-label-"},
+    {"find": "bg-name-", "replace": "pocket-name-"},
+    {"find": "bg-envelopes", "replace": "pockets"},
+    {"find": "bg-total", "replace": "overall"}
+  ]
+}

@@ -1,0 +1,140 @@
+{
+ "protocol_id": "generator-skill-effect-v1",
+ "model": "claude-sonnet-5-5",
+ "run": {
+  "case": "gen-00",
+  "arm": "no-skill",
+  "repetition": 1,
+  "ordinal": 0,
+  "smoke": true,
+  "attempts": [
+   {
+    "infrastructure_error": false,
+    "timeout": false,
+    "error": null,
+    "elapsed_ms": 20396,
+    "cost_usd": 0.0495386,
+    "num_turns": 7,
+    "usage": {
+     "input_tokens": 8,
+     "cache_creation_input_tokens": 5629,
+     "cache_read_input_tokens": 38683,
+     "output_tokens": 1927,
+     "output_tokens_details": {
+      "thinking_tokens": 0
+     },
+     "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+     },
+     "service_tier": "standard",
+     "cache_creation": {
+      "ephemeral_1h_input_tokens": 5629,
+      "ephemeral_5m_input_tokens": 0
+     },
+     "inference_geo": "not_available",
+     "iterations": [
+      {
+       "input_tokens": 2,
+       "output_tokens": 465,
+       "cache_read_input_tokens": 11118,
+       "cache_creation_input_tokens": 1712,
+       "cache_creation": {
+        "ephemeral_5m_input_tokens": 0,
+        "ephemeral_1h_input_tokens": 1712
+       },
+       "type": "message"
+      }
+     ],
+     "speed": "standard",
+     "fallback_credit": null
+    },
+    "model_usage": {
+     "claude-sonnet-5-5": {
+      "inputTokens": 8,
+      "outputTokens": 1927,
+      "cacheReadInputTokens": 38683,
+      "cacheCreationInputTokens": 5629,
+      "webSearchRequests": 0,
+      "costUSD": 0.0495386,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-sonnet-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+     }
+    },
+    "exit_code": 0,
+    "is_error": false,
+    "subtype": "success",
+    "result_text": "{\"spec_files\":[\"tests/tip.spec.mjs\"],\"status\":\"complete\",\"summary\":\"I added tests/tip.spec.mjs with 7 tests covering all three acceptance criteria. The full suite (these 7 plus the existing smoke spec) passed, 8 of 8, on the first run. I didn't use browser exploration or repeat runs, so I haven't checked for flakiness.\\n\\n- **Tip and total:** the default 15% on 100 gives `Tip: $15.00` and `Total: $115.00`. A chosen 20% on 42.50 gives `Tip: $8.50` and `Total: $51.00`.\\n- **Recompute on change:** switching an 80 bill from 10% to 20% updates both values.\\n- **Errors:** non-numeric (`abc`), negative (`-5`) and zero (`0`) amounts each show `Enter a positive amount` and clear the tip and total.\\n- **Recovery:** entering a valid amount after an error clears the error and shows the correct tip and total.\\n\\nI included zero as an extra case. The app treats it as invalid, but your criteria only name non-numeric and negative amounts. I changed nothing outside `tests/`.\"}",
+    "structured_output": {
+     "spec_files": [
+      "tests/tip.spec.mjs"
+     ],
+     "status": "complete",
+     "summary": "I added tests/tip.spec.mjs with 7 tests covering all three acceptance criteria. The full suite (these 7 plus the existing smoke spec) passed, 8 of 8, on the first run. I didn't use browser exploration or repeat runs, so I haven't checked for flakiness.\n\n- **Tip and total:** the default 15% on 100 gives `Tip: $15.00` and `Total: $115.00`. A chosen 20% on 42.50 gives `Tip: $8.50` and `Total: $51.00`.\n- **Recompute on change:** switching an 80 bill from 10% to 20% updates both values.\n- **Errors:** non-numeric (`abc`), negative (`-5`) and zero (`0`) amounts each show `Enter a positive amount` and clear the tip and total.\n- **Recovery:** entering a valid amount after an error clears the error and shows the correct tip and total.\n\nI included zero as an extra case. The app treats it as invalid, but your criteria only name non-numeric and negative amounts. I changed nothing outside `tests/`."
+    },
+    "attempt": 1
+   }
+  ],
+  "spec_files": [
+   "tests/tip.spec.mjs"
+  ],
+  "tests_files": [
+   "tests/tip.spec.mjs"
+  ],
+  "out_of_scope_writes": [],
+  "call_id": "gen-00-no-skill-r1",
+  "cost_usd": 0.0495386,
+  "elapsed_ms": 20396,
+  "timeout": false,
+  "num_turns": 7,
+  "usage": {
+   "input_tokens": 8,
+   "cache_creation_input_tokens": 5629,
+   "cache_read_input_tokens": 38683,
+   "output_tokens": 1927,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 5629,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "not_available",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 465,
+     "cache_read_input_tokens": 11118,
+     "cache_creation_input_tokens": 1712,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 1712
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard",
+   "fallback_credit": null
+  },
+  "structured_output": {
+   "spec_files": [
+    "tests/tip.spec.mjs"
+   ],
+   "status": "complete",
+   "summary": "I added tests/tip.spec.mjs with 7 tests covering all three acceptance criteria. The full suite (these 7 plus the existing smoke spec) passed, 8 of 8, on the first run. I didn't use browser exploration or repeat runs, so I haven't checked for flakiness.\n\n- **Tip and total:** the default 15% on 100 gives `Tip: $15.00` and `Total: $115.00`. A chosen 20% on 42.50 gives `Tip: $8.50` and `Total: $51.00`.\n- **Recompute on change:** switching an 80 bill from 10% to 20% updates both values.\n- **Errors:** non-numeric (`abc`), negative (`-5`) and zero (`0`) amounts each show `Enter a positive amount` and clear the tip and total.\n- **Recovery:** entering a valid amount after an error clears the error and shows the correct tip and total.\n\nI included zero as an extra case. The app treats it as invalid, but your criteria only name non-numeric and negative amounts. I changed nothing outside `tests/`."
+  },
+  "result_text": "{\"spec_files\":[\"tests/tip.spec.mjs\"],\"status\":\"complete\",\"summary\":\"I added tests/tip.spec.mjs with 7 tests covering all three acceptance criteria. The full suite (these 7 plus the existing smoke spec) passed, 8 of 8, on the first run. I didn't use browser exploration or repeat runs, so I haven't checked for flakiness.\\n\\n- **Tip and total:** the default 15% on 100 gives `Tip: $15.00` and `Total: $115.00`. A chosen 20% on 42.50 gives `Tip: $8.50` and `Total: $51.00`.\\n- **Recompute on change:** switching an 80 bill from 10% to 20% updates both values.\\n- **Errors:** non-numeric (`abc`), negative (`-5`) and zero (`0`) amounts each show `Enter a positive amount` and clear the tip and total.\\n- **Recovery:** entering a valid amount after an error clears the error and shows the correct tip and total.\\n\\nI included zero as an extra case. The app treats it as invalid, but your criteria only name non-numeric and negative amounts. I changed nothing outside `tests/`.\"}",
+  "infrastructure_error": false,
+  "deliverable": true,
+  "note": "unscored smoke call on a case outside the corpus; used to calibrate budget and timeout before freeze"
+ }
+}

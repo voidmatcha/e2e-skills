@@ -1,0 +1,422 @@
+{
+ "cy-06": {
+  "mapper_a_opus": {
+   "f_code": "F11",
+   "second_choice": "F14",
+   "fit": "clean",
+   "reason": "The alias wait could be satisfied by an unrelated request, so the test assumed an ordering between its own wait and the target query that was not guaranteed."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F11",
+   "second_choice": "F3",
+   "fit": "clean",
+   "reason": "The cy.wait alias is consumed by an unrelated matching request, so the test's own wait ordering assumption breaks."
+  },
+  "label": "F11"
+ },
+ "pw-04": {
+  "mapper_a_opus": {
+   "f_code": "F2",
+   "second_choice": "F5",
+   "fit": "clean",
+   "reason": "Ambiguous locator (two file inputs) plus an input action that never reached the real onChange handler are both target-resolution failures, which the F5 note assigns to F2."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F2",
+   "second_choice": "F5",
+   "fit": "forced",
+   "reason": "Ambiguous two-input locator is F2, but the second mode (setInputFiles not reaching React state) has no clean code; F2 is the least bad."
+  },
+  "label": "F2"
+ },
+ "cy-05": {
+  "mapper_a_opus": {
+   "f_code": "F2",
+   "second_choice": "F8",
+   "fit": "clean",
+   "reason": "The click/type landed on fixed chrome instead of the intended input, and a keystroke or click that never reaches its target is F2."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F2",
+   "second_choice": "F5",
+   "fit": "clean",
+   "reason": "The click or type never landed on the intended input because fixed chrome covered it, which the table assigns to F2 rather than F5."
+  },
+  "label": "F2"
+ },
+ "pw-11": {
+  "mapper_a_opus": {
+   "f_code": "F14",
+   "second_choice": "F15",
+   "fit": "clean",
+   "reason": "A whole-app remount replaced the filled input with a fresh node, a re-render window where the test acted on a stale element."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F14",
+   "second_choice": "F13",
+   "fit": "clean",
+   "reason": "The filled input node was replaced by a re-render/remount, a stale-element window, with the toPass retry masking it."
+  },
+  "label": "F14"
+ },
+ "cy-14": {
+  "mapper_a_opus": {
+   "f_code": "F1",
+   "second_choice": "F11",
+   "fit": "clean",
+   "reason": "The backend did succeed after 20-27 s and the defect was a 20 s wait budget near that slow successful response, fixed by waiting longer on the response."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F1",
+   "second_choice": "F3",
+   "fit": "clean",
+   "reason": "The 20s wait budget was shorter than a slow but successful 20-27s response, so the defect is the wait budget."
+  },
+  "label": "F1"
+ },
+ "pw-02": {
+  "mapper_a_opus": {
+   "f_code": "F7",
+   "second_choice": "F2",
+   "fit": "clean",
+   "reason": "A popup left open by an earlier test was picked up as the target, so failures depended on test order."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F7",
+   "second_choice": null,
+   "fit": "clean",
+   "reason": "A popup left open by an earlier test in the same browser leaked state, making failures order dependent."
+  },
+  "label": "F7"
+ },
+ "cy-01": {
+  "mapper_a_opus": {
+   "f_code": "F14",
+   "second_choice": "F4",
+   "fit": "clean",
+   "reason": "The Bootstrap fade transition removed the element before the re-query observed it, a transient-element window."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F14",
+   "second_choice": "F1",
+   "fit": "clean",
+   "reason": "The element was mid fade transition and then removed from the DOM, so the re-query read inside a transition window."
+  },
+  "label": "F14"
+ },
+ "pw-14": {
+  "mapper_a_opus": {
+   "f_code": "F14",
+   "second_choice": "F1",
+   "fit": "clean",
+   "reason": "A non-waiting isHidden read sampled the table before its rows rendered, a one-shot read inside a render window."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F14",
+   "second_choice": "F1",
+   "fit": "clean",
+   "reason": "A non-waiting isHidden() read sampled a table that was not yet rendered."
+  },
+  "label": "F14"
+ },
+ "pw-13": {
+  "mapper_a_opus": {
+   "f_code": "F1",
+   "second_choice": "F8",
+   "fit": "forced",
+   "reason": "Readiness did eventually arrive but took 2-4x longer under reduced motion and exceeded the test timeout; the real cause is a product CSS performance cascade that no code describes well."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F14",
+   "second_choice": "F8",
+   "fit": "forced",
+   "reason": "Transitions cascading under reduced motion slowed readiness past the timeout; nearest is animation/transition in progress, with F8 as the reduced-motion environment angle."
+  },
+  "label": null
+ },
+ "cy-13": {
+  "mapper_a_opus": {
+   "f_code": "F11",
+   "second_choice": "F14",
+   "fit": "clean",
+   "reason": "The assertion that the input stays empty ran before the save the test itself triggered had been processed and normalized to zero."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F11",
+   "second_choice": "F14",
+   "fit": "clean",
+   "reason": "The assertion ran before the save the test itself triggered was processed, racing the save response."
+  },
+  "label": "F11"
+ },
+ "cy-03": {
+  "mapper_a_opus": {
+   "f_code": "F10",
+   "second_choice": "F11",
+   "fit": "forced",
+   "reason": "The write was rejected as unauthenticated because the auth token handshake had not settled; the mechanism is a product-side auth/session race rather than a test ordering assumption."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F11",
+   "second_choice": "F10",
+   "fit": "clean",
+   "reason": "The database write raced ahead of the auth token handshake, an async ordering assumption between separate processes."
+  },
+  "label": null
+ },
+ "cy-02": {
+  "mapper_a_opus": {
+   "f_code": "F15",
+   "second_choice": "F14",
+   "fit": "forced",
+   "reason": "The inputs were rendered but not yet interactive until page script enabled them, closest to rendered-but-inert, though not an SSR hydration case."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F14",
+   "second_choice": "F15",
+   "fit": "clean",
+   "reason": "Typing happened during the window before the page script enabled the inputs, a not-yet-ready render state."
+  },
+  "label": null
+ },
+ "pw-01": {
+  "mapper_a_opus": {
+   "f_code": "F7",
+   "second_choice": "F8",
+   "fit": "clean",
+   "reason": "A previous test's context disposal wedged the shared browser process, so the next test in the worker stalled."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F7",
+   "second_choice": null,
+   "fit": "clean",
+   "reason": "A previous test's leftover WebGL renderer wedged the browser for the next context in the same worker."
+  },
+  "label": "F7"
+ },
+ "cy-04": {
+  "mapper_a_opus": {
+   "f_code": "F15",
+   "second_choice": "F1",
+   "fit": "clean",
+   "reason": "Server-rendered content was visible but clicks did nothing until hydration, fixed with a hydration marker."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F15",
+   "second_choice": null,
+   "fit": "clean",
+   "reason": "Server-rendered content was visible but inert until hydration, so the click opened no dialog."
+  },
+  "label": "F15"
+ },
+ "pw-12": {
+  "mapper_a_opus": {
+   "f_code": "F14",
+   "second_choice": "F1",
+   "fit": "clean",
+   "reason": "Keystrokes were dropped while the editor was re-rendering, so Save never enabled; a re-render window rather than a wait budget."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F14",
+   "second_choice": "F15",
+   "fit": "clean",
+   "reason": "Keystrokes were dropped during editor re-renders, a re-render window, leaving Save disabled."
+  },
+  "label": "F14"
+ },
+ "pw-07": {
+  "mapper_a_opus": {
+   "f_code": "F3",
+   "second_choice": "F8",
+   "fit": "clean",
+   "reason": "The static server's small backlog occasionally reset connections, failing a module import, which is a network dependency failure."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F3",
+   "second_choice": "F8",
+   "fit": "clean",
+   "reason": "Intermittent connection resets from the test static server broke the module graph, a network-level failure."
+  },
+  "label": "F3"
+ },
+ "pw-03": {
+  "mapper_a_opus": {
+   "f_code": "F14",
+   "second_choice": "F2",
+   "fit": "clean",
+   "reason": "Clicking during the menu's enter transition left an invisible mounted menu catching pointer events, a transition race."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F14",
+   "second_choice": "F5",
+   "fit": "clean",
+   "reason": "Clicking within an interrupted enter transition left an invisible menu mounted that still caught pointer events."
+  },
+  "label": "F14"
+ },
+ "cy-09": {
+  "mapper_a_opus": {
+   "f_code": "F15",
+   "second_choice": "F11",
+   "fit": "forced",
+   "reason": "The dispatched event had no effect because the app's listener was not yet attached after mount, matching rendered-but-inert listeners, though not an SSR hydration case."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F11",
+   "second_choice": "F15",
+   "fit": "clean",
+   "reason": "The dispatch was queued before the app's listener was attached, an ordering assumption within the test's own steps."
+  },
+  "label": null
+ },
+ "cy-10": {
+  "mapper_a_opus": {
+   "f_code": "F11",
+   "second_choice": null,
+   "fit": "clean",
+   "reason": "A read at the JS call site ran before the queued record step had produced its value, a command-queue ordering assumption."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F11",
+   "second_choice": null,
+   "fit": "clean",
+   "reason": "A JS read fired before the cy queue had run the earlier record step, a command-queue ordering race."
+  },
+  "label": "F11"
+ },
+ "cy-11": {
+  "mapper_a_opus": {
+   "f_code": "F4",
+   "second_choice": "F9",
+   "fit": "clean",
+   "reason": "The assertion on the dropdown's disappearance did not check the intended outcome, compounded by leftover data matching a substring name."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F4",
+   "second_choice": "F7",
+   "fit": "forced",
+   "reason": "The assertion checked the wrong thing (over-broad), compounded by leftover state matching rows; no single code covers both."
+  },
+  "label": "F4"
+ },
+ "pw-05": {
+  "mapper_a_opus": {
+   "f_code": "F2",
+   "second_choice": "F14",
+   "fit": "clean",
+   "reason": "The id selector matched both the visible main and an offscreen preload copy, an ambiguous selector."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F2",
+   "second_choice": "F12",
+   "fit": "clean",
+   "reason": "The id selector matched two elements (strict mode violation) because of an offscreen duplicate."
+  },
+  "label": "F2"
+ },
+ "pw-08": {
+  "mapper_a_opus": {
+   "f_code": "F11",
+   "second_choice": "F8",
+   "fit": "clean",
+   "reason": "The test assumed navigation had completed loading when its URL assertion passed at commit, then resized the viewport across that lifecycle boundary."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F11",
+   "second_choice": "F14",
+   "fit": "clean",
+   "reason": "The test assumed navigation commit meant the document had finished loading before resizing the viewport."
+  },
+  "label": "F11"
+ },
+ "cy-07": {
+  "mapper_a_opus": {
+   "f_code": "F2",
+   "second_choice": "F12",
+   "fit": "clean",
+   "reason": "A hidden duplicate element made the class selector match two elements."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F2",
+   "second_choice": "F12",
+   "fit": "clean",
+   "reason": "The class selector matched two elements because of a hidden duplicate button."
+  },
+  "label": "F2"
+ },
+ "pw-06": {
+  "mapper_a_opus": {
+   "f_code": "F15",
+   "second_choice": "F14",
+   "fit": "clean",
+   "reason": "Keyboard traversal started before React hydration finished on server-rendered HTML."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F15",
+   "second_choice": null,
+   "fit": "clean",
+   "reason": "Keyboard traversal began before React hydration finished on server-rendered HTML."
+  },
+  "label": "F15"
+ },
+ "cy-12": {
+  "mapper_a_opus": {
+   "f_code": "F11",
+   "second_choice": "F14",
+   "fit": "clean",
+   "reason": "The test navigated before the app's own location replace landed, assuming an order the app's async steps do not guarantee."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F11",
+   "second_choice": "F14",
+   "fit": "clean",
+   "reason": "The test's navigation was issued before the app's own location replace landed and was overwritten."
+  },
+  "label": "F11"
+ },
+ "cy-08": {
+  "mapper_a_opus": {
+   "f_code": "F2",
+   "second_choice": "F12",
+   "fit": "forced",
+   "reason": "The helper acted on the wrong element (adding a new row instead of opening row 1's cell), closest to a targeting failure though no selector error was involved."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F2",
+   "second_choice": "F12",
+   "fit": "clean",
+   "reason": "The selector targeted a newly appended row instead of the existing row whose cell lacks an input."
+  },
+  "label": "F2"
+ },
+ "pw-10": {
+  "mapper_a_opus": {
+   "f_code": "F14",
+   "second_choice": "F11",
+   "fit": "clean",
+   "reason": "During a screen transition the test acted on the old screen, whose popover unmounted when the new screen committed."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F11",
+   "second_choice": "F14",
+   "fit": "clean",
+   "reason": "The helper did not wait for the account screen transition, so the next step acted on the old screen that was then replaced."
+  },
+  "label": null
+ },
+ "pw-09": {
+  "mapper_a_opus": {
+   "f_code": "F1",
+   "second_choice": "F11",
+   "fit": "clean",
+   "reason": "A fixed 300 ms sleep sampled state instead of awaiting the native fullscreenchange outcome that does arrive on its own."
+  },
+  "mapper_b_sonnet": {
+   "f_code": "F1",
+   "second_choice": "F11",
+   "fit": "clean",
+   "reason": "A fixed 300ms sample was used instead of a retrying wait or the event, a wait strategy defect."
+  },
+  "label": "F1"
+ }
+}

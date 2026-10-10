@@ -1,0 +1,28 @@
+{
+  "status": "SOURCE_ADJUDICATED_PUBLIC_DEVELOPMENT_CASES",
+  "source_ledger": "commit-ledger.json",
+  "disposition_ledger": "adjudication.json",
+  "cases": [
+    {
+      "id": "xmlui-scroll-readiness",
+      "repository": "xmlui-org/xmlui",
+      "api_ordinal": 25,
+      "fix": "2807bff4afafe5696257b7c53ed848a6808ab29c",
+      "parent": "f5c47a05dfada70edcb8295e84cb81d1c90d5a9b",
+      "pattern": "#9",
+      "severity": "P1",
+      "representative_spec": "xmlui/tests-e2e/how-to-examples/preserve-tree-state-across-data-refreshes.spec.ts",
+      "parent_spec_blob": "8df1da396d30d782ffef3397f0c70e0de258bd16",
+      "fix_spec_blob": "ffbdcb54e88d0c5f10e3a83f1c7db793f6b86968",
+      "parent_location": "line 54",
+      "fix_location": "helper lines 15-21, invocation line 62",
+      "mapped_repair": "After assigning the Tree scroller's scrollTop to scrollHeight, a fixed 50ms Playwright sleep becomes bounded-by-assertion expect.poll() on nonzero scrollTop; the later deletion and <=1px scroll-preservation assertions remain.",
+      "source_context": [
+        "the original Tree role locator and new project-tree test ID identify the same scrollable Tree surface",
+        "parent spec lines 49-68 and fix spec lines 61-73 preserve the pre-delete visibility, deletion, disappearance, success text, and scroll-delta check",
+        "the fix adds testId=project-tree to the existing Tree example; TreeReact.tsx renders the scrollable role=tree surface"
+      ],
+      "limit": "The poll proves nonzero scrolling, not exact bottom position or full scroll-event settlement. The large feature commit changes app behavior; no historical flaky run was reproduced. Only this narrow fixed-delay replacement is admitted."
+    }
+  ]
+}

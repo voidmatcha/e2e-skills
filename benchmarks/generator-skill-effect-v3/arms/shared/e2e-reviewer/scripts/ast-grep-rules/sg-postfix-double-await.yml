@@ -1,0 +1,15 @@
+# Post-fix verification rule: double await
+#
+# Detects `await await expect(...)` shapes that sed bulk replacement can
+# introduce when the original line already had `await` and the regex
+# accidentally added another. Common pattern after rushed bulk fixes.
+
+id: postfix-double-await
+language: TypeScript
+severity: error
+message: "Double await detected — likely sed bulk-replace artifact; check the original line and remove one await"
+
+rule:
+  any:
+    - pattern: 'await await expect($$$ARGS)'
+    - pattern: 'await await $X.$METHOD($$$ARGS)'

@@ -14,4 +14,8 @@ export class AdminRooms {
 	getCellByIndex(name: string, index: number): Locator {
 		return this.getRoomRow(name).getByRole('cell').nth(index);
 	}
+
+	getRoomBadge(name: string): Locator {
+		return this.getRoomRow(name).locator('.room-badge');
+	}
 }

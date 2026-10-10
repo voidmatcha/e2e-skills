@@ -1,0 +1,169 @@
+{
+  "status": "PASS",
+  "safe_setup": {
+    "pre_start_connection_refused": true,
+    "cli_help_available": true,
+    "owned_server_ready": true,
+    "explicit_chromium_cli_open": true,
+    "deny_unapproved_origin": true,
+    "approved_origin_navigation": true,
+    "cli_snapshot": true,
+    "cli_closed": true,
+    "owned_app_stopped": true,
+    "owned_port_released": true,
+    "three_tests_after_cleanup": true
+  },
+  "image": "sha256:687b18c424d01c3af69efa921eaa824b48eb737d46492da334405e348da73881",
+  "fixture": "v2-20",
+  "fixture_sha256": {
+    "app.mjs": "721398e2d14dd1a40353ae54062345f77b00d2973c52466b312f4874df11a54a",
+    "playwright.config.mjs": "016672d75bc5045b168b8339fc46ba73a1830cb05b2bc3bedfd9053df23a462f",
+    "package.json": "c0c19f53b00787c894387d66859c3e5b377f5f5d989dd195f8c395837a4bea1f",
+    "tests/smoke.spec.mjs": "f73b37db612da92ba41b687cbdda140f567120ee1c3a120e48f742243f7711a4"
+  },
+  "limitation": "One public fixture; model-free environment readiness only, not quality equivalence or measured cost reduction.",
+  "checks": {
+    "cli_help": {
+      "exit": 0,
+      "stdout": "playwright-cli open [url]\n\nOpen the browser\n\nArguments:\n  [url]                       the url to navigate to\nOptions:\n  --browser                   browser or chrome channel to use, possible values: chrome, firefox, webkit, msedge.\n  --config                    path to the configuration file, defaults to .playwright/cli.config.json\n  --device                    emulate a specific device, for example \"iphone 15\".\n  --headed                    run browser in headed mode\n  --mobile                    emulate a generic mobile device (pixel 10 for chromium, iphone 17 for webkit). mobile pages are usually lighter, which saves tokens.\n  --persistent                use persistent browser profile\n  --profile                   path to a persistent user data directory.\n",
+      "stderr": ""
+    },
+    "pre_start_health": {
+      "exit": 7,
+      "stdout": "",
+      "stderr": "curl: (7) Failed to connect to 127.0.0.1 port 43819 after 0 ms: Couldn't connect to server\n"
+    },
+    "owned_app_ready": {
+      "ready": true,
+      "exit": null
+    },
+    "explicit_cli": {
+      "exit": 0,
+      "stdout": "### Browser `successor-probe-8d21b77286684cfbb0c65b780b588773` opened with pid 37.\n### Ran Playwright code\n```js\nawait page.goto('about:blank');\n```\n### Page\n- Page URL: about:blank\n### Snapshot\n- [Snapshot](.playwright-cli/page-2026-10-08T08-39-21-267Z.yml)\n",
+      "stderr": ""
+    },
+    "browser_identity": {
+      "exit": 0,
+      "stdout": "### Result\n\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36\"\n### Ran Playwright code\n```js\nawait page.evaluate('() => (navigator.userAgent)');\n```\n",
+      "stderr": ""
+    },
+    "guard_fetch": {
+      "exit": 0,
+      "stdout": "### Result\n\"TypeError: Failed to fetch\"\n### Ran Playwright code\n```js\nawait page.evaluate('() => (fetch(\\'http://127.0.0.1:9/\\').catch(e => String(e)))');\n```\n### Page\n- Page URL: about:blank\n- Console: 1 errors, 0 warnings\n### Events\n- New console entries: .playwright-cli/console-2026-10-08T08-39-21-235Z.log#L1\n",
+      "stderr": ""
+    },
+    "guard_requests": {
+      "exit": 0,
+      "stdout": "### Result\n1. [GET] http://127.0.0.1:9/ => [FAILED] net::ERR_BLOCKED_BY_CLIENT.Inspector\n",
+      "stderr": ""
+    },
+    "goto": {
+      "exit": 0,
+      "stdout": "### Ran Playwright code\n```js\nawait page.goto('http://127.0.0.1:43819');\n```\n### Page\n- Page URL: http://127.0.0.1:43819/\n- Page Title: Reading list\n### Snapshot\n- [Snapshot](.playwright-cli/page-2026-10-08T08-39-24-237Z.yml)\n",
+      "stderr": ""
+    },
+    "snapshot": {
+      "exit": 0,
+      "stdout": "### Page\n- Page URL: http://127.0.0.1:43819/\n- Page Title: Reading list\n### Snapshot\n```yaml\n- main [ref=e2]:\n  - heading \"Reading list\" [level=1] [ref=e3]\n  - generic [ref=e4]:\n    - checkbox \"Hide read\" [ref=e5]\n    - text: Hide read\n  - list \"Articles\" [ref=e6]:\n    - listitem [ref=e7]:\n      - text: Article 1\n      - 'button \"Mark as read: Article 1\" [ref=e8]': Mark as read\n    - listitem [ref=e9]:\n      - text: Article 2\n      - 'button \"Mark as read: Article 2\" [ref=e10]': Mark as read\n    - listitem [ref=e11]:\n      - text: Article 3\n      - 'button \"Mark as read: Article 3\" [ref=e12]': Mark as read\n    - listitem [ref=e13]:\n      - text: Article 4\n      - 'button \"Mark as read: Article 4\" [ref=e14]': Mark as read\n    - listitem [ref=e15]:\n      - text: Article 5\n      - 'button \"Mark as read: Article 5\" [ref=e16]': Mark as read\n    - listitem [ref=e17]:\n      - text: Article 6\n      - 'button \"Mark as read: Article 6\" [ref=e18]': Mark as read\n    - listitem [ref=e19]:\n      - text: Article 7\n      - 'button \"Mark as read: Article 7\" [ref=e20]': Mark as read\n    - listitem [ref=e21]:\n      - text: Article 8\n      - 'button \"Mark as read: Article 8\" [ref=e22]': Mark as read\n    - listitem [ref=e23]:\n      - text: Article 9\n      - 'button \"Mark as read: Article 9\" [ref=e24]': Mark as read\n    - listitem [ref=e25]:\n      - text: Article 10\n      - 'button \"Mark as read: Article 10\" [ref=e26]': Mark as read\n  - paragraph [ref=e27]: Showing 10 of 25\n  - button \"Load more\" [ref=e28]\n```\n",
+      "stderr": ""
+    },
+    "cli_close": {
+      "exit": 0,
+      "stdout": "Browser 'successor-probe-8d21b77286684cfbb0c65b780b588773' closed\n\n",
+      "stderr": ""
+    },
+    "owned_app_stopped": {
+      "stopped": true
+    },
+    "post_cleanup_health": {
+      "exit": 7,
+      "stdout": "",
+      "stderr": "curl: (7) Failed to connect to 127.0.0.1 port 43819 after 0 ms: Couldn't connect to server\n"
+    },
+    "test_after_owned_cleanup": {
+      "exit": 0,
+      "stdout": "\nRunning 3 tests using 1 worker\n\n[1/3] tests/smoke.spec.mjs:3:1 \u203a shows the reading list heading\n[2/3] tests/smoke.spec.mjs:3:1 \u203a shows the reading list heading\n[3/3] tests/smoke.spec.mjs:3:1 \u203a shows the reading list heading\n  3 passed (1.5s)\n",
+      "stderr": ""
+    }
+  },
+  "commands": [
+    [
+      "node_modules/.bin/playwright",
+      "cli",
+      "open",
+      "--help"
+    ],
+    [
+      "curl",
+      "--max-time",
+      "2",
+      "--silent",
+      "--show-error",
+      "http://127.0.0.1:43819/health"
+    ],
+    [
+      "/tmp/generator-successor-environment-xjvfvojs/node_modules/.bin/playwright",
+      "cli",
+      "-s=successor-probe-8d21b77286684cfbb0c65b780b588773",
+      "open",
+      "about:blank",
+      "--browser",
+      "chromium",
+      "--config",
+      "/tmp/cli-guard-ijtxz5uo/config.json"
+    ],
+    [
+      "/tmp/generator-successor-environment-xjvfvojs/node_modules/.bin/playwright",
+      "cli",
+      "-s=successor-probe-8d21b77286684cfbb0c65b780b588773",
+      "eval",
+      "navigator.userAgent"
+    ],
+    [
+      "/tmp/generator-successor-environment-xjvfvojs/node_modules/.bin/playwright",
+      "cli",
+      "-s=successor-probe-8d21b77286684cfbb0c65b780b588773",
+      "eval",
+      "fetch('http://127.0.0.1:9/').catch(e => String(e))"
+    ],
+    [
+      "/tmp/generator-successor-environment-xjvfvojs/node_modules/.bin/playwright",
+      "cli",
+      "-s=successor-probe-8d21b77286684cfbb0c65b780b588773",
+      "requests"
+    ],
+    [
+      "/tmp/generator-successor-environment-xjvfvojs/node_modules/.bin/playwright",
+      "cli",
+      "-s=successor-probe-8d21b77286684cfbb0c65b780b588773",
+      "goto",
+      "http://127.0.0.1:43819"
+    ],
+    [
+      "/tmp/generator-successor-environment-xjvfvojs/node_modules/.bin/playwright",
+      "cli",
+      "-s=successor-probe-8d21b77286684cfbb0c65b780b588773",
+      "snapshot"
+    ],
+    [
+      "/tmp/generator-successor-environment-xjvfvojs/node_modules/.bin/playwright",
+      "cli",
+      "-s=successor-probe-8d21b77286684cfbb0c65b780b588773",
+      "close"
+    ],
+    [
+      "curl",
+      "--max-time",
+      "2",
+      "--silent",
+      "--show-error",
+      "http://127.0.0.1:43819/health"
+    ],
+    [
+      "node_modules/.bin/playwright",
+      "test",
+      "--repeat-each=3",
+      "--reporter=line"
+    ]
+  ]
+}

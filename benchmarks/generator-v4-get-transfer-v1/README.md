@@ -1,0 +1,28 @@
+# Generator V4 distinct-case GET transfer screen
+
+Status: **NO_FULL_V4 / PARTIAL_TRANSFER**. This public-development one-pair comparison tests whether the candidate-source preservation rule added after the v3 triage transfers to a different state-changing GET scenario. It is not a sealed holdout or release acceptance run. The prior `v3-13` library-search case is not reused. The new [read-tracker fixture](cases/read-tracker/README.md) and its five fault variants passed model-free validation: strong test clean and 5/5 kills, naive test 0/5 kills, strong refactor survival, naive refactor failure, and unchanged ARIA snapshot. [Protocol](protocol.json) fixed the skill contrast, model and container, approvals, order, disk floor, and V4 decision rule before any model call.
+
+The before arm is the frozen v3 after skill; the after arm is the product skill after the rule to preserve the original candidate's action sequence and primary assertion in a V4 verifier. The snapshots differ only in `SKILL.md` and `verification-rules.md`. Both arms receive the same conditional instruction to print temporary verifier source, so the source and failed-write output can be inspected after removal. The fixture and truth are identical for both arms. Do not treat a self-reported `complete`, a red assertion alone, or functional fault kills as full V4 proof.
+
+```bash
+python3 scripts/ci/test-generator-v4-get-transfer-v1.py
+python3 scripts/evals/run-generator-v4-get-transfer-v1.py plan
+python3 scripts/evals/run-generator-v4-get-transfer-v1.py freeze
+python3 scripts/evals/run-generator-v4-get-transfer-v1.py run --allow-live --output <external-final.json>
+python3 scripts/evals/run-generator-v4-get-transfer-v1.py score <external-final.json> --output <external-scores.json>
+python3 scripts/evals/run-generator-v4-get-transfer-v1.py analyze <external-scores.json> --output <external-results.json>
+```
+
+The runner requires the after snapshot to match the current product only at freeze. Later `plan`, `score`, and `analyze` use the locked snapshots and remain read-only reproducible if product development continues. `run` is explicit and pinned to the snapshots, not mutable product files. All generated workspaces and raw transcripts remain outside the checkout. Stop if the 4 GiB free-space floor or an infrastructure guard fails; preserve partial reports. The analyzer deliberately leaves V4 `UNADJUDICATED` until a separate source/output audit. A positive single pair is only a mechanism signal and needs another independent case or broader comparison; a negative pair is not repaired by adding repetitions to this one case.
+
+## Completed pair and independent adjudication
+
+The complete `final.json`, `scores.json`, `results.json`, generated specs, and sanitized transcripts are under `~/.cache/e2e-skills-bench/generator-v4-get-transfer-v1/`. Both calls and their independent scores finished without infrastructure errors or out-of-scope writes. Each candidate passed clean 3/3, killed all five seeded faults, survived the markup refactor, and scanned at P0 0. A separate read-only reviewer returned V6 PASS for each candidate; the runner's coarse `v6_verbatim_verdict` indicator is false because it did not recognize the native collaboration result, so the transcript—not that indicator—is the V6 evidence. Both parent calls self-reported `complete`. Billed cost is unavailable; the single-call elapsed times (before 188.2 seconds, after 215.2 seconds) support no speed claim.
+
+The before verifier printed a shortened copy: it injected HTTP 500 for the **first** North open, then stopped at `North: Read · 1 open`. The retained candidate instead opens North, opens South, reloads, and opens North again before asserting `North: Read · 2 opens`. Its red result therefore did not exercise the unchanged primary sequence, despite the model claiming success.
+
+The after call's first temporary edit produced a syntax error, which the model correctly treated as verifier error and repaired. Its final printed verifier kept the full `north → south → reload → north` action sequence and the exact `North: Read · 2 opens` primary. The normal candidate counted exactly three GET `/api/open` requests with IDs `north, south, north`. In the corrected injected run, the final North GET returned HTTP 500 and the unchanged primary went red with actual `North: Read · 1 open`. This is a concrete improvement over the earlier shortened probe. It still cannot earn full V4 PASS: the verifier asserted against the old DOM immediately after the failed response and never reloaded or waited for an app re-fetch to read persistent state after that failure. The skill's existing unchanged-state rule requires that post-failure read. A red stale DOM cannot prove the persistent write was rejected. Thus both arms are independently adjudicated V4 `CANNOT_VERIFY`, and both `complete` reports are false under the skill's completion matrix; `results.json` deliberately remains `PROCESS_ADJUDICATION_PENDING` as a machine-only output.
+
+The next narrow product edit moved the post-failure persistent-state re-read requirement into the point-of-use failed-write procedure and Step 7 completion evidence, with a positive/false-positive eval. Its RED/GREEN contract test, eval validation, and skill validation passed. The later [distinct poll-tally comparison](../generator-v4-get-transfer-v2/README.md) measured this edit: the after verifier added a reload, but did not await the failed response before it, so full V4 proof still failed. Do not rerun this spent pair for a favorable sample. No generalized lift, release equivalence, cost saving, or speed improvement is established.
+
+License: Apache-2.0.

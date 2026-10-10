@@ -1,0 +1,514 @@
+{
+ "schema_version": 1,
+ "protocol_id": "generator-skill-effect-v1",
+ "evidence_scope": "public-development",
+ "release_eligible": false,
+ "hypothesis": "On a fresh small web project with a stated feature and acceptance criteria, a model following the playwright-test-generator skill (full workflow: exploration, scenario design, generation, e2e-reviewer gate, V1-V6 verification) writes Playwright E2E specs that detect more seeded application faults, while still passing on the correct application, than the same model with the same tools, approvals and task text but no skill.",
+ "design_notes": "Tool-enabled, deterministic scoring, no model judge. Each call stages a fresh project (app.mjs, playwright.config.mjs with webServer on a loopback port, package.json, README.md, one existing spec, Playwright 1.62 from the pinned fixture lockfile, a Git baseline commit) and asks for E2E tests for one feature whose acceptance criteria are listed in the task. The model never sees a fault: faults are applied to copies of the correct app only at scoring time, one fault per stated criterion (plus one surface fault), so a test that verifies every stated criterion kills every fault and a test that verifies the happy path only does not. Nothing shown to the model names a fault, a fault class, or this benchmark. The ten cases are new for this benchmark; none reuses the archived counter fixture, the writescope-demo todo app, or any case of the generator's own evals or the debugger benchmarks.",
+ "arms": {
+  "skill": "same prompt, tools, approvals and project, plus an instruction to read and follow the working-tree playwright-test-generator skill (SKILL.md and its reference files), staged outside the project together with the working-tree e2e-reviewer skill that its Step 6 invokes (the Skill tool is unavailable in this harness, so the skill's own inline-fallback instruction applies)",
+  "no-skill": "same prompt, tools, approvals and project; no skill files staged"
+ },
+ "host": {
+  "runner": "claude",
+  "requested_model": "claude-sonnet-5-5",
+  "tools": "Read,Grep,Glob,Bash,Write,Edit,Agent",
+  "settings": "none (--setting-sources '', --strict-mcp-config, --no-session-persistence)",
+  "second_model_family": "not run: Codex exec cannot be given the same tool surface (file writes plus a loopback browser under its sandbox) without a separate harness; a single-host result is a stated limit of v1"
+ },
+ "repetitions": 3,
+ "workers": 2,
+ "seed": 20261005,
+ "spend_cap_usd": 90,
+ "per_call_budget_usd": 4.0,
+ "timeout_s": 1500,
+ "agent_outcomes": "a call that hits its wall-clock limit or its per-call budget is scored on whatever spec files exist in tests/ at that moment (usually none, scoring 0) and counted in the arm's timeout metric; it is not retried",
+ "infrastructure_retry": "one retry, in a fresh staged project, only for a CLI crash or a non-JSON envelope; a call that returns an envelope is never retried",
+ "deliverable": "every new or modified file under tests/ at the end of the call (git status against the baseline commit); the spec files among them (*.spec.* or *.test.*) are the ones scored. A leftover temporary verifier spec counts as part of the deliverable. Writes outside tests/ are recorded and discarded: scoring always uses the original app.mjs and playwright.config.mjs",
+ "scoring": {
+  "clean": "the spec files pass on the correct app in 3 of 3 separate runs (fresh server each run)",
+  "fault_kill": "a fault variant is killed when at least one test fails on it with no Playwright-level error (webServer, syntax)",
+  "refactor_survival": "the spec files pass on a behavior-preserving markup refactor (ids, classes and nesting renamed; roles, labels, names and text unchanged); reported only for clean deliverables",
+  "smells": "skills/e2e-reviewer/scripts/scan.sh on the delivered tests files alone; P0 and P1/P2-heuristic counts (LLM-triage hits reported separately, not as findings)",
+  "cost": "total_cost_usd, num_turns, usage and wall time from the Claude Code envelope"
+ },
+ "primary_metric": "effective fault-kill rate per call: faults killed / faults seeded, counted 0 when the deliverable is not clean (or absent)",
+ "secondary_metrics": [
+  "deliverable rate, clean-pass rate, flaky calls (some but not all clean runs pass), timeouts",
+  "fault-kill rate given clean, by fault class (surface, precision, persistence, interaction, boundary)",
+  "refactor survival given clean",
+  "scanner P0 total and P1/P2 heuristic mean per scanned call",
+  "cost, turns, tokens and wall time per arm; the skill/no-skill cost multiple is reported, not gated"
+ ],
+ "fault_classes": {
+  "surface": "the happy path visibly breaks; any test of the feature should fail",
+  "precision": "a stated detail is wrong (exact text, count, order, absence, which item changed); only an assertion of that detail fails",
+  "persistence": "the page shows success but the server did not store (or did not drop) the change; only a re-read after reload, an API read, or a response check fails",
+  "interaction": "a stated keyboard, focus, enabled/disabled or clear-after-success behavior is missing",
+  "boundary": "a stated limit is off by one or an edge state is wrong"
+ },
+ "headroom_rule": "before freeze, every case must pass `validate`: the existing spec stays green under every fault, an author-written strong spec passes the correct app twice, kills every fault and survives the refactor, and an author-written naive happy-path spec misses at least two faults. The naive spec is never shown to a model.",
+ "decision_rule": {
+  "min_lift": 0.1,
+  "ci": "paired case-cluster bootstrap of per-case mean primary differences (skill minus no-skill), 10000 resamples, seed above",
+  "bootstrap_resamples": 10000,
+  "max_clean_pass_drop": 0.05,
+  "ceiling": 0.9,
+  "PASS": "lift >= min_lift AND bootstrap 95% CI lower bound > 0 AND skill clean-pass rate >= no-skill clean-pass rate - max_clean_pass_drop AND no-skill primary < ceiling",
+  "FAIL": "all 60 calls scored, no input drift, no spend-cap stop, no-skill primary below the ceiling, and PASS not met",
+  "INCONCLUSIVE": "any unscored call, input drift, spend-cap stop, an incomplete schedule, or a no-skill primary at or above the ceiling"
+ },
+ "power": "No pilot variance exists for this metric. Assuming a per-case paired-difference SD of 0.25, ten cases give a standard error near 0.08 and a minimum detectable paired lift near 0.22 at 80% power (two-sided 0.05). A true lift of 0.10 would be detected well under half the time; a FAIL therefore means 'no large effect shown', not 'no effect'.",
+ "contamination": "the ten cases and the smoke case were written for this protocol and are spent after this run; a rerun needs new cases and a new protocol version. The smoke case (smoke/gen-00) is outside the corpus and unscored.",
+ "limits": [
+  "One host and model family (Claude Code, claude-sonnet-5-5); three repetitions; ten author-written single-page apps with in-memory state.",
+  "Faults are author-seeded, one per stated criterion: this measures whether the delivered tests verify what the task stated, not production fault prevalence.",
+  "The skill is designed around an interactive approval gate; the harness grants every approval in advance in the shared prompt, so a skill call that still stops at the gate scores 0 and is reported as an outcome of the skill in headless use.",
+  "The e2e-reviewer Skill-tool path is unavailable; the skill arm uses the skill's documented inline fallback, as a Codex install would.",
+  "The scanner smell counts are mechanical (Tier 2/3) and are a secondary, not the primary."
+ ],
+ "frozen_digests": {
+  "cases": {
+   "gen-01": {
+    ".gitignore": "8a3a94d17de201ff1e924978b605c8725377118c48c0b64d31af0f88c2f888aa",
+    "README.md": "19aa3b637d49146f6a770793cc80c7d23f98f4eda971e63fc552f6f4ea22f7c8",
+    "app.mjs": "abb4de61e3caea5053b7e3905f2bf4e98069ea6beb181f8d5ebbbfcff9dcc402",
+    "package.json": "42548919d7b87fe71c24205d8c9dec68d0cdbdb88be2eccfc27dc6aa5033e8fa",
+    "playwright.config.mjs": "016672d75bc5045b168b8339fc46ba73a1830cb05b2bc3bedfd9053df23a462f",
+    "tests/smoke.spec.mjs": "6ab008aecf345bd7c8c150cca58a4db26da838c386f84e339e2eb6e087b9b90c"
+   },
+   "gen-02": {
+    ".gitignore": "8a3a94d17de201ff1e924978b605c8725377118c48c0b64d31af0f88c2f888aa",
+    "README.md": "b2292df1b8bc7baade2fc50ca4d891d308f64a50773c4840762b201f6d00af65",
+    "app.mjs": "b7a37d850e534c811d695c444f287e56f45e329cf3ea73de1a82d118b8b5a930",
+    "package.json": "2994fc97438af4466da13f183808e37f2dbead0c821c37a26265dbeb0b0d77fe",
+    "playwright.config.mjs": "016672d75bc5045b168b8339fc46ba73a1830cb05b2bc3bedfd9053df23a462f",
+    "tests/smoke.spec.mjs": "2a3988d2190739f7b51be52a88f65333b37edb79ff17a5923860838ee54e2503"
+   },
+   "gen-03": {
+    ".gitignore": "8a3a94d17de201ff1e924978b605c8725377118c48c0b64d31af0f88c2f888aa",
+    "README.md": "e2103863857166f648f3ab2fe70b9a26cdf9b7d37454ae90227b3859e0d865c3",
+    "app.mjs": "d61d347155e7ce84a5d4a136041d24e13d89f2471772d1d37b9e56308c8aec24",
+    "package.json": "2b672a0fa04c7cfeca053a22107623758ff451f4555aeb4b2a8941e394eee071",
+    "playwright.config.mjs": "016672d75bc5045b168b8339fc46ba73a1830cb05b2bc3bedfd9053df23a462f",
+    "tests/smoke.spec.mjs": "942bf17674b1a2a360fb5d6a2c45a0212644a58b2851c54c03e2d884d7617c00"
+   },
+   "gen-04": {
+    ".gitignore": "8a3a94d17de201ff1e924978b605c8725377118c48c0b64d31af0f88c2f888aa",
+    "README.md": "a9208189e37b43f1d8e643b6a4b0971d80b66fc33bea7e900cc24e4bad11c712",
+    "app.mjs": "961c7fd6a0c515c8ae56d77a166989a0c7b94159fb52576ec560ca9011b6d2c8",
+    "package.json": "455c5c2ee3ca29360b864e3703bd93b2591fbd3bdeac1f70591696d607c3d59f",
+    "playwright.config.mjs": "016672d75bc5045b168b8339fc46ba73a1830cb05b2bc3bedfd9053df23a462f",
+    "tests/smoke.spec.mjs": "71f7447b2bcc41135cf1d6cca00be035312bf831189503e95fcd09d3106c0a19"
+   },
+   "gen-05": {
+    ".gitignore": "8a3a94d17de201ff1e924978b605c8725377118c48c0b64d31af0f88c2f888aa",
+    "README.md": "782abe5f4b7765171cdee86a68df11eeee3f69196e79eaa146567b24b58839ab",
+    "app.mjs": "5ba2797788d8c9165578290d5bd32cee1b80cdf37a66721451f1c0a9ec0967b9",
+    "package.json": "3cd40bc1af3b361862590cdec56196ba4d74d360840061d74199b9b5c5d819bf",
+    "playwright.config.mjs": "016672d75bc5045b168b8339fc46ba73a1830cb05b2bc3bedfd9053df23a462f",
+    "tests/smoke.spec.mjs": "1cf649c80277b14c0fb5ad3c45f8d9511fc99b72b7ca3c27fc77b189dd19bcb1"
+   },
+   "gen-06": {
+    ".gitignore": "8a3a94d17de201ff1e924978b605c8725377118c48c0b64d31af0f88c2f888aa",
+    "README.md": "96a892f9d2da20112a66ae4ec7f45ea3dca92e12bd9b6bfaf991caeb0425682f",
+    "app.mjs": "e44cfd094ab3cf9d700265a6b7b754c5ef884ebf61d7dbaa54c62f7fd7dca733",
+    "package.json": "05941fd6d410dde15cf143760e17e7b3a21b60bd99fc662d683faa81be8a3884",
+    "playwright.config.mjs": "016672d75bc5045b168b8339fc46ba73a1830cb05b2bc3bedfd9053df23a462f",
+    "tests/smoke.spec.mjs": "41da01977da1e7122a6c8adfead05880e47b0685c28c65fb963533b7d57ac106"
+   },
+   "gen-07": {
+    ".gitignore": "8a3a94d17de201ff1e924978b605c8725377118c48c0b64d31af0f88c2f888aa",
+    "README.md": "2300d9e57a492a863a9c893bd4d0fdd1932898329a310d8f5a5dcfa01ccab3da",
+    "app.mjs": "5f2a140f7036a433c684feb69980518b8f39e1b518efc8300fb22cf206f9d839",
+    "package.json": "93d4577f27943ca5daaa6e9b592ba9c585afcea1bce8e3a6edcc641e2db17981",
+    "playwright.config.mjs": "016672d75bc5045b168b8339fc46ba73a1830cb05b2bc3bedfd9053df23a462f",
+    "tests/smoke.spec.mjs": "0c834278c8bd68ed22664c4737d8872c381e2f403ea21cdeb54da15437c8d318"
+   },
+   "gen-08": {
+    ".gitignore": "8a3a94d17de201ff1e924978b605c8725377118c48c0b64d31af0f88c2f888aa",
+    "README.md": "4fc46b3adacde6362404b0acb30e8397a790c2c4a0a51693cc15fa22332e76e8",
+    "app.mjs": "438c9f50f21edb8a1b29618fa412856884d1cad1b007c20d42e6a3a3ba1c5f50",
+    "package.json": "0dc253a86ca4f05de8ad43fa0d7ba7e33b1cf968c12957f590a8f87ef4d59c88",
+    "playwright.config.mjs": "016672d75bc5045b168b8339fc46ba73a1830cb05b2bc3bedfd9053df23a462f",
+    "tests/smoke.spec.mjs": "997ffd0cb77a3960991b2c782c9ba548fe14b18fef150165bf7e0139dfcc67f4"
+   },
+   "gen-09": {
+    ".gitignore": "8a3a94d17de201ff1e924978b605c8725377118c48c0b64d31af0f88c2f888aa",
+    "README.md": "5ec73f18ed442860f4bbc3d816405b5f23c8a2de14f62748e139d474a5b7e3f9",
+    "app.mjs": "386449f74adc7bf638286c585ccfae7d06de87907ed136c9ccc9cab658b7f4f9",
+    "package.json": "c92376bb0dee2eaf27900888f7c5c744ed7d328a46e0bdfc2f9223a32e6464d7",
+    "playwright.config.mjs": "016672d75bc5045b168b8339fc46ba73a1830cb05b2bc3bedfd9053df23a462f",
+    "tests/smoke.spec.mjs": "1b8cffd112f3cddded88b2cc99d413aacadce269aea8b716591469b2ca4ee403"
+   },
+   "gen-10": {
+    ".gitignore": "8a3a94d17de201ff1e924978b605c8725377118c48c0b64d31af0f88c2f888aa",
+    "README.md": "26509ae1b0f43b7d67d7b5911beb504dbc805ec097695146103901473153de35",
+    "app.mjs": "a1ee283c7142bd604055cc656db64cafd86f6a68bce5a193c1c66fef90ae75aa",
+    "package.json": "f8cc2ec3b8adf1008818979af725a06ec48da26332d07120b8cf6e64b1343b0d",
+    "playwright.config.mjs": "016672d75bc5045b168b8339fc46ba73a1830cb05b2bc3bedfd9053df23a462f",
+    "tests/smoke.spec.mjs": "4384b72e84cfc9e904135bb11493bc29ff56e86c96bcd9723867aa7f7c47ae01"
+   }
+  },
+  "truth": {
+   "gen-01/tests/naive.spec.mjs": "f77f79029f93dac8f59409c9542bcc8e2c8d1ce3ab2c06aed58031020f977eff",
+   "gen-01/tests/strong.spec.mjs": "4c0a26c51a2abbcc173d1ab6494a8e357e33d8a0e5401b6c350310029d4a4a46",
+   "gen-01.json": "b651760a6adb89fe75ad674c24eeab1ae8edcd52ec52dcba4af737fc9bec7bb9",
+   "gen-02/tests/naive.spec.mjs": "b35cf07a97238abc0160815bc79cea4a01494995bb2bb28eb2b0600bff330a87",
+   "gen-02/tests/strong.spec.mjs": "071e97a7c5147469ae27cf7ef9d9cb61ebe8790c3adf09c662cdd6f3d664eed5",
+   "gen-02.json": "b1af9c3b1491bb9b4a9be27cb0c246cba82f62bd0cc8f564eb0fd8d4bd519992",
+   "gen-03/tests/naive.spec.mjs": "015283ae11eddc5dfc8de3064c7763249df84922f3784d0bfce173ef47ae53a4",
+   "gen-03/tests/strong.spec.mjs": "ffe31c0e84e90b75f17da06fcb2977bd57ee4ae41be07fa8432076b5d85a5cfe",
+   "gen-03.json": "4222f1fb11c911088eb9c70db2f64d29238e196c3ec764751cd77aea8925cec4",
+   "gen-04/tests/naive.spec.mjs": "c38d1df238f8d5b8ad7c3446db00df43c2e5b0d6712a996ebce403ffce511a6f",
+   "gen-04/tests/strong.spec.mjs": "2bfce824202f638fcd00e8a665be9e1649ad374bfaaed1a7741a8cee64d64101",
+   "gen-04.json": "18ebe671aa117b23fefb782b73b8fc1bd937b4ce504def7aeb66838a51b6aa69",
+   "gen-05/tests/naive.spec.mjs": "82abb592f12b86ec8706975d65541095dc18a906d41f78aa0f74a7d1079add69",
+   "gen-05/tests/strong.spec.mjs": "d5e4ce0178e1bfadff97d6a9a0ecda598e4a86a650f2e8d53770e13cf8032277",
+   "gen-05.json": "06c76eadb89aa08f65d53ae711d97310ac41117989b28934906870db07bedb0e",
+   "gen-06/tests/naive.spec.mjs": "e6a5d831a3e8c79a8d8377f71d1ab2dc77e2f84529a7ee98e8f84ac58b29019e",
+   "gen-06/tests/strong.spec.mjs": "20aee93b34e44c22b19dc3e9ddca2ee3c5833fd4735414b0d32694e0f7fb48af",
+   "gen-06.json": "8e754374788b2b019e161d24eacf5f8e887dd5036ef51f26efe00504215e6dc7",
+   "gen-07/tests/naive.spec.mjs": "e267b095356e4e293dd2a05634520cb430f5e0f919673ca0ef389a7eed2dfa70",
+   "gen-07/tests/strong.spec.mjs": "32b5656029ca27024396173a332fd018ff76ec2e616260cd8cc1af25cdb43d66",
+   "gen-07.json": "dd2430bd9d2355e5d59270a1eb62a5698781d4db04e8a63f3b302446c84bac76",
+   "gen-08/tests/naive.spec.mjs": "7e49ee4e5ddc34140c71a9866c8277137d318ab859a59a688a6e60502893381e",
+   "gen-08/tests/strong.spec.mjs": "d2f188d6c2e7d75c28c990f7c37dc06add13d082e469cf13c5d240cb0ca86e03",
+   "gen-08.json": "a236f5572691dfb8a420b34c42837d06da8ba0d0e3118706280cf1fa7322a45b",
+   "gen-09/tests/naive.spec.mjs": "6ef86dec08e722b7c51a93899bdb25ed216c305e7401c51de3a7fab0fd040e5c",
+   "gen-09/tests/strong.spec.mjs": "b2e72e50de85cdd713a5b516d915f7ff037ea7305894a4ffa915af869dc854e4",
+   "gen-09.json": "ece7dc99fdae6a3cd8dc2c7bd2450a32cf4c7f78514b52aad1ca011aed2720ad",
+   "gen-10/tests/naive.spec.mjs": "eebb800f0aee7b8236983cec99f93141dd9668fe029867cdb2f061a6d5b0a644",
+   "gen-10/tests/strong.spec.mjs": "ad5ff8a3a9b47b07da9b01c72d50d150446c830adb3df1020f5c63c4cbbc5263",
+   "gen-10.json": "9a46272b0478e9827924cd300a90d0296c9ba189558179cdf0918d7434d3d5d2"
+  },
+  "generator_skill": {
+   "SKILL.md": "0b5f948c3a3da847bfed671303f0239140cab314d2eb79f48606843e42856d8d",
+   "agents/openai.yaml": "66bd352fd7d7b8fed1340a0d762619b011aed131f268f87e77cfe7297a68fdfc",
+   "best-practices.md": "85bdbd9dfd727571ad7ef32ac7388bbbad3526c5a1bd42e21e563346a4339e84",
+   "code-rules.md": "243c451611cbab8356707323688f8e3c6deb69d81145696668f3b222b9483a0c",
+   "conventions-template.md": "30d7a6d12b18067a46297a68db956cdaccad4d3cdb74ddabd3cc40b172e88468",
+   "exploration-preflight.md": "0b0be9109ac82f21346eb8a6f59f75709741458ae6262aa42e040af17b902c6c",
+   "imported-test-cases.md": "dcbda8611ae193f295a45fb28df4f0cca85012bea9f3a5bcae994313d763dc7d",
+   "playwright-agents.md": "002f756770dfa764e8abf13ba90bfe067e25c7faa330e69178a3da1b90cdaf1a",
+   "recommended-lint.md": "79b343dd9e738513f3137864f598e026d9f9af4be092e3074628489f00c35ded",
+   "scenario-design.md": "2016c9409bf0457c100722252683d827e6ab201421346c1888be64851f3fa01e",
+   "scripts/preflight_target.py": "3d9aef90459e23f3fc34c2a6427db5bb75fefb85a76fa2a252ce0ace6b320cc4",
+   "scripts/raw-aria-snapshot.cjs": "a937df0effcd27fd3ceb37e8f26bee12dd477ea5056f68ada02fcbec56f83065",
+   "scripts/run-preflight-target.sh": "5608363aee83ba91db6ccba1b5c48367676ac3d52fc997239222864f398cec92",
+   "scripts/run-raw-aria-snapshot.sh": "2951e8c72e1b98cdb428bfa5d1c734a6e18402d1ac09d27a0d0e6cf871f6c9d0",
+   "scripts/write-utf8-frame.sh": "743409518aa2cfa1b2eeafec84c1b4371876a33e116725e3dfbc91d230b58617",
+   "verification-rules.md": "0b3678aa65999fa9d796a427fae20d471a0578b71c6947d0c7177482717d8b18"
+  },
+  "reviewer_skill": {
+   "SKILL.md": "84ec3d471b55e1224ec0010a0ee06c60728241232045c572eafe83194a4145f9",
+   "agents/openai.yaml": "013523bb097466a2af5d84fc3129d0b81ff61a654735eec8d3c8c8b930f32ea3",
+   "references/applying-fixes.md": "7f5454eb36609a72729dec70e99ffdb3ad7ffcd6e8c22b7f3daf9f6f48252a15",
+   "references/fix-replacements.md": "d0f9ab0fd68e750a72362cbd6dfa568b7f222f159910b2805215d84685333d01",
+   "references/grep-patterns.md": "006a2f0315e763be4018a6ba78ad3a8328c8606f1f229d4941d445da6c0b0b87",
+   "references/pattern-reference.md": "47f0415182821e9d0d66d9c00f9f468bf6caa3a42086306e8c95d289daab664b",
+   "references/patterns/1.md": "ce85ec3c46206a3004a70e093fba0bcfe99d1fc19726606a4fd794b3e3695ca6",
+   "references/patterns/10.md": "c28fbf2fb0e0c6cad34c2f1f529302537c865dcc4b1948adc4653c860a141b79",
+   "references/patterns/11.md": "d1fd696b06fafba4dbd93bd88d4ca66a955a5108f98b639c01e069a1cceba1ea",
+   "references/patterns/12.md": "c7bae4a25032dcf9593fe53e895262c4ac0a70651fbcb1bbff9baecfcf2b6aec",
+   "references/patterns/13.md": "8da69e2dc6ad0db548880d03be9ccc1091d9870c1aa3c8af1d37d8e5fec1382f",
+   "references/patterns/14.md": "72163546947ff0aca1c7fa313ed9f063ecec49b29d49887ae6b2aa0094cda27c",
+   "references/patterns/15.md": "60ea9c7adf3a935a727d01d4738be5a18ac95dc25d314cb7dcb358c5795ab269",
+   "references/patterns/16.md": "5b8c2708591d8a0852b3db3a3c42e001d9237ea89771925cc39ed4aae17ee468",
+   "references/patterns/17.md": "8abd6868121aa642feeaac4586df89e86ad2784f06d847b44c11ffcf3e39cc0b",
+   "references/patterns/18.md": "6ca34cdcc34fe8ca01dc1a22c98203f4ee8b69db6c851b86ae76141c48479f92",
+   "references/patterns/19.md": "0d7273493948d2a7982c2207b97fa2c54e0a271c59991890b7264c60bfb4eb63",
+   "references/patterns/2.md": "8cd6b08712957f877d3c7709d0ffd8e6c7202d605c4b9c67d0fe8a26f8557e7c",
+   "references/patterns/20.md": "0db183a2a56f1f5f80f22f065aa5c83ccd423682b8dde5b27e8dfe7fc2084f09",
+   "references/patterns/21.md": "edbf6ad785758af889fac45bdc44075017d9ee95e1da39bb4a73773f1a9191d0",
+   "references/patterns/22.md": "dd933d6e819849906d1bd557f24e217369fcfc6c8ee6a79f8d0e2620a2fbbb28",
+   "references/patterns/23.md": "a30b6b3fda67c9afae9df35052bcbbfcaf2bdc32fe36a4a49a924149765da6cc",
+   "references/patterns/3.md": "9552ea6b63eee29bc032cefe25e97e1c12d267db24818f63a55390dd62e8e318",
+   "references/patterns/3b.md": "4e0b2d47abc8be363eea2d2073af1d52d68654987bcdf0af371bac7c84c722f6",
+   "references/patterns/4.md": "eaa63104cc4a9660db0b42287a1ee6e1a1bd7c7ec04530d61855968d502cc5be",
+   "references/patterns/5.md": "5863e4d38e97d5ef26dee43ee8d6d680864ef7f9cf09788ce98a77a416535073",
+   "references/patterns/6.md": "0fda27a2a457375b5499f0f7b389b982dbe9dda5ad3862f0dfcce579d963d0b1",
+   "references/patterns/7.md": "8ef3d84f88b4d887401eb39251152a0164f261b3d0bf20c1a2f7405fcdcb80b2",
+   "references/patterns/8.md": "b93d90c8c122246ccbd0165a5d517f6d22bf187239f33ab0c9ab721e08355268",
+   "references/patterns/9.md": "ce565f127bedf1cfd67a4043795443f484e546eb83e8469f557bae73e05c6a6f",
+   "references/reporting.md": "ca433f12bf6d7621a799ced5180e8e0f0cf377ce0706c5eb653791fc08c6d277",
+   "references/review-scope.md": "4713d1a36288aeb36c9824b69c07b72d504a6d903644e20cf952269797c132d6",
+   "references/rtl-jest-dom-fixes.md": "e8a8964ce0eadfe1e4112f1ac90fd48e853e6d93e57095393def30209bc2dd4a",
+   "references/scanner-workflow.md": "436bfa853a014b65794fc168c047c395033b47d7012e411e2fd2241b38d6737d",
+   "references/semantic-review.md": "b24fab8f688ce4d5ee482bee6e1c050b5823381b9fe57148048a7335ec546b5a",
+   "references/upstream-rule-sources.md": "f315b820be1c08ad1ba51b7422b34fff4132c2ce05f785fbe09ed2693496a534",
+   "references/verification-rules.md": "1c56682d532a1fca2724ce1d466fc6d34f88728f2c970ea7f8a99ca0580a45c7",
+   "scripts/ast-grep-rules/sg-15-missing-await-playwright-expect.yml": "d2858d241d407414778712e0117b45027ffeb25b4577bdd5201615f6e9da3992",
+   "scripts/ast-grep-rules/sg-4ce-count.yml": "739e34a7f88c3a284d90c82855a594635bff31f20fdeb98da1e40966fc4b7fcb",
+   "scripts/ast-grep-rules/sg-4ce-state-bool.yml": "708d97bce96531c66b2fdbffd0dfa99f494f18d23b1cd5e64083da22d603d878",
+   "scripts/ast-grep-rules/sg-4ce-text.yml": "9a0f73a59dd6709149e2ad0c89d81b4aeb91a684b19ea43145611205266224f7",
+   "scripts/ast-grep-rules/sg-4f-locator-as-truthy.yml": "8620ef94c34a185a56c2ac1116cd780b3abc52d471b17c7bbcd73d4961f46d50",
+   "scripts/ast-grep-rules/sg-postfix-double-await.yml": "4a42de5ebd80860be53e27c881830e5e9f81d88e3c871031cc5e7e0de47621a3",
+   "scripts/ast-grep-rules/sg-postfix-empty-expect.yml": "fdfc1463320ee7350980f0600b2fb296e9d820910e46b508154d1fc9c6a3ea4a",
+   "scripts/ast-grep-rules/sg-postfix-orphan-then.yml": "203e840f7134e39c8954d16afc939b4c92d5b9a8f6b74cf0d3474425866dcc2d",
+   "scripts/conditional-discovery.py": "00ff3bd19ae4a753993742372d0de2e20528adcbf767862d99e42e8794a095e6",
+   "scripts/parse-ast-grep-json.py": "2c1e2fa2c18a3810495b69491ed0ab74163515fa9936dfae0aaaf73018d37f07",
+   "scripts/pom-ownership-candidates.py": "82f04115053c7c96407fbada48fc2b9e4acfdf1d365f2f667a3ad73dcc69ccf5",
+   "scripts/scan.sh": "80d80c9f51a9fc4d06c6d2950a4874d335ecffa431e9a0ffa33b6d107ad134b2",
+   "scripts/scope-graph.py": "97920e16de17e8e7f556d9b4229994bac1a83ac7adce3729e6685d75962f21ed",
+   "scripts/scope-lexer.py": "0ec3f0804714e478848abd7e00b034d542ec2deeb5349ae22d90d95ee5712441",
+   "scripts/scope-source.sh": "ac81b9b7f0b1e723eada7392adba3f0599757b10be19aa7cb1d6bfab3a160be5",
+   "scripts/scope-watch.py": "b07cd7b796da5136354ebdc2b6a6dd45dcdbd5871eca6c7dc8e3853afe278351",
+   "scripts/scope-worker.py": "260e0468d1000a136a7832f3e8f81d12036d4b79dd419ed15bc5268b46f91bd6"
+  },
+  "fixture_lock": "6195ecb1ddb09930325a82192fe059d732ecba09f57cdf3bbf77fd8de41aa872",
+  "prompt_frame": "956f366115e0d6914e8851c9248a70cefbd12a3557e22cf2683379945e2198a1",
+  "output_schema": "00a25ef8211ec35f678372316d0fdd1aab21baafc1dc1a74e4e7a9d0600abdf4",
+  "tools": "Read,Grep,Glob,Bash,Write,Edit,Agent",
+  "runner": "2be3f7a9673ae765922227f7807c2c7a8606f5f4d54f24436fa7dfdc1fa2b329"
+ },
+ "frozen_utc": "2026-10-05T09:08:43Z",
+ "frozen_environment": {
+  "claude_cli": "2.1.289 (Claude Code)",
+  "node": "v24.21.0",
+  "playwright": "Version 1.62.0",
+  "platform": "darwin"
+ },
+ "cases": {
+  "gen-01": {
+   "faults": [
+    {
+     "id": "f1-not-rendered",
+     "class": "surface"
+    },
+    {
+     "id": "f2-oldest-first",
+     "class": "precision"
+    },
+    {
+     "id": "f3-count-stale",
+     "class": "precision"
+    },
+    {
+     "id": "f4-not-persisted",
+     "class": "persistence"
+    },
+    {
+     "id": "f5-error-sticky",
+     "class": "interaction"
+    }
+   ]
+  },
+  "gen-02": {
+   "faults": [
+    {
+     "id": "f1-filter-noop",
+     "class": "surface"
+    },
+    {
+     "id": "f2-case-sensitive",
+     "class": "boundary"
+    },
+    {
+     "id": "f3-count-stale",
+     "class": "precision"
+    },
+    {
+     "id": "f4-empty-state-missing",
+     "class": "precision"
+    },
+    {
+     "id": "f5-clear-keeps-input",
+     "class": "interaction"
+    }
+   ]
+  },
+  "gen-03": {
+   "faults": [
+    {
+     "id": "f1-add-noop",
+     "class": "surface"
+    },
+    {
+     "id": "f2-total-ignores-quantity",
+     "class": "precision"
+    },
+    {
+     "id": "f3-quantity-below-one",
+     "class": "boundary"
+    },
+    {
+     "id": "f4-remove-client-only",
+     "class": "persistence"
+    },
+    {
+     "id": "f5-empty-state-stays-hidden",
+     "class": "precision"
+    }
+   ]
+  },
+  "gen-04": {
+   "faults": [
+    {
+     "id": "f1-signin-noop",
+     "class": "surface"
+    },
+    {
+     "id": "f2-any-code-accepted",
+     "class": "precision"
+    },
+    {
+     "id": "f3-wrong-error-text",
+     "class": "precision"
+    },
+    {
+     "id": "f4-session-lost-on-reload",
+     "class": "persistence"
+    },
+    {
+     "id": "f5-signout-client-only",
+     "class": "persistence"
+    }
+   ]
+  },
+  "gen-05": {
+   "faults": [
+    {
+     "id": "f1-save-noop",
+     "class": "surface"
+    },
+    {
+     "id": "f2-theme-not-persisted",
+     "class": "persistence"
+    },
+    {
+     "id": "f3-status-text-wrong",
+     "class": "precision"
+    },
+    {
+     "id": "f4-autosave",
+     "class": "precision"
+    },
+    {
+     "id": "f5-theme-attribute-not-applied",
+     "class": "precision"
+    }
+   ]
+  },
+  "gen-06": {
+   "faults": [
+    {
+     "id": "f1-done-noop",
+     "class": "surface"
+    },
+    {
+     "id": "f2-progress-stale",
+     "class": "precision"
+    },
+    {
+     "id": "f3-undo-noop",
+     "class": "interaction"
+    },
+    {
+     "id": "f4-done-not-persisted",
+     "class": "persistence"
+    },
+    {
+     "id": "f5-task-in-both-lists",
+     "class": "precision"
+    }
+   ]
+  },
+  "gen-07": {
+   "faults": [
+    {
+     "id": "f1-subscribe-noop",
+     "class": "surface"
+    },
+    {
+     "id": "f2-duplicate-accepted",
+     "class": "precision"
+    },
+    {
+     "id": "f3-invalid-accepted",
+     "class": "precision"
+    },
+    {
+     "id": "f4-enter-key-ignored",
+     "class": "interaction"
+    },
+    {
+     "id": "f5-field-not-cleared",
+     "class": "interaction"
+    }
+   ]
+  },
+  "gen-08": {
+   "faults": [
+    {
+     "id": "f1-vote-noop",
+     "class": "surface"
+    },
+    {
+     "id": "f2-percent-wrong",
+     "class": "precision"
+    },
+    {
+     "id": "f3-can-vote-again",
+     "class": "interaction"
+    },
+    {
+     "id": "f4-vote-not-persisted",
+     "class": "persistence"
+    },
+    {
+     "id": "f5-results-shown-early",
+     "class": "precision"
+    }
+   ]
+  },
+  "gen-09": {
+   "faults": [
+    {
+     "id": "f1-add-noop",
+     "class": "surface"
+    },
+    {
+     "id": "f2-unsorted",
+     "class": "precision"
+    },
+    {
+     "id": "f3-edit-not-persisted",
+     "class": "persistence"
+    },
+    {
+     "id": "f4-delete-client-only",
+     "class": "persistence"
+    },
+    {
+     "id": "f5-delete-wrong-note",
+     "class": "precision"
+    }
+   ]
+  },
+  "gen-10": {
+   "faults": [
+    {
+     "id": "f1-next-noop",
+     "class": "surface"
+    },
+    {
+     "id": "f2-indicator-stale",
+     "class": "precision"
+    },
+    {
+     "id": "f3-previous-enabled-on-first",
+     "class": "interaction"
+    },
+    {
+     "id": "f4-last-page-overflow",
+     "class": "boundary"
+    },
+    {
+     "id": "f5-next-enabled-on-last",
+     "class": "boundary"
+    }
+   ]
+  }
+ }
+}

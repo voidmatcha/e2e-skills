@@ -1,0 +1,19 @@
+{
+  "repository": "godotlauncher/launcher",
+  "api_ordinal": 12,
+  "sha": "53c5042b2bef67564840eaeea8c0181cfe9efeba",
+  "reason": "unpaginated commit detail stopped at 300 changed files",
+  "endpoint_template": "repos/godotlauncher/launcher/commits/53c5042b2bef67564840eaeea8c0181cfe9efeba?per_page=100&page=<n>",
+  "page_file_counts": [100, 100, 100, 100, 26, 0],
+  "complete_changed_files": 426,
+  "e2e_paths": [
+    "e2e/codeEditorIntegration.spec.ts",
+    "e2e/create-project-session.spec.ts",
+    "e2e/createProjectGithubPublishing.spec.ts",
+    "e2e/gitLfsCreateProject.spec.ts",
+    "e2e/guided-empty-states.spec.ts",
+    "e2e/project-import-conflicts.spec.ts",
+    "e2e/projects-compact-view.spec.ts"
+  ],
+  "note": "All seven in-scope spec paths were on page 1. Pages 2-5 had no e2e/ path; page 6 was empty. The raw commit ledger retains its 300-file truncation marker."
+}

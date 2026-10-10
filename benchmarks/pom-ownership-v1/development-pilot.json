@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "status": "EXPLORATORY_DEVELOPMENT_PILOT",
+  "date": "2026-10-03",
+  "case": "appsmi-ec4ea27d",
+  "source": "Public Appsmith S3 BEFORE/AFTER development pair in the local fixpair-v1 harness; previously used to develop the collector, not an independent test case.",
+  "host": "Codex CLI 0.159.3",
+  "model": "gpt-6-sol",
+  "effort": "low",
+  "repetitions": 2,
+  "arm_order": "Repetition 1 control then treatment; repetition 2 treatment then control, each on BEFORE and AFTER.",
+  "ablation": "The control removes only the automatic #13 lead pass, its helper file, and point-of-use instructions; the unchanged source-ownership decision rule remains in both arms. scripts/evals/make-pom-ownership-control.py reproduces the exact control diff.",
+  "arm_digests": {
+    "control": "d6cf07f8d3c177b58bc4c89cfde671498cc161648aad869f8d9345d346a4bc07",
+    "treatment": "23237f5966dddf8f847bbcca02c0534d511dfdca243da9f1e4e2c68d72c52747"
+  },
+  "harness_manifest_sha256": "168f8e2fa8a5976167356d9cae2436d1316f0bab9e3a49ecdb2cdbbf3dc3128c",
+  "checkout_digests": {
+    "before": "68d03dc3030d9430161173c46688ed18d4a2ba636c11fdb5194736ea286575df",
+    "after": "3eb50fdda2ca85c7413a48574d57612438a97f331523eda0c547ca02eb7efd75"
+  },
+  "cells": [
+    {"side": "before", "arm": "control", "repetition": 1, "target_13": false, "seconds": 127.8, "input_tokens": 629712, "cached_input_tokens": 583296, "output_tokens": 3459, "event_sha256": "a6cae932cf16c270f4e36be52ee74eba39d3c9e0ba1eae81c0ea310b42dbd57e"},
+    {"side": "before", "arm": "treatment", "repetition": 1, "target_13": true, "seconds": 113.9, "input_tokens": 499367, "cached_input_tokens": 445056, "output_tokens": 3505, "event_sha256": "58ff94d4c8b26d21c6d7acc5d91072be0eef7c3a9bf241254a5103d20e6b37fa"},
+    {"side": "after", "arm": "control", "repetition": 1, "target_13": false, "seconds": 120.2, "input_tokens": 562021, "cached_input_tokens": 500480, "output_tokens": 2995, "event_sha256": "d15034ec4d54e70efb76ef3ecc225fefb9335be280793b57e244e8cc3bdd7c18"},
+    {"side": "after", "arm": "treatment", "repetition": 1, "target_13": false, "seconds": 94.0, "input_tokens": 475932, "cached_input_tokens": 422400, "output_tokens": 2645, "event_sha256": "29706ea24f707c91c6949ad6d6e1d4e7b3f3cabba8a715a8551ee1761bddec1f"},
+    {"side": "before", "arm": "treatment", "repetition": 2, "target_13": true, "seconds": 108.2, "input_tokens": 519799, "cached_input_tokens": 464256, "output_tokens": 3102, "event_sha256": "3ed6afcc04dce508cb6207de1675e9cbbd1e90078cc2b0e580a735a14eeed682"},
+    {"side": "before", "arm": "control", "repetition": 2, "target_13": false, "seconds": 110.3, "input_tokens": 481763, "cached_input_tokens": 430720, "output_tokens": 3078, "event_sha256": "2dcce7c79f1fd4c6ad35ea61adfa507834ad87ae8122be08786b2f585e21abc9"},
+    {"side": "after", "arm": "treatment", "repetition": 2, "target_13": false, "seconds": 94.5, "input_tokens": 446262, "cached_input_tokens": 396544, "output_tokens": 2660, "event_sha256": "41f32f01e1f28e905413c9dbce1bef949ad40ce5c159aebc290cb7a47b1fb5b5"},
+    {"side": "after", "arm": "control", "repetition": 2, "target_13": false, "seconds": 108.8, "input_tokens": 587244, "cached_input_tokens": 537088, "output_tokens": 2933, "event_sha256": "0d6dac5a104faccbd0a660cd4b35d64ed5bb079ffe4af8834f31745f515bfcf1"}
+  ],
+  "summary": {
+    "before_target_hits": {"control": 0, "treatment": 2},
+    "after_target_alarms": {"control": 0, "treatment": 0},
+    "total_input_tokens": {"control": 2260740, "treatment": 1941360},
+    "total_cached_input_tokens": {"control": 2051584, "treatment": 1728256},
+    "total_output_tokens": {"control": 12465, "treatment": 11912},
+    "summed_call_seconds": {"control": 467.1, "treatment": 410.6},
+    "integrity": "All eight calls exited zero, returned a final response, and preserved target and skill digests."
+  },
+  "limitations": "One known development pair, two repetitions, model-adjudicated label, local raw logs, no independent new Cypress positive, and no exhaustive whole-report adjudication. Totals are not an independent-defect recall estimate or billed-token/latency effect.",
+  "local_raw_logs": "/tmp/e2e-pom-ablation.MC5Fb9/pilot"
+}

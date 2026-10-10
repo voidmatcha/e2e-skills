@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "status": "exploratory-source-screening; not labels or a benchmark corpus",
+  "date": "2026-10-03",
+  "method": "Read-only inspection of pinned public repository source, then a non-blind independent Astra refutation pass. Repeated call sites with the same ownership mechanism are consolidated. Every repository was inspected during development and is excluded from a fresh confirmatory corpus.",
+  "counts": {
+    "source_backed_clusters": 15,
+    "positive_candidates": 5,
+    "negative_guards": 5,
+    "debatable": 5,
+    "repositories": 7,
+    "new_eligible_positive_in_automatic_cypress_population": 0
+  },
+  "repositories": {
+    "OHIF/Viewers": "f06cf8b309551325038a80d38c2ec94af81d79ae",
+    "AdaptiveConsulting/ReactiveTraderCloud": "4a31f016e6336c438ae9ab3731674af5d5c9203a",
+    "RedHatInsights/uhc-portal": "5ccaadbf025ae035bf2d95a8f4716102f6e63303",
+    "xchem/fragalysis-frontend": "c5a0cd68d30fcbb34dd66dfccedd9f41fb571648",
+    "ever-co/ever-gauzy": "54b537baf8755924eb11f0505b99c304e6b44c8a",
+    "omegaup/omegaup": "26730787a588243308602da544f5be2fc009ceff",
+    "harvester/tests": "fe06844ce0f38a4b3a438085c436dad3c51e464c"
+  },
+  "cases": [
+    {
+      "id": "ohif-panel-toggle",
+      "repo": "OHIF/Viewers",
+      "assessment": "positive_candidate",
+      "spec": "tests/mpr2.spec.ts:17",
+      "ownership": "tests/pages/RightPanelPageObject.ts:235-237",
+      "reason": "The raw click and existing toggle method target the same panel control. Playwright layout is outside automatic Cypress invocation."
+    },
+    {
+      "id": "ohif-segmentation-tools",
+      "repo": "OHIF/Viewers",
+      "assessment": "positive_candidate",
+      "spec": "tests/SEGDrawingToolsResizing.spec.ts:69,87,95,115",
+      "ownership": "tests/pages/RightPanelPageObject.ts:560-603",
+      "reason": "The same label-map tool buttons and radius inputs are exposed by the Page Object already used in this spec. Brush, Eraser, and Threshold are variants of one ownership mechanism, not independent defects; the similarly named TMTV panel is a different context."
+    },
+    {
+      "id": "reactive-csv-export",
+      "repo": "AdaptiveConsulting/ReactiveTraderCloud",
+      "assessment": "positive_candidate",
+      "spec": "packages/client/e2e/fx-blotter.spec.ts:140-143",
+      "ownership": "packages/client/e2e/pages/FxBlotterPageObject.ts:19-21",
+      "reason": "The raw CSV export locator duplicates an existing member that the same spec uses at lines 106-108. The bypassing action is line 143. Playwright layout is outside automatic Cypress invocation."
+    },
+    {
+      "id": "redhat-wizard-entry",
+      "repo": "RedHatInsights/uhc-portal",
+      "assessment": "positive_candidate",
+      "spec": "cypress/e2e/rosa/RosaClusterWizard.js:25-30",
+      "ownership": "cypress/pageobjects/CreateRosaWizard.page.js:711-728",
+      "reason": "Three raw clicks duplicate one Page Object wizard-entry workflow; the first bypass is line 25. The enclosing suite is describe.skip, and the Page Object is outside cypress/support."
+    },
+    {
+      "id": "xchem-menu-entry",
+      "repo": "xchem/fragalysis-frontend",
+      "assessment": "positive_candidate",
+      "spec": "cypress/e2e/smoke.cy.js:29",
+      "ownership": "cypress/pageobjects/general.js:7; cypress/e2e/FRAG-T1-Menu.cy.js:14,20,24",
+      "reason": "The raw menu click duplicates an exposed locator used to click the same landing-page control in another spec. A smoke filename alone does not establish intentional POM independence. Page Object is outside cypress/support."
+    },
+    {
+      "id": "ever-gauzy-independent-login-canary",
+      "repo": "ever-co/ever-gauzy",
+      "assessment": "negative_guard",
+      "spec": "apps/gauzy-e2e/tests/login.smoke.spec.ts:4-10,24-26",
+      "ownership": "apps/gauzy-e2e/src/support/Base/pageobjects/LoginPageObject.ts:2-4; apps/gauzy-e2e/tests/support/pages/Login.po.ts:8,11,16",
+      "reason": "The spec expressly keeps raw selectors independent of the POM/BDD layer to diagnose that layer's failures. Exact selector overlap is intentional, not an accidental bypass."
+    },
+    {
+      "id": "reactive-assertion-only-rows",
+      "repo": "AdaptiveConsulting/ReactiveTraderCloud",
+      "assessment": "negative_guard",
+      "spec": "packages/client/e2e/fx-blotter.spec.ts:56-58,94-95",
+      "ownership": "packages/client/e2e/pages/FxBlotterPageObject.ts:23-28,41-45",
+      "reason": "These raw locators only assert animation or collection count, not a bypassing UI action; the POM's trade-row member also resolves descendant cells rather than the asserted row root. Consolidate both reads under one generic-assertion exclusion."
+    },
+    {
+      "id": "omegaup-course-intermediate-observation",
+      "repo": "omegaup/omegaup",
+      "assessment": "negative_guard",
+      "spec": "cypress/e2e/course_2Part.cy.ts:298-305",
+      "ownership": "cypress/support/pageObjects/coursePage.ts:95-107",
+      "reason": "The test checks that an unlisted course can still be entered directly. enterCourse() navigates away and starts an assignment before the intermediate listing observation; it cannot replace this workflow. This is not an access-denial test."
+    },
+    {
+      "id": "omegaup-global-menu-different-destination",
+      "repo": "omegaup/omegaup",
+      "assessment": "negative_guard",
+      "spec": "cypress/e2e/navigation.cy.ts:81-84",
+      "ownership": "cypress/support/pageObjects/profilePage.ts:9-14,21-26",
+      "reason": "The shared user-menu prefix leads to enrolled contests in the spec but profile editing in the Page Object. A global overlay is not owned by ProfilePage merely because that Page Object also opens it."
+    },
+    {
+      "id": "xchem-body-escape-vs-idp-query",
+      "repo": "xchem/fragalysis-frontend",
+      "assessment": "negative_guard",
+      "spec": "cypress/e2e/FRAG-T1-Menu.cy.js:17",
+      "ownership": "cypress/pageobjects/loginPage.js:15-23",
+      "reason": "The spec types Escape on body; the login helper queries body inside cy.origin for an identity-provider branch. Same generic selector, different action, origin, and purpose."
+    },
+    {
+      "id": "harvester-advanced-tab-stage",
+      "repo": "harvester/tests",
+      "assessment": "debatable",
+      "spec": "cypress/testcases/virtualmachines/advanced.spec.ts:34,83,121",
+      "ownership": "cypress/pageobjects/virtualmachine.po.ts:173-186",
+      "reason": "The spec opens a read-only config tab; the Page Object clicks the same tab inside form-populating setValue(). Direct method reuse is wrong, but broader same-page ownership remains a judgment call. Three call sites are one mechanism."
+    },
+    {
+      "id": "harvester-prefix-search-vs-detail",
+      "repo": "harvester/tests",
+      "assessment": "debatable",
+      "spec": "cypress/testcases/virtualmachines/advanced.spec.ts:197-205",
+      "ownership": "cypress/pageobjects/virtualmachine.po.ts:295-305",
+      "reason": "The raw search filters multiple rows for count and cleanup, while the Page Object searches one VM and opens its Config. Selector overlap does not prove equivalent workflow, but partial ownership is unresolved."
+    },
+    {
+      "id": "harvester-create-response",
+      "repo": "harvester/tests",
+      "assessment": "debatable",
+      "spec": "cypress/testcases/virtualmachines/virtual-machine.spec.ts:226-237",
+      "ownership": "cypress/pageobjects/virtualmachine.po.ts:189-204",
+      "reason": "The spec consumes create-response data for image export; save() consumes the response and returns void, so direct reuse is unsafe. The Page Object still owns a duplicated create workflow; #13 may call for an adapted boundary, so this is not a secure negative."
+    },
+    {
+      "id": "reactive-row-root-vs-cells",
+      "repo": "AdaptiveConsulting/ReactiveTraderCloud",
+      "assessment": "debatable",
+      "spec": "packages/client/e2e/fx-blotter.spec.ts:31-38",
+      "ownership": "packages/client/e2e/pages/FxBlotterPageObject.ts:23-25",
+      "reason": "The spec hovers and inspects the row root; firstTradeRow returns descendant divs. Locator prefixes overlap, but the exposed member is not a drop-in replacement."
+    },
+    {
+      "id": "xchem-target-preview-timeout",
+      "repo": "xchem/fragalysis-frontend",
+      "assessment": "debatable",
+      "spec": "cypress/e2e/smoke.cy.js:45-48",
+      "ownership": "cypress/pageobjects/general.js:4,18-21",
+      "reason": "An exposed locator and method click the same first target, but the smoke spec uses a 60000-ms query timeout and its own preview checks; the Page Object adds dialog checking and a fixed wait. Reuse must preserve timing and observation semantics."
+    }
+  ]
+}

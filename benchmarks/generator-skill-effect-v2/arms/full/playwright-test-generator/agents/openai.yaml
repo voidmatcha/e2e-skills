@@ -1,0 +1,7 @@
+interface:
+  display_name: Playwright Test Generator
+  short_description: Generate reviewed Playwright E2E tests
+  default_prompt: Use $playwright-test-generator to generate Playwright E2E tests, exploring only local/disposable or externally isolated approved non-production targets.
+
+policy:
+  allow_implicit_invocation: true

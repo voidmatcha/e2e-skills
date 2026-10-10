@@ -1,0 +1,4647 @@
+{
+  "schema_version": 2,
+  "runner": "claude",
+  "runner_identity": "2.1.283 (Claude Code)",
+  "execution_identity_policy": "minimum",
+  "execution_identity_match": "minimum-satisfied",
+  "runner_executable": "/Users/user/.local/share/claude/versions/2.1.283",
+  "model": "claude-opus-5",
+  "reasoning_effort": null,
+  "git_revision": "7e76d32587252afef4b9ea4945cc448813db90cf",
+  "git_dirty": false,
+  "git_dirty_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "evaluator_sha256": "a3e39ddf3d6db0008bd7c0ea7539b97bddd8adbde41916cf41eaf7d5c3dfc717",
+  "prompt_set_sha256": "ad6b05b784c2d611bf82ff3693c5481b14a75a4ddc1df7bd0860691b957c44da",
+  "prompt_profile": "no-skill",
+  "skill_sha256": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+  "snapshot_skill_sha256": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+  "skill_source_path": "/Users/user/Documents/e2e-skills/skills/e2e-reviewer",
+  "corpus_sha256": "672f99fc323cf72cb9946483b01f7df314ee12000bcc40b5aa3eb1efb2f8cb8d",
+  "snapshot_corpus_sha256": "672f99fc323cf72cb9946483b01f7df314ee12000bcc40b5aa3eb1efb2f8cb8d",
+  "corpus_visibility": "public-development",
+  "corpus_intended_use": "Preregistered public development corpus for the Codex-only three-arm comparison. It asks again whether the full reviewer workflow beats the pattern catalog alone, on cases written after the severity-exception wording was added to the skill, and whether documented severity exceptions are applied on cases no model has seen. It is not sealed and does not establish generalization.",
+  "corpus_contamination_risk": "The corpus is inspectable and was written by the same author who wrote the reviewer references it exercises. It was designed from the reference contracts alone, without reading any v9 run report. Every result must disclose that exposure and remain development evidence.",
+  "protocol_id": "reviewer-holdout-v10",
+  "protocol_path": "/Users/user/Documents/e2e-skills/scripts/evals/reviewer-validation-protocol-v10.json",
+  "protocol_sha256": "186680ad624f9ae40ff0b652ee4949322fb6ccfac5e5426a4b7c182278f33c39",
+  "protocol": {
+    "schema_version": 1,
+    "protocol_id": "reviewer-holdout-v10",
+    "corpus": {
+      "path": "scripts/evals/reviewer-holdout-v10.json",
+      "cases_file_sha256": "6db718fe63001f987901a68ee230809c56fda2df5e97d3f0b83ab382b953cc5e",
+      "corpus_sha256": "672f99fc323cf72cb9946483b01f7df314ee12000bcc40b5aa3eb1efb2f8cb8d"
+    },
+    "scoring": {
+      "source_rendering": "nl-ba-display-line-numbers",
+      "source_rendering_contract": "Each embedded source line is prefixed with its 1-based number, right-aligned to six columns, and a tab, as `nl -ba` prints it. The prefix is display-only; findings must cite that number as `line`.",
+      "label_semantics": "accepted-alternatives-and-optional-v1",
+      "label_semantics_contract": "Findings still match exact (pattern_id, severity, file, line) tuples. A finding label matches when a report hits its primary tuple or any accepted_alternatives tuple, and counts as one true positive however many of those tuples are reported. An optional label is excluded from true-positive and false-negative denominators; a report matching it is not a false positive and is counted separately as an optional match. fp_guard labels keep their meaning.",
+      "stability_contract": "A finding or optional label is stable when the number of successful repetitions that matched any of its tuples meets the strict-majority rule. A stable prediction is a false positive only when it matches no finding or optional label tuple."
+    },
+    "schedule": {
+      "algorithm": "sha256-seeded-sort-v1",
+      "seed": 20260801,
+      "default_repetitions": 5,
+      "release_repetitions": 5,
+      "evidence_scope": "public-development",
+      "freeze_policy": "Freeze sources, labels, and protocol before the first measured run. Any later edit creates a new version.",
+      "design_disclosure": "Designed after reviewer holdout v9 ran and the reviewer skill then changed: the SKILL.md Quick Reference now calls each listed severity the usual case and names documented exceptions, and pattern-reference.md #1 states a P0/P1 severity rule. Those changes were written after v9 was seen, so v9 cannot test them. V10 asks the same question on 30 new synthetic cases (15 Playwright, 15 Cypress) that no model has run: does the full workflow beat the catalog alone, and does severity-exception handling generalize to unseen cases? Eleven cases hinge on a documented severity exception or boundary (#1, #2, #4 sub-IDs, #4k, #5a/#5b, #8b, #12, #3/#15, #18, #23), with a guard at the other severity on the same line wherever the contract forces one and an optional label where it supports two readings. Ten are decided by rules that live only in the full workflow references: semantic-review.md sweeps and anchors, review-scope.md framework-scope and project-convention rules, the reporting.md P0 boundary, and scanner-workflow.md JUSTIFIED handling. The rest are ordinary true positives and four clean cases. The cases were designed from the reference contracts alone, without reading any v9 run report or per-case v9 result. Labels were written by one author, then checked by two blind model labelers (Claude and Codex) and a model arbiter before any measured run. It keeps the v9 host, arms, thresholds, seed, strict-majority stability rule, numbered sources, scoring contract, and five repetitions. The corpus is public development evidence that was inspected while designing this protocol; it is not sealed and does not establish generalization. Before any run, the single host was moved from Codex gpt-5.6-sol to Claude claude-opus-5 because the Codex subscription quota was nearly exhausted and the Fable model was usage-limited. Claude runs with every tool disabled and no permission mode (claude_permission_mode off), so the plan-file failure that ended the v5 and v6 Claude runs cannot occur. Results are not comparable across hosts with v8 or v9; the full versus catalog-only question is answered within this one host."
+    },
+    "stability": {
+      "rule": "strict-majority",
+      "minimum_repetitions": 3
+    },
+    "execution_identity": {
+      "require_explicit_runner_path": true,
+      "expected_cli_versions": {
+        "claude": "Claude Code 2.1.281"
+      },
+      "run_identity_capture": "Capture the resolved runner path and CLI version in each report. Do not pin user-specific absolute paths or binary digests in this public protocol.",
+      "attestation_limit": "Reported execution identity is provenance, not cryptographic attestation.",
+      "version_policy": "minimum",
+      "claude_permission_mode": "off"
+    },
+    "prompt_arms": {
+      "treatment": "full",
+      "controls": [
+        "catalog-only",
+        "no-skill"
+      ],
+      "shared_output_legend": true,
+      "no_skill_is_taxonomy_free": false,
+      "comparison_unit": "separate-complete-host-matrix",
+      "matrix_requirement": "Run a separate complete host matrix for full, catalog-only, and no-skill."
+    },
+    "arm_comparison": {
+      "treatment": "full",
+      "controls": [
+        "catalog-only",
+        "no-skill"
+      ],
+      "required_matrix": "exact-three-profiles-by-one-host",
+      "requires_all_reports_execution_complete": true,
+      "requires_treatment_report_status": "PASS",
+      "requires_each_control_comparison_pass": true,
+      "provider_aggregation": "single-host-direct",
+      "stability_basis": "strict-majority-stable-predictions",
+      "execution_order_design": "single-host-three-arm-sequential",
+      "execution_order": [
+        {
+          "ordinal": 1,
+          "prompt_profile": "full",
+          "runner": "claude",
+          "model": "claude-opus-5"
+        },
+        {
+          "ordinal": 2,
+          "prompt_profile": "catalog-only",
+          "runner": "claude",
+          "model": "claude-opus-5"
+        },
+        {
+          "ordinal": 3,
+          "prompt_profile": "no-skill",
+          "runner": "claude",
+          "model": "claude-opus-5"
+        }
+      ],
+      "requires_sequential_non_overlapping_execution": true,
+      "matrix_elapsed_basis": "first-start-to-last-completion",
+      "maximum_matrix_elapsed_seconds": 43200,
+      "temporal_validity_limit": "Reported start/completion timestamps, fixed order, non-overlap, and a 12-hour first-start-to-last-completion window reduce arm-position and time-drift confounding but do not cryptographically attest time or identify or freeze provider backend revisions.",
+      "uncertainty": {
+        "method": "paired-stratified-case-bootstrap",
+        "seed": 20260801,
+        "iterations": 10000,
+        "confidence": 0.95,
+        "strata": [
+          "finding-cases",
+          "clean-cases"
+        ],
+        "percentile_method": "nearest-rank",
+        "metrics": [
+          "stable_precision",
+          "stable_recall",
+          "stable_f1",
+          "clean_case_specificity"
+        ],
+        "interpretation_limit": "Bootstrap intervals describe case-resampling sensitivity on this fixed public case set. They do not quantify model-run stochasticity and are not population confidence intervals, independent replications, or release-grade causal inference."
+      },
+      "decision": {
+        "thresholds": {
+          "stable_f1_delta_min": 0.05,
+          "stable_f1_delta_ci95_lower_min": 0.01,
+          "stable_precision_delta_min": -0.02,
+          "stable_recall_delta_min": -0.02,
+          "clean_case_specificity_delta_min": 0,
+          "repeated_precision_delta_min": 0
+        },
+        "failure_semantics": "Every threshold must pass against each control. A complete matrix that misses any threshold is FAIL, not partial evidence."
+      },
+      "claim_policy": {
+        "pass": "Development skill-lift evidence is limited to this fixed public corpus, declared model identifiers, captured CLI versions, prompts, and schedule; provider backend snapshots are not attested.",
+        "fail": "No skill-lift claim is allowed.",
+        "inconclusive": "No skill-lift claim is allowed.",
+        "partial_results": "Descriptive arm metrics may be published, but never as a causal or partial skill-lift claim."
+      }
+    },
+    "host_matrix": [
+      {
+        "runner": "claude",
+        "model": "claude-opus-5"
+      }
+    ],
+    "confidence_intervals": {
+      "method": "wilson",
+      "confidence": 0.95,
+      "unit": "unique-label-or-prediction"
+    },
+    "decision": {
+      "threshold_basis": "point-estimate",
+      "point_estimate_limits": "Threshold crossings on this small fixed public development corpus are descriptive signals. The corpus is public and inspectable. Confidence intervals accompany point estimates; sealing, independent blind evaluation after publication, cryptographic runner attestation, cross-provider replication, and population-level generalization are not established.",
+      "thresholds": {
+        "stable_precision_min": 0.95,
+        "stable_recall_min": 0.85,
+        "repeated_precision_min": 0.9,
+        "pattern_macro_recall_min": 0.8,
+        "case_macro_recall_min": 0.8,
+        "framework_macro_recall_min": 0.8,
+        "p0_stable_label_recall_min": 0.9,
+        "stable_guard_hit_rate_max": 0.05,
+        "clean_case_specificity_min": 0.95
+      }
+    },
+    "cross_host_decision": {
+      "threshold_basis": "point-estimate",
+      "requires_each_report_status": "PASS",
+      "aggregation_intent": "Single-host Claude protocol; the single declared host is evaluated directly and no cross-provider claim is allowed.",
+      "provider_family_balance_required": false,
+      "thresholds": {
+        "stable_recall_gap_max": 0.1,
+        "stable_prediction_jaccard_min": 0.8
+      }
+    }
+  },
+  "adjudication_ledger_path": null,
+  "adjudication_ledger_sha256": null,
+  "repository_walk_path": null,
+  "repository_walk_sha256": null,
+  "schedule_seed": 20260801,
+  "schedule_algorithm": "sha256-seeded-sort-v1",
+  "release_repetitions": 5,
+  "schedule_sha256": "12ac2a10a80791d94251fa417a1d8a6d8bde2b8f18b09b2edcd7192a5996b8c4",
+  "schedule": [
+    {
+      "ordinal": 1,
+      "case": "v10-cy-07",
+      "repetition": 2
+    },
+    {
+      "ordinal": 2,
+      "case": "v10-pw-12",
+      "repetition": 1
+    },
+    {
+      "ordinal": 3,
+      "case": "v10-cy-15",
+      "repetition": 1
+    },
+    {
+      "ordinal": 4,
+      "case": "v10-cy-14",
+      "repetition": 2
+    },
+    {
+      "ordinal": 5,
+      "case": "v10-cy-02",
+      "repetition": 1
+    },
+    {
+      "ordinal": 6,
+      "case": "v10-pw-13",
+      "repetition": 1
+    },
+    {
+      "ordinal": 7,
+      "case": "v10-cy-04",
+      "repetition": 3
+    },
+    {
+      "ordinal": 8,
+      "case": "v10-cy-11",
+      "repetition": 3
+    },
+    {
+      "ordinal": 9,
+      "case": "v10-pw-04",
+      "repetition": 4
+    },
+    {
+      "ordinal": 10,
+      "case": "v10-cy-04",
+      "repetition": 5
+    },
+    {
+      "ordinal": 11,
+      "case": "v10-cy-05",
+      "repetition": 2
+    },
+    {
+      "ordinal": 12,
+      "case": "v10-pw-03",
+      "repetition": 2
+    },
+    {
+      "ordinal": 13,
+      "case": "v10-cy-13",
+      "repetition": 1
+    },
+    {
+      "ordinal": 14,
+      "case": "v10-cy-12",
+      "repetition": 1
+    },
+    {
+      "ordinal": 15,
+      "case": "v10-pw-09",
+      "repetition": 3
+    },
+    {
+      "ordinal": 16,
+      "case": "v10-pw-10",
+      "repetition": 1
+    },
+    {
+      "ordinal": 17,
+      "case": "v10-pw-14",
+      "repetition": 4
+    },
+    {
+      "ordinal": 18,
+      "case": "v10-pw-15",
+      "repetition": 1
+    },
+    {
+      "ordinal": 19,
+      "case": "v10-cy-08",
+      "repetition": 1
+    },
+    {
+      "ordinal": 20,
+      "case": "v10-cy-11",
+      "repetition": 5
+    },
+    {
+      "ordinal": 21,
+      "case": "v10-cy-10",
+      "repetition": 2
+    },
+    {
+      "ordinal": 22,
+      "case": "v10-pw-13",
+      "repetition": 4
+    },
+    {
+      "ordinal": 23,
+      "case": "v10-pw-06",
+      "repetition": 3
+    },
+    {
+      "ordinal": 24,
+      "case": "v10-pw-02",
+      "repetition": 4
+    },
+    {
+      "ordinal": 25,
+      "case": "v10-cy-03",
+      "repetition": 4
+    },
+    {
+      "ordinal": 26,
+      "case": "v10-cy-08",
+      "repetition": 2
+    },
+    {
+      "ordinal": 27,
+      "case": "v10-cy-03",
+      "repetition": 1
+    },
+    {
+      "ordinal": 28,
+      "case": "v10-pw-09",
+      "repetition": 5
+    },
+    {
+      "ordinal": 29,
+      "case": "v10-cy-01",
+      "repetition": 4
+    },
+    {
+      "ordinal": 30,
+      "case": "v10-cy-12",
+      "repetition": 2
+    },
+    {
+      "ordinal": 31,
+      "case": "v10-pw-09",
+      "repetition": 1
+    },
+    {
+      "ordinal": 32,
+      "case": "v10-cy-04",
+      "repetition": 2
+    },
+    {
+      "ordinal": 33,
+      "case": "v10-pw-02",
+      "repetition": 3
+    },
+    {
+      "ordinal": 34,
+      "case": "v10-cy-09",
+      "repetition": 2
+    },
+    {
+      "ordinal": 35,
+      "case": "v10-pw-01",
+      "repetition": 3
+    },
+    {
+      "ordinal": 36,
+      "case": "v10-cy-02",
+      "repetition": 2
+    },
+    {
+      "ordinal": 37,
+      "case": "v10-pw-07",
+      "repetition": 1
+    },
+    {
+      "ordinal": 38,
+      "case": "v10-cy-12",
+      "repetition": 3
+    },
+    {
+      "ordinal": 39,
+      "case": "v10-cy-06",
+      "repetition": 5
+    },
+    {
+      "ordinal": 40,
+      "case": "v10-pw-04",
+      "repetition": 5
+    },
+    {
+      "ordinal": 41,
+      "case": "v10-cy-01",
+      "repetition": 1
+    },
+    {
+      "ordinal": 42,
+      "case": "v10-pw-11",
+      "repetition": 4
+    },
+    {
+      "ordinal": 43,
+      "case": "v10-pw-06",
+      "repetition": 2
+    },
+    {
+      "ordinal": 44,
+      "case": "v10-pw-07",
+      "repetition": 3
+    },
+    {
+      "ordinal": 45,
+      "case": "v10-pw-01",
+      "repetition": 4
+    },
+    {
+      "ordinal": 46,
+      "case": "v10-cy-14",
+      "repetition": 3
+    },
+    {
+      "ordinal": 47,
+      "case": "v10-cy-14",
+      "repetition": 1
+    },
+    {
+      "ordinal": 48,
+      "case": "v10-pw-06",
+      "repetition": 4
+    },
+    {
+      "ordinal": 49,
+      "case": "v10-cy-08",
+      "repetition": 5
+    },
+    {
+      "ordinal": 50,
+      "case": "v10-pw-14",
+      "repetition": 2
+    },
+    {
+      "ordinal": 51,
+      "case": "v10-cy-13",
+      "repetition": 5
+    },
+    {
+      "ordinal": 52,
+      "case": "v10-cy-08",
+      "repetition": 3
+    },
+    {
+      "ordinal": 53,
+      "case": "v10-cy-02",
+      "repetition": 4
+    },
+    {
+      "ordinal": 54,
+      "case": "v10-pw-13",
+      "repetition": 3
+    },
+    {
+      "ordinal": 55,
+      "case": "v10-cy-01",
+      "repetition": 5
+    },
+    {
+      "ordinal": 56,
+      "case": "v10-pw-06",
+      "repetition": 1
+    },
+    {
+      "ordinal": 57,
+      "case": "v10-cy-02",
+      "repetition": 3
+    },
+    {
+      "ordinal": 58,
+      "case": "v10-cy-09",
+      "repetition": 1
+    },
+    {
+      "ordinal": 59,
+      "case": "v10-cy-10",
+      "repetition": 5
+    },
+    {
+      "ordinal": 60,
+      "case": "v10-cy-14",
+      "repetition": 5
+    },
+    {
+      "ordinal": 61,
+      "case": "v10-cy-13",
+      "repetition": 4
+    },
+    {
+      "ordinal": 62,
+      "case": "v10-pw-11",
+      "repetition": 3
+    },
+    {
+      "ordinal": 63,
+      "case": "v10-cy-14",
+      "repetition": 4
+    },
+    {
+      "ordinal": 64,
+      "case": "v10-pw-08",
+      "repetition": 4
+    },
+    {
+      "ordinal": 65,
+      "case": "v10-cy-15",
+      "repetition": 3
+    },
+    {
+      "ordinal": 66,
+      "case": "v10-cy-13",
+      "repetition": 3
+    },
+    {
+      "ordinal": 67,
+      "case": "v10-cy-04",
+      "repetition": 4
+    },
+    {
+      "ordinal": 68,
+      "case": "v10-pw-11",
+      "repetition": 1
+    },
+    {
+      "ordinal": 69,
+      "case": "v10-cy-01",
+      "repetition": 3
+    },
+    {
+      "ordinal": 70,
+      "case": "v10-pw-05",
+      "repetition": 4
+    },
+    {
+      "ordinal": 71,
+      "case": "v10-pw-01",
+      "repetition": 5
+    },
+    {
+      "ordinal": 72,
+      "case": "v10-cy-11",
+      "repetition": 4
+    },
+    {
+      "ordinal": 73,
+      "case": "v10-cy-06",
+      "repetition": 3
+    },
+    {
+      "ordinal": 74,
+      "case": "v10-cy-09",
+      "repetition": 4
+    },
+    {
+      "ordinal": 75,
+      "case": "v10-pw-15",
+      "repetition": 4
+    },
+    {
+      "ordinal": 76,
+      "case": "v10-pw-14",
+      "repetition": 1
+    },
+    {
+      "ordinal": 77,
+      "case": "v10-cy-15",
+      "repetition": 5
+    },
+    {
+      "ordinal": 78,
+      "case": "v10-pw-10",
+      "repetition": 4
+    },
+    {
+      "ordinal": 79,
+      "case": "v10-pw-12",
+      "repetition": 5
+    },
+    {
+      "ordinal": 80,
+      "case": "v10-pw-12",
+      "repetition": 3
+    },
+    {
+      "ordinal": 81,
+      "case": "v10-pw-10",
+      "repetition": 2
+    },
+    {
+      "ordinal": 82,
+      "case": "v10-pw-05",
+      "repetition": 1
+    },
+    {
+      "ordinal": 83,
+      "case": "v10-pw-05",
+      "repetition": 5
+    },
+    {
+      "ordinal": 84,
+      "case": "v10-pw-05",
+      "repetition": 3
+    },
+    {
+      "ordinal": 85,
+      "case": "v10-pw-04",
+      "repetition": 2
+    },
+    {
+      "ordinal": 86,
+      "case": "v10-cy-09",
+      "repetition": 3
+    },
+    {
+      "ordinal": 87,
+      "case": "v10-pw-02",
+      "repetition": 5
+    },
+    {
+      "ordinal": 88,
+      "case": "v10-cy-10",
+      "repetition": 1
+    },
+    {
+      "ordinal": 89,
+      "case": "v10-pw-14",
+      "repetition": 5
+    },
+    {
+      "ordinal": 90,
+      "case": "v10-pw-10",
+      "repetition": 3
+    },
+    {
+      "ordinal": 91,
+      "case": "v10-cy-03",
+      "repetition": 5
+    },
+    {
+      "ordinal": 92,
+      "case": "v10-cy-07",
+      "repetition": 3
+    },
+    {
+      "ordinal": 93,
+      "case": "v10-pw-14",
+      "repetition": 3
+    },
+    {
+      "ordinal": 94,
+      "case": "v10-cy-12",
+      "repetition": 5
+    },
+    {
+      "ordinal": 95,
+      "case": "v10-pw-09",
+      "repetition": 2
+    },
+    {
+      "ordinal": 96,
+      "case": "v10-cy-06",
+      "repetition": 1
+    },
+    {
+      "ordinal": 97,
+      "case": "v10-pw-12",
+      "repetition": 2
+    },
+    {
+      "ordinal": 98,
+      "case": "v10-cy-04",
+      "repetition": 1
+    },
+    {
+      "ordinal": 99,
+      "case": "v10-cy-11",
+      "repetition": 2
+    },
+    {
+      "ordinal": 100,
+      "case": "v10-pw-15",
+      "repetition": 5
+    },
+    {
+      "ordinal": 101,
+      "case": "v10-pw-12",
+      "repetition": 4
+    },
+    {
+      "ordinal": 102,
+      "case": "v10-pw-05",
+      "repetition": 2
+    },
+    {
+      "ordinal": 103,
+      "case": "v10-pw-07",
+      "repetition": 5
+    },
+    {
+      "ordinal": 104,
+      "case": "v10-cy-13",
+      "repetition": 2
+    },
+    {
+      "ordinal": 105,
+      "case": "v10-pw-03",
+      "repetition": 4
+    },
+    {
+      "ordinal": 106,
+      "case": "v10-cy-06",
+      "repetition": 4
+    },
+    {
+      "ordinal": 107,
+      "case": "v10-pw-02",
+      "repetition": 1
+    },
+    {
+      "ordinal": 108,
+      "case": "v10-cy-06",
+      "repetition": 2
+    },
+    {
+      "ordinal": 109,
+      "case": "v10-pw-08",
+      "repetition": 1
+    },
+    {
+      "ordinal": 110,
+      "case": "v10-pw-11",
+      "repetition": 5
+    },
+    {
+      "ordinal": 111,
+      "case": "v10-cy-01",
+      "repetition": 2
+    },
+    {
+      "ordinal": 112,
+      "case": "v10-pw-03",
+      "repetition": 5
+    },
+    {
+      "ordinal": 113,
+      "case": "v10-cy-07",
+      "repetition": 4
+    },
+    {
+      "ordinal": 114,
+      "case": "v10-cy-08",
+      "repetition": 4
+    },
+    {
+      "ordinal": 115,
+      "case": "v10-cy-07",
+      "repetition": 5
+    },
+    {
+      "ordinal": 116,
+      "case": "v10-cy-03",
+      "repetition": 2
+    },
+    {
+      "ordinal": 117,
+      "case": "v10-pw-08",
+      "repetition": 3
+    },
+    {
+      "ordinal": 118,
+      "case": "v10-cy-05",
+      "repetition": 5
+    },
+    {
+      "ordinal": 119,
+      "case": "v10-pw-08",
+      "repetition": 5
+    },
+    {
+      "ordinal": 120,
+      "case": "v10-pw-15",
+      "repetition": 2
+    },
+    {
+      "ordinal": 121,
+      "case": "v10-cy-07",
+      "repetition": 1
+    },
+    {
+      "ordinal": 122,
+      "case": "v10-pw-13",
+      "repetition": 5
+    },
+    {
+      "ordinal": 123,
+      "case": "v10-cy-10",
+      "repetition": 4
+    },
+    {
+      "ordinal": 124,
+      "case": "v10-cy-12",
+      "repetition": 4
+    },
+    {
+      "ordinal": 125,
+      "case": "v10-pw-02",
+      "repetition": 2
+    },
+    {
+      "ordinal": 126,
+      "case": "v10-pw-09",
+      "repetition": 4
+    },
+    {
+      "ordinal": 127,
+      "case": "v10-cy-05",
+      "repetition": 1
+    },
+    {
+      "ordinal": 128,
+      "case": "v10-pw-13",
+      "repetition": 2
+    },
+    {
+      "ordinal": 129,
+      "case": "v10-pw-11",
+      "repetition": 2
+    },
+    {
+      "ordinal": 130,
+      "case": "v10-cy-11",
+      "repetition": 1
+    },
+    {
+      "ordinal": 131,
+      "case": "v10-pw-04",
+      "repetition": 3
+    },
+    {
+      "ordinal": 132,
+      "case": "v10-pw-04",
+      "repetition": 1
+    },
+    {
+      "ordinal": 133,
+      "case": "v10-cy-03",
+      "repetition": 3
+    },
+    {
+      "ordinal": 134,
+      "case": "v10-cy-02",
+      "repetition": 5
+    },
+    {
+      "ordinal": 135,
+      "case": "v10-cy-15",
+      "repetition": 4
+    },
+    {
+      "ordinal": 136,
+      "case": "v10-cy-05",
+      "repetition": 4
+    },
+    {
+      "ordinal": 137,
+      "case": "v10-pw-07",
+      "repetition": 4
+    },
+    {
+      "ordinal": 138,
+      "case": "v10-pw-03",
+      "repetition": 1
+    },
+    {
+      "ordinal": 139,
+      "case": "v10-pw-03",
+      "repetition": 3
+    },
+    {
+      "ordinal": 140,
+      "case": "v10-pw-15",
+      "repetition": 3
+    },
+    {
+      "ordinal": 141,
+      "case": "v10-pw-06",
+      "repetition": 5
+    },
+    {
+      "ordinal": 142,
+      "case": "v10-pw-07",
+      "repetition": 2
+    },
+    {
+      "ordinal": 143,
+      "case": "v10-cy-05",
+      "repetition": 3
+    },
+    {
+      "ordinal": 144,
+      "case": "v10-cy-10",
+      "repetition": 3
+    },
+    {
+      "ordinal": 145,
+      "case": "v10-pw-10",
+      "repetition": 5
+    },
+    {
+      "ordinal": 146,
+      "case": "v10-pw-01",
+      "repetition": 1
+    },
+    {
+      "ordinal": 147,
+      "case": "v10-pw-01",
+      "repetition": 2
+    },
+    {
+      "ordinal": 148,
+      "case": "v10-pw-08",
+      "repetition": 2
+    },
+    {
+      "ordinal": 149,
+      "case": "v10-cy-15",
+      "repetition": 2
+    },
+    {
+      "ordinal": 150,
+      "case": "v10-cy-09",
+      "repetition": 5
+    }
+  ],
+  "source_read_isolation": "prompt-complete-zero-tools",
+  "credential_environment": "not-inherited-by-model-tools",
+  "model_tool_surface": "none",
+  "evidence_scope": "development",
+  "release_eligible": false,
+  "release_isolation_attestation": null,
+  "evidence_limitations": [
+    {
+      "code": "development_only_no_release_isolation_attestation",
+      "message": "prompt-complete zero-tool execution stages parent authentication material, not a disposable scoped credential; this report is development evidence and is not release-eligible"
+    },
+    {
+      "code": "no_skill_with_shared_output_legend",
+      "message": "the no-skill arm receives no detection rules or workflow; a minimal ID, title, and severity legend is shared only for fair exact-match output scoring"
+    }
+  ],
+  "external_wrapper": null,
+  "input_snapshot": "copy-once-temp",
+  "workspace_integrity": "pre-post-sha256",
+  "repetitions": 5,
+  "case_scope": {
+    "selection": "full",
+    "selected_case_ids": [
+      "v10-pw-01",
+      "v10-pw-02",
+      "v10-pw-03",
+      "v10-pw-04",
+      "v10-pw-05",
+      "v10-pw-06",
+      "v10-pw-07",
+      "v10-pw-08",
+      "v10-pw-09",
+      "v10-pw-10",
+      "v10-pw-11",
+      "v10-pw-12",
+      "v10-pw-13",
+      "v10-pw-14",
+      "v10-pw-15",
+      "v10-cy-01",
+      "v10-cy-02",
+      "v10-cy-03",
+      "v10-cy-04",
+      "v10-cy-05",
+      "v10-cy-06",
+      "v10-cy-07",
+      "v10-cy-08",
+      "v10-cy-09",
+      "v10-cy-10",
+      "v10-cy-11",
+      "v10-cy-12",
+      "v10-cy-13",
+      "v10-cy-14",
+      "v10-cy-15"
+    ],
+    "selected_case_count": 30,
+    "total_case_count": 30
+  },
+  "decision_scope": {
+    "mode": "release",
+    "repetitions": 5,
+    "release_repetitions": 5
+  },
+  "started_at": "2026-09-26T14:53:20.768647+00:00",
+  "complete": false,
+  "execution_complete": false,
+  "status": "INCONCLUSIVE",
+  "status_reasons": [
+    {
+      "code": "infrastructure_errors",
+      "message": "150 scheduled runs were not scoreable",
+      "count": 150
+    }
+  ],
+  "protocol_sha256_after": "186680ad624f9ae40ff0b652ee4949322fb6ccfac5e5426a4b7c182278f33c39",
+  "skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+  "corpus_sha256_after": "672f99fc323cf72cb9946483b01f7df314ee12000bcc40b5aa3eb1efb2f8cb8d",
+  "snapshot_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+  "snapshot_corpus_sha256_after": "672f99fc323cf72cb9946483b01f7df314ee12000bcc40b5aa3eb1efb2f8cb8d",
+  "created_at": "2026-09-26T14:59:35.874938+00:00",
+  "summary": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "runs": 150,
+    "successful_runs": 0,
+    "infrastructure_errors": 150
+  },
+  "primary_metrics": {
+    "aggregation_unit": "unique-case-label-or-prediction",
+    "label_semantics": "accepted-alternatives-and-optional-v1",
+    "stability": {
+      "rule": "hits >= floor(repetitions / 2) + 1",
+      "repetitions": 5,
+      "required_hits": 3
+    },
+    "unique": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 53,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "precision_ci95": {
+        "method": "wilson",
+        "confidence": 0.95,
+        "successes": 0,
+        "total": 0,
+        "lower": null,
+        "upper": null
+      },
+      "recall_ci95": {
+        "method": "wilson",
+        "confidence": 0.95,
+        "successes": 0,
+        "total": 53,
+        "lower": 0.0,
+        "upper": 0.06758198857654187
+      },
+      "guard_labels": 50,
+      "stable_guard_hits": 0,
+      "stable_guard_hit_rate": 0.0,
+      "stable_guard_hit_rate_ci95": {
+        "method": "wilson",
+        "confidence": 0.95,
+        "successes": 0,
+        "total": 50,
+        "lower": 6.938893903907228e-18,
+        "upper": 0.07134759913335872
+      },
+      "optional_labels": 11,
+      "stable_optional_matches": 0,
+      "stable_optional_matched_ids": []
+    },
+    "macro_recall": {
+      "pattern": {
+        "value": 0.0,
+        "groups": {
+          "#1": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "#10a": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#10b": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#10c": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#10d": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#10e": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#10f": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "#11": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#11c": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "#12": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#13": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#14": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "#15": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#16": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#17": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "#18": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#19": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#2": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "#20": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#21": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#22": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#23": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "#3": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#3b": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#4a": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#4c-4e": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "#4f": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "#4g": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#4h": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#4j": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#4k": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#5a": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#5b": {
+            "detected": 0,
+            "expected": 3,
+            "recall": 0.0
+          },
+          "#6": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#7": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#8b": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "#9": {
+            "detected": 0,
+            "expected": 3,
+            "recall": 0.0
+          },
+          "#9b": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "#9c": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          }
+        }
+      },
+      "case": {
+        "value": 0.0,
+        "groups": {
+          "v10-cy-01": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "v10-cy-02": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "v10-cy-03": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "v10-cy-04": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "v10-cy-05": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "v10-cy-06": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "v10-cy-07": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "v10-cy-08": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "v10-cy-09": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "v10-cy-10": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "v10-cy-11": {
+            "detected": 0,
+            "expected": 3,
+            "recall": 0.0
+          },
+          "v10-cy-12": {
+            "detected": 0,
+            "expected": 3,
+            "recall": 0.0
+          },
+          "v10-cy-13": {
+            "detected": 0,
+            "expected": 3,
+            "recall": 0.0
+          },
+          "v10-pw-01": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "v10-pw-02": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "v10-pw-03": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "v10-pw-04": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "v10-pw-05": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "v10-pw-06": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "v10-pw-07": {
+            "detected": 0,
+            "expected": 1,
+            "recall": 0.0
+          },
+          "v10-pw-08": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "v10-pw-09": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "v10-pw-10": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "v10-pw-11": {
+            "detected": 0,
+            "expected": 2,
+            "recall": 0.0
+          },
+          "v10-pw-12": {
+            "detected": 0,
+            "expected": 6,
+            "recall": 0.0
+          },
+          "v10-pw-13": {
+            "detected": 0,
+            "expected": 4,
+            "recall": 0.0
+          }
+        }
+      },
+      "framework": {
+        "value": 0.0,
+        "groups": {
+          "cypress": {
+            "detected": 0,
+            "expected": 26,
+            "recall": 0.0
+          },
+          "playwright": {
+            "detected": 0,
+            "expected": 27,
+            "recall": 0.0
+          }
+        }
+      }
+    },
+    "p0_per_label_stability": {
+      "labels": [
+        {
+          "case": "v10-cy-01",
+          "framework": "cypress",
+          "finding_id": "V10-062",
+          "pattern_id": "#1",
+          "hits": 0,
+          "repetitions": 5,
+          "detection_rate": 0.0,
+          "required_hits": 3,
+          "stable": false
+        },
+        {
+          "case": "v10-cy-02",
+          "framework": "cypress",
+          "finding_id": "V10-064",
+          "pattern_id": "#23",
+          "hits": 0,
+          "repetitions": 5,
+          "detection_rate": 0.0,
+          "required_hits": 3,
+          "stable": false
+        },
+        {
+          "case": "v10-cy-03",
+          "framework": "cypress",
+          "finding_id": "V10-071",
+          "pattern_id": "#5a",
+          "hits": 0,
+          "repetitions": 5,
+          "detection_rate": 0.0,
+          "required_hits": 3,
+          "stable": false
+        },
+        {
+          "case": "v10-cy-04",
+          "framework": "cypress",
+          "finding_id": "V10-074",
+          "pattern_id": "#12",
+          "hits": 0,
+          "repetitions": 5,
+          "detection_rate": 0.0,
+          "required_hits": 3,
+          "stable": false
+        },
+        {
+          "case": "v10-cy-05",
+          "framework": "cypress",
+          "finding_id": "V10-079",
+          "pattern_id": "#2",
+          "hits": 0,
+          "repetitions": 5,
+          "detection_rate": 0.0,
+          "required_hits": 3,
+          "stable": false
+        },
+        {
+          "case": "v10-cy-08",
+          "framework": "cypress",
+          "finding_id": "V10-087",
+          "pattern_id": "#7",
+          "hits": 0,
+          "repetitions": 5,
+          "detection_rate": 0.0,
+          "required_hits": 3,
+          "stable": false
+        },
+        {
+          "case": "v10-cy-11",
+          "framework": "cypress",
+          "finding_id": "V10-095",
+          "pattern_id": "#3b",
+          "hits": 0,
+          "repetitions": 5,
+          "detection_rate": 0.0,
+          "required_hits": 3,
+          "stable": false
+        },
+        {
+          "case": "v10-pw-01",
+          "framework": "playwright",
+          "finding_id": "V10-001",
+          "pattern_id": "#4f",
+          "hits": 0,
+          "repetitions": 5,
+          "detection_rate": 0.0,
+          "required_hits": 3,
+          "stable": false
+        },
+        {
+          "case": "v10-pw-02",
+          "framework": "playwright",
+          "finding_id": "V10-007",
+          "pattern_id": "#4a",
+          "hits": 0,
+          "repetitions": 5,
+          "detection_rate": 0.0,
+          "required_hits": 3,
+          "stable": false
+        },
+        {
+          "case": "v10-pw-03",
+          "framework": "playwright",
+          "finding_id": "V10-011",
+          "pattern_id": "#8b",
+          "hits": 0,
+          "repetitions": 5,
+          "detection_rate": 0.0,
+          "required_hits": 3,
+          "stable": false
+        },
+        {
+          "case": "v10-pw-05",
+          "framework": "playwright",
+          "finding_id": "V10-018",
+          "pattern_id": "#3",
+          "hits": 0,
+          "repetitions": 5,
+          "detection_rate": 0.0,
+          "required_hits": 3,
+          "stable": false
+        },
+        {
+          "case": "v10-pw-10",
+          "framework": "playwright",
+          "finding_id": "V10-038",
+          "pattern_id": "#4f",
+          "hits": 0,
+          "repetitions": 5,
+          "detection_rate": 0.0,
+          "required_hits": 3,
+          "stable": false
+        }
+      ],
+      "stable_labels": 0,
+      "labels_total": 12,
+      "stable_label_recall": 0.0,
+      "stable_label_recall_ci95": {
+        "method": "wilson",
+        "confidence": 0.95,
+        "successes": 0,
+        "total": 12,
+        "lower": 2.7755575615628914e-17,
+        "upper": 0.24249400665524085
+      }
+    },
+    "clean_case_specificity": {
+      "value": 1.0,
+      "clean_cases": 4,
+      "cases_without_stable_predictions": 4,
+      "by_case": {
+        "v10-cy-14": {
+          "has_stable_prediction": false
+        },
+        "v10-cy-15": {
+          "has_stable_prediction": false
+        },
+        "v10-pw-14": {
+          "has_stable_prediction": false
+        },
+        "v10-pw-15": {
+          "has_stable_prediction": false
+        }
+      }
+    }
+  },
+  "secondary_metrics": {
+    "aggregation_unit": "repeated-run",
+    "tp": 0,
+    "fp": 0,
+    "fn": 0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "runs": 150,
+    "successful_runs": 0,
+    "infrastructure_errors": 150
+  },
+  "by_case": {
+    "v10-pw-01": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-pw-02": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-pw-03": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-pw-04": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-pw-05": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-pw-06": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-pw-07": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-pw-08": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-pw-09": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-pw-10": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-pw-11": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-pw-12": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-pw-13": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-pw-14": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-pw-15": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-cy-01": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-cy-02": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-cy-03": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-cy-04": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-cy-05": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-cy-06": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-cy-07": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-cy-08": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-cy-09": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-cy-10": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-cy-11": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-cy-12": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-cy-13": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-cy-14": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    },
+    "v10-cy-15": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "runs": 5,
+      "successful_runs": 0,
+      "infrastructure_errors": 5
+    }
+  },
+  "runs": [
+    {
+      "schedule_ordinal": 1,
+      "case": "v10-cy-07",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2505,
+      "workspace_sha256_before": "43873a953cc2f69f07e360a8839720b6b3f9628ca2b88e6db049c69353078b2a",
+      "workspace_sha256_after": "43873a953cc2f69f07e360a8839720b6b3f9628ca2b88e6db049c69353078b2a",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 2,
+      "case": "v10-pw-12",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2551,
+      "workspace_sha256_before": "770f7c9c8491d1a1608a4fde2e8e2f1d9b3e52627aaf3896f349d55367949895",
+      "workspace_sha256_after": "770f7c9c8491d1a1608a4fde2e8e2f1d9b3e52627aaf3896f349d55367949895",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 3,
+      "case": "v10-cy-15",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2385,
+      "workspace_sha256_before": "91efdb9d3f22490afb34bcfbbdbbe02a7ceca9fac9e0cb63dd54beb8d27e04af",
+      "workspace_sha256_after": "91efdb9d3f22490afb34bcfbbdbbe02a7ceca9fac9e0cb63dd54beb8d27e04af",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 4,
+      "case": "v10-cy-14",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2274,
+      "workspace_sha256_before": "becd67227e5d0884dde7d38f02f6490e567a9fc56e0810df71506bb7a7730fa7",
+      "workspace_sha256_after": "becd67227e5d0884dde7d38f02f6490e567a9fc56e0810df71506bb7a7730fa7",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 5,
+      "case": "v10-cy-02",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2685,
+      "workspace_sha256_before": "3c28409fe9dea1b7b72d5296de9d5ce29c3f879d67013a60d5929a14ebdc1e57",
+      "workspace_sha256_after": "3c28409fe9dea1b7b72d5296de9d5ce29c3f879d67013a60d5929a14ebdc1e57",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 6,
+      "case": "v10-pw-13",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2239,
+      "workspace_sha256_before": "aa76ce77d6fd52c910da19b182a047fd45966b8eb43300e5bae8d3477a259279",
+      "workspace_sha256_after": "aa76ce77d6fd52c910da19b182a047fd45966b8eb43300e5bae8d3477a259279",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 7,
+      "case": "v10-cy-04",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2273,
+      "workspace_sha256_before": "ba4c9f7b51c0293c42401cd0bf2355860ccedb00e006491e20dd73decfb6c1e4",
+      "workspace_sha256_after": "ba4c9f7b51c0293c42401cd0bf2355860ccedb00e006491e20dd73decfb6c1e4",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 8,
+      "case": "v10-cy-11",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2580,
+      "workspace_sha256_before": "6263fd6b930dc284b06c3ebd3d0bf1dee7bae56955337979ff64722d598b6149",
+      "workspace_sha256_after": "6263fd6b930dc284b06c3ebd3d0bf1dee7bae56955337979ff64722d598b6149",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 9,
+      "case": "v10-pw-04",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2318,
+      "workspace_sha256_before": "a311335990944ac53a9f0a226d8ee1a3b82201d9a6da1ce7d088834607851862",
+      "workspace_sha256_after": "a311335990944ac53a9f0a226d8ee1a3b82201d9a6da1ce7d088834607851862",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 10,
+      "case": "v10-cy-04",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 3345,
+      "workspace_sha256_before": "ba4c9f7b51c0293c42401cd0bf2355860ccedb00e006491e20dd73decfb6c1e4",
+      "workspace_sha256_after": "ba4c9f7b51c0293c42401cd0bf2355860ccedb00e006491e20dd73decfb6c1e4",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 11,
+      "case": "v10-cy-05",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2224,
+      "workspace_sha256_before": "bfd9770ad540d3b569486af7734be9847a55fe616ab3e214a9082b4f1d98e4ab",
+      "workspace_sha256_after": "bfd9770ad540d3b569486af7734be9847a55fe616ab3e214a9082b4f1d98e4ab",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 12,
+      "case": "v10-pw-03",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2306,
+      "workspace_sha256_before": "ec6a2674a044e05f78a3a5265c43dad127beae77b35d01b84a58f9243479b5c7",
+      "workspace_sha256_after": "ec6a2674a044e05f78a3a5265c43dad127beae77b35d01b84a58f9243479b5c7",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 13,
+      "case": "v10-cy-13",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2238,
+      "workspace_sha256_before": "b297f4bc1a5e89a1be47447d3d6e936f0e1cd2cc5a5cdbd0b75bac087b362690",
+      "workspace_sha256_after": "b297f4bc1a5e89a1be47447d3d6e936f0e1cd2cc5a5cdbd0b75bac087b362690",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 14,
+      "case": "v10-cy-12",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2340,
+      "workspace_sha256_before": "b7445f3d6fdd2b2967e5397d7aeb00ed735fa29b2aab0b9c688183509c2d0cad",
+      "workspace_sha256_after": "b7445f3d6fdd2b2967e5397d7aeb00ed735fa29b2aab0b9c688183509c2d0cad",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 15,
+      "case": "v10-pw-09",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2412,
+      "workspace_sha256_before": "0678503215e2371afa0cd64229975c67b6727b067098f74e20a81da4e4aeeaaa",
+      "workspace_sha256_after": "0678503215e2371afa0cd64229975c67b6727b067098f74e20a81da4e4aeeaaa",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 16,
+      "case": "v10-pw-10",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2486,
+      "workspace_sha256_before": "cbb1bc45b243af6b9be1b1d1088041aca24e9061c8cca553797de0c8620585a2",
+      "workspace_sha256_after": "cbb1bc45b243af6b9be1b1d1088041aca24e9061c8cca553797de0c8620585a2",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 17,
+      "case": "v10-pw-14",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2715,
+      "workspace_sha256_before": "5062440ee096127a4f4a74e517664e27dc5e436a6e0b9b35a1d696a07df299c5",
+      "workspace_sha256_after": "5062440ee096127a4f4a74e517664e27dc5e436a6e0b9b35a1d696a07df299c5",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 18,
+      "case": "v10-pw-15",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2271,
+      "workspace_sha256_before": "fe4687085e8afed6f6d81f016592608048beb2c7fdd9d0232c074c46250a92a4",
+      "workspace_sha256_after": "fe4687085e8afed6f6d81f016592608048beb2c7fdd9d0232c074c46250a92a4",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 19,
+      "case": "v10-cy-08",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2650,
+      "workspace_sha256_before": "037f911bc74d1514e2237d9331e0ddd0dd663a9f339d5192708b96fa4fc7a030",
+      "workspace_sha256_after": "037f911bc74d1514e2237d9331e0ddd0dd663a9f339d5192708b96fa4fc7a030",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 20,
+      "case": "v10-cy-11",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2314,
+      "workspace_sha256_before": "6263fd6b930dc284b06c3ebd3d0bf1dee7bae56955337979ff64722d598b6149",
+      "workspace_sha256_after": "6263fd6b930dc284b06c3ebd3d0bf1dee7bae56955337979ff64722d598b6149",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 21,
+      "case": "v10-cy-10",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2506,
+      "workspace_sha256_before": "b61361f9fac6cfa0263500002a43a21c9d6fd8ec1e0194a41b3652cdc3a7c03a",
+      "workspace_sha256_after": "b61361f9fac6cfa0263500002a43a21c9d6fd8ec1e0194a41b3652cdc3a7c03a",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 22,
+      "case": "v10-pw-13",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2371,
+      "workspace_sha256_before": "aa76ce77d6fd52c910da19b182a047fd45966b8eb43300e5bae8d3477a259279",
+      "workspace_sha256_after": "aa76ce77d6fd52c910da19b182a047fd45966b8eb43300e5bae8d3477a259279",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 23,
+      "case": "v10-pw-06",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2502,
+      "workspace_sha256_before": "0a3228ac8f4b433462d866f4f556838c99c4f4a5ba242eb543dbc38e041d44ec",
+      "workspace_sha256_after": "0a3228ac8f4b433462d866f4f556838c99c4f4a5ba242eb543dbc38e041d44ec",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 24,
+      "case": "v10-pw-02",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2498,
+      "workspace_sha256_before": "0add396a8d5ae2aa5200815e43f3abff5c92c7459d3b7a52ea21c44219561402",
+      "workspace_sha256_after": "0add396a8d5ae2aa5200815e43f3abff5c92c7459d3b7a52ea21c44219561402",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 25,
+      "case": "v10-cy-03",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2454,
+      "workspace_sha256_before": "2e5c2740df9eac5c86498012f53fd28b6fe34d9e1b9c4015c4aca6be8605a43e",
+      "workspace_sha256_after": "2e5c2740df9eac5c86498012f53fd28b6fe34d9e1b9c4015c4aca6be8605a43e",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 26,
+      "case": "v10-cy-08",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2597,
+      "workspace_sha256_before": "037f911bc74d1514e2237d9331e0ddd0dd663a9f339d5192708b96fa4fc7a030",
+      "workspace_sha256_after": "037f911bc74d1514e2237d9331e0ddd0dd663a9f339d5192708b96fa4fc7a030",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 27,
+      "case": "v10-cy-03",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2386,
+      "workspace_sha256_before": "2e5c2740df9eac5c86498012f53fd28b6fe34d9e1b9c4015c4aca6be8605a43e",
+      "workspace_sha256_after": "2e5c2740df9eac5c86498012f53fd28b6fe34d9e1b9c4015c4aca6be8605a43e",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 28,
+      "case": "v10-pw-09",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2357,
+      "workspace_sha256_before": "0678503215e2371afa0cd64229975c67b6727b067098f74e20a81da4e4aeeaaa",
+      "workspace_sha256_after": "0678503215e2371afa0cd64229975c67b6727b067098f74e20a81da4e4aeeaaa",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 29,
+      "case": "v10-cy-01",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2309,
+      "workspace_sha256_before": "e2a9d4d2a228bd1bff6f3d61a152423e51085af5a165750031510d299d8db86c",
+      "workspace_sha256_after": "e2a9d4d2a228bd1bff6f3d61a152423e51085af5a165750031510d299d8db86c",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 30,
+      "case": "v10-cy-12",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2264,
+      "workspace_sha256_before": "b7445f3d6fdd2b2967e5397d7aeb00ed735fa29b2aab0b9c688183509c2d0cad",
+      "workspace_sha256_after": "b7445f3d6fdd2b2967e5397d7aeb00ed735fa29b2aab0b9c688183509c2d0cad",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 31,
+      "case": "v10-pw-09",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2456,
+      "workspace_sha256_before": "0678503215e2371afa0cd64229975c67b6727b067098f74e20a81da4e4aeeaaa",
+      "workspace_sha256_after": "0678503215e2371afa0cd64229975c67b6727b067098f74e20a81da4e4aeeaaa",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 32,
+      "case": "v10-cy-04",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2598,
+      "workspace_sha256_before": "ba4c9f7b51c0293c42401cd0bf2355860ccedb00e006491e20dd73decfb6c1e4",
+      "workspace_sha256_after": "ba4c9f7b51c0293c42401cd0bf2355860ccedb00e006491e20dd73decfb6c1e4",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 33,
+      "case": "v10-pw-02",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2334,
+      "workspace_sha256_before": "0add396a8d5ae2aa5200815e43f3abff5c92c7459d3b7a52ea21c44219561402",
+      "workspace_sha256_after": "0add396a8d5ae2aa5200815e43f3abff5c92c7459d3b7a52ea21c44219561402",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 34,
+      "case": "v10-cy-09",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2258,
+      "workspace_sha256_before": "f72b340a4bb8be74236bb684c9293ffcb8497c7e4a3868929bdbaf7b1363209c",
+      "workspace_sha256_after": "f72b340a4bb8be74236bb684c9293ffcb8497c7e4a3868929bdbaf7b1363209c",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 35,
+      "case": "v10-pw-01",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2443,
+      "workspace_sha256_before": "50ec09882298ce478bc5a7029c552c53c87eddfde8170ebf359cb3387a46e651",
+      "workspace_sha256_after": "50ec09882298ce478bc5a7029c552c53c87eddfde8170ebf359cb3387a46e651",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 36,
+      "case": "v10-cy-02",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2252,
+      "workspace_sha256_before": "3c28409fe9dea1b7b72d5296de9d5ce29c3f879d67013a60d5929a14ebdc1e57",
+      "workspace_sha256_after": "3c28409fe9dea1b7b72d5296de9d5ce29c3f879d67013a60d5929a14ebdc1e57",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 37,
+      "case": "v10-pw-07",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2558,
+      "workspace_sha256_before": "cba24b1f21250328c5e972ff468328c749baa9b441ce993e4622108653e51071",
+      "workspace_sha256_after": "cba24b1f21250328c5e972ff468328c749baa9b441ce993e4622108653e51071",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 38,
+      "case": "v10-cy-12",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2410,
+      "workspace_sha256_before": "b7445f3d6fdd2b2967e5397d7aeb00ed735fa29b2aab0b9c688183509c2d0cad",
+      "workspace_sha256_after": "b7445f3d6fdd2b2967e5397d7aeb00ed735fa29b2aab0b9c688183509c2d0cad",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 39,
+      "case": "v10-cy-06",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2421,
+      "workspace_sha256_before": "b795de3dc8dba1535cfe6f04dc76030f5a9b3b1bf9763f9e1a719f87a3c7d50b",
+      "workspace_sha256_after": "b795de3dc8dba1535cfe6f04dc76030f5a9b3b1bf9763f9e1a719f87a3c7d50b",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 40,
+      "case": "v10-pw-04",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2438,
+      "workspace_sha256_before": "a311335990944ac53a9f0a226d8ee1a3b82201d9a6da1ce7d088834607851862",
+      "workspace_sha256_after": "a311335990944ac53a9f0a226d8ee1a3b82201d9a6da1ce7d088834607851862",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 41,
+      "case": "v10-cy-01",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2566,
+      "workspace_sha256_before": "e2a9d4d2a228bd1bff6f3d61a152423e51085af5a165750031510d299d8db86c",
+      "workspace_sha256_after": "e2a9d4d2a228bd1bff6f3d61a152423e51085af5a165750031510d299d8db86c",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 42,
+      "case": "v10-pw-11",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2283,
+      "workspace_sha256_before": "d24022d61885ef20d9a32abfb93bca946e68f7fc2e9738f99574270c39182054",
+      "workspace_sha256_after": "d24022d61885ef20d9a32abfb93bca946e68f7fc2e9738f99574270c39182054",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 43,
+      "case": "v10-pw-06",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2486,
+      "workspace_sha256_before": "0a3228ac8f4b433462d866f4f556838c99c4f4a5ba242eb543dbc38e041d44ec",
+      "workspace_sha256_after": "0a3228ac8f4b433462d866f4f556838c99c4f4a5ba242eb543dbc38e041d44ec",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 44,
+      "case": "v10-pw-07",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2507,
+      "workspace_sha256_before": "cba24b1f21250328c5e972ff468328c749baa9b441ce993e4622108653e51071",
+      "workspace_sha256_after": "cba24b1f21250328c5e972ff468328c749baa9b441ce993e4622108653e51071",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 45,
+      "case": "v10-pw-01",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2670,
+      "workspace_sha256_before": "50ec09882298ce478bc5a7029c552c53c87eddfde8170ebf359cb3387a46e651",
+      "workspace_sha256_after": "50ec09882298ce478bc5a7029c552c53c87eddfde8170ebf359cb3387a46e651",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 46,
+      "case": "v10-cy-14",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2514,
+      "workspace_sha256_before": "becd67227e5d0884dde7d38f02f6490e567a9fc56e0810df71506bb7a7730fa7",
+      "workspace_sha256_after": "becd67227e5d0884dde7d38f02f6490e567a9fc56e0810df71506bb7a7730fa7",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 47,
+      "case": "v10-cy-14",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2583,
+      "workspace_sha256_before": "becd67227e5d0884dde7d38f02f6490e567a9fc56e0810df71506bb7a7730fa7",
+      "workspace_sha256_after": "becd67227e5d0884dde7d38f02f6490e567a9fc56e0810df71506bb7a7730fa7",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 48,
+      "case": "v10-pw-06",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2696,
+      "workspace_sha256_before": "0a3228ac8f4b433462d866f4f556838c99c4f4a5ba242eb543dbc38e041d44ec",
+      "workspace_sha256_after": "0a3228ac8f4b433462d866f4f556838c99c4f4a5ba242eb543dbc38e041d44ec",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 49,
+      "case": "v10-cy-08",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2335,
+      "workspace_sha256_before": "037f911bc74d1514e2237d9331e0ddd0dd663a9f339d5192708b96fa4fc7a030",
+      "workspace_sha256_after": "037f911bc74d1514e2237d9331e0ddd0dd663a9f339d5192708b96fa4fc7a030",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 50,
+      "case": "v10-pw-14",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2464,
+      "workspace_sha256_before": "5062440ee096127a4f4a74e517664e27dc5e436a6e0b9b35a1d696a07df299c5",
+      "workspace_sha256_after": "5062440ee096127a4f4a74e517664e27dc5e436a6e0b9b35a1d696a07df299c5",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 51,
+      "case": "v10-cy-13",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2379,
+      "workspace_sha256_before": "b297f4bc1a5e89a1be47447d3d6e936f0e1cd2cc5a5cdbd0b75bac087b362690",
+      "workspace_sha256_after": "b297f4bc1a5e89a1be47447d3d6e936f0e1cd2cc5a5cdbd0b75bac087b362690",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 52,
+      "case": "v10-cy-08",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2589,
+      "workspace_sha256_before": "037f911bc74d1514e2237d9331e0ddd0dd663a9f339d5192708b96fa4fc7a030",
+      "workspace_sha256_after": "037f911bc74d1514e2237d9331e0ddd0dd663a9f339d5192708b96fa4fc7a030",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 53,
+      "case": "v10-cy-02",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2418,
+      "workspace_sha256_before": "3c28409fe9dea1b7b72d5296de9d5ce29c3f879d67013a60d5929a14ebdc1e57",
+      "workspace_sha256_after": "3c28409fe9dea1b7b72d5296de9d5ce29c3f879d67013a60d5929a14ebdc1e57",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 54,
+      "case": "v10-pw-13",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2358,
+      "workspace_sha256_before": "aa76ce77d6fd52c910da19b182a047fd45966b8eb43300e5bae8d3477a259279",
+      "workspace_sha256_after": "aa76ce77d6fd52c910da19b182a047fd45966b8eb43300e5bae8d3477a259279",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 55,
+      "case": "v10-cy-01",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2290,
+      "workspace_sha256_before": "e2a9d4d2a228bd1bff6f3d61a152423e51085af5a165750031510d299d8db86c",
+      "workspace_sha256_after": "e2a9d4d2a228bd1bff6f3d61a152423e51085af5a165750031510d299d8db86c",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 56,
+      "case": "v10-pw-06",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2564,
+      "workspace_sha256_before": "0a3228ac8f4b433462d866f4f556838c99c4f4a5ba242eb543dbc38e041d44ec",
+      "workspace_sha256_after": "0a3228ac8f4b433462d866f4f556838c99c4f4a5ba242eb543dbc38e041d44ec",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 57,
+      "case": "v10-cy-02",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2837,
+      "workspace_sha256_before": "3c28409fe9dea1b7b72d5296de9d5ce29c3f879d67013a60d5929a14ebdc1e57",
+      "workspace_sha256_after": "3c28409fe9dea1b7b72d5296de9d5ce29c3f879d67013a60d5929a14ebdc1e57",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 58,
+      "case": "v10-cy-09",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2413,
+      "workspace_sha256_before": "f72b340a4bb8be74236bb684c9293ffcb8497c7e4a3868929bdbaf7b1363209c",
+      "workspace_sha256_after": "f72b340a4bb8be74236bb684c9293ffcb8497c7e4a3868929bdbaf7b1363209c",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 59,
+      "case": "v10-cy-10",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2418,
+      "workspace_sha256_before": "b61361f9fac6cfa0263500002a43a21c9d6fd8ec1e0194a41b3652cdc3a7c03a",
+      "workspace_sha256_after": "b61361f9fac6cfa0263500002a43a21c9d6fd8ec1e0194a41b3652cdc3a7c03a",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 60,
+      "case": "v10-cy-14",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2334,
+      "workspace_sha256_before": "becd67227e5d0884dde7d38f02f6490e567a9fc56e0810df71506bb7a7730fa7",
+      "workspace_sha256_after": "becd67227e5d0884dde7d38f02f6490e567a9fc56e0810df71506bb7a7730fa7",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 61,
+      "case": "v10-cy-13",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2514,
+      "workspace_sha256_before": "b297f4bc1a5e89a1be47447d3d6e936f0e1cd2cc5a5cdbd0b75bac087b362690",
+      "workspace_sha256_after": "b297f4bc1a5e89a1be47447d3d6e936f0e1cd2cc5a5cdbd0b75bac087b362690",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 62,
+      "case": "v10-pw-11",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2289,
+      "workspace_sha256_before": "d24022d61885ef20d9a32abfb93bca946e68f7fc2e9738f99574270c39182054",
+      "workspace_sha256_after": "d24022d61885ef20d9a32abfb93bca946e68f7fc2e9738f99574270c39182054",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 63,
+      "case": "v10-cy-14",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2484,
+      "workspace_sha256_before": "becd67227e5d0884dde7d38f02f6490e567a9fc56e0810df71506bb7a7730fa7",
+      "workspace_sha256_after": "becd67227e5d0884dde7d38f02f6490e567a9fc56e0810df71506bb7a7730fa7",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 64,
+      "case": "v10-pw-08",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2639,
+      "workspace_sha256_before": "b17c6daedf86dabdeea0e7dd519f853fbb49c473844ba879182ddbfc253f585b",
+      "workspace_sha256_after": "b17c6daedf86dabdeea0e7dd519f853fbb49c473844ba879182ddbfc253f585b",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 65,
+      "case": "v10-cy-15",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2611,
+      "workspace_sha256_before": "91efdb9d3f22490afb34bcfbbdbbe02a7ceca9fac9e0cb63dd54beb8d27e04af",
+      "workspace_sha256_after": "91efdb9d3f22490afb34bcfbbdbbe02a7ceca9fac9e0cb63dd54beb8d27e04af",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 66,
+      "case": "v10-cy-13",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2332,
+      "workspace_sha256_before": "b297f4bc1a5e89a1be47447d3d6e936f0e1cd2cc5a5cdbd0b75bac087b362690",
+      "workspace_sha256_after": "b297f4bc1a5e89a1be47447d3d6e936f0e1cd2cc5a5cdbd0b75bac087b362690",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 67,
+      "case": "v10-cy-04",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2683,
+      "workspace_sha256_before": "ba4c9f7b51c0293c42401cd0bf2355860ccedb00e006491e20dd73decfb6c1e4",
+      "workspace_sha256_after": "ba4c9f7b51c0293c42401cd0bf2355860ccedb00e006491e20dd73decfb6c1e4",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 68,
+      "case": "v10-pw-11",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2515,
+      "workspace_sha256_before": "d24022d61885ef20d9a32abfb93bca946e68f7fc2e9738f99574270c39182054",
+      "workspace_sha256_after": "d24022d61885ef20d9a32abfb93bca946e68f7fc2e9738f99574270c39182054",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 69,
+      "case": "v10-cy-01",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2421,
+      "workspace_sha256_before": "e2a9d4d2a228bd1bff6f3d61a152423e51085af5a165750031510d299d8db86c",
+      "workspace_sha256_after": "e2a9d4d2a228bd1bff6f3d61a152423e51085af5a165750031510d299d8db86c",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 70,
+      "case": "v10-pw-05",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2515,
+      "workspace_sha256_before": "fc6861a953b9b22cf23df25eb764b3eb035d1d099530468ffb8770a2e232862a",
+      "workspace_sha256_after": "fc6861a953b9b22cf23df25eb764b3eb035d1d099530468ffb8770a2e232862a",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 71,
+      "case": "v10-pw-01",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2292,
+      "workspace_sha256_before": "50ec09882298ce478bc5a7029c552c53c87eddfde8170ebf359cb3387a46e651",
+      "workspace_sha256_after": "50ec09882298ce478bc5a7029c552c53c87eddfde8170ebf359cb3387a46e651",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 72,
+      "case": "v10-cy-11",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2605,
+      "workspace_sha256_before": "6263fd6b930dc284b06c3ebd3d0bf1dee7bae56955337979ff64722d598b6149",
+      "workspace_sha256_after": "6263fd6b930dc284b06c3ebd3d0bf1dee7bae56955337979ff64722d598b6149",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 73,
+      "case": "v10-cy-06",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2497,
+      "workspace_sha256_before": "b795de3dc8dba1535cfe6f04dc76030f5a9b3b1bf9763f9e1a719f87a3c7d50b",
+      "workspace_sha256_after": "b795de3dc8dba1535cfe6f04dc76030f5a9b3b1bf9763f9e1a719f87a3c7d50b",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 74,
+      "case": "v10-cy-09",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2375,
+      "workspace_sha256_before": "f72b340a4bb8be74236bb684c9293ffcb8497c7e4a3868929bdbaf7b1363209c",
+      "workspace_sha256_after": "f72b340a4bb8be74236bb684c9293ffcb8497c7e4a3868929bdbaf7b1363209c",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 75,
+      "case": "v10-pw-15",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2505,
+      "workspace_sha256_before": "fe4687085e8afed6f6d81f016592608048beb2c7fdd9d0232c074c46250a92a4",
+      "workspace_sha256_after": "fe4687085e8afed6f6d81f016592608048beb2c7fdd9d0232c074c46250a92a4",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 76,
+      "case": "v10-pw-14",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2273,
+      "workspace_sha256_before": "5062440ee096127a4f4a74e517664e27dc5e436a6e0b9b35a1d696a07df299c5",
+      "workspace_sha256_after": "5062440ee096127a4f4a74e517664e27dc5e436a6e0b9b35a1d696a07df299c5",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 77,
+      "case": "v10-cy-15",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2381,
+      "workspace_sha256_before": "91efdb9d3f22490afb34bcfbbdbbe02a7ceca9fac9e0cb63dd54beb8d27e04af",
+      "workspace_sha256_after": "91efdb9d3f22490afb34bcfbbdbbe02a7ceca9fac9e0cb63dd54beb8d27e04af",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 78,
+      "case": "v10-pw-10",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2415,
+      "workspace_sha256_before": "cbb1bc45b243af6b9be1b1d1088041aca24e9061c8cca553797de0c8620585a2",
+      "workspace_sha256_after": "cbb1bc45b243af6b9be1b1d1088041aca24e9061c8cca553797de0c8620585a2",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 79,
+      "case": "v10-pw-12",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2432,
+      "workspace_sha256_before": "770f7c9c8491d1a1608a4fde2e8e2f1d9b3e52627aaf3896f349d55367949895",
+      "workspace_sha256_after": "770f7c9c8491d1a1608a4fde2e8e2f1d9b3e52627aaf3896f349d55367949895",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 80,
+      "case": "v10-pw-12",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2588,
+      "workspace_sha256_before": "770f7c9c8491d1a1608a4fde2e8e2f1d9b3e52627aaf3896f349d55367949895",
+      "workspace_sha256_after": "770f7c9c8491d1a1608a4fde2e8e2f1d9b3e52627aaf3896f349d55367949895",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 81,
+      "case": "v10-pw-10",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2335,
+      "workspace_sha256_before": "cbb1bc45b243af6b9be1b1d1088041aca24e9061c8cca553797de0c8620585a2",
+      "workspace_sha256_after": "cbb1bc45b243af6b9be1b1d1088041aca24e9061c8cca553797de0c8620585a2",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 82,
+      "case": "v10-pw-05",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2294,
+      "workspace_sha256_before": "fc6861a953b9b22cf23df25eb764b3eb035d1d099530468ffb8770a2e232862a",
+      "workspace_sha256_after": "fc6861a953b9b22cf23df25eb764b3eb035d1d099530468ffb8770a2e232862a",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 83,
+      "case": "v10-pw-05",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2284,
+      "workspace_sha256_before": "fc6861a953b9b22cf23df25eb764b3eb035d1d099530468ffb8770a2e232862a",
+      "workspace_sha256_after": "fc6861a953b9b22cf23df25eb764b3eb035d1d099530468ffb8770a2e232862a",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 84,
+      "case": "v10-pw-05",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2375,
+      "workspace_sha256_before": "fc6861a953b9b22cf23df25eb764b3eb035d1d099530468ffb8770a2e232862a",
+      "workspace_sha256_after": "fc6861a953b9b22cf23df25eb764b3eb035d1d099530468ffb8770a2e232862a",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 85,
+      "case": "v10-pw-04",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2152,
+      "workspace_sha256_before": "a311335990944ac53a9f0a226d8ee1a3b82201d9a6da1ce7d088834607851862",
+      "workspace_sha256_after": "a311335990944ac53a9f0a226d8ee1a3b82201d9a6da1ce7d088834607851862",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 86,
+      "case": "v10-cy-09",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2259,
+      "workspace_sha256_before": "f72b340a4bb8be74236bb684c9293ffcb8497c7e4a3868929bdbaf7b1363209c",
+      "workspace_sha256_after": "f72b340a4bb8be74236bb684c9293ffcb8497c7e4a3868929bdbaf7b1363209c",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 87,
+      "case": "v10-pw-02",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2326,
+      "workspace_sha256_before": "0add396a8d5ae2aa5200815e43f3abff5c92c7459d3b7a52ea21c44219561402",
+      "workspace_sha256_after": "0add396a8d5ae2aa5200815e43f3abff5c92c7459d3b7a52ea21c44219561402",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 88,
+      "case": "v10-cy-10",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2500,
+      "workspace_sha256_before": "b61361f9fac6cfa0263500002a43a21c9d6fd8ec1e0194a41b3652cdc3a7c03a",
+      "workspace_sha256_after": "b61361f9fac6cfa0263500002a43a21c9d6fd8ec1e0194a41b3652cdc3a7c03a",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 89,
+      "case": "v10-pw-14",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2231,
+      "workspace_sha256_before": "5062440ee096127a4f4a74e517664e27dc5e436a6e0b9b35a1d696a07df299c5",
+      "workspace_sha256_after": "5062440ee096127a4f4a74e517664e27dc5e436a6e0b9b35a1d696a07df299c5",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 90,
+      "case": "v10-pw-10",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2927,
+      "workspace_sha256_before": "cbb1bc45b243af6b9be1b1d1088041aca24e9061c8cca553797de0c8620585a2",
+      "workspace_sha256_after": "cbb1bc45b243af6b9be1b1d1088041aca24e9061c8cca553797de0c8620585a2",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 91,
+      "case": "v10-cy-03",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2474,
+      "workspace_sha256_before": "2e5c2740df9eac5c86498012f53fd28b6fe34d9e1b9c4015c4aca6be8605a43e",
+      "workspace_sha256_after": "2e5c2740df9eac5c86498012f53fd28b6fe34d9e1b9c4015c4aca6be8605a43e",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 92,
+      "case": "v10-cy-07",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2325,
+      "workspace_sha256_before": "43873a953cc2f69f07e360a8839720b6b3f9628ca2b88e6db049c69353078b2a",
+      "workspace_sha256_after": "43873a953cc2f69f07e360a8839720b6b3f9628ca2b88e6db049c69353078b2a",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 93,
+      "case": "v10-pw-14",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2622,
+      "workspace_sha256_before": "5062440ee096127a4f4a74e517664e27dc5e436a6e0b9b35a1d696a07df299c5",
+      "workspace_sha256_after": "5062440ee096127a4f4a74e517664e27dc5e436a6e0b9b35a1d696a07df299c5",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 94,
+      "case": "v10-cy-12",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2210,
+      "workspace_sha256_before": "b7445f3d6fdd2b2967e5397d7aeb00ed735fa29b2aab0b9c688183509c2d0cad",
+      "workspace_sha256_after": "b7445f3d6fdd2b2967e5397d7aeb00ed735fa29b2aab0b9c688183509c2d0cad",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 95,
+      "case": "v10-pw-09",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2204,
+      "workspace_sha256_before": "0678503215e2371afa0cd64229975c67b6727b067098f74e20a81da4e4aeeaaa",
+      "workspace_sha256_after": "0678503215e2371afa0cd64229975c67b6727b067098f74e20a81da4e4aeeaaa",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 96,
+      "case": "v10-cy-06",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2498,
+      "workspace_sha256_before": "b795de3dc8dba1535cfe6f04dc76030f5a9b3b1bf9763f9e1a719f87a3c7d50b",
+      "workspace_sha256_after": "b795de3dc8dba1535cfe6f04dc76030f5a9b3b1bf9763f9e1a719f87a3c7d50b",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 97,
+      "case": "v10-pw-12",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2388,
+      "workspace_sha256_before": "770f7c9c8491d1a1608a4fde2e8e2f1d9b3e52627aaf3896f349d55367949895",
+      "workspace_sha256_after": "770f7c9c8491d1a1608a4fde2e8e2f1d9b3e52627aaf3896f349d55367949895",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 98,
+      "case": "v10-cy-04",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2216,
+      "workspace_sha256_before": "ba4c9f7b51c0293c42401cd0bf2355860ccedb00e006491e20dd73decfb6c1e4",
+      "workspace_sha256_after": "ba4c9f7b51c0293c42401cd0bf2355860ccedb00e006491e20dd73decfb6c1e4",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 99,
+      "case": "v10-cy-11",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2488,
+      "workspace_sha256_before": "6263fd6b930dc284b06c3ebd3d0bf1dee7bae56955337979ff64722d598b6149",
+      "workspace_sha256_after": "6263fd6b930dc284b06c3ebd3d0bf1dee7bae56955337979ff64722d598b6149",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 100,
+      "case": "v10-pw-15",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 3089,
+      "workspace_sha256_before": "fe4687085e8afed6f6d81f016592608048beb2c7fdd9d0232c074c46250a92a4",
+      "workspace_sha256_after": "fe4687085e8afed6f6d81f016592608048beb2c7fdd9d0232c074c46250a92a4",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 101,
+      "case": "v10-pw-12",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2455,
+      "workspace_sha256_before": "770f7c9c8491d1a1608a4fde2e8e2f1d9b3e52627aaf3896f349d55367949895",
+      "workspace_sha256_after": "770f7c9c8491d1a1608a4fde2e8e2f1d9b3e52627aaf3896f349d55367949895",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 102,
+      "case": "v10-pw-05",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2508,
+      "workspace_sha256_before": "fc6861a953b9b22cf23df25eb764b3eb035d1d099530468ffb8770a2e232862a",
+      "workspace_sha256_after": "fc6861a953b9b22cf23df25eb764b3eb035d1d099530468ffb8770a2e232862a",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 103,
+      "case": "v10-pw-07",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2346,
+      "workspace_sha256_before": "cba24b1f21250328c5e972ff468328c749baa9b441ce993e4622108653e51071",
+      "workspace_sha256_after": "cba24b1f21250328c5e972ff468328c749baa9b441ce993e4622108653e51071",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 104,
+      "case": "v10-cy-13",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2474,
+      "workspace_sha256_before": "b297f4bc1a5e89a1be47447d3d6e936f0e1cd2cc5a5cdbd0b75bac087b362690",
+      "workspace_sha256_after": "b297f4bc1a5e89a1be47447d3d6e936f0e1cd2cc5a5cdbd0b75bac087b362690",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 105,
+      "case": "v10-pw-03",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2228,
+      "workspace_sha256_before": "ec6a2674a044e05f78a3a5265c43dad127beae77b35d01b84a58f9243479b5c7",
+      "workspace_sha256_after": "ec6a2674a044e05f78a3a5265c43dad127beae77b35d01b84a58f9243479b5c7",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 106,
+      "case": "v10-cy-06",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2482,
+      "workspace_sha256_before": "b795de3dc8dba1535cfe6f04dc76030f5a9b3b1bf9763f9e1a719f87a3c7d50b",
+      "workspace_sha256_after": "b795de3dc8dba1535cfe6f04dc76030f5a9b3b1bf9763f9e1a719f87a3c7d50b",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 107,
+      "case": "v10-pw-02",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2275,
+      "workspace_sha256_before": "0add396a8d5ae2aa5200815e43f3abff5c92c7459d3b7a52ea21c44219561402",
+      "workspace_sha256_after": "0add396a8d5ae2aa5200815e43f3abff5c92c7459d3b7a52ea21c44219561402",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 108,
+      "case": "v10-cy-06",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2484,
+      "workspace_sha256_before": "b795de3dc8dba1535cfe6f04dc76030f5a9b3b1bf9763f9e1a719f87a3c7d50b",
+      "workspace_sha256_after": "b795de3dc8dba1535cfe6f04dc76030f5a9b3b1bf9763f9e1a719f87a3c7d50b",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 109,
+      "case": "v10-pw-08",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2584,
+      "workspace_sha256_before": "b17c6daedf86dabdeea0e7dd519f853fbb49c473844ba879182ddbfc253f585b",
+      "workspace_sha256_after": "b17c6daedf86dabdeea0e7dd519f853fbb49c473844ba879182ddbfc253f585b",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 110,
+      "case": "v10-pw-11",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2335,
+      "workspace_sha256_before": "d24022d61885ef20d9a32abfb93bca946e68f7fc2e9738f99574270c39182054",
+      "workspace_sha256_after": "d24022d61885ef20d9a32abfb93bca946e68f7fc2e9738f99574270c39182054",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 111,
+      "case": "v10-cy-01",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2222,
+      "workspace_sha256_before": "e2a9d4d2a228bd1bff6f3d61a152423e51085af5a165750031510d299d8db86c",
+      "workspace_sha256_after": "e2a9d4d2a228bd1bff6f3d61a152423e51085af5a165750031510d299d8db86c",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 112,
+      "case": "v10-pw-03",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2588,
+      "workspace_sha256_before": "ec6a2674a044e05f78a3a5265c43dad127beae77b35d01b84a58f9243479b5c7",
+      "workspace_sha256_after": "ec6a2674a044e05f78a3a5265c43dad127beae77b35d01b84a58f9243479b5c7",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 113,
+      "case": "v10-cy-07",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2276,
+      "workspace_sha256_before": "43873a953cc2f69f07e360a8839720b6b3f9628ca2b88e6db049c69353078b2a",
+      "workspace_sha256_after": "43873a953cc2f69f07e360a8839720b6b3f9628ca2b88e6db049c69353078b2a",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 114,
+      "case": "v10-cy-08",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2411,
+      "workspace_sha256_before": "037f911bc74d1514e2237d9331e0ddd0dd663a9f339d5192708b96fa4fc7a030",
+      "workspace_sha256_after": "037f911bc74d1514e2237d9331e0ddd0dd663a9f339d5192708b96fa4fc7a030",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 115,
+      "case": "v10-cy-07",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2189,
+      "workspace_sha256_before": "43873a953cc2f69f07e360a8839720b6b3f9628ca2b88e6db049c69353078b2a",
+      "workspace_sha256_after": "43873a953cc2f69f07e360a8839720b6b3f9628ca2b88e6db049c69353078b2a",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 116,
+      "case": "v10-cy-03",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2409,
+      "workspace_sha256_before": "2e5c2740df9eac5c86498012f53fd28b6fe34d9e1b9c4015c4aca6be8605a43e",
+      "workspace_sha256_after": "2e5c2740df9eac5c86498012f53fd28b6fe34d9e1b9c4015c4aca6be8605a43e",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 117,
+      "case": "v10-pw-08",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2549,
+      "workspace_sha256_before": "b17c6daedf86dabdeea0e7dd519f853fbb49c473844ba879182ddbfc253f585b",
+      "workspace_sha256_after": "b17c6daedf86dabdeea0e7dd519f853fbb49c473844ba879182ddbfc253f585b",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 118,
+      "case": "v10-cy-05",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2415,
+      "workspace_sha256_before": "bfd9770ad540d3b569486af7734be9847a55fe616ab3e214a9082b4f1d98e4ab",
+      "workspace_sha256_after": "bfd9770ad540d3b569486af7734be9847a55fe616ab3e214a9082b4f1d98e4ab",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 119,
+      "case": "v10-pw-08",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2237,
+      "workspace_sha256_before": "b17c6daedf86dabdeea0e7dd519f853fbb49c473844ba879182ddbfc253f585b",
+      "workspace_sha256_after": "b17c6daedf86dabdeea0e7dd519f853fbb49c473844ba879182ddbfc253f585b",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 120,
+      "case": "v10-pw-15",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2354,
+      "workspace_sha256_before": "fe4687085e8afed6f6d81f016592608048beb2c7fdd9d0232c074c46250a92a4",
+      "workspace_sha256_after": "fe4687085e8afed6f6d81f016592608048beb2c7fdd9d0232c074c46250a92a4",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 121,
+      "case": "v10-cy-07",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2539,
+      "workspace_sha256_before": "43873a953cc2f69f07e360a8839720b6b3f9628ca2b88e6db049c69353078b2a",
+      "workspace_sha256_after": "43873a953cc2f69f07e360a8839720b6b3f9628ca2b88e6db049c69353078b2a",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 122,
+      "case": "v10-pw-13",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2315,
+      "workspace_sha256_before": "aa76ce77d6fd52c910da19b182a047fd45966b8eb43300e5bae8d3477a259279",
+      "workspace_sha256_after": "aa76ce77d6fd52c910da19b182a047fd45966b8eb43300e5bae8d3477a259279",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 123,
+      "case": "v10-cy-10",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2204,
+      "workspace_sha256_before": "b61361f9fac6cfa0263500002a43a21c9d6fd8ec1e0194a41b3652cdc3a7c03a",
+      "workspace_sha256_after": "b61361f9fac6cfa0263500002a43a21c9d6fd8ec1e0194a41b3652cdc3a7c03a",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 124,
+      "case": "v10-cy-12",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2606,
+      "workspace_sha256_before": "b7445f3d6fdd2b2967e5397d7aeb00ed735fa29b2aab0b9c688183509c2d0cad",
+      "workspace_sha256_after": "b7445f3d6fdd2b2967e5397d7aeb00ed735fa29b2aab0b9c688183509c2d0cad",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 125,
+      "case": "v10-pw-02",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2458,
+      "workspace_sha256_before": "0add396a8d5ae2aa5200815e43f3abff5c92c7459d3b7a52ea21c44219561402",
+      "workspace_sha256_after": "0add396a8d5ae2aa5200815e43f3abff5c92c7459d3b7a52ea21c44219561402",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 126,
+      "case": "v10-pw-09",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2375,
+      "workspace_sha256_before": "0678503215e2371afa0cd64229975c67b6727b067098f74e20a81da4e4aeeaaa",
+      "workspace_sha256_after": "0678503215e2371afa0cd64229975c67b6727b067098f74e20a81da4e4aeeaaa",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 127,
+      "case": "v10-cy-05",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2148,
+      "workspace_sha256_before": "bfd9770ad540d3b569486af7734be9847a55fe616ab3e214a9082b4f1d98e4ab",
+      "workspace_sha256_after": "bfd9770ad540d3b569486af7734be9847a55fe616ab3e214a9082b4f1d98e4ab",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 128,
+      "case": "v10-pw-13",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2178,
+      "workspace_sha256_before": "aa76ce77d6fd52c910da19b182a047fd45966b8eb43300e5bae8d3477a259279",
+      "workspace_sha256_after": "aa76ce77d6fd52c910da19b182a047fd45966b8eb43300e5bae8d3477a259279",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 129,
+      "case": "v10-pw-11",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2221,
+      "workspace_sha256_before": "d24022d61885ef20d9a32abfb93bca946e68f7fc2e9738f99574270c39182054",
+      "workspace_sha256_after": "d24022d61885ef20d9a32abfb93bca946e68f7fc2e9738f99574270c39182054",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 130,
+      "case": "v10-cy-11",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2560,
+      "workspace_sha256_before": "6263fd6b930dc284b06c3ebd3d0bf1dee7bae56955337979ff64722d598b6149",
+      "workspace_sha256_after": "6263fd6b930dc284b06c3ebd3d0bf1dee7bae56955337979ff64722d598b6149",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 131,
+      "case": "v10-pw-04",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2605,
+      "workspace_sha256_before": "a311335990944ac53a9f0a226d8ee1a3b82201d9a6da1ce7d088834607851862",
+      "workspace_sha256_after": "a311335990944ac53a9f0a226d8ee1a3b82201d9a6da1ce7d088834607851862",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 132,
+      "case": "v10-pw-04",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2650,
+      "workspace_sha256_before": "a311335990944ac53a9f0a226d8ee1a3b82201d9a6da1ce7d088834607851862",
+      "workspace_sha256_after": "a311335990944ac53a9f0a226d8ee1a3b82201d9a6da1ce7d088834607851862",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 133,
+      "case": "v10-cy-03",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2739,
+      "workspace_sha256_before": "2e5c2740df9eac5c86498012f53fd28b6fe34d9e1b9c4015c4aca6be8605a43e",
+      "workspace_sha256_after": "2e5c2740df9eac5c86498012f53fd28b6fe34d9e1b9c4015c4aca6be8605a43e",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 134,
+      "case": "v10-cy-02",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2356,
+      "workspace_sha256_before": "3c28409fe9dea1b7b72d5296de9d5ce29c3f879d67013a60d5929a14ebdc1e57",
+      "workspace_sha256_after": "3c28409fe9dea1b7b72d5296de9d5ce29c3f879d67013a60d5929a14ebdc1e57",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 135,
+      "case": "v10-cy-15",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2401,
+      "workspace_sha256_before": "91efdb9d3f22490afb34bcfbbdbbe02a7ceca9fac9e0cb63dd54beb8d27e04af",
+      "workspace_sha256_after": "91efdb9d3f22490afb34bcfbbdbbe02a7ceca9fac9e0cb63dd54beb8d27e04af",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 136,
+      "case": "v10-cy-05",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2268,
+      "workspace_sha256_before": "bfd9770ad540d3b569486af7734be9847a55fe616ab3e214a9082b4f1d98e4ab",
+      "workspace_sha256_after": "bfd9770ad540d3b569486af7734be9847a55fe616ab3e214a9082b4f1d98e4ab",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 137,
+      "case": "v10-pw-07",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 4,
+      "exit_code": 1,
+      "duration_ms": 2482,
+      "workspace_sha256_before": "cba24b1f21250328c5e972ff468328c749baa9b441ce993e4622108653e51071",
+      "workspace_sha256_after": "cba24b1f21250328c5e972ff468328c749baa9b441ce993e4622108653e51071",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 138,
+      "case": "v10-pw-03",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2591,
+      "workspace_sha256_before": "ec6a2674a044e05f78a3a5265c43dad127beae77b35d01b84a58f9243479b5c7",
+      "workspace_sha256_after": "ec6a2674a044e05f78a3a5265c43dad127beae77b35d01b84a58f9243479b5c7",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 139,
+      "case": "v10-pw-03",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2305,
+      "workspace_sha256_before": "ec6a2674a044e05f78a3a5265c43dad127beae77b35d01b84a58f9243479b5c7",
+      "workspace_sha256_after": "ec6a2674a044e05f78a3a5265c43dad127beae77b35d01b84a58f9243479b5c7",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 140,
+      "case": "v10-pw-15",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2179,
+      "workspace_sha256_before": "fe4687085e8afed6f6d81f016592608048beb2c7fdd9d0232c074c46250a92a4",
+      "workspace_sha256_after": "fe4687085e8afed6f6d81f016592608048beb2c7fdd9d0232c074c46250a92a4",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 141,
+      "case": "v10-pw-06",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2388,
+      "workspace_sha256_before": "0a3228ac8f4b433462d866f4f556838c99c4f4a5ba242eb543dbc38e041d44ec",
+      "workspace_sha256_after": "0a3228ac8f4b433462d866f4f556838c99c4f4a5ba242eb543dbc38e041d44ec",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 142,
+      "case": "v10-pw-07",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2332,
+      "workspace_sha256_before": "cba24b1f21250328c5e972ff468328c749baa9b441ce993e4622108653e51071",
+      "workspace_sha256_after": "cba24b1f21250328c5e972ff468328c749baa9b441ce993e4622108653e51071",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 143,
+      "case": "v10-cy-05",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2202,
+      "workspace_sha256_before": "bfd9770ad540d3b569486af7734be9847a55fe616ab3e214a9082b4f1d98e4ab",
+      "workspace_sha256_after": "bfd9770ad540d3b569486af7734be9847a55fe616ab3e214a9082b4f1d98e4ab",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 144,
+      "case": "v10-cy-10",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 3,
+      "exit_code": 1,
+      "duration_ms": 2496,
+      "workspace_sha256_before": "b61361f9fac6cfa0263500002a43a21c9d6fd8ec1e0194a41b3652cdc3a7c03a",
+      "workspace_sha256_after": "b61361f9fac6cfa0263500002a43a21c9d6fd8ec1e0194a41b3652cdc3a7c03a",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 145,
+      "case": "v10-pw-10",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2284,
+      "workspace_sha256_before": "cbb1bc45b243af6b9be1b1d1088041aca24e9061c8cca553797de0c8620585a2",
+      "workspace_sha256_after": "cbb1bc45b243af6b9be1b1d1088041aca24e9061c8cca553797de0c8620585a2",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 146,
+      "case": "v10-pw-01",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 1,
+      "exit_code": 1,
+      "duration_ms": 2413,
+      "workspace_sha256_before": "50ec09882298ce478bc5a7029c552c53c87eddfde8170ebf359cb3387a46e651",
+      "workspace_sha256_after": "50ec09882298ce478bc5a7029c552c53c87eddfde8170ebf359cb3387a46e651",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 147,
+      "case": "v10-pw-01",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2231,
+      "workspace_sha256_before": "50ec09882298ce478bc5a7029c552c53c87eddfde8170ebf359cb3387a46e651",
+      "workspace_sha256_after": "50ec09882298ce478bc5a7029c552c53c87eddfde8170ebf359cb3387a46e651",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 148,
+      "case": "v10-pw-08",
+      "framework": "playwright",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2814,
+      "workspace_sha256_before": "b17c6daedf86dabdeea0e7dd519f853fbb49c473844ba879182ddbfc253f585b",
+      "workspace_sha256_after": "b17c6daedf86dabdeea0e7dd519f853fbb49c473844ba879182ddbfc253f585b",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 149,
+      "case": "v10-cy-15",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 2,
+      "exit_code": 1,
+      "duration_ms": 2510,
+      "workspace_sha256_before": "91efdb9d3f22490afb34bcfbbdbbe02a7ceca9fac9e0cb63dd54beb8d27e04af",
+      "workspace_sha256_after": "91efdb9d3f22490afb34bcfbbdbbe02a7ceca9fac9e0cb63dd54beb8d27e04af",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    },
+    {
+      "schedule_ordinal": 150,
+      "case": "v10-cy-09",
+      "framework": "cypress",
+      "split": "public-development-v10",
+      "repetition": 5,
+      "exit_code": 1,
+      "duration_ms": 2594,
+      "workspace_sha256_before": "f72b340a4bb8be74236bb684c9293ffcb8497c7e4a3868929bdbaf7b1363209c",
+      "workspace_sha256_after": "f72b340a4bb8be74236bb684c9293ffcb8497c7e4a3868929bdbaf7b1363209c",
+      "staged_skill_sha256_before": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "staged_skill_sha256_after": "4289f0cf82aed04c9eac7f8674a12870c460b3340ed18a3fcc23c90953d61535",
+      "findings": [],
+      "score": null,
+      "output": "You've hit your weekly limit \u00b7 resets Oct 1 at 9am (Asia/Seoul)\n",
+      "error": "runner exited 1",
+      "cleanup_failures": []
+    }
+  ]
+}

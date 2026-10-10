@@ -1,0 +1,14 @@
+{
+ "source": {
+  "repo": "Altinn/altinn-studio",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/Altinn/altinn-studio/pull/20688"
+  ],
+  "merged": "2026-09-24"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test",
+ "explanation": "Clearing the field saves an empty value to a non-nullable integer; the backend normalizes it to zero, so the assertion that the input stays empty races with the save response, and the response can interrupt typing.",
+ "fix": "Wait for saving to finish (`cy.waitUntilSaved()`), assert `NOK 0`, then type the threshold at the end of the input."
+}

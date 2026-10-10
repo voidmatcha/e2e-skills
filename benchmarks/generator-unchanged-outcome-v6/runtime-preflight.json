@@ -1,0 +1,231 @@
+{
+  "status": "PASS",
+  "reports": {
+    "2": {
+      "path": "/Users/user/.cache/gen-unchanged-outcome-v2-run/final.json",
+      "sha256": "6cb648f1157049d96eb2277fdaa39c273ff29df49933dd92509e9c0bac44b498",
+      "completed_calls": 12
+    },
+    "3": {
+      "path": "/Users/user/.cache/gen-unchanged-outcome-v3-run/final.json",
+      "sha256": "9c50fdad8d0d1ae1054edcfd72dce6fec3a182513d93314b030ac793da44a1ad",
+      "completed_calls": 2
+    },
+    "4": {
+      "path": "/Users/user/.cache/gen-unchanged-outcome-v4-run/final.json",
+      "sha256": "db5ad72318b1eb546c93dafaf1ec4d69090b75b939751a9b668cc9d1b3a6beac",
+      "completed_calls": 3
+    }
+  },
+  "replayed_calls": 17,
+  "limitations": "v2 did not bind transcript SHA in original report; its SHA is recorded at this preflight only. Runtime classification is not creator provenance.",
+  "rows": [
+    {
+      "version": 2,
+      "call_id": "response-before-render-before-r1",
+      "transcript_sha256": "16a9e92b995a5398a6e4bcbc315b580d7e96acb8bf109bdd4150ae2bb2f19c57",
+      "transcript_originally_digest_bound": false,
+      "transcript_events": 118,
+      "runtime_paths": [
+        ".playwright-cli/page-2026-10-08T13-40-54-874Z.yml",
+        ".playwright-cli/page-2026-10-08T13-41-07-965Z.yml",
+        ".playwright-cli/page-2026-10-08T13-41-14-162Z.yml",
+        ".playwright-cli/page-2026-10-08T13-41-22-917Z.yml"
+      ],
+      "scope_violations": []
+    },
+    {
+      "version": 2,
+      "call_id": "response-before-render-after-r1",
+      "transcript_sha256": "5cc34019fbdbe109d54f31b8c60013cf993b258eba9808ba3e95a1eca5c46f87",
+      "transcript_originally_digest_bound": false,
+      "transcript_events": 146,
+      "runtime_paths": [],
+      "scope_violations": []
+    },
+    {
+      "version": 2,
+      "call_id": "response-before-render-before-r2",
+      "transcript_sha256": "4138467bb6061f60b8c569ddeef1086f68b3ef878fe5e2d8aecae509f965ba62",
+      "transcript_originally_digest_bound": false,
+      "transcript_events": 171,
+      "runtime_paths": [],
+      "scope_violations": []
+    },
+    {
+      "version": 2,
+      "call_id": "response-before-render-after-r2",
+      "transcript_sha256": "4611f65b0cfed33cedfc1d9555d2c7c53ea669aed48566fc87450fe52e518db7",
+      "transcript_originally_digest_bound": false,
+      "transcript_events": 128,
+      "runtime_paths": [],
+      "scope_violations": []
+    },
+    {
+      "version": 2,
+      "call_id": "response-before-render-before-r3",
+      "transcript_sha256": "fde9078e4157cce73e9d81d5071aec239a160845258ffaeb35bae57f2ba22188",
+      "transcript_originally_digest_bound": false,
+      "transcript_events": 162,
+      "runtime_paths": [],
+      "scope_violations": []
+    },
+    {
+      "version": 2,
+      "call_id": "response-before-render-after-r3",
+      "transcript_sha256": "b19fbc04176023d6f94079bed4e56d3213b3a562ece9333598c8b5f520c8f4b7",
+      "transcript_originally_digest_bound": false,
+      "transcript_events": 164,
+      "runtime_paths": [],
+      "scope_violations": []
+    },
+    {
+      "version": 2,
+      "call_id": "async-boundary-before-r1",
+      "transcript_sha256": "b6ec9723d2de5612f2240bb436c003455300ec59275f30da28b21bfb7f3e9895",
+      "transcript_originally_digest_bound": false,
+      "transcript_events": 117,
+      "runtime_paths": [],
+      "scope_violations": []
+    },
+    {
+      "version": 2,
+      "call_id": "async-boundary-after-r1",
+      "transcript_sha256": "d7c79858450497eaa62b41a20f011015a93c736391d7606dbe6238ae6259e6b4",
+      "transcript_originally_digest_bound": false,
+      "transcript_events": 162,
+      "runtime_paths": [],
+      "scope_violations": []
+    },
+    {
+      "version": 2,
+      "call_id": "async-boundary-before-r2",
+      "transcript_sha256": "73c6786e3010c8652a7396473ecc6c13a0d52f093c1d79d21bbf9b9391f0a53b",
+      "transcript_originally_digest_bound": false,
+      "transcript_events": 135,
+      "runtime_paths": [],
+      "scope_violations": []
+    },
+    {
+      "version": 2,
+      "call_id": "async-boundary-after-r2",
+      "transcript_sha256": "03c664a50fde37b040b2184bfaaf5c56a8e4941d86bbc978efa4297c3c90ab91",
+      "transcript_originally_digest_bound": false,
+      "transcript_events": 109,
+      "runtime_paths": [],
+      "scope_violations": []
+    },
+    {
+      "version": 2,
+      "call_id": "async-boundary-after-r3",
+      "transcript_sha256": "dc0f27c2f02cff76066d22e215489fa5b427e8ad26021a85a522fe67d3f72bc7",
+      "transcript_originally_digest_bound": false,
+      "transcript_events": 192,
+      "runtime_paths": [],
+      "scope_violations": []
+    },
+    {
+      "version": 2,
+      "call_id": "async-boundary-before-r3",
+      "transcript_sha256": "489dff5cf85e087643cfc1f943624c890887156e24ac52de8ec823a31ad700fb",
+      "transcript_originally_digest_bound": false,
+      "transcript_events": 131,
+      "runtime_paths": [],
+      "scope_violations": []
+    },
+    {
+      "version": 3,
+      "call_id": "repeated-ready-before-r1",
+      "transcript_sha256": "cb04228409035361453544d9e59f54736c41309e4e586713edfd530f3eb9bd91",
+      "transcript_originally_digest_bound": true,
+      "transcript_events": 145,
+      "runtime_paths": [
+        ".playwright-cli/page-2026-10-08T16-21-54-304Z.yml",
+        ".playwright-cli/page-2026-10-08T16-22-06-368Z.yml",
+        ".playwright-cli/page-2026-10-08T16-22-15-169Z.yml",
+        ".playwright-cli/page-2026-10-08T16-22-21-878Z.yml",
+        ".playwright-cli/page-2026-10-08T16-22-27-240Z.yml",
+        ".playwright-cli/page-2026-10-08T16-22-34-569Z.yml",
+        "test-results/.last-run.json",
+        "test-results/minimum-controls-asynchronous-minimum-remains-one/trace.zip",
+        "test-results/minimum-controls-disabled-minimum-prevents-decrement/trace.zip",
+        "test-results/minimum-controls-synchronous-minimum-remains-one/trace.zip"
+      ],
+      "scope_violations": []
+    },
+    {
+      "version": 3,
+      "call_id": "repeated-ready-after-r1",
+      "transcript_sha256": "032348d41be8936f32b28acf71d0dcec7cd39f601fec2497323a9f9b9ef8fc20",
+      "transcript_originally_digest_bound": true,
+      "transcript_events": 157,
+      "runtime_paths": [
+        ".playwright-cli/page-2026-10-08T16-26-09-536Z.yml",
+        ".playwright-cli/page-2026-10-08T16-26-20-572Z.yml",
+        ".playwright-cli/page-2026-10-08T16-26-27-227Z.yml",
+        ".playwright-cli/page-2026-10-08T16-26-32-953Z.yml",
+        ".playwright-cli/page-2026-10-08T16-26-36-689Z.yml",
+        ".playwright-cli/page-2026-10-08T16-26-47-158Z.yml",
+        "test-results/.last-run.json",
+        "test-results/minimum-controls.v3-async--5e11e-hronous-minimum-remains-one/error-context.md",
+        "test-results/minimum-controls.v3-async--5e11e-hronous-minimum-remains-one/trace.zip"
+      ],
+      "scope_violations": []
+    },
+    {
+      "version": 4,
+      "call_id": "repeated-ready-after-r2",
+      "transcript_sha256": "d99a764528b5bc562306b389ff30518d7ba9471b176912d1a18e1088c7f883aa",
+      "transcript_originally_digest_bound": true,
+      "transcript_events": 131,
+      "runtime_paths": [
+        ".playwright-cli/page-2026-10-08T16-37-25-660Z.yml",
+        ".playwright-cli/page-2026-10-08T16-37-32-435Z.yml",
+        ".playwright-cli/page-2026-10-08T16-37-37-350Z.yml",
+        ".playwright-cli/page-2026-10-08T16-37-41-859Z.yml",
+        "test-results/.last-run.json",
+        "test-results/minimum-controls.v3-temp-asynchronous-minimum-remains-one/error-context.md",
+        "test-results/minimum-controls.v3-temp-asynchronous-minimum-remains-one/trace.zip"
+      ],
+      "scope_violations": []
+    },
+    {
+      "version": 4,
+      "call_id": "repeated-ready-before-r2",
+      "transcript_sha256": "22ccd28d02c6dc5f4315c28822afeb6a7d080e19060c1c32b8dd92dfc6c5f59b",
+      "transcript_originally_digest_bound": true,
+      "transcript_events": 124,
+      "runtime_paths": [
+        ".playwright-cli/page-2026-10-08T16-40-55-585Z.yml",
+        ".playwright-cli/page-2026-10-08T16-41-05-893Z.yml",
+        ".playwright-cli/page-2026-10-08T16-41-13-494Z.yml",
+        ".playwright-cli/page-2026-10-08T16-41-16-906Z.yml",
+        "test-results/.last-run.json",
+        "test-results/minimum-controls-asynchronous-minimum-remains-one/trace.zip",
+        "test-results/minimum-controls-disabled-minimum-prevents-decrement/trace.zip",
+        "test-results/minimum-controls-synchronous-minimum-remains-one/trace.zip",
+        "test-results/smoke-page-opens/trace.zip"
+      ],
+      "scope_violations": []
+    },
+    {
+      "version": 4,
+      "call_id": "unrelated-completion-after-r1",
+      "transcript_sha256": "e8f17e9216fca24967d81b0568c270f18875a76ad3ecb7f28f0eef9fd6a5da11",
+      "transcript_originally_digest_bound": true,
+      "transcript_events": 140,
+      "runtime_paths": [
+        ".playwright-cli/page-2026-10-08T16-44-57-413Z.yml",
+        ".playwright-cli/page-2026-10-08T16-45-05-014Z.yml",
+        ".playwright-cli/page-2026-10-08T16-45-10-212Z.yml",
+        "test-results/.last-run.json",
+        "test-results/minimum-controls-asynchronous-minimum-remains-one/trace.zip",
+        "test-results/minimum-controls-disabled-minimum-prevents-decrement/trace.zip",
+        "test-results/minimum-controls-synchronous-minimum-remains-one/trace.zip",
+        "test-results/smoke-page-opens/trace.zip"
+      ],
+      "scope_violations": []
+    }
+  ]
+}
+

@@ -1,0 +1,706 @@
+{
+  "schema_version": 1,
+  "comparator_sha256": "d3eabe5392a6fddb8437b7f468b0deb910a57374189d298d98b511ccbb9cfcc4",
+  "evaluator_sha256": "363e5680aede3c734080feae41bdc50c2ec18a0f9fa4bf467b8044a3339a2811",
+  "comparison_mode": "arm-matrix",
+  "skill_lift_claim_eligible": false,
+  "evidence_scope": "development",
+  "release_eligible": false,
+  "protocol_id": "reviewer-holdout-v10",
+  "protocol_sha256": "186680ad624f9ae40ff0b652ee4949322fb6ccfac5e5426a4b7c182278f33c39",
+  "corpus_sha256": "672f99fc323cf72cb9946483b01f7df314ee12000bcc40b5aa3eb1efb2f8cb8d",
+  "reports": [
+    "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v10-attempt-3-e7a9f81/full-claude.json",
+    "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v10-attempt-3-e7a9f81/catalog-only-claude.json",
+    "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v10-attempt-3-e7a9f81/no-skill-claude.json"
+  ],
+  "report_inputs": [
+    {
+      "path": "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v10-attempt-3-e7a9f81/full-claude.json",
+      "sha256": "15ce353d5733e5569ada1eb8830515c0416bd64abd1120868fc0d537072b4713"
+    },
+    {
+      "path": "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v10-attempt-3-e7a9f81/catalog-only-claude.json",
+      "sha256": "b8866b13e292a718bea35ec7bed6544c0ab5a9f7eaf890f13749f90b3f3b109a"
+    },
+    {
+      "path": "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v10-attempt-3-e7a9f81/no-skill-claude.json",
+      "sha256": "d8a306e98435448d71c70e197937dc7e3deb89713f1ae76a00c0f86a72509bdc"
+    }
+  ],
+  "prompt_profiles": [
+    "catalog-only",
+    "full",
+    "no-skill"
+  ],
+  "status": "FAIL",
+  "status_reasons": [
+    {
+      "code": "treatment_cross_host_not_pass",
+      "actual": "FAIL",
+      "required": "PASS",
+      "message": "the full treatment must pass all per-report and cross-host development thresholds before a skill-lift claim"
+    },
+    {
+      "code": "arm_lift_threshold_not_met",
+      "control": "catalog-only",
+      "metric": "stable_f1_delta_min",
+      "actual": -0.01851851851851849,
+      "required": 0.05,
+      "comparator": ">=",
+      "message": "full minus catalog-only stable_f1_delta_min was -0.018519; required >= 0.050000"
+    },
+    {
+      "code": "arm_lift_threshold_not_met",
+      "control": "catalog-only",
+      "metric": "stable_f1_delta_ci95_lower_min",
+      "actual": -0.04797258709308949,
+      "required": 0.01,
+      "comparator": ">=",
+      "message": "full minus catalog-only stable_f1_delta_ci95_lower_min was -0.047973; required >= 0.010000"
+    }
+  ],
+  "metrics": {
+    "comparison_unit": "exact-three-profiles-by-one-host",
+    "provider_aggregation": "single-host-direct",
+    "stability_basis": "strict-majority-stable-predictions",
+    "execution_order": {
+      "design": "single-host-three-arm-sequential",
+      "required": [
+        {
+          "ordinal": 1,
+          "prompt_profile": "full",
+          "runner": "claude",
+          "model": "claude-opus-5"
+        },
+        {
+          "ordinal": 2,
+          "prompt_profile": "catalog-only",
+          "runner": "claude",
+          "model": "claude-opus-5"
+        },
+        {
+          "ordinal": 3,
+          "prompt_profile": "no-skill",
+          "runner": "claude",
+          "model": "claude-opus-5"
+        }
+      ],
+      "observed": [
+        {
+          "ordinal": 1,
+          "prompt_profile": "full",
+          "runner": "claude",
+          "model": "claude-opus-5"
+        },
+        {
+          "ordinal": 2,
+          "prompt_profile": "catalog-only",
+          "runner": "claude",
+          "model": "claude-opus-5"
+        },
+        {
+          "ordinal": 3,
+          "prompt_profile": "no-skill",
+          "runner": "claude",
+          "model": "claude-opus-5"
+        }
+      ],
+      "sequential_non_overlapping_required": true,
+      "elapsed_basis": "first-start-to-last-completion",
+      "elapsed_seconds": 7647.459241,
+      "maximum_elapsed_seconds": 43200,
+      "interpretation_limit": "Reported start/completion timestamps, fixed order, non-overlap, and a 12-hour first-start-to-last-completion window reduce arm-position and time-drift confounding but do not cryptographically attest time or identify or freeze provider backend revisions."
+    },
+    "arms": {
+      "full": {
+        "method": "single-host-direct",
+        "provider_family_denominator": 1,
+        "families": {
+          "anthropic": {
+            "configuration_count": 1,
+            "configurations": [
+              {
+                "runner": "claude",
+                "model": "claude-opus-5"
+              }
+            ],
+            "metrics": {
+              "stable_precision": {
+                "value": 0.9272727272727272,
+                "configuration_denominator": 1
+              },
+              "stable_recall": {
+                "value": 0.9622641509433962,
+                "configuration_denominator": 1
+              },
+              "stable_f1": {
+                "value": 0.9444444444444444,
+                "configuration_denominator": 1
+              },
+              "repeated_precision": {
+                "value": 0.9345454545454546,
+                "configuration_denominator": 1
+              },
+              "p0_stable_label_recall": {
+                "value": 1.0,
+                "configuration_denominator": 1
+              },
+              "clean_case_specificity": {
+                "value": 1.0,
+                "configuration_denominator": 1
+              }
+            }
+          }
+        },
+        "equal_weighted_metrics": {
+          "stable_precision": {
+            "value": 0.9272727272727272,
+            "provider_family_denominator": 1
+          },
+          "stable_recall": {
+            "value": 0.9622641509433962,
+            "provider_family_denominator": 1
+          },
+          "stable_f1": {
+            "value": 0.9444444444444444,
+            "provider_family_denominator": 1
+          },
+          "repeated_precision": {
+            "value": 0.9345454545454546,
+            "provider_family_denominator": 1
+          },
+          "p0_stable_label_recall": {
+            "value": 1.0,
+            "provider_family_denominator": 1
+          },
+          "clean_case_specificity": {
+            "value": 1.0,
+            "provider_family_denominator": 1
+          }
+        }
+      },
+      "catalog-only": {
+        "method": "single-host-direct",
+        "provider_family_denominator": 1,
+        "families": {
+          "anthropic": {
+            "configuration_count": 1,
+            "configurations": [
+              {
+                "runner": "claude",
+                "model": "claude-opus-5"
+              }
+            ],
+            "metrics": {
+              "stable_precision": {
+                "value": 0.9454545454545454,
+                "configuration_denominator": 1
+              },
+              "stable_recall": {
+                "value": 0.9811320754716981,
+                "configuration_denominator": 1
+              },
+              "stable_f1": {
+                "value": 0.9629629629629629,
+                "configuration_denominator": 1
+              },
+              "repeated_precision": {
+                "value": 0.9283154121863799,
+                "configuration_denominator": 1
+              },
+              "p0_stable_label_recall": {
+                "value": 1.0,
+                "configuration_denominator": 1
+              },
+              "clean_case_specificity": {
+                "value": 1.0,
+                "configuration_denominator": 1
+              }
+            }
+          }
+        },
+        "equal_weighted_metrics": {
+          "stable_precision": {
+            "value": 0.9454545454545454,
+            "provider_family_denominator": 1
+          },
+          "stable_recall": {
+            "value": 0.9811320754716981,
+            "provider_family_denominator": 1
+          },
+          "stable_f1": {
+            "value": 0.9629629629629629,
+            "provider_family_denominator": 1
+          },
+          "repeated_precision": {
+            "value": 0.9283154121863799,
+            "provider_family_denominator": 1
+          },
+          "p0_stable_label_recall": {
+            "value": 1.0,
+            "provider_family_denominator": 1
+          },
+          "clean_case_specificity": {
+            "value": 1.0,
+            "provider_family_denominator": 1
+          }
+        }
+      },
+      "no-skill": {
+        "method": "single-host-direct",
+        "provider_family_denominator": 1,
+        "families": {
+          "anthropic": {
+            "configuration_count": 1,
+            "configurations": [
+              {
+                "runner": "claude",
+                "model": "claude-opus-5"
+              }
+            ],
+            "metrics": {
+              "stable_precision": {
+                "value": 0.4,
+                "configuration_denominator": 1
+              },
+              "stable_recall": {
+                "value": 0.41509433962264153,
+                "configuration_denominator": 1
+              },
+              "stable_f1": {
+                "value": 0.40740740740740744,
+                "configuration_denominator": 1
+              },
+              "repeated_precision": {
+                "value": 0.35782747603833864,
+                "configuration_denominator": 1
+              },
+              "p0_stable_label_recall": {
+                "value": 0.4166666666666667,
+                "configuration_denominator": 1
+              },
+              "clean_case_specificity": {
+                "value": 0.75,
+                "configuration_denominator": 1
+              }
+            }
+          }
+        },
+        "equal_weighted_metrics": {
+          "stable_precision": {
+            "value": 0.4,
+            "provider_family_denominator": 1
+          },
+          "stable_recall": {
+            "value": 0.41509433962264153,
+            "provider_family_denominator": 1
+          },
+          "stable_f1": {
+            "value": 0.40740740740740744,
+            "provider_family_denominator": 1
+          },
+          "repeated_precision": {
+            "value": 0.35782747603833864,
+            "provider_family_denominator": 1
+          },
+          "p0_stable_label_recall": {
+            "value": 0.4166666666666667,
+            "provider_family_denominator": 1
+          },
+          "clean_case_specificity": {
+            "value": 0.75,
+            "provider_family_denominator": 1
+          }
+        }
+      }
+    },
+    "treatment_cross_host": {
+      "status": "FAIL",
+      "status_reasons": [
+        {
+          "code": "input_status_not_met",
+          "runner": "claude",
+          "model": "claude-opus-5",
+          "actual": "FAIL",
+          "required": "PASS",
+          "message": "claude:claude-opus-5 status was FAIL; required PASS"
+        }
+      ],
+      "metrics": {
+        "stable_recall_gap": 0.0,
+        "stable_prediction_jaccard": 1.0,
+        "stable_prediction_intersection": 55,
+        "stable_prediction_union": 55,
+        "agreement_aggregation": {
+          "stable_recall_gap": "maximum pairwise gap",
+          "stable_prediction_jaccard": "minimum pairwise Jaccard",
+          "global_intersection_and_union": "all hosts"
+        },
+        "pairwise": [],
+        "hosts": [
+          {
+            "runner": "claude",
+            "model": "claude-opus-5",
+            "status": "FAIL",
+            "stable_precision": 0.9272727272727272,
+            "stable_recall": 0.9622641509433962,
+            "stable_predictions": 55
+          }
+        ]
+      }
+    },
+    "lift": {
+      "catalog-only": {
+        "point_deltas": {
+          "stable_precision": -0.018181818181818188,
+          "stable_recall": -0.018867924528301883,
+          "stable_f1": -0.01851851851851849,
+          "repeated_precision": 0.00623004235907465,
+          "clean_case_specificity": 0.0
+        },
+        "paired_bootstrap_ci95": {
+          "stable_precision": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": -0.05833333333333335,
+            "upper": 0.0
+          },
+          "stable_recall": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": -0.061224489795918324,
+            "upper": 0.0
+          },
+          "stable_f1": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": -0.04797258709308949,
+            "upper": 0.0
+          },
+          "clean_case_specificity": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.0,
+            "upper": 0.0
+          }
+        },
+        "decision_checks": [
+          {
+            "metric": "stable_f1_delta_min",
+            "actual": -0.01851851851851849,
+            "required": 0.05,
+            "comparator": ">=",
+            "passed": false
+          },
+          {
+            "metric": "stable_f1_delta_ci95_lower_min",
+            "actual": -0.04797258709308949,
+            "required": 0.01,
+            "comparator": ">=",
+            "passed": false
+          },
+          {
+            "metric": "stable_precision_delta_min",
+            "actual": -0.018181818181818188,
+            "required": -0.02,
+            "comparator": ">=",
+            "passed": true
+          },
+          {
+            "metric": "stable_recall_delta_min",
+            "actual": -0.018867924528301883,
+            "required": -0.02,
+            "comparator": ">=",
+            "passed": true
+          },
+          {
+            "metric": "clean_case_specificity_delta_min",
+            "actual": 0.0,
+            "required": 0,
+            "comparator": ">=",
+            "passed": true
+          },
+          {
+            "metric": "repeated_precision_delta_min",
+            "actual": 0.00623004235907465,
+            "required": 0,
+            "comparator": ">=",
+            "passed": true
+          }
+        ],
+        "passed": false
+      },
+      "no-skill": {
+        "point_deltas": {
+          "stable_precision": 0.5272727272727272,
+          "stable_recall": 0.5471698113207547,
+          "stable_f1": 0.537037037037037,
+          "repeated_precision": 0.5767179785071159,
+          "clean_case_specificity": 0.25
+        },
+        "paired_bootstrap_ci95": {
+          "stable_precision": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.38286893704850355,
+            "upper": 0.6823863636363636
+          },
+          "stable_recall": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.37735849056603776,
+            "upper": 0.7209302325581395
+          },
+          "stable_f1": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.3909668313338037,
+            "upper": 0.6971207087486158
+          },
+          "clean_case_specificity": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.0,
+            "upper": 0.75
+          }
+        },
+        "decision_checks": [
+          {
+            "metric": "stable_f1_delta_min",
+            "actual": 0.537037037037037,
+            "required": 0.05,
+            "comparator": ">=",
+            "passed": true
+          },
+          {
+            "metric": "stable_f1_delta_ci95_lower_min",
+            "actual": 0.3909668313338037,
+            "required": 0.01,
+            "comparator": ">=",
+            "passed": true
+          },
+          {
+            "metric": "stable_precision_delta_min",
+            "actual": 0.5272727272727272,
+            "required": -0.02,
+            "comparator": ">=",
+            "passed": true
+          },
+          {
+            "metric": "stable_recall_delta_min",
+            "actual": 0.5471698113207547,
+            "required": -0.02,
+            "comparator": ">=",
+            "passed": true
+          },
+          {
+            "metric": "clean_case_specificity_delta_min",
+            "actual": 0.25,
+            "required": 0,
+            "comparator": ">=",
+            "passed": true
+          },
+          {
+            "metric": "repeated_precision_delta_min",
+            "actual": 0.5767179785071159,
+            "required": 0,
+            "comparator": ">=",
+            "passed": true
+          }
+        ],
+        "passed": true
+      }
+    },
+    "uncertainty": {
+      "method": "paired-stratified-case-bootstrap",
+      "seed": 20260801,
+      "iterations": 10000,
+      "confidence": 0.95,
+      "strata": [
+        "finding-cases",
+        "clean-cases"
+      ],
+      "percentile_method": "nearest-rank",
+      "metrics": [
+        "stable_precision",
+        "stable_recall",
+        "stable_f1",
+        "clean_case_specificity"
+      ],
+      "interpretation_limit": "Bootstrap intervals describe case-resampling sensitivity on this fixed public case set. They do not quantify model-run stochasticity and are not population confidence intervals, independent replications, or release-grade causal inference.",
+      "intervals": {
+        "catalog-only": {
+          "stable_precision": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": -0.05833333333333335,
+            "upper": 0.0
+          },
+          "stable_recall": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": -0.061224489795918324,
+            "upper": 0.0
+          },
+          "stable_f1": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": -0.04797258709308949,
+            "upper": 0.0
+          },
+          "clean_case_specificity": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.0,
+            "upper": 0.0
+          }
+        },
+        "no-skill": {
+          "stable_precision": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.38286893704850355,
+            "upper": 0.6823863636363636
+          },
+          "stable_recall": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.37735849056603776,
+            "upper": 0.7209302325581395
+          },
+          "stable_f1": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.3909668313338037,
+            "upper": 0.6971207087486158
+          },
+          "clean_case_specificity": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.0,
+            "upper": 0.75
+          }
+        }
+      }
+    }
+  },
+  "claim_policy": {
+    "pass": "Development skill-lift evidence is limited to this fixed public corpus, declared model identifiers, captured CLI versions, prompts, and schedule; provider backend snapshots are not attested.",
+    "fail": "No skill-lift claim is allowed.",
+    "inconclusive": "No skill-lift claim is allowed.",
+    "partial_results": "Descriptive arm metrics may be published, but never as a causal or partial skill-lift claim."
+  }
+}

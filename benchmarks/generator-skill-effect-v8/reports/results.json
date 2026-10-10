@@ -1,0 +1,356 @@
+{
+ "protocol_id": "generator-skill-effect-v8",
+ "status": "PASS",
+ "primary": {
+  "arms": [
+   "full-fixed",
+   "no-skill"
+  ],
+  "full_fixed": 0.9537,
+  "no_skill": 0.4352,
+  "paired_lift": 0.5185,
+  "bootstrap_95ci": [
+   0.3981,
+   0.6296
+  ],
+  "cases_better": 28,
+  "cases_worse": 0,
+  "cases_tied": 8,
+  "paired_cases": 36,
+  "per_case_diff": {
+   "v2-01": 1.0,
+   "v2-04": 0.0,
+   "v2-05": 0.0,
+   "v2-06": 0.3333,
+   "v2-07": 0.3333,
+   "v2-08": 0.6667,
+   "v2-09": 0.3333,
+   "v2-10": 0.0,
+   "v2-11": 0.3333,
+   "v2-12": 0.6667,
+   "v2-13": 0.6667,
+   "v2-14": 0.6667,
+   "v2-15": 0.3333,
+   "v2-16": 0.0,
+   "v2-17": 0.0,
+   "v2-18": 1.0,
+   "v2-19": 1.0,
+   "v2-20": 0.0,
+   "v2-21": 0.3333,
+   "v2-22": 0.6667,
+   "v2-23": 0.0,
+   "v2-24": 0.0,
+   "v3-01": 1.0,
+   "v3-02": 0.6667,
+   "v3-03": 1.0,
+   "v3-04": 1.0,
+   "v3-05": 0.6667,
+   "v3-06": 0.3333,
+   "v3-07": 1.0,
+   "v3-08": 0.6667,
+   "v3-09": 0.6667,
+   "v3-10": 0.6667,
+   "v3-11": 0.6667,
+   "v3-12": 0.6667,
+   "v3-13": 0.3333,
+   "v3-14": 1.0
+  },
+  "checks": {
+   "lift_at_least_min": true,
+   "ci_lower_above_zero": true,
+   "baseline_below_ceiling": true,
+   "clean_pass_guard": true,
+   "fault_kill_guard": true
+  }
+ },
+ "fault_kill_guard": {
+  "arms": [
+   "full-fixed",
+   "no-skill"
+  ],
+  "full_fixed": 0.9389,
+  "no_skill": 0.9222,
+  "paired_lift": 0.0167,
+  "bootstrap_95ci": [
+   -0.0167,
+   0.0519
+  ],
+  "cases_better": 6,
+  "cases_worse": 6,
+  "cases_tied": 24,
+  "paired_cases": 36,
+  "per_case_diff": {
+   "v2-01": 0.1333,
+   "v2-04": 0.2,
+   "v2-05": -0.0667,
+   "v2-06": 0.0,
+   "v2-07": -0.0667,
+   "v2-08": 0.1333,
+   "v2-09": 0.3333,
+   "v2-10": 0.0,
+   "v2-11": 0.0,
+   "v2-12": 0.0,
+   "v2-13": -0.0667,
+   "v2-14": 0.0,
+   "v2-15": 0.0,
+   "v2-16": 0.0,
+   "v2-17": 0.0,
+   "v2-18": 0.1333,
+   "v2-19": 0.0,
+   "v2-20": 0.0,
+   "v2-21": 0.0,
+   "v2-22": 0.0,
+   "v2-23": 0.0,
+   "v2-24": -0.1333,
+   "v3-01": 0.0,
+   "v3-02": 0.0,
+   "v3-03": 0.0,
+   "v3-04": -0.2667,
+   "v3-05": -0.0667,
+   "v3-06": 0.0,
+   "v3-07": 0.0,
+   "v3-08": 0.0,
+   "v3-09": 0.0,
+   "v3-10": 0.3333,
+   "v3-11": 0.0,
+   "v3-12": 0.0,
+   "v3-13": 0.0,
+   "v3-14": 0.0
+  },
+  "checks": {
+   "lift_at_least_min": true,
+   "ci_lower_above_zero": false,
+   "baseline_below_ceiling": true
+  }
+ },
+ "arm_metrics": {
+  "full-fixed": {
+   "calls": 108,
+   "primary_effective_kill": 0.9389,
+   "refactor_survival_score": 0.9537,
+   "deliverable_rate": 1.0,
+   "clean_pass_rate": 1.0,
+   "kill_rate_given_clean": 0.9389,
+   "refactor_survival_given_clean": 0.9537,
+   "kill_rate_by_class_given_clean": {
+    "a11y": 1.0,
+    "boundary": 0.8974,
+    "interaction": 0.8947,
+    "ordering": 1.0,
+    "persistence": 0.9561,
+    "precision": 0.8983,
+    "recovery": 1.0,
+    "surface": 1.0
+   },
+   "flaky_calls": 0,
+   "scan_p0_total": 0,
+   "scan_p0_calls": 0,
+   "scan_p1p2_total": 0,
+   "scan_p1p2_mean": 0.0,
+   "scan_triage_total": 485,
+   "scanned_calls": 108,
+   "self_reported_status": {
+    "complete": 107,
+    "partial_or_blocked": 1,
+    "nothing_written": 0,
+    "other": 0,
+    "null": 0
+   },
+   "timeouts": 0,
+   "out_of_scope_write_calls": 0,
+   "process_compliance": {
+    "calls_with_transcript": 108,
+    "read_generator_skill": 0,
+    "read_lean_skill": 0,
+    "read_reviewer_skill": 0,
+    "read_app_source": 0,
+    "ran_playwright_test": 108,
+    "ran_repeat_each": 108,
+    "ran_scanner": 108,
+    "ran_exploration_command": 105,
+    "ran_git_status": 108,
+    "spawned_agent": 0,
+    "wrote_outside_tests": 0,
+    "mean_tool_calls": 50.4352
+   },
+   "cost_usd": null,
+   "cost_usd_mean": null,
+   "elapsed_s": 30717.5,
+   "turns": 108,
+   "input_tokens": 240102951,
+   "output_tokens": 1159106
+  },
+  "no-skill": {
+   "calls": 108,
+   "primary_effective_kill": 0.9222,
+   "refactor_survival_score": 0.4352,
+   "deliverable_rate": 1.0,
+   "clean_pass_rate": 0.9722,
+   "kill_rate_given_clean": 0.9486,
+   "refactor_survival_given_clean": 0.4476,
+   "kill_rate_by_class_given_clean": {
+    "a11y": 1.0,
+    "boundary": 0.8889,
+    "interaction": 0.9464,
+    "ordering": 1.0,
+    "persistence": 0.9554,
+    "precision": 0.9133,
+    "recovery": 1.0,
+    "surface": 1.0
+   },
+   "flaky_calls": 2,
+   "scan_p0_total": 0,
+   "scan_p0_calls": 0,
+   "scan_p1p2_total": 5,
+   "scan_p1p2_mean": 0.0463,
+   "scan_triage_total": 1283,
+   "scanned_calls": 108,
+   "self_reported_status": {
+    "complete": 108,
+    "partial_or_blocked": 0,
+    "nothing_written": 0,
+    "other": 0,
+    "null": 0
+   },
+   "timeouts": 0,
+   "out_of_scope_write_calls": 0,
+   "process_compliance": {
+    "calls_with_transcript": 108,
+    "read_generator_skill": 0,
+    "read_lean_skill": 0,
+    "read_reviewer_skill": 0,
+    "read_app_source": 0,
+    "ran_playwright_test": 108,
+    "ran_repeat_each": 0,
+    "ran_scanner": 0,
+    "ran_exploration_command": 0,
+    "ran_git_status": 11,
+    "spawned_agent": 0,
+    "wrote_outside_tests": 0,
+    "mean_tool_calls": 7.4259
+   },
+   "cost_usd": null,
+   "cost_usd_mean": null,
+   "elapsed_s": 4556.2,
+   "turns": 108,
+   "input_tokens": 7976866,
+   "output_tokens": 247797
+  }
+ },
+ "historical_strata_descriptive_only": {
+  "floor": {
+   "arms": [
+    "full-fixed",
+    "no-skill"
+   ],
+   "full_fixed": 0.9444,
+   "no_skill": 0.2037,
+   "paired_lift": 0.7407,
+   "bootstrap_95ci": [
+    0.6111,
+    0.8519
+   ],
+   "cases_better": 17,
+   "cases_worse": 0,
+   "cases_tied": 1,
+   "paired_cases": 18,
+   "per_case_diff": {
+    "v2-07": 0.3333,
+    "v2-10": 0.0,
+    "v2-12": 0.6667,
+    "v2-14": 0.6667,
+    "v2-18": 1.0,
+    "v2-19": 1.0,
+    "v2-22": 0.6667,
+    "v3-01": 1.0,
+    "v3-02": 0.6667,
+    "v3-03": 1.0,
+    "v3-04": 1.0,
+    "v3-05": 0.6667,
+    "v3-07": 1.0,
+    "v3-08": 0.6667,
+    "v3-09": 0.6667,
+    "v3-10": 0.6667,
+    "v3-11": 0.6667,
+    "v3-14": 1.0
+   },
+   "checks": {
+    "lift_at_least_min": true,
+    "ci_lower_above_zero": true,
+    "baseline_below_ceiling": true
+   }
+  },
+  "middle": {
+   "arms": [
+    "full-fixed",
+    "no-skill"
+   ],
+   "full_fixed": 0.963,
+   "no_skill": 0.5185,
+   "paired_lift": 0.4444,
+   "bootstrap_95ci": [
+    0.2593,
+    0.6296
+   ],
+   "cases_better": 7,
+   "cases_worse": 0,
+   "cases_tied": 2,
+   "paired_cases": 9,
+   "per_case_diff": {
+    "v2-01": 1.0,
+    "v2-06": 0.3333,
+    "v2-08": 0.6667,
+    "v2-11": 0.3333,
+    "v2-13": 0.6667,
+    "v2-16": 0.0,
+    "v2-20": 0.0,
+    "v3-06": 0.3333,
+    "v3-12": 0.6667
+   },
+   "checks": {
+    "lift_at_least_min": true,
+    "ci_lower_above_zero": true,
+    "baseline_below_ceiling": true
+   }
+  },
+  "ceiling": {
+   "arms": [
+    "full-fixed",
+    "no-skill"
+   ],
+   "full_fixed": 0.963,
+   "no_skill": 0.8148,
+   "paired_lift": 0.1481,
+   "bootstrap_95ci": [
+    0.037,
+    0.2593
+   ],
+   "cases_better": 4,
+   "cases_worse": 0,
+   "cases_tied": 5,
+   "paired_cases": 9,
+   "per_case_diff": {
+    "v2-04": 0.0,
+    "v2-05": 0.0,
+    "v2-09": 0.3333,
+    "v2-15": 0.3333,
+    "v2-17": 0.0,
+    "v2-21": 0.3333,
+    "v2-23": 0.0,
+    "v2-24": 0.0,
+    "v3-13": 0.3333
+   },
+   "checks": {
+    "lift_at_least_min": false,
+    "ci_lower_above_zero": true,
+    "baseline_below_ceiling": true
+   }
+  }
+ },
+ "cost_multiple": null,
+ "cost_note": "Codex CLI does not report billed USD; token usage is recorded, not a price estimate.",
+ "process_evidence": "Tool-use indicators only; V4 fault injection and reviewer correctness require separate transcript audit.",
+ "scores_sha256": "4cac4985ce215bc41fe1fbd1afa525997e3440f666003c9bed057fee77143068",
+ "report_sha256": "b4a8054b61c47eefa26b377b0ba15a4abe980d53f39048f4cb86a85890badd13",
+ "freeze_sha256": "e0b30621a97f251318167b77c739d91261c7a3c618217f1134e376b79b9bd829"
+}

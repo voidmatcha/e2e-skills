@@ -1,0 +1,160 @@
+{
+  "status": "COMPLETE",
+  "case": "growi",
+  "source_identity": {
+    "before_revision": "f6c5b34d143e27fcf4bc09bac548b3b28eefa79d",
+    "before_sha256": "a72ca8ad3fcd30c1880cb20cc9745c8f55fe0ae809dd2af25b3a67994b664eaf",
+    "after_revision": "171ace0e5c16d00888b8cc74c6e64b319ecc293a",
+    "after_sha256": "9ef609dfffa918453b1e36231ca6f88b024d66c4f0735959da8504aa84c7517c"
+  },
+  "scope": "All unique off-target prediction keys across the four completed Growi calls in real-fix-tool-workflow-v2.",
+  "totals": {
+    "rows": 28,
+    "CONFIRMED": 19,
+    "FALSE_POSITIVE": 4,
+    "INVALID_LOCATION": 3,
+    "NEEDS_CONTEXT": 2
+  },
+  "rows": [
+    {
+      "case": "growi", "side": "before", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 49, "pattern_id": "#10a", "verdict": "CONFIRMED",
+      "reason": "The Playwright locator uses first() without a documented positional-access exemption.",
+      "evidence": ["growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L49", "references/patterns/10.md: #10a requires a stable selector or documented exemption."]
+    },
+    {
+      "case": "growi", "side": "before", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 57, "pattern_id": "#10a", "verdict": "CONFIRMED",
+      "reason": "The Playwright locator uses first() without a documented positional-access exemption.",
+      "evidence": ["growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L57", "references/patterns/10.md: #10a requires a stable selector or documented exemption."]
+    },
+    {
+      "case": "growi", "side": "before", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 61, "pattern_id": "#10a", "verdict": "FALSE_POSITIVE",
+      "reason": "The loop removes the current first item from a shrinking homogeneous collection; order does not select a semantic item, and the following assertion verifies all toasts are gone.",
+      "evidence": ["growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L58-L63", "references/patterns/10.md: #10a requires order-sensitive positional selection."]
+    },
+    {
+      "case": "growi", "side": "before", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 71, "pattern_id": "#10a", "verdict": "CONFIRMED",
+      "reason": "The Playwright locator uses first() without a documented positional-access exemption.",
+      "evidence": ["growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L71", "references/patterns/10.md: #10a requires a stable selector or documented exemption."]
+    },
+    {
+      "case": "growi", "side": "before", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 74, "pattern_id": "#2", "verdict": "CONFIRMED",
+      "reason": "The acceptance comment promises error toasters after the update click, but no positive assertion proves any appeared; the loop can execute zero times.",
+      "evidence": ["growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L73-L82", "references/patterns/2.md: a promised action needs an observable postcondition."]
+    },
+    {
+      "case": "growi", "side": "before", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 79, "pattern_id": "#10a", "verdict": "CONFIRMED",
+      "reason": "The Playwright locator uses nth() without a documented positional-access exemption.",
+      "evidence": ["growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L79", "references/patterns/10.md: #10a requires a stable selector or documented exemption."]
+    },
+    {
+      "case": "growi", "side": "before", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 82, "pattern_id": "#4a", "verdict": "FALSE_POSITIVE",
+      "reason": "The line is an absence matcher, not an invariant numeric predicate; it can fail when the locator matches a visible element.",
+      "evidence": ["growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L82", "references/patterns/4.md: #4a covers invariant numeric predicates."]
+    },
+    {
+      "case": "growi", "side": "before", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 82, "pattern_id": "#4i", "verdict": "CONFIRMED",
+      "reason": "The negative assertion uses a test-id locator never proven present or acted on in this path, with no positive empty-state counterpart.",
+      "evidence": ["growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L73-L82", "references/patterns/4.md: #4i requires same-path positive provenance or a positive counterpart."]
+    },
+    {
+      "case": "growi", "side": "before", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 90, "pattern_id": "#10a", "verdict": "CONFIRMED",
+      "reason": "The Playwright locator uses first() without a documented positional-access exemption.",
+      "evidence": ["growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L90", "references/patterns/10.md: #10a requires a stable selector or documented exemption."]
+    },
+    {
+      "case": "growi", "side": "before", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 102, "pattern_id": "#10a", "verdict": "CONFIRMED",
+      "reason": "The Playwright locator uses first() without a documented positional-access exemption.",
+      "evidence": ["growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L102", "references/patterns/10.md: #10a requires a stable selector or documented exemption."]
+    },
+    {
+      "case": "growi", "side": "before", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 108, "pattern_id": "#20", "verdict": "NEEDS_CONTEXT",
+      "reason": "The action may perform a backend mutation, but the staged evidence does not establish whether the backend is shared or isolated.",
+      "evidence": ["growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L108", "references/patterns/20.md: confirm both a real write and an uncontrolled persistent boundary."]
+    },
+    {
+      "case": "growi", "side": "before", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 118, "pattern_id": "#2", "verdict": "FALSE_POSITIVE",
+      "reason": "The delete confirmation is followed by a visible success-toast assertion, an allowed observable completion signal.",
+      "evidence": ["growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L114-L119", "references/patterns/2.md: a success toast can satisfy the Then requirement."]
+    },
+    {
+      "case": "growi", "side": "before", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 119, "pattern_id": "#4b", "verdict": "INVALID_LOCATION",
+      "reason": "The cited line is toBeVisible(), not the positive toBeAttached() shape covered by #4b.",
+      "evidence": ["growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L119", "references/patterns/4.md: #4b is limited to positive toBeAttached() checks."]
+    },
+    {
+      "case": "growi", "side": "before", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 129, "pattern_id": "#10a", "verdict": "CONFIRMED",
+      "reason": "The Playwright locator uses first() without a documented positional-access exemption.",
+      "evidence": ["growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L129", "references/patterns/10.md: #10a requires a stable selector or documented exemption."]
+    },
+    {
+      "case": "growi", "side": "before", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 144, "pattern_id": "#10a", "verdict": "CONFIRMED",
+      "reason": "The Playwright locator uses first() without a documented positional-access exemption.",
+      "evidence": ["growilabs/growi@f6c5b34d143e27fcf4bc09bac548b3b28eefa79d:apps/app/playwright/60-home/home.spec.ts:L144", "references/patterns/10.md: #10a requires a stable selector or documented exemption."]
+    },
+    {
+      "case": "growi", "side": "after", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 49, "pattern_id": "#10a", "verdict": "CONFIRMED",
+      "reason": "The Playwright locator uses first() without a documented positional-access exemption.",
+      "evidence": ["growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L49", "references/patterns/10.md: #10a requires a stable selector or documented exemption."]
+    },
+    {
+      "case": "growi", "side": "after", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 71, "pattern_id": "#10a", "verdict": "CONFIRMED",
+      "reason": "The Playwright locator uses first() without a documented positional-access exemption.",
+      "evidence": ["growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L71", "references/patterns/10.md: #10a requires a stable selector or documented exemption."]
+    },
+    {
+      "case": "growi", "side": "after", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 74, "pattern_id": "#2", "verdict": "CONFIRMED",
+      "reason": "The acceptance comment promises error toasters after the update click, but no positive assertion proves any appeared; the loop can execute zero times.",
+      "evidence": ["growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L73-L82", "references/patterns/2.md: a promised action needs an observable postcondition."]
+    },
+    {
+      "case": "growi", "side": "after", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 77, "pattern_id": "#4b", "verdict": "INVALID_LOCATION",
+      "reason": "The cited line reads locator.count(); it contains no positive toBeAttached() assertion covered by #4b.",
+      "evidence": ["growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L77", "references/patterns/4.md: #4b is limited to positive toBeAttached() checks."]
+    },
+    {
+      "case": "growi", "side": "after", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 79, "pattern_id": "#10a", "verdict": "CONFIRMED",
+      "reason": "The Playwright locator uses nth() without a documented positional-access exemption.",
+      "evidence": ["growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L79", "references/patterns/10.md: #10a requires a stable selector or documented exemption."]
+    },
+    {
+      "case": "growi", "side": "after", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 82, "pattern_id": "#4a", "verdict": "FALSE_POSITIVE",
+      "reason": "The line is an absence matcher, not an invariant numeric predicate; it can fail when the locator matches a visible element.",
+      "evidence": ["growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L82", "references/patterns/4.md: #4a covers invariant numeric predicates."]
+    },
+    {
+      "case": "growi", "side": "after", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 82, "pattern_id": "#4i", "verdict": "CONFIRMED",
+      "reason": "The negative assertion uses a test-id locator never proven present or acted on in this path, with no positive empty-state counterpart.",
+      "evidence": ["growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L73-L82", "references/patterns/4.md: #4i requires same-path positive provenance or a positive counterpart."]
+    },
+    {
+      "case": "growi", "side": "after", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 90, "pattern_id": "#10a", "verdict": "CONFIRMED",
+      "reason": "The Playwright locator uses first() without a documented positional-access exemption.",
+      "evidence": ["growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L90", "references/patterns/10.md: #10a requires a stable selector or documented exemption."]
+    },
+    {
+      "case": "growi", "side": "after", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 102, "pattern_id": "#10a", "verdict": "CONFIRMED",
+      "reason": "The Playwright locator uses first() without a documented positional-access exemption.",
+      "evidence": ["growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L102", "references/patterns/10.md: #10a requires a stable selector or documented exemption."]
+    },
+    {
+      "case": "growi", "side": "after", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 108, "pattern_id": "#20", "verdict": "NEEDS_CONTEXT",
+      "reason": "The action may perform a backend mutation, but the staged evidence does not establish whether the backend is shared or isolated.",
+      "evidence": ["growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L108", "references/patterns/20.md: confirm both a real write and an uncontrolled persistent boundary."]
+    },
+    {
+      "case": "growi", "side": "after", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 119, "pattern_id": "#22", "verdict": "INVALID_LOCATION",
+      "reason": "The cited line is a toast visibility assertion, not the write-control action required as #22's primary anchor; the supplied evidence also does not prove optimistic rendering.",
+      "evidence": ["growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L114-L119", "references/patterns/22.md: #22 requires proven optimistic UI and anchors the write-control action."]
+    },
+    {
+      "case": "growi", "side": "after", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 129, "pattern_id": "#10a", "verdict": "CONFIRMED",
+      "reason": "The Playwright locator uses first() without a documented positional-access exemption.",
+      "evidence": ["growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L129", "references/patterns/10.md: #10a requires a stable selector or documented exemption."]
+    },
+    {
+      "case": "growi", "side": "after", "file": "apps/app/playwright/60-home/home.spec.ts", "line": 144, "pattern_id": "#10a", "verdict": "CONFIRMED",
+      "reason": "The Playwright locator uses first() without a documented positional-access exemption.",
+      "evidence": ["growilabs/growi@171ace0e5c16d00888b8cc74c6e64b319ecc293a:apps/app/playwright/60-home/home.spec.ts:L144", "references/patterns/10.md: #10a requires a stable selector or documented exemption."]
+    }
+  ]
+}

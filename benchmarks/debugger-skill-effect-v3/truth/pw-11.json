@@ -1,0 +1,14 @@
+{
+ "source": {
+  "repo": "sjdodge123/Raid-Ledger",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/sjdodge123/Raid-Ledger/pull/1473"
+  ],
+  "merged": "2026-10-04"
+ },
+ "diagnosis": "product_regression",
+ "side": "Product",
+ "explanation": "The StartupGate component remounted the whole app while the page settled, so the search input the test had filled was replaced by a fresh empty node (TDB:1817); the test's `toPass` retry around `fill` masked it.",
+ "fix": "Product fix #1342 stopped the StartupGate whole-app remount; the smoke spec then dropped the `toPass` retry and asserts value and card count together."
+}

@@ -1,0 +1,55 @@
+{
+  "status": "COMPLETE",
+  "protocol_sha256": "ca960a5633ff485865c38dd44e78c58ba9a999e62f5a6e614e41cf7ace57a07d",
+  "raw_report_sha256": "4bf5d9e9c4bd06890ab8a7241e0ff58e99a5e78e6f1170075a73e73efb9339f1",
+  "adjudication_sha256": {
+    "growi": "c6772f77598449e1ac1856d828e7280e063aafb26f4399147ccfebbca894a791",
+    "chronograf": "62cffcbe919b6dd1f249a6ad2d5fa054027747f5e57404579a4a1a00b694cd08",
+    "opensearch": "c98fc7400ebd153a80d21a84e36801defe2f4e366b9435f684b786cd98fd1704"
+  },
+  "unique_off_target_keys_all_arms": 124,
+  "arms": {
+    "workflow": {
+      "calls": 6,
+      "target_hits": [
+        "chronograf",
+        "growi",
+        "opensearch"
+      ],
+      "mapped_after_alarms": [],
+      "scanner_commands": 7,
+      "scanner_summaries": 7,
+      "shell_commands": 145,
+      "input_tokens": 3339348,
+      "cached_input_tokens": 2955648,
+      "output_tokens": 23492,
+      "model_call_seconds": 924.039,
+      "off_target_predictions_by_verdict": {
+        "CONFIRMED": 90,
+        "FALSE_POSITIVE": 6,
+        "INVALID_LOCATION": 1
+      },
+      "unique_off_target_keys": 97
+    },
+    "legend-only": {
+      "calls": 6,
+      "target_hits": [
+        "growi"
+      ],
+      "mapped_after_alarms": [],
+      "scanner_commands": 0,
+      "scanner_summaries": 0,
+      "shell_commands": 32,
+      "input_tokens": 454993,
+      "cached_input_tokens": 370816,
+      "output_tokens": 9043,
+      "model_call_seconds": 340.84,
+      "off_target_predictions_by_verdict": {
+        "FALSE_POSITIVE": 14,
+        "INVALID_LOCATION": 11,
+        "NEEDS_CONTEXT": 2
+      },
+      "unique_off_target_keys": 27
+    }
+  }
+}

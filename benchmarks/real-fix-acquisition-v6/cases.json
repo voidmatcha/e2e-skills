@@ -1,0 +1,46 @@
+[
+  {
+    "id": "comfy-background-image-upload-value",
+    "repository": "Comfy-Org/ComfyUI_frontend",
+    "search_position": "PW-title:9",
+    "pull_request": "https://github.com/Comfy-Org/ComfyUI_frontend/pull/7389",
+    "fix": "bf8d9de1c1fcb891ef394c8267050f473626aa7a",
+    "parent": "b9f75b6cc8d96b90b50a99c2740f9df98692275c",
+    "pattern": "#4c-4e",
+    "severity": "P1",
+    "spec": "browser_tests/tests/backgroundImageUpload.spec.ts",
+    "parent_spec_blob": "44ae2d6aea7a38a2f4a525925444a0291393639a",
+    "fix_spec_blob": "b620f5441e637063b8fa7e3f1b11448431cdf30e",
+    "parent_location": "lines 79-81",
+    "fix_location": "lines 79-80",
+    "mapped_repair": "A one-shot inputValue() read plus regex assertion becomes awaited toHaveValue() on the same locator with the identical URL regex.",
+    "source_context": [
+      "The unchanged BackgroundImageUpload.vue upload flow awaits the upload and JSON response before assigning the input URL; the async value race exists independently of PR prose.",
+      "The direct Playwright expect import and Page fixture establish in-scope framework provenance.",
+      "The completed squash merge has one parent; other same-cause retry edits in the PR are not separate clusters."
+    ],
+    "limit": "Narrow upload-value check only; no claim that every assertion changed by the PR is fixed, and no failure was reproduced locally."
+  },
+  {
+    "id": "care-prescription-networkidle-readiness",
+    "repository": "ohcnetwork/care_fe",
+    "search_position": "PW-title:14",
+    "pull_request": "https://github.com/ohcnetwork/care_fe/pull/14587",
+    "fix": "8857e68abf56c38a2b67c225375fef66f0889a52",
+    "parent": "182943ce77b5c136ef520c07aca47ef54937af27",
+    "pattern": "#9c",
+    "severity": "P1",
+    "spec": "tests/facility/patient/encounter/medicine/prescriptionCreate.spec.ts",
+    "parent_spec_blob": "677ec277f24d5fb76c74791fd14ec3a59768b7a9",
+    "fix_spec_blob": "32cc6b97b8eaae2bf097e762a5d5c06b0ca94558",
+    "parent_location": "line 38",
+    "fix_location": "lines 38-41",
+    "mapped_repair": "Discouraged Playwright networkidle load-state wait after opening the prescription form becomes a web-first visibility assertion on the Add Medication control clicked next.",
+    "source_context": [
+      "The same Add Medication click and downstream prescription/table outcome assertions remain after the replacement.",
+      "The unchanged medication UI supplies the selected control; the PR does not modify application files.",
+      "The completed squash merge has one parent; other same-cause networkidle replacements are not separate clusters."
+    ],
+    "limit": "Only this representative same-cause #9c cluster is admitted. The broader PR also changes other waits and timeouts; no failure was reproduced locally."
+  }
+]

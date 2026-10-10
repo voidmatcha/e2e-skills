@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "protocol_id": "generator-unchanged-outcome-v6",
+  "evidence_scope": "public-development-directional",
+  "release_eligible": false,
+  "arms": [
+    "before",
+    "after"
+  ],
+  "cases": [
+    "repeated-ready",
+    "unrelated-completion"
+  ],
+  "repetitions": 2,
+  "workers": 1,
+  "seed": 20261014,
+  "maximum_model_attempts": 8,
+  "maximum_attempts_per_cell": 1,
+  "model": "gpt-5.5",
+  "reasoning_effort": "medium",
+  "cli": "codex-cli 0.159.3",
+  "timeout_s": 1500,
+  "per_call_budget_usd": null,
+  "container_image": "sha256:687b18c424d01c3af69efa921eaa824b48eb737d46492da334405e348da73881",
+  "docker_context": "colima",
+  "minimum_free_disk_bytes": 4294967296,
+  "intervention": "Before is exact v2 after snapshot. After replaces only verification-rules.md. Both receive identical frozen approved scenario facts without a handoff reminder.",
+  "decision_rule": "DIRECTIONAL_SIGNAL requires packet credit after >=3/4 and strictly above before, with no per-case decline. Every approved scenario field and exact arm V1 section, with only the preregistered terminal-LF boundary allowance, must occur in actual spawn prompt, bound to that receiver completed PASS verdict. Every candidate must be clean 3/3, refactor green, zero P0, no timeout, no unapproved scope writes, and causally detect DOM/sync/disabled faults. Baseline packet omissions are treatment outcomes, not guard failures. Missing or unverifiable evidence fails closed.",
+  "approved_runtime_paths": "Path-and-config runtime classification: .playwright-cli/page-YYYY-MM-DDTHH-MM-SS-mmmZ.yml; test-results/.last-run.json; test-results/<single safe slug>/{trace.zip,error-context.md}. Runtime paths are separately listed, not product writes. Every other non-tests path fails scope.",
+  "common_prompt_appendix": "For BOTH arms, standard timestamped .playwright-cli/page-YYYY-MM-DDTHH-MM-SS-mmmZ.yml snapshots and the configured trace-on Playwright test-results/.last-run.json plus test-results/<single safe slug>/trace.zip or error-context.md are approved runtime output paths. List these separately from generated test files; they are not product writes. All other non-tests workspace paths remain unapproved. Runtime classification is based on these exact path families and the frozen fixture configuration, independently of transcript command formatting.",
+  "limits": [
+    "Two correlated constructed fixtures; two repetitions each, not independent defects.",
+    "Packet handoff is primary; browser causal kill is a regression guard.",
+    "No release equivalence, generalization, significance or cost claim.",
+    "Eight calls total; no retries. Missing cells are INCOMPLETE.",
+    "Prospective v6 changes correlated case render labels and delay. V5 posthoc boundary replay is calibration only; frozen v5 outcome remains unchanged and no earlier model calls are pooled."
+  ],
+  "runtime_configuration_sha256": {
+    "repeated-ready": "b4f3798c8e9fb1719fb2b768713794920565520bcff8a638cb489c27e519ec6d",
+    "unrelated-completion": "b4f3798c8e9fb1719fb2b768713794920565520bcff8a638cb489c27e519ec6d"
+  },
+  "packet_section_boundary": "Accept the original exact V1 section anywhere in the outgoing packet, or that section with exactly ONE terminal LF removed ONLY when the remaining section ends at end-of-message. No internal normalization, header/list changes, truncation or other whitespace edits."
+}

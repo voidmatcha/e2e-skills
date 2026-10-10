@@ -1,0 +1,67 @@
+{
+  "schema": "debugger-ci-artifacts-adjudication-v1",
+  "status": "ONE_CAUSAL_CASE_FOUR_UNADJUDICATED_CANDIDATE_GROUPS",
+  "source_manifest_sha256": "4ce4c7b9839cefe3db2bf3e7e1b13c3b8a8ccec3ede38fad60de678c5e1775da",
+  "candidate_groups": 5,
+  "adjudicated_causal_cases": 1,
+  "model_arms": "TWO_ARM_PROMPT_COMPLETE_PILOT_RECORDED_SEPARATELY",
+  "cases": [
+    {
+      "id": "superset-mobile-empty-dashboard-2026-09-28",
+      "status": "ADJUDICATED_CAUSE_MAINTAINER_FIX_LINKED",
+      "repository": "apache/superset",
+      "run_id": 36463952537,
+      "run_url": "https://github.com/apache/superset/actions/runs/36463952537",
+      "head_sha": "6cad838c8237691e742a7bf26ce7c8ea341e13f7",
+      "artifact_id": 10989449069,
+      "report_sha256": "0bcdd4d71815ea236a5f0fbbbf72abd956be59de579d4d0936f8179ca3c9857c",
+      "test_id_sha256": "3adf2f688441fd6abc877e44f482516ea305562bf4a01687120568e2e30889aa",
+      "failed_screenshot_sha256": "c3cfd1fab257c46810e2960d5acae711f6377af4baa7bf21c1980e4094d9e44a",
+      "f_code": "F7",
+      "diagnosis_axis": "test defect",
+      "causal_label": "The mobile test selected the first dashboard card. A duplicate empty xref dashboard left by another test was first, so the chart assertion failed on the wrong dashboard.",
+      "evidence": [
+        "Bundled JSON reader: three failed chart-container visibility attempts.",
+        "Bundled media snapshot: empty xref_dash_ dashboard with the no-charts state at the failing attempt.",
+        "Run-head source: openFirstDashboard clicks cards.first() and the failing test calls it.",
+        "Maintainer PR #44856 explicitly identifies the leaked duplicate, changes the Save modal to select an exact existing dashboard, and changes the mobile test to open a known sample dashboard."
+      ],
+      "fix_pr_url": "https://github.com/apache/superset/pull/44856",
+      "fix_merge_sha": "0a0a1974c50ac46544068897b4d4f78eccceaef4",
+      "fix_validation": "PR reports targeted local mobile tests passing; PR Playwright checks were green. The exact failed run was not rerun against the fix here.",
+      "scope_limit": "This label applies to this run, not automatically to the other 54 same-hash mobile events. The latest sampled post-merge PR head still contained openFirstDashboard, so calendar date alone does not prove it included the fix."
+    },
+    {
+      "id": "superset-drill-chart-data-500-2026-10-01",
+      "status": "UNADJUDICATED",
+      "repository": "apache/superset",
+      "run_id": 36896024842,
+      "observation": "Seven tests in one run share POST /api/v1/chart/data HTTP 500 before missing-canvas assertions.",
+      "missing_truth": "No linked maintainer fix or source-backed cause of the API 500."
+    },
+    {
+      "id": "openmetadata-profile-learning-resources-2026-10-08",
+      "status": "UNADJUDICATED",
+      "repository": "open-metadata/OpenMetadata",
+      "run_id": 37836413683,
+      "observation": "Two setup-timeout attempts; browser closed after the 180-second test budget.",
+      "missing_truth": "No linked fix or isolated product/test cause."
+    },
+    {
+      "id": "openmetadata-ingestion-live-logs-2026-10-08",
+      "status": "UNADJUDICATED",
+      "repository": "open-metadata/OpenMetadata",
+      "run_id": 37843316867,
+      "observation": "Expected pipeline status Running; observed Success before the SSE assertion.",
+      "missing_truth": "No linked fix establishing whether the run ended too quickly or the assertion's precondition was invalid."
+    },
+    {
+      "id": "openmetadata-glossary-dutch-2026-10-08",
+      "status": "UNADJUDICATED",
+      "repository": "open-metadata/OpenMetadata",
+      "run_id": 37809070890,
+      "observation": "Two setup-timeout attempts before the glossary behavior was exercised.",
+      "missing_truth": "No linked fix or isolated setup cause; older Dutch-language test fixes do not establish causality for this timeout."
+    }
+  ]
+}

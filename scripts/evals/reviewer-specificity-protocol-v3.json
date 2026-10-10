@@ -1,0 +1,597 @@
+{
+  "schema_version": 1,
+  "protocol_id": "reviewer-specificity-v3",
+  "status": "FROZEN",
+  "visibility": "public-development",
+  "purpose": "Measure false-positive behavior on cases with no e2e-reviewer finding anywhere in the submitted case.",
+  "design_disclosure": "Designed after reviewer-holdout-v7 and frozen reviewer-specificity-v1 and v2 were inspected. V7 motivates the retained metrics and thresholds but cannot validate them. V1 was superseded without execution because its adjudication artifacts were underspecified. A pre-corpus v2 pilot then established that GitHub code search cannot execute v2's claimed population and star ordering: it returns a bounded relevance-ordered slice. No corpus case, adjudication pass, evaluated-model call, or result was created under v2. Before any v3 corpus case was collected, the project measured framework declarations under the frozen keyword-free enumeration and found that a forced 12/12 split was not executable. V3 therefore also replaces framework parity with taxonomy-first allocation and discloses the resulting framework limits.",
+  "corpus": {
+    "status": "NOT_CREATED",
+    "case_count_target": 48,
+    "case_count_minimum": 24,
+    "framework_allocation": {
+      "rule": "Framework is an observed property of cases selected from the frozen global candidate order, never a pattern-slot assignment or a reason to reorder candidates.",
+      "cypress_floor": 1,
+      "floor_semantics": "The floor is a disclosure and collection goal, not a quota that may override candidate order and not a run-completeness gate.",
+      "if_floor_unmet": "Proceed when all 24 principal pattern quotas and every other gate are met, report the corpus as Playwright-only, suppress Cypress-specific rates, and apply the Playwright-dominant claim limit. Stopping would recreate an infeasible protocol around a framework prevalence this project does not control.",
+      "cypress_specific_metrics_minimum_cases": 8,
+      "cypress_specific_metrics_rationale": "Eight is the smallest preregistered descriptive stratum retained from the V7 total-case calibration scale and gives rate steps no coarser than 0.125. Below eight, publish only the Cypress case count and covered pattern IDs, not a Cypress specificity rate or interval. This is a reporting threshold, not a claim of statistical power."
+    },
+    "labels": "Every accepted case has an empty finding set; fp_guard labels do not replace the whole-case clean oracle.",
+    "case_boundary": "One spec plus every repository-local config, fixture, page object, command, support module, and application helper needed to judge behavior reached by that spec.",
+    "cases_per_source_repository_max": 2,
+    "deduplication_unit": "shared-source-or-behavior-lineage-cluster",
+    "source_selection": {
+      "freeze_timing": "Frozen before any candidate repository, scanner hit, or source file is inspected for this corpus.",
+      "population": "For each framework, the population is the distinct repositories returned by pages 1 through 10 (or every available page when fewer exist) of each of two frozen, keyword-free GitHub REST repository-search queries, requested with sort=stars, order=desc, and per_page=100, that then pass the pinned-HEAD verification predicates. It is not all public repositories using the framework. It excludes repositories whose GitHub primary language is neither TypeScript nor JavaScript, repositories with no push on or after 2025-09-21, repositories smaller than 1,000 KiB, repositories beyond either language query's 1,000-result GitHub search window, repositories added or made discoverable after the query snapshot, inaccessible or transiently unresolvable repositories, repositories whose dependency exists only outside the root default-branch package.json, and every repository that fails a verification predicate or the separately frozen prior-use exclusions.",
+      "repository_enumeration": {
+        "api": "GitHub REST repository search",
+        "endpoint": "GET https://api.github.com/search/repositories",
+        "queries": {
+          "playwright": [
+            "language:TypeScript pushed:>=2025-09-21 size:>=1000",
+            "language:JavaScript pushed:>=2025-09-21 size:>=1000"
+          ],
+          "cypress": [
+            "language:TypeScript pushed:>=2025-09-21 size:>=1000",
+            "language:JavaScript pushed:>=2025-09-21 size:>=1000"
+          ]
+        },
+        "query_rationale": "Enumeration is deliberately keyword-free: neither framework name nor any other topical term may steer selection toward repositories that advertise a framework. TypeScript and JavaScript are separate shards because the verified packages are the Node.js @playwright/test and cypress packages and their project tests are authored in those languages; separate shards also preserve GitHub's 1,000-result window for each primary-language population. pushed:>=2025-09-21 requires activity during the frozen one-year lookback so the walk favors maintained code whose pinned dependency and test suite remain inspectable. size:>=1000 excludes tiny toy, snippet, and skeletal repositories while retaining substantial applications and libraries. The trade is a lower framework-dependency hit rate per page, which the page budget must absorb.",
+        "sort": "stars",
+        "order": "desc",
+        "per_page": 100,
+        "first_page": 1,
+        "maximum_pages_per_query": 10,
+        "maximum_pages_per_framework": 20,
+        "maximum_repositories_per_query": 1000,
+        "maximum_repositories_per_framework": 2000,
+        "page_budget_rationale": "The project measurement found only 3 Cypress declarations across 160 repositories even after adding lower-star strata, while Playwright appeared in 31. The full two-shard budget remains 2,000 repositories because Cypress declarations are rare enough that a smaller walk could miss even the one-case disclosure floor before licence, prior-use, candidate, and adjudication attrition. The budget bounds collection effort; it does not promise a Cypress case and does not authorize framework-based reordering.",
+        "page_walk": "For each framework independently, request the TypeScript query first and the JavaScript query second. Within each query request pages 1 through 10 sequentially with the exact query, sort, order, per_page, and page parameters above. Stop a query early only after a successful page returns fewer than 100 items. A failed, incomplete, rate-limited, or truncated response stops construction; it is never treated as an empty page or permission to spend the unused page budget elsewhere.",
+        "snapshot": "Before source or scanner inspection, preserve every raw successful search response byte-for-byte with request URL, response status, retrieval timestamp, page number, reported total_count, incomplete_results, and every returned repository's id, full_name, html_url, stargazers_count, default_branch, private, fork, archived, visibility, license metadata, and API URL. Require incomplete_results=false. The snapshot plus this protocol determines the fetched set without code search.",
+        "deduplication": "Within each framework, deduplicate returned repositories by immutable GitHub repository id. Query order, then page, then position determines the first occurrence that supplies search metadata; any conflicting duplicate stops construction.",
+        "canonical_order": "Within each framework, sort the deduplicated fetched set by search-snapshot stargazers_count descending, then Unicode case-folded full_name ascending, then exact full_name ascending, then numeric repository id ascending. Assign contiguous one-based repository ranks after this sort. Process all Playwright ranks independently from all Cypress ranks.",
+        "repository_walk": {
+          "path": "benchmarks/reviewer-specificity-v3/repository-walk.json",
+          "schema_version": 1,
+          "maximum_file_bytes": 8388608,
+          "maximum_file_bytes_rationale": "The strict JSON reader keeps its 1 MiB generic manifest limit. This artifact-only 8 MiB ceiling covers the full 4,000-row walk with substantial schema and repository-name growth headroom while still rejecting unexpectedly large runner input.",
+          "required_before_candidate_inspection": true,
+          "records_every_returned_repository": true,
+          "records_skips_with_reason": true,
+          "repository_list_order": "All Playwright rows by contiguous repository_rank, followed by all Cypress rows by contiguous repository_rank.",
+          "top_level_fields": [
+            "schema_version",
+            "protocol_id",
+            "query_snapshots",
+            "repositories"
+          ],
+          "repository_fields": [
+            "framework",
+            "repository_rank",
+            "repository_id",
+            "repository_identity",
+            "search_snapshot_stars",
+            "full_commit_sha",
+            "verification_retrieved_at",
+            "verification_status",
+            "skip_reason"
+          ],
+          "query_snapshot_fields": [
+            "framework",
+            "query",
+            "sort",
+            "order",
+            "per_page",
+            "maximum_pages",
+            "pages"
+          ],
+          "page_fields": [
+            "page",
+            "request_url",
+            "response_status",
+            "retrieved_at",
+            "reported_total_count",
+            "incomplete_results",
+            "response_path",
+            "response_sha256",
+            "returned_repository_ids"
+          ],
+          "verification_status_values": [
+            "eligible",
+            "skipped",
+            "not-reached"
+          ],
+          "skip_reason_values": [
+            "not-public",
+            "fork",
+            "archived",
+            "default-branch-head-unresolvable",
+            "root-package-json-missing",
+            "root-package-json-invalid",
+            "framework-dependency-absent",
+            "licence-evidence-missing",
+            "licence-does-not-permit-redistribution",
+            "prior-use-exclusion",
+            "repository-state-or-evidence-conflict"
+          ]
+        },
+        "verification": "Walk repositories strictly by canonical rank. Resolve the recorded default branch to one full 40-character HEAD SHA, then bind every verification fetch to that SHA. Verify public visibility, fork=false, archived=false, a redistributable licence using the commit-pinned licence file and recorded SPDX identifier/basis, and a valid root package.json whose dependencies, devDependencies, peerDependencies, or optionalDependencies object contains the exact framework key (@playwright/test for Playwright; cypress for Cypress). Apply the frozen prior-use exclusions during this same walk. Record each reached repository as eligible or skipped with exactly one enumerated reason and its evidence before advancing; record the untouched trailing suffix as not-reached with no SHA, reason, or evidence. A later invocation resumes at the first not-reached row. Stop when every adjudicated principal-pattern slot is filled or an invocation bound or deferred rate limit is reached; never silently drop, reorder, retry into a different rank, skip ahead, or inspect source candidates from a skipped or not-reached repository.",
+        "framework_dependency_fields": [
+          "dependencies",
+          "devDependencies",
+          "peerDependencies",
+          "optionalDependencies"
+        ]
+      },
+      "framework_population_measurement": {"status": "project-measured fact", "measured_on": "2026-09-21", "source": "GitHub default-branch trees returned by the frozen keyword-free repository enumeration", "manifest_scope": "Every package.json in each default-branch tree was read; nested monorepo and sub-package manifests counted, not only the root manifest.", "dependency_predicate": "An exact @playwright/test or cypress key in dependencies, devDependencies, peerDependencies, or optionalDependencies in any package.json.", "strata": [{"query": "language:TypeScript pushed:>=2025-09-21 size:>=1000", "repositories": 40, "playwright_declarations": 16, "cypress_declarations": 1, "cypress_repositories": ["angular/angular"]}, {"query": "language:JavaScript pushed:>=2025-09-21 size:>=1000", "repositories": 40, "playwright_declarations": 5, "cypress_declarations": 0, "cypress_repositories": []}, {"query": "language:TypeScript pushed:>=2025-09-21 size:>=1000 stars:100..2000", "repositories": 40, "playwright_declarations": 6, "cypress_declarations": 0, "cypress_repositories": []}, {"query": "language:JavaScript pushed:>=2025-09-21 size:>=1000 stars:100..2000", "repositories": 40, "playwright_declarations": 4, "cypress_declarations": 2, "cypress_repositories": ["roxiness/routify", "WordPress/wordpress-playground"]}], "totals": {"repositories": 160, "playwright_declarations": 31, "cypress_declarations": 3}, "finding": "Lowering the star band did not materially improve Cypress yield. The observed public population is too Cypress-sparse to support a forced 12/12 corpus after later attrition.", "allocation_justification": "Set the Cypress floor to one case. Three declarations in 160 repositories support attempting at least one case, but not a larger mandatory quota after licence, prior-use, lookalike-availability, and two-pass clean-adjudication attrition."},
+      "unverified_ecosystem_context": {"status": "not tested by this project; possible general ecosystem explanations only", "items": ["Cypress parallel CI orchestration was historically tied to its commercial cloud, while Playwright ships worker parallelism.", "Cypress executes inside the browser, which historically constrained cross-origin, multi-tab, and multi-window flows.", "Playwright exposes Chromium, Firefox, and WebKit through one API and supports several host languages, while Cypress is JavaScript/TypeScript only.", "Adoption in large repositories may compound through examples, contributor familiarity, and convention."], "non_attribution_rule": "None of these possibilities was tested here, none is a project finding, and none may be used to explain why any specific repository chose Playwright or Cypress."},
+      "candidate_snapshot": "The byte-preserved repository-search responses and repository-walk artifact freeze the complete fetched set, query parameters, retrieval time, stars, and default branch before candidate source inspection. The walk additionally records a pinned full HEAD SHA and verification result for every reached repository, and an explicit not-reached state for the untouched trailing suffix.",
+      "repository_order": "Within framework: the repository_enumeration canonical_order, followed without omission by the resumable pinned-HEAD verification walk. Only eligible repositories reach scanner candidate generation; skipped and not-reached repositories retain their rank and audit record.",
+      "candidate_order": "Run the frozen scanner per pinned repository. Merge candidates into one global order by repository rank, POSIX path, line, taxonomy order, source bytes, then framework name only as a deterministic final tie-break for a hybrid candidate. Group the same spec and reachable dependency closure. Visit principal guard pattern quotas in taxonomy order and accept the first eligible clean group for each open quota. Framework is recorded from the selected case and never changes candidate priority. Never reorder after inspection.",
+      "scanner_role": "Candidate generator only; a hit is not a finding or proof of cleanliness. Every accepted case must contain at least one scanner-produced, preregistered guard line that resembles a catalogued anti-pattern but is adjudicated as a non-finding in context.",
+      "lookalike_allocation": {"minimum_24_cases": "One case for each of the 24 principal guard pattern IDs, filled from the frozen global candidate order without framework slots.", "target_48_cases": "Two cases for each of the 24 principal guard pattern IDs, filled from the same frozen global candidate order without framework slots.", "principal_rule": "A case may contain additional guard lines, but only its first eligible hit in frozen candidate order fills one principal quota. A pattern quota that cannot be filled stops construction; framework scarcity does not permit swapping patterns or reordering candidates.", "framework_result": "The Playwright/Cypress count is whatever the frozen order yields. Report it after selection; do not engineer it during selection."},
+      "anti_tuning_rule": "Selection may use only the frozen scanner, taxonomy order, global candidate order, lineage rules, and blinded whole-case adjudication. Do not use framework quotas, V7 error identities, treatment or control outputs, pattern-specific observed arm gaps, or manual similarity judgments to prioritize candidates. This constructs taxonomy-wide lookalikes without targeting known treatment weaknesses by proxy.",
+      "insufficient_pool": "If the pool cannot fill all 24 principal pattern quotas without relaxing a frozen rule, stop and version a new protocol; never backfill discretionarily. Failure to meet the one-case Cypress disclosure floor alone does not stop the run.",
+      "excluded_repository_identities": [
+        "apache/zeppelin",
+        "calcom/cal.diy",
+        "carbon-design-system/carbon",
+        "coder/code-server",
+        "DefGuard/defguard",
+        "element-hq/element-web",
+        "ever-co/ever-gauzy",
+        "expo/expo",
+        "francoischalifour/medium-zoom",
+        "gautamkrishnar/nothing-private",
+        "hcengineering/platform",
+        "i5ting/imove",
+        "ixartz/SaaS-Boilerplate",
+        "jhipster/jhipster-sample-app",
+        "kentcdodds/bookshelf",
+        "Kong/insomnia",
+        "LekoArts/gatsby-themes",
+        "livestorejs/livestore",
+        "module-federation/core",
+        "mui/mui-x",
+        "n8n-io/n8n",
+        "open-mercato/open-mercato",
+        "QwikDev/qwik",
+        "rancher-sandbox/rancher-desktop",
+        "remix-run/react-router",
+        "RocketChat/Rocket.Chat",
+        "storybookjs/storybook",
+        "strapi/strapi",
+        "supabase/supabase",
+        "sveltejs/kit",
+        "sweetalert2/sweetalert2",
+        "TanStack/router",
+        "ToolJet/ToolJet",
+        "TryGhost/Ghost",
+        "usebruno/bruno",
+        "valor-software/ngx-bootstrap",
+        "VoltAgent/awesome-agent-skills",
+        "voxel51/fiftyone"
+      ],
+      "excluded_project_material": [
+        "All field-scan-v1 and extension repositories",
+        "All field-review-v1 and case-study repositories and PR targets",
+        "All existing eval, case-library, holdout, fault-corpus, independent-review, and testbed sources or lineages",
+        "Anything inspected while developing or tuning e2e-reviewer, even if absent from the explicit list"
+      ],
+      "exclusion_precedence": "Rule-based exclusions are authoritative. Newly discovered prior use is excluded and published as a protocol defect; never silently amend this version."
+    },
+    "required_case_provenance_fields": [
+      "repository_identity",
+      "repository_url",
+      "full_commit_sha",
+      "default_branch_at_snapshot",
+      "repository_rank_and_framework_query",
+      "candidate_ordinal",
+      "source_paths",
+      "immutable_blob_urls",
+      "source_file_sha256_values",
+      "retrieved_at",
+      "lineage_cluster",
+      "transformations_or_redactions",
+      "license_spdx_identifier",
+      "license_file_path",
+      "license_blob_url",
+      "license_file_sha256",
+      "redistribution_basis"
+    ],
+    "frozen_adjudication_inputs": {
+      "scanner": "skills/e2e-reviewer/scripts/scan.sh",
+      "scanner_sha256": "3056aa13c55f337dbd6a24f6a61859fdd47e0b3758e4cb4cbe795d050b04f3de",
+      "pattern_reference": "skills/e2e-reviewer/references/pattern-reference.md",
+      "pattern_reference_sha256": "9c27480bd0fdde91d865c095de67bc0fc96606da79b13ed64e7e07807d5d5708"
+    },
+    "case_provenance_storage": "Each corpus case stores one provenance object with every required_case_provenance_fields key; the ledger repeats the same object for admitted and discarded candidates.",
+    "case_provenance_schema": {
+      "repository_identity": "non-empty owner/name string",
+      "repository_url": "public repository URL",
+      "full_commit_sha": "40 lowercase hexadecimal characters",
+      "default_branch_at_snapshot": "non-empty branch name",
+      "repository_rank_and_framework_query": "machine-readable object containing framework, query, and positive integer rank",
+      "candidate_ordinal": "positive integer in frozen candidate order",
+      "source_paths": "non-empty list matching the candidate full-file boundary",
+      "immutable_blob_urls": "non-empty list of commit-pinned blob URLs matching source_paths",
+      "source_file_sha256_values": "object mapping every source path to its lowercase SHA-256",
+      "retrieved_at": "RFC 3339 UTC timestamp",
+      "lineage_cluster": "non-empty lineage identifier",
+      "transformations_or_redactions": "list; empty when source bytes are unchanged",
+      "license_spdx_identifier": "non-empty SPDX identifier",
+      "license_file_path": "repository-relative licence path",
+      "license_blob_url": "commit-pinned licence blob URL",
+      "license_file_sha256": "lowercase SHA-256 of the licence file",
+      "redistribution_basis": "non-empty explanation of why the files may be redistributed"
+    }
+  },
+  "clean_verification": {
+    "candidate_generation": "Preserve complete scanner stdout, stderr, exit status, completeness diagnostics, and order. Incomplete output is ineligible until rerun completely.",
+    "whole_case_review": "Each adjudication pass reviews the full boundary against all 24 frozen pattern IDs. The ledger stores the complete ordered pattern_coverage list, a non-empty rationale, and every proposed finding.",
+    "finding_disposition": "If any pattern is present, record the rejection and discard the case. Never relabel, repair, trim, or make it a positive case here.",
+    "acceptance": "Require source closure, scanner record, complete provenance and licence evidence, lineage check, and exactly two fresh mutually blinded Claude-family adjudication passes. Admit only when both independently return clean with no proposed finding; otherwise record and discard the candidate.",
+    "independence": {
+      "evaluated_host_family": "codex",
+      "adjudicator_family": "claude",
+      "family_separation": "Codex may not adjudicate a Codex / gpt-5.6-sol evaluation corpus. A shared blind spot could mark a case clean for the same reason the evaluated arm would miss it and inflate specificity.",
+      "passes_per_candidate": 2,
+      "different_models_required": true,
+      "fresh_session_per_pass": true,
+      "mutual_blinding": "Neither pass sees the other verdict, scanner candidate-list rationale, or any treatment output. Each receives only the case's full files and the frozen pattern reference.",
+      "disagreement_policy": "Any proposed finding or disagreement discards the candidate. There is no tie-break adjudication because discarding is cheap and conservative for a clean-only corpus.",
+      "evidence_limit": "Model adjudication is weaker evidence than independent human adjudication."
+    }
+  },
+  "schedule": {
+    "algorithm": "sha256-seeded-sort-v1",
+    "seed": 20260801,
+    "default_repetitions": 3,
+    "release_repetitions": 3,
+    "evidence_scope": "public-development",
+    "freeze_policy": "Freeze the raw repository-search responses, repository walk with every verification skip, corpus, per-case provenance/licence, the complete admitted-and-discarded adjudication ledger, skill, prompts, and protocol before the first measured run; any edit creates a new version.",
+    "fresh_workspace_per_repetition": true,
+    "repetitions_are_independent_cases": false,
+    "repetition_purpose": "Stability and repeated-run false-positive measurement only."
+  },
+  "stability": {
+    "rule": "strict-majority",
+    "minimum_repetitions": 3,
+    "primary_definition": "For the primary metric, first classify each case-repetition as clean or not clean using all reported findings anywhere in the case. A case is stably clean for an arm when clean case-repetitions are a strict majority of that arm's successful repetitions for the case.",
+    "finding_tuple_definition": "For tuple-based secondary diagnostics, the identical case, pattern ID, severity, file, and line tuple appears in strictly more than half of successful repetitions."
+  },
+  "execution_identity": {
+    "require_explicit_runner_path": true,
+    "expected_cli_versions": {
+      "codex": "codex-cli 0.154.0"
+    },
+    "run_identity_capture": "Capture resolved path and CLI version; do not pin user paths or binary digests.",
+    "attestation_limit": "Identity is provenance, not cryptographic attestation.",
+    "version_policy": "minimum"
+  },
+  "prompt_arms": {
+    "treatment": "full",
+    "controls": [
+      "catalog-only",
+      "no-skill"
+    ],
+    "material_definitions": {
+      "full": [
+        "SKILL.md",
+        "references/review-scope.md",
+        "references/scanner-workflow.md",
+        "references/semantic-review.md",
+        "references/reporting.md",
+        "references/pattern-reference.md",
+        "references/verification-rules.md"
+      ],
+      "catalog-only": [
+        "references/pattern-reference.md"
+      ],
+      "no-skill": []
+    },
+    "shared_output_legend": true,
+    "no_skill_is_taxonomy_free": false,
+    "no_skill_legend_limit": "No rules or workflow; only the minimal ID, title, and severity legend shared for scoring.",
+    "comparison_unit": "separate-complete-host-matrix",
+    "matrix_requirement": "Separate complete full, catalog-only, and no-skill reports."
+  },
+  "host_matrix": [
+    {
+      "runner": "codex",
+      "model": "gpt-5.6-sol"
+    }
+  ],
+  "metrics": {
+    "primary": {
+      "name": "per-case-specificity",
+      "unit": "unique-clean-case",
+      "definition": "A clean case counts as clean for an arm in a repetition when that arm reports no finding of any pattern at any line in any file of the case; a case is stably clean when that holds in a strict majority of repetitions; per-arm specificity is the share of stably clean cases."
+    },
+    "co_primary": {
+      "name": "repeated-run-false-positive-count-per-case",
+      "unit": "reported-finding-per-clean-case",
+      "definition": "Sum every distinct reported finding tuple across all successful repetitions, without majority collapse, and divide by the number of clean cases. A tuple is pattern ID, severity, file, and line and is counted at most once within one case-repetition. Thus V7 full's 1 finding over 24 case-repetitions is 1/8 = 0.125 per case, while catalog-only's 6 is 6/8 = 0.75 per case."
+    },
+    "secondary": [
+      {
+        "name": "stable-false-positives-per-case",
+        "unit": "stable-prediction-per-clean-case",
+        "definition": "Distinct stable prediction tuples divided by clean cases."
+      },
+      {
+        "name": "repeated-run-false-positive-rate",
+        "unit": "case-repetition",
+        "definition": "Share of successful clean case-repetitions with at least one prediction; multiple predictions count once."
+      },
+      {
+        "name": "guard-line-hit-rate",
+        "unit": "preregistered-guard-line-repetition",
+        "definition": "Share of preregistered guard-line repetitions for which the arm reports a finding tuple on that exact file and line; also report strict-majority-stable guard hits by guard ID. This diagnostic identifies which lookalike shapes attract false positives but does not determine whether a case is clean."
+      }
+    ],
+    "v7_noncomparability": "This protocol's per-case specificity is not V7's clean_case_specificity. V7 asked whether preregistered guard lines were flagged; it could score a case clean despite a false positive elsewhere. This protocol asks whether there was any finding anywhere in the case before majority aggregation. The two specificity values must not be compared as if they were the same metric.",
+    "rounding_policy": "Evaluate exact counts and rational values before display rounding."
+  },
+  "arm_comparison": {
+    "treatment": "full",
+    "controls": [
+      "catalog-only",
+      "no-skill"
+    ],
+    "required_matrix": "exact-three-profiles-by-one-host",
+    "requires_all_reports_execution_complete": true,
+    "requires_treatment_report_status": "PASS",
+    "requires_each_control_comparison_pass": true,
+    "provider_aggregation": "single-host-direct",
+    "stability_basis": "Primary specificity majority-aggregates case-repetition cleanliness; tuple stability is used only for secondary diagnostics.",
+    "execution_order_design": "single-host-three-arm-sequential",
+    "execution_order": [
+      {
+        "ordinal": 1,
+        "prompt_profile": "full",
+        "runner": "codex",
+        "model": "gpt-5.6-sol"
+      },
+      {
+        "ordinal": 2,
+        "prompt_profile": "catalog-only",
+        "runner": "codex",
+        "model": "gpt-5.6-sol"
+      },
+      {
+        "ordinal": 3,
+        "prompt_profile": "no-skill",
+        "runner": "codex",
+        "model": "gpt-5.6-sol"
+      }
+    ],
+    "requires_sequential_non_overlapping_execution": true,
+    "matrix_elapsed_basis": "first-start-to-last-completion",
+    "maximum_matrix_elapsed_seconds": 43200,
+    "temporal_validity_limit": "Fixed order, non-overlap, and 12 hours reduce time confounding but do not attest time or provider revisions.",
+    "uncertainty": {
+      "method": "paired-case-bootstrap",
+      "seed": 20260801,
+      "iterations": 10000,
+      "confidence": 0.95,
+      "strata": ["all-clean-cases"],
+      "percentile_method": "nearest-rank",
+      "metrics": [
+        {
+          "name": "per-case-specificity",
+          "comparison": "full-minus-control"
+        },
+        {
+          "name": "repeated-run-false-positive-count-per-case",
+          "comparison": "control-minus-full"
+        }
+      ],
+      "pairing": "Resample case identities with replacement across the full corpus and carry all arms together. Framework is not a sampling stratum because its observed allocation may be highly imbalanced or Playwright-only.",
+      "interpretation_limit": "Case-resampling sensitivity on this fixed public set, not model-run uncertainty, statistical power, a population interval, independent replication, or causal inference."
+    }
+  },
+  "decision": {
+    "requires_every_gate": true,
+    "full_arm_absolute_thresholds": {
+      "per_case_specificity_min": 0.95,
+      "repeated_run_false_positive_count_per_case_max": 0.125
+    },
+    "full_vs_each_control_thresholds": {
+      "per_case_specificity_delta_min": 0.125,
+      "per_case_specificity_delta_ci95_lower_min_exclusive": 0,
+      "repeated_run_false_positive_count_per_case_advantage_min": 0.5,
+      "repeated_run_false_positive_count_per_case_advantage_ci95_lower_min_exclusive": 0
+    },
+    "threshold_rationale": {
+      "per_case_specificity_min": "Under this protocol's any-finding-anywhere definition, V7 full was 8/8 stably clean. Keep a 0.95 absolute floor while allowing at most two non-clean cases at the 48-case target.",
+      "repeated_run_false_positive_count_per_case_max": "V7 full produced 1 reported false positive across 24 case-repetitions, or 1/8 = 0.125 per case. Preserve that observed full-arm ceiling.",
+      "per_case_specificity_delta_min": "Under the new definition V7 full was 8/8 and catalog-only 6/8, a 0.25 delta. Require at least half that observed difference, 0.125, against each control.",
+      "per_case_specificity_delta_ci95_lower_min_exclusive": "Require the paired advantage not to disappear under case resampling; this is fixed-set resampling sensitivity, not population inference.",
+      "repeated_run_false_positive_count_per_case_advantage_min": "V7 catalog-only minus full was (6 - 1) / 8 = 0.625 reported false positives per case. Require at least 0.5, retaining four fifths of that observed count-rate advantage. The comparison direction is control minus full.",
+      "repeated_run_false_positive_count_per_case_advantage_ci95_lower_min_exclusive": "Require the control-minus-full count-rate advantage not to disappear under paired case resampling. Carry all repetitions for a sampled case together; repetitions are not independent bootstrap units.",
+      "post_observation_limit": "Every threshold above was chosen after observing the V7 numbers. V7 is the calibration starting point and cannot validate any of these thresholds; only a newly frozen corpus can test them."
+    },
+    "failure_semantics": {
+      "fail": "A complete matrix missing any full-arm or either control-comparison gate is FAIL.",
+      "inconclusive": "Missing or malformed repository-search snapshots or repository walk, an omitted returned repository or verification skip, missing or fewer than 24 cases, incomplete principal-pattern coverage, incomplete calls, infrastructure errors, identity or provenance mismatch, elapsed-window violation, mutation, missing or malformed adjudication ledger, missing clean rationale or licence evidence, fewer than two independent passes, adjudicator-family overlap, or case/ledger digest mismatch is INCONCLUSIVE. Framework imbalance and a zero-case Cypress stratum are disclosed limitations, not incompleteness.",
+      "partial": "Partial metrics are descriptive only and never a lift result."
+    }
+  },
+  "size_rationale": {
+    "v7_starting_point": "Under the any-finding-anywhere definition, V7 had 8 clean cases: full was 8/8 stably clean, catalog-only was 6/8, and no-skill was 1/8. The full-versus-catalog-only paired discordance was 2/8, both full-favouring, with one discordance in each four-case framework stratum.",
+    "paired_interval_calculation": "Across all eight V7 cases, the observed one-sided discordance rate was 2/8 = 1/4. Under a paired unstratified case bootstrap, a draw has zero discordances with probability (3/4)^N. A two-sided 95% percentile lower bound can exclude zero only when this mass is below 0.025, so N >= 13. This arithmetic does not require or justify equal framework strata.",
+    "target": "Keep 48 cases: two lookalikes for each of the 24 principal pattern IDs. At the observed overall 1/4 rate this projects 12 full-favouring discordances, the 0.125 point-delta gate requires six net discordances, and the 1/48 step permits more informative corpus-level rates. Framework allocation is observed, not balanced. This is a design projection, not validation or guaranteed power.",
+    "minimum": "Do not run below 24 cases. The paired interval arithmetic first becomes numerically usable at 13, but the corpus rule requires one principal lookalike for every one of the 24 pattern IDs. Twenty-four is therefore the run minimum; at the observed overall 1/4 discordance rate it projects six discordances and (3/4)^24 = 0.00100339 zero-discordance mass. A smaller run lacks taxonomy-wide lookalike coverage. No framework balance enters this calculation.",
+    "not_power": "This is analytic resampling sensitivity under the observed all-one-direction discordance pattern, not statistical power. Opposite discordances, a smaller new-corpus effect, or finite 10000-draw Monte Carlo variation can keep the interval at zero even with 48 cases. It supports only corpus-level interpretation, not a framework-specific inference."
+  },
+  "claim_policy": {
+    "pass": "Only fixed-public-corpus, declared Codex model, CLI, and schedule evidence that full met the specificity gates and exceeded both controls.",
+    "fail": "No specificity-lift claim; descriptive metrics may be published.",
+    "inconclusive": "No specificity-lift claim.",
+    "maintainer_only_oracle": "Numeric PASS cannot make a maintainer-only corpus claim-eligible.",
+    "framework_limit": "This corpus estimates specificity mainly on Playwright code drawn from the frozen public, active, substantial TypeScript/JavaScript population. Report Cypress-specific rates only with at least 8 Cypress cases; otherwise report counts and pattern coverage only. Neither the corpus-level result nor any Cypress subset generalizes to Cypress usage in private repositories or smaller repositories outside this population.",
+    "repository_choice_limit": "The measured declaration imbalance does not establish why any repository chose either framework.",
+    "excluded_claims": [
+      "recall, finding precision, or F1",
+      "pattern-detection ability",
+      "population generalization",
+      "cross-provider performance",
+      "sealed or release-grade evidence",
+      "developer usefulness, repair quality, time saved, or prevalence"
+    ],
+    "oracle_limit": "Model adjudication is weaker evidence than independent human adjudication.",
+    "selection_bias_limit": "Discarding every disputed case biases the corpus toward obviously-clean code and weakens its power to discriminate the arms. Resulting specificity is an estimate on unambiguous clean code, not on borderline code."
+  },
+  "supersedes": {
+    "protocol_id": "reviewer-specificity-v2",
+    "disposition": "SUPERSEDED_BEFORE_RUN",
+    "reason": "V2's population required dependency-bearing root package.json files but its only practical discovery route was GitHub code search, whose bounded relevance-ordered results cannot execute the claimed star-ordered enumeration. A pilot found this before any case was collected. Replacing a frozen protocol in place would conceal that defect, so v2 remains byte-preserved.",
+    "model_calls": 0,
+    "corpus_cases_created": 0,
+    "results": 0
+  },
+  "changes_from_v2": {
+    "discovery_failure": "A pre-corpus pilot used GitHub code search because v2 asked for repositories whose package.json contains a framework dependency. The Playwright and Cypress searches returned only 36 and 38 repositories respectively, in relevance order rather than star order. No case was collected and no adjudication or evaluation model was called. Therefore v2's phrase selected by the frozen rule could not identify an auditable, non-cherry-picked walk.",
+    "enumeration": "V3 replaces code-search discovery with keyword-free GitHub repository-search shards for active, substantial TypeScript and JavaScript repositories, sorted by stars descending, with 100 results per page and at most 10 pages per shard and 20 pages per framework. It snapshots every response, deterministically orders the fetched set, pins each default-branch HEAD, and records every repository as eligible or skipped with verification evidence and a fixed reason.",
+    "population_boundary": "V3 describes the population as the dependency-verified repositories reachable by the frozen language, activity, and size queries inside the frozen 2,000-result-per-framework page budget, not all public repositories using the framework, and lists the resulting exclusions explicitly.",
+    "allocation_amendment": "The 2026-09-21 measurement found 3 Cypress declarations in 160 repositories, including nested manifests, and the lower-star strata did not improve yield enough to make 12 Cypress cases credible after attrition. V3 removes framework parity, retains one principal case per pattern at the 24-case minimum and two per pattern at the 48-case target, uses a one-case Cypress disclosure floor with a Playwright-only fallback, and re-derives uncertainty and claim limits without balanced strata.",
+    "unchanged": "Prior-use exclusions, clean-case and licence adjudication, adjudication ledger schema, evaluated Codex host, prompt arms, schedule algorithm and repetitions, stability rule, corpus-level metrics, and thresholds remain unchanged from v2."
+  },
+  "adjudication": {
+    "ledger": {
+      "path": "benchmarks/reviewer-specificity-v3/adjudication-ledger.json",
+      "schema_version": 1,
+      "ledger_id": "reviewer-specificity-v3-adjudication-ledger",
+      "required_before_evaluated_run": true,
+      "records_discarded_candidates": true
+    },
+    "evaluated_host": {
+      "runner": "codex",
+      "model": "gpt-5.6-sol",
+      "model_family": "codex"
+    },
+    "allowed_adjudicator": {
+      "runner": "claude",
+      "model_family": "claude"
+    },
+    "passes_per_candidate": 2,
+    "different_model_identifiers_required": true,
+    "fresh_session_required": true,
+    "required_pattern_ids": [
+      "#1",
+      "#2",
+      "#3",
+      "#3b",
+      "#4",
+      "#5",
+      "#6",
+      "#7",
+      "#8",
+      "#9",
+      "#10",
+      "#11",
+      "#12",
+      "#13",
+      "#14",
+      "#15",
+      "#16",
+      "#17",
+      "#18",
+      "#19",
+      "#20",
+      "#21",
+      "#22",
+      "#23"
+    ],
+    "pattern_reference": "skills/e2e-reviewer/references/pattern-reference.md",
+    "pattern_reference_sha256": "9c27480bd0fdde91d865c095de67bc0fc96606da79b13ed64e7e07807d5d5708",
+    "prompt_contract": {
+      "contract_id": "reviewer-specificity-v2-clean-adjudication-prompt-v1",
+      "inputs": [
+        "candidate full files",
+        "frozen pattern reference"
+      ],
+      "excluded_inputs": [
+        "other adjudicator verdict",
+        "scanner candidate-list rationale",
+        "treatment output",
+        "prior session context"
+      ],
+      "instruction": "Review the complete candidate boundary against every required pattern ID. Return clean only if no finding of any pattern exists anywhere in the case; otherwise return finding and enumerate every proposed finding.",
+      "output_fields": [
+        "verdict",
+        "proposed_findings",
+        "pattern_coverage",
+        "rationale"
+      ]
+    },
+    "prompt_sha256": "23ea8230ed061fb2676d75dc0fae5b5e8d9002e9335362f8ca57400071fb9e18",
+    "case_sha256_algorithm": "SHA-256 over canonical JSON for the complete case object (UTF-8, ASCII escapes, sorted keys, compact separators), then a NUL byte, then each source entry in source-name order as source name UTF-8, NUL, exact file bytes, NUL.",
+    "ledger_schema": {
+      "top_level": [
+        "schema_version",
+        "ledger_id",
+        "protocol_id",
+        "pattern_reference_sha256",
+        "prompt_sha256",
+        "candidates"
+      ],
+      "candidate": [
+        "case_id",
+        "disposition",
+        "discard_reason",
+        "case_sha256",
+        "provenance",
+        "passes"
+      ],
+      "pass": [
+        "adjudicator",
+        "prompt_sha256",
+        "case_sha256",
+        "verdict",
+        "proposed_findings",
+        "pattern_coverage",
+        "rationale",
+        "timestamp",
+        "fresh_session",
+        "input_exclusions_attested"
+      ],
+      "adjudicator": [
+        "runner",
+        "model_family",
+        "model_identifier",
+        "model_version",
+        "runner_version"
+      ],
+      "proposed_finding": [
+        "pattern_id",
+        "severity",
+        "file",
+        "line",
+        "rationale"
+      ],
+      "pattern_coverage_entry": [
+        "pattern_id",
+        "rationale",
+        "citations"
+      ],
+      "pattern_coverage_citation": [
+        "file",
+        "line"
+      ],
+      "dispositions": [
+        "admitted",
+        "discarded"
+      ],
+      "verdicts": [
+        "clean",
+        "finding"
+      ]
+    },
+    "admission_rule": "Exactly two passes from different Claude-family model identifiers must both say clean, propose no findings, cover all 24 patterns, and bind the same prompt and case digests. Anything else is discarded.",
+    "discard_visibility": "The ledger retains every discarded candidate and its reason so admission rate and conservative selection are visible; candidate records may not be omitted because they were disputed.",
+    "runner_validation": "Before any evaluated-host run, fail closed on a missing or malformed ledger, incomplete identity or provenance/licence evidence, fewer or more than two passes, same-model passes, non-Claude or Codex-family adjudication, stale prompt/pattern/case digests, incomplete pattern coverage, missing rationale/timestamp, missing blinding/freshness attestations, or an admission not supported by two clean passes."
+  }
+}

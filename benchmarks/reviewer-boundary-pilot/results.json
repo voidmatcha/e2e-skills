@@ -1,0 +1,851 @@
+{
+  "model": "gpt-6-sol",
+  "runner_version": "codex-cli 0.159.3",
+  "repetitions": 3,
+  "cases_sha256": "ab269c1c461a8720fdd98e4009a260e22b514d4f8a0bae5a926c2ada8ccb38ff",
+  "rule_excerpts": {
+    "before": {
+      "10a": "e46f9e266d4d0b1a18c1731ff6a47e7b49c33da22f845abefa2ddd77220e1ab6",
+      "11c": "edcc187fc4a2c7fd13dec2e516e2c024679b0ffe9e70229605b2f141ac836dbf",
+      "19": "cfd9476dce79eb56b481155e9306872cd1266908c5410bd58e864ddb293b3fca",
+      "20": "b8a22671bf015752aebff2d18cc48b51ebb613b6d24fc503ad60abea0df2baa1"
+    },
+    "after": {
+      "10a": "03c37f2840ef0a04b9917a9fd301643603510464ee63dc573f7d8d484c37470b",
+      "11c": "a8503ee3646ef6e77f44e21734ff13f056bb7f64b59692eb808a6df91fabcf38",
+      "19": "d2c2589d51e95fe6a59e1f57c11baeab2665916ff2651092cfb6f673e2c0eeaf",
+      "20": "ef5088a1cdaa493de72429f18dd266faaa3f7f7cbb44f8085d282968c008f678"
+    }
+  },
+  "limitations": "Public synthetic development cases; one model; excerpt-only prompt, not full skill or scanner; no blind human labels.",
+  "calls": [
+    {
+      "case": "10a",
+      "arm": "before",
+      "repetition": 1,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/rooms.spec.ts",
+            "line": 5,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "tp": 1,
+        "positives": 1,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12172,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": null,
+        "output_tokens": 56,
+        "reasoning_output_tokens": 14
+      },
+      "elapsed_ms": 6219,
+      "raw_sha256": "014bc095c02b9a69ffe7663907ee9f2abea9cea677d57f004a43a7ead1ea52d3"
+    },
+    {
+      "case": "10a",
+      "arm": "after",
+      "repetition": 1,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/rooms.spec.ts",
+            "line": 5,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "tp": 1,
+        "positives": 1,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12160,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": null,
+        "output_tokens": 57,
+        "reasoning_output_tokens": 15
+      },
+      "elapsed_ms": 5837,
+      "raw_sha256": "014bc095c02b9a69ffe7663907ee9f2abea9cea677d57f004a43a7ead1ea52d3"
+    },
+    {
+      "case": "11c",
+      "arm": "before",
+      "repetition": 1,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/clipboard.spec.ts",
+            "line": 7,
+            "pattern_id": "#11c",
+            "severity": "P2"
+          }
+        ]
+      },
+      "score": {
+        "tp": 1,
+        "positives": 1,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12335,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 65,
+        "reasoning_output_tokens": 23
+      },
+      "elapsed_ms": 6360,
+      "raw_sha256": "4ddd3b2e7aae5025508d22df093c66f097a4d1ae0bc05d44729c917056f6969b"
+    },
+    {
+      "case": "11c",
+      "arm": "after",
+      "repetition": 1,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/clipboard.spec.ts",
+            "line": 7,
+            "pattern_id": "#11c",
+            "severity": "P2"
+          }
+        ]
+      },
+      "score": {
+        "tp": 1,
+        "positives": 1,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12345,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 65,
+        "reasoning_output_tokens": 23
+      },
+      "elapsed_ms": 6441,
+      "raw_sha256": "4ddd3b2e7aae5025508d22df093c66f097a4d1ae0bc05d44729c917056f6969b"
+    },
+    {
+      "case": "19",
+      "arm": "before",
+      "repetition": 1,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/notebook-utils.ts",
+            "line": 2,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "tests/notebook-utils.ts",
+            "line": 3,
+            "pattern_id": "#19",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "tp": 2,
+        "positives": 2,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12254,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 119,
+        "reasoning_output_tokens": 55
+      },
+      "elapsed_ms": 8370,
+      "raw_sha256": "f2afc39e51bb0cb375ac92939e09c84001ea79a0934d78ef981cbad089c9de24"
+    },
+    {
+      "case": "19",
+      "arm": "after",
+      "repetition": 1,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/notebook-utils.ts",
+            "line": 2,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "tests/notebook-utils.ts",
+            "line": 3,
+            "pattern_id": "#19",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "tp": 2,
+        "positives": 2,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12261,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": null,
+        "output_tokens": 78,
+        "reasoning_output_tokens": 14
+      },
+      "elapsed_ms": 8097,
+      "raw_sha256": "f2afc39e51bb0cb375ac92939e09c84001ea79a0934d78ef981cbad089c9de24"
+    },
+    {
+      "case": "20",
+      "arm": "before",
+      "repetition": 1,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/signup.spec.ts",
+            "line": 4,
+            "pattern_id": "#20",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "tp": 1,
+        "positives": 1,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12333,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 73,
+        "reasoning_output_tokens": 33
+      },
+      "elapsed_ms": 7638,
+      "raw_sha256": "bb86b0340f2cd0706836f38fad6dfa63e79473b26952662bcc68a6a9b733120a"
+    },
+    {
+      "case": "20",
+      "arm": "after",
+      "repetition": 1,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/signup.spec.ts",
+            "line": 4,
+            "pattern_id": "#20",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "tp": 1,
+        "positives": 1,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12292,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 175,
+        "reasoning_output_tokens": 135
+      },
+      "elapsed_ms": 9313,
+      "raw_sha256": "bb86b0340f2cd0706836f38fad6dfa63e79473b26952662bcc68a6a9b733120a"
+    },
+    {
+      "case": "10a",
+      "arm": "after",
+      "repetition": 2,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/rooms.spec.ts",
+            "line": 5,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "tp": 1,
+        "positives": 1,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12160,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 61,
+        "reasoning_output_tokens": 19
+      },
+      "elapsed_ms": 6211,
+      "raw_sha256": "014bc095c02b9a69ffe7663907ee9f2abea9cea677d57f004a43a7ead1ea52d3"
+    },
+    {
+      "case": "10a",
+      "arm": "before",
+      "repetition": 2,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/rooms.spec.ts",
+            "line": 5,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "tp": 1,
+        "positives": 1,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12172,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 58,
+        "reasoning_output_tokens": 16
+      },
+      "elapsed_ms": 6423,
+      "raw_sha256": "014bc095c02b9a69ffe7663907ee9f2abea9cea677d57f004a43a7ead1ea52d3"
+    },
+    {
+      "case": "11c",
+      "arm": "after",
+      "repetition": 2,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/clipboard.spec.ts",
+            "line": 7,
+            "pattern_id": "#11c",
+            "severity": "P2"
+          }
+        ]
+      },
+      "score": {
+        "tp": 1,
+        "positives": 1,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12344,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 75,
+        "reasoning_output_tokens": 33
+      },
+      "elapsed_ms": 6376,
+      "raw_sha256": "4ddd3b2e7aae5025508d22df093c66f097a4d1ae0bc05d44729c917056f6969b"
+    },
+    {
+      "case": "11c",
+      "arm": "before",
+      "repetition": 2,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/clipboard.spec.ts",
+            "line": 7,
+            "pattern_id": "#11c",
+            "severity": "P2"
+          }
+        ]
+      },
+      "score": {
+        "tp": 1,
+        "positives": 1,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12334,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 67,
+        "reasoning_output_tokens": 25
+      },
+      "elapsed_ms": 6249,
+      "raw_sha256": "4ddd3b2e7aae5025508d22df093c66f097a4d1ae0bc05d44729c917056f6969b"
+    },
+    {
+      "case": "19",
+      "arm": "after",
+      "repetition": 2,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/notebook-utils.ts",
+            "line": 2,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "tests/notebook-utils.ts",
+            "line": 3,
+            "pattern_id": "#19",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "tp": 2,
+        "positives": 2,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12261,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 92,
+        "reasoning_output_tokens": 28
+      },
+      "elapsed_ms": 7605,
+      "raw_sha256": "f2afc39e51bb0cb375ac92939e09c84001ea79a0934d78ef981cbad089c9de24"
+    },
+    {
+      "case": "19",
+      "arm": "before",
+      "repetition": 2,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/notebook-utils.ts",
+            "line": 2,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "tests/notebook-utils.ts",
+            "line": 3,
+            "pattern_id": "#19",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "tp": 2,
+        "positives": 2,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12254,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 96,
+        "reasoning_output_tokens": 32
+      },
+      "elapsed_ms": 8065,
+      "raw_sha256": "f2afc39e51bb0cb375ac92939e09c84001ea79a0934d78ef981cbad089c9de24"
+    },
+    {
+      "case": "20",
+      "arm": "after",
+      "repetition": 2,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/signup.spec.ts",
+            "line": 4,
+            "pattern_id": "#20",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "tp": 1,
+        "positives": 1,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12293,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 105,
+        "reasoning_output_tokens": 65
+      },
+      "elapsed_ms": 8623,
+      "raw_sha256": "bb86b0340f2cd0706836f38fad6dfa63e79473b26952662bcc68a6a9b733120a"
+    },
+    {
+      "case": "20",
+      "arm": "before",
+      "repetition": 2,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/signup.spec.ts",
+            "line": 4,
+            "pattern_id": "#20",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "tp": 1,
+        "positives": 1,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12333,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 58,
+        "reasoning_output_tokens": 18
+      },
+      "elapsed_ms": 6689,
+      "raw_sha256": "bb86b0340f2cd0706836f38fad6dfa63e79473b26952662bcc68a6a9b733120a"
+    },
+    {
+      "case": "10a",
+      "arm": "before",
+      "repetition": 3,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/rooms.spec.ts",
+            "line": 5,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "tp": 1,
+        "positives": 1,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12173,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 65,
+        "reasoning_output_tokens": 23
+      },
+      "elapsed_ms": 6757,
+      "raw_sha256": "014bc095c02b9a69ffe7663907ee9f2abea9cea677d57f004a43a7ead1ea52d3"
+    },
+    {
+      "case": "10a",
+      "arm": "after",
+      "repetition": 3,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/rooms.spec.ts",
+            "line": 5,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "tp": 1,
+        "positives": 1,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12159,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 55,
+        "reasoning_output_tokens": 13
+      },
+      "elapsed_ms": 6778,
+      "raw_sha256": "014bc095c02b9a69ffe7663907ee9f2abea9cea677d57f004a43a7ead1ea52d3"
+    },
+    {
+      "case": "11c",
+      "arm": "before",
+      "repetition": 3,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/clipboard.spec.ts",
+            "line": 7,
+            "pattern_id": "#11c",
+            "severity": "P2"
+          }
+        ]
+      },
+      "score": {
+        "tp": 1,
+        "positives": 1,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12335,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 63,
+        "reasoning_output_tokens": 21
+      },
+      "elapsed_ms": 6904,
+      "raw_sha256": "4ddd3b2e7aae5025508d22df093c66f097a4d1ae0bc05d44729c917056f6969b"
+    },
+    {
+      "case": "11c",
+      "arm": "after",
+      "repetition": 3,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/clipboard.spec.ts",
+            "line": 7,
+            "pattern_id": "#11c",
+            "severity": "P2"
+          }
+        ]
+      },
+      "score": {
+        "tp": 1,
+        "positives": 1,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12343,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 76,
+        "reasoning_output_tokens": 34
+      },
+      "elapsed_ms": 7238,
+      "raw_sha256": "4ddd3b2e7aae5025508d22df093c66f097a4d1ae0bc05d44729c917056f6969b"
+    },
+    {
+      "case": "19",
+      "arm": "before",
+      "repetition": 3,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/notebook-utils.ts",
+            "line": 2,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "tests/notebook-utils.ts",
+            "line": 3,
+            "pattern_id": "#19",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "tp": 2,
+        "positives": 2,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12257,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 124,
+        "reasoning_output_tokens": 60
+      },
+      "elapsed_ms": 9226,
+      "raw_sha256": "f2afc39e51bb0cb375ac92939e09c84001ea79a0934d78ef981cbad089c9de24"
+    },
+    {
+      "case": "19",
+      "arm": "after",
+      "repetition": 3,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/notebook-utils.ts",
+            "line": 2,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "tests/notebook-utils.ts",
+            "line": 3,
+            "pattern_id": "#19",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "tp": 2,
+        "positives": 2,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12262,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 84,
+        "reasoning_output_tokens": 20
+      },
+      "elapsed_ms": 7633,
+      "raw_sha256": "f2afc39e51bb0cb375ac92939e09c84001ea79a0934d78ef981cbad089c9de24"
+    },
+    {
+      "case": "20",
+      "arm": "before",
+      "repetition": 3,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/signup.spec.ts",
+            "line": 4,
+            "pattern_id": "#20",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "tp": 1,
+        "positives": 1,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12334,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 208,
+        "reasoning_output_tokens": 168
+      },
+      "elapsed_ms": 10163,
+      "raw_sha256": "bb86b0340f2cd0706836f38fad6dfa63e79473b26952662bcc68a6a9b733120a"
+    },
+    {
+      "case": "20",
+      "arm": "after",
+      "repetition": 3,
+      "returncode": 0,
+      "complete": true,
+      "answer": {
+        "findings": [
+          {
+            "file": "tests/signup.spec.ts",
+            "line": 4,
+            "pattern_id": "#20",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "tp": 1,
+        "positives": 1,
+        "guard_hits": 0,
+        "unexpected": []
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 12293,
+        "cached_input_tokens": 9728,
+        "cache_write_tokens": null,
+        "output_tokens": 61,
+        "reasoning_output_tokens": 21
+      },
+      "elapsed_ms": 5919,
+      "raw_sha256": "bb86b0340f2cd0706836f38fad6dfa63e79473b26952662bcc68a6a9b733120a"
+    }
+  ]
+}

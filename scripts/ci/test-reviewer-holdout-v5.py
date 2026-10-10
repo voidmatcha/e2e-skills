@@ -287,7 +287,7 @@ class ReviewerHoldoutV5Test(unittest.TestCase):
                 self.protocol["prompt_arms"]["treatment"],
                 *self.protocol["prompt_arms"]["controls"],
             },
-            set(runner.PROMPT_SKILL_PROFILES),
+            set(runner.PROMPT_SKILL_PROFILES) - {"catalog-formal"},
         )
         pinned = runner.PINNED_LIVE_INPUTS[(CASES_PATH, PROTOCOL_PATH)]
         self.assertEqual(EXPECTED_CASES_FILE_SHA256, pinned["cases_file_sha256"])

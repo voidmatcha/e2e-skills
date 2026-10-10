@@ -1,0 +1,13 @@
+Draft a new labeled corpus "v21" (48 cases) for one question: should the reviewer skill state that a #2 Missing Then instance with one promised effect verified and another unverified is P1, and does stating it cause #1 findings to be misfiled as #2? Work only in this directory. No network, no git. Do not look for or read any other corpus or benchmark results (in particular nothing named v16, v20, or holdout results).
+Skill (release 2.0.0): ./skills/e2e-reviewer. Format example (schema only; do not reuse its cases): ./format-example.json. Produce ./corpus-v21.json in the same schema, source files under ./files/v21-<case>/..., ids v21-pw-NN / v21-cy-NN (24 each), split "public-development-v21".
+Ground-truth rules, fixed now:
+- Severity follows the P0 boundary in skills/e2e-reviewer/references/reporting.md ("Both halves are required ... if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1").
+- #1 vs #2 follows patterns/1.md, patterns/2.md and semantic-review.md's consolidation/primary-line rules: a missing postcondition of a state-changing action is #2 at that action (classified once as #2 even if it also leaves the title incomplete); a title promise that does not reduce to an action postcondition (rendering, content, data shown on arrival, a value produced without a user action in the test) is #1 at the title/declaration.
+Case mix (vary domains, frameworks, file structure, and wording; realistic 1–3 file suites under ~70 lines):
+ - 12: #2 partial (one promised action effect verified, another missing) → #2 P1 at the action; fp_guard #2 P0 same line.
+ - 6: #2 nothing verified → #2 P0; fp_guard #2 P1.
+ - 12: TRAPS for over-applying #2: title-level promises with partial verification that must stay #1 P1 at the title (e.g. "shows X and Y" after navigation, or a value computed on load) → #1 P1; fp_guard #2 at the nearest action line (both P0 and P1) and fp_guard #1 P0.
+ - 6: #1 P0 (nothing promised verified).
+ - 6: mixed cases containing both a #1 and a #2 finding in different tests of the same file.
+ - 6: clean (every promise verified), each with fp_guards for the tempting wrong answer.
+Every label: pattern_id, severity, file, exact 1-based line, verbatim source_line, reason quoting the rule. design_note per case names the rule probed; never predict model behaviour. Validate JSON, canonical IDs, exact source_line matches; print a summary table by category.

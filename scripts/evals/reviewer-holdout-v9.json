@@ -1,0 +1,1462 @@
+{
+  "schema_version": 1,
+  "corpus_visibility": "public-development",
+  "intended_use": "Preregistered public development corpus for the Codex-only three-arm comparison. Its cases are built so that the deciding rule often lives in the full reviewer workflow references rather than in the pattern catalog alone. It is not sealed and does not establish generalization.",
+  "contamination_risk": "The corpus is inspectable and was written by the same author who wrote the reviewer references it exercises. Every result must disclose that exposure and remain development evidence.",
+  "labeling": {
+    "procedure": "Single-author labels written from the reviewer references at the frozen skill commit, before any model call on this corpus. Every label records the reference rule that decides it, and every case records which prompt arm is expected to get it right and why. After authoring, a Claude subagent and Codex gpt-5.6-sol each labeled all 30 cases blind from the contracts alone. 66 of 74 author labels matched both. An arbiter subagent resolved the 8 disputed labels and 2 extra findings from quoted contract text; the user approved the resolutions on 2026-09-26.",
+    "limitations": "Labels were authored by one agent and then checked by two blind labelers and an arbiter; all are models, not human experts. No model has been run on the corpus. Optional labels mark contract boundaries where the references do not force one verdict. Code is synthetic and original; field themes were reduced to structure only.",
+    "instance_severities": "Two labels use an instance severity that the references define but the Quick Reference does not list: #1 at P1 when one promised outcome is verified and another is not, and #23 at P0 when a guard-suppressed render lets a negative assertion pass."
+  },
+  "cases": [
+    {
+      "id": "v9-pw-01",
+      "split": "public-development-v9",
+      "framework": "playwright",
+      "design_note": "Both arms: the #1 severity rule (P0 when no promised outcome has evidence, P1 when one promise is verified and another is not) is in pattern-reference.md, which every skill arm sees; reporting.md restates the same P0 boundary for the full arm. The case measures whether each title is judged separately.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-pw-01/src/pages/OrderPage.tsx",
+          "path": "src/pages/OrderPage.tsx"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-01/tests/shipment.spec.ts",
+          "path": "tests/shipment.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-001",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/shipment.spec.ts",
+          "line": 3,
+          "source_line": "test('shows the shipped status and the carrier name', async ({ page }) => {",
+          "reason": "pattern-reference.md #1 severity: the title promises the status and the carrier name; the status is asserted with toHaveText and the carrier is never checked, so one promise is verified and another is not. That is #1 at P1 (reporting.md P0 boundary), anchored at the declaration per the #1 primary-line rule."
+        },
+        {
+          "finding_id": "V9-002",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/shipment.spec.ts",
+          "line": 3,
+          "source_line": "test('shows the shipped status and the carrier name', async ({ page }) => {",
+          "reason": "The same title verifies one of its two promises, so the #1 severity rule makes it P1, not P0. A P0 report at this tuple contradicts pattern-reference.md #1 and the reporting.md P0 boundary."
+        },
+        {
+          "finding_id": "V9-003",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/shipment.spec.ts",
+          "line": 8,
+          "source_line": "test('shows the refund total and the refund reason', async ({ page }) => {",
+          "reason": "pattern-reference.md #1 severity: the only assertion is a URL check, which observes neither promised noun (refund total, refund reason). No promised outcome has evidence, so this is P0. Each title is judged separately; the partial title above does not lower it."
+        }
+      ]
+    },
+    {
+      "id": "v9-pw-02",
+      "split": "public-development-v9",
+      "framework": "playwright",
+      "design_note": "Both arms: the #4i contract in pattern-reference.md holds both the FLAG rule (locator used nowhere else and nothing positive asserted alongside) and the positive-counterpart boundary. The case separates a loading gate followed by a real assertion from an absence check that is the test's only verification. The app source proves both selectors exist only in test code.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-pw-02/src/components/ReportsView.tsx",
+          "path": "src/components/ReportsView.tsx"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-02/tests/reports.spec.ts",
+          "path": "tests/reports.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-004",
+          "kind": "optional",
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "tests/reports.spec.ts",
+          "line": 5,
+          "source_line": "await expect(page.locator('.loading-spinner')).toBeHidden();",
+          "reason": "The spinner selector matches nothing in the app, but it is a loading gate, not the verification: the test asserts a positive, retrying outcome (toHaveCount(3) on report rows) alongside it. The #4i FLAG condition requires that nothing positive is asserted alongside, so this gate is not reported. Blind-label adjudication (2026-09-26): both blind labelers flagged it; the #4i FLAG condition requires nothing positive asserted alongside while the #4i Rule says the gate proves nothing, so the contract supports both readings."
+        },
+        {
+          "finding_id": "V9-005",
+          "kind": "finding",
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "tests/reports.spec.ts",
+          "line": 12,
+          "source_line": "await expect(page.locator('.upgrade-banner')).not.toBeVisible();",
+          "reason": "The absence check is the dismiss test's only verification, and '.upgrade-banner' appears nowhere else on the test's execution path; the app renders the offer as data-testid=upgrade-offer with class offer-strip, so the locator matches nothing and the assertion passes without observing the dismissal. #4i FLAG P1; #2 defers to #4i for a vacuous absence check. Blind-label adjudication (2026-09-26): the check is the only verification and cannot fail, which meets the P0 definition outright (reporting.md), so a #4i P0 report is not penalized: a separate optional #4i P0 label sits on the same line, because one label keeps one severity."
+        },
+        {
+          "finding_id": "V9-006",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/reports.spec.ts",
+          "line": 11,
+          "source_line": "await page.getByRole('button', { name: 'Dismiss upgrade offer', exact: true }).click();",
+          "reason": "pattern-reference.md #2 accept criteria: an absence assertion on a locator that never matched satisfies #2 while proving nothing, and that is #4i, not #2. Reporting #2 at the dismiss click duplicates the #4i finding."
+        },
+        {
+          "finding_id": "V9-078",
+          "kind": "optional",
+          "pattern_id": "#4i",
+          "severity": "P0",
+          "file": "tests/reports.spec.ts",
+          "line": 12,
+          "source_line": "await expect(page.locator('.upgrade-banner')).not.toBeVisible();",
+          "reason": "Added by blind-label adjudication (2026-09-26): the check under V9-005 is the only verification and cannot fail, which can meet the P0 definition outright (reporting.md). A #4i P0 report is neither rewarded nor penalized; the required label stays #4i P1."
+        }
+      ]
+    },
+    {
+      "id": "v9-pw-03",
+      "split": "public-development-v9",
+      "framework": "playwright",
+      "design_note": "Full arm expected: semantic-review.md's bounded opening-token sweep row for #5a says a branch body of bare `return` skips the gated assertion and is the same finding, and that a test.skip() body is not. pattern-reference.md #5a describes only assertions inside the branch, so the catalog-only arm may miss the early-return form.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-pw-03/tests/checkout.spec.ts",
+          "path": "tests/checkout.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-007",
+          "kind": "finding",
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "tests/checkout.spec.ts",
+          "line": 6,
+          "source_line": "if (!(await loyaltyBanner.isVisible())) {",
+          "accepted_alternatives": [
+            {
+              "pattern_id": "#5a",
+              "severity": "P0",
+              "file": "tests/checkout.spec.ts",
+              "line": 7,
+              "source_line": "return;"
+            }
+          ],
+          "reason": "semantic-review.md #5a sweep row: a branch body of bare return leaves the test early and skips the load-bearing total assertion; it is the same #5a finding. When the one-shot banner read is false, nothing else in the test can fail, so it is P0 per #5a."
+        },
+        {
+          "finding_id": "V9-008",
+          "kind": "fp_guard",
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "tests/checkout.spec.ts",
+          "line": 13,
+          "source_line": "test.skip(!process.env.GIFT_WRAP_ENABLED, 'gift wrap is disabled outside the retail tenant');",
+          "reason": "A declaration-level test.skip with a reason is the documented fix for #5a and produces a visible skipped result (pattern-reference.md #5a rule; semantic-review.md #5a row: `test.skip(reason)` is always intentional)."
+        },
+        {
+          "finding_id": "V9-009",
+          "kind": "fp_guard",
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "tests/checkout.spec.ts",
+          "line": 21,
+          "source_line": "if (await consent.isVisible()) {",
+          "reason": "Action-only branch: it conditionally dismisses an optional blocker before an unconditional promised-outcome assertion. pattern-reference.md #5a excludes this shape."
+        }
+      ]
+    },
+    {
+      "id": "v9-pw-04",
+      "split": "public-development-v9",
+      "framework": "playwright",
+      "design_note": "Both arms: pattern-reference.md #10a tells the reviewer to inspect render conditions before resolving a positional candidate; semantic-review.md repeats it. The supplied component renders exactly one header inside the scoped popover, while the field list is reorderable.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-pw-04/pages/field-browser.ts",
+          "path": "pages/field-browser.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-04/src/components/FieldList.tsx",
+          "path": "src/components/FieldList.tsx"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-04/src/components/TopValuesPopover.tsx",
+          "path": "src/components/TopValuesPopover.tsx"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-04/tests/field-browser.spec.ts",
+          "path": "tests/field-browser.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-010",
+          "kind": "finding",
+          "pattern_id": "#10a",
+          "severity": "P1",
+          "file": "pages/field-browser.ts",
+          "line": 15,
+          "source_line": "return this.page.getByTestId('top-values-popover').getByRole('heading').first();",
+          "reason": "The locator is scoped to the popover container, and the supplied TopValuesPopover renders exactly one heading there, so `.first()` cannot pick a different element when DOM order changes. #10a asks the reviewer to inspect the render conditions of the targeted collection before resolving the candidate. Blind-label adjudication (2026-09-26): changed to a finding. The only single-element exemption requires an adjacent toHaveCount(1), and pattern-reference.md #10a says POM encapsulation is not an exemption; both blind labelers flagged it."
+        },
+        {
+          "finding_id": "V9-011",
+          "kind": "finding",
+          "pattern_id": "#10a",
+          "severity": "P1",
+          "file": "tests/field-browser.spec.ts",
+          "line": 14,
+          "source_line": "await expect(page.getByTestId('field-row').nth(2)).toHaveText('host.name: keyword');",
+          "reason": "Positional `.nth(2)` reaches the host field through a list whose order the supplied FieldList derives from a runtime sort key, so a new field or a sort change moves it; no comment or #10a exemption applies."
+        }
+      ]
+    },
+    {
+      "id": "v9-pw-05",
+      "split": "public-development-v9",
+      "framework": "playwright",
+      "design_note": "Both arms, with judgement: pattern-reference.md #4 defines an assertion that is logically unable to fail as #4a P0, and the tolerance only becomes vacuous once the component's 16x16 size is traced. The #1 reading at the declaration is accepted as the same single defect.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-pw-05/src/components/PlanCard.tsx",
+          "path": "src/components/PlanCard.tsx"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-05/src/components/StatusIcon.tsx",
+          "path": "src/components/StatusIcon.tsx"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-05/tests/status-icons.spec.ts",
+          "path": "tests/status-icons.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-012",
+          "kind": "finding",
+          "pattern_id": "#4a",
+          "severity": "P0",
+          "file": "tests/status-icons.spec.ts",
+          "line": 7,
+          "source_line": "await expect(page.getByTestId('status-icon')).toHaveScreenshot('warning-icon.png', { maxDiffPixels: 900 });",
+          "accepted_alternatives": [
+            {
+              "pattern_id": "#1",
+              "severity": "P0",
+              "file": "tests/status-icons.spec.ts",
+              "line": 5,
+              "source_line": "test('matches the approved warning icon artwork', async ({ page }) => {"
+            }
+          ],
+          "reason": "At deviceScaleFactor 1 the icon renders 16x16 = 256 pixels, so maxDiffPixels: 900 accepts any rendering of it; the comparison cannot fail independently of product behavior. That is the #4 'logically unable to fail' shape at P0 (#4a invariant), anchored at the assertion."
+        },
+        {
+          "finding_id": "V9-013",
+          "kind": "fp_guard",
+          "pattern_id": "#4a",
+          "severity": "P0",
+          "file": "tests/status-icons.spec.ts",
+          "line": 12,
+          "source_line": "await expect(page.getByTestId('plan-card')).toHaveScreenshot('plan-card.png', { maxDiffPixels: 40 });",
+          "reason": "The plan card is 320x180 = 57,600 pixels; a 40-pixel tolerance is a real bound the product can violate, so the comparison is meaningful (#4a: a bound the product can fail is not a hit)."
+        }
+      ]
+    },
+    {
+      "id": "v9-pw-06",
+      "split": "public-development-v9",
+      "framework": "playwright",
+      "design_note": "Both arms, but only by following the helper: pattern-reference.md #3 says to check any file the spec reaches. The spec looks like a Missing Then or name-assertion gap; the real defect is the swallowed assertion one import away, and #1/#2 at the spec would double-report it.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-pw-06/support/invoice-helpers.ts",
+          "path": "support/invoice-helpers.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-06/tests/invoice-send.spec.ts",
+          "path": "tests/invoice-send.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-014",
+          "kind": "finding",
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "support/invoice-helpers.ts",
+          "line": 9,
+          "source_line": "await expect(page.getByTestId('invoice-sent-banner')).toHaveText('Invoice sent');",
+          "reason": "pattern-reference.md #3: a swallow counts wherever it executes, including an imported helper. The catch logs and never rethrows, the identical check is not re-asserted, and it is the test's only verification, so it is P0 anchored at the protected assertion (semantic-review.md primary-line rule for swallowed operations)."
+        },
+        {
+          "finding_id": "V9-015",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/invoice-send.spec.ts",
+          "line": 4,
+          "source_line": "test('sends the invoice and shows the sent confirmation', async ({ page }) => {",
+          "reason": "The title's promise has a matching assertion in the helper; the unverified outcome is caused by the swallowed assertion (#3). Reporting #1 as well double-reports one defect (semantic-review.md: a misleading or swallowed assertion is evidence, not a second finding)."
+        },
+        {
+          "finding_id": "V9-077",
+          "kind": "optional",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/invoice-send.spec.ts",
+          "line": 11,
+          "source_line": "test('sends a reminder for an overdue invoice', async ({ page }) => {",
+          "reason": "Added by blind-label adjudication (2026-09-26): one labeler reported #1 P0 because the reminder test proves no reminder; the other consolidated it into the #3 swallow at support/invoice-helpers.ts:9. Whether the 'Invoice sent' banner is evidence for a reminder can be read either way, so it is optional."
+        }
+      ]
+    },
+    {
+      "id": "v9-pw-07",
+      "split": "public-development-v9",
+      "framework": "playwright",
+      "design_note": "Full arm favoured on the guard: review-scope.md says application source is context only, so module state in src/ is never a finding; the catalog-only arm has no scope rule. The #19 findings (a `var` and a mutated `const` Set, which the scanner misses) are in both the catalog and the semantic-review.md bounded sweep.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-pw-07/src/state/projectCounter.ts",
+          "path": "src/state/projectCounter.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-07/tests/projects.spec.ts",
+          "path": "tests/projects.spec.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-07/tests/support/names.ts",
+          "path": "tests/support/names.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-016",
+          "kind": "optional",
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "tests/support/names.ts",
+          "line": 1,
+          "source_line": "var runPrefix = `run-${Date.now()}`;",
+          "reason": "Module-level `var` in a test utility: the binding persists across tests in a worker (pattern-reference.md #19; semantic-review.md bounded sweep row #19 covers `var` at column 0). Anchored at the declaration. Blind-label adjudication (2026-09-26): the Quick Reference and sweep row trigger on the keyword, but the Phase 2 confirmation asks for mutable test state and runPrefix is never mutated, so it is optional."
+        },
+        {
+          "finding_id": "V9-017",
+          "kind": "finding",
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "tests/support/names.ts",
+          "line": 2,
+          "source_line": "const issuedNames = new Set<string>();",
+          "reason": "A module-level `const` Set that uniqueProjectName mutates is mutable worker state (pattern-reference.md #19; semantic-review.md sweep row #19). Anchored at the declaration."
+        },
+        {
+          "finding_id": "V9-018",
+          "kind": "fp_guard",
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "src/state/projectCounter.ts",
+          "line": 1,
+          "source_line": "let openProjectCount = 0;",
+          "reason": "review-scope.md: application source is context only, never an in-scope E2E artifact. #19 targets test utilities, helpers, and POMs, so app state is not a finding."
+        }
+      ]
+    },
+    {
+      "id": "v9-pw-08",
+      "split": "public-development-v9",
+      "framework": "playwright",
+      "design_note": "Both arms: the #9c constant form, the retry-wrapper skip for #4c-4e, and the `> -1` bound are all described in pattern-reference.md; semantic-review.md adds them as mandatory sweep rows and a retry-wrapper boundary, which should make the full arm more consistent.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-pw-08/tests/sync.spec.ts",
+          "path": "tests/sync.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-019",
+          "kind": "fp_guard",
+          "pattern_id": "#4c-4e",
+          "severity": "P1",
+          "file": "tests/sync.spec.ts",
+          "line": 10,
+          "source_line": "expect(await page.getByTestId('sync-badge').textContent()).toBe('Synced');",
+          "reason": "The one-shot read sits inside an awaited expect(...).toPass() callback, which retries it; the retry-wrapper skip in pattern-reference.md #4 and semantic-review.md removes the P1."
+        },
+        {
+          "finding_id": "V9-020",
+          "kind": "finding",
+          "pattern_id": "#9c",
+          "severity": "P1",
+          "file": "tests/sync.spec.ts",
+          "line": 16,
+          "source_line": "await page.waitForLoadState(SETTLED);",
+          "reason": "'networkidle' arrives through a constant, which the scanner cannot see; #9c still applies (semantic-review.md bounded sweep row #9c; pattern-reference.md #9)."
+        },
+        {
+          "finding_id": "V9-021",
+          "kind": "finding",
+          "pattern_id": "#4a",
+          "severity": "P0",
+          "file": "tests/sync.spec.ts",
+          "line": 23,
+          "source_line": "expect(rows).toBeGreaterThan(-1);",
+          "accepted_alternatives": [
+            {
+              "pattern_id": "#1",
+              "severity": "P0",
+              "file": "tests/sync.spec.ts",
+              "line": 20,
+              "source_line": "test('lists every synced workspace', async ({ page }) => {"
+            }
+          ],
+          "reason": "A count is never negative, so `> -1` holds for every product state (semantic-review.md #4a sweep row names `> -1`; pattern-reference.md #4a). It is the test's only assertion, so the title's promise has no real evidence; #1 P0 at the declaration is the same defect."
+        }
+      ]
+    },
+    {
+      "id": "v9-pw-09",
+      "split": "public-development-v9",
+      "framework": "playwright",
+      "design_note": "Both arms: #22 and the #1/#2 overlap rule are in pattern-reference.md (#22 detection, #2 write-contract overlap), and semantic-review.md's acceptance-target rule restates that the gap is #22, not an additional #1 or #2. The second test is a UI-only preference toggle.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-pw-09/src/settings/ProfileForm.tsx",
+          "path": "src/settings/ProfileForm.tsx"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-09/tests/profile.spec.ts",
+          "path": "tests/profile.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-022",
+          "kind": "finding",
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "tests/profile.spec.ts",
+          "line": 7,
+          "source_line": "await page.getByRole('button', { name: 'Save profile', exact: true }).click();",
+          "reason": "The title promises a persisted profile write; ProfileForm sets the heading before and regardless of the PUT, and the test has no request observation or reload. #22 P1, anchored at the write-control action (primary-line rule)."
+        },
+        {
+          "finding_id": "V9-023",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/profile.spec.ts",
+          "line": 3,
+          "source_line": "test('saves the new display name to the profile', async ({ page }) => {",
+          "reason": "The visible outcome is asserted; the unproven part is the backend call, which #1 routes to #20/#22 (pattern-reference.md #1; semantic-review.md acceptance-target rule)."
+        },
+        {
+          "finding_id": "V9-024",
+          "kind": "fp_guard",
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "tests/profile.spec.ts",
+          "line": 13,
+          "source_line": "await page.getByRole('button', { name: 'Compact layout', exact: true }).click();",
+          "reason": "The compact toggle is client-side UI state with no promised backend effect; #22 does not require request proof from UI-only interaction tests."
+        }
+      ]
+    },
+    {
+      "id": "v9-pw-10",
+      "split": "public-development-v9",
+      "framework": "playwright",
+      "design_note": "Full arm expected: review-scope.md and verification-rules.md say project conventions never downgrade a confirmed P0, suppress a P1 only with a concrete local rationale the pattern allows, and decide P2/style. The catalog-only arm has no convention rule, so it should flag the documented bare skip as #11c.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-pw-10/tests/README.md",
+          "path": "tests/README.md"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-10/tests/billing.spec.ts",
+          "path": "tests/billing.spec.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-10/tests/support/flags.ts",
+          "path": "tests/support/flags.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-025",
+          "kind": "finding",
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "tests/billing.spec.ts",
+          "line": 6,
+          "source_line": "if (flags.annualBilling) {",
+          "reason": "The only assertion is gated on a runtime flag and the false branch proves nothing, so #5a P0 holds. review-scope.md: once silent-always-pass behavior is confirmed as P0, a project convention cannot downgrade or suppress it."
+        },
+        {
+          "finding_id": "V9-026",
+          "kind": "finding",
+          "pattern_id": "#5b",
+          "severity": "P1",
+          "file": "tests/billing.spec.ts",
+          "line": 13,
+          "source_line": "await page.getByTestId('seat-editor-toggle').click({ force: true });",
+          "reason": "`force: true` without a concrete rationale for this element. review-scope.md and verification-rules.md: a P1 may be suppressed only by a concrete local rationale the pattern contract allows; a blanket 'force is accepted' note is not one (#5b requires a reason explaining why the element is not normally actionable)."
+        },
+        {
+          "finding_id": "V9-027",
+          "kind": "fp_guard",
+          "pattern_id": "#11c",
+          "severity": "P2",
+          "file": "tests/billing.spec.ts",
+          "line": 17,
+          "source_line": "test.skip('exports the invoice history as CSV', async ({ page }) => {",
+          "reason": "The repository documents that quarantined tests are skipped without inline reasons and tracked on a board that holds the reason and revisit date. review-scope.md: P2/style follows a documented project convention, so the bare skip is not reported."
+        }
+      ]
+    },
+    {
+      "id": "v9-pw-11",
+      "split": "public-development-v9",
+      "framework": "playwright",
+      "design_note": "Clean case. Both arms have the exemptions in pattern-reference.md (#4i positive proof, #3 named application-error allowlist, #4a bound the product can fail); semantic-review.md adds the #3 propagation classification and the #4a sweep wording. Measures specificity.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-pw-11/tests/payments.spec.ts",
+          "path": "tests/payments.spec.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-11/tests/support/payments.ts",
+          "path": "tests/support/payments.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-028",
+          "kind": "fp_guard",
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "tests/payments.spec.ts",
+          "line": 10,
+          "source_line": "await expect(expiredCard).toHaveCount(0);",
+          "reason": "The same locator is asserted visible and acted on before the absence check, so it is proven able to match (#4i SKIP)."
+        },
+        {
+          "finding_id": "V9-029",
+          "kind": "fp_guard",
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "tests/payments.spec.ts",
+          "line": 17,
+          "source_line": "await submitPayment(page);",
+          "reason": "The catch rethrows everything except one named application error, PaymentDeclinedError (#3 three-way classification, outcome 2), and the declined attempt is then asserted. Not a swallow."
+        }
+      ]
+    },
+    {
+      "id": "v9-pw-12",
+      "split": "public-development-v9",
+      "framework": "playwright",
+      "design_note": "Full arm expected on the anchor: semantic-review.md's primary-line contract says #23 anchors at the fixture field that violates the render guard. pattern-reference.md #23 gives no anchor, so the catalog-only arm is likely to cite the spec assertion or route line.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-pw-12/src/library/SongCard.tsx",
+          "path": "src/library/SongCard.tsx"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-12/tests/fixtures/liked-songs.json",
+          "path": "tests/fixtures/liked-songs.json"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-12/tests/liked-songs.spec.ts",
+          "path": "tests/liked-songs.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-030",
+          "kind": "finding",
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "tests/fixtures/liked-songs.json",
+          "line": 10,
+          "source_line": "\"liked\": false",
+          "reason": "SongCard returns null on the Liked tab when liked is false, so the second seeded song never renders and the count assertion fails as an apparent flake: #23 P2 (usual case). semantic-review.md primary-line contract: anchor #23 at the fixture field."
+        },
+        {
+          "finding_id": "V9-031",
+          "kind": "fp_guard",
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "tests/liked-songs.spec.ts",
+          "line": 7,
+          "source_line": "await expect(page.getByTestId('song-card')).toHaveCount(2);",
+          "reason": "The assertion is evidence for the #23 mismatch, not its anchor; semantic-review.md anchors #23 at the fixture field."
+        }
+      ]
+    },
+    {
+      "id": "v9-pw-13",
+      "split": "public-development-v9",
+      "framework": "playwright",
+      "design_note": "Both arms: pattern-reference.md #20 accepts documented disposable backends and flags only uncontrolled writes; semantic-review.md lists the same procedure as a mandatory sweep. The config documents a per-run database for one project and a shared staging host for another.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-pw-13/playwright.config.ts",
+          "path": "playwright.config.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-13/tests/global-setup.ts",
+          "path": "tests/global-setup.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-13/tests/local/signup.spec.ts",
+          "path": "tests/local/signup.spec.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-13/tests/smoke/newsletter.spec.ts",
+          "path": "tests/smoke/newsletter.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-032",
+          "kind": "fp_guard",
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "tests/local/signup.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByRole('button', { name: 'Create account', exact: true }).click();",
+          "reason": "The local project runs against an ephemeral container recreated in globalSetup, a documented disposable backend boundary, so the unstubbed signup write is controlled (#20)."
+        },
+        {
+          "finding_id": "V9-033",
+          "kind": "finding",
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "tests/smoke/newsletter.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByRole('button', { name: 'Subscribe', exact: true }).click();",
+          "reason": "The staging-smoke project targets a shared staging host that globalSetup never resets, and nothing stubs the subscribe request, so each run writes to shared persistent state. #20 P1, anchored at the triggering action."
+        }
+      ]
+    },
+    {
+      "id": "v9-pw-14",
+      "split": "public-development-v9",
+      "framework": "playwright",
+      "design_note": "Both arms: pattern-reference.md #13 owns both the ownership test and the consolidation rule (one finding per duplicated workflow, anchored at the first bypassing raw action). Counts whether later steps of the same workflow are reported as extra findings.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-pw-14/pages/shipping-page.ts",
+          "path": "pages/shipping-page.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-14/tests/shipping.spec.ts",
+          "path": "tests/shipping.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-034",
+          "kind": "finding",
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "tests/shipping.spec.ts",
+          "line": 14,
+          "source_line": "await page.getByTestId('ship-street').fill('4 Rue Oberkampf');",
+          "reason": "ShippingPage.fillAddress owns the same three selectors, and the second test repeats them raw: ownership is proven by an existing equivalent method (#13). One finding per duplicated workflow, anchored at the first bypassing raw action."
+        },
+        {
+          "finding_id": "V9-035",
+          "kind": "fp_guard",
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "tests/shipping.spec.ts",
+          "line": 15,
+          "source_line": "await page.getByTestId('ship-city').fill('Paris');",
+          "reason": "A later step of the same duplicated workflow; #13 consolidation makes it supporting evidence, not a second finding."
+        },
+        {
+          "finding_id": "V9-036",
+          "kind": "finding",
+          "pattern_id": "#11",
+          "severity": "P2",
+          "file": "pages/shipping-page.ts",
+          "line": 20,
+          "source_line": "async useSavedAddress() {",
+          "reason": "useSavedAddress is referenced by no spec or other module: an UNUSED POM member under #11a, anchored at its declaration (semantic-review.md primary-line contract)."
+        }
+      ]
+    },
+    {
+      "id": "v9-pw-15",
+      "split": "public-development-v9",
+      "framework": "playwright",
+      "design_note": "Full arm favoured on the #21 anchor: semantic-review.md anchors declaration and configuration findings (#11, #21) at the declaration or reference, so #21 belongs at the config's storageState reference rather than the capture script that writes the file. #11 and #18 are decided by pattern-reference.md for both arms.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-pw-15/pages/audit-log-page.ts",
+          "path": "pages/audit-log-page.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-15/playwright.config.ts",
+          "path": "playwright.config.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-15/scripts/save-admin-session.ts",
+          "path": "scripts/save-admin-session.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-pw-15/tests/audit-log.spec.ts",
+          "path": "tests/audit-log.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-037",
+          "kind": "finding",
+          "pattern_id": "#21",
+          "severity": "P2",
+          "file": "playwright.config.ts",
+          "line": 7,
+          "source_line": "storageState: 'playwright/.auth/admin.json',",
+          "reason": "The project-level storageState file is produced only by a manual, headed capture script with no setup project or API-login fallback (#21). Anchored at the storageState reference (semantic-review.md primary-line contract)."
+        },
+        {
+          "finding_id": "V9-038",
+          "kind": "fp_guard",
+          "pattern_id": "#21",
+          "severity": "P2",
+          "file": "scripts/save-admin-session.ts",
+          "line": 11,
+          "source_line": "await page.context().storageState({ path: 'playwright/.auth/admin.json' });",
+          "reason": "The capture script is evidence that the file is produced by hand, not the reference the suite depends on; semantic-review.md anchors #21 at the reference."
+        },
+        {
+          "finding_id": "V9-039",
+          "kind": "finding",
+          "pattern_id": "#11",
+          "severity": "P2",
+          "file": "pages/audit-log-page.ts",
+          "line": 14,
+          "source_line": "async exportCsv() {",
+          "reason": "exportCsv is referenced by no spec or other module: an UNUSED POM member (#11a), anchored at its declaration."
+        },
+        {
+          "finding_id": "V9-040",
+          "kind": "finding",
+          "pattern_id": "#18",
+          "severity": "P1",
+          "file": "tests/audit-log.spec.ts",
+          "line": 14,
+          "source_line": "await expect.soft(page.getByTestId('audit-note-editor')).toBeVisible();",
+          "reason": "A soft assertion proves the editor is present, and the fill that depends on it runs with no intervening hard assertion (#18). The awaited soft form reaches review only through semantic-review.md's #18 sweep row; the catalog rule decides it for both arms."
+        }
+      ]
+    },
+    {
+      "id": "v9-pw-16",
+      "split": "public-development-v9",
+      "framework": "playwright",
+      "design_note": "Full arm favoured on #10b: semantic-review.md's sweep row names a describe.configure policy passed through a variable, which pattern-reference.md #10b (inline and multiline literals) does not. #7 through an immutable alias and #17 on a renamed page fixture are in both the catalog and the sweep.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-pw-16/tests/search.spec.ts",
+          "path": "tests/search.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-041",
+          "kind": "finding",
+          "pattern_id": "#10b",
+          "severity": "P1",
+          "file": "tests/search.spec.ts",
+          "line": 4,
+          "source_line": "test.describe.configure(policy);",
+          "reason": "The serial policy arrives through a variable, which the scanner cannot see; semantic-review.md sweep row #10b names this shape. It makes the file's tests order-dependent (#10b)."
+        },
+        {
+          "finding_id": "V9-042",
+          "kind": "finding",
+          "pattern_id": "#7",
+          "severity": "P0",
+          "file": "tests/search.spec.ts",
+          "line": 13,
+          "source_line": "focused('filters the results by the owner facet', async ({ page }) => {",
+          "reason": "`focused` is an immutable one-hop alias of test.only, so this call focuses the file and silently drops the other tests. #7 reports the alias call as P0."
+        },
+        {
+          "finding_id": "V9-043",
+          "kind": "finding",
+          "pattern_id": "#17",
+          "severity": "P1",
+          "file": "tests/search.spec.ts",
+          "line": 21,
+          "source_line": "await pw.fill('[data-testid=search-input]', 'latency');",
+          "reason": "A selector-based Page API on the page fixture renamed at destructuring (#17; semantic-review.md sweep row #17 names the renamed fixture)."
+        }
+      ]
+    },
+    {
+      "id": "v9-cy-01",
+      "split": "public-development-v9",
+      "framework": "cypress",
+      "design_note": "Both arms: the #1 severity rule is in pattern-reference.md (status-only evidence is P0, a partially verified title is P1); #20 accepts a documented reset of a local backend. The full arm also has reporting.md's P0 boundary.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-cy-01/cypress.config.ts",
+          "path": "cypress.config.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-01/cypress/e2e/transactions-api.cy.ts",
+          "path": "cypress/e2e/transactions-api.cy.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-01/cypress/plugins/reset-db.ts",
+          "path": "cypress/plugins/reset-db.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-044",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/transactions-api.cy.ts",
+          "line": 8,
+          "source_line": "it('increments the like count on the transaction', () => {",
+          "reason": "Only the response status is checked; the promised like count is never observed. pattern-reference.md #1: a status code that observes none of the promised nouns is P0. Blind-label adjudication (2026-09-26): #2 P0 at the status-only POST (line 9) is an equally valid reading and is accepted as the same finding.",
+          "accepted_alternatives": [
+            {
+              "pattern_id": "#2",
+              "severity": "P0",
+              "file": "cypress/e2e/transactions-api.cy.ts",
+              "line": 9,
+              "source_line": "cy.request('POST', `${apiUrl}/likes/tx-310`).its('status').should('eq', 200);"
+            }
+          ]
+        },
+        {
+          "finding_id": "V9-045",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "cypress/e2e/transactions-api.cy.ts",
+          "line": 12,
+          "source_line": "it('creates a payment owned by the sender with pending status', () => {",
+          "reason": "Ownership (senderId) is verified and the pending status is not. One promise verified and another unchecked is #1 P1 under the #1 severity rule and the reporting.md P0 boundary."
+        },
+        {
+          "finding_id": "V9-046",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/transactions-api.cy.ts",
+          "line": 12,
+          "source_line": "it('creates a payment owned by the sender with pending status', () => {",
+          "reason": "The ownership promise has evidence, so this title is P1, not P0 (#1 severity rule)."
+        }
+      ]
+    },
+    {
+      "id": "v9-cy-02",
+      "split": "public-development-v9",
+      "framework": "cypress",
+      "design_note": "Both arms: the #4i contract in pattern-reference.md decides both tests; the supplied app source shows the absence selector exists only in test code. Cypress framework balance for the loading-gate theme.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-cy-02/cypress/e2e/notifications.cy.ts",
+          "path": "cypress/e2e/notifications.cy.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-02/cypress/fixtures/notifications.json",
+          "path": "cypress/fixtures/notifications.json"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-02/src/NotificationsPanel.tsx",
+          "path": "src/NotificationsPanel.tsx"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-047",
+          "kind": "finding",
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "cypress/e2e/notifications.cy.ts",
+          "line": 5,
+          "source_line": "cy.get('.spinner').should('not.exist');",
+          "reason": "The absence check is the test's only verification and '.spinner' appears nowhere else; the app renders its loading state as data-cy=notifications-loading, so the selector matches nothing and always passes. #4i FLAG P1. Blind-label adjudication (2026-09-26): the check is the only verification and cannot fail, which meets the P0 definition outright (reporting.md), so a #4i P0 report is not penalized: a separate optional #4i P0 label sits on the same line, because one label keeps one severity."
+        },
+        {
+          "finding_id": "V9-048",
+          "kind": "fp_guard",
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "cypress/e2e/notifications.cy.ts",
+          "line": 13,
+          "source_line": "cy.get('[data-cy=shortcuts-tip]').should('not.exist');",
+          "reason": "The same selector is asserted visible before the close action, so the absence check is proven able to match (#4i SKIP)."
+        },
+        {
+          "finding_id": "V9-079",
+          "kind": "optional",
+          "pattern_id": "#4i",
+          "severity": "P0",
+          "file": "cypress/e2e/notifications.cy.ts",
+          "line": 5,
+          "source_line": "cy.get('.spinner').should('not.exist');",
+          "reason": "Added by blind-label adjudication (2026-09-26): the check under V9-047 is the only verification and cannot fail, which can meet the P0 definition outright (reporting.md). A #4i P0 report is neither rewarded nor penalized; the required label stays #4i P1."
+        }
+      ]
+    },
+    {
+      "id": "v9-cy-03",
+      "split": "public-development-v9",
+      "framework": "cypress",
+      "design_note": "Contract boundary, no arm advantage: spec-level env gating sits outside #5a's per-test wording (optional label), and pattern-reference.md #20 accepts a documented dedicated test user pool. The field adjudicators split on both.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-cy-03/cypress.config.ts",
+          "path": "cypress.config.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-03/cypress/e2e/cognito.cy.ts",
+          "path": "cypress/e2e/cognito.cy.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-03/cypress/support/commands.ts",
+          "path": "cypress/support/commands.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-049",
+          "kind": "optional",
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "cypress/e2e/cognito.cy.ts",
+          "line": 2,
+          "source_line": "if (Cypress.env('cognitoUsername')) {",
+          "reason": "The condition removes the whole describe from the run instead of skipping an assertion inside a test that still passes. #5a is written for a gated assertion inside a test; whether spec-level registration gating is a silent pass or an unreported skip is a contract boundary, so a report is neither required nor penalized."
+        },
+        {
+          "finding_id": "V9-050",
+          "kind": "fp_guard",
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "cypress/e2e/cognito.cy.ts",
+          "line": 5,
+          "source_line": "cy.loginByCognito(Cypress.env('cognitoUsername'), Cypress.env('cognitoPassword'));",
+          "reason": "The sign-in is opt-in and the config documents a dedicated, nightly-reset test pool with no customer data: a documented isolated backend boundary (#20)."
+        }
+      ]
+    },
+    {
+      "id": "v9-cy-04",
+      "split": "public-development-v9",
+      "framework": "cypress",
+      "design_note": "Both arms: the #11c reason rule (a preceding comment naming a ticket is a reason) is in pattern-reference.md and semantic-review.md. Measures the FP guard on a reasoned describe.skip next to a bare it.skip.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-cy-04/cypress/e2e/exports.cy.ts",
+          "path": "cypress/e2e/exports.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-051",
+          "kind": "fp_guard",
+          "pattern_id": "#11c",
+          "severity": "P2",
+          "file": "cypress/e2e/exports.cy.ts",
+          "line": 3,
+          "source_line": "describe.skip('CSV v2 exports', () => {",
+          "reason": "The preceding comment gives the reason, a ticket, and a revisit date (#11c SKIP)."
+        },
+        {
+          "finding_id": "V9-052",
+          "kind": "finding",
+          "pattern_id": "#11c",
+          "severity": "P2",
+          "file": "cypress/e2e/exports.cy.ts",
+          "line": 10,
+          "source_line": "it.skip('downloads the ledger as PDF', () => {",
+          "reason": "Nothing in the call, a preceding comment, or the title explains why coverage was dropped: #11c P2, anchored at the skip declaration."
+        }
+      ]
+    },
+    {
+      "id": "v9-cy-05",
+      "split": "public-development-v9",
+      "framework": "cypress",
+      "design_note": "Full arm favoured: semantic-review.md's bounded sweep rows for #3b (bracket access `Cypress['on'](`) and #9b (non-literal cy.wait argument) name exactly these shapes; pattern-reference.md #3b shows only the dot-call form. The scoped allowlist that rethrows is an FP guard in both references.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-cy-05/cypress/e2e/dashboard.cy.ts",
+          "path": "cypress/e2e/dashboard.cy.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-05/cypress/fixtures/revenue.json",
+          "path": "cypress/fixtures/revenue.json"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-05/cypress/support/commands.ts",
+          "path": "cypress/support/commands.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-05/cypress/support/e2e.ts",
+          "path": "cypress/support/e2e.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-053",
+          "kind": "finding",
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/e2e.ts",
+          "line": 3,
+          "source_line": "Cypress['on']('uncaught:exception', () => false);",
+          "reason": "Bracket access registers the same blanket handler and suppresses every application error (pattern-reference.md #3b; semantic-review.md sweep row #3b names the bracket form)."
+        },
+        {
+          "finding_id": "V9-054",
+          "kind": "fp_guard",
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/e2e/dashboard.cy.ts",
+          "line": 5,
+          "source_line": "cy.on('uncaught:exception', (error) => {",
+          "reason": "Allowlists one named regression and rethrows every other error: the safe handler shape in pattern-reference.md #3b."
+        },
+        {
+          "finding_id": "V9-055",
+          "kind": "finding",
+          "pattern_id": "#9b",
+          "severity": "P1",
+          "file": "cypress/e2e/dashboard.cy.ts",
+          "line": 13,
+          "source_line": "cy.wait(delays.chartAnimation);",
+          "reason": "A fixed 800 ms sleep passed through an object property; semantic-review.md sweep row #9b names this non-literal form, and pattern-reference.md #9 says identifier arguments resolve to the same sleep."
+        }
+      ]
+    },
+    {
+      "id": "v9-cy-06",
+      "split": "public-development-v9",
+      "framework": "cypress",
+      "design_note": "Both arms: pattern-reference.md #2 holds the redirect accept criterion and the rule that one missing effect is classified once as #2 at the causal action; semantic-review.md's acceptance-target rule repeats it. Measures #1/#2 attribution.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-cy-06/cypress/e2e/drafts.cy.ts",
+          "path": "cypress/e2e/drafts.cy.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-06/cypress/fixtures/draft.json",
+          "path": "cypress/fixtures/draft.json"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-056",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "cypress/e2e/drafts.cy.ts",
+          "line": 9,
+          "source_line": "cy.get('[data-cy=delete-draft]').click();",
+          "reason": "The delete is followed by request proof and a redirect back to the list; #2 accept criteria count a redirect as verifying the delete."
+        },
+        {
+          "finding_id": "V9-057",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "cypress/e2e/drafts.cy.ts",
+          "line": 19,
+          "source_line": "cy.get('[data-cy=save-title]').click();",
+          "reason": "The rename action has no UI postcondition: waiting for the stubbed PATCH proves the request fired, not that the new title is shown. #2 at the causal action (pattern-reference.md #2). Blind-label adjudication (2026-09-26): changed to P1. cy.wait on the PATCH alias is request proof for the rename, so only the promised new title is unchecked; reporting.md makes a partly verified test P1."
+        },
+        {
+          "finding_id": "V9-058",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/drafts.cy.ts",
+          "line": 14,
+          "source_line": "it('renames the draft and shows the new title', () => {",
+          "reason": "The same missing effect is classified once as #2 at the causal action; reporting #1 as well double-reports it (#2 rule; semantic-review.md acceptance-target rule)."
+        }
+      ]
+    },
+    {
+      "id": "v9-cy-07",
+      "split": "public-development-v9",
+      "framework": "cypress",
+      "design_note": "Full arm favoured on the anchor: semantic-review.md anchors #21 at the declaration or reference, and its #21 sweep names a cy.session() callback that reads a committed file. pattern-reference.md #21 covers the Cypress form but gives no anchor; the cy.session line is accepted as an equivalent reference.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-cy-07/cypress/e2e/admin-users.cy.ts",
+          "path": "cypress/e2e/admin-users.cy.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-07/cypress/fixtures/invitations.json",
+          "path": "cypress/fixtures/invitations.json"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-07/cypress/support/commands.ts",
+          "path": "cypress/support/commands.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-07/scripts/capture-admin-session.ts",
+          "path": "scripts/capture-admin-session.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-059",
+          "kind": "finding",
+          "pattern_id": "#21",
+          "severity": "P2",
+          "file": "cypress/support/commands.ts",
+          "line": 3,
+          "source_line": "cy.fixture('sessions/admin-session.json').then((session) => {",
+          "accepted_alternatives": [
+            {
+              "pattern_id": "#21",
+              "severity": "P2",
+              "file": "cypress/support/commands.ts",
+              "line": 2,
+              "source_line": "cy.session('admin', () => {"
+            }
+          ],
+          "reason": "The session callback replays a cookie from a JSON file that only a manual capture script writes, with no programmatic login fallback (#21 Cypress form). Anchored at the file reference (semantic-review.md primary-line contract)."
+        }
+      ]
+    },
+    {
+      "id": "v9-cy-08",
+      "split": "public-development-v9",
+      "framework": "cypress",
+      "design_note": "Both arms: pattern-reference.md #4g states that a Cypress `timeout: 0` reaches review only through the Phase 2 sweep, and #10f covers continued action chains; semantic-review.md names both as sweep rows. A concrete JUSTIFIED immediate-state check is the guard.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-cy-08/cypress/e2e/editor.cy.ts",
+          "path": "cypress/e2e/editor.cy.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-08/cypress/fixtures/doc.json",
+          "path": "cypress/fixtures/doc.json"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-060",
+          "kind": "finding",
+          "pattern_id": "#10f",
+          "severity": "P1",
+          "file": "cypress/e2e/editor.cy.ts",
+          "line": 8,
+          "source_line": "cy.get('[data-cy=doc-heading]').dblclick().should('have.class', 'is-selected');",
+          "reason": "An action followed by an assertion on the same chain can keep a stale subject (#10f; semantic-review.md sweep row #10f lists .dblclick)."
+        },
+        {
+          "finding_id": "V9-061",
+          "kind": "finding",
+          "pattern_id": "#4g",
+          "severity": "P1",
+          "file": "cypress/e2e/editor.cy.ts",
+          "line": 12,
+          "source_line": "cy.get('[data-cy=editor-toolbar]', { timeout: 0 }).should('be.visible');",
+          "reason": "A zero timeout removes the retry window on a query whose element appears after load (#4g Cypress form)."
+        },
+        {
+          "finding_id": "V9-062",
+          "kind": "fp_guard",
+          "pattern_id": "#4g",
+          "severity": "P1",
+          "file": "cypress/e2e/editor.cy.ts",
+          "line": 17,
+          "source_line": "cy.get('[data-cy=unsaved-marker]', { timeout: 0 }).should('not.exist');",
+          "reason": "A concrete JUSTIFIED line documents that an immediate current-state check is the intent, which #4g allows."
+        },
+        {
+          "finding_id": "V9-063",
+          "kind": "fp_guard",
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "cypress/e2e/editor.cy.ts",
+          "line": 17,
+          "source_line": "cy.get('[data-cy=unsaved-marker]', { timeout: 0 }).should('not.exist');",
+          "reason": "#4i SKIP: a concrete JUSTIFIED comment on the preceding line documents the first-paint absence contract."
+        }
+      ]
+    },
+    {
+      "id": "v9-cy-09",
+      "split": "public-development-v9",
+      "framework": "cypress",
+      "design_note": "Full arm favoured: semantic-review.md's sweep row #10d names a formatter-wrapped `it(` whose async callback starts on a later line, and the primary-line contract anchors #10d at the declaration. The async line is accepted as the same finding.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-cy-09/cypress/e2e/reports.cy.ts",
+          "path": "cypress/e2e/reports.cy.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-09/cypress/fixtures/report.json",
+          "path": "cypress/fixtures/report.json"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-064",
+          "kind": "finding",
+          "pattern_id": "#10d",
+          "severity": "P1",
+          "file": "cypress/e2e/reports.cy.ts",
+          "line": 2,
+          "source_line": "it(",
+          "accepted_alternatives": [
+            {
+              "pattern_id": "#10d",
+              "severity": "P1",
+              "file": "cypress/e2e/reports.cy.ts",
+              "line": 4,
+              "source_line": "async () => {"
+            }
+          ],
+          "reason": "An async test callback that queues cy commands mixes a Promise with the command queue (#10d). The callback starts on a later line after formatting; semantic-review.md sweep row #10d and the primary-line contract anchor it at the declaration."
+        }
+      ]
+    },
+    {
+      "id": "v9-cy-10",
+      "split": "public-development-v9",
+      "framework": "cypress",
+      "design_note": "Clean case, full arm favoured: review-scope.md says application source is context only, so an empty catch and module state in src/ are never findings. The catalog-only arm has no scope rule and may report them as #3 and #19. The spec itself is sound.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-cy-10/cypress/e2e/feedback.cy.ts",
+          "path": "cypress/e2e/feedback.cy.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-10/src/analytics/track.ts",
+          "path": "src/analytics/track.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-065",
+          "kind": "fp_guard",
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "src/analytics/track.ts",
+          "line": 5,
+          "source_line": "fetch('/api/analytics', { method: 'POST', body: JSON.stringify({ event, queuedEvents }) }).catch(() => {});",
+          "reason": "review-scope.md: application source is context only. The fire-and-forget analytics catch is product code, not an in-scope E2E artifact."
+        },
+        {
+          "finding_id": "V9-066",
+          "kind": "fp_guard",
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "src/analytics/track.ts",
+          "line": 1,
+          "source_line": "let queuedEvents = 0;",
+          "reason": "review-scope.md: application source is context only; #19 targets test utilities, helpers, and POMs."
+        }
+      ]
+    },
+    {
+      "id": "v9-cy-11",
+      "split": "public-development-v9",
+      "framework": "cypress",
+      "design_note": "Full arm expected: the semantic-review.md #5a sweep row treats a bare `return` branch as the same finding; pattern-reference.md #5a describes only an assertion inside the branch. The conditional dismiss before an unconditional assertion is an FP guard in both.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-cy-11/cypress/e2e/pricing.cy.ts",
+          "path": "cypress/e2e/pricing.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-067",
+          "kind": "finding",
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "cypress/e2e/pricing.cy.ts",
+          "line": 5,
+          "source_line": "if ($body.find('[data-cy=student-offer]').length === 0) {",
+          "accepted_alternatives": [
+            {
+              "pattern_id": "#5a",
+              "severity": "P0",
+              "file": "cypress/e2e/pricing.cy.ts",
+              "line": 6,
+              "source_line": "return;"
+            }
+          ],
+          "reason": "When the offer is not rendered at the moment of the one-shot jQuery check, the callback returns early and the only assertion never runs. semantic-review.md #5a sweep row: a bare return branch is the same finding. P0: no independent postcondition remains."
+        },
+        {
+          "finding_id": "V9-068",
+          "kind": "fp_guard",
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "cypress/e2e/pricing.cy.ts",
+          "line": 15,
+          "source_line": "if ($body.find('[data-cy=cookie-banner]').length > 0) {",
+          "reason": "Action-only branch dismissing an optional blocker before an unconditional assertion (#5a exclusion)."
+        }
+      ]
+    },
+    {
+      "id": "v9-cy-12",
+      "split": "public-development-v9",
+      "framework": "cypress",
+      "design_note": "Clean case. Both arms have the exemptions in pattern-reference.md (#4k Cypress DOM-query implicit existence, #4i positive proof, #22 with request proof); semantic-review.md repeats them. Measures specificity on a Cypress suite.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-cy-12/cypress/e2e/team.cy.ts",
+          "path": "cypress/e2e/team.cy.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-12/cypress/fixtures/team.json",
+          "path": "cypress/fixtures/team.json"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-069",
+          "kind": "fp_guard",
+          "pattern_id": "#4k",
+          "severity": "P1",
+          "file": "cypress/e2e/team.cy.ts",
+          "line": 9,
+          "source_line": "cy.get('[data-cy=member-row]').each(($row) => {",
+          "reason": "The collection size is asserted first, and a Cypress DOM query keeps an implicit existence check (#4k SKIP)."
+        },
+        {
+          "finding_id": "V9-070",
+          "kind": "fp_guard",
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "cypress/e2e/team.cy.ts",
+          "line": 19,
+          "source_line": "cy.get('[data-cy=member-m-2]').should('not.exist');",
+          "reason": "The same selector is asserted visible before the removal (#4i SKIP)."
+        }
+      ]
+    },
+    {
+      "id": "v9-cy-13",
+      "split": "public-development-v9",
+      "framework": "cypress",
+      "design_note": "Full arm favoured on the anchor: semantic-review.md anchors #23 at the violating fixture field; pattern-reference.md #23 defines the P0 variant (a negative assertion that passes because the guard suppressed the seeded items) but no anchor. The #4i report on the absence check is optional because #23 is the root cause.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-cy-13/cypress/e2e/inbox.cy.ts",
+          "path": "cypress/e2e/inbox.cy.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-13/cypress/fixtures/inbox.json",
+          "path": "cypress/fixtures/inbox.json"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-13/src/inbox/InboxList.tsx",
+          "path": "src/inbox/InboxList.tsx"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-071",
+          "kind": "finding",
+          "pattern_id": "#23",
+          "severity": "P0",
+          "file": "cypress/fixtures/inbox.json",
+          "line": 6,
+          "source_line": "\"archived\": true",
+          "reason": "InboxList filters out archived messages, so the only seeded message never renders and the unread-dot absence check passes whether or not mark-all-read works. pattern-reference.md #23 reports this negative-assertion variant at P0; semantic-review.md anchors #23 at the violating fixture field."
+        },
+        {
+          "finding_id": "V9-072",
+          "kind": "optional",
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "cypress/e2e/inbox.cy.ts",
+          "line": 8,
+          "source_line": "cy.get('[data-cy=unread-dot]').should('not.exist');",
+          "reason": "The unread-dot selector is never proven present on this path, so a #4i report is defensible; the root cause is the #23 render-guard mismatch, so it is neither required nor penalized."
+        },
+        {
+          "finding_id": "V9-073",
+          "kind": "fp_guard",
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "cypress/fixtures/inbox.json",
+          "line": 6,
+          "source_line": "\"archived\": true",
+          "reason": "The guard-suppressed render makes a negative assertion pass for the wrong reason, which pattern-reference.md #23 reports at P0, not the usual P2."
+        }
+      ]
+    },
+    {
+      "id": "v9-cy-14",
+      "split": "public-development-v9",
+      "framework": "cypress",
+      "design_note": "Both arms: #19, #10e, and #11c are decided by pattern-reference.md; semantic-review.md adds the #11c sweep and the declaration anchor. Adds Cypress P1/P2 findings to balance the corpus.",
+      "source_files": [
+        {
+          "source": "files/holdout-v9/v9-cy-14/cypress/e2e/orders.cy.ts",
+          "path": "cypress/e2e/orders.cy.ts"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-14/cypress/fixtures/orders.json",
+          "path": "cypress/fixtures/orders.json"
+        },
+        {
+          "source": "files/holdout-v9/v9-cy-14/cypress/support/test-data.ts",
+          "path": "cypress/support/test-data.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V9-074",
+          "kind": "finding",
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "cypress/support/test-data.ts",
+          "line": 1,
+          "source_line": "let orderSequence = 100;",
+          "reason": "Initialised module-level `let` in a test utility, mutated by nextOrderNumber: it persists across tests in a worker (#19), anchored at the declaration."
+        },
+        {
+          "finding_id": "V9-075",
+          "kind": "finding",
+          "pattern_id": "#10e",
+          "severity": "P1",
+          "file": "cypress/e2e/orders.cy.ts",
+          "line": 16,
+          "source_line": "const newest = cy.get('[data-cy=newest-order]');",
+          "reason": "The variable stores a Chainable, not the element, and it is queued before cy.visit (#10e)."
+        },
+        {
+          "finding_id": "V9-076",
+          "kind": "finding",
+          "pattern_id": "#11c",
+          "severity": "P2",
+          "file": "cypress/e2e/orders.cy.ts",
+          "line": 21,
+          "source_line": "xit('prints the packing slip', () => {",
+          "reason": "A bare xit with no reason string, preceding comment, ticket, or date (#11c)."
+        }
+      ]
+    }
+  ]
+}

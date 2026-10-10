@@ -24,8 +24,8 @@ Not every change needs the same amount of process. Which tier a change falls int
 | Tier | What it covers | What you need |
 | --- | --- | --- |
 | **0 — Docs & typos** | Wording, comments, and typo fixes that do not change installed skill behavior, regardless of file location | Nothing beyond `scripts/ci/review.sh`'s Markdown/link checks passing |
-| **1 — Skill behavior wording** | Any behavior-affecting instruction edit that does not change a pattern ID, F-code, or verdict term, including `skills/*/SKILL.md` and point-of-use procedure files such as `classification-procedure.md`, `scenario-design.md`, and `semantic-review.md` | A RED/GREEN contract test proving the old wording violated your intent and the new wording satisfies it (see `scripts/ci/test-routing-contract.py` for a worked example), then `ci-local.sh` green — `scripts/dev/tier1-check.sh` runs that gate for you |
-| **2 — Taxonomy / decision-surface change** | New or renumbered pattern IDs, F-codes, verdict vocabulary, or a delegation-routing decision not yet backed by measured evidence | A preregistered benchmark protocol under `benchmarks/`, per the pattern in `benchmarks/subagent-routing-v1/` (or `benchmarks/stub-echo-v1/`, where the same process refused a proposed rule) — the heavy path below, reserved for changes that make a new correctness claim about the skills themselves |
+| **1 — Skill behavior wording** | Any behavior-affecting instruction edit that does not change a pattern ID, F-code, or verdict term, including `skills/*/SKILL.md` and point-of-use procedure files such as `classification-procedure.md`, `scenario-design.md`, and `semantic-review.md`. A mechanical sub-ID under an existing pattern (for example `#8c` under `#8`) is also Tier 1 when it changes no existing ID, title, or severity and its scanner shape is syntactically certain and contract-tested with a true positive and a false-positive guard; it claims no detection rate | A RED/GREEN contract test proving the old wording violated your intent and the new wording satisfies it (see `scripts/ci/test-routing-contract.py` for a worked example), then `ci-local.sh` green — `scripts/dev/tier1-check.sh` runs that gate for you |
+| **2 — Taxonomy / decision-surface change** | New or renumbered top-level pattern IDs, F-codes, verdict vocabulary, severity changes, or a delegation-routing decision not yet backed by measured evidence | A preregistered benchmark protocol under `benchmarks/`, per the pattern in `benchmarks/subagent-routing-v1/` (or `benchmarks/stub-echo-v1/`, where the same process refused a proposed rule) — the heavy path below, reserved for changes that make a new correctness claim about the skills themselves |
 
 Most contributions are Tier 0 or Tier 1. Tier 2 is rare by design and most
 contributors will never need it. Issues labeled `good first issue` are Tier
@@ -40,6 +40,8 @@ honest as the skills change. A typo fix or a Tier 1 wording change barely
 touches any of it.
 
 ## Development setup
+
+Bundled debugger helpers must remain compatible with Python 3.9, the oldest system interpreter their trusted launcher may select. Keep newer Python APIs out of those helpers; the launcher's fixed interpreter policy is not a dependency-upgrade mechanism.
 
 The full local CI mirror targets macOS and Linux with `/bin/bash`, a PCRE2-capable `rg`, and Python 3.10 or newer. Its frozen prompt-size replay also requires CPython 3.12 and access to the hash-locked Python packages (from a local cache or PyPI). For its trust boundary, the gate discovers interpreters only at standard system and Homebrew prefixes; a Nix-, Conda-, or pyenv-only layout is not currently auto-discovered. GitHub CI runs the full mirror on Ubuntu and a smaller portability contract on both Ubuntu and macOS.
 
@@ -90,6 +92,26 @@ python3 scripts/ci/test-reviewer-holdout-v3.py # all-family corpus + N-configura
 python3 scripts/ci/test-reviewer-holdout-v4.py # v4 corpus and protocol contracts
 python3 scripts/ci/test-reviewer-holdout-v5.py # historical v5 corpus contracts
 python3 scripts/ci/test-reviewer-holdout-v7.py # Codex-only v7 protocol + committed-result contracts
+python3 scripts/ci/test-reviewer-holdout-v8.py # preregistered v8 protocol, revised labels, numbered prompts
+python3 scripts/ci/test-reviewer-holdout-v9.py # preregistered v9 protocol, designed corpus, instance severities
+python3 scripts/ci/test-reviewer-holdout-v10.py # preregistered v10 protocol, fresh designed corpus, severity exceptions
+python3 scripts/ci/test-reviewer-holdout-v11.py # preregistered v11 protocol, reused v10 corpus on Codex, infrastructure-retry policy
+python3 scripts/ci/test-reviewer-holdout-v12.py # preregistered v12 protocol, reused v10 corpus on Codex gpt-6-sol, pinned retry policy
+python3 scripts/ci/test-reviewer-holdout-v13.py # preregistered v13 protocol, reused v10 corpus on Claude claude-sonnet-5, pinned retry policy
+python3 scripts/ci/test-reviewer-holdout-v14.py # preregistered v14 protocol: v13 plus the pinned single-JSON-fence output normalization
+python3 scripts/ci/test-reviewer-holdout-v15.py # preregistered v15 protocol: v13 plus the pinned native JSON-schema structured output
+python3 scripts/ci/test-reviewer-holdout-v16.py # preregistered v16 protocol: pinned before/after skill revisions on the reused v9 corpus (Codex gpt-6-sol) and the paired revision analysis
+python3 scripts/ci/test-reviewer-holdout-v17.py # preregistered v17 AI-labeled corpus and catalog-formal comparison on Codex gpt-6-sol
+python3 scripts/ci/test-reviewer-holdout-v18.py # preregistered v18 release confirmation on the frozen v17 corpus, including auth retry
+python3 scripts/ci/test-reviewer-holdout-v19.py # v19 rerun preregistration and frozen-corpus binding
+python3 scripts/ci/test-reviewer-holdout-v20.py # v20 #2 severity revision comparison preregistration
+python3 scripts/ci/test-reviewer-holdout-v21.py # v21 decisive #1/#2 severity replication preregistration
+python3 scripts/ci/test-reviewer-stream-retry.py # unexpected Codex event diagnostic and opt-in retry
+python3 scripts/ci/test-fixpair-v1.py # real-code BEFORE/AFTER fix-pair corpus and score contracts
+python3 scripts/ci/test-semantic-mutants-v1.py # semantic-mutant corpus and score contracts
+python3 scripts/ci/test-reviewer-auth-retry.py # future-protocol opt-in auth retry and frozen-policy isolation
+python3 scripts/dev/reviewer-contract.py # generated Lean severity model drift check
+python3 scripts/ci/test-reviewer-usage-capture.py # opt-in token-usage capture (v13): Claude JSON envelope, Codex JSON events, unchanged opt-out commands
 /bin/bash -p scripts/ci/run-reference-tokenizer-suites.sh \
   scripts/ci/test-independent-review-v7.py \
   scripts/ci/test-independent-review-v10.py \
@@ -105,23 +127,18 @@ python3 scripts/ci/test-reviewer-evidence.py # immutable reports + aggregate rep
 python3 scripts/ci/test-fixture-faults.py # browser-free 36-cell classifier regression
 python3 scripts/evals/run-fixture-faults.py --validate-only # browser-free fixture contract
 bash scripts/ci/codex-smoke.sh       # manual Codex cross-host smoke (skips if codex absent)
+# Claude Code plugin eval (manual; uses Claude usage): skill triggering and routing, with a no-plugin baseline.
+# Run it on a clean export: the checkout's testbed/ and worktrees exceed the 20,000-entry plugin scan limit.
+#   S=$(mktemp -d) && git archive HEAD | tar -x -C "$S" && claude plugin eval "$S" --trust-plugin --no-publish
 ```
 
 ### Reviewer accuracy and behavior validation
 
-Current validation uses the completed Codex-only v7 three-arm workflow and exact commands in [`benchmarks/reviewer-holdout-v7/README.md`](benchmarks/reviewer-holdout-v7/README.md#exact-rerun-command). That run completed 180/180 calls with zero infrastructure errors and returned `FAIL`; it supports no skill-lift claim. The v3 and v5 commands below are historical reproduction workflows, not the current release-validation route.
+The latest completed reviewer development holdout is [v21](benchmarks/reviewer-holdout-v21/README.md), a Codex `gpt-6-sol` before/after wording comparison on 48 public synthetic cases. Its complete 480-call matrix returned `NOT_SUPPORTED`: full-arm stable F1 fell from 1.000 to 0.980, and the 2.0.0 wording was retained. The prior [v20](benchmarks/reviewer-holdout-v20/README.md) comparison also returned `NOT_SUPPORTED`. The [v15](benchmarks/reviewer-holdout-v15/README.md) README records the latest Claude structured-output run. Earlier v3–v11 commands describe historical protocols; use their recorded model IDs only to reproduce those runs.
 
-`evals/evals.json` defines expected behavior, while the ordinary CI gate checks that those contracts and fixtures remain structurally valid. The labeled development holdout adds exact TP/FP/FN scoring over isolated multi-file Playwright/Cypress cases:
+The [v8](benchmarks/reviewer-holdout-v8/README.md) and [v9](benchmarks/reviewer-holdout-v9/README.md) READMEs retain their own protocol and outcome details. Their results and subsequent runs are summarized in [benchmark status](benchmarks/STATUS.md).
 
-```bash
-python3 scripts/evals/run-reviewer-holdout.py \
-  --cases scripts/evals/reviewer-holdout-v3.json \
-  --protocol scripts/evals/reviewer-validation-protocol-v3.json \
-  --runner codex --model gpt-5.6-sol --repetitions 3 --allow-live
-# Repeat with:
-#   --runner claude --model claude-opus-5
-#   --runner claude --model claude-fable-5
-```
+`evals/evals.json` defines expected behavior, while the ordinary CI gate checks that those contracts and fixtures remain structurally valid. The labeled development holdout adds exact TP/FP/FN scoring over isolated multi-file Playwright/Cypress cases. For new runs, follow the current protocol README; [v3's exact commands](benchmarks/reviewer-holdout-v3/README.md) use a now-retired model and remain historical reproduction instructions.
 
 The completed v3 public corpus has eight multi-file cases, 24 findings covering all 24 base pattern families, and 24 explicit false-positive guards. It is public, so it is a reproducible development holdout, not a secret release oracle. The historical v2/r3 corpus has 30 findings and 31 guards, but its performance estimate was oracle-invalidated after post-run adjudication. Pass an external corpus with `--cases` for a sealed run, inside an independently isolated environment supplied through `--isolation-wrapper <executable>`. The current preregistered v5 corpus remains pre-live; see [`benchmarks/STATUS.md`](benchmarks/STATUS.md) before making any accuracy claim. Reports under `benchmarks/reviewer-holdout-v3/reports/` include corpus/model/CLI/Git provenance, the evaluated-skill and protocol digests, seeded schedule, raw outputs, per-case TP/FP/FN, unique majority-stable precision/recall, repeated-run metrics, and Wilson intervals. Public runs use one immutable skill/corpus input snapshot, fresh temporary workspaces, Codex/Claude read-only controls, and pre/post digests of every staged path and original input. A changed digest is an infrastructure error and is not scored. The release gate also enforces repeated precision so rotating one-off false positives cannot disappear under majority aggregation. The runner does not provide a built-in sealed sandbox; non-public corpora fail closed without the external wrapper.
 
@@ -146,6 +163,8 @@ python3 scripts/evals/run-fixture-faults.py
 ```
 
 Across twelve fault operators and 36 browser cells, the strong test must pass on the correct app and fail after behavior fault injection; the assertion-mutated or call-proof-mutated weak test must remain green against the same fault.
+
+For reviewer replacement changes, run `node scripts/evals/run-assertion-contract-probes.cjs` with the same fixture dependencies and an available Chromium binary. It executes the documented replacements against raw-text, exact-membership, and compound-visibility counterexamples; it does not update frozen benchmark reports. The dependency-free `scripts/ci/test-assertion-contracts.py` guards the corresponding guidance in ordinary CI.
 
 The older paired behavioral harness still measures whether loading a skill improves a bounded answer:
 
@@ -186,7 +205,7 @@ Then:
 2. **Add or update evals.** Each behavior change needs at least two assertions in the skill's `evals/evals.json`: one true positive that must be flagged, and one false-positive guard that names the exact line and why it must not be flagged.
 3. **Respect the severity contract.** P0 entries are silent-always-pass smells; do not downgrade them or promote P1/P2 into P0 just because they are easier to grep.
 4. **Record the new reviewer digest.** Any byte change under `skills/e2e-reviewer/`, including a version bump or a whitespace-only reflow, changes the digest `scripts/ci/test-reviewer-evidence-v3.py` checks. Run `python3 scripts/dev/refresh-reviewer-evidence-digest.py` rather than editing `benchmarks/reviewer-holdout-v3/evidence-status.json` by hand.
-5. **Run the shipped scripts on Linux.** `ci-local.sh` runs on macOS; when you change anything under `skills/*/scripts/`, run `/bin/bash -p scripts/dev/linux-script-check.sh` (the pre-push hook does this when Docker is available).
+5. **Run the shipped scripts on Linux.** `ci-local.sh` runs on macOS. After changes to shipped skills or their Linux suites are in a local commit, run `/bin/bash -p scripts/dev/linux-script-check.sh` from a worktree with no relevant dirty or untracked inputs. The default command archives `HEAD` and refuses worktree changes in `skills/**`, `README*.md`, `.github/workflows/e2e-smell-scan.yml`, `scripts/ci/ci-local.sh`, `scripts/ci/test-reviewer-scanner.py`, `scripts/ci/test-debugger-contracts.py`, `scripts/ci/test-*-debugger-*.py`, or `scripts/dev/linux-script-check.sh` rather than silently testing the previous commit. These paths are the product, documentation, workflow contract, and suites that the pinned Linux run actually reads. Passing an explicit `<revision>` intentionally validates only that immutable commit, which is how the pre-push hook checks the pushed revision. `--validate-inputs-only` checks this snapshot contract without Docker or network but does not run the Linux suites.
 6. **Rerun the live generator fixture** after changing `playwright-test-generator`'s exploration, approval tables, write-set check, verification rules, or completion status: follow [`scripts/evals/generator-live/writescope-demo/RUNBOOK.md`](scripts/evals/generator-live/writescope-demo/RUNBOOK.md). It needs a model and a browser, so it is not part of CI.
 
 ## Releases

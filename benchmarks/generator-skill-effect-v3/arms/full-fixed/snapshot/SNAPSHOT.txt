@@ -1,0 +1,1 @@
+full-fixed snapshot taken at 2026-10-06T14:57:26Z from commit a1f8d61 (skills/playwright-test-generator clean: 0 uncommitted paths); evals/ excluded, scripts/ included

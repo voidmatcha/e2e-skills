@@ -1,0 +1,2513 @@
+{
+  "status": "COMPLETE",
+  "claim": "known public development examples; zero-tool skill-material versus no-skill probe only",
+  "runner_version": "codex-cli 0.159.3",
+  "model": "gpt-6-sol",
+  "reasoning_effort": "medium",
+  "repetitions": 3,
+  "script_sha256": "c4c8ef7004ecc444b79a48f83326584ab81801216e658aa84d5327021e28b307",
+  "protocol_document_sha256": "de2bb4fe3e120744d67a211a7fbbde64c1a98ede2a342882bf26eab877b888c9",
+  "schema_sha256": "0e79b040aab2b47865ca13a6a484fb3bcad617ef16bcc38b4de7a49b12498d93",
+  "prompt_skill_sha256": "6acaf64ad9f03c4e644192eb409a7a9b8999861e8a1ce49c2c5c5ea7bf8a4c7f",
+  "source_sha256": {
+    "vexus-timing": {
+      "before": {
+        "e2e/smoke.spec.ts": "7a7419afd02681f083c2928a93efcf764e5d5181ff7269cb5a1cbd330ced5997",
+        "src/main.ts": "0231a94115f8b60e4d13b485f09a25035f5459664569996c8dff66bf57f0da1c",
+        "playwright.config.ts": "5205d905aed01aa09386cecd1fc62d4acffd11fd7810b659a45e8b8e1d8844ad"
+      },
+      "after": {
+        "e2e/smoke.spec.ts": "ad921b76370d5e5c71302674ee51cb5782eedcab90b35bf9ea5e55a9d904e81e",
+        "src/main.ts": "0231a94115f8b60e4d13b485f09a25035f5459664569996c8dff66bf57f0da1c",
+        "playwright.config.ts": "5205d905aed01aa09386cecd1fc62d4acffd11fd7810b659a45e8b8e1d8844ad"
+      }
+    },
+    "reactivetrader-focus": {
+      "before": {
+        "packages/client/e2e/credit.spec.ts": "5554457745cb3c0a3bdf7403a02f547b76721d1865b6055506a2dbb17b3437f5",
+        "packages/client/e2e/fixtures.ts": "106a2ae619967774f2d72b718abf685e7ce9bd35fd220d3ef1ddeb8c4618a82a",
+        "packages/client/playwright.config.ts": "b11e3470212113d3e23e98b1ce274bbbc4d4dbf0c9950432ff280d87821e10f0"
+      },
+      "after": {
+        "packages/client/e2e/credit.spec.ts": "f1e745048bc3d9b33c3adc03b4b6f696e1017aa6fec2db3e0b0d3ea9807c07ee",
+        "packages/client/e2e/fixtures.ts": "106a2ae619967774f2d72b718abf685e7ce9bd35fd220d3ef1ddeb8c4618a82a",
+        "packages/client/playwright.config.ts": "b11e3470212113d3e23e98b1ce274bbbc4d4dbf0c9950432ff280d87821e10f0"
+      }
+    },
+    "reactivetrader-pnl-selector": {
+      "before": {
+        "packages/client/e2e/fx-analytics.spec.ts": "14285f392a9d272a57e942969ef018e9e4f676939491643141b326f9fd39f25d",
+        "packages/client/src/client/App/Analytics/PnL/PNLBar.tsx": "9a7354e07cdaa585c9ae1ebfecc4f2d6ddd1553a2063b864b9ed860d62c9c23f",
+        "packages/client/src/client/App/Analytics/PnL/PnL.tsx": "f23195d09a5e9d7366e795a8ffcb3993b072d316b03d3068cbce95bb4b41d0de",
+        "packages/client/playwright.config.ts": "5da2465acb9b30b9b5f54f2c75849ddc15b60df202bd932c86b3a31fdb5b764b"
+      },
+      "after": {
+        "packages/client/e2e/fx-analytics.spec.ts": "640d1854440a2c737f4d72356db8b6d79bea95421df2dbbdd2c2a295a72bdee3",
+        "packages/client/src/client/App/Analytics/PnL/PNLBar.tsx": "dd2e2dd5e6b32767bbefbcdfbe97f75b866feb5117501c47343c2a30fabf7938",
+        "packages/client/src/client/App/Analytics/PnL/PnL.tsx": "f23195d09a5e9d7366e795a8ffcb3993b072d316b03d3068cbce95bb4b41d0de",
+        "packages/client/playwright.config.ts": "5da2465acb9b30b9b5f54f2c75849ddc15b60df202bd932c86b3a31fdb5b764b"
+      }
+    }
+  },
+  "schedule": [
+    {
+      "case": "vexus-timing",
+      "repetition": 1,
+      "side": "before",
+      "arm": "full"
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 1,
+      "side": "before",
+      "arm": "no-skill"
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 1,
+      "side": "after",
+      "arm": "full"
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 1,
+      "side": "after",
+      "arm": "no-skill"
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 2,
+      "side": "before",
+      "arm": "no-skill"
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 2,
+      "side": "before",
+      "arm": "full"
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 2,
+      "side": "after",
+      "arm": "no-skill"
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 2,
+      "side": "after",
+      "arm": "full"
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 3,
+      "side": "before",
+      "arm": "full"
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 3,
+      "side": "before",
+      "arm": "no-skill"
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 3,
+      "side": "after",
+      "arm": "full"
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 3,
+      "side": "after",
+      "arm": "no-skill"
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 1,
+      "side": "before",
+      "arm": "full"
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 1,
+      "side": "before",
+      "arm": "no-skill"
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 1,
+      "side": "after",
+      "arm": "full"
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 1,
+      "side": "after",
+      "arm": "no-skill"
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 2,
+      "side": "before",
+      "arm": "no-skill"
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 2,
+      "side": "before",
+      "arm": "full"
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 2,
+      "side": "after",
+      "arm": "no-skill"
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 2,
+      "side": "after",
+      "arm": "full"
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 3,
+      "side": "before",
+      "arm": "full"
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 3,
+      "side": "before",
+      "arm": "no-skill"
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 3,
+      "side": "after",
+      "arm": "full"
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 3,
+      "side": "after",
+      "arm": "no-skill"
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 1,
+      "side": "before",
+      "arm": "full"
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 1,
+      "side": "before",
+      "arm": "no-skill"
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 1,
+      "side": "after",
+      "arm": "full"
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 1,
+      "side": "after",
+      "arm": "no-skill"
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 2,
+      "side": "before",
+      "arm": "no-skill"
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 2,
+      "side": "before",
+      "arm": "full"
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 2,
+      "side": "after",
+      "arm": "no-skill"
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 2,
+      "side": "after",
+      "arm": "full"
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 3,
+      "side": "before",
+      "arm": "full"
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 3,
+      "side": "before",
+      "arm": "no-skill"
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 3,
+      "side": "after",
+      "arm": "full"
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 3,
+      "side": "after",
+      "arm": "no-skill"
+    }
+  ],
+  "calls": [
+    {
+      "case": "vexus-timing",
+      "repetition": 1,
+      "side": "before",
+      "arm": "full",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "841d4c181f7269ec1867ae46d9cc122e4f451669280d79a70fb5f7ab3764bbe7",
+      "raw_sha256": "03e8d1fb8ad32e28ab881848739037ed29d1b7fe0967a1f73ab64b0f1bf4631b",
+      "answer": {
+        "findings": [
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 23,
+            "pattern_id": "#9",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 33,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 35,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 47,
+            "pattern_id": "#9",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "target_hits": {
+          "#9": true,
+          "#4c-4e": false
+        },
+        "all_labels_hit": false
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 60977,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": null,
+        "output_tokens": 516,
+        "reasoning_output_tokens": 394
+      },
+      "elapsed_ms": 17947
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 1,
+      "side": "before",
+      "arm": "no-skill",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "a0998a0aa2fa8d27c696f05af93d771a7f7dada46970b4dd10fd46556d1291ce",
+      "raw_sha256": "03e8d1fb8ad32e28ab881848739037ed29d1b7fe0967a1f73ab64b0f1bf4631b",
+      "answer": {
+        "findings": [
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 23,
+            "pattern_id": "#9",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 33,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 35,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 47,
+            "pattern_id": "#9",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "target_hits": {
+          "#9": true,
+          "#4c-4e": false
+        },
+        "all_labels_hit": false
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 19383,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 495,
+        "reasoning_output_tokens": 373
+      },
+      "elapsed_ms": 18172
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 1,
+      "side": "after",
+      "arm": "full",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "51ce181e1bfa5685dfe773a7a4f40ed7d916002fea3f7134fd82e1b2fe2e4ca9",
+      "raw_sha256": "f13310482171c9d23153e8c426cdc5d604859c8cdc342885e1d47200526879cd",
+      "answer": {
+        "findings": [
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 19,
+            "pattern_id": "#1",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 32,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 34,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 47,
+            "pattern_id": "#9",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 54,
+            "pattern_id": "#5b",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "mapped_after_alarms": [],
+        "mapped_after_clean": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 61072,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": null,
+        "output_tokens": 1016,
+        "reasoning_output_tokens": 867
+      },
+      "elapsed_ms": 31122
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 1,
+      "side": "after",
+      "arm": "no-skill",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "551eca50a7b89c8b59f4b957c94dee8de81ac2a9e42c9c2a863171f67cb52406",
+      "raw_sha256": "aa07888e7b75046c24c3d7e777665ffe3e679c9a0aca3bce51e31c354300e829",
+      "answer": {
+        "findings": [
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 32,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 34,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 47,
+            "pattern_id": "#9",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 53,
+            "pattern_id": "#5b",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 54,
+            "pattern_id": "#5b",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "mapped_after_alarms": [],
+        "mapped_after_clean": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 19477,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 604,
+        "reasoning_output_tokens": 454
+      },
+      "elapsed_ms": 19283
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 2,
+      "side": "before",
+      "arm": "no-skill",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "a0998a0aa2fa8d27c696f05af93d771a7f7dada46970b4dd10fd46556d1291ce",
+      "raw_sha256": "03e8d1fb8ad32e28ab881848739037ed29d1b7fe0967a1f73ab64b0f1bf4631b",
+      "answer": {
+        "findings": [
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 23,
+            "pattern_id": "#9",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 33,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 35,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 47,
+            "pattern_id": "#9",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "target_hits": {
+          "#9": true,
+          "#4c-4e": false
+        },
+        "all_labels_hit": false
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 19382,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 576,
+        "reasoning_output_tokens": 454
+      },
+      "elapsed_ms": 18853
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 2,
+      "side": "before",
+      "arm": "full",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "841d4c181f7269ec1867ae46d9cc122e4f451669280d79a70fb5f7ab3764bbe7",
+      "raw_sha256": "03e8d1fb8ad32e28ab881848739037ed29d1b7fe0967a1f73ab64b0f1bf4631b",
+      "answer": {
+        "findings": [
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 23,
+            "pattern_id": "#9",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 33,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 35,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 47,
+            "pattern_id": "#9",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "target_hits": {
+          "#9": true,
+          "#4c-4e": false
+        },
+        "all_labels_hit": false
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 60975,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 414,
+        "reasoning_output_tokens": 292
+      },
+      "elapsed_ms": 16766
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 2,
+      "side": "after",
+      "arm": "no-skill",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "551eca50a7b89c8b59f4b957c94dee8de81ac2a9e42c9c2a863171f67cb52406",
+      "raw_sha256": "aa07888e7b75046c24c3d7e777665ffe3e679c9a0aca3bce51e31c354300e829",
+      "answer": {
+        "findings": [
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 32,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 34,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 47,
+            "pattern_id": "#9",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 53,
+            "pattern_id": "#5b",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 54,
+            "pattern_id": "#5b",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "mapped_after_alarms": [],
+        "mapped_after_clean": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 19476,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 612,
+        "reasoning_output_tokens": 462
+      },
+      "elapsed_ms": 23048
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 2,
+      "side": "after",
+      "arm": "full",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "51ce181e1bfa5685dfe773a7a4f40ed7d916002fea3f7134fd82e1b2fe2e4ca9",
+      "raw_sha256": "1c39dfe1a7aad9d4e117790eab1db4eccf5bc2e6544a71521b156789ca5cb3e0",
+      "answer": {
+        "findings": [
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 32,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 34,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 47,
+            "pattern_id": "#9",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 54,
+            "pattern_id": "#5b",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "mapped_after_alarms": [],
+        "mapped_after_clean": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 61070,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 639,
+        "reasoning_output_tokens": 516
+      },
+      "elapsed_ms": 22028
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 3,
+      "side": "before",
+      "arm": "full",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "841d4c181f7269ec1867ae46d9cc122e4f451669280d79a70fb5f7ab3764bbe7",
+      "raw_sha256": "03e8d1fb8ad32e28ab881848739037ed29d1b7fe0967a1f73ab64b0f1bf4631b",
+      "answer": {
+        "findings": [
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 23,
+            "pattern_id": "#9",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 33,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 35,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 47,
+            "pattern_id": "#9",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "target_hits": {
+          "#9": true,
+          "#4c-4e": false
+        },
+        "all_labels_hit": false
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 60978,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": null,
+        "output_tokens": 407,
+        "reasoning_output_tokens": 285
+      },
+      "elapsed_ms": 14826
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 3,
+      "side": "before",
+      "arm": "no-skill",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "a0998a0aa2fa8d27c696f05af93d771a7f7dada46970b4dd10fd46556d1291ce",
+      "raw_sha256": "03e8d1fb8ad32e28ab881848739037ed29d1b7fe0967a1f73ab64b0f1bf4631b",
+      "answer": {
+        "findings": [
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 23,
+            "pattern_id": "#9",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 33,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 35,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 47,
+            "pattern_id": "#9",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "target_hits": {
+          "#9": true,
+          "#4c-4e": false
+        },
+        "all_labels_hit": false
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 19383,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": null,
+        "output_tokens": 476,
+        "reasoning_output_tokens": 354
+      },
+      "elapsed_ms": 16985
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 3,
+      "side": "after",
+      "arm": "full",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "51ce181e1bfa5685dfe773a7a4f40ed7d916002fea3f7134fd82e1b2fe2e4ca9",
+      "raw_sha256": "1c39dfe1a7aad9d4e117790eab1db4eccf5bc2e6544a71521b156789ca5cb3e0",
+      "answer": {
+        "findings": [
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 32,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 34,
+            "pattern_id": "#17",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 47,
+            "pattern_id": "#9",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 54,
+            "pattern_id": "#5b",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "mapped_after_alarms": [],
+        "mapped_after_clean": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 61072,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 613,
+        "reasoning_output_tokens": 490
+      },
+      "elapsed_ms": 20250
+    },
+    {
+      "case": "vexus-timing",
+      "repetition": 3,
+      "side": "after",
+      "arm": "no-skill",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "551eca50a7b89c8b59f4b957c94dee8de81ac2a9e42c9c2a863171f67cb52406",
+      "raw_sha256": "dc8aa50fbcb57c11f6f0a76aee3a68f5e5a514276eb9dfcc7d5c790ba7f7f441",
+      "answer": {
+        "findings": [
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 47,
+            "pattern_id": "#9",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 53,
+            "pattern_id": "#5b",
+            "severity": "P1"
+          },
+          {
+            "file": "e2e/smoke.spec.ts",
+            "line": 54,
+            "pattern_id": "#5b",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "mapped_after_alarms": [],
+        "mapped_after_clean": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 19478,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 472,
+        "reasoning_output_tokens": 374
+      },
+      "elapsed_ms": 16154
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 1,
+      "side": "before",
+      "arm": "full",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "b69ed67704b05ae65741d63b13f237b0776b00ff4c027d04463dd48367712346",
+      "raw_sha256": "30afa600a7c71ef895028a2d342de3852cdc60bbcebad3df16c2b74f7c9bd57f",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 83,
+            "pattern_id": "#7",
+            "severity": "P0"
+          }
+        ]
+      },
+      "score": {
+        "target_hits": {
+          "#7": true
+        },
+        "all_labels_hit": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 58250,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": null,
+        "output_tokens": 363,
+        "reasoning_output_tokens": 318
+      },
+      "elapsed_ms": 14296
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 1,
+      "side": "before",
+      "arm": "no-skill",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "5b9854870df1eb6cc9b44552dbb3c08fec71952cd0a9616b7f0dc1a066190c43",
+      "raw_sha256": "3f01029c96a7c4ec9c80057c55d50eceba52f9e528b84ca70c93ec3d15246a6f",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 12,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 31,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 83,
+            "pattern_id": "#7",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 97,
+            "pattern_id": "#10",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 75,
+            "pattern_id": "#3",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 77,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 93,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 97,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 150,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 162,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 167,
+            "pattern_id": "#16",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "target_hits": {
+          "#7": true
+        },
+        "all_labels_hit": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 16654,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 1106,
+        "reasoning_output_tokens": 798
+      },
+      "elapsed_ms": 32603
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 1,
+      "side": "after",
+      "arm": "full",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "242fbeddf29daecda4f9b80c3eb9e48dd4644821a0cee8fbcb1b9080d7aee0bc",
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36",
+      "answer": {
+        "findings": []
+      },
+      "score": {
+        "mapped_after_alarms": [],
+        "mapped_after_clean": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 58247,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 711,
+        "reasoning_output_tokens": 694
+      },
+      "elapsed_ms": 22286
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 1,
+      "side": "after",
+      "arm": "no-skill",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "91116f37033f3506d01440344d4511b8f09f1bdfc601b40fd8a795a114228f6d",
+      "raw_sha256": "96239b6b8c521f3caa1a532b79f2635d1dafbb8228f08cf2e4217310ca2737fb",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 12,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 13,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 14,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 15,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 16,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 31,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 75,
+            "pattern_id": "#3",
+            "severity": "P0"
+          }
+        ]
+      },
+      "score": {
+        "mapped_after_alarms": [],
+        "mapped_after_clean": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 16654,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 722,
+        "reasoning_output_tokens": 516
+      },
+      "elapsed_ms": 22052
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 2,
+      "side": "before",
+      "arm": "no-skill",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "5b9854870df1eb6cc9b44552dbb3c08fec71952cd0a9616b7f0dc1a066190c43",
+      "raw_sha256": "4d17d2f99ce6c807b99cbf322dcd4ee20f5c6752d19cecf267d2995016dbed18",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 12,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 31,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 83,
+            "pattern_id": "#7",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 75,
+            "pattern_id": "#3",
+            "severity": "P0"
+          }
+        ]
+      },
+      "score": {
+        "target_hits": {
+          "#7": true
+        },
+        "all_labels_hit": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 16657,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 1065,
+        "reasoning_output_tokens": 940
+      },
+      "elapsed_ms": 30739
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 2,
+      "side": "before",
+      "arm": "full",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "b69ed67704b05ae65741d63b13f237b0776b00ff4c027d04463dd48367712346",
+      "raw_sha256": "30afa600a7c71ef895028a2d342de3852cdc60bbcebad3df16c2b74f7c9bd57f",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 83,
+            "pattern_id": "#7",
+            "severity": "P0"
+          }
+        ]
+      },
+      "score": {
+        "target_hits": {
+          "#7": true
+        },
+        "all_labels_hit": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 58249,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 935,
+        "reasoning_output_tokens": 890
+      },
+      "elapsed_ms": 28214
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 2,
+      "side": "after",
+      "arm": "no-skill",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "91116f37033f3506d01440344d4511b8f09f1bdfc601b40fd8a795a114228f6d",
+      "raw_sha256": "8f91bb809d10fdffafcc486b03730c5f61a5a734ddbf7234361236f54e1fcc94",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 12,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 13,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 14,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 15,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 16,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 31,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 97,
+            "pattern_id": "#10",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 75,
+            "pattern_id": "#3",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 77,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 93,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 97,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 150,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 162,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 167,
+            "pattern_id": "#16",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "mapped_after_alarms": [],
+        "mapped_after_clean": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 16654,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 1441,
+        "reasoning_output_tokens": 1052
+      },
+      "elapsed_ms": 40266
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 2,
+      "side": "after",
+      "arm": "full",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "242fbeddf29daecda4f9b80c3eb9e48dd4644821a0cee8fbcb1b9080d7aee0bc",
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36",
+      "answer": {
+        "findings": []
+      },
+      "score": {
+        "mapped_after_alarms": [],
+        "mapped_after_clean": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 58249,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 616,
+        "reasoning_output_tokens": 599
+      },
+      "elapsed_ms": 20405
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 3,
+      "side": "before",
+      "arm": "full",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "b69ed67704b05ae65741d63b13f237b0776b00ff4c027d04463dd48367712346",
+      "raw_sha256": "30afa600a7c71ef895028a2d342de3852cdc60bbcebad3df16c2b74f7c9bd57f",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 83,
+            "pattern_id": "#7",
+            "severity": "P0"
+          }
+        ]
+      },
+      "score": {
+        "target_hits": {
+          "#7": true
+        },
+        "all_labels_hit": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 58250,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 938,
+        "reasoning_output_tokens": 893
+      },
+      "elapsed_ms": 29784
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 3,
+      "side": "before",
+      "arm": "no-skill",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "5b9854870df1eb6cc9b44552dbb3c08fec71952cd0a9616b7f0dc1a066190c43",
+      "raw_sha256": "f1235b81f8a3fd67d249dfd9f21585e1e29b74fd00f2a29b6f5b2c1fe0d20967",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 12,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 31,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 83,
+            "pattern_id": "#7",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 75,
+            "pattern_id": "#3",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 77,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 93,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 97,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 150,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 162,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 167,
+            "pattern_id": "#16",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "target_hits": {
+          "#7": true
+        },
+        "all_labels_hit": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 16656,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 662,
+        "reasoning_output_tokens": 381
+      },
+      "elapsed_ms": 22694
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 3,
+      "side": "after",
+      "arm": "full",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "242fbeddf29daecda4f9b80c3eb9e48dd4644821a0cee8fbcb1b9080d7aee0bc",
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36",
+      "answer": {
+        "findings": []
+      },
+      "score": {
+        "mapped_after_alarms": [],
+        "mapped_after_clean": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 58248,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 1176,
+        "reasoning_output_tokens": 1159
+      },
+      "elapsed_ms": 33044
+    },
+    {
+      "case": "reactivetrader-focus",
+      "repetition": 3,
+      "side": "after",
+      "arm": "no-skill",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "91116f37033f3506d01440344d4511b8f09f1bdfc601b40fd8a795a114228f6d",
+      "raw_sha256": "9604054d74377b0f44e8d9c0cac6f3bbc3ff13e1d4fc61f70ae046addda1e9b5",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 12,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 13,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 14,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 15,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 16,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/credit.spec.ts",
+            "line": 31,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 75,
+            "pattern_id": "#3",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 77,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 93,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 97,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 150,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 162,
+            "pattern_id": "#16",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fixtures.ts",
+            "line": 167,
+            "pattern_id": "#16",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "mapped_after_alarms": [],
+        "mapped_after_clean": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 16654,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 1168,
+        "reasoning_output_tokens": 806
+      },
+      "elapsed_ms": 32815
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 1,
+      "side": "before",
+      "arm": "full",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "779250250e82ed128cd831ead0337192d6fb260365b2cce51f1f264ddef50b57",
+      "raw_sha256": "8a0862794e54db6a62bc4aebeff4d5cd08c0a07e0913554f4089f4913d767b66",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 42,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 63,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 77,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 80,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 85,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 96,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 101,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 105,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 114,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 121,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 125,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "target_hits": {
+          "#10a": true
+        },
+        "all_labels_hit": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 57481,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 1701,
+        "reasoning_output_tokens": 1338
+      },
+      "elapsed_ms": 45813
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 1,
+      "side": "before",
+      "arm": "no-skill",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "9246852fcc753c39a4ae99340f27a74c15599f640254426fc0e91c95dc5b0927",
+      "raw_sha256": "64c6765dd5c142eb870a52dc5948c8056da99bef41b70043fd683e1242cb79b9",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 42,
+            "pattern_id": "#4b",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 45,
+            "pattern_id": "#1",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 59,
+            "pattern_id": "#5a",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 88,
+            "pattern_id": "#4b",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 119,
+            "pattern_id": "#1",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 128,
+            "pattern_id": "#4b",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "target_hits": {
+          "#10a": false
+        },
+        "all_labels_hit": false
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 15888,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 2195,
+        "reasoning_output_tokens": 1999
+      },
+      "elapsed_ms": 57766
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 1,
+      "side": "after",
+      "arm": "full",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "632f7148b749a0525c45479de82c683fc2c54e1802e12ae9d405a52a5043bc78",
+      "raw_sha256": "3d7c20b014a42d37b375dbd26b7a4143d3bc63258302447cc6bf87ff46424d7b",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 36,
+            "pattern_id": "#1",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 39,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 57,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 59,
+            "pattern_id": "#5a",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 77,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 80,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 86,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 96,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 101,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 110,
+            "pattern_id": "#1",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 115,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "mapped_after_alarms": [],
+        "mapped_after_clean": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 57444,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 1810,
+        "reasoning_output_tokens": 1452
+      },
+      "elapsed_ms": 49506
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 1,
+      "side": "after",
+      "arm": "no-skill",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "f6995388ee8bb0487aaff946bdaa370a023f910b643d6b84742667fdda80d2b8",
+      "raw_sha256": "315f697008f31da38b3ed6e3388aac57805c496ac503866737b467ba17b1907d",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 42,
+            "pattern_id": "#4b",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 49,
+            "pattern_id": "#10",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 59,
+            "pattern_id": "#5a",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 88,
+            "pattern_id": "#4b",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 122,
+            "pattern_id": "#4b",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "mapped_after_alarms": [],
+        "mapped_after_clean": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 15850,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 1607,
+        "reasoning_output_tokens": 1440
+      },
+      "elapsed_ms": 44194
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 2,
+      "side": "before",
+      "arm": "no-skill",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "9246852fcc753c39a4ae99340f27a74c15599f640254426fc0e91c95dc5b0927",
+      "raw_sha256": "7ddefd0cc09381e164b78c659bb3ae16082fbbd3c2bf016d49085b9cd6ec06c0",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 42,
+            "pattern_id": "#4a",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 59,
+            "pattern_id": "#5a",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 88,
+            "pattern_id": "#4a",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 128,
+            "pattern_id": "#4a",
+            "severity": "P0"
+          }
+        ]
+      },
+      "score": {
+        "target_hits": {
+          "#10a": false
+        },
+        "all_labels_hit": false
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 15888,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 1536,
+        "reasoning_output_tokens": 1398
+      },
+      "elapsed_ms": 42179
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 2,
+      "side": "before",
+      "arm": "full",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "779250250e82ed128cd831ead0337192d6fb260365b2cce51f1f264ddef50b57",
+      "raw_sha256": "7ff84711c2dc21723281250c0571b9a1fefc65f9d46ef2835dff6f503d3fe6ce",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 42,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 59,
+            "pattern_id": "#5a",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 77,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 80,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 86,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 96,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 101,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 114,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 121,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 125,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "target_hits": {
+          "#10a": true
+        },
+        "all_labels_hit": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 57483,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 2397,
+        "reasoning_output_tokens": 2070
+      },
+      "elapsed_ms": 64556
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 2,
+      "side": "after",
+      "arm": "no-skill",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "f6995388ee8bb0487aaff946bdaa370a023f910b643d6b84742667fdda80d2b8",
+      "raw_sha256": "b948377a5ee4ebebebedb8cb9cb1768aae036151ea5e817d7632622c2f4d4416",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 42,
+            "pattern_id": "#4b",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 49,
+            "pattern_id": "#10",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 59,
+            "pattern_id": "#5b",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 88,
+            "pattern_id": "#4b",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 122,
+            "pattern_id": "#4b",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "mapped_after_alarms": [],
+        "mapped_after_clean": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 15851,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 1072,
+        "reasoning_output_tokens": 905
+      },
+      "elapsed_ms": 30145
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 2,
+      "side": "after",
+      "arm": "full",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "632f7148b749a0525c45479de82c683fc2c54e1802e12ae9d405a52a5043bc78",
+      "raw_sha256": "6d78514fd0d10ccf09c60ace19369c95dc8266e3460c34dff8638eb7adb13b99",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 36,
+            "pattern_id": "#1",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 42,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 59,
+            "pattern_id": "#5a",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 77,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 80,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 86,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 96,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 101,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 119,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "mapped_after_alarms": [],
+        "mapped_after_clean": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 57443,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 2366,
+        "reasoning_output_tokens": 2070
+      },
+      "elapsed_ms": 62155
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 3,
+      "side": "before",
+      "arm": "full",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "779250250e82ed128cd831ead0337192d6fb260365b2cce51f1f264ddef50b57",
+      "raw_sha256": "d3bc8bf5ebc7320fda7e7bf4f89a648d43942290e12fb352528a6b28ea98bb34",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 36,
+            "pattern_id": "#1",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 42,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 77,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 80,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 85,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 96,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 101,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 105,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 114,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 121,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 125,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "target_hits": {
+          "#10a": true
+        },
+        "all_labels_hit": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 57482,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 1644,
+        "reasoning_output_tokens": 1285
+      },
+      "elapsed_ms": 44783
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 3,
+      "side": "before",
+      "arm": "no-skill",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "9246852fcc753c39a4ae99340f27a74c15599f640254426fc0e91c95dc5b0927",
+      "raw_sha256": "f87827aa1d7187c5875d8aac48b3df503963b3c2f59057759ef513b7e2ceff41",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 20,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 41,
+            "pattern_id": "#4b",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 59,
+            "pattern_id": "#5b",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 84,
+            "pattern_id": "#4b",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 111,
+            "pattern_id": "#10",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 124,
+            "pattern_id": "#4b",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "target_hits": {
+          "#10a": false
+        },
+        "all_labels_hit": false
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 15889,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 1583,
+        "reasoning_output_tokens": 1387
+      },
+      "elapsed_ms": 44892
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 3,
+      "side": "after",
+      "arm": "full",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "632f7148b749a0525c45479de82c683fc2c54e1802e12ae9d405a52a5043bc78",
+      "raw_sha256": "8b153120ec0b272f7485575a09482d3c7bf9376a8b12ec0eaada4ca89947a3e3",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 36,
+            "pattern_id": "#1",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 39,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 59,
+            "pattern_id": "#5a",
+            "severity": "P0"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 77,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 80,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 86,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 96,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 101,
+            "pattern_id": "#10a",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 115,
+            "pattern_id": "#4c-4e",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "mapped_after_alarms": [],
+        "mapped_after_clean": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 57445,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 2242,
+        "reasoning_output_tokens": 1946
+      },
+      "elapsed_ms": 59305
+    },
+    {
+      "case": "reactivetrader-pnl-selector",
+      "repetition": 3,
+      "side": "after",
+      "arm": "no-skill",
+      "returncode": 0,
+      "complete": true,
+      "prompt_sha256": "f6995388ee8bb0487aaff946bdaa370a023f910b643d6b84742667fdda80d2b8",
+      "raw_sha256": "b8734209531fd5c654403eea68ea057c1cc06cc4c066219aa78a681fe9ad8937",
+      "answer": {
+        "findings": [
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 20,
+            "pattern_id": "#19",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 42,
+            "pattern_id": "#4b",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 49,
+            "pattern_id": "#10",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 59,
+            "pattern_id": "#5b",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 88,
+            "pattern_id": "#4b",
+            "severity": "P1"
+          },
+          {
+            "file": "packages/client/e2e/fx-analytics.spec.ts",
+            "line": 122,
+            "pattern_id": "#4b",
+            "severity": "P1"
+          }
+        ]
+      },
+      "score": {
+        "mapped_after_alarms": [],
+        "mapped_after_clean": true
+      },
+      "usage": {
+        "source": "codex-json-events",
+        "input_tokens": 15851,
+        "cached_input_tokens": 9856,
+        "cache_write_tokens": null,
+        "output_tokens": 1388,
+        "reasoning_output_tokens": 1192
+      },
+      "elapsed_ms": 38099
+    }
+  ]
+}

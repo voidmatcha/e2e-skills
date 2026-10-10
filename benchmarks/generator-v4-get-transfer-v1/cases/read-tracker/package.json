@@ -1,0 +1,7 @@
+{
+  "name": "read-tracker",
+  "private": true,
+  "type": "module",
+  "scripts": { "test:e2e": "playwright test" },
+  "devDependencies": { "@playwright/test": "1.62.0" }
+}

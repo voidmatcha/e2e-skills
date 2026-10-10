@@ -1,0 +1,60 @@
+{
+  "task": "Cover the file manager page (`/`), seeded with seven files. Each row has a checkbox and the toolbar shows `N selected`. The header checkbox selects every row or clears them all, and shows the indeterminate state while only some rows are selected. Delete selected asks `Delete N files?` in the browser dialog; on confirm it removes those rows and shows `N files deleted` with an Undo button, and dismissing the dialog deletes nothing. Undo brings the deleted files back, on the server too, so they are still listed after a reload.",
+  "faults": [
+    {
+      "id": "f1-delete-noop",
+      "class": "surface",
+      "brief_phrase": "on confirm it removes those rows",
+      "description": "Confirming the dialog deletes nothing and shows no toast.",
+      "find": "      if (!confirm(\"Delete \" + ids.length + \" files?\")) return;\n      await api",
+      "replace": "      if (!confirm(\"Delete \" + ids.length + \" files?\") || ids.length) return;\n      await api"
+    },
+    {
+      "id": "f2-select-all-skips-last",
+      "class": "boundary",
+      "brief_phrase": "The header checkbox selects every row",
+      "description": "The header checkbox selects every row except the last one.",
+      "find": "      if (el(\"fm-all\").checked) selected = new Set(rows.map((f) => f.id));\n",
+      "replace": "      if (el(\"fm-all\").checked) selected = new Set(rows.slice(0, -1).map((f) => f.id));\n"
+    },
+    {
+      "id": "f3-indeterminate-missing",
+      "class": "a11y",
+      "brief_phrase": "shows the indeterminate state while only some rows are selected",
+      "description": "The header checkbox is never indeterminate.",
+      "find": "      all.indeterminate = count > 0 && count < rows.length;\n",
+      "replace": "      all.indeterminate = false;\n"
+    },
+    {
+      "id": "f4-undo-client-only",
+      "class": "persistence",
+      "brief_phrase": "on the server too, so they are still listed after a reload",
+      "description": "Undo restores the rows on the page but the server keeps them deleted; a reload loses them.",
+      "find": "      for (const f of files) if (ids.includes(f.id)) f.deleted = false;\n",
+      "replace": "      void ids;\n"
+    },
+    {
+      "id": "f5-confirm-count-wrong",
+      "class": "precision",
+      "brief_phrase": "asks `Delete N files?` in the browser dialog",
+      "description": "The dialog text undercounts by one (`Delete 1 files?` for two selected).",
+      "find": "      if (!confirm(\"Delete \" + ids.length + \" files?\")) return;\n",
+      "replace": "      if (!confirm(\"Delete \" + (ids.length - 1) + \" files?\")) return;\n"
+    }
+  ],
+  "refactor": [
+    {"find": "<div id=\"fm-toolbar\">", "replace": "<header class=\"toolbar\"><div id=\"fm-toolbar\" class=\"toolbar__row\">"},
+    {"find": "<button type=\"button\" id=\"fm-delete\" disabled>Delete selected</button>\n    </div>", "replace": "<button type=\"button\" id=\"fm-delete\" class=\"btn btn-danger\" disabled><span>Delete selected</span></button>\n    </div></header>"},
+    {"find": "<table id=\"fm-table\">", "replace": "<section class=\"panel\"><table id=\"fm-table\" class=\"data-grid\">"},
+    {"find": "<tbody id=\"fm-rows\"></tbody>\n    </table>", "replace": "<tbody id=\"fm-rows\"></tbody>\n    </table></section>"},
+    {"find": "fm-toast-text", "replace": "notice-text"},
+    {"find": "fm-toast", "replace": "notice"},
+    {"find": "fm-toolbar", "replace": "actions"},
+    {"find": "fm-selected", "replace": "selection-count"},
+    {"find": "fm-delete", "replace": "remove-selected"},
+    {"find": "fm-table", "replace": "listing"},
+    {"find": "fm-rows", "replace": "listing-body"},
+    {"find": "fm-undo", "replace": "notice-undo"},
+    {"find": "fm-all", "replace": "select-every"}
+  ]
+}

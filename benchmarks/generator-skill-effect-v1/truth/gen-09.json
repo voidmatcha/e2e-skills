@@ -1,0 +1,55 @@
+{
+  "task": "Add end-to-end tests for the notes page (`/`). Acceptance criteria: (1) adding a title creates a note in the list; (2) notes are listed alphabetically by title, ignoring letter case; (3) Edit turns a note's title into a text field, and Save applies the new title to that note; (4) Delete removes exactly the chosen note; (5) additions, edits and deletions are stored on the server, so a reload shows the same list; (6) the counter under the heading reads `1 note` or `N notes`. The test seam `POST /api/reset` deletes every note.",
+  "faults": [
+    {
+      "id": "f1-add-noop",
+      "class": "surface",
+      "criterion": 1,
+      "description": "Adding a note changes nothing on the page until a reload.",
+      "find": "      state.push(created);\n",
+      "replace": "      void created;\n"
+    },
+    {
+      "id": "f2-unsorted",
+      "class": "precision",
+      "criterion": 2,
+      "description": "Notes render in insertion order.",
+      "find": "listEl.replaceChildren(...sorted(state).map(row));",
+      "replace": "listEl.replaceChildren(...state.map(row));"
+    },
+    {
+      "id": "f3-edit-not-persisted",
+      "class": "persistence",
+      "criterion": 5,
+      "description": "Save shows the new title but the server keeps the old one; a reload shows the old title.",
+      "find": "      note.title = String(title).trim();\n",
+      "replace": "      void title;\n"
+    },
+    {
+      "id": "f4-delete-client-only",
+      "class": "persistence",
+      "criterion": 5,
+      "description": "Delete removes the note from the page only; a reload brings it back.",
+      "find": "      notes = notes.filter((n) => n.id !== removedId);\n",
+      "replace": "      void removedId;\n"
+    },
+    {
+      "id": "f5-delete-wrong-note",
+      "class": "precision",
+      "criterion": 4,
+      "description": "Delete removes the alphabetically first note from the page instead of the chosen one (the server deletes the right one).",
+      "find": "        state = state.filter((n) => n.id !== note.id);\n",
+      "replace": "        state = sorted(state).slice(1);\n"
+    }
+  ],
+  "refactor": [
+    {"find": "<ul id=\"nt-list\" aria-label=\"Notes\"></ul>", "replace": "<section class=\"panel\"><ul id=\"nt-list\" class=\"panel__list\" aria-label=\"Notes\"></ul></section>"},
+    {"find": "<button type=\"submit\">Add</button>", "replace": "<button type=\"submit\" class=\"btn btn-primary\"><span>Add</span></button>"},
+    {"find": "li.className = \"note\";", "replace": "li.className = \"card card--note\";"},
+    {"find": "title.className = \"title\";", "replace": "title.className = \"card__heading\";"},
+    {"find": "nt-count", "replace": "tally"},
+    {"find": "nt-form", "replace": "composer"},
+    {"find": "nt-title", "replace": "composer-title"},
+    {"find": "nt-list", "replace": "notebook"}
+  ]
+}

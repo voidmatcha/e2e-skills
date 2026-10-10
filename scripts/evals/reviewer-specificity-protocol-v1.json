@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "protocol_id": "reviewer-specificity-v1",
+  "status": "FROZEN",
+  "visibility": "public-development",
+  "purpose": "Measure false-positive behavior on cases with no e2e-reviewer finding anywhere in the submitted case.",
+  "design_disclosure": "Designed after reviewer-holdout-v7 was inspected. V7 motivates this protocol but cannot validate thresholds selected after V7 was observed.",
+  "corpus": {
+    "status": "NOT_CREATED",
+    "case_count_target": 48,
+    "case_count_minimum": 24,
+    "framework_allocation_target": {"playwright": 24, "cypress": 24},
+    "framework_allocation_minimum": {"playwright": 12, "cypress": 12},
+    "labels": "Every accepted case has an empty finding set; fp_guard labels do not replace the whole-case clean oracle.",
+    "case_boundary": "One spec plus every repository-local config, fixture, page object, command, support module, and application helper needed to judge behavior reached by that spec.",
+    "cases_per_source_repository_max": 2,
+    "deduplication_unit": "shared-source-or-behavior-lineage-cluster",
+    "source_selection": {
+      "freeze_timing": "Frozen before any candidate repository, scanner hit, or source file is inspected for this corpus.",
+      "population": "Public, non-fork, non-archived GitHub repositories whose default-branch package.json contains @playwright/test or cypress and whose licence permits redistribution.",
+      "candidate_snapshot": "Before source inspection, record complete GitHub search results, query, retrieval time, stars, default branch, and full HEAD SHA for each framework.",
+      "repository_order": "Within framework: stars descending, then case-folded owner/name ascending, then exact owner/name ascending.",
+      "candidate_order": "Run the frozen scanner per pinned repository. Sort by repository rank, POSIX path, line, taxonomy order, then source bytes. Group the same spec and reachable dependency closure. Visit principal guard pattern and framework slots in their frozen allocation order and accept the first eligible clean group for each open slot. Never reorder after inspection.",
+      "scanner_role": "Candidate generator only; a hit is not a finding or proof of cleanliness. Every accepted case must contain at least one scanner-produced, preregistered guard line that resembles a catalogued anti-pattern but is adjudicated as a non-finding in context.",
+      "lookalike_allocation": "At the 24-case run minimum, assign exactly one case to each of the 24 principal guard pattern IDs; assign odd taxonomy-order slots to Playwright and even slots to Cypress for a frozen 12/12 split. At the 48-case target, assign one Playwright and one Cypress case per pattern for a 24/24 split. A case may contain additional guard lines, but only its first eligible hit in frozen candidate order fills a principal quota. If a frozen pattern-framework slot cannot be filled, stop and version a new protocol rather than swapping frameworks or patterns discretionarily.",
+      "anti_tuning_rule": "Selection may use only the frozen scanner, taxonomy order, source order, framework balance, lineage rules, and blinded whole-case adjudication. Do not use V7 error identities, treatment or control outputs, pattern-specific observed arm gaps, or manual similarity judgments to prioritize candidates. This constructs taxonomy-wide lookalikes without targeting known treatment weaknesses by proxy.",
+      "insufficient_pool": "If the pool cannot fill the target without relaxing a frozen rule, stop and version a new protocol; never backfill discretionarily.",
+      "excluded_repository_identities": [
+        "apache/zeppelin", "calcom/cal.diy", "carbon-design-system/carbon", "coder/code-server", "DefGuard/defguard", "element-hq/element-web", "ever-co/ever-gauzy", "expo/expo", "francoischalifour/medium-zoom", "gautamkrishnar/nothing-private", "hcengineering/platform", "i5ting/imove", "ixartz/SaaS-Boilerplate", "jhipster/jhipster-sample-app", "kentcdodds/bookshelf", "Kong/insomnia", "LekoArts/gatsby-themes", "livestorejs/livestore", "module-federation/core", "mui/mui-x", "n8n-io/n8n", "open-mercato/open-mercato", "QwikDev/qwik", "rancher-sandbox/rancher-desktop", "remix-run/react-router", "RocketChat/Rocket.Chat", "storybookjs/storybook", "strapi/strapi", "supabase/supabase", "sveltejs/kit", "sweetalert2/sweetalert2", "TanStack/router", "ToolJet/ToolJet", "TryGhost/Ghost", "usebruno/bruno", "valor-software/ngx-bootstrap", "VoltAgent/awesome-agent-skills", "voxel51/fiftyone"
+      ],
+      "excluded_project_material": [
+        "All field-scan-v1 and extension repositories",
+        "All field-review-v1 and case-study repositories and PR targets",
+        "All existing eval, case-library, holdout, fault-corpus, independent-review, and testbed sources or lineages",
+        "Anything inspected while developing or tuning e2e-reviewer, even if absent from the explicit list"
+      ],
+      "exclusion_precedence": "Rule-based exclusions are authoritative. Newly discovered prior use is excluded and published as a protocol defect; never silently amend this version."
+    },
+    "required_case_provenance_fields": [
+      "repository_identity", "repository_url", "full_commit_sha", "default_branch_at_snapshot", "repository_rank_and_framework_query", "candidate_ordinal", "source_paths", "immutable_blob_urls", "source_file_sha256_values", "retrieved_at", "lineage_cluster", "transformations_or_redactions", "license_spdx_identifier", "license_file_path", "license_blob_url", "license_file_sha256", "redistribution_basis"
+    ],
+    "frozen_adjudication_inputs": {
+      "scanner": "skills/e2e-reviewer/scripts/scan.sh",
+      "scanner_sha256": "3056aa13c55f337dbd6a24f6a61859fdd47e0b3758e4cb4cbe795d050b04f3de",
+      "pattern_reference": "skills/e2e-reviewer/references/pattern-reference.md",
+      "pattern_reference_sha256": "9c27480bd0fdde91d865c095de67bc0fc96606da79b13ed64e7e07807d5d5708"
+    }
+  },
+  "clean_verification": {
+    "candidate_generation": "Preserve complete scanner stdout, stderr, exit status, completeness diagnostics, and order. Incomplete output is ineligible until rerun completely.",
+    "whole_case_review": "Inspect the full boundary and write a non-finding rationale for all 24 pattern IDs against the frozen reference, citing files and lines and resolving every scanner candidate.",
+    "finding_disposition": "If any pattern is present, record the rejection and discard the case. Never relabel, repair, trim, or make it a positive case here.",
+    "acceptance": "Require source closure, scanner record, 24-pattern rationale, licence, lineage check, and reviewer decision. Reviewers cannot see model output.",
+    "independence": {
+      "problem": "The maintainer who tuned the skill is not an independent oracle.",
+      "claim_eligible_minimum": "A non-author who has not seen model output confirms every accepted case. Disagreements reject unless another independent reviewer resolves them before freeze.",
+      "options": [
+        {"tier": "maintainer-only", "cost": "One full review per candidate.", "limit": "Descriptive only; no independent lift claim."},
+        {"tier": "independent-confirmation", "cost": "One extra full review per accepted case plus disagreements.", "limit": "Minimum claim-eligible tier; public-selection risk remains."},
+        {"tier": "dual-independent-with-tie-break", "cost": "Two blinded reviews and a third for disagreements.", "limit": "Strongest option here, but not sealed or representative."}
+      ]
+    }
+  },
+  "schedule": {
+    "algorithm": "sha256-seeded-sort-v1", "seed": 20260801,
+    "default_repetitions": 3, "release_repetitions": 3,
+    "evidence_scope": "public-development",
+    "freeze_policy": "Freeze corpus, rationales, ledger, skill, prompts, and protocol before the first measured run; any edit creates a new version.",
+    "fresh_workspace_per_repetition": true,
+    "repetitions_are_independent_cases": false,
+    "repetition_purpose": "Stability and repeated-run false-positive measurement only."
+  },
+  "stability": {
+    "rule": "strict-majority", "minimum_repetitions": 3,
+    "primary_definition": "For the primary metric, first classify each case-repetition as clean or not clean using all reported findings anywhere in the case. A case is stably clean for an arm when clean case-repetitions are a strict majority of that arm's successful repetitions for the case.",
+    "finding_tuple_definition": "For tuple-based secondary diagnostics, the identical case, pattern ID, severity, file, and line tuple appears in strictly more than half of successful repetitions."
+  },
+  "execution_identity": {
+    "require_explicit_runner_path": true,
+    "expected_cli_versions": {"codex": "codex-cli 0.154.0"},
+    "run_identity_capture": "Capture resolved path and CLI version; do not pin user paths or binary digests.",
+    "attestation_limit": "Identity is provenance, not cryptographic attestation.",
+    "version_policy": "minimum"
+  },
+  "prompt_arms": {
+    "treatment": "full", "controls": ["catalog-only", "no-skill"],
+    "material_definitions": {
+      "full": ["SKILL.md", "references/review-scope.md", "references/scanner-workflow.md", "references/semantic-review.md", "references/reporting.md", "references/pattern-reference.md", "references/verification-rules.md"],
+      "catalog-only": ["references/pattern-reference.md"], "no-skill": []
+    },
+    "shared_output_legend": true,
+    "no_skill_is_taxonomy_free": false,
+    "no_skill_legend_limit": "No rules or workflow; only the minimal ID, title, and severity legend shared for scoring.",
+    "comparison_unit": "separate-complete-host-matrix",
+    "matrix_requirement": "Separate complete full, catalog-only, and no-skill reports."
+  },
+  "host_matrix": [{"runner": "codex", "model": "gpt-5.6-sol"}],
+  "metrics": {
+    "primary": {"name": "per-case-specificity", "unit": "unique-clean-case", "definition": "A clean case counts as clean for an arm in a repetition when that arm reports no finding of any pattern at any line in any file of the case; a case is stably clean when that holds in a strict majority of repetitions; per-arm specificity is the share of stably clean cases."},
+    "co_primary": {
+      "name": "repeated-run-false-positive-count-per-case",
+      "unit": "reported-finding-per-clean-case",
+      "definition": "Sum every distinct reported finding tuple across all successful repetitions, without majority collapse, and divide by the number of clean cases. A tuple is pattern ID, severity, file, and line and is counted at most once within one case-repetition. Thus V7 full's 1 finding over 24 case-repetitions is 1/8 = 0.125 per case, while catalog-only's 6 is 6/8 = 0.75 per case."
+    },
+    "secondary": [
+      {"name": "stable-false-positives-per-case", "unit": "stable-prediction-per-clean-case", "definition": "Distinct stable prediction tuples divided by clean cases."},
+      {"name": "repeated-run-false-positive-rate", "unit": "case-repetition", "definition": "Share of successful clean case-repetitions with at least one prediction; multiple predictions count once."},
+      {"name": "guard-line-hit-rate", "unit": "preregistered-guard-line-repetition", "definition": "Share of preregistered guard-line repetitions for which the arm reports a finding tuple on that exact file and line; also report strict-majority-stable guard hits by guard ID. This diagnostic identifies which lookalike shapes attract false positives but does not determine whether a case is clean."}
+    ],
+    "v7_noncomparability": "This protocol's per-case specificity is not V7's clean_case_specificity. V7 asked whether preregistered guard lines were flagged; it could score a case clean despite a false positive elsewhere. This protocol asks whether there was any finding anywhere in the case before majority aggregation. The two specificity values must not be compared as if they were the same metric.",
+    "rounding_policy": "Evaluate exact counts and rational values before display rounding."
+  },
+  "arm_comparison": {
+    "treatment": "full", "controls": ["catalog-only", "no-skill"],
+    "required_matrix": "exact-three-profiles-by-one-host",
+    "requires_all_reports_execution_complete": true,
+    "requires_treatment_report_status": "PASS",
+    "requires_each_control_comparison_pass": true,
+    "provider_aggregation": "single-host-direct",
+    "stability_basis": "Primary specificity majority-aggregates case-repetition cleanliness; tuple stability is used only for secondary diagnostics.",
+    "execution_order_design": "single-host-three-arm-sequential",
+    "execution_order": [
+      {"ordinal": 1, "prompt_profile": "full", "runner": "codex", "model": "gpt-5.6-sol"},
+      {"ordinal": 2, "prompt_profile": "catalog-only", "runner": "codex", "model": "gpt-5.6-sol"},
+      {"ordinal": 3, "prompt_profile": "no-skill", "runner": "codex", "model": "gpt-5.6-sol"}
+    ],
+    "requires_sequential_non_overlapping_execution": true,
+    "matrix_elapsed_basis": "first-start-to-last-completion",
+    "maximum_matrix_elapsed_seconds": 43200,
+    "temporal_validity_limit": "Fixed order, non-overlap, and 12 hours reduce time confounding but do not attest time or provider revisions.",
+    "uncertainty": {
+      "method": "paired-stratified-case-bootstrap",
+      "seed": 20260801,
+      "iterations": 10000,
+      "confidence": 0.95,
+      "strata": ["playwright-clean-cases", "cypress-clean-cases"],
+      "percentile_method": "nearest-rank",
+      "metrics": [
+        {"name": "per-case-specificity", "comparison": "full-minus-control"},
+        {"name": "repeated-run-false-positive-count-per-case", "comparison": "control-minus-full"}
+      ],
+      "pairing": "Resample case identities with replacement within framework and carry all arms together.",
+      "interpretation_limit": "Case-resampling sensitivity on this fixed public set, not model-run uncertainty, statistical power, a population interval, independent replication, or causal inference."
+    }
+  },
+  "decision": {
+    "requires_every_gate": true,
+    "full_arm_absolute_thresholds": {
+      "per_case_specificity_min": 0.95,
+      "repeated_run_false_positive_count_per_case_max": 0.125
+    },
+    "full_vs_each_control_thresholds": {
+      "per_case_specificity_delta_min": 0.125,
+      "per_case_specificity_delta_ci95_lower_min_exclusive": 0,
+      "repeated_run_false_positive_count_per_case_advantage_min": 0.5,
+      "repeated_run_false_positive_count_per_case_advantage_ci95_lower_min_exclusive": 0
+    },
+    "threshold_rationale": {
+      "per_case_specificity_min": "Under this protocol's any-finding-anywhere definition, V7 full was 8/8 stably clean. Keep a 0.95 absolute floor while allowing at most two non-clean cases at the 48-case target.",
+      "repeated_run_false_positive_count_per_case_max": "V7 full produced 1 reported false positive across 24 case-repetitions, or 1/8 = 0.125 per case. Preserve that observed full-arm ceiling.",
+      "per_case_specificity_delta_min": "Under the new definition V7 full was 8/8 and catalog-only 6/8, a 0.25 delta. Require at least half that observed difference, 0.125, against each control.",
+      "per_case_specificity_delta_ci95_lower_min_exclusive": "Require the paired advantage not to disappear under case resampling; this is fixed-set resampling sensitivity, not population inference.",
+      "repeated_run_false_positive_count_per_case_advantage_min": "V7 catalog-only minus full was (6 - 1) / 8 = 0.625 reported false positives per case. Require at least 0.5, retaining four fifths of that observed count-rate advantage. The comparison direction is control minus full.",
+      "repeated_run_false_positive_count_per_case_advantage_ci95_lower_min_exclusive": "Require the control-minus-full count-rate advantage not to disappear under paired case resampling. Carry all repetitions for a sampled case together; repetitions are not independent bootstrap units.",
+      "post_observation_limit": "Every threshold above was chosen after observing the V7 numbers. V7 is the calibration starting point and cannot validate any of these thresholds; only a newly frozen corpus can test them."
+    },
+    "failure_semantics": {
+      "fail": "A complete matrix missing any full-arm or either control-comparison gate is FAIL.",
+      "inconclusive": "Missing or fewer than 24 cases, incomplete principal-pattern coverage, imbalance, incomplete calls, infrastructure errors, identity or provenance mismatch, elapsed-window violation, mutation, missing clean rationale or licence, or missing independent confirmation is INCONCLUSIVE.",
+      "partial": "Partial metrics are descriptive only and never a lift result."
+    }
+  },
+  "size_rationale": {
+    "v7_starting_point": "Under the any-finding-anywhere definition, V7 had 8 clean cases: full was 8/8 stably clean, catalog-only was 6/8, and no-skill was 1/8. The full-versus-catalog-only paired discordance was 2/8, both full-favouring, with one discordance in each four-case framework stratum.",
+    "paired_interval_calculation": "If the observed one-sided 1/4 discordance rate repeats in each framework stratum, a paired stratified bootstrap draw has zero discordances with probability (3/4)^N. A two-sided 95% percentile lower bound can exclude zero only when this mass is below 0.025: algebraically N >= 13. Because the design requires equal framework strata and the observed 1/4 rate must be representable without rounding it upward, the first statistically usable balanced size is 16, with 8 cases and 2 discordances per framework; (3/4)^16 = 0.0100226.",
+    "target": "Keep 48 balanced cases: the observed rate projects to 12 full-favouring discordances, the 0.125 point-delta gate requires six net discordances, and the 1/48 step permits more informative rate estimates. This is a design projection, not validation or guaranteed power.",
+    "minimum": "Do not run below 24 balanced cases. The paired interval alone first becomes defensible at 16, but the corpus rule requires at least one principal lookalike case for every one of the 24 pattern IDs. Twenty-four is therefore the protocol run minimum, balanced 12/12; at the observed rate it projects three discordances per framework and (3/4)^24 = 0.00100339 zero-discordance mass. A smaller run either lacks taxonomy-wide lookalike coverage or cannot honestly be justified by the observed paired effect.",
+    "not_power": "This is analytic resampling sensitivity under the observed all-one-direction discordance pattern, not statistical power. Opposite discordances, a smaller new-corpus effect, framework imbalance, or finite 10000-draw Monte Carlo variation can keep the interval at zero even with 48 cases."
+  },
+  "claim_policy": {
+    "pass": "Only fixed-public-corpus, declared Codex model, CLI, and schedule evidence that full met the specificity gates and exceeded both controls.",
+    "fail": "No specificity-lift claim; descriptive metrics may be published.",
+    "inconclusive": "No specificity-lift claim.",
+    "maintainer_only_oracle": "Numeric PASS cannot make a maintainer-only corpus claim-eligible.",
+    "excluded_claims": [
+      "recall, finding precision, or F1", "pattern-detection ability", "population generalization", "cross-provider performance", "sealed or release-grade evidence", "developer usefulness, repair quality, time saved, or prevalence"
+    ]
+  }
+}

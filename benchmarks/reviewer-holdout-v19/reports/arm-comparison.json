@@ -1,0 +1,409 @@
+{
+  "schema_version": 1,
+  "comparator_sha256": "51d0026a131e80988752ee0afeb68b44f19d8c835462b3379b68cb819cb509c8",
+  "evaluator_sha256": "689cd5fbe711b1345e837bdcae28211961ae6cc6cbdce1749837778220d49b35",
+  "comparison_mode": "arm-matrix",
+  "skill_lift_claim_eligible": true,
+  "evidence_scope": "development",
+  "release_eligible": false,
+  "protocol_id": "reviewer-holdout-v19",
+  "protocol_sha256": "e1bdc533f596884d0b3de286882bb97aeca5327010e59b65df47c8fe2ebfc90b",
+  "corpus_sha256": "c74538cdb005ef040428ad25b37c85bb31d432e069246338ee6d437efa214238",
+  "reports": [
+    "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v19-1723a34/full.json",
+    "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v19-1723a34/catalog-only.json",
+    "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v19-1723a34/no-skill.json"
+  ],
+  "report_inputs": [
+    {
+      "path": "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v19-1723a34/full.json",
+      "sha256": "da5da3cf6bb0425a4b9f7e447c38b39373c5633b9373b8a53a99c0c2dcb920e2"
+    },
+    {
+      "path": "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v19-1723a34/catalog-only.json",
+      "sha256": "9a81e46195cd4bb4a0b0afc7e047730721f97dca83615b741db52fce98c4f43f"
+    },
+    {
+      "path": "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v19-1723a34/no-skill.json",
+      "sha256": "ffb03509e570d3d953a3d9ee567ef9a44bdee604ac89a4959f38a253545ed9a7"
+    }
+  ],
+  "prompt_profiles": [
+    "catalog-only",
+    "full",
+    "no-skill"
+  ],
+  "status": "PASS",
+  "status_reasons": [
+    {
+      "code": "release_confirmation_passed",
+      "failed_checks": []
+    }
+  ],
+  "metrics": {
+    "arm_point_metrics": {
+      "full": {
+        "stable_precision": 0.9523809523809523,
+        "stable_recall": 1.0,
+        "stable_f1": 0.975609756097561,
+        "repeated_precision": 0.9342723004694836,
+        "clean_case_specificity": 1.0
+      },
+      "catalog-only": {
+        "stable_precision": 0.8888888888888888,
+        "stable_recall": 1.0,
+        "stable_f1": 0.9411764705882353,
+        "repeated_precision": 0.8733624454148472,
+        "clean_case_specificity": 1.0
+      },
+      "no-skill": {
+        "stable_precision": 0.38636363636363635,
+        "stable_recall": 0.425,
+        "stable_f1": 0.40476190476190477,
+        "repeated_precision": 0.3483606557377049,
+        "clean_case_specificity": 1.0
+      }
+    },
+    "primary": {
+      "delta": 0.5708478513356562,
+      "paired_bootstrap_ci95": {
+        "method": "paired-stratified-case-bootstrap",
+        "confidence": 0.95,
+        "iterations": 10000,
+        "seed": 20260928,
+        "strata": [
+          "finding-cases",
+          "clean-cases"
+        ],
+        "percentile_method": "nearest-rank",
+        "lower": 0.41072796934865896,
+        "upper": 0.7375168690958165
+      },
+      "decision_checks": [
+        {
+          "metric": "stable_f1_delta_min",
+          "actual": 0.5708478513356562,
+          "required": 0.3,
+          "comparator": ">=",
+          "passed": true
+        },
+        {
+          "metric": "stable_f1_delta_ci95_lower_min_exclusive",
+          "actual": 0.41072796934865896,
+          "required": 0.0,
+          "comparator": ">",
+          "passed": true
+        }
+      ]
+    },
+    "descriptive_full_minus_catalog_only_stable_f1": 0.03443328550932567,
+    "descriptive_full_minus_catalog_only": {
+      "point_deltas": {
+        "stable_precision": 0.06349206349206349,
+        "stable_recall": 0.0,
+        "stable_f1": 0.03443328550932567,
+        "repeated_precision": 0.06090985505463642,
+        "clean_case_specificity": 0.0
+      },
+      "paired_bootstrap_ci95": {
+        "stable_precision": {
+          "method": "paired-stratified-case-bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "seed": 20260928,
+          "strata": [
+            "finding-cases",
+            "clean-cases"
+          ],
+          "percentile_method": "nearest-rank",
+          "lower": 0.0,
+          "upper": 0.1299145299145299
+        },
+        "stable_recall": {
+          "method": "paired-stratified-case-bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "seed": 20260928,
+          "strata": [
+            "finding-cases",
+            "clean-cases"
+          ],
+          "percentile_method": "nearest-rank",
+          "lower": 0.0,
+          "upper": 0.0
+        },
+        "stable_f1": {
+          "method": "paired-stratified-case-bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "seed": 20260928,
+          "strata": [
+            "finding-cases",
+            "clean-cases"
+          ],
+          "percentile_method": "nearest-rank",
+          "lower": 0.0,
+          "upper": 0.07190022010271468
+        },
+        "clean_case_specificity": {
+          "method": "paired-stratified-case-bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "seed": 20260928,
+          "strata": [
+            "finding-cases",
+            "clean-cases"
+          ],
+          "percentile_method": "nearest-rank",
+          "lower": 0.0,
+          "upper": 0.0
+        }
+      }
+    },
+    "historical_v17_full_stable_f1": 0.964
+  },
+  "claim_policy": {
+    "pass": "Development skill-lift evidence is limited to this fixed public corpus, declared model identifiers, captured CLI versions, prompts, and schedule; provider backend snapshots are not attested.",
+    "fail": "No skill-lift claim is allowed.",
+    "inconclusive": "No skill-lift claim is allowed.",
+    "partial_results": "Descriptive arm metrics may be published, but never as a causal or partial skill-lift claim."
+  },
+  "infrastructure_retry": {
+    "policy": {
+      "max_attempts_per_call": 2,
+      "retryable": [
+        "timeout",
+        "runner_nonzero_exit_with_usage_limit_text",
+        "malformed_json_output",
+        "runner_auth_error",
+        "codex_unexpected_stream_item"
+      ],
+      "contract": "A scheduled call with a v11 retryable failure or a nonzero runner authentication-error envelope is retried once in a freshly prepared identical workspace at the same schedule position. Every attempt and retry reason is recorded; the final attempt is scored. A scoreable output is never retried. Authentication-error output is omitted from reports to avoid credential leakage. A Codex unexpected tool or item in the tools-disabled event stream is retryable once; a repeated event remains unscoreable and fail-closed."
+    },
+    "reports": [
+      {
+        "prompt_profile": "full",
+        "runner": "codex",
+        "model": "gpt-6-sol",
+        "infrastructure_retry_summary": {
+          "scheduled_calls": 180,
+          "total_attempts": 180,
+          "retried_calls": 0,
+          "retries": 0,
+          "retries_by_reason": {
+            "timeout": 0,
+            "runner_nonzero_exit_with_usage_limit_text": 0,
+            "malformed_json_output": 0,
+            "runner_auth_error": 0,
+            "codex_unexpected_stream_item": 0
+          },
+          "scored_after_retry": 0,
+          "unscoreable_with_retryable_reason": 0
+        }
+      },
+      {
+        "prompt_profile": "catalog-only",
+        "runner": "codex",
+        "model": "gpt-6-sol",
+        "infrastructure_retry_summary": {
+          "scheduled_calls": 180,
+          "total_attempts": 180,
+          "retried_calls": 0,
+          "retries": 0,
+          "retries_by_reason": {
+            "timeout": 0,
+            "runner_nonzero_exit_with_usage_limit_text": 0,
+            "malformed_json_output": 0,
+            "runner_auth_error": 0,
+            "codex_unexpected_stream_item": 0
+          },
+          "scored_after_retry": 0,
+          "unscoreable_with_retryable_reason": 0
+        }
+      },
+      {
+        "prompt_profile": "no-skill",
+        "runner": "codex",
+        "model": "gpt-6-sol",
+        "infrastructure_retry_summary": {
+          "scheduled_calls": 180,
+          "total_attempts": 180,
+          "retried_calls": 0,
+          "retries": 0,
+          "retries_by_reason": {
+            "timeout": 0,
+            "runner_nonzero_exit_with_usage_limit_text": 0,
+            "malformed_json_output": 0,
+            "runner_auth_error": 0,
+            "codex_unexpected_stream_item": 0
+          },
+          "scored_after_retry": 0,
+          "unscoreable_with_retryable_reason": 0
+        }
+      }
+    ]
+  },
+  "usage_capture": {
+    "policy": {
+      "enabled": true
+    },
+    "reports": [
+      {
+        "prompt_profile": "full",
+        "runner": "codex",
+        "model": "gpt-6-sol",
+        "usage_summary": {
+          "unit": "one-report-one-arm",
+          "final_attempts": {
+            "records": 180,
+            "records_with_usage": 180,
+            "records_without_usage": 0,
+            "sources": [
+              "codex-json-events"
+            ],
+            "totals": {
+              "input_tokens": 9590246,
+              "cached_input_tokens": 1518592,
+              "cache_write_tokens": null,
+              "output_tokens": 30098,
+              "reasoning_output_tokens": 21136
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 53279.14444444444,
+              "cached_input_tokens": 8436.622222222222,
+              "cache_write_tokens": null,
+              "output_tokens": 167.2111111111111,
+              "reasoning_output_tokens": 117.42222222222222
+            }
+          },
+          "all_attempts": {
+            "records": 180,
+            "records_with_usage": 180,
+            "records_without_usage": 0,
+            "sources": [
+              "codex-json-events"
+            ],
+            "totals": {
+              "input_tokens": 9590246,
+              "cached_input_tokens": 1518592,
+              "cache_write_tokens": null,
+              "output_tokens": 30098,
+              "reasoning_output_tokens": 21136
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 53279.14444444444,
+              "cached_input_tokens": 8436.622222222222,
+              "cache_write_tokens": null,
+              "output_tokens": 167.2111111111111,
+              "reasoning_output_tokens": 117.42222222222222
+            }
+          }
+        }
+      },
+      {
+        "prompt_profile": "catalog-only",
+        "runner": "codex",
+        "model": "gpt-6-sol",
+        "usage_summary": {
+          "unit": "one-report-one-arm",
+          "final_attempts": {
+            "records": 180,
+            "records_with_usage": 180,
+            "records_without_usage": 0,
+            "sources": [
+              "codex-json-events"
+            ],
+            "totals": {
+              "input_tokens": 5854173,
+              "cached_input_tokens": 1612800,
+              "cache_write_tokens": null,
+              "output_tokens": 28242,
+              "reasoning_output_tokens": 18348
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 32523.183333333334,
+              "cached_input_tokens": 8960.0,
+              "cache_write_tokens": null,
+              "output_tokens": 156.9,
+              "reasoning_output_tokens": 101.93333333333334
+            }
+          },
+          "all_attempts": {
+            "records": 180,
+            "records_with_usage": 180,
+            "records_without_usage": 0,
+            "sources": [
+              "codex-json-events"
+            ],
+            "totals": {
+              "input_tokens": 5854173,
+              "cached_input_tokens": 1612800,
+              "cache_write_tokens": null,
+              "output_tokens": 28242,
+              "reasoning_output_tokens": 18348
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 32523.183333333334,
+              "cached_input_tokens": 8960.0,
+              "cache_write_tokens": null,
+              "output_tokens": 156.9,
+              "reasoning_output_tokens": 101.93333333333334
+            }
+          }
+        }
+      },
+      {
+        "prompt_profile": "no-skill",
+        "runner": "codex",
+        "model": "gpt-6-sol",
+        "usage_summary": {
+          "unit": "one-report-one-arm",
+          "final_attempts": {
+            "records": 180,
+            "records_with_usage": 180,
+            "records_without_usage": 0,
+            "sources": [
+              "codex-json-events"
+            ],
+            "totals": {
+              "input_tokens": 2185163,
+              "cached_input_tokens": 1649664,
+              "cache_write_tokens": null,
+              "output_tokens": 52256,
+              "reasoning_output_tokens": 42669
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 12139.794444444444,
+              "cached_input_tokens": 9164.8,
+              "cache_write_tokens": null,
+              "output_tokens": 290.31111111111113,
+              "reasoning_output_tokens": 237.05
+            }
+          },
+          "all_attempts": {
+            "records": 180,
+            "records_with_usage": 180,
+            "records_without_usage": 0,
+            "sources": [
+              "codex-json-events"
+            ],
+            "totals": {
+              "input_tokens": 2185163,
+              "cached_input_tokens": 1649664,
+              "cache_write_tokens": null,
+              "output_tokens": 52256,
+              "reasoning_output_tokens": 42669
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 12139.794444444444,
+              "cached_input_tokens": 9164.8,
+              "cache_write_tokens": null,
+              "output_tokens": 290.31111111111113,
+              "reasoning_output_tokens": 237.05
+            }
+          }
+        }
+      }
+    ]
+  }
+}

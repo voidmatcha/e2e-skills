@@ -1,0 +1,7875 @@
+{
+ "protocol_id": "generator-skill-effect-v1",
+ "report": "claude-sonnet.json",
+ "scored_utc": "2026-10-05T13:14:55Z",
+ "scores": [
+  {
+   "call_id": "gen-07-no-skill-r1",
+   "case": "gen-07",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 1,
+   "spec_files": [
+    "tests/signup.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/signup.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0734052,
+   "elapsed_ms": 21751,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.4
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.0
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.2
+    }
+   ],
+   "faults": {
+    "f1-subscribe-noop": {
+     "exit": 1,
+     "passed": 0,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 29.3,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-duplicate-accepted": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.0,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-invalid-accepted": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.7,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-enter-key-ignored": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.6,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f5-field-not-cleared": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.4,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 5,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 29.1
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 12,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 12,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#14",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-04-skill-r3",
+   "case": "gen-04",
+   "arm": "skill",
+   "repetition": 3,
+   "ordinal": 2,
+   "spec_files": [
+    "tests/sign-in.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/sign-in.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.2097158,
+   "elapsed_ms": 40352,
+   "num_turns": 9,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.9
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.3
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.5
+    }
+   ],
+   "faults": {
+    "f1-signin-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.7,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-any-code-accepted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.1,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-wrong-error-text": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.9,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-session-lost-on-reload": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.9,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-signout-client-only": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.2,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 1.9
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 17,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 17,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-03-skill-r3",
+   "case": "gen-03",
+   "arm": "skill",
+   "repetition": 3,
+   "ordinal": 3,
+   "spec_files": [
+    "tests/cart.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/cart.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.5271741999999999,
+   "elapsed_ms": 149623,
+   "num_turns": 15,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.8
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.7
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.7
+    }
+   ],
+   "faults": {
+    "f1-add-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 7,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 40.0,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-total-ignores-quantity": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.7,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-quantity-below-one": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.2,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f4-remove-client-only": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 2.7,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-empty-state-stays-hidden": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.7,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.9
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 11,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 11,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-06-no-skill-r1",
+   "case": "gen-06",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 4,
+   "spec_files": [
+    "tests/task-board.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/task-board.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.05333619999999999,
+   "elapsed_ms": 19527,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.3
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.3
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.3
+    }
+   ],
+   "faults": {
+    "f1-done-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 44.1,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-progress-stale": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.0,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-undo-noop": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.6,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-done-not-persisted": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.6,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-task-in-both-lists": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.1,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 1,
+    "failed": 6,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 34.6
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 17,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 17,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-07-skill-r1",
+   "case": "gen-07",
+   "arm": "skill",
+   "repetition": 1,
+   "ordinal": 5,
+   "spec_files": [
+    "tests/signup.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/signup.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.43392780000000003,
+   "elapsed_ms": 68232,
+   "num_turns": 3,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.9
+    }
+   ],
+   "faults": {
+    "f1-subscribe-noop": {
+     "exit": 1,
+     "passed": 0,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 49.0,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-duplicate-accepted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.6,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-invalid-accepted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.6,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-enter-key-ignored": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 17.5,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f5-field-not-cleared": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.0,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 5,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 28.9
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 8,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 8,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#14"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-07-skill-r3",
+   "case": "gen-07",
+   "arm": "skill",
+   "repetition": 3,
+   "ordinal": 6,
+   "spec_files": [
+    "tests/newsletter-signup.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/newsletter-signup.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.5014810000000001,
+   "elapsed_ms": 122750,
+   "num_turns": 14,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.3
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.3
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.2
+    }
+   ],
+   "faults": {
+    "f1-subscribe-noop": {
+     "exit": 1,
+     "passed": 0,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 64.3,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-duplicate-accepted": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 2.6,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-invalid-accepted": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 2.8,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-enter-key-ignored": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 17.6,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f5-field-not-cleared": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.6,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.1
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 9,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 9,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#14"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-06-no-skill-r2",
+   "case": "gen-06",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 7,
+   "spec_files": [
+    "tests/board.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/board.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0737458,
+   "elapsed_ms": 34784,
+   "num_turns": 9,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 2.4
+    },
+    {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 2.4
+    },
+    {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 2.4
+    }
+   ],
+   "faults": {
+    "f1-done-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 34.3,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-progress-stale": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 29.0,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-undo-noop": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.7,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-done-not-persisted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.3,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-task-in-both-lists": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 24.1,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 7,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 39.8
+   },
+   "clean": false,
+   "kill_rate": 1.0,
+   "primary": 0.0,
+   "refactor_pass": null,
+   "scan": {
+    "total": 14,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 14,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-05-no-skill-r2",
+   "case": "gen-05",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 8,
+   "spec_files": [
+    "tests/preferences.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/preferences.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.051524,
+   "elapsed_ms": 20836,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.2
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.2
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    }
+   ],
+   "faults": {
+    "f1-save-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 28.8,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-theme-not-persisted": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.0,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f3-status-text-wrong": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 28.8,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-autosave": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.1,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-theme-attribute-not-applied": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.5,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 7,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.1
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 5,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 5,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-02-no-skill-r1",
+   "case": "gen-02",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 9,
+   "spec_files": [
+    "tests/search.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/search.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0458022,
+   "elapsed_ms": 17450,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.6
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.6
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.6
+    }
+   ],
+   "faults": {
+    "f1-filter-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 28.3,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-case-sensitive": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 17.9,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f3-count-stale": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.6,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-empty-state-missing": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 15.4,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-clear-keeps-input": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.8,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 6,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 39.1
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 10,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 10,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-06-skill-r1",
+   "case": "gen-06",
+   "arm": "skill",
+   "repetition": 1,
+   "ordinal": 10,
+   "spec_files": [
+    "tests/task-board.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/task-board.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.41590460000000007,
+   "elapsed_ms": 109150,
+   "num_turns": 11,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.6
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.9
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.0
+    }
+   ],
+   "faults": {
+    "f1-done-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 29.9,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-progress-stale": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 24.8,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-undo-noop": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 19.7,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-done-not-persisted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 22.3,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-task-in-both-lists": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 25.8,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.7
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 17,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 17,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-01-skill-r2",
+   "case": "gen-01",
+   "arm": "skill",
+   "repetition": 2,
+   "ordinal": 11,
+   "spec_files": [
+    "tests/guestbook.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/guestbook.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.5593348,
+   "elapsed_ms": 123671,
+   "num_turns": 15,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.4
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.0
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.9
+    }
+   ],
+   "faults": {
+    "f1-not-rendered": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 37.3,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-oldest-first": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.0,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-count-stale": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.8,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-not-persisted": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 3.2,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-error-sticky": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.8,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 4,
+    "failed": 3,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 19.4
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 3,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 3,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-10-no-skill-r2",
+   "case": "gen-10",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 12,
+   "spec_files": [
+    "tests/pagination.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/pagination.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0383738,
+   "elapsed_ms": 15535,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.2
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.2
+    }
+   ],
+   "faults": {
+    "f1-next-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.8,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-indicator-stale": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.4,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-previous-enabled-on-first": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.3,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-last-page-overflow": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.2,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f5-next-enabled-on-last": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.2,
+     "killed": true,
+     "class": "boundary"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 5,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 29.4
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 3,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 3,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-02-skill-r3",
+   "case": "gen-02",
+   "arm": "skill",
+   "repetition": 3,
+   "ordinal": 13,
+   "spec_files": [
+    "tests/search.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/search.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.5948108000000001,
+   "elapsed_ms": 134973,
+   "num_turns": 3,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.4
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.4
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.4
+    }
+   ],
+   "faults": {
+    "f1-filter-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 22.8,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-case-sensitive": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.8,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f3-count-stale": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.2,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-empty-state-missing": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.0,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-clear-keeps-input": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 6.6,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 1.5
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 9,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 9,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-02-skill-r1",
+   "case": "gen-02",
+   "arm": "skill",
+   "repetition": 1,
+   "ordinal": 14,
+   "spec_files": [
+    "tests/product-search.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/product-search.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0908836,
+   "elapsed_ms": 55007,
+   "num_turns": 5,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.0
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8
+    }
+   ],
+   "faults": {
+    "f1-filter-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 24.3,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-case-sensitive": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.5,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f3-count-stale": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.2,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-empty-state-missing": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.0,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-clear-keeps-input": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.2,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 3.4
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 4,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 4,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-02-skill-r2",
+   "case": "gen-02",
+   "arm": "skill",
+   "repetition": 2,
+   "ordinal": 15,
+   "spec_files": [
+    "tests/product-search.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/product-search.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.1070044,
+   "elapsed_ms": 31556,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.3
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.4
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.0
+    }
+   ],
+   "faults": {
+    "f1-filter-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 29.8,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-case-sensitive": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 15.6,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f3-count-stale": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 26.5,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-empty-state-missing": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.2,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-clear-keeps-input": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.6,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.9
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 9,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 9,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-01-no-skill-r2",
+   "case": "gen-01",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 16,
+   "spec_files": [
+    "tests/guestbook.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/guestbook.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.06451219999999999,
+   "elapsed_ms": 28284,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 4.1
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.9
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.1
+    }
+   ],
+   "faults": {
+    "f1-not-rendered": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 24.9,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-oldest-first": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 11.6,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-count-stale": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.5,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-not-persisted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.9,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-error-sticky": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.6,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 3,
+    "failed": 3,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 21.0
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 15,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 15,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-07-no-skill-r3",
+   "case": "gen-07",
+   "arm": "no-skill",
+   "repetition": 3,
+   "ordinal": 17,
+   "spec_files": [
+    "tests/signup.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/signup.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.052434999999999996,
+   "elapsed_ms": 43866,
+   "num_turns": 5,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 4.6
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.9
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.2
+    }
+   ],
+   "faults": {
+    "f1-subscribe-noop": {
+     "exit": 1,
+     "passed": 0,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 30.7,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-duplicate-accepted": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.5,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-invalid-accepted": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.4,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-enter-key-ignored": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.7,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f5-field-not-cleared": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.2,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 5,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 29.8
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 12,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 12,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#14",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-10-skill-r2",
+   "case": "gen-10",
+   "arm": "skill",
+   "repetition": 2,
+   "ordinal": 18,
+   "spec_files": [
+    "tests/pagination.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/pagination.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.693223,
+   "elapsed_ms": 142914,
+   "num_turns": 22,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.5
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.2
+    }
+   ],
+   "faults": {
+    "f1-next-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 24.7,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-indicator-stale": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.7,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-previous-enabled-on-first": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.4,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-last-page-overflow": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.4,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f5-next-enabled-on-last": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.5,
+     "killed": true,
+     "class": "boundary"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 1.9
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 10,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 10,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-05-no-skill-r3",
+   "case": "gen-05",
+   "arm": "no-skill",
+   "repetition": 3,
+   "ordinal": 19,
+   "spec_files": [
+    "tests/preferences.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/preferences.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0572038,
+   "elapsed_ms": 28921,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.5
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.0
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.7
+    }
+   ],
+   "faults": {
+    "f1-save-noop": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 29.9,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-theme-not-persisted": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.1,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f3-status-text-wrong": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 30.2,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-autosave": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.9,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-theme-attribute-not-applied": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 14.0,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.7
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 5,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 5,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-08-no-skill-r1",
+   "case": "gen-08",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 20,
+   "spec_files": [
+    "tests/poll.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/poll.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.046630399999999995,
+   "elapsed_ms": 20393,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.0
+    },
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.9
+    },
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8
+    }
+   ],
+   "faults": {
+    "f1-vote-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 17.9,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-percent-wrong": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.9,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-can-vote-again": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.7,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-vote-not-persisted": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.6,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-results-shown-early": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.0,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 4,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.3
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 10,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 10,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-09-skill-r1",
+   "case": "gen-09",
+   "arm": "skill",
+   "repetition": 1,
+   "ordinal": 21,
+   "spec_files": [
+    "tests/notes.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/notes-page.mjs",
+    "tests/notes.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.26884939999999996,
+   "elapsed_ms": 81559,
+   "num_turns": 8,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 11,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 4.9
+    },
+    {
+     "exit": 0,
+     "passed": 11,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 4.5
+    },
+    {
+     "exit": 0,
+     "passed": 11,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 4.3
+    }
+   ],
+   "faults": {
+    "f1-add-noop": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 25.4,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-unsorted": {
+     "exit": 1,
+     "passed": 8,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 58.0,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-edit-not-persisted": {
+     "exit": 1,
+     "passed": 10,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 10.5,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f4-delete-client-only": {
+     "exit": 1,
+     "passed": 10,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 9.7,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-delete-wrong-note": {
+     "exit": 1,
+     "passed": 9,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 14.6,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 11,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 66.0
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 1,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 1,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-10-no-skill-r1",
+   "case": "gen-10",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 22,
+   "spec_files": [
+    "tests/pagination.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/pagination.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0412058,
+   "elapsed_ms": 20386,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.9
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.9
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.9
+    }
+   ],
+   "faults": {
+    "f1-next-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.6,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-indicator-stale": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.7,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-previous-enabled-on-first": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.4,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-last-page-overflow": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.3,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f5-next-enabled-on-last": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.3,
+     "killed": true,
+     "class": "boundary"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 1.8
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 3,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 3,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-06-skill-r2",
+   "case": "gen-06",
+   "arm": "skill",
+   "repetition": 2,
+   "ordinal": 23,
+   "spec_files": [
+    "tests/task-board.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/task-board.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.1682406,
+   "elapsed_ms": 46999,
+   "num_turns": 9,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.3
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.3
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.4
+    }
+   ],
+   "faults": {
+    "f1-done-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 44.1,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-progress-stale": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 29.6,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-undo-noop": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.3,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-done-not-persisted": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.4,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-task-in-both-lists": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 34.9,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 7,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 3.2
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 8,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 8,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-05-skill-r1",
+   "case": "gen-05",
+   "arm": "skill",
+   "repetition": 1,
+   "ordinal": 24,
+   "spec_files": [
+    "tests/preferences.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/preferences.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.4447988000000001,
+   "elapsed_ms": 128410,
+   "num_turns": 13,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.4
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.3
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.2
+    }
+   ],
+   "faults": {
+    "f1-save-noop": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 55.3,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-theme-not-persisted": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 33.8,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f3-status-text-wrong": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 25.1,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-autosave": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.3,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-theme-attribute-not-applied": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 25.0,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 7,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.4
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 2,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 2,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-06-skill-r3",
+   "case": "gen-06",
+   "arm": "skill",
+   "repetition": 3,
+   "ordinal": 25,
+   "spec_files": [
+    "tests/task-board.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/task-board.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.3353112,
+   "elapsed_ms": 92509,
+   "num_turns": 11,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.3
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.6
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.6
+    }
+   ],
+   "faults": {
+    "f1-done-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 44.9,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-progress-stale": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.9,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-undo-noop": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 24.1,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-done-not-persisted": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 15.3,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-task-in-both-lists": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 15.4,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 7,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 3.6
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 8,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 8,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-04-no-skill-r2",
+   "case": "gen-04",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 26,
+   "spec_files": [
+    "tests/signin.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/signin.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.044626000000000006,
+   "elapsed_ms": 19498,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.4
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.5
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.5
+    }
+   ],
+   "faults": {
+    "f1-signin-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 19.2,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-any-code-accepted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.6,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-wrong-error-text": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.3,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-session-lost-on-reload": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.2,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-signout-client-only": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 9.1,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.7
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 18,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 18,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#14",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-08-skill-r3",
+   "case": "gen-08",
+   "arm": "skill",
+   "repetition": 3,
+   "ordinal": 27,
+   "spec_files": [
+    "tests/poll.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/poll.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.2067982,
+   "elapsed_ms": 39599,
+   "num_turns": 9,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.3
+    },
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.8
+    },
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.2
+    }
+   ],
+   "faults": {
+    "f1-vote-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 20.3,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-percent-wrong": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 14.0,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-can-vote-again": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 14.2,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-vote-not-persisted": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.5,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-results-shown-early": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.4,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 4,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.7
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 15,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 15,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-07-skill-r2",
+   "case": "gen-07",
+   "arm": "skill",
+   "repetition": 2,
+   "ordinal": 28,
+   "spec_files": [
+    "tests/newsletter.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/newsletter.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.19841599999999998,
+   "elapsed_ms": 67218,
+   "num_turns": 8,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.5
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.8
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.2
+    }
+   ],
+   "faults": {
+    "f1-subscribe-noop": {
+     "exit": 1,
+     "passed": 0,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 63.2,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-duplicate-accepted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 9.8,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-invalid-accepted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 10.7,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-enter-key-ignored": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 19.1,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f5-field-not-cleared": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.6,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 3.0
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 11,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 11,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#14"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-06-no-skill-r3",
+   "case": "gen-06",
+   "arm": "no-skill",
+   "repetition": 3,
+   "ordinal": 29,
+   "spec_files": [
+    "tests/task-board.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/task-board.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.066175,
+   "elapsed_ms": 26657,
+   "num_turns": 9,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 6.9
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 4.7
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 4.5
+    }
+   ],
+   "faults": {
+    "f1-done-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 39.6,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-progress-stale": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 47.1,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-undo-noop": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 38.6,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-done-not-persisted": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 20.8,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-task-in-both-lists": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 38.0,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 7,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 47.2
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 15,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 15,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-03-skill-r1",
+   "case": "gen-03",
+   "arm": "skill",
+   "repetition": 1,
+   "ordinal": 30,
+   "spec_files": [
+    "tests/cart.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/cart.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.5268398000000001,
+   "elapsed_ms": 83357,
+   "num_turns": 3,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 9,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 8.5
+    },
+    {
+     "exit": 0,
+     "passed": 9,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 4.9
+    },
+    {
+     "exit": 0,
+     "passed": 9,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 16.6
+    }
+   ],
+   "faults": {
+    "f1-add-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 8,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 88.5,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-total-ignores-quantity": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 37.5,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-quantity-below-one": {
+     "exit": 1,
+     "passed": 8,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.2,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f4-remove-client-only": {
+     "exit": 1,
+     "passed": 8,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.2,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-empty-state-stays-hidden": {
+     "exit": 1,
+     "passed": 8,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 33.5,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 9,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 105.5
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 10,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 10,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-02-no-skill-r3",
+   "case": "gen-02",
+   "arm": "no-skill",
+   "repetition": 3,
+   "ordinal": 31,
+   "spec_files": [
+    "tests/search.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/search.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0394962,
+   "elapsed_ms": 14379,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 23.8
+    },
+    {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 138.6
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 43.4
+    }
+   ],
+   "faults": {
+    "f1-filter-noop": {
+     "exit": null,
+     "passed": 0,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [
+      "harness timeout"
+     ],
+     "ok": false,
+     "seconds": 240.1,
+     "killed": false,
+     "class": "surface"
+    },
+    "f2-case-sensitive": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 221.0,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f3-count-stale": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 94.6,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-empty-state-missing": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 66.8,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-clear-keeps-input": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 17.9,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 5,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 112.2
+   },
+   "clean": false,
+   "kill_rate": 0.8,
+   "primary": 0.0,
+   "refactor_pass": null,
+   "scan": {
+    "total": 5,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 5,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-10-no-skill-r3",
+   "case": "gen-10",
+   "arm": "no-skill",
+   "repetition": 3,
+   "ordinal": 32,
+   "spec_files": [
+    "tests/pagination.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/pagination.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0380592,
+   "elapsed_ms": 14224,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 47.8
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 86.0
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 25.5
+    }
+   ],
+   "faults": {
+    "f1-next-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 94.2,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-indicator-stale": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 85.8,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-previous-enabled-on-first": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.4,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-last-page-overflow": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.3,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f5-next-enabled-on-last": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 11.7,
+     "killed": true,
+     "class": "boundary"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 5,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 49.9
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 3,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 3,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-01-skill-r3",
+   "case": "gen-01",
+   "arm": "skill",
+   "repetition": 3,
+   "ordinal": 33,
+   "spec_files": [
+    "tests/guestbook.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/guestbook.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.31689100000000003,
+   "elapsed_ms": 110053,
+   "num_turns": 14,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 41.8
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 12.9
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 9.1
+    }
+   ],
+   "faults": {
+    "f1-not-rendered": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 32.5,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-oldest-first": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 10.5,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-count-stale": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 19.3,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-not-persisted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 15.2,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-error-sticky": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.0,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 3,
+    "failed": 3,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 22.2
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 9,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 9,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-05-skill-r3",
+   "case": "gen-05",
+   "arm": "skill",
+   "repetition": 3,
+   "ordinal": 34,
+   "spec_files": [
+    "tests/preferences.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/preferences.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.205425,
+   "elapsed_ms": 84069,
+   "num_turns": 8,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.3
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.1
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.0
+    }
+   ],
+   "faults": {
+    "f1-save-noop": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 37.2,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-theme-not-persisted": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 14.5,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f3-status-text-wrong": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 26.7,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-autosave": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 10.6,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-theme-attribute-not-applied": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 16.4,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 7,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 9.5
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 4,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 4,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-09-skill-r2",
+   "case": "gen-09",
+   "arm": "skill",
+   "repetition": 2,
+   "ordinal": 35,
+   "spec_files": [
+    "tests/notes.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/notes-page.mjs",
+    "tests/notes.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.6677158,
+   "elapsed_ms": 155309,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 12,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 5.1
+    },
+    {
+     "exit": 0,
+     "passed": 12,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 5.1
+    },
+    {
+     "exit": 0,
+     "passed": 12,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 5.1
+    }
+   ],
+   "faults": {
+    "f1-add-noop": {
+     "exit": 1,
+     "passed": 8,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 36.9,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-unsorted": {
+     "exit": 1,
+     "passed": 8,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 40.9,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-edit-not-persisted": {
+     "exit": 1,
+     "passed": 11,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 16.0,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f4-delete-client-only": {
+     "exit": 1,
+     "passed": 11,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 14.1,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-delete-wrong-note": {
+     "exit": 1,
+     "passed": 10,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 26.2,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 12,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 101.7
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 1,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 1,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-09-skill-r3",
+   "case": "gen-09",
+   "arm": "skill",
+   "repetition": 3,
+   "ordinal": 36,
+   "spec_files": [
+    "tests/notes.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/notes.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.11965820000000002,
+   "elapsed_ms": 38322,
+   "num_turns": 7,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 5.0
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 16.0
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 5.7
+    }
+   ],
+   "faults": {
+    "f1-add-noop": {
+     "exit": 1,
+     "passed": 0,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 42.0,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-unsorted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 31.4,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-edit-not-persisted": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 15.3,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f4-delete-client-only": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.3,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-delete-wrong-note": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.2,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 6,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 132.7
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 16,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 16,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-02-no-skill-r2",
+   "case": "gen-02",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 37,
+   "spec_files": [
+    "tests/search.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/search.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.05436540000000001,
+   "elapsed_ms": 26437,
+   "num_turns": 5,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 20.2
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 6.7
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 4.0
+    }
+   ],
+   "faults": {
+    "f1-filter-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 45.8,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-case-sensitive": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 22.4,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f3-count-stale": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 42.3,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-empty-state-missing": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 14.7,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-clear-keeps-input": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.8,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 6,
+    "failed": 1,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 8.5
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 6,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 6,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-08-no-skill-r3",
+   "case": "gen-08",
+   "arm": "no-skill",
+   "repetition": 3,
+   "ordinal": 38,
+   "spec_files": [
+    "tests/poll.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/poll.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0576036,
+   "elapsed_ms": 20232,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.1
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.2
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.2
+    }
+   ],
+   "faults": {
+    "f1-vote-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 31.3,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-percent-wrong": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 20.0,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-can-vote-again": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 14.5,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-vote-not-persisted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.6,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-results-shown-early": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 14.0,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.9
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 18,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 18,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i",
+     "#4k"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-01-skill-r1",
+   "case": "gen-01",
+   "arm": "skill",
+   "repetition": 1,
+   "ordinal": 39,
+   "spec_files": [
+    "tests/guestbook.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/guestbook.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.45547020000000005,
+   "elapsed_ms": 128990,
+   "num_turns": 15,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.4
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.7
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.2
+    }
+   ],
+   "faults": {
+    "f1-not-rendered": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 31.7,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-oldest-first": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.1,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-count-stale": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 9.5,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-not-persisted": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.8,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-error-sticky": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.2,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 3.2
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 9,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 9,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-08-skill-r1",
+   "case": "gen-08",
+   "arm": "skill",
+   "repetition": 1,
+   "ordinal": 40,
+   "spec_files": [
+    "tests/poll.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/poll.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.37539599999999995,
+   "elapsed_ms": 87005,
+   "num_turns": 13,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.7
+    },
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.3
+    },
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.7
+    }
+   ],
+   "faults": {
+    "f1-vote-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.8,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-percent-wrong": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.2,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-can-vote-again": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.0,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-vote-not-persisted": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.3,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-results-shown-early": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.7,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 3,
+    "failed": 1,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 9.1
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 13,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 13,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-03-skill-r2",
+   "case": "gen-03",
+   "arm": "skill",
+   "repetition": 2,
+   "ordinal": 41,
+   "spec_files": [
+    "tests/cart.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/cart.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.12096420000000002,
+   "elapsed_ms": 31225,
+   "num_turns": 7,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 4.8
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.7
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.6
+    }
+   ],
+   "faults": {
+    "f1-add-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 7,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 72.0,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-total-ignores-quantity": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 14.5,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-quantity-below-one": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 9.0,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f4-remove-client-only": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.6,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-empty-state-stays-hidden": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 14.1,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 3.8
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 28,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 28,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-09-no-skill-r2",
+   "case": "gen-09",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 42,
+   "spec_files": [
+    "tests/notes.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/notes.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.061447999999999996,
+   "elapsed_ms": 50740,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.6
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.2
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.3
+    }
+   ],
+   "faults": {
+    "f1-add-noop": {
+     "exit": 1,
+     "passed": 0,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 35.6,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-unsorted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 14.5,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-edit-not-persisted": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.9,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f4-delete-client-only": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.9,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-delete-wrong-note": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 14.8,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 6,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 36.3
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 12,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 12,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-04-skill-r2",
+   "case": "gen-04",
+   "arm": "skill",
+   "repetition": 2,
+   "ordinal": 43,
+   "spec_files": [
+    "tests/sign-in.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/sign-in.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.10962300000000001,
+   "elapsed_ms": 32006,
+   "num_turns": 7,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.6
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.4
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.4
+    }
+   ],
+   "faults": {
+    "f1-signin-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.6,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-any-code-accepted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.6,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-wrong-error-text": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 9.5,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-session-lost-on-reload": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 9.1,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-signout-client-only": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 9.0,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 4.8
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 21,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 21,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-01-no-skill-r3",
+   "case": "gen-01",
+   "arm": "no-skill",
+   "repetition": 3,
+   "ordinal": 44,
+   "spec_files": [
+    "tests/guestbook.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/guestbook.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.05214960000000001,
+   "elapsed_ms": 22995,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 4.0
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 4.9
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.6
+    }
+   ],
+   "faults": {
+    "f1-not-rendered": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 32.1,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-oldest-first": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 9.5,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-count-stale": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 15.6,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-not-persisted": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 3.9,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-error-sticky": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.5,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 3,
+    "failed": 3,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 22.7
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 10,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 10,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-05-skill-r2",
+   "case": "gen-05",
+   "arm": "skill",
+   "repetition": 2,
+   "ordinal": 45,
+   "spec_files": [
+    "tests/preferences.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/preferences.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.452293,
+   "elapsed_ms": 90888,
+   "num_turns": 12,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.7
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.7
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.7
+    }
+   ],
+   "faults": {
+    "f1-save-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 40.2,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-theme-not-persisted": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.4,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f3-status-text-wrong": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 30.3,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-autosave": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 9.2,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-theme-attribute-not-applied": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 15.2,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 3.2
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 5,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 5,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-04-no-skill-r3",
+   "case": "gen-04",
+   "arm": "no-skill",
+   "repetition": 3,
+   "ordinal": 46,
+   "spec_files": [
+    "tests/signin.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/signin.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0448186,
+   "elapsed_ms": 38130,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.5
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.5
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.5
+    }
+   ],
+   "faults": {
+    "f1-signin-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.8,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-any-code-accepted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.1,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-wrong-error-text": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.6,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-session-lost-on-reload": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.5,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-signout-client-only": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.1,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.1
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 18,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 18,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#14",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-10-skill-r3",
+   "case": "gen-10",
+   "arm": "skill",
+   "repetition": 3,
+   "ordinal": 47,
+   "spec_files": [
+    "tests/pagination.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/pagination.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.1199966,
+   "elapsed_ms": 32065,
+   "num_turns": 8,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.9
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.9
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.9
+    }
+   ],
+   "faults": {
+    "f1-next-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.3,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-indicator-stale": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.3,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-previous-enabled-on-first": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.3,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-last-page-overflow": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.4,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f5-next-enabled-on-last": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.3,
+     "killed": true,
+     "class": "boundary"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 1.8
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 16,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 16,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-09-no-skill-r3",
+   "case": "gen-09",
+   "arm": "no-skill",
+   "repetition": 3,
+   "ordinal": 48,
+   "spec_files": [
+    "tests/notes.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/notes.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0583684,
+   "elapsed_ms": 43619,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.6
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.7
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.6
+    }
+   ],
+   "faults": {
+    "f1-add-noop": {
+     "exit": 1,
+     "passed": 0,
+     "failed": 8,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 95.5,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-unsorted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 26.1,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-edit-not-persisted": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 15.0,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f4-delete-client-only": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 25.5,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-delete-wrong-note": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 20.2,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 8,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 47.2
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 15,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 15,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-03-no-skill-r3",
+   "case": "gen-03",
+   "arm": "no-skill",
+   "repetition": 3,
+   "ordinal": 49,
+   "spec_files": [
+    "tests/shop.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/shop.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0706614,
+   "elapsed_ms": 46846,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.0
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.0
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.0
+    }
+   ],
+   "faults": {
+    "f1-add-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 7,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 80.0,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-total-ignores-quantity": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 14.3,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-quantity-below-one": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.9,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f4-remove-client-only": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.7,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-empty-state-stays-hidden": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.6,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 3.0
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 11,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 11,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-04-no-skill-r1",
+   "case": "gen-04",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 50,
+   "spec_files": [
+    "tests/signin.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/signin.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0515824,
+   "elapsed_ms": 18546,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.4
+    }
+   ],
+   "faults": {
+    "f1-signin-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.1,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-any-code-accepted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.6,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-wrong-error-text": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.7,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-session-lost-on-reload": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.5,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-signout-client-only": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.0,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 1.9
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 19,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 19,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#14",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-03-no-skill-r1",
+   "case": "gen-03",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 51,
+   "spec_files": [
+    "tests/shop.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/shop.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.08216620000000001,
+   "elapsed_ms": 30885,
+   "num_turns": 9,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.1
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.2
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.0
+    }
+   ],
+   "faults": {
+    "f1-add-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 7,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 69.7,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-total-ignores-quantity": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.6,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-quantity-below-one": {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.9,
+     "killed": false,
+     "class": "boundary"
+    },
+    "f4-remove-client-only": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.3,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-empty-state-stays-hidden": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.9,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.9
+   },
+   "clean": true,
+   "kill_rate": 0.8,
+   "primary": 0.8,
+   "refactor_pass": true,
+   "scan": {
+    "total": 15,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 15,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-01-no-skill-r1",
+   "case": "gen-01",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 52,
+   "spec_files": [
+    "tests/guestbook.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/guestbook.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0576642,
+   "elapsed_ms": 25702,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.2
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.3
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.3
+    }
+   ],
+   "faults": {
+    "f1-not-rendered": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 29.0,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-oldest-first": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.8,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-count-stale": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.2,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-not-persisted": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 2.7,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-error-sticky": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.2,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 3,
+    "failed": 3,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 18.6
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 10,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 10,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-07-no-skill-r2",
+   "case": "gen-07",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 53,
+   "spec_files": [
+    "tests/signup.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/signup.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.049179600000000004,
+   "elapsed_ms": 19059,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.0
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.9
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.9
+    }
+   ],
+   "faults": {
+    "f1-subscribe-noop": {
+     "exit": 1,
+     "passed": 0,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 28.6,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-duplicate-accepted": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.9,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-invalid-accepted": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.8,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-enter-key-ignored": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.4,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f5-field-not-cleared": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.0,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 5,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 28.3
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 12,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 12,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#14",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-08-no-skill-r2",
+   "case": "gen-08",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 54,
+   "spec_files": [
+    "tests/poll.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/poll.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0487046,
+   "elapsed_ms": 17139,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.9
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8
+    }
+   ],
+   "faults": {
+    "f1-vote-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.3,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-percent-wrong": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.0,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-can-vote-again": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.8,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-vote-not-persisted": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.4,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-results-shown-early": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.3,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 1.8
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 17,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 17,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-04-skill-r1",
+   "case": "gen-04",
+   "arm": "skill",
+   "repetition": 1,
+   "ordinal": 55,
+   "spec_files": [
+    "tests/sign-in.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/sign-in.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.2291184,
+   "elapsed_ms": 40695,
+   "num_turns": 10,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.9
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.9
+    }
+   ],
+   "faults": {
+    "f1-signin-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 17.7,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-any-code-accepted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.4,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-wrong-error-text": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.4,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-session-lost-on-reload": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.3,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-signout-client-only": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 6.9,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 1.9
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 8,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 8,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-05-no-skill-r1",
+   "case": "gen-05",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 56,
+   "spec_files": [
+    "tests/preferences.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/preferences.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0521304,
+   "elapsed_ms": 21021,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.3
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.2
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.2
+    }
+   ],
+   "faults": {
+    "f1-save-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 29.0,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-theme-not-persisted": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.7,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f3-status-text-wrong": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 29.1,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-autosave": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.1,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-theme-attribute-not-applied": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.2,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 7,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 39.4
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 5,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 5,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-03-no-skill-r2",
+   "case": "gen-03",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 57,
+   "spec_files": [
+    "tests/cart.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/cart.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0725868,
+   "elapsed_ms": 23981,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.9
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.9
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.9
+    }
+   ],
+   "faults": {
+    "f1-add-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 7,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 89.5,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-total-ignores-quantity": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.8,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-quantity-below-one": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.5,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f4-remove-client-only": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.9,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-empty-state-stays-hidden": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.4,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.8
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 12,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 12,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-10-skill-r1",
+   "case": "gen-10",
+   "arm": "skill",
+   "repetition": 1,
+   "ordinal": 58,
+   "spec_files": [
+    "tests/pagination.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/pagination.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.10308,
+   "elapsed_ms": 26427,
+   "num_turns": 7,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8
+    }
+   ],
+   "faults": {
+    "f1-next-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.2,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-indicator-stale": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.2,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-previous-enabled-on-first": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.3,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-last-page-overflow": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.3,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f5-next-enabled-on-last": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.3,
+     "killed": true,
+     "class": "boundary"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 1.8
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 17,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 17,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-08-skill-r2",
+   "case": "gen-08",
+   "arm": "skill",
+   "repetition": 2,
+   "ordinal": 59,
+   "spec_files": [
+    "tests/poll.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/poll.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.49949600000000005,
+   "elapsed_ms": 88469,
+   "num_turns": 3,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8
+    }
+   ],
+   "faults": {
+    "f1-vote-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.1,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-percent-wrong": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 17.7,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-can-vote-again": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 17.7,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-vote-not-persisted": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.3,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-results-shown-early": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.3,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 1.9
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "scan": {
+    "total": 14,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 14,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "gen-09-no-skill-r1",
+   "case": "gen-09",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 60,
+   "spec_files": [
+    "tests/notes.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/notes.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.06254,
+   "elapsed_ms": 27248,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.9
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.8
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.8
+    }
+   ],
+   "faults": {
+    "f1-add-noop": {
+     "exit": 1,
+     "passed": 0,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 34.3,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-unsorted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.9,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-edit-not-persisted": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.3,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f4-delete-client-only": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.4,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-delete-wrong-note": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.4,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 6,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 34.3
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "scan": {
+    "total": 12,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 12,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  }
+ ]
+}

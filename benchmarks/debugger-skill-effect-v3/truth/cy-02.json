@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "ChurchCRM/CRM",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/ChurchCRM/CRM/issues/10215",
+   "https://github.com/ChurchCRM/CRM/pull/10285"
+  ],
+  "merged": "2026-10-03"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test",
+ "explanation": "The sign-in after `clearCookies()` typed before the form was ready to accept input: the inputs are rendered disabled until the page script enables them.",
+ "fix": "Wait for the User and Password inputs to be enabled (`should('not.be.disabled')`) before typing."
+}

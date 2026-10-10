@@ -1,0 +1,89 @@
+# Phase 1: Scanner Workflow
+
+Read this complete file before the first Phase 1 scanner run in a review; reuse it for later scan roots when the same complete text remains in context. Reuse does not skip a scan root or any rule below. It contains the scanner command lines, mechanics, tier contracts, fail-closed recovery, suppression rules, and false-positive filters; `SKILL.md` retains the scan-scope rules, target-execution trust gate, and required report outcomes.
+
+## Phase 1: Mechanical Scan
+
+Run the bundled scanner once per scan root. For a named file root:
+
+```bash
+/bin/bash -p <skill-base>/scripts/scan.sh <file>
+```
+
+For a directory root, write the full report to a new file:
+
+```bash
+/bin/bash -p <skill-base>/scripts/scan.sh --report-file <new-file> <dir>
+```
+
+The full report goes to `<new-file>` and the output is a digest of headers, per-file hit counts, and the `Summary:` line, as `SKILL.md` § Scan scope and output size describes. The report file and the exit code are the same as a plain run's output and exit code.
+
+`<skill-base>` is the absolute directory of the actual loaded skill: use the host-provided skill file path or Base directory and resolve its `SKILL.md`, including plugin-cache, custom installation, or checkout locations. Do not infer the active copy from a conventional home directory or the target project cwd. Quote the resolved script and target paths as separate arguments. If the skill location cannot be resolved, report the missing location; do not run a guessed copy. Auto-detect `<test-dir>` from project structure (common: `e2e/`, `tests/`, `__tests__/`, `spec/`, `cypress/e2e/`).
+
+The scanner's bundled checks require no package from the reviewed project. They do require both Python 3 and `rg` with PCRE2 support on the host (`rg -P`). Python 3 creates and validates NUL-safe candidate identity records so candidate drift or malformed records fail closed; this mandatory scanner bookkeeping is separate from optional Tier 2 AST tooling. By default the scanner does not execute target-controlled ESLint binaries, plugins, parsers, or configs, and it does not auto-download tools. The target repository is untrusted by default. Target-controlled package scripts, local binaries, plugins, parsers, and configs may run only when the user has both explicitly trusted the checkout and approved the exact command, including its environment and flags. Without both, report the command as `recommended/unexecuted`; project documentation is evidence about what to recommend, not execution approval. The same two-part gate applies to a documented project lint command and Tier 1. When both approvals exist, run the documented E2E lint command separately and merge equivalent results rather than reporting duplicates. For that approved trusted checkout, `E2E_SMELL_ALLOW_PROJECT_ESLINT=1` opts into Tier 1. That mode uses a minimized environment and E2E-scoped file arguments but is not sandboxed.
+
+Output is grouped per pattern ID (`#3`, `#4a`, `#15`, etc.) with `file:line:matched-line`. See `references/grep-patterns.md` for the meaning of each ID.
+
+Tier 2, Tier 3, and filename validation use no-ignore mode, so repository, parent, global Git, `.ignore`, and `.rgignore` rules cannot hide a candidate. The same explicit vendor/build/report/eval exclusions apply before every tier and are rechecked against Tier 2 records. Tier 2 requests ast-grep's JSON stream, validates each record with deterministic Python 3, and fails closed on malformed or unconsumed output; a human renderer change cannot become a false clean result. Scanner utilities come from the fixed system path. `rg`, `node`/`npx`, and `ast-grep` are selected only from documented deterministic install locations or explicit absolute `E2E_SMELL_*_BIN` overrides, never from arbitrary inherited `PATH` entries. Set `E2E_SMELL_DISABLE_AST_GREP=1` to disable Tier 2 entirely when a host's preinstalled binary must not affect a portability check. Relative scan roots are canonicalized after clearing `CDPATH`.
+
+Before discovery, a no-follow preflight checks the requested tree outside the scanner's vendor/build/report exclusions. A symbolic link that could stand in for scanned source (a JS/TS file extension, a directory link, or a link named like a source root such as `src`, `e2e`, or `tests`), or a FIFO, socket, or device with a JS/TS file extension, makes the scanner print `INCOMPLETE`, list at most 20 entries plus a `Remediation:` block, exit 2, and emit no Summary. Asset links such as `public/logo-current.png` do not trigger it. There is no override setting: following a link could scan outside the root, and skipping it would hide source behind a clean result. Report the run as incomplete, never as clean. Each rerun covers only its own root, so one rerun is never the whole review: rerun on the largest directories that contain none of the listed entries and on each regular file outside them as a file root, and scan each link's target as its own root by its real path, because symbolic-link scan roots are rejected. Until the reruns cover the whole requested tree, name each part left unscanned and keep the review marked incomplete. Replacing a link or removing a special file changes the reviewed repository, so suggest it to the user instead of doing it.
+
+Tier 3 has a fail-closed workload ceiling: a single rule may produce at most 1,000 raw candidates by default. `E2E_SMELL_MAX_RULE_HITS` can set a value from 1 through the hard maximum of 10,000. Every Tier 1, Tier 2, and Tier 3 tool stream is also byte-bounded before shell materialization: `E2E_SMELL_MAX_RULE_BYTES` defaults to 1 MiB and accepts up to 16 MiB. When either configured ceiling is exceeded, the scanner prints `INCOMPLETE`, exits 2, and emits neither that rule's findings nor a Summary; this is scanner infrastructure failure, not a P0 finding count. Narrow the scan root before raising a ceiling. `E2E_SMELL_ESLINT_TIMEOUT_SECS` defaults to 300 and accepts positive integers through 3,600; invalid values fail closed before any target-controlled Tier 1 process can start.
+
+The exit threshold is explicit: `E2E_SMELL_FAIL_ON=p0` (default) fails only confirmed mechanical P0 hits; `p0-candidate` also fails on P0-shaped LLM-triage candidates; `any` fails on every confirmed mechanical hit but not triage; `none` is report-only. The example workflow uses `p0-candidate` for higher sensitivity; adopt it only after the repository self-scan is green and the higher candidate false-positive cost is accepted.
+
+**Whose rules each tier follows.** The tiers answer different questions, so they take different orders from the project's ESLint setup — say which applied when a project has its own config:
+
+- **Tier 1 is an explicit trusted-project and exact-command opt-in.** It must satisfy the same two-part trust gate above; setting an environment variable alone is not approval. With `E2E_SMELL_ALLOW_PROJECT_ESLINT=1`, the project's flat config (`eslint.config.mjs|js|cjs`) is layered on top of the baseline, so a deliberate `'playwright/no-focused-test': 'off'` genuinely silences that rule there. Severity edits (`error` ↔ `warn`) are ignored — severity is this skill's to assign (P0/P1). A legacy `.eslintrc` cannot be imported from an ESM flat config, so those projects get the `recommended` preset and their disables are NOT honored; the scanner says so in its output.
+- **Tiers 2 and 3 are this reviewer.** They ask *"can this test fail?"*, not *"does your lint policy allow it?"*, so they keep reporting regardless of what the project disabled. This is deliberate: it keeps the finding count reproducible across hosts and independent of local policy. A pattern the project turned off in ESLint can therefore still surface from Tier 2/3 — when reporting one, note that the project has it disabled at lint level, and let the reader decide.
+
+Deduplicate equivalent results into one finding with both provenance sources. Project rules may strengthen generation/style conventions, but cannot downgrade a P0 silent-pass rule. P1 needs a concrete local justification to suppress; P2/style follows the project's documented convention. A project-lint clean result never suppresses semantic checks with no rule equivalent.
+
+Verified against `eslint-plugin-playwright@2.11.0` `flat/recommended` (37 rules on by default): `#7`, `#9`, `#9c`, `#15`, `#8a`, `#4c`-`#4e`, `#17`, `#5a`, `#5b`, `#6` and Cypress `#7`, `#9b`, `#10d`-`#10f` already map onto a rule that ships enabled, and `#4f` is covered upstream by `no-unnecessary-assertions` (this skill's detection is broader). `#16` needs type-aware `@typescript-eslint/no-floating-promises`, not `missing-playwright-await`, which only sees matchers. That leaves 12 patterns with no ESLint equivalent — the cross-file and intent-versus-assertion ones (`#1`, `#2`, `#12`, `#20`, `#22`, `#23`) plus a few unclaimed mechanical ones (`#3b`, `#4g`, `#4i`, `#4j`, `#4k`, `#10c`). Read the run's own "Enforceable by a lint rule" line rather than this paragraph: it is computed per run.
+
+**Companion CI enforcement (only when already present or explicitly requested).** The mechanical always-pass class (`#4f`) is covered for Playwright by [`eslint-plugin-playwright/no-unnecessary-assertions`](https://github.com/mskelton/eslint-plugin-playwright/blob/main/docs/rules/no-unnecessary-assertions.md). Reuse that rule when the project already owns it; do not make installation a review prerequisite. Do not recommend `eslint-plugin-cypress-silent-pass@0.2.2`: it also flags assertions on queued `cy.get(...)` chains, but a missing element still fails when Cypress executes the query, so those hits are not unconditional silent-pass P0s. The bundled `Cypress.$(...)` detector and semantic review remain load-bearing for genuine Cypress synchronous-object cases.
+
+**Tier scoping note:** Tier 2's `sg-4f` deliberately also matches RTL `getBy*().toBeTruthy()` in unit tests — that surface gets the jest-dom canonical fix from 4.1, not a P0 label. Severity classification of #4f stays with Phase 2 (Locator subject = P0; RTL = advisory). Tier 2 skips vendored/build/report/eval artifacts through command globs, per-rule ignores, and record post-filtering.
+
+**Deterministic mode (cross-host consistency target):** use the same evidence and counting rules so findings from different hosts (Claude Code, Codex, etc.) can be compared on the same repo. Agreement is evidence to check, not a guarantee that independent models will always produce identical results. Downloads and target-project Tier 1 execution are disabled by default. A trusted external Tier 2 tool may add precision, while bundled Tier 3 remains the canonical finding baseline. Invoke the scanner normally and say which tiers ran:
+
+```bash
+/bin/bash -p <skill-base>/scripts/scan.sh <test-dir>
+```
+
+(Tier 3 regex always runs and is the deterministic baseline; opted-in Tier 1 and trusted external Tier 2 add precision but never subtract findings — the exit-code gate guarantees a crashed tier cannot suppress Tier 3.) The report MUST state which tiers actually ran ("Tier coverage: 3 only" / "1+2+3").
+
+**E2E content scoping:** for the FP-prone patterns the Tier 3 regex requires an E2E filename/path or executable Playwright/Cypress provenance (`@playwright/test` static/dynamic import, fixture/type provenance, `cy.<cmd>(`, or executable `Cypress.on(` support wiring). Every mechanically scannable P0 family conservatively admits files that import `test` from an unresolved package/workspace fixture, including renamed `test`/`expect` bindings, but emits only non-gating `[LLM-TRIAGE]` candidates until provenance is resolved. A generic `.e2e.*` filename without executable Playwright/Cypress provenance is handled the same way: it can create candidates but cannot create a gating P0. An executable import from a known foreign test framework (Vitest, Jest, `node:test`, `bun:test`, Mocha, or `@wdio/globals`) overrides filename-only `.e2e` inference unless the file also has direct or transitive Playwright/Cypress provenance. Playwright-only `expect` checks and focused-test receivers follow the called binding's own named/default/namespace local import/re-export lineage; a neighboring Playwright export does not promote a custom binding. A bare property segment named `page`, such as `router.page.goto()`, does not establish Playwright scope. Framework-looking text inside comments, strings, regex literals, and ordinary template text does not create scope; executable template substitutions remain code. Imported `test`/`expect` bindings shadowed by function/catch parameters, including expression-bodied arrows, destructuring, or local declarations are not framework calls in that scope. Scanner evidence for `#14` preserves only `file:line` and replaces the source payload with `[REDACTED credential candidate]`.
+
+**Evidence rule:** scanner hits are mechanical review signals. Report exact matches, then use Phase 2 where the rule requires intent or project context.
+
+**Suppression — `// JUSTIFIED:`:** Treat `// JUSTIFIED:` as a request to suppress a documented exception, not as proof that every marked hit is safe. For P1/P2, skip a hit after confirming a concrete rationale in one of the positions below. For P0, keep the hit visible as a deduplicated `[P0?][JUSTIFIED-REVIEW]` candidate until Phase 2 or an external verifier confirms the rationale; it still gates `E2E_SMELL_FAIL_ON=p0-candidate` before that confirmation. `#7` Focused Test Leak is never suppressible:
+1. The line **immediately preceding** the hit
+2. The line immediately preceding the **enclosing call/block** when the hit is inside a callback body — e.g., `// JUSTIFIED:` above `page.evaluate(() => { … document.querySelector(…) … })` or `page.waitForFunction(() => { … })` covers every qualifying pattern inside that callback
+3. For chained calls split across lines (`page.locator(…)\n  .filter(…)\n  .first()`), the line immediately preceding the chain's **starting expression** covers `.nth()` / `.first()` / `.last()` further down the chain
+
+The scanner applies positions 1 and 3 mechanically, plus position 2 for brace-delimited `page.evaluate()` / `page.waitForFunction()` callbacks. The marker must be the immediately preceding pure `//` comment; an intervening comment is a different boundary. Chain-start suppression ends at the next independent expression even when the preceding expression is semicolonless; one rationale never suppresses a neighboring fluent chain. Other enclosing callback/block shapes remain a Phase 2 judgment.
+
+Phase 2 also recognizes these as JUSTIFIED-equivalent (informal):
+- `// eslint-disable-next-line <rule> -- <concrete rationale>` with concrete reason
+- Author rationale comments above the hit (signals intentional vs accidental — see 4.2 band-aid awareness)
+- Comments describing dual-mode UI handlers (e.g., `// Single workspace mode — no workspace selection` above `if (await x.isVisible())` indicates intentional dual-mode, not a band-aid)
+
+**Comment / string-literal false positives** (the bundled lexical/provenance filters for #7, #4f, #9, #4g, and #5b, plus ast-grep and ESLint, handle their supported shapes; Phase 2 removes any remaining candidates):
+- Trailing `// comment` on a code line — token in code triggers, comment is noise
+- Block comment `/* … { timeout: 0 } … */` containing the token
+- String literal containing the token (e.g., `"test.only('focused', ...)"` in a meta-test for the rule itself; bundled #7 filtering removes this before the P0 gate)
+- Same token in a different language API (e.g., Node `fs.rm(path, { force: true })`)
+
+`try/catch` wrapping (#3 partial) is a Phase 1 `[LLM-TRIAGE]` candidate, never a gate hit, when its own try body holds a gate and its catch block does not rethrow; Phase 2 decides it, because the shape has too many legitimate uses for grep to confirm.
+
+---
+
+
+## Suppression
+
+`// JUSTIFIED: [reason]` marks a grep-detected pattern as intentional. The three accepted comment positions (immediately-preceding line, enclosing call/block, multi-line-chain start) are defined once above under **Suppression — `// JUSTIFIED:`** in the Phase 1 section; the same rules apply here and are not repeated.
+
+**Phase 1 vs Phase 2 suppression.** The mechanical scan (`scripts/scan.sh`) pre-suppresses **position 1**, bounded **position 3** fluent chains, and one deliberately narrow **position 2** shape: a marker immediately above a brace-delimited `page.evaluate()` or `page.waitForFunction()` callback covers hits that remain inside that callback, within the scanner's bounded 24-line lexical window. Its lexical walk stops at a semicolon, block boundary, callback close, or second independent expression, so a marker above one expression/callback cannot suppress a later sibling. A mechanically suppressed P0 remains a deduplicated `[P0?][JUSTIFIED-REVIEW]` candidate and still gates `E2E_SMELL_FAIL_ON=p0-candidate` until Phase 2 or another external verifier confirms the rationale; a source comment alone is not that verification. Every other **position 2** enclosing callback/block shape remains Phase 2-only because it requires structural judgment.
+
+**Exception — #7 Focused Test Leak:** `// JUSTIFIED:` does not suppress `.only` hits. There are no legitimate committed uses of `test.only` / `it.only` / `describe.only` — every hit is P0.

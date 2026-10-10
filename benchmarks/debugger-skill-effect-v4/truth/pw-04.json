@@ -1,0 +1,11 @@
+{
+ "case_id": "pw-04",
+ "roots": [
+  {
+   "file": "tests/main.spec.mjs",
+   "line": 11,
+   "mechanism": "wait_budget",
+   "diagnosis": "test_defect"
+  }
+ ]
+}

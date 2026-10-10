@@ -1,0 +1,169 @@
+{
+ "schema_version": 1,
+ "protocol_id": "debugger-skill-effect-v3",
+ "registered_utc": "2026-10-05T12:00:00Z",
+ "evidence_scope": "public-development",
+ "release_eligible": false,
+ "hypotheses": "See hypothesis.md (written before the Stage 2 edits). H1: the F1/F14/F11/F7 tie-break raises blind-mapper agreement and the new arm's F-code exact match over the 2.0.0 arm. H2: the Root Cause shape rule raises strict judge match of the new arm over the 2.0.0 arm. H3: no harm to diagnosis attribution or lenient match.",
+ "arms": {
+  "new": "Stage 2 debugger skill text, frozen in skill-snapshots/new (working tree after the edits; base commit ed9489c)",
+  "old": "release 2.0.0 debugger skill text, frozen in skill-snapshots/old (git ed9489c)",
+  "free": "taxonomy-free prompt (v2's FREE_FRAME): diagnose root cause and fix; 3-field schema"
+ },
+ "tool_enabled_workflow_arm": "not run: it needs each of the 17 source repositories checked out at the failing commit with its report artifacts, plus tool-enabled model calls per case, which is neither cheap nor reproducible from this checkout; the zero-tool arms measure interpretation of the skill text only",
+ "primary_comparison": "new minus old, strict judge match (score 2) per call, mean per case, paired per-case difference",
+ "secondary_comparisons": [
+  "new minus free and old minus free (strict and lenient)",
+  "F-code exact match new vs old on blind-agreed labels",
+  "blind-mapper agreement rate using the new tables (v2 with the 2.0.0 tables: 15/26)",
+  "diagnosis attribution against the maintainers",
+  "tokens and wall time per arm"
+ ],
+ "judge": {
+  "runner": "codex",
+  "model": "gpt-6-sol",
+  "blind": "sees maintainers' explanation and fix plus all nine candidate root-cause statements per case in shuffled order under letter ids; never sees arm, model, or F-code",
+  "rubric": "2 same mechanism; 1 right family wrong mechanism; 0 different or vague",
+  "schema": "enforced via --output-schema"
+ },
+ "hosts": [
+  {
+   "runner": "claude",
+   "requested_model": "sonnet",
+   "cli_min": "Claude Code 2.1.289",
+   "tools": "none",
+   "settings": "none",
+   "output": "--output-format json --json-schema"
+  }
+ ],
+ "corpus": "benchmarks/debugger-skill-effect-v3/corpus.json",
+ "cases": 28,
+ "case_sources": "28 cases (14 Playwright, 14 Cypress) from 17 merged fixes in 15 MIT/Apache-2.0 repositories; none used in v1 or v2 (three come from PRs whose other sub-cases v2 used); two artifacts carry raw GitHub Actions job-log excerpts",
+ "labels": {
+  "f_code": "two blind mappers (Claude Opus, Claude Sonnet; fresh contexts; saw only explanation + fix + the NEW skill tables) agreed on 23/28; 5 disputed cases carry no F-code label and are excluded from the F-code metric only",
+  "diagnosis": "maintainers' own product/test attribution where stated; otherwise test_defect when only test code changed"
+ },
+ "repetitions": 3,
+ "seed": 20261006,
+ "timeout_s": 240,
+ "infrastructure_retry": {
+  "max_attempts": 2,
+  "retryable": [
+   "timeout",
+   "runner_nonzero_exit",
+   "malformed_envelope",
+   "missing_structured_output"
+  ],
+  "not_retryable": [
+   "schema-valid prediction with any value"
+  ]
+ },
+ "decision_rule": {
+  "min_lift": 0.1,
+  "ci": "paired case-cluster bootstrap of per-case strict-match differences (new minus old), stratified by framework",
+  "bootstrap_resamples": 10000,
+  "max_diagnosis_drop": 0.05,
+  "PASS": "new-minus-old lift >= min_lift AND bootstrap 95% CI lower bound > 0 AND new diagnosis accuracy >= old diagnosis accuracy - max_diagnosis_drop",
+  "FAIL": "all model calls scored, all judge calls parsed, no input drift, and PASS conditions not met",
+  "INCONCLUSIVE": "any unscored model call after the retry policy, any unparsed judge call, or any input digest drift"
+ },
+ "power_note": "28 cases. v2 observed per-case strict-match differences between coded arms with SD about 0.20 (23 of 26 ties); with that SD the MDE is about 0.11 at alpha 0.05 and power 0.8, and with the prior assumption of 0.35 it is about 0.19. v2's coded arms sat at 0.83-0.87 strict match, so a +0.10 lift requires the new arm to approach the ceiling; FAIL is the likely outcome even if the wording helps a little.",
+ "limits": [
+  "Search-selected public cases over-represent timing and isolation causes; the author selected and redacted them (auditable via source URLs).",
+  "Several PR descriptions were written with AI coding assistants; the truth is the merged fix, not independent human adjudication.",
+  "The judge is a model, blind to arm but not human.",
+  "Zero-tool prompts measure interpretation of the skill text, not the end-to-end workflow.",
+  "One host, three repetitions."
+ ],
+ "frozen_digests": {
+  "corpus.json": "f13b2d955a492dec4c3a5f0cbbd564ec0e36372c16eb65de57468c2732ccbff2",
+  "cases": {
+   "pw-01": "f9133943ae2a620adab7c09a2d63087a877f7e900a4537ee089d768c2bd39fe0",
+   "pw-02": "9e0f7de9bff3ce4c824d19b153f46b989a7b64539acdc010b72c3d1fdc48a1a8",
+   "pw-03": "89cca89e62fc56fe24244f67b528b23aefc477ac15ae5755cca125e936e5d69a",
+   "pw-04": "60a572c79c179ae8376f86ab7e2d10cb14d0f1652ce44b6c700876f731d05886",
+   "pw-05": "67be4bd12d43cec40c082abfb67af99c003b7c699af8d27f7072afd1bf4fee41",
+   "pw-06": "e5d86eadaa4166a121df98ec807eaac6e2d1c67bb6f56965addea997b8481d99",
+   "pw-07": "70da69d91b90295ed7951dcb58e95900e107ac9905b542603c0172d91b2a851c",
+   "pw-08": "0f8d7b768835dc05c758269de4cfb81210a6870fdf02f2a7b769b289a2a08fdf",
+   "pw-09": "4eb84f36720e2782985522493c89d5ea6ed1e42dcf96684adc707b97d31bbc5f",
+   "pw-10": "c320e89d7adbd87a422b783f0d64ee59b59b8ed3a2b6878c106f23e0b8bb014b",
+   "pw-11": "01ed39fa355358b8985a413e21c44ffdcff7c6a25c25bbc92863ae28d8a1310c",
+   "pw-12": "b65aee125a857ecdc061636ca81748d5eede665f14a3d089943346e74aa65249",
+   "pw-13": "edcccc412dcf2d677fae97b648bb6d50b3787c0c91a4a7c0e3c2a434710cb6cd",
+   "pw-14": "6ba2c3a2cfbdfd3d72645d349f4627e9091b9c61c9f82368bf9d0fde9421e0d1",
+   "cy-01": "05483308e36e97e201b39401e52ad9c401b95c559eafc458296f013cf13a1c72",
+   "cy-02": "45fb4bc19b308d8b7868930fc5ba0c52dc26b75525df460928b94b27dc85e6bf",
+   "cy-03": "30dc28b1e940b732e7777252ef3854d4f6b894a6c22fc08f15c4c15300d6b761",
+   "cy-04": "6d3bc6dcb5d34e8143443094d5f5ee911dd40fb390c3ea0ce2fe4dca9d6acfa8",
+   "cy-05": "42cf56f8c3b1496d8e26dc1ecc6aeaa1dab8ccd34eb69dc2b257bbed96187f16",
+   "cy-06": "70ea0e65b12789791d52a10e143a002aa95cc19abec4d85f962239b2e0bc85a8",
+   "cy-07": "5945409eac78d3d97c06d83d04cc63ea5c75e85d8d7baa38fa20fe164b2070cf",
+   "cy-08": "b27e3f3ad5ad2d2f87fcc22774f01cc51400a79ca94840f2b3a2761cfdc767d4",
+   "cy-09": "bf2e867bedeebba6143f8e68ef8a7bd82d0b930d8541acbb380d0d0c669f9ead",
+   "cy-10": "d687c44dbd2b93efbfdb4cf5edc7064f85a5c5eae053570dd2272944defccfc5",
+   "cy-11": "1e55e3f0d42191dc98b5a03dd0a76d97e73654d019d2b88ec7f6523ead9e8918",
+   "cy-12": "410cd6bb6de235d74864dd410a1865465dc2bb88df71b8f4ccce95fa67582fd2",
+   "cy-13": "00328a2a82f6ab71e41e4aef8d2425c77633305920b19318ff90d11d89bf92ed",
+   "cy-14": "cc9067a54e7e950262364f437cfedb442d1d38ae845eee85ff33420968a323c1"
+  },
+  "truth": {
+   "pw-01": "226e34fa83ee6c206e5c85f3137a2aaadfaed564040a1bc461ebdc81f54e9d76",
+   "pw-02": "c713ddee241a390cb269429b438cf97b4b0e2e16ac3293a56d4a94e6bb4911ff",
+   "pw-03": "92036d294daa6dbcd0b88849977150cdd966fdfc42a6d83eb349e94d5e67247e",
+   "pw-04": "7bd082385e47dc538cb423b12f38b263899c5574f489422d7154b9cf2637adde",
+   "pw-05": "10f57e74b841ebd9d23d53f349aceb88604a2418db63de2d0a85eaf1d7c7cd92",
+   "pw-06": "5514799b844421c659efc63bfa2c4581a80854c501d0ec8d2f4fe156938e79f0",
+   "pw-07": "d7877f7c0184bcb436c45a658e6433b0f0d4e01f147af39a246886f394372069",
+   "pw-08": "7d3e1a4137f6c06413f263d65eb38ff403f9d18dce2a25f9670509a7a394fc54",
+   "pw-09": "78bfffa495f612ec80a7aee27b45f64f84b0ddcab3c5416f80a3c880b9e66c53",
+   "pw-10": "1ff413ddcf7fb8eb026dcfafe8c6efdff593dfc7c4ee9b0147e4fbc7a018373c",
+   "pw-11": "aae9ce4b3ae9f2171d1030f952d07d0ff1068b312d56588bd19b6a4b86b514d9",
+   "pw-12": "cfaccb54d6ea8de131e91095f8ad83465f4df8542ab1e512b66a98e581938d86",
+   "pw-13": "c59364d07476ae60683eadf59f92291dab94302a1a0d25ecf7ff27d97f62a104",
+   "pw-14": "3c31bc1ca9e8926d1e3c5ce5bf9f25965fefef56a93ed307433843e1cef1ec69",
+   "cy-01": "1f7bd4723a4bc3131d2fb1e040543ee4d3ab72a02b5125eb82d322ca96c545bd",
+   "cy-02": "f02bb48fce1fb1f5991ff42f201d9cabc116ac69020a59c0cb5449d29291b203",
+   "cy-03": "ed5acfc79a575e055a2fed38c752ffaf2861ade6b154a844c2c65e285795fada",
+   "cy-04": "f52da484ea94cec6095544201c9dea46276c8b99d155567119f2c8eae4a45b21",
+   "cy-05": "1399d6edf4dd28f66f91eeb641fa8a5847c193e934438224fca955ad45877643",
+   "cy-06": "60771609355dbcaa01be4dfd2523aa2557c00ce534850d0fcd098423af16b095",
+   "cy-07": "e82eee90291ced241f4dd6484a4c1d704527cbedad1f91c093f0e629aed66d6f",
+   "cy-08": "69853f25eb27262bb48238cef7091eb38cd92002a210db44b875f91b30d37db1",
+   "cy-09": "a48c4b0d0cf0bb7e3c084b49899ac91414f35914edd3aed4160d38fcb8e68efb",
+   "cy-10": "69f8ceb0794c4fd2e6e798168429b4576efbd20764aaaf7f0a29b6dd260a3654",
+   "cy-11": "8895357c3edcd2447cea3eaf7adb625825b095142eb5ab3c419343a9243df3fb",
+   "cy-12": "2ff6612828f9fb30064494039c478ad9fa0b1bd051f5d9185947947aef8570a0",
+   "cy-13": "b812aa55871baace5a8531a0fd19d364d9e0f4d3bb4600834e0ed60336f126c2",
+   "cy-14": "cb922d549a13e094cd3a3c65295710f0044a05f8f0d946c1146e32b938278a12"
+  },
+  "skill_snapshots": {
+   "skill-snapshots/new/playwright-debugger/SKILL.md": "bfef6291c44f11679aa6e3cf9f53cc15b9e8eea5ab75a4dffd513771f8923a73",
+   "skill-snapshots/new/playwright-debugger/references/report-acquisition.md": "2a03860a5159511593054a47494b7fb067ff863edd8d2400977952da24e28f0f",
+   "skill-snapshots/new/playwright-debugger/references/artifact-extraction.md": "0c89b9b239a0685297ae30b2b25c72ae1caf52abe884c8d8d6e50eac9dd4a3cb",
+   "skill-snapshots/new/playwright-debugger/references/classification-procedure.md": "0bc769cf9fa9dd12ca98c6a4b00937f462cf69d9242ac645c0fb2a618925f243",
+   "skill-snapshots/new/playwright-debugger/references/fix-verification.md": "2dd83131a150eabad611b26b68a419b22c90615d561a16686205efa4055dea44",
+   "skill-snapshots/new/cypress-debugger/SKILL.md": "f4c6480a5d4330e1f3b4b2c0a877dda6c95c468771b2536e99696f5c3659aa58",
+   "skill-snapshots/new/cypress-debugger/references/report-acquisition.md": "b10ac0ecb2b332ec7f43e76992f647223886d2ccfc7d795cab23f87340c131be",
+   "skill-snapshots/new/cypress-debugger/references/artifact-extraction.md": "fe70c328ad22fc273a911d9f888f6ab49b5dc8db3c1776abef0cfbccd1202b97",
+   "skill-snapshots/new/cypress-debugger/references/classification-procedure.md": "74595bb62fda0f3f321a4b23b8f74d1f53b6227820274632485e7a3133b879a2",
+   "skill-snapshots/new/cypress-debugger/references/fix-verification.md": "89fc0dab0c840dd57b54dced36fe32944a6871e8cff56554b1afa9b28cf565f5",
+   "skill-snapshots/old/playwright-debugger/SKILL.md": "952a4e34621d1eed587a3cb448c751120b6452c053e038f094759819e9e12dcf",
+   "skill-snapshots/old/playwright-debugger/references/report-acquisition.md": "2a03860a5159511593054a47494b7fb067ff863edd8d2400977952da24e28f0f",
+   "skill-snapshots/old/playwright-debugger/references/artifact-extraction.md": "0c89b9b239a0685297ae30b2b25c72ae1caf52abe884c8d8d6e50eac9dd4a3cb",
+   "skill-snapshots/old/playwright-debugger/references/classification-procedure.md": "39350b25046feea946d0f64e7d2ec9247fa9fb52886707a91c26247c26e91cf6",
+   "skill-snapshots/old/playwright-debugger/references/fix-verification.md": "2dd83131a150eabad611b26b68a419b22c90615d561a16686205efa4055dea44",
+   "skill-snapshots/old/cypress-debugger/SKILL.md": "1f65e503434bc14d9849970559cf9cfdedb6d98f78e7cc59c3933c10705eecc4",
+   "skill-snapshots/old/cypress-debugger/references/report-acquisition.md": "b10ac0ecb2b332ec7f43e76992f647223886d2ccfc7d795cab23f87340c131be",
+   "skill-snapshots/old/cypress-debugger/references/artifact-extraction.md": "fe70c328ad22fc273a911d9f888f6ab49b5dc8db3c1776abef0cfbccd1202b97",
+   "skill-snapshots/old/cypress-debugger/references/classification-procedure.md": "d2a3d8a00cecb30fefae8beb5145810ebdb66dd4ccbb4e976604b1964b0ea105",
+   "skill-snapshots/old/cypress-debugger/references/fix-verification.md": "89fc0dab0c840dd57b54dced36fe32944a6871e8cff56554b1afa9b28cf565f5"
+  },
+  "prompt_frame_coded": "8a103732441044917ba499b5518916c863ee36ad93a3b217d3dcb42bd6ba8a4e",
+  "prompt_frame_free": "2823b81913c7bca4d0f639bf8d4c90b54e20a372687b15d93b8542a6bd033fef",
+  "judge_frame": "20f6c22cb0798cb30a65fabf1daa742fd859a44d19d45fc4f0b3950ed864fec0",
+  "output_schema_coded": "641305de835cd4251ee2fc2eb0d317dbc5c28065ae8697e1353009ad0bb040f5",
+  "output_schema_free": "50c3497341496d6a1d5c183beb82d89f90001b6da0b0e5d7b97fc9e213e19351",
+  "judge_schema": "c419e3807b7f840255515ac454b411393980f44ca17a9d5bd2956640fa51cea3"
+ }
+}

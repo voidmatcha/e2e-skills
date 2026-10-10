@@ -1,0 +1,7 @@
+interface:
+  display_name: E2E Reviewer
+  short_description: Audit E2E tests and diffs
+  default_prompt: Use $e2e-reviewer to review Playwright or Cypress specs and PR diffs against 24 anti-patterns grouped by P0/P1/P2 severity.
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,11 @@
+{
+ "checked_utc": "2026-10-06T21:53:59Z",
+ "problems": [],
+ "snapshot_digests": {
+  "full_fixed_arm_snapshot": "fa4675241dac224ae8c5c339ccd5fa111f5cee61b56ef9357fed710e1d132111",
+  "full_arm_snapshot": "5ba66c7b5a04db567d7b66016667cd527e7d6ad9386d1f32c956ef8a5a46fd10",
+  "lean_arm": "9237c953b4939db15e3c71c5da428322c2cfdcfdf956c6b5e04e95e45d9e87c5",
+  "rules_only_arm": "92db2a4040b769e2a9c2ea684aa7334d29ff8b929ca46ba5281f2aca36134189",
+  "shared_reviewer_snapshot": "982c8c05562cbb002e33e241f3b34cc6aa3c9c7bab081056c66eedbd4562fa91"
+ }
+}

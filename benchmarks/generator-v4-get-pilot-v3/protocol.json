@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "protocol_id": "generator-v4-get-pilot-v3",
+  "status": "NOT_RUN",
+  "evidence_scope": "public-development-mechanism-triage",
+  "release_eligible": false,
+  "arms": ["before", "after"],
+  "cases": ["v3-13"],
+  "repetitions": 1,
+  "workers": 1,
+  "seed": 20261012,
+  "model": "gpt-5.5",
+  "reasoning_effort": "medium",
+  "timeout_s": 1500,
+  "per_call_budget_usd": null,
+  "spend_cap_usd": null,
+  "container_image": "sha256:687b18c424d01c3af69efa921eaa824b48eb737d46492da334405e348da73881",
+  "docker_context": "colima",
+  "minimum_free_disk_bytes": 4294967296,
+  "snapshot": "Before is the v2 after skill. After changes only SKILL.md and verification-rules.md: counted normal requests, product-recognized failed response, two evidence lines before V5/V6, and a V4 completion-report field. Evals are excluded. All other skill files, the spent case, reviewer, model, container, prompt, approvals, and scorer are shared.",
+  "schedule": "One fresh before/after pair on spent public v3-13; one worker. This is a stop-early mechanism triage, not a lift estimate. No generated spec is reused.",
+  "common_prompt_appendix": "Additional explicit command approvals for BOTH arms: the already-approved project-local Playwright CLI prefix may use --browser chromium, --config <outside-worktree guard JSON>, and -s=<fresh unique session> for the skill's origin-guarded exploration only. Its named eval and requests subcommands for the skill's blocked-origin proof are approved, as is goto on the exact preflighted app origin. Creating that guard config outside the target worktree is approved. This does not approve another origin, a package install, changing project controls, skipping the preflight, or terminating a process the invocation did not start. Record these exact command rows as already approved. Follow the unchanged skill safety gate, guard, V4/V5/V6, and completion rules in both arms. If a V4 temporary verifier is created, print its complete source with a read-only command before removing it so the benchmark can audit what ran; do not retain the verifier in the target worktree.",
+  "decision_rule": {
+    "primary": "Independently adjudicate V4 on the state-changing GET. Require normal method, exact endpoint and query, counted request cardinality and visible outcome, plus preserved temporary source showing a product-recognized failed response and a run red at the unchanged recent-search primary or declared settled-state gate. If after omits any part yet reports Complete, stop the iteration as mechanism not demonstrated; do not extend this spent-case pilot merely for another attempt. If after meets V4 and before does not, record a promising single-pair mechanism observation only, then design a distinct-case comparison; do not claim lift from one pair.",
+    "guards": "Both calls must be complete without infrastructure error or out-of-scope writes; independent functional scores and V6 packet/final verdict are reported separately. An incomplete cell, missing transcript, or missing manual adjudication makes the process result INCONCLUSIVE. Self-report and command counts are not V4 evidence.",
+    "secondary": "Report clean 3/3, effective seeded-fault kills, refactor, P0, attempts, elapsed time and available usage descriptively. No speed or cost threshold is specified.",
+    "interpretation": "This is one pair on a spent public task. It cannot establish generalization, release equivalence, speed improvement, or billed-cost savings. The v2 comparison used the same case but has a different intervention; do not pool cells or present historical controls as independent."
+  },
+  "prerequisite_probe": "Reuse the pinned image's passing model-free successor probe for explicit Chromium CLI, pre-dispatch origin rejection, owned cleanup, and clean smoke tests.",
+  "process_audit": "Inspect parent transcripts, printed temporary verifier source, normal request counter source/output, and failed-write output. Do not award PASS from a V4 label or red assertion alone."
+}

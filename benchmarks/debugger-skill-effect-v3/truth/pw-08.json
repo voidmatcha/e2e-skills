@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "krzysztofcal/arcadePlatform",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/krzysztofcal/arcadePlatform/issues/1028",
+   "https://github.com/krzysztofcal/arcadePlatform/pull/1035"
+  ],
+  "merged": "2026-10-04"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test",
+ "explanation": "The footer click and URL assertion can complete at navigation commit, before the destination document has finished parsing and executing its deferred scripts; the next command immediately resizes the Firefox viewport across that lifecycle boundary.",
+ "fix": "`await page.waitForLoadState('domcontentloaded')` before `setViewportSize`."
+}

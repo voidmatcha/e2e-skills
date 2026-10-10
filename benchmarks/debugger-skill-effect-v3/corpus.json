@@ -1,0 +1,638 @@
+{
+  "schema_version": 1,
+  "corpus_id": "debugger-skill-effect-v3",
+  "status": "public-development-corpus-real-fixes",
+  "description": "28 fresh real Playwright/Cypress failures (14/14) from 17 merged MIT/Apache fixes, none used in v1 or v2; the maintainers' merged fix is the hidden truth. F-code labels come from two blind mappers using the Stage 2 skill tables.",
+  "construction_rule": "Each artifact contains only observations: the test identifier, the failure text as reported in the issue, PR, CI log or diff comments (quoted or minimally normalised into a Playwright/Cypress error shape), the pre-fix test code from the merged diff's removed lines and unchanged context, the attempt or frequency pattern the maintainers reported, and environment, DOM, or network facts that a report would show. Two cases (pw-13, cy-01) carry a verbatim raw excerpt of the failed GitHub Actions job log, fetched read-only. Sentences stating the cause or the fix were removed and are held in `truth`; where a report-style detail is not verbatim, it restates a fact the maintainers reported, and the source URLs allow an audit.",
+  "cases": [
+    {
+      "id": "pw-01",
+      "framework": "playwright",
+      "artifact": {
+        "source": "cases/pw-01.json",
+        "sha256": "f9133943ae2a620adab7c09a2d63087a877f7e900a4537ee089d768c2bd39fe0"
+      },
+      "truth": {
+        "source": "truth/pw-01.json",
+        "sha256": "226e34fa83ee6c206e5c85f3137a2aaadfaed564040a1bc461ebdc81f54e9d76"
+      },
+      "source_repo": "opengeos/GeoLibre",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/opengeos/GeoLibre/pull/2937"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": "F7"
+      }
+    },
+    {
+      "id": "pw-02",
+      "framework": "playwright",
+      "artifact": {
+        "source": "cases/pw-02.json",
+        "sha256": "9e0f7de9bff3ce4c824d19b153f46b989a7b64539acdc010b72c3d1fdc48a1a8"
+      },
+      "truth": {
+        "source": "truth/pw-02.json",
+        "sha256": "c713ddee241a390cb269429b438cf97b4b0e2e16ac3293a56d4a94e6bb4911ff"
+      },
+      "source_repo": "ankit/stylebot",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/ankit/stylebot/pull/1163"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": "F7"
+      }
+    },
+    {
+      "id": "pw-03",
+      "framework": "playwright",
+      "artifact": {
+        "source": "cases/pw-03.json",
+        "sha256": "89cca89e62fc56fe24244f67b528b23aefc477ac15ae5755cca125e936e5d69a"
+      },
+      "truth": {
+        "source": "truth/pw-03.json",
+        "sha256": "92036d294daa6dbcd0b88849977150cdd966fdfc42a6d83eb349e94d5e67247e"
+      },
+      "source_repo": "hanzei/jot",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/hanzei/jot/issues/1013",
+        "https://github.com/hanzei/jot/pull/1014"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "product_regression",
+        "f_code": "F14"
+      }
+    },
+    {
+      "id": "pw-04",
+      "framework": "playwright",
+      "artifact": {
+        "source": "cases/pw-04.json",
+        "sha256": "60a572c79c179ae8376f86ab7e2d10cb14d0f1652ce44b6c700876f731d05886"
+      },
+      "truth": {
+        "source": "truth/pw-04.json",
+        "sha256": "7bd082385e47dc538cb423b12f38b263899c5574f489422d7154b9cf2637adde"
+      },
+      "source_repo": "anchapin/staging-studio",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/anchapin/staging-studio/issues/1081",
+        "https://github.com/anchapin/staging-studio/pull/1089"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": "F2"
+      }
+    },
+    {
+      "id": "pw-05",
+      "framework": "playwright",
+      "artifact": {
+        "source": "cases/pw-05.json",
+        "sha256": "67be4bd12d43cec40c082abfb67af99c003b7c699af8d27f7072afd1bf4fee41"
+      },
+      "truth": {
+        "source": "truth/pw-05.json",
+        "sha256": "10f57e74b841ebd9d23d53f349aceb88604a2418db63de2d0a85eaf1d7c7cd92"
+      },
+      "source_repo": "eemtijca/ludus",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/eemtijca/ludus/issues/12",
+        "https://github.com/eemtijca/ludus/pull/14"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": "F2"
+      }
+    },
+    {
+      "id": "pw-06",
+      "framework": "playwright",
+      "artifact": {
+        "source": "cases/pw-06.json",
+        "sha256": "e5d86eadaa4166a121df98ec807eaac6e2d1c67bb6f56965addea997b8481d99"
+      },
+      "truth": {
+        "source": "truth/pw-06.json",
+        "sha256": "5514799b844421c659efc63bfa2c4581a80854c501d0ec8d2f4fe156938e79f0"
+      },
+      "source_repo": "eemtijca/ludus",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/eemtijca/ludus/issues/12",
+        "https://github.com/eemtijca/ludus/pull/14"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": "F15"
+      }
+    },
+    {
+      "id": "pw-07",
+      "framework": "playwright",
+      "artifact": {
+        "source": "cases/pw-07.json",
+        "sha256": "70da69d91b90295ed7951dcb58e95900e107ac9905b542603c0172d91b2a851c"
+      },
+      "truth": {
+        "source": "truth/pw-07.json",
+        "sha256": "d7877f7c0184bcb436c45a658e6433b0f0d4e01f147af39a246886f394372069"
+      },
+      "source_repo": "souravmondalshuvo/Shohoj",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/souravmondalshuvo/Shohoj/issues/828",
+        "https://github.com/souravmondalshuvo/Shohoj/pull/829"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": "F3"
+      }
+    },
+    {
+      "id": "pw-08",
+      "framework": "playwright",
+      "artifact": {
+        "source": "cases/pw-08.json",
+        "sha256": "0f8d7b768835dc05c758269de4cfb81210a6870fdf02f2a7b769b289a2a08fdf"
+      },
+      "truth": {
+        "source": "truth/pw-08.json",
+        "sha256": "7d3e1a4137f6c06413f263d65eb38ff403f9d18dce2a25f9670509a7a394fc54"
+      },
+      "source_repo": "krzysztofcal/arcadePlatform",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/krzysztofcal/arcadePlatform/issues/1028",
+        "https://github.com/krzysztofcal/arcadePlatform/pull/1035"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": "F11"
+      }
+    },
+    {
+      "id": "pw-09",
+      "framework": "playwright",
+      "artifact": {
+        "source": "cases/pw-09.json",
+        "sha256": "4eb84f36720e2782985522493c89d5ea6ed1e42dcf96684adc707b97d31bbc5f"
+      },
+      "truth": {
+        "source": "truth/pw-09.json",
+        "sha256": "78bfffa495f612ec80a7aee27b45f64f84b0ddcab3c5416f80a3c880b9e66c53"
+      },
+      "source_repo": "krzysztofcal/arcadePlatform",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/krzysztofcal/arcadePlatform/pull/1035"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": "F1"
+      }
+    },
+    {
+      "id": "pw-10",
+      "framework": "playwright",
+      "artifact": {
+        "source": "cases/pw-10.json",
+        "sha256": "c320e89d7adbd87a422b783f0d64ee59b59b8ed3a2b6878c106f23e0b8bb014b"
+      },
+      "truth": {
+        "source": "truth/pw-10.json",
+        "sha256": "1ff413ddcf7fb8eb026dcfafe8c6efdff593dfc7c4ee9b0147e4fbc7a018373c"
+      },
+      "source_repo": "chrisvasz/actual",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/chrisvasz/actual/pull/102"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": null
+      }
+    },
+    {
+      "id": "pw-11",
+      "framework": "playwright",
+      "artifact": {
+        "source": "cases/pw-11.json",
+        "sha256": "01ed39fa355358b8985a413e21c44ffdcff7c6a25c25bbc92863ae28d8a1310c"
+      },
+      "truth": {
+        "source": "truth/pw-11.json",
+        "sha256": "aae9ce4b3ae9f2171d1030f952d07d0ff1068b312d56588bd19b6a4b86b514d9"
+      },
+      "source_repo": "sjdodge123/Raid-Ledger",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/sjdodge123/Raid-Ledger/pull/1473"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "product_regression",
+        "f_code": "F14"
+      }
+    },
+    {
+      "id": "pw-12",
+      "framework": "playwright",
+      "artifact": {
+        "source": "cases/pw-12.json",
+        "sha256": "b65aee125a857ecdc061636ca81748d5eede665f14a3d089943346e74aa65249"
+      },
+      "truth": {
+        "source": "truth/pw-12.json",
+        "sha256": "cfaccb54d6ea8de131e91095f8ad83465f4df8542ab1e512b66a98e581938d86"
+      },
+      "source_repo": "datahub-project/datahub",
+      "license": "Apache-2.0",
+      "source_urls": [
+        "https://github.com/datahub-project/datahub/pull/19054"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": "F14"
+      }
+    },
+    {
+      "id": "pw-13",
+      "framework": "playwright",
+      "artifact": {
+        "source": "cases/pw-13.json",
+        "sha256": "6b05d06c3d49dfd7a94ae69b1aa3884c4434d0f95c6c07c0ac19888aa36f8aed"
+      },
+      "truth": {
+        "source": "truth/pw-13.json",
+        "sha256": "c59364d07476ae60683eadf59f92291dab94302a1a0d25ecf7ff27d97f62a104"
+      },
+      "source_repo": "intent-hq/cloudlands-fe",
+      "license": "Apache-2.0",
+      "source_urls": [
+        "https://github.com/intent-hq/intent/issues/5687",
+        "https://github.com/intent-hq/cloudlands-fe/pull/2806"
+      ],
+      "raw_ci_log": true,
+      "expected": {
+        "diagnosis": "product_regression",
+        "f_code": null
+      }
+    },
+    {
+      "id": "pw-14",
+      "framework": "playwright",
+      "artifact": {
+        "source": "cases/pw-14.json",
+        "sha256": "6ba2c3a2cfbdfd3d72645d349f4627e9091b9c61c9f82368bf9d0fde9421e0d1"
+      },
+      "truth": {
+        "source": "truth/pw-14.json",
+        "sha256": "3c31bc1ca9e8926d1e3c5ce5bf9f25965fefef56a93ed307433843e1cef1ec69"
+      },
+      "source_repo": "open-metadata/OpenMetadata",
+      "license": "Apache-2.0",
+      "source_urls": [
+        "https://github.com/open-metadata/OpenMetadata/pull/31063"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": "F14"
+      }
+    },
+    {
+      "id": "cy-01",
+      "framework": "cypress",
+      "artifact": {
+        "source": "cases/cy-01.json",
+        "sha256": "d6c324bd27e63093091ca8243f6958ddeb79a31a4b47c0d1d3f5b1adf047d085"
+      },
+      "truth": {
+        "source": "truth/cy-01.json",
+        "sha256": "1f7bd4723a4bc3131d2fb1e040543ee4d3ab72a02b5125eb82d322ca96c545bd"
+      },
+      "source_repo": "ChurchCRM/CRM",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/ChurchCRM/CRM/issues/10054",
+        "https://github.com/ChurchCRM/CRM/pull/10055",
+        "https://github.com/ChurchCRM/CRM/actions/runs/36189324249"
+      ],
+      "raw_ci_log": true,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": "F14"
+      }
+    },
+    {
+      "id": "cy-02",
+      "framework": "cypress",
+      "artifact": {
+        "source": "cases/cy-02.json",
+        "sha256": "45fb4bc19b308d8b7868930fc5ba0c52dc26b75525df460928b94b27dc85e6bf"
+      },
+      "truth": {
+        "source": "truth/cy-02.json",
+        "sha256": "f02bb48fce1fb1f5991ff42f201d9cabc116ac69020a59c0cb5449d29291b203"
+      },
+      "source_repo": "ChurchCRM/CRM",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/ChurchCRM/CRM/issues/10215",
+        "https://github.com/ChurchCRM/CRM/pull/10285"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": null
+      }
+    },
+    {
+      "id": "cy-03",
+      "framework": "cypress",
+      "artifact": {
+        "source": "cases/cy-03.json",
+        "sha256": "30dc28b1e940b732e7777252ef3854d4f6b894a6c22fc08f15c4c15300d6b761"
+      },
+      "truth": {
+        "source": "truth/cy-03.json",
+        "sha256": "ed5acfc79a575e055a2fed38c752ffaf2861ade6b154a844c2c65e285795fada"
+      },
+      "source_repo": "glaboryp/recetas-ia",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/glaboryp/recetas-ia/issues/4",
+        "https://github.com/glaboryp/recetas-ia/pull/5"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "product_regression",
+        "f_code": null
+      }
+    },
+    {
+      "id": "cy-04",
+      "framework": "cypress",
+      "artifact": {
+        "source": "cases/cy-04.json",
+        "sha256": "6d3bc6dcb5d34e8143443094d5f5ee911dd40fb390c3ea0ce2fe4dca9d6acfa8"
+      },
+      "truth": {
+        "source": "truth/cy-04.json",
+        "sha256": "f52da484ea94cec6095544201c9dea46276c8b99d155567119f2c8eae4a45b21"
+      },
+      "source_repo": "gbstem/portal",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/gbstem/portal/pull/143"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": "F15"
+      }
+    },
+    {
+      "id": "cy-05",
+      "framework": "cypress",
+      "artifact": {
+        "source": "cases/cy-05.json",
+        "sha256": "42cf56f8c3b1496d8e26dc1ecc6aeaa1dab8ccd34eb69dc2b257bbed96187f16"
+      },
+      "truth": {
+        "source": "truth/cy-05.json",
+        "sha256": "1399d6edf4dd28f66f91eeb641fa8a5847c193e934438224fca955ad45877643"
+      },
+      "source_repo": "frappe/release_tests",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/frappe/release_tests/pull/3"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": "F2"
+      }
+    },
+    {
+      "id": "cy-06",
+      "framework": "cypress",
+      "artifact": {
+        "source": "cases/cy-06.json",
+        "sha256": "70ea0e65b12789791d52a10e143a002aa95cc19abec4d85f962239b2e0bc85a8"
+      },
+      "truth": {
+        "source": "truth/cy-06.json",
+        "sha256": "60771609355dbcaa01be4dfd2523aa2557c00ce534850d0fcd098423af16b095"
+      },
+      "source_repo": "frappe/release_tests",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/frappe/release_tests/pull/3"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": "F11"
+      }
+    },
+    {
+      "id": "cy-07",
+      "framework": "cypress",
+      "artifact": {
+        "source": "cases/cy-07.json",
+        "sha256": "5945409eac78d3d97c06d83d04cc63ea5c75e85d8d7baa38fa20fe164b2070cf"
+      },
+      "truth": {
+        "source": "truth/cy-07.json",
+        "sha256": "e82eee90291ced241f4dd6484a4c1d704527cbedad1f91c093f0e629aed66d6f"
+      },
+      "source_repo": "frappe/release_tests",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/frappe/release_tests/pull/3"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": "F2"
+      }
+    },
+    {
+      "id": "cy-08",
+      "framework": "cypress",
+      "artifact": {
+        "source": "cases/cy-08.json",
+        "sha256": "b27e3f3ad5ad2d2f87fcc22774f01cc51400a79ca94840f2b3a2761cfdc767d4"
+      },
+      "truth": {
+        "source": "truth/cy-08.json",
+        "sha256": "69853f25eb27262bb48238cef7091eb38cd92002a210db44b875f91b30d37db1"
+      },
+      "source_repo": "frappe/release_tests",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/frappe/release_tests/pull/3"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": "F2"
+      }
+    },
+    {
+      "id": "cy-09",
+      "framework": "cypress",
+      "artifact": {
+        "source": "cases/cy-09.json",
+        "sha256": "bf2e867bedeebba6143f8e68ef8a7bd82d0b930d8541acbb380d0d0c669f9ead"
+      },
+      "truth": {
+        "source": "truth/cy-09.json",
+        "sha256": "a48c4b0d0cf0bb7e3c084b49899ac91414f35914edd3aed4160d38fcb8e68efb"
+      },
+      "source_repo": "bettersoftware-io/ReactiveTraderCloudClone",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/bettersoftware-io/ReactiveTraderCloudClone/pull/66"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": null
+      }
+    },
+    {
+      "id": "cy-10",
+      "framework": "cypress",
+      "artifact": {
+        "source": "cases/cy-10.json",
+        "sha256": "d687c44dbd2b93efbfdb4cf5edc7064f85a5c5eae053570dd2272944defccfc5"
+      },
+      "truth": {
+        "source": "truth/cy-10.json",
+        "sha256": "69f8ceb0794c4fd2e6e798168429b4576efbd20764aaaf7f0a29b6dd260a3654"
+      },
+      "source_repo": "bettersoftware-io/ReactiveTraderCloudClone",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/bettersoftware-io/ReactiveTraderCloudClone/pull/66"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": "F11"
+      }
+    },
+    {
+      "id": "cy-11",
+      "framework": "cypress",
+      "artifact": {
+        "source": "cases/cy-11.json",
+        "sha256": "1e55e3f0d42191dc98b5a03dd0a76d97e73654d019d2b88ec7f6523ead9e8918"
+      },
+      "truth": {
+        "source": "truth/cy-11.json",
+        "sha256": "8895357c3edcd2447cea3eaf7adb625825b095142eb5ab3c419343a9243df3fb"
+      },
+      "source_repo": "opendatahub-io/odh-dashboard",
+      "license": "Apache-2.0",
+      "source_urls": [
+        "https://github.com/opendatahub-io/odh-dashboard/pull/9745"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": "F4"
+      }
+    },
+    {
+      "id": "cy-12",
+      "framework": "cypress",
+      "artifact": {
+        "source": "cases/cy-12.json",
+        "sha256": "410cd6bb6de235d74864dd410a1865465dc2bb88df71b8f4ccce95fa67582fd2"
+      },
+      "truth": {
+        "source": "truth/cy-12.json",
+        "sha256": "2ff6612828f9fb30064494039c478ad9fa0b1bd051f5d9185947947aef8570a0"
+      },
+      "source_repo": "Altinn/altinn-studio",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/Altinn/altinn-studio/issues/20512",
+        "https://github.com/Altinn/altinn-studio/pull/20513"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "product_regression",
+        "f_code": "F11"
+      }
+    },
+    {
+      "id": "cy-13",
+      "framework": "cypress",
+      "artifact": {
+        "source": "cases/cy-13.json",
+        "sha256": "00328a2a82f6ab71e41e4aef8d2425c77633305920b19318ff90d11d89bf92ed"
+      },
+      "truth": {
+        "source": "truth/cy-13.json",
+        "sha256": "b812aa55871baace5a8531a0fd19d364d9e0f4d3bb4600834e0ed60336f126c2"
+      },
+      "source_repo": "Altinn/altinn-studio",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/Altinn/altinn-studio/pull/20688"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": "F11"
+      }
+    },
+    {
+      "id": "cy-14",
+      "framework": "cypress",
+      "artifact": {
+        "source": "cases/cy-14.json",
+        "sha256": "cc9067a54e7e950262364f437cfedb442d1d38ae845eee85ff33420968a323c1"
+      },
+      "truth": {
+        "source": "truth/cy-14.json",
+        "sha256": "cb922d549a13e094cd3a3c65295710f0044a05f8f0d946c1146e32b938278a12"
+      },
+      "source_repo": "Altinn/altinn-studio",
+      "license": "MIT",
+      "source_urls": [
+        "https://github.com/Altinn/altinn-studio/pull/20688"
+      ],
+      "raw_ci_log": false,
+      "expected": {
+        "diagnosis": "test_defect",
+        "f_code": "F1"
+      }
+    }
+  ],
+  "post_run_normalization": "see post-run-normalization.json"
+}

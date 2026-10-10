@@ -1,0 +1,1718 @@
+{
+  "schema_version": 1,
+  "corpus_visibility": "public-development",
+  "intended_use": "Preregistered public development corpus for the Codex-only three-arm comparison. It asks again whether the full reviewer workflow beats the pattern catalog alone, on cases written after the severity-exception wording was added to the skill, and whether documented severity exceptions are applied on cases no model has seen. It is not sealed and does not establish generalization.",
+  "contamination_risk": "The corpus is inspectable and was written by the same author who wrote the reviewer references it exercises. It was designed from the reference contracts alone, without reading any v9 run report. Every result must disclose that exposure and remain development evidence.",
+  "labeling": {
+    "procedure": "Single-author labels written from the reviewer references at the frozen skill commit, before any model call on this corpus, and without reading any earlier holdout run report. Every label records the reference rule that decides it, quoting or citing the contract text, and every case records which prompt arm is expected to get it right and why. Blind double labeling is pending. After authoring, a Claude subagent and Codex gpt-5.6-sol each labeled all 30 cases blind from copies of the case sources and the skill, without the corpus file. 100 of the 103 finding and guard labels matched both. An arbiter subagent resolved 4 disputes from quoted contract text, and the user approved the result on 2026-09-26.",
+    "limitations": "Labels were authored by one agent, then checked by two blind labelers and an arbiter; all are models, not human experts. No model has been run on the corpus. Optional labels mark contract boundaries where the references support two readings, including a second pattern for the same gap and a contested severity. Code is synthetic and original.",
+    "instance_severities": "Labels may use an instance severity that the references define but the Quick Reference does not list: #1 at P1 when one promised outcome is verified and another is not, #23 at P0 when a guard-suppressed render lets an empty-state or negative assertion pass, #2 at P1 when one promised effect is verified and another is not (reporting.md P0 boundary), and, as optional labels only, #4k at P0 when an assertion loop over an unproven collection is the test's only verification (reporting.md: an instance can be reported higher when it meets the P0 definition outright)."
+  },
+  "cases": [
+    {
+      "id": "v10-pw-01",
+      "split": "public-development-v10",
+      "framework": "playwright",
+      "design_note": "Both arms: the #4 sub-ID severity rule lives in pattern-reference.md (#4a and #4f are P0 because their predicates are true independently of product behavior; #4b-#4e and #4g-#4k are P1). The two lines put the P0 and P1 sub-IDs on the same matcher, `toBeTruthy()`, so only the subject decides: a Locator object (#4f P0) or an awaited boolean read (#4c-4e P1). Each line carries a guard at the other sub-ID. semantic-review.md repeats the Locator-versus-boolean confirmation for the full arm.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-pw-01/tests/recipe-box.spec.ts",
+          "path": "tests/recipe-box.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-001",
+          "kind": "finding",
+          "pattern_id": "#4f",
+          "severity": "P0",
+          "file": "tests/recipe-box.spec.ts",
+          "line": 10,
+          "source_line": "expect(page.getByTestId('pinned-ribbon')).toBeTruthy();",
+          "reason": "pattern-reference.md #4: \"Locator is always a truthy JS object regardless of element existence\", and the severity rule says \"#4a and #4f are P0 because their predicates are true independently of product behavior.\" The subject is the Locator returned by getByTestId, not a read of it."
+        },
+        {
+          "finding_id": "V10-002",
+          "kind": "fp_guard",
+          "pattern_id": "#4c-4e",
+          "severity": "P1",
+          "file": "tests/recipe-box.spec.ts",
+          "line": 10,
+          "source_line": "expect(page.getByTestId('pinned-ribbon')).toBeTruthy();",
+          "reason": "#4c-4e is the one-shot read shape, `expect(await el.isVisible()).toBe(true)` (pattern-reference.md #4 sub-IDs and the #15 boundary: \"the await sits INSIDE expect() and resolves a real value\"). Nothing is read here; the Locator object itself is asserted, which is #4f P0, so a P1 report on this line is the wrong sub-ID and severity."
+        },
+        {
+          "finding_id": "V10-003",
+          "kind": "optional",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/recipe-box.spec.ts",
+          "line": 9,
+          "source_line": "await page.getByRole('button', { name: 'Pin to board', exact: true }).click();",
+          "reason": "The pin click has no real postcondition, so #2 at the causal action is a defensible reading (pattern-reference.md #2: \"Anchor the finding to the action line whose promised result lacks proof\"). The vacuous #4f assertion is the more specific defect on the next line, so a #2 report here is neither rewarded nor penalized."
+        },
+        {
+          "finding_id": "V10-004",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/recipe-box.spec.ts",
+          "line": 8,
+          "source_line": "test('pins a recipe to the kitchen board', async ({ page }) => {",
+          "reason": "The unproven pin is the missing effect of the click. pattern-reference.md #2: \"If the same missing effect also makes the title incomplete, classify it once as #2 at this causal action. Reserve #1 for title-promised outcomes that do not reduce to a more specific state-changing action\"; semantic-review.md: \"Never report both for the same missing effect.\""
+        },
+        {
+          "finding_id": "V10-005",
+          "kind": "finding",
+          "pattern_id": "#4c-4e",
+          "severity": "P1",
+          "file": "tests/recipe-box.spec.ts",
+          "line": 16,
+          "source_line": "expect(await flour.isVisible()).toBeTruthy();",
+          "reason": "pattern-reference.md #4: `expect(await el.isVisible()).toBe(true)` is a P1 one-shot read with no auto-retry; `flour` is a Playwright Locator, so the semantic-review.md 4c-4e confirmation (\"Flag P1 only when subject is a Locator/Page\") holds. The later toHaveText does not make this read retry."
+        },
+        {
+          "finding_id": "V10-006",
+          "kind": "fp_guard",
+          "pattern_id": "#4f",
+          "severity": "P0",
+          "file": "tests/recipe-box.spec.ts",
+          "line": 16,
+          "source_line": "expect(await flour.isVisible()).toBeTruthy();",
+          "reason": "The subject of toBeTruthy() is the awaited boolean, which can be false. semantic-review.md #4: \"Confirm which .toBeTruthy() subjects are Locators (P0) vs. legitimate booleans\"; pattern-reference.md #4 severity rule: #4c-4e \"can fail\" and is P1, and \"Do not call a one-shot or partial-match assertion always-passing.\""
+        }
+      ]
+    },
+    {
+      "id": "v10-pw-02",
+      "split": "public-development-v10",
+      "framework": "playwright",
+      "design_note": "Both arms: pattern-reference.md #4a helper-invariant semantics say to read a helper supplied in scope and flag only when \"the implementation itself proves the predicate for every call\". `permitsLeft` clamps with Math.max(0, ...), so `>= 0` cannot fail; the same helper under `toBeLessThan(12)` inside expect.poll can fail and retries, so it is a guard at both sub-IDs. The one-shot read on the vacuous line is a genuine second reading, so #4c-4e there is optional rather than forced.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-pw-02/tests/permits.spec.ts",
+          "path": "tests/permits.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-007",
+          "kind": "finding",
+          "pattern_id": "#4a",
+          "severity": "P0",
+          "file": "tests/permits.spec.ts",
+          "line": 11,
+          "source_line": "expect(permitsLeft(await counter.textContent())).toBeGreaterThanOrEqual(0);",
+          "reason": "pattern-reference.md #4a helper-invariant semantics: \"Flag #4a only if the implementation itself proves the predicate for every call independently of product behavior\". permitsLeft returns Math.max(0, ...), so `>= 0` holds for every input. #4a is P0 (\"their predicates are true independently of product behavior\"). Anchor the assertion line."
+        },
+        {
+          "finding_id": "V10-008",
+          "kind": "optional",
+          "pattern_id": "#4c-4e",
+          "severity": "P1",
+          "file": "tests/permits.spec.ts",
+          "line": 11,
+          "source_line": "expect(permitsLeft(await counter.textContent())).toBeGreaterThanOrEqual(0);",
+          "reason": "The line is also a one-shot textContent read in a wrapped form, which pattern-reference.md #4 lists under #4c-4e (\"including wrapped forms ... expect(Number(await ...))\"). semantic-review.md's consolidation rule reports one line once with all rule numbers, so a #4c-4e P1 tuple beside the #4a P0 is not penalized; the required label is #4a P0."
+        },
+        {
+          "finding_id": "V10-009",
+          "kind": "fp_guard",
+          "pattern_id": "#4a",
+          "severity": "P0",
+          "file": "tests/permits.spec.ts",
+          "line": 19,
+          "source_line": "await expect.poll(async () => permitsLeft(await counter.textContent())).toBeLessThan(12);",
+          "reason": "`< 12` is a bound the product can fail: a counter that stays at 12 violates it. pattern-reference.md #4a: \"If the helper can return a value that violates the predicate, keep the assertion\"; semantic-review.md #4a sweep: \"A bound the product can fail is not a hit.\""
+        },
+        {
+          "finding_id": "V10-010",
+          "kind": "fp_guard",
+          "pattern_id": "#4c-4e",
+          "severity": "P1",
+          "file": "tests/permits.spec.ts",
+          "line": 19,
+          "source_line": "await expect.poll(async () => permitsLeft(await counter.textContent())).toBeLessThan(12);",
+          "reason": "The read sits inside `await expect.poll(async () => ...)`. pattern-reference.md #4 retry-wrapper skip: \"when a hit's enclosing function is the callback of ... await expect.poll(async () => { ... }).toX(...), Playwright re-runs the callback ... SKIP the P1 finding.\""
+        }
+      ]
+    },
+    {
+      "id": "v10-pw-03",
+      "split": "public-development-v10",
+      "framework": "playwright",
+      "design_note": "Both arms: pattern-reference.md #8 makes a discarded boolean read P0 only when it is \"the scenario's intended verification\" and skips \"a discarded pre-check immediately followed by an action on the same locator\". One test's only check is a discarded isVisible() (#8b P0); the other discards a pre-check, then clicks that locator and asserts the dialog (guard). The #4c-4e guard on the P0 line tests the P0/P1 boundary between a discarded read and a one-shot read inside expect.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-pw-03/tests/episodes.spec.ts",
+          "path": "tests/episodes.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-011",
+          "kind": "finding",
+          "pattern_id": "#8b",
+          "severity": "P0",
+          "file": "tests/episodes.spec.ts",
+          "line": 9,
+          "source_line": "await page.getByTestId('live-badge').isVisible();",
+          "reason": "pattern-reference.md #8b: `await el.isVisible();` \"The boolean resolves and is thrown away\"; P0 \"when the discarded expression is the scenario's intended verification and removing it leaves no independent meaningful verification\". It is the test's only check of the promised live badge."
+        },
+        {
+          "finding_id": "V10-012",
+          "kind": "fp_guard",
+          "pattern_id": "#4c-4e",
+          "severity": "P1",
+          "file": "tests/episodes.spec.ts",
+          "line": 9,
+          "source_line": "await page.getByTestId('live-badge').isVisible();",
+          "reason": "#4c-4e is `expect(await el.isVisible())`, a read that feeds a synchronous matcher (pattern-reference.md #4 and the #15 boundary). This read feeds nothing; it is the #8b discarded-boolean shape at P0, so a P1 one-shot report on this line is the wrong sub-ID and severity."
+        },
+        {
+          "finding_id": "V10-013",
+          "kind": "optional",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/episodes.spec.ts",
+          "line": 8,
+          "source_line": "await page.getByRole('button', { name: 'Publish episode', exact: true }).click();",
+          "reason": "The publish click lacks a postcondition, so #2 at the action is a defensible second reading (pattern-reference.md #2: \"Anchor the finding to the action line whose promised result lacks proof\"). #8 names the discarded read as the finding when it was the intended verification, so #2 here is neither rewarded nor penalized."
+        },
+        {
+          "finding_id": "V10-014",
+          "kind": "fp_guard",
+          "pattern_id": "#8b",
+          "severity": "P0",
+          "file": "tests/episodes.spec.ts",
+          "line": 14,
+          "source_line": "await chapters.isVisible();",
+          "reason": "pattern-reference.md #8: \"Skip a leftover read in a test that already has real assertions. Also skip a discarded pre-check immediately followed by an action on the same locator.\" The next line clicks `chapters` and the test asserts the Chapters dialog."
+        }
+      ]
+    },
+    {
+      "id": "v10-pw-04",
+      "split": "public-development-v10",
+      "framework": "playwright",
+      "design_note": "Both arms for the P1 finding: pattern-reference.md #4k flags a loop whose body holds the only assertions over a collection never proven non-empty, and skips a loop preceded by toHaveCount. Contract boundary on severity: #4k is P1 in the catalog, but its text places it \"with the silent-always-pass family\" and reporting.md lets an instance be reported higher \"when it meets the P0 definition outright\", so #4k P0 on the unproven loop is optional, not forced.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-pw-04/tests/menu-allergens.spec.ts",
+          "path": "tests/menu-allergens.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-015",
+          "kind": "finding",
+          "pattern_id": "#4k",
+          "severity": "P1",
+          "file": "tests/menu-allergens.spec.ts",
+          "line": 9,
+          "source_line": "for (const dish of await dishes.all()) {",
+          "reason": "pattern-reference.md #4k: \"FLAG P1 - the loop body holds the only assertions and nothing constrains the collection size\"; \"locator.all() resolves immediately without waiting or retrying\". Anchor at the loop header (\"Anchor the finding at the loop header\")."
+        },
+        {
+          "finding_id": "V10-016",
+          "kind": "optional",
+          "pattern_id": "#4k",
+          "severity": "P0",
+          "file": "tests/menu-allergens.spec.ts",
+          "line": 9,
+          "source_line": "for (const dish of await dishes.all()) {",
+          "reason": "Contract boundary. #4k is P1 in the catalog, but pattern-reference.md says an empty collection means \"zero assertions and the test passes having verified nothing\" and that it belongs \"with the silent-always-pass family\"; reporting.md: \"an instance can be reported higher when it meets the P0 definition outright\". A #4k P0 report is neither rewarded nor penalized; the required label stays #4k P1."
+        },
+        {
+          "finding_id": "V10-017",
+          "kind": "fp_guard",
+          "pattern_id": "#4k",
+          "severity": "P1",
+          "file": "tests/menu-allergens.spec.ts",
+          "line": 17,
+          "source_line": "for (const nutFree of await dishes.all()) {",
+          "reason": "The same collection is counted first with `await expect(dishes).toHaveCount(4)`. pattern-reference.md #4k: \"SKIP - a toHaveCount, toHaveLength, should('have.length'...), or an explicit non-empty check on the same collection appears earlier in the test\"."
+        }
+      ]
+    },
+    {
+      "id": "v10-pw-05",
+      "split": "public-development-v10",
+      "framework": "playwright",
+      "design_note": "Both arms: pattern-reference.md #15 fixes the boundary between a floating matcher and a swallowed one: \"If code catches or otherwise swallows the floating matcher's rejection, report #3 P0 ... Keep #15 as the P1 sequencing defect; do not inflate it to P0.\" One line awaits a matcher and swallows it with .catch (#3 P0, guard #15 P1); the other leaves a matcher unawaited with no catch (#15 P1, guard #3 P0).",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-pw-05/tests/seat-map.spec.ts",
+          "path": "tests/seat-map.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-018",
+          "kind": "finding",
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "tests/seat-map.spec.ts",
+          "line": 9,
+          "source_line": "await expect(page.getByTestId('seat-summary')).toHaveText('14C - Aisle').catch(() => {});",
+          "reason": "pattern-reference.md #3: an empty `.catch(() => {})` on an awaited operation means the \"caller never sees the failure\", and \"A real assertion on a swallowed catch path is P0 unless the identical check is re-asserted unswallowed later\". The swallowed toHaveText is the test's only check; anchor at the protected assertion."
+        },
+        {
+          "finding_id": "V10-019",
+          "kind": "fp_guard",
+          "pattern_id": "#15",
+          "severity": "P1",
+          "file": "tests/seat-map.spec.ts",
+          "line": 9,
+          "source_line": "await expect(page.getByTestId('seat-summary')).toHaveText('14C - Aisle').catch(() => {});",
+          "reason": "The matcher is awaited, so it is not #15 (pattern-reference.md #15: \"Report P1 when an async Locator/Page web-first matcher ... is not awaited or returned\"). The defect is the swallow, #3 P0."
+        },
+        {
+          "finding_id": "V10-020",
+          "kind": "optional",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/seat-map.spec.ts",
+          "line": 8,
+          "source_line": "await page.getByRole('button', { name: 'Seat 14C', exact: true }).click();",
+          "reason": "With its only assertion swallowed, the seat click has no effective postcondition, so #2 at the action is a defensible second reading (pattern-reference.md #2: \"Anchor the finding to the action line whose promised result lacks proof\"). pattern-reference.md #3 names the swallowed assertion as the defect (\"anchor a confirmed finding at the protected assertion\"), so a #2 report is neither rewarded nor penalized."
+        },
+        {
+          "finding_id": "V10-021",
+          "kind": "finding",
+          "pattern_id": "#15",
+          "severity": "P1",
+          "file": "tests/seat-map.spec.ts",
+          "line": 17,
+          "source_line": "expect(summary).toBeHidden();",
+          "reason": "pattern-reference.md #15: \"Report P1 when an async Locator/Page web-first matcher ... is not awaited or returned.\" toBeHidden is a web-first matcher on a Locator and nothing observes its Promise."
+        },
+        {
+          "finding_id": "V10-022",
+          "kind": "fp_guard",
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "tests/seat-map.spec.ts",
+          "line": 17,
+          "source_line": "expect(summary).toBeHidden();",
+          "reason": "Nothing catches or swallows this matcher, so the #15 escalation to #3 does not apply: \"If code catches or otherwise swallows the floating matcher's rejection, report #3 P0 ... Keep #15 as the P1 sequencing defect; do not inflate it to P0\" (pattern-reference.md #15)."
+        },
+        {
+          "finding_id": "V10-023",
+          "kind": "optional",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/seat-map.spec.ts",
+          "line": 16,
+          "source_line": "await page.getByRole('button', { name: 'Clear seat', exact: true }).click();",
+          "reason": "pattern-reference.md #15: \"If the scenario also lacks an independent postcondition, #2 P0 may apply.\" The clear action's only postcondition is the unobserved matcher, so the contract allows this reading without requiring it."
+        }
+      ]
+    },
+    {
+      "id": "v10-pw-06",
+      "split": "public-development-v10",
+      "framework": "playwright",
+      "design_note": "Both arms: pattern-reference.md #18 says a soft assertion is \"a diagnostic/control-flow problem, not error swallowing\" because Playwright \"still records each soft assertion error and fails the test at the end\". The soft prerequisite before dependent fills and clicks is #18 P1, with a #3 P0 guard on the same line; the terminal soft details after a hard gate are guards.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-pw-06/tests/tax-wizard.spec.ts",
+          "path": "tests/tax-wizard.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-024",
+          "kind": "finding",
+          "pattern_id": "#18",
+          "severity": "P1",
+          "file": "tests/tax-wizard.spec.ts",
+          "line": 6,
+          "source_line": "await expect.soft(income).toBeVisible();",
+          "reason": "pattern-reference.md #18: \"Flag P1 only when a scenario-critical soft assertion is a prerequisite for a later action or check and that dependent work runs without an intervening hard assertion proving the prerequisite. ... Anchor the finding at the soft prerequisite line.\" The fill and click inside `income` depend on it."
+        },
+        {
+          "finding_id": "V10-025",
+          "kind": "fp_guard",
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "tests/tax-wizard.spec.ts",
+          "line": 6,
+          "source_line": "await expect.soft(income).toBeVisible();",
+          "reason": "A soft assertion is not a swallowed assertion. pattern-reference.md #18: \"Playwright still records each soft assertion error and fails the test at the end; this is a diagnostic/control-flow problem, not error swallowing.\" semantic-review.md #3: \"recorded soft failures are not swallowed assertions.\""
+        },
+        {
+          "finding_id": "V10-026",
+          "kind": "fp_guard",
+          "pattern_id": "#18",
+          "severity": "P1",
+          "file": "tests/tax-wizard.spec.ts",
+          "line": 15,
+          "source_line": "await expect.soft(page.getByTestId('filer-name')).toHaveText('Dana Okafor');",
+          "reason": "A hard heading assertion gates the summary, and the three soft checks are independent terminal details. pattern-reference.md #18: \"Independent terminal details are legitimate even when every detail assertion is soft. Do not use a numeric soft-assertion count or ratio as the verdict.\""
+        }
+      ]
+    },
+    {
+      "id": "v10-pw-07",
+      "split": "public-development-v10",
+      "framework": "playwright",
+      "design_note": "Full arm expected: review-scope.md decides framework by \"actual import statements\", warns that a `.spec.ts` filename alone \"could be Jest/Vitest unit tests\", and says to \"trace relative imports and re-exports until framework provenance is resolved\". The Vitest file is out of scope, so its module-level `let` and truthiness check are guards; the loans spec imports test from a fixture that re-exports Playwright, so its sleep is a real #9. pattern-reference.md has no framework-scope rule.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-pw-07/src/loans/due-date.spec.ts",
+          "path": "src/loans/due-date.spec.ts"
+        },
+        {
+          "source": "files/holdout-v10/v10-pw-07/tests/e2e/fixtures.ts",
+          "path": "tests/e2e/fixtures.ts"
+        },
+        {
+          "source": "files/holdout-v10/v10-pw-07/tests/e2e/loans.spec.ts",
+          "path": "tests/e2e/loans.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-027",
+          "kind": "finding",
+          "pattern_id": "#9",
+          "severity": "P1",
+          "file": "tests/e2e/loans.spec.ts",
+          "line": 6,
+          "source_line": "await page.waitForTimeout(1500);",
+          "reason": "The spec imports test from ./fixtures, which extends and re-exports @playwright/test, so it is in scope (review-scope.md: \"trace relative imports and re-exports until framework provenance is resolved\"). `page` is the Playwright Page fixture. pattern-reference.md #9: \"Never use explicit framework sleep (Page.waitForTimeout / cy.wait(ms))\"."
+        },
+        {
+          "finding_id": "V10-028",
+          "kind": "fp_guard",
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "src/loans/due-date.spec.ts",
+          "line": 4,
+          "source_line": "let calls = 0;",
+          "reason": "The file imports from 'vitest'; it is a unit test, not an in-scope E2E artifact. review-scope.md: \"`.spec.ts` filename alone - could be Jest/Vitest unit tests\" and \"classify only the confirmed foreign-framework files as out of scope\"; SKILL.md: \"An in-scope E2E artifact is a Playwright/Cypress spec, POM, support file, fixture, custom command, or E2E config.\""
+        },
+        {
+          "finding_id": "V10-029",
+          "kind": "fp_guard",
+          "pattern_id": "#4f",
+          "severity": "P0",
+          "file": "src/loans/due-date.spec.ts",
+          "line": 9,
+          "source_line": "expect(nextDueDate(new Date('2026-09-30'))).toBeTruthy();",
+          "reason": "Out of scope as a Vitest unit test (review-scope.md framework detection), and the subject is a Date, not a Playwright Locator, so #4f's \"Locator truthiness\" does not describe it (semantic-review.md #4: \"Confirm which .toBeTruthy() subjects are Locators (P0) vs. legitimate booleans\")."
+        }
+      ]
+    },
+    {
+      "id": "v10-pw-08",
+      "split": "public-development-v10",
+      "framework": "playwright",
+      "design_note": "Full arm favoured: semantic-review.md's #9 sweep row covers \"Framework sleeps on any receiver, not just a proven Page: .waitForTimeout( on a Frame/POM/aliased receiver, and new Promise(r => setTimeout(r, N)) sleep helpers\". pattern-reference.md #9 names only Page.waitForTimeout and cy.wait(ms). The Playwright clock's runFor advances fake time and is not a sleep.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-pw-08/tests/bin-scanner.spec.ts",
+          "path": "tests/bin-scanner.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-030",
+          "kind": "finding",
+          "pattern_id": "#9",
+          "severity": "P1",
+          "file": "tests/bin-scanner.spec.ts",
+          "line": 9,
+          "source_line": "await settle(800);",
+          "accepted_alternatives": [
+            {
+              "pattern_id": "#9",
+              "severity": "P1",
+              "file": "tests/bin-scanner.spec.ts",
+              "line": 3,
+              "source_line": "const settle = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));"
+            }
+          ],
+          "reason": "`settle` is a `new Promise((resolve) => setTimeout(resolve, ms))` sleep helper, which semantic-review.md's #9 sweep names as the same fixed sleep. The call site is where the test pauses; the helper definition is accepted as the same single finding."
+        },
+        {
+          "finding_id": "V10-031",
+          "kind": "finding",
+          "pattern_id": "#9",
+          "severity": "P1",
+          "file": "tests/bin-scanner.spec.ts",
+          "line": 17,
+          "source_line": "await picklist!.waitForTimeout(1200);",
+          "reason": "semantic-review.md #9 sweep: \".waitForTimeout( on a Frame/POM/aliased receiver\" is a framework sleep; `picklist` is the Playwright Frame returned by page.frame(). pattern-reference.md #9 rule: rely on condition-based waits instead of explicit sleeps."
+        },
+        {
+          "finding_id": "V10-032",
+          "kind": "fp_guard",
+          "pattern_id": "#9",
+          "severity": "P1",
+          "file": "tests/bin-scanner.spec.ts",
+          "line": 24,
+          "source_line": "await page.clock.runFor(60_000);",
+          "reason": "clock.runFor advances Playwright's fake clock; it does not pause the test. pattern-reference.md #9 excludes non-sleep APIs (\"an unrelated fakeClock.waitForTimeout() is not a finding\") and says timeout option values \"are bounds, not sleeps\"."
+        }
+      ]
+    },
+    {
+      "id": "v10-pw-09",
+      "split": "public-development-v10",
+      "framework": "playwright",
+      "design_note": "Full arm favoured on the guard: semantic-review.md's 4c-4e row says to confirm the subject is a Playwright Locator/Page, \"NOT a custom service or helper method\", and names `expect(await myService.isEnabled()).toBe(true)` as a false positive. pattern-reference.md #4 describes the one-shot shapes but not that exclusion. The service call is a guard; the Locator read in the last test is the real #4c-4e. The favourite test is an ordinary #22: the title promises persistence and the component flips aria-pressed before its request.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-pw-09/src/classes/FavouriteInstructor.tsx",
+          "path": "src/classes/FavouriteInstructor.tsx"
+        },
+        {
+          "source": "files/holdout-v10/v10-pw-09/tests/class-booking.spec.ts",
+          "path": "tests/class-booking.spec.ts"
+        },
+        {
+          "source": "files/holdout-v10/v10-pw-09/tests/support/booking-api.ts",
+          "path": "tests/support/booking-api.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-033",
+          "kind": "fp_guard",
+          "pattern_id": "#4c-4e",
+          "severity": "P1",
+          "file": "tests/class-booking.spec.ts",
+          "line": 9,
+          "source_line": "expect(await api.isWaitlisted('spin-0715', 'm-5520')).toBe(true);",
+          "reason": "`api` is a BookingApi helper returning Promise<boolean> from an HTTP read, not a Locator. semantic-review.md 4c-4e: \"LLM confirms x is a Playwright Locator/Page, NOT a custom service or helper method. False positive examples: expect(await myService.isEnabled()).toBe(true) ... Flag P1 only when subject is a Locator/Page.\""
+        },
+        {
+          "finding_id": "V10-034",
+          "kind": "finding",
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "tests/class-booking.spec.ts",
+          "line": 15,
+          "source_line": "await favourite.click();",
+          "reason": "The title promises the favourite is saved to the profile; FavouriteInstructor sets aria-pressed with setSaved before a fire-and-forget fetch, and the test asserts only aria-pressed. pattern-reference.md #22: \"Flag P1 only when the test ... promises a backend call or persisted result, repository evidence proves the asserted UI state is optimistic, and no assertion proves the promised backend effect\"; \"Anchor #22 to the write-control action.\""
+        },
+        {
+          "finding_id": "V10-035",
+          "kind": "finding",
+          "pattern_id": "#4c-4e",
+          "severity": "P1",
+          "file": "tests/class-booking.spec.ts",
+          "line": 22,
+          "source_line": "expect(await cancel.isEnabled()).toBe(true);",
+          "reason": "`cancel` is a Playwright Locator and its state is read once with no retry. pattern-reference.md #4: \"P1 - one-shot values, no auto-retry\"; semantic-review.md 4c-4e: \"Flag P1 only when subject is a Locator/Page.\""
+        },
+        {
+          "finding_id": "V10-113",
+          "kind": "optional",
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "tests/class-booking.spec.ts",
+          "line": 7,
+          "source_line": "await page.getByRole('button', { name: 'Join waitlist', exact: true }).click();",
+          "reason": "Added by blind-label adjudication (2026-09-26): pattern-reference.md #20: the Rule lists persistent state and the API read shows the write persists, but #20 Detection says \"Flag only when the available repository evidence establishes an uncontrolled boundary\" and the case gives no environment evidence either way, so it is optional."
+        }
+      ]
+    },
+    {
+      "id": "v10-pw-10",
+      "split": "public-development-v10",
+      "framework": "playwright",
+      "design_note": "Full arm expected: SKILL.md and scanner-workflow.md say a `// JUSTIFIED:` marker \"is a request to verify an exception, not proof\", that a P0 stays visible \"until Phase 2 ... confirms the rationale\", and that a marker directly above a page.evaluate() callback covers hits inside that callback but \"one rationale never suppresses a neighboring\" expression. pattern-reference.md #4f has no JUSTIFIED rule and #6 only asks for one. The cross-element layout check is justified; the sibling evaluate that a locator can express is not; the vague marker above a Locator truthiness check does not rescue it.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-pw-10/tests/telescope-queue.spec.ts",
+          "path": "tests/telescope-queue.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-036",
+          "kind": "fp_guard",
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "tests/telescope-queue.spec.ts",
+          "line": 10,
+          "source_line": "const legend = document.querySelector('#queue-legend')!.getBoundingClientRect();",
+          "reason": "The marker sits directly above the page.evaluate() callback and gives a concrete reason. scanner-workflow.md position 2: \"// JUSTIFIED: above page.evaluate(() => { ... document.querySelector(...) ... }) ... covers every qualifying pattern inside that callback\"; pattern-reference.md #6 allows evaluate for \"cross-element DOM relationships\"."
+        },
+        {
+          "finding_id": "V10-037",
+          "kind": "finding",
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "tests/telescope-queue.spec.ts",
+          "line": 20,
+          "source_line": "const listed = await page.evaluate(() => document.querySelector('[data-target=\"M31\"]') !== null);",
+          "reason": "A separate evaluate with no marker of its own; a locator assertion (`await expect(page.locator('[data-target=\"M31\"]')).toBeVisible()`) expresses the same condition with auto-waiting. pattern-reference.md #6 \"BAD\" example `page.evaluate(() => !!document.querySelector('.result'))`; scanner-workflow.md: \"one rationale never suppresses a neighboring fluent chain.\""
+        },
+        {
+          "finding_id": "V10-038",
+          "kind": "finding",
+          "pattern_id": "#4f",
+          "severity": "P0",
+          "file": "tests/telescope-queue.spec.ts",
+          "line": 26,
+          "source_line": "expect(page.getByTestId('weather-hold')).toBeTruthy();",
+          "reason": "A Locator is always truthy (pattern-reference.md #4f, P0). The marker's reason does not make the check able to fail. SKILL.md Suppression: \"A // JUSTIFIED: marker is a request to verify an exception, not proof; mechanically suppressed P0 candidates stay visible until confirmed\"; scanner-workflow.md: \"For P0, keep the hit visible ... until Phase 2 or an external verifier confirms the rationale.\""
+        },
+        {
+          "finding_id": "V10-039",
+          "kind": "optional",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/telescope-queue.spec.ts",
+          "line": 24,
+          "source_line": "test('the weather hold banner is present', async ({ page }) => {",
+          "reason": "The title's only promise has no evidence, so #1 P0 at the declaration is a defensible reading beside the #4f finding (pattern-reference.md #1: \"A constant or unrelated assertion that fails to prove the noun is supporting evidence\"). Neither rewarded nor penalized."
+        }
+      ]
+    },
+    {
+      "id": "v10-pw-11",
+      "split": "public-development-v10",
+      "framework": "playwright",
+      "design_note": "Full arm favoured: review-scope.md says to \"Read repository guidance and consult the nearest README.md before resolving selector-stability findings\". The README next to the spec says tab names are fixed at build time and that shift-card link names contain free-text display names. A role-only ARIA snapshot node (#4j) is an ordinary catalog finding in the same spec. The README decides both #10c candidates: a page-scoped tab name cannot collide with free text, while a page-scoped link name `Roster` can. pattern-reference.md #10c has the static-only exemption but no instruction to read the README.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-pw-11/tests/shifts/README.md",
+          "path": "tests/shifts/README.md"
+        },
+        {
+          "source": "files/holdout-v10/v10-pw-11/tests/shifts/shift-board.spec.ts",
+          "path": "tests/shifts/shift-board.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-040",
+          "kind": "fp_guard",
+          "pattern_id": "#10c",
+          "severity": "P1",
+          "file": "tests/shifts/shift-board.spec.ts",
+          "line": 8,
+          "source_line": "await page.getByRole('tab', { name: 'Weekend' }).click();",
+          "reason": "The README says tab names come from build-time config and cannot be renamed; the free text only appears in link names, so no tab name can contain it. pattern-reference.md #10c exemption: \"Static-only surface ... Judge by whether the app paints dynamic list/entity text\" for that role; semantic-review.md: flag only when \"the suite renders user/data-controlled text that could contain the name as a substring\"; review-scope.md: consult the nearest README.md first."
+        },
+        {
+          "finding_id": "V10-041",
+          "kind": "finding",
+          "pattern_id": "#4j",
+          "severity": "P1",
+          "file": "tests/shifts/shift-board.spec.ts",
+          "line": 15,
+          "source_line": "- button",
+          "reason": "The title promises an \"Export week\" button and the snapshot's second node omits the name, so any button label passes. pattern-reference.md #4j: \"Flag P1 when an omitted accessible name lets the ARIA snapshot pass with a wrong or empty label that the scenario promises to verify. Anchor the finding at the role-only snapshot node.\""
+        },
+        {
+          "finding_id": "V10-042",
+          "kind": "finding",
+          "pattern_id": "#10c",
+          "severity": "P1",
+          "file": "tests/shifts/shift-board.spec.ts",
+          "line": 20,
+          "source_line": "await page.getByRole('link', { name: 'Roster' }).click();",
+          "reason": "Page-scoped getByRole with a name and no `exact: true`, on a page whose other links carry free-text volunteer names (README). pattern-reference.md #10c: the name \"matches the accessible name as a case-insensitive substring by default\"; a short common word \"on a page with dynamic content is the real hit\"."
+        }
+      ]
+    },
+    {
+      "id": "v10-pw-12",
+      "split": "public-development-v10",
+      "framework": "playwright",
+      "design_note": "Both arms: #17, #14, #16, #4h, and #13 are decided by pattern-reference.md, each on its own line; the RoomsPage method with the same selectors is the #13 ownership evidence; semantic-review.md adds the #14 authentication-context confirmation and the #16 receiver sweep. Ordinary Playwright true positives.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-pw-12/pages/rooms-page.ts",
+          "path": "pages/rooms-page.ts"
+        },
+        {
+          "source": "files/holdout-v10/v10-pw-12/tests/housekeeping.spec.ts",
+          "path": "tests/housekeeping.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-043",
+          "kind": "finding",
+          "pattern_id": "#17",
+          "severity": "P1",
+          "file": "tests/housekeeping.spec.ts",
+          "line": 6,
+          "source_line": "await page.fill('#staff-id', 'hk-lead-04');",
+          "reason": "pattern-reference.md #17: \"Flag P1 for selector-based page.click, page.dblclick, page.tap, page.fill ...\"; `page` is the Playwright Page fixture and the selector is a literal. Blind-label adjudication (2026-09-26): #14 P1 on the same line is accepted as the same finding. semantic-review.md's consolidation rule reports one block as ONE finding with all rule numbers, and the staff ID is the username in the login submitted on line 8 (#14: \"usernames, passwords\").",
+          "accepted_alternatives": [
+            {
+              "pattern_id": "#14",
+              "severity": "P1",
+              "file": "tests/housekeeping.spec.ts",
+              "line": 6,
+              "source_line": "await page.fill('#staff-id', 'hk-lead-04');"
+            }
+          ]
+        },
+        {
+          "finding_id": "V10-044",
+          "kind": "finding",
+          "pattern_id": "#17",
+          "severity": "P1",
+          "file": "tests/housekeeping.spec.ts",
+          "line": 8,
+          "source_line": "await page.click('#sign-in');",
+          "reason": "Selector-based page.click on the Page fixture (pattern-reference.md #17, P1)."
+        },
+        {
+          "finding_id": "V10-045",
+          "kind": "finding",
+          "pattern_id": "#14",
+          "severity": "P1",
+          "file": "tests/housekeeping.spec.ts",
+          "line": 7,
+          "source_line": "await page.getByLabel('Password').fill('Linen!Cart2026');",
+          "reason": "A literal password filled into the password field, followed by the sign-in click. pattern-reference.md #14: \"Flag literals passed to authentication operations: ... page.locator('#password').fill('<literal-password>') followed by submit\"."
+        },
+        {
+          "finding_id": "V10-046",
+          "kind": "optional",
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "tests/housekeeping.spec.ts",
+          "line": 14,
+          "source_line": "room.getByRole('button', { name: 'Mark inspected', exact: true }).click();",
+          "reason": "Repurposed by blind-label adjudication (2026-09-26): the former optional #14 at line 6 became an accepted alternative of V10-043. #13 at line 14 is optional because its pattern-reference.md rule reads both ways: \"existing equivalent method or locator, duplicated selectors\" fits, since page.getByTestId('room-512') duplicates RoomsPage.room(), but \"a missing method alone is not ownership evidence\" also fits, since no page-object method handles Mark inspected. #16 stays required on that line."
+        },
+        {
+          "finding_id": "V10-047",
+          "kind": "finding",
+          "pattern_id": "#4h",
+          "severity": "P1",
+          "file": "tests/housekeeping.spec.ts",
+          "line": 9,
+          "source_line": "expect(page.url()).toContain('/staff/rooms');",
+          "reason": "A one-shot page.url() read right after a click that navigates. pattern-reference.md #4 sub-IDs: \"#4h one-shot page.url()\", P1; fix: \"await expect.poll(() => page.url()).toContain(x) (one-shot URL read with no retry)\"."
+        },
+        {
+          "finding_id": "V10-048",
+          "kind": "finding",
+          "pattern_id": "#13",
+          "severity": "P1",
+          "file": "tests/housekeeping.spec.ts",
+          "line": 20,
+          "source_line": "await page.getByTestId('room-514').getByRole('button', { name: 'Request linen', exact: true }).click();",
+          "reason": "RoomsPage already owns this exact interaction: requestLinen() clicks the same Request linen button inside the same room-<n> test ID, and the test even constructs RoomsPage. pattern-reference.md #13: \"Flag P1 only when supplied source proves ownership through an existing equivalent method or locator ... Cite both the raw action and the ownership evidence\"; anchor \"at its first bypassing raw action\"."
+        },
+        {
+          "finding_id": "V10-049",
+          "kind": "finding",
+          "pattern_id": "#16",
+          "severity": "P1",
+          "file": "tests/housekeeping.spec.ts",
+          "line": 14,
+          "source_line": "room.getByRole('button', { name: 'Mark inspected', exact: true }).click();",
+          "reason": "pattern-reference.md #16: \"Report P1 when an action in the supported Playwright Locator subset (.click() ...) is not awaited or returned.\" The receiver chains off `room`, a Locator from page.getByTestId."
+        }
+      ]
+    },
+    {
+      "id": "v10-pw-13",
+      "split": "public-development-v10",
+      "framework": "playwright",
+      "design_note": "Both arms: #10b, #19, #9c, and #11c are decided by pattern-reference.md; semantic-review.md adds the declaration anchors. Ordinary Playwright P1/P2 true positives, including module state in an imported support helper.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-pw-13/tests/appointments.spec.ts",
+          "path": "tests/appointments.spec.ts"
+        },
+        {
+          "source": "files/holdout-v10/v10-pw-13/tests/support/patients.ts",
+          "path": "tests/support/patients.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-050",
+          "kind": "finding",
+          "pattern_id": "#10b",
+          "severity": "P1",
+          "file": "tests/appointments.spec.ts",
+          "line": 4,
+          "source_line": "test.describe.serial('appointment booking', () => {",
+          "reason": "pattern-reference.md #10b: \"test.describe.serial() ... make tests order-dependent: a single failure cascades to all subsequent tests\"; no JUSTIFIED above it."
+        },
+        {
+          "finding_id": "V10-051",
+          "kind": "finding",
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "tests/support/patients.ts",
+          "line": 1,
+          "source_line": "let nextChart = 1000;",
+          "reason": "pattern-reference.md #19: \"Flag P1 when a let at column 0 has an initializer\"; the counter is incremented by newChartNumber and survives across tests in a worker, which is the pattern's own example."
+        },
+        {
+          "finding_id": "V10-052",
+          "kind": "finding",
+          "pattern_id": "#9c",
+          "severity": "P1",
+          "file": "tests/appointments.spec.ts",
+          "line": 7,
+          "source_line": "await page.waitForLoadState('networkidle', { timeout: 15_000 });",
+          "reason": "pattern-reference.md #9: \"#9c Playwright waitForLoadState('networkidle') - networkidle is explicitly discouraged by Playwright docs as unreliable on modern SPAs; replace with a web-first assertion on the element the test actually needs.\""
+        },
+        {
+          "finding_id": "V10-053",
+          "kind": "finding",
+          "pattern_id": "#11c",
+          "severity": "P2",
+          "file": "tests/appointments.spec.ts",
+          "line": 13,
+          "source_line": "test.skip('reschedules the follow-up to the afternoon', async ({ page }) => {",
+          "reason": "pattern-reference.md #11c: \"FLAG P2 - nothing in the call, the preceding comment, or the test title explains the skip.\""
+        }
+      ]
+    },
+    {
+      "id": "v10-pw-14",
+      "split": "public-development-v10",
+      "framework": "playwright",
+      "design_note": "Clean case. Both arms have every exemption in pattern-reference.md: #4i with the same locator proven visible first, #10a with an adjacent toHaveCount(1), the #4c-4e retry-wrapper skip inside expect.poll, and a conditional test.skip with a reason. semantic-review.md repeats each for the full arm.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-pw-14/tests/trail-map.spec.ts",
+          "path": "tests/trail-map.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-054",
+          "kind": "fp_guard",
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "tests/trail-map.spec.ts",
+          "line": 11,
+          "source_line": "await expect(panel).toBeHidden();",
+          "reason": "`panel` is asserted visible before the close click. pattern-reference.md #4i: \"SKIP - the same locator (or an alias of it) is asserted present ... anywhere in that test's execution path.\""
+        },
+        {
+          "finding_id": "V10-055",
+          "kind": "fp_guard",
+          "pattern_id": "#10a",
+          "severity": "P1",
+          "file": "tests/trail-map.spec.ts",
+          "line": 17,
+          "source_line": "await pins.first().click();",
+          "reason": "pattern-reference.md #10a exemption: \"Single-result toHaveCount(1) adjacent - await expect(items).toHaveCount(1); const only = items.first();\""
+        },
+        {
+          "finding_id": "V10-056",
+          "kind": "fp_guard",
+          "pattern_id": "#4c-4e",
+          "severity": "P1",
+          "file": "tests/trail-map.spec.ts",
+          "line": 23,
+          "source_line": "await expect.poll(async () => (await readout.textContent())?.trim()).toBe('11.4 km');",
+          "reason": "pattern-reference.md #4 retry-wrapper skip: a read inside `await expect.poll(async () => ...)` is re-run until it passes, so \"SKIP the P1 finding for those hits\"."
+        }
+      ]
+    },
+    {
+      "id": "v10-pw-15",
+      "split": "public-development-v10",
+      "framework": "playwright",
+      "design_note": "Clean case. Both arms have the exemptions in pattern-reference.md: an awaited Promise.all aggregate observes its click (#16), a one-shot read inside an awaited toPass callback (#4c-4e retry-wrapper skip), and toBeAttached on a stylesheet link the app injects at runtime (#4b is meaningful when attachment is the contract). The application source is context that proves the injection.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-pw-15/src/print/enablePrintView.ts",
+          "path": "src/print/enablePrintView.ts"
+        },
+        {
+          "source": "files/holdout-v10/v10-pw-15/tests/gradebook.spec.ts",
+          "path": "tests/gradebook.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-057",
+          "kind": "fp_guard",
+          "pattern_id": "#16",
+          "severity": "P1",
+          "file": "tests/gradebook.spec.ts",
+          "line": 10,
+          "source_line": "page.getByRole('button', { name: 'Export CSV', exact: true }).click(),",
+          "reason": "pattern-reference.md #16 exclusion: \"SKIP a hit when the action is an array element passed to Promise.all ... and that aggregate is itself syntactically led by await or return\"."
+        },
+        {
+          "finding_id": "V10-058",
+          "kind": "fp_guard",
+          "pattern_id": "#4c-4e",
+          "severity": "P1",
+          "file": "tests/gradebook.spec.ts",
+          "line": 18,
+          "source_line": "expect(await page.getByTestId('class-average').textContent()).toBe('78.4');",
+          "reason": "The read is inside `await expect(async () => { ... }).toPass(...)`. pattern-reference.md #4 retry-wrapper skip: \"SKIP the P1 finding for those hits.\""
+        },
+        {
+          "finding_id": "V10-059",
+          "kind": "fp_guard",
+          "pattern_id": "#4b",
+          "severity": "P1",
+          "file": "tests/gradebook.spec.ts",
+          "line": 24,
+          "source_line": "await expect(page.locator('link[rel=\"preload\"][href$=\"rubric-print.css\"]')).toBeAttached();",
+          "reason": "enablePrintView injects this link at runtime, and the title promises the preload. pattern-reference.md #4: \"toBeAttached() is meaningful when the promised contract is DOM attachment itself: for example, a conditionally rendered node, a dynamically injected resource\"; semantic-review.md 4b names \"a <link rel=prefetch> added at runtime\"."
+        }
+      ]
+    },
+    {
+      "id": "v10-cy-01",
+      "split": "public-development-v10",
+      "framework": "cypress",
+      "design_note": "Both arms: the #1 severity rule is in pattern-reference.md (P0 when no promised outcome has evidence, P1 when one is verified and another is not), and #1 also says \"Visibility can prove a rendering-only promise\". The first title's rendering promise is proved by visibility and its second promise is unchecked (P1); the second title promises a saved value and has only visibility, which observes none of it (P0). Each line carries a guard at the other severity; reporting.md restates the boundary for the full arm.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-cy-01/cypress/e2e/tides.cy.ts",
+          "path": "cypress/e2e/tides.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-060",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "cypress/e2e/tides.cy.ts",
+          "line": 6,
+          "source_line": "it('renders the tide chart and lists the high-tide times', () => {",
+          "reason": "pattern-reference.md #1: \"Visibility can prove a rendering-only promise\", so the chart promise is verified; the high-tide times are never checked. Severity: \"When the test really verifies at least one promised outcome and a further promise goes unchecked ... report #1 at P1\". Anchored at the declaration."
+        },
+        {
+          "finding_id": "V10-061",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/tides.cy.ts",
+          "line": 6,
+          "source_line": "it('renders the tide chart and lists the high-tide times', () => {",
+          "reason": "One of the two promises is verified, so the #1 severity rule makes this P1, not P0 (pattern-reference.md #1 severity; reporting.md: \"if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1\")."
+        },
+        {
+          "finding_id": "V10-062",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/tides.cy.ts",
+          "line": 10,
+          "source_line": "it('shows the saved harbour name \"Port Isaac\" in the header', () => {",
+          "reason": "The title promises a specific saved value and the only assertion is visibility. pattern-reference.md #1 severity: \"P0 when no promised outcome in the title has evidence: a status code, navigation, or visibility check that observes none of the promised nouns\"; \"require content, identity, or value assertions only when the title ... promises them\"."
+        },
+        {
+          "finding_id": "V10-063",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "cypress/e2e/tides.cy.ts",
+          "line": 10,
+          "source_line": "it('shows the saved harbour name \"Port Isaac\" in the header', () => {",
+          "reason": "No promised outcome of this title is verified, so it is P0, not the partial-verification P1. pattern-reference.md #1: \"Judge each title separately; one partial title does not lower another title's P0.\""
+        }
+      ]
+    },
+    {
+      "id": "v10-cy-02",
+      "split": "public-development-v10",
+      "framework": "cypress",
+      "design_note": "Both arms on severity: pattern-reference.md #23 is P2 for the usual element-not-found case and P0 for \"a negative assertion or empty-state check that passes because the guard suppressed the seeded items\". The component drops pickups dated before today and skipped pickups. One fixture's only item is dated in the past, so the empty-state check passes for the wrong reason (P0); the other seeds a skipped item under a positive assertion that will fail (P2). Each fixture line has a guard at the other severity. Full arm favoured on the anchor: semantic-review.md anchors #23 at the violating fixture field.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-cy-02/cypress/e2e/pickups.cy.ts",
+          "path": "cypress/e2e/pickups.cy.ts"
+        },
+        {
+          "source": "files/holdout-v10/v10-cy-02/cypress/fixtures/pickups-glass.json",
+          "path": "cypress/fixtures/pickups-glass.json"
+        },
+        {
+          "source": "files/holdout-v10/v10-cy-02/cypress/fixtures/pickups-organics.json",
+          "path": "cypress/fixtures/pickups-organics.json"
+        },
+        {
+          "source": "files/holdout-v10/v10-cy-02/src/household/PickupList.tsx",
+          "path": "src/household/PickupList.tsx"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-064",
+          "kind": "finding",
+          "pattern_id": "#23",
+          "severity": "P0",
+          "file": "cypress/fixtures/pickups-glass.json",
+          "line": 2,
+          "source_line": "{ \"id\": \"p-1\", \"stream\": \"glass\", \"date\": \"2026-09-14\", \"skipped\": false }",
+          "reason": "PickupList filters `pickup.date >= today` and the clock is 2026-10-01, so the only seeded pickup never renders and the empty-state check passes whether or not pausing works. pattern-reference.md #23: \"Report the variant this pattern calls worse - a negative assertion or empty-state check that passes because the guard suppressed the seeded items - at P0.\" semantic-review.md: \"For #23, anchor the fixture field that violates the render guard.\""
+        },
+        {
+          "finding_id": "V10-065",
+          "kind": "fp_guard",
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "cypress/fixtures/pickups-glass.json",
+          "line": 2,
+          "source_line": "{ \"id\": \"p-1\", \"stream\": \"glass\", \"date\": \"2026-09-14\", \"skipped\": false }",
+          "reason": "This mismatch lets an empty-state check pass, which is the P0 variant, not the usual P2 case where the test fails with element-not-found (pattern-reference.md #23 severity)."
+        },
+        {
+          "finding_id": "V10-066",
+          "kind": "finding",
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "cypress/fixtures/pickups-organics.json",
+          "line": 2,
+          "source_line": "{ \"id\": \"p-9\", \"stream\": \"organics\", \"date\": \"2026-10-06\", \"skipped\": true }",
+          "reason": "PickupList drops `skipped` pickups, so the positive `pickup-row` assertion fails with element-not-found. pattern-reference.md #23: \"P2 for the usual case, where the guard leaves the container empty and the test fails with a confusing 'element not found'.\" Anchored at the violating fixture field."
+        },
+        {
+          "finding_id": "V10-067",
+          "kind": "fp_guard",
+          "pattern_id": "#23",
+          "severity": "P0",
+          "file": "cypress/fixtures/pickups-organics.json",
+          "line": 2,
+          "source_line": "{ \"id\": \"p-9\", \"stream\": \"organics\", \"date\": \"2026-10-06\", \"skipped\": true }",
+          "reason": "The assertion that consumes this fixture is positive and fails, so nothing passes for the wrong reason; the P0 variant needs \"a negative assertion or empty-state check that passes\" (pattern-reference.md #23)."
+        },
+        {
+          "finding_id": "V10-068",
+          "kind": "fp_guard",
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "cypress/e2e/pickups.cy.ts",
+          "line": 10,
+          "source_line": "cy.get('[data-cy=no-pickups]').should('be.visible');",
+          "reason": "semantic-review.md primary-line contract: \"For #23, anchor the fixture field that violates the render guard. An adjacent explanatory or assertion line is evidence, not a second finding.\""
+        }
+      ]
+    },
+    {
+      "id": "v10-cy-03",
+      "split": "public-development-v10",
+      "framework": "cypress",
+      "design_note": "Both arms: pattern-reference.md #5 holds both halves of the P0/P1 split. #5a (P0) is a load-bearing assertion behind a runtime condition, and \"conditionally dismissing an optional blocker before an unconditional promised-outcome assertion is an action-only branch, not this bypass\"; #5b (P1) is `{ force: true }` without JUSTIFIED. The survey dismissal is a conditional action with force (#5b P1, guard #5a P0 on the same line); the offline-pack check is a gated assertion with no unconditional proof (#5a P0).",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-cy-03/cypress/e2e/audio-tour.cy.ts",
+          "path": "cypress/e2e/audio-tour.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-069",
+          "kind": "finding",
+          "pattern_id": "#5b",
+          "severity": "P1",
+          "file": "cypress/e2e/audio-tour.cy.ts",
+          "line": 8,
+          "source_line": "if ($shell.find('[data-cy=visitor-survey]').length) cy.get('[data-cy=survey-later]').click({ force: true });",
+          "reason": "pattern-reference.md #5b: \"Each { force: true } ... on a Playwright/Cypress action must have // JUSTIFIED: on the line above ... Without a comment, flag P1 and anchor the finding at the line containing the action option.\""
+        },
+        {
+          "finding_id": "V10-070",
+          "kind": "fp_guard",
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "cypress/e2e/audio-tour.cy.ts",
+          "line": 8,
+          "source_line": "if ($shell.find('[data-cy=visitor-survey]').length) cy.get('[data-cy=survey-later]').click({ force: true });",
+          "reason": "The branch holds only an action and the stop title is asserted unconditionally afterwards. pattern-reference.md #5a: \"conditionally dismissing an optional blocker before an unconditional promised-outcome assertion is an action-only branch, not this bypass\"; semantic-review.md 5a: \"SKIP action-only branches.\""
+        },
+        {
+          "finding_id": "V10-071",
+          "kind": "finding",
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "cypress/e2e/audio-tour.cy.ts",
+          "line": 17,
+          "source_line": "if ($shell.find('[data-cy=offline-ready]').length) {",
+          "accepted_alternatives": [
+            {
+              "pattern_id": "#5a",
+              "severity": "P0",
+              "file": "cypress/e2e/audio-tour.cy.ts",
+              "line": 18,
+              "source_line": "cy.get('[data-cy=offline-ready]').should('contain', '38 MB');"
+            }
+          ],
+          "reason": "pattern-reference.md #5a: \"Flag P0 only when the conditional assertion is load-bearing for the title/action's promised outcome and the false branch has no independent unconditional meaningful postcondition\". The offline pack is the promised outcome and nothing checks it when the element is absent."
+        },
+        {
+          "finding_id": "V10-072",
+          "kind": "optional",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "cypress/e2e/audio-tour.cy.ts",
+          "line": 15,
+          "source_line": "cy.get('[data-cy=download-tour]').click();",
+          "reason": "When the branch is false the download click has no postcondition, so #2 at the action is a defensible second reading of the same gap (pattern-reference.md #2: \"Test acts but doesn't verify the final expected state\"). pattern-reference.md #5a is the specific contract for a gated assertion, so a #2 report is neither rewarded nor penalized."
+        },
+        {
+          "finding_id": "V10-073",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/audio-tour.cy.ts",
+          "line": 14,
+          "source_line": "it('downloading the tour offers the offline pack', () => {",
+          "reason": "The unproven offline pack is the missing effect of the download action. pattern-reference.md #2: \"Reserve #1 for title-promised outcomes that do not reduce to a more specific state-changing action\"; semantic-review.md: \"Never report both for the same missing effect.\""
+        }
+      ]
+    },
+    {
+      "id": "v10-cy-04",
+      "split": "public-development-v10",
+      "framework": "cypress",
+      "design_note": "Both arms: pattern-reference.md #12 is P0 only when the route is protected, auth is absent, and \"the login/wrong surface can satisfy the test's actual assertions\"; \"If the wrong surface makes the assertion fail ... do not report #12 as P0.\" The middleware redirects to /sign-in?returnTo=%2Frota, so `url().should('include', 'rota')` passes on the sign-in page while the night-shift count fails there. #12 has no documented non-P0 severity, so the boundary guard is #12 P0 at the navigation whose assertion the sign-in page cannot satisfy.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-cy-04/cypress.config.ts",
+          "path": "cypress.config.ts"
+        },
+        {
+          "source": "files/holdout-v10/v10-cy-04/cypress/e2e/rota.cy.ts",
+          "path": "cypress/e2e/rota.cy.ts"
+        },
+        {
+          "source": "files/holdout-v10/v10-cy-04/cypress/support/e2e.ts",
+          "path": "cypress/support/e2e.ts"
+        },
+        {
+          "source": "files/holdout-v10/v10-cy-04/src/middleware.ts",
+          "path": "src/middleware.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-074",
+          "kind": "finding",
+          "pattern_id": "#12",
+          "severity": "P0",
+          "file": "cypress/e2e/rota.cy.ts",
+          "line": 3,
+          "source_line": "cy.visit('/rota');",
+          "reason": "The middleware protects /rota and redirects to /sign-in with returnTo=%2Frota; no spec, support hook, config, or cy.session logs in. The URL check `include 'rota'` is satisfied by the sign-in URL. pattern-reference.md #12: \"Flag P0 only when both conditions hold and no auth mechanism is supplied ... Anchor the finding at the causal navigation line.\""
+        },
+        {
+          "finding_id": "V10-075",
+          "kind": "fp_guard",
+          "pattern_id": "#12",
+          "severity": "P0",
+          "file": "cypress/e2e/rota.cy.ts",
+          "line": 8,
+          "source_line": "cy.visit('/rota/nights');",
+          "reason": "The sign-in page has no night-shift rows, so the length-3 assertion fails without auth. pattern-reference.md #12: \"If the wrong surface makes the assertion fail, missing auth is a setup problem rather than a silent always-pass defect: do not report #12 as P0.\""
+        }
+      ]
+    },
+    {
+      "id": "v10-cy-05",
+      "split": "public-development-v10",
+      "framework": "cypress",
+      "design_note": "Full arm expected on severity: the rule that makes a partially verified action P1 is the reporting.md P0 boundary (\"if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1\"); pattern-reference.md #2 gives no severity rule of its own, so the catalog-only arm has only the catalog's P0. The withdraw test proves the request the app sent but never checks the promised list removal (#2 P1); the visit test verifies nothing (#2 P0). Both arms have the #1/#2 attribution rule in pattern-reference.md #2.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-cy-05/cypress/e2e/adoption.cy.ts",
+          "path": "cypress/e2e/adoption.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-076",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "cypress/e2e/adoption.cy.ts",
+          "line": 9,
+          "source_line": "cy.get('[data-cy=withdraw-biscuit]').click();",
+          "reason": "The withdraw request the application sent is asserted, but the promised removal from the list is never checked, so the action lacks one promised postcondition (#2, anchored at the action per pattern-reference.md #2). reporting.md P0 boundary: \"if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1.\""
+        },
+        {
+          "finding_id": "V10-077",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "cypress/e2e/adoption.cy.ts",
+          "line": 9,
+          "source_line": "cy.get('[data-cy=withdraw-biscuit]').click();",
+          "reason": "P0 needs both halves: \"Test silently passes when the feature is broken - no real verification happening\" (reporting.md). The request assertion is real verification of one promise, so this instance is P1."
+        },
+        {
+          "finding_id": "V10-078",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "cypress/e2e/adoption.cy.ts",
+          "line": 8,
+          "source_line": "it('withdraws the application for Biscuit and removes it from the list', () => {",
+          "reason": "The unchecked removal is the missing effect of the withdraw click. pattern-reference.md #2: \"If the same missing effect also makes the title incomplete, classify it once as #2 at this causal action\"; semantic-review.md: \"Never report both for the same missing effect.\""
+        },
+        {
+          "finding_id": "V10-079",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "cypress/e2e/adoption.cy.ts",
+          "line": 14,
+          "source_line": "cy.get('[data-cy=cancel-visit-pepper]').click();",
+          "reason": "The test clicks cancel and asserts nothing: no request wait, no UI state, no toast. pattern-reference.md #2: \"Test acts but doesn't verify the final expected state\"; with no verification at all it meets the reporting.md P0 definition."
+        },
+        {
+          "finding_id": "V10-080",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "cypress/e2e/adoption.cy.ts",
+          "line": 14,
+          "source_line": "cy.get('[data-cy=cancel-visit-pepper]').click();",
+          "reason": "Nothing the test promised is verified, so the reporting.md partial-verification P1 does not apply; this instance is P0."
+        },
+        {
+          "finding_id": "V10-081",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/adoption.cy.ts",
+          "line": 13,
+          "source_line": "it('cancels the home visit and clears the visit slot', () => {",
+          "reason": "The missing effects belong to the cancel click. pattern-reference.md #2: \"classify it once as #2 at this causal action. Reserve #1 for title-promised outcomes that do not reduce to a more specific state-changing action.\""
+        }
+      ]
+    },
+    {
+      "id": "v10-cy-06",
+      "split": "public-development-v10",
+      "framework": "cypress",
+      "design_note": "Full arm expected: review-scope.md says \"P2/style follows a documented project convention\", and CONTRIBUTING.md documents that quarantined skips are bare `it.skip` calls listed in cypress/QUARANTINE.md with owner, ticket, and revisit date. The listed skip follows that convention; the unlisted one is exactly what the convention calls a bug. pattern-reference.md #11c's SKIP list names only a reason in the call, a preceding comment, or JUSTIFIED, so the catalog-only arm will likely flag both.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-cy-06/CONTRIBUTING.md",
+          "path": "CONTRIBUTING.md"
+        },
+        {
+          "source": "files/holdout-v10/v10-cy-06/cypress/QUARANTINE.md",
+          "path": "cypress/QUARANTINE.md"
+        },
+        {
+          "source": "files/holdout-v10/v10-cy-06/cypress/e2e/docks.cy.ts",
+          "path": "cypress/e2e/docks.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-082",
+          "kind": "fp_guard",
+          "pattern_id": "#11c",
+          "severity": "P2",
+          "file": "cypress/e2e/docks.cy.ts",
+          "line": 6,
+          "source_line": "it.skip('undocks a bike with a low battery warning', () => {",
+          "reason": "The skip is listed in cypress/QUARANTINE.md with owner, ticket BIKE-882, and a revisit date, as CONTRIBUTING.md requires. review-scope.md: \"P2/style follows a documented project convention\"; verification-rules.md conflict rule: \"P2/style follows project convention.\" #11c's own purpose - a reason and \"something that makes it revisitable\" - is met by the documented record."
+        },
+        {
+          "finding_id": "V10-083",
+          "kind": "finding",
+          "pattern_id": "#9b",
+          "severity": "P1",
+          "file": "cypress/e2e/docks.cy.ts",
+          "line": 17,
+          "source_line": "cy.wait(500);",
+          "reason": "pattern-reference.md #9: `cy.wait(ms)` is the Cypress fixed sleep (#9b); \"Never use explicit framework sleep ... rely on framework auto-wait or condition-based waits.\" The convention in CONTRIBUTING.md covers skips only."
+        },
+        {
+          "finding_id": "V10-084",
+          "kind": "finding",
+          "pattern_id": "#11c",
+          "severity": "P2",
+          "file": "cypress/e2e/docks.cy.ts",
+          "line": 11,
+          "source_line": "it.skip('reserves a dock for twenty minutes', () => {",
+          "reason": "Not listed in QUARANTINE.md, no reason string, no preceding comment, no JUSTIFIED. pattern-reference.md #11c: \"FLAG P2 - nothing in the call, the preceding comment, or the test title explains the skip\"; the project convention itself says an unlisted skip \"is a bug\"."
+        }
+      ]
+    },
+    {
+      "id": "v10-cy-07",
+      "split": "public-development-v10",
+      "framework": "cypress",
+      "design_note": "Full arm expected: review-scope.md says \"A P1 may be suppressed only when a concrete local rationale is documented and the pattern contract allows that rationale\", and the #10a contract accepts a concrete order rationale (semantic-review.md: \"verify that the rationale is concrete (e.g. 'server returns in fixed order')\"). The suite README pins the readings feed to newest-first by an API contract test and says other lists have no guaranteed order, so `.first()` on the feed is a guard and `.last()` on the sensor cards is a finding. The catalog-only arm has no rule for applying the README.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-cy-07/cypress/README.md",
+          "path": "cypress/README.md"
+        },
+        {
+          "source": "files/holdout-v10/v10-cy-07/cypress/e2e/sensors.cy.ts",
+          "path": "cypress/e2e/sensors.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-085",
+          "kind": "fp_guard",
+          "pattern_id": "#10a",
+          "severity": "P1",
+          "file": "cypress/e2e/sensors.cy.ts",
+          "line": 7,
+          "source_line": "cy.get('[data-cy=reading-row]').first().should('contain', 'PM2.5 11 ug/m3');",
+          "reason": "The suite README documents a concrete order guarantee (an API contract test pins newest-first) for exactly this collection. review-scope.md: \"A P1 may be suppressed only when a concrete local rationale is documented and the pattern contract allows that rationale\"; semantic-review.md #10: accept a rationale that is \"concrete (e.g. 'server returns in fixed order')\"."
+        },
+        {
+          "finding_id": "V10-086",
+          "kind": "finding",
+          "pattern_id": "#10a",
+          "severity": "P1",
+          "file": "cypress/e2e/sensors.cy.ts",
+          "line": 11,
+          "source_line": "cy.get('[data-cy=sensor-card]').last().find('[data-cy=rename]').click();",
+          "reason": "`.last()` stands in for \"the rooftop sensor\" on a list the README says has no guaranteed order, with no JUSTIFIED and no adjacent single-result count. pattern-reference.md #10a: positional locators \"break when DOM order changes\"; none of the exemptions apply."
+        }
+      ]
+    },
+    {
+      "id": "v10-cy-08",
+      "split": "public-development-v10",
+      "framework": "cypress",
+      "design_note": "Full arm favoured: semantic-review.md's #7 sweep row covers \"the same destructure wrapped by a formatter, which needs its own `^\\s*only\\s*[,:]` sweep because neither `.only(` nor the one-line spellings appear in it\". pattern-reference.md #7 lists the one-line alias forms. Both arms have #7's rejection of \"an unrelated application method named only\", which decides the guard on the imported collection helper.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-cy-08/cypress/e2e/puzzles.cy.ts",
+          "path": "cypress/e2e/puzzles.cy.ts"
+        },
+        {
+          "source": "files/holdout-v10/v10-cy-08/cypress/support/collections.ts",
+          "path": "cypress/support/collections.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-087",
+          "kind": "finding",
+          "pattern_id": "#7",
+          "severity": "P0",
+          "file": "cypress/e2e/puzzles.cy.ts",
+          "line": 12,
+          "source_line": "focusOn('accepts the winning knight move', () => {",
+          "accepted_alternatives": [
+            {
+              "pattern_id": "#7",
+              "severity": "P0",
+              "file": "cypress/e2e/puzzles.cy.ts",
+              "line": 4,
+              "source_line": "only: focusOn,"
+            }
+          ],
+          "reason": "`focusOn` is `it.only` through an immutable one-hop destructure, split across lines by a formatter. pattern-reference.md #7: trace \"const { only: focused } = test\" and \"Report the alias call (for example, focused(...)) as P0\"; semantic-review.md's #7 sweep covers the formatter-wrapped destructure. The destructure line is accepted as the same single finding."
+        },
+        {
+          "finding_id": "V10-088",
+          "kind": "fp_guard",
+          "pattern_id": "#7",
+          "severity": "P0",
+          "file": "cypress/e2e/puzzles.cy.ts",
+          "line": 20,
+          "source_line": "const unsolved = pickOnly(themes, (theme) => !theme.solved);",
+          "reason": "`pickOnly` is an application helper that filters an array, imported from support/collections. pattern-reference.md #7: \"Reject aliases that are reassigned, shadowed, imported from a foreign test framework, bound to a different receiver, or derived from an unrelated application method named only.\""
+        },
+        {
+          "finding_id": "V10-114",
+          "kind": "optional",
+          "pattern_id": "#11",
+          "severity": "P2",
+          "file": "cypress/support/collections.ts",
+          "line": 1,
+          "source_line": "export function only<T>(items: T[], keep: (item: T) => boolean): T[] {",
+          "reason": "Added by blind-label adjudication (2026-09-26): semantic-review.md #11 calls a helper used from one place \"a SINGLE-USE review candidate, not an automatic finding\", so reporting it is neither required nor penalized."
+        }
+      ]
+    },
+    {
+      "id": "v10-cy-09",
+      "split": "public-development-v10",
+      "framework": "cypress",
+      "design_note": "Full arm favoured: semantic-review.md's #10f sweep row names \"Cypress actions beyond the scanner's list: .dblclick, .rightclick, .clear, .submit, .focus, .blur followed by .should( on the same chain\". pattern-reference.md #10f describes the defect with `.click()` and `.type()` as examples. Both continued chains are findings.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-cy-09/cypress/e2e/glossary.cy.ts",
+          "path": "cypress/e2e/glossary.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-089",
+          "kind": "finding",
+          "pattern_id": "#10f",
+          "severity": "P1",
+          "file": "cypress/e2e/glossary.cy.ts",
+          "line": 7,
+          "source_line": "cy.get('[data-cy=term-input]').clear().should('have.value', '');",
+          "reason": "pattern-reference.md #10f: \"an action such as .click() or .type() is followed by another assertion/action in the same chain ... Cypress retries queries and assertions but not the action, so the continued chain can retain a detached/stale subject.\" semantic-review.md's sweep names `.clear` followed by `.should(`."
+        },
+        {
+          "finding_id": "V10-090",
+          "kind": "finding",
+          "pattern_id": "#10f",
+          "severity": "P1",
+          "file": "cypress/e2e/glossary.cy.ts",
+          "line": 8,
+          "source_line": "cy.get('[data-cy=term-input]').blur().should('have.attr', 'aria-invalid', 'true');",
+          "reason": "Same #10f shape with `.blur()`, which semantic-review.md's #10f sweep row names explicitly."
+        }
+      ]
+    },
+    {
+      "id": "v10-cy-10",
+      "split": "public-development-v10",
+      "framework": "cypress",
+      "design_note": "Full arm favoured: semantic-review.md's #5b sweep row names `force: true` \"on the Cypress actions absent from the scanner's Playwright-flavoured list - .select, .rightclick, .trigger, .blur, .submit - and on options passed by variable\". pattern-reference.md #5b states the rule for any Playwright/Cypress action but not the variable form. A concrete JUSTIFIED above the select is a guard.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-cy-10/cypress/e2e/rental-extras.cy.ts",
+          "path": "cypress/e2e/rental-extras.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-091",
+          "kind": "finding",
+          "pattern_id": "#5b",
+          "severity": "P1",
+          "file": "cypress/e2e/rental-extras.cy.ts",
+          "line": 9,
+          "source_line": "cy.get('[data-cy=extras-slider]').trigger('mousedown', forced);",
+          "accepted_alternatives": [
+            {
+              "pattern_id": "#5b",
+              "severity": "P1",
+              "file": "cypress/e2e/rental-extras.cy.ts",
+              "line": 1,
+              "source_line": "const forced = { force: true };"
+            }
+          ],
+          "reason": "`forced` is `{ force: true }` passed by variable to a Cypress `.trigger`, with no JUSTIFIED. pattern-reference.md #5b: flag P1 \"and anchor the finding at the line containing the action option\"; semantic-review.md's #5b sweep names `.trigger` and \"options passed by variable\". The constant's declaration is accepted as the same single finding."
+        },
+        {
+          "finding_id": "V10-092",
+          "kind": "fp_guard",
+          "pattern_id": "#5b",
+          "severity": "P1",
+          "file": "cypress/e2e/rental-extras.cy.ts",
+          "line": 16,
+          "source_line": "cy.get('[data-cy=insurance-tier]').select('Premium', { force: true });",
+          "reason": "A concrete JUSTIFIED on the line above explains why the element is not normally actionable. pattern-reference.md #5b: \"Each { force: true } ... must have // JUSTIFIED: on the line above explaining why the element is not normally actionable.\""
+        },
+        {
+          "finding_id": "V10-093",
+          "kind": "finding",
+          "pattern_id": "#5b",
+          "severity": "P1",
+          "file": "cypress/e2e/rental-extras.cy.ts",
+          "line": 22,
+          "source_line": "cy.get('@gps').find('[data-cy=remove]').dblclick({ force: true });",
+          "reason": "`{ force: true }` on a Cypress action with no JUSTIFIED (pattern-reference.md #5b, P1, anchored at the line containing the option)."
+        },
+        {
+          "finding_id": "V10-094",
+          "kind": "fp_guard",
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "cypress/e2e/rental-extras.cy.ts",
+          "line": 23,
+          "source_line": "cy.get('[data-cy=extra-gps]').should('not.exist');",
+          "reason": "The same selector is aliased as @gps and acted on two lines earlier, so it is proven able to match. pattern-reference.md #4i: \"SKIP - the same locator (or an alias of it) is asserted present, or is clicked ... anywhere in that test's execution path.\""
+        }
+      ]
+    },
+    {
+      "id": "v10-cy-11",
+      "split": "public-development-v10",
+      "framework": "cypress",
+      "design_note": "Both arms: #3b, #9b, and #4g are decided by pattern-reference.md; semantic-review.md adds the #4g Cypress sweep row. The stubbed subscription is a #20 guard both arms can resolve from the catalog, and the zero-timeout Cypress query is #4g. Ordinary Cypress true positives.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-cy-11/cypress/e2e/weather-alerts.cy.ts",
+          "path": "cypress/e2e/weather-alerts.cy.ts"
+        },
+        {
+          "source": "files/holdout-v10/v10-cy-11/cypress/support/e2e.ts",
+          "path": "cypress/support/e2e.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-095",
+          "kind": "finding",
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/e2e.ts",
+          "line": 2,
+          "source_line": "Cypress.on('uncaught:exception', (_error) => false);",
+          "reason": "The handler ignores its error argument and returns false for every error. pattern-reference.md #3b: \"Blanket () => false is P0 - equivalent to .catch(() => {})\"; it sits in the support file, so it applies to every spec."
+        },
+        {
+          "finding_id": "V10-096",
+          "kind": "finding",
+          "pattern_id": "#9b",
+          "severity": "P1",
+          "file": "cypress/e2e/weather-alerts.cy.ts",
+          "line": 4,
+          "source_line": "cy.wait(1500);",
+          "reason": "pattern-reference.md #9: `cy.wait(1000)` is a fixed sleep (#9b); \"Never use explicit framework sleep\"."
+        },
+        {
+          "finding_id": "V10-097",
+          "kind": "finding",
+          "pattern_id": "#4g",
+          "severity": "P1",
+          "file": "cypress/e2e/weather-alerts.cy.ts",
+          "line": 5,
+          "source_line": "cy.get('[data-cy=alert-card]', { timeout: 0 }).should('contain', 'Storm warning');",
+          "reason": "pattern-reference.md #4g: \"In Cypress, a zero command timeout removes the normal retry window and behaves like an immediate current-state check ... flag timeout: 0 ... when bounded call context ties it to a ... Cypress command (P1)\"; nothing marks an immediate check as the intent."
+        },
+        {
+          "finding_id": "V10-098",
+          "kind": "fp_guard",
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "cypress/e2e/weather-alerts.cy.ts",
+          "line": 12,
+          "source_line": "cy.get('[data-cy=subscribe]').click();",
+          "reason": "The subscription POST is stubbed by cy.intercept before the click. pattern-reference.md #20: \"A route stub is one valid strategy\"."
+        }
+      ]
+    },
+    {
+      "id": "v10-cy-12",
+      "split": "public-development-v10",
+      "framework": "cypress",
+      "design_note": "Both arms: #14, #10d, and #10e are decided by pattern-reference.md. The unawaited Chainable `.click()` is a guard for #16, which pattern-reference.md scopes to Playwright Locator actions and review-scope.md lists among the Playwright-only checks to skip for Cypress.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-cy-12/cypress/e2e/timesheets.cy.ts",
+          "path": "cypress/e2e/timesheets.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-099",
+          "kind": "finding",
+          "pattern_id": "#14",
+          "severity": "P1",
+          "file": "cypress/e2e/timesheets.cy.ts",
+          "line": 3,
+          "source_line": "cy.request('POST', '/auth/session', { username: 'contractor-7', password: 'Timesheet#77' });",
+          "reason": "Literal username and password posted to a login endpoint. pattern-reference.md #14: flag \"API calls posting credentials\"."
+        },
+        {
+          "finding_id": "V10-100",
+          "kind": "finding",
+          "pattern_id": "#10d",
+          "severity": "P1",
+          "file": "cypress/e2e/timesheets.cy.ts",
+          "line": 7,
+          "source_line": "it('totals the logged hours', async () => {",
+          "reason": "pattern-reference.md #10d: \"an async test or hook callback that also queues cy commands mixes a returned Promise with Cypress's command queue\"."
+        },
+        {
+          "finding_id": "V10-101",
+          "kind": "finding",
+          "pattern_id": "#10e",
+          "severity": "P1",
+          "file": "cypress/e2e/timesheets.cy.ts",
+          "line": 14,
+          "source_line": "const submit = cy.get('[data-cy=submit-week]');",
+          "reason": "pattern-reference.md #10e: \"const value = cy.get(...) stores a Chainable, not the yielded DOM/application value.\""
+        },
+        {
+          "finding_id": "V10-102",
+          "kind": "fp_guard",
+          "pattern_id": "#16",
+          "severity": "P1",
+          "file": "cypress/e2e/timesheets.cy.ts",
+          "line": 15,
+          "source_line": "submit.click();",
+          "reason": "#16 covers Playwright Locator actions (pattern-reference.md #16: \"A Playwright Locator action starts without the test observing its Promise\"); review-scope.md: \"If Cypress, skip Playwright-specific greps (... #16 missing await on action ...)\". The Chainable misuse is reported once as #10e."
+        }
+      ]
+    },
+    {
+      "id": "v10-cy-13",
+      "split": "public-development-v10",
+      "framework": "cypress",
+      "design_note": "Both arms: #20, #21, and #11 are decided by pattern-reference.md; semantic-review.md adds the Cypress #21 sweep (session JSON loaded through cy.fixture and replayed with cy.setCookie) and the reference anchor. The config comment documents a shared staging backend and the form source proves a POST, so the RSVP submit is an uncontrolled write. The unused custom command is #11 at its declaration.",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-cy-13/cypress.config.ts",
+          "path": "cypress.config.ts"
+        },
+        {
+          "source": "files/holdout-v10/v10-cy-13/cypress/e2e/rsvp.cy.ts",
+          "path": "cypress/e2e/rsvp.cy.ts"
+        },
+        {
+          "source": "files/holdout-v10/v10-cy-13/cypress/support/commands.ts",
+          "path": "cypress/support/commands.ts"
+        },
+        {
+          "source": "files/holdout-v10/v10-cy-13/scripts/capture-organiser-session.ts",
+          "path": "scripts/capture-organiser-session.ts"
+        },
+        {
+          "source": "files/holdout-v10/v10-cy-13/src/events/RsvpForm.tsx",
+          "path": "src/events/RsvpForm.tsx"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-103",
+          "kind": "finding",
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "cypress/e2e/rsvp.cy.ts",
+          "line": 11,
+          "source_line": "cy.get('[data-cy=rsvp-submit]').click();",
+          "reason": "RsvpForm POSTs to /api/events/:slug/rsvps, no cy.intercept covers it, and the config's baseUrl is a shared staging API. pattern-reference.md #20: \"Flag only when repository evidence shows the write can reach shared, persistent ... state\"; anchor at the triggering action."
+        },
+        {
+          "finding_id": "V10-104",
+          "kind": "finding",
+          "pattern_id": "#21",
+          "severity": "P2",
+          "file": "cypress/e2e/rsvp.cy.ts",
+          "line": 3,
+          "source_line": "cy.fixture('sessions/organiser.json').then((session) => cy.setCookie('rsvp_session', session.cookie));",
+          "reason": "The organiser session is a committed cookie file that only a by-hand capture produces (scripts/capture-organiser-session.ts); nothing in the suite logs in. pattern-reference.md #21: \"sweep the Cypress equivalents too: a session JSON loaded through cy.fixture( and replayed with cy.setCookie\"; semantic-review.md anchors #21 at \"the declaration or reference\"."
+        },
+        {
+          "finding_id": "V10-105",
+          "kind": "finding",
+          "pattern_id": "#11",
+          "severity": "P2",
+          "file": "cypress/support/commands.ts",
+          "line": 5,
+          "source_line": "Cypress.Commands.add('clearRsvps', () => {",
+          "reason": "`clearRsvps` is registered but no spec or support file calls it. pattern-reference.md #11a: members \"never referenced by any spec or other module\" are UNUSED (delete); semantic-review.md anchors #11 at the declaration."
+        }
+      ]
+    },
+    {
+      "id": "v10-cy-14",
+      "split": "public-development-v10",
+      "framework": "cypress",
+      "design_note": "Clean case. Both arms have the exemptions in pattern-reference.md: a scoped uncaught:exception handler that rethrows every other error (#3b), `.each` over a Cypress DOM query after a length assertion (#4k), and a stubbed write with a request-body assertion (#22, and the #4 stub-echo lookalike).",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-cy-14/cypress/e2e/batches.cy.ts",
+          "path": "cypress/e2e/batches.cy.ts"
+        },
+        {
+          "source": "files/holdout-v10/v10-cy-14/cypress/support/e2e.ts",
+          "path": "cypress/support/e2e.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-106",
+          "kind": "fp_guard",
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/e2e.ts",
+          "line": 1,
+          "source_line": "Cypress.on('uncaught:exception', (exception) => {",
+          "reason": "pattern-reference.md #3b: \"Safe handlers conditionally allowlist one named, documented regression and rethrow every other error.\" The handler returns false for one named widget error and throws the rest."
+        },
+        {
+          "finding_id": "V10-107",
+          "kind": "fp_guard",
+          "pattern_id": "#4k",
+          "severity": "P1",
+          "file": "cypress/e2e/batches.cy.ts",
+          "line": 10,
+          "source_line": "cy.get('[data-cy=batch-row][data-grain=rye]').each(($row) => {",
+          "reason": "pattern-reference.md #4k: \"SKIP - a toHaveCount, toHaveLength, should('have.length'...) ... on the same collection appears earlier\" and \"Cypress DOM queries retain an implicit existence check on the iterated subject\"."
+        },
+        {
+          "finding_id": "V10-108",
+          "kind": "fp_guard",
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "cypress/e2e/batches.cy.ts",
+          "line": 17,
+          "source_line": "cy.get('[data-cy=batch-croissant] [data-cy=to-oven]').click();",
+          "reason": "The test asserts the request body the application sent before checking the UI. pattern-reference.md #22: \"Valid proof includes a request/response observation, a route-handler hit or mocked-request capture\"; #4 lists \"an assertion on the request the application sent\" as a correct lookalike."
+        }
+      ]
+    },
+    {
+      "id": "v10-cy-15",
+      "split": "public-development-v10",
+      "framework": "cypress",
+      "design_note": "Clean case, full arm favoured on two guards: review-scope.md tells the reviewer to skip Playwright-specific checks for Cypress, including #8a and #15, so a standalone `cy.get` and a synchronous chai `expect` inside `.then` are not findings. pattern-reference.md #8 also says a standalone cy.get is a retrying query. The session is created by a programmatic login with env-backed credentials (#21 guard), and the absence check follows a positive check on the same selector (#4i).",
+      "source_files": [
+        {
+          "source": "files/holdout-v10/v10-cy-15/cypress/e2e/plots.cy.ts",
+          "path": "cypress/e2e/plots.cy.ts"
+        },
+        {
+          "source": "files/holdout-v10/v10-cy-15/cypress/support/commands.ts",
+          "path": "cypress/support/commands.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V10-109",
+          "kind": "fp_guard",
+          "pattern_id": "#15",
+          "severity": "P1",
+          "file": "cypress/e2e/plots.cy.ts",
+          "line": 9,
+          "source_line": "expect($plots).to.have.length(3);",
+          "reason": "A synchronous chai assertion on a yielded jQuery collection, not a Playwright web-first matcher. pattern-reference.md #15 covers \"An async Playwright Locator/Page web-first matcher\"; review-scope.md: \"If Cypress, skip Playwright-specific greps (... #15 missing await on expect ...)\"."
+        },
+        {
+          "finding_id": "V10-110",
+          "kind": "fp_guard",
+          "pattern_id": "#8a",
+          "severity": "P0",
+          "file": "cypress/e2e/plots.cy.ts",
+          "line": 14,
+          "source_line": "cy.get('[data-cy=plot-map]');",
+          "reason": "pattern-reference.md #8: \"Do not generalize this rule to Cypress: cy.get(...) is a retrying query that requires the element to exist even without a .should(...) chain\"; semantic-review.md: \"#8a is Playwright-only\"."
+        },
+        {
+          "finding_id": "V10-111",
+          "kind": "fp_guard",
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "cypress/e2e/plots.cy.ts",
+          "line": 21,
+          "source_line": "cy.get('[data-cy=my-plot-12]').should('not.exist');",
+          "reason": "The same selector is asserted visible before the release click (pattern-reference.md #4i SKIP: \"the same locator ... is asserted present ... anywhere in that test's execution path\")."
+        },
+        {
+          "finding_id": "V10-112",
+          "kind": "fp_guard",
+          "pattern_id": "#21",
+          "severity": "P2",
+          "file": "cypress/support/commands.ts",
+          "line": 2,
+          "source_line": "cy.session('gardener', () => {",
+          "reason": "The session callback logs in programmatically through the API. pattern-reference.md #21: \"Session state must be reproducible from code: an API-login helper\"; the defect needs a callback that \"reads a committed file instead of logging in\"."
+        }
+      ]
+    }
+  ]
+}

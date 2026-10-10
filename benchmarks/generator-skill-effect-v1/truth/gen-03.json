@@ -1,0 +1,58 @@
+{
+  "task": "Add end-to-end tests for the shop page (`/`): catalog and cart. Acceptance criteria: (1) Add to cart adds a cart line for that product with `Qty: 1`; (2) the + and − buttons change a line's quantity, and the quantity never goes below 1; (3) the total is the sum of price times quantity over all lines, shown as `Total: $X.XX`; (4) Remove deletes the line; (5) the cart is stored on the server, so a reload shows the same lines; (6) `Your cart is empty` is shown whenever the cart has no lines, including after the last line is removed. Prices: Canvas Tote $25.00, Merino Beanie $30.00, Camp Mug $12.50. The test seam `POST /api/reset` empties the cart.",
+  "faults": [
+    {
+      "id": "f1-add-noop",
+      "class": "surface",
+      "criterion": 1,
+      "description": "Add to cart no longer shows the new line until a reload.",
+      "find": "          const next = await api(\"POST\", \"/api/cart/items\", { productId: p.id });\n          state = next;\n",
+      "replace": "          const next = await api(\"POST\", \"/api/cart/items\", { productId: p.id });\n          void next;\n"
+    },
+    {
+      "id": "f2-total-ignores-quantity",
+      "class": "precision",
+      "criterion": 3,
+      "description": "The total adds each line's unit price once, whatever its quantity.",
+      "find": "total += line.price * line.quantity;",
+      "replace": "total += line.price;"
+    },
+    {
+      "id": "f3-quantity-below-one",
+      "class": "boundary",
+      "criterion": 2,
+      "description": "− at quantity 1 produces `Qty: 0`.",
+      "find": "line.quantity = Math.max(1, Number(quantity) || 1);",
+      "replace": "line.quantity = Math.max(0, Number(quantity) || 0);"
+    },
+    {
+      "id": "f4-remove-client-only",
+      "class": "persistence",
+      "criterion": 5,
+      "description": "Remove deletes the line from the page but the server keeps it; a reload brings it back.",
+      "find": "      cart = cart.filter((l) => l.id !== removedId);\n",
+      "replace": "      void removedId;\n"
+    },
+    {
+      "id": "f5-empty-state-stays-hidden",
+      "class": "precision",
+      "criterion": 6,
+      "description": "`Your cart is empty` shows on first load but never again after a line was added, even when the cart is emptied.",
+      "find": "emptyEl.hidden = state.length > 0;",
+      "replace": "emptyEl.hidden = emptyEl.hidden || state.length > 0;"
+    }
+  ],
+  "refactor": [
+    {"find": "<section id=\"ct-catalog\">", "replace": "<div class=\"layout\"><section id=\"ct-catalog\" class=\"panel panel--catalog\">"},
+    {"find": "<p id=\"ct-total\">Total: $0.00</p>\n    </section>", "replace": "<footer class=\"panel__footer\"><p id=\"ct-total\" class=\"total\">Total: $0.00</p></footer>\n    </section></div>"},
+    {"find": "li.className = \"product\";", "replace": "li.className = \"card card--product\";"},
+    {"find": "li.className = \"line\";", "replace": "li.className = \"row row--line\";"},
+    {"find": "qty.className = \"qty\";", "replace": "qty.className = \"badge badge--quantity\";"},
+    {"find": "ct-catalog", "replace": "catalog-panel"},
+    {"find": "ct-products", "replace": "catalog-items"},
+    {"find": "ct-cart", "replace": "basket-panel"},
+    {"find": "ct-empty", "replace": "basket-empty"},
+    {"find": "ct-lines", "replace": "basket-lines"},
+    {"find": "ct-total", "replace": "basket-total"}
+  ]
+}

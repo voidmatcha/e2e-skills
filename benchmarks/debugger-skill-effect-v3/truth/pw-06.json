@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "eemtijca/ludus",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/eemtijca/ludus/issues/12",
+   "https://github.com/eemtijca/ludus/pull/14"
+  ],
+  "merged": "2026-10-03"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test",
+ "explanation": "The keyboard traversal started before React hydration finished, so Tab walked the server HTML that React replaces during mount.",
+ "fix": "`expectHydrated(page)` polls for React props on the visible main before any keyboard traversal, and the traversal start is made explicit (focus and activate the skip link first)."
+}

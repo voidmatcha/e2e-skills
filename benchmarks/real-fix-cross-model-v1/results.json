@@ -1,0 +1,52 @@
+{
+  "status": "COMPLETE",
+  "evidence_class": "public-development-zero-tool-single-repetition",
+  "source_clusters": 5,
+  "calls_per_model": 30,
+  "excluded_case": "datagrok: base #4 was unavailable in the frozen output schema",
+  "raw_reports": {
+    "sol": {
+      "local_cache_relative_path": "e2e-skills-bench/real-fix-probe-v1/report.json",
+      "sha256": "e6e0d7039d53d8f646bda043ca1a8dfdc66a4356122f0e4c88cdcfeecd273fac",
+      "runner_version": "codex-cli 0.159.3",
+      "model": "gpt-6-sol"
+    },
+    "astra": {
+      "local_cache_relative_path": "e2e-skills-bench/real-fix-cross-model-v1/astra.json",
+      "sha256": "b869dfa11efa6ea7bd0cbe40db74be4703455d17bd2eaab76a5217f33d3fd3a9",
+      "runner_version": "codex-cli 0.159.3",
+      "model": "gpt-6-astra"
+    },
+    "claude": {
+      "local_cache_relative_path": "e2e-skills-bench/real-fix-cross-model-v1/claude.json",
+      "sha256": "e4629c2508f98074306bc7c1ba25ded7c04445f3450a374f7aab064e45d4a997",
+      "runner_version": "2.1.289 (Claude Code)",
+      "model": "claude-sonnet-5"
+    }
+  },
+  "arms": {
+    "sol": {
+      "full": {"before_target_hits": 5, "hit_cases": ["growi", "opensearch", "chronograf", "onearmy", "kibana"], "mapped_after_alarms": 0, "input_tokens": 585783, "cached_input_tokens": 88704, "cache_write_tokens": null, "output_tokens": 14819, "reasoning_output_tokens": 10561, "summed_call_seconds": 415.2, "other_findings_unadjudicated": 123},
+      "catalog-only": {"before_target_hits": 4, "hit_cases": ["growi", "opensearch", "onearmy", "kibana"], "mapped_after_alarms": 0, "input_tokens": 373304, "cached_input_tokens": 98560, "cache_write_tokens": null, "output_tokens": 11810, "reasoning_output_tokens": 8198, "summed_call_seconds": 342.3, "other_findings_unadjudicated": 103},
+      "no-skill": {"before_target_hits": 1, "hit_cases": ["growi"], "mapped_after_alarms": 0, "input_tokens": 169840, "cached_input_tokens": 78848, "cache_write_tokens": null, "output_tokens": 9562, "reasoning_output_tokens": 7684, "summed_call_seconds": 290.5, "other_findings_unadjudicated": 53}
+    },
+    "astra": {
+      "full": {"before_target_hits": 4, "hit_cases": ["growi", "opensearch", "onearmy", "kibana"], "mapped_after_alarms": 0, "input_tokens": 590262, "cached_input_tokens": 20480, "cache_write_tokens": null, "output_tokens": 7847, "reasoning_output_tokens": 3597, "summed_call_seconds": 297.5, "other_findings_unadjudicated": 125},
+      "catalog-only": {"before_target_hits": 4, "hit_cases": ["growi", "opensearch", "onearmy", "kibana"], "mapped_after_alarms": 0, "input_tokens": 377783, "cached_input_tokens": 30720, "cache_write_tokens": null, "output_tokens": 8826, "reasoning_output_tokens": 3674, "summed_call_seconds": 425.9, "other_findings_unadjudicated": 153},
+      "no-skill": {"before_target_hits": 2, "hit_cases": ["growi", "opensearch"], "mapped_after_alarms": 0, "input_tokens": 174317, "cached_input_tokens": 10240, "cache_write_tokens": null, "output_tokens": 3273, "reasoning_output_tokens": 1468, "summed_call_seconds": 200.9, "other_findings_unadjudicated": 51}
+    },
+    "claude": {
+      "full": {"before_target_hits": 2, "hit_cases": ["growi", "onearmy"], "mapped_after_alarms": 0, "input_tokens": 30, "cached_input_tokens": 468043, "cache_write_tokens": 839107, "output_tokens": 142707, "reasoning_output_tokens": null, "summed_call_seconds": 1490.0, "other_findings_unadjudicated": 87},
+      "catalog-only": {"before_target_hits": 2, "hit_cases": ["growi", "chronograf"], "mapped_after_alarms": 0, "input_tokens": 24, "cached_input_tokens": 138398, "cache_write_tokens": 446512, "output_tokens": 121980, "reasoning_output_tokens": null, "summed_call_seconds": 1272.8, "other_findings_unadjudicated": 74},
+      "no-skill": {"before_target_hits": 1, "hit_cases": ["growi"], "mapped_after_alarms": 0, "input_tokens": 24, "cached_input_tokens": 105689, "cache_write_tokens": 135510, "output_tokens": 93323, "reasoning_output_tokens": null, "summed_call_seconds": 939.1, "other_findings_unadjudicated": 114}
+    }
+  },
+  "limitations": [
+    "Five selected, public source-repair clusters and one repetition per model are descriptive, not population or release-grade estimates.",
+    "The full arm embeds skill material but does not execute scanner, browser, or subagent steps; the no-skill arm still receives a shared output legend.",
+    "Other findings are not source-adjudicated, so they are not false-positive counts and whole-report precision is unknown.",
+    "Codex and Claude token accounting differs: Claude input_tokens excludes cache reads and writes; compare arms within each host, not raw cross-host billing cost.",
+    "Claude used host-default reasoning effort; Codex used medium. Same prompts do not eliminate host, model, or effort confounding.",
+    "Raw reports are local-only; checked-in hashes and source/prompt controls document provenance but do not make the run independently replayable from this repository alone."
+  ]
+}

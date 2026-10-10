@@ -1,0 +1,50 @@
+{
+  "task": "Cover the queue-priority page at `/`. Raven starts first, Finch second. Promoting Finch moves it first with exactly one state-changing GET per click. Reloading preserves that order. Promoting Raven moves Raven first again. Promote Finch once more so Finch is first and the order is Finch, Raven.",
+  "faults": [
+    {
+      "id": "f1-no-promote-request",
+      "class": "surface",
+      "brief_phrase": "Promoting Finch moves it first",
+      "description": "The Promote Finch button does not dispatch a request.",
+      "find": "    document.getElementById(\"promote-finch\").addEventListener(\"click\", () => promote(\"finch\"));",
+      "replace": "    document.getElementById(\"promote-finch\").addEventListener(\"click\", () => {});"
+    },
+    {
+      "id": "f2-wrong-item",
+      "class": "precision",
+      "brief_phrase": "Promoting Raven moves Raven first again",
+      "description": "The server always promotes Finch, regardless of the requested item.",
+      "find": "    queue = [item, ...queue.filter((entry) => entry !== item)];",
+      "replace": "    queue = [\"finch\", ...queue.filter((entry) => entry !== \"finch\")];"
+    },
+    {
+      "id": "f3-status-stale",
+      "class": "state",
+      "brief_phrase": "Finch is first",
+      "description": "The visible first-item status remains Raven.",
+      "find": "      statusEl.textContent = \"First: \" + names[next[0]];",
+      "replace": "      statusEl.textContent = \"First: Raven\";"
+    },
+    {
+      "id": "f4-duplicate-get",
+      "class": "cardinality",
+      "brief_phrase": "exactly one state-changing GET per click",
+      "description": "The UI sends two promotion requests per click.",
+      "find": "      const response = await fetch(\"/api/promote?item=\" + encodeURIComponent(item));",
+      "replace": "      await fetch(\"/api/promote?item=\" + encodeURIComponent(item));\n      const response = await fetch(\"/api/promote?item=\" + encodeURIComponent(item));"
+    },
+    {
+      "id": "f5-reload-forgets-order",
+      "class": "persistence",
+      "brief_phrase": "Reloading preserves that order",
+      "description": "The queue read endpoint returns the seed order after reload.",
+      "find": "  if (url.pathname === \"/api/queue\" && req.method === \"GET\") return json(res, 200, queue);",
+      "replace": "  if (url.pathname === \"/api/queue\" && req.method === \"GET\") return json(res, 200, SEED);"
+    }
+  ],
+  "refactor": [
+    { "find": "priority-list", "replace": "queue-order" },
+    { "find": "queue-status", "replace": "first-item-status" },
+    { "find": "promotion-error", "replace": "promote-error" }
+  ]
+}

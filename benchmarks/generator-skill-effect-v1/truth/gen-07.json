@@ -1,0 +1,55 @@
+{
+  "task": "Add end-to-end tests for the newsletter signup page (`/`). Acceptance criteria: (1) subscribing with a valid, new email address shows `Thanks, you're subscribed` and the subscriber count under the heading increases (`1 subscriber`, then `N subscribers`); (2) an invalid address shows the error `Enter a valid email address` and is not counted; (3) an address that is already subscribed shows the error `That email is already subscribed` and is not counted twice; (4) pressing Enter in the email field submits exactly like the Subscribe button; (5) the email field is emptied after a successful subscription. The test seam `POST /api/reset` removes every subscriber.",
+  "faults": [
+    {
+      "id": "f1-subscribe-noop",
+      "class": "surface",
+      "criterion": 1,
+      "description": "Submitting (button or Enter) does nothing.",
+      "find": "      const email = emailEl.value;\n",
+      "replace": "      const email = emailEl.value;\n      if (email.length >= 0) return;\n"
+    },
+    {
+      "id": "f2-duplicate-accepted",
+      "class": "precision",
+      "criterion": 3,
+      "description": "A duplicate address is accepted and counted again.",
+      "find": "if (subscribers.has(normalized))",
+      "replace": "if (!subscribers.has(normalized) && false)"
+    },
+    {
+      "id": "f3-invalid-accepted",
+      "class": "precision",
+      "criterion": 2,
+      "description": "Any non-empty text is accepted as an address.",
+      "find": "if (!EMAIL_RE.test(normalized))",
+      "replace": "if (!normalized)"
+    },
+    {
+      "id": "f4-enter-key-ignored",
+      "class": "interaction",
+      "criterion": 4,
+      "description": "Enter in the email field does nothing; only the button submits.",
+      "find": "      if (event.key === \"Enter\") {\n",
+      "replace": "      if (event.key === \"Enter\" && event.altKey) {\n"
+    },
+    {
+      "id": "f5-field-not-cleared",
+      "class": "interaction",
+      "criterion": 5,
+      "description": "The email stays in the field after a successful subscription.",
+      "find": "      emailEl.value = \"\";\n",
+      "replace": "      emailEl.value = emailEl.value;\n"
+    }
+  ],
+  "refactor": [
+    {"find": "<form id=\"nl-form\">", "replace": "<section class=\"signup\"><form id=\"nl-form\" class=\"signup__form\">"},
+    {"find": "<button type=\"button\" id=\"nl-subscribe\">Subscribe</button>\n    </form>", "replace": "<button type=\"button\" id=\"nl-subscribe\" class=\"btn btn-primary\"><span>Subscribe</span></button>\n    </form></section>"},
+    {"find": "nl-subscribe", "replace": "join-button"},
+    {"find": "nl-success", "replace": "join-confirmation"},
+    {"find": "nl-error", "replace": "join-problem"},
+    {"find": "nl-email", "replace": "address-field"},
+    {"find": "nl-count", "replace": "audience-size"},
+    {"find": "nl-form", "replace": "join-form"}
+  ]
+}

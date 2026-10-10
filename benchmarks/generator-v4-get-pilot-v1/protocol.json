@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "protocol_id": "generator-v4-get-pilot-v1",
+  "status": "NOT_RUN",
+  "evidence_scope": "public-development-process-pilot",
+  "release_eligible": false,
+  "arms": ["before", "after"],
+  "cases": ["v3-13"],
+  "repetitions": 3,
+  "workers": 1,
+  "seed": 20261010,
+  "model": "gpt-5.5",
+  "reasoning_effort": "medium",
+  "timeout_s": 1500,
+  "per_call_budget_usd": null,
+  "spend_cap_usd": null,
+  "container_image": "sha256:687b18c424d01c3af69efa921eaa824b48eb737d46492da334405e348da73881",
+  "docker_context": "colima",
+  "minimum_free_disk_bytes": 4294967296,
+  "snapshot": "Both arms are byte-identical except that after adds one Step 7 paragraph classifying side-effectful GET as a V4 write. Evals are excluded. The case, reviewer, runner, model, container, prompt, approvals, and scorer are shared.",
+  "schedule": "Three fresh pairs on the spent public v3-13 search task, one worker; before/after, after/before, before/after. No generated spec is reused.",
+  "common_prompt_appendix": "Additional explicit command approvals for BOTH arms: the already-approved project-local Playwright CLI prefix may use --browser chromium, --config <outside-worktree guard JSON>, and -s=<fresh unique session> for the skill's origin-guarded exploration only. Its named eval and requests subcommands for the skill's blocked-origin proof are approved, as is goto on the exact preflighted app origin. Creating that guard config outside the target worktree is approved. This does not approve another origin, a package install, changing project controls, skipping the preflight, or terminating a process the invocation did not start. Record these exact command rows as already approved. Follow the unchanged skill safety gate, guard, V4/V5/V6, and completion rules in both arms.",
+  "decision_rule": {
+    "primary": "Independently adjudicated V4 evidence on the recent-search state-changing GET: method, exact endpoint and query, cardinality, normal user-visible outcome, and a failed-write temporary-copy run that turns red at the unchanged primary assertion or declared settled-state gate for the intended reason. Compare after against before over three pairs; a directional signal needs after V4 PASS in at least two cells and more than before, with no after false Complete on a missing or failed V4 probe.",
+    "guards": "Every after cell must pass clean 3/3, refactor, zero P0, no timeout, no out-of-scope write, and V6 packet plus independent final verdict. An infrastructure attempt, incomplete cell, missing transcript, or missing adjudication makes the process comparison INCONCLUSIVE. Do not count model self-report as V4 evidence.",
+    "secondary": "Report effective seeded-fault kills only from clean-passing specs, all clean/refactor/P0 results, all attempts, elapsed time, and available usage descriptively. No time or cost savings threshold is specified.",
+    "interpretation": "One spent public task and three pairs cannot establish causality, generalization, release equivalence, speed, or billed-cost savings."
+  },
+  "prerequisite_probe": "Reuse the pinned image's passing model-free successor probe for explicit Chromium CLI, pre-dispatch origin rejection, owned cleanup, and clean smoke tests.",
+  "process_audit": "A reviewer must inspect raw parent transcripts and V4 temporary-copy run outputs; command-count heuristics and model self-report cannot award PASS."
+}

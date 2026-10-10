@@ -21,6 +21,72 @@ builtin export LANG=C LC_ALL=C LC_CTYPE=C
 
 builtin set -uo pipefail
 
+# --report-file PATH writes the full report to PATH and prints a digest: every
+# line except individual hits, then hit counts per file. A directory scan of a
+# real suite can print hundreds of KB, more than an agent host shows in one tool
+# result. PATH is still untrusted here, so this block uses builtins only; the
+# scan itself runs in a fresh invocation that performs every normal check.
+if [[ "${1:-}" == "--report-file" ]]; then
+  if (( $# < 2 || $# > 3 )) || [[ -z "$2" ]]; then
+    printf 'error: usage: scan.sh --report-file <new-file> [scan-root]\n' >&2
+    exit 2
+  fi
+  report_file="$2"
+  report_dir="${report_file%/*}"
+  [[ "$report_dir" == "$report_file" ]] && report_dir="."
+  [[ -z "$report_dir" ]] && report_dir="/"
+  if [[ -e "$report_file" || -L "$report_file" ]]; then
+    printf 'error: --report-file %s already exists; choose a new path\n' "$report_file" >&2
+    exit 2
+  fi
+  if [[ ! -d "$report_dir" || -L "$report_dir" ]]; then
+    printf 'error: --report-file directory %s must be an existing, non-symlink directory\n' "$report_dir" >&2
+    exit 2
+  fi
+  builtin set -o noclobber
+  exec 3> "$report_file" || {
+    printf 'error: cannot create --report-file %s\n' "$report_file" >&2
+    exit 2
+  }
+  builtin set +o noclobber
+  "$BASH" -p "${BASH_SOURCE[0]}" "${@:3}" >&3 3>&-
+  scan_status=$?
+  exec 3>&-
+  report_files=() report_counts=() report_summary=""
+  while IFS= builtin read -r report_line || [[ -n "$report_line" ]]; do
+    [[ "$report_line" == Summary:* ]] && report_summary="$report_line"
+    if [[ "$report_line" =~ ^\ \ (/[^:]+|[^[:space:]:][^:]*):[0-9]+: ]]; then
+      hit_file="${BASH_REMATCH[1]}"
+      found=0
+      for ((i = 0; i < ${#report_files[@]}; i++)); do
+        if [[ "${report_files[i]}" == "$hit_file" ]]; then
+          report_counts[i]=$((report_counts[i] + 1))
+          found=1
+          break
+        fi
+      done
+      if (( !found )); then
+        report_files+=("$hit_file")
+        report_counts+=(1)
+      fi
+    else
+      printf '%s\n' "$report_line"
+    fi
+  done < "$report_file"
+  printf '\nHits per file (full report with every hit line: %s):\n' "$report_file"
+  if (( ${#report_files[@]} == 0 )); then
+    printf '  none\n'
+  fi
+  for ((i = 0; i < ${#report_files[@]}; i++)); do
+    printf '  %s: %s\n' "${report_files[i]}" "${report_counts[i]}"
+  done
+  # Repeat the Summary last so a reader that keeps only the tail still sees it.
+  if [[ -n "$report_summary" ]]; then
+    printf '\n%s\n' "$report_summary"
+  fi
+  exit "$scan_status"
+fi
+
 if (( $# > 1 )); then
   printf 'error: multiple scan roots are not supported; invoke scan.sh once per root\n' >&2
   exit 2
@@ -825,7 +891,7 @@ scope_graph_call() {
     *) request=(--op query --node "$1" --visited "$2" --depth "$3") ;;
   esac
   "$PYTHON3_BIN" -I -B "$SCANNER_DIR_REAL/scope-worker.py" client \
-    --socket "$SCANNER_TEMP_ROOT/scope.sock" \
+    --channel "$SCANNER_TEMP_ROOT/scope" \
     --control "$SCANNER_TEMP_ROOT/scope-worker.json" "${request[@]}"
   rc=$?
   # Exit 3 is a proven negative. An interpreter/helper crash can exit 1,
@@ -2577,7 +2643,7 @@ allocate_temp SUPPRESSED_P0_CANDIDATES_FILE
 # Start once in the main shell after its error sink is ready. A failed worker
 # is never restarted: that would discard historical dependency witnesses.
 "$PYTHON3_BIN" -I -B "$SCANNER_DIR_REAL/scope-worker.py" serve \
-  --socket "$SCANNER_TEMP_ROOT/scope.sock" \
+  --channel "$SCANNER_TEMP_ROOT/scope" \
   --control "$SCANNER_TEMP_ROOT/scope-worker.json" \
   --engine "$SCANNER_DIR_REAL/scope-graph.py" --parent-pid "$$" \
   --project "$PROJECT_ROOT_REAL" --helper "$SCANNER_DIR_REAL/scope-source.sh" \
@@ -2848,15 +2914,15 @@ try_eslint() {
       -p '@typescript-eslint/parser@8.65.0'
       -p 'typescript@6.0.3'
     )
-    # The companion silent-pass plugin is Cypress-only now. Its Playwright counterpart was
-    # upstreamed as `no-unnecessary-assertions`, shipped in eslint-plugin-playwright v2.11.0 and
-    # enabled by that plugin's `recommended` config — so #4f is covered by Tier 1 with no extra
-    # package, and eslint-plugin-playwright-silent-pass is deprecated on npm. Downloading it here
-    # would pull a deprecated package and double-report the same finding.
+    # Playwright #4f is covered by `no-unnecessary-assertions`, shipped in
+    # eslint-plugin-playwright v2.11.0 and enabled by its recommended config.
+    # Do not load a Cypress companion here: eslint-plugin-cypress-silent-pass@0.2.2
+    # also flags assertions on queued `cy.get(...)` chains even though a missing
+    # element still fails when Cypress executes the query. Treating those hits as
+    # silent-pass P0s would overstate the runtime behavior.
     if [[ "$plugin" == "cypress" ]]; then
       npx_args+=(
         -p 'eslint-plugin-cypress@6.4.3'
-        -p 'eslint-plugin-cypress-silent-pass@0.2.2'
         -p 'eslint-plugin-mocha@12.0.1'
       )
     else
@@ -2956,29 +3022,6 @@ EOFRES
     fi
   fi
 
-  # Companion silent-pass plugin — Cypress only. Best-effort: resolved separately so a
-  # missing/offline package NEVER breaks Tier 1, and Tier 2/3 still cover #4f regardless.
-  # Playwright is deliberately excluded: #4f was upstreamed as `no-unnecessary-assertions`
-  # (mskelton/eslint-plugin-playwright#470), shipped in v2.11.0, and enabled by that plugin's
-  # `recommended` config — which the flat/recommended spread below already pulls in. Resolving
-  # the companion here too would load a package now deprecated on npm and double-report #4f.
-  # The rule id still is not hardcoded: it arrives through recommended, so an older
-  # eslint-plugin-playwright simply does not enable it instead of erroring "rule not found".
-  local _sp_abs="" _sp_paths="" _sp_imp="" _sp_plg="" _sp_rul=""
-  if [[ "$plugin" == "cypress" ]]; then
-    if [[ "$mode" == "locally installed" ]]; then
-      _sp_paths=$( (cd "$PROJECT_ROOT_REAL" && "$NODE_BIN" "$_cfgd/resolve.cjs" "eslint-plugin-$plugin-silent-pass") 2>/dev/null | tail -1 )
-    else
-      _sp_paths=$(run_pinned_npx "${npx_args[@]}" "$NODE_BIN" "$_cfgd/resolve.cjs" "eslint-plugin-$plugin-silent-pass" 2>/dev/null | tail -1)
-    fi
-  fi
-  if [[ "$_sp_paths" == "["* ]]; then
-    _sp_abs=$(printf '%s' "$_sp_paths" | sed 's/^\["//; s/"\]$//')
-    _sp_imp="import spp from '$_sp_abs';"
-    _sp_plg=", '$plugin-silent-pass': spp"
-    _sp_rul=", '$plugin-silent-pass/no-silent-pass': 'error'"
-  fi
-
   # Respect the project's own flat config when it has one. ESLint flat config is an array
   # and later entries win, so appending the project's config after ours lets a deliberate
   # `'playwright/no-force': 'off'` actually take effect instead of being overridden by our
@@ -3009,14 +3052,14 @@ EOFRES
     {
       printf "import playwright from '%s';\n" "$_plugin_abs"
       printf "import tsParser from '%s';\n" "$_parser_abs"
-      printf '%s%s\n' "$_sp_imp" "$_localimport"
+      printf '%s\n' "$_localimport"
       printf "export default [\n  { ignores: ['**/node_modules/**','**/dist/**','**/build/**','**/.next/**','**/out/**','**/coverage/**','**/*.min.js',%s] },\n" "$_evalign"
       printf '  {\n    files: [%s],\n' "$ESLINT_FILE_GLOBS"
-      printf '    plugins: { playwright%s },\n' "$_sp_plg"
+      printf '    plugins: { playwright },\n'
       cat <<'EOFCFG'
     languageOptions: { parser: tsParser, ecmaVersion: 'latest', sourceType: 'module', parserOptions: { ecmaFeatures: { jsx: true } } },
 EOFCFG
-      printf "    rules: { ...(playwright.configs['flat/recommended'] ?? playwright.configs.recommended).rules%s },\n" "$_sp_rul"
+      printf "    rules: { ...(playwright.configs['flat/recommended'] ?? playwright.configs.recommended).rules },\n"
       printf '  },\n%s\n];\n' "$_localspread"
     } > "$_cfg"
   else
@@ -3024,17 +3067,17 @@ EOFCFG
       printf "import cypress from '%s';\n" "$_plugin_abs"
       printf "import mocha from '%s';\n" "$_mocha_abs"
       printf "import tsParser from '%s';\n" "$_parser_abs"
-      printf '%s%s\n' "$_sp_imp" "$_localimport"
+      printf '%s\n' "$_localimport"
       cat <<'EOFCFG'
 const cypressRules = (cypress.configs['flat/recommended'] ?? cypress.configs.recommended).rules;
 EOFCFG
       printf "export default [\n  { ignores: ['**/node_modules/**','**/dist/**','**/build/**','**/coverage/**','**/*.min.js',%s] },\n" "$_evalign"
       printf '  {\n    files: [%s],\n' "$ESLINT_FILE_GLOBS"
-      printf '    plugins: { cypress, mocha%s },\n' "$_sp_plg"
+      printf '    plugins: { cypress, mocha },\n'
       cat <<'EOFCFG'
     languageOptions: { parser: tsParser, ecmaVersion: 'latest', sourceType: 'module', parserOptions: { ecmaFeatures: { jsx: true } } },
 EOFCFG
-      printf "    rules: { ...cypressRules, 'mocha/no-exclusive-tests': 'error'%s },\n" "$_sp_rul"
+      printf "    rules: { ...cypressRules, 'mocha/no-exclusive-tests': 'error' },\n"
       printf '  },\n%s\n];\n' "$_localspread"
     } > "$_cfg"
   fi
@@ -3197,7 +3240,7 @@ EOFCFG
   # and deduplicate only the same file/line/rule-class fingerprint.
   # Map covered eslint rule IDs onto the same counters Tier 3 uses:
   #   P0: no-focused-test (#7), mocha no-exclusive-tests (#7 Cypress),
-  #       no-silent-pass (#4f companion plugin)
+  #       Playwright no-unnecessary-assertions (#4f)
   #   P1: missing-playwright-await (#15/#16), no-wait-for-timeout (#9),
   #       no-unnecessary-waiting (#9b)
   # Count Tier-1 hits, routing JUSTIFIED P0 to external-review candidates while
@@ -3225,14 +3268,12 @@ EOFCFG
             case "$_etrim" in
               */no-focused-test|*/no-exclusive-tests)
                 _t1_p0=$((_t1_p0 + 1)); _dclass='focused-test' ;;    # #7 — never JUSTIFIED-exempt
-              */no-silent-pass|*/no-unnecessary-assertions)
+              *" playwright/no-unnecessary-assertions")
                 if _line_is_justified "$_efp" "$_elno"; then
                   record_justified_suppression P0 '#4f' "$_efp" "$_elno"
                 else
                   _t1_p0=$((_t1_p0 + 1))
-                  case "$_etrim" in
-                    */no-silent-pass|*/no-unnecessary-assertions) _dclass='silent-pass' ;;
-                  esac
+                  _dclass='silent-pass'
                 fi ;;
               */missing-playwright-await|*/no-wait-for-timeout|*/no-unnecessary-waiting)
                 if _line_is_justified "$_efp" "$_elno"; then
@@ -3459,6 +3500,16 @@ record_tier2_infrastructure_failure() {
   TIER2_INFRA_DETAIL="$1"
 }
 
+run_tier2_ast_grep() {
+  # Called as the producer of capture_bounded_command's pipeline, so this runs in
+  # that pipeline's subshell: the cd is private to the ast-grep process and the
+  # scan root, already canonical and absolute, is unaffected. A failed cd exits
+  # before the binary starts and reaches the caller as an empty capture with a
+  # nonzero status, which Tier 2 already treats as an infrastructure failure.
+  cd "$SCANNER_TEMP_ROOT" || exit 2
+  exec "${AST_GREP_CMD[@]}" "$@"
+}
+
 if [[ "${#AST_GREP_CMD[@]}" -eq 1 && "${AST_GREP_CMD[0]}" == run_ast_grep_npx ]]; then
   if resolve_verified_ast_grep_download; then
     AST_GREP_CMD=("$AST_GREP_DOWNLOADED_BIN")
@@ -3491,6 +3542,20 @@ if [[ "${#AST_GREP_CMD[@]}" -gt 0 && -d "$ASTGREP_RULES_DIR" &&
   if [[ "${#EVAL_FIXTURE_AST_GREP_EXCLUDES[@]}" -gt 0 ]]; then
     _ast_glob_args+=("${EVAL_FIXTURE_AST_GREP_EXCLUDES[@]}")
   fi
+  # ast-grep looks for `sgconfig.yml` in its working directory and the parents and
+  # loads any `customLanguages.<lang>.libraryPath` that file names, as a native
+  # library, before the first rule runs (reproduced on 0.39.7 and 0.45.3 with a
+  # nonexistent path: exit 79 "Cannot load custom language library"). Running in
+  # the caller's cwd without `--config` let a scanned repository supply that file.
+  # `--config` replaces discovery with this rule-free, skill-owned file, and
+  # run_tier2_ast_grep starts the binary from the private temporary directory so
+  # the target tree and its parents are outside the search even on a build that
+  # ignored the flag. Neither pinned build knows `--no-config`.
+  allocate_temp _ast_config
+  if ! printf 'ruleDirs: []\n' > "$_ast_config"; then
+    printf 'error: unable to write the skill-owned ast-grep configuration\n' >&2
+    exit 2
+  fi
   for rule in "$ASTGREP_RULES_DIR"/sg-*.yml; do
     [[ "$(basename "$rule")" == sg-postfix-* ]] && continue  # postfix rules are for verify-fixes.sh
     rule_name=$(basename "$rule" .yml)
@@ -3500,8 +3565,9 @@ if [[ "${#AST_GREP_CMD[@]}" -gt 0 && -d "$ASTGREP_RULES_DIR" &&
     allocate_temp _ast_limit
     allocate_temp _ast_stream_err
     capture_bounded_command "$_ast_capture" "$_ast_error" "$_ast_limit" "$_ast_stream_err" \
-      "${AST_GREP_CMD[@]}" scan \
+      run_tier2_ast_grep scan \
       --rule "$rule" \
+      --config "$_ast_config" \
       --json=stream \
       --no-ignore hidden \
       --no-ignore dot \
@@ -4720,19 +4786,71 @@ playwright_page_receiver_proven_at() {
   fi
 }
 
+one_shot_page_url_in_retry_callback() {
+  local file="$1" line="$2" first last
+  first=$((line > 24 ? line - 24 : 1))
+  last=$((line + 24))
+  source_executable_code "$file" |
+    awk -v first="$first" -v last="$last" -v target="$line" '
+      NR >= first && NR <= last {
+        if (NR == target) { marker = length(code) + 2 }
+        code = code " " $0
+      }
+      END {
+        if (!marker) exit 1
+        depth = 0
+        for (i = 1; i <= length(code); i++) {
+          ch = substr(code, i, 1)
+          if (ch == "{") {
+            depth++
+            prefix = substr(code, i > 200 ? i - 200 : 1, i > 200 ? 200 : i - 1)
+            retry[depth] = i < marker && prefix ~ /expect([.]poll)?[[:space:]]*[(][[:space:]]*(async[[:space:]]*)?[(][^)]*[)][[:space:]]*=>[[:space:]]*$/
+            poll[depth] = prefix ~ /expect[.]poll[[:space:]]*[(]/
+          } else if (ch == "}" && depth > 0) {
+            suffix = substr(code, i + 1, 100)
+            if (i > marker && retry[depth] &&
+                ((poll[depth] && suffix ~ /^[[:space:]]*[)][[:space:]]*[.][[:space:]]*to[A-Za-z]+[[:space:]]*[(]/) ||
+                 (!poll[depth] && suffix ~ /^[[:space:]]*[)][[:space:]]*[.][[:space:]]*toPass[[:space:]]*[(]/))) {
+              exit 0
+            }
+            delete retry[depth]
+            delete poll[depth]
+            depth--
+          }
+        }
+        exit 1
+      }
+    '
+}
+
 one_shot_page_url_hit_matches() {
-  local hit="$1" file rest line binding code receiver
+  local hit="$1" file rest line binding code receiver next offset
   file=${hit%%:*}
   rest=${hit#*:}
   line=${rest%%:*}
   binding=$(expect_call_binding_at "$hit")
   [[ -n "$binding" ]] && playwright_expect_binding "$file" "$binding" "$line" || return 1
-  code=$(locator_assertion_source "$file" "$line")
+  code=$(lexical_target_line "$hit")
+  # A matcher may continue on the next line. Only join adjacent member-chain
+  # lines, never another semicolonless statement or a later assertion.
+  if [[ "$code" != *';'* && "$code" != *'.to'* ]]; then
+    for offset in 1 2 3; do
+      next=$(lexical_target_line "$file:$((line + offset)):")
+      [[ -n "${next//[[:space:]]/}" ]] || continue
+      printf '%s\n' "$next" | scanner_rg -qP '^[[:space:]]*[.]' || break
+      code+=" $next"
+      [[ "$next" == *';'* ]] && break
+    done
+  fi
+  printf '%s\n' "$code" |
+    scanner_rg -qP '[.]url[[:space:]]*[(][[:space:]]*[)][[:space:]]*[)][[:space:]]*[.](?:not[[:space:]]*[.])?to(?:[A-Za-z_$][A-Za-z0-9_$]*|[[:space:]]*[.])' ||
+    return 1
   receiver=$(printf '%s\n' "$code" |
     scanner_rg -oP '\([[:space:]]*\K(?:this[.])?[A-Za-z_$][A-Za-z0-9_$]*(?=[[:space:]]*[.][[:space:]]*url[[:space:]]*[(])' |
     head -1)
   [[ -n "$receiver" ]] || return 1
-  playwright_page_receiver_proven_at "$file" "$line" "$receiver"
+  playwright_page_receiver_proven_at "$file" "$line" "$receiver" || return 1
+  ! one_shot_page_url_in_retry_callback "$file" "$line"
 }
 
 soft_expect_hit_matches() {
@@ -4748,6 +4866,38 @@ soft_expect_hit_matches() {
   rest=${hit#*:}
   line=${rest%%:*}
   playwright_expect_binding "$file" "$binding" "$line"
+}
+
+uncalled_matcher_hit_matches() {
+  # #8c: `expect(x).toBeVisible;` reads the matcher and discards it, and
+  # `expect(x);` builds the matcher object and discards it; neither runs an
+  # assertion, so the statement passes whatever x is. Confirm on the lexed line
+  # (strings inert, comments gone) that the statement really ends there, that
+  # the callee is a Playwright `expect` binding, and that no following code line
+  # continues the expression: `(` would make the matcher a call and `.` a longer
+  # chain, since ASI inserts nothing before either.
+  local hit="$1" file rest line binding code next offset
+  file=${hit%%:*}
+  rest=${hit#*:}
+  line=${rest%%:*}
+  code=$(lexical_target_line "$hit")
+  binding=$(printf '%s\n' "$code" |
+    scanner_rg -oP '^[[:space:]]*(?:await[[:space:]]+)?\K[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*[.][[:space:]]*expect)?(?=[[:space:]]*(?:[.][[:space:]]*soft)?[[:space:]]*\()' |
+    head -1 |
+    sed -E 's/[[:space:]]//g')
+  [[ -n "$binding" ]] && playwright_expect_binding "$file" "$binding" "$line" || return 1
+  printf '%s\n' "$code" |
+    scanner_rg -qP '^[[:space:]]*(?:await[[:space:]]+)?[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*[.][[:space:]]*(?:expect|soft))*[[:space:]]*\((?:[^()]|\([^()]*\))*\)(?:[[:space:]]*[.][[:space:]]*(?:not|resolves|rejects))*(?:[[:space:]]*[.][[:space:]]*to[A-Z][A-Za-z0-9_$]*)?[[:space:]]*;?[[:space:]]*$' ||
+    return 1
+  if [[ "$code" != *';'* ]]; then
+    for offset in 1 2 3; do
+      next=$(lexical_target_line "$file:$((line + offset)):")
+      [[ -n "${next//[[:space:]]/}" ]] || continue
+      printf '%s\n' "$next" | scanner_rg -qP '^[[:space:]]*[(.]' && return 1
+      break
+    done
+  fi
+  return 0
 }
 
 page_api_receiver_at() {
@@ -5368,7 +5518,7 @@ hardcoded_credential_hit_matches() {
   [[ -n "$code" ]] || code=$(lexical_target_line "$hit")
   [[ -n "$code" ]] || return 1
   printf '%s\n' "$code" |
-    scanner_rg -qi '(process\.env|import\.meta\.env|Cypress\.env\s*\(|Deno\.env|Bun\.env)' &&
+    scanner_rg -qi '(process\.env|import\.meta\.env|Cypress\.env\s*\(|(^|[^A-Za-z0-9_$.])cy\.env\s*\(|Deno\.env|Bun\.env)' &&
     return 1
   printf '%s\n' "$code" |
     scanner_rg -q '(__STR__|__STR_[A-Za-z0-9_$]+__)' || return 1
@@ -6297,6 +6447,8 @@ run_check() {
     raw_output=$(filter_hits_by one_shot_page_url_hit_matches)
   elif [[ "$flags" == *",soft-expect,"* && -n "$raw_output" ]]; then
     raw_output=$(filter_hits_by soft_expect_hit_matches)
+  elif [[ "$flags" == *",uncalled-matcher,"* && -n "$raw_output" ]]; then
+    raw_output=$(filter_hits_by uncalled_matcher_hit_matches)
   elif [[ "$flags" == *",direct-page-api,"* && -n "$raw_output" ]]; then
     raw_output=$(filter_hits_by direct_page_api_hit_matches)
   elif [[ "$flags" == *",triage-page-api,"* && -n "$raw_output" ]]; then
@@ -6865,6 +7017,14 @@ run_check P1 '#5b' 'Forced actionability bypass' '(?:force|["'"'"']force["'"'"']
 # are explicit skip guards in the #8 contract.
 run_check P0 '#8a' 'Dangling Playwright locator statement' '^\s*(await\s+)?page\.(locator|getBy[A-Za-z]+)\(([^()]|\([^()]*\))*\)\s*;?\s*(//.*)?$' "$ALL_CODE_GLOB" 'triage,cont,playwright-only'
 run_check P0 '#8b' 'Boolean state result discarded' '^\s*await .*\.(isVisible|isEnabled|isChecked|isDisabled|isEditable|isHidden)\([^)]*\)\s*;?\s*(//.*)?$' "$ALL_CODE_GLOB" 'e2e,triage,boolean-consumed,playwright-only'
+# #8c: a matcher that is read but never called (`expect(x).toBeVisible;`) and a bare
+# `expect(x);` run no assertion at all, so the statement passes whatever x is. Both are
+# syntactically certain once the statement is known to end there and `expect` is Playwright's,
+# which uncalled_matcher_hit_matches confirms on the lexed line (an ASI continuation on the next
+# code line, a called matcher, an assignment, a comment or a string copy are not candidates).
+# Chai-style property assertions (`expect(x).to.be.true`) never match `to[A-Z]`.
+run_check P0 '#8c' 'Matcher never invoked' '^\s*(?:await\s+)?[A-Za-z_$][A-Za-z0-9_$]*(?:\s*\.\s*(?:expect|soft))*\s*\((?:[^()\n]|\([^()\n]*\))*\)(?:\s*\.\s*(?:not|resolves|rejects))*\s*\.\s*to[A-Z][A-Za-z0-9_$]*\s*;?\s*(//.*)?$' "$ALL_CODE_GLOB" 'e2e,playwright-only,uncalled-matcher'
+run_check P0 '#8c' 'Bare expect() without matcher' '^\s*(?:await\s+)?(?:[A-Za-z_$][A-Za-z0-9_$]*\s*\.\s*)?expect(?:\s*\.\s*soft)?\s*\((?:[^()\n]|\([^()\n]*\))*\)\s*;?\s*(//.*)?$' "$ALL_CODE_GLOB" 'e2e,playwright-only,uncalled-matcher'
 run_check P1 '#10a' 'Positional selector' '\.(nth\(|first\(\)|last\(\))' "$ALL_CODE_GLOB" 'triage'
 run_check P1 '#10b' 'Serial Playwright suite' '\.describe\.serial\(' "$ALL_CODE_GLOB" 'playwright-only,executable-line'
 run_check P1 '#10b' 'Serial Playwright suite' '\.describe[[:space:]]*\.configure[[:space:]]*\(' "$ALL_CODE_GLOB" 'playwright-only,serial-configure'
@@ -6996,6 +7156,7 @@ if [[ -n "$hit_pattern_ids" ]]; then
       # does NOT see a floating locator action. Type-aware no-floating-promises is what catches #16.
       '#16') _lintable="$_lintable $_id(@typescript-eslint/no-floating-promises, type-aware)" ;;
       '#8a') _lintable="$_lintable $_id(playwright/no-unused-locators)" ;;
+      '#8c') _lintable="$_lintable $_id(playwright/valid-expect)" ;;
       '#4f') _lintable="$_lintable $_id(playwright/no-unnecessary-assertions, partial)" ;;
       '#4c'|'#4d'|'#4e'|'#4c-4e') _lintable="$_lintable $_id(playwright/prefer-web-first-assertions)" ;;
       '#17') _lintable="$_lintable $_id(playwright/prefer-locator)" ;;

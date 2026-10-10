@@ -1,0 +1,1699 @@
+{
+  "scores_sha256": "4299b0110ebea31f0ed5e1bc1b6bf8e4801b03176384cebcb74a3c151614e4d7",
+  "freeze_sha256": "69e189a1b8612f78e06d5923e788cc95e13487a02b46e60fc19eced7d37116fd",
+  "entries": [
+    {
+      "call_id": "response-before-render-before-r1",
+      "status": "VERIFIED",
+      "primary_causal_dom_kill": true,
+      "synchronous_covered": true,
+      "disabled_covered": true,
+      "synchronous_guard_killed": true,
+      "disabled_guard_killed": true,
+      "evidence": [
+        {
+          "kind": "primary_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 16,
+          "source_sha256": "9b9c19e582bedfe5edf5c1715f8778a274946f771a59bbe656c823392f38f1dc",
+          "raw_path": "scores-third-raw/raw-0004.json",
+          "raw_sha256": "4f9b9e889734d8f5f98ec4f3e2bf5763abda0df517bd0d81734f9b6b34ff5626",
+          "reason": "Sole failed test is async fewer keeps the value at the minimum after the update commits; error at the intended Async value assertion, not setup or unrelated test.",
+          "failure_title": "async fewer keeps the value at the minimum after the update commits"
+        },
+        {
+          "kind": "primary_dom_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 16,
+          "source_sha256": "9b9c19e582bedfe5edf5c1715f8778a274946f771a59bbe656c823392f38f1dc",
+          "raw_path": "scores-third-raw/raw-0004-trace-1.zip",
+          "raw_sha256": "505aca6b45dd6bd187a5e5e0eca4f9fe8c3167af6dbd1afdc8c2bc5d333e6d02",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@45",
+            "source_line": 16,
+            "start_ms": 1673.958,
+            "end_ms": 3178.063,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "synchronous-below-minimum_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 32,
+          "source_sha256": "9b9c19e582bedfe5edf5c1715f8778a274946f771a59bbe656c823392f38f1dc",
+          "raw_path": "scores-third-raw/raw-0005.json",
+          "raw_sha256": "69a2aa0c4ad427f99c5a1e82aa17309eeda8bd92ebcc3c70fe14a91865929ff0",
+          "reason": "Sole failed test is sync fewer clamps at the minimum without sending a request; error at the intended Sync value assertion, not setup or unrelated test.",
+          "failure_title": "sync fewer clamps at the minimum without sending a request"
+        },
+        {
+          "kind": "synchronous-below-minimum_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 32,
+          "source_sha256": "9b9c19e582bedfe5edf5c1715f8778a274946f771a59bbe656c823392f38f1dc",
+          "raw_path": "scores-third-raw/raw-0005-trace-3.zip",
+          "raw_sha256": "f09b8d615fb0c0c5f674f180856200d7e4b980bc206f9cbcf4517c975e47019c",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@34",
+            "source_line": 32,
+            "start_ms": 1776.406,
+            "end_ms": 3284.133,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "disabled-enabled_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 40,
+          "source_sha256": "9b9c19e582bedfe5edf5c1715f8778a274946f771a59bbe656c823392f38f1dc",
+          "raw_path": "scores-third-raw/raw-0006.json",
+          "raw_sha256": "3dde823ca6ead464812671ddc68027543750c18bc294e4e8784e916aa7ee8e26",
+          "reason": "Sole failed test is disabled fewer stays disabled at the minimum value; error at the intended Disabled fewer assertion, not setup or unrelated test.",
+          "failure_title": "disabled fewer stays disabled at the minimum value"
+        },
+        {
+          "kind": "disabled-enabled_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 40,
+          "source_sha256": "9b9c19e582bedfe5edf5c1715f8778a274946f771a59bbe656c823392f38f1dc",
+          "raw_path": "scores-third-raw/raw-0006-trace-2.zip",
+          "raw_sha256": "0d1cd915102cb8a7d923dac3e4a409156b7d8d13aee9aeada6f3740d95c1fd21",
+          "reason": "Trace fails toBeDisabled because the intended disabled button is enabled.",
+          "trace_event": {
+            "call_id": "expect@32",
+            "source_line": 40,
+            "start_ms": 1877.621,
+            "end_ms": 3385.687,
+            "title": "Expect \"toBeDisabled\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "completion_gate",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 15,
+          "source_sha256": "9b9c19e582bedfe5edf5c1715f8778a274946f771a59bbe656c823392f38f1dc",
+          "raw_path": "scores-third-raw/raw-0004-trace-1.zip",
+          "raw_sha256": "505aca6b45dd6bd187a5e5e0eca4f9fe8c3167af6dbd1afdc8c2bc5d333e6d02",
+          "reason": "Fresh page has one Async fewer click; its Update 1 complete gate succeeds before the final DOM assertion starts. The same trace logs committed request id1 with DOM value0.",
+          "action_trace_event": {
+            "call_id": "pw:api@42",
+            "source_line": 11,
+            "start_ms": 899.02,
+            "end_ms": 967.731,
+            "title": "Click getByRole('region', { name: 'Async control', exact: true }).getByRole('button', { name: 'Async fewer' })",
+            "error": false
+          },
+          "completion_trace_event": {
+            "call_id": "expect@44",
+            "source_line": 15,
+            "start_ms": 970.28,
+            "end_ms": 1673.39,
+            "title": "Expect \"toHaveText\"",
+            "error": false
+          },
+          "commit_console_event": {
+            "time_ms": 1670.323,
+            "text": "UNCHANGED_COMMIT {\"id\":1,\"value\":\"0\"}"
+          }
+        },
+        {
+          "kind": "synchronous_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 32,
+          "source_sha256": "9b9c19e582bedfe5edf5c1715f8778a274946f771a59bbe656c823392f38f1dc",
+          "raw_path": "scores-third-raw/raw-0001.json",
+          "raw_sha256": "3ad9c48308003a860d8e50e8f181e2667ce43c300035427cfc0aa02ac74b5299",
+          "reason": "Clean suite passes the sync click, final value1, and no-/api/fewer assertion; source and matching sync mutant establish coverage.",
+          "action_source_line": 30
+        },
+        {
+          "kind": "disabled_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 41,
+          "source_sha256": "9b9c19e582bedfe5edf5c1715f8778a274946f771a59bbe656c823392f38f1dc",
+          "raw_path": "scores-third-raw/raw-0001.json",
+          "raw_sha256": "3ad9c48308003a860d8e50e8f181e2667ce43c300035427cfc0aa02ac74b5299",
+          "reason": "Clean suite passes disabled-state and boundary value1 assertions with no forced click; matching enabled mutant fails toBeDisabled.",
+          "disabled_state_source_line": 40
+        }
+      ]
+    },
+    {
+      "call_id": "response-before-render-after-r1",
+      "status": "VERIFIED",
+      "primary_causal_dom_kill": true,
+      "synchronous_covered": true,
+      "disabled_covered": true,
+      "synchronous_guard_killed": true,
+      "disabled_guard_killed": true,
+      "evidence": [
+        {
+          "kind": "primary_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 23,
+          "source_sha256": "cfbbf2dc222c53e21a74dee245f3a06b208b18d2f181afb75009196a1dcc9c3d",
+          "raw_path": "scores-third-raw/raw-0011.json",
+          "raw_sha256": "65bf6da596a512733b30508697649350b82c0605efe499d7b03ab1e20a22c02a",
+          "reason": "Sole failed test is async fewer keeps the value at the minimum after the update completes; error at the intended Async value assertion, not setup or unrelated test.",
+          "failure_title": "async fewer keeps the value at the minimum after the update completes"
+        },
+        {
+          "kind": "primary_dom_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 23,
+          "source_sha256": "cfbbf2dc222c53e21a74dee245f3a06b208b18d2f181afb75009196a1dcc9c3d",
+          "raw_path": "scores-third-raw/raw-0011-trace-1.zip",
+          "raw_sha256": "585ace851c9cb0c98bb57798c3fbacea040ab5b9169b0b3dd09f030b595fb06a",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@47",
+            "source_line": 23,
+            "start_ms": 1652.566,
+            "end_ms": 3161.881,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "synchronous-below-minimum_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 38,
+          "source_sha256": "cfbbf2dc222c53e21a74dee245f3a06b208b18d2f181afb75009196a1dcc9c3d",
+          "raw_path": "scores-third-raw/raw-0012.json",
+          "raw_sha256": "d3be3e0d445700fb0ca29ea3bf9b1584ef5cb5a2307ec074de1057abb9d2cb76",
+          "reason": "Sole failed test is sync fewer clamps at the minimum without a request; error at the intended Sync value assertion, not setup or unrelated test.",
+          "failure_title": "sync fewer clamps at the minimum without a request"
+        },
+        {
+          "kind": "synchronous-below-minimum_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 38,
+          "source_sha256": "cfbbf2dc222c53e21a74dee245f3a06b208b18d2f181afb75009196a1dcc9c3d",
+          "raw_path": "scores-third-raw/raw-0012-trace-3.zip",
+          "raw_sha256": "0444a393a5069553f78452186d6fe6b3a2e1947f5722df9f819ed0394a801b81",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@34",
+            "source_line": 38,
+            "start_ms": 1789.439,
+            "end_ms": 3305.983,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "disabled-enabled_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 46,
+          "source_sha256": "cfbbf2dc222c53e21a74dee245f3a06b208b18d2f181afb75009196a1dcc9c3d",
+          "raw_path": "scores-third-raw/raw-0013.json",
+          "raw_sha256": "08afcbacef4552f1365e93a5e225979a573a9ec4138161d0af610de191f24357",
+          "reason": "Sole failed test is disabled fewer is disabled at the minimum and remains at the minimum; error at the intended Disabled fewer assertion, not setup or unrelated test.",
+          "failure_title": "disabled fewer is disabled at the minimum and remains at the minimum"
+        },
+        {
+          "kind": "disabled-enabled_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 46,
+          "source_sha256": "cfbbf2dc222c53e21a74dee245f3a06b208b18d2f181afb75009196a1dcc9c3d",
+          "raw_path": "scores-third-raw/raw-0013-trace-2.zip",
+          "raw_sha256": "976b6566a8f053b95941ebae4ffff825b0e6ddf8c9aa9329b86f002213f057ed",
+          "reason": "Trace fails toBeDisabled because the intended disabled button is enabled.",
+          "trace_event": {
+            "call_id": "expect@33",
+            "source_line": 46,
+            "start_ms": 1945.572,
+            "end_ms": 3450.098,
+            "title": "Expect \"toBeDisabled\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "completion_gate",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 22,
+          "source_sha256": "cfbbf2dc222c53e21a74dee245f3a06b208b18d2f181afb75009196a1dcc9c3d",
+          "raw_path": "scores-third-raw/raw-0011-trace-1.zip",
+          "raw_sha256": "585ace851c9cb0c98bb57798c3fbacea040ab5b9169b0b3dd09f030b595fb06a",
+          "reason": "Fresh page has one Async fewer click; its Update 1 complete gate succeeds before the final DOM assertion starts. The same trace logs committed request id1 with DOM value0.",
+          "action_trace_event": {
+            "call_id": "pw:api@43",
+            "source_line": 17,
+            "start_ms": 882.75,
+            "end_ms": 944.997,
+            "title": "Click getByRole('button', { name: 'Async fewer', exact: true })",
+            "error": false
+          },
+          "completion_trace_event": {
+            "call_id": "expect@46",
+            "source_line": 22,
+            "start_ms": 948.118,
+            "end_ms": 1652.1,
+            "title": "Expect \"toHaveText\"",
+            "error": false
+          },
+          "commit_console_event": {
+            "time_ms": 1647.224,
+            "text": "UNCHANGED_COMMIT {\"id\":1,\"value\":\"0\"}"
+          }
+        },
+        {
+          "kind": "synchronous_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 38,
+          "source_sha256": "cfbbf2dc222c53e21a74dee245f3a06b208b18d2f181afb75009196a1dcc9c3d",
+          "raw_path": "scores-third-raw/raw-0008.json",
+          "raw_sha256": "7d9da70b7ddeed594439a3f9fd19776a0d69eed149ff36e5aa81ce7543dd12a0",
+          "reason": "Clean suite passes the sync click, final value1, and no-/api/fewer assertion; source and matching sync mutant establish coverage.",
+          "action_source_line": 36
+        },
+        {
+          "kind": "disabled_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 47,
+          "source_sha256": "cfbbf2dc222c53e21a74dee245f3a06b208b18d2f181afb75009196a1dcc9c3d",
+          "raw_path": "scores-third-raw/raw-0008.json",
+          "raw_sha256": "7d9da70b7ddeed594439a3f9fd19776a0d69eed149ff36e5aa81ce7543dd12a0",
+          "reason": "Clean suite passes disabled-state and boundary value1 assertions with no forced click; matching enabled mutant fails toBeDisabled.",
+          "disabled_state_source_line": 46
+        }
+      ]
+    },
+    {
+      "call_id": "response-before-render-before-r2",
+      "status": "VERIFIED",
+      "primary_causal_dom_kill": true,
+      "synchronous_covered": true,
+      "disabled_covered": true,
+      "synchronous_guard_killed": true,
+      "disabled_guard_killed": true,
+      "evidence": [
+        {
+          "kind": "primary_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 22,
+          "source_sha256": "dac9784d5290ccd140a42be776ef5ad422d1caf02f32681bea9b339d07338a65",
+          "raw_path": "scores-third-raw/raw-0018.json",
+          "raw_sha256": "1e7383d74acde998363605aea5fab7dee554fda1bfa8b0db204b38e170b45111",
+          "reason": "Sole failed test is async decrement stays at the minimum after the update completes; error at the intended Async value assertion, not setup or unrelated test.",
+          "failure_title": "async decrement stays at the minimum after the update completes"
+        },
+        {
+          "kind": "primary_dom_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 22,
+          "source_sha256": "dac9784d5290ccd140a42be776ef5ad422d1caf02f32681bea9b339d07338a65",
+          "raw_path": "scores-third-raw/raw-0018-trace-1.zip",
+          "raw_sha256": "eaa499302b013c0e02b803efea51690feedce29cc85f8aa6ac8fa32180088a37",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@45",
+            "source_line": 22,
+            "start_ms": 1658.049,
+            "end_ms": 3163.647,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "synchronous-below-minimum_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 39,
+          "source_sha256": "dac9784d5290ccd140a42be776ef5ad422d1caf02f32681bea9b339d07338a65",
+          "raw_path": "scores-third-raw/raw-0019.json",
+          "raw_sha256": "9bf1edb53931ec12d54f7677b14b4fc4a897cabbbea6da89ff599387c265e3ba",
+          "reason": "Sole failed test is sync decrement clamps at the minimum without a request; error at the intended Sync value assertion, not setup or unrelated test.",
+          "failure_title": "sync decrement clamps at the minimum without a request"
+        },
+        {
+          "kind": "synchronous-below-minimum_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 39,
+          "source_sha256": "dac9784d5290ccd140a42be776ef5ad422d1caf02f32681bea9b339d07338a65",
+          "raw_path": "scores-third-raw/raw-0019-trace-3.zip",
+          "raw_sha256": "5dcff1f4729e471b2ea50b6912ae1be7d68b05b23e9bc1423f7e302e56d68435",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@33",
+            "source_line": 39,
+            "start_ms": 1792.6,
+            "end_ms": 3323.279,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "disabled-enabled_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 48,
+          "source_sha256": "dac9784d5290ccd140a42be776ef5ad422d1caf02f32681bea9b339d07338a65",
+          "raw_path": "scores-third-raw/raw-0020.json",
+          "raw_sha256": "bef1050d8a27ff6ea9273fa70ea77afc11981026ba58fa588267c30e771d7881",
+          "reason": "Sole failed test is disabled decrement remains disabled at the minimum; error at the intended Disabled fewer assertion, not setup or unrelated test.",
+          "failure_title": "disabled decrement remains disabled at the minimum"
+        },
+        {
+          "kind": "disabled-enabled_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 48,
+          "source_sha256": "dac9784d5290ccd140a42be776ef5ad422d1caf02f32681bea9b339d07338a65",
+          "raw_path": "scores-third-raw/raw-0020-trace-2.zip",
+          "raw_sha256": "e8155c7896680f8e990eb791c3e1bc49f627d9901da7c41f159cc7e1c7f887a2",
+          "reason": "Trace fails toBeDisabled because the intended disabled button is enabled.",
+          "trace_event": {
+            "call_id": "expect@32",
+            "source_line": 48,
+            "start_ms": 1881.254,
+            "end_ms": 3385.99,
+            "title": "Expect \"toBeDisabled\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "completion_gate",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 21,
+          "source_sha256": "dac9784d5290ccd140a42be776ef5ad422d1caf02f32681bea9b339d07338a65",
+          "raw_path": "scores-third-raw/raw-0018-trace-1.zip",
+          "raw_sha256": "eaa499302b013c0e02b803efea51690feedce29cc85f8aa6ac8fa32180088a37",
+          "reason": "Fresh page has one Async fewer click; its Update 1 complete gate succeeds before the final DOM assertion starts. The same trace logs committed request id1 with DOM value0.",
+          "action_trace_event": {
+            "call_id": "pw:api@42",
+            "source_line": 19,
+            "start_ms": 874.532,
+            "end_ms": 942.268,
+            "title": "Click getByRole('region', { name: 'Async control', exact: true }).getByRole('button', { name: 'Async fewer' })",
+            "error": false
+          },
+          "completion_trace_event": {
+            "call_id": "expect@44",
+            "source_line": 21,
+            "start_ms": 944.328,
+            "end_ms": 1657.443,
+            "title": "Expect \"toHaveText\"",
+            "error": false
+          },
+          "commit_console_event": {
+            "time_ms": 1645.458,
+            "text": "UNCHANGED_COMMIT {\"id\":1,\"value\":\"0\"}"
+          }
+        },
+        {
+          "kind": "synchronous_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 39,
+          "source_sha256": "dac9784d5290ccd140a42be776ef5ad422d1caf02f32681bea9b339d07338a65",
+          "raw_path": "scores-third-raw/raw-0015.json",
+          "raw_sha256": "5382fda17906f379f672ce7f9979fb7ebdc1fd2811af8c910cf1f9a93bbc68e5",
+          "reason": "Clean suite passes the sync click, final value1, and no-/api/fewer assertion; source and matching sync mutant establish coverage.",
+          "action_source_line": 38
+        },
+        {
+          "kind": "disabled_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 49,
+          "source_sha256": "dac9784d5290ccd140a42be776ef5ad422d1caf02f32681bea9b339d07338a65",
+          "raw_path": "scores-third-raw/raw-0015.json",
+          "raw_sha256": "5382fda17906f379f672ce7f9979fb7ebdc1fd2811af8c910cf1f9a93bbc68e5",
+          "reason": "Clean suite passes disabled-state and boundary value1 assertions with no forced click; matching enabled mutant fails toBeDisabled.",
+          "disabled_state_source_line": 48
+        }
+      ]
+    },
+    {
+      "call_id": "response-before-render-after-r2",
+      "status": "VERIFIED",
+      "primary_causal_dom_kill": true,
+      "synchronous_covered": true,
+      "disabled_covered": true,
+      "synchronous_guard_killed": true,
+      "disabled_guard_killed": true,
+      "evidence": [
+        {
+          "kind": "primary_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 20,
+          "source_sha256": "422b5644c57e3877ad785c29c239df9b5135e1817c9f30475df7e68d8e3e93a4",
+          "raw_path": "scores-third-raw/raw-0025.json",
+          "raw_sha256": "455d43b064c84f460eca4abaac86c155ab057a2c022e14f749830580a9d0a507",
+          "reason": "Sole failed test is async fewer stays at the minimum after the update completes; error at the intended Async value assertion, not setup or unrelated test.",
+          "failure_title": "async fewer stays at the minimum after the update completes"
+        },
+        {
+          "kind": "primary_dom_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 20,
+          "source_sha256": "422b5644c57e3877ad785c29c239df9b5135e1817c9f30475df7e68d8e3e93a4",
+          "raw_path": "scores-third-raw/raw-0025-trace-1.zip",
+          "raw_sha256": "65012ab6109c42bdc17f7bcbe17d9c1b3aa95fb0cadee850ea6c9364ee21418e",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@44",
+            "source_line": 20,
+            "start_ms": 1653.179,
+            "end_ms": 3164.042,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "synchronous-below-minimum_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 36,
+          "source_sha256": "422b5644c57e3877ad785c29c239df9b5135e1817c9f30475df7e68d8e3e93a4",
+          "raw_path": "scores-third-raw/raw-0026.json",
+          "raw_sha256": "bcd6393565ee975552035a55f0093efb436964ac2d595ab6dc7d9f4148d0a497",
+          "reason": "Sole failed test is sync fewer clamps at the minimum without a request; error at the intended Sync value assertion, not setup or unrelated test.",
+          "failure_title": "sync fewer clamps at the minimum without a request"
+        },
+        {
+          "kind": "synchronous-below-minimum_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 36,
+          "source_sha256": "422b5644c57e3877ad785c29c239df9b5135e1817c9f30475df7e68d8e3e93a4",
+          "raw_path": "scores-third-raw/raw-0026-trace-3.zip",
+          "raw_sha256": "3ea5721752e903ff4788febe4463a22a1b9f5532f360d8ea3be3fe07e964f809",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@33",
+            "source_line": 36,
+            "start_ms": 1762.681,
+            "end_ms": 3270.26,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "disabled-enabled_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 44,
+          "source_sha256": "422b5644c57e3877ad785c29c239df9b5135e1817c9f30475df7e68d8e3e93a4",
+          "raw_path": "scores-third-raw/raw-0027.json",
+          "raw_sha256": "d4935b7ee2d59c64aad57fec635d2a350a17a78477302bd761b09354f6faf361",
+          "reason": "Sole failed test is disabled fewer remains disabled at the minimum; error at the intended Disabled fewer assertion, not setup or unrelated test.",
+          "failure_title": "disabled fewer remains disabled at the minimum"
+        },
+        {
+          "kind": "disabled-enabled_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 44,
+          "source_sha256": "422b5644c57e3877ad785c29c239df9b5135e1817c9f30475df7e68d8e3e93a4",
+          "raw_path": "scores-third-raw/raw-0027-trace-2.zip",
+          "raw_sha256": "953df5d2543fbc312ccca3bb5ef0c983401a3abc1842441367741804458e41e6",
+          "reason": "Trace fails toBeDisabled because the intended disabled button is enabled.",
+          "trace_event": {
+            "call_id": "expect@32",
+            "source_line": 44,
+            "start_ms": 1876.454,
+            "end_ms": 3390.946,
+            "title": "Expect \"toBeDisabled\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "completion_gate",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 19,
+          "source_sha256": "422b5644c57e3877ad785c29c239df9b5135e1817c9f30475df7e68d8e3e93a4",
+          "raw_path": "scores-third-raw/raw-0025-trace-1.zip",
+          "raw_sha256": "65012ab6109c42bdc17f7bcbe17d9c1b3aa95fb0cadee850ea6c9364ee21418e",
+          "reason": "Fresh page has one Async fewer click; its Update 1 complete gate succeeds before the final DOM assertion starts. The same trace logs committed request id1 with DOM value0.",
+          "action_trace_event": {
+            "call_id": "pw:api@42",
+            "source_line": 17,
+            "start_ms": 884.428,
+            "end_ms": 944.701,
+            "title": "Click getByRole('region', { name: 'Async control', exact: true }).getByRole('button', { name: 'Async fewer' })",
+            "error": false
+          },
+          "completion_trace_event": {
+            "call_id": "expect@43",
+            "source_line": 19,
+            "start_ms": 946.479,
+            "end_ms": 1652.143,
+            "title": "Expect \"toHaveText\"",
+            "error": false
+          },
+          "commit_console_event": {
+            "time_ms": 1646.844,
+            "text": "UNCHANGED_COMMIT {\"id\":1,\"value\":\"0\"}"
+          }
+        },
+        {
+          "kind": "synchronous_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 36,
+          "source_sha256": "422b5644c57e3877ad785c29c239df9b5135e1817c9f30475df7e68d8e3e93a4",
+          "raw_path": "scores-third-raw/raw-0022.json",
+          "raw_sha256": "c74d768ac2531f4d2281a447ecc72cd59f2915f4e676ebaa9408304f181a1317",
+          "reason": "Clean suite passes the sync click, final value1, and no-/api/fewer assertion; source and matching sync mutant establish coverage.",
+          "action_source_line": 35
+        },
+        {
+          "kind": "disabled_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 45,
+          "source_sha256": "422b5644c57e3877ad785c29c239df9b5135e1817c9f30475df7e68d8e3e93a4",
+          "raw_path": "scores-third-raw/raw-0022.json",
+          "raw_sha256": "c74d768ac2531f4d2281a447ecc72cd59f2915f4e676ebaa9408304f181a1317",
+          "reason": "Clean suite passes disabled-state and boundary value1 assertions with no forced click; matching enabled mutant fails toBeDisabled.",
+          "disabled_state_source_line": 44
+        }
+      ]
+    },
+    {
+      "call_id": "response-before-render-before-r3",
+      "status": "VERIFIED",
+      "primary_causal_dom_kill": true,
+      "synchronous_covered": true,
+      "disabled_covered": true,
+      "synchronous_guard_killed": true,
+      "disabled_guard_killed": true,
+      "evidence": [
+        {
+          "kind": "primary_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 21,
+          "source_sha256": "7a41bfd68da878d82568db79fa1889144ee2465b8ab880ad7af4a9b40fd8b5c3",
+          "raw_path": "scores-third-raw/raw-0032.json",
+          "raw_sha256": "5ded4c2748a7cde33e1578455d116b966a41d3a05473234d3265efe1df272ed2",
+          "reason": "Sole failed test is async fewer keeps the value at 1 after the update finishes; error at the intended Async value assertion, not setup or unrelated test.",
+          "failure_title": "async fewer keeps the value at 1 after the update finishes"
+        },
+        {
+          "kind": "primary_dom_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 21,
+          "source_sha256": "7a41bfd68da878d82568db79fa1889144ee2465b8ab880ad7af4a9b40fd8b5c3",
+          "raw_path": "scores-third-raw/raw-0032-trace-1.zip",
+          "raw_sha256": "a3ff12917d6338b1b2320d0e1c5ed72e944838c849bd11260fb5740c20d4e89b",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@46",
+            "source_line": 21,
+            "start_ms": 1655.343,
+            "end_ms": 3173.074,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "synchronous-below-minimum_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 35,
+          "source_sha256": "7a41bfd68da878d82568db79fa1889144ee2465b8ab880ad7af4a9b40fd8b5c3",
+          "raw_path": "scores-third-raw/raw-0033.json",
+          "raw_sha256": "fecdaf56318eaf86f2f91ff4ae87c696f0285f32dc07522189d2b8cf87b3d196",
+          "reason": "Sole failed test is sync fewer clamps at 1 without a request; error at the intended Sync value assertion, not setup or unrelated test.",
+          "failure_title": "sync fewer clamps at 1 without a request"
+        },
+        {
+          "kind": "synchronous-below-minimum_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 35,
+          "source_sha256": "7a41bfd68da878d82568db79fa1889144ee2465b8ab880ad7af4a9b40fd8b5c3",
+          "raw_path": "scores-third-raw/raw-0033-trace-3.zip",
+          "raw_sha256": "5bd2f36afe71e648c56538d5a142b80c8a275f80a47670e8bf59401ef307071d",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@35",
+            "source_line": 35,
+            "start_ms": 1778.883,
+            "end_ms": 3285.626,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "disabled-enabled_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 42,
+          "source_sha256": "7a41bfd68da878d82568db79fa1889144ee2465b8ab880ad7af4a9b40fd8b5c3",
+          "raw_path": "scores-third-raw/raw-0034.json",
+          "raw_sha256": "18baeb19f865da295cd363e77853877aea5ab421483e80ab342fe1eb92625dbc",
+          "reason": "Sole failed test is disabled fewer stays disabled with value 1; error at the intended Disabled fewer assertion, not setup or unrelated test.",
+          "failure_title": "disabled fewer stays disabled with value 1"
+        },
+        {
+          "kind": "disabled-enabled_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 42,
+          "source_sha256": "7a41bfd68da878d82568db79fa1889144ee2465b8ab880ad7af4a9b40fd8b5c3",
+          "raw_path": "scores-third-raw/raw-0034-trace-2.zip",
+          "raw_sha256": "66f470796db4b69c41afb7d8c9b64285ff7dd169616591e8f7ddc20509406b86",
+          "reason": "Trace fails toBeDisabled because the intended disabled button is enabled.",
+          "trace_event": {
+            "call_id": "expect@33",
+            "source_line": 42,
+            "start_ms": 1829.715,
+            "end_ms": 3337.081,
+            "title": "Expect \"toBeDisabled\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "completion_gate",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 20,
+          "source_sha256": "7a41bfd68da878d82568db79fa1889144ee2465b8ab880ad7af4a9b40fd8b5c3",
+          "raw_path": "scores-third-raw/raw-0032-trace-1.zip",
+          "raw_sha256": "a3ff12917d6338b1b2320d0e1c5ed72e944838c849bd11260fb5740c20d4e89b",
+          "reason": "Fresh page has one Async fewer click; its Update 1 complete gate succeeds before the final DOM assertion starts. The same trace logs committed request id1 with DOM value0.",
+          "action_trace_event": {
+            "call_id": "pw:api@43",
+            "source_line": 16,
+            "start_ms": 882.578,
+            "end_ms": 950.156,
+            "title": "Click getByRole('region', { name: 'Async control', exact: true }).getByRole('button', { name: 'Async fewer' })",
+            "error": false
+          },
+          "completion_trace_event": {
+            "call_id": "expect@45",
+            "source_line": 20,
+            "start_ms": 953.138,
+            "end_ms": 1654.621,
+            "title": "Expect \"toHaveText\"",
+            "error": false
+          },
+          "commit_console_event": {
+            "time_ms": 1653.426,
+            "text": "UNCHANGED_COMMIT {\"id\":1,\"value\":\"0\"}"
+          }
+        },
+        {
+          "kind": "synchronous_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 35,
+          "source_sha256": "7a41bfd68da878d82568db79fa1889144ee2465b8ab880ad7af4a9b40fd8b5c3",
+          "raw_path": "scores-third-raw/raw-0029.json",
+          "raw_sha256": "e6337b96ff11f5ebae16a9773fa878bccaea632e34bfae1af9a43dd894c5de2e",
+          "reason": "Clean suite passes the sync click, final value1, and no-/api/fewer assertion; source and matching sync mutant establish coverage.",
+          "action_source_line": 33
+        },
+        {
+          "kind": "disabled_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 43,
+          "source_sha256": "7a41bfd68da878d82568db79fa1889144ee2465b8ab880ad7af4a9b40fd8b5c3",
+          "raw_path": "scores-third-raw/raw-0029.json",
+          "raw_sha256": "e6337b96ff11f5ebae16a9773fa878bccaea632e34bfae1af9a43dd894c5de2e",
+          "reason": "Clean suite passes disabled-state and boundary value1 assertions with no forced click; matching enabled mutant fails toBeDisabled.",
+          "disabled_state_source_line": 42
+        }
+      ]
+    },
+    {
+      "call_id": "response-before-render-after-r3",
+      "status": "VERIFIED",
+      "primary_causal_dom_kill": true,
+      "synchronous_covered": true,
+      "disabled_covered": true,
+      "synchronous_guard_killed": true,
+      "disabled_guard_killed": true,
+      "evidence": [
+        {
+          "kind": "primary_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 22,
+          "source_sha256": "ac8aa55a8b88a4f8f8ec91ef971edafb37fb14f05527bfa1ca6ea5ef7c34e80c",
+          "raw_path": "scores-third-raw/raw-0039.json",
+          "raw_sha256": "1b5eefbdd36d2bac7232cd493b3c04de60de9048aea604b3d2bd569de607bcc0",
+          "reason": "Sole failed test is async decrement stays at the minimum after update completes; error at the intended Async value assertion, not setup or unrelated test.",
+          "failure_title": "async decrement stays at the minimum after update completes"
+        },
+        {
+          "kind": "primary_dom_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 22,
+          "source_sha256": "ac8aa55a8b88a4f8f8ec91ef971edafb37fb14f05527bfa1ca6ea5ef7c34e80c",
+          "raw_path": "scores-third-raw/raw-0039-trace-1.zip",
+          "raw_sha256": "10d5a2321ffd5c35209d773a9fd23e248bd4cf0fb73156072df2da38aee1cf32",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@46",
+            "source_line": 22,
+            "start_ms": 1645.727,
+            "end_ms": 3151.957,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "synchronous-below-minimum_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 38,
+          "source_sha256": "ac8aa55a8b88a4f8f8ec91ef971edafb37fb14f05527bfa1ca6ea5ef7c34e80c",
+          "raw_path": "scores-third-raw/raw-0040.json",
+          "raw_sha256": "0a57a493974bac5adf4c51273eed20b16666284cdefecf3aad2a1dc155c0c7bd",
+          "reason": "Sole failed test is sync decrement clamps at the minimum without a request; error at the intended Sync value assertion, not setup or unrelated test.",
+          "failure_title": "sync decrement clamps at the minimum without a request"
+        },
+        {
+          "kind": "synchronous-below-minimum_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 38,
+          "source_sha256": "ac8aa55a8b88a4f8f8ec91ef971edafb37fb14f05527bfa1ca6ea5ef7c34e80c",
+          "raw_path": "scores-third-raw/raw-0040-trace-3.zip",
+          "raw_sha256": "f5e7e23116ce8cea770e8eac51f4f886776c05b075fc2242adbcc26dacd19003",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@33",
+            "source_line": 38,
+            "start_ms": 1763.445,
+            "end_ms": 3269.987,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "disabled-enabled_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 47,
+          "source_sha256": "ac8aa55a8b88a4f8f8ec91ef971edafb37fb14f05527bfa1ca6ea5ef7c34e80c",
+          "raw_path": "scores-third-raw/raw-0041.json",
+          "raw_sha256": "e5c8dc9c6e633d6554833f9bf22f3533394d4012b3c19fe713fe5d9a5983cb2b",
+          "reason": "Sole failed test is disabled decrement remains disabled at the minimum; error at the intended Disabled fewer assertion, not setup or unrelated test.",
+          "failure_title": "disabled decrement remains disabled at the minimum"
+        },
+        {
+          "kind": "disabled-enabled_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 47,
+          "source_sha256": "ac8aa55a8b88a4f8f8ec91ef971edafb37fb14f05527bfa1ca6ea5ef7c34e80c",
+          "raw_path": "scores-third-raw/raw-0041-trace-2.zip",
+          "raw_sha256": "20813b867b66d5c67005c53d21aed7427704e1d62cfa2b5e120cf6f1309ef6fc",
+          "reason": "Trace fails toBeDisabled because the intended disabled button is enabled.",
+          "trace_event": {
+            "call_id": "expect@32",
+            "source_line": 47,
+            "start_ms": 1895.185,
+            "end_ms": 3399.634,
+            "title": "Expect \"toBeDisabled\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "completion_gate",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 19,
+          "source_sha256": "ac8aa55a8b88a4f8f8ec91ef971edafb37fb14f05527bfa1ca6ea5ef7c34e80c",
+          "raw_path": "scores-third-raw/raw-0039-trace-1.zip",
+          "raw_sha256": "10d5a2321ffd5c35209d773a9fd23e248bd4cf0fb73156072df2da38aee1cf32",
+          "reason": "Fresh page has one Async fewer click; its Update 1 complete gate succeeds before the final DOM assertion starts. The same trace logs committed request id1 with DOM value0.",
+          "action_trace_event": {
+            "call_id": "pw:api@42",
+            "source_line": 16,
+            "start_ms": 874.01,
+            "end_ms": 934.377,
+            "title": "Click getByRole('region', { name: 'Async control', exact: true }).getByRole('button', { name: 'Async fewer' })",
+            "error": false
+          },
+          "completion_trace_event": {
+            "call_id": "expect@43",
+            "source_line": 19,
+            "start_ms": 936.341,
+            "end_ms": 1643.144,
+            "title": "Expect \"toHaveText\"",
+            "error": false
+          },
+          "commit_console_event": {
+            "time_ms": 1637.897,
+            "text": "UNCHANGED_COMMIT {\"id\":1,\"value\":\"0\"}"
+          }
+        },
+        {
+          "kind": "synchronous_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 38,
+          "source_sha256": "ac8aa55a8b88a4f8f8ec91ef971edafb37fb14f05527bfa1ca6ea5ef7c34e80c",
+          "raw_path": "scores-third-raw/raw-0036.json",
+          "raw_sha256": "3652d3f72d98c9867b3e3a4385a47857c7b175a08efc67a2fb8560173e965a91",
+          "reason": "Clean suite passes the sync click, final value1, and no-/api/fewer assertion; source and matching sync mutant establish coverage.",
+          "action_source_line": 36
+        },
+        {
+          "kind": "disabled_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 48,
+          "source_sha256": "ac8aa55a8b88a4f8f8ec91ef971edafb37fb14f05527bfa1ca6ea5ef7c34e80c",
+          "raw_path": "scores-third-raw/raw-0036.json",
+          "raw_sha256": "3652d3f72d98c9867b3e3a4385a47857c7b175a08efc67a2fb8560173e965a91",
+          "reason": "Clean suite passes disabled-state and boundary value1 assertions with no forced click; matching enabled mutant fails toBeDisabled.",
+          "disabled_state_source_line": 47
+        }
+      ]
+    },
+    {
+      "call_id": "async-boundary-before-r1",
+      "status": "VERIFIED",
+      "primary_causal_dom_kill": true,
+      "synchronous_covered": true,
+      "disabled_covered": true,
+      "synchronous_guard_killed": true,
+      "disabled_guard_killed": true,
+      "evidence": [
+        {
+          "kind": "primary_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 16,
+          "source_sha256": "722aa3e129367c6eb8c634b3f824df42f80b517214d4b59cf0a7b42d75cbfa09",
+          "raw_path": "scores-third-raw/raw-0046.json",
+          "raw_sha256": "a3943d500ba271b771c815a42f9d00e5ffdd99cef7afce87c1799836e2fa929d",
+          "reason": "Sole failed test is async decrement keeps the minimum after the update completes; error at the intended Async value assertion, not setup or unrelated test.",
+          "failure_title": "async decrement keeps the minimum after the update completes"
+        },
+        {
+          "kind": "primary_dom_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 16,
+          "source_sha256": "722aa3e129367c6eb8c634b3f824df42f80b517214d4b59cf0a7b42d75cbfa09",
+          "raw_path": "scores-third-raw/raw-0046-trace-1.zip",
+          "raw_sha256": "ab4b2d13a3d99d89f8cc7561c23346ad5a07ba27c9bb363f962490e5fbe71cca",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@44",
+            "source_line": 16,
+            "start_ms": 1753.412,
+            "end_ms": 3262.628,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "synchronous-below-minimum_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 26,
+          "source_sha256": "722aa3e129367c6eb8c634b3f824df42f80b517214d4b59cf0a7b42d75cbfa09",
+          "raw_path": "scores-third-raw/raw-0047.json",
+          "raw_sha256": "f31a02ec362b41e0d4e7276570c379d378e33e1831541a88e5551ed14c19e45d",
+          "reason": "Sole failed test is sync decrement clamps at the minimum without a request; error at the intended Sync value assertion, not setup or unrelated test.",
+          "failure_title": "sync decrement clamps at the minimum without a request"
+        },
+        {
+          "kind": "synchronous-below-minimum_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 26,
+          "source_sha256": "722aa3e129367c6eb8c634b3f824df42f80b517214d4b59cf0a7b42d75cbfa09",
+          "raw_path": "scores-third-raw/raw-0047-trace-3.zip",
+          "raw_sha256": "e35a308641f406069b7aed2ff6c6895c74fe3d1f7ddf2c55141680996fb6b2f2",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@34",
+            "source_line": 26,
+            "start_ms": 1877.437,
+            "end_ms": 3388.711,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "disabled-enabled_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 34,
+          "source_sha256": "722aa3e129367c6eb8c634b3f824df42f80b517214d4b59cf0a7b42d75cbfa09",
+          "raw_path": "scores-third-raw/raw-0048.json",
+          "raw_sha256": "8b894a591076e7c18cf8b3a9df05dd2df705a25af21de48655ef8492f8484140",
+          "reason": "Sole failed test is disabled decrement stays disabled at the minimum; error at the intended Disabled fewer assertion, not setup or unrelated test.",
+          "failure_title": "disabled decrement stays disabled at the minimum"
+        },
+        {
+          "kind": "disabled-enabled_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 34,
+          "source_sha256": "722aa3e129367c6eb8c634b3f824df42f80b517214d4b59cf0a7b42d75cbfa09",
+          "raw_path": "scores-third-raw/raw-0048-trace-2.zip",
+          "raw_sha256": "31d16e707dd4a79b8ac56fccfce7cdcb1269919f04c1e6c72c8e3d2489c0785a",
+          "reason": "Trace fails toBeDisabled because the intended disabled button is enabled.",
+          "trace_event": {
+            "call_id": "expect@32",
+            "source_line": 34,
+            "start_ms": 2912.864,
+            "end_ms": 4425.563,
+            "title": "Expect \"toBeDisabled\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "completion_gate",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 15,
+          "source_sha256": "722aa3e129367c6eb8c634b3f824df42f80b517214d4b59cf0a7b42d75cbfa09",
+          "raw_path": "scores-third-raw/raw-0046-trace-1.zip",
+          "raw_sha256": "ab4b2d13a3d99d89f8cc7561c23346ad5a07ba27c9bb363f962490e5fbe71cca",
+          "reason": "Fresh page has one Async fewer click; its Update 1 complete gate succeeds before the final DOM assertion starts. The same trace logs committed request id1 with DOM value0.",
+          "action_trace_event": {
+            "call_id": "pw:api@42",
+            "source_line": 13,
+            "start_ms": 875.876,
+            "end_ms": 940.434,
+            "title": "Click getByRole('region', { name: 'Async control', exact: true }).getByRole('button', { name: 'Async fewer' })",
+            "error": false
+          },
+          "completion_trace_event": {
+            "call_id": "expect@43",
+            "source_line": 15,
+            "start_ms": 942.24,
+            "end_ms": 1752.97,
+            "title": "Expect \"toHaveText\"",
+            "error": false
+          },
+          "commit_console_event": {
+            "time_ms": 1715.04,
+            "text": "UNCHANGED_COMMIT {\"id\":1,\"value\":\"0\"}"
+          }
+        },
+        {
+          "kind": "synchronous_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 26,
+          "source_sha256": "722aa3e129367c6eb8c634b3f824df42f80b517214d4b59cf0a7b42d75cbfa09",
+          "raw_path": "scores-third-raw/raw-0043.json",
+          "raw_sha256": "271677562c771d4e71bdd7a1288e3474ed538eb1da27a6bb9d20f666fe91ff6c",
+          "reason": "Clean suite passes the sync click, final value1, and no-/api/fewer assertion; source and matching sync mutant establish coverage.",
+          "action_source_line": 25
+        },
+        {
+          "kind": "disabled_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 35,
+          "source_sha256": "722aa3e129367c6eb8c634b3f824df42f80b517214d4b59cf0a7b42d75cbfa09",
+          "raw_path": "scores-third-raw/raw-0043.json",
+          "raw_sha256": "271677562c771d4e71bdd7a1288e3474ed538eb1da27a6bb9d20f666fe91ff6c",
+          "reason": "Clean suite passes disabled-state and boundary value1 assertions with no forced click; matching enabled mutant fails toBeDisabled.",
+          "disabled_state_source_line": 34
+        }
+      ]
+    },
+    {
+      "call_id": "async-boundary-after-r1",
+      "status": "VERIFIED",
+      "primary_causal_dom_kill": true,
+      "synchronous_covered": true,
+      "disabled_covered": true,
+      "synchronous_guard_killed": true,
+      "disabled_guard_killed": true,
+      "evidence": [
+        {
+          "kind": "primary_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 25,
+          "source_sha256": "acbc4fd0f69d1725777c2feee6747577656a0690ffa4dbab23df274a08bf4b94",
+          "raw_path": "scores-third-raw/raw-0053.json",
+          "raw_sha256": "6a8003136a6f99d06a66507079bb61e48ef85f9675505ab2ddf455f6a267f9d6",
+          "reason": "Sole failed test is enabled async decrement stays at the minimum after its update finishes; error at the intended Async value assertion, not setup or unrelated test.",
+          "failure_title": "enabled async decrement stays at the minimum after its update finishes"
+        },
+        {
+          "kind": "primary_dom_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 25,
+          "source_sha256": "acbc4fd0f69d1725777c2feee6747577656a0690ffa4dbab23df274a08bf4b94",
+          "raw_path": "scores-third-raw/raw-0053-trace-2.zip",
+          "raw_sha256": "a7339397e867fa1bac11bc24aa533c4f51f58828f2a26d427b8d34a8a8a7483a",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@50",
+            "source_line": 25,
+            "start_ms": 1881.577,
+            "end_ms": 3387.922,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "synchronous-below-minimum_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 41,
+          "source_sha256": "acbc4fd0f69d1725777c2feee6747577656a0690ffa4dbab23df274a08bf4b94",
+          "raw_path": "scores-third-raw/raw-0054.json",
+          "raw_sha256": "8e6e23e6fe0449a25a5cccb125d1283e4a35e4f95c840b94875e11ae2b36d6eb",
+          "reason": "Sole failed test is synchronous decrement clamps at the minimum without a request; error at the intended Sync value assertion, not setup or unrelated test.",
+          "failure_title": "synchronous decrement clamps at the minimum without a request"
+        },
+        {
+          "kind": "synchronous-below-minimum_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 41,
+          "source_sha256": "acbc4fd0f69d1725777c2feee6747577656a0690ffa4dbab23df274a08bf4b94",
+          "raw_path": "scores-third-raw/raw-0054-trace-3.zip",
+          "raw_sha256": "4d680d062c0aa6e9b38df5898dc3e4eb96756da85d15ccd03cb85dd6a331c9e3",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@35",
+            "source_line": 41,
+            "start_ms": 1947.831,
+            "end_ms": 3453.273,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "disabled-enabled_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 50,
+          "source_sha256": "acbc4fd0f69d1725777c2feee6747577656a0690ffa4dbab23df274a08bf4b94",
+          "raw_path": "scores-third-raw/raw-0055.json",
+          "raw_sha256": "9d8b36ae0fa15e202999cef3622031d017dec97cfe8e515af53ec309a22e59fd",
+          "reason": "Sole failed test is disabled decrement remains disabled at the minimum; error at the intended Disabled fewer assertion, not setup or unrelated test.",
+          "failure_title": "disabled decrement remains disabled at the minimum"
+        },
+        {
+          "kind": "disabled-enabled_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 50,
+          "source_sha256": "acbc4fd0f69d1725777c2feee6747577656a0690ffa4dbab23df274a08bf4b94",
+          "raw_path": "scores-third-raw/raw-0055-trace-1.zip",
+          "raw_sha256": "05be5e6a80922ea1af7514de08bddaac26b8b3c7716260d1c0d20fa0b9638fcd",
+          "reason": "Trace fails toBeDisabled because the intended disabled button is enabled.",
+          "trace_event": {
+            "call_id": "expect@32",
+            "source_line": 50,
+            "start_ms": 2058.162,
+            "end_ms": 3562.662,
+            "title": "Expect \"toBeDisabled\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "completion_gate",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 24,
+          "source_sha256": "acbc4fd0f69d1725777c2feee6747577656a0690ffa4dbab23df274a08bf4b94",
+          "raw_path": "scores-third-raw/raw-0053-trace-2.zip",
+          "raw_sha256": "a7339397e867fa1bac11bc24aa533c4f51f58828f2a26d427b8d34a8a8a7483a",
+          "reason": "Fresh page has one Async fewer click; its Update 1 complete gate succeeds before the final DOM assertion starts. The same trace logs committed request id1 with DOM value0.",
+          "action_trace_event": {
+            "call_id": "pw:api@44",
+            "source_line": 19,
+            "start_ms": 954.952,
+            "end_ms": 1013.382,
+            "title": "Click getByRole('region', { name: 'Async control', exact: true }).getByRole('button', { name: 'Async fewer' })",
+            "error": false
+          },
+          "completion_trace_event": {
+            "call_id": "expect@49",
+            "source_line": 24,
+            "start_ms": 1386.572,
+            "end_ms": 1881.185,
+            "title": "Expect \"toHaveText\"",
+            "error": false
+          },
+          "commit_console_event": {
+            "time_ms": 1785.186,
+            "text": "UNCHANGED_COMMIT {\"id\":1,\"value\":\"0\"}"
+          }
+        },
+        {
+          "kind": "synchronous_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 41,
+          "source_sha256": "acbc4fd0f69d1725777c2feee6747577656a0690ffa4dbab23df274a08bf4b94",
+          "raw_path": "scores-third-raw/raw-0050.json",
+          "raw_sha256": "36164823adf78776c080ace6461390de614d7b09e74a1dcb24f1667f10fc77ab",
+          "reason": "Clean suite passes the sync click, final value1, and no-/api/fewer assertion; source and matching sync mutant establish coverage.",
+          "action_source_line": 40
+        },
+        {
+          "kind": "disabled_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 51,
+          "source_sha256": "acbc4fd0f69d1725777c2feee6747577656a0690ffa4dbab23df274a08bf4b94",
+          "raw_path": "scores-third-raw/raw-0050.json",
+          "raw_sha256": "36164823adf78776c080ace6461390de614d7b09e74a1dcb24f1667f10fc77ab",
+          "reason": "Clean suite passes disabled-state and boundary value1 assertions with no forced click; matching enabled mutant fails toBeDisabled.",
+          "disabled_state_source_line": 50
+        }
+      ]
+    },
+    {
+      "call_id": "async-boundary-before-r2",
+      "status": "VERIFIED",
+      "primary_causal_dom_kill": true,
+      "synchronous_covered": true,
+      "disabled_covered": true,
+      "synchronous_guard_killed": true,
+      "disabled_guard_killed": true,
+      "evidence": [
+        {
+          "kind": "primary_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 15,
+          "source_sha256": "4b38e1384d2354465dbc61d6cd0cd933f43d7b9c4440e59ad08d384a34100fa6",
+          "raw_path": "scores-third-raw/raw-0060.json",
+          "raw_sha256": "6e4db0431a843b49c8905f2737e7fe2048033850c58b6f35697d35a89e5f3217",
+          "reason": "Sole failed test is async fewer keeps the value at the minimum after the update completes; error at the intended Async value assertion, not setup or unrelated test.",
+          "failure_title": "async fewer keeps the value at the minimum after the update completes"
+        },
+        {
+          "kind": "primary_dom_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 15,
+          "source_sha256": "4b38e1384d2354465dbc61d6cd0cd933f43d7b9c4440e59ad08d384a34100fa6",
+          "raw_path": "scores-third-raw/raw-0060-trace-1.zip",
+          "raw_sha256": "7e3ad48448cd10fc67ee75c7b818066d26ccd2331cc120dd084bc05397c8b3f5",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@46",
+            "source_line": 15,
+            "start_ms": 1790.173,
+            "end_ms": 3295.29,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "synchronous-below-minimum_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 27,
+          "source_sha256": "4b38e1384d2354465dbc61d6cd0cd933f43d7b9c4440e59ad08d384a34100fa6",
+          "raw_path": "scores-third-raw/raw-0061.json",
+          "raw_sha256": "842e2ad6b9ef9af9bae74d009bff93808ee3cf5ea1340ad26cbdd73d9364c61c",
+          "reason": "Sole failed test is sync fewer clamps at the minimum without a request; error at the intended Sync value assertion, not setup or unrelated test.",
+          "failure_title": "sync fewer clamps at the minimum without a request"
+        },
+        {
+          "kind": "synchronous-below-minimum_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 27,
+          "source_sha256": "4b38e1384d2354465dbc61d6cd0cd933f43d7b9c4440e59ad08d384a34100fa6",
+          "raw_path": "scores-third-raw/raw-0061-trace-3.zip",
+          "raw_sha256": "b6613daa63d1175d301e4b5dc5029b6c8ab818edf7f6586505e9fd6a8800d622",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@34",
+            "source_line": 27,
+            "start_ms": 1902.252,
+            "end_ms": 3407.82,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "disabled-enabled_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 34,
+          "source_sha256": "4b38e1384d2354465dbc61d6cd0cd933f43d7b9c4440e59ad08d384a34100fa6",
+          "raw_path": "scores-third-raw/raw-0062.json",
+          "raw_sha256": "721a974a4ebe4e2d8f31dd10c70f69ef928f53f8fa7860b00f9c93f23d2c8e44",
+          "reason": "Sole failed test is disabled fewer stays disabled at the minimum; error at the intended Disabled fewer assertion, not setup or unrelated test.",
+          "failure_title": "disabled fewer stays disabled at the minimum"
+        },
+        {
+          "kind": "disabled-enabled_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 34,
+          "source_sha256": "4b38e1384d2354465dbc61d6cd0cd933f43d7b9c4440e59ad08d384a34100fa6",
+          "raw_path": "scores-third-raw/raw-0062-trace-2.zip",
+          "raw_sha256": "15d0207d865d47f9cb33662d910e539b6994f6b74e210ddf96494dcb71f8b786",
+          "reason": "Trace fails toBeDisabled because the intended disabled button is enabled.",
+          "trace_event": {
+            "call_id": "expect@33",
+            "source_line": 34,
+            "start_ms": 2012.584,
+            "end_ms": 3516.777,
+            "title": "Expect \"toBeDisabled\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "completion_gate",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 13,
+          "source_sha256": "4b38e1384d2354465dbc61d6cd0cd933f43d7b9c4440e59ad08d384a34100fa6",
+          "raw_path": "scores-third-raw/raw-0060-trace-1.zip",
+          "raw_sha256": "7e3ad48448cd10fc67ee75c7b818066d26ccd2331cc120dd084bc05397c8b3f5",
+          "reason": "Fresh page has one Async fewer click; its Update 1 complete gate succeeds before the final DOM assertion starts. The same trace logs committed request id1 with DOM value0.",
+          "action_trace_event": {
+            "call_id": "pw:api@43",
+            "source_line": 11,
+            "start_ms": 918.243,
+            "end_ms": 981.97,
+            "title": "Click getByRole('region', { name: 'Async control', exact: true }).getByRole('button', { name: 'Async fewer' })",
+            "error": false
+          },
+          "completion_trace_event": {
+            "call_id": "expect@44",
+            "source_line": 13,
+            "start_ms": 983.794,
+            "end_ms": 1789.068,
+            "title": "Expect \"toHaveText\"",
+            "error": false
+          },
+          "commit_console_event": {
+            "time_ms": 1757.697,
+            "text": "UNCHANGED_COMMIT {\"id\":1,\"value\":\"0\"}"
+          }
+        },
+        {
+          "kind": "synchronous_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 27,
+          "source_sha256": "4b38e1384d2354465dbc61d6cd0cd933f43d7b9c4440e59ad08d384a34100fa6",
+          "raw_path": "scores-third-raw/raw-0057.json",
+          "raw_sha256": "2062602fd4eaf99f49810ba67d1d341e6cb05a4e933d29918ce396f3cae42a60",
+          "reason": "Clean suite passes the sync click, final value1, and no-/api/fewer assertion; source and matching sync mutant establish coverage.",
+          "action_source_line": 25
+        },
+        {
+          "kind": "disabled_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 35,
+          "source_sha256": "4b38e1384d2354465dbc61d6cd0cd933f43d7b9c4440e59ad08d384a34100fa6",
+          "raw_path": "scores-third-raw/raw-0057.json",
+          "raw_sha256": "2062602fd4eaf99f49810ba67d1d341e6cb05a4e933d29918ce396f3cae42a60",
+          "reason": "Clean suite passes disabled-state and boundary value1 assertions with no forced click; matching enabled mutant fails toBeDisabled.",
+          "disabled_state_source_line": 34
+        }
+      ]
+    },
+    {
+      "call_id": "async-boundary-after-r2",
+      "status": "VERIFIED",
+      "primary_causal_dom_kill": true,
+      "synchronous_covered": true,
+      "disabled_covered": true,
+      "synchronous_guard_killed": true,
+      "disabled_guard_killed": true,
+      "evidence": [
+        {
+          "kind": "primary_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 24,
+          "source_sha256": "de7f27fc030496e9b843d247be1f77c7013d387aea2482319572220ac326a01d",
+          "raw_path": "scores-third-raw/raw-0067.json",
+          "raw_sha256": "7aa611eae49a57269062209f608254bf6ffd13bfa83c8182b054031d6c98864b",
+          "reason": "Sole failed test is async decrement keeps the value at one after the update completes; error at the intended Async value assertion, not setup or unrelated test.",
+          "failure_title": "async decrement keeps the value at one after the update completes"
+        },
+        {
+          "kind": "primary_dom_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 24,
+          "source_sha256": "de7f27fc030496e9b843d247be1f77c7013d387aea2482319572220ac326a01d",
+          "raw_path": "scores-third-raw/raw-0067-trace-2.zip",
+          "raw_sha256": "cd2f414298b4d99467ade5dcd4cf97a09151b0bd5be88b0ca95a0f1785eb7c4f",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@46",
+            "source_line": 24,
+            "start_ms": 1812.793,
+            "end_ms": 3317.77,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "synchronous-below-minimum_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 41,
+          "source_sha256": "de7f27fc030496e9b843d247be1f77c7013d387aea2482319572220ac326a01d",
+          "raw_path": "scores-third-raw/raw-0068.json",
+          "raw_sha256": "47d159c1e09ad5f7e75e8010afdb0f5507202d2cc4af68a75ef892ff48dd12c0",
+          "reason": "Sole failed test is sync decrement clamps at one without sending a request; error at the intended Sync value assertion, not setup or unrelated test.",
+          "failure_title": "sync decrement clamps at one without sending a request"
+        },
+        {
+          "kind": "synchronous-below-minimum_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 41,
+          "source_sha256": "de7f27fc030496e9b843d247be1f77c7013d387aea2482319572220ac326a01d",
+          "raw_path": "scores-third-raw/raw-0068-trace-1.zip",
+          "raw_sha256": "37d639c1535cbb056ef4821e4ccf54ba0f7ed13896d3c7eefe2d576f9d3c5e62",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@34",
+            "source_line": 41,
+            "start_ms": 1914.968,
+            "end_ms": 3425.352,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "disabled-enabled_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 50,
+          "source_sha256": "de7f27fc030496e9b843d247be1f77c7013d387aea2482319572220ac326a01d",
+          "raw_path": "scores-third-raw/raw-0069.json",
+          "raw_sha256": "139a8288c459de510011b0b648ccdfd5bddb9519bf965b2636eaad13c3f17021",
+          "reason": "Sole failed test is disabled decrement remains disabled at one; error at the intended Disabled fewer assertion, not setup or unrelated test.",
+          "failure_title": "disabled decrement remains disabled at one"
+        },
+        {
+          "kind": "disabled-enabled_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 50,
+          "source_sha256": "de7f27fc030496e9b843d247be1f77c7013d387aea2482319572220ac326a01d",
+          "raw_path": "scores-third-raw/raw-0069-trace-3.zip",
+          "raw_sha256": "297a0616ce524296f61937570de9285c8c3deb758fed5e55d1de8ba74dc8988d",
+          "reason": "Trace fails toBeDisabled because the intended disabled button is enabled.",
+          "trace_event": {
+            "call_id": "expect@33",
+            "source_line": 50,
+            "start_ms": 1947.525,
+            "end_ms": 3456.28,
+            "title": "Expect \"toBeDisabled\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "completion_gate",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 23,
+          "source_sha256": "de7f27fc030496e9b843d247be1f77c7013d387aea2482319572220ac326a01d",
+          "raw_path": "scores-third-raw/raw-0067-trace-2.zip",
+          "raw_sha256": "cd2f414298b4d99467ade5dcd4cf97a09151b0bd5be88b0ca95a0f1785eb7c4f",
+          "reason": "Fresh page has one Async fewer click; its Update 1 complete gate succeeds before the final DOM assertion starts. The same trace logs committed request id1 with DOM value0.",
+          "action_trace_event": {
+            "call_id": "pw:api@43",
+            "source_line": 19,
+            "start_ms": 929.324,
+            "end_ms": 1000.941,
+            "title": "Click getByRole('region', { name: 'Async control', exact: true }).getByRole('button', { name: 'Async fewer' })",
+            "error": false
+          },
+          "completion_trace_event": {
+            "call_id": "expect@45",
+            "source_line": 23,
+            "start_ms": 1004.333,
+            "end_ms": 1812.347,
+            "title": "Expect \"toHaveText\"",
+            "error": false
+          },
+          "commit_console_event": {
+            "time_ms": 1778.05,
+            "text": "UNCHANGED_COMMIT {\"id\":1,\"value\":\"0\"}"
+          }
+        },
+        {
+          "kind": "synchronous_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 41,
+          "source_sha256": "de7f27fc030496e9b843d247be1f77c7013d387aea2482319572220ac326a01d",
+          "raw_path": "scores-third-raw/raw-0064.json",
+          "raw_sha256": "a75713f640536287def781bc9b137a9c13f5ed830f7476316de5ecf66e72b354",
+          "reason": "Clean suite passes the sync click, final value1, and no-/api/fewer assertion; source and matching sync mutant establish coverage.",
+          "action_source_line": 39
+        },
+        {
+          "kind": "disabled_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 51,
+          "source_sha256": "de7f27fc030496e9b843d247be1f77c7013d387aea2482319572220ac326a01d",
+          "raw_path": "scores-third-raw/raw-0064.json",
+          "raw_sha256": "a75713f640536287def781bc9b137a9c13f5ed830f7476316de5ecf66e72b354",
+          "reason": "Clean suite passes disabled-state and boundary value1 assertions with no forced click; matching enabled mutant fails toBeDisabled.",
+          "disabled_state_source_line": 50
+        }
+      ]
+    },
+    {
+      "call_id": "async-boundary-after-r3",
+      "status": "VERIFIED",
+      "primary_causal_dom_kill": true,
+      "synchronous_covered": true,
+      "disabled_covered": true,
+      "synchronous_guard_killed": true,
+      "disabled_guard_killed": true,
+      "evidence": [
+        {
+          "kind": "primary_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 26,
+          "source_sha256": "9fed5349f78a5531f3ffc2f37803dda7b155aeefcc9edde4662a9a94c42fa12e",
+          "raw_path": "scores-third-raw/raw-0074.json",
+          "raw_sha256": "01f974e7cc3cf44a3bd99c3290852542f4a8538e36e566865d86d6011fbc1269",
+          "reason": "Sole failed test is async fewer stays at the minimum after the update completes; error at the intended Async value assertion, not setup or unrelated test.",
+          "failure_title": "async fewer stays at the minimum after the update completes"
+        },
+        {
+          "kind": "primary_dom_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 26,
+          "source_sha256": "9fed5349f78a5531f3ffc2f37803dda7b155aeefcc9edde4662a9a94c42fa12e",
+          "raw_path": "scores-third-raw/raw-0074-trace-1.zip",
+          "raw_sha256": "758fa11060b1eb4a1a27abdffe3c357f87d5f58d2fec5f87e81d26e9665bf88b",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@46",
+            "source_line": 26,
+            "start_ms": 1744.775,
+            "end_ms": 3256.701,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "synchronous-below-minimum_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 44,
+          "source_sha256": "9fed5349f78a5531f3ffc2f37803dda7b155aeefcc9edde4662a9a94c42fa12e",
+          "raw_path": "scores-third-raw/raw-0075.json",
+          "raw_sha256": "b1a1a3913523bf92e02a754d0744ed9bc0d173e1beb1de44df4be56beee5846b",
+          "reason": "Sole failed test is sync fewer clamps at the minimum without a request; error at the intended Sync value assertion, not setup or unrelated test.",
+          "failure_title": "sync fewer clamps at the minimum without a request"
+        },
+        {
+          "kind": "synchronous-below-minimum_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 44,
+          "source_sha256": "9fed5349f78a5531f3ffc2f37803dda7b155aeefcc9edde4662a9a94c42fa12e",
+          "raw_path": "scores-third-raw/raw-0075-trace-3.zip",
+          "raw_sha256": "ad1e78fdf312085e93addd883c1dc22ee9137b5089c595a958a3dd850bf5677a",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@34",
+            "source_line": 44,
+            "start_ms": 1895.606,
+            "end_ms": 3432.974,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "disabled-enabled_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 52,
+          "source_sha256": "9fed5349f78a5531f3ffc2f37803dda7b155aeefcc9edde4662a9a94c42fa12e",
+          "raw_path": "scores-third-raw/raw-0076.json",
+          "raw_sha256": "3d521e2456b4ebe7c873efd0020d8e7f848587f0c1e7f27b0804bf6f3362cab7",
+          "reason": "Sole failed test is disabled fewer remains disabled at the minimum; error at the intended Disabled fewer assertion, not setup or unrelated test.",
+          "failure_title": "disabled fewer remains disabled at the minimum"
+        },
+        {
+          "kind": "disabled-enabled_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 52,
+          "source_sha256": "9fed5349f78a5531f3ffc2f37803dda7b155aeefcc9edde4662a9a94c42fa12e",
+          "raw_path": "scores-third-raw/raw-0076-trace-2.zip",
+          "raw_sha256": "0e7c197abf05012d1b3aa9aab7b3511db5449318729e1e4fa92c553f80963dc5",
+          "reason": "Trace fails toBeDisabled because the intended disabled button is enabled.",
+          "trace_event": {
+            "call_id": "expect@32",
+            "source_line": 52,
+            "start_ms": 2185.465,
+            "end_ms": 3689.304,
+            "title": "Expect \"toBeDisabled\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "completion_gate",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 24,
+          "source_sha256": "9fed5349f78a5531f3ffc2f37803dda7b155aeefcc9edde4662a9a94c42fa12e",
+          "raw_path": "scores-third-raw/raw-0074-trace-1.zip",
+          "raw_sha256": "758fa11060b1eb4a1a27abdffe3c357f87d5f58d2fec5f87e81d26e9665bf88b",
+          "reason": "Fresh page has one Async fewer click; its Update 1 complete gate succeeds before the final DOM assertion starts. The same trace logs committed request id1 with DOM value0.",
+          "action_trace_event": {
+            "call_id": "pw:api@42",
+            "source_line": 20,
+            "start_ms": 858.134,
+            "end_ms": 916.032,
+            "title": "Click getByRole('region', { name: 'Async control', exact: true }).getByRole('button', { name: 'Async fewer' })",
+            "error": false
+          },
+          "completion_trace_event": {
+            "call_id": "expect@44",
+            "source_line": 24,
+            "start_ms": 918.661,
+            "end_ms": 1743.952,
+            "title": "Expect \"toHaveText\"",
+            "error": false
+          },
+          "commit_console_event": {
+            "time_ms": 1694.494,
+            "text": "UNCHANGED_COMMIT {\"id\":1,\"value\":\"0\"}"
+          }
+        },
+        {
+          "kind": "synchronous_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 44,
+          "source_sha256": "9fed5349f78a5531f3ffc2f37803dda7b155aeefcc9edde4662a9a94c42fa12e",
+          "raw_path": "scores-third-raw/raw-0071.json",
+          "raw_sha256": "7a2f3632c2222d7e0349fa44a3c7288080f6e80f20a29aef970aa679936ba91c",
+          "reason": "Clean suite passes the sync click, final value1, and no-/api/fewer assertion; source and matching sync mutant establish coverage.",
+          "action_source_line": 42
+        },
+        {
+          "kind": "disabled_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 53,
+          "source_sha256": "9fed5349f78a5531f3ffc2f37803dda7b155aeefcc9edde4662a9a94c42fa12e",
+          "raw_path": "scores-third-raw/raw-0071.json",
+          "raw_sha256": "7a2f3632c2222d7e0349fa44a3c7288080f6e80f20a29aef970aa679936ba91c",
+          "reason": "Clean suite passes disabled-state and boundary value1 assertions with no forced click; matching enabled mutant fails toBeDisabled.",
+          "disabled_state_source_line": 52
+        }
+      ]
+    },
+    {
+      "call_id": "async-boundary-before-r3",
+      "status": "VERIFIED",
+      "primary_causal_dom_kill": true,
+      "synchronous_covered": true,
+      "disabled_covered": true,
+      "synchronous_guard_killed": true,
+      "disabled_guard_killed": true,
+      "evidence": [
+        {
+          "kind": "primary_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 15,
+          "source_sha256": "10111ef9cd37fbc2e156b23fce726496d90641f1fec991783a328388ad80255e",
+          "raw_path": "scores-third-raw/raw-0081.json",
+          "raw_sha256": "fe3909f8f5501472685d363cb100ace4968a43222f99acf950a838c19f88090f",
+          "reason": "Sole failed test is async decrement stays at the minimum after the update completes; error at the intended Async value assertion, not setup or unrelated test.",
+          "failure_title": "async decrement stays at the minimum after the update completes"
+        },
+        {
+          "kind": "primary_dom_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 15,
+          "source_sha256": "10111ef9cd37fbc2e156b23fce726496d90641f1fec991783a328388ad80255e",
+          "raw_path": "scores-third-raw/raw-0081-trace-1.zip",
+          "raw_sha256": "f88e119ee982e0fab64ffc32694439c8b0dd9c69ace5a1313bbf5d0b2b17210f",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@44",
+            "source_line": 15,
+            "start_ms": 1817.062,
+            "end_ms": 3330.262,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "synchronous-below-minimum_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 26,
+          "source_sha256": "10111ef9cd37fbc2e156b23fce726496d90641f1fec991783a328388ad80255e",
+          "raw_path": "scores-third-raw/raw-0082.json",
+          "raw_sha256": "55eb100aee028d871094d74c39d4932f896fe762c7b0a51b97171be322969e72",
+          "reason": "Sole failed test is sync decrement clamps at the minimum without a request; error at the intended Sync value assertion, not setup or unrelated test.",
+          "failure_title": "sync decrement clamps at the minimum without a request"
+        },
+        {
+          "kind": "synchronous-below-minimum_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 26,
+          "source_sha256": "10111ef9cd37fbc2e156b23fce726496d90641f1fec991783a328388ad80255e",
+          "raw_path": "scores-third-raw/raw-0082-trace-3.zip",
+          "raw_sha256": "2bb44ca382e967274637c54fbd450832297efef7b5905969c7a4ff1922f47a49",
+          "reason": "Trace error matches the generated outcome assertion; mutated value is 0 versus expected 1.",
+          "trace_event": {
+            "call_id": "expect@33",
+            "source_line": 26,
+            "start_ms": 1922.534,
+            "end_ms": 3432.02,
+            "title": "Expect \"toHaveText\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "disabled-enabled_failure_report",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 33,
+          "source_sha256": "10111ef9cd37fbc2e156b23fce726496d90641f1fec991783a328388ad80255e",
+          "raw_path": "scores-third-raw/raw-0083.json",
+          "raw_sha256": "2fbcd8ab53088cc23e4f83ffe50a58b8307b60591e5eaf024e8a2b5e77024e18",
+          "reason": "Sole failed test is disabled decrement is unavailable at the minimum; error at the intended Disabled fewer assertion, not setup or unrelated test.",
+          "failure_title": "disabled decrement is unavailable at the minimum"
+        },
+        {
+          "kind": "disabled-enabled_assertion",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 33,
+          "source_sha256": "10111ef9cd37fbc2e156b23fce726496d90641f1fec991783a328388ad80255e",
+          "raw_path": "scores-third-raw/raw-0083-trace-2.zip",
+          "raw_sha256": "8912cbdcc6115e851c5d128d288ff04fb9975e1af3e42ceff0af88d0009e76dc",
+          "reason": "Trace fails toBeDisabled because the intended disabled button is enabled.",
+          "trace_event": {
+            "call_id": "expect@32",
+            "source_line": 33,
+            "start_ms": 2008.104,
+            "end_ms": 3514.496,
+            "title": "Expect \"toBeDisabled\"",
+            "error": true
+          }
+        },
+        {
+          "kind": "completion_gate",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 14,
+          "source_sha256": "10111ef9cd37fbc2e156b23fce726496d90641f1fec991783a328388ad80255e",
+          "raw_path": "scores-third-raw/raw-0081-trace-1.zip",
+          "raw_sha256": "f88e119ee982e0fab64ffc32694439c8b0dd9c69ace5a1313bbf5d0b2b17210f",
+          "reason": "Fresh page has one Async fewer click; its Update 1 complete gate succeeds before the final DOM assertion starts. The same trace logs committed request id1 with DOM value0.",
+          "action_trace_event": {
+            "call_id": "pw:api@42",
+            "source_line": 12,
+            "start_ms": 877.294,
+            "end_ms": 936.959,
+            "title": "Click getByRole('region', { name: 'Async control', exact: true }).getByRole('button', { name: 'Async fewer', exact: true })",
+            "error": false
+          },
+          "completion_trace_event": {
+            "call_id": "expect@43",
+            "source_line": 14,
+            "start_ms": 1311.479,
+            "end_ms": 1816.237,
+            "title": "Expect \"toHaveText\"",
+            "error": false
+          },
+          "commit_console_event": {
+            "time_ms": 1712.523,
+            "text": "UNCHANGED_COMMIT {\"id\":1,\"value\":\"0\"}"
+          }
+        },
+        {
+          "kind": "synchronous_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 26,
+          "source_sha256": "10111ef9cd37fbc2e156b23fce726496d90641f1fec991783a328388ad80255e",
+          "raw_path": "scores-third-raw/raw-0078.json",
+          "raw_sha256": "62856f36322955c12589af161617e6dd493fc5baf7ccc81ae10294a4647daf80",
+          "reason": "Clean suite passes the sync click, final value1, and no-/api/fewer assertion; source and matching sync mutant establish coverage.",
+          "action_source_line": 25
+        },
+        {
+          "kind": "disabled_coverage",
+          "source_path": "tests/minimum-controls.spec.mjs",
+          "source_line": 34,
+          "source_sha256": "10111ef9cd37fbc2e156b23fce726496d90641f1fec991783a328388ad80255e",
+          "raw_path": "scores-third-raw/raw-0078.json",
+          "raw_sha256": "62856f36322955c12589af161617e6dd493fc5baf7ccc81ae10294a4647daf80",
+          "reason": "Clean suite passes disabled-state and boundary value1 assertions with no forced click; matching enabled mutant fails toBeDisabled.",
+          "disabled_state_source_line": 33
+        }
+      ]
+    }
+  ],
+  "adjudication_note": "Manual source and bound raw/trace review. Browser assertion timeout is a failure of the final intended DOM assertion after successful completion, not a completion-gate timeout. Scope-write guard flags remain unchanged in scores."
+}

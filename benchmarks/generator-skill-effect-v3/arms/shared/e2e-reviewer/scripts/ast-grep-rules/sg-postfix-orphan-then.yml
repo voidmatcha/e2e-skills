@@ -1,0 +1,14 @@
+# Post-fix verification rule: orphan .then() after await expect
+#
+# Detects `await expect(...).$M(...).then(...)` after canonical replacement.
+# The web-first matcher returns Promise<void>; chaining .then is suspicious
+# and usually means the original code was awaiting a value (not the matcher)
+# and sed flattened the structure incorrectly.
+
+id: postfix-orphan-then
+language: TypeScript
+severity: warning
+message: "await expect(...).matcher().then(...) — verify .then handler is intentional after web-first conversion"
+
+rule:
+  pattern: 'await expect($X).$M($$$ARGS).then($$$CB)'

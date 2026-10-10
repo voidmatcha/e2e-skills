@@ -1,0 +1,14 @@
+{
+ "source": {
+  "repo": "bettersoftware-io/ReactiveTraderCloudClone",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/bettersoftware-io/ReactiveTraderCloudClone/pull/66"
+  ],
+  "merged": "2026-07-01"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test",
+ "explanation": "Under the cucumber-cypress shim the prior record step's `map.set(...)` lands in an awaited continuation that the shim discards until the cy queue drains, so a baseline read at the JS call site can fire before that set ('no recorded count').",
+ "fix": "Read the baseline after awaiting the current count: awaiting a page-object call first drains the cy queue past the record step."
+}

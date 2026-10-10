@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "protocol_id": "generator-skill-effect-v7",
+  "status": "NOT_RUN",
+  "evidence_scope": "public-development",
+  "release_eligible": false,
+  "arms": [
+    "full-fixed",
+    "no-skill"
+  ],
+  "repetitions": 3,
+  "workers": 1,
+  "seed": 20261010,
+  "model": "gpt-5.5",
+  "timeout_s": 1500,
+  "per_call_budget_usd": null,
+  "spend_cap_usd": null,
+  "selection": "All 36 digest-bound validated v3 tasks. No screening, exclusions, replacement, or reuse of prior generated tests or scores in the primary comparison.",
+  "snapshot": "Reuse the exact v3 full-fixed and shared reviewer snapshots, not the current product tree.",
+  "decision_rule": {
+    "min_lift": 0.2,
+    "bootstrap_resamples": 10000,
+    "max_clean_pass_drop": 0.05,
+    "fault_kill_margin": 0.1,
+    "ceiling": 0.85
+  },
+  "primary": "Paired case-cluster bootstrap on all 36 per-task mean refactor-score differences. Score is 1 only if clean 3/3 and refactor pass. PASS requires lift >= 0.20, lower 95% CI > 0, clean-pass drop <= 0.05, effective fault-kill drop <= 0.10 with lower paired CI > -0.10, and baseline < 0.85. Complete non-ceiling matrix missing these gates is FAIL (no prespecified large effect shown). Ceiling is INCONCLUSIVE. Missing, duplicated, unexpected, drifted, or unscored cells are refused and remain INCOMPLETE, never PASS.",
+  "secondaries": "Prior v3 floor/middle/ceiling groups (18/9/9) are descriptive only. Tool-use indicators, self-reported completion, scanner counts, cost and time do not decide the primary verdict. No lean/full/rules-only or reachability-fix causal comparison.",
+  "process_audit": "Before claiming V4 execution or V6 correctness, separately inspect the full-fixed transcript, exact introduced failure, nonzero test outcome, restoration, clean rerun, and independent reviewer result. Existing truncated tool-command heuristics are not proof; absent evidence is UNVERIFIED.",
+  "load": "Inherited threshold 20, maximum pause 1800 seconds, one worker, sequential model calls and separate sequential scoring. Record starts above 12 and above 20.",
+  "validation": "Reuse the complete v3 model-free validation only when its report SHA256 and all engine input digests match the frozen v3 protocol; otherwise refuse. Freeze also binds v7 protocol and runner bytes and exact shuffled 216-cell schedule.",
+  "limits": [
+    "Public spent development pool selected after seeing v3 results; not an independent release holdout.",
+    "Single host/model, author-written apps and one id/class refactor per task; visible names remain unchanged.",
+    "Three repetitions increase repeatability but do not create 108 independent cases per arm. The inferential unit is 36 tasks.",
+    "At assumed paired task SD 0.35, normal approximation detectable lift is about 0.16 at 80% power; this is an assumption, not guaranteed power.",
+    "No skill-fix attribution or workflow simplification claim follows from this two-arm comparison.",
+    "Codex host/model successor; do not pool Claude failures or compare host effects causally. Sandbox/tool exposure differs from Claude. Independent-agent and V4/V6 completion claims remain UNVERIFIED unless separately audited."
+  ],
+  "runner": "codex",
+  "reasoning_effort": "medium",
+  "runtime_policy": "Private auth-only HOME and CODEX_HOME; explicit trusted PATH and installed Playwright browser cache; no shell snapshots or login-shell profiles; apps, image generation and web search disabled. Workspace-write sandbox with local app networking, no approval/sandbox bypass. Native agent tools remain available but their use and review independence require transcript audit.",
+  "runner_contract": "Codex exec with private auth-only home, no ambient config or skills, workspace-write sandbox, one worker. Both arms receive identical CLI flags. Exact v3 snapshots and shared prompt remain unchanged. Token usage recorded; CLI does not provide billed USD or support Claude's per-call USD budget. No price estimate is reused. Stop on infrastructure failure; new execution needed if failed cells remain.",
+  "model_selection": "v5 gpt-6.1-sol requests were rejected as unsupported by the ChatGPT account before any task generation. A separate read-only routing smoke on gpt-5.5 returned OK with exit 0; this smoke is not primary evidence. All 216 task calls are new, on gpt-5.5 with medium effort.",
+  "execution_identity": "The same resolved absolute Codex executable is used for version capture and every call; record launcher SHA256 and CLI version, refuse resume on change. v6 was interrupted before any completed task because its report and call executable differed; no v6 data are used."
+}

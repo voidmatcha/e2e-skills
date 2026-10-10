@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "intent-hq/cloudlands-fe",
+  "license": "Apache-2.0",
+  "urls": [
+   "https://github.com/intent-hq/intent/issues/5687",
+   "https://github.com/intent-hq/cloudlands-fe/pull/2806"
+  ],
+  "merged": "2026-09-23"
+ },
+ "diagnosis": "product_regression",
+ "side": "Product (CSS)",
+ "explanation": "`app.css` declared `scrollbar-color` on every element, and the reduced-motion blanket sets `transition-duration: 0.01ms !important` on everything. `scrollbar-color` is animatable, so under the blanket Chromium starts a `scrollbar-color` transition on every restyled element, cascading one level per frame; readiness took 2-4x longer under reduced motion and ran into the 30 s test timeout.",
+ "fix": "Declare `scrollbar-color` once on `:root`/theme roots (it is inherited) instead of on every element; a component test guards against per-element declarations."
+}

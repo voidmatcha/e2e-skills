@@ -146,6 +146,30 @@ run_python scripts/ci/test-reviewer-release-v1.py ||
   fail "test-reviewer-release-v1.py"
 run_python scripts/ci/test-reviewer-release-runner-v1.py ||
   fail "test-reviewer-release-runner-v1.py"
+run_python scripts/ci/test-reviewer-release-capture-v1.py ||
+  fail "test-reviewer-release-capture-v1.py"
+run_python scripts/ci/test-reviewer-release-witness-v1.py ||
+  fail "test-reviewer-release-witness-v1.py"
+run_python scripts/ci/test-reviewer-release-executor-v1.py ||
+  fail "test-reviewer-release-executor-v1.py"
+run_python scripts/ci/test-reviewer-release-attested-calls-v1.py ||
+  fail "test-reviewer-release-attested-calls-v1.py"
+run_python scripts/ci/test-reviewer-release-tool-surface-v1.py ||
+  fail "test-reviewer-release-tool-surface-v1.py"
+run_python scripts/ci/test-reviewer-release-codex-mcp-v1.py ||
+  fail "test-reviewer-release-codex-mcp-v1.py"
+run_python scripts/ci/test-reviewer-release-codex-transcript-v1.py ||
+  fail "test-reviewer-release-codex-transcript-v1.py"
+run_python scripts/ci/test-reviewer-release-normalizer-v1.py ||
+  fail "test-reviewer-release-normalizer-v1.py"
+run_python scripts/ci/test-reviewer-release-postrun-v1.py ||
+  fail "test-reviewer-release-postrun-v1.py"
+run_python scripts/ci/test-reviewer-release-findings-v1.py ||
+  fail "test-reviewer-release-findings-v1.py"
+run_python scripts/ci/test-reviewer-release-matrix-v1.py ||
+  fail "test-reviewer-release-matrix-v1.py"
+run_python scripts/ci/test-reviewer-release-scorer-v1.py ||
+  fail "test-reviewer-release-scorer-v1.py"
 run_python scripts/ci/test-runner-version-resolution-v1.py ||
   fail "test-runner-version-resolution-v1.py"
 
@@ -159,8 +183,55 @@ fi
 step "Generator contracts"
 run_python scripts/ci/test-generator-contracts.py ||
   fail "test-generator-contracts.py"
+run_python scripts/ci/test-generator-unchanged-outcome.py ||
+  fail "test-generator-unchanged-outcome.py"
+run_python scripts/ci/test-generator-unchanged-outcome-v1.py ||
+  fail "test-generator-unchanged-outcome-v1.py"
+run_python scripts/ci/test-generator-unchanged-outcome-v2.py ||
+  fail "test-generator-unchanged-outcome-v2.py"
+run_python scripts/ci/test-generator-unchanged-outcome-v5.py ||
+  fail "test-generator-unchanged-outcome-v5.py"
+run_python scripts/ci/test-generator-unchanged-outcome-v6.py ||
+  fail "test-generator-unchanged-outcome-v6.py"
+run_python scripts/ci/test-generator-skill-effect-v8.py ||
+  fail "test-generator-skill-effect-v8.py"
+run_python scripts/ci/test-generator-skill-effect-v8-evidence.py ||
+  fail "test-generator-skill-effect-v8-evidence.py"
+run_python scripts/ci/test-generator-transcript-audit.py ||
+  fail "test-generator-transcript-audit.py"
+run_python scripts/ci/test-generator-environment-probe.py ||
+  fail "test-generator-environment-probe.py"
+run_python scripts/ci/test-generator-environment-successor-probe.py ||
+  fail "test-generator-environment-successor-probe.py"
+run_python scripts/ci/test-generator-environment-pilot-v1.py ||
+  fail "test-generator-environment-pilot-v1.py"
+run_python scripts/ci/test-generator-codex-container-adapter.py ||
+  fail "test-generator-codex-container-adapter.py"
+run_python scripts/ci/test-generator-codex-adapter.py ||
+  fail "test-generator-codex-adapter.py"
+run_python scripts/ci/test-generator-codex-adapter-v2.py ||
+  fail "test-generator-codex-adapter-v2.py"
+run_python scripts/ci/test-generator-v4-get-transfer-v1.py ||
+  fail "test-generator-v4-get-transfer-v1.py"
+run_python scripts/ci/test-generator-v4-get-transfer-v2.py ||
+  fail "test-generator-v4-get-transfer-v2.py"
+run_python scripts/ci/test-generator-v4-get-transfer-v3.py ||
+  fail "test-generator-v4-get-transfer-v3.py"
+run_python scripts/ci/test-generator-v4-get-transfer-v4.py ||
+  fail "test-generator-v4-get-transfer-v4.py"
+run_python scripts/ci/test-generator-v4-get-template-v1.py ||
+  fail "test-generator-v4-get-template-v1.py"
+run_python scripts/ci/test-generator-overlap-v1-pilot.py ||
+  fail "test-generator-overlap-v1-pilot.py"
+run_python scripts/ci/test-generator-v4-get-pilot-v1.py ||
+  fail "test-generator-v4-get-pilot-v1.py"
+run_python scripts/ci/test-generator-v4-get-pilot-v2.py ||
+  fail "test-generator-v4-get-pilot-v2.py"
+run_python scripts/ci/test-generator-v4-get-pilot-v3.py ||
+  fail "test-generator-v4-get-pilot-v3.py"
 
 step "Verification-rule parity"
+# Check the terminal proof boundary itself, not incidental mentions in the V6 packet instructions.
 /bin/bash -p scripts/ci/check-verification-parity.sh || fail "check-verification-parity.sh"
 
 step "Codex agent packaging"
@@ -178,7 +249,9 @@ run_python scripts/ci/test-reinstall-skills.py ||
 step "Behavioral eval harness"
 /bin/bash -p scripts/ci/test-behavioral-evals.sh || fail "test-behavioral-evals.sh"
 run_python scripts/ci/test-debugger-contracts.py || fail "test-debugger-contracts.py"
+run_python scripts/ci/test-assertion-contracts.py || fail "test-assertion-contracts.py"
 run_python scripts/ci/test-routing-contract.py || fail "test-routing-contract.py"
+run_python scripts/ci/test-linux-script-check.py || fail "test-linux-script-check.py"
 run_python scripts/ci/test-residual-redos-budget.py ||
   fail "test-residual-redos-budget.py"
 run_python scripts/ci/test-cypress-debugger-artifact-download.py ||
@@ -277,6 +350,10 @@ run_python scripts/ci/test-reviewer-scanner.py ||
   fail "test-reviewer-scanner.py"
 
 step "Reviewer benchmark contracts"
+run_python scripts/ci/test-fixpair-v1.py ||
+  fail "test-fixpair-v1.py"
+run_python scripts/ci/test-semantic-mutants-v1.py ||
+  fail "test-semantic-mutants-v1.py"
 run_python scripts/ci/test-reviewer-holdout-v3.py ||
   fail "test-reviewer-holdout-v3.py"
 run_python scripts/ci/test-reviewer-fault-causal.py ||
@@ -289,6 +366,68 @@ run_python scripts/ci/test-reviewer-holdout-v5.py ||
   fail "test-reviewer-holdout-v5.py"
 run_python scripts/ci/test-reviewer-holdout-v7.py ||
   fail "test-reviewer-holdout-v7.py"
+run_python scripts/ci/test-reviewer-holdout-v8.py ||
+  fail "test-reviewer-holdout-v8.py"
+run_python scripts/ci/test-reviewer-holdout-v9.py ||
+  fail "test-reviewer-holdout-v9.py"
+run_python scripts/ci/test-reviewer-holdout-v10.py ||
+  fail "test-reviewer-holdout-v10.py"
+run_python scripts/ci/test-reviewer-holdout-v11.py ||
+  fail "test-reviewer-holdout-v11.py"
+run_python scripts/ci/test-reviewer-holdout-v12.py ||
+  fail "test-reviewer-holdout-v12.py"
+run_python scripts/ci/test-reviewer-holdout-v13.py ||
+  fail "test-reviewer-holdout-v13.py"
+run_python scripts/ci/test-reviewer-holdout-v14.py ||
+  fail "test-reviewer-holdout-v14.py"
+run_python scripts/ci/test-reviewer-holdout-v15.py ||
+  fail "test-reviewer-holdout-v15.py"
+run_python scripts/ci/test-reviewer-holdout-v16.py ||
+  fail "test-reviewer-holdout-v16.py"
+run_python scripts/ci/test-reviewer-holdout-v17.py ||
+  fail "test-reviewer-holdout-v17.py"
+run_python scripts/ci/test-reviewer-holdout-v18.py ||
+  fail "test-reviewer-holdout-v18.py"
+run_python scripts/ci/test-reviewer-holdout-v19.py ||
+  fail "test-reviewer-holdout-v19.py"
+run_python scripts/ci/test-reviewer-holdout-v20.py ||
+  fail "test-reviewer-holdout-v20.py"
+run_python scripts/ci/test-reviewer-holdout-v21.py ||
+  fail "test-reviewer-holdout-v21.py"
+run_python scripts/ci/test-reviewer-stream-retry.py ||
+  fail "test-reviewer-stream-retry.py"
+run_python scripts/ci/test-reviewer-auth-retry.py ||
+  fail "test-reviewer-auth-retry.py"
+run_python scripts/ci/test-reviewer-usage-capture.py ||
+  fail "test-reviewer-usage-capture.py"
+run_python scripts/ci/test-reviewer-specificity-v1.py ||
+  fail "test-reviewer-specificity-v1.py"
+run_python scripts/ci/test-reviewer-specificity-v2.py ||
+  fail "test-reviewer-specificity-v2.py"
+run_python scripts/ci/test-reviewer-specificity-v3.py ||
+  fail "test-reviewer-specificity-v3.py"
+run_python scripts/ci/test-reviewer-specificity-v4.py ||
+  fail "test-reviewer-specificity-v4.py"
+run_python scripts/ci/test-specificity-successor-rules.py ||
+  fail "test-specificity-successor-rules.py"
+run_python scripts/ci/test-specificity-context-ast.py ||
+  fail "test-specificity-context-ast.py"
+run_python scripts/ci/test-specificity-context-followup.py ||
+  fail "test-specificity-context-followup.py"
+run_python scripts/ci/test-specificity-transport.py ||
+  fail "test-specificity-transport.py"
+run_python scripts/ci/test-specificity-discovery-calibration.py ||
+  fail "test-specificity-discovery-calibration.py"
+run_python scripts/ci/test-specificity-fresh-pilot.py ||
+  fail "test-specificity-fresh-pilot.py"
+run_python scripts/ci/test-specificity-citations.py ||
+  fail "test-specificity-citations.py"
+run_python scripts/ci/test-specificity-primary-batch.py ||
+  fail "test-specificity-primary-batch.py"
+run_python scripts/ci/test-specificity-semantic-pilot.py ||
+  fail "test-specificity-semantic-pilot.py"
+run_python scripts/ci/test-reviewer-specificity-collector-v3.py ||
+  fail "test-reviewer-specificity-collector-v3.py"
 run_python scripts/ci/test-reviewer-fault-causal-v3.py ||
   fail "test-reviewer-fault-causal-v3.py"
 run_python scripts/ci/test-debugger-holdout-v1.py ||
@@ -367,8 +506,13 @@ step "Local ESLint path"
 /bin/bash -p scripts/ci/test-local-eslint-path.sh || fail "test-local-eslint-path.sh"
 run_python scripts/ci/test-reviewer-trust-contract.py ||
   fail "test-reviewer-trust-contract.py"
+# Includes portable skill-root routing and evidence-based disagreement guards.
+# Includes the versioned #13 ownership boundary and #1 rendering guards;
+# these development contracts never rewrite frozen holdout labels.
 run_python scripts/ci/test-reviewer-doc-contracts.py ||
   fail "test-reviewer-doc-contracts.py"
+run_python scripts/dev/reviewer-contract.py ||
+  fail "reviewer-contract.py"
 run_python scripts/ci/test-reviewer-output-discipline-v2.py ||
   fail "test-reviewer-output-discipline-v2.py"
 run_python scripts/ci/test-scanner-bounded-rule-v1.py ||

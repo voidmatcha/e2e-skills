@@ -1,0 +1,56 @@
+{
+  "task": "Cover the appointment booking page (`/`). A visitor picks a day, books a free slot, and sees it under My bookings; the slot then shows as Yours for them and stays booked after a reload. Cancelling one of their bookings frees the slot again, so it can be booked once more. If another visitor took the slot in the meantime (the seam `POST /api/dev/take` simulates that), booking it shows `That slot was just taken` and the slot list refreshes to show it as Taken. The My bookings heading shows the number of bookings in parentheses.",
+  "faults": [
+    {
+      "id": "f1-book-noop",
+      "class": "surface",
+      "brief_phrase": "books a free slot, and sees it under My bookings",
+      "description": "Booking sends the request but nothing on the page changes until a reload.",
+      "find": "      state.mine.push(result.body);\n      slot.taken = true;\n      slot.mine = true;\n      slot.id = result.body.id;\n      render();\n",
+      "replace": "      void result.body;\n"
+    },
+    {
+      "id": "f2-booking-not-stored",
+      "class": "persistence",
+      "brief_phrase": "stays booked after a reload",
+      "description": "The server answers 201 but does not store the booking; a reload shows the slot free and My bookings empty.",
+      "find": "      bookings.push(booking);\n      return json(res, 201, { id: booking.id, date, time }, headers);\n",
+      "replace": "      return json(res, 201, { id: booking.id, date, time }, headers);\n"
+    },
+    {
+      "id": "f3-cancel-leaves-slot-taken",
+      "class": "precision",
+      "brief_phrase": "frees the slot again, so it can be booked once more",
+      "description": "Cancel removes the booking from My bookings but the slot keeps showing Yours with no Book button until a reload.",
+      "find": "          slot.taken = false;\n          slot.mine = false;\n",
+      "replace": "          void slot;\n"
+    },
+    {
+      "id": "f4-conflict-no-refresh",
+      "class": "recovery",
+      "brief_phrase": "the slot list refreshes to show it as Taken",
+      "description": "After `That slot was just taken` the slot list is not refreshed; the slot still offers Book.",
+      "find": "        el(\"bk-message\").textContent = result.body.error;\n        await refresh();\n",
+      "replace": "        el(\"bk-message\").textContent = result.body.error;\n"
+    },
+    {
+      "id": "f5-count-stale",
+      "class": "precision",
+      "brief_phrase": "shows the number of bookings in parentheses",
+      "description": "The My bookings heading always shows (0).",
+      "find": "el(\"bk-mine-heading\").textContent = \"My bookings (\" + state.mine.length + \")\";",
+      "replace": "el(\"bk-mine-heading\").textContent = \"My bookings (\" + 0 + \")\";"
+    }
+  ],
+  "refactor": [
+    {"find": "<ul id=\"bk-slots\" aria-label=\"Slots\"></ul>", "replace": "<section class=\"grid\"><ul id=\"bk-slots\" class=\"grid__list\" aria-label=\"Slots\"></ul></section>"},
+    {"find": "<section id=\"bk-mine-section\">", "replace": "<aside class=\"sidebar\"><section id=\"bk-mine-section\" class=\"sidebar__block\">"},
+    {"find": "<ul id=\"bk-mine\" aria-label=\"My bookings\"></ul>\n    </section>", "replace": "<ul id=\"bk-mine\" aria-label=\"My bookings\"></ul>\n    </section></aside>"},
+    {"find": "bk-mine-section", "replace": "reservations-block"},
+    {"find": "bk-mine-heading", "replace": "reservations-title"},
+    {"find": "bk-mine", "replace": "reservations"},
+    {"find": "bk-message", "replace": "notice"},
+    {"find": "bk-slots", "replace": "openings"},
+    {"find": "bk-days", "replace": "day-picker"}
+  ]
+}

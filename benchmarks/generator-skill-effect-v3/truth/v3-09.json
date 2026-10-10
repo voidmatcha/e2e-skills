@@ -1,0 +1,66 @@
+{
+  "task": "Cover the flashcards app (`/`): two decks, Spanish basics (hola, gracias, adiós; gracias already learned) and Capitals (Norway, Peru). Study on a deck opens the Study panel titled `Studying <deck>` with the first card's front and `Card 1 of N`. Flip reveals the back. Got it marks the card learned and Again leaves it unlearned; both advance to the next card and the `Card N of M` line follows. After the last card the panel shows `Session done` and `All N cards reviewed`, and the deck's `N cards · M learned` line reflects the learned count. Learned state is stored on the server and survives a reload. Back to decks closes the panel.",
+  "faults": [
+    {
+      "id": "f1-study-noop",
+      "class": "surface",
+      "brief_phrase": "Study on a deck opens the Study panel",
+      "description": "Study never opens the panel.",
+      "find": "        study.addEventListener(\"click\", () => { session = { deckId: deck.id, index: 0, flipped: false, done: false }; render(); });\n",
+      "replace": "        study.addEventListener(\"click\", () => { render(); });\n"
+    },
+    {
+      "id": "f2-progress-stale",
+      "class": "precision",
+      "brief_phrase": "the `Card N of M` line follows",
+      "description": "The progress line always reads `Card 1 of N` while the cards advance.",
+      "find": "\"Card \" + (session.index + 1) + \" of \" + deck.cards.length;",
+      "replace": "\"Card 1 of \" + deck.cards.length;"
+    },
+    {
+      "id": "f3-again-marks-learned",
+      "class": "precision",
+      "brief_phrase": "Again leaves it unlearned",
+      "description": "Again marks the card learned just like Got it.",
+      "find": "    el(\"fc-again\").addEventListener(\"click\", () => answer(false));\n",
+      "replace": "    el(\"fc-again\").addEventListener(\"click\", () => answer(true));\n"
+    },
+    {
+      "id": "f4-learned-not-persisted",
+      "class": "persistence",
+      "brief_phrase": "Learned state is stored on the server and survives a reload",
+      "description": "The server answers with the new learned state but keeps the old one.",
+      "find": "      card.learned = Boolean(learned);\n      return json(res, 200, card);\n",
+      "replace": "      return json(res, 200, { ...card, learned: Boolean(learned) });\n"
+    },
+    {
+      "id": "f5-deck-line-stale",
+      "class": "precision",
+      "brief_phrase": "the deck's `N cards · M learned` line reflects the learned count",
+      "description": "The deck lines keep the counts from page load; a reload shows the right counts.",
+      "find": "        const learned = deck.cards.filter((c) => c.learned).length;\n",
+      "replace": "        if (!deck.initialLearned && deck.initialLearned !== 0) deck.initialLearned = deck.cards.filter((c) => c.learned).length;\n        const learned = deck.initialLearned;\n"
+    }
+  ],
+  "refactor": [
+    {"find": "<div id=\"fc-decks\" class=\"decks\"></div>", "replace": "<div class=\"shelf\"><div id=\"fc-decks\" class=\"shelf__items\"></div></div>"},
+    {"find": "<section id=\"fc-study\" class=\"study\" aria-label=\"Study\" hidden>", "replace": "<section id=\"fc-study\" class=\"drill\" aria-label=\"Study\" hidden>"},
+    {"find": "<p id=\"fc-progress\" class=\"progress\">", "replace": "<p id=\"fc-progress\" class=\"drill__position\">"},
+    {"find": "<p id=\"fc-front\" class=\"card-face\">", "replace": "<p id=\"fc-front\" class=\"face face--front\">"},
+    {"find": "<p id=\"fc-back\" class=\"card-face back\" hidden>", "replace": "<p id=\"fc-back\" class=\"face face--back\" hidden>"},
+    {"find": "<p id=\"fc-done\" class=\"done\" hidden>", "replace": "<p id=\"fc-done\" class=\"notice notice--finished\" hidden>"},
+    {"find": "article.className = \"deck\";", "replace": "article.className = \"tile tile--deck\";"},
+    {"find": "line.className = \"deck-line\";", "replace": "line.className = \"tile__meta\";"},
+    {"find": "fc-study-title", "replace": "drill-title"},
+    {"find": "fc-progress", "replace": "drill-position"},
+    {"find": "fc-decks", "replace": "collections"},
+    {"find": "fc-study", "replace": "drill"},
+    {"find": "fc-front", "replace": "face-front"},
+    {"find": "fc-back", "replace": "face-back"},
+    {"find": "fc-flip", "replace": "turn"},
+    {"find": "fc-got", "replace": "known"},
+    {"find": "fc-again", "replace": "repeat"},
+    {"find": "fc-done", "replace": "finished"},
+    {"find": "fc-close", "replace": "leave"}
+  ]
+}

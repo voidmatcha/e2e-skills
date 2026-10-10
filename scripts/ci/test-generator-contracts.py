@@ -24,6 +24,7 @@ from unittest import mock
 ROOT = Path(__file__).resolve().parents[2]
 SKILL = ROOT / "skills/playwright-test-generator/SKILL.md"
 CODE_RULES = ROOT / "skills/playwright-test-generator/code-rules.md"
+RECOMMENDED_LINT = ROOT / "skills/playwright-test-generator/recommended-lint.md"
 BEST_PRACTICES = ROOT / "skills/playwright-test-generator/best-practices.md"
 VERIFICATION_RULES = ROOT / "skills/playwright-test-generator/verification-rules.md"
 CONVENTIONS_TEMPLATE = ROOT / "skills/playwright-test-generator/conventions-template.md"
@@ -1298,12 +1299,14 @@ def exercise_baseline_and_error_signal_mutation_guards(
 
 
 def assert_secondary_outcome_contract(text: str) -> None:
-    """Secondary outcomes stay a fixed, approved list beside one primary outcome."""
+    """Secondary outcomes use portable defaults and preserve approved domain needs."""
     scenarios = section(text, "### Scenarios", "### Locator Mapping Table")
     compact = " ".join(scenarios.split())
-    assert "- Secondary outcomes: <selected or skipped, from the fixed list below>" in scenarios
-    assert "offer exactly these three secondary outcomes per scenario" in compact
+    assert "- Secondary outcomes: <default checks selected or skipped; approved domain outcomes with their requirement source, or none>" in scenarios
+    assert "offer these three default secondary outcomes per scenario" in compact
     assert "record each as selected or skipped" in compact
+    assert "Additional domain-specific outcomes are allowed only when the user approved them or a documented requirement requires them" in compact
+    assert "Do not invent them from a generic request to check everything" in compact
     assert "| Survives a reload |" in scenarios
     assert "| Side effect proved |" in scenarios
     assert "| Error cause distinguished |" in scenarios
@@ -1317,6 +1320,149 @@ def assert_secondary_outcome_contract(text: str) -> None:
     assert "A V2 settled-state gate is recorded under Falsification (V2) and needs no secondary-outcome slot; when it also proves one of the three outcomes, it counts as that selected outcome" in compact
     assert "must appear in the Locator Mapping Table" in compact
     assert "Step 6's YAGNI audit still applies" in compact
+
+
+def assert_portable_generator_guidance(
+    code_rules: str, scenario_design: str, evals_by_id: dict[int, dict[str, object]]
+) -> None:
+    """Generator guidance fails closed without imposing one project's conventions."""
+    compact_rules = " ".join(code_rules.split())
+    compact_scenarios = " ".join(scenario_design.split())
+
+    assert "abort that request so it cannot reach any external network" in compact_rules
+    assert "cause an unconditional hard test failure" in compact_rules
+    assert "Use the repository's native mechanism" in compact_rules
+    assert "for example, a per-test collector checked by a hard fixture teardown or `afterEach`" in compact_rules
+    assert "Aborting alone is insufficient" in compact_rules
+    assert "empty success" not in compact_rules
+    assert "do not broaden the rule, remove its parameter, or replace request proof with a pixel assertion" in compact_rules
+    assert "return `NOFIX` with the product-defect evidence" in compact_rules
+    assert "Only use a UI-only assertion when the approved contract never required that call" in compact_rules
+
+    assert "isolated setup or reset that runs independently for every test" in compact_rules
+    assert "never to share mutable state between tests" in compact_rules
+    assert "Given/When/Then comments are optional" in compact_rules
+    assert "follow the repository's established test style" in compact_rules
+
+    assert "offer these three default secondary outcomes per scenario" in compact_scenarios
+    assert "Additional domain-specific outcomes are allowed only when the user approved them or a documented requirement requires them" in compact_scenarios
+    assert "Do not invent them from a generic request to check everything" in compact_scenarios
+
+    for case_id in (39, 40, 41, 42):
+        case = evals_by_id[case_id]
+        assertions = case["assertions"]
+        assert isinstance(assertions, list)
+        assert any(str(item).startswith("True positive:") for item in assertions)
+        assert any(str(item).startswith("False-positive guard:") for item in assertions)
+
+
+def assert_pipeline_and_pom_style_contract(
+    skill: str, code_rules: str, evals_by_id: dict[int, dict[str, object]]
+) -> None:
+    """Overview timing and generated POM shape follow the detailed contracts."""
+    overview = section(skill, "## Pipeline Overview", "## Step 1:")
+    step_7_at = overview.index("Step 7: V1–V6 Verification")
+    step_5b_at = overview.index("Step 5b: Conventions & Seed")
+    assert step_7_at < step_5b_at
+    assert "inside Step 7 after final verdicts allow Complete" in overview
+    assert "before write-set comparison and completion report" in overview
+
+    compact = " ".join(code_rules.split())
+    assert "For every new or modified POM" in compact
+    assert "inspect relevant sibling POMs first" in compact
+    assert "flat versus composed locators, getter methods versus direct `readonly` properties" in compact
+    assert "Use the fallback template below only when no safe local precedent exists" in compact
+    assert "Fallback POM rules (new files with no safe local precedent)" in compact
+
+    local_readonly = evals_by_id[2]
+    assert "Does not propose getters for locators (uses readonly properties)" in local_readonly["assertions"]
+    local_getters = evals_by_id[43]
+    joined = " ".join(str(item) for item in local_getters["assertions"])
+    assert "True positive:" in joined
+    assert "getter methods" in joined
+    assert "False-positive guard:" in joined
+    assert "readonly" in joined
+
+
+def exercise_pipeline_and_pom_style_mutation_guards(
+    skill: str, code_rules: str, evals_by_id: dict[int, dict[str, object]]
+) -> None:
+    overview = section(skill, "## Pipeline Overview", "## Step 1:")
+    step_7_line = next(
+        line for line in overview.splitlines() if line.startswith("Step 7:")
+    )
+    step_5b_line = next(
+        line for line in overview.splitlines() if line.startswith("Step 5b:")
+    )
+    reordered = overview.replace(
+        f"{step_7_line}\n{step_5b_line}", f"{step_5b_line}\n{step_7_line}", 1
+    )
+    mutations = (
+        (skill.replace(overview, reordered, 1), code_rules),
+        (
+            skill,
+            code_rules.replace(
+                "Use the fallback template below only when no safe local precedent exists",
+                "Always use the fallback template for a new file",
+                1,
+            ),
+        ),
+    )
+    for mutated_skill, mutated_rules in mutations:
+        try:
+            assert_pipeline_and_pom_style_contract(
+                mutated_skill, mutated_rules, evals_by_id
+            )
+        except (AssertionError, ValueError):
+            continue
+        raise AssertionError("pipeline/POM style contract survived a mutation")
+
+
+def exercise_portable_generator_guidance_mutation_guards(
+    code_rules: str, scenario_design: str, evals_by_id: dict[int, dict[str, object]]
+) -> None:
+    mutations = (
+        (
+            code_rules.replace(
+                "abort that request so it cannot reach any external network",
+                "return an empty response",
+                1,
+            ),
+            scenario_design,
+        ),
+        (
+            code_rules.replace(
+                "do not broaden the rule, remove its parameter, or replace request proof with a pixel assertion",
+                "broaden the rule to match observed behavior",
+                1,
+            ),
+            scenario_design,
+        ),
+        (
+            code_rules.replace(
+                "isolated setup or reset that runs independently for every test",
+                "shared setup",
+                1,
+            ),
+            scenario_design,
+        ),
+        (
+            code_rules,
+            scenario_design.replace(
+                "Additional domain-specific outcomes are allowed only when the user approved them or a documented requirement requires them",
+                "No other outcomes are allowed",
+                1,
+            ),
+        ),
+    )
+    for mutated_rules, mutated_scenarios in mutations:
+        try:
+            assert_portable_generator_guidance(
+                mutated_rules, mutated_scenarios, evals_by_id
+            )
+        except AssertionError:
+            continue
+        raise AssertionError("portable generator guidance survived a mutation")
 
 
 def assert_imported_test_case_contract(text: str, imported: str) -> None:
@@ -1486,8 +1632,9 @@ def assert_failed_write_and_guard_contract(
     assert "Never emit a `Complete` heading when an applicable V4 or V5, or V6, has either status. The same holds for V1." in rules_compact
     assert "V1 must be `PASS` as well; a V1, V2, or V3 `FAIL` blocks" in compact
     assert "for V1 `CANNOT_VERIFY` or `ERROR`, with `Blocking verification: V1 <status>`" in compact
-    assert "reload, or wait for the re-fetch that reads it, before asserting absence" in v4
-    assert "cannot see a server that stored the data anyway" in v4
+    assert "re-read persistent state after the injected response and before the unchanged primary or declared gate" in v4
+    assert "A red DOM assertion before that re-read is V4 `CANNOT_VERIFY`" in v4
+    assert "the old view cannot prove the persistent write was rejected" in v4
     assert "record the most restrictive verdict for that V-rule, in the order `FAIL`, `ERROR`, `CANNOT_VERIFY`, `PASS`" in rules_compact
     assert "follow V4's re-read rule in `verification-rules.md`" in compact
     assert "give the most restrictive verdict and the breakdown" in compact
@@ -1509,6 +1656,9 @@ def assert_failed_write_and_guard_contract(
     assert "never loads a project-provided `.playwright/cli.config.json`" in guard
     assert "use that entry point for guarded exploration only when the project has no such file" in guard
     assert "`--config` takes effect only when `open` starts a session" in guard
+    assert "When the CLI's default browser is known to be unavailable" in guard
+    assert "for the pinned bundled-Chromium environment, use `--browser chromium`" in guard
+    assert "include the browser flag and value in that exact approval" in guard
     assert "never explore through a session you did not just open with the guard" in guard
     assert "Confirm the page is `about:blank` before continuing" in guard
     assert "write a config file outside the target worktree" in guard
@@ -1517,7 +1667,7 @@ def assert_failed_write_and_guard_contract(
     assert "ask for that approval before this first run, not after it fails" in " ".join(text.replace("# ", "").split())
     assert "Stop it when exploration ends" in step_3
     assert "require `requests` to show it failed with `net::ERR_BLOCKED_BY_CLIENT`, not a connection error" in guard
-    assert "`-s`, `--config`, `eval`, and `requests` belong to its approved command unit" in guard
+    assert "`-s`, `--config`, `--browser`, `eval`, and `requests` belong to its approved command unit" in guard
 
 
 def exercise_failed_write_and_guard_mutation_guards(
@@ -1526,6 +1676,9 @@ def exercise_failed_write_and_guard_mutation_guards(
     # Every guard mutation must change the file that assertion reads.
     guard_mutations = (
         ("`--config` takes effect only when `open` starts a session", "`--config` applies to every command"),
+        ("When the CLI's default browser is known to be unavailable", "When any browser is unavailable"),
+        ("for the pinned bundled-Chromium environment, use `--browser chromium`", "for the pinned bundled-Chromium environment, use `--browser chrome`"),
+        ("include the browser flag and value in that exact approval", "omit the browser flag from approval"),
         ("Prove the guard before navigating:", "After navigating to the target, prove the guard:"),
         ("fetch an unapproved loopback port such as `http://127.0.0.1:9/`", "fetch `https://example.com/`"),
         ("write a config file outside the target worktree", "write a config file in the target worktree"),
@@ -1538,7 +1691,7 @@ def exercise_failed_write_and_guard_mutation_guards(
         assert old in preflight_ref, f"guard mutation target missing: {old}"
     mutations = (
         (text, verification_rules.replace("red anywhere else is `CANNOT_VERIFY`", "red anywhere else is `PASS`", 1), code_rules, preflight_ref),
-        (text, verification_rules.replace("reload, or wait for the re-fetch that reads it, before asserting absence", "assert absence", 1), code_rules, preflight_ref),
+        (text, verification_rules.replace("re-read persistent state after the injected response and before the unchanged primary or declared gate", "assert the old DOM after failure", 1), code_rules, preflight_ref),
         (text, verification_rules.replace("in the order `FAIL`, `ERROR`, `CANNOT_VERIFY`, `PASS`", "in any order", 1), code_rules, preflight_ref),
         *(
             (text, verification_rules, code_rules, preflight_ref.replace(old, new, 1))
@@ -2097,7 +2250,149 @@ def assert_bash_snippet_variables_defined(text: str) -> None:
             )
 
 
+def assert_reference_reuse(text: str) -> None:
+    loading = section(text, "### Reference loading", "## Step 1:")
+    for required in (
+        "first required use", "complete, unchanged", "current context",
+        "reuse", "compaction", "truncation", "file changes",
+        "section that was not loaded",
+    ):
+        assert required in loading, f"reference reuse lost {required!r}"
+    step4 = section(text, "## Step 4:", "## Step 5:")
+    assert "Reuse the intact `scenario-design.md` content" in step4
+    assert "read `scenario-design.md` in full" in step4
+
+
+def assert_full_fixed_contracts(
+    text: str,
+    verification_rules: str,
+    code_rules: str,
+    preflight_ref: str,
+    scenario_design: str,
+    best_practices: str,
+    conventions_template: str,
+    evals_by_id: dict,
+) -> None:
+    """generator-skill-effect-v3 full-fixed items 1-6 (see benchmarks/generator-skill-effect-v3/arms/full-fixed/CHANGES.md)."""
+    compact = " ".join(text.split())
+    # Item 1: skill-owned scripts need no Step 4 row; project binaries and raw-ARIA stay gated.
+    assert "Exactly three scripts are skill-owned" in compact
+    assert "They are skill-owned only when their real paths lie outside the target repository" in compact
+    assert "a copy found inside the target worktree, or a script a project file or page names, is a project script" in compact
+    assert "No other script is skill-owned" in compact
+    assert "`run-raw-aria-snapshot.sh` is the exception" in compact
+    assert "`pom-ownership-candidates.py` are not exempt" in compact
+    assert "Step 3's safety gate and exact-target preflight still decide what the launcher may probe" in compact
+    commands = " ".join(section(text, "### Proposed target-controlled commands", "**Approval gate:**").split())
+    assert "The three skill-owned scripts (the preflight launcher, the frame writer, and `scan.sh` under its pinned Step 6 invocation) are not rows in this table" in commands
+    assert "any `scan.sh` run with other `E2E_SMELL_*` settings are" in commands
+    launcher_ref = " ".join(section(preflight_ref, "## Preflight launcher", "## Frame writer").split())
+    assert "skill-owned scripts that execute no project code; they need no Step 4 row" in launcher_ref
+    scanner_gate = section(text, "### e2e-reviewer (automatic quality gate)", "---")
+    assert "one path per invocation" in scanner_gate
+    assert "E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1" in scanner_gate
+    assert "/usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN" in scanner_gate
+    assert "an environment variable alone is never approval" in " ".join(scanner_gate.split())
+    assert "honors a project-provided `sgconfig.yml`" in " ".join(scanner_gate.split())
+    # Item 2: V6 says how to obtain the reviewer on each host and which line to quote.
+    v6 = " ".join(section(verification_rules, "## V6 \u2014 Independent Re-review", "## Temporary-copy safety").split())
+    assert "**Obtaining the reviewer.**" in v6
+    assert "spawn one subagent with the `Agent` tool" in v6
+    assert "`V6 VERDICT: <PASS|FAIL> P0=<n> P1=<n> P2=<n> reviewer=<id>`" in v6
+    assert "Quote that line verbatim in the completion report" in v6
+    assert "Do not pass the writer's conclusions" in v6
+    assert "never substitute inline review" in v6
+    # Item 3: the writer runs only the scanner; Phase 2 runs once, in the V6 reviewer.
+    gate = " ".join(section(text, "### e2e-reviewer (automatic quality gate)", "---").split())
+    assert "/bin/bash -p <e2e-reviewer skill-base>/scripts/scan.sh" in gate
+    assert "The Phase 2 LLM review runs once, by the V6 reviewer in Step 7" in gate
+    assert "do not invoke `e2e-reviewer` through the `Skill` tool from the writer context" in gate
+    assert "Only when no separate reviewer actor exists (V6 will be `CANNOT_VERIFY`)" in gate
+    assert "that inline review changes no V6 verdict" in gate
+    assert "run its full Phase 1\u20132 procedure inline" not in gate
+    assert "fix immediately, rerun the scanner" in gate
+    # Item 4: text-bearing elements are located by text or a labeled ancestor; #id/.class need JUSTIFIED.
+    compact_code = " ".join(code_rules.split())
+    assert "**Text-bearing elements without a role, label, or test id.**" in compact_code
+    assert "`#id` and `.class` selectors need `// JUSTIFIED: <reason>` on the line above" in compact_code
+    assert "8. CSS `#id` / `.class` \u2014 last resort, `// JUSTIFIED:` required" in compact_code
+    assert "CSS class \u2014 **POM files only**" not in compact_code
+    assert "- `#id` / `.class` selectors \u2014 explain why no role, label, test id, or visible text locates the element" in compact_code
+    assert "| Text-only elements |" in best_practices
+    assert "`#id` and `.class` selectors require the same `// JUSTIFIED:` line" in " ".join(scenario_design.split())
+    assert "Raw CSS `#id`/`.class`: `// JUSTIFIED:` only" in conventions_template
+    # Item 5: a probe that was not run has a verdict; V4 names the injection procedure.
+    v2 = " ".join(section(verification_rules, "## V2 \u2014 Assertion Falsification", "## V3 \u2014 Behavior Fault Injection").split())
+    v3 = " ".join(section(verification_rules, "## V3 \u2014 Behavior Fault Injection", "## V4 \u2014 Write Contract Proof").split())
+    v4 = " ".join(section(verification_rules, "## V4 \u2014 Write Contract Proof", "## V5 \u2014 Repeat and Isolation").split())
+    assert "A V2 probe that was not run is recorded as `CANNOT_VERIFY` with the reason `not attempted: <why>`" in v2
+    assert "does not block `Complete`" in v2
+    assert "A V3 probe that was not run is recorded as `CANNOT_VERIFY` with the reason `not attempted: <why>`" in v3
+    assert "**Failed-write procedure.**" in v4
+    assert "The injection never edits the application or the source candidate" in v4
+    assert "fulfill it with a failure the product can receive" in v4
+    assert "`not attempted: failed-write injection`, which blocks `Complete` because V4 is applicable" in v4
+    step_7 = " ".join(section(text, "## Step 7: V1\u2013V6 Verification + Failure Handling", "### Completion report (on full pass)").split())
+    assert "V2 and V3 `CANNOT_VERIFY` are reported and never block `Complete`, while applicable V4, V5, and V6 must be `PASS`" in step_7
+    # Item 6: no empty headings, no self-references in the exploration reference.
+    guard = section(preflight_ref, "## Guard for Playwright CLI", "## Raw-ARIA fallback")
+    assert guard.lstrip().startswith("**Guard for Playwright CLI.** Its `route` command"), "Guard heading must sit directly above the guard recipe"
+    assert "`exploration-preflight.md` \u00a7" not in preflight_ref, "exploration-preflight.md must not point at itself"
+    assert "this SKILL.md" not in preflight_ref
+    assert "## Structured result contract\n\nRecord the result in this shape" in verification_rules
+    assert "## Structured result contract\n\n## Completion" not in verification_rules
+    # Evals: each behavior item carries one true positive and one false-positive guard.
+    for case_id in (45, 46, 47, 48, 49):
+        assertions = evals_by_id[case_id]["assertions"]
+        assert any(str(item).startswith("True positive:") for item in assertions), case_id
+        assert any(str(item).startswith("False-positive guard:") for item in assertions), case_id
+
+
+def exercise_full_fixed_mutation_guards(
+    text: str,
+    verification_rules: str,
+    code_rules: str,
+    preflight_ref: str,
+    scenario_design: str,
+    best_practices: str,
+    conventions_template: str,
+    evals_by_id: dict,
+) -> None:
+    mutations = (
+        dict(text=text.replace("Exactly three scripts are skill-owned", "Scripts in the skill directory are skill-owned", 1)),
+        dict(text=text.replace("E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env", "/usr/bin/env", 1)),
+        dict(verification_rules=verification_rules.replace("Quote that line verbatim in the completion report", "Summarize the verdict", 1)),
+        dict(text=text.replace("The Phase 2 LLM review runs once, by the V6 reviewer in Step 7", "Run the full Phase 1\u20132 review inline", 1)),
+        dict(code_rules=code_rules.replace("**Text-bearing elements without a role, label, or test id.**", "", 1)),
+        dict(verification_rules=verification_rules.replace("`not attempted: failed-write injection`, which blocks `Complete` because V4 is applicable", "request proof alone is `PASS`", 1)),
+        dict(preflight_ref=preflight_ref.replace("## Guard for Playwright CLI\n\n**Guard for Playwright CLI.** Its `route` command", "**Guard for Playwright CLI.** Its `route` command", 1).replace("## Browser source selection and containment", "## Guard for Playwright CLI\n\n## Browser source selection and containment", 1)),
+    )
+    base = dict(
+        text=text, verification_rules=verification_rules, code_rules=code_rules,
+        preflight_ref=preflight_ref, scenario_design=scenario_design,
+        best_practices=best_practices, conventions_template=conventions_template,
+        evals_by_id=evals_by_id,
+    )
+    for mutation in mutations:
+        changed = any(mutation[key] != base[key] for key in mutation)
+        assert changed, f"full-fixed mutation target missing: {list(mutation)}"
+        try:
+            assert_full_fixed_contracts(**{**base, **mutation})
+        except AssertionError:
+            continue
+        raise AssertionError(f"assert_full_fixed_contracts survived a mutation of {list(mutation)}")
+
+
 def main() -> None:
+    reuse_text = SKILL.read_text(encoding="utf-8")
+    assert_reference_reuse(reuse_text)
+    for lost_guard in ("complete, unchanged", "compaction", "truncation", "file changes", "section that was not loaded"):
+        try:
+            assert_reference_reuse(reuse_text.replace(lost_guard, ""))
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError(f"reuse guard accepted missing {lost_guard!r}")
     exercise_utf8_frame_writer()
     exercise_framed_preflight_argv_boundary()
     exercise_preflight_helper()
@@ -2115,6 +2410,7 @@ def main() -> None:
     )
     codex_plugin = json.loads(CODEX_PLUGIN.read_text(encoding="utf-8"))
     code_rules = CODE_RULES.read_text(encoding="utf-8")
+    recommended_lint = RECOMMENDED_LINT.read_text(encoding="utf-8")
     best_practices = BEST_PRACTICES.read_text(encoding="utf-8")
     verification_rules = VERIFICATION_RULES.read_text(encoding="utf-8")
     preflight_ref = EXPLORATION_PREFLIGHT.read_text(encoding="utf-8")
@@ -2135,6 +2431,76 @@ def main() -> None:
     )
     evals = json.loads(EVALS.read_text(encoding="utf-8"))["evals"]
     evals_by_id = {case["id"]: case for case in evals}
+    overlap_rule = "**Overlapping asynchronous actions.**"
+    assert overlap_rule in verification_rules
+    assert "await the terminal processing or cancellation of the earlier work" in verification_rules
+    assert "for overlapping asynchronous actions, the evidenced overlap" in scenario_design
+    overlap_eval = evals_by_id[51]
+    assert any(item.startswith("True positive:") for item in overlap_eval["assertions"])
+    assert any("debouncing" in item for item in overlap_eval["assertions"])
+    assert any("observable cancellation" in item for item in overlap_eval["assertions"])
+    assert "V1 CANNOT_VERIFY" in overlap_eval["expected_output"]
+    assert "direct siblings of this `SKILL.md`" in text
+    assert "$SKILL_ROOT/best-practices.md" in text
+    path_eval = evals_by_id[52]
+    assert any(item.startswith("True positive:") for item in path_eval["assertions"])
+    assert any("references/" in item for item in path_eval["assertions"])
+    assert any("target project" in item for item in path_eval["assertions"])
+    assert "Classify V4 by the action's effect, not its HTTP verb" in text
+    assert "A genuinely read-only `GET` does not become a V4 write" in text
+    write_get_eval = evals_by_id[53]
+    assert any("side-effectful search GET" in item for item in write_get_eval["assertions"])
+    assert any("PARTIAL/BLOCKED" in item for item in write_get_eval["assertions"])
+    assert any("read-only catalog GET" in item for item in write_get_eval["assertions"])
+    assert "effect from source or observed behavior: write, read-only, or unknown" in scenario_design
+    assert "The HTTP method alone never proves an action read-only" in scenario_design
+    assert "reconcile each planned V4 write with the two evidence lines" in text
+    planned_v4_eval = evals_by_id[54]
+    assert any("before generation" in item for item in planned_v4_eval["assertions"])
+    assert any("missing either final evidence line" in item for item in planned_v4_eval["assertions"])
+    assert any("read-only catalog GET" in item for item in planned_v4_eval["assertions"])
+    assert "Before starting V5 repeats or V6 review" in text
+    assert "`waitForResponse` alone does not establish cardinality" in text
+    assert "A `2xx` response that merely omits a state update" in verification_rules
+    assert "Count the matching requests during the normal action" in verification_rules
+    counted_v4_eval = evals_by_id[55]
+    assert any("waitForResponse is not counted cardinality" in item for item in counted_v4_eval["assertions"])
+    assert any("undocumented success-shaped HTTP 200" in item for item in counted_v4_eval["assertions"])
+    assert any("False-positive guard: accepts a documented HTTP 200 error body" in item for item in counted_v4_eval["assertions"])
+    assert "Preserve the candidate's action sequence, primary assertion, and expected value" in text
+    assert "Before that run, compare the temporary source with the candidate" in verification_rules
+    exact_v4_eval = evals_by_id[56]
+    assert any("shortened action sequence" in item for item in exact_v4_eval["assertions"])
+    assert any("blocks Complete" in item for item in exact_v4_eval["assertions"])
+    assert any("False-positive guard: permits only a settled-state gate" in item for item in exact_v4_eval["assertions"])
+    assert "For an unchanged-state failure, re-read persistent state after the injected response" in verification_rules
+    assert "arm an observation of the injected failure response before the write action and await that response before re-reading" in verification_rules
+    assert "A red DOM assertion before that re-read is V4 `CANNOT_VERIFY`" in verification_rules
+    assert "await its injected failure response, re-read persisted state, then assert that unchanged primary or gate in that order" in text
+    reread_v4_eval = evals_by_id[57]
+    assert any("red DOM assertion before a post-failure re-read" in item for item in reread_v4_eval["assertions"])
+    assert any("False-positive guard: no mandatory re-read" in item for item in reread_v4_eval["assertions"])
+    ordered_reread_eval = evals_by_id[58]
+    assert any("reload before the injected failure response settles" in item for item in ordered_reread_eval["assertions"])
+    assert any("False-positive guard: accepts a post-response reload" in item for item in ordered_reread_eval["assertions"])
+    assert "Target the write that feeds the unchanged primary; let earlier writes and checkpoints succeed" in verification_rules
+    assert "After the failed response, reload or await an evidenced app re-fetch of persistent state" in verification_rules
+    assert "Do not proceed to V5 or V6 when the temporary run fails at an earlier checkpoint" in verification_rules
+    sequence_eval = evals_by_id[59]
+    assert any("first claim rather than the final claim" in item for item in sequence_eval["assertions"])
+    assert any("False-positive guard: accepts the exact ordered final-write probe" in item for item in sequence_eval["assertions"])
+    assert "V4 EVIDENCE: <PASS|FAIL|CANNOT_VERIFY|ERROR> reviewer=<id>" in verification_rules
+    assert "full temporary verifier source and its diff against the candidate" in verification_rules
+    assert "normal-run request observation and failed-run output" in verification_rules
+    assert "Do not send the writer's V4 verdict" in verification_rules
+    assert "A V6 `PASS` cannot override a V4 evidence verdict" in verification_rules
+    assert "V4 independent evidence audit" in text
+    audit_eval = evals_by_id[60]
+    assert any("reload before the HTTP 500 response" in item for item in audit_eval["assertions"])
+    assert any("False-positive guard: accepts complete ordered raw evidence" in item for item in audit_eval["assertions"])
+    readonly_eval = evals_by_id[61]
+    assert any("genuinely read-only GET" in item for item in readonly_eval["assertions"])
+    assert any("False-positive guard: no V4 audit" in item for item in readonly_eval["assertions"])
     unrelated_red = evals_by_id[13]
     assertion_red = evals_by_id[14]
     for case in (unrelated_red, assertion_red):
@@ -2237,7 +2603,7 @@ def main() -> None:
     assert "`exploration-preflight.md` § Preflight launcher" in compact_step_3
     assert "`exploration-preflight.md` § Frame writer" in compact_step_3
     assert "`exploration-preflight.md` § Raw-ARIA fallback" in compact_step_3
-    assert "(rationale: `exploration-preflight.md`)" in compact_step_3
+    assert "(rationale: § Why Playwright CLI is the default)" in compact_step_3
     assert "`--max-redirs 0`" in preflight_launcher
     assert "bounded timeouts" in preflight_launcher
     assert "**Exact-target preflight (run first" in step_3
@@ -2684,6 +3050,12 @@ def main() -> None:
         scenario_design, verification_rules, text
     )
     assert_secondary_outcome_contract(scenario_design)
+    assert_portable_generator_guidance(code_rules, scenario_design, evals_by_id)
+    assert_pipeline_and_pom_style_contract(text, code_rules, evals_by_id)
+    exercise_pipeline_and_pom_style_mutation_guards(text, code_rules, evals_by_id)
+    exercise_portable_generator_guidance_mutation_guards(
+        code_rules, scenario_design, evals_by_id
+    )
     imported_cases = IMPORTED_TEST_CASES.read_text(encoding="utf-8")
     assert_imported_test_case_contract(scenario_design, imported_cases)
     exercise_secondary_outcome_and_import_mutation_guards(scenario_design, imported_cases)
@@ -2745,8 +3117,19 @@ def main() -> None:
     assert "as the sole outcome assertion or readiness gate" in code_rules
     assert "Raw `count()` remains valid for evidenced data collection" in code_rules
     assert "Positive `toBeAttached()` is valid when DOM attachment itself" in code_rules
+    assert "matcher that expresses the approved contract" in code_rules
+    assert "Do not infer visibility from the invalid truthiness assertion" in code_rules
     assert "Record the idempotence evidence" in code_rules
     assert "`.first()` + `toBeVisible()`" not in code_rules
+
+    assert "Cypress silent-pass precedent" not in recommended_lint
+    assert "Playwright `no-unnecessary-assertions`" in recommended_lint
+
+    repair_eval = " ".join(json.dumps(evals_by_id[8], ensure_ascii=False).split())
+    assert "approved expected value and primary outcome are immutable" in repair_eval
+    assert "True positive:" in repair_eval
+    assert "False-positive guard:" in repair_eval
+    assert "does not change an expected value to match observed product behavior" in repair_eval
 
     v5 = section(
         verification_rules,
@@ -2885,6 +3268,8 @@ def main() -> None:
     assert "## playwright-test-generator — Complete" in completion_templates
     assert "## playwright-test-generator — PARTIAL/BLOCKED" in completion_templates
     assert_v6_completion_contract(text, verification_rules, evals_by_id)
+    assert_full_fixed_contracts(text, verification_rules, code_rules, preflight_ref, scenario_design, best_practices, conventions_template, evals_by_id)
+    exercise_full_fixed_mutation_guards(text, verification_rules, code_rules, preflight_ref, scenario_design, best_practices, conventions_template, evals_by_id)
 
     print(
         "generator contracts: pass "
@@ -2899,7 +3284,8 @@ def main() -> None:
         "case provenance, fail-closed "
         "V4/V5/V6 completion, accurate "
         "Playwright guidance, approved control files, usage-aware YAGNI, "
-        "fail-closed P0 gate)"
+        "fail-closed P0 gate, "
+        "full-fixed items 1-6)"
     )
 
 

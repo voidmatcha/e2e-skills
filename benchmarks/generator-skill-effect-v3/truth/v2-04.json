@@ -1,0 +1,123 @@
+{
+  "task": "Cover the account settings page (`/`), which has a Profile tab (Display name, Bio) and a Notifications tab (Email alerts, Digest). Save is disabled until something changed and is disabled again once saved, with the status `Settings saved`. Reset puts every field back to the saved values. What a reload shows is what was last saved, and saving from one tab must not lose the other tab's saved values. Switching tabs with unsaved changes shows `You have unsaved changes` with Discard and Keep editing: Keep editing stays on the current tab with the edits intact; Discard switches tabs and drops the edits.",
+  "faults": [
+    {
+      "id": "f1-save-noop",
+      "class": "surface",
+      "brief_phrase": "the status `Settings saved`",
+      "description": "Save sends nothing and shows no status.",
+      "find": "    el(\"st-save\").addEventListener(\"click\", async () => {\n      const payload = current();\n",
+      "replace": "    el(\"st-save\").addEventListener(\"click\", async () => {\n      const payload = current();\n      if (payload) return;\n"
+    },
+    {
+      "id": "f2-save-never-disabled",
+      "class": "interaction",
+      "brief_phrase": "Save is disabled until something changed",
+      "description": "Save is always enabled.",
+      "find": "      el(\"st-save\").disabled = !isDirty();\n",
+      "replace": "      el(\"st-save\").disabled = false;\n"
+    },
+    {
+      "id": "f3-reset-skips-notifications",
+      "class": "precision",
+      "brief_phrase": "Reset puts every field back to the saved values",
+      "description": "Reset restores the Profile fields only; Email alerts and Digest keep their edited values.",
+      "find": "    el(\"st-reset\").addEventListener(\"click\", () => fill(saved));\n",
+      "replace": "    el(\"st-reset\").addEventListener(\"click\", () => fill({ ...current(), displayName: saved.displayName, bio: saved.bio }));\n"
+    },
+    {
+      "id": "f4-guard-missing",
+      "class": "interaction",
+      "brief_phrase": "Switching tabs with unsaved changes shows `You have unsaved changes`",
+      "description": "Tabs switch immediately even with unsaved changes; the edits stay in the fields.",
+      "find": "      if (isDirty()) {\n        pendingTab = name;\n",
+      "replace": "      if (isDirty() && pendingTab === \"never\") {\n        pendingTab = name;\n"
+    },
+    {
+      "id": "f5-save-drops-other-tab",
+      "class": "persistence",
+      "brief_phrase": "saving from one tab must not lose the other tab's saved values",
+      "description": "Save sends only the visible tab's fields, so the server resets the other tab to defaults; visible after a reload.",
+      "find": "      const payload = current();\n      const res = await fetch(\"/api/settings\", {",
+      "replace": "      const payload = Object.fromEntries(Object.entries(current()).filter(([key]) => panels.profile.hidden ? [\"emailAlerts\", \"digest\"].includes(key) : [\"displayName\", \"bio\"].includes(key)));\n      const res = await fetch(\"/api/settings\", {"
+    }
+  ],
+  "refactor": [
+    {
+      "find": "<div id=\"st-actions\">",
+      "replace": "<div class=\"toolbar\"><div id=\"st-actions\" class=\"toolbar__actions\">"
+    },
+    {
+      "find": "<button type=\"button\" id=\"st-save\" disabled>Save</button>\n    </div>",
+      "replace": "<button type=\"button\" id=\"st-save\" class=\"btn btn-primary\" disabled><span>Save</span></button>\n    </div></div>"
+    },
+    {
+      "find": "<button type=\"button\" id=\"st-reset\">Reset</button>",
+      "replace": "<button type=\"button\" id=\"st-reset\" class=\"btn btn-ghost\"><span>Reset</span></button>"
+    },
+    {
+      "find": "st-display-name",
+      "replace": "field-handle"
+    },
+    {
+      "find": "st-email-alerts",
+      "replace": "field-alerts"
+    },
+    {
+      "find": "st-panel-profile",
+      "replace": "pane-identity"
+    },
+    {
+      "find": "st-panel-notifications",
+      "replace": "pane-alerts"
+    },
+    {
+      "find": "st-tab-profile",
+      "replace": "tab-identity"
+    },
+    {
+      "find": "st-tab-notifications",
+      "replace": "tab-alerts"
+    },
+    {
+      "find": "st-discard",
+      "replace": "guard-drop"
+    },
+    {
+      "find": "st-keep",
+      "replace": "guard-stay"
+    },
+    {
+      "find": "st-guard",
+      "replace": "dirty-guard"
+    },
+    {
+      "find": "st-status",
+      "replace": "feedback"
+    },
+    {
+      "find": "st-reset",
+      "replace": "revert"
+    },
+    {
+      "find": "st-save",
+      "replace": "commit"
+    },
+    {
+      "find": "st-tabs",
+      "replace": "section-tabs"
+    },
+    {
+      "find": "st-bio",
+      "replace": "field-about"
+    },
+    {
+      "find": "st-digest",
+      "replace": "field-cadence"
+    },
+    {
+      "find": "st-actions",
+      "replace": "form-actions"
+    }
+  ]
+}

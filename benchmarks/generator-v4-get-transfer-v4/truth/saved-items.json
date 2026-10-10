@@ -1,0 +1,50 @@
+{
+  "task": "Cover the saved-items page at `/`. It starts with Oak and Cedar not saved and Saved 0. Toggling one item flips exactly that item's saved state once per click and updates the saved count. Toggle Oak, then Cedar; both should be saved and Saved 2. Reloading keeps those values. Toggle Oak again so Oak is not saved, Cedar remains saved, and Saved 1.",
+  "faults": [
+    {
+      "id": "f1-toggle-noop",
+      "class": "surface",
+      "brief_phrase": "Toggling one item",
+      "description": "The Toggle button does not dispatch a request.",
+      "find": "        button.addEventListener(\"click\", () => toggle(item));",
+      "replace": "        button.addEventListener(\"click\", () => {});"
+    },
+    {
+      "id": "f2-wrong-item",
+      "class": "precision",
+      "brief_phrase": "exactly that item's saved state",
+      "description": "The server always flips Oak, regardless of which item was clicked.",
+      "find": "    saved[item] = !saved[item];",
+      "replace": "    saved.oak = !saved.oak;"
+    },
+    {
+      "id": "f3-count-stale",
+      "class": "state",
+      "brief_phrase": "updates the saved count",
+      "description": "The visible saved count is always zero while item flags update.",
+      "find": "      countEl.textContent = \"Saved: \" + Object.values(next).filter(Boolean).length;",
+      "replace": "      countEl.textContent = \"Saved: 0\";"
+    },
+    {
+      "id": "f4-duplicate-get",
+      "class": "cardinality",
+      "brief_phrase": "once per click",
+      "description": "The UI sends two state-changing GET requests per click.",
+      "find": "      const response = await fetch(\"/api/toggle?item=\" + encodeURIComponent(item));",
+      "replace": "      await fetch(\"/api/toggle?item=\" + encodeURIComponent(item));\n      const response = await fetch(\"/api/toggle?item=\" + encodeURIComponent(item));"
+    },
+    {
+      "id": "f5-reload-forgets-saved",
+      "class": "persistence",
+      "brief_phrase": "Reloading keeps those values",
+      "description": "The initial saved endpoint returns seed values after reload.",
+      "find": "  if (url.pathname === \"/api/saved\" && req.method === \"GET\") return json(res, 200, saved);",
+      "replace": "  if (url.pathname === \"/api/saved\" && req.method === \"GET\") return json(res, 200, SEED);"
+    }
+  ],
+  "refactor": [
+    { "find": "saved-list", "replace": "item-options" },
+    { "find": "saved-count", "replace": "item-summary" },
+    { "find": "saved-error", "replace": "toggle-error" }
+  ]
+}

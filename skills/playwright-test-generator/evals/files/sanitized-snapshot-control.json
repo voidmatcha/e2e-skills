@@ -1,0 +1,27 @@
+{
+  "source": "user-provided sanitized DOM and console snapshot",
+  "origin": "https://shop.example.invalid",
+  "route": "/checkout",
+  "dom": [
+    {
+      "role": "heading",
+      "name": "Checkout",
+      "level": 1
+    },
+    {
+      "role": "textbox",
+      "name": "Email"
+    },
+    {
+      "role": "button",
+      "name": "Place order"
+    },
+    {
+      "role": "note",
+      "name": "Orders are reviewed before fulfillment"
+    }
+  ],
+  "console": [
+    "Checkout form ready"
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "task": "Cover the stock-claim page at `/`. It starts with Lamp 3 left, Desk 3 left, and Claimed 0. Claiming a product decreases exactly that product's stock once per click and increases the claimed total by one. Claim Lamp, then Desk; the page should show Lamp 2 left, Desk 2 left, Claimed 2. Reloading keeps those values. Claim Lamp again to show Lamp 1 left, Desk 2 left, Claimed 3.",
+  "faults": [
+    {
+      "id": "f1-claim-noop",
+      "class": "surface",
+      "brief_phrase": "Claiming a product",
+      "description": "The Claim button does not dispatch a claim.",
+      "find": "        button.addEventListener(\"click\", () => claim(sku));",
+      "replace": "        button.addEventListener(\"click\", () => {});"
+    },
+    {
+      "id": "f2-wrong-product",
+      "class": "precision",
+      "brief_phrase": "exactly that product's stock",
+      "description": "The server always decrements Lamp regardless of the clicked product.",
+      "find": "    stock[sku] -= 1;",
+      "replace": "    stock.lamp -= 1;"
+    },
+    {
+      "id": "f3-total-omitted",
+      "class": "state",
+      "brief_phrase": "increases the claimed total by one",
+      "description": "Individual stocks change, but the claimed total never increments.",
+      "find": "    stock.claimed += 1;",
+      "replace": "    void stock.claimed;"
+    },
+    {
+      "id": "f4-duplicate-get",
+      "class": "cardinality",
+      "brief_phrase": "once per click",
+      "description": "The UI sends two state-changing GET requests per click.",
+      "find": "      const response = await fetch(\"/api/claim?sku=\" + encodeURIComponent(sku));",
+      "replace": "      await fetch(\"/api/claim?sku=\" + encodeURIComponent(sku));\n      const response = await fetch(\"/api/claim?sku=\" + encodeURIComponent(sku));"
+    },
+    {
+      "id": "f5-reload-forgets-stock",
+      "class": "persistence",
+      "brief_phrase": "Reloading keeps those values",
+      "description": "The initial stock endpoint returns seed values after reload.",
+      "find": "  if (url.pathname === \"/api/stock\" && req.method === \"GET\") return json(res, 200, stock);",
+      "replace": "  if (url.pathname === \"/api/stock\" && req.method === \"GET\") return json(res, 200, SEED);"
+    }
+  ],
+  "refactor": [
+    { "find": "claim-list", "replace": "inventory-options" },
+    { "find": "claim-total", "replace": "claims-summary" },
+    { "find": "claim-error", "replace": "claims-alert" }
+  ]
+}

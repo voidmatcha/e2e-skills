@@ -1,0 +1,14 @@
+{
+ "source": {
+  "repo": "frappe/release_tests",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/frappe/release_tests/pull/3"
+  ],
+  "merged": "2026-09-30"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test",
+ "explanation": "`cy.wait('@searchLink')` matches any Link field's lookup on the page, not just the one under test, so it can consume an unrelated call and resolve before the actual query's results render, surfacing as 'no request ever occurred' even though one did.",
+ "fix": "Replace the alias wait with a direct assertion on the rendered suggestion for the typed value, which cannot pass until that query's own result is on screen."
+}

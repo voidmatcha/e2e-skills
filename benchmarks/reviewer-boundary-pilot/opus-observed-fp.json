@@ -1,0 +1,223 @@
+{
+  "case": "v10-cy-15",
+  "model": "claude-opus-5",
+  "runner_version": "2.1.286 (Claude Code)",
+  "repetitions": 5,
+  "target": [
+    "#20",
+    "P1",
+    "cypress/e2e/plots.cy.ts",
+    20
+  ],
+  "source_sha256": {
+    "cypress/e2e/plots.cy.ts": "0c68ddf72b2428ffadf62f44ae64781d3951aa594372bf7b01479bdf70f22149",
+    "cypress/support/commands.ts": "ee8f187d247bb2d0aa9575eefd87ceca7e4c241c824edc307dd64f14e3743456"
+  },
+  "historical_motivation": "v15 Sonnet full flagged #20 at line 20 in 3/5 runs; v10 Opus full in 1/5. Historical reports used an older skill and CLI, so they are not a paired control.",
+  "calls": [
+    {
+      "arm": "before",
+      "repetition": 1,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "answer": {
+        "findings": []
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 2,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 72411,
+        "output_tokens": 739,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 13184,
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    },
+    {
+      "arm": "after",
+      "repetition": 1,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "answer": {
+        "findings": []
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 4,
+        "cached_input_tokens": 75518,
+        "cache_write_tokens": 70013,
+        "output_tokens": 818,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 18215,
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    },
+    {
+      "arm": "after",
+      "repetition": 2,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "answer": {
+        "findings": []
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 2,
+        "cached_input_tokens": 72363,
+        "cache_write_tokens": 0,
+        "output_tokens": 944,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 15756,
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    },
+    {
+      "arm": "before",
+      "repetition": 2,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "answer": {
+        "findings": []
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 2,
+        "cached_input_tokens": 72411,
+        "cache_write_tokens": 0,
+        "output_tokens": 811,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 14344,
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    },
+    {
+      "arm": "before",
+      "repetition": 3,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "answer": {
+        "findings": []
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 2,
+        "cached_input_tokens": 72411,
+        "cache_write_tokens": 0,
+        "output_tokens": 973,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 16201,
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    },
+    {
+      "arm": "after",
+      "repetition": 3,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "answer": {
+        "findings": []
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 2,
+        "cached_input_tokens": 72363,
+        "cache_write_tokens": 0,
+        "output_tokens": 803,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 13636,
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    },
+    {
+      "arm": "after",
+      "repetition": 4,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "answer": {
+        "findings": []
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 4,
+        "cached_input_tokens": 144726,
+        "cache_write_tokens": 661,
+        "output_tokens": 674,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 13264,
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    },
+    {
+      "arm": "before",
+      "repetition": 4,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "answer": {
+        "findings": []
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 2,
+        "cached_input_tokens": 72411,
+        "cache_write_tokens": 0,
+        "output_tokens": 1045,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 16669,
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    },
+    {
+      "arm": "before",
+      "repetition": 5,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "answer": {
+        "findings": []
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 2,
+        "cached_input_tokens": 72411,
+        "cache_write_tokens": 0,
+        "output_tokens": 950,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 14846,
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    },
+    {
+      "arm": "after",
+      "repetition": 5,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "answer": {
+        "findings": []
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 2,
+        "cached_input_tokens": 72363,
+        "cache_write_tokens": 0,
+        "output_tokens": 555,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 18241,
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    }
+  ],
+  "skill_prompt_sha256": {
+    "before": "13613ff87cd115e2dd8e55a48b80a15e7be7562cca37788ac73910568bbb43ff",
+    "after": "6acaf64ad9f03c4e644192eb409a7a9b8999861e8a1ce49c2c5c5ea7bf8a4c7f"
+  }
+}

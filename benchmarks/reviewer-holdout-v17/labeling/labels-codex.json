@@ -1,0 +1,67 @@
+{
+  "labeler": "codex-gpt-6-sol",
+  "cases": {
+    "v17-pw-01": [
+      {"pattern_id":"#1","severity":"P1","file":"tests/estuary.spec.ts","line":2,"rule":"One promised outcome is verified, but tide phase is not."},
+      {"pattern_id":"#1","severity":"P0","file":"tests/estuary.spec.ts","line":6,"rule":"No title-promised outcome has corresponding evidence."}
+    ],
+    "v17-pw-02": [{"pattern_id":"#23","severity":"P0","file":"tests/fixtures/bulbs.ts","line":2,"rule":"Fixture violates the render guard, making the negative assertion pass for the wrong reason."}],
+    "v17-pw-03": [{"pattern_id":"#5a","severity":"P0","file":"tests/meteor.spec.ts","line":5,"rule":"A condition skips the only load-bearing promised-outcome assertion."}],
+    "v17-pw-04": [{"pattern_id":"#3","severity":"P0","file":"tests/support/compass.ts","line":4,"rule":"A real assertion is swallowed and is not reasserted unswallowed."}],
+    "v17-pw-05": [
+      {"pattern_id":"#4a","severity":"P0","file":"tests/kiln.spec.ts","line":5,"rule":"The asserted constant satisfies the predicate independently of product behavior."},
+      {"pattern_id":"#4c-4e","severity":"P1","file":"tests/kiln.spec.ts","line":9,"rule":"A Locator state is sampled once instead of using a retrying assertion."},
+      {"pattern_id":"#4f + #6","severity":"P0","file":"tests/kiln.spec.ts","line":13,"rule":"The raw DOM query falls back to an always-truthy Locator."}
+    ],
+    "v17-pw-06": [{"pattern_id":"#10a","severity":"P1","file":"pages/MineralShelf.ts","line":4,"rule":"Positional Locator use lacks a documented or self-describing positional intent."}],
+    "v17-pw-07": [
+      {"pattern_id":"#16","severity":"P1","file":"tests/aurora.spec.ts","line":4,"rule":"The Locator action Promise is neither awaited nor returned."},
+      {"pattern_id":"#15","severity":"P1","file":"tests/aurora.spec.ts","line":5,"rule":"The web-first assertion Promise is neither awaited nor returned."},
+      {"pattern_id":"#4a","severity":"P0","file":"tests/aurora.spec.ts","line":6,"rule":"Invariant arithmetic is true independently of application behavior."}
+    ],
+    "v17-pw-08": [],
+    "v17-pw-09": [{"pattern_id":"#20","severity":"P1","file":"tests/tag-forge.spec.ts","line":5,"rule":"The click triggers an unstubbed write to an explicitly persistent shared service."}],
+    "v17-pw-10": [{"pattern_id":"#22","severity":"P1","file":"tests/star-pin.spec.ts","line":4,"rule":"Server persistence is promised, but only optimistic UI state is proved."}],
+    "v17-pw-11": [{"pattern_id":"#8a","severity":"P0","file":"tests/sundial.spec.ts","line":4,"rule":"A standalone Locator is discarded, leaving the promised behavior unverified."}],
+    "v17-pw-12": [{"pattern_id":"#12","severity":"P0","file":"tests/atlas.spec.ts","line":3,"rule":"The protected route lacks auth and the login surface satisfies the assertion."}],
+    "v17-pw-13": [{"pattern_id":"#19","severity":"P1","file":"tests/support/visits.ts","line":1,"rule":"A module-level mutable container persists across tests within a worker."}],
+    "v17-pw-14": [],
+    "v17-pw-15": [
+      {"pattern_id":"#4j","severity":"P1","file":"tests/chimes.spec.ts","line":4,"rule":"The role-only ARIA snapshot omits the accessible name promised by the title."},
+      {"pattern_id":"#4k","severity":"P1","file":"tests/chimes.spec.ts","line":8,"rule":"The assertion loop can run zero times because collection size is unproven."}
+    ],
+    "v17-pw-16": [{"pattern_id":"#4k","severity":"P1","file":"tests/beacon-readings.spec.ts","line":4,"rule":"The assertion loop can run zero times because collection size is unproven."}],
+    "v17-pw-17": [{"pattern_id":"#4f + #6","severity":"P0","file":"tests/lantern-signal.spec.ts","line":4,"rule":"The assertion checks an always-truthy Locator created through an avoidable raw DOM query."}],
+    "v17-pw-18": [{"pattern_id":"#1","severity":"P0","file":"tests/harbor-receipt.spec.ts","line":2,"rule":"The URL assertion verifies neither harbor fee nor permit number promised by the title."}],
+    "v17-cy-01": [
+      {"pattern_id":"#1","severity":"P1","file":"cypress/e2e/salt-marsh.cy.ts","line":2,"rule":"Oxygen is verified, but the title's turbidity promise is not."},
+      {"pattern_id":"#1","severity":"P0","file":"cypress/e2e/salt-marsh.cy.ts","line":6,"rule":"No title-promised outcome has corresponding evidence."}
+    ],
+    "v17-cy-02": [{"pattern_id":"#23","severity":"P2","file":"cypress/fixtures/seed-packets.json","line":2,"rule":"The fixture field violates the component render guard."}],
+    "v17-cy-03": [{"pattern_id":"#3b","severity":"P0","file":"cypress/support/e2e.ts","line":1,"rule":"A blanket uncaught:exception handler returning false suppresses application errors."}],
+    "v17-cy-04": [{"pattern_id":"#4i","severity":"P1","file":"cypress/e2e/lichen.cy.ts","line":4,"rule":"The absence locator is never proven able to match and has no positive counterpart."}],
+    "v17-cy-05": [
+      {"pattern_id":"#9b","severity":"P1","file":"cypress/e2e/glassworks.cy.ts","line":4,"rule":"A numeric cy.wait is a hard-coded sleep."},
+      {"pattern_id":"#5b","severity":"P1","file":"cypress/e2e/glassworks.cy.ts","line":5,"rule":"force:true on a Cypress action lacks a concrete JUSTIFIED rationale."}
+    ],
+    "v17-cy-06": [],
+    "v17-cy-07": [{"pattern_id":"#10d","severity":"P1","file":"cypress/e2e/radio-dial.cy.ts","line":2,"rule":"An async test callback queues cy commands, mixing Promises with the command queue."}],
+    "v17-cy-08": [{"pattern_id":"#10e","severity":"P1","file":"cypress/e2e/ink-vats.cy.ts","line":4,"rule":"An assigned cy.get result is a Chainable, not the yielded DOM value."}],
+    "v17-cy-09": [{"pattern_id":"#10f","severity":"P1","file":"cypress/e2e/palette.cy.ts","line":4,"rule":"An action continues into an assertion on the potentially replaced subject."}],
+    "v17-cy-10": [
+      {"pattern_id":"#10f","severity":"P1","file":"cypress/e2e/terrarium.cy.ts","line":4,"rule":"A clear action continues into type on the same unsafe action chain."},
+      {"pattern_id":"#2","severity":"P0","file":"cypress/e2e/terrarium.cy.ts","line":5,"rule":"The save action has no final-state verification."}
+    ],
+    "v17-cy-11": [{"pattern_id":"#11c","severity":"P2","file":"cypress/e2e/canal-lock.cy.ts","line":2,"rule":"A committed skip lacks a reason, ticket, date, condition, or JUSTIFIED rationale."}],
+    "v17-cy-12": [],
+    "v17-cy-13": [{"pattern_id":"#3","severity":"P0","file":"cypress/support/commands.ts","line":5,"rule":"An assertion failure is swallowed by catch."}],
+    "v17-cy-14": [],
+    "v17-cy-15": [{"pattern_id":"#4a","severity":"P0","file":"cypress/e2e/compost.cy.ts","line":5,"rule":"The predicate is invariant from local data and cannot verify product behavior."}],
+    "v17-cy-16": [{"pattern_id":"#4i","severity":"P1","file":"cypress/e2e/map-archive.cy.ts","line":5,"rule":"The post-action absence locator is never proven able to match."}],
+    "v17-cy-17": [
+      {"pattern_id":"#9b","severity":"P1","file":"cypress/e2e/sluice-gate.cy.ts","line":4,"rule":"A numeric cy.wait is a hard-coded sleep."},
+      {"pattern_id":"#2","severity":"P0","file":"cypress/e2e/sluice-gate.cy.ts","line":5,"rule":"The save action has no final-state verification."}
+    ],
+    "v17-cy-18": [{"pattern_id":"#23","severity":"P2","file":"cypress/fixtures/specimens.json","line":2,"rule":"The fixture field violates the component render guard."}]
+  }
+}

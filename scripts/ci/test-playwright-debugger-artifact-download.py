@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import os
 from pathlib import Path
 import stat
@@ -669,6 +670,49 @@ def main() -> None:
             "repos/owner/repo/actions/artifacts/42/zip",
         ]
         assert_no_staging(valid_workspace)
+
+        for label, artifacts, should_pass in (
+            (
+                "run-bound-report",
+                [{"id": 43, "name": "playwright-report-123456-1", "expired": False}],
+                True,
+            ),
+            (
+                "different-run-report",
+                [{"id": 43, "name": "playwright-report-654321-1", "expired": False}],
+                False,
+            ),
+            (
+                "ambiguous-report",
+                [
+                    {"id": 42, "name": "playwright-report", "expired": False},
+                    {"id": 43, "name": "playwright-report-123456-1", "expired": False},
+                ],
+                False,
+            ),
+            (
+                "non-numeric-attempt",
+                [{"id": 43, "name": "playwright-report-123456-latest", "expired": False}],
+                False,
+            ),
+        ):
+            workspace = temp / label
+            workspace.mkdir()
+            listing = temp / f"{label}.json"
+            listing.write_text(
+                json.dumps({"total_count": len(artifacts), "artifacts": artifacts}),
+                encoding="utf-8",
+            )
+            result = run_helper(
+                workspace,
+                gh,
+                temp,
+                valid_zip,
+                MOCK_GH_ARTIFACT_JSON=str(listing),
+            )
+            assert (result.returncode == 0) is should_pass, (label, result.stderr)
+            assert (workspace / "playwright-report").exists() is should_pass
+            assert_no_staging(workspace)
 
         ambient_workspace = temp / "ambient-repository-workspace"
         (ambient_workspace / ".git").mkdir(parents=True)

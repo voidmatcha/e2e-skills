@@ -1,0 +1,18 @@
+{
+ "screen_frozen_utc": "2026-10-07T05:15:53Z",
+ "metric": "refactor_score",
+ "keep_band": [0.25, 0.75],
+ "min_kept": 12,
+ "initial_calls": 72,
+ "extension_calls": 29,
+ "kept": ["v2-01", "v2-06", "v2-08", "v2-11", "v2-13", "v2-16", "v2-20", "v3-06", "v3-12"],
+ "kept_count": 9,
+ "kept_mean_no_skill_refactor_score": 0.5,
+ "outcome": "fewer than min_kept tasks qualified after the preregistered third-repetition extension; the final five-arm comparison was not run and the protocol ends INCONCLUSIVE (thin pool)",
+ "report_sha256": "825c74cc1dec08aa608d84b6da77f098af32054d1d33c1f96613f238c3765e8e",
+ "scores_sha256": "7a297b0b717a08d34b24d6df243fa6d4ed2c4211b5ccaade443f4e8673e381a6",
+ "extension_report_sha256": "7a6b52aad4b7eb20cd019ff8564f2a6a096849f48beb67b5be4daf8ef156d967",
+ "extension_scores_sha256": "67f8ccdb49d59e820947e3a17abbd3579199a5c05065465799cc577ddebcb6ca",
+ "spent_usd": 7.0518,
+ "unscored_calls": []
+}

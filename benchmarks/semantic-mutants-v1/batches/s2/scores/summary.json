@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "batch": "S2",
+  "sample_count": 36,
+  "case_count": 9,
+  "arms": {
+    "skill": {
+      "samples": 18,
+      "strict_recall": {
+        "ratio": 0.8888888888888888,
+        "hits": 8,
+        "n": 9
+      },
+      "lenient_recall": {
+        "ratio": 0.8888888888888888,
+        "hits": 8,
+        "n": 9
+      },
+      "after_false_alarm": {
+        "ratio": 0.0,
+        "alarms": 0,
+        "n": 9
+      },
+      "input_tokens": {
+        "mean": 520121.3888888889,
+        "stderr": 30741.90861492646
+      }
+    },
+    "no-skill": {
+      "samples": 18,
+      "strict_recall": {
+        "ratio": 0.2222222222222222,
+        "hits": 2,
+        "n": 9
+      },
+      "lenient_recall": {
+        "ratio": 0.7777777777777778,
+        "hits": 7,
+        "n": 9
+      },
+      "after_false_alarm": {
+        "ratio": 0.0,
+        "alarms": 0,
+        "n": 9
+      },
+      "input_tokens": {
+        "mean": 134502.05555555556,
+        "stderr": 6155.206721743807
+      }
+    }
+  }
+}

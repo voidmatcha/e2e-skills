@@ -1,16 +1,25 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Persistent scope engine with fail-closed private scanner IPC."""
+"""Persistent scope engine with fail-closed private scanner IPC.
+
+The channel is a request FIFO, a response FIFO and a lock file in the private
+scanner directory. FIFOs, unlike AF_UNIX sockets, are allowed by host sandboxes
+such as the Codex macOS seatbelt, which denies socket bind/connect by default.
+Clients serialize on the lock; a random request id binds each response to its
+request, so an answer left for a client that gave up can never satisfy another.
+"""
 import sys
 sys.dont_write_bytecode = True
 import argparse
+import errno
+import fcntl
 import importlib.util
 import json
 import os
 from pathlib import Path
 import secrets
+import select
 import signal
-import socket
 import stat
 import struct
 import threading
@@ -18,6 +27,7 @@ import time
 from types import SimpleNamespace
 
 MAX_FRAME = 65536
+IO_TIMEOUT = 5
 
 
 class WorkerError(Exception): pass
@@ -55,28 +65,69 @@ def private_regular(fd):
     return value
 
 
-def exact(sock, count):
+def channel_paths(channel):
+    return {'request': channel + '.req', 'response': channel + '.resp', 'lock': channel + '.lock'}
+
+
+def channel_identity(paths):
+    identity = []
+    for name, check in (('request', stat.S_ISFIFO), ('response', stat.S_ISFIFO), ('lock', stat.S_ISREG)):
+        value = os.lstat(paths[name])
+        if (not check(value.st_mode) or value.st_uid != os.getuid() or value.st_mode & 0o077
+                or value.st_nlink != 1):
+            raise WorkerError('IPC channel is not private storage')
+        identity.append((value.st_dev, value.st_ino, value.st_mode))
+    return tuple(identity)
+
+
+def open_checked(path, flags, expected):
+    fd = os.open(path, flags | os.O_NOFOLLOW)
+    value = os.fstat(fd)
+    if (value.st_dev, value.st_ino, value.st_mode) != expected:
+        os.close(fd)
+        raise WorkerError('IPC channel identity changed')
+    return fd
+
+
+def read_exact(fd, count, deadline):
     chunks = bytearray()
     while len(chunks) < count:
-        part = sock.recv(count - len(chunks))
+        remaining = deadline - time.monotonic()
+        if remaining <= 0: raise WorkerError('protocol read timed out')
+        if not select.select([fd], [], [], remaining)[0]: continue
+        try: part = os.read(fd, count - len(chunks))
+        except BlockingIOError: continue
         if not part: raise WorkerError('premature protocol EOF')
         chunks.extend(part)
     return bytes(chunks)
 
 
-def receive(sock):
-    length = struct.unpack('!I', exact(sock, 4))[0]
-    if not 0 < length <= MAX_FRAME: raise WorkerError('invalid protocol frame length')
-    result = json.loads(exact(sock, length).decode('utf-8'), object_pairs_hook=unique_object)
+def write_all(fd, data, deadline):
+    view = memoryview(data)
+    while view:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0: raise WorkerError('protocol write timed out')
+        if not select.select([], [fd], [], remaining)[1]: continue
+        try: view = view[os.write(fd, view):]
+        except BlockingIOError: continue
+
+
+def decode(payload):
+    result = json.loads(payload.decode('utf-8'), object_pairs_hook=unique_object)
     if not isinstance(result, dict): raise WorkerError('protocol frame must be an object')
-    if sock.recv(1): raise WorkerError('trailing protocol bytes')
     return result
 
 
-def send(sock, data):
+def frame_length(header):
+    length = struct.unpack('!I', header)[0]
+    if not 0 < length <= MAX_FRAME: raise WorkerError('invalid protocol frame length')
+    return length
+
+
+def encode(data):
     payload = json.dumps(data, separators=(',', ':'), ensure_ascii=True).encode()
     if not 0 < len(payload) <= MAX_FRAME: raise WorkerError('response exceeds protocol limit')
-    sock.sendall(struct.pack('!I', len(payload)) + payload)
+    return struct.pack('!I', len(payload)) + payload
 
 
 def load_engine(path):
@@ -90,16 +141,17 @@ class Worker:
     def __init__(self, args):
         self.args = args
         self.parent, self.parent_identity = private_parent(args.control)
-        if private_parent(args.socket)[0] != self.parent:
-            raise WorkerError('socket and control must share the private directory')
+        if private_parent(args.channel)[0] != self.parent:
+            raise WorkerError('channel and control must share the private directory')
+        self.paths = channel_paths(args.channel)
         if type(args.parent_pid) is not int or args.parent_pid <= 1 or os.getppid() != args.parent_pid:
             raise WorkerError('expected scanner parent is no longer the worker parent')
         self.owner_pid = args.parent_pid
         self.nonce = secrets.token_hex(16)
         self.engine = load_engine(args.engine)
         self.graph = None
-        self.listener = None
-        self.marker_identity = self.socket_identity = None
+        self.request_fd = self.request_hold = None
+        self.marker_identity = self.channel_identity = None
         self.stop_watchdog = threading.Event()
         self.poisoned = False
         # No existing marker can be adopted, even after a previous worker died.
@@ -112,18 +164,19 @@ class Worker:
                                                        rg=args.rg, rg_errors=args.rg_errors,
                                                        strict_watch=getattr(args, 'watch_mode', 'off') == 'strict'), data)
         self.graph.witnesses.watch(__file__)
-        self.listener = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        # bind publishes the socket before returning; keep it private from
-        # its first visible instant, including before the following chmod.
+        # Create every channel node private from its first visible instant.
+        # Exclusive creation means an existing channel can never be adopted.
         previous_umask = os.umask(0o077)
         try:
-            self.listener.bind(args.socket)
+            os.mkfifo(self.paths['request'], 0o600)
+            os.mkfifo(self.paths['response'], 0o600)
+            os.close(os.open(self.paths['lock'], os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600))
         finally:
             os.umask(previous_umask)
-        os.chmod(args.socket, 0o600)
-        self.socket_identity = signature(args.socket)
-        self.listener.listen(1)
-        self.listener.settimeout(1)
+        self.channel_identity = channel_identity(self.paths)
+        self.request_fd = open_checked(self.paths['request'], os.O_RDONLY | os.O_NONBLOCK, self.channel_identity[0])
+        # Holding a writer keeps the request FIFO from reporting EOF between clients.
+        self.request_hold = open_checked(self.paths['request'], os.O_WRONLY | os.O_NONBLOCK, self.channel_identity[0])
         self.watchdog = threading.Thread(target=self.watch_parent, daemon=True)
         self.watchdog.start()
 
@@ -139,14 +192,16 @@ class Worker:
             raise WorkerError('worker private directory identity changed')
         if signature(self.args.control) != self.marker_identity:
             raise WorkerError('worker continuity marker changed')
-        if signature(self.args.socket) != self.socket_identity:
-            raise WorkerError('worker socket identity changed')
+        if channel_identity(self.paths) != self.channel_identity:
+            raise WorkerError('worker channel identity changed')
 
     def check_request(self, request):
         if type(request.get('v')) is not int or request['v'] != 1 or request.get('nonce') != self.nonce:
             raise WorkerError('invalid protocol identity')
+        if not isinstance(request.get('rid'), str) or len(request['rid']) != 32:
+            raise WorkerError('invalid request id')
         operation = request.get('op')
-        expected = {'v', 'nonce', 'op'}
+        expected = {'v', 'nonce', 'rid', 'op'}
         if operation == 'query': expected |= {'node', 'visited', 'depth'}
         elif operation not in ('ping', 'checkpoint', 'validate'): raise WorkerError('unknown operation')
         if set(request) != expected: raise WorkerError('invalid operation fields')
@@ -210,34 +265,53 @@ class Worker:
         self.identities()
         if os.path.exists(self.args.rg_errors) and os.path.getsize(self.args.rg_errors):
             raise WorkerError('lexical helper recorded a runtime failure')
-        return operation, {'v': 1, 'nonce': self.nonce, 'status': status}
+        return operation, {'v': 1, 'nonce': self.nonce, 'rid': request['rid'], 'status': status}
+
+    def receive(self):
+        deadline = time.monotonic() + IO_TIMEOUT
+        length = frame_length(read_exact(self.request_fd, 4, deadline))
+        payload = read_exact(self.request_fd, length, deadline)
+        # Clients hold the lock for a whole exchange, so any byte already
+        # queued after the frame came from the same client.
+        try: trailing = os.read(self.request_fd, 1)
+        except BlockingIOError: trailing = b''
+        if trailing: raise WorkerError('trailing protocol bytes')
+        return decode(payload)
+
+    def respond(self, data):
+        frame = encode(data)
+        try:
+            fd = open_checked(self.paths['response'], os.O_WRONLY | os.O_NONBLOCK, self.channel_identity[1])
+        except OSError as error:
+            if error.errno == errno.ENXIO: raise WorkerError('client stopped waiting for its response')
+            raise
+        try: write_all(fd, frame, time.monotonic() + IO_TIMEOUT)
+        finally: os.close(fd)
 
     def run(self):
         while not self.poisoned:
-            try: connection, _ = self.listener.accept()
-            except socket.timeout:
+            if not select.select([self.request_fd], [], [], 1)[0]:
                 self.identities()
                 continue
-            with connection:
+            rid = None
+            try:
+                request = self.receive()
+                rid = request.get('rid') if isinstance(request.get('rid'), str) else None
+                signal.alarm(self.args.timeout)
+                operation, response = self.evaluate(request)
+                signal.alarm(0)
+                self.respond(response)
+                if operation == 'validate': return 0
+            except BaseException as error:
+                signal.alarm(0)
+                self.poisoned = True
                 try:
-                    connection.settimeout(5)
-                    request = receive(connection)
-                    signal.alarm(self.args.timeout)
-                    operation, response = self.evaluate(request)
-                    signal.alarm(0)
-                    connection.settimeout(5)
-                    send(connection, response)
-                    connection.shutdown(socket.SHUT_WR)
-                    if operation == 'validate': return 0
-                except BaseException as error:
-                    signal.alarm(0)
-                    self.poisoned = True
-                    try:
-                        send(connection, {'v': 1, 'nonce': self.nonce, 'status': 'error', 'error': str(error)[:4000]})
-                        connection.shutdown(socket.SHUT_WR)
-                    except BaseException:
-                        pass
-                    raise
+                    error_response = {'v': 1, 'nonce': self.nonce, 'status': 'error', 'error': str(error)[:4000]}
+                    if rid is not None: error_response['rid'] = rid
+                    self.respond(error_response)
+                except BaseException:
+                    pass
+                raise
         raise WorkerError('poisoned worker')
 
     def close(self, restore_signals=True):
@@ -248,12 +322,14 @@ class Worker:
         previous = {number: signal.signal(number, signal.SIG_IGN) for number in signals}
         signal.alarm(0)
         try:
-            if self.listener is not None: self.listener.close()
+            for fd in (self.request_fd, self.request_hold):
+                if fd is not None: os.close(fd)
+            self.request_fd = self.request_hold = None
             if self.graph is not None: self.graph.close()
         finally:
             if restore_signals:
                 for number, handler in previous.items(): signal.signal(number, handler)
-        # Keep marker/socket nodes until parent cleanup. This prevents restart
+        # Keep marker/channel nodes until parent cleanup. This prevents restart
         # and lets the successful terminal client's postcheck pin identities.
 
 
@@ -273,44 +349,104 @@ def read_control(path):
     return data, before
 
 
-def client(args):
-    parent, parent_identity = private_parent(args.socket)
-    if private_parent(args.control)[0] != parent: raise WorkerError('mismatched IPC directory')
-    deadline = time.monotonic() + args.wait_ready
+def reader_present(path, expected):
+    """True while some process holds the request FIFO's read end.
+
+    Only the worker opens that end, and the kernel drops it when the worker
+    exits, so this survives zombies and reused PIDs where a PID probe would not.
+    """
+    try: fd = open_checked(path, os.O_WRONLY | os.O_NONBLOCK, expected)
+    except OSError as error:
+        if error.errno == errno.ENXIO: return False
+        raise
+    os.close(fd)
+    return True
+
+
+def read_response(fd, deadline, alive):
+    """Read one frame from a nonblocking response FIFO, then require EOF.
+
+    Before the worker opens its end, reads return EOF immediately, so an
+    empty read only means "not answered yet" until the first byte arrives.
+    """
+    data = bytearray()
     while True:
-        connection = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        if time.monotonic() >= deadline: raise WorkerError('worker response timed out')
+        select.select([fd], [], [], 0.05)
+        try: part = os.read(fd, MAX_FRAME + 5)
+        except BlockingIOError: continue
+        if part:
+            data.extend(part)
+            if len(data) > MAX_FRAME + 4: raise WorkerError('response exceeds protocol limit')
+            continue
+        if data: break
+        if not alive(): raise WorkerError('worker is not running')
+        time.sleep(0.02)
+    if len(data) < 4: raise WorkerError('premature protocol EOF')
+    length = frame_length(bytes(data[:4]))
+    if len(data) != 4 + length: raise WorkerError('trailing or missing protocol bytes')
+    return decode(bytes(data[4:]))
+
+
+def client(args):
+    paths = channel_paths(args.channel)
+    parent, parent_identity = private_parent(args.channel)
+    if private_parent(args.control)[0] != parent: raise WorkerError('mismatched IPC directory')
+    ready_deadline = time.monotonic() + args.wait_ready
+    deadline = time.monotonic() + args.timeout
+    rid = secrets.token_hex(16)
+    while True:
+        lock_fd = response_fd = None
         try:
-            node = os.lstat(args.socket)
-            if not stat.S_ISSOCK(node.st_mode) or node.st_uid != os.getuid() or node.st_mode & 0o077:
-                raise WorkerError('socket is not private storage')
-            socket_identity = signature(args.socket)
+            identity = channel_identity(paths)
             state, marker_identity = read_control(args.control)
-            connection.settimeout(args.timeout)
-            connection.connect(args.socket)
+            lock_fd = open_checked(paths['lock'], os.O_RDWR, identity[2])
+            alive = lambda: reader_present(paths['request'], identity[0])
+            while True:
+                try:
+                    fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    break
+                except BlockingIOError:
+                    if time.monotonic() >= deadline: raise WorkerError('IPC channel lock timed out')
+                    if not alive(): raise WorkerError('worker is not running')
+                    time.sleep(0.02)
+            response_fd = open_checked(paths['response'], os.O_RDONLY | os.O_NONBLOCK, identity[1])
+            try:
+                request_fd = open_checked(paths['request'], os.O_WRONLY | os.O_NONBLOCK, identity[0])
+            except OSError as error:
+                if error.errno == errno.ENXIO: raise ConnectionRefusedError('worker is not reading requests')
+                raise
             break
         except (FileNotFoundError, ConnectionRefusedError):
-            connection.close()
-            if args.wait_ready and args.op == 'ping' and time.monotonic() < deadline:
+            for fd in (response_fd, lock_fd):
+                if fd is not None: os.close(fd)
+            if args.wait_ready and args.op == 'ping' and time.monotonic() < ready_deadline:
                 time.sleep(0.05)
                 continue
             raise
         except BaseException:
-            connection.close()
+            for fd in (response_fd, lock_fd):
+                if fd is not None: os.close(fd)
             raise
-    with connection:
-        request = {'v': 1, 'nonce': state['nonce'], 'op': args.op}
+    try:
+        request = {'v': 1, 'nonce': state['nonce'], 'rid': rid, 'op': args.op}
         if args.op == 'query': request.update(node=args.node, visited=args.visited, depth=args.depth)
-        send(connection, request)
-        connection.shutdown(socket.SHUT_WR)
-        response = receive(connection)
+        try: write_all(request_fd, encode(request), deadline)
+        finally: os.close(request_fd)
+        response = read_response(response_fd, deadline, alive)
+    finally:
+        os.close(response_fd)
+        os.close(lock_fd)
     if (private_parent(args.control) != (parent, parent_identity)
-            or signature(args.control) != marker_identity or signature(args.socket) != socket_identity):
+            or signature(args.control) != marker_identity or channel_identity(paths) != identity):
         raise WorkerError('IPC identity changed during request')
-    expected = {'v', 'nonce', 'status'} | ({'error'} if response.get('status') == 'error' else set())
-    if (set(response) != expected or type(response.get('v')) is not int or response['v'] != 1
-            or response.get('nonce') != state['nonce']):
-        raise WorkerError('invalid worker response')
     status = response.get('status')
+    expected = {'v', 'nonce', 'rid', 'status'}
+    if status == 'error':
+        expected = {'v', 'nonce', 'status', 'error'} | ({'rid'} if 'rid' in response else set())
+    if (set(response) != expected or type(response.get('v')) is not int or response['v'] != 1
+            or response.get('nonce') != state['nonce'] or response.get('rid', rid) != rid):
+        raise WorkerError('invalid worker response')
     if status == 'error': raise WorkerError('worker rejected request: ' + str(response.get('error')))
     if args.op == 'query':
         if status == 'found': return 0
@@ -322,7 +458,7 @@ def client(args):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('mode', choices=['serve', 'client'])
-    parser.add_argument('--socket', required=True)
+    parser.add_argument('--channel', required=True)
     parser.add_argument('--control', required=True)
     parser.add_argument('--engine', default=str(Path(__file__).with_name('scope-graph.py')))
     parser.add_argument('--parent-pid', type=int)

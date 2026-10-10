@@ -1,0 +1,62 @@
+{
+  "task": "Cover the quick quiz (`/`): three multiple-choice questions shown one at a time with `Question N of 3`. Next is disabled until an answer is chosen; Previous goes back to the earlier question with its answer still selected. On the last question Submit replaces Next; submitting shows `You scored N of 3` for the chosen answers (Jupiter, Canberra and 6 are correct), and the score is stored so that a reload shows `Your last score: N of 3`.",
+  "faults": [
+    {
+      "id": "f1-next-noop",
+      "class": "surface",
+      "brief_phrase": "three multiple-choice questions shown one at a time",
+      "description": "Next never advances to the following question.",
+      "find": "    el(\"qz-next\").addEventListener(\"click\", () => { index += 1; render(); });\n",
+      "replace": "    el(\"qz-next\").addEventListener(\"click\", () => { render(); });\n"
+    },
+    {
+      "id": "f2-next-enabled-unanswered",
+      "class": "interaction",
+      "brief_phrase": "Next is disabled until an answer is chosen",
+      "description": "Next and Submit are always enabled.",
+      "find": "      el(\"qz-next\").disabled = !answers[q.id];\n      el(\"qz-submit\").disabled = !answers[q.id];\n",
+      "replace": "      el(\"qz-next\").disabled = false;\n      el(\"qz-submit\").disabled = false;\n"
+    },
+    {
+      "id": "f3-previous-loses-answer",
+      "class": "recovery",
+      "brief_phrase": "with its answer still selected",
+      "description": "Going back shows the earlier question with no answer selected (and Next disabled again).",
+      "find": "    el(\"qz-previous\").addEventListener(\"click\", () => { index -= 1; render(); });\n",
+      "replace": "    el(\"qz-previous\").addEventListener(\"click\", () => { index -= 1; delete answers[questions[index].id]; render(); });\n"
+    },
+    {
+      "id": "f4-score-skips-last",
+      "class": "precision",
+      "brief_phrase": "shows `You scored N of 3` for the chosen answers",
+      "description": "The last question is never counted: three right answers score 2 of 3.",
+      "find": "      const score = QUESTIONS.filter((q) => answers[q.id] === q.answer).length;\n",
+      "replace": "      const score = QUESTIONS.slice(0, -1).filter((q) => answers[q.id] === q.answer).length;\n"
+    },
+    {
+      "id": "f5-score-not-persisted",
+      "class": "persistence",
+      "brief_phrase": "a reload shows `Your last score: N of 3`",
+      "description": "The score is shown but not stored; a reload shows no last score.",
+      "find": "      lastScore = { score, total: QUESTIONS.length };\n      return json(res, 201, lastScore);\n",
+      "replace": "      return json(res, 201, { score, total: QUESTIONS.length });\n"
+    }
+  ],
+  "refactor": [
+    {"find": "<section id=\"qz-quiz\">", "replace": "<section id=\"qz-quiz\" class=\"card card--quiz\"><div class=\"card__body\">"},
+    {"find": "<button type=\"button\" id=\"qz-submit\" hidden>Submit</button>\n    </section>", "replace": "<button type=\"button\" id=\"qz-submit\" class=\"btn btn-primary\" hidden><span>Submit</span></button>\n    </div></section>"},
+    {"find": "<button type=\"button\" id=\"qz-next\">Next</button>", "replace": "<button type=\"button\" id=\"qz-next\" class=\"btn btn-primary\"><span>Next</span></button>"},
+    {"find": "<button type=\"button\" id=\"qz-previous\">Previous</button>", "replace": "<button type=\"button\" id=\"qz-previous\" class=\"btn btn-ghost\"><span>Previous</span></button>"},
+    {"find": "qz-previous", "replace": "step-back"},
+    {"find": "qz-progress", "replace": "step-label"},
+    {"find": "qz-question", "replace": "prompt"},
+    {"find": "qz-options", "replace": "choices"},
+    {"find": "qz-result", "replace": "outcome"},
+    {"find": "qz-submit", "replace": "finish"},
+    {"find": "qz-score", "replace": "outcome-line"},
+    {"find": "qz-quiz", "replace": "stage"},
+    {"find": "qz-last", "replace": "history-line"},
+    {"find": "qz-next", "replace": "step-forward"},
+    {"find": "qz-text", "replace": "prompt-text"}
+  ]
+}

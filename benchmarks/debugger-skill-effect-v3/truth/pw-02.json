@@ -1,0 +1,14 @@
+{
+ "source": {
+  "repo": "ankit/stylebot",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/ankit/stylebot/pull/1163"
+  ],
+  "merged": "2026-10-05"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test",
+ "explanation": "The Firefox engine finds the popup as a DevTools target by URL and took the first match, including a popup an earlier test in the same browser left open. Tests then drove that stale popup, so which ones failed depended on test order.",
+ "fix": "`openPopup` records the targets already open and waits for a popup target that was not among them."
+}

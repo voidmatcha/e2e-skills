@@ -1,0 +1,57 @@
+{
+  "task": "Cover the team roster (`/`), a table of five members (one, Linus Torvalds, starts on leave). Toggle leave switches that member's status badge between Active and On leave, and the headcount line (`5 members · 1 on leave`) follows. Remove opens an inline confirmation row under that member (`Remove Ada?` with Confirm and Cancel): Cancel keeps the member and closes the row; Confirm removes exactly that member and updates the headcount. Leave status and removals are stored on the server and survive a reload.",
+  "faults": [
+    {
+      "id": "f1-toggle-noop",
+      "class": "surface",
+      "brief_phrase": "Toggle leave switches that member's status badge",
+      "description": "Toggle leave sends the request but the badge does not change until a reload.",
+      "find": "        member.onLeave = updated.onLeave;\n        render();\n",
+      "replace": "        void updated;\n"
+    },
+    {
+      "id": "f2-headcount-stale",
+      "class": "precision",
+      "brief_phrase": "the headcount line (`5 members · 1 on leave`) follows",
+      "description": "The headcount keeps the numbers from page load.",
+      "find": "      el(\"tr-headcount\").textContent = state.length + (state.length === 1 ? \" member\" : \" members\") + \" · \" + away + \" on leave\";\n",
+      "replace": "      if (!el(\"tr-headcount\").dataset.set) { el(\"tr-headcount\").dataset.set = \"1\"; el(\"tr-headcount\").textContent = state.length + (state.length === 1 ? \" member\" : \" members\") + \" · \" + away + \" on leave\"; }\n"
+    },
+    {
+      "id": "f3-confirm-removes-first",
+      "class": "precision",
+      "brief_phrase": "Confirm removes exactly that member",
+      "description": "Confirm removes the first member in the table instead of the one whose row was confirmed (the server deletes the right one).",
+      "find": "        state = state.filter((m) => m.id !== member.id);\n        confirming = null;\n",
+      "replace": "        state = state.slice(1);\n        confirming = null;\n"
+    },
+    {
+      "id": "f4-cancel-removes",
+      "class": "interaction",
+      "brief_phrase": "Cancel keeps the member and closes the row",
+      "description": "Cancel removes the member from the page (not from the server) instead of keeping them.",
+      "find": "      no.addEventListener(\"click\", () => { confirming = null; render(); });\n",
+      "replace": "      no.addEventListener(\"click\", () => { state = state.filter((m) => m.id !== member.id); confirming = null; render(); });\n"
+    },
+    {
+      "id": "f5-leave-not-persisted",
+      "class": "persistence",
+      "brief_phrase": "Leave status and removals are stored on the server and survive a reload",
+      "description": "The server answers with the toggled status but keeps the old one; a reload shows it.",
+      "find": "      member.onLeave = Boolean(onLeave);\n      return json(res, 200, member);\n",
+      "replace": "      return json(res, 200, { ...member, onLeave: Boolean(onLeave) });\n"
+    }
+  ],
+  "refactor": [
+    {"find": "<table id=\"tr-table\" class=\"roster\">", "replace": "<div class=\"panel\"><table id=\"tr-table\" class=\"data-grid\">"},
+    {"find": "<tbody id=\"tr-rows\"></tbody>\n    </table>", "replace": "<tbody id=\"tr-rows\"></tbody>\n    </table></div>"},
+    {"find": "<p id=\"tr-headcount\" class=\"headcount\">", "replace": "<p id=\"tr-headcount\" class=\"summary\">"},
+    {"find": "tr.className = member.onLeave ? \"member away\" : \"member\";", "replace": "tr.className = member.onLeave ? \"row row--absent\" : \"row\";"},
+    {"find": "badge.className = member.onLeave ? \"badge badge-away\" : \"badge badge-active\";", "replace": "badge.className = member.onLeave ? \"pill pill--absent\" : \"pill pill--present\";"},
+    {"find": "tr.className = \"confirm\";", "replace": "tr.className = \"row row--prompt\";"},
+    {"find": "text.className = \"confirm-text\";", "replace": "text.className = \"prompt__text\";"},
+    {"find": "tr-headcount", "replace": "roster-summary"},
+    {"find": "tr-table", "replace": "roster-grid"},
+    {"find": "tr-rows", "replace": "roster-grid-body"}
+  ]
+}

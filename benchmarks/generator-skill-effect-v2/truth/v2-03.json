@@ -1,0 +1,56 @@
+{
+  "task": "Cover the discussion page (`/`). A reader posts a comment; replies to a comment, and the reply appears nested under that comment (not under another one); edits a comment's text in place with Edit and Save; and deletes a comment after confirming the browser dialog, while dismissing the dialog keeps the comment. The counter under the heading counts replies too (`3 comments`). Comments, edits and deletions are stored on the server and survive a reload.",
+  "faults": [
+    {
+      "id": "f1-post-noop",
+      "class": "surface",
+      "brief_phrase": "A reader posts a comment",
+      "description": "Posting a comment changes nothing on the page until a reload.",
+      "find": "      state.push(created);\n",
+      "replace": "      void created;\n"
+    },
+    {
+      "id": "f2-reply-under-first-comment",
+      "class": "precision",
+      "brief_phrase": "nested under that comment (not under another one)",
+      "description": "Every reply is stored under the first top-level comment instead of the one replied to.",
+      "find": "parentId: parentId === null ? null : Number(parentId)",
+      "replace": "parentId: parentId === null ? null : comments.find((c) => c.parentId === null).id"
+    },
+    {
+      "id": "f3-dismiss-still-deletes",
+      "class": "interaction",
+      "brief_phrase": "dismissing the dialog keeps the comment",
+      "description": "The comment is deleted whether the dialog is confirmed or dismissed.",
+      "find": "          if (!confirm(\"Delete this comment?\")) return;\n",
+      "replace": "          confirm(\"Delete this comment?\");\n"
+    },
+    {
+      "id": "f4-edit-not-persisted",
+      "class": "persistence",
+      "brief_phrase": "survive a reload",
+      "description": "Save shows the new text but the server keeps the old one.",
+      "find": "      comment.text = String(text).trim();\n      return json(res, 200, comment);\n",
+      "replace": "      return json(res, 200, { ...comment, text: String(text).trim() });\n"
+    },
+    {
+      "id": "f5-count-ignores-replies",
+      "class": "precision",
+      "brief_phrase": "counts replies too",
+      "description": "The counter counts top-level comments only.",
+      "find": "      const total = state.length;\n",
+      "replace": "      const total = state.filter((c) => c.parentId === null).length;\n"
+    }
+  ],
+  "refactor": [
+    {"find": "<ul id=\"cm-thread\" aria-label=\"Comments\"></ul>", "replace": "<section class=\"thread-panel\"><ul id=\"cm-thread\" class=\"thread\" aria-label=\"Comments\"></ul></section>"},
+    {"find": "<button type=\"submit\">Post</button>", "replace": "<button type=\"submit\" class=\"btn btn-primary\"><span>Post</span></button>"},
+    {"find": "li.className = \"comment\";", "replace": "li.className = \"card card--comment\";"},
+    {"find": "text.className = \"text\";", "replace": "text.className = \"card__body\";"},
+    {"find": "ul.className = \"replies\";", "replace": "ul.className = \"thread thread--nested\";"},
+    {"find": "cm-count", "replace": "tally"},
+    {"find": "cm-form", "replace": "composer"},
+    {"find": "cm-text", "replace": "composer-text"},
+    {"find": "cm-thread", "replace": "conversation"}
+  ]
+}

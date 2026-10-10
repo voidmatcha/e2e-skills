@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "anchapin/staging-studio",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/anchapin/staging-studio/issues/1081",
+   "https://github.com/anchapin/staging-studio/pull/1089"
+  ],
+  "merged": "2026-09-28"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test",
+ "explanation": "Two independent failure modes: the page renders two file inputs so the locator is ambiguous, and `setInputFiles` on the hidden input does not register the files with React state in the production build, so the file list never updates. The real user flow goes through the dropzone click that opens the native picker.",
+ "fix": "Use Playwright's `page.on('filechooser')` pattern: click the dropzone and deliver the files through the chooser, so the real onChange handler fires."
+}

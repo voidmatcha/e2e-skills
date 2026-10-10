@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "ExaDev/agent-comms",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/ExaDev/agent-comms/issues/361",
+   "https://github.com/ExaDev/agent-comms/pull/383"
+  ],
+  "merged": "2026-10-02"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test",
+ "explanation": "The e2e fixture starts each dashboard with no `firstContactPort`, so every dashboard in the run takes part in default-on first contact on the shared well-known port. Parallel workers' dashboards, registered under the same name, discover each other and appear in each other's sidebar depending on timing.",
+ "fix": "Give the fixture an OS-assigned first-contact port (`freeLocalPort()`) so parallel workers' dashboards cannot discover each other."
+}

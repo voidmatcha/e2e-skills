@@ -1,0 +1,94 @@
+{
+ "status": "NO_TARGETED_SIGNAL",
+ "f3_killed_calls": {
+  "before": 3,
+  "after": 1
+ },
+ "paired_repetitions": [
+  {
+   "before": {
+    "f3_killed": true,
+    "clean": true,
+    "refactor": 1.0,
+    "effective_fault_kill": 1.0,
+    "p0": 0,
+    "timeout": false,
+    "out_of_scope": false,
+    "elapsed_ms": 257549,
+    "self_reported_status": "complete"
+   },
+   "after": {
+    "f3_killed": false,
+    "clean": true,
+    "refactor": 1.0,
+    "effective_fault_kill": 0.8,
+    "p0": 0,
+    "timeout": false,
+    "out_of_scope": false,
+    "elapsed_ms": 339789,
+    "self_reported_status": "partial_or_blocked"
+   },
+   "repetition": 1
+  },
+  {
+   "before": {
+    "f3_killed": true,
+    "clean": true,
+    "refactor": 1.0,
+    "effective_fault_kill": 1.0,
+    "p0": 0,
+    "timeout": false,
+    "out_of_scope": false,
+    "elapsed_ms": 212762,
+    "self_reported_status": "partial_or_blocked"
+   },
+   "after": {
+    "f3_killed": true,
+    "clean": true,
+    "refactor": 1.0,
+    "effective_fault_kill": 1.0,
+    "p0": 0,
+    "timeout": false,
+    "out_of_scope": false,
+    "elapsed_ms": 320102,
+    "self_reported_status": "partial_or_blocked"
+   },
+   "repetition": 2
+  },
+  {
+   "before": {
+    "f3_killed": true,
+    "clean": true,
+    "refactor": 1.0,
+    "effective_fault_kill": 1.0,
+    "p0": 0,
+    "timeout": false,
+    "out_of_scope": false,
+    "elapsed_ms": 251222,
+    "self_reported_status": "complete"
+   },
+   "after": {
+    "f3_killed": false,
+    "clean": true,
+    "refactor": 1.0,
+    "effective_fault_kill": 0.8,
+    "p0": 0,
+    "timeout": false,
+    "out_of_scope": false,
+    "elapsed_ms": 257283,
+    "self_reported_status": "partial_or_blocked"
+   },
+   "repetition": 3
+  }
+ ],
+ "clean_refactor_p0_scope_guards": true,
+ "no_paired_fault_kill_worsening": false,
+ "billed_usd": null,
+ "process_audit": "UNVERIFIED: counts and tool indicators do not establish V4/V6 compliance or causal failure attribution.",
+ "interpretation": "Posthoc public-spent single-fixture comparison; repeated calls are not independent defects. No generalized quality, cost, release, or adoption claim.",
+ "release_equivalence": false,
+ "protocol_id": "generator-unchanged-outcome-v1",
+ "report_sha256": "28a579308da6124f5cbb940a17ae7e241f6f8dbdc80088839560b32d94a99f9f",
+ "scores_sha256": "50ee69a599db34540b2704bb6876b7a0521f5ef7c0668d388abed0415615f91a",
+ "freeze_sha256": "2331ec120f3323dc4ffdc929da66675dd34976b43cd71847ef798180c46726b2"
+}

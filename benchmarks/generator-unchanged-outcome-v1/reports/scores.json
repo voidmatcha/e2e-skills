@@ -1,0 +1,1715 @@
+{
+ "protocol_id": "generator-unchanged-outcome-v1",
+ "stage": "final",
+ "report": "final.json",
+ "scored_utc": "2026-10-08T12:37:16Z",
+ "scores": [
+  {
+   "call_id": "v3-02-after-r1",
+   "case": "v3-02",
+   "arm": "after",
+   "repetition": 1,
+   "ordinal": 1,
+   "spec_files": [
+    "tests/recipe-browser.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/recipe-browser.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": null,
+   "elapsed_ms": 339789,
+   "num_turns": 1,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "evidence_source": "codex-json-command-execution",
+    "semantic_compliance": "unverified",
+    "tool_counts": {
+     "command_execution": 65
+    },
+    "bash_commands": [
+     "/usr/bin/bash -c \"sed -n '1,240p' <work>/skill/playwright-test-generator/SKILL.md\"",
+     "/usr/bin/bash -c \"sed -n '241,520p' <work>/skill/playwright-test-generator/SKILL.md\"",
+     "/usr/bin/bash -c \"sed -n '/\"'^## Environment Detection/,/''^## Coverage Gap Analysis/p'\"' <work>/skill/playwright-test-generator/references/best-practices.md\"",
+     "/usr/bin/bash -c 'rg --files <work>/skill/playwright-test-generator'",
+     "/usr/bin/bash -c \"sed -n '/\"'^## Environment Detection/,/''^## Coverage Gap Analysis/p'\"' <work>/skill/playwright-test-generator/best-practices.md\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' README.md\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' playwright.config.mjs\"",
+     "/usr/bin/bash -c 'rg --files'",
+     "/usr/bin/bash -c \"sed -n '1,220p' package.json\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' tests/smoke.spec.mjs\"",
+     "/usr/bin/bash -c 'find .. -name AGENTS.md -o -name CLAUDE.md -o -name CONTRIBUTING.md'",
+     "/usr/bin/bash -c \"sed -n '/\"'^## Browser source selection and containment/,/''^## Guard for Playwright CLI/p'\"' <work>/skill/playwright-test-generator/exploration-preflight.md\"",
+     "/usr/bin/bash -c \"sed -n '/\"'^## Preflight launcher/,/''^## Frame writer/p'\"' <work>/skill/playwright-test-generator/exploration-preflight.md\"",
+     "/usr/bin/bash -c \"sed -n '/\"'^## Frame writer/,/''^## Browser source selection and containment/p'\"' <work>/skill/playwright-test-generator/exploration-preflight.md\"",
+     "/usr/bin/bash -c \"sed -n '/\"'^## Guard for Playwright CLI/,/''^## Raw-ARIA fallback/p'\"' <work>/skill/playwright-test-generator/exploration-preflight.md\"",
+     "/usr/bin/bash -c \"sed -n '1,260p' <work>/skill/playwright-test-generator/scenario-design.md\"",
+     "/usr/bin/bash -c 'git status --porcelain --untracked-files=all'",
+     "/usr/bin/bash -c \"TARGET_URL='http://127.0.0.1:6101/' BASE_URL='http://127.0.0.1:6101' LOGIN_URL='' ALLOW_LOOPBACK=1; write_frame='<work>/skill/playwright-test-generator/scripts/write-utf8-frame.sh'; { printf '%s' \\\"\"'$TARGET_URL\" | \"$write_frame\"; printf '\"'%s' \\\"\"'$BASE_URL\" | \"$write_frame\"; printf '\"'%s' \\\"\"'$LOGIN_URL\" | \"$write_frame\"; printf '\"'%s' \\\"\"'$ALLOW_LOOPBACK\" | \"$write_frame\"; } | <work>/skill/playwright-test-generator/scripts/run-preflight-target.sh --framed-stdin'",
+     "/usr/bin/bash -c \"TARGET_URL='http://127.0.0.1:6101/' BASE_URL='http://127.0.0.1:6101' LOGIN_URL='' ALLOW_LOOPBACK=1; write_frame='<work>/skill/playwright-test-generator/scripts/write-utf8-frame.sh'; { printf '%s' \\\"\"'$TARGET_URL\" | \"$write_frame\"; printf '\"'%s' \\\"\"'$BASE_URL\" | \"$write_frame\"; printf '\"'%s' \\\"\"'$LOGIN_URL\" | \"$write_frame\"; printf '\"'%s' \\\"\"'$ALLOW_LOOPBACK\" | \"$write_frame\"; } | <work>/skill/playwright-test-generator/scripts/run-preflight-target.sh --framed-stdin'",
+     "/usr/bin/bash -c 'npx --no-install playwright help cli'",
+     "/usr/bin/bash -c \"tmp='/tmp/pw-origin-guard-recipes-6101.json'; printf '%s\\\\n' '{\\\"network\\\":{\\\"allowedOrigins\\\":[\\\"http://127.0.0.1:6101\\\"]}}' > \\\"\"'$tmp\"; ls -l \"$tmp\"'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli open --help'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-e2e-20261008-1205 --config /tmp/pw-origin-guard-recipes-6101.json open --browser chromium'",
+     "/usr/bin/bash -c \"npx --no-install playwright cli -s=recipes-e2e-20261008-1205 eval \\\"await page.evaluate(() => fetch('http://127.0.0.1:9/').catch(e => String(e)))\\\"\"",
+     "/usr/bin/bash -c 'npx --no-install playwright cli requests --help'",
+     "/usr/bin/bash -c \"npx --no-install playwright cli -s=recipes-e2e-20261008-1205 eval \\\"fetch('http://127.0.0.1:9/').catch(e => String(e))\\\"\"",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-e2e-20261008-1205 requests'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli goto --help'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli snapshot --help'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-e2e-20261008-1205 goto http://127.0.0.1:6101/'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-e2e-20261008-1205 snapshot'",
+     "/usr/bin/bash -c \"sed -n '1,260p' app.mjs\"",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-e2e-20261008-1205 click e15'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-e2e-20261008-1205 click \"Add Lentil soup to plan\"'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-e2e-20261008-1205 click vegan'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli click --help'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-e2e-20261008-1205 snapshot'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-e2e-20261008-1205 click e47 && npx --no-install playwright cli -s=recipes-e2e-20261008-1205 snapshot'",
+     "/usr/bin/bash -c \"sed -n '1,320p' <work>/skill/playwright-test-generator/verification-rules.md\"",
+     "/usr/bin/bash -c \"sed -n '1,260p' <work>/skill/playwright-test-generator/code-rules.md\"",
+     "/usr/bin/bash -c 'npx --no-install playwright cli close --help'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-e2e-20261008-1205 close'",
+     "/usr/bin/bash -c 'node app.mjs'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/smoke.spec.mjs'",
+     "/usr/bin/bash -c 'E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN /bin/bash -p <work>/skill/e2e-reviewer/scripts/scan.sh tests/recipe-browser.spec.mjs'",
+     "/usr/bin/bash -c 'E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN /bin/bash -p <work>/skill/e2e-reviewer/scripts/scan.sh tests/recipe-browser.spec.mjs'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.spec.mjs'",
+     "/usr/bin/bash -c 'cp tests/recipe-browser.spec.mjs tests/recipe-browser.v4.tmp.spec.mjs'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.v4.tmp.spec.mjs --grep \"updates planned recipe and serving totals\"'",
+     "/usr/bin/bash -c 'rm tests/recipe-browser.v4.tmp.spec.mjs'",
+     "/usr/bin/bash -c 'git status --porcelain --untracked-files=all'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.spec.mjs --repeat-each=2'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test'",
+     "/usr/bin/bash -c \"sed -n '1,260p' <work>/skill/e2e-reviewer/SKILL.md\"",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.spec.mjs'",
+     "/usr/bin/bash -c 'E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN /bin/bash -p <work>/skill/e2e-reviewer/scripts/scan.sh tests/recipe-browser.spec.mjs'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.spec.mjs --repeat-each=2'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.spec.mjs --repeat-each=2'",
+     "/usr/bin/bash -c 'cp tests/recipe-browser.spec.mjs tests/recipe-browser.v4.tmp.spec.mjs'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.v4.tmp.spec.mjs --grep \"updates planned recipe and serving totals\"'",
+     "/usr/bin/bash -c 'rm tests/recipe-browser.v4.tmp.spec.mjs'",
+     "/usr/bin/bash -c 'git status --porcelain --untracked-files=all'",
+     "/usr/bin/bash -c \"sed -n '1,140p' tests/recipe-browser.spec.mjs\"",
+     "/usr/bin/bash -c \"find tests -maxdepth 1 -name '*tmp*' -print\""
+    ],
+    "read_generator_skill": null,
+    "read_reviewer_skill": null,
+    "read_lean_skill": null,
+    "read_rules_only": null,
+    "read_app_source": null,
+    "generator_reference_files_read": [],
+    "playwright_test_runs": 10,
+    "repeat_each_runs": 3,
+    "scanner_runs": 3,
+    "exploration_commands": 18,
+    "git_status_calls": 3,
+    "agent_spawns": 0,
+    "agent_spawns_verification": "unverified",
+    "write_or_edit_calls": null,
+    "writes_outside_tests": [],
+    "legitimate_complete": false,
+    "v6_verbatim_verdict": false
+   },
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 3,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.0,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0001.json",
+      "sha256": "7e8c839e41302b5d4245287f06f3858642f5fdd50a94a54ca30b52929fbf0c6e"
+     },
+     "attempt": 1,
+     "load_1m": 5.79
+    },
+    {
+     "exit": 0,
+     "passed": 3,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.7,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0002.json",
+      "sha256": "30ebd93c021fdf873b00dd5b3cd58341fbcd1a225ca895687588821e2397e093"
+     },
+     "attempt": 1,
+     "load_1m": 5.79
+    },
+    {
+     "exit": 0,
+     "passed": 3,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.7,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0003.json",
+      "sha256": "21c3dc1c8b323837db16d3e3e31748d95e9e9f64c944e715992305f5ed148db5"
+     },
+     "attempt": 1,
+     "load_1m": 5.8
+    }
+   ],
+   "faults": {
+    "f1-toggle-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.2,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0004.json",
+      "sha256": "9d949e62211279b9d4dc163057dbfdff7198a12f94516a14fc0542d39a532e06"
+     },
+     "attempt": 1,
+     "load_1m": 6.06,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-plan-ignores-servings": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.1,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0005.json",
+      "sha256": "cb2c35033159bc30c2e093d20df1b14abdf961cd1c5fe4a2cc21c7654272972a"
+     },
+     "attempt": 1,
+     "load_1m": 6.27,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-servings-below-one": {
+     "exit": 0,
+     "passed": 3,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.6,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0006.json",
+      "sha256": "84dd114b87e152af1b3ecc69b5e3c31221e874ac483fdcddaae2cbee4b59746f"
+     },
+     "attempt": 1,
+     "load_1m": 6.27,
+     "killed": false,
+     "class": "boundary"
+    },
+    "f4-servings-not-persisted": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.1,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0007.json",
+      "sha256": "c012271933910832849b03867f3c18a610e60a421d8f21d67b75f02d9fd77e88"
+     },
+     "attempt": 1,
+     "load_1m": 6.01,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-second-click-keeps-filter": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 6.7,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0008.json",
+      "sha256": "786f1281326a3953fcb1b052f78199ad9bbd56e1bdd64c05ffd46a243bdbadd5"
+     },
+     "attempt": 1,
+     "load_1m": 5.69,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 1.6,
+    "raw_playwright": {
+     "path": "scores-raw/raw-0009.json",
+     "sha256": "967195ec3bf56a0145513aebc12f818c84bf825bc00d274cc4d8f1fafcc2310d"
+    },
+    "attempt": 1,
+    "load_1m": 5.69
+   },
+   "load": {
+    "load_at_start": 5.69
+   },
+   "clean": true,
+   "kill_rate": 0.8,
+   "primary": 0.8,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 0,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 0,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": []
+   },
+   "census": {
+    "getByRole": 21,
+    "getByLabel": 0,
+    "getByText": 1,
+    "getByTestId": 0,
+    "getByPlaceholder": 0,
+    "css_id_or_class": 0,
+    "nth_first_last": 0,
+    "xpath": 0
+   }
+  },
+  {
+   "call_id": "v3-02-before-r1",
+   "case": "v3-02",
+   "arm": "before",
+   "repetition": 1,
+   "ordinal": 2,
+   "spec_files": [
+    "tests/recipe-browser.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/recipe-browser.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": null,
+   "elapsed_ms": 257549,
+   "num_turns": 1,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "evidence_source": "codex-json-command-execution",
+    "semantic_compliance": "unverified",
+    "tool_counts": {
+     "command_execution": 47
+    },
+    "bash_commands": [
+     "/usr/bin/bash -c \"sed -n '1,240p' <work>/skill/playwright-test-generator/SKILL.md\"",
+     "/usr/bin/bash -c \"sed -n '241,520p' <work>/skill/playwright-test-generator/SKILL.md\"",
+     "/usr/bin/bash -c 'rg -n \"''^## (Environment Detection|Coverage Gap Analysis)\" <work>/skill/playwright-test-generator/best-practices.md && sed -n '\"'1,220p' <work>/skill/playwright-test-generator/best-practices.md\"",
+     "/usr/bin/bash -c \"pwd && rg --files -g 'playwright.config.*' -g 'package.json' -g 'README.md' -g 'AGENTS.md' -g 'CLAUDE.md' -g 'CONTRIBUTING.md' -g 'tests/**' -g '\"'!node_modules/**'\"'\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' playwright.config.mjs\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' package.json\"",
+     "/usr/bin/bash -c 'find tests -maxdepth 3 -type f | sort'",
+     "/usr/bin/bash -c \"sed -n '1,240p' tests/smoke.spec.mjs\"",
+     "/usr/bin/bash -c \"sed -n '1,240p' README.md\"",
+     "/usr/bin/bash -c \"find . -maxdepth 3 \\\\( -name 'AGENTS.md' -o -name 'CLAUDE.md' -o -name 'CONTRIBUTING.md' -o -name 'seed.spec.*' \\\\) -print\"",
+     "/usr/bin/bash -c \"rg -n \\\"mutation|coverage|axe|a11y|toHaveScreenshot|screenshot|visual|fault|accessibility|test:e2e|playwright\\\" -g '\"'!node_modules/**'\"' -g '\"'!package-lock.json'\"'\"",
+     "/usr/bin/bash -c \"sed -n '1,260p' <work>/skill/playwright-test-generator/exploration-preflight.md\"",
+     "/usr/bin/bash -c \"git status --porcelain --untracked-files=all && (git status --porcelain --untracked-files=all | awk '{print \"'$2}'\"' | while IFS= read -r p; do [ -n \\\"\"'$p\" ] && sha256sum -- \"$p\"; done)'",
+     "/usr/bin/bash -c 'git status --porcelain=v1 --untracked-files=all'",
+     "/usr/bin/bash -c 'ls -ld node_modules && git ls-files -s node_modules | head'",
+     "/usr/bin/bash -c 'readlink node_modules | sha256sum'",
+     "/usr/bin/bash -c \"write_frame=<work>/skill/playwright-test-generator/scripts/write-utf8-frame.sh; { printf '%s' 'http://127.0.0.1:6102/' | \\\"\"'$write_frame\"; printf '\"'%s' 'http://127.0.0.1:6102' | \\\"\"'$write_frame\"; printf '\"'%s' '' | \\\"\"'$write_frame\"; printf '\"'%s' '1' | \\\"\"'$write_frame\"; } | <work>/skill/playwright-test-generator/scripts/run-preflight-target.sh --framed-stdin'",
+     "/usr/bin/bash -c \"write_frame=<work>/skill/playwright-test-generator/scripts/write-utf8-frame.sh; { printf '%s' 'http://127.0.0.1:6102/' | \\\"\"'$write_frame\"; printf '\"'%s' 'http://127.0.0.1:6102' | \\\"\"'$write_frame\"; printf '\"'%s' '' | \\\"\"'$write_frame\"; printf '\"'%s' '1' | \\\"\"'$write_frame\"; } | <work>/skill/playwright-test-generator/scripts/run-preflight-target.sh --framed-stdin'",
+     "/usr/bin/bash -c \"sed -n '1,260p' <work>/skill/playwright-test-generator/scenario-design.md\"",
+     "/usr/bin/bash -c \"find . -path './node_modules' -prune -o -path './.playwright/cli.config.json' -print\"",
+     "/usr/bin/bash -c 'npx --no-install playwright help cli'",
+     "/usr/bin/bash -c \"mkdir -p /tmp/codex-playwright-guard-recipes && printf '%s\n' '{\\\"network\\\":{\\\"allowedOrigins\\\":[\\\"http://127.0.0.1:6102\\\"]}}' > /tmp/codex-playwright-guard-recipes/cli-config.json && npx --no-install playwright cli -s=recipes-guard-20261008 --config /tmp/codex-playwright-guard-recipes/cli-config.json open --browser chromium\"",
+     "/usr/bin/bash -c \"npx --no-install playwright cli -s=recipes-guard-20261008 eval \\\"fetch('http://127.0.0.1:9/').catch(error => error.message)\\\"\"",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-guard-20261008 requests'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-guard-20261008 goto http://127.0.0.1:6102/'",
+     "/usr/bin/bash -c \"sed -n '1,260p' .playwright-cli/page-2026-10-08T12-11-23-144Z.yml\"",
+     "/usr/bin/bash -c \"sed -n '1,260p' app.mjs\"",
+     "/usr/bin/bash -c \"npx --no-install playwright cli -s=recipes-guard-20261008 click \\\"role=button[name='vegan']\\\" && npx --no-install playwright cli -s=recipes-guard-20261008 snapshot\"",
+     "/usr/bin/bash -c \"npx --no-install playwright cli -s=recipes-guard-20261008 click \\\"role=button[name='vegan']\\\" && npx --no-install playwright cli -s=recipes-guard-20261008 snapshot\"",
+     "/usr/bin/bash -c \"npx --no-install playwright cli -s=recipes-guard-20261008 click \\\"role=button[name='Add Lentil soup to plan']\\\" && npx --no-install playwright cli -s=recipes-guard-20261008 click \\\"role=button[name='More servings for Lentil soup']\\\" && npx --no-install playwright cli -s=recipes-guard-20261008 click \\\"role=button[name='Add Chickpea curry to plan']\\\" && npx --no-install playwright cli -s=recipes-guard-20261008 snapshot\"",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-guard-20261008 close'",
+     "/usr/bin/bash -c 'node app.mjs'",
+     "/usr/bin/bash -c \"sed -n '1,360p' <work>/skill/playwright-test-generator/code-rules.md\"",
+     "/usr/bin/bash -c \"sed -n '1,520p' <work>/skill/playwright-test-generator/verification-rules.md\"",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/smoke.spec.mjs --reporter=line'",
+     "/usr/bin/bash -c 'E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN /bin/bash -p <work>/skill/e2e-reviewer/scripts/scan.sh tests/recipe-browser.spec.mjs'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.spec.mjs --reporter=line'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test --reporter=line'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.spec.mjs --repeat-each=2 --reporter=line'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test --reporter=line'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.v4.tmp.spec.mjs --reporter=line'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.spec.mjs --reporter=line'",
+     "/usr/bin/bash -c 'E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN /bin/bash -p <work>/skill/e2e-reviewer/scripts/scan.sh tests/recipe-browser.spec.mjs'",
+     "/usr/bin/bash -c 'git diff -- tests/recipe-browser.spec.mjs'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.spec.mjs --repeat-each=2 --reporter=line'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test --reporter=line'",
+     "/usr/bin/bash -c 'git status --porcelain --untracked-files=all'"
+    ],
+    "read_generator_skill": null,
+    "read_reviewer_skill": null,
+    "read_lean_skill": null,
+    "read_rules_only": null,
+    "read_app_source": null,
+    "generator_reference_files_read": [],
+    "playwright_test_runs": 9,
+    "repeat_each_runs": 2,
+    "scanner_runs": 2,
+    "exploration_commands": 9,
+    "git_status_calls": 3,
+    "agent_spawns": 0,
+    "agent_spawns_verification": "unverified",
+    "write_or_edit_calls": null,
+    "writes_outside_tests": [],
+    "legitimate_complete": false,
+    "v6_verbatim_verdict": false
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0010.json",
+      "sha256": "5413705645325a0a5fcfcc3b2efb812d16a0d226f5dfff6ecef54c07f855eeaa"
+     },
+     "attempt": 1,
+     "load_1m": 5.97
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0011.json",
+      "sha256": "568116f22026a6c04b6f89237f492496265a1281baf3bcb786b58fef5ee26faa"
+     },
+     "attempt": 1,
+     "load_1m": 5.97
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0012.json",
+      "sha256": "457bce238919c148f60de119618af73170eb3358d7eae464b996573440b62be8"
+     },
+     "attempt": 1,
+     "load_1m": 6.69
+    }
+   ],
+   "faults": {
+    "f1-toggle-noop": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.0,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0013.json",
+      "sha256": "af5f15b84b11ea8cff1b5054f0526c88e1e1789601eef4628ae7f4d428acec1a"
+     },
+     "attempt": 1,
+     "load_1m": 6.71,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-plan-ignores-servings": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.1,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0014.json",
+      "sha256": "dd81ea42370c0d66dbcaada9d44f5cad67eff317dd7f40efde537a393cac1edc"
+     },
+     "attempt": 1,
+     "load_1m": 6.66,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-servings-below-one": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 2.2,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0015.json",
+      "sha256": "4f6c2ea9e1bdf2f0678beb9a76c43e568fa44daf2330237967a6cf06c8fbaa80"
+     },
+     "attempt": 1,
+     "load_1m": 6.6,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f4-servings-not-persisted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.5,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0016.json",
+      "sha256": "86ab29c2c56f71f5968f3b9e129d6041aaf597718d4b3003f65e2bacf252a58d"
+     },
+     "attempt": 1,
+     "load_1m": 6.8,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-second-click-keeps-filter": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.5,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0017.json",
+      "sha256": "e97df1b35146d1411c85e43cd78e5a5c4a4e79923c55bf61098cdfddbb62b0d8"
+     },
+     "attempt": 1,
+     "load_1m": 7.42,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 1.8,
+    "raw_playwright": {
+     "path": "scores-raw/raw-0018.json",
+     "sha256": "8002b863d9e509d7e036cd58a99b455767f52e31b800f2172af4c72a9e824063"
+    },
+    "attempt": 1,
+    "load_1m": 7.42
+   },
+   "load": {
+    "load_at_start": 7.42
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 12,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 12,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   },
+   "census": {
+    "getByRole": 20,
+    "getByLabel": 0,
+    "getByText": 7,
+    "getByTestId": 0,
+    "getByPlaceholder": 0,
+    "css_id_or_class": 0,
+    "nth_first_last": 0,
+    "xpath": 0
+   }
+  },
+  {
+   "call_id": "v3-02-before-r2",
+   "case": "v3-02",
+   "arm": "before",
+   "repetition": 2,
+   "ordinal": 3,
+   "spec_files": [
+    "tests/recipe-browser.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/recipe-browser.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": null,
+   "elapsed_ms": 212762,
+   "num_turns": 1,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "evidence_source": "codex-json-command-execution",
+    "semantic_compliance": "unverified",
+    "tool_counts": {
+     "command_execution": 45
+    },
+    "bash_commands": [
+     "/usr/bin/bash -c \"sed -n '1,240p' <work>/skill/playwright-test-generator/SKILL.md && sed -n '1,240p' <work>/skill/e2e-reviewer/SKILL.md\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' <work>/skill/playwright-test-generator/references/best-practices.md\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' playwright.config.mjs\"",
+     "/usr/bin/bash -c \"rg --files -g '\"'!*node_modules*'\"'\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' package.json\"",
+     "/usr/bin/bash -c \"find tests -maxdepth 3 -type f -print -exec sed -n '1,220p' {} \\\\;\"",
+     "/usr/bin/bash -c 'find <work>/skill/playwright-test-generator -maxdepth 3 -type f -print'",
+     "/usr/bin/bash -c \"sed -n '1,260p' <work>/skill/playwright-test-generator/best-practices.md\"",
+     "/usr/bin/bash -c \"nl -ba <work>/skill/playwright-test-generator/SKILL.md | sed -n '150,340p'\"",
+     "/usr/bin/bash -c \"sed -n '1,260p' <work>/skill/playwright-test-generator/exploration-preflight.md\"",
+     "/usr/bin/bash -c \"sed -n '1,260p' <work>/skill/playwright-test-generator/scenario-design.md\"",
+     "/usr/bin/bash -c \"sed -n '1,320p' <work>/skill/playwright-test-generator/verification-rules.md\"",
+     "/usr/bin/bash -c \"sed -n '1,260p' <work>/skill/playwright-test-generator/code-rules.md\"",
+     "/usr/bin/bash -c 'git status --porcelain --untracked-files=all'",
+     "/usr/bin/bash -c 'git status --porcelain=v1 --untracked-files=all -z | od -An -tx1'",
+     "/usr/bin/bash -c 'git ls-files -s -- node_modules && git diff -- node_modules'",
+     "/usr/bin/bash -c \"SKILL_ROOT=<work>/skill/playwright-test-generator\nTARGET_URL='http://127.0.0.1:6103/'\nBASE_URL='http://127.0.0.1:6103'\nLOGIN_URL=''\nALLOW_LOOPBACK=1\n{\n  printf '%s' \\\"\"'$TARGET_URL\" | \"$SKILL_ROOT/scripts/write-utf8-frame.sh\"\n  printf '\"'%s' \\\"\"'$BASE_URL\" | \"$SKILL_ROOT/scripts/write-utf8-frame.sh\"\n  printf '\"'%s' \\\"\"'$LOGIN_URL\" | \"$SKILL_ROOT/scripts/write-utf8-frame.sh\"\n  printf '\"'%s' \\\"\"'$ALLOW_LOOPBACK\" | \"$SKILL_ROOT/scripts/write-utf8-frame.sh\"\n} | \"$SKILL_ROOT/scripts/run-preflight-target.sh\" --framed-stdin'",
+     "/usr/bin/bash -c \"SKILL_ROOT=<work>/skill/playwright-test-generator\nTARGET_URL='http://127.0.0.1:6103/'\nBASE_URL='http://127.0.0.1:6103'\nLOGIN_URL=''\nALLOW_LOOPBACK=1\n{\n  printf '%s' \\\"\"'$TARGET_URL\" | \"$SKILL_ROOT/scripts/write-utf8-frame.sh\"\n  printf '\"'%s' \\\"\"'$BASE_URL\" | \"$SKILL_ROOT/scripts/write-utf8-frame.sh\"\n  printf '\"'%s' \\\"\"'$LOGIN_URL\" | \"$SKILL_ROOT/scripts/write-utf8-frame.sh\"\n  printf '\"'%s' \\\"\"'$ALLOW_LOOPBACK\" | \"$SKILL_ROOT/scripts/write-utf8-frame.sh\"\n} | \"$SKILL_ROOT/scripts/run-preflight-target.sh\" --framed-stdin'",
+     "/usr/bin/bash -c 'npx --no-install playwright help cli'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli open --help'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli --help'",
+     "/usr/bin/bash -c \"test -e .playwright/cli.config.json; printf '%s\\\\n' \"'$?'",
+     "/usr/bin/bash -c \"mkdir -p /tmp/pw-recipe-guard && printf '%s\\\\n' '{\\\"network\\\":{\\\"allowedOrigins\\\":[\\\"http://127.0.0.1:6103\\\"]}}' > /tmp/pw-recipe-guard/cli-guard.json && sed -n '1,20p' /tmp/pw-recipe-guard/cli-guard.json\"",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipe-guard-1008 --config /tmp/pw-recipe-guard/cli-guard.json open --browser chromium'",
+     "/usr/bin/bash -c \"npx --no-install playwright cli -s=recipe-guard-1008 eval \\\"async () => await fetch('http://127.0.0.1:9/').then(() => 'ok').catch(e => e.message)\\\" && npx --no-install playwright cli -s=recipe-guard-1008 requests\"",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipe-guard-1008 goto http://127.0.0.1:6103/'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipe-guard-1008 snapshot'",
+     "/usr/bin/bash -c \"sed -n '1,260p' app.mjs\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' README.md\"",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipe-guard-1008 close'",
+     "/usr/bin/bash -c 'node app.mjs'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/smoke.spec.mjs --reporter=line'",
+     "/usr/bin/bash -c \"sed -n '1,260p' <work>/skill/e2e-reviewer/references/scanner-workflow.md\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' <work>/skill/e2e-reviewer/references/review-scope.md\"",
+     "/usr/bin/bash -c 'E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN /bin/bash -p <work>/skill/e2e-reviewer/scripts/scan.sh tests/recipe-browser.spec.mjs'",
+     "/usr/bin/bash -c 'E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN /bin/bash -p <work>/skill/e2e-reviewer/scripts/scan.sh tests/recipe-browser.spec.mjs'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.spec.mjs --reporter=line'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.spec.mjs --repeat-each=2 --reporter=line'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test --reporter=line'",
+     "/usr/bin/bash -c 'git status --porcelain --untracked-files=all'",
+     "/usr/bin/bash -c \"test -d .playwright-cli; printf '%s\\\\n' \"'$?'",
+     "/usr/bin/bash -c 'find .playwright-cli -maxdepth 2 -type f -print'",
+     "/usr/bin/bash -c 'rmdir .playwright-cli'",
+     "/usr/bin/bash -c 'git status --porcelain --untracked-files=all'",
+     "/usr/bin/bash -c \"sed -n '1,220p' tests/recipe-browser.spec.mjs\""
+    ],
+    "read_generator_skill": null,
+    "read_reviewer_skill": null,
+    "read_lean_skill": null,
+    "read_rules_only": null,
+    "read_app_source": null,
+    "generator_reference_files_read": [],
+    "playwright_test_runs": 4,
+    "repeat_each_runs": 1,
+    "scanner_runs": 2,
+    "exploration_commands": 10,
+    "git_status_calls": 4,
+    "agent_spawns": 0,
+    "agent_spawns_verification": "unverified",
+    "write_or_edit_calls": null,
+    "writes_outside_tests": [],
+    "legitimate_complete": false,
+    "v6_verbatim_verdict": false
+   },
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 3,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.6,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0019.json",
+      "sha256": "de891ffee977af5eb7c241d63e757b3e524021eaf27e59395afb242f4fdd51bb"
+     },
+     "attempt": 1,
+     "load_1m": 7.58
+    },
+    {
+     "exit": 0,
+     "passed": 3,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.6,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0020.json",
+      "sha256": "3434670295a6afd4be830e8eab09b1be57657babb9881cdb7ccd6b65d3cbdaa5"
+     },
+     "attempt": 1,
+     "load_1m": 7.58
+    },
+    {
+     "exit": 0,
+     "passed": 3,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.6,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0021.json",
+      "sha256": "f3cfb5cc4a00a0956f249a157f6645c6f10437fae9d791dbbef99065262a333a"
+     },
+     "attempt": 1,
+     "load_1m": 8.09
+    }
+   ],
+   "faults": {
+    "f1-toggle-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.6,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0022.json",
+      "sha256": "38d5aae05b3e9de82520d76c9d2b756b27999a5d7c81ec9de555a2302e2e1234"
+     },
+     "attempt": 1,
+     "load_1m": 8.06,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-plan-ignores-servings": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.4,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0023.json",
+      "sha256": "c6d420e57810522a8ee2a64913801a4840e455c865b26c8e799f4d3b1d518183"
+     },
+     "attempt": 1,
+     "load_1m": 7.34,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-servings-below-one": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.0,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0024.json",
+      "sha256": "e09f8410f0819dc9ea4e5f3c0bd7b443bd537b1278c5b2ff38507dc9f49aba31"
+     },
+     "attempt": 1,
+     "load_1m": 7.39,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f4-servings-not-persisted": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.5,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0025.json",
+      "sha256": "7cc298fa2b481a0423552dbaadb03dc1d6c1c5edb51005ccbedd252bf30c947f"
+     },
+     "attempt": 1,
+     "load_1m": 7.84,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-second-click-keeps-filter": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 6.6,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0026.json",
+      "sha256": "106926b9274a86eeda7000e51a37bb153528f470027df43cb4c34cfbf248dff8"
+     },
+     "attempt": 1,
+     "load_1m": 7.69,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 1.6,
+    "raw_playwright": {
+     "path": "scores-raw/raw-0027.json",
+     "sha256": "6b438eba8beb65105c69a530449d33300b30f0d650e83577939596a64affdb7c"
+    },
+    "attempt": 1,
+    "load_1m": 7.69
+   },
+   "load": {
+    "load_at_start": 7.69
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 0,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 0,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": []
+   },
+   "census": {
+    "getByRole": 24,
+    "getByLabel": 0,
+    "getByText": 8,
+    "getByTestId": 0,
+    "getByPlaceholder": 0,
+    "css_id_or_class": 0,
+    "nth_first_last": 0,
+    "xpath": 0
+   }
+  },
+  {
+   "call_id": "v3-02-after-r2",
+   "case": "v3-02",
+   "arm": "after",
+   "repetition": 2,
+   "ordinal": 4,
+   "spec_files": [
+    "tests/recipe-browser.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/recipe-browser.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": null,
+   "elapsed_ms": 320102,
+   "num_turns": 1,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "evidence_source": "codex-json-command-execution",
+    "semantic_compliance": "unverified",
+    "tool_counts": {
+     "command_execution": 45
+    },
+    "bash_commands": [
+     "/usr/bin/bash -c \"sed -n '1,240p' <work>/skill/playwright-test-generator/SKILL.md\"",
+     "/usr/bin/bash -c \"sed -n '241,520p' <work>/skill/playwright-test-generator/SKILL.md\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' <work>/skill/playwright-test-generator/best-practices.md\"",
+     "/usr/bin/bash -c \"pwd && rg --files -g 'playwright.config.*' -g 'package.json' -g 'README.md' -g 'AGENTS.md' -g 'CLAUDE.md' -g 'CONTRIBUTING.md' -g 'tests/**' -g 'app.mjs'\"",
+     "/usr/bin/bash -c 'git status --porcelain --untracked-files=all'",
+     "/usr/bin/bash -c \"sed -n '1,220p' playwright.config.mjs\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' package.json\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' README.md\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' tests/smoke.spec.mjs\"",
+     "/usr/bin/bash -c 'rg -n \"''^(##|###).*|Preflight launcher|Frame writer|Browser source selection|Guard for Playwright CLI|Raw-ARIA\" <work>/skill/playwright-test-generator/exploration-preflight.md'",
+     "/usr/bin/bash -c \"sed -n '1,120p' <work>/skill/playwright-test-generator/exploration-preflight.md\"",
+     "/usr/bin/bash -c \"sed -n '1,260p' <work>/skill/playwright-test-generator/scenario-design.md\"",
+     "/usr/bin/bash -c 'file node_modules && ls -ld node_modules'",
+     "/usr/bin/bash -c 'git ls-files -s node_modules'",
+     "/usr/bin/bash -c \"find . -name '.playwright' -o -name '.playwright-cli' -maxdepth 3\"",
+     "/usr/bin/bash -c \"write_frame=\\\"<work>/skill/playwright-test-generator/scripts/write-utf8-frame.sh\\\"; { printf '%s' \\\"http://127.0.0.1:6104/\\\" | \\\"\"'$write_frame\"; printf '\"'%s' \\\"http://127.0.0.1:6104\\\" | \\\"\"'$write_frame\"; printf '\"'%s' \\\"\\\" | \\\"\"'$write_frame\"; printf '\"'%s' \\\"1\\\" | \\\"\"'$write_frame\"; } | <work>/skill/playwright-test-generator/scripts/run-preflight-target.sh --framed-stdin'",
+     "/usr/bin/bash -c \"write_frame=\\\"<work>/skill/playwright-test-generator/scripts/write-utf8-frame.sh\\\"; { printf '%s' \\\"http://127.0.0.1:6104/\\\" | \\\"\"'$write_frame\"; printf '\"'%s' \\\"http://127.0.0.1:6104\\\" | \\\"\"'$write_frame\"; printf '\"'%s' \\\"\\\" | \\\"\"'$write_frame\"; printf '\"'%s' \\\"1\\\" | \\\"\"'$write_frame\"; } | <work>/skill/playwright-test-generator/scripts/run-preflight-target.sh --framed-stdin'",
+     "/usr/bin/bash -c \"find . -path './node_modules' -prune -o -path './.playwright/cli.config.json' -print -o -path './.playwright-cli' -print\"",
+     "/usr/bin/bash -c 'npx --no-install playwright help cli'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-e2e-20261008 --config /tmp/playwright-cli-origin-guard-recipes-6104.json open --browser chromium'",
+     "/usr/bin/bash -c \"npx --no-install playwright cli -s=recipes-e2e-20261008 eval \\\"fetch('http://127.0.0.1:9/').catch(error => error.name + ': ' + error.message)\\\"\"",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-e2e-20261008 requests'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-e2e-20261008 goto http://127.0.0.1:6104/'",
+     "/usr/bin/bash -c \"sed -n '1,240p' .playwright-cli/page-2026-10-08T12-19-14-046Z.yml\"",
+     "/usr/bin/bash -c \"sed -n '1,260p' app.mjs\"",
+     "/usr/bin/bash -c \"npx --no-install playwright cli -s=recipes-e2e-20261008 eval \\\"(async () => { await page.getByRole('button', { name: 'Add Lentil soup to plan' }).click(); await page.getByRole('button', { name: 'More servings for Lentil soup' }).click(); await page.getByRole('button', { name: 'Add Herb omelette to plan' }).click(); return document.body.innerText; })()\\\"\"",
+     "/usr/bin/bash -c \"npx --no-install playwright cli -s=recipes-e2e-20261008 eval \\\"(async () => { const byLabel = (name) => [...document.querySelectorAll('button')].find((button) => button.getAttribute('aria-label') === name); byLabel('Add Lentil soup to plan').click(); await new Promise(r => setTimeout(r, 100)); byLabel('More servings for Lentil soup').click(); await new Promise(r => setTimeout(r, 100)); byLabel('Add Herb omelette to plan').click(); await new Promise(r => setTimeout(r, 100)); return document.body.innerText; })()\\\"\"",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-e2e-20261008 close'",
+     "/usr/bin/bash -c 'node app.mjs'",
+     "/usr/bin/bash -c \"sed -n '1,320p' <work>/skill/playwright-test-generator/code-rules.md\"",
+     "/usr/bin/bash -c \"sed -n '1,420p' <work>/skill/playwright-test-generator/verification-rules.md\"",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/smoke.spec.mjs --reporter=line'",
+     "/usr/bin/bash -c 'E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN /bin/bash -p <work>/skill/e2e-reviewer/scripts/scan.sh tests/recipe-browser.spec.mjs'",
+     "/usr/bin/bash -c 'E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN /bin/bash -p <work>/skill/e2e-reviewer/scripts/scan.sh tests/recipe-browser.spec.mjs'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.spec.mjs --reporter=line'",
+     "/usr/bin/bash -c 'E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN /bin/bash -p <work>/skill/e2e-reviewer/scripts/scan.sh tests/recipe-browser.spec.mjs'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.spec.mjs --reporter=line'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test --reporter=line'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.spec.mjs --repeat-each=2 --reporter=line'",
+     "/usr/bin/bash -c 'rm -r .playwright-cli test-results /tmp/playwright-cli-origin-guard-recipes-6104.json'",
+     "/usr/bin/bash -c 'E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN /bin/bash -p <work>/skill/e2e-reviewer/scripts/scan.sh tests/recipe-browser.spec.mjs'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.spec.mjs --reporter=line'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test --reporter=line'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.spec.mjs --repeat-each=2 --reporter=line'",
+     "/usr/bin/bash -c 'git status --porcelain --untracked-files=all'"
+    ],
+    "read_generator_skill": null,
+    "read_reviewer_skill": null,
+    "read_lean_skill": null,
+    "read_rules_only": null,
+    "read_app_source": null,
+    "generator_reference_files_read": [],
+    "playwright_test_runs": 8,
+    "repeat_each_runs": 2,
+    "scanner_runs": 4,
+    "exploration_commands": 11,
+    "git_status_calls": 2,
+    "agent_spawns": 0,
+    "agent_spawns_verification": "unverified",
+    "write_or_edit_calls": null,
+    "writes_outside_tests": [],
+    "legitimate_complete": false,
+    "v6_verbatim_verdict": false
+   },
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.7,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0028.json",
+      "sha256": "27522dccc90e0a92a0e556461ce1d2e27b52608807a4c8eaa05cc00e76ed9059"
+     },
+     "attempt": 1,
+     "load_1m": 7.29
+    },
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.7,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0029.json",
+      "sha256": "e684b9de5ec8de4d66f335e41714ee926fbabb497026f5c51d71c51fe840e51f"
+     },
+     "attempt": 1,
+     "load_1m": 7.29
+    },
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.7,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0030.json",
+      "sha256": "0b8e558155eb4efa491907cc6059bd8791d66870d4acae62833b2df1b6d80db5"
+     },
+     "attempt": 1,
+     "load_1m": 7.29
+    }
+   ],
+   "faults": {
+    "f1-toggle-noop": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.0,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0031.json",
+      "sha256": "65d011ac36d3cb092a78467200eb1277af1ec71b7471747aff7684c3a8c01757"
+     },
+     "attempt": 1,
+     "load_1m": 7.25,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-plan-ignores-servings": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.0,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0032.json",
+      "sha256": "0143b72e9780d1c6b80432dd930beb849f88ff73c2fc21d02210833b680f76a9"
+     },
+     "attempt": 1,
+     "load_1m": 6.83,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-servings-below-one": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.1,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0033.json",
+      "sha256": "fff0740624ae43974b09259f7de0b0b47d66b25640da10fcef6de39dc4530950"
+     },
+     "attempt": 1,
+     "load_1m": 6.31,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f4-servings-not-persisted": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.1,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0034.json",
+      "sha256": "f32fa981bb78913146daa251034f251ed10d184cb7d64b54210f328ee03b4ddc"
+     },
+     "attempt": 1,
+     "load_1m": 6.69,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-second-click-keeps-filter": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 6.7,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0035.json",
+      "sha256": "4d332a34bf95b0e7222777a85aec460860a287dfe45d57804c891fc5bea4e9a3"
+     },
+     "attempt": 1,
+     "load_1m": 6.47,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 4,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 1.7,
+    "raw_playwright": {
+     "path": "scores-raw/raw-0036.json",
+     "sha256": "33d8c9db8ab47c136b3c7a0f62a46f6a20e3d56f16b46e9b7e7a9aceae6c0659"
+    },
+    "attempt": 1,
+    "load_1m": 6.99
+   },
+   "load": {
+    "load_at_start": 6.47
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 2,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 2,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#4i"
+    ]
+   },
+   "census": {
+    "getByRole": 21,
+    "getByLabel": 0,
+    "getByText": 6,
+    "getByTestId": 0,
+    "getByPlaceholder": 0,
+    "css_id_or_class": 0,
+    "nth_first_last": 0,
+    "xpath": 0
+   }
+  },
+  {
+   "call_id": "v3-02-before-r3",
+   "case": "v3-02",
+   "arm": "before",
+   "repetition": 3,
+   "ordinal": 5,
+   "spec_files": [
+    "tests/recipe-browser.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/recipe-browser.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": null,
+   "elapsed_ms": 251222,
+   "num_turns": 1,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "evidence_source": "codex-json-command-execution",
+    "semantic_compliance": "unverified",
+    "tool_counts": {
+     "command_execution": 57
+    },
+    "bash_commands": [
+     "/usr/bin/bash -c \"sed -n '1,240p' <work>/skill/playwright-test-generator/SKILL.md && sed -n '1,240p' <work>/skill/e2e-reviewer/SKILL.md\"",
+     "/usr/bin/bash -c \"sed -n '1,260p' <work>/skill/playwright-test-generator/references/best-practices.md\"",
+     "/usr/bin/bash -c \"sed -n '240,520p' <work>/skill/playwright-test-generator/SKILL.md\"",
+     "/usr/bin/bash -c \"rg --files <work>/skill/playwright-test-generator | sed -n '1,120p'\"",
+     "/usr/bin/bash -c \"rg --files <work>/skill/e2e-reviewer | sed -n '1,160p'\"",
+     "/usr/bin/bash -c \"sed -n '1,260p' <work>/skill/playwright-test-generator/best-practices.md\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' playwright.config.mjs\"",
+     "/usr/bin/bash -c 'find tests -maxdepth 3 -type f -print'",
+     "/usr/bin/bash -c \"rg --files -g 'playwright.config.*' -g 'package.json' -g 'README.md' -g 'tests/**' -g 'AGENTS.md' -g 'CLAUDE.md' -g 'CONTRIBUTING.md'\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' package.json\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' README.md\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' tests/smoke.spec.mjs\"",
+     "/usr/bin/bash -c \"sed -n '1,320p' <work>/skill/playwright-test-generator/exploration-preflight.md\"",
+     "/usr/bin/bash -c 'git status --porcelain --untracked-files=all'",
+     "/usr/bin/bash -c 'find node_modules -maxdepth 2 -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum'",
+     "/usr/bin/bash -c \"write_frame=\\\"<work>/skill/playwright-test-generator/scripts/write-utf8-frame.sh\\\"\n{\n  printf '%s' \\\"http://127.0.0.1:6105/\\\" | \\\"\"'$write_frame\"\n  printf '\"'%s' \\\"http://127.0.0.1:6105\\\" | \\\"\"'$write_frame\"\n  printf '\"'%s' \\\"\\\" | \\\"\"'$write_frame\"\n  printf '\"'%s' \\\"1\\\" | \\\"\"'$write_frame\"\n} | \"<work>/skill/playwright-test-generator/scripts/run-preflight-target.sh\" --framed-stdin'",
+     "/usr/bin/bash -c \"write_frame=\\\"<work>/skill/playwright-test-generator/scripts/write-utf8-frame.sh\\\"\n{\n  printf '%s' \\\"http://127.0.0.1:6105/\\\" | \\\"\"'$write_frame\"\n  printf '\"'%s' \\\"http://127.0.0.1:6105\\\" | \\\"\"'$write_frame\"\n  printf '\"'%s' \\\"\\\" | \\\"\"'$write_frame\"\n  printf '\"'%s' \\\"1\\\" | \\\"\"'$write_frame\"\n} | \"<work>/skill/playwright-test-generator/scripts/run-preflight-target.sh\" --framed-stdin'",
+     "/usr/bin/bash -c \"find <work> -path '*/.playwright/cli.config.json' -print\"",
+     "/usr/bin/bash -c 'npx --no-install playwright help cli'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-20261008-1 --config /tmp/recipes-pw-cli-guard-20261008-1.json open'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli --browser chromium -s=recipes-20261008-2 --config /tmp/recipes-pw-cli-guard-20261008-1.json open'",
+     "/usr/bin/bash -c \"npx --no-install playwright cli --browser chromium -s=recipes-20261008-2 --config /tmp/recipes-pw-cli-guard-20261008-1.json eval \\\"fetch('http://127.0.0.1:9/').catch(error => error.toString())\\\"\"",
+     "/usr/bin/bash -c \"npx --no-install playwright cli -s=recipes-20261008-2 eval \\\"() => fetch('http://127.0.0.1:9/').catch(error => error.toString())\\\"\"",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-20261008-2 requests'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-20261008-2 goto http://127.0.0.1:6105/'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-20261008-2 snapshot'",
+     "/usr/bin/bash -c \"sed -n '1,260p' app.mjs\"",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-20261008-2 click e7'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-20261008-2 click e6'",
+     "/usr/bin/bash -c \"sed -n '1,260p' <work>/skill/playwright-test-generator/scenario-design.md\"",
+     "/usr/bin/bash -c \"sed -n '1,320p' <work>/skill/playwright-test-generator/code-rules.md\"",
+     "/usr/bin/bash -c \"sed -n '1,340p' <work>/skill/playwright-test-generator/verification-rules.md\"",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-20261008-2 close'",
+     "/usr/bin/bash -c 'node app.mjs'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/smoke.spec.mjs'",
+     "/usr/bin/bash -c \"sed -n '1,240p' <work>/skill/e2e-reviewer/references/review-scope.md\"",
+     "/usr/bin/bash -c \"sed -n '1,260p' <work>/skill/e2e-reviewer/references/scanner-workflow.md\"",
+     "/usr/bin/bash -c 'E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN /bin/bash -p <work>/skill/e2e-reviewer/scripts/scan.sh tests/recipe-browser.spec.mjs'",
+     "/usr/bin/bash -c 'E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN /bin/bash -p <work>/skill/e2e-reviewer/scripts/scan.sh tests/recipe-browser.spec.mjs'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.spec.mjs --reporter=line'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.spec.mjs --repeat-each=2 --reporter=line'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test --reporter=line'",
+     "/usr/bin/bash -c \"cp tests/recipe-browser.spec.mjs tests/recipe-browser.v4-failure.spec.mjs\nperl -0pi -e 's/const requestPromise = page\\\\.waitForRequest\\\\(/await page.route(\"'`**'\"\\\\/api\\\\/plan\\\\/\"'${id}`, (route) => route.fulfill({ status: 500, contentType: \"application'\"\\\\/json\\\", body: \\\"{}\\\" }), { times: 1 });\\\\n  const requestPromise = page.waitForRequest\\\\(/' tests/recipe-browser.v4-failure.spec.mjs\"",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.v4-failure.spec.mjs --grep \"keeps servings above zero\" --reporter=line'",
+     "/usr/bin/bash -c \"nl -ba tests/recipe-browser.v4-failure.spec.mjs | sed -n '15,35p'\"",
+     "/usr/bin/bash -c \"perl -0pi -e 's#\"'`'\"\\\\*\\\\*/api/plan/\"'`#`**/api/plan/${id}`#'\"' tests/recipe-browser.v4-failure.spec.mjs\"",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.v4-failure.spec.mjs --grep \"keeps servings above zero\" --reporter=line'",
+     "/usr/bin/bash -c \"nl -ba tests/recipe-browser.v4-failure.spec.mjs | sed -n '21,25p'\"",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.v4-failure.spec.mjs --grep \"keeps servings above zero\" --reporter=line'",
+     "/usr/bin/bash -c 'rm tests/recipe-browser.v4-failure.spec.mjs'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test --reporter=line'",
+     "/usr/bin/bash -c 'git status --porcelain --untracked-files=all'",
+     "/usr/bin/bash -c \"find . -maxdepth 2 \\\\( -path './.playwright-cli' -o -path './test-results' -o -path './playwright-report' \\\\) -print\"",
+     "/usr/bin/bash -c 'find .playwright-cli test-results -type f -delete\nfind .playwright-cli test-results -depth -type d -empty -delete'",
+     "/usr/bin/bash -c \"sed -n '1,220p' tests/recipe-browser.spec.mjs\"",
+     "/usr/bin/bash -c 'find node_modules -maxdepth 2 -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum'",
+     "/usr/bin/bash -c 'git status --porcelain --untracked-files=all'"
+    ],
+    "read_generator_skill": null,
+    "read_reviewer_skill": null,
+    "read_lean_skill": null,
+    "read_rules_only": null,
+    "read_app_source": null,
+    "generator_reference_files_read": [],
+    "playwright_test_runs": 8,
+    "repeat_each_runs": 1,
+    "scanner_runs": 2,
+    "exploration_commands": 12,
+    "git_status_calls": 3,
+    "agent_spawns": 0,
+    "agent_spawns_verification": "unverified",
+    "write_or_edit_calls": null,
+    "writes_outside_tests": [],
+    "legitimate_complete": false,
+    "v6_verbatim_verdict": false
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.0,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0037.json",
+      "sha256": "1b6566cfd6781c61ca1f7b47ddf4323c22bbd143ffae4dc4bcb5f7c6cab2ff3b"
+     },
+     "attempt": 1,
+     "load_1m": 6.83
+    },
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.0,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0038.json",
+      "sha256": "2bb1cc26c4d0b3483839398d9629a0edbc12c9db14245aeb375df799994a96dd"
+     },
+     "attempt": 1,
+     "load_1m": 7.09
+    },
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.0,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0039.json",
+      "sha256": "124ab83662710330a901963b57db05f0e2f31bd54343137e3e5f842520111ca6"
+     },
+     "attempt": 1,
+     "load_1m": 7.09
+    }
+   ],
+   "faults": {
+    "f1-toggle-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.2,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0040.json",
+      "sha256": "0433df347cb61ac0c3d89d9e65ba55d2ae9f4f628892801590f61e041b277e76"
+     },
+     "attempt": 1,
+     "load_1m": 8.35,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-plan-ignores-servings": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.3,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0041.json",
+      "sha256": "8c921d72c4e755ebcfba7c229fdebf9d7e961434a300f12329421cd0432820d9"
+     },
+     "attempt": 1,
+     "load_1m": 8.72,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-servings-below-one": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 2.5,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0042.json",
+      "sha256": "10af198c2bad7c671d206ea83afc3c331603d1cb72a150240a48bcf6cb764575"
+     },
+     "attempt": 1,
+     "load_1m": 8.75,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f4-servings-not-persisted": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.0,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0043.json",
+      "sha256": "2bec61c6d736ca83f7a18933ce09faa30038908a7d60a5d538307897af18484d"
+     },
+     "attempt": 1,
+     "load_1m": 9.01,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-second-click-keeps-filter": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.1,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0044.json",
+      "sha256": "0798fedcb3209b6528263abd7be9b6c9cdae171bce5e0732e82a83192f377d02"
+     },
+     "attempt": 1,
+     "load_1m": 8.56,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 4,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.1,
+    "raw_playwright": {
+     "path": "scores-raw/raw-0045.json",
+     "sha256": "3b00316505d0a3f99912ca823760d5de134d3d347443857d00191c3ae54e9da1"
+    },
+    "attempt": 1,
+    "load_1m": 8.56
+   },
+   "load": {
+    "load_at_start": 8.56
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 4,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 4,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#4i"
+    ]
+   },
+   "census": {
+    "getByRole": 29,
+    "getByLabel": 0,
+    "getByText": 5,
+    "getByTestId": 0,
+    "getByPlaceholder": 0,
+    "css_id_or_class": 0,
+    "nth_first_last": 0,
+    "xpath": 0
+   }
+  },
+  {
+   "call_id": "v3-02-after-r3",
+   "case": "v3-02",
+   "arm": "after",
+   "repetition": 3,
+   "ordinal": 6,
+   "spec_files": [
+    "tests/recipe-browser.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/recipe-browser.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": null,
+   "elapsed_ms": 257283,
+   "num_turns": 1,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "evidence_source": "codex-json-command-execution",
+    "semantic_compliance": "unverified",
+    "tool_counts": {
+     "command_execution": 51
+    },
+    "bash_commands": [
+     "/usr/bin/bash -c \"sed -n '1,240p' <work>/skill/playwright-test-generator/SKILL.md\"",
+     "/usr/bin/bash -c \"sed -n '241,520p' <work>/skill/playwright-test-generator/SKILL.md\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' <work>/skill/playwright-test-generator/best-practices.md\"",
+     "/usr/bin/bash -c \"pwd && rg --files -g 'playwright.config.*' -g 'package.json' -g 'README.md' -g 'AGENTS.md' -g 'CLAUDE.md' -g 'CONTRIBUTING.md' -g 'tests/**'\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' playwright.config.mjs\"",
+     "/usr/bin/bash -c 'find tests -type f -maxdepth 3 -print'",
+     "/usr/bin/bash -c \"sed -n '1,220p' package.json\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' tests/smoke.spec.mjs\"",
+     "/usr/bin/bash -c \"sed -n '1,240p' README.md\"",
+     "/usr/bin/bash -c \"find . -maxdepth 2 -type d \\\\( -name pages -o -name models -o -name page-objects \\\\) -print\"",
+     "/usr/bin/bash -c 'rg -n \"mutation|coverage|a11y|visual|axe|screenshot|toHaveScreenshot|convention|Playwright|e2e\" -S .'",
+     "/usr/bin/bash -c \"sed -n '1,260p' <work>/skill/playwright-test-generator/exploration-preflight.md\"",
+     "/usr/bin/bash -c 'git rev-parse --show-toplevel'",
+     "/usr/bin/bash -c 'git status --porcelain --untracked-files=all'",
+     "/usr/bin/bash -c \"git ls-files -s node_modules && if [ -e node_modules ]; then stat -c '%F %s %Y' node_modules; fi\"",
+     "/usr/bin/bash -c 'readlink node_modules | sha256sum'",
+     "/usr/bin/bash -c \"SKILL_ROOT=<work>/skill/playwright-test-generator; TARGET_URL='http://127.0.0.1:6106/'; BASE_URL='http://127.0.0.1:6106'; LOGIN_URL=''; ALLOW_LOOPBACK=1; write_frame=\\\"\"'$SKILL_ROOT/scripts/write-utf8-frame.sh\"; { printf '\"'%s' \\\"\"'$TARGET_URL\" | \"$write_frame\"; printf '\"'%s' \\\"\"'$BASE_URL\" | \"$write_frame\"; printf '\"'%s' \\\"\"'$LOGIN_URL\" | \"$write_frame\"; printf '\"'%s' \\\"\"'$ALLOW_LOOPBACK\" | \"$write_frame\"; } | \"$SKILL_ROOT/scripts/run-preflight-target.sh\" --framed-stdin'",
+     "/usr/bin/bash -c \"SKILL_ROOT=<work>/skill/playwright-test-generator; TARGET_URL='http://127.0.0.1:6106/'; BASE_URL='http://127.0.0.1:6106'; LOGIN_URL=''; ALLOW_LOOPBACK=1; write_frame=\\\"\"'$SKILL_ROOT/scripts/write-utf8-frame.sh\"; { printf '\"'%s' \\\"\"'$TARGET_URL\" | \"$write_frame\"; printf '\"'%s' \\\"\"'$BASE_URL\" | \"$write_frame\"; printf '\"'%s' \\\"\"'$LOGIN_URL\" | \"$write_frame\"; printf '\"'%s' \\\"\"'$ALLOW_LOOPBACK\" | \"$write_frame\"; } | \"$SKILL_ROOT/scripts/run-preflight-target.sh\" --framed-stdin'",
+     "/usr/bin/bash -c \"sed -n '1,260p' <work>/skill/playwright-test-generator/scenario-design.md\"",
+     "/usr/bin/bash -c 'npx --no-install playwright help cli'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli --help'",
+     "/usr/bin/bash -c \"mkdir -p /tmp/codex-pw-guard-recipes && printf '%s\n' '{\\\"network\\\":{\\\"allowedOrigins\\\":[\\\"http://127.0.0.1:6106\\\"]}}' > /tmp/codex-pw-guard-recipes/cli-guard.json && ls -l /tmp/codex-pw-guard-recipes/cli-guard.json\"",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-127-6106-a --config /tmp/codex-pw-guard-recipes/cli-guard.json open --browser chromium'",
+     "/usr/bin/bash -c \"npx --no-install playwright cli -s=recipes-127-6106-a eval \\\"async () => { try { await fetch('http://127.0.0.1:9/'); return 'unexpected-success'; } catch (e) { return String(e && (e.message || e)); } }\\\"\"",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-127-6106-a requests'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-127-6106-a goto http://127.0.0.1:6106/'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-127-6106-a snapshot'",
+     "/usr/bin/bash -c \"sed -n '1,260p' app.mjs\"",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-127-6106-a click e6'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-127-6106-a snapshot'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-127-6106-a click e38 && npx --no-install playwright cli -s=recipes-127-6106-a snapshot'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-127-6106-a click e64 && npx --no-install playwright cli -s=recipes-127-6106-a click e70 && npx --no-install playwright cli -s=recipes-127-6106-a click e63 && npx --no-install playwright cli -s=recipes-127-6106-a snapshot'",
+     "/usr/bin/bash -c 'npx --no-install playwright cli -s=recipes-127-6106-a close'",
+     "/usr/bin/bash -c 'node app.mjs'",
+     "/usr/bin/bash -c \"sed -n '1,320p' <work>/skill/playwright-test-generator/code-rules.md\"",
+     "/usr/bin/bash -c \"sed -n '1,420p' <work>/skill/playwright-test-generator/verification-rules.md\"",
+     "/usr/bin/bash -c \"sed -n '1,260p' <work>/skill/e2e-reviewer/SKILL.md\"",
+     "/usr/bin/bash -c \"sed -n '1,220p' <work>/skill/e2e-reviewer/references/scanner-workflow.md\"",
+     "/usr/bin/bash -c 'E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN /bin/bash -p <work>/skill/e2e-reviewer/scripts/scan.sh tests/recipe-browser.spec.mjs'",
+     "/usr/bin/bash -c 'E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN /bin/bash -p <work>/skill/e2e-reviewer/scripts/scan.sh tests/recipe-browser.spec.mjs'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/smoke.spec.mjs'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.spec.mjs'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/recipe-browser.spec.mjs --repeat-each=2'",
+     "/usr/bin/bash -c 'node_modules/.bin/playwright test tests/.tmp-recipe-browser-v4.spec.mjs'",
+     "/usr/bin/bash -c 'git status --porcelain --untracked-files=all'",
+     "/usr/bin/bash -c 'if [ -d .playwright-cli ]; then find .playwright-cli -maxdepth 2 -type f | head -20; fi; if [ -d test-results ]; then find test-results -maxdepth 2 -type f | head -20; fi'",
+     "/usr/bin/bash -c 'rm -r .playwright-cli test-results'",
+     "/usr/bin/bash -c 'git status --porcelain --untracked-files=all'",
+     "/usr/bin/bash -c \"sed -n '1,180p' tests/recipe-browser.spec.mjs\"",
+     "/usr/bin/bash -c 'if [ -d .playwright-cli ]; then echo present; else echo no-playwright-cli; fi; if [ -d test-results ]; then echo test-results-present; else echo no-test-results; fi'"
+    ],
+    "read_generator_skill": null,
+    "read_reviewer_skill": null,
+    "read_lean_skill": null,
+    "read_rules_only": null,
+    "read_app_source": null,
+    "generator_reference_files_read": [],
+    "playwright_test_runs": 5,
+    "repeat_each_runs": 1,
+    "scanner_runs": 2,
+    "exploration_commands": 14,
+    "git_status_calls": 3,
+    "agent_spawns": 0,
+    "agent_spawns_verification": "unverified",
+    "write_or_edit_calls": null,
+    "writes_outside_tests": [],
+    "legitimate_complete": false,
+    "v6_verbatim_verdict": false
+   },
+   "self_reported_status": "partial_or_blocked",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 3,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.6,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0046.json",
+      "sha256": "7fd6c807cd82486dcb395e2c273178d82bf3355b7df2585e1ff01f63151b5fe9"
+     },
+     "attempt": 1,
+     "load_1m": 8.87
+    },
+    {
+     "exit": 0,
+     "passed": 3,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.5,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0047.json",
+      "sha256": "b5061deca9bc0a4297701b5eb342002cb2980ad6213c5c2fc7c8540a6743756c"
+     },
+     "attempt": 1,
+     "load_1m": 8.87
+    },
+    {
+     "exit": 0,
+     "passed": 3,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.6,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0048.json",
+      "sha256": "b57df848f35b78758312b677619efd108af34db3e375e3ebbd03c3092740f537"
+     },
+     "attempt": 1,
+     "load_1m": 8.87
+    }
+   ],
+   "faults": {
+    "f1-toggle-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 6.9,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0049.json",
+      "sha256": "f662154513f8e141beb90399a85f9f2c4689ecb67a42203c897d175dbbf6284b"
+     },
+     "attempt": 1,
+     "load_1m": 8.63,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-plan-ignores-servings": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 6.9,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0050.json",
+      "sha256": "e0d9d0824c3eafbd8fe829690d393dcbbf4d537fc22cc9709f6e751ab7d40877"
+     },
+     "attempt": 1,
+     "load_1m": 8.42,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-servings-below-one": {
+     "exit": 0,
+     "passed": 3,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.7,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0051.json",
+      "sha256": "5a7dbde1ea1ae9ef4aa486dcf7ef4929fd9435f2e314fae797bdbaaf136a3af2"
+     },
+     "attempt": 1,
+     "load_1m": 8.15,
+     "killed": false,
+     "class": "boundary"
+    },
+    "f4-servings-not-persisted": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.2,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0052.json",
+      "sha256": "8e790561c93679b3484fe4bf8fe34d8ee2834d3979c1f68fb27e1dd20fd15b5e"
+     },
+     "attempt": 1,
+     "load_1m": 7.66,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-second-click-keeps-filter": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 6.6,
+     "raw_playwright": {
+      "path": "scores-raw/raw-0053.json",
+      "sha256": "84e317a36907936b531423cd8f2313d1e5ed357e9d723d0e2d201408b4e016ac"
+     },
+     "attempt": 1,
+     "load_1m": 7.52,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 1.5,
+    "raw_playwright": {
+     "path": "scores-raw/raw-0054.json",
+     "sha256": "5ee4103b6cdccbac0dd93851f0040c0627598202fc9a46a41bd0d8a2450683b9"
+    },
+    "attempt": 1,
+    "load_1m": 9.16
+   },
+   "load": {
+    "load_at_start": 7.52
+   },
+   "clean": true,
+   "kill_rate": 0.8,
+   "primary": 0.8,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 0,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 0,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": []
+   },
+   "census": {
+    "getByRole": 20,
+    "getByLabel": 0,
+    "getByText": 7,
+    "getByTestId": 0,
+    "getByPlaceholder": 0,
+    "css_id_or_class": 0,
+    "nth_first_last": 0,
+    "xpath": 0
+   }
+  }
+ ],
+ "report_sha256": "28a579308da6124f5cbb940a17ae7e241f6f8dbdc80088839560b32d94a99f9f",
+ "freeze_sha256": "2331ec120f3323dc4ffdc929da66675dd34976b43cd71847ef798180c46726b2",
+ "raw_playwright_manifest": {
+  "scores-raw/raw-0001.json": "7e8c839e41302b5d4245287f06f3858642f5fdd50a94a54ca30b52929fbf0c6e",
+  "scores-raw/raw-0002.json": "30ebd93c021fdf873b00dd5b3cd58341fbcd1a225ca895687588821e2397e093",
+  "scores-raw/raw-0003.json": "21c3dc1c8b323837db16d3e3e31748d95e9e9f64c944e715992305f5ed148db5",
+  "scores-raw/raw-0004.json": "9d949e62211279b9d4dc163057dbfdff7198a12f94516a14fc0542d39a532e06",
+  "scores-raw/raw-0005.json": "cb2c35033159bc30c2e093d20df1b14abdf961cd1c5fe4a2cc21c7654272972a",
+  "scores-raw/raw-0006.json": "84dd114b87e152af1b3ecc69b5e3c31221e874ac483fdcddaae2cbee4b59746f",
+  "scores-raw/raw-0007.json": "c012271933910832849b03867f3c18a610e60a421d8f21d67b75f02d9fd77e88",
+  "scores-raw/raw-0008.json": "786f1281326a3953fcb1b052f78199ad9bbd56e1bdd64c05ffd46a243bdbadd5",
+  "scores-raw/raw-0009.json": "967195ec3bf56a0145513aebc12f818c84bf825bc00d274cc4d8f1fafcc2310d",
+  "scores-raw/raw-0010.json": "5413705645325a0a5fcfcc3b2efb812d16a0d226f5dfff6ecef54c07f855eeaa",
+  "scores-raw/raw-0011.json": "568116f22026a6c04b6f89237f492496265a1281baf3bcb786b58fef5ee26faa",
+  "scores-raw/raw-0012.json": "457bce238919c148f60de119618af73170eb3358d7eae464b996573440b62be8",
+  "scores-raw/raw-0013.json": "af5f15b84b11ea8cff1b5054f0526c88e1e1789601eef4628ae7f4d428acec1a",
+  "scores-raw/raw-0014.json": "dd81ea42370c0d66dbcaada9d44f5cad67eff317dd7f40efde537a393cac1edc",
+  "scores-raw/raw-0015.json": "4f6c2ea9e1bdf2f0678beb9a76c43e568fa44daf2330237967a6cf06c8fbaa80",
+  "scores-raw/raw-0016.json": "86ab29c2c56f71f5968f3b9e129d6041aaf597718d4b3003f65e2bacf252a58d",
+  "scores-raw/raw-0017.json": "e97df1b35146d1411c85e43cd78e5a5c4a4e79923c55bf61098cdfddbb62b0d8",
+  "scores-raw/raw-0018.json": "8002b863d9e509d7e036cd58a99b455767f52e31b800f2172af4c72a9e824063",
+  "scores-raw/raw-0019.json": "de891ffee977af5eb7c241d63e757b3e524021eaf27e59395afb242f4fdd51bb",
+  "scores-raw/raw-0020.json": "3434670295a6afd4be830e8eab09b1be57657babb9881cdb7ccd6b65d3cbdaa5",
+  "scores-raw/raw-0021.json": "f3cfb5cc4a00a0956f249a157f6645c6f10437fae9d791dbbef99065262a333a",
+  "scores-raw/raw-0022.json": "38d5aae05b3e9de82520d76c9d2b756b27999a5d7c81ec9de555a2302e2e1234",
+  "scores-raw/raw-0023.json": "c6d420e57810522a8ee2a64913801a4840e455c865b26c8e799f4d3b1d518183",
+  "scores-raw/raw-0024.json": "e09f8410f0819dc9ea4e5f3c0bd7b443bd537b1278c5b2ff38507dc9f49aba31",
+  "scores-raw/raw-0025.json": "7cc298fa2b481a0423552dbaadb03dc1d6c1c5edb51005ccbedd252bf30c947f",
+  "scores-raw/raw-0026.json": "106926b9274a86eeda7000e51a37bb153528f470027df43cb4c34cfbf248dff8",
+  "scores-raw/raw-0027.json": "6b438eba8beb65105c69a530449d33300b30f0d650e83577939596a64affdb7c",
+  "scores-raw/raw-0028.json": "27522dccc90e0a92a0e556461ce1d2e27b52608807a4c8eaa05cc00e76ed9059",
+  "scores-raw/raw-0029.json": "e684b9de5ec8de4d66f335e41714ee926fbabb497026f5c51d71c51fe840e51f",
+  "scores-raw/raw-0030.json": "0b8e558155eb4efa491907cc6059bd8791d66870d4acae62833b2df1b6d80db5",
+  "scores-raw/raw-0031.json": "65d011ac36d3cb092a78467200eb1277af1ec71b7471747aff7684c3a8c01757",
+  "scores-raw/raw-0032.json": "0143b72e9780d1c6b80432dd930beb849f88ff73c2fc21d02210833b680f76a9",
+  "scores-raw/raw-0033.json": "fff0740624ae43974b09259f7de0b0b47d66b25640da10fcef6de39dc4530950",
+  "scores-raw/raw-0034.json": "f32fa981bb78913146daa251034f251ed10d184cb7d64b54210f328ee03b4ddc",
+  "scores-raw/raw-0035.json": "4d332a34bf95b0e7222777a85aec460860a287dfe45d57804c891fc5bea4e9a3",
+  "scores-raw/raw-0036.json": "33d8c9db8ab47c136b3c7a0f62a46f6a20e3d56f16b46e9b7e7a9aceae6c0659",
+  "scores-raw/raw-0037.json": "1b6566cfd6781c61ca1f7b47ddf4323c22bbd143ffae4dc4bcb5f7c6cab2ff3b",
+  "scores-raw/raw-0038.json": "2bb1cc26c4d0b3483839398d9629a0edbc12c9db14245aeb375df799994a96dd",
+  "scores-raw/raw-0039.json": "124ab83662710330a901963b57db05f0e2f31bd54343137e3e5f842520111ca6",
+  "scores-raw/raw-0040.json": "0433df347cb61ac0c3d89d9e65ba55d2ae9f4f628892801590f61e041b277e76",
+  "scores-raw/raw-0041.json": "8c921d72c4e755ebcfba7c229fdebf9d7e961434a300f12329421cd0432820d9",
+  "scores-raw/raw-0042.json": "10af198c2bad7c671d206ea83afc3c331603d1cb72a150240a48bcf6cb764575",
+  "scores-raw/raw-0043.json": "2bec61c6d736ca83f7a18933ce09faa30038908a7d60a5d538307897af18484d",
+  "scores-raw/raw-0044.json": "0798fedcb3209b6528263abd7be9b6c9cdae171bce5e0732e82a83192f377d02",
+  "scores-raw/raw-0045.json": "3b00316505d0a3f99912ca823760d5de134d3d347443857d00191c3ae54e9da1",
+  "scores-raw/raw-0046.json": "7fd6c807cd82486dcb395e2c273178d82bf3355b7df2585e1ff01f63151b5fe9",
+  "scores-raw/raw-0047.json": "b5061deca9bc0a4297701b5eb342002cb2980ad6213c5c2fc7c8540a6743756c",
+  "scores-raw/raw-0048.json": "b57df848f35b78758312b677619efd108af34db3e375e3ebbd03c3092740f537",
+  "scores-raw/raw-0049.json": "f662154513f8e141beb90399a85f9f2c4689ecb67a42203c897d175dbbf6284b",
+  "scores-raw/raw-0050.json": "e0d9d0824c3eafbd8fe829690d393dcbbf4d537fc22cc9709f6e751ab7d40877",
+  "scores-raw/raw-0051.json": "5a7dbde1ea1ae9ef4aa486dcf7ef4929fd9435f2e314fae797bdbaaf136a3af2",
+  "scores-raw/raw-0052.json": "8e790561c93679b3484fe4bf8fe34d8ee2834d3979c1f68fb27e1dd20fd15b5e",
+  "scores-raw/raw-0053.json": "84e317a36907936b531423cd8f2313d1e5ed357e9d723d0e2d201408b4e016ac",
+  "scores-raw/raw-0054.json": "5ee4103b6cdccbac0dd93851f0040c0627598202fc9a46a41bd0d8a2450683b9"
+ }
+}

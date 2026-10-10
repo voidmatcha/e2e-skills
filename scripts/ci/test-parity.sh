@@ -482,7 +482,7 @@ restore "$file"
 # Case 5: Quick Reference row count drift (Check 3c)
 file="skills/e2e-reviewer/SKILL.md"
 backup "$file"
-mutate "$file" "| 1 | Name-Assertion | P0 | LLM | Noun in name with no matching \`expect()\` |
+mutate "$file" "| 1 | Name-Assertion | P0 | LLM | Noun in name with no matching \`expect()\`. P1 when the test verifies one promised outcome and misses another |
 " ""
 assert_fails "Check 3c — QR row count drift" "expected 24 rows"
 restore "$file"
@@ -907,8 +907,8 @@ file="README.md"
 backup "$file"
 mutate \
   "$file" \
-  "Windows users should run them through WSL" \
-  "Windows users should run them through a compatible shell"
+  "Windows users need a compatible WSL distribution" \
+  "Windows users need a compatible shell"
 assert_fails \
   "README i18n parity — Windows limitation keeps the WSL boundary" \
   "README.md Scope and limits section missing platform-limit tokens ['WSL execution/filesystem boundary']"
@@ -1165,10 +1165,18 @@ restore "$file"
 
 file="skills/cypress-debugger/references/fix-verification.md"
 backup "$file"
-mutate "$file" "CANNOT_VERIFY" "CANNOTVERIFY"
+mutate "$file" 'use `CANNOT_VERIFY` with the exact missing evidence' 'use `CANNOTVERIFY` with the exact missing evidence'
 assert_verification_parity_fails \
   "Verification parity — Cypress debugger proof boundary drift" \
-  "Cypress debugger missing proof boundary CANNOT_VERIFY"
+  'Cypress debugger missing proof boundary use `CANNOT_VERIFY` with the exact missing evidence'
+restore "$file"
+
+file="skills/playwright-debugger/references/fix-verification.md"
+backup "$file"
+mutate "$file" 'verbatim into the outgoing message' 'by reference in the outgoing message'
+assert_verification_parity_fails \
+  "Verification parity — Playwright debugger V1 packet verbatim rule drift" \
+  'Playwright debugger missing proof boundary verbatim into the outgoing message'
 restore "$file"
 
 # Case 23: named custom agents are optional; standard Codex native roles must

@@ -1,0 +1,73 @@
+{
+  "status": "COMPLETE",
+  "protocol_sha256": "38d5bc6653b1d9fbdc297dc7eaf49e553f5507c07589cb650d1a650b848fffa2",
+  "raw_report_sha256": "6d4ff3865becd260dead868bf6d07e051bb32c8e0e39510303d7e4ef083b036d",
+  "adjudication_sha256": {
+    "growi": "ad4eea01070b4c6e17da04cda563247f196443b71e069b2a19105a84677eb9e8",
+    "chronograf": "f018a63005d63a828c776bec7cdd644c3f623c2262ff74f55ffcd95e9be7dd46",
+    "opensearch": "b5a7d96fb789828fbb668300259211b14cd3867d9ed0b9d2e19d2d5bdfff600e"
+  },
+  "source_label_severity": {
+    "growi": "P1",
+    "chronograf": "P1",
+    "opensearch": "P0"
+  },
+  "unique_off_target_keys_all_arms": 117,
+  "arms": {
+    "scanner": {
+      "calls": 6,
+      "exact_target_hits": [
+        "chronograf",
+        "growi",
+        "opensearch"
+      ],
+      "correct_severity_target_hits_exploratory": [
+        "growi",
+        "opensearch"
+      ],
+      "near_target_wrong_anchor_exploratory": [],
+      "mapped_after_alarms": [],
+      "scanner_commands": 8,
+      "scanner_summaries": 8,
+      "shell_commands": 144,
+      "input_tokens": 3527038,
+      "cached_input_tokens": 3200768,
+      "output_tokens": 26521,
+      "model_call_seconds": 1087.811,
+      "off_target_predictions_by_verdict": {
+        "CONFIRMED": 89,
+        "FALSE_POSITIVE": 10,
+        "INVALID_LOCATION": 1
+      },
+      "unique_off_target_keys": 100
+    },
+    "no-scanner": {
+      "calls": 6,
+      "exact_target_hits": [
+        "chronograf",
+        "growi"
+      ],
+      "correct_severity_target_hits_exploratory": [
+        "chronograf",
+        "growi"
+      ],
+      "near_target_wrong_anchor_exploratory": [
+        "opensearch"
+      ],
+      "mapped_after_alarms": [],
+      "scanner_commands": 0,
+      "scanner_summaries": 0,
+      "shell_commands": 92,
+      "input_tokens": 2758115,
+      "cached_input_tokens": 2404864,
+      "output_tokens": 22990,
+      "model_call_seconds": 854.693,
+      "off_target_predictions_by_verdict": {
+        "CONFIRMED": 90,
+        "FALSE_POSITIVE": 4,
+        "INVALID_LOCATION": 2
+      },
+      "unique_off_target_keys": 96
+    }
+  }
+}

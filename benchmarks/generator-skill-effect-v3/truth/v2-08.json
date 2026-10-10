@@ -1,0 +1,115 @@
+{
+  "task": "Cover the Outfitters storefront. The product list (`/`) links to each product's own page, which shows that product's name and price. Add to wishlist on a product page saves it and the header's Wishlist count updates on every page. The Wishlist page (`/wishlist`) lists the saved products, and Remove takes one off; the wishlist is kept on the server, so it is the same after a reload. An unknown product URL such as `/products/99` shows the `Product not found` page.",
+  "faults": [
+    {
+      "id": "f1-add-noop",
+      "class": "surface",
+      "brief_phrase": "Add to wishlist on a product page saves it",
+      "description": "Add to wishlist shows the status but the server does not save anything; the Wishlist page stays empty.",
+      "find": "      if (added) wishlist.push(id);\n",
+      "replace": "      void added;\n"
+    },
+    {
+      "id": "f2-detail-off-by-one",
+      "class": "precision",
+      "brief_phrase": "shows that product's name and price",
+      "description": "The pages for products 2 and 3 show the previous product; product 1 is right.",
+      "find": "      const product = PRODUCTS.find((p) => p.id === id);\n      if (!product) return send(res, 404",
+      "replace": "      const product = PRODUCTS.find((p) => p.id === (id > 1 && id <= PRODUCTS.length ? id - 1 : id));\n      if (!product) return send(res, 404"
+    },
+    {
+      "id": "f3-list-header-count-stale",
+      "class": "precision",
+      "brief_phrase": "the header's Wishlist count updates on every page",
+      "description": "The product list page always shows Wishlist (0) in its header.",
+      "find": "    </ul>`, wishlist.length);\n\nconst detailPage",
+      "replace": "    </ul>`, 0);\n\nconst detailPage"
+    },
+    {
+      "id": "f4-remove-client-only",
+      "class": "persistence",
+      "brief_phrase": "it is the same after a reload",
+      "description": "Remove deletes the row on the page but the server keeps the product; a reload shows it again.",
+      "find": "      wishlist = wishlist.filter((id) => id !== removedId);\n",
+      "replace": "      void removedId;\n"
+    },
+    {
+      "id": "f5-unknown-product-blank",
+      "class": "precision",
+      "brief_phrase": "shows the `Product not found` page",
+      "description": "An unknown product id renders a product page with an empty name and `$0.00` instead of the not-found page.",
+      "find": "      if (!product) return send(res, 404, \"text/html; charset=utf-8\", notFoundPage());\n      return send(res, 200, \"text/html; charset=utf-8\", detailPage(product));",
+      "replace": "      return send(res, 200, \"text/html; charset=utf-8\", detailPage(product || { id, name: \"\", price: 0 }));"
+    }
+  ],
+  "refactor": [
+    {
+      "find": "<header id=\"sf-header\">",
+      "replace": "<header id=\"sf-header\" class=\"site-header\"><div class=\"site-header__nav\">"
+    },
+    {
+      "find": "<a href=\"/wishlist\" id=\"sf-wishlist-link\">Wishlist (<span id=\"sf-wishlist-count\">${count}</span>)</a>\n  </header>",
+      "replace": "<a href=\"/wishlist\" id=\"sf-wishlist-link\" class=\"nav-link\">Wishlist (<span id=\"sf-wishlist-count\">${count}</span>)</a>\n  </div></header>"
+    },
+    {
+      "find": "<li class=\"product\">",
+      "replace": "<li class=\"card card--product\">"
+    },
+    {
+      "find": "<li class=\"saved\"",
+      "replace": "<li class=\"card card--saved\""
+    },
+    {
+      "find": "<button type=\"button\" id=\"sf-add\" data-id=\"${product.id}\">Add to wishlist</button>",
+      "replace": "<div class=\"actions\"><button type=\"button\" id=\"sf-add\" class=\"btn btn-primary\" data-id=\"${product.id}\"><span>Add to wishlist</span></button></div>"
+    },
+    {
+      "find": "sf-wishlist-count",
+      "replace": "nav-saved-count"
+    },
+    {
+      "find": "sf-wishlist-link",
+      "replace": "nav-saved"
+    },
+    {
+      "find": "sf-product-name",
+      "replace": "item-title"
+    },
+    {
+      "find": "sf-product-price",
+      "replace": "item-price"
+    },
+    {
+      "find": "sf-products",
+      "replace": "catalog"
+    },
+    {
+      "find": "sf-status",
+      "replace": "item-feedback"
+    },
+    {
+      "find": "sf-saved",
+      "replace": "saved-items"
+    },
+    {
+      "find": "sf-empty",
+      "replace": "saved-none"
+    },
+    {
+      "find": "sf-header",
+      "replace": "masthead"
+    },
+    {
+      "find": "sf-home",
+      "replace": "brand"
+    },
+    {
+      "find": "sf-main",
+      "replace": "content"
+    },
+    {
+      "find": "sf-add",
+      "replace": "save-item"
+    }
+  ]
+}

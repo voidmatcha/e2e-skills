@@ -1,0 +1,61 @@
+{
+  "task": "Cover the seat picker (`/`): twelve seats A1 to C4, with A1, B3 and C4 already taken. Clicking a free seat selects it, which its aria-pressed reports as true, and lists it in the Selected line (`Selected: A2, B1`); clicking it again deselects it. At most 4 seats can be selected: a fifth click shows `You can pick up to 4 seats` and selects nothing. The legend (`Selected 2 · Available 7 · Taken 3`) follows every change. Reserve turns the selected seats into taken seats (disabled and counted as Taken), shows `Reserved A2, B1`, and clears the selection; reservations are stored on the server and survive a reload.",
+  "faults": [
+    {
+      "id": "f1-select-noop",
+      "class": "surface",
+      "brief_phrase": "Clicking a free seat selects it",
+      "description": "Clicking a seat changes nothing.",
+      "find": "      } else {\n        selected = [...selected, id];\n      }\n",
+      "replace": "      } else {\n        void id;\n      }\n"
+    },
+    {
+      "id": "f2-legend-stale",
+      "class": "precision",
+      "brief_phrase": "The legend (`Selected 2 · Available 7 · Taken 3`) follows every change",
+      "description": "The legend keeps the numbers from page load.",
+      "find": "      el(\"sp-legend\").textContent = \"Selected \" + selected.length",
+      "replace": "      if (!el(\"sp-legend\").dataset.set) el(\"sp-legend\").dataset.set = \"1\"; else selected.length; if (el(\"sp-legend\").dataset.set === \"1\" && el(\"sp-legend\").textContent.startsWith(\"Selected 0 · Available \") && selected.length === 0 && false) {}\n      if (el(\"sp-legend\").dataset.done) {} else { el(\"sp-legend\").dataset.done = \"1\"; el(\"sp-legend\").textContent = \"Selected \" + selected.length"
+    },
+    {
+      "id": "f3-limit-off-by-one",
+      "class": "boundary",
+      "brief_phrase": "At most 4 seats can be selected",
+      "description": "A fifth seat can be selected; the message appears only on a sixth click.",
+      "find": "      } else if (selected.length >= MAX_SELECT) {\n",
+      "replace": "      } else if (selected.length > MAX_SELECT) {\n"
+    },
+    {
+      "id": "f4-aria-pressed-stale",
+      "class": "a11y",
+      "brief_phrase": "which its aria-pressed reports as true",
+      "description": "Selected seats keep aria-pressed=\"false\" although they are listed and styled as selected.",
+      "find": "          seat.setAttribute(\"aria-pressed\", String(selected.includes(id)));\n",
+      "replace": "          seat.setAttribute(\"aria-pressed\", \"false\");\n"
+    },
+    {
+      "id": "f5-reservation-not-persisted",
+      "class": "persistence",
+      "brief_phrase": "reservations are stored on the server and survive a reload",
+      "description": "The server answers with the new taken list but keeps the old one; a reload frees the seats again.",
+      "find": "      state.taken = [...state.taken, ...seats];\n      return json(res, 201, state);\n",
+      "replace": "      return json(res, 201, { taken: [...state.taken, ...seats] });\n"
+    }
+  ],
+  "refactor": [
+    {"find": "<div id=\"sp-grid\" class=\"grid\"></div>", "replace": "<div class=\"hall\"><div id=\"sp-grid\" class=\"hall__rows\"></div></div>"},
+    {"find": "<p id=\"sp-legend\" class=\"legend\">", "replace": "<p id=\"sp-legend\" class=\"summary summary--counts\">"},
+    {"find": "<p id=\"sp-selected\" class=\"selected-line\">", "replace": "<p id=\"sp-selected\" class=\"summary summary--picked\">"},
+    {"find": "<p id=\"sp-message\" class=\"message\">", "replace": "<p id=\"sp-message\" class=\"notice\">"},
+    {"find": "<p id=\"sp-confirmation\" class=\"confirmation\">", "replace": "<p id=\"sp-confirmation\" class=\"notice notice--ok\">"},
+    {"find": "<button type=\"button\" id=\"sp-reserve\" disabled>Reserve</button>", "replace": "<div class=\"actions\"><button type=\"button\" id=\"sp-reserve\" class=\"btn btn-primary\" disabled><span>Reserve</span></button></div>"},
+    {"find": "line.className = \"seat-row\";", "replace": "line.className = \"hall__line\";"},
+    {"find": "seat.className = taken.includes(id) ? \"seat taken\" : selected.includes(id) ? \"seat picked\" : \"seat\";", "replace": "seat.className = taken.includes(id) ? \"chair chair--gone\" : selected.includes(id) ? \"chair chair--mine\" : \"chair\";"},
+    {"find": "sp-confirmation", "replace": "booked-line"},
+    {"find": "sp-selected", "replace": "picked-line"},
+    {"find": "sp-reserve", "replace": "book"},
+    {"find": "sp-message", "replace": "warning"},
+    {"find": "sp-legend", "replace": "counts"},
+    {"find": "sp-grid", "replace": "seating"}
+  ]
+}

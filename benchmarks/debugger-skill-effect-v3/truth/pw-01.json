@@ -1,0 +1,14 @@
+{
+ "source": {
+  "repo": "opengeos/GeoLibre",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/opengeos/GeoLibre/pull/2937"
+  ],
+  "merged": "2026-10-04"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (shared fixture)",
+ "explanation": "When a test ends, Playwright disposes its browser context, which kills the renderer outright. If that renderer still holds a live software-rendered WebGL map, the browser process is left wedged, and the next `Target.createBrowserContext` in that worker waits for it. The stall is left behind by whichever test ran before.",
+ "fix": "A shared `e2e/test.ts` fixture navigates a passing test's pages to `about:blank` before Playwright disposes the context; all specs import `test` from it."
+}

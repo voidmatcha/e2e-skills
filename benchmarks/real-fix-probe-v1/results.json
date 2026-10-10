@@ -1,0 +1,67 @@
+{
+  "status": "COMPLETE",
+  "evidence_class": "public-development-zero-tool-single-repetition",
+  "model": "gpt-6-sol",
+  "runner_version": "codex-cli 0.159.3",
+  "scheduled_calls": 36,
+  "scored_calls": 36,
+  "source_clusters": 6,
+  "raw_report": {
+    "local_cache_relative_path": "e2e-skills-bench/real-fix-probe-v1/report.json",
+    "sha256": "e6e0d7039d53d8f646bda043ca1a8dfdc66a4356122f0e4c88cdcfeecd273fac",
+    "archived_in_repository": false
+  },
+  "runner_script_sha256": "167125ced44bb2ed87751107ccc52f30e931e937233d5ca14c7df6596da1734a",
+  "protocol_sha256": "bad0eb346c5385cf88fee9bef967d16a289fc3afafbde13e3318f2a7e5fb4398",
+  "prompt_skill_sha256": "6acaf64ad9f03c4e644192eb409a7a9b8999861e8a1ce49c2c5c5ea7bf8a4c7f",
+  "arms": {
+    "full": {
+      "before_target_hits": 5,
+      "mapped_after_alarms": 0,
+      "input_tokens": 724175,
+      "cached_input_tokens": 98560,
+      "output_tokens": 20529,
+      "reasoning_output_tokens": 14298,
+      "summed_call_seconds": 565.9,
+      "other_findings_unadjudicated": 183
+    },
+    "catalog-only": {
+      "before_target_hits": 4,
+      "mapped_after_alarms": 0,
+      "input_tokens": 469205,
+      "cached_input_tokens": 118272,
+      "output_tokens": 15979,
+      "reasoning_output_tokens": 11002,
+      "summed_call_seconds": 456.5,
+      "other_findings_unadjudicated": 144
+    },
+    "no-skill": {
+      "before_target_hits": 1,
+      "mapped_after_alarms": 0,
+      "input_tokens": 225043,
+      "cached_input_tokens": 78848,
+      "output_tokens": 12898,
+      "reasoning_output_tokens": 9573,
+      "summed_call_seconds": 380.7,
+      "other_findings_unadjudicated": 97
+    }
+  },
+  "strict_before_by_case": {
+    "datagrok": {"full": false, "catalog-only": false, "no-skill": false},
+    "growi": {"full": true, "catalog-only": true, "no-skill": true},
+    "opensearch": {"full": true, "catalog-only": true, "no-skill": false},
+    "chronograf": {"full": true, "catalog-only": false, "no-skill": false},
+    "onearmy": {"full": true, "catalog-only": true, "no-skill": false},
+    "kibana": {"full": true, "catalog-only": true, "no-skill": false}
+  },
+  "datagrok_boundary": "All three arms cited the target assertion line as #4a, but the source-adjudicated label is base #4. The enforced v15 JSON schema did not allow #4, despite the shared prompt legend addition. This is a schema-constrained unscoreable target, not independent evidence that all three models chose the wrong subtype. Exclude it from valid cross-model strict-recall comparisons.",
+  "limitations": [
+    "One repetition on six selected public clusters is descriptive, not a stable or population effect estimate.",
+    "The full arm embeds skill material but executes no scanner, browser, or subagent workflow.",
+    "The no-skill arm receives a shared output legend and is not a natural unprompted review.",
+    "Other findings were not source-adjudicated; whole-report precision and false-positive rates are unknown.",
+    "Input tokens include cached input and are not billing-cost ratios; summed model-call time excludes staging and analysis.",
+    "Raw model output remains in a local cache and is not independently replayable from this repository alone.",
+    "The enforced output schema omitted base #4, making the DataGrok target unscoreable; the original six-case aggregate is retained as historical output, not a valid six-case accuracy estimate."
+  ]
+}

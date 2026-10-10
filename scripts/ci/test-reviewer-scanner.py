@@ -106,6 +106,7 @@ def scan_path(
     privileged: bool = True,
     timeout: int | None = None,
     scanner: Path | None = None,
+    leading_args: tuple[str, ...] = (),
 ) -> subprocess.CompletedProcess[str]:
     ast_grep_policy_keys = {
         "E2E_SMELL_AST_GREP_BIN",
@@ -140,7 +141,7 @@ def scan_path(
     command = ["/bin/bash"]
     if privileged:
         command.append("-p")
-    command.extend((str(scanner or SCANNER), str(path)))
+    command.extend((str(scanner or SCANNER), *leading_args, str(path)))
     return subprocess.run(
         command,
         cwd=ROOT,
@@ -165,7 +166,6 @@ def assert_eslint_registry_fallback_uses_reviewed_exact_pins() -> None:
         "eslint-plugin-cypress": "6.4.3",
         "@typescript-eslint/parser": "8.65.0",
         "typescript": "6.0.3",
-        "eslint-plugin-cypress-silent-pass": "0.2.2",
         "eslint-plugin-mocha": "12.0.1",
     }
     start = source.index("    npx_args=(\n", source.index("try_eslint()"))
@@ -176,6 +176,10 @@ def assert_eslint_registry_fallback_uses_reviewed_exact_pins() -> None:
         assert download_contract.count(exact) == 1, (
             f"optional ESLint registry fallback must request {exact} exactly once"
         )
+    assert "-p 'eslint-plugin-cypress-silent-pass@" not in download_contract, (
+        "the optional registry path must not load the Cypress companion whose "
+        "cy.get findings are not unconditional silent passes"
+    )
     assert "eslint-plugin-$plugin" not in download_contract
     assert "@latest" not in download_contract
     # Only the direct specs above are pinned; npm still resolves the transitive
@@ -228,9 +232,9 @@ def assert_eslint_download_path_delegates_every_npx_call() -> None:
         "try_eslint must reach npx only through run_pinned_npx; a direct "
         "NPX_BIN invocation bypasses the private cwd and the pinned npm config"
     )
-    assert body.count("run_pinned_npx ") >= 2, (
-        "both the plugin/parser resolve and the silent-pass resolve must go "
-        "through run_pinned_npx"
+    assert body.count("run_pinned_npx ") == 1, (
+        "the single plugin/parser/ESLint resolve must go through run_pinned_npx; "
+        "a second companion-plugin download is outside the reviewed boundary"
     )
 
     helper = eslint_download_helper_source("run_pinned_npx")
@@ -758,6 +762,55 @@ def assert_non_ascii_identifier_scans_under_utf8_locale() -> None:
             assert result.returncode == 0, (locale, result.returncode, result.stdout[-2000:])
             assert "INCOMPLETE" not in result.stdout, (locale, result.stdout[-2000:])
             assert "#9 Playwright hard-coded sleep" in result.stdout, (locale, result.stdout[-2000:])
+
+
+def assert_report_file_writes_full_report_and_prints_digest() -> None:
+    """--report-file keeps the full report on disk and prints a bounded digest."""
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-report-") as temp:
+        root = Path(temp) / "project"
+        root.mkdir()
+        (root / "package.json").write_text(
+            '{"name":"p","devDependencies":{"@playwright/test":"1.62.1"}}\n', encoding="utf-8"
+        )
+        for name in ("a", "b"):
+            (root / f"{name}.spec.ts").write_text(
+                "import { test, expect } from '@playwright/test';\n"
+                "test.only('focused', async ({ page }) => {\n"
+                "  await page.waitForTimeout(1000);\n"
+                "  await page.waitForTimeout(2000);\n"
+                "  await expect(page.getByText('ok')).toBeVisible();\n"
+                "});\n",
+                encoding="utf-8",
+            )
+        plain = scan_path(root)
+        report = Path(temp) / "report.txt"
+        digest = scan_path(root, leading_args=("--report-file", str(report)))
+        assert digest.returncode == plain.returncode == 1, (plain.returncode, digest.returncode)
+        full = report.read_text(encoding="utf-8")
+        assert "Summary:" in full and "#7" in full, full[-2000:]
+        hit_lines = [line for line in full.splitlines() if line.startswith("  ") and ".spec.ts:" in line]
+        assert hit_lines, full
+        for line in hit_lines:
+            assert line not in digest.stdout, line
+        assert "Summary:" in digest.stdout, digest.stdout
+        assert f"full report with every hit line: {report}" in digest.stdout, digest.stdout
+        summary = next(line for line in full.splitlines() if line.startswith("Summary:"))
+        assert digest.stdout.rstrip("\n").splitlines()[-1] == summary, digest.stdout[-500:]
+        for name in ("a", "b"):
+            count = sum(1 for line in hit_lines if f"/{name}.spec.ts:" in line)
+            assert f"/{name}.spec.ts: {count}\n" in digest.stdout, (name, count, digest.stdout)
+
+        refused = scan_path(root, leading_args=("--report-file", str(report)))
+        assert refused.returncode == 2 and "already exists" in refused.stdout, refused.stdout
+        assert report.read_text(encoding="utf-8") == full, "an existing report was overwritten"
+        link = Path(temp) / "link.txt"
+        link.symlink_to(Path(temp) / "target.txt")
+        refused = scan_path(root, leading_args=("--report-file", str(link)))
+        assert refused.returncode == 2 and not (Path(temp) / "target.txt").exists(), refused.stdout
+        refused = scan_path(root, leading_args=("--report-file", str(Path(temp) / "missing/r.txt")))
+        assert refused.returncode == 2 and "existing, non-symlink directory" in refused.stdout, refused.stdout
+        usage = scan_path(root, leading_args=("--report-file", ""))
+        assert usage.returncode == 2 and "usage" in usage.stdout, usage.stdout
 
 
 def assert_ast_grep_fixed_candidates_exclude_system_sg() -> None:
@@ -1544,6 +1597,121 @@ def assert_parent_project_ast_grep_rejected() -> None:
         assert result.returncode == 2, result.stdout
         assert "refusing PATH entry inside the requested scan root" in result.stdout
         assert not marker.exists()
+
+
+def assert_ast_grep_config_discovery_is_pinned() -> None:
+    """A scanned repository must not be able to feed ast-grep its sgconfig.yml.
+
+    ast-grep discovers `sgconfig.yml` in its working directory and the parents and
+    loads any `customLanguages.<lang>.libraryPath` it names before a rule runs
+    (observed on 0.39.7 and 0.45.3: exit 79 for a nonexistent library path). The
+    scanner therefore pins a skill-owned `--config` and starts the binary outside
+    the target tree. The fake below reproduces the discovery and library-load
+    attempt so the contract is tested without a real ast-grep.
+    """
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-sgconfig-") as temp:
+        outer = Path(temp)
+        root = outer / "project"
+        scan_root = root / "tests"
+        scan_root.mkdir(parents=True)
+        bin_dir = outer / "bin"
+        bin_dir.mkdir()
+        (root / "sgconfig.yml").write_text(
+            "ruleDirs: []\n"
+            "customLanguages:\n"
+            "  hostile:\n"
+            "    libraryPath: ./tooling/libhostile.so\n"
+            "    extensions: [hostile]\n",
+            encoding="utf-8",
+        )
+        (scan_root / "missing-await.spec.ts").write_text(
+            "import { expect, test } from '@playwright/test';\n"
+            "test('e2e', async ({ page }) => {\n"
+            "  expect(page.getByRole('button')).toBeVisible();\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        argv_log = outer / "argv.log"
+        cwd_log = outer / "cwd.log"
+        config_log = outer / "config.log"
+        fake_ast_grep = bin_dir / "ast-grep"
+        fake_ast_grep.write_text(
+            "#!/usr/bin/env python3\n"
+            "from pathlib import Path\n"
+            "import json, os, sys\n"
+            f"Path({str(argv_log)!r}).write_text("
+            "''.join(f'<{value}>' for value in sys.argv[1:]) + '\\n')\n"
+            f"Path({str(cwd_log)!r}).write_text(os.getcwd() + '\\n')\n"
+            "if '--config' in sys.argv:\n"
+            "    config = Path(sys.argv[sys.argv.index('--config') + 1])\n"
+            "else:\n"
+            "    config = None\n"
+            "    for directory in [Path.cwd(), *Path.cwd().parents]:\n"
+            "        if (directory / 'sgconfig.yml').is_file():\n"
+            "            config = directory / 'sgconfig.yml'\n"
+            "            break\n"
+            "if config is not None:\n"
+            "    text = config.read_text()\n"
+            f"    Path({str(config_log)!r}).write_text(str(config) + '\\n' + text)\n"
+            "    if 'libraryPath' in text:\n"
+            "        print('Error: Cannot load custom language library', file=sys.stderr)\n"
+            "        raise SystemExit(79)\n"
+            "rule = Path(sys.argv[sys.argv.index('--rule') + 1]).name\n"
+            "root = Path(sys.argv[-1]).resolve()\n"
+            "if rule == 'sg-15-missing-await-playwright-expect.yml':\n"
+            "    print(json.dumps({'file': str(root / 'missing-await.spec.ts'), "
+            "'range': {'start': {'line': 2, 'column': 2}}}, separators=(',', ':')))\n",
+            encoding="utf-8",
+        )
+        fake_ast_grep.chmod(0o755)
+        environment = os.environ.copy()
+        environment.pop("BASH_ENV", None)
+        environment.pop("ENV", None)
+        environment.update(
+            {
+                "E2E_SMELL_AST_GREP_BIN": str(fake_ast_grep),
+                "E2E_SMELL_NO_AST_GREP_DOWNLOAD": "1",
+                "E2E_SMELL_NO_ESLINT_DOWNLOAD": "1",
+                "E2E_SMELL_FAIL_ON": "p0",
+                "E2E_SMELL_RG_BIN": str(TRUSTED_RG),
+                "LC_ALL": "C",
+                "LC_CTYPE": "C",
+                "LANG": "C",
+            }
+        )
+        # The exposure needs the scanner started from inside the repository, where a
+        # reviewer or generator normally runs it; a relative root exercises the
+        # canonicalization that the cwd change depends on.
+        result = subprocess.run(
+            ["/bin/bash", "-p", str(SCANNER), "tests"],
+            cwd=root,
+            env=environment,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            check=False,
+        )
+        assert result.returncode == 0, result.stdout
+        assert "Cannot load custom language library" not in result.stdout, result.stdout
+        assert "Tier 2 ast-grep failed" not in result.stdout, result.stdout
+        assert (
+            "[AST] sg-15-missing-await-playwright-expect (1 hit)" in result.stdout
+        ), result.stdout
+        root_real = root.resolve()
+        scan_root_real = scan_root.resolve()
+        assert f"{scan_root_real / 'missing-await.spec.ts'}:3:3" in result.stdout, result.stdout
+
+        # The logs hold the last rule's invocation; every rule shares the cwd and config.
+        argv = argv_log.read_text(encoding="utf-8").strip()
+        assert "<--config>" in argv, argv
+        assert argv.endswith(f"<{scan_root_real}>"), argv
+        cwd = Path(cwd_log.read_text(encoding="utf-8").strip())
+        assert cwd.is_absolute() and not cwd.is_relative_to(root_real), cwd
+        assert cwd.name.startswith("e2e-reviewer."), cwd
+        config_path, _, config_text = config_log.read_text(encoding="utf-8").partition("\n")
+        assert not Path(config_path).is_relative_to(root_real), config_path
+        assert Path(config_path).parent == cwd, (config_path, cwd)
+        assert config_text == "ruleDirs: []\n", config_text
 
 
 def assert_focused_serial_and_parallel_suites_are_reported() -> None:
@@ -2378,6 +2546,89 @@ def assert_form_literal_credential_filter() -> None:
             assert value not in credentials, value
 
 
+def assert_cy_env_credentials_are_not_candidates() -> None:
+    """Cypress 16 removed Cypress.env(); cy.env() is its documented replacement
+    for secrets, so a literal key or username beside a cy.env() value is not a
+    hardcoded credential, exactly as the Cypress.env() exclusion already held."""
+    result = scan("cy-env-login.cy.ts")
+    assert result.returncode == 0, result.stdout
+    findings = section(result.stdout, "[P1?][LLM-TRIAGE] #14 Hardcoded credential candidate")
+    assert "cy-env-login.cy.ts:12:" in findings, result.stdout
+    # The exclusion is anchored to the `cy` identifier: `agency.env(` on line 13
+    # must not hide the literal password beside it.
+    assert "cy-env-login.cy.ts:13:" in findings, result.stdout
+    assert "cy-env-login.cy.ts:4:" not in findings, result.stdout
+    # The exclusion reads the candidate's own statement. Line 6 sits inside a
+    # cy.env() callback block, so its literal email stays a triage candidate for
+    # Phase 2, exactly like a Cypress.env() read on an enclosing line.
+    assert "cy-env-login.cy.ts:6:" in findings, result.stdout
+
+
+def assert_uncalled_matchers_are_p0() -> None:
+    """#8c: a matcher that is read but never called, or a bare expect(x), runs no
+    assertion, so the statement passes whatever x is. The fixture pairs each hit
+    with the lookalikes that must stay clean."""
+    result = scan("uncalled-matcher.spec.ts")
+    assert result.returncode == 1, result.stdout
+    uncalled = section(result.stdout, "[P0] #8c Matcher never invoked")
+    bare = section(result.stdout, "[P0] #8c Bare expect() without matcher")
+    for line in (7, 8):
+        assert f"uncalled-matcher.spec.ts:{line}:" in uncalled, result.stdout
+    assert "uncalled-matcher.spec.ts:9:" in bare, result.stdout
+    for line in (6, 10, 11, 12, 13, 14, 15, 16):
+        assert f"uncalled-matcher.spec.ts:{line}:" not in uncalled, result.stdout
+        assert f"uncalled-matcher.spec.ts:{line}:" not in bare, result.stdout
+    assert "#8c(playwright/valid-expect)" in result.stdout, result.stdout
+
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-uncalled-matcher-") as temp:
+        root = Path(temp)
+        # Cypress Chai property assertions are real assertions and lowercase, so
+        # `to.be.true` never matches `to[A-Z]`; a shadowed expect is not Playwright's.
+        (root / "chai.cy.ts").write_text(
+            "describe('chai', () => {\n"
+            "  it('asserts with properties', () => {\n"
+            "    cy.get('[data-cy=flag]').then(($el) => {\n"
+            "      expect($el.is(':visible')).to.be.true;\n"
+            "      expect($el);\n"
+            "    });\n"
+            "  });\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        (root / "shadowed.spec.ts").write_text(
+            "import { test } from '@playwright/test';\n"
+            "const expect = makeCustomExpect();\n"
+            "test('shadowed', async ({ page }) => {\n"
+            "  expect(page.getByRole('status')).toBeVisible;\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        (root / "semicolonless.spec.ts").write_text(
+            "import { expect, test } from '@playwright/test';\n"
+            "test('semicolonless', async ({ page }) => {\n"
+            "  expect(page.getByRole('status')).toBeVisible\n"
+            "  await expect(page.getByRole('status'))\n"
+            "    .toBeVisible()\n"
+            "  expect(page.getByRole('status'))\n"
+            "\n"
+            "    .toHaveText('ok')\n"
+            "})\n",
+            encoding="utf-8",
+        )
+        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
+        assert result.returncode == 0, result.stdout
+        assert "chai.cy.ts:" not in result.stdout, result.stdout
+        assert "shadowed.spec.ts:4:" not in section(result.stdout, "[P0] #8c Matcher never invoked"), result.stdout
+        uncalled = section(result.stdout, "[P0] #8c Matcher never invoked")
+        # No bare expect() in these fixtures, so that heading must not appear at all.
+        assert "[P0] #8c Bare expect() without matcher" not in result.stdout, result.stdout
+        # Line 3 ends the statement (the next code line starts with `await`), while
+        # lines 4 and 6 are chain heads whose matcher call follows on a later line.
+        assert "semicolonless.spec.ts:3:" in uncalled, result.stdout
+        for line in (4, 5, 6, 8):
+            assert f"semicolonless.spec.ts:{line}:" not in uncalled, result.stdout
+
+
 def assert_playwright_rules_skip_cypress_only_files_but_allow_mixed_files() -> None:
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-framework-applicability-") as temp:
         root = Path(temp)
@@ -2504,6 +2755,40 @@ def assert_expect_aliases_and_page_receiver_provenance() -> None:
             assert "aliases.spec.ts:2:" not in section(
                 result.stdout, "[P1] #19 Module-level mutable state in test code"
             )
+
+
+def assert_semicolonless_page_url_and_retry_boundaries() -> None:
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-url-boundary-") as temp:
+        target = Path(temp) / "url.spec.ts"
+        target.write_text(
+            "import { expect, test } from '@playwright/test';\n"
+            "test('url', async ({ page }) => {\n"
+            "  expect(page.url()).toBe('/ready')\n"
+            "  expect(page.url()).toEqual('/ready')\n"
+            "  expect(page.url()).toContain('/ready')\n"
+            "  expect(page.url())\n"
+            "    .toBe('/ready')\n"
+            "  expect(page.url())\n"
+            "    .not\n"
+            "    .toBe('/away')\n"
+            + ("\n" * 14) +
+            "  await expect(async () => {\n"
+            "    expect(page.url()).toBe('/ready')\n"
+            "  }).toPass()\n"
+            "  await expect.poll(() => page.url()).toBe('/ready')\n"
+            "  const pageLike = { url: () => '/ready' };\n"
+            "  expect(pageLike.url()).toBe('/ready')\n"
+            "  expect(page.url())\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        result = scan_path(target, {"E2E_SMELL_FAIL_ON": "none"})
+        assert result.returncode == 0, result.stdout
+        findings = section(result.stdout, "[P1] #4h One-shot page.url assertion")
+        for line in (3, 4, 5, 6, 8):
+            assert f"url.spec.ts:{line}:" in findings, result.stdout
+        for line in (26, 28, 30, 31):
+            assert f"url.spec.ts:{line}:" not in findings, result.stdout
 
 
 def assert_whitespace_comments_and_shadowed_page_boundaries() -> None:
@@ -6864,6 +7149,7 @@ def main() -> None:
         assert_ast_grep_can_be_disabled_even_when_installed,
         assert_ast_grep_fixed_candidates_exclude_system_sg,
         assert_non_ascii_identifier_scans_under_utf8_locale,
+        assert_report_file_writes_full_report_and_prints_digest,
         assert_ast_grep_fail_closed,
         assert_explicit_tool_binds_canonical_resolved_path,
         assert_default_versioned_tool_symlink_executes,
@@ -6877,6 +7163,7 @@ def main() -> None:
         assert_project_ripgrep_rejected,
         assert_invalid_inherited_locale_preserves_evidence,
         assert_parent_project_ast_grep_rejected,
+        assert_ast_grep_config_discovery_is_pinned,
         assert_module_extension_scope,
         assert_focused_serial_and_parallel_suites_are_reported,
         assert_regex_literal_quotes_do_not_open_strings,
@@ -6895,10 +7182,13 @@ def main() -> None:
         assert_function_expression_catch_boundaries,
         assert_multiline_auth_helper_literals,
         assert_form_literal_credential_filter,
+        assert_cy_env_credentials_are_not_candidates,
+        assert_uncalled_matchers_are_p0,
         assert_playwright_rules_skip_cypress_only_files_but_allow_mixed_files,
         assert_initialized_module_state_only,
         assert_positional_selector_is_always_triage,
         assert_expect_aliases_and_page_receiver_provenance,
+        assert_semicolonless_page_url_and_retry_boundaries,
         assert_whitespace_comments_and_shadowed_page_boundaries,
         assert_multiline_tsx_and_aliased_expect,
         assert_playwright_text_does_not_create_e2e_scope,

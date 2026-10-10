@@ -46,15 +46,18 @@ For every scenario, add a **verification contract**:
 
 ```
 - Primary outcome (V1): <one observable behavior>
+- V1 completion: <expected state changes; or, when already true, the action-specific completion evidence and its source; for overlapping asynchronous actions, the evidenced overlap and earlier-work terminal processing/cancellation plus latest UI completion; disabled/synchronous proof; or CANNOT_VERIFY reason — see verification-rules.md, V1>
 - Falsification (V2): <safe matcher inverse, or CANNOT_VERIFY reason>
 - Fault probe (V3): <evidenced response/input mutation that must turn the test red>
 - V3 expected failing assertion: <exact unchanged primary assertion expected to fail under the fault>
 - V3 expected observable mismatch: <expected matcher diagnostic and faulted observable state>
-- Write proof (V4): <request evidence, or N/A for read-only behavior>
-- Secondary outcomes: <selected or skipped, from the fixed list below>
+- Write proof (V4): <effect from source or observed behavior: write, read-only, or unknown; for a write, planned method, endpoint, relevant payload/query, cardinality, user-visible outcome, and failed-write assertion/gate; N/A with reason for read-only behavior; CANNOT_VERIFY for unknown effect>
+- Secondary outcomes: <default checks selected or skipped; approved domain outcomes with their requirement source, or none>
 ```
 
-A written "Then" usually records less than a person checks by hand, so offer exactly these three secondary outcomes per scenario and record each as selected or skipped — no others, and never as a replacement for the primary outcome:
+Classify the action's effect before assigning V4, including a `GET` handler that changes server-side state the scenario asserts. The HTTP method alone never proves an action read-only. If its effect remains unknown, keep that uncertainty in the plan instead of marking V4 `N/A`.
+
+A written "Then" usually records less than a person checks by hand, so offer these three default secondary outcomes per scenario and record each as selected or skipped. Additional domain-specific outcomes are allowed only when the user approved them or a documented requirement requires them; record that source and keep them bounded. Do not invent them from a generic request to check everything, and never use any secondary outcome as a replacement for the primary outcome:
 
 | Secondary outcome | Ask | Skip when |
 |---|---|---|
@@ -80,4 +83,5 @@ Mark one approved scenario as the **tracer scenario** when this is the first gen
 - Do not create any locator not listed in this table
 - No getter methods — locators are exposed directly as `readonly` properties
 - `.nth()`, `.first()`, `.last()` require `// JUSTIFIED: <reason>` on the line immediately above
+- `#id` and `.class` selectors require the same `// JUSTIFIED:` line unless the project configures `testIdAttribute` for that attribute or documents the scheme; record the visible text or ancestor role that was tried first (`code-rules.md` § Selector Priority)
 - **Flat (non-POM) specs:** the "File" column is the spec file itself and locators are inline `const`s declared in the test — the table does not force a Page Object. Use POM only when Step 5 structure detection finds an existing POM directory.

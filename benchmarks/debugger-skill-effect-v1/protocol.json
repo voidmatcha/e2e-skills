@@ -1,0 +1,130 @@
+{
+ "schema_version": 1,
+ "protocol_id": "debugger-skill-effect-v1",
+ "registered_utc": "2026-10-04T05:30:00Z",
+ "evidence_scope": "public-development",
+ "release_eligible": false,
+ "hypothesis": "Given the same sanitized failure excerpt and the same output contract, a zero-tool model that receives the debugger skill text (SKILL.md plus report-acquisition.md, artifact-extraction.md, classification-procedure.md, fix-verification.md; the model-visible surface of debugger-holdout-v1) classifies the F1-F15 root cause more accurately than the same model given only the F-code legend (ID and title) parsed from the same SKILL.md.",
+ "arms": {
+  "skill": "prompt frame + full debugger skill text for the case's framework + excerpt",
+  "no-skill": "prompt frame + 15-line F-code legend (ID: title) + excerpt; legend-only, not taxonomy-free"
+ },
+ "hosts": [
+  {
+   "runner": "claude",
+   "requested_model": "sonnet",
+   "cli_min": "Claude Code 2.1.289",
+   "claude_permission_mode": "off",
+   "tools": "none",
+   "settings": "none",
+   "output": "--output-format json --json-schema",
+   "role": "primary"
+  },
+  {
+   "runner": "codex",
+   "requested_model": "gpt-6-sol",
+   "cli_min": "codex-cli 0.159.3",
+   "sandbox": "read-only, shell/web/multi-agent disabled",
+   "output": "--json --output-schema",
+   "role": "secondary, run only if quota allows; same rule applies per host"
+  }
+ ],
+ "corpus": "benchmarks/debugger-skill-effect-v1/corpus.json",
+ "cases": 30,
+ "repetitions": 3,
+ "seed": 20261004,
+ "schedule": "one seeded shuffle of all case x arm x repetition cells; arms interleave",
+ "timeout_s": 180,
+ "infrastructure_retry": {
+  "max_attempts": 2,
+  "retryable": [
+   "timeout",
+   "runner_nonzero_exit",
+   "malformed_envelope",
+   "missing_structured_output"
+  ],
+  "not_retryable": [
+   "schema-valid prediction with any value"
+  ]
+ },
+ "labels": "author-written; two blind model labelers (claude sonnet, claude opus; fresh contexts; saw only the two debugger SKILL.md F tables, both classification-procedure.md files, and the unlabeled packet) matched 30/30 f_code and 30/30 diagnosis. No human labeled the corpus.",
+ "primary_metric": "F-code accuracy per call -> mean per case per arm -> paired per-case difference (skill minus no-skill) -> mean lift",
+ "secondary_metrics": [
+  "diagnosis accuracy per arm",
+  "per-F-code and per-framework accuracy",
+  "strict-majority stable F-code accuracy",
+  "invalid prediction rate",
+  "input/output tokens and summed wall time per arm",
+  "confusion by expected F-code"
+ ],
+ "decision_rule": {
+  "min_lift": 0.1,
+  "ci": "paired case-cluster bootstrap of per-case differences, stratified by framework",
+  "bootstrap_resamples": 10000,
+  "max_diagnosis_drop": 0.05,
+  "PASS": "lift >= min_lift AND bootstrap 95% CI lower bound > 0 AND skill diagnosis accuracy >= no-skill diagnosis accuracy - max_diagnosis_drop",
+  "FAIL": "all scheduled calls scored, no input drift, and PASS conditions not met",
+  "INCONCLUSIVE": "any scheduled call without a scoreable prediction after the retry policy, or any input digest drift"
+ },
+ "power_note": "No pilot variance was available. Assuming a paired per-case SD of 0.35 over 30 cases, the minimum detectable effect is about 0.18 at alpha 0.05 and power 0.8; a true +0.10 lift can be missed.",
+ "limits": [
+  "Public, model-authored corpus and labels; the author is the same model family as the primary host.",
+  "Zero-tool prompt measures interpretation of the skill text, not the end-to-end debugger workflow (artifact reader, isolation probes, fix verification).",
+  "Short synthetic excerpts with one planted lookalike each, not full reports or traces.",
+  "The no-skill arm receives the F-code legend so exact scoring is possible; it is not an unprompted baseline.",
+  "Runner and model strings are provenance, not attestation."
+ ],
+ "frozen_digests": {
+  "corpus.json": "4ffbf128aa907ce55e22a4a983052dddf9c2e1c2b312c50339c5d078fe8a7841",
+  "cases": {
+   "pw-f1": "945aaa48537ba3ee7863f9d2432e8bde24cd8efd5116b51ef0f3c076b603a140",
+   "pw-f2": "f63aea777701fa109d1f072810b8f9405ce87c6843a70c95dadfef36a3c627e6",
+   "pw-f3": "e35166a90ef438602fd70e1b269a9382fe3e07c66f821a367a9538553ce32993",
+   "pw-f4": "9b22ac520c4df6e620957196f2fff7244f659974f0a610a5338e737bdbcb85ff",
+   "pw-f5": "ab4685b6b77f8a70b3e8ab923de085999217b3277ded94108e29f600cb16bb1a",
+   "pw-f6": "193018ee1d001c1d5cee4a8028fa265b61f40662dff879c7bdb3f319c881444f",
+   "pw-f7": "dac575a780f66dd4ff624b2c8a9dd84f21dd53904d0bdc0867cdda3f2786b129",
+   "pw-f8": "5cceff97472371f09a5102509fbb9fadb03faf957d417be8ceecb2f97520baa1",
+   "pw-f9": "ff76da19dcb2d12ca04a036de2b7484e936123ff6f781056f50ef932a15523e4",
+   "pw-f10": "9c351e579b5dc5389e9db03e1e7524dd660a16be17486dcd6a561215ee80debf",
+   "pw-f11": "bf5f6db650f32dfc18d3d720a1caa18a58873b314eaf7ea469824e8f88766078",
+   "pw-f12": "9d9f278fd2ed00d1def294c6082daab822ee9123311233ffe5926af10a0a51e5",
+   "pw-f13": "0772a1551fa0ed1a607f54d0641feda838f32b776fe9106f18ca5e5d58ab5155",
+   "pw-f14": "651bd940ff9d30f106c76f2e3493ef0f3b64edc46c99e9e3c8bde7b060007568",
+   "pw-f15": "d98670e9968735094868841f5bcb6d6eb47ce0e248edae057362e449ba00ce89",
+   "cy-f1": "070545a269c491816e7afe50e0b7b21660c822b157ddea28a5bd47dadbd1232e",
+   "cy-f2": "97b626808ba298c0d5550a8a133cc86d350db2f6deb54ef3537407ccb1867662",
+   "cy-f3": "53b5fbdd1ed7a36bb722fef66cafdc4d76d4fffdce19f6f0e5f47c5d23cb8057",
+   "cy-f4": "c2099634fe26a3bc743789f6baf93490c7d2f339f436b2a9bb648b0c89639797",
+   "cy-f5": "edd092839759991ce718152367f928f79a2e41da0882876ce82783b7ad2fcb1d",
+   "cy-f6": "e291d93d47488d2490d616ffcda460fb59c2b6fc4e3434fbc6ba823f59717450",
+   "cy-f7": "75e344813a69aed58eb9399e4a90e32cc85602a2d32eb01c637ab36747957fd0",
+   "cy-f8": "158b1958feb195a2b9c14daff5415c7e0899fee431e331d96a789f63d9539e45",
+   "cy-f9": "d6f367f24822e12bb56f99d368a0b0153051efd023e53a88a9c68f1bee167d15",
+   "cy-f10": "18a4ce510a07a9fc09d5ca7384607cc3f24ec80a1b038a499e6e8be5407f9533",
+   "cy-f11": "fbbaa0f6d0794427b24c516d05ca7f9a39754d9ab7f5777e2ee7090d35540953",
+   "cy-f12": "2bbe90dff96924ea9dbe3283b429ffeef1b277e9ac0c967bb69cf7d49c100327",
+   "cy-f13": "278e38bf89d83f5a4df545f1b76bddb4579be82f9fcd4c10017d237443d8e5d0",
+   "cy-f14": "e10588fc1df0ab38fc94275a7a969e60a3c1a578f4f5dc33f9fc7f9c5af4acea",
+   "cy-f15": "02d95a91b6d9042b1e129605340650f836e0135359d100c43bd1c2a3d348efb5"
+  },
+  "skill_files": {
+   "skills/playwright-debugger/SKILL.md": "952a4e34621d1eed587a3cb448c751120b6452c053e038f094759819e9e12dcf",
+   "skills/playwright-debugger/references/report-acquisition.md": "2a03860a5159511593054a47494b7fb067ff863edd8d2400977952da24e28f0f",
+   "skills/playwright-debugger/references/artifact-extraction.md": "0c89b9b239a0685297ae30b2b25c72ae1caf52abe884c8d8d6e50eac9dd4a3cb",
+   "skills/playwright-debugger/references/classification-procedure.md": "39350b25046feea946d0f64e7d2ec9247fa9fb52886707a91c26247c26e91cf6",
+   "skills/playwright-debugger/references/fix-verification.md": "2dd83131a150eabad611b26b68a419b22c90615d561a16686205efa4055dea44",
+   "skills/cypress-debugger/SKILL.md": "1f65e503434bc14d9849970559cf9cfdedb6d98f78e7cc59c3933c10705eecc4",
+   "skills/cypress-debugger/references/report-acquisition.md": "b10ac0ecb2b332ec7f43e76992f647223886d2ccfc7d795cab23f87340c131be",
+   "skills/cypress-debugger/references/artifact-extraction.md": "fe70c328ad22fc273a911d9f888f6ab49b5dc8db3c1776abef0cfbccd1202b97",
+   "skills/cypress-debugger/references/classification-procedure.md": "d2a3d8a00cecb30fefae8beb5145810ebdb66dd4ccbb4e976604b1964b0ea105",
+   "skills/cypress-debugger/references/fix-verification.md": "89fc0dab0c840dd57b54dced36fe32944a6871e8cff56554b1afa9b28cf565f5"
+  },
+  "legends": {
+   "playwright": "c67a0a5970469a082fe269bde8f4b2d8ef164dc516779187c7585d08c8f34a13",
+   "cypress": "a2bf365f74ddbd1cf5c96049a54eafca4ee126aef1eaa24af277471843a673a7"
+  },
+  "prompt_frame": "8a103732441044917ba499b5518916c863ee36ad93a3b217d3dcb42bd6ba8a4e",
+  "output_schema": "641305de835cd4251ee2fc2eb0d317dbc5c28065ae8697e1353009ad0bb040f5"
+ }
+}

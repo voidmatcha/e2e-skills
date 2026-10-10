@@ -1,0 +1,55 @@
+{
+  "task": "Add end-to-end tests for the task board (`/`), which starts with three open tasks: Write report, Book flights, Call plumber. Acceptance criteria: (1) Mark done moves a task from the Open tasks list to the Done tasks list; (2) the progress line reads `N of 3 done`; (3) Undo moves a done task back to the Open tasks list; (4) done and undone states are stored on the server, so a reload shows the same lists; (5) a task is never shown in both lists at once. The test seam `POST /api/reset` restores the three tasks as open.",
+  "faults": [
+    {
+      "id": "f1-done-noop",
+      "class": "surface",
+      "criterion": 1,
+      "description": "Mark done changes nothing on the page until a reload.",
+      "find": "        replace(updated);\n        render();\n",
+      "replace": "        void updated;\n"
+    },
+    {
+      "id": "f2-progress-stale",
+      "class": "precision",
+      "criterion": 2,
+      "description": "The progress line always reads `0 of 3 done`.",
+      "find": "progressEl.textContent = doneCount + \" of \" + state.length + \" done\";",
+      "replace": "progressEl.textContent = 0 + \" of \" + state.length + \" done\";"
+    },
+    {
+      "id": "f3-undo-noop",
+      "class": "interaction",
+      "criterion": 3,
+      "description": "Undo leaves the task done.",
+      "find": "      const reopened = { ...task, done: false };\n",
+      "replace": "      const reopened = { ...task, done: true };\n"
+    },
+    {
+      "id": "f4-done-not-persisted",
+      "class": "persistence",
+      "criterion": 4,
+      "description": "The server answers Mark done with the completed task but does not store it; a reload shows the task open again.",
+      "find": "        Object.assign(task, completed);\n",
+      "replace": "        void completed;\n"
+    },
+    {
+      "id": "f5-task-in-both-lists",
+      "class": "precision",
+      "criterion": 5,
+      "description": "A done task also stays in the Open tasks list.",
+      "find": "openEl.replaceChildren(...state.filter((t) => !t.done).map((t) => item(t, \"done\")));",
+      "replace": "openEl.replaceChildren(...state.map((t) => item(t, \"done\")));"
+    }
+  ],
+  "refactor": [
+    {"find": "<section id=\"tb-open-section\">", "replace": "<div class=\"columns\"><section id=\"tb-open-section\" class=\"column column--open\">"},
+    {"find": "<ul id=\"tb-done\" aria-label=\"Done tasks\"></ul>\n    </section>", "replace": "<ul id=\"tb-done\" aria-label=\"Done tasks\"></ul>\n    </section></div>"},
+    {"find": "li.className = \"task\";", "replace": "li.className = \"card card--task\";"},
+    {"find": "tb-open-section", "replace": "todo-column"},
+    {"find": "tb-done-section", "replace": "finished-column"},
+    {"find": "tb-progress", "replace": "completion-summary"},
+    {"find": "tb-open", "replace": "todo-items"},
+    {"find": "tb-done", "replace": "finished-items"}
+  ]
+}

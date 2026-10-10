@@ -9,6 +9,7 @@ release-v1 model executor has not been implemented yet.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -18,8 +19,15 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[2]
+LIB = ROOT / "scripts" / "ci" / "lib"
+sys.path.insert(0, str(LIB))
+
+from reviewer_release_case_id import is_valid_case_id  # noqa: E402
+
 DEFAULT_PROTOCOL = ROOT / "scripts/evals/reviewer-release-v1-protocol.json"
 DEFAULT_VALIDATOR = ROOT / "scripts/evals/validate-reviewer-release-v1.py"
+ARMS = ("full", "catalog-only", "no-skill")
+ARM_ORDER_ALGORITHM = "sha256_v1_per_case_repetition_order"
 
 
 class ReleasePlanError(ValueError):
@@ -56,6 +64,31 @@ def require_positive_int(value: Any, name: str) -> int:
     return value
 
 
+def ordered_arms(case_id: str, repetition: int) -> tuple[str, ...]:
+    """Frozen arm order: ascending SHA-256, with arm ID as an impossible-tie rule.
+
+    Hash compact UTF-8 JSON array [protocol_id, case_id, repetition, arm].
+    Case IDs are committed by the independent custodian before any run.
+    """
+    if not is_valid_case_id(case_id) or type(repetition) is not int or repetition not in (1, 2, 3):
+        raise ReleasePlanError("arm order needs a committed case ID and repetition 1..3")
+    def rank(arm: str) -> tuple[bytes, str]:
+        material = json.dumps(["reviewer-release-v1", case_id, repetition, arm], ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+        return hashlib.sha256(material).digest(), arm
+    return tuple(sorted(ARMS, key=rank))
+
+
+def ordered_call_keys(case_ids: list[str]) -> list[tuple[str, str, int]]:
+    if not isinstance(case_ids, list) or len(case_ids) != 120 or any(not is_valid_case_id(case_id) for case_id in case_ids) or len(set(case_ids)) != 120:
+        raise ReleasePlanError("call schedule needs 120 distinct committed case IDs")
+    return [
+        (case_id, arm, repetition)
+        for case_id in sorted(case_ids)
+        for repetition in (1, 2, 3)
+        for arm in ordered_arms(case_id, repetition)
+    ]
+
+
 def protocol_schedule(protocol: dict[str, Any]) -> dict[str, Any]:
     if protocol.get("protocol_id") != "reviewer-release-v1":
         raise ReleasePlanError("protocol_id must be reviewer-release-v1")
@@ -68,8 +101,11 @@ def protocol_schedule(protocol: dict[str, Any]) -> dict[str, Any]:
         if not isinstance(arm, dict) or not isinstance(arm.get("id"), str):
             raise ReleasePlanError(f"arms[{index}].id must be a string")
         arms.append(arm["id"])
-    if arms != ["full", "catalog-only", "no-skill"]:
+    if arms != list(ARMS):
         raise ReleasePlanError("arms must be exactly full, catalog-only, no-skill")
+    pairing = protocol.get("pairing")
+    if not isinstance(pairing, dict) or pairing.get("arm_order") != ARM_ORDER_ALGORITHM:
+        raise ReleasePlanError("pairing.arm_order differs from the frozen ordering algorithm")
 
     corpus = protocol.get("corpus")
     schedule = protocol.get("schedule")
@@ -121,6 +157,12 @@ def protocol_schedule(protocol: dict[str, Any]) -> dict[str, Any]:
     planned_calls = unique_cases * repetitions * len(arms) * len(matrix)
     if schedule.get("scheduled_model_calls") != planned_calls:
         raise ReleasePlanError("schedule.scheduled_model_calls does not match the derived matrix")
+    if type(schedule.get("per_call_wall_timeout_seconds")) is not int or schedule["per_call_wall_timeout_seconds"] != 600:
+        raise ReleasePlanError("schedule.per_call_wall_timeout_seconds must be the frozen 600 seconds")
+    if type(schedule.get("attempts_per_call")) is not int or schedule["attempts_per_call"] != 1:
+        raise ReleasePlanError("schedule.attempts_per_call must be the frozen single attempt")
+    if schedule.get("timeout_or_interruption_handling") != "inconclusive_no_replacement_call":
+        raise ReleasePlanError("schedule.timeout_or_interruption_handling differs from the frozen policy")
     return {
         "independent_unit": "unique_case",
         "independent_case_count": unique_cases,
@@ -129,6 +171,9 @@ def protocol_schedule(protocol: dict[str, Any]) -> dict[str, Any]:
         "host_model_count": len(matrix),
         "cell_count": len(cells),
         "planned_model_invocations": planned_calls,
+        "per_call_wall_timeout_seconds": 600,
+        "attempts_per_call": 1,
+        "timeout_or_interruption_handling": "inconclusive_no_replacement_call",
         "cells": cells,
     }
 
@@ -160,7 +205,7 @@ def parse_runner_paths(values: list[str], required_hosts: set[str]) -> dict[str,
 
 def trusted_executable(path: Path | None, name: str) -> str:
     if path is None:
-        raise ReleasePlanError(f"--{name} is required for release-ready validation")
+        raise ReleasePlanError(f"--{name} is required for pre-execution readiness validation")
     if not path.is_absolute():
         raise ReleasePlanError(f"--{name} must be an absolute path")
     try:
@@ -177,11 +222,14 @@ def run_validator(
     bundle: Path | None,
     protocol_only: bool,
     attestation_verifier: str | None,
+    expected_protocol_sha256: str | None = None,
 ) -> dict[str, Any]:
     command = [sys.executable, str(DEFAULT_VALIDATOR), "--protocol", str(protocol)]
     command.extend(["--protocol-only"] if protocol_only else ["--bundle", str(bundle)])
     if attestation_verifier is not None:
         command.extend(["--attestation-verifier", attestation_verifier])
+    if expected_protocol_sha256 is not None:
+        command.extend(["--expected-protocol-sha256", expected_protocol_sha256])
     completed = subprocess.run(
         command,
         cwd=ROOT,
@@ -193,14 +241,14 @@ def run_validator(
     expected = (
         "reviewer-release-v1 validation: PASS (protocol-only)"
         if protocol_only
-        else "reviewer-release-v1 validation: PASS (release-ready)"
+        else "reviewer-release-v1 validation: PASS (pre-execution-ready)"
     )
     stdout_lines = completed.stdout.strip().splitlines()
     if completed.returncode != 0 or not stdout_lines or stdout_lines[-1] != expected:
         detail = completed.stderr.strip() or completed.stdout.strip() or "validator failed"
         raise ReleasePlanError(f"release validator did not pass: {detail[:1000]}")
     return {
-        "mode": "protocol-only" if protocol_only else "release-ready",
+        "mode": "protocol-only" if protocol_only else "pre-execution-ready",
         "status": "PASS",
     }
 
@@ -210,6 +258,7 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--protocol", type=Path, default=DEFAULT_PROTOCOL)
     result.add_argument("--bundle", type=Path)
     result.add_argument("--attestation-verifier", type=Path)
+    result.add_argument("--expected-protocol-sha256")
     result.add_argument("--runner-path", action="append", default=[], metavar="HOST_ID=PATH")
     mode = result.add_mutually_exclusive_group()
     mode.add_argument("--protocol-only", action="store_true")
@@ -220,12 +269,14 @@ def parser() -> argparse.ArgumentParser:
 def execute(args: argparse.Namespace) -> dict[str, Any]:
     protocol = load_json(args.protocol)
     if args.protocol_only:
-        if args.bundle is not None or args.runner_path or args.attestation_verifier is not None:
+        if args.bundle is not None or args.runner_path or args.attestation_verifier is not None or args.expected_protocol_sha256 is not None:
             raise ReleasePlanError(
-                "--protocol-only does not accept bundle, runner paths, or an attestation verifier"
+                "--protocol-only does not accept bundle, runner paths, an attestation verifier, or a protocol pin"
             )
     elif args.bundle is None:
-        raise ReleasePlanError("--bundle is required for release-ready validation")
+        raise ReleasePlanError("--bundle is required for pre-execution readiness validation")
+    elif args.expected_protocol_sha256 is None:
+        raise ReleasePlanError("pre-execution readiness requires --expected-protocol-sha256")
     verifier = None
     if not args.protocol_only:
         verifier = trusted_executable(args.attestation_verifier, "attestation-verifier")
@@ -234,6 +285,7 @@ def execute(args: argparse.Namespace) -> dict[str, Any]:
         args.bundle,
         args.protocol_only,
         verifier,
+        args.expected_protocol_sha256,
     )
     if args.protocol_only:
         return {

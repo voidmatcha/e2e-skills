@@ -1,0 +1,35 @@
+{
+ "status": "DIRECTIONAL_SIGNAL",
+ "packet_primary_by_case": {
+  "before": {
+   "repeated-ready": 0,
+   "unrelated-completion": 0
+  },
+  "after": {
+   "repeated-ready": 2,
+   "unrelated-completion": 2
+  }
+ },
+ "packet_primary_totals": {
+  "before": 0,
+  "after": 4
+ },
+ "causal_dom_guard_by_case": {
+  "before": {
+   "repeated-ready": 2,
+   "unrelated-completion": 2
+  },
+  "after": {
+   "repeated-ready": 2,
+   "unrelated-completion": 2
+  }
+ },
+ "guards": true,
+ "release_equivalence": false,
+ "billed_usd": null,
+ "interpretation": "Exact outgoing reviewer-packet development evidence on two correlated fixtures, two repetitions each. No generalized, statistically significant or release claim.",
+ "protocol_id": "generator-unchanged-outcome-v6",
+ "scores_sha256": "6132630de0fda2a8bd801e9b5a40552573bb9708df4f4a53ef5c4c21b2fcd36a",
+ "audit_sha256": "f978c7a41e1ae247d2bd2d5c3156f6ef7c4c04ec21c4749a7aad77e90e693b62",
+ "freeze_sha256": "aff8c928b79e4ede46e6f5863ba46fb162a9359c13e13e9ca817a0e4ee808d76"
+}

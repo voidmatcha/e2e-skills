@@ -1,0 +1,50 @@
+{
+  "task": "Cover the reading tracker at `/`. It starts with North and South unread. Opening a title marks exactly that title read, reduces the unread count, and shows that title's open count increasing by exactly one per click. Open North, then South; both should be read and the unread count should be zero. Reloading keeps the read flags and open counts. Opening North again increases only North's open count to two without changing the unread count.",
+  "faults": [
+    {
+      "id": "f1-open-noop",
+      "class": "surface",
+      "brief_phrase": "Opening a title",
+      "description": "The Open button does not dispatch the title-opening request.",
+      "find": "        button.addEventListener(\"click\", () => open(item.id));",
+      "replace": "        button.addEventListener(\"click\", () => {});"
+    },
+    {
+      "id": "f2-wrong-title",
+      "class": "precision",
+      "brief_phrase": "exactly that title",
+      "description": "The server always opens the first title, even when South was clicked.",
+      "find": "    const item = state.find((entry) => entry.id === id);",
+      "replace": "    const item = state[0];"
+    },
+    {
+      "id": "f3-read-flag-unchanged",
+      "class": "state",
+      "brief_phrase": "reduces the unread count",
+      "description": "The open count changes, but the title is never marked read.",
+      "find": "    item.read = true;",
+      "replace": "    void item;"
+    },
+    {
+      "id": "f4-duplicate-get",
+      "class": "cardinality",
+      "brief_phrase": "exactly one per click",
+      "description": "The UI dispatches two state-changing GET requests for one click.",
+      "find": "      const response = await fetch(\"/api/open?id=\" + encodeURIComponent(id));",
+      "replace": "      await fetch(\"/api/open?id=\" + encodeURIComponent(id));\n      const response = await fetch(\"/api/open?id=\" + encodeURIComponent(id));"
+    },
+    {
+      "id": "f5-reload-forgets-state",
+      "class": "persistence",
+      "brief_phrase": "Reloading keeps the read flags and open counts",
+      "description": "The initial list endpoint always returns unread seed values after a reload.",
+      "find": "  if (url.pathname === \"/api/items\" && req.method === \"GET\") return json(res, 200, state);",
+      "replace": "  if (url.pathname === \"/api/items\" && req.method === \"GET\") return json(res, 200, SEED);"
+    }
+  ],
+  "refactor": [
+    { "find": "rt-list", "replace": "reading-list" },
+    { "find": "rt-unread", "replace": "unread-total" },
+    { "find": "rt-error", "replace": "opening-error" }
+  ]
+}

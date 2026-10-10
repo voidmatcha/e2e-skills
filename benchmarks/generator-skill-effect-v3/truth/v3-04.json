@@ -1,0 +1,64 @@
+{
+  "task": "Cover the playlist editor (`/`), seeded with four tracks (Blue in Green 5:37, So What 9:22, Freddie Freeloader 9:49, All Blues 11:33). Play shows the Now playing panel with that track's title and Stop hides the panel. Move up and Move down reorder the tracks and the new order survives a reload. The Total line (`Total 36:21`) sums the track lengths and follows a removal; Remove deletes a track. The Repeat toggle reports its state through aria-pressed and the setting is remembered on the server across a reload.",
+  "faults": [
+    {
+      "id": "f1-play-noop",
+      "class": "surface",
+      "brief_phrase": "Play shows the Now playing panel with that track's title",
+      "description": "Play never shows the Now playing panel.",
+      "find": "        play.addEventListener(\"click\", () => { playing = track.id; render(); });\n",
+      "replace": "        play.addEventListener(\"click\", () => { render(); });\n"
+    },
+    {
+      "id": "f2-total-stale-after-remove",
+      "class": "precision",
+      "brief_phrase": "follows a removal",
+      "description": "After Remove the track disappears but the Total keeps the old sum until a reload.",
+      "find": "          data = next;\n          if (playing === track.id) playing = null;\n          render();\n",
+      "replace": "          const keep = el(\"pl-total\").textContent;\n          data = next;\n          if (playing === track.id) playing = null;\n          render();\n          el(\"pl-total\").textContent = keep;\n"
+    },
+    {
+      "id": "f3-order-not-persisted",
+      "class": "persistence",
+      "brief_phrase": "the new order survives a reload",
+      "description": "The server answers with the reordered list but keeps the old order.",
+      "find": "      state.tracks = order.map((id) => state.tracks.find((t) => t.id === id));\n      return json(res, 200, state);\n",
+      "replace": "      return json(res, 200, { ...state, tracks: order.map((id) => state.tracks.find((t) => t.id === id)) });\n"
+    },
+    {
+      "id": "f4-repeat-aria-pressed-stale",
+      "class": "a11y",
+      "brief_phrase": "reports its state through aria-pressed",
+      "description": "The Repeat toggle's aria-pressed never leaves `false` although the setting is stored and remembered.",
+      "find": "      el(\"pl-repeat\").setAttribute(\"aria-pressed\", String(data.repeat));\n",
+      "replace": "      el(\"pl-repeat\").setAttribute(\"aria-pressed\", \"false\");\n"
+    },
+    {
+      "id": "f5-stop-keeps-panel",
+      "class": "interaction",
+      "brief_phrase": "Stop hides the panel",
+      "description": "Stop clears the title but leaves the Now playing panel visible.",
+      "find": "      el(\"pl-now\").hidden = !current;\n",
+      "replace": "      el(\"pl-now\").hidden = el(\"pl-now\").hidden && !current;\n"
+    }
+  ],
+  "refactor": [
+    {"find": "<ol id=\"pl-tracks\" class=\"tracks\" aria-label=\"Tracks\"></ol>", "replace": "<div class=\"panel\"><ol id=\"pl-tracks\" class=\"panel__rows\" aria-label=\"Tracks\"></ol></div>"},
+    {"find": "<div id=\"pl-toolbar\" class=\"toolbar\">", "replace": "<div id=\"pl-toolbar\" class=\"controls-bar\">"},
+    {"find": "<span id=\"pl-total\" class=\"total\">", "replace": "<span id=\"pl-total\" class=\"controls-bar__sum\">"},
+    {"find": "<div id=\"pl-now\" class=\"now-playing\" hidden>", "replace": "<div id=\"pl-now\" class=\"banner banner--active\" hidden>"},
+    {"find": "<span class=\"now-label\">", "replace": "<span class=\"banner__label\">"},
+    {"find": "<span id=\"pl-now-title\" class=\"now-title\">", "replace": "<span id=\"pl-now-title\" class=\"banner__title\">"},
+    {"find": "<button type=\"button\" id=\"pl-stop\">Stop</button>", "replace": "<button type=\"button\" id=\"pl-stop\" class=\"btn btn-ghost\"><span>Stop</span></button>"},
+    {"find": "li.className = playing === track.id ? \"track playing\" : \"track\";", "replace": "li.className = playing === track.id ? \"row row--current\" : \"row\";"},
+    {"find": "title.className = \"title\";", "replace": "title.className = \"row__title\";"},
+    {"find": "length.className = \"length\";", "replace": "length.className = \"row__meta\";"},
+    {"find": "pl-now-title", "replace": "current-title"},
+    {"find": "pl-toolbar", "replace": "player-bar"},
+    {"find": "pl-tracks", "replace": "queue"},
+    {"find": "pl-repeat", "replace": "loop-toggle"},
+    {"find": "pl-total", "replace": "queue-length"},
+    {"find": "pl-stop", "replace": "halt"},
+    {"find": "pl-now", "replace": "current"}
+  ]
+}

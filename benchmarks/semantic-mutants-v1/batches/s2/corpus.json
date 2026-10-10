@@ -1,0 +1,250 @@
+{
+  "schema_version": 1,
+  "batch": "S2",
+  "provenance": {
+    "creation": "model-authored semantic mutations of real upstream specs",
+    "verifier": "codex-gpt-6-astra",
+    "human_labels": false,
+    "source_manifest": "fixpair-pilot/semantic-v2/manifest.json",
+    "source_verification": [
+      "fixpair-pilot/semantic-v2/verification-astra-23.json",
+      "fixpair-pilot/semantic-v2/verification-astra-20.json"
+    ]
+  },
+  "cases": [
+    {
+      "id": "fixture-price-usd",
+      "repo": "payload",
+      "license": "MIT",
+      "spec_path": "test/plugin-ecommerce/e2e.spec.ts",
+      "files": {
+        "mutant": {
+          "path": "cases/fixture-price-usd/mutant/test/plugin-ecommerce/e2e.spec.ts",
+          "sha256": "60158c4f4e0f867a2633c4c3ba920678425044e60a3f10308f93a06918ae3d78"
+        },
+        "original": {
+          "path": "cases/fixture-price-usd/original/test/plugin-ecommerce/e2e.spec.ts",
+          "sha256": "f1822fab8b3440120f4bb2eb902236a982912816462da5fe6d2b3c30131f9417"
+        }
+      },
+      "pattern_id": "#23",
+      "severity": "P2",
+      "line": 56,
+      "source_line": "        priceInUSDEnabled: false,",
+      "edit": "Set the seeded product's priceInUSDEnabled field from true to false so the USD price input is suppressed by its admin render condition.",
+      "quoted_rule": "**Severity:** P2 for the usual case, where the guard leaves the container empty and the test fails with a confusing \"element not found\". Report the variant this pattern calls worse \u2014 a negative assertion or empty-state check that passes because the guard suppressed the seeded items \u2014 at P0: nothing the test promised is verified, and it stays green while the feature is broken.\n\n**Primary line:** Anchor #23 to the fixture field that violates the render guard. The negative assertion or missing-element failure it causes is supporting evidence, not the causal line.\n\n**Scope note:** the guard need not sit on a list/card item \u2014 the same failure appears whenever a *container* is gated on a value the test controls indirectly. A results panel wrapped in `@if (result.type === TABLE)` suppresses every control inside it when the fixture produces a different result type, so a test targeting a toolbar button inside that panel fails with \"element not found\" and looks like infra flake. When a control the test needs is missing, walk up the template to the nearest guard before suspecting the selector.",
+      "verifier_verdict": "confirm",
+      "verifier_reason": "Confirmed #23 P2 at test/plugin-ecommerce/e2e.spec.ts:56. The sole edit changes priceInUSDEnabled from true to false in the fixture used as productWithPriceId. heads/payload/packages/plugin-ecommerce/src/fields/pricesField.ts:22-24 derives the corresponding Enabled field path, and line 48 gates the price field with Boolean(siblingData?.[path]). The product collection installs pricesField at packages/plugin-ecommerce/src/collections/products/createProductsCollection.ts:51; test/plugin-ecommerce/config.ts:17-28,77 enables USD and EUR; fields/amountField.ts:45 preserves the admin condition. The mutant spec requires 128-129 (visible USD input and value 19.99), plus 139-140 (USD symbol); it does not enable that currency before those checks. The original true value satisfies this guard at the corresponding place. This is a minimal, realistic fixture-configuration error causing positive checks to fail, not the P0 negative/empty-state variant. The hidden-field assertion at line 171 uses the separate noPriceProductId fixture and does not change this classification. Static verification only; no runtime executed.",
+      "evidence": "spec test/plugin-ecommerce/e2e.spec.ts:128; fixture test/plugin-ecommerce/e2e.spec.ts:56; component packages/plugin-ecommerce/src/fields/pricesField.ts:48",
+      "why_not_excluded": "The fixture field directly controls the condition that mounts the asserted USD input; setting it false makes the positive visibility/value assertion fail because the target is not rendered."
+    },
+    {
+      "id": "fixture-price-eur",
+      "repo": "payload",
+      "license": "MIT",
+      "spec_path": "test/plugin-ecommerce/e2e.spec.ts",
+      "files": {
+        "mutant": {
+          "path": "cases/fixture-price-eur/mutant/test/plugin-ecommerce/e2e.spec.ts",
+          "sha256": "4c9b11460e820d03c3cdaa4d4ef0ea3f53a6e860e8cd584c7a0c75abd898f7c2"
+        },
+        "original": {
+          "path": "cases/fixture-price-eur/original/test/plugin-ecommerce/e2e.spec.ts",
+          "sha256": "f1822fab8b3440120f4bb2eb902236a982912816462da5fe6d2b3c30131f9417"
+        }
+      },
+      "pattern_id": "#23",
+      "severity": "P2",
+      "line": 54,
+      "source_line": "        priceInEUREnabled: false,",
+      "edit": "Set the seeded product's priceInEUREnabled field from true to false so the EUR price input is suppressed by its admin render condition.",
+      "quoted_rule": "**Severity:** P2 for the usual case, where the guard leaves the container empty and the test fails with a confusing \"element not found\". Report the variant this pattern calls worse \u2014 a negative assertion or empty-state check that passes because the guard suppressed the seeded items \u2014 at P0: nothing the test promised is verified, and it stays green while the feature is broken.\n\n**Primary line:** Anchor #23 to the fixture field that violates the render guard. The negative assertion or missing-element failure it causes is supporting evidence, not the causal line.\n\n**Scope note:** the guard need not sit on a list/card item \u2014 the same failure appears whenever a *container* is gated on a value the test controls indirectly. A results panel wrapped in `@if (result.type === TABLE)` suppresses every control inside it when the fixture produces a different result type, so a test targeting a toolbar button inside that panel fails with \"element not found\" and looks like infra flake. When a control the test needs is missing, walk up the template to the nearest guard before suspecting the selector.",
+      "verifier_verdict": "confirm",
+      "verifier_reason": "Confirmed #23 P2 at test/plugin-ecommerce/e2e.spec.ts:54. The sole edit changes priceInEUREnabled from true to false in the fixture used as productWithPriceId. heads/payload/packages/plugin-ecommerce/src/fields/pricesField.ts:22-24 derives the corresponding Enabled field path, and line 48 gates the price field with Boolean(siblingData?.[path]). The product collection installs pricesField at packages/plugin-ecommerce/src/collections/products/createProductsCollection.ts:51; test/plugin-ecommerce/config.ts:17-28,77 enables USD and EUR; fields/amountField.ts:45 preserves the admin condition. The mutant spec requires 149-154 (visible EUR symbol/input and value 25.99); it does not enable that currency before those checks. The original true value satisfies this guard at the corresponding place. This is a minimal, realistic fixture-configuration error causing positive checks to fail, not the P0 negative/empty-state variant. The hidden-field assertion at line 171 uses the separate noPriceProductId fixture and does not change this classification. Static verification only; no runtime executed.",
+      "evidence": "spec test/plugin-ecommerce/e2e.spec.ts:149; fixture test/plugin-ecommerce/e2e.spec.ts:54; component packages/plugin-ecommerce/src/fields/pricesField.ts:48",
+      "why_not_excluded": "The fixture field directly controls the condition that mounts the asserted EUR input and symbol; setting it false removes both positive assertion targets."
+    },
+    {
+      "id": "fixture-zero-price-usd",
+      "repo": "payload",
+      "license": "MIT",
+      "spec_path": "test/plugin-ecommerce/e2e.spec.ts",
+      "files": {
+        "mutant": {
+          "path": "cases/fixture-zero-price-usd/mutant/test/plugin-ecommerce/e2e.spec.ts",
+          "sha256": "67e1f9b2fe293f00ff328d822b7e9f83ab33e44c383eb60013362e2ea5d612fb"
+        },
+        "original": {
+          "path": "cases/fixture-zero-price-usd/original/test/plugin-ecommerce/e2e.spec.ts",
+          "sha256": "f1822fab8b3440120f4bb2eb902236a982912816462da5fe6d2b3c30131f9417"
+        }
+      },
+      "pattern_id": "#23",
+      "severity": "P2",
+      "line": 69,
+      "source_line": "        priceInUSDEnabled: false,",
+      "edit": "Set the zero-price product's priceInUSDEnabled field from true to false so its USD price input is suppressed by the admin render condition.",
+      "quoted_rule": "**Severity:** P2 for the usual case, where the guard leaves the container empty and the test fails with a confusing \"element not found\". Report the variant this pattern calls worse \u2014 a negative assertion or empty-state check that passes because the guard suppressed the seeded items \u2014 at P0: nothing the test promised is verified, and it stays green while the feature is broken.\n\n**Primary line:** Anchor #23 to the fixture field that violates the render guard. The negative assertion or missing-element failure it causes is supporting evidence, not the causal line.\n\n**Scope note:** the guard need not sit on a list/card item \u2014 the same failure appears whenever a *container* is gated on a value the test controls indirectly. A results panel wrapped in `@if (result.type === TABLE)` suppresses every control inside it when the fixture produces a different result type, so a test targeting a toolbar button inside that panel fails with \"element not found\" and looks like infra flake. When a control the test needs is missing, walk up the template to the nearest guard before suspecting the selector.",
+      "verifier_verdict": "confirm",
+      "verifier_reason": "Confirmed #23 P2 at test/plugin-ecommerce/e2e.spec.ts:69. The sole edit changes priceInUSDEnabled from true to false in the fixture used as zeroPriceProductId. heads/payload/packages/plugin-ecommerce/src/fields/pricesField.ts:22-24 derives the corresponding Enabled field path, and line 48 gates the price field with Boolean(siblingData?.[path]). The product collection installs pricesField at packages/plugin-ecommerce/src/collections/products/createProductsCollection.ts:51; test/plugin-ecommerce/config.ts:17-28,77 enables USD and EUR; fields/amountField.ts:45 preserves the admin condition. The mutant spec requires 162-163 (visible USD input and value 0.00); it does not enable that currency before those checks. The original true value satisfies this guard at the corresponding place. This is a minimal, realistic fixture-configuration error causing positive checks to fail, not the P0 negative/empty-state variant. The hidden-field assertion at line 171 uses the separate noPriceProductId fixture and does not change this classification. Static verification only; no runtime executed.",
+      "evidence": "spec test/plugin-ecommerce/e2e.spec.ts:162; fixture test/plugin-ecommerce/e2e.spec.ts:69; component packages/plugin-ecommerce/src/fields/pricesField.ts:48",
+      "why_not_excluded": "The test promises that a zero value remains visible, while the mutated fixture makes the render condition hide the entire price input before the value can be checked."
+    },
+    {
+      "id": "fixture-editable-price-usd",
+      "repo": "payload",
+      "license": "MIT",
+      "spec_path": "test/plugin-ecommerce/e2e.spec.ts",
+      "files": {
+        "mutant": {
+          "path": "cases/fixture-editable-price-usd/mutant/test/plugin-ecommerce/e2e.spec.ts",
+          "sha256": "d065405629fe493a28ff401cfb7465ce82251bfd7bf8002432f17e528882f8c2"
+        },
+        "original": {
+          "path": "cases/fixture-editable-price-usd/original/test/plugin-ecommerce/e2e.spec.ts",
+          "sha256": "f1822fab8b3440120f4bb2eb902236a982912816462da5fe6d2b3c30131f9417"
+        }
+      },
+      "pattern_id": "#23",
+      "severity": "P2",
+      "line": 180,
+      "source_line": "          priceInUSDEnabled: false,",
+      "edit": "Set the editable product's priceInUSDEnabled field from true to false so the input needed by the edit flow is suppressed by the admin render condition.",
+      "quoted_rule": "**Severity:** P2 for the usual case, where the guard leaves the container empty and the test fails with a confusing \"element not found\". Report the variant this pattern calls worse \u2014 a negative assertion or empty-state check that passes because the guard suppressed the seeded items \u2014 at P0: nothing the test promised is verified, and it stays green while the feature is broken.\n\n**Primary line:** Anchor #23 to the fixture field that violates the render guard. The negative assertion or missing-element failure it causes is supporting evidence, not the causal line.\n\n**Scope note:** the guard need not sit on a list/card item \u2014 the same failure appears whenever a *container* is gated on a value the test controls indirectly. A results panel wrapped in `@if (result.type === TABLE)` suppresses every control inside it when the fixture produces a different result type, so a test targeting a toolbar button inside that panel fails with \"element not found\" and looks like infra flake. When a control the test needs is missing, walk up the template to the nearest guard before suspecting the selector.",
+      "verifier_verdict": "confirm",
+      "verifier_reason": "Confirmed #23 P2 at test/plugin-ecommerce/e2e.spec.ts:180. The sole edit changes priceInUSDEnabled from true to false in the fixture used as editableProduct.id. heads/payload/packages/plugin-ecommerce/src/fields/pricesField.ts:22-24 derives the corresponding Enabled field path, and line 48 gates the price field with Boolean(siblingData?.[path]). The product collection installs pricesField at packages/plugin-ecommerce/src/collections/products/createProductsCollection.ts:51; test/plugin-ecommerce/config.ts:17-28,77 enables USD and EUR; fields/amountField.ts:45 preserves the admin condition. The mutant spec requires 190-195 (visible USD input, value 9.99, then editing); it does not enable that currency before those checks. The original true value satisfies this guard at the corresponding place. This is a minimal, realistic fixture-configuration error causing positive checks to fail, not the P0 negative/empty-state variant. The hidden-field assertion at line 171 uses the separate noPriceProductId fixture and does not change this classification. Static verification only; no runtime executed.",
+      "evidence": "spec test/plugin-ecommerce/e2e.spec.ts:190; fixture test/plugin-ecommerce/e2e.spec.ts:180; component packages/plugin-ecommerce/src/fields/pricesField.ts:48",
+      "why_not_excluded": "The fixture field directly gates the input used for the test's initial assertion and edit action; false prevents the guarded control from rendering."
+    },
+    {
+      "id": "p20-refine-post-create",
+      "repo": "refine",
+      "license": "MIT",
+      "spec_path": "cypress/e2e/form-material-ui-use-modal-form/all.cy.ts",
+      "files": {
+        "mutant": {
+          "path": "cases/p20-refine-post-create/mutant/cypress/e2e/form-material-ui-use-modal-form/all.cy.ts",
+          "sha256": "c3f1b75ce309c78f666967517cc81d7be44b9a7c1f07f14844921e4819e747ac"
+        },
+        "original": {
+          "path": "cases/p20-refine-post-create/original/cypress/e2e/form-material-ui-use-modal-form/all.cy.ts",
+          "sha256": "1d7c44ee0fc9373d773cdc7a2cf1c6829091b1b1cabb09e0b04b280513541524"
+        }
+      },
+      "pattern_id": "#20",
+      "severity": "P1",
+      "line": 67,
+      "source_line": "    submitForm();",
+      "edit": "Register a later POST intercept for https://api.fake-rest.refine.dev/posts immediately before submitForm(); its handler calls req.continue() so this write reaches the upstream API instead of the shared stub.",
+      "quoted_rule": "patterns/20.md: \"A write test must prove that its backend boundary is controlled.\" \"Flag only when repository evidence shows the write can reach shared, persistent, chargeable, rate-limited, or otherwise uncontrolled state.\" \"Anchor #20 to the submit/click/action that triggers the unstubbed write.\" semantic-review.md #20: \"missing isolation documentation alone is not that evidence\".",
+      "verifier_verdict": "confirm",
+      "verifier_reason": "Confirm #20 P1 at mutant cypress/e2e/form-material-ui-use-modal-form/all.cy.ts:67: submitForm(); triggers POST /posts; the following cy.wait(\"@postPost\") and response assertions establish the request contract. The sole edit is the immediately preceding, endpoint-specific pass-through intercept. In Cypress 13 (heads/refine/package.json:71), ordinary matching intercepts run newest first; req.continue() sends the request upstream and ends the request phase rather than falling through to the older reply. The original action at line 66 remains covered by heads/refine/cypress/support/e2e.ts:136 and heads/refine/cypress/support/commands/intercepts/api-fake-rest.ts:50-69, so the corresponding original has no #20 smell. heads/refine/examples/form-material-ui-use-modal-form/src/App.tsx:22-34 explicitly selects the fixed public https://api.fake-rest.refine.dev data provider; heads/refine/packages/simple-rest/src/provider.ts:80-103,123-132 implements POST/PATCH/DELETE against that URL. This is positive evidence of an external, uncontrolled request boundary after bypassing the stub, not merely absent isolation documentation. The inspected config, runner, support hooks, specs and example READMEs provide no disposable or isolated backend exemption: heads/refine/cypress/cypress.config.ts:13-15 and heads/refine/.github/workflows/scripts/e2e-examples.js:169-182,213-220 configure/start the example frontend, while the app API remains the public host. No claim about actual persisted server state or charges is necessary or established. The one-line override is a minimal, realistic attempt to exercise a live API while preserving the alias and assertions. The anchor is the triggering action, not the intercept declaration or later wait. P1 matches semantic-review.md #20; the retained response/UI assertions do not meet reporting.md's P0 requirement of no real verification. Static verification only; no requests or tests were executed. The VERIFY20 relative catalog/evidence paths were resolved to the existing skills/ and heads/ directories within fixpair-pilot.",
+      "evidence": "Action and cy.wait request proof: cypress/e2e/form-material-ui-use-modal-form/all.cy.ts:67,69. Shared stub registration: cypress/support/e2e.ts:136; matching reply: cypress/support/commands/intercepts/api-fake-rest.ts:50-69. API configuration: examples/form-material-ui-use-modal-form/src/App.tsx:22-34. Local frontend only: cypress/cypress.config.ts:13-15 and .github/workflows/scripts/e2e-examples.js:213-220. Cypress routing: matching routes run in reverse registration order; req.continue() forwards upstream and ends the request phase, bypassing earlier matching replies.",
+      "why_not_excluded": "The original POST is fulfilled by the global stub. In the mutant, the later matching handler calls req.continue(), so the aliased write is forwarded to api.fake-rest.refine.dev before the earlier stub can reply; the existing cy.wait proves that request occurs. The runner starts only the frontend and shows no disposable API, rollback, isolated tenant, reset, or teardown for the deployed backend."
+    },
+    {
+      "id": "p20-refine-post-edit",
+      "repo": "refine",
+      "license": "MIT",
+      "spec_path": "cypress/e2e/form-material-ui-use-modal-form/all.cy.ts",
+      "files": {
+        "mutant": {
+          "path": "cases/p20-refine-post-edit/mutant/cypress/e2e/form-material-ui-use-modal-form/all.cy.ts",
+          "sha256": "d3cf8f4a0749ce1397d9ad9b24ea15838d94f2e30236dd31239caa424fa68a8b"
+        },
+        "original": {
+          "path": "cases/p20-refine-post-edit/original/cypress/e2e/form-material-ui-use-modal-form/all.cy.ts",
+          "sha256": "1d7c44ee0fc9373d773cdc7a2cf1c6829091b1b1cabb09e0b04b280513541524"
+        }
+      },
+      "pattern_id": "#20",
+      "severity": "P1",
+      "line": 84,
+      "source_line": "    submitForm();",
+      "edit": "Register a later PATCH intercept for https://api.fake-rest.refine.dev/posts/* immediately before submitForm(); its handler calls req.continue() so this write reaches the upstream API instead of the shared stub.",
+      "quoted_rule": "patterns/20.md: \"A write test must prove that its backend boundary is controlled.\" \"Flag only when repository evidence shows the write can reach shared, persistent, chargeable, rate-limited, or otherwise uncontrolled state.\" \"Anchor #20 to the submit/click/action that triggers the unstubbed write.\" semantic-review.md #20: \"missing isolation documentation alone is not that evidence\".",
+      "verifier_verdict": "confirm",
+      "verifier_reason": "Confirm #20 P1 at mutant cypress/e2e/form-material-ui-use-modal-form/all.cy.ts:84: submitForm(); triggers PATCH /posts/*; the following cy.wait(\"@patchPost\") and response assertions establish the request contract. The sole edit is the immediately preceding, endpoint-specific pass-through intercept. In Cypress 13 (heads/refine/package.json:71), ordinary matching intercepts run newest first; req.continue() sends the request upstream and ends the request phase rather than falling through to the older reply. The original action at line 83 remains covered by heads/refine/cypress/support/e2e.ts:137 and heads/refine/cypress/support/commands/intercepts/api-fake-rest.ts:71-95, so the corresponding original has no #20 smell. heads/refine/examples/form-material-ui-use-modal-form/src/App.tsx:22-34 explicitly selects the fixed public https://api.fake-rest.refine.dev data provider; heads/refine/packages/simple-rest/src/provider.ts:80-103,123-132 implements POST/PATCH/DELETE against that URL. This is positive evidence of an external, uncontrolled request boundary after bypassing the stub, not merely absent isolation documentation. The inspected config, runner, support hooks, specs and example READMEs provide no disposable or isolated backend exemption: heads/refine/cypress/cypress.config.ts:13-15 and heads/refine/.github/workflows/scripts/e2e-examples.js:169-182,213-220 configure/start the example frontend, while the app API remains the public host. No claim about actual persisted server state or charges is necessary or established. The one-line override is a minimal, realistic attempt to exercise a live API while preserving the alias and assertions. The anchor is the triggering action, not the intercept declaration or later wait. P1 matches semantic-review.md #20; the retained response/UI assertions do not meet reporting.md's P0 requirement of no real verification. Static verification only; no requests or tests were executed. The VERIFY20 relative catalog/evidence paths were resolved to the existing skills/ and heads/ directories within fixpair-pilot.",
+      "evidence": "Action and cy.wait request proof: cypress/e2e/form-material-ui-use-modal-form/all.cy.ts:84,86. Shared stub registration: cypress/support/e2e.ts:137; matching reply: cypress/support/commands/intercepts/api-fake-rest.ts:71-95. API configuration: examples/form-material-ui-use-modal-form/src/App.tsx:22-34. Local frontend only: cypress/cypress.config.ts:13-15 and .github/workflows/scripts/e2e-examples.js:213-220. Cypress routing: matching routes run in reverse registration order; req.continue() forwards upstream and ends the request phase, bypassing earlier matching replies.",
+      "why_not_excluded": "The original PATCH is fulfilled by the global stub. In the mutant, the later matching handler calls req.continue(), so the aliased write is forwarded to api.fake-rest.refine.dev before the earlier stub can reply; the existing cy.wait proves that request occurs. The runner starts only the frontend and shows no disposable API, rollback, isolated tenant, reset, or teardown for the deployed backend."
+    },
+    {
+      "id": "p20-refine-post-delete",
+      "repo": "refine",
+      "license": "MIT",
+      "spec_path": "cypress/e2e/form-antd-mutation-mode/all.cy.ts",
+      "files": {
+        "mutant": {
+          "path": "cases/p20-refine-post-delete/mutant/cypress/e2e/form-antd-mutation-mode/all.cy.ts",
+          "sha256": "cc11f8c2141385315005492252f73edf3a4cf1c88a9348eda0c4b40285f6983c"
+        },
+        "original": {
+          "path": "cases/p20-refine-post-delete/original/cypress/e2e/form-antd-mutation-mode/all.cy.ts",
+          "sha256": "fb7bf8d490f79dff49534e36c8ee26afb2d4f0ed5d94002d11788c92a692a45a"
+        }
+      },
+      "pattern_id": "#20",
+      "severity": "P1",
+      "line": 187,
+      "source_line": "    cy.getAntdPopoverDeleteButton().click();",
+      "edit": "Register a later DELETE intercept for https://api.fake-rest.refine.dev/posts/* immediately before cy.getAntdPopoverDeleteButton().click(); its handler calls req.continue() so this write reaches the upstream API instead of the shared stub.",
+      "quoted_rule": "patterns/20.md: \"A write test must prove that its backend boundary is controlled.\" \"Flag only when repository evidence shows the write can reach shared, persistent, chargeable, rate-limited, or otherwise uncontrolled state.\" \"Anchor #20 to the submit/click/action that triggers the unstubbed write.\" semantic-review.md #20: \"missing isolation documentation alone is not that evidence\".",
+      "verifier_verdict": "confirm",
+      "verifier_reason": "Confirm #20 P1 at mutant cypress/e2e/form-antd-mutation-mode/all.cy.ts:187: cy.getAntdPopoverDeleteButton().click(); triggers DELETE /posts/*; the following cy.wait(\"@deletePost\") and response assertions establish the request contract. The sole edit is the immediately preceding, endpoint-specific pass-through intercept. In Cypress 13 (heads/refine/package.json:71), ordinary matching intercepts run newest first; req.continue() sends the request upstream and ends the request phase rather than falling through to the older reply. The original action at line 186 remains covered by heads/refine/cypress/support/e2e.ts:138 and heads/refine/cypress/support/commands/intercepts/api-fake-rest.ts:97-108, so the corresponding original has no #20 smell. heads/refine/examples/form-antd-mutation-mode/src/App.tsx:24-35 explicitly selects the fixed public https://api.fake-rest.refine.dev data provider; heads/refine/packages/simple-rest/src/provider.ts:80-103,123-132 implements POST/PATCH/DELETE against that URL. This is positive evidence of an external, uncontrolled request boundary after bypassing the stub, not merely absent isolation documentation. The inspected config, runner, support hooks, specs and example READMEs provide no disposable or isolated backend exemption: heads/refine/cypress/cypress.config.ts:13-15 and heads/refine/.github/workflows/scripts/e2e-examples.js:169-182,213-220 configure/start the example frontend, while the app API remains the public host. No claim about actual persisted server state or charges is necessary or established. The one-line override is a minimal, realistic attempt to exercise a live API while preserving the alias and assertions. The anchor is the triggering action, not the intercept declaration or later wait. P1 matches semantic-review.md #20; the retained response/UI assertions do not meet reporting.md's P0 requirement of no real verification. Static verification only; no requests or tests were executed. The VERIFY20 relative catalog/evidence paths were resolved to the existing skills/ and heads/ directories within fixpair-pilot.",
+      "evidence": "Action and cy.wait request proof: cypress/e2e/form-antd-mutation-mode/all.cy.ts:187,189. Shared stub registration: cypress/support/e2e.ts:138; matching reply: cypress/support/commands/intercepts/api-fake-rest.ts:97-108. API configuration: examples/form-antd-mutation-mode/src/App.tsx:24-35. Local frontend only: cypress/cypress.config.ts:13-15 and .github/workflows/scripts/e2e-examples.js:213-220. Cypress routing: matching routes run in reverse registration order; req.continue() forwards upstream and ends the request phase, bypassing earlier matching replies.",
+      "why_not_excluded": "The original DELETE is fulfilled by the global stub. In the mutant, the later matching handler calls req.continue(), so the aliased write is forwarded to api.fake-rest.refine.dev before the earlier stub can reply; the existing cy.wait proves that request occurs. The runner starts only the frontend and shows no disposable API, rollback, isolated tenant, reset, or teardown for the deployed backend."
+    },
+    {
+      "id": "p20-refine-blog-create",
+      "repo": "refine",
+      "license": "MIT",
+      "spec_path": "cypress/e2e/inferencer-antd/all.cy.ts",
+      "files": {
+        "mutant": {
+          "path": "cases/p20-refine-blog-create/mutant/cypress/e2e/inferencer-antd/all.cy.ts",
+          "sha256": "21a43d9f2453ca42f071ce55c23afe7771a07b563f82067a24a2a3f8613c6f7e"
+        },
+        "original": {
+          "path": "cases/p20-refine-blog-create/original/cypress/e2e/inferencer-antd/all.cy.ts",
+          "sha256": "031991f287bfb312da6ec966cc6f4fffd04bed983121bccd2883a764f43c49fe"
+        }
+      },
+      "pattern_id": "#20",
+      "severity": "P1",
+      "line": 117,
+      "source_line": "      cy.getSaveButton().click();",
+      "edit": "Register a later POST intercept for https://api.fake-rest.refine.dev/blog_posts immediately before cy.getSaveButton().click(); its handler calls req.continue() so this write reaches the upstream API instead of the shared stub.",
+      "quoted_rule": "patterns/20.md: \"A write test must prove that its backend boundary is controlled.\" \"Flag only when repository evidence shows the write can reach shared, persistent, chargeable, rate-limited, or otherwise uncontrolled state.\" \"Anchor #20 to the submit/click/action that triggers the unstubbed write.\" semantic-review.md #20: \"missing isolation documentation alone is not that evidence\".",
+      "verifier_verdict": "confirm",
+      "verifier_reason": "Confirm #20 P1 at mutant cypress/e2e/inferencer-antd/all.cy.ts:117: cy.getSaveButton().click(); triggers POST /blog_posts; the following cy.wait(\"@postBlogPost\") and response assertions establish the request contract. The sole edit is the immediately preceding, endpoint-specific pass-through intercept. In Cypress 13 (heads/refine/package.json:71), ordinary matching intercepts run newest first; req.continue() sends the request upstream and ends the request phase rather than falling through to the older reply. The original action at line 116 remains covered by heads/refine/cypress/support/e2e.ts:141 and heads/refine/cypress/support/commands/intercepts/api-fake-rest.ts:194-213, so the corresponding original has no #20 smell. heads/refine/examples/inferencer-antd/src/App.tsx:57-65 explicitly selects the fixed public https://api.fake-rest.refine.dev data provider; heads/refine/packages/simple-rest/src/provider.ts:80-103,123-132 implements POST/PATCH/DELETE against that URL. This is positive evidence of an external, uncontrolled request boundary after bypassing the stub, not merely absent isolation documentation. The inspected config, runner, support hooks, specs and example READMEs provide no disposable or isolated backend exemption: heads/refine/cypress/cypress.config.ts:13-15 and heads/refine/.github/workflows/scripts/e2e-examples.js:169-182,213-220 configure/start the example frontend, while the app API remains the public host. No claim about actual persisted server state or charges is necessary or established. The one-line override is a minimal, realistic attempt to exercise a live API while preserving the alias and assertions. The anchor is the triggering action, not the intercept declaration or later wait. P1 matches semantic-review.md #20; the retained response/UI assertions do not meet reporting.md's P0 requirement of no real verification. Static verification only; no requests or tests were executed. The VERIFY20 relative catalog/evidence paths were resolved to the existing skills/ and heads/ directories within fixpair-pilot.",
+      "evidence": "Action and cy.wait request proof: cypress/e2e/inferencer-antd/all.cy.ts:117,119. Shared stub registration: cypress/support/e2e.ts:141; matching reply: cypress/support/commands/intercepts/api-fake-rest.ts:194-213. API configuration: examples/inferencer-antd/src/App.tsx:57-59. Local frontend only: cypress/cypress.config.ts:13-15 and .github/workflows/scripts/e2e-examples.js:213-220. Cypress routing: matching routes run in reverse registration order; req.continue() forwards upstream and ends the request phase, bypassing earlier matching replies.",
+      "why_not_excluded": "The original POST is fulfilled by the global stub. In the mutant, the later matching handler calls req.continue(), so the aliased write is forwarded to api.fake-rest.refine.dev before the earlier stub can reply; the existing cy.wait proves that request occurs. The runner starts only the frontend and shows no disposable API, rollback, isolated tenant, reset, or teardown for the deployed backend."
+    },
+    {
+      "id": "p20-refine-blog-edit",
+      "repo": "refine",
+      "license": "MIT",
+      "spec_path": "cypress/e2e/inferencer-antd/all.cy.ts",
+      "files": {
+        "mutant": {
+          "path": "cases/p20-refine-blog-edit/mutant/cypress/e2e/inferencer-antd/all.cy.ts",
+          "sha256": "5d5a7f4f02a99b94351886d375364cca2c1a4276073c9e67229ece392f164620"
+        },
+        "original": {
+          "path": "cases/p20-refine-blog-edit/original/cypress/e2e/inferencer-antd/all.cy.ts",
+          "sha256": "031991f287bfb312da6ec966cc6f4fffd04bed983121bccd2883a764f43c49fe"
+        }
+      },
+      "pattern_id": "#20",
+      "severity": "P1",
+      "line": 191,
+      "source_line": "      cy.getSaveButton().click();",
+      "edit": "Register a later PATCH intercept for https://api.fake-rest.refine.dev/blog_posts/* immediately before cy.getSaveButton().click(); its handler calls req.continue() so this write reaches the upstream API instead of the shared stub.",
+      "quoted_rule": "patterns/20.md: \"A write test must prove that its backend boundary is controlled.\" \"Flag only when repository evidence shows the write can reach shared, persistent, chargeable, rate-limited, or otherwise uncontrolled state.\" \"Anchor #20 to the submit/click/action that triggers the unstubbed write.\" semantic-review.md #20: \"missing isolation documentation alone is not that evidence\".",
+      "verifier_verdict": "confirm",
+      "verifier_reason": "Confirm #20 P1 at mutant cypress/e2e/inferencer-antd/all.cy.ts:191: cy.getSaveButton().click(); triggers PATCH /blog_posts/*; the following cy.wait(\"@patchBlogPost\") and response assertions establish the request contract. The sole edit is the immediately preceding, endpoint-specific pass-through intercept. In Cypress 13 (heads/refine/package.json:71), ordinary matching intercepts run newest first; req.continue() sends the request upstream and ends the request phase rather than falling through to the older reply. The original action at line 190 remains covered by heads/refine/cypress/support/e2e.ts:142 and heads/refine/cypress/support/commands/intercepts/api-fake-rest.ts:215-239, so the corresponding original has no #20 smell. heads/refine/examples/inferencer-antd/src/App.tsx:57-65 explicitly selects the fixed public https://api.fake-rest.refine.dev data provider; heads/refine/packages/simple-rest/src/provider.ts:80-103,123-132 implements POST/PATCH/DELETE against that URL. This is positive evidence of an external, uncontrolled request boundary after bypassing the stub, not merely absent isolation documentation. The inspected config, runner, support hooks, specs and example READMEs provide no disposable or isolated backend exemption: heads/refine/cypress/cypress.config.ts:13-15 and heads/refine/.github/workflows/scripts/e2e-examples.js:169-182,213-220 configure/start the example frontend, while the app API remains the public host. No claim about actual persisted server state or charges is necessary or established. The one-line override is a minimal, realistic attempt to exercise a live API while preserving the alias and assertions. The anchor is the triggering action, not the intercept declaration or later wait. P1 matches semantic-review.md #20; the retained response/UI assertions do not meet reporting.md's P0 requirement of no real verification. Static verification only; no requests or tests were executed. The VERIFY20 relative catalog/evidence paths were resolved to the existing skills/ and heads/ directories within fixpair-pilot.",
+      "evidence": "Action and cy.wait request proof: cypress/e2e/inferencer-antd/all.cy.ts:191,193. Shared stub registration: cypress/support/e2e.ts:142; matching reply: cypress/support/commands/intercepts/api-fake-rest.ts:215-239. API configuration: examples/inferencer-antd/src/App.tsx:57-59. Local frontend only: cypress/cypress.config.ts:13-15 and .github/workflows/scripts/e2e-examples.js:213-220. Cypress routing: matching routes run in reverse registration order; req.continue() forwards upstream and ends the request phase, bypassing earlier matching replies.",
+      "why_not_excluded": "The original PATCH is fulfilled by the global stub. In the mutant, the later matching handler calls req.continue(), so the aliased write is forwarded to api.fake-rest.refine.dev before the earlier stub can reply; the existing cy.wait proves that request occurs. The runner starts only the frontend and shows no disposable API, rollback, isolated tenant, reset, or teardown for the deployed backend."
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "task": "Cover the library search page (`/`). As the reader types, the results list shows the titles containing the typed text and the status line reads `N results for \"text\"` (`1 result` for one); when nothing matches, `No titles match` is shown. Typing quickly must never leave results from an earlier, shorter query on screen: the list always reflects what is in the box now. Searches of three or more characters are added to Recent searches, newest first, without duplicates, and are still there after a reload; clicking a recent search runs it again. Clearing the box clears the results and the status.",
+  "faults": [
+    {
+      "id": "f1-search-noop",
+      "class": "surface",
+      "brief_phrase": "the results list shows the titles containing the typed text",
+      "description": "Typing never updates the results.",
+      "find": "    queryEl.addEventListener(\"input\", search);\n",
+      "replace": "    void search;\n"
+    },
+    {
+      "id": "f2-stale-response-wins",
+      "class": "ordering",
+      "brief_phrase": "never leave results from an earlier, shorter query on screen",
+      "description": "A slow response for a short earlier query overwrites the results of the current longer query.",
+      "find": "      if (serial !== requestSerial) return;\n",
+      "replace": "      void serial;\n"
+    },
+    {
+      "id": "f3-recent-not-persisted",
+      "class": "persistence",
+      "brief_phrase": "still there after a reload",
+      "description": "Recent searches are returned with each search response but the server does not keep them; a reload shows none.",
+      "find": "        recent = [q, ...recent.filter((item) => item !== q)].slice(0, 5);\n      }\n      return json(res, 200, { query: q, titles, recent });",
+      "replace": "        return json(res, 200, { query: q, titles, recent: [q, ...recent.filter((item) => item !== q)].slice(0, 5) });\n      }\n      return json(res, 200, { query: q, titles, recent });"
+    },
+    {
+      "id": "f4-recent-duplicates",
+      "class": "precision",
+      "brief_phrase": "newest first, without duplicates",
+      "description": "Repeating a search adds it to Recent searches again.",
+      "find": "recent = [q, ...recent.filter((item) => item !== q)].slice(0, 5);",
+      "replace": "recent = [q, ...recent].slice(0, 5);"
+    },
+    {
+      "id": "f5-clear-keeps-status",
+      "class": "interaction",
+      "brief_phrase": "Clearing the box clears the results and the status",
+      "description": "Clearing the box empties the list but leaves the previous status line.",
+      "find": "statusEl.textContent = data.query ? data.titles.length",
+      "replace": "if (data.query) statusEl.textContent = data.titles.length"
+    }
+  ],
+  "refactor": [
+    {"find": "<ul id=\"ls-results\" aria-label=\"Results\"></ul>", "replace": "<section class=\"panel\"><ul id=\"ls-results\" class=\"panel__list\" aria-label=\"Results\"></ul></section>"},
+    {"find": "<section id=\"ls-recent-section\">", "replace": "<aside class=\"sidebar\"><section id=\"ls-recent-section\" class=\"sidebar__block\">"},
+    {"find": "<ul id=\"ls-recent\" aria-label=\"Recent searches\"></ul>\n    </section>", "replace": "<ul id=\"ls-recent\" aria-label=\"Recent searches\"></ul>\n    </section></aside>"},
+    {"find": "ls-recent-section", "replace": "history-block"},
+    {"find": "ls-recent", "replace": "history-list"},
+    {"find": "ls-results", "replace": "matches"},
+    {"find": "ls-status", "replace": "match-summary"},
+    {"find": "ls-empty", "replace": "no-matches"},
+    {"find": "ls-query", "replace": "catalog-query"}
+  ]
+}

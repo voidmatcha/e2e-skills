@@ -1,0 +1,50 @@
+{
+  "task": "Add browser coverage for the verification links at `/`. Primary and secondary email both start Unverified. Clicking Verify primary email sends one GET with its token and lands on Event types; a fresh visit to `/` shows Primary: Verified. Clicking Verify secondary email sends one GET with its token and lands on Account profile, where both emails are Verified. The secondary token is one-use: a later direct visit with that same token is rejected without changing either verified state.",
+  "faults": [
+    {
+      "id": "f1-primary-link-inert",
+      "class": "surface",
+      "brief_phrase": "Clicking Verify primary email",
+      "description": "Primary email link no longer reaches the verification handler.",
+      "find": "href=\"/api/auth/verify-email?token=primary-token\"",
+      "replace": "href=\"#primary\""
+    },
+    {
+      "id": "f2-secondary-wrong-token",
+      "class": "precision",
+      "brief_phrase": "Clicking Verify secondary email",
+      "description": "Secondary email link carries the primary token.",
+      "find": "href=\"/api/auth/verify-email?token=secondary-token\"",
+      "replace": "href=\"/api/auth/verify-email?token=primary-token\""
+    },
+    {
+      "id": "f3-primary-write-lost",
+      "class": "state",
+      "brief_phrase": "Primary: Verified",
+      "description": "The primary verification write is discarded by its DB double.",
+      "find": "update: async ({ data }) => { Object.assign(user, data); return { ...user }; },",
+      "replace": "update: async ({ data }) => { return { ...user, ...data }; },"
+    },
+    {
+      "id": "f4-token-reusable",
+      "class": "persistence",
+      "brief_phrase": "secondary token is one-use",
+      "description": "Token cleanup does not persist.",
+      "find": "for (const [key, value] of tokens) if (value.id === where.id) tokens.delete(key);",
+      "replace": "for (const [key, value] of tokens) if (value.id === where.id) void key;"
+    },
+    {
+      "id": "f5-secondary-write-lost",
+      "class": "state",
+      "brief_phrase": "both emails are Verified",
+      "description": "The secondary verification write is discarded by its DB double.",
+      "find": "update: async ({ data }) => { Object.assign(secondary, data); return { ...secondary }; },",
+      "replace": "update: async ({ data }) => { return { ...secondary, ...data }; },"
+    }
+  ],
+  "refactor": [
+    { "find": "primary-status", "replace": "main-email-state" },
+    { "find": "secondary-status", "replace": "alternate-email-state" }
+  ],
+  "routes": ["/"]
+}

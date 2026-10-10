@@ -1,0 +1,40 @@
+{
+  "schema": "debugger-ci-artifact-pilot-result-v1",
+  "status": "PIPELINE_PASS_CAUSAL_TRUTH_UNOBSERVABLE",
+  "evidence_scope": "public-development-one-case-smoke",
+  "private_readiness_sha256": "4c86063de8c9964dd7b37fda86230fc3f3190a43df9d89128e34467909ba1ec8",
+  "private_run_sha256": "1dbdbe77d22938c094381f0f31330df18815efe8cfcbfc5ad061640d8cd6b94c",
+  "protocol_sha256": "10f2c0c175ce00a0102b8b235704b4b39e5f81ef4e0d12296027e5ae7e055b0a",
+  "truth_sha256": "a774572496166d0547b777038dc33f32a82fc9738c3212b309f3b62f634ff4e5",
+  "runner_sha256": "29f884498872160ad5f71007b1336955f7e64cc7ea181b77bc18a7b53d2f1fd9",
+  "input": {
+    "run_id": 36463952537,
+    "report_sha256": "0bcdd4d71815ea236a5f0fbbbf72abd956be59de579d4d0936f8179ca3c9857c",
+    "source_sha256": "05ab9d91106cc7bf1faffed7d04316a6f940bdaac88d4b4dab9b34debccac549",
+    "screenshot_sha256": "c3cfd1fab257c46810e2960d5acae711f6377af4baa7bf21c1980e4094d9e44a",
+    "maintainer_pr_in_prompt": false,
+    "model_callable_tools": false
+  },
+  "arms": [
+    {
+      "arm": "no-skill",
+      "status": "SCHEMA_VALID",
+      "elapsed_ms": 17745,
+      "mechanism": "data_dependency",
+      "diagnosis": "test_defect",
+      "confidence": "high",
+      "observed_result": "Identified first-card selection of an empty dashboard as the immediate cause; explicitly left the empty dashboard's origin unknown."
+    },
+    {
+      "arm": "skill",
+      "status": "SCHEMA_VALID",
+      "elapsed_ms": 18364,
+      "mechanism": "data_dependency",
+      "diagnosis": "test_defect",
+      "confidence": "high",
+      "observed_result": "Identified first-card selection of an empty dashboard as the immediate cause; explicitly left the empty dashboard's origin unknown."
+    }
+  ],
+  "interpretation": "The screenshot and run-head test source establish the empty-dashboard selection, but the supplied input does not show which prior test created it. The maintainer-linked cross-test-state label is therefore not fair to score from this prompt. Both arms gave a supported proximal diagnosis and calibrated uncertainty. This is a routing, redaction, image, and schema smoke, not a measurement of skill lift or full causal accuracy.",
+  "next_gate": "For causal scoring, obtain failure-time evidence linking the xref dashboard creation to a preceding test without showing the maintainer PR, or use a different case whose cause is visible in its original artifact and source. Do not retrospectively change this frozen one-case run."
+}

@@ -40,3 +40,12 @@ export function bindFixtures(p: Page, c: BrowserContext): void {
   page = p;
   context = c;
 }
+
+var suiteOrder = 0;
+const sharedNames = new Set<string>();
+
+export function recordName(name: string): number {
+  sharedNames.add(name);
+  suiteOrder += 1;
+  return suiteOrder;
+}

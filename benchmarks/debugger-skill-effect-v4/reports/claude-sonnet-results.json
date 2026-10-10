@@ -1,0 +1,198 @@
+{
+ "protocol_id": "debugger-skill-effect-v4",
+ "status": "INCONCLUSIVE",
+ "problems": [
+  "2 unscored call(s)",
+  "ceiling: no-skill primary at or above the preregistered ceiling"
+ ],
+ "checks": {
+  "lift_at_least_min": false,
+  "ci_lower_above_zero": false,
+  "diagnosis_not_worse": true,
+  "baseline_below_ceiling": false
+ },
+ "primary": {
+  "metric": "full (location, mechanism, diagnosis and root-cause count all correct)",
+  "skill": 0.8824,
+  "no_skill": 0.9167,
+  "paired_lift": -0.0417,
+  "bootstrap_95ci": [
+   -0.1944,
+   0.0972
+  ],
+  "cases_better": 1,
+  "cases_worse": 2,
+  "cases_tied": 9
+ },
+ "arm_metrics": {
+  "skill": {
+   "full": 0.8824,
+   "loc": 0.8824,
+   "mech": 0.8824,
+   "diag": 0.8824,
+   "count": 1.0,
+   "calls": 34,
+   "cost_usd": 2.484,
+   "elapsed_s": 475.7,
+   "turns": 219
+  },
+  "no-skill": {
+   "full": 0.9167,
+   "loc": 0.9167,
+   "mech": 0.9167,
+   "diag": 0.9167,
+   "count": 1.0,
+   "calls": 36,
+   "cost_usd": 0.939,
+   "elapsed_s": 394.0,
+   "turns": 180
+  }
+ },
+ "spent_usd": 3.4232,
+ "model": "sonnet",
+ "cli": "2.1.289 (Claude Code)",
+ "per_case": {
+  "pw-01": {
+   "no-skill": [
+    1,
+    1,
+    1
+   ],
+   "skill": [
+    1,
+    1,
+    1
+   ]
+  },
+  "pw-02": {
+   "skill": [
+    1,
+    0,
+    0
+   ],
+   "no-skill": [
+    1,
+    1,
+    1
+   ]
+  },
+  "pw-03": {
+   "skill": [
+    1,
+    1,
+    1
+   ],
+   "no-skill": [
+    1,
+    1,
+    1
+   ]
+  },
+  "pw-04": {
+   "no-skill": [
+    1,
+    1,
+    1
+   ],
+   "skill": [
+    1,
+    1
+   ]
+  },
+  "pw-05": {
+   "no-skill": [
+    0,
+    0,
+    0
+   ],
+   "skill": [
+    1,
+    0
+   ]
+  },
+  "pw-06": {
+   "skill": [
+    1,
+    1,
+    1
+   ],
+   "no-skill": [
+    1,
+    1,
+    1
+   ]
+  },
+  "pw-07": {
+   "no-skill": [
+    1,
+    1,
+    1
+   ],
+   "skill": [
+    1,
+    1,
+    1
+   ]
+  },
+  "pw-08": {
+   "skill": [
+    1,
+    1,
+    0
+   ],
+   "no-skill": [
+    1,
+    1,
+    1
+   ]
+  },
+  "pw-09": {
+   "no-skill": [
+    1,
+    1,
+    1
+   ],
+   "skill": [
+    1,
+    1,
+    1
+   ]
+  },
+  "pw-10": {
+   "skill": [
+    1,
+    1,
+    1
+   ],
+   "no-skill": [
+    1,
+    1,
+    1
+   ]
+  },
+  "pw-11": {
+   "no-skill": [
+    1,
+    1,
+    1
+   ],
+   "skill": [
+    1,
+    1,
+    1
+   ]
+  },
+  "pw-12": {
+   "no-skill": [
+    1,
+    1,
+    1
+   ],
+   "skill": [
+    1,
+    1,
+    1
+   ]
+  }
+ }
+}

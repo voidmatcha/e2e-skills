@@ -1,0 +1,4 @@
+{
+  "task": "Add end-to-end tests for the tip calculator page (`/`). Acceptance criteria: (1) entering a bill amount and choosing a tip percentage shows the tip and the total, formatted as `Tip: $X.XX` and `Total: $Y.YY`; (2) changing the percentage recomputes both; (3) a non-numeric or negative amount shows the error `Enter a positive amount` and clears the tip and total.",
+  "note": "Smoke case outside the scored corpus; used only to calibrate budget, timeout and harness behavior before the protocol is frozen."
+}

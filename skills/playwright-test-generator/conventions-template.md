@@ -29,7 +29,7 @@ Append the section below to the project's root `AGENTS.md` (create the file if a
 ### Locator strategy (this app's reality)
 - Buttons / links: `getByRole('button' | 'link', { name })`
 - Form inputs: `<"getByLabel — labels exist" | "inputs have NO labels — use getByPlaceholder('<string>') or getByRole('textbox'); getByLabel matches nothing here">`
-- Last resort: `data-testid`. Raw CSS chains / XPath: forbidden.
+- Last resort: `data-testid`. Text-only elements (counters, status lines): `getByText` or a labeled ancestor. Raw CSS `#id`/`.class`: `// JUSTIFIED:` only. XPath: forbidden.
 
 ### Assertions
 Auto-waiting web-first assertions only (`toBeVisible`, `toHaveURL`, `toHaveText`, `toHaveCount`). No `waitForTimeout`, no one-shot boolean checks (`expect(await el.isVisible())`).

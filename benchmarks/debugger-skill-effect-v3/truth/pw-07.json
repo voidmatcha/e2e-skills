@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "souravmondalshuvo/Shohoj",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/souravmondalshuvo/Shohoj/issues/828",
+   "https://github.com/souravmondalshuvo/Shohoj/pull/829"
+  ],
+  "merged": "2026-10-04"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (infrastructure)",
+ "explanation": "`python3 -m http.server` answers in HTTP/1.0 and listens with socketserver's default backlog of 5. Under the burst of about a hundred simultaneous module imports a connection is occasionally reset; one failed import takes the whole module graph with it, `main.js` never runs, and the calculator stays hidden.",
+ "fix": "Serve the suite with a `ThreadingHTTPServer` whose `request_queue_size` is 128 (`scripts/e2e_static_server.py`) and point the three Playwright configs at it."
+}

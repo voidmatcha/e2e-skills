@@ -1,0 +1,14 @@
+{
+ "source": {
+  "repo": "open-metadata/OpenMetadata",
+  "license": "Apache-2.0",
+  "urls": [
+   "https://github.com/open-metadata/OpenMetadata/pull/33747"
+  ],
+  "merged": "2026-09-22"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test",
+ "explanation": "`openDataProductDrawer` ends by clicking a domain option in an Ant Design Select dropdown, then returns with no wait. The dropdown overlay lingers briefly during its close animation, and the subsequent click on the Glossary Terms TreeSelect trigger is intercepted by that overlay, so the tree popover never opens.",
+ "fix": "Wait for the `.domain-select-popover` overlay to be hidden before returning from `openDataProductDrawer`."
+}

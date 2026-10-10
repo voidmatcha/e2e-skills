@@ -1,0 +1,39 @@
+{
+  "status": "SOURCE_REVIEWED_CHALLENGED",
+  "join_key": "repository name plus 1-based API ordinal in commit-ledger.json",
+  "dispositions": {
+    "calcom/cal.com": [
+      "admitted", "out-of-catalog", "out-of-catalog", "refactor-only", "out-of-catalog",
+      "out-of-catalog", "no-eligible-repair", "no-eligible-repair", "no-spec-change", "out-of-catalog",
+      "out-of-catalog", "out-of-catalog", "no-eligible-repair", "out-of-catalog", "ambiguous-mixed-repair",
+      "admitted", "no-spec-change", "negative-reverse", "no-eligible-repair", "eligible-not-retained",
+      "ambiguous-mixed-repair", "ambiguous-mixed-repair", "out-of-catalog", "no-spec-change", "new-test-only"
+    ],
+    "element-hq/hydrogen-web": [
+      "refactor-only", "new-test-only", "refactor-only", "refactor-only", "new-test-only"
+    ],
+    "officecli/officedex": [
+      "out-of-catalog", "new-test-only", "new-test-only", "admitted", "new-test-only",
+      "out-of-catalog", "new-test-only", "new-test-only", "new-test-only", "out-of-catalog",
+      "new-test-only", "new-test-only", "out-of-catalog", "new-test-only", "new-test-only",
+      "no-spec-change", "out-of-catalog", "new-test-only", "no-spec-change", "new-test-only"
+    ],
+    "RedHatInsights/uhc-portal": [
+      "out-of-catalog", "out-of-catalog", "out-of-catalog", "refactor-only", "out-of-catalog",
+      "out-of-catalog", "out-of-catalog", "out-of-catalog", "negative-lookalike", "refactor-only",
+      "out-of-catalog", "new-test-only", "out-of-catalog", "ambiguous-mixed-repair", "out-of-catalog",
+      "new-test-only", "new-test-only", "negative-reverse", "out-of-catalog", "negative-reverse",
+      "out-of-catalog", "out-of-catalog", "out-of-catalog", "out-of-catalog", "out-of-catalog"
+    ],
+    "tomosterlund/qalendar": [
+      "ambiguous-mixed-repair", "new-test-only", "new-test-only", "new-test-only", "out-of-catalog",
+      "new-test-only", "new-test-only", "new-test-only", "out-of-catalog", "new-test-only",
+      "new-test-only", "new-test-only", "new-test-only", "new-test-only", "out-of-catalog",
+      "out-of-catalog", "new-test-only", "new-test-only", "out-of-catalog", "new-test-only",
+      "refactor-only", "ambiguous-mixed-repair", "new-test-only", "new-test-only"
+    ],
+    "xchem/fragalysis-frontend": [
+      "refactor-only", "new-test-only", "new-test-only"
+    ]
+  }
+}

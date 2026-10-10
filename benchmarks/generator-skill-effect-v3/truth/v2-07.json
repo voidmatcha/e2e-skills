@@ -1,0 +1,95 @@
+{
+  "task": "Cover the inbox page (`/`), seeded with four messages of which three are unread. The heading shows the number of unread messages in parentheses. Opening a message shows its subject, sender and body and marks that message, and only that message, as read, lowering the count. Mark all read clears the count and the unread markers. The Unread only filter hides the read messages. Read state is stored on the server, so a reload shows the same unread count and markers.",
+  "faults": [
+    {
+      "id": "f1-open-noop",
+      "class": "surface",
+      "brief_phrase": "Opening a message shows its subject, sender and body",
+      "description": "Opening a message never shows the reader.",
+      "find": "      openId = message.id;\n",
+      "replace": "      openId = null;\n"
+    },
+    {
+      "id": "f2-read-not-persisted",
+      "class": "persistence",
+      "brief_phrase": "a reload shows the same unread count and markers",
+      "description": "Opening a message marks it read on the page only; the server keeps it unread.",
+      "find": "      message.read = true;\n      return json(res, 200, message);\n",
+      "replace": "      return json(res, 200, { ...message, read: true });\n"
+    },
+    {
+      "id": "f3-mark-all-keeps-count",
+      "class": "precision",
+      "brief_phrase": "Mark all read clears the count and the unread markers",
+      "description": "Mark all read clears the markers but the heading keeps the old count until a reload.",
+      "find": "      for (const m of state) m.read = true;\n      render();\n",
+      "replace": "      const keep = el(\"ib-heading\").textContent;\n      for (const m of state) m.read = true;\n      render();\n      el(\"ib-heading\").textContent = keep;\n"
+    },
+    {
+      "id": "f4-filter-shows-read",
+      "class": "precision",
+      "brief_phrase": "The Unread only filter hides the read messages",
+      "description": "The filter hides only the messages that were already read when the page loaded, not ones read since.",
+      "find": "      const visible = el(\"ib-unread-only\").checked ? state.filter((m) => !m.read) : state;\n",
+      "replace": "      const visible = el(\"ib-unread-only\").checked ? state.filter((m) => unreadAtLoad.has(m.id)) : state;\n"
+    },
+    {
+      "id": "f5-open-marks-neighbor",
+      "class": "persistence",
+      "brief_phrase": "marks that message, and only that message, as read",
+      "description": "The server also marks the following message as read; the page shows it only after a reload.",
+      "find": "      message.read = true;\n      return json(res, 200, message);\n",
+      "replace": "      message.read = true;\n      const following = messages.find((m) => m.id === message.id + 1);\n      if (following) following.read = true;\n      return json(res, 200, message);\n"
+    }
+  ],
+  "refactor": [
+    {
+      "find": "<div id=\"ib-toolbar\">",
+      "replace": "<div class=\"toolbar\"><div id=\"ib-toolbar\" class=\"toolbar__row\">"
+    },
+    {
+      "find": "<button type=\"button\" id=\"ib-mark-all\">Mark all read</button>\n    </div>",
+      "replace": "<button type=\"button\" id=\"ib-mark-all\" class=\"btn btn-ghost\"><span>Mark all read</span></button>\n    </div></div>"
+    },
+    {
+      "find": "li.className = (message.read ? \"message read\" : \"message unread\")",
+      "replace": "li.className = (message.read ? \"row row--seen\" : \"row row--new\")"
+    },
+    {
+      "find": "ib-unread-only",
+      "replace": "filter-new"
+    },
+    {
+      "find": "ib-mark-all",
+      "replace": "clear-new"
+    },
+    {
+      "find": "ib-heading",
+      "replace": "mailbox-title"
+    },
+    {
+      "find": "ib-toolbar",
+      "replace": "mailbox-tools"
+    },
+    {
+      "find": "ib-list",
+      "replace": "mailbox-rows"
+    },
+    {
+      "find": "ib-reader",
+      "replace": "preview"
+    },
+    {
+      "find": "ib-subject",
+      "replace": "preview-subject"
+    },
+    {
+      "find": "ib-from",
+      "replace": "preview-from"
+    },
+    {
+      "find": "ib-body",
+      "replace": "preview-body"
+    }
+  ]
+}

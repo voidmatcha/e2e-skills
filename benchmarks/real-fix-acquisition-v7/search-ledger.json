@@ -1,0 +1,464 @@
+{
+  "protocol": "real-fix-acquisition-v7",
+  "status": "COMPLETE",
+  "query_rows": [
+    {
+      "label": "PW-old-title",
+      "query": "is:pr is:merged playwright flaky in:title created:2023-01-01..2024-12-31",
+      "endpoint": "search/issues?q=is%3Apr%20is%3Amerged%20playwright%20flaky%20in%3Atitle%20created%3A2023-01-01..2024-12-31&sort=created&order=desc&per_page=20",
+      "total_count": 123,
+      "returned_prs": 20,
+      "prs": [
+        {
+          "ordinal": 1,
+          "repository": "Comfy-Org/ComfyUI_frontend",
+          "number": 2051,
+          "url": "https://github.com/Comfy-Org/ComfyUI_frontend/pull/2051",
+          "title": "Fix flaky reroute insert playwright test",
+          "created_at": "2024-12-26T02:24:08Z",
+          "closed_at": "2024-12-26T02:57:53Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 2,
+          "repository": "open-metadata/OpenMetadata",
+          "number": 19150,
+          "url": "https://github.com/open-metadata/OpenMetadata/pull/19150",
+          "title": "fix tag page flaky playwright test",
+          "created_at": "2024-12-20T07:08:29Z",
+          "closed_at": "2024-12-31T11:42:15Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 3,
+          "repository": "Sage/carbon",
+          "number": 7127,
+          "url": "https://github.com/Sage/carbon/pull/7127",
+          "title": "perf(pipeline): flaky Playwright investigations",
+          "created_at": "2024-12-12T08:07:58Z",
+          "closed_at": "2024-12-17T08:19:01Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 4,
+          "repository": "open-metadata/OpenMetadata",
+          "number": 18984,
+          "url": "https://github.com/open-metadata/OpenMetadata/pull/18984",
+          "title": "Minor: Fix the flaky playwright tests",
+          "created_at": "2024-12-10T07:23:59Z",
+          "closed_at": "2024-12-11T14:26:43Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 5,
+          "repository": "SchwarzIT/onyx",
+          "number": 2274,
+          "url": "https://github.com/SchwarzIT/onyx/pull/2274",
+          "title": "chore: fix flaky Playground Playwright test",
+          "created_at": "2024-12-06T13:54:48Z",
+          "closed_at": "2024-12-09T08:15:51Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 6,
+          "repository": "element-hq/element-web",
+          "number": 28641,
+          "url": "https://github.com/element-hq/element-web/pull/28641",
+          "title": "Playwright: fix (hopefully) flaky shields test",
+          "created_at": "2024-12-04T21:36:59Z",
+          "closed_at": "2024-12-04T23:18:52Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 7,
+          "repository": "Scille/parsec-cloud",
+          "number": 9081,
+          "url": "https://github.com/Scille/parsec-cloud/pull/9081",
+          "title": "[MS] Should solve flaky playwright tests",
+          "created_at": "2024-12-02T13:26:45Z",
+          "closed_at": "2024-12-04T06:55:47Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 8,
+          "repository": "redhat-developer/rhdh",
+          "number": 2010,
+          "url": "https://github.com/redhat-developer/rhdh/pull/2010",
+          "title": "fix(e2e): disable broken/flaky tests and add support for MUI v5 buttons in playwright tests [release-1.4]",
+          "created_at": "2024-11-28T09:43:59Z",
+          "closed_at": "2024-11-28T11:00:37Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 9,
+          "repository": "redhat-developer/rhdh",
+          "number": 2003,
+          "url": "https://github.com/redhat-developer/rhdh/pull/2003",
+          "title": "fix(e2e): disable broken/flaky tests and add support for MUI v5 buttons in playwright tests",
+          "created_at": "2024-11-27T10:26:37Z",
+          "closed_at": "2024-11-27T15:11:48Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 10,
+          "repository": "AlejandroBlanco2001/GhostE2E",
+          "number": 28,
+          "url": "https://github.com/AlejandroBlanco2001/GhostE2E/pull/28",
+          "title": "fix: flaky test in playwright",
+          "created_at": "2024-11-23T19:14:00Z",
+          "closed_at": "2024-11-23T19:30:06Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 11,
+          "repository": "ietf-tools/datatracker",
+          "number": 8267,
+          "url": "https://github.com/ietf-tools/datatracker/pull/8267",
+          "title": "fix: flaky playwright status tests",
+          "created_at": "2024-11-23T05:00:01Z",
+          "closed_at": "2024-11-25T15:42:05Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 12,
+          "repository": "eclipse-theia/theia",
+          "number": 14457,
+          "url": "https://github.com/eclipse-theia/theia/pull/14457",
+          "title": "Flaky Playwright test - notebook split cell #14450",
+          "created_at": "2024-11-15T14:45:44Z",
+          "closed_at": "2024-11-22T08:13:49Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 13,
+          "repository": "mozilla/kitsune",
+          "number": 6353,
+          "url": "https://github.com/mozilla/kitsune/pull/6353",
+          "title": "Playwright try fixing recent AAQ and top-navbar related test failures/flakiness",
+          "created_at": "2024-11-12T21:40:07Z",
+          "closed_at": "2024-11-13T08:30:06Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 14,
+          "repository": "Immersion-Facilitee/immersion-facile",
+          "number": 2506,
+          "url": "https://github.com/Immersion-Facilitee/immersion-facile/pull/2506",
+          "title": "TECH - fix de test flaky de playwright",
+          "created_at": "2024-11-12T14:52:45Z",
+          "closed_at": "2024-11-12T15:32:25Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 15,
+          "repository": "econia-labs/emojicoin-dot-fun",
+          "number": 322,
+          "url": "https://github.com/econia-labs/emojicoin-dot-fun/pull/322",
+          "title": "[ECO-2362] Fix flaky playwright tests",
+          "created_at": "2024-11-04T03:06:37Z",
+          "closed_at": "2024-11-05T01:37:22Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 16,
+          "repository": "MarvNC/yomitan",
+          "number": 7,
+          "url": "https://github.com/MarvNC/yomitan/pull/7",
+          "title": "Fix flaky playwright comment",
+          "created_at": "2024-10-27T18:10:41Z",
+          "closed_at": "2024-10-27T18:11:17Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 17,
+          "repository": "MarvNC/yomitan",
+          "number": 5,
+          "url": "https://github.com/MarvNC/yomitan/pull/5",
+          "title": "Playwright comment on flaky",
+          "created_at": "2024-10-26T19:06:49Z",
+          "closed_at": "2024-10-26T19:09:13Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 18,
+          "repository": "yomidevs/yomitan",
+          "number": 1531,
+          "url": "https://github.com/yomidevs/yomitan/pull/1531",
+          "title": "Playwright Comment on Flaky Tests",
+          "created_at": "2024-10-26T11:02:57Z",
+          "closed_at": "2024-10-27T17:24:41Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 19,
+          "repository": "open-metadata/OpenMetadata",
+          "number": 18382,
+          "url": "https://github.com/open-metadata/OpenMetadata/pull/18382",
+          "title": "PLAYWRIGHT: fix tags playwright failure and user flaky test",
+          "created_at": "2024-10-23T16:32:56Z",
+          "closed_at": "2024-10-23T18:15:59Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 20,
+          "repository": "replicatedhq/embedded-cluster",
+          "number": 1376,
+          "url": "https://github.com/replicatedhq/embedded-cluster/pull/1376",
+          "title": "Fix deploy-upgrade playwright test flakiness",
+          "created_at": "2024-10-23T16:03:51Z",
+          "closed_at": "2024-10-23T17:58:27Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        }
+      ]
+    },
+    {
+      "label": "CY-old-title",
+      "query": "is:pr is:merged cypress flaky in:title created:2023-01-01..2024-12-31",
+      "endpoint": "search/issues?q=is%3Apr%20is%3Amerged%20cypress%20flaky%20in%3Atitle%20created%3A2023-01-01..2024-12-31&sort=created&order=desc&per_page=20",
+      "total_count": 442,
+      "returned_prs": 20,
+      "prs": [
+        {
+          "ordinal": 1,
+          "repository": "ghiscoding/slickgrid-react",
+          "number": 452,
+          "url": "https://github.com/ghiscoding/slickgrid-react/pull/452",
+          "title": "chore: fix Composite example flaky Cypress test",
+          "created_at": "2024-12-30T06:04:37Z",
+          "closed_at": "2024-12-30T06:14:58Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 2,
+          "repository": "ghiscoding/Angular-Slickgrid",
+          "number": 1515,
+          "url": "https://github.com/ghiscoding/Angular-Slickgrid/pull/1515",
+          "title": "chore: fix Composite example flaky Cypress test",
+          "created_at": "2024-12-30T06:04:26Z",
+          "closed_at": "2024-12-30T06:14:55Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 3,
+          "repository": "ghiscoding/aurelia-slickgrid",
+          "number": 1305,
+          "url": "https://github.com/ghiscoding/aurelia-slickgrid/pull/1305",
+          "title": "chore: fix Composite example flaky Cypress test",
+          "created_at": "2024-12-30T06:04:14Z",
+          "closed_at": "2024-12-30T06:14:48Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 4,
+          "repository": "ohcnetwork/care_fe",
+          "number": 9569,
+          "url": "https://github.com/ohcnetwork/care_fe/pull/9569",
+          "title": "Fixed All Cypress Flaky test capture in cloud",
+          "created_at": "2024-12-26T02:44:29Z",
+          "closed_at": "2024-12-26T03:50:22Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 5,
+          "repository": "ohcnetwork/care_fe",
+          "number": 9492,
+          "url": "https://github.com/ohcnetwork/care_fe/pull/9492",
+          "title": "Fixed Flaky Test in cypress develop branch",
+          "created_at": "2024-12-18T19:45:15Z",
+          "closed_at": "2024-12-19T02:34:07Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 6,
+          "repository": "opensearch-project/dashboards-observability",
+          "number": 2296,
+          "url": "https://github.com/opensearch-project/dashboards-observability/pull/2296",
+          "title": "[Backport 2.x] Fix flaky cypress tests",
+          "created_at": "2024-12-17T19:49:12Z",
+          "closed_at": "2024-12-17T22:02:50Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 7,
+          "repository": "cockroachdb/cockroach",
+          "number": 137297,
+          "url": "https://github.com/cockroachdb/cockroach/pull/137297",
+          "title": "ui: fixes flaky authenticated cypress test",
+          "created_at": "2024-12-11T20:15:28Z",
+          "closed_at": "2024-12-17T19:05:59Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 8,
+          "repository": "opensearch-project/dashboards-observability",
+          "number": 2293,
+          "url": "https://github.com/opensearch-project/dashboards-observability/pull/2293",
+          "title": "Fix flaky cypress tests",
+          "created_at": "2024-12-10T19:39:22Z",
+          "closed_at": "2024-12-17T19:48:57Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 9,
+          "repository": "MaMpf-HD/mampf",
+          "number": 726,
+          "url": "https://github.com/MaMpf-HD/mampf/pull/726",
+          "title": "Fix flaky voucher redemption Cypress test",
+          "created_at": "2024-12-09T12:56:29Z",
+          "closed_at": "2024-12-09T15:34:17Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 10,
+          "repository": "MaMpf-HD/mampf",
+          "number": 725,
+          "url": "https://github.com/MaMpf-HD/mampf/pull/725",
+          "title": "Fix flaky Cypress submission test",
+          "created_at": "2024-12-08T19:35:33Z",
+          "closed_at": "2024-12-09T11:47:54Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 11,
+          "repository": "opensearch-project/dashboards-observability",
+          "number": 2286,
+          "url": "https://github.com/opensearch-project/dashboards-observability/pull/2286",
+          "title": "[Backport 2.x] [Cypress Updates] Fix flaky notebooks test",
+          "created_at": "2024-12-06T21:21:58Z",
+          "closed_at": "2024-12-06T22:01:13Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 12,
+          "repository": "opensearch-project/dashboards-observability",
+          "number": 2280,
+          "url": "https://github.com/opensearch-project/dashboards-observability/pull/2280",
+          "title": "[Cypress Updates] Fix flaky notebooks test",
+          "created_at": "2024-12-06T00:18:19Z",
+          "closed_at": "2024-12-06T21:21:39Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 13,
+          "repository": "bcgov/mds",
+          "number": 3336,
+          "url": "https://github.com/bcgov/mds/pull/3336",
+          "title": "[CHORE] Fix cypress test flakiness in the file upload test",
+          "created_at": "2024-12-05T18:43:28Z",
+          "closed_at": "2024-12-05T20:03:37Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 14,
+          "repository": "ministryofjustice/bichard7-next-core",
+          "number": 1153,
+          "url": "https://github.com/ministryofjustice/bichard7-next-core/pull/1153",
+          "title": "Fix flaky cypress tests",
+          "created_at": "2024-12-02T11:55:23Z",
+          "closed_at": "2024-12-02T16:30:03Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 15,
+          "repository": "MaMpf-HD/mampf",
+          "number": 718,
+          "url": "https://github.com/MaMpf-HD/mampf/pull/718",
+          "title": "Fix flaky user deletion & redemption cypress test",
+          "created_at": "2024-12-01T22:53:36Z",
+          "closed_at": "2024-12-03T14:43:03Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 16,
+          "repository": "THM-Health/PILOS",
+          "number": 1645,
+          "url": "https://github.com/THM-Health/PILOS/pull/1645",
+          "title": "Fix flaky cypress tests",
+          "created_at": "2024-11-28T13:09:17Z",
+          "closed_at": "2024-12-18T15:51:09Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 17,
+          "repository": "n8n-io/n8n",
+          "number": 11894,
+          "url": "https://github.com/n8n-io/n8n/pull/11894",
+          "title": "chore: Fix flaky cypress tests (no-changelog)",
+          "created_at": "2024-11-26T11:12:33Z",
+          "closed_at": "2024-11-26T12:57:01Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 18,
+          "repository": "ohcnetwork/care_fe",
+          "number": 9148,
+          "url": "https://github.com/ohcnetwork/care_fe/pull/9148",
+          "title": "Fixed the flaky test in user skill management cypress test",
+          "created_at": "2024-11-18T09:37:43Z",
+          "closed_at": "2024-11-18T10:54:20Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 19,
+          "repository": "taiga-family/taiga-ui",
+          "number": 9765,
+          "url": "https://github.com/taiga-family/taiga-ui/pull/9765",
+          "title": "chore(demo-cypress): mock fonts to fix flaky Cypress tests",
+          "created_at": "2024-11-15T10:35:13Z",
+          "closed_at": "2024-11-20T13:11:39Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 20,
+          "repository": "Ontotext-AD/graphdb-workbench",
+          "number": 1705,
+          "url": "https://github.com/Ontotext-AD/graphdb-workbench/pull/1705",
+          "title": "Cherry-pick GDB-11133 fixing flaky cypress tests",
+          "created_at": "2024-11-13T08:05:14Z",
+          "closed_at": "2024-11-13T09:30:49Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        }
+      ]
+    }
+  ]
+}

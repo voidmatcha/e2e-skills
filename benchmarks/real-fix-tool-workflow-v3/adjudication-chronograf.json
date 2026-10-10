@@ -1,0 +1,394 @@
+{
+  "status": "COMPLETE",
+  "sources": [
+    {
+      "case": "chronograf",
+      "repository": "influxdata/chronograf",
+      "side": "before",
+      "revision": "22d67c5e727ffb2cd2412d1259c8d23f5a41dadc",
+      "blob": "2d69e2a2e5dedb977f58a860b363e55b5fa8d6de",
+      "sha256": "1ceed5ead83ebc5b62373b1ba4954b35097745c8c5628b25915c7f0deb96148f",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts"
+    },
+    {
+      "case": "chronograf",
+      "repository": "influxdata/chronograf",
+      "side": "after",
+      "revision": "23d6e913eb8bbc946af866c58df2729925fe3732",
+      "blob": "92a12c4673c0a7780967600dbc59f95d434553a3",
+      "sha256": "8008d0a599bc65959c70eb413d82b27c52e01c65ba67dbbb6b8a5144da3da1bb",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts"
+    }
+  ],
+  "totals": {
+    "unique_off_target_keys": 27,
+    "by_verdict": {
+      "CONFIRMED": 19,
+      "INVALID_LOCATION": 6,
+      "FALSE_POSITIVE": 2
+    },
+    "by_side": {
+      "before": 15,
+      "after": 12
+    },
+    "reused_exact_keys": 27,
+    "new_source_adjudications": 0
+  },
+  "rows": [
+    {
+      "case": "chronograf",
+      "side": "before",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 39,
+      "pattern_id": "#10f",
+      "verdict": "CONFIRMED",
+      "reason": "A Cypress action continues into another subject-dependent command or assertion on the same chain; no supplied evidence proves the subject remains stable.",
+      "evidence": [
+        "influxdata/chronograf blob 2d69e2a2e5dedb977f58a860b363e55b5fa8d6de, admin_chronograf.test.ts:39",
+        "references/patterns/10.md #10f: continued Cypress action chains are P1 unless source proves stable, intentionally atomic subject use."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "before",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 50,
+      "pattern_id": "#10f",
+      "verdict": "CONFIRMED",
+      "reason": "A Cypress action continues into another subject-dependent command or assertion on the same chain; no supplied evidence proves the subject remains stable.",
+      "evidence": [
+        "influxdata/chronograf blob 2d69e2a2e5dedb977f58a860b363e55b5fa8d6de, admin_chronograf.test.ts:50",
+        "references/patterns/10.md #10f: continued Cypress action chains are P1 unless source proves stable, intentionally atomic subject use."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "before",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 68,
+      "pattern_id": "#2",
+      "verdict": "CONFIRMED",
+      "reason": "The role dropdown item is clicked, but the edited role is never asserted.",
+      "evidence": [
+        "influxdata/chronograf blob 2d69e2a2e5dedb977f58a860b363e55b5fa8d6de, admin_chronograf.test.ts:68",
+        "references/patterns/2.md: a promised edit/delete action needs its resulting state; anchor at the causal action."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "before",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 77,
+      "pattern_id": "#2",
+      "verdict": "CONFIRMED",
+      "reason": "The user-delete confirmation is clicked, but removal is never asserted.",
+      "evidence": [
+        "influxdata/chronograf blob 2d69e2a2e5dedb977f58a860b363e55b5fa8d6de, admin_chronograf.test.ts:77",
+        "references/patterns/2.md: a promised edit/delete action needs its resulting state; anchor at the causal action."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "before",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 77,
+      "pattern_id": "#8",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line is a Cypress click command, while #8 covers discarded Playwright locators or boolean state reads.",
+      "evidence": [
+        "influxdata/chronograf blob 2d69e2a2e5dedb977f58a860b363e55b5fa8d6de, admin_chronograf.test.ts:77",
+        "references/patterns/8.md: dangling-locator #8a is Playwright-only and the contract explicitly excludes Cypress cy.get chains."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "before",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 99,
+      "pattern_id": "#10f",
+      "verdict": "FALSE_POSITIVE",
+      "reason": "Pinned app source proves this is an intentional atomic SlideToggle click/class check: React retains the same unkeyed root div while a synchronous Redux dispatch changes only its active class.",
+      "evidence": [
+        "influxdata/chronograf blob 2d69e2a2e5dedb977f58a860b363e55b5fa8d6de, admin_chronograf.test.ts:99",
+        "influxdata/chronograf@22d67c5e727ffb2cd2412d1259c8d23f5a41dadc: AllUsersTableHeader.tsx:47-53 keeps SlideToggle at the same unkeyed position; SlideToggle.tsx:33-40 renders one root div whose className derives from active.",
+        "influxdata/chronograf@22d67c5e727ffb2cd2412d1259c8d23f5a41dadc: shared/actions/config.js:58-60 dispatches the new auth config synchronously; shared/reducers/config.js:9-15 updates the active prop without changing component identity.",
+        "references/patterns/10.md #10f: skip when project evidence proves the subject remains stable and the chain is intentionally atomic."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "before",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 131,
+      "pattern_id": "#10f",
+      "verdict": "CONFIRMED",
+      "reason": "A Cypress action continues into another subject-dependent command or assertion on the same chain; no supplied evidence proves the subject remains stable.",
+      "evidence": [
+        "influxdata/chronograf blob 2d69e2a2e5dedb977f58a860b363e55b5fa8d6de, admin_chronograf.test.ts:131",
+        "references/patterns/10.md #10f: continued Cypress action chains are P1 unless source proves stable, intentionally atomic subject use."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "before",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 164,
+      "pattern_id": "#2",
+      "verdict": "CONFIRMED",
+      "reason": "The organization tag is added, but the restored membership is never asserted.",
+      "evidence": [
+        "influxdata/chronograf blob 2d69e2a2e5dedb977f58a860b363e55b5fa8d6de, admin_chronograf.test.ts:164",
+        "references/patterns/2.md: a promised edit/delete action needs its resulting state; anchor at the causal action."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "before",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 172,
+      "pattern_id": "#2",
+      "verdict": "CONFIRMED",
+      "reason": "The all-users delete confirmation is clicked, but removal is never asserted.",
+      "evidence": [
+        "influxdata/chronograf blob 2d69e2a2e5dedb977f58a860b363e55b5fa8d6de, admin_chronograf.test.ts:172",
+        "references/patterns/2.md: a promised edit/delete action needs its resulting state; anchor at the causal action."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "before",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 172,
+      "pattern_id": "#8",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line is a Cypress click command, while #8 covers discarded Playwright locators or boolean state reads.",
+      "evidence": [
+        "influxdata/chronograf blob 2d69e2a2e5dedb977f58a860b363e55b5fa8d6de, admin_chronograf.test.ts:172",
+        "references/patterns/8.md: dangling-locator #8a is Playwright-only and the contract explicitly excludes Cypress cy.get chains."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "before",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 192,
+      "pattern_id": "#10f",
+      "verdict": "CONFIRMED",
+      "reason": "A Cypress action continues into another subject-dependent command or assertion on the same chain; no supplied evidence proves the subject remains stable.",
+      "evidence": [
+        "influxdata/chronograf blob 2d69e2a2e5dedb977f58a860b363e55b5fa8d6de, admin_chronograf.test.ts:192",
+        "references/patterns/10.md #10f: continued Cypress action chains are P1 unless source proves stable, intentionally atomic subject use."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "before",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 212,
+      "pattern_id": "#10f",
+      "verdict": "CONFIRMED",
+      "reason": "A Cypress action continues into another subject-dependent command or assertion on the same chain; no supplied evidence proves the subject remains stable.",
+      "evidence": [
+        "influxdata/chronograf blob 2d69e2a2e5dedb977f58a860b363e55b5fa8d6de, admin_chronograf.test.ts:212",
+        "references/patterns/10.md #10f: continued Cypress action chains are P1 unless source proves stable, intentionally atomic subject use."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "before",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 291,
+      "pattern_id": "#10f",
+      "verdict": "CONFIRMED",
+      "reason": "A Cypress action continues into another subject-dependent command or assertion on the same chain; no supplied evidence proves the subject remains stable.",
+      "evidence": [
+        "influxdata/chronograf blob 2d69e2a2e5dedb977f58a860b363e55b5fa8d6de, admin_chronograf.test.ts:291",
+        "references/patterns/10.md #10f: continued Cypress action chains are P1 unless source proves stable, intentionally atomic subject use."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "before",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 306,
+      "pattern_id": "#2",
+      "verdict": "CONFIRMED",
+      "reason": "The mapping-delete confirmation is clicked, but removal or a decreased count is never asserted.",
+      "evidence": [
+        "influxdata/chronograf blob 2d69e2a2e5dedb977f58a860b363e55b5fa8d6de, admin_chronograf.test.ts:306",
+        "references/patterns/2.md: a promised edit/delete action needs its resulting state; anchor at the causal action."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "before",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 306,
+      "pattern_id": "#8",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line is a Cypress click command, while #8 covers discarded Playwright locators or boolean state reads.",
+      "evidence": [
+        "influxdata/chronograf blob 2d69e2a2e5dedb977f58a860b363e55b5fa8d6de, admin_chronograf.test.ts:306",
+        "references/patterns/8.md: dangling-locator #8a is Playwright-only and the contract explicitly excludes Cypress cy.get chains."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "after",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 39,
+      "pattern_id": "#10f",
+      "verdict": "CONFIRMED",
+      "reason": "A Cypress action continues into another subject-dependent command or assertion on the same chain; no supplied evidence proves the subject remains stable.",
+      "evidence": [
+        "influxdata/chronograf blob 92a12c4673c0a7780967600dbc59f95d434553a3, admin_chronograf.test.ts:39",
+        "references/patterns/10.md #10f: continued Cypress action chains are P1 unless source proves stable, intentionally atomic subject use."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "after",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 50,
+      "pattern_id": "#10f",
+      "verdict": "CONFIRMED",
+      "reason": "A Cypress action continues into another subject-dependent command or assertion on the same chain; no supplied evidence proves the subject remains stable.",
+      "evidence": [
+        "influxdata/chronograf blob 92a12c4673c0a7780967600dbc59f95d434553a3, admin_chronograf.test.ts:50",
+        "references/patterns/10.md #10f: continued Cypress action chains are P1 unless source proves stable, intentionally atomic subject use."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "after",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 68,
+      "pattern_id": "#2",
+      "verdict": "CONFIRMED",
+      "reason": "The role dropdown item is clicked, but the edited role is never asserted.",
+      "evidence": [
+        "influxdata/chronograf blob 92a12c4673c0a7780967600dbc59f95d434553a3, admin_chronograf.test.ts:68",
+        "references/patterns/2.md: a promised edit/delete action needs its resulting state; anchor at the causal action."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "after",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 77,
+      "pattern_id": "#2",
+      "verdict": "CONFIRMED",
+      "reason": "The user-delete confirmation is clicked, but removal is never asserted.",
+      "evidence": [
+        "influxdata/chronograf blob 92a12c4673c0a7780967600dbc59f95d434553a3, admin_chronograf.test.ts:77",
+        "references/patterns/2.md: a promised edit/delete action needs its resulting state; anchor at the causal action."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "after",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 77,
+      "pattern_id": "#8",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line is a Cypress click command, while #8 covers discarded Playwright locators or boolean state reads.",
+      "evidence": [
+        "influxdata/chronograf blob 92a12c4673c0a7780967600dbc59f95d434553a3, admin_chronograf.test.ts:77",
+        "references/patterns/8.md: dangling-locator #8a is Playwright-only and the contract explicitly excludes Cypress cy.get chains."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "after",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 99,
+      "pattern_id": "#10f",
+      "verdict": "FALSE_POSITIVE",
+      "reason": "Pinned app source proves this is an intentional atomic SlideToggle click/class check: React retains the same unkeyed root div while a synchronous Redux dispatch changes only its active class.",
+      "evidence": [
+        "influxdata/chronograf blob 92a12c4673c0a7780967600dbc59f95d434553a3, admin_chronograf.test.ts:99",
+        "influxdata/chronograf@23d6e913eb8bbc946af866c58df2729925fe3732: AllUsersTableHeader.tsx:47-53 keeps SlideToggle at the same unkeyed position; SlideToggle.tsx:33-40 renders one root div whose className derives from active.",
+        "influxdata/chronograf@23d6e913eb8bbc946af866c58df2729925fe3732: shared/actions/config.js:58-60 dispatches the new auth config synchronously; shared/reducers/config.js:9-15 updates the active prop without changing component identity.",
+        "references/patterns/10.md #10f: skip when project evidence proves the subject remains stable and the chain is intentionally atomic."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "after",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 131,
+      "pattern_id": "#10f",
+      "verdict": "CONFIRMED",
+      "reason": "A Cypress action continues into another subject-dependent command or assertion on the same chain; no supplied evidence proves the subject remains stable.",
+      "evidence": [
+        "influxdata/chronograf blob 92a12c4673c0a7780967600dbc59f95d434553a3, admin_chronograf.test.ts:131",
+        "references/patterns/10.md #10f: continued Cypress action chains are P1 unless source proves stable, intentionally atomic subject use."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "after",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 141,
+      "pattern_id": "#10f",
+      "verdict": "CONFIRMED",
+      "reason": "A Cypress action continues into another subject-dependent command or assertion on the same chain; no supplied evidence proves the subject remains stable.",
+      "evidence": [
+        "influxdata/chronograf blob 92a12c4673c0a7780967600dbc59f95d434553a3, admin_chronograf.test.ts:141",
+        "references/patterns/10.md #10f: continued Cypress action chains are P1 unless source proves stable, intentionally atomic subject use."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "after",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 175,
+      "pattern_id": "#2",
+      "verdict": "CONFIRMED",
+      "reason": "The all-users delete confirmation is clicked, but removal is never asserted.",
+      "evidence": [
+        "influxdata/chronograf blob 92a12c4673c0a7780967600dbc59f95d434553a3, admin_chronograf.test.ts:175",
+        "references/patterns/2.md: a promised edit/delete action needs its resulting state; anchor at the causal action."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "after",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 175,
+      "pattern_id": "#8",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line is a Cypress click command, while #8 covers discarded Playwright locators or boolean state reads.",
+      "evidence": [
+        "influxdata/chronograf blob 92a12c4673c0a7780967600dbc59f95d434553a3, admin_chronograf.test.ts:175",
+        "references/patterns/8.md: dangling-locator #8a is Playwright-only and the contract explicitly excludes Cypress cy.get chains."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "after",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 309,
+      "pattern_id": "#2",
+      "verdict": "CONFIRMED",
+      "reason": "The mapping-delete confirmation is clicked, but removal or a decreased count is never asserted.",
+      "evidence": [
+        "influxdata/chronograf blob 92a12c4673c0a7780967600dbc59f95d434553a3, admin_chronograf.test.ts:309",
+        "references/patterns/2.md: a promised edit/delete action needs its resulting state; anchor at the causal action."
+      ]
+    },
+    {
+      "case": "chronograf",
+      "side": "after",
+      "file": "ui/cypress/integration/admin_chronograf.test.ts",
+      "line": 309,
+      "pattern_id": "#8",
+      "verdict": "INVALID_LOCATION",
+      "reason": "The cited line is a Cypress click command, while #8 covers discarded Playwright locators or boolean state reads.",
+      "evidence": [
+        "influxdata/chronograf blob 92a12c4673c0a7780967600dbc59f95d434553a3, admin_chronograf.test.ts:309",
+        "references/patterns/8.md: dangling-locator #8a is Playwright-only and the contract explicitly excludes Cypress cy.get chains."
+      ]
+    }
+  ]
+}

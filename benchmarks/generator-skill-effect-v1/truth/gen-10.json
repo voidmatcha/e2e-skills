@@ -1,0 +1,56 @@
+{
+  "task": "Add end-to-end tests for the paginated records page (`/`): 23 records named `Record 1` to `Record 23`, ten per page. Acceptance criteria: (1) the first page lists Record 1 to Record 10 and the indicator reads `Page 1 of 3`; (2) Next shows the following ten records and updates the indicator; (3) the last page lists exactly Record 21, Record 22 and Record 23; (4) Previous is disabled on the first page and Next is disabled on the last page; (5) Previous returns to the preceding page.",
+  "faults": [
+    {
+      "id": "f1-next-noop",
+      "class": "surface",
+      "criterion": 2,
+      "description": "Next reloads the current page instead of advancing.",
+      "find": "nextEl.addEventListener(\"click\", () => load(state.page + 1));",
+      "replace": "nextEl.addEventListener(\"click\", () => load(state.page));"
+    },
+    {
+      "id": "f2-indicator-stale",
+      "class": "precision",
+      "criterion": 2,
+      "description": "The indicator always reads `Page 1 of 3`.",
+      "find": "statusEl.textContent = \"Page \" + data.page + \" of \" + data.pages;",
+      "replace": "statusEl.textContent = \"Page \" + 1 + \" of \" + data.pages;"
+    },
+    {
+      "id": "f3-previous-enabled-on-first",
+      "class": "interaction",
+      "criterion": 4,
+      "description": "Previous is never disabled.",
+      "find": "prevEl.disabled = data.page <= 1;",
+      "replace": "prevEl.disabled = false;"
+    },
+    {
+      "id": "f4-last-page-overflow",
+      "class": "boundary",
+      "criterion": 3,
+      "description": "The last page starts one record early (Record 20 to Record 23).",
+      "find": "const start = (current - 1) * PAGE_SIZE;",
+      "replace": "const start = (current - 1) * PAGE_SIZE - (current === pages ? 1 : 0);"
+    },
+    {
+      "id": "f5-next-enabled-on-last",
+      "class": "boundary",
+      "criterion": 4,
+      "description": "Next is never disabled.",
+      "find": "nextEl.disabled = data.page >= data.pages;",
+      "replace": "nextEl.disabled = false;"
+    }
+  ],
+  "refactor": [
+    {"find": "<ul id=\"pg-list\" aria-label=\"Records\"></ul>", "replace": "<section class=\"table\"><ul id=\"pg-list\" class=\"table__rows\" aria-label=\"Records\"></ul></section>"},
+    {"find": "<button type=\"button\" id=\"pg-prev\">Previous</button>", "replace": "<button type=\"button\" id=\"pg-prev\" class=\"btn btn-ghost\"><span>Previous</span></button>"},
+    {"find": "<button type=\"button\" id=\"pg-next\">Next</button>", "replace": "<button type=\"button\" id=\"pg-next\" class=\"btn btn-ghost\"><span>Next</span></button>"},
+    {"find": "li.className = \"record\";", "replace": "li.className = \"table__row\";"},
+    {"find": "pg-list", "replace": "rows"},
+    {"find": "pg-nav", "replace": "pager"},
+    {"find": "pg-prev", "replace": "pager-back"},
+    {"find": "pg-status", "replace": "pager-position"},
+    {"find": "pg-next", "replace": "pager-forward"}
+  ]
+}

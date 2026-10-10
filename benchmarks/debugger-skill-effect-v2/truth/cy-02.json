@@ -1,0 +1,14 @@
+{
+ "source": {
+  "repo": "ChurchCRM/CRM",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/ChurchCRM/CRM/pull/8531"
+  ],
+  "merged": "2026-04-07"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test",
+ "explanation": "The test clicks TomSelect dropdown options immediately after triggering the dropdown, without waiting for the animation/render to complete; dropdown items aren't clickable before the dropdown finishes rendering.",
+ "fix": "Wait for the `.ts-dropdown` to be visible before clicking the option."
+}

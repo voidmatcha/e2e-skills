@@ -1,0 +1,1154 @@
+{
+  "purpose": "Public development check of #20 false-positive reduction without losing a source-confirmed positive",
+  "limitations": "Known synthetic v10 cases; zero-tool full prompt; five repetitions are not independent defects or a generalization estimate",
+  "model": "claude-sonnet-5",
+  "runner_version": "2.1.286 (Claude Code)",
+  "corpus_sha256": "6db718fe63001f987901a68ee230809c56fda2df5e97d3f0b83ab382b953cc5e",
+  "case_order": [
+    "v10-cy-11",
+    "v10-cy-13",
+    "v10-cy-15"
+  ],
+  "repetitions": 5,
+  "targets": {
+    "v10-cy-11": [
+      "guard-stubbed",
+      "cypress/e2e/weather-alerts.cy.ts",
+      12
+    ],
+    "v10-cy-13": [
+      "positive-shared-write",
+      "cypress/e2e/rsvp.cy.ts",
+      11
+    ],
+    "v10-cy-15": [
+      "guard-unproven-write",
+      "cypress/e2e/plots.cy.ts",
+      20
+    ]
+  },
+  "source_sha256": {
+    "v10-cy-11": {
+      "cypress/e2e/weather-alerts.cy.ts": "acdfcf15683f96b5f2625133a493e99d4a9a896ad3d92f31294248c9347d1b39",
+      "cypress/support/e2e.ts": "16cf6ac22a68680731d22ff37a9074d454394ef71df9c1d6ddd45c302db9e982"
+    },
+    "v10-cy-13": {
+      "cypress.config.ts": "ca42a992cdc9562a83fde1d858038250465ecd6e772e06a4d8a43cbefcdd26c4",
+      "cypress/e2e/rsvp.cy.ts": "503c6abac32d45062421480dbcbaf62f2a5ab1616b0c71202ee33bcb783e4cf0",
+      "cypress/support/commands.ts": "67da6b95b4e59e07d4b965fb1e97b5169c7e10db3319d25238e9e0b3744a39f1",
+      "scripts/capture-organiser-session.ts": "6a21ac48479a9778fd9950dfece9bb0f461c6cbc3cce6daab05e80629d071fdb",
+      "src/events/RsvpForm.tsx": "43ca935de0d7e866ffc8fbac553f56878d17b76d2e8279025e1b230764fd691b"
+    },
+    "v10-cy-15": {
+      "cypress/e2e/plots.cy.ts": "0c68ddf72b2428ffadf62f44ae64781d3951aa594372bf7b01479bdf70f22149",
+      "cypress/support/commands.ts": "ee8f187d247bb2d0aa9575eefd87ceca7e4c241c824edc307dd64f14e3743456"
+    }
+  },
+  "calls": [
+    {
+      "case": "v10-cy-11",
+      "kind": "guard-stubbed",
+      "arm": "before",
+      "repetition": 1,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "correct": true,
+      "number_20_hits": 0,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#9b",
+            "severity": "P1",
+            "file": "cypress/e2e/weather-alerts.cy.ts",
+            "line": 4
+          },
+          {
+            "pattern_id": "#4g",
+            "severity": "P1",
+            "file": "cypress/e2e/weather-alerts.cy.ts",
+            "line": 5
+          },
+          {
+            "pattern_id": "#3b",
+            "severity": "P0",
+            "file": "cypress/support/e2e.ts",
+            "line": 2
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 2,
+        "cached_input_tokens": 5204,
+        "cache_write_tokens": 69570,
+        "output_tokens": 857,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 10613,
+      "raw_sha256": "4f2f7f6196e01809f79eac7d85e10100716a3dc34d0b55e503d6d9a9af00947f"
+    },
+    {
+      "case": "v10-cy-11",
+      "kind": "guard-stubbed",
+      "arm": "after",
+      "repetition": 1,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "correct": true,
+      "number_20_hits": 0,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#9b",
+            "severity": "P1",
+            "file": "cypress/e2e/weather-alerts.cy.ts",
+            "line": 4
+          },
+          {
+            "pattern_id": "#4g",
+            "severity": "P1",
+            "file": "cypress/e2e/weather-alerts.cy.ts",
+            "line": 5
+          },
+          {
+            "pattern_id": "#3b",
+            "severity": "P0",
+            "file": "cypress/support/e2e.ts",
+            "line": 2
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 4,
+        "cached_input_tokens": 79930,
+        "cache_write_tokens": 70605,
+        "output_tokens": 1205,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 19558,
+      "raw_sha256": "4f2f7f6196e01809f79eac7d85e10100716a3dc34d0b55e503d6d9a9af00947f"
+    },
+    {
+      "case": "v10-cy-11",
+      "kind": "guard-stubbed",
+      "arm": "after",
+      "repetition": 2,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "correct": true,
+      "number_20_hits": 0,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#3b",
+            "severity": "P0",
+            "file": "cypress/support/e2e.ts",
+            "line": 2
+          },
+          {
+            "pattern_id": "#9b",
+            "severity": "P1",
+            "file": "cypress/e2e/weather-alerts.cy.ts",
+            "line": 4
+          },
+          {
+            "pattern_id": "#4g",
+            "severity": "P1",
+            "file": "cypress/e2e/weather-alerts.cy.ts",
+            "line": 5
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 4,
+        "cached_input_tokens": 149452,
+        "cache_write_tokens": 1974,
+        "output_tokens": 2082,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 25861,
+      "raw_sha256": "e6cd3f9139702379df3e444d0b4b5ef6c7feef4a5ca7ee8ed477d3cbf59f543c"
+    },
+    {
+      "case": "v10-cy-11",
+      "kind": "guard-stubbed",
+      "arm": "before",
+      "repetition": 2,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "correct": true,
+      "number_20_hits": 0,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#9b",
+            "severity": "P1",
+            "file": "cypress/e2e/weather-alerts.cy.ts",
+            "line": 4
+          },
+          {
+            "pattern_id": "#4g",
+            "severity": "P1",
+            "file": "cypress/e2e/weather-alerts.cy.ts",
+            "line": 5
+          },
+          {
+            "pattern_id": "#3b",
+            "severity": "P0",
+            "file": "cypress/support/e2e.ts",
+            "line": 2
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 2,
+        "cached_input_tokens": 74774,
+        "cache_write_tokens": 0,
+        "output_tokens": 1328,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 16666,
+      "raw_sha256": "4f2f7f6196e01809f79eac7d85e10100716a3dc34d0b55e503d6d9a9af00947f"
+    },
+    {
+      "case": "v10-cy-11",
+      "kind": "guard-stubbed",
+      "arm": "before",
+      "repetition": 3,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "correct": true,
+      "number_20_hits": 0,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#3b",
+            "severity": "P0",
+            "file": "cypress/support/e2e.ts",
+            "line": 2
+          },
+          {
+            "pattern_id": "#9b",
+            "severity": "P1",
+            "file": "cypress/e2e/weather-alerts.cy.ts",
+            "line": 4
+          },
+          {
+            "pattern_id": "#4g",
+            "severity": "P1",
+            "file": "cypress/e2e/weather-alerts.cy.ts",
+            "line": 5
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 4,
+        "cached_input_tokens": 149548,
+        "cache_write_tokens": 1651,
+        "output_tokens": 1773,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 21436,
+      "raw_sha256": "e6cd3f9139702379df3e444d0b4b5ef6c7feef4a5ca7ee8ed477d3cbf59f543c"
+    },
+    {
+      "case": "v10-cy-11",
+      "kind": "guard-stubbed",
+      "arm": "after",
+      "repetition": 3,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "correct": true,
+      "number_20_hits": 0,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#9b",
+            "severity": "P1",
+            "file": "cypress/e2e/weather-alerts.cy.ts",
+            "line": 4
+          },
+          {
+            "pattern_id": "#4g",
+            "severity": "P1",
+            "file": "cypress/e2e/weather-alerts.cy.ts",
+            "line": 5
+          },
+          {
+            "pattern_id": "#3b",
+            "severity": "P0",
+            "file": "cypress/support/e2e.ts",
+            "line": 2
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 4,
+        "cached_input_tokens": 149452,
+        "cache_write_tokens": 2325,
+        "output_tokens": 2447,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 49328,
+      "raw_sha256": "4f2f7f6196e01809f79eac7d85e10100716a3dc34d0b55e503d6d9a9af00947f"
+    },
+    {
+      "case": "v10-cy-11",
+      "kind": "guard-stubbed",
+      "arm": "after",
+      "repetition": 4,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "correct": true,
+      "number_20_hits": 0,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#9b",
+            "severity": "P1",
+            "file": "cypress/e2e/weather-alerts.cy.ts",
+            "line": 4
+          },
+          {
+            "pattern_id": "#4g",
+            "severity": "P1",
+            "file": "cypress/e2e/weather-alerts.cy.ts",
+            "line": 5
+          },
+          {
+            "pattern_id": "#3b",
+            "severity": "P0",
+            "file": "cypress/support/e2e.ts",
+            "line": 2
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 2,
+        "cached_input_tokens": 74726,
+        "cache_write_tokens": 0,
+        "output_tokens": 1158,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 15127,
+      "raw_sha256": "4f2f7f6196e01809f79eac7d85e10100716a3dc34d0b55e503d6d9a9af00947f"
+    },
+    {
+      "case": "v10-cy-11",
+      "kind": "guard-stubbed",
+      "arm": "before",
+      "repetition": 4,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "correct": true,
+      "number_20_hits": 0,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#9b",
+            "severity": "P1",
+            "file": "cypress/e2e/weather-alerts.cy.ts",
+            "line": 4
+          },
+          {
+            "pattern_id": "#4g",
+            "severity": "P1",
+            "file": "cypress/e2e/weather-alerts.cy.ts",
+            "line": 5
+          },
+          {
+            "pattern_id": "#3b",
+            "severity": "P0",
+            "file": "cypress/support/e2e.ts",
+            "line": 2
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 4,
+        "cached_input_tokens": 149548,
+        "cache_write_tokens": 1120,
+        "output_tokens": 1242,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 16103,
+      "raw_sha256": "4f2f7f6196e01809f79eac7d85e10100716a3dc34d0b55e503d6d9a9af00947f"
+    },
+    {
+      "case": "v10-cy-11",
+      "kind": "guard-stubbed",
+      "arm": "before",
+      "repetition": 5,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "correct": true,
+      "number_20_hits": 0,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#3b",
+            "severity": "P0",
+            "file": "cypress/support/e2e.ts",
+            "line": 2
+          },
+          {
+            "pattern_id": "#9b",
+            "severity": "P1",
+            "file": "cypress/e2e/weather-alerts.cy.ts",
+            "line": 4
+          },
+          {
+            "pattern_id": "#4g",
+            "severity": "P1",
+            "file": "cypress/e2e/weather-alerts.cy.ts",
+            "line": 5
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 4,
+        "cached_input_tokens": 149548,
+        "cache_write_tokens": 1100,
+        "output_tokens": 1222,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 15755,
+      "raw_sha256": "e6cd3f9139702379df3e444d0b4b5ef6c7feef4a5ca7ee8ed477d3cbf59f543c"
+    },
+    {
+      "case": "v10-cy-11",
+      "kind": "guard-stubbed",
+      "arm": "after",
+      "repetition": 5,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "correct": true,
+      "number_20_hits": 0,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#3b",
+            "severity": "P0",
+            "file": "cypress/support/e2e.ts",
+            "line": 2
+          },
+          {
+            "pattern_id": "#9b",
+            "severity": "P1",
+            "file": "cypress/e2e/weather-alerts.cy.ts",
+            "line": 4
+          },
+          {
+            "pattern_id": "#4g",
+            "severity": "P1",
+            "file": "cypress/e2e/weather-alerts.cy.ts",
+            "line": 5
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 4,
+        "cached_input_tokens": 149452,
+        "cache_write_tokens": 1944,
+        "output_tokens": 2066,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 24160,
+      "raw_sha256": "e6cd3f9139702379df3e444d0b4b5ef6c7feef4a5ca7ee8ed477d3cbf59f543c"
+    },
+    {
+      "case": "v10-cy-13",
+      "kind": "positive-shared-write",
+      "arm": "before",
+      "repetition": 1,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": true,
+      "correct": true,
+      "number_20_hits": 1,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#21",
+            "severity": "P2",
+            "file": "cypress/e2e/rsvp.cy.ts",
+            "line": 3
+          },
+          {
+            "pattern_id": "#20",
+            "severity": "P1",
+            "file": "cypress/e2e/rsvp.cy.ts",
+            "line": 11
+          },
+          {
+            "pattern_id": "#11",
+            "severity": "P2",
+            "file": "cypress/support/commands.ts",
+            "line": 5
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 4,
+        "cached_input_tokens": 80719,
+        "cache_write_tokens": 74879,
+        "output_tokens": 4683,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 49594,
+      "raw_sha256": "d392c97c3e4835bb9581ed8f47582d691a92b1b1af39645129ca46d58d0ee8be"
+    },
+    {
+      "case": "v10-cy-13",
+      "kind": "positive-shared-write",
+      "arm": "after",
+      "repetition": 1,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": true,
+      "correct": true,
+      "number_20_hits": 1,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#21",
+            "severity": "P2",
+            "file": "cypress/e2e/rsvp.cy.ts",
+            "line": 3
+          },
+          {
+            "pattern_id": "#20",
+            "severity": "P1",
+            "file": "cypress/e2e/rsvp.cy.ts",
+            "line": 11
+          },
+          {
+            "pattern_id": "#11",
+            "severity": "P2",
+            "file": "cypress/support/commands.ts",
+            "line": 5
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 4,
+        "cached_input_tokens": 80671,
+        "cache_write_tokens": 77461,
+        "output_tokens": 7312,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 82810,
+      "raw_sha256": "d392c97c3e4835bb9581ed8f47582d691a92b1b1af39645129ca46d58d0ee8be"
+    },
+    {
+      "case": "v10-cy-13",
+      "kind": "positive-shared-write",
+      "arm": "after",
+      "repetition": 2,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": true,
+      "correct": true,
+      "number_20_hits": 1,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#21",
+            "severity": "P2",
+            "file": "cypress/e2e/rsvp.cy.ts",
+            "line": 3
+          },
+          {
+            "pattern_id": "#20",
+            "severity": "P1",
+            "file": "cypress/e2e/rsvp.cy.ts",
+            "line": 11
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 4,
+        "cached_input_tokens": 150934,
+        "cache_write_tokens": 7427,
+        "output_tokens": 7504,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 81128,
+      "raw_sha256": "4d000ad55f3308658f9572dd91ef82b33914c56c3f3edabb539d4a1cb5ff36b3"
+    },
+    {
+      "case": "v10-cy-13",
+      "kind": "positive-shared-write",
+      "arm": "before",
+      "repetition": 2,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": true,
+      "correct": true,
+      "number_20_hits": 1,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#20",
+            "severity": "P1",
+            "file": "cypress/e2e/rsvp.cy.ts",
+            "line": 11
+          },
+          {
+            "pattern_id": "#21",
+            "severity": "P2",
+            "file": "cypress/e2e/rsvp.cy.ts",
+            "line": 3
+          },
+          {
+            "pattern_id": "#11",
+            "severity": "P2",
+            "file": "cypress/support/commands.ts",
+            "line": 5
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 4,
+        "cached_input_tokens": 151030,
+        "cache_write_tokens": 6548,
+        "output_tokens": 6648,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 74058,
+      "raw_sha256": "8b378a9bbd50fba37e1271b4d819d752e68abfb8764d8232dbbf7722d5ed6439"
+    },
+    {
+      "case": "v10-cy-13",
+      "kind": "positive-shared-write",
+      "arm": "before",
+      "repetition": 3,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": true,
+      "correct": true,
+      "number_20_hits": 1,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#21",
+            "severity": "P2",
+            "file": "cypress/e2e/rsvp.cy.ts",
+            "line": 3
+          },
+          {
+            "pattern_id": "#20",
+            "severity": "P1",
+            "file": "cypress/e2e/rsvp.cy.ts",
+            "line": 11
+          },
+          {
+            "pattern_id": "#11",
+            "severity": "P2",
+            "file": "cypress/support/commands.ts",
+            "line": 5
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 4,
+        "cached_input_tokens": 151030,
+        "cache_write_tokens": 4940,
+        "output_tokens": 5054,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 57161,
+      "raw_sha256": "d392c97c3e4835bb9581ed8f47582d691a92b1b1af39645129ca46d58d0ee8be"
+    },
+    {
+      "case": "v10-cy-13",
+      "kind": "positive-shared-write",
+      "arm": "after",
+      "repetition": 3,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": true,
+      "correct": true,
+      "number_20_hits": 1,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#21",
+            "severity": "P2",
+            "file": "cypress/e2e/rsvp.cy.ts",
+            "line": 3
+          },
+          {
+            "pattern_id": "#20",
+            "severity": "P1",
+            "file": "cypress/e2e/rsvp.cy.ts",
+            "line": 11
+          },
+          {
+            "pattern_id": "#11",
+            "severity": "P2",
+            "file": "cypress/support/commands.ts",
+            "line": 5
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 2,
+        "cached_input_tokens": 75467,
+        "cache_write_tokens": 0,
+        "output_tokens": 4903,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 56773,
+      "raw_sha256": "d392c97c3e4835bb9581ed8f47582d691a92b1b1af39645129ca46d58d0ee8be"
+    },
+    {
+      "case": "v10-cy-13",
+      "kind": "positive-shared-write",
+      "arm": "after",
+      "repetition": 4,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": true,
+      "correct": true,
+      "number_20_hits": 1,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#21",
+            "severity": "P2",
+            "file": "cypress/e2e/rsvp.cy.ts",
+            "line": 3
+          },
+          {
+            "pattern_id": "#20",
+            "severity": "P1",
+            "file": "cypress/e2e/rsvp.cy.ts",
+            "line": 11
+          },
+          {
+            "pattern_id": "#11",
+            "severity": "P2",
+            "file": "cypress/support/commands.ts",
+            "line": 5
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 2,
+        "cached_input_tokens": 75467,
+        "cache_write_tokens": 0,
+        "output_tokens": 3027,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 33924,
+      "raw_sha256": "d392c97c3e4835bb9581ed8f47582d691a92b1b1af39645129ca46d58d0ee8be"
+    },
+    {
+      "case": "v10-cy-13",
+      "kind": "positive-shared-write",
+      "arm": "before",
+      "repetition": 4,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": true,
+      "correct": true,
+      "number_20_hits": 1,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#21",
+            "severity": "P2",
+            "file": "cypress/e2e/rsvp.cy.ts",
+            "line": 3
+          },
+          {
+            "pattern_id": "#20",
+            "severity": "P1",
+            "file": "cypress/e2e/rsvp.cy.ts",
+            "line": 11
+          },
+          {
+            "pattern_id": "#11",
+            "severity": "P2",
+            "file": "cypress/support/commands.ts",
+            "line": 5
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 2,
+        "cached_input_tokens": 75515,
+        "cache_write_tokens": 0,
+        "output_tokens": 5958,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 67554,
+      "raw_sha256": "d392c97c3e4835bb9581ed8f47582d691a92b1b1af39645129ca46d58d0ee8be"
+    },
+    {
+      "case": "v10-cy-13",
+      "kind": "positive-shared-write",
+      "arm": "before",
+      "repetition": 5,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": true,
+      "correct": true,
+      "number_20_hits": 1,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#21",
+            "severity": "P2",
+            "file": "cypress/e2e/rsvp.cy.ts",
+            "line": 3
+          },
+          {
+            "pattern_id": "#20",
+            "severity": "P1",
+            "file": "cypress/e2e/rsvp.cy.ts",
+            "line": 11
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 2,
+        "cached_input_tokens": 75515,
+        "cache_write_tokens": 0,
+        "output_tokens": 7349,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 82699,
+      "raw_sha256": "4d000ad55f3308658f9572dd91ef82b33914c56c3f3edabb539d4a1cb5ff36b3"
+    },
+    {
+      "case": "v10-cy-13",
+      "kind": "positive-shared-write",
+      "arm": "after",
+      "repetition": 5,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": true,
+      "correct": true,
+      "number_20_hits": 1,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#20",
+            "severity": "P1",
+            "file": "cypress/e2e/rsvp.cy.ts",
+            "line": 11
+          },
+          {
+            "pattern_id": "#21",
+            "severity": "P2",
+            "file": "cypress/e2e/rsvp.cy.ts",
+            "line": 3
+          },
+          {
+            "pattern_id": "#11",
+            "severity": "P2",
+            "file": "cypress/support/commands.ts",
+            "line": 5
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 4,
+        "cached_input_tokens": 150934,
+        "cache_write_tokens": 5606,
+        "output_tokens": 5706,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 65378,
+      "raw_sha256": "8b378a9bbd50fba37e1271b4d819d752e68abfb8764d8232dbbf7722d5ed6439"
+    },
+    {
+      "case": "v10-cy-15",
+      "kind": "guard-unproven-write",
+      "arm": "before",
+      "repetition": 1,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "correct": true,
+      "number_20_hits": 0,
+      "answer": {
+        "findings": []
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 4,
+        "cached_input_tokens": 80081,
+        "cache_write_tokens": 74423,
+        "output_tokens": 4737,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 57365,
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    },
+    {
+      "case": "v10-cy-15",
+      "kind": "guard-unproven-write",
+      "arm": "after",
+      "repetition": 1,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "correct": true,
+      "number_20_hits": 0,
+      "answer": {
+        "findings": []
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 2,
+        "cached_input_tokens": 5204,
+        "cache_write_tokens": 69625,
+        "output_tokens": 6923,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 81627,
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    },
+    {
+      "case": "v10-cy-15",
+      "kind": "guard-unproven-write",
+      "arm": "after",
+      "repetition": 2,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "correct": true,
+      "number_20_hits": 0,
+      "answer": {
+        "findings": []
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 4,
+        "cached_input_tokens": 149658,
+        "cache_write_tokens": 6084,
+        "output_tokens": 6071,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 65468,
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    },
+    {
+      "case": "v10-cy-15",
+      "kind": "guard-unproven-write",
+      "arm": "before",
+      "repetition": 2,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "correct": true,
+      "number_20_hits": 0,
+      "answer": {
+        "findings": []
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 4,
+        "cached_input_tokens": 149754,
+        "cache_write_tokens": 5548,
+        "output_tokens": 5535,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 61579,
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    },
+    {
+      "case": "v10-cy-15",
+      "kind": "guard-unproven-write",
+      "arm": "before",
+      "repetition": 3,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "correct": true,
+      "number_20_hits": 0,
+      "answer": {
+        "findings": []
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 2,
+        "cached_input_tokens": 74877,
+        "cache_write_tokens": 0,
+        "output_tokens": 3743,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 46486,
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    },
+    {
+      "case": "v10-cy-15",
+      "kind": "guard-unproven-write",
+      "arm": "after",
+      "repetition": 3,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "correct": true,
+      "number_20_hits": 0,
+      "answer": {
+        "findings": []
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 2,
+        "cached_input_tokens": 74829,
+        "cache_write_tokens": 0,
+        "output_tokens": 3991,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 47770,
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    },
+    {
+      "case": "v10-cy-15",
+      "kind": "guard-unproven-write",
+      "arm": "after",
+      "repetition": 4,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "correct": true,
+      "number_20_hits": 0,
+      "answer": {
+        "findings": []
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 2,
+        "cached_input_tokens": 74829,
+        "cache_write_tokens": 0,
+        "output_tokens": 3235,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 38022,
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    },
+    {
+      "case": "v10-cy-15",
+      "kind": "guard-unproven-write",
+      "arm": "before",
+      "repetition": 4,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "correct": true,
+      "number_20_hits": 0,
+      "answer": {
+        "findings": []
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 4,
+        "cached_input_tokens": 149754,
+        "cache_write_tokens": 7614,
+        "output_tokens": 7601,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 82274,
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    },
+    {
+      "case": "v10-cy-15",
+      "kind": "guard-unproven-write",
+      "arm": "before",
+      "repetition": 5,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": true,
+      "correct": false,
+      "number_20_hits": 2,
+      "answer": {
+        "findings": [
+          {
+            "pattern_id": "#20",
+            "severity": "P1",
+            "file": "cypress/support/commands.ts",
+            "line": 3
+          },
+          {
+            "pattern_id": "#20",
+            "severity": "P1",
+            "file": "cypress/e2e/plots.cy.ts",
+            "line": 20
+          }
+        ]
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 4,
+        "cached_input_tokens": 149754,
+        "cache_write_tokens": 7765,
+        "output_tokens": 7834,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 90392,
+      "raw_sha256": "7fc69a40d6e91d29c4fb0145bc24bbdeda0afbf5369fd21318e3250db87515f6"
+    },
+    {
+      "case": "v10-cy-15",
+      "kind": "guard-unproven-write",
+      "arm": "after",
+      "repetition": 5,
+      "returncode": 0,
+      "complete": true,
+      "target_hit": false,
+      "correct": true,
+      "number_20_hits": 0,
+      "answer": {
+        "findings": []
+      },
+      "usage": {
+        "source": "claude-json-envelope",
+        "input_tokens": 6,
+        "cached_input_tokens": 228909,
+        "cache_write_tokens": 4547,
+        "output_tokens": 4705,
+        "reasoning_output_tokens": null
+      },
+      "elapsed_ms": 57571,
+      "raw_sha256": "9d0f2143c61cfbb6c0cf0425ce8b447811a32d48ec37333ba8b3700218631b36"
+    }
+  ],
+  "skill_prompt_sha256": {
+    "before": "13613ff87cd115e2dd8e55a48b80a15e7be7562cca37788ac73910568bbb43ff",
+    "after": "6acaf64ad9f03c4e644192eb409a7a9b8999861e8a1ce49c2c5c5ea7bf8a4c7f"
+  }
+}

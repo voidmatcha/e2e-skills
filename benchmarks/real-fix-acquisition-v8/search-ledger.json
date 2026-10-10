@@ -1,0 +1,702 @@
+{
+  "protocol": "real-fix-acquisition-v8",
+  "status": "COMPLETE",
+  "query_rows": [
+    {
+      "label": "PW-await",
+      "query": "is:pr is:merged playwright \"missing await\" created:2023-01-01..2026-09-30",
+      "endpoint": "search/issues?q=is%3Apr%20is%3Amerged%20playwright%20%22missing%20await%22%20created%3A2023-01-01..2026-09-30&sort=created&order=desc&per_page=15",
+      "total_count": 8234,
+      "returned_prs": 15,
+      "prs": [
+        {
+          "ordinal": 1,
+          "repository": "nestormata/project-vault",
+          "number": 487,
+          "url": "https://github.com/nestormata/project-vault/pull/487",
+          "title": "test(web): type-check the playwright e2e directory (66-2)",
+          "created_at": "2026-09-30T23:52:54Z",
+          "closed_at": "2026-10-01T00:11:58Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 2,
+          "repository": "ModologyStudiosLLC/KerfOS",
+          "number": 3,
+          "url": "https://github.com/ModologyStudiosLLC/KerfOS/pull/3",
+          "title": "Fix JWT secret fallback, broken frontend build, and vulnerable dependencies",
+          "created_at": "2026-09-30T23:52:10Z",
+          "closed_at": "2026-10-01T09:21:13Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 3,
+          "repository": "JordiParraCrespo/oppenheimer",
+          "number": 217,
+          "url": "https://github.com/JordiParraCrespo/oppenheimer/pull/217",
+          "title": "perf(sessions): a session starts in about a second, measured from the browser",
+          "created_at": "2026-09-30T22:55:34Z",
+          "closed_at": "2026-10-02T08:57:23Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 4,
+          "repository": "Miwi35/maggie",
+          "number": 19,
+          "url": "https://github.com/Miwi35/maggie/pull/19",
+          "title": "Socle Playwright pour l'admin web (MAG-97)",
+          "created_at": "2026-09-30T21:12:21Z",
+          "closed_at": "2026-09-30T21:53:40Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 5,
+          "repository": "SpaceshipCreative/tumnis-guide",
+          "number": 109,
+          "url": "https://github.com/SpaceshipCreative/tumnis-guide/pull/109",
+          "title": "[P1-08] impl: Enrichment by the project agent",
+          "created_at": "2026-09-30T20:46:31Z",
+          "closed_at": "2026-09-30T23:51:41Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 6,
+          "repository": "except-pass/tinstar",
+          "number": 267,
+          "url": "https://github.com/except-pass/tinstar/pull/267",
+          "title": "fix(server): find the worker pane when tmux rewrites tabs in list formats",
+          "created_at": "2026-09-30T19:21:29Z",
+          "closed_at": "2026-09-30T19:24:45Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 7,
+          "repository": "BubblesOnBrain/home-assistant-canvas",
+          "number": 3,
+          "url": "https://github.com/BubblesOnBrain/home-assistant-canvas/pull/3",
+          "title": "0.3.0: quizzes and tests, waiting on teacher, grade review and grade log",
+          "created_at": "2026-09-30T18:08:03Z",
+          "closed_at": "2026-09-30T20:41:33Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 8,
+          "repository": "emergent-company/emergent.memory",
+          "number": 1298,
+          "url": "https://github.com/emergent-company/emergent.memory/pull/1298",
+          "title": "refactor(web-ui): chat client transport routing + helper dedupe (#1286 Steps 3+5)",
+          "created_at": "2026-09-30T17:38:34Z",
+          "closed_at": "2026-09-30T17:44:13Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 9,
+          "repository": "morganrentalsphilly-creator/truecap",
+          "number": 150,
+          "url": "https://github.com/morganrentalsphilly-creator/truecap/pull/150",
+          "title": "perf(sentry): stop shipping the whole SDK barrel on every page's idle load (−111 KB)",
+          "created_at": "2026-09-30T17:37:15Z",
+          "closed_at": "2026-09-30T20:06:05Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 10,
+          "repository": "raccioly/testguard",
+          "number": 185,
+          "url": "https://github.com/raccioly/testguard/pull/185",
+          "title": "release: v0.16.0 — automated weekly batch",
+          "created_at": "2026-09-30T17:30:09Z",
+          "closed_at": "2026-09-30T20:56:14Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 11,
+          "repository": "pyand3v/devfolio",
+          "number": 51,
+          "url": "https://github.com/pyand3v/devfolio/pull/51",
+          "title": "feat(search): add static site search with pagefind",
+          "created_at": "2026-09-30T17:15:08Z",
+          "closed_at": "2026-09-30T18:08:42Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 12,
+          "repository": "ToluLabs/StellarCred",
+          "number": 721,
+          "url": "https://github.com/ToluLabs/StellarCred/pull/721",
+          "title": "feat: implement data wipe, badge framing controls, and typed errors (#558, #532, #215, #404)",
+          "created_at": "2026-09-30T12:50:55Z",
+          "closed_at": "2026-10-02T10:17:49Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 13,
+          "repository": "getlarge/themoltnet",
+          "number": 2575,
+          "url": "https://github.com/getlarge/themoltnet/pull/2575",
+          "title": "Fix task creation retry options and terminal waits",
+          "created_at": "2026-09-30T12:02:30Z",
+          "closed_at": "2026-09-30T13:12:36Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 14,
+          "repository": "hongyime/sgConnectSphere2026",
+          "number": 163,
+          "url": "https://github.com/hongyime/sgConnectSphere2026/pull/163",
+          "title": "feat(backend): SCRUM-33 request and answer clarification on event requests",
+          "created_at": "2026-09-30T10:08:04Z",
+          "closed_at": "2026-10-01T15:10:12Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 15,
+          "repository": "n8n-io/n8n",
+          "number": 39942,
+          "url": "https://github.com/n8n-io/n8n/pull/39942",
+          "title": "chore: Migrate testing infrastructure lint to Oxlint (no-changelog)",
+          "created_at": "2026-09-30T05:58:55Z",
+          "closed_at": "2026-09-30T11:26:01Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        }
+      ]
+    },
+    {
+      "label": "PW-retry",
+      "query": "is:pr is:merged playwright \"waitForTimeout\" flaky created:2023-01-01..2026-09-30",
+      "endpoint": "search/issues?q=is%3Apr%20is%3Amerged%20playwright%20%22waitForTimeout%22%20flaky%20created%3A2023-01-01..2026-09-30&sort=created&order=desc&per_page=15",
+      "total_count": 7166,
+      "returned_prs": 15,
+      "prs": [
+        {
+          "ordinal": 1,
+          "repository": "go-vikunja/vikunja",
+          "number": 4077,
+          "url": "https://github.com/go-vikunja/vikunja/pull/4077",
+          "title": "fix(notifications): fetch inbox only once websocket is subscribed",
+          "created_at": "2026-09-30T22:37:44Z",
+          "closed_at": "2026-10-01T13:37:15Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 2,
+          "repository": "vrwarp/versicle",
+          "number": 1694,
+          "url": "https://github.com/vrwarp/versicle/pull/1694",
+          "title": "perf(e2e): cut suite runtime ~70% with parallel runs and real waits",
+          "created_at": "2026-09-30T22:31:48Z",
+          "closed_at": "2026-10-01T00:12:43Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 3,
+          "repository": "xability/r-maidr",
+          "number": 345,
+          "url": "https://github.com/xability/r-maidr/pull/345",
+          "title": "fix(webr): run the page script on the page's thread, and test maidr in a real webR",
+          "created_at": "2026-09-30T19:57:38Z",
+          "closed_at": "2026-09-30T21:05:53Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 4,
+          "repository": "fixpoint-labs/flow-state-dev",
+          "number": 2444,
+          "url": "https://github.com/fixpoint-labs/flow-state-dev/pull/2444",
+          "title": "FIX-1655: App Lab design system",
+          "created_at": "2026-09-30T18:44:13Z",
+          "closed_at": "2026-09-30T20:32:38Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 5,
+          "repository": "danielmigueltejedor/nodalia-cards",
+          "number": 218,
+          "url": "https://github.com/danielmigueltejedor/nodalia-cards/pull/218",
+          "title": "Make animation regressions independent of slow CI lifecycle timers",
+          "created_at": "2026-09-30T18:11:30Z",
+          "closed_at": "2026-09-30T18:23:55Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 6,
+          "repository": "mr-sujay-patil/EcomDemo-Web",
+          "number": 3,
+          "url": "https://github.com/mr-sujay-patil/EcomDemo-Web/pull/3",
+          "title": "Phase 03: End-to-End Smoke Tests",
+          "created_at": "2026-09-30T18:07:59Z",
+          "closed_at": "2026-09-30T18:22:15Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 7,
+          "repository": "navikt/melosys-e2e-tests",
+          "number": 354,
+          "url": "https://github.com/navikt/melosys-e2e-tests/pull/354",
+          "title": "TEK Fjern slowMo på CI og bytt faste sleep med tilstandsventing",
+          "created_at": "2026-09-30T16:19:42Z",
+          "closed_at": "2026-09-30T19:52:00Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 8,
+          "repository": "fbereilh/cellar",
+          "number": 130,
+          "url": "https://github.com/fbereilh/cellar/pull/130",
+          "title": "test(e2e): make foreign-action-refresh wait on signals instead of sleeps",
+          "created_at": "2026-09-30T15:25:53Z",
+          "closed_at": "2026-09-30T15:35:12Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 9,
+          "repository": "huridocs/uwazi",
+          "number": 9815,
+          "url": "https://github.com/huridocs/uwazi/pull/9815",
+          "title": "Bump Dependabot dependencies that need no code changes",
+          "created_at": "2026-09-30T15:11:41Z",
+          "closed_at": "2026-09-30T15:39:35Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 10,
+          "repository": "J3vb/OwnCord",
+          "number": 2031,
+          "url": "https://github.com/J3vb/OwnCord/pull/2031",
+          "title": "fix(client): keep retrying a dropped voice call for up to five minutes",
+          "created_at": "2026-09-30T15:05:38Z",
+          "closed_at": "2026-09-30T17:01:00Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 11,
+          "repository": "milosCvetkovicDev/website",
+          "number": 204,
+          "url": "https://github.com/milosCvetkovicDev/website/pull/204",
+          "title": "test(web): exclude the tmux log stream from the / at-rest axe pass",
+          "created_at": "2026-09-30T14:48:53Z",
+          "closed_at": "2026-09-30T16:25:39Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 12,
+          "repository": "LexiLominite/ShelfDock",
+          "number": 5,
+          "url": "https://github.com/LexiLominite/ShelfDock/pull/5",
+          "title": "Release ShelfDock 0.7.4 with Continuity clipboard and native Mac glass",
+          "created_at": "2026-09-30T13:59:02Z",
+          "closed_at": "2026-09-30T15:05:24Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 13,
+          "repository": "daintreehq/daintree",
+          "number": 13141,
+          "url": "https://github.com/daintreehq/daintree/pull/13141",
+          "title": "test(e2e): overhaul the E2E suite for real coverage, speed and stability",
+          "created_at": "2026-09-30T13:49:37Z",
+          "closed_at": "2026-09-30T15:07:06Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 14,
+          "repository": "platzhersh/openehr-explorer",
+          "number": 223,
+          "url": "https://github.com/platzhersh/openehr-explorer/pull/223",
+          "title": "fix(a11y): raise text contrast to WCAG AA and gate it in CI",
+          "created_at": "2026-09-30T12:41:45Z",
+          "closed_at": "2026-09-30T16:12:19Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 15,
+          "repository": "eli-eric/ELI-panda",
+          "number": 1182,
+          "url": "https://github.com/eli-eric/ELI-panda/pull/1182",
+          "title": "fix(table): keep filters from shared deep links, migrate to nuqs v2 [ELIPANDA-505]",
+          "created_at": "2026-09-30T12:09:34Z",
+          "closed_at": "2026-10-01T11:35:40Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        }
+      ]
+    },
+    {
+      "label": "CY-order",
+      "query": "is:pr is:merged cypress \"first()\" flaky created:2023-01-01..2026-09-30",
+      "endpoint": "search/issues?q=is%3Apr%20is%3Amerged%20cypress%20%22first%28%29%22%20flaky%20created%3A2023-01-01..2026-09-30&sort=created&order=desc&per_page=15",
+      "total_count": 20824,
+      "returned_prs": 15,
+      "prs": [
+        {
+          "ordinal": 1,
+          "repository": "sugarlabs/musicblocks",
+          "number": 9139,
+          "url": "https://github.com/sugarlabs/musicblocks/pull/9139",
+          "title": "refactor(rhythmruler): split the Rhythm Maker into six modules",
+          "created_at": "2026-09-30T23:54:27Z",
+          "closed_at": "2026-10-03T17:43:25Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 2,
+          "repository": "opendatahub-io/odh-dashboard",
+          "number": 10031,
+          "url": "https://github.com/opendatahub-io/odh-dashboard/pull/10031",
+          "title": "Add a human send-off to Fullsend reviews before merge",
+          "created_at": "2026-09-30T23:32:01Z",
+          "closed_at": "2026-10-01T20:28:28Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 3,
+          "repository": "apache/superset",
+          "number": 44838,
+          "url": "https://github.com/apache/superset/pull/44838",
+          "title": "test(explore): port remaining deleted Cypress explore specs to RTL",
+          "created_at": "2026-09-30T23:30:41Z",
+          "closed_at": "2026-10-02T18:25:35Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 4,
+          "repository": "opendatahub-io/odh-dashboard",
+          "number": 10027,
+          "url": "https://github.com/opendatahub-io/odh-dashboard/pull/10027",
+          "title": "Add Alert and Update Microcopy for External Models Availability Section",
+          "created_at": "2026-09-30T19:42:28Z",
+          "closed_at": "2026-10-02T13:07:02Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 5,
+          "repository": "opendatahub-io/odh-dashboard",
+          "number": 10026,
+          "url": "https://github.com/opendatahub-io/odh-dashboard/pull/10026",
+          "title": "feat(RHOAIENG-89761): add agent deployment feature flag",
+          "created_at": "2026-09-30T18:55:01Z",
+          "closed_at": "2026-10-01T16:02:06Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 6,
+          "repository": "concord-consortium/collaborative-learning",
+          "number": 3022,
+          "url": "https://github.com/concord-consortium/collaborative-learning/pull/3022",
+          "title": "CLUE-596: read readOnly from context in the dataflow subtree",
+          "created_at": "2026-09-30T18:28:36Z",
+          "closed_at": "2026-10-02T18:47:20Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 7,
+          "repository": "okTurtles/group-income",
+          "number": 3172,
+          "url": "https://github.com/okTurtles/group-income/pull/3172",
+          "title": "Faster typing",
+          "created_at": "2026-09-30T17:51:30Z",
+          "closed_at": "2026-10-03T03:23:42Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 8,
+          "repository": "opendatahub-io/odh-dashboard",
+          "number": 10023,
+          "url": "https://github.com/opendatahub-io/odh-dashboard/pull/10023",
+          "title": "RHOAIENG-89756: Add agent profile deployment details page",
+          "created_at": "2026-09-30T17:44:23Z",
+          "closed_at": "2026-10-01T11:02:25Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 9,
+          "repository": "elastic/kibana",
+          "number": 294570,
+          "url": "https://github.com/elastic/kibana/pull/294570",
+          "title": "[Alerting v2] Seed the tag selection limit test via the URL filter state",
+          "created_at": "2026-09-30T17:43:08Z",
+          "closed_at": "2026-10-01T16:00:53Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 10,
+          "repository": "elastic/kibana",
+          "number": 294542,
+          "url": "https://github.com/elastic/kibana/pull/294542",
+          "title": "[Security Solution][Attack Discovery] Use activeConversation$ instead of round_complete in \"Edit with AI\"",
+          "created_at": "2026-09-30T15:42:28Z",
+          "closed_at": "2026-10-01T13:23:26Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 11,
+          "repository": "OHIF/Viewers",
+          "number": 6322,
+          "url": "https://github.com/OHIF/Viewers/pull/6322",
+          "title": "chore(deps): update pnpm to 12.8.1 and i18next to 19.9.2",
+          "created_at": "2026-09-30T14:32:25Z",
+          "closed_at": "2026-09-30T16:26:38Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 12,
+          "repository": "guibranco/finorganizer-ui",
+          "number": 135,
+          "url": "https://github.com/guibranco/finorganizer-ui/pull/135",
+          "title": "Update motion 13.4.4 → 13.4.6 (patch)",
+          "created_at": "2026-09-30T14:11:15Z",
+          "closed_at": "2026-09-30T14:13:48Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 13,
+          "repository": "guibranco/grimoire-ui",
+          "number": 307,
+          "url": "https://github.com/guibranco/grimoire-ui/pull/307",
+          "title": "Update motion 13.4.4 → 13.4.6 (patch)",
+          "created_at": "2026-09-30T14:11:15Z",
+          "closed_at": "2026-09-30T14:12:08Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 14,
+          "repository": "guibranco/daftalerts-ui",
+          "number": 316,
+          "url": "https://github.com/guibranco/daftalerts-ui/pull/316",
+          "title": "Update motion 13.4.4 → 13.4.6 (patch)",
+          "created_at": "2026-09-30T14:11:15Z",
+          "closed_at": "2026-09-30T14:13:02Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 15,
+          "repository": "guibranco/logstream-ui",
+          "number": 283,
+          "url": "https://github.com/guibranco/logstream-ui/pull/283",
+          "title": "Update motion 13.4.4 → 13.4.6 (patch)",
+          "created_at": "2026-09-30T14:11:12Z",
+          "closed_at": "2026-09-30T14:11:46Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        }
+      ]
+    },
+    {
+      "label": "CY-sleep",
+      "query": "is:pr is:merged cypress \"cy.wait\" flaky created:2023-01-01..2026-09-30",
+      "endpoint": "search/issues?q=is%3Apr%20is%3Amerged%20cypress%20%22cy.wait%22%20flaky%20created%3A2023-01-01..2026-09-30&sort=created&order=desc&per_page=15",
+      "total_count": 2408,
+      "returned_prs": 15,
+      "prs": [
+        {
+          "ordinal": 1,
+          "repository": "opendatahub-io/odh-dashboard",
+          "number": 10021,
+          "url": "https://github.com/opendatahub-io/odh-dashboard/pull/10021",
+          "title": "fix(autorag): fix hanging cypress mock tests",
+          "created_at": "2026-09-30T17:18:49Z",
+          "closed_at": "2026-10-02T13:50:05Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 2,
+          "repository": "concord-consortium/codap",
+          "number": 2713,
+          "url": "https://github.com/concord-consortium/codap/pull/2713",
+          "title": "CODAP-1521: save and restore visibility sliders",
+          "created_at": "2026-09-30T04:52:56Z",
+          "closed_at": "2026-10-01T03:36:11Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 3,
+          "repository": "jrfornes/ui-skills",
+          "number": 8,
+          "url": "https://github.com/jrfornes/ui-skills/pull/8",
+          "title": "Remove duplication across cypress-nx SKILL.md and its references",
+          "created_at": "2026-09-29T13:53:18Z",
+          "closed_at": "2026-09-29T14:20:48Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 4,
+          "repository": "cypress-io/cypress-documentation",
+          "number": 6970,
+          "url": "https://github.com/cypress-io/cypress-documentation/pull/6970",
+          "title": "docs: correct and expand the cy.hash() page, and add a shared URL parts diagram",
+          "created_at": "2026-09-29T02:53:15Z",
+          "closed_at": "2026-09-29T03:29:22Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 5,
+          "repository": "frappe/release_tests",
+          "number": 3,
+          "url": "https://github.com/frappe/release_tests/pull/3",
+          "title": "Fix UI test flakiness: scroll-hidden fields, racy waits, wrong grid row",
+          "created_at": "2026-09-28T12:02:53Z",
+          "closed_at": "2026-09-30T10:44:30Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 6,
+          "repository": "cypress-io/cypress-documentation",
+          "number": 6964,
+          "url": "https://github.com/cypress-io/cypress-documentation/pull/6964",
+          "title": "docs: correct and expand the cy.debug() API page",
+          "created_at": "2026-09-27T19:07:33Z",
+          "closed_at": "2026-09-27T19:23:59Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 7,
+          "repository": "concord-consortium/codap",
+          "number": 2708,
+          "url": "https://github.com/concord-consortium/codap/pull/2708",
+          "title": "CODAP-1516: range thumb for visibility sliders",
+          "created_at": "2026-09-25T05:16:00Z",
+          "closed_at": "2026-10-01T03:05:20Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 8,
+          "repository": "concord-consortium/codap",
+          "number": 2707,
+          "url": "https://github.com/concord-consortium/codap/pull/2707",
+          "title": "CODAP-1515: configure a slider by dropping an attribute on it",
+          "created_at": "2026-09-25T01:04:51Z",
+          "closed_at": "2026-09-30T22:31:47Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 9,
+          "repository": "motiondivision/motion",
+          "number": 3836,
+          "url": "https://github.com/motiondivision/motion/pull/3836",
+          "title": "Fix flaky drag, layout and unit-conversion Cypress specs",
+          "created_at": "2026-09-24T19:56:35Z",
+          "closed_at": "2026-09-25T06:17:20Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 10,
+          "repository": "opendatahub-io/odh-dashboard",
+          "number": 9945,
+          "url": "https://github.com/opendatahub-io/odh-dashboard/pull/9945",
+          "title": "feat(eval-hub): add Kueue hardware profile scheduling support",
+          "created_at": "2026-09-24T17:19:01Z",
+          "closed_at": "2026-09-30T17:38:31Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 11,
+          "repository": "ehlersio/eyewallanalytics",
+          "number": 362,
+          "url": "https://github.com/ehlersio/eyewallanalytics/pull/362",
+          "title": "Fix three intermittent CI failures, one of them a real read-state bug",
+          "created_at": "2026-09-24T16:42:45Z",
+          "closed_at": "2026-09-24T17:10:51Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 12,
+          "repository": "opendatahub-io/odh-dashboard",
+          "number": 9943,
+          "url": "https://github.com/opendatahub-io/odh-dashboard/pull/9943",
+          "title": "test fix testEnableNIM.cy.ts",
+          "created_at": "2026-09-24T16:26:36Z",
+          "closed_at": "2026-09-24T20:30:03Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 13,
+          "repository": "Altinn/altinn-studio",
+          "number": 20688,
+          "url": "https://github.com/Altinn/altinn-studio/pull/20688",
+          "title": "test(app): stabilize assertions around saves and process transitions",
+          "created_at": "2026-09-24T13:52:05Z",
+          "closed_at": "2026-09-24T14:26:06Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 14,
+          "repository": "Asherlc/dofek",
+          "number": 2800,
+          "url": "https://github.com/Asherlc/dofek/pull/2800",
+          "title": "feat(web): wavy neural landing hero",
+          "created_at": "2026-09-24T04:53:49Z",
+          "closed_at": "2026-09-24T05:29:58Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        },
+        {
+          "ordinal": 15,
+          "repository": "opendatahub-io/odh-dashboard",
+          "number": 9923,
+          "url": "https://github.com/opendatahub-io/odh-dashboard/pull/9923",
+          "title": "Create Context Provider for API Keys and My Subscriptions",
+          "created_at": "2026-09-23T16:49:10Z",
+          "closed_at": "2026-09-24T20:29:54Z",
+          "duplicate_of": null,
+          "disposition": "pending-source"
+        }
+      ]
+    }
+  ]
+}

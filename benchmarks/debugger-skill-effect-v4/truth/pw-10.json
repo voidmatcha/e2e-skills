@@ -1,0 +1,11 @@
+{
+ "case_id": "pw-10",
+ "roots": [
+  {
+   "file": "app.mjs",
+   "line": 15,
+   "mechanism": "backend_error",
+   "diagnosis": "product_regression"
+  }
+ ]
+}

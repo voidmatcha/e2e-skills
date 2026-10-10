@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "status": "EXPLORATORY_NOT_FROZEN",
+  "screened_at": "2026-10-03",
+  "method": "Read-only public GitHub source inspection at pinned commits; no treatment scanner output, model comparison, or third-party code execution was used to select or label cases.",
+  "population_interpretation": "The registered v2 exclusions do not remove tutorial or demo repositories. Do not add an outcome-dependent exclusion after seeing a candidate. Record the repository character as an external-validity limitation and keep the source-based label and automatic-lead eligibility separate.",
+  "admitted_confirmatory_positives": 0,
+  "source_cases": [
+    {
+      "repo": "Ismaelvadillo/cypress-page-object-model",
+      "commit": "6539a696608f31ec5e1ada0213b0167efc5aba80",
+      "spec": "cypress/e2e/tests/todomvc.cy.js:11",
+      "ownership": "cypress/support/pages/todomvc.js:3-11",
+      "assessment": "Provisional source-positive: the spec directly types a todo through .new-todo while addTodo() owns the same selector and type-plus-Enter workflow. The README says this is a QA training project. The registered protocol does not exclude tutorials, so repository character limits generalization but is not a reason to discard this case. A second blinded label remains unavailable.",
+      "automatic_surface": "Literal cy.get action under a named cypress/e2e spec with a sibling cypress/support POM; syntactically eligible for lead collection, not a measured lead or reviewer finding.",
+      "use": "candidate-only; not admitted"
+    },
+    {
+      "repo": "padmarajnidagundi/Cypress-POM-Ready-To-Use",
+      "commit": "d295514828d1948b7c5645da9817dcceb581876e",
+      "spec": "cypress/e2e/ui/chatgpt.cy.js:58-69",
+      "ownership": "cypress/pageObjects/chatGptPage.js:55-62",
+      "assessment": "Source-supported #13 bypass: generic getElement(selector).click() calls duplicate openMenu()/openSettings(). The source has been read independently by two AI reviewers; its demo/template character limits generalization but does not itself exclude it under the registered protocol.",
+      "automatic_surface": "The pageObjects root is supported, but this spec passes computed POM selector members through getElement(); the current literal raw-action collector does not generate this lead. Keep it out of any claim about automatic lead recall, without calling it semantically clean.",
+      "use": "semantic development case; not admitted to automatic-lead effect analysis"
+    },
+    {
+      "repo": "jeanljh/cy-testframework",
+      "commit": "4896b4253b4c5502818e94578998f3ad79731b93",
+      "spec": "cypress/e2e/car-search.spec.js; cypress/e2e/flights-search.spec.js; cypress/e2e/hotels-search.spec.js",
+      "ownership": "cypress/pageobjects/car-search.js; cypress/pageobjects/flights-search.js; cypress/pageobjects/hotel-search.js",
+      "assessment": "Potential clean controls: inspected interaction actions use the Page Object members; raw snippets in comments and read-only DOM checks are not ownership bypasses. No independent clean label yet.",
+      "use": "candidate-only; not admitted"
+    },
+    {
+      "repo": "AtomicSiopao/VCam.ai",
+      "commit": "1a0f431dc461d87e206ddc80c39b96c21318a5fb",
+      "spec": "cypress/e2e/dashboard.spec.js; cypress/e2e/home.spec.js; cypress/e2e/onboarding.spec.js",
+      "ownership": "cypress/pageObjects/pages/ and cypress/pageObjects/components/",
+      "assessment": "Potential clean controls: the named specs delegate page actions to Page Object methods in the inspected source. No independent clean label yet.",
+      "use": "candidate-only; not admitted"
+    },
+    {
+      "repo": "rlucasorsi/react-multistep-form",
+      "commit": "f42357c2f79b8d866ff5d638f04de0f1617e618c",
+      "spec": "cypress/e2e/gui/form/AvaliationForm.cy.js",
+      "ownership": "cypress/support/pages/IdentificationPage.js; cypress/support/pages/ReviewPage.js; cypress/support/pages/ThanksPage.js",
+      "assessment": "Potential clean control: workflow actions use the Page Object methods while direct cy.get calls inspect steps or absent controls. No independent clean label yet.",
+      "use": "candidate-only; not admitted"
+    },
+    {
+      "repo": "prkhanna/CypressWeb",
+      "commit": "d737cfd4ba84a51793201549e2ca823018515342",
+      "spec": "cypress/e2e/i_Doit/new-object.cy.js:18-26",
+      "ownership": "cypress/support/pageObjects/",
+      "assessment": "Contributor-screened potential clean control: the named spec uses Page Object methods for page actions. Coordinator has not independently adjudicated the label.",
+      "use": "candidate-only; not admitted"
+    },
+    {
+      "repo": "FabianaAds/cypress-pageobjects-cy",
+      "commit": "ee296f665b4b995321c039fba927dc228753ff9a",
+      "spec": "cypress/e2e/comprar.cy.js:10-13",
+      "ownership": "cypress/support/Pages/index.js:4-16",
+      "assessment": "Contributor-screened potential clean control: the named spec delegates its flow to comprar(). Coordinator has not independently adjudicated the label.",
+      "use": "candidate-only; not admitted"
+    },
+    {
+      "repo": "RonaldoFD/AutomacaoCypressPageObject",
+      "commit": "5c8c485fed4eed7c9f7a22d230857a4ed12c2869",
+      "spec": "cypress/e2e/AplicativoConta.cy.js:48-56",
+      "ownership": "cypress/support/commands.js:27-38; cypress/support/PageObject/locators.js",
+      "assessment": "Supported layout, but not a confirmed #13 positive: the spec performs a negative-login test using shared locators, while cy.login() includes a successful-login assertion and is not an equivalent helper. Other workflows in the named spec use custom commands. Independent labeling is pending.",
+      "use": "candidate-only; not admitted"
+    },
+    {
+      "repo": "jessica-teixeira/vollmed-qa-automation",
+      "commit": "a2ab194abed611474ec897e4cc0005c44ae73560",
+      "spec": "cypress/e2e/login-clinica.cy.js:12-23",
+      "ownership": "cypress/support/pages/LoginPage.js:37-67",
+      "assessment": "Potential clean control for this named spec: login interactions delegate to the page methods or a custom login command. Other repository specs were not adjudicated. Independent labeling is pending.",
+      "use": "candidate-only; not admitted"
+    },
+    {
+      "repo": "RickyWillian/demoqa-automation-cypress",
+      "commit": "9e70023c5d9e317771f64d11beb5dbee68fb85c0",
+      "spec": "cypress/e2e/UI/form.cy.js:11-15",
+      "ownership": "cypress/support/pages/FormPage.js",
+      "assessment": "Potential clean control for this named spec: form actions delegate to FormPage. Other repository specs were not adjudicated. Independent labeling is pending.",
+      "use": "candidate-only; not admitted"
+    }
+  ],
+  "additional_source_screen": {
+    "method": "Second read-only discovery round: GitHub repository and code search, tree filtering, then pinned spec/source reads. These are exploratory source screens, not independent labels. Partial means relevant ownership source was not completely adjudicated.",
+    "cases": [
+      {"repo": "mate-academy/qa_cypress_e2e_demoblaze_page_object", "commit": "0a736f3235917f683a6ed3b4766f6145f39d572a", "spec": "cypress/e2e/contactForm.cy.js:22-29", "source": "cypress/support/pages/contactForm.pageObject.js:22-35", "assessment": "Potential clean: contact actions delegate to existing Page Object methods; checkout.cy.js is empty.", "use": "candidate-only"},
+      {"repo": "mlozowska/cypress-pom-orangehr", "commit": "3418466783198a5b4b4d90019e76d322245280b7", "spec": "cypress/e2e/tests/dashboardPage.cy.js:12-34; cypress/e2e/tests/myInfoPage.cy.js:23-42", "source": "cypress/support/objectPages/dashboardPage.js:23-25; cypress/support/objectPages/myInfoPage.js:21-31", "assessment": "Potential negative controls: raw dropdown-item clicks have no equivalent owned method; negative field-validation actions use the existing POM locator but intentionally differ from the normal-name helper. Other inspected specs largely delegate actions.", "use": "candidate-only"},
+      {"repo": "SaraPeca/cypressPageObjects", "commit": "ee9f5346ea8d8b7c2352b524f4714d8031deb73a", "spec": "cypress/e2e/login.cy.js:14-56; cypress/e2e/cadastro_usuario.cy.js:22-62", "source": "cypress/support/pages/", "assessment": "Potential clean: named login/registration interactions delegate to page methods; produto.cy.js contains several empty tests. POM source and clean label need independent closure.", "use": "candidate-only; partial"},
+      {"repo": "murilodasilvazup/cypress-page-objects", "commit": "3f3d623281cf6a67cef3748f9d220ce49f0a09b7", "spec": "cypress/e2e/login.cy.js:20-50", "source": "cypress/support/pageObjects/LoginPage.js:13-23", "assessment": "Potential clean: login actions use POM methods; direct cy.contains calls are assertions.", "use": "candidate-only"},
+      {"repo": "Edg4rjr1/Cypress-page-object", "commit": "8a2b26bccdb3775e4ffbcf3b1b02df8ee67b90cb", "spec": "cypress/e2e/tests/Login.cy.js:7-19; cypress/e2e/tests/Home.cy.js:7-15", "source": "cypress/support/pages/", "assessment": "Potential clean for inspected specs: actions delegate to page methods. One other spec has a case-mismatched import; runtime eligibility is unresolved.", "use": "candidate-only; partial"},
+      {"repo": "Bamndo/cypress-pom-demo", "commit": "98d11724d108b42d996eb2b8ed7ace6355fb51a0", "spec": "cypress/e2e/step_definitions/userLogin.step.cy.js:18-47", "source": "cypress/support/pages/loginPage.js:10-27; cypress/support/pages/homePage.js:12-25", "assessment": "No raw page interaction bypass in inspected specs; actions use POM methods or a custom login command. One import case does not match the pinned file name; runtime eligibility is unresolved.", "use": "candidate-only; partial"},
+      {"repo": "NoeAnsen/BankProject--CypressWithPOM", "commit": "03589b6a0e61034346ba5c74d5186898f2d563f7", "spec": "cypress/e2e/BankingProject.cy.js:19-127", "source": "cypress/support/PageObjects/AccountPage.js; cypress/support/PageObjects/ManagerPage.js", "assessment": "Potential clean: inspected interactions use POM getters and custom login; no literal raw Cypress action bypass observed.", "use": "candidate-only"},
+      {"repo": "shashibalaji/Storyblok-automation-framework", "commit": "6039b30adf88ee7d87011fcc0d9c74af53b5fd0e", "spec": "cypress/e2e/assets-tests/asset_registration.spec.js:42-70", "source": "cypress/support/features/assets/assetsPage.js; cypress/support/features/assets/assetsRegistration.js", "assessment": "Potential clean in inspected asset specs: interactions delegate to support-page methods; raw cy.get('@platformDataLoad') is an alias/setup read, not a page action.", "use": "candidate-only"},
+      {"repo": "PaoloDuenas/e2e-ecommerce-automation", "commit": "7537185697cfbd3894b0115ec780adb02f8da8c5", "spec": "cypress/e2e/smoke.cy.js:53-55", "source": "cypress/support/pages/CheckoutStepOne.js:2-6", "assessment": "Provisional semantic #13 bypass: the spec types the checkout first/last/zip fields directly while fillInformation() owns that workflow. Spec uses #first-name/#last-name/#postal-code, POM uses data-test selectors, so the exact-selector collector cannot lead this case. The smoke spec may intentionally demonstrate raw selectors; retain this external-validity caveat.", "use": "semantic-only; not admitted to automatic-lead effect"},
+      {"repo": "paulosandim/teste-tecnico-onfly", "commit": "c275f62a8db58abdce7a280ff711770c15863d5a", "spec": "cypress/e2e/compra.cy.js:14-36; cypress/e2e/login.cy.js:14-30", "source": "cypress/support/pages.js:1-31", "assessment": "Raw actions consume the shared selector-object members rather than duplicate literal selectors; no automatic exact-selector lead. A successful-login custom command is not equivalent to negative login cases.", "use": "candidate-only; not a confirmed #13 positive"},
+      {"repo": "dbquiroga/cypress_saucedemo", "commit": "41697c7ad4a49374770149888507c00d7f72c6bf", "spec": "cypress/e2e/login.cy.js:22-24", "source": "cypress/support/Pages/loginPage.js:3-14", "assessment": "One-off XPath typing test targets the same username element as the login POM, but has a different diagnostic purpose and is not a source-proven equivalent login workflow. No confirmed #13 positive.", "use": "candidate-only"},
+      {"repo": "RyZyKs/saucedemo_cypress", "commit": "3fc222847502bbc4bfba20575edc195cd172d9d5", "spec": "cypress/e2e/inventory.cy.ts:14-38; cypress/e2e/login.cy.ts:17-77", "source": "cypress/support/pageObjects/", "assessment": "Potential negative control: raw cy.get(POM_MEMBER) calls are read-only badge/error assertions; interactions use POM methods or custom commands. Full ownership closure remains pending.", "use": "candidate-only; partial"},
+      {"repo": "AymanAttili/GSG-QA-Training-Cypress", "commit": "289742a3eb6fcaa24fcdebdf400cfdbc3b2c01b4", "spec": "cypress/e2e/orangeHRM/loginFunctionality.cy.ts; cypress/e2e/orangeHRM/publishPost.cy.ts", "source": "cypress/support/pageObjects/", "assessment": "Partial screen: sampled raw cy.get calls are aliases or assertions; sampled interactions use POM methods. No positive label without full source closure.", "use": "candidate-only; partial"},
+      {"repo": "Efefred/signup-cypress-test", "commit": "cf4920f00f383221b46f98ef1df93d8f0f89ca49", "spec": "cypress/e2e/signup.cy.js:14-30", "source": "cypress/support/pages/SignUpPage.js", "assessment": "Partial screen: raw cy.get(POM_MEMBER) calls are assertions, not action leads. Ownership source not fully adjudicated.", "use": "candidate-only; partial"},
+      {"repo": "SavioHolanda/afastamentolegal", "commit": "65a9168c07dd75adc15fd5077c35b80abfd8e9e8", "spec": "cypress/e2e/cadastro-teste.cy.js:9-34", "source": "cypress/support/pages/cadastro-page.js", "assessment": "Partial screen: direct actions use imported POM selector members rather than literals, so they cannot test the exact-selector collector. Method ownership not fully adjudicated.", "use": "candidate-only; partial"},
+      {"repo": "OlGubkina/CypressExperiments", "commit": "10f290d63c47339d802319e0c844365096ec9da2", "spec": "cypress/e2e/lesson_18_Homework.cy.js:255-257", "source": "cypress/support/pages/", "assessment": "Partial screen: the sampled homework spec mixes POM calls and raw clicks, but one import is visibly invalid and equivalence to existing POM methods was not established.", "use": "candidate-only; partial"},
+      {"repo": "jnovikova/cypress-buecher.de", "commit": "8771a9c8c2bbaa9ef5b57d497f25c7171ebc736b", "spec": "cypress/e2e/registration.cy.js:14-17; cypress/e2e/addToCartFlow.cy.js:20-47", "source": "cypress/support/pages/mainPage.js:17-35; cypress/support/pages/registrationPage.js:50-65", "assessment": "No confirmed #13 bypass: registration and search actions use page methods; raw tab/product selectors lack a shown equivalent owner, and other raw calls are assertions.", "use": "candidate-only"},
+      {"repo": "fabioaraujoqa/test-qa-commerce", "commit": "ca46cda890089ab67ca7e3e1280c9508129b7b3e", "spec": "cypress/e2e/web/produto.cy.js:10-26", "source": "cypress/support/pages/checkout-page.js; cypress/support/pages/login-page.js", "assessment": "Raw product-page actions have no product-page POM in the inspected supported source; checkout/login POMs do not establish their ownership.", "use": "candidate-only; not a confirmed #13 positive"},
+      {"repo": "Lucasviggiano/UI-Testing-Patterns---Loja-EBAC", "commit": "70ba2eef4efda44b22b8cabbd1919069a3feb0ac", "spec": "cypress/e2e/register.cy.js:16-19", "source": "cypress/support/pages/", "assessment": "Partial screen: literal raw clicks exist, but equivalent POM ownership was not established from the sampled source.", "use": "candidate-only; partial"},
+      {"repo": "MarkiMark3/habit-rabbit-frontend", "commit": "d748f4662f5961a301cf98ee1973a89c5595bee9", "spec": "cypress/e2e/signIn.cy.js:22-30; cypress/e2e/todos.cy.js:48", "source": "cypress/support/pages/", "assessment": "Partial screen: sampled raw cy.get calls are assertions; page actions appear delegated. No independent clean label.", "use": "candidate-only; partial"},
+      {"repo": "MarciaMagaX/Meu-projeto-cypress", "commit": "b8a2501fc44bb169f893a9286cbd9455dafff4ff", "spec": "cypress/e2e/produtos_checkout.cy.js:10-12", "source": "cypress/support/pages/loginPage.js:3-12; cypress/support/commands.js:27-31", "assessment": "Provisional semantic #13 bypass: a checkout spec duplicates the existing login page interaction with raw actions. It uses data-test selectors while the POM/custom command uses #user-name/#password/#login-button, so the exact-selector collector cannot lead this workflow.", "use": "semantic-only; not admitted to automatic-lead effect"}
+    ]
+  },
+  "exact_match_screen_round_3": {
+    "method": "Read-only pinned-source pre-screen of literal spec actions against regular sibling cypress/support page sources. This narrows source inspection but is not the treatment collector, a model prediction, or a full-repository negative label. Some repositories had only the named spec subset read.",
+    "screened_repositories": [
+      {"repo": "netcattest/cypress-quality-engineering-lab", "commit": "8b5458478173d86ae2c619f2b7358563c63ebeb3", "screen": "No shared literal action in four UI/smoke specs and two page sources."},
+      {"repo": "mvsaran/Mind-Map-Testing-Framework-with-Cypress", "commit": "4a0c3fc75029d61839ded776cb60af2610a12bba", "screen": "No shared literal action in seven specs and four page sources."},
+      {"repo": "ElcimarSilva/sbt-e2e-project", "commit": "7cf22aafbaa4950b378b928a56cb16c77bd6b413", "screen": "No shared literal action in eight UI specs and six page sources."},
+      {"repo": "kamaldhingra/cypress-automation-framework", "commit": "52f439107a6e2a404984381f1f3060c1f335c614", "screen": "No shared literal action in five UI specs and seven page sources."},
+      {"repo": "tweladera/tw-demo-cypress", "commit": "43d8a6f250cc5b733c919180bb5eacc192633df9", "screen": "No shared literal action in four UI specs and six page sources."},
+      {"repo": "gabrielbergmann/cypress-serverest-gold", "commit": "ba156bb77994ec9561d2639e4f41c52da079ce2e", "screen": "No shared literal action in three UI specs and three page sources."},
+      {"repo": "theEverlastingStudentDodo/cypress-portfolio-saucedemo", "commit": "8864cf7de2505b8d620cde58e20228fae4b40313", "screen": "One exact-selector candidate was source-inspected and rejected as an intentional network-fault canary, not a POM ownership defect."},
+      {"repo": "R3nR3n03/qa-automation-demo", "commit": "006f584be21b7192708deef35f08fac06bb24b7c", "screen": "No shared literal action in five specs and four page sources."},
+      {"repo": "BestAccessDoors/ecommerce-qa-test-suite", "commit": "3eabd36a1821304ef728e0ffc404274f0cba7c1f", "screen": "No shared literal action in seven sampled specs and eight form-page sources; not a full-repository screen."},
+      {"repo": "thiagobfernandes/testes-e2e-cypress", "commit": "96ae95ffaf8d18070f42309563a898fe1b354fcc", "screen": "Exact-selector candidates source-inspected and rejected: registration/dashboard-named tests type the Cypress demo email field for different purposes than the LoginPage helper; a #password overlap is commented-out code."},
+      {"repo": "JoaoKleinkauf/Automacao_UI_Cypress_pt3", "commit": "41b280d8f445180453f2259231018414be919858", "screen": "No shared literal action in three specs and five page sources."},
+      {"repo": "OliveiraJessicaBusiness/tray-qa-e2e-test", "commit": "13e5ddacd3bcda05d3b084f940c0d2e074092d4d", "screen": "No shared literal action in three specs and three page sources."},
+      {"repo": "migsuarez282/CypressChallenge", "commit": "5f302b615b77d8f21a15b521583103867d94656a", "screen": "No shared literal action in eight sampled specs and fourteen support action/page sources; not a full-repository screen."},
+      {"repo": "Nicolopez603/beloved_challenge", "commit": "e2deab8cc327bbe368da2a977f3ddfc37b9999a7", "screen": "No shared literal action in six UI specs and six page sources."},
+      {"repo": "aasimsyed/classavo", "commit": "fe140c3dbb5271a8d2da9f4460654e736633557d", "screen": "No shared literal action in six specs and four page sources."},
+      {"repo": "LeanderHeitor/SGTCypress", "commit": "91d4457f78859e9ac66b298d39ca3bf35e74ae3c", "screen": "No shared literal action in five sampled specs and six page/action sources; not a full-repository screen."},
+      {"repo": "alynn01/whiteLabelPO", "commit": "b68599188cd281af8032d90ad01b16902e05a386", "screen": "No shared literal action in twelve specs and twelve page sources."},
+      {"repo": "TetianaZholudova/CypressTest", "commit": "c37a625112fb2fb12b7d9fc3635a6017b94ef0b4", "screen": "Multiple source-equivalent POM bypasses in non-template specs, but those specs import modules from the author's absolute /Users path. Source closure does not resolve in a fresh staged workspace; excluded from the registered primary population."},
+      {"repo": "fabioaraujoqa/severest-test", "commit": "94357ce0b0b6b1bd2f8fce964755c4a76032a10c", "screen": "Manual sample: registration specs use custom commands or page methods; no literal raw action bypass found in the sampled files."}
+    ],
+    "adjudicated_exceptions": [
+      {"repo": "theEverlastingStudentDodo/cypress-portfolio-saucedemo", "spec": "cypress/e2e/08-edge-cases.cy.js:360-371", "ownership": "cypress/support/pages/InventoryPage.js:5,53-56", "verdict": "Source-matched guard: cy.get('.shopping_cart_link').click() is deliberately placed after a forceNetworkError intercept to test connectivity failure; the v2 negative-label rule excludes intentional diagnostic canaries."},
+      {"repo": "thiagobfernandes/testes-e2e-cypress", "spec": "cypress/e2e/features/cadastro/cadastro.cy.js:13-22; cypress/e2e/features/dashboard/dashboard.cy.js:14-17", "ownership": "cypress/support/pages/LoginPage.js:2-7", "verdict": "Source-matched guard: the LoginPage email helper does not establish ownership of differently purposed registration/dashboard-named tests on a generic Cypress demo page. Same selector alone is not #13; the other #password match is commented out."},
+      {"repo": "TetianaZholudova/CypressTest", "spec": "cypress/e2e/emailValidation.cy.js:1,7-8; cypress/e2e/addCarFunctionaity.cy.js:1-8", "ownership": "cypress/support/pages/RegistrationPage.js:10,41-43; cypress/support/pages/LoginPage.js:3,9-11", "verdict": "Source-supported bypasses but inadmissible: absolute imports point to the author's filesystem rather than repository-resolvable source. Related repeated lines are not independent defects."}
+    ]
+  },
+  "additional_layout_screen": {
+    "method": "Repository-tree screening only; these names are not source-complete case labels or a prevalence sample.",
+    "no_current_named_cypress_e2e_or_supported_pom_root": [
+      "Hypercubed/cypress-page-object-pattern",
+      "grajk88/cypress-page-objects",
+      "nareshnavinash/Cypress-PageObjectModel",
+      "mostafanasserr/cypress-toolshop-automation",
+      "Brunolzx/OrangeHRM_Automation",
+      "crisrodriguezperalta/QA_Automation_Test",
+      "HenriqueRicieri/cypress-e2e-saucedemo",
+      "matiastartara/cypress",
+      "Brunolzx/SauceDemo_Automation",
+      "Brunolzx/OrangeHRM_QualidadeUIUX",
+      "patrickzrodrigues/qa-automation-cypress-heroes",
+      "Juanbukanjojo/cypress-page-object-e2e-testing",
+      "LincolnMota07/ServerRestCypressAutomation",
+      "JEJS-IA97/Cypress-Core"
+    ]
+  },
+  "access_limit": "GitHub code-search API reached a shared user rate limit in the first round. It was available again in the later round; no rate-limit bypass was attempted.",
+  "next_gate": "Obtain 20 fresh independently adjudicated, automatic-lead-eligible positive workflows from at least ten repositories, with paired repairs and independent clean controls, before the disjoint pilot or measured A/B."
+}

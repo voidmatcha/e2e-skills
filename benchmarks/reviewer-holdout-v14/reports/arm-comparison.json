@@ -1,0 +1,980 @@
+{
+  "schema_version": 1,
+  "comparator_sha256": "405a2e8baefa906a9c84b36e9f27160ead118267dcbbd20ad52fcf639d2d1f0f",
+  "evaluator_sha256": "ffe2ef034984e8c1b44d44a8522bb1ae2878aa7a366eb4ca232a75eb05195664",
+  "comparison_mode": "arm-matrix",
+  "skill_lift_claim_eligible": false,
+  "evidence_scope": "development",
+  "release_eligible": false,
+  "protocol_id": "reviewer-holdout-v14",
+  "protocol_sha256": "c668d7308c4ec841998c26c052a8900a1da99d2057955e79b39d76848a20c679",
+  "corpus_sha256": "672f99fc323cf72cb9946483b01f7df314ee12000bcc40b5aa3eb1efb2f8cb8d",
+  "reports": [
+    "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v14-official-3bc1dd5/full-claude.json",
+    "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v14-official-3bc1dd5/catalog-only-claude.json",
+    "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v14-official-3bc1dd5/no-skill-claude.json"
+  ],
+  "report_inputs": [
+    {
+      "path": "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v14-official-3bc1dd5/full-claude.json",
+      "sha256": "191e96756146669f2a8611075627aeef851aa130106e9a68ff8b4a9296532899"
+    },
+    {
+      "path": "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v14-official-3bc1dd5/catalog-only-claude.json",
+      "sha256": "7160f4b433ae57b526702bfd9ba8db39b68c739e6bc64e9f5e9998c9ea0429c8"
+    },
+    {
+      "path": "/Users/user/.cache/e2e-skills-bench/reviewer-holdout-v14-official-3bc1dd5/no-skill-claude.json",
+      "sha256": "bd6fbc099eec06111682610ba8fb355ce1e4f51a36fc45684a4a1b5f535d41c7"
+    }
+  ],
+  "prompt_profiles": [
+    "catalog-only",
+    "full",
+    "no-skill"
+  ],
+  "status": "FAIL",
+  "status_reasons": [
+    {
+      "code": "treatment_cross_host_not_pass",
+      "actual": "FAIL",
+      "required": "PASS",
+      "message": "the full treatment must pass all per-report and cross-host development thresholds before a skill-lift claim"
+    },
+    {
+      "code": "arm_lift_threshold_not_met",
+      "control": "catalog-only",
+      "metric": "stable_f1_delta_min",
+      "actual": 0.03738317757009346,
+      "required": 0.05,
+      "comparator": ">=",
+      "message": "full minus catalog-only stable_f1_delta_min was 0.037383; required >= 0.050000"
+    },
+    {
+      "code": "arm_lift_threshold_not_met",
+      "control": "catalog-only",
+      "metric": "stable_f1_delta_ci95_lower_min",
+      "actual": -0.03224704515952714,
+      "required": 0.01,
+      "comparator": ">=",
+      "message": "full minus catalog-only stable_f1_delta_ci95_lower_min was -0.032247; required >= 0.010000"
+    }
+  ],
+  "metrics": {
+    "comparison_unit": "exact-three-profiles-by-one-host",
+    "provider_aggregation": "single-host-direct",
+    "stability_basis": "strict-majority-stable-predictions",
+    "execution_order": {
+      "design": "single-host-three-arm-sequential",
+      "required": [
+        {
+          "ordinal": 1,
+          "prompt_profile": "full",
+          "runner": "claude",
+          "model": "claude-sonnet-5"
+        },
+        {
+          "ordinal": 2,
+          "prompt_profile": "catalog-only",
+          "runner": "claude",
+          "model": "claude-sonnet-5"
+        },
+        {
+          "ordinal": 3,
+          "prompt_profile": "no-skill",
+          "runner": "claude",
+          "model": "claude-sonnet-5"
+        }
+      ],
+      "observed": [
+        {
+          "ordinal": 1,
+          "prompt_profile": "full",
+          "runner": "claude",
+          "model": "claude-sonnet-5"
+        },
+        {
+          "ordinal": 2,
+          "prompt_profile": "catalog-only",
+          "runner": "claude",
+          "model": "claude-sonnet-5"
+        },
+        {
+          "ordinal": 3,
+          "prompt_profile": "no-skill",
+          "runner": "claude",
+          "model": "claude-sonnet-5"
+        }
+      ],
+      "sequential_non_overlapping_required": true,
+      "elapsed_basis": "first-start-to-last-completion",
+      "elapsed_seconds": 12967.384666,
+      "maximum_elapsed_seconds": 43200,
+      "interpretation_limit": "Reported start/completion timestamps, fixed order, non-overlap, and a 12-hour first-start-to-last-completion window reduce arm-position and time-drift confounding but do not cryptographically attest time or identify or freeze provider backend revisions."
+    },
+    "arms": {
+      "full": {
+        "method": "single-host-direct",
+        "provider_family_denominator": 1,
+        "families": {
+          "anthropic": {
+            "configuration_count": 1,
+            "configurations": [
+              {
+                "runner": "claude",
+                "model": "claude-sonnet-5"
+              }
+            ],
+            "metrics": {
+              "stable_precision": {
+                "value": 0.9259259259259259,
+                "configuration_denominator": 1
+              },
+              "stable_recall": {
+                "value": 0.9433962264150944,
+                "configuration_denominator": 1
+              },
+              "stable_f1": {
+                "value": 0.9345794392523364,
+                "configuration_denominator": 1
+              },
+              "repeated_precision": {
+                "value": 0.9259259259259259,
+                "configuration_denominator": 1
+              },
+              "p0_stable_label_recall": {
+                "value": 1.0,
+                "configuration_denominator": 1
+              },
+              "clean_case_specificity": {
+                "value": 1.0,
+                "configuration_denominator": 1
+              }
+            }
+          }
+        },
+        "equal_weighted_metrics": {
+          "stable_precision": {
+            "value": 0.9259259259259259,
+            "provider_family_denominator": 1
+          },
+          "stable_recall": {
+            "value": 0.9433962264150944,
+            "provider_family_denominator": 1
+          },
+          "stable_f1": {
+            "value": 0.9345794392523364,
+            "provider_family_denominator": 1
+          },
+          "repeated_precision": {
+            "value": 0.9259259259259259,
+            "provider_family_denominator": 1
+          },
+          "p0_stable_label_recall": {
+            "value": 1.0,
+            "provider_family_denominator": 1
+          },
+          "clean_case_specificity": {
+            "value": 1.0,
+            "provider_family_denominator": 1
+          }
+        }
+      },
+      "catalog-only": {
+        "method": "single-host-direct",
+        "provider_family_denominator": 1,
+        "families": {
+          "anthropic": {
+            "configuration_count": 1,
+            "configurations": [
+              {
+                "runner": "claude",
+                "model": "claude-sonnet-5"
+              }
+            ],
+            "metrics": {
+              "stable_precision": {
+                "value": 0.8888888888888888,
+                "configuration_denominator": 1
+              },
+              "stable_recall": {
+                "value": 0.9056603773584906,
+                "configuration_denominator": 1
+              },
+              "stable_f1": {
+                "value": 0.897196261682243,
+                "configuration_denominator": 1
+              },
+              "repeated_precision": {
+                "value": 0.855595667870036,
+                "configuration_denominator": 1
+              },
+              "p0_stable_label_recall": {
+                "value": 0.9166666666666666,
+                "configuration_denominator": 1
+              },
+              "clean_case_specificity": {
+                "value": 1.0,
+                "configuration_denominator": 1
+              }
+            }
+          }
+        },
+        "equal_weighted_metrics": {
+          "stable_precision": {
+            "value": 0.8888888888888888,
+            "provider_family_denominator": 1
+          },
+          "stable_recall": {
+            "value": 0.9056603773584906,
+            "provider_family_denominator": 1
+          },
+          "stable_f1": {
+            "value": 0.897196261682243,
+            "provider_family_denominator": 1
+          },
+          "repeated_precision": {
+            "value": 0.855595667870036,
+            "provider_family_denominator": 1
+          },
+          "p0_stable_label_recall": {
+            "value": 0.9166666666666666,
+            "provider_family_denominator": 1
+          },
+          "clean_case_specificity": {
+            "value": 1.0,
+            "provider_family_denominator": 1
+          }
+        }
+      },
+      "no-skill": {
+        "method": "single-host-direct",
+        "provider_family_denominator": 1,
+        "families": {
+          "anthropic": {
+            "configuration_count": 1,
+            "configurations": [
+              {
+                "runner": "claude",
+                "model": "claude-sonnet-5"
+              }
+            ],
+            "metrics": {
+              "stable_precision": {
+                "value": 0.4067796610169492,
+                "configuration_denominator": 1
+              },
+              "stable_recall": {
+                "value": 0.4528301886792453,
+                "configuration_denominator": 1
+              },
+              "stable_f1": {
+                "value": 0.4285714285714286,
+                "configuration_denominator": 1
+              },
+              "repeated_precision": {
+                "value": 0.3606060606060606,
+                "configuration_denominator": 1
+              },
+              "p0_stable_label_recall": {
+                "value": 0.4166666666666667,
+                "configuration_denominator": 1
+              },
+              "clean_case_specificity": {
+                "value": 0.75,
+                "configuration_denominator": 1
+              }
+            }
+          }
+        },
+        "equal_weighted_metrics": {
+          "stable_precision": {
+            "value": 0.4067796610169492,
+            "provider_family_denominator": 1
+          },
+          "stable_recall": {
+            "value": 0.4528301886792453,
+            "provider_family_denominator": 1
+          },
+          "stable_f1": {
+            "value": 0.4285714285714286,
+            "provider_family_denominator": 1
+          },
+          "repeated_precision": {
+            "value": 0.3606060606060606,
+            "provider_family_denominator": 1
+          },
+          "p0_stable_label_recall": {
+            "value": 0.4166666666666667,
+            "provider_family_denominator": 1
+          },
+          "clean_case_specificity": {
+            "value": 0.75,
+            "provider_family_denominator": 1
+          }
+        }
+      }
+    },
+    "treatment_cross_host": {
+      "status": "FAIL",
+      "status_reasons": [
+        {
+          "code": "input_status_not_met",
+          "runner": "claude",
+          "model": "claude-sonnet-5",
+          "actual": "FAIL",
+          "required": "PASS",
+          "message": "claude:claude-sonnet-5 status was FAIL; required PASS"
+        }
+      ],
+      "metrics": {
+        "stable_recall_gap": 0.0,
+        "stable_prediction_jaccard": 1.0,
+        "stable_prediction_intersection": 55,
+        "stable_prediction_union": 55,
+        "agreement_aggregation": {
+          "stable_recall_gap": "maximum pairwise gap",
+          "stable_prediction_jaccard": "minimum pairwise Jaccard",
+          "global_intersection_and_union": "all hosts"
+        },
+        "pairwise": [],
+        "hosts": [
+          {
+            "runner": "claude",
+            "model": "claude-sonnet-5",
+            "status": "FAIL",
+            "stable_precision": 0.9259259259259259,
+            "stable_recall": 0.9433962264150944,
+            "stable_predictions": 55
+          }
+        ]
+      }
+    },
+    "lift": {
+      "catalog-only": {
+        "point_deltas": {
+          "stable_precision": 0.03703703703703709,
+          "stable_recall": 0.037735849056603765,
+          "stable_f1": 0.03738317757009346,
+          "repeated_precision": 0.07033025805588988,
+          "clean_case_specificity": 0.0
+        },
+        "paired_bootstrap_ci95": {
+          "stable_precision": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": -0.06513409961685823,
+            "upper": 0.15652173913043477
+          },
+          "stable_recall": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.0,
+            "upper": 0.125
+          },
+          "stable_f1": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": -0.03224704515952714,
+            "upper": 0.13607843137254905
+          },
+          "clean_case_specificity": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.0,
+            "upper": 0.0
+          }
+        },
+        "decision_checks": [
+          {
+            "metric": "stable_f1_delta_min",
+            "actual": 0.03738317757009346,
+            "required": 0.05,
+            "comparator": ">=",
+            "passed": false
+          },
+          {
+            "metric": "stable_f1_delta_ci95_lower_min",
+            "actual": -0.03224704515952714,
+            "required": 0.01,
+            "comparator": ">=",
+            "passed": false
+          },
+          {
+            "metric": "stable_precision_delta_min",
+            "actual": 0.03703703703703709,
+            "required": -0.02,
+            "comparator": ">=",
+            "passed": true
+          },
+          {
+            "metric": "stable_recall_delta_min",
+            "actual": 0.037735849056603765,
+            "required": -0.02,
+            "comparator": ">=",
+            "passed": true
+          },
+          {
+            "metric": "clean_case_specificity_delta_min",
+            "actual": 0.0,
+            "required": 0,
+            "comparator": ">=",
+            "passed": true
+          },
+          {
+            "metric": "repeated_precision_delta_min",
+            "actual": 0.07033025805588988,
+            "required": 0,
+            "comparator": ">=",
+            "passed": true
+          }
+        ],
+        "passed": false
+      },
+      "no-skill": {
+        "point_deltas": {
+          "stable_precision": 0.5191462649089768,
+          "stable_recall": 0.49056603773584906,
+          "stable_f1": 0.5060080106809078,
+          "repeated_precision": 0.5653198653198653,
+          "clean_case_specificity": 0.25
+        },
+        "paired_bootstrap_ci95": {
+          "stable_precision": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.3881010031131097,
+            "upper": 0.6569811320754717
+          },
+          "stable_recall": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.34615384615384615,
+            "upper": 0.6415094339622642
+          },
+          "stable_f1": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.39008468595624557,
+            "upper": 0.6378845116028062
+          },
+          "clean_case_specificity": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.0,
+            "upper": 0.75
+          }
+        },
+        "decision_checks": [
+          {
+            "metric": "stable_f1_delta_min",
+            "actual": 0.5060080106809078,
+            "required": 0.05,
+            "comparator": ">=",
+            "passed": true
+          },
+          {
+            "metric": "stable_f1_delta_ci95_lower_min",
+            "actual": 0.39008468595624557,
+            "required": 0.01,
+            "comparator": ">=",
+            "passed": true
+          },
+          {
+            "metric": "stable_precision_delta_min",
+            "actual": 0.5191462649089768,
+            "required": -0.02,
+            "comparator": ">=",
+            "passed": true
+          },
+          {
+            "metric": "stable_recall_delta_min",
+            "actual": 0.49056603773584906,
+            "required": -0.02,
+            "comparator": ">=",
+            "passed": true
+          },
+          {
+            "metric": "clean_case_specificity_delta_min",
+            "actual": 0.25,
+            "required": 0,
+            "comparator": ">=",
+            "passed": true
+          },
+          {
+            "metric": "repeated_precision_delta_min",
+            "actual": 0.5653198653198653,
+            "required": 0,
+            "comparator": ">=",
+            "passed": true
+          }
+        ],
+        "passed": true
+      }
+    },
+    "uncertainty": {
+      "method": "paired-stratified-case-bootstrap",
+      "seed": 20260801,
+      "iterations": 10000,
+      "confidence": 0.95,
+      "strata": [
+        "finding-cases",
+        "clean-cases"
+      ],
+      "percentile_method": "nearest-rank",
+      "metrics": [
+        "stable_precision",
+        "stable_recall",
+        "stable_f1",
+        "clean_case_specificity"
+      ],
+      "interpretation_limit": "Bootstrap intervals describe case-resampling sensitivity on this fixed public case set. They do not quantify model-run stochasticity and are not population confidence intervals, independent replications, or release-grade causal inference.",
+      "intervals": {
+        "catalog-only": {
+          "stable_precision": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": -0.06513409961685823,
+            "upper": 0.15652173913043477
+          },
+          "stable_recall": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.0,
+            "upper": 0.125
+          },
+          "stable_f1": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": -0.03224704515952714,
+            "upper": 0.13607843137254905
+          },
+          "clean_case_specificity": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.0,
+            "upper": 0.0
+          }
+        },
+        "no-skill": {
+          "stable_precision": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.3881010031131097,
+            "upper": 0.6569811320754717
+          },
+          "stable_recall": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.34615384615384615,
+            "upper": 0.6415094339622642
+          },
+          "stable_f1": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.39008468595624557,
+            "upper": 0.6378845116028062
+          },
+          "clean_case_specificity": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260801,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.0,
+            "upper": 0.75
+          }
+        }
+      }
+    }
+  },
+  "claim_policy": {
+    "pass": "Development skill-lift evidence is limited to this fixed public corpus, declared model identifiers, captured CLI versions, prompts, and schedule; provider backend snapshots are not attested.",
+    "fail": "No skill-lift claim is allowed.",
+    "inconclusive": "No skill-lift claim is allowed.",
+    "partial_results": "Descriptive arm metrics may be published, but never as a causal or partial skill-lift claim."
+  },
+  "infrastructure_retry": {
+    "policy": {
+      "max_attempts_per_call": 2,
+      "retryable": [
+        "timeout",
+        "runner_nonzero_exit_with_usage_limit_text",
+        "malformed_json_output"
+      ],
+      "contract": "A scheduled call whose attempt times out, exits non-zero with a CLI usage, weekly, or rate limit message, or exits zero with output that is not one strict JSON payload is re-invoked in a freshly prepared identical workspace at the same schedule position, up to max_attempts_per_call attempts. Every attempt is recorded with its number, reason, and exit code. The final attempt is the one scored; an unscoreable final attempt stays an infrastructure error. A scoreable output is never retried, whatever its findings."
+    },
+    "reports": [
+      {
+        "prompt_profile": "full",
+        "runner": "claude",
+        "model": "claude-sonnet-5",
+        "infrastructure_retry_summary": {
+          "scheduled_calls": 150,
+          "total_attempts": 150,
+          "retried_calls": 0,
+          "retries": 0,
+          "retries_by_reason": {
+            "timeout": 0,
+            "runner_nonzero_exit_with_usage_limit_text": 0,
+            "malformed_json_output": 0
+          },
+          "scored_after_retry": 0,
+          "unscoreable_with_retryable_reason": 0
+        }
+      },
+      {
+        "prompt_profile": "catalog-only",
+        "runner": "claude",
+        "model": "claude-sonnet-5",
+        "infrastructure_retry_summary": {
+          "scheduled_calls": 150,
+          "total_attempts": 151,
+          "retried_calls": 1,
+          "retries": 1,
+          "retries_by_reason": {
+            "timeout": 0,
+            "runner_nonzero_exit_with_usage_limit_text": 0,
+            "malformed_json_output": 1
+          },
+          "scored_after_retry": 1,
+          "unscoreable_with_retryable_reason": 0
+        }
+      },
+      {
+        "prompt_profile": "no-skill",
+        "runner": "claude",
+        "model": "claude-sonnet-5",
+        "infrastructure_retry_summary": {
+          "scheduled_calls": 150,
+          "total_attempts": 150,
+          "retried_calls": 0,
+          "retries": 0,
+          "retries_by_reason": {
+            "timeout": 0,
+            "runner_nonzero_exit_with_usage_limit_text": 0,
+            "malformed_json_output": 0
+          },
+          "scored_after_retry": 0,
+          "unscoreable_with_retryable_reason": 0
+        }
+      }
+    ]
+  },
+  "usage_capture": {
+    "policy": {
+      "enabled": true
+    },
+    "reports": [
+      {
+        "prompt_profile": "full",
+        "runner": "claude",
+        "model": "claude-sonnet-5",
+        "usage_summary": {
+          "unit": "one-report-one-arm",
+          "final_attempts": {
+            "records": 150,
+            "records_with_usage": 150,
+            "records_without_usage": 0,
+            "sources": [
+              "claude-json-envelope"
+            ],
+            "totals": {
+              "input_tokens": 300,
+              "cached_input_tokens": 668550,
+              "cache_write_tokens": 10222355,
+              "output_tokens": 464541,
+              "reasoning_output_tokens": null
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 2.0,
+              "cached_input_tokens": 4457.0,
+              "cache_write_tokens": 68149.03333333334,
+              "output_tokens": 3096.94,
+              "reasoning_output_tokens": null
+            }
+          },
+          "all_attempts": {
+            "records": 150,
+            "records_with_usage": 150,
+            "records_without_usage": 0,
+            "sources": [
+              "claude-json-envelope"
+            ],
+            "totals": {
+              "input_tokens": 300,
+              "cached_input_tokens": 668550,
+              "cache_write_tokens": 10222355,
+              "output_tokens": 464541,
+              "reasoning_output_tokens": null
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 2.0,
+              "cached_input_tokens": 4457.0,
+              "cache_write_tokens": 68149.03333333334,
+              "output_tokens": 3096.94,
+              "reasoning_output_tokens": null
+            }
+          }
+        }
+      },
+      {
+        "prompt_profile": "catalog-only",
+        "runner": "claude",
+        "model": "claude-sonnet-5",
+        "usage_summary": {
+          "unit": "one-report-one-arm",
+          "final_attempts": {
+            "records": 150,
+            "records_with_usage": 150,
+            "records_without_usage": 0,
+            "sources": [
+              "claude-json-envelope"
+            ],
+            "totals": {
+              "input_tokens": 300,
+              "cached_input_tokens": 668550,
+              "cache_write_tokens": 5246887,
+              "output_tokens": 363445,
+              "reasoning_output_tokens": null
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 2.0,
+              "cached_input_tokens": 4457.0,
+              "cache_write_tokens": 34979.246666666666,
+              "output_tokens": 2422.9666666666667,
+              "reasoning_output_tokens": null
+            }
+          },
+          "all_attempts": {
+            "records": 151,
+            "records_with_usage": 151,
+            "records_without_usage": 0,
+            "sources": [
+              "claude-json-envelope"
+            ],
+            "totals": {
+              "input_tokens": 302,
+              "cached_input_tokens": 673007,
+              "cache_write_tokens": 5281979,
+              "output_tokens": 363562,
+              "reasoning_output_tokens": null
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 2.0,
+              "cached_input_tokens": 4457.0,
+              "cache_write_tokens": 34979.99337748344,
+              "output_tokens": 2407.6953642384105,
+              "reasoning_output_tokens": null
+            }
+          }
+        }
+      },
+      {
+        "prompt_profile": "no-skill",
+        "runner": "claude",
+        "model": "claude-sonnet-5",
+        "usage_summary": {
+          "unit": "one-report-one-arm",
+          "final_attempts": {
+            "records": 150,
+            "records_with_usage": 150,
+            "records_without_usage": 0,
+            "sources": [
+              "claude-json-envelope"
+            ],
+            "totals": {
+              "input_tokens": 300,
+              "cached_input_tokens": 668550,
+              "cache_write_tokens": 360195,
+              "output_tokens": 232882,
+              "reasoning_output_tokens": null
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 2.0,
+              "cached_input_tokens": 4457.0,
+              "cache_write_tokens": 2401.3,
+              "output_tokens": 1552.5466666666666,
+              "reasoning_output_tokens": null
+            }
+          },
+          "all_attempts": {
+            "records": 150,
+            "records_with_usage": 150,
+            "records_without_usage": 0,
+            "sources": [
+              "claude-json-envelope"
+            ],
+            "totals": {
+              "input_tokens": 300,
+              "cached_input_tokens": 668550,
+              "cache_write_tokens": 360195,
+              "output_tokens": 232882,
+              "reasoning_output_tokens": null
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 2.0,
+              "cached_input_tokens": 4457.0,
+              "cache_write_tokens": 2401.3,
+              "output_tokens": 1552.5466666666666,
+              "reasoning_output_tokens": null
+            }
+          }
+        }
+      }
+    ]
+  },
+  "output_normalization": {
+    "policy": {
+      "strip_single_json_fence": true,
+      "contract": "Before the strict single-JSON-payload parser judges a model answer, the answer is trimmed of leading and trailing whitespace. If the trimmed answer is exactly one fenced block, whose first line is three backticks optionally followed by json, whose last line is three backticks, whose lines are separated by LF, and whose text between the fences contains no other run of three backticks, the text between the fences is passed to the strict parser unchanged. Any other answer, including prose before or after a fence, two fenced blocks, a fence without a closing line, or a fence around non-JSON, is judged by the strict parser as before. Each run records output_normalized, each report counts normalized runs, and the rule applies identically to every arm."
+    },
+    "reports": [
+      {
+        "prompt_profile": "full",
+        "runner": "claude",
+        "model": "claude-sonnet-5",
+        "output_normalization_summary": {
+          "unit": "one-report-one-arm",
+          "scheduled_calls": 150,
+          "normalized_runs": 31,
+          "normalized_scored_runs": 31,
+          "normalized_unscoreable_runs": 0
+        }
+      },
+      {
+        "prompt_profile": "catalog-only",
+        "runner": "claude",
+        "model": "claude-sonnet-5",
+        "output_normalization_summary": {
+          "unit": "one-report-one-arm",
+          "scheduled_calls": 150,
+          "normalized_runs": 62,
+          "normalized_scored_runs": 62,
+          "normalized_unscoreable_runs": 0
+        }
+      },
+      {
+        "prompt_profile": "no-skill",
+        "runner": "claude",
+        "model": "claude-sonnet-5",
+        "output_normalization_summary": {
+          "unit": "one-report-one-arm",
+          "scheduled_calls": 150,
+          "normalized_runs": 17,
+          "normalized_scored_runs": 17,
+          "normalized_unscoreable_runs": 0
+        }
+      }
+    ]
+  }
+}

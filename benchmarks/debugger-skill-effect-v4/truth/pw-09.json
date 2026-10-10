@@ -1,0 +1,17 @@
+{
+ "case_id": "pw-09",
+ "roots": [
+  {
+   "file": "app.mjs",
+   "line": 16,
+   "mechanism": "backend_error",
+   "diagnosis": "product_regression"
+  },
+  {
+   "file": "tests/main.spec.mjs",
+   "line": 11,
+   "mechanism": "locator_mismatch",
+   "diagnosis": "test_defect"
+  }
+ ]
+}

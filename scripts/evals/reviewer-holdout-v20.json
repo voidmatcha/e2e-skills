@@ -1,0 +1,849 @@
+{
+  "schema_version": 1,
+  "corpus_visibility": "public-development",
+  "intended_use": "Public development v20 corpus for Missing Then instance severity and #1/#2 boundaries.",
+  "contamination_risk": "Public synthetic AI-authored cases and labels may be seen by future evaluation models.",
+  "labeling": {
+    "procedure": "Synthetic sources and initial labels authored by Codex gpt-6-sol; independent blind labels by gpt-6-astra and gpt-6-luna, each matching 19 of 21 author findings; disputes resolved in benchmarks/reviewer-holdout-v20/labeling/adjudication.md.",
+    "limitations": "Public synthetic AI-authored cases with AI blind labels; not a sealed or human-adjudicated release corpus.",
+    "instance_severities": "Fixed before blind labeling: references/reporting.md P0 boundary; a #2 instance with one promised effect verified and another unchecked is P1."
+  },
+  "cases": [
+    {
+      "id": "v20-pw-01",
+      "split": "public-development-v20",
+      "framework": "playwright",
+      "design_note": "Probes partial under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-pw-01/tests/v20-pw-01.spec.ts",
+          "path": "tests/v20-pw-01.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-001",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-pw-01.spec.ts",
+          "line": 5,
+          "source_line": "await page.getByRole('button', { name: 'New booking' }).click();",
+          "reason": "reporting.md: \"if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1\"; patterns/2.md and semantic-review.md anchor at the causal action."
+        },
+        {
+          "finding_id": "V20-002",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v20-pw-01.spec.ts",
+          "line": 5,
+          "source_line": "await page.getByRole('button', { name: 'New booking' }).click();",
+          "reason": "reporting.md: \"Both halves are required\" for P0; one promised effect is verified."
+        },
+        {
+          "finding_id": "V20-049",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v20-pw-01.spec.ts",
+          "line": 3,
+          "source_line": "test('opening booking shows form and backdrop', async ({ page }) => {",
+          "reason": "Blind-label adjudication (2026-09-29): one labeler put #1 at the title; patterns/2.md: 'If the same missing effect also makes the title incomplete, classify it once as #2 at this causal action.' The missing effect belongs to the action, so #1 at the title is a false positive."
+        }
+      ]
+    },
+    {
+      "id": "v20-pw-02",
+      "split": "public-development-v20",
+      "framework": "playwright",
+      "design_note": "Probes partial under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-pw-02/tests/v20-pw-02.spec.ts",
+          "path": "tests/v20-pw-02.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-003",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-pw-02.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByRole('button', { name: 'Cancel' }).click();",
+          "reason": "reporting.md: \"if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1\"; patterns/2.md and semantic-review.md anchor at the causal action."
+        },
+        {
+          "finding_id": "V20-004",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v20-pw-02.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByRole('button', { name: 'Cancel' }).click();",
+          "reason": "reporting.md: \"Both halves are required\" for P0; one promised effect is verified."
+        }
+      ]
+    },
+    {
+      "id": "v20-pw-03",
+      "split": "public-development-v20",
+      "framework": "playwright",
+      "design_note": "Probes partial under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-pw-03/tests/v20-pw-03.spec.ts",
+          "path": "tests/v20-pw-03.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-005",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-pw-03.spec.ts",
+          "line": 5,
+          "source_line": "await page.getByRole('tab', { name: 'Invoices' }).click();",
+          "reason": "reporting.md: \"if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1\"; patterns/2.md and semantic-review.md anchor at the causal action."
+        },
+        {
+          "finding_id": "V20-006",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v20-pw-03.spec.ts",
+          "line": 5,
+          "source_line": "await page.getByRole('tab', { name: 'Invoices' }).click();",
+          "reason": "reporting.md: \"Both halves are required\" for P0; one promised effect is verified."
+        }
+      ]
+    },
+    {
+      "id": "v20-pw-04",
+      "split": "public-development-v20",
+      "framework": "playwright",
+      "design_note": "Probes partial under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-pw-04/tests/v20-pw-04.spec.ts",
+          "path": "tests/v20-pw-04.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-007",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-pw-04.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByRole('button', { name: 'Send' }).click();",
+          "reason": "reporting.md: \"if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1\"; patterns/2.md and semantic-review.md anchor at the causal action."
+        },
+        {
+          "finding_id": "V20-008",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v20-pw-04.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByRole('button', { name: 'Send' }).click();",
+          "reason": "reporting.md: \"Both halves are required\" for P0; one promised effect is verified."
+        }
+      ]
+    },
+    {
+      "id": "v20-pw-05",
+      "split": "public-development-v20",
+      "framework": "playwright",
+      "design_note": "Probes zero under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-pw-05/tests/v20-pw-05.spec.ts",
+          "path": "tests/v20-pw-05.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-009",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v20-pw-05.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByRole('button', { name: 'Close' }).click();",
+          "reason": "reporting.md: \"Test silently passes when the feature is broken — no real verification happening\"; neither promised postcondition is checked. semantic-review.md anchors #2 at the action."
+        },
+        {
+          "finding_id": "V20-010",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-pw-05.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByRole('button', { name: 'Close' }).click();",
+          "reason": "reporting.md reserves the partial case for a test that \"really verifies something it promised\"; neither promised effect is verified."
+        }
+      ]
+    },
+    {
+      "id": "v20-pw-06",
+      "split": "public-development-v20",
+      "framework": "playwright",
+      "design_note": "Probes zero under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-pw-06/tests/v20-pw-06.spec.ts",
+          "path": "tests/v20-pw-06.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-011",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v20-pw-06.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByRole('button', { name: 'Clear' }).click();",
+          "reason": "reporting.md: \"Test silently passes when the feature is broken — no real verification happening\"; neither promised postcondition is checked. semantic-review.md anchors #2 at the action."
+        },
+        {
+          "finding_id": "V20-012",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-pw-06.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByRole('button', { name: 'Clear' }).click();",
+          "reason": "reporting.md reserves the partial case for a test that \"really verifies something it promised\"; neither promised effect is verified."
+        }
+      ]
+    },
+    {
+      "id": "v20-pw-07",
+      "split": "public-development-v20",
+      "framework": "playwright",
+      "design_note": "Probes zero under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-pw-07/tests/v20-pw-07.spec.ts",
+          "path": "tests/v20-pw-07.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-013",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v20-pw-07.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByRole('button', { name: 'Undo' }).click();",
+          "reason": "reporting.md: \"Test silently passes when the feature is broken — no real verification happening\"; neither promised postcondition is checked. semantic-review.md anchors #2 at the action."
+        },
+        {
+          "finding_id": "V20-014",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-pw-07.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByRole('button', { name: 'Undo' }).click();",
+          "reason": "reporting.md reserves the partial case for a test that \"really verifies something it promised\"; neither promised effect is verified."
+        }
+      ]
+    },
+    {
+      "id": "v20-pw-08",
+      "split": "public-development-v20",
+      "framework": "playwright",
+      "design_note": "Probes title partial under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-pw-08/tests/v20-pw-08.spec.ts",
+          "path": "tests/v20-pw-08.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-015",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v20-pw-08.spec.ts",
+          "line": 3,
+          "source_line": "test('shows train platform and departure time', async ({ page }) => {",
+          "reason": "patterns/1.md: \"Every explicit promised outcome\" in the title needs evidence; one is checked, one is not. reporting.md makes this P1."
+        },
+        {
+          "finding_id": "V20-016",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-pw-08.spec.ts",
+          "line": 4,
+          "source_line": "await page.goto('/departures');",
+          "reason": "semantic-review.md: use #1 when \"the title is the primary source of the unverified promise\"; navigation is setup, not a promised action postcondition."
+        }
+      ]
+    },
+    {
+      "id": "v20-pw-09",
+      "split": "public-development-v20",
+      "framework": "playwright",
+      "design_note": "Probes title partial under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-pw-09/tests/v20-pw-09.spec.ts",
+          "path": "tests/v20-pw-09.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-017",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v20-pw-09.spec.ts",
+          "line": 3,
+          "source_line": "test('displays room capacity and floor number', async ({ page }) => {",
+          "reason": "patterns/1.md: \"Every explicit promised outcome\" in the title needs evidence; one is checked, one is not. reporting.md makes this P1."
+        },
+        {
+          "finding_id": "V20-018",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-pw-09.spec.ts",
+          "line": 4,
+          "source_line": "await page.goto('/rooms/cedar');",
+          "reason": "semantic-review.md: use #1 when \"the title is the primary source of the unverified promise\"; navigation is setup, not a promised action postcondition."
+        }
+      ]
+    },
+    {
+      "id": "v20-pw-10",
+      "split": "public-development-v20",
+      "framework": "playwright",
+      "design_note": "Probes title zero under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-pw-10/tests/v20-pw-10.spec.ts",
+          "path": "tests/v20-pw-10.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-019",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v20-pw-10.spec.ts",
+          "line": 3,
+          "source_line": "test('shows invoice total and due date', async ({ page }) => {",
+          "reason": "patterns/1.md: \"P0 when no promised outcome in the title has evidence\"; neither named outcome is checked."
+        },
+        {
+          "finding_id": "V20-020",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v20-pw-10.spec.ts",
+          "line": 4,
+          "source_line": "await page.goto('/invoices/42');",
+          "reason": "semantic-review.md: \"Require proof for the outcomes promised by the test title or an explicit acceptance contract, not for every helper action\"; navigation is setup."
+        }
+      ]
+    },
+    {
+      "id": "v20-pw-11",
+      "split": "public-development-v20",
+      "framework": "playwright",
+      "design_note": "Probes title zero under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-pw-11/tests/v20-pw-11.spec.ts",
+          "path": "tests/v20-pw-11.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-021",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v20-pw-11.spec.ts",
+          "line": 3,
+          "source_line": "test('lists author and publication date', async ({ page }) => {",
+          "reason": "patterns/1.md: \"P0 when no promised outcome in the title has evidence\"; neither named outcome is checked."
+        },
+        {
+          "finding_id": "V20-022",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v20-pw-11.spec.ts",
+          "line": 4,
+          "source_line": "await page.goto('/articles/river');",
+          "reason": "semantic-review.md: \"Require proof for the outcomes promised by the test title or an explicit acceptance contract, not for every helper action\"; navigation is setup."
+        }
+      ]
+    },
+    {
+      "id": "v20-pw-12",
+      "split": "public-development-v20",
+      "framework": "playwright",
+      "design_note": "Probes clean under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-pw-12/tests/v20-pw-12.spec.ts",
+          "path": "tests/v20-pw-12.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-023",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-pw-12.spec.ts",
+          "line": 6,
+          "source_line": "await page.getByRole('tab', { name: 'Activity' }).click();",
+          "reason": "patterns/2.md: \"verify both the restored state AND the dismissed state\"; both promised effects have assertions here."
+        },
+        {
+          "finding_id": "V20-024",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v20-pw-12.spec.ts",
+          "line": 3,
+          "source_line": "test('switching to activity shows activity and hides overview', async ({ page }) => {",
+          "reason": "patterns/1.md: \"Every explicit promised outcome\" in the title needs evidence; both are verified here."
+        }
+      ]
+    },
+    {
+      "id": "v20-cy-01",
+      "split": "public-development-v20",
+      "framework": "cypress",
+      "design_note": "Probes partial under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-cy-01/tests/v20-cy-01.cy.ts",
+          "path": "tests/v20-cy-01.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-025",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-cy-01.cy.ts",
+          "line": 4,
+          "source_line": "cy.contains('button', 'Open help').click();",
+          "reason": "reporting.md: \"if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1\"; patterns/2.md and semantic-review.md anchor at the causal action."
+        },
+        {
+          "finding_id": "V20-026",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v20-cy-01.cy.ts",
+          "line": 4,
+          "source_line": "cy.contains('button', 'Open help').click();",
+          "reason": "reporting.md: \"Both halves are required\" for P0; one promised effect is verified."
+        },
+        {
+          "finding_id": "V20-050",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v20-cy-01.cy.ts",
+          "line": 2,
+          "source_line": "it('opening help shows article and backdrop', () => {",
+          "reason": "Blind-label adjudication (2026-09-29): one labeler put #1 at the title; patterns/2.md: 'If the same missing effect also makes the title incomplete, classify it once as #2 at this causal action.' The missing effect belongs to the action, so #1 at the title is a false positive."
+        }
+      ]
+    },
+    {
+      "id": "v20-cy-02",
+      "split": "public-development-v20",
+      "framework": "cypress",
+      "design_note": "Probes partial under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-cy-02/tests/v20-cy-02.cy.ts",
+          "path": "tests/v20-cy-02.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-027",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-cy-02.cy.ts",
+          "line": 5,
+          "source_line": "cy.contains('button', 'Cancel').click();",
+          "reason": "reporting.md: \"if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1\"; patterns/2.md and semantic-review.md anchor at the causal action."
+        },
+        {
+          "finding_id": "V20-028",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v20-cy-02.cy.ts",
+          "line": 5,
+          "source_line": "cy.contains('button', 'Cancel').click();",
+          "reason": "reporting.md: \"Both halves are required\" for P0; one promised effect is verified."
+        }
+      ]
+    },
+    {
+      "id": "v20-cy-03",
+      "split": "public-development-v20",
+      "framework": "cypress",
+      "design_note": "Probes partial under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-cy-03/tests/v20-cy-03.cy.ts",
+          "path": "tests/v20-cy-03.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-029",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-cy-03.cy.ts",
+          "line": 4,
+          "source_line": "cy.contains('[role=tab]', 'Archived').click();",
+          "reason": "reporting.md: \"if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1\"; patterns/2.md and semantic-review.md anchor at the causal action."
+        },
+        {
+          "finding_id": "V20-030",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v20-cy-03.cy.ts",
+          "line": 4,
+          "source_line": "cy.contains('[role=tab]', 'Archived').click();",
+          "reason": "reporting.md: \"Both halves are required\" for P0; one promised effect is verified."
+        }
+      ]
+    },
+    {
+      "id": "v20-cy-04",
+      "split": "public-development-v20",
+      "framework": "cypress",
+      "design_note": "Probes partial under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-cy-04/tests/v20-cy-04.cy.ts",
+          "path": "tests/v20-cy-04.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-031",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-cy-04.cy.ts",
+          "line": 4,
+          "source_line": "cy.contains('button', 'Save').click();",
+          "reason": "reporting.md: \"if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1\"; patterns/2.md and semantic-review.md anchor at the causal action."
+        },
+        {
+          "finding_id": "V20-032",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v20-cy-04.cy.ts",
+          "line": 4,
+          "source_line": "cy.contains('button', 'Save').click();",
+          "reason": "reporting.md: \"Both halves are required\" for P0; one promised effect is verified."
+        }
+      ]
+    },
+    {
+      "id": "v20-cy-05",
+      "split": "public-development-v20",
+      "framework": "cypress",
+      "design_note": "Probes zero under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-cy-05/tests/v20-cy-05.cy.ts",
+          "path": "tests/v20-cy-05.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-033",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v20-cy-05.cy.ts",
+          "line": 5,
+          "source_line": "cy.contains('button', 'Close invite').click();",
+          "reason": "reporting.md: \"Test silently passes when the feature is broken — no real verification happening\"; neither promised postcondition is checked. semantic-review.md anchors #2 at the action."
+        },
+        {
+          "finding_id": "V20-034",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-cy-05.cy.ts",
+          "line": 5,
+          "source_line": "cy.contains('button', 'Close invite').click();",
+          "reason": "reporting.md reserves the partial case for a test that \"really verifies something it promised\"; neither promised effect is verified."
+        }
+      ]
+    },
+    {
+      "id": "v20-cy-06",
+      "split": "public-development-v20",
+      "framework": "cypress",
+      "design_note": "Probes zero under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-cy-06/tests/v20-cy-06.cy.ts",
+          "path": "tests/v20-cy-06.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-035",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v20-cy-06.cy.ts",
+          "line": 5,
+          "source_line": "cy.contains('button', 'Reset filters').click();",
+          "reason": "reporting.md: \"Test silently passes when the feature is broken — no real verification happening\"; neither promised postcondition is checked. semantic-review.md anchors #2 at the action."
+        },
+        {
+          "finding_id": "V20-036",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-cy-06.cy.ts",
+          "line": 5,
+          "source_line": "cy.contains('button', 'Reset filters').click();",
+          "reason": "reporting.md reserves the partial case for a test that \"really verifies something it promised\"; neither promised effect is verified."
+        }
+      ]
+    },
+    {
+      "id": "v20-cy-07",
+      "split": "public-development-v20",
+      "framework": "cypress",
+      "design_note": "Probes title partial under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-cy-07/tests/v20-cy-07.cy.ts",
+          "path": "tests/v20-cy-07.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-037",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v20-cy-07.cy.ts",
+          "line": 2,
+          "source_line": "it('shows parcel carrier and tracking number', () => {",
+          "reason": "patterns/1.md: \"Every explicit promised outcome\" in the title needs evidence; one is checked, one is not. reporting.md makes this P1."
+        },
+        {
+          "finding_id": "V20-038",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-cy-07.cy.ts",
+          "line": 3,
+          "source_line": "cy.visit('/parcels/12');",
+          "reason": "semantic-review.md: use #1 when \"the title is the primary source of the unverified promise\"; navigation is setup, not a promised action postcondition."
+        }
+      ]
+    },
+    {
+      "id": "v20-cy-08",
+      "split": "public-development-v20",
+      "framework": "cypress",
+      "design_note": "Probes title partial under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-cy-08/tests/v20-cy-08.cy.ts",
+          "path": "tests/v20-cy-08.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-039",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v20-cy-08.cy.ts",
+          "line": 2,
+          "source_line": "it('displays course tutor and duration', () => {",
+          "reason": "patterns/1.md: \"Every explicit promised outcome\" in the title needs evidence; one is checked, one is not. reporting.md makes this P1."
+        },
+        {
+          "finding_id": "V20-040",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-cy-08.cy.ts",
+          "line": 3,
+          "source_line": "cy.visit('/courses/pottery');",
+          "reason": "semantic-review.md: use #1 when \"the title is the primary source of the unverified promise\"; navigation is setup, not a promised action postcondition."
+        }
+      ]
+    },
+    {
+      "id": "v20-cy-09",
+      "split": "public-development-v20",
+      "framework": "cypress",
+      "design_note": "Probes title partial under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-cy-09/tests/v20-cy-09.cy.ts",
+          "path": "tests/v20-cy-09.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-041",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/v20-cy-09.cy.ts",
+          "line": 2,
+          "source_line": "it('shows match score and venue', () => {",
+          "reason": "patterns/1.md: \"Every explicit promised outcome\" in the title needs evidence; one is checked, one is not. reporting.md makes this P1."
+        },
+        {
+          "finding_id": "V20-042",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-cy-09.cy.ts",
+          "line": 3,
+          "source_line": "cy.visit('/matches/8');",
+          "reason": "semantic-review.md: use #1 when \"the title is the primary source of the unverified promise\"; navigation is setup, not a promised action postcondition."
+        }
+      ]
+    },
+    {
+      "id": "v20-cy-10",
+      "split": "public-development-v20",
+      "framework": "cypress",
+      "design_note": "Probes title zero under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-cy-10/tests/v20-cy-10.cy.ts",
+          "path": "tests/v20-cy-10.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-043",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v20-cy-10.cy.ts",
+          "line": 2,
+          "source_line": "it('shows account balance and currency', () => {",
+          "reason": "patterns/1.md: \"P0 when no promised outcome in the title has evidence\"; neither named outcome is checked."
+        },
+        {
+          "finding_id": "V20-044",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/v20-cy-10.cy.ts",
+          "line": 3,
+          "source_line": "cy.visit('/accounts/primary');",
+          "reason": "semantic-review.md: \"Require proof for the outcomes promised by the test title or an explicit acceptance contract, not for every helper action\"; navigation is setup."
+        }
+      ]
+    },
+    {
+      "id": "v20-cy-11",
+      "split": "public-development-v20",
+      "framework": "cypress",
+      "design_note": "Probes clean under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-cy-11/tests/v20-cy-11.cy.ts",
+          "path": "tests/v20-cy-11.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-045",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-cy-11.cy.ts",
+          "line": 6,
+          "source_line": "cy.contains('button', 'Close export').click();",
+          "reason": "patterns/2.md: \"verify both the restored state AND the dismissed state\"; both promised effects have assertions here."
+        },
+        {
+          "finding_id": "V20-046",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v20-cy-11.cy.ts",
+          "line": 2,
+          "source_line": "it('closing export panel hides it and restores export button', () => {",
+          "reason": "patterns/1.md: \"Every explicit promised outcome\" in the title needs evidence; both are verified here."
+        }
+      ]
+    },
+    {
+      "id": "v20-cy-12",
+      "split": "public-development-v20",
+      "framework": "cypress",
+      "design_note": "Probes clean under reporting.md P0 boundary and semantic-review.md #1/#2 acceptance-target and primary-line rules.",
+      "source_files": [
+        {
+          "source": "files/holdout-v20/v20-cy-12/tests/v20-cy-12.cy.ts",
+          "path": "tests/v20-cy-12.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V20-047",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P1",
+          "file": "tests/v20-cy-12.cy.ts",
+          "line": 5,
+          "source_line": "cy.contains('button', 'Clear').click();",
+          "reason": "patterns/2.md: \"verify both the restored state AND the dismissed state\"; both promised effects have assertions here."
+        },
+        {
+          "finding_id": "V20-048",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/v20-cy-12.cy.ts",
+          "line": 2,
+          "source_line": "it('clearing query empties search and restores every result', () => {",
+          "reason": "patterns/1.md: \"Every explicit promised outcome\" in the title needs evidence; both are verified here."
+        }
+      ]
+    }
+  ]
+}

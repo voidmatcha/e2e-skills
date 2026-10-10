@@ -1,0 +1,62 @@
+{
+  "task": "Cover the recipe browser (`/`): four recipe cards (Lentil soup, Chickpea curry, Herb omelette, Mushroom lasagne), each with a servings stepper and an Add to plan toggle. The stepper never goes below 1 serving. The plan line (`Plan: 2 recipes · 6 servings`) counts the planned recipes and totals their servings, and follows every change. The tag chips filter the cards to one tag at a time, show `No recipes match` when no card has the tag, and a second click on the active chip clears the filter. Plan membership and servings are stored on the server and survive a reload.",
+  "faults": [
+    {
+      "id": "f1-toggle-noop",
+      "class": "surface",
+      "brief_phrase": "an Add to plan toggle",
+      "description": "Add to plan sends the request but the card and the plan line do not change until a reload.",
+      "find": "        state[recipe.id] = updated;\n        render();\n",
+      "replace": "        void updated;\n"
+    },
+    {
+      "id": "f2-plan-ignores-servings",
+      "class": "precision",
+      "brief_phrase": "totals their servings",
+      "description": "The plan line counts two servings per planned recipe whatever the stepper says.",
+      "find": "const servings = planned.reduce((sum, r) => sum + state[r.id].servings, 0);",
+      "replace": "const servings = planned.length * 2;"
+    },
+    {
+      "id": "f3-servings-below-one",
+      "class": "boundary",
+      "brief_phrase": "The stepper never goes below 1 serving",
+      "description": "Fewer at 1 serving goes to 0 servings.",
+      "edits": [
+        {"find": "      const next = Math.max(1, value);\n", "replace": "      const next = Math.max(0, value);\n"},
+        {"find": "entry.servings = Math.max(1, Math.round(body.servings));", "replace": "entry.servings = Math.max(0, Math.round(body.servings));"}
+      ]
+    },
+    {
+      "id": "f4-servings-not-persisted",
+      "class": "persistence",
+      "brief_phrase": "servings are stored on the server and survive a reload",
+      "description": "The server answers with the new servings but keeps the old value; plan membership persists, servings do not.",
+      "find": "      if (typeof body.servings === \"number\") entry.servings = Math.max(1, Math.round(body.servings));\n      return json(res, 200, entry);\n",
+      "replace": "      if (typeof body.servings === \"number\") return json(res, 200, { ...entry, servings: Math.max(1, Math.round(body.servings)) });\n      return json(res, 200, entry);\n"
+    },
+    {
+      "id": "f5-second-click-keeps-filter",
+      "class": "interaction",
+      "brief_phrase": "a second click on the active chip clears the filter",
+      "description": "Clicking the active chip again leaves the filter on.",
+      "find": "chip.addEventListener(\"click\", () => { tag = tag === t ? null : t; render(); });",
+      "replace": "chip.addEventListener(\"click\", () => { tag = t; render(); });"
+    }
+  ],
+  "refactor": [
+    {"find": "<div id=\"rc-cards\" class=\"cards\"></div>", "replace": "<div class=\"grid\"><div id=\"rc-cards\" class=\"grid__cells\"></div></div>"},
+    {"find": "<p id=\"rc-plan\" class=\"plan-line\">", "replace": "<p id=\"rc-plan\" class=\"summary summary--plan\">"},
+    {"find": "<div id=\"rc-tags\" class=\"chips\">", "replace": "<div id=\"rc-tags\" class=\"filter-bar\">"},
+    {"find": "<p id=\"rc-empty\" class=\"empty\" hidden>", "replace": "<p id=\"rc-empty\" class=\"notice notice--empty\" hidden>"},
+    {"find": "chip.className = tag === t ? \"chip chip-on\" : \"chip\";", "replace": "chip.className = tag === t ? \"pill pill--active\" : \"pill\";"},
+    {"find": "article.className = entry.planned ? \"card planned\" : \"card\";", "replace": "article.className = entry.planned ? \"tile tile--chosen\" : \"tile\";"},
+    {"find": "tags.className = \"tags\";", "replace": "tags.className = \"tile__meta\";"},
+    {"find": "servings.className = \"servings\";", "replace": "servings.className = \"tile__count\";"},
+    {"find": "controls.className = \"controls\";", "replace": "controls.className = \"tile__actions\";"},
+    {"find": "rc-cards", "replace": "catalog"},
+    {"find": "rc-plan", "replace": "menu-summary"},
+    {"find": "rc-tags", "replace": "filters"},
+    {"find": "rc-empty", "replace": "no-matches"}
+  ]
+}

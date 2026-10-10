@@ -1,0 +1,7535 @@
+{
+ "protocol_id": "generator-skill-effect-v2",
+ "stage": "screen",
+ "report": "screen.json",
+ "scored_utc": "2026-10-06T07:16:55Z",
+ "scores": [
+  {
+   "call_id": "v2-20-no-skill-r1",
+   "case": "v2-20",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 1,
+   "spec_files": [
+    "tests/reading-list.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/reading-list.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.106984,
+   "elapsed_ms": 35081,
+   "num_turns": 7,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 3,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 2,
+    "repeat_each_runs": 2,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "ls tests && cat tests/*.spec.* playwright.config.mjs README.md",
+     "node_modules/.bin/playwright test --repeat-each 2 2>&1 | tail -30",
+     "f=tests/reading-list.spec.mjs && sed -i '' -E 's/(name: `Mark as (un)?read: Article \\$\\{n\\}`)/\\1, exact: true/; s/(name: \"Mark as (un)?read: Article 5\")/\\1, exact: true/' $f && sed -i '' 's/filter({ hasText: \"Article \\([0-9]*\\)\" })/filter({ has: page.getByText(\"Article \\1\", { exact: true }) })/' $f && grep -n \"exact\" $f | head -20; node_modules/.bin/playwright test --repeat-each 3 2>&1 | tail -15"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.2
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    }
+   ],
+   "faults": {
+    "f1-load-more-noop": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.6,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-load-more-repeats": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.6,
+     "killed": true,
+     "class": "ordering"
+    },
+    "f3-not-disabled-at-end": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.6,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f4-read-not-persisted": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.7,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-hide-read-count-stale": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.6,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 5,
+    "failed": 1,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 7.6
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 5,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 5,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-17-no-skill-r1",
+   "case": "v2-17",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 2,
+   "spec_files": [
+    "tests/trash.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/trash.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0995068,
+   "elapsed_ms": 47282,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Bash": 4,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": false,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 0,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat app.mjs README.md playwright.config.mjs; ls tests; cat tests/*.spec.*",
+     "cat > tests/trash.spec.mjs <<'EOF'\nimport { expect, test } from \"@playwright/test\";\n\nconst notesList = (page) => page.getByRole(\"list\", { name: \"Notes\", exact: true });\nconst trashList = (page) => page.getByRole(\"list\", { name: \"Trash\", exact: true });\n\ntest.beforeEach(async ({ page, request }) => {\n  await request.post(\"/api/reset\");\n  await page.goto(\"/\");\n  await expect(page.getByRole(\"tab\", { ",
+     "node_modules/.bin/playwright test -g \"delete moves\" 2>&1 | head -30",
+     "python3 - <<'EOF'\np='tests/trash.spec.mjs'\ns=open(p).read()\ns=s.replace('toHaveText([/Old draft/, /Meeting notes/]);\\n  await expect(notesList(page).getByText(\"Meeting notes\")).toHaveCount(0);','toHaveText([/Meeting notes/, /Old draft/]);\\n  await page.getByRole(\"tab\", { name: \"Notes\", exact: true }).click();\\n  await expect(notesList(page).getByText(\"Meeting notes\")).toHaveCount(0);')\ns=s.replace"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.0
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    }
+   ],
+   "faults": {
+    "f1-delete-noop": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 22.7,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-restore-keeps-in-trash": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.4,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-empty-not-persisted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 17.2,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f4-trash-count-stale": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 28.1,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-delete-client-only": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.0,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.1
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 22,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 22,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-05-no-skill-r2",
+   "case": "v2-05",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 3,
+   "spec_files": [
+    "tests/booking.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/booking.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0654066,
+   "elapsed_ms": 22153,
+   "num_turns": 5,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 0,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 0,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat README.md playwright.config.mjs && ls tests && cat tests/*",
+     "cat > tests/booking.spec.mjs <<'EOF'\nimport { expect, test } from \"@playwright/test\";\n\nconst slot = (page, time) => page.getByRole(\"listitem\").filter({ hasText: time }).filter({ has: page.locator(\"span\") }).first();\nconst slots = (page) => page.getByRole(\"list\", { name: \"Slots\" });\nconst mine = (page) => page.getByRole(\"list\", { name: \"My bookings\" });\n\ntest.beforeEach(async ({ page, request }) =>"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.0
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    }
+   ],
+   "faults": {
+    "f1-book-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.9,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-booking-not-stored": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.5,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f3-cancel-leaves-slot-taken": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.6,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-conflict-no-refresh": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.0,
+     "killed": true,
+     "class": "recovery"
+    },
+    "f5-count-stale": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.9,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.1
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 24,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 24,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-04-no-skill-r1",
+   "case": "v2-04",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 4,
+   "spec_files": [
+    "tests/settings.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/settings.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0770512,
+   "elapsed_ms": 26572,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "ls tests && cat tests/*.spec.* README.md playwright.config.mjs",
+     "node_modules/.bin/playwright test 2>&1 | tail -40"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.4
+    },
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.4
+    },
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.2
+    }
+   ],
+   "faults": {
+    "f1-save-noop": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 26.0,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-save-never-disabled": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 41.1,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f3-reset-skips-notifications": {
+     "exit": 1,
+     "passed": 9,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 9.4,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-guard-missing": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 39.6,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f5-save-drops-other-tab": {
+     "exit": 1,
+     "passed": 9,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 10.3,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 10,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 4.6
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 12,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 12,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-02-no-skill-r2",
+   "case": "v2-02",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 5,
+   "spec_files": [
+    "tests/search.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/search.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0911234,
+   "elapsed_ms": 55969,
+   "num_turns": 8,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "Write": 1,
+     "Edit": 2,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 3,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cd <work>; cat README.md playwright.config.mjs; ls tests; cat tests/*",
+     "cd <work>; node_modules/.bin/playwright test --reporter line 2>&1 | tail -40"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.6
+    },
+    {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.5
+    },
+    {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.3
+    }
+   ],
+   "faults": {
+    "f1-search-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 7,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 42.5,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-stale-response-wins": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 19.1,
+     "killed": true,
+     "class": "ordering"
+    },
+    "f3-recent-not-persisted": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 24.3,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f4-recent-duplicates": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 24.3,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-clear-keeps-status": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 7,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 42.3,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 7,
+    "failed": 1,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 13.3
+   },
+   "clean": false,
+   "kill_rate": 1.0,
+   "primary": 0.0,
+   "refactor_pass": null,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 12,
+    "p0": 0,
+    "p1p2": 2,
+    "triage": 10,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i",
+     "#9"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-22-no-skill-r1",
+   "case": "v2-22",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 6,
+   "spec_files": [
+    "tests/orders.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/orders.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0728194,
+   "elapsed_ms": 60545,
+   "num_turns": 7,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Bash": 4,
+     "Edit": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": false,
+    "playwright_test_runs": 2,
+    "repeat_each_runs": 2,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 1,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat app.mjs README.md playwright.config.mjs; ls tests; cat tests/*.spec.*",
+     "cat > tests/orders.spec.mjs <<'EOF'\nimport { expect, test } from \"@playwright/test\";\n\nconst list = (page) => page.getByRole(\"list\", { name: \"Orders\" }).getByRole(\"listitem\");\nconst status = (page) => page.getByLabel(\"Status\");\nconst search = (page) => page.getByLabel(\"Search\");\nconst count = (page) => page.locator(\"#or-count\");\n\nasync function expectOrders(page, ids) {\n  await expect(list(page)).t",
+     "sed -i 's|await expectOrders(page, \\[\\]);\\n||; /goto(\"\\/?q=201\")/,+2 s|expectOrders(page, \\[\\])|expectOrders(page, [\"2010\"])|' tests/orders.spec.mjs\nsed -i 's|page.goto(\"/?q=201\")|page.goto(\"/?q=201\")|' tests/orders.spec.mjs\nsed -n 84,94p tests/orders.spec.mjs; node_modules/.bin/playwright test --repeat-each 3 --reporter line 2>&1 | tail -5",
+     "node_modules/.bin/playwright test --repeat-each 3 --reporter line 2>&1 | tail -5; git status --short"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.7
+    },
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.7
+    },
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.7
+    }
+   ],
+   "faults": {
+    "f1-filter-noop": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 7,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 42.1,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-filters-or": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 20.8,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-count-stale": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 7,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 40.8,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-url-not-restored": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.8,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-clear-keeps-search": {
+     "exit": 1,
+     "passed": 9,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.4,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 1,
+    "failed": 9,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 51.6
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 3,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 3,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-18-no-skill-r2",
+   "case": "v2-18",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 7,
+   "spec_files": [
+    "tests/notifications.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/notifications.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.048866799999999995,
+   "elapsed_ms": 28389,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Bash": 2,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": false,
+    "playwright_test_runs": 0,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 0,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat app.mjs README.md playwright.config.mjs; ls tests; cat tests/*.spec.*",
+     "cat > tests/notifications.spec.mjs <<'EOF'\nimport { expect, test } from \"@playwright/test\";\n\ntest.beforeEach(async ({ page, request }) => {\n  await request.post(\"/api/reset\");\n  await page.goto(\"/\");\n});\n\nasync function sendAndWait(page, n) {\n  await page.getByRole(\"button\", { name: \"Send test notification\" }).click();\n  await expect(page.getByText(`${n} sent`, { exact: true })).toBeVisible();\n}\n\n"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 4.3
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 4.3
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 4.3
+    }
+   ],
+   "faults": {
+    "f1-send-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 24.0,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-auto-dismiss-missing": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 6.4,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f3-dismiss-closes-oldest": {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 4.3,
+     "killed": false,
+     "class": "precision"
+    },
+    "f4-queue-unbounded": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 9.9,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f5-aria-live-missing": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 9.3,
+     "killed": true,
+     "class": "a11y"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 3,
+    "failed": 2,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 15.2
+   },
+   "clean": true,
+   "kill_rate": 0.8,
+   "primary": 0.8,
+   "refactor_pass": false,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 11,
+    "p0": 0,
+    "p1p2": 1,
+    "triage": 10,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c",
+     "#4i",
+     "#9"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-10-no-skill-r1",
+   "case": "v2-10",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 8,
+   "spec_files": [
+    "tests/inventory-sort.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/inventory-sort.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0601666,
+   "elapsed_ms": 19910,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Bash": 2,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": false,
+    "playwright_test_runs": 0,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 0,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat app.mjs README.md playwright.config.mjs; ls tests; cat tests/*.spec.*",
+     "cat > tests/inventory-sort.spec.mjs <<'EOF'\nimport { expect, test } from \"@playwright/test\";\n\nconst header = (page, name) => page.getByRole(\"columnheader\", { name });\nconst names = async (page) =>\n  (await page.locator(\"#iv-rows tr td:first-child\").allTextContents()).map((t) =>\n    t.replace(\"Out of stock\", \"\").trim(),\n  );\nconst column = async (page, n) => page.locator(`#iv-rows tr td:nth-child($"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.6
+    },
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.6
+    },
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.7
+    }
+   ],
+   "faults": {
+    "f1-sort-noop": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 10.0,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-aria-sort-stale": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 30.1,
+     "killed": true,
+     "class": "a11y"
+    },
+    "f3-descending-ignored": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 5.0,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-numeric-as-text": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 4.5,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-url-not-read": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.6,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 2,
+    "failed": 8,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 15.9
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 18,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 18,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-18-no-skill-r1",
+   "case": "v2-18",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 9,
+   "spec_files": [
+    "tests/notifications.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/notifications.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.07396780000000001,
+   "elapsed_ms": 32413,
+   "num_turns": 9,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 3,
+     "Glob": 1,
+     "Write": 1,
+     "Edit": 1,
+     "Bash": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 1,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 2,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "node_modules/.bin/playwright test --repeat-each 3 2>&1 | tail -30"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    }
+   ],
+   "faults": {
+    "f1-send-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 19.0,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-auto-dismiss-missing": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.6,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f3-dismiss-closes-oldest": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 2.6,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-queue-unbounded": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.7,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f5-aria-live-missing": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.3,
+     "killed": true,
+     "class": "a11y"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 3,
+    "failed": 2,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 32.7
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 4,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 4,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-02-no-skill-r1",
+   "case": "v2-02",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 10,
+   "spec_files": [
+    "tests/search.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/search.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0841492,
+   "elapsed_ms": 44448,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 0,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat README.md playwright.config.mjs && ls tests && cat tests/*.spec.*",
+     "python3 - <<'E'\nimport re\np='tests/search.spec.mjs'\ns=open(p).read()\na=s.index('  await box(page).fill(\"the\");')\nb=s.index('});',a)\ns=s[:a]+'''  await box(page).fill(\"an\");\n  await expect(status(page)).toHaveText('5 results for \"an\"');\n  await expect(results(page)).toHaveText([\"Alice in Wonderland\", \"Animal Farm\", \"Frankenstein\", \"Jane Eyre\", \"Neuromancer\"]);\n'''+s[b:]\na=s.index(\"  await expect(st"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 1,
+     "passed": 10,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 14.2
+    },
+    {
+     "exit": 1,
+     "passed": 10,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 14.0
+    },
+    {
+     "exit": 1,
+     "passed": 10,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 14.3
+    }
+   ],
+   "faults": {
+    "f1-search-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 10,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 60.2,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-stale-response-wins": {
+     "exit": 1,
+     "passed": 8,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 25.3,
+     "killed": true,
+     "class": "ordering"
+    },
+    "f3-recent-not-persisted": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 40.6,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f4-recent-duplicates": {
+     "exit": 1,
+     "passed": 8,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 25.9,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-clear-keeps-status": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 10,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 63.2,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 10,
+    "failed": 1,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 14.7
+   },
+   "clean": false,
+   "kill_rate": 1.0,
+   "primary": 0.0,
+   "refactor_pass": null,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 11,
+    "p0": 0,
+    "p1p2": 3,
+    "triage": 8,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i",
+     "#9"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-04-no-skill-r2",
+   "case": "v2-04",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 11,
+   "spec_files": [
+    "tests/settings.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/settings.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.11008300000000001,
+   "elapsed_ms": 56939,
+   "num_turns": 9,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 2,
+     "Bash": 3,
+     "Write": 1,
+     "Edit": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 2,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "ls tests && cat tests/*.spec.* README.md playwright.config.mjs",
+     "node_modules/.bin/playwright test --reporter=line 2>&1 | tail -40",
+     "python3 - <<'E'\np='tests/settings.spec.mjs'\nL=open(p).read().split('\\n')\nnew='''test(\"reset restores every field to saved values\", async ({ page }) => {\n  await page.getByLabel(\"Display name\").fill(\"Grace\");\n  await page.getByLabel(\"Bio\").fill(\"Compilers\");\n  await save(page).click();\n  await expect(save(page)).toBeDisabled();\n\n  await page.getByLabel(\"Display name\").fill(\"Other\");\n  await page.ge"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 9,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.7
+    },
+    {
+     "exit": 0,
+     "passed": 9,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.7
+    },
+    {
+     "exit": 0,
+     "passed": 9,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.7
+    }
+   ],
+   "faults": {
+    "f1-save-noop": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 31.6,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-save-never-disabled": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 7,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 42.4,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f3-reset-skips-notifications": {
+     "exit": 1,
+     "passed": 8,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 9.4,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-guard-missing": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 24.1,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f5-save-drops-other-tab": {
+     "exit": 1,
+     "passed": 8,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 9.7,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 9,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 3.7
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 7,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 7,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-23-no-skill-r1",
+   "case": "v2-23",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 12,
+   "spec_files": [
+    "tests/delete-account.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/delete-account.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.051814,
+   "elapsed_ms": 18263,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 1,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "ls tests && cat tests/*.spec.* playwright.config.mjs README.md",
+     "node_modules/.bin/playwright test --repeat-each 2 2>&1 | tail -30"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.1
+    },
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.1
+    },
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.9
+    }
+   ],
+   "faults": {
+    "f1-open-noop": {
+     "exit": 1,
+     "passed": 0,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 24.9,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-confirm-enabled-by-any-text": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.6,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f3-escape-ignored": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 9.9,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-focus-not-restored": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 16.1,
+     "killed": true,
+     "class": "a11y"
+    },
+    "f5-delete-not-persisted": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 2.7,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 4,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.8
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 9,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 9,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-24-no-skill-r2",
+   "case": "v2-24",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 13,
+   "spec_files": [
+    "tests/editor.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/editor.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0864214,
+   "elapsed_ms": 229340,
+   "num_turns": 8,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Bash": 6,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": false,
+    "playwright_test_runs": 3,
+    "repeat_each_runs": 2,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 1,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 0,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat app.mjs README.md playwright.config.mjs; ls tests; cat tests/*.spec.*",
+     "cat > tests/editor.spec.mjs <<'EOF'\nimport { expect, test } from \"@playwright/test\";\n\ntest.beforeEach(async ({ page, request }) => {\n  await request.post(\"/api/reset\");\n  // The editor fills itself from /api/state after load; wait so typing is not overwritten.\n  const loaded = page.waitForResponse(\"**/api/state\");\n  await page.goto(\"/\");\n  await loaded;\n});\n\nconst title = (page) => page.getByLabel",
+     "sed -i 's|  await title(page).press(\"Backspace\");\\n||' tests/editor.spec.mjs\npython3 - <<'EOF'\np=\"tests/editor.spec.mjs\"\ns=open(p).read()\ns=s.replace('  await title(page).press(\"Backspace\");\\n  await title(page).press(\"Backspace\");','  await title(page).press(\"End\");\\n  await title(page).press(\"Backspace\");\\n  await title(page).press(\"Backspace\");',1)\nopen(p,\"w\").write(s)\nEOF\nnode_modules/.bin/pla",
+     "sed -n 31,44p tests/editor.spec.mjs; node_modules/.bin/playwright test --grep \"last typed\" 2>&1 | grep -E \"Expected|Received\"",
+     "sed -i 's/\"Hello wrld\"/\"Hello wxx\"/; s/pressSequentially(\"ld\")/pressSequentially(\"orld\")/' tests/editor.spec.mjs\nnode_modules/.bin/playwright test --repeat-each 5 2>&1 | tail -4; git status --short",
+     "sed -i '' 's/\"Hello wrld\"/\"Hello wxx\"/; s/pressSequentially(\"ld\")/pressSequentially(\"orld\")/' tests/editor.spec.mjs\nnode_modules/.bin/playwright test --repeat-each 5 2>&1 | tail -4"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 6.9
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 7.1
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 6.7
+    }
+   ],
+   "faults": {
+    "f1-autosave-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 25.5,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-stale-snapshot-saved": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 17.6,
+     "killed": true,
+     "class": "ordering"
+    },
+    "f3-publish-keeps-draft": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.0,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f4-discard-client-only": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.0,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-status-text-wrong": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 25.2,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 6.5
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 10,
+    "p0": 0,
+    "p1p2": 2,
+    "triage": 8,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i",
+     "#9"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-11-no-skill-r1",
+   "case": "v2-11",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 14,
+   "spec_files": [
+    "tests/file-manager.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/file-manager.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0705032,
+   "elapsed_ms": 27943,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 1,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cd <work>; ls tests; cat tests/*.mjs README.md playwright.config.mjs",
+     "cd <work>; node_modules/.bin/playwright test --repeat-each 2 2>&1 | tail -40"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.0
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.9
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.9
+    }
+   ],
+   "faults": {
+    "f1-delete-noop": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.4,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-select-all-skips-last": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 3.3,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f3-indeterminate-missing": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 3.2,
+     "killed": true,
+     "class": "a11y"
+    },
+    "f4-undo-client-only": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.9,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-confirm-count-wrong": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.8,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 7,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 40.5
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 14,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 14,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-01-no-skill-r2",
+   "case": "v2-01",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 15,
+   "spec_files": [
+    "tests/checkout.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/checkout.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0748728,
+   "elapsed_ms": 27310,
+   "num_turns": 9,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 4,
+     "Glob": 1,
+     "Write": 1,
+     "Bash": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 1,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "node_modules/.bin/playwright test --repeat-each 2"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.6
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.7
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.7
+    }
+   ],
+   "faults": {
+    "f1-confirm-noop": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.2,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-back-loses-address": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.2,
+     "killed": true,
+     "class": "recovery"
+    },
+    "f3-order-not-stored": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.2,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f4-express-total-wrong": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.2,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-declined-order-stored": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.3,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.7
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 22,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 22,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-21-no-skill-r1",
+   "case": "v2-21",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 16,
+   "spec_files": [
+    "tests/language.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/language.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.052775800000000005,
+   "elapsed_ms": 19038,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat README.md playwright.config.mjs && ls tests && cat tests/*.spec.*",
+     "node_modules/.bin/playwright test 2>&1 | tail -30"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.9
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8
+    }
+   ],
+   "faults": {
+    "f1-switch-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.2,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-lang-attribute-stale": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.3,
+     "killed": true,
+     "class": "a11y"
+    },
+    "f3-button-untranslated": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.3,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-date-not-localized": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.3,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-not-persisted": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.3,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 1.9
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 4,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 4,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-03-no-skill-r2",
+   "case": "v2-03",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 17,
+   "spec_files": [
+    "tests/discussion.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/discussion.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0728302,
+   "elapsed_ms": 28965,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 1,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat README.md playwright.config.mjs && ls tests && cat tests/*.spec.*",
+     "node_modules/.bin/playwright test --repeat-each 2 2>&1 | tail -40"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.3
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.2
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.3
+    }
+   ],
+   "faults": {
+    "f1-post-noop": {
+     "exit": 1,
+     "passed": 0,
+     "failed": 8,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 45.9,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-reply-under-first-comment": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.8,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-dismiss-still-deletes": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.7,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-edit-not-persisted": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.3,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-count-ignores-replies": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 25.0,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 8,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 46.8
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 22,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 22,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-06-no-skill-r2",
+   "case": "v2-06",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 18,
+   "spec_files": [
+    "tests/tags.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/tags.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0572286,
+   "elapsed_ms": 25387,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 1,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "ls tests && cat tests/*.mjs playwright.config.mjs README.md",
+     "node_modules/.bin/playwright test --repeat-each 3 2>&1 | tail -30"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.2
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.2
+    }
+   ],
+   "faults": {
+    "f1-enter-noop": {
+     "exit": 1,
+     "passed": 0,
+     "failed": 7,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 50.1,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-duplicate-case-sensitive": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.7,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f3-limit-off-by-one": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.6,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f4-backspace-removes-first": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.7,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f5-not-persisted": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.2,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 7,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 40.4
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 3,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 3,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-05-no-skill-r1",
+   "case": "v2-05",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 19,
+   "spec_files": [
+    "tests/booking.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/booking.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0662064,
+   "elapsed_ms": 23042,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 1,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat README.md playwright.config.mjs && ls tests && cat tests/*.spec.*",
+     "node_modules/.bin/playwright test --repeat-each 2 2>&1 | tail -30"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.0
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.0
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.0
+    }
+   ],
+   "faults": {
+    "f1-book-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.9,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-booking-not-stored": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.0,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f3-cancel-leaves-slot-taken": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.4,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-conflict-no-refresh": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.0,
+     "killed": true,
+     "class": "recovery"
+    },
+    "f5-count-stale": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.8,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.1
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 21,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 21,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-19-no-skill-r2",
+   "case": "v2-19",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 20,
+   "spec_files": [
+    "tests/profile.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/profile.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.046363400000000006,
+   "elapsed_ms": 18011,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Bash": 2,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": false,
+    "playwright_test_runs": 0,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 0,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat app.mjs README.md playwright.config.mjs; ls tests; cat tests/*.spec.*",
+     "cat > tests/profile.spec.mjs <<'EOF'\nimport { expect, test } from \"@playwright/test\";\n\nconst ERROR = \"Name must be 2\u201330 characters\";\n\ntest.beforeEach(async ({ page, request }) => {\n  await request.post(\"/api/reset\");\n  await page.goto(\"/\");\n  await expect(page.getByLabel(\"Display name\")).toHaveValue(\"Ada Lovelace\");\n});\n\ntest(\"initials update live as the name is typed\", async ({ page }) => {\n  con"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.3
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.3
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.4
+    }
+   ],
+   "faults": {
+    "f1-save-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 29.4,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-initials-only-on-save": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.8,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-accepts-31-characters": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.8,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f4-not-persisted": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.3,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-single-word-two-letters": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.6,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 2,
+    "failed": 4,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 24.1
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 3,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 3,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-23-no-skill-r2",
+   "case": "v2-23",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 21,
+   "spec_files": [
+    "tests/account-deletion.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/account-deletion.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0466462,
+   "elapsed_ms": 17164,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Bash": 2,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": false,
+    "playwright_test_runs": 0,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 0,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat app.mjs README.md playwright.config.mjs; ls tests; cat tests/*.spec.*",
+     "cat > tests/account-deletion.spec.mjs <<'EOF'\nimport { expect, test } from \"@playwright/test\";\n\ntest.beforeEach(async ({ page, request }) => {\n  const res = await request.post(\"/api/reset\");\n  expect(res.ok()).toBeTruthy();\n  await page.goto(\"/\");\n  await expect(page.locator(\"#ac-name\")).toHaveText(\"Ada Lovelace\");\n});\n\nconst openDialog = async (page) => {\n  await page.getByRole(\"button\", { name: "
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8
+    },
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8
+    },
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.8
+    }
+   ],
+   "faults": {
+    "f1-open-noop": {
+     "exit": 1,
+     "passed": 0,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.1,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-confirm-enabled-by-any-text": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.3,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f3-escape-ignored": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.3,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-focus-not-restored": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.8,
+     "killed": true,
+     "class": "a11y"
+    },
+    "f5-delete-not-persisted": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 1.8,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 4,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 22.9
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 10,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 10,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-07-no-skill-r2",
+   "case": "v2-07",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 22,
+   "spec_files": [
+    "tests/inbox.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/inbox.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.063884,
+   "elapsed_ms": 22880,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 1,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat README.md playwright.config.mjs && ls tests && cat tests/*.spec.*",
+     "node_modules/.bin/playwright test --repeat-each 2 2>&1 | tail -30"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.2
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.3
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.3
+    }
+   ],
+   "faults": {
+    "f1-open-noop": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.3,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-read-not-persisted": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.7,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f3-mark-all-keeps-count": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.7,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-filter-shows-read": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.7,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-open-marks-neighbor": {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.2,
+     "killed": false,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 4,
+    "failed": 3,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 18.8
+   },
+   "clean": true,
+   "kill_rate": 0.8,
+   "primary": 0.8,
+   "refactor_pass": false,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 22,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 22,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-14-no-skill-r2",
+   "case": "v2-14",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 23,
+   "spec_files": [
+    "tests/coupon.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/coupon.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0633494,
+   "elapsed_ms": 21123,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "ls tests && cat tests/*.spec.* README.md playwright.config.mjs",
+     "node_modules/.bin/playwright test 2>&1 | tail -30"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 9,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.8
+    },
+    {
+     "exit": 0,
+     "passed": 9,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.8
+    },
+    {
+     "exit": 0,
+     "passed": 9,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.8
+    }
+   ],
+   "faults": {
+    "f1-apply-noop": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 35.0,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-coupons-stack": {
+     "exit": 1,
+     "passed": 8,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.3,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-expired-accepted": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.8,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-remove-keeps-discount": {
+     "exit": 1,
+     "passed": 8,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.3,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f5-not-persisted": {
+     "exit": 1,
+     "passed": 8,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.8,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 9,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 50.8
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 6,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 6,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-13-no-skill-r2",
+   "case": "v2-13",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 24,
+   "spec_files": [
+    "tests/board.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/board.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0589058,
+   "elapsed_ms": 20180,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Bash": 2,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": false,
+    "playwright_test_runs": 0,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 0,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat app.mjs README.md playwright.config.mjs; ls tests; cat tests/*.spec.*",
+     "cat > tests/board.spec.mjs <<'EOF'\nimport { expect, test } from \"@playwright/test\";\n\nconst column = (page, name) => page.getByRole(\"list\", { name, exact: true });\nconst heading = (page, name) => page.getByRole(\"heading\", { name: new RegExp(`^${name} \\\\(\\\\d+\\\\)$`) });\n\ntest.beforeEach(async ({ page, request }) => {\n  const res = await request.post(\"/api/reset\");\n  expect(res.ok()).toBeTruthy();\n  a"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.2
+    }
+   ],
+   "faults": {
+    "f1-move-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 34.5,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-limit-off-by-one": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.2,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f3-card-in-both-columns": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.7,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-move-not-persisted": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.7,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-counts-stale": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 34.8,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 7,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.1
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 17,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 17,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-12-no-skill-r1",
+   "case": "v2-12",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 25,
+   "spec_files": [
+    "tests/expenses.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/expenses.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0676288,
+   "elapsed_ms": 27366,
+   "num_turns": 5,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 0,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 0,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat README.md playwright.config.mjs && ls tests && cat tests/*",
+     "cat > tests/expenses.spec.mjs <<'EOF'\nimport { expect, test } from \"@playwright/test\";\n\nconst ERROR = \"Amount must be a positive number\";\n\ntest.beforeEach(async ({ page, request }) => {\n  await request.post(\"/api/reset\");\n  await page.goto(\"/\");\n});\n\nasync function add(page, description, amount) {\n  await page.getByLabel(\"Description\").fill(description);\n  await page.getByLabel(\"Amount\").fill(amou"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.5
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.5
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.1
+    }
+   ],
+   "faults": {
+    "f1-add-noop": {
+     "exit": 1,
+     "passed": 0,
+     "failed": 8,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 47.0,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-blur-validation-missing": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 25.9,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f3-total-ignores-edit": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.9,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-edit-not-persisted": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 9.1,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-oldest-first": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 20.0,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 8,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 46.0
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 21,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 21,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-14-no-skill-r1",
+   "case": "v2-14",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 26,
+   "spec_files": [
+    "tests/coupon.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/coupon.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.071952,
+   "elapsed_ms": 30070,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 1,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat README.md playwright.config.mjs && ls tests && cat tests/*.spec.*",
+     "node_modules/.bin/playwright test --repeat-each=2 2>&1 | tail -30"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.1
+    },
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.2
+    },
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.1
+    }
+   ],
+   "faults": {
+    "f1-apply-noop": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 7,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 40.7,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-coupons-stack": {
+     "exit": 1,
+     "passed": 9,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.6,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-expired-accepted": {
+     "exit": 1,
+     "passed": 8,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 14.2,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-remove-keeps-discount": {
+     "exit": 1,
+     "passed": 9,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.7,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f5-not-persisted": {
+     "exit": 1,
+     "passed": 9,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.6,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 10,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 56.4
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 10,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 10,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-22-no-skill-r2",
+   "case": "v2-22",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 27,
+   "spec_files": [
+    "tests/orders.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/orders.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0596742,
+   "elapsed_ms": 21743,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat README.md playwright.config.mjs && ls tests && cat tests/*.spec.*",
+     "node_modules/.bin/playwright test --reporter line 2>&1 | tail -30"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.4
+    },
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.5
+    },
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.5
+    }
+   ],
+   "faults": {
+    "f1-filter-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 8,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 45.7,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-filters-or": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 29.2,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-count-stale": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 8,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 45.6,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-url-not-restored": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.6,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-clear-keeps-search": {
+     "exit": 1,
+     "passed": 9,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.3,
+     "killed": true,
+     "class": "interaction"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 1,
+    "failed": 9,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 51.2
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 3,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 3,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-16-no-skill-r2",
+   "case": "v2-16",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 28,
+   "spec_files": [
+    "tests/quiz.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/quiz.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.052270000000000004,
+   "elapsed_ms": 20452,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Bash": 2,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": false,
+    "playwright_test_runs": 0,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 0,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat app.mjs README.md playwright.config.mjs; ls tests; cat tests/*.spec.*",
+     "cat > tests/quiz.spec.mjs <<'EOF'\nimport { expect, test } from \"@playwright/test\";\n\ntest.beforeEach(async ({ page, request }) => {\n  await request.post(\"/api/reset\");\n  await page.goto(\"/\");\n  await expect(page.getByText(\"Question 1 of 3\")).toBeVisible();\n});\n\nconst next = (page) => page.getByRole(\"button\", { name: \"Next\" });\nconst previous = (page) => page.getByRole(\"button\", { name: \"Previous\" }"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.8
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.8
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.7
+    }
+   ],
+   "faults": {
+    "f1-next-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 44.5,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-next-enabled-unanswered": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 19.3,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f3-previous-loses-answer": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.4,
+     "killed": true,
+     "class": "recovery"
+    },
+    "f4-score-skips-last": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.3,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-score-not-persisted": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.8,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.8
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 6,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 6,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-09-no-skill-r1",
+   "case": "v2-09",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 29,
+   "spec_files": [
+    "tests/sign-in.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/sign-in.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.06642580000000001,
+   "elapsed_ms": 26342,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 1,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat README.md playwright.config.mjs && ls tests && cat tests/*.spec.*",
+     "node_modules/.bin/playwright test --repeat-each 3 2>&1 | tail -30"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.8
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.7
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.7
+    }
+   ],
+   "faults": {
+    "f1-send-noop": {
+     "exit": 1,
+     "passed": 0,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 34.4,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-lock-not-enforced": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.3,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f3-lock-carries-over": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.7,
+     "killed": true,
+     "class": "recovery"
+    },
+    "f4-session-not-persisted": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.2,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-wrong-code-text": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.6,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.8
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 8,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 8,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-24-no-skill-r1",
+   "case": "v2-24",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 30,
+   "spec_files": [
+    "tests/editor.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/editor.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0821692,
+   "elapsed_ms": 61682,
+   "num_turns": 7,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 4,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 0,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat README.md playwright.config.mjs && ls tests && cat tests/*.spec.*",
+     "cat > tests/editor.spec.mjs <<'EOF'\nimport { expect, test } from \"@playwright/test\";\n\nconst isState = (r) => new URL(r.url()).pathname === \"/api/state\";\n\n// The page fills the editor from /api/state after load, so wait for it\n// before typing or asserting on a reloaded editor.\nasync function open(page) {\n  const loaded = page.waitForResponse(isState);\n  await page.goto(\"/\");\n  await loaded;\n}\n\nasy",
+     "node_modules/.bin/playwright test tests/editor.spec.mjs --grep \"last typed\" 2>&1 | grep -B5 -A12 \"Expected\"",
+     "python3 - <<'EOF'\np='tests/editor.spec.mjs'\ns=open(p).read()\ns=s.replace('''  await page.getByLabel(\"Title\").pressSequentially(\"ld\");\n  await page.getByLabel(\"Body\").pressSequentially(\"def\");''','''  await page.getByLabel(\"Title\").press(\"End\");\n  await page.getByLabel(\"Title\").pressSequentially(\"ld\");\n  await page.getByLabel(\"Body\").press(\"End\");\n  await page.getByLabel(\"Body\").pressSequentially(\""
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 5.2
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 5.1
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 5.1
+    }
+   ],
+   "faults": {
+    "f1-autosave-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.4,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-stale-snapshot-saved": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 11.2,
+     "killed": true,
+     "class": "ordering"
+    },
+    "f3-publish-keeps-draft": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 5.6,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f4-discard-client-only": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 5.1,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-status-text-wrong": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.4,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 5.2
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 9,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 9,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-17-no-skill-r2",
+   "case": "v2-17",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 31,
+   "spec_files": [
+    "tests/trash.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/trash.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.08301739999999999,
+   "elapsed_ms": 48677,
+   "num_turns": 8,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 3,
+     "Write": 1,
+     "Edit": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 2,
+    "repeat_each_runs": 2,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 1,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 2,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat README.md playwright.config.mjs && ls tests && cat tests/*",
+     "node_modules/.bin/playwright test --repeat-each 2 2>&1 | tail -30",
+     "node_modules/.bin/playwright test --repeat-each 3 2>&1 | tail -8; git status --short"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.7
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.6
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.6
+    }
+   ],
+   "faults": {
+    "f1-delete-noop": {
+     "exit": 1,
+     "passed": 0,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [
+      "Error: http://127.0.0.1:5574/health is already used, make sure that nothing is running on the port/url or set reuseExistingServer:true in config.webServer."
+     ],
+     "ok": false,
+     "seconds": 0.4,
+     "killed": false,
+     "class": "surface"
+    },
+    "f2-restore-keeps-in-trash": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.6,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-empty-not-persisted": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.6,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f4-trash-count-stale": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 35.0,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-delete-client-only": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.0,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.6
+   },
+   "clean": true,
+   "kill_rate": 0.8,
+   "primary": 0.8,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 30,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 30,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-08-no-skill-r1",
+   "case": "v2-08",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 32,
+   "spec_files": [
+    "tests/storefront.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/storefront.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0794888,
+   "elapsed_ms": 28990,
+   "num_turns": 8,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 3,
+     "Glob": 1,
+     "Write": 1,
+     "Bash": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 1,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "node_modules/.bin/playwright test --repeat-each 2"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 3.2
+    },
+    {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 3.3
+    },
+    {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 3.4
+    }
+   ],
+   "faults": {
+    "f1-add-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 30.1,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-detail-off-by-one": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 19.9,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-list-header-count-stale": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.8,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-remove-client-only": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 9.0,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-unknown-product-blank": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 3.7,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 2,
+    "failed": 5,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 30.1
+   },
+   "clean": false,
+   "kill_rate": 1.0,
+   "primary": 0.0,
+   "refactor_pass": null,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 23,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 23,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-16-no-skill-r1",
+   "case": "v2-16",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 33,
+   "spec_files": [
+    "tests/quiz.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/quiz.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0557694,
+   "elapsed_ms": 19229,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Bash": 2,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": false,
+    "playwright_test_runs": 0,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 0,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat app.mjs README.md playwright.config.mjs; ls tests; cat tests/*.spec.*",
+     "cat > tests/quiz.spec.mjs <<'EOF'\nimport { expect, test } from \"@playwright/test\";\n\ntest.beforeEach(async ({ page, request }) => {\n  await request.post(\"/api/reset\");\n  await page.goto(\"/\");\n  await expect(page.getByText(\"Question 1 of 3\")).toBeVisible();\n});\n\nconst answer = (page, name) => page.getByRole(\"radio\", { name }).check();\n\nasync function finish(page, [a, b, c]) {\n  await answer(page, a)"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.1
+    },
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.1
+    },
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.2
+    }
+   ],
+   "faults": {
+    "f1-next-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 8,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 114.6,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-next-enabled-unanswered": {
+     "exit": 1,
+     "passed": 8,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.9,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f3-previous-loses-answer": {
+     "exit": 1,
+     "passed": 9,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.5,
+     "killed": true,
+     "class": "recovery"
+    },
+    "f4-score-skips-last": {
+     "exit": 1,
+     "passed": 8,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.6,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-score-not-persisted": {
+     "exit": 1,
+     "passed": 9,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.1,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 10,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 3.1
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 21,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 21,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-01-no-skill-r1",
+   "case": "v2-01",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 34,
+   "spec_files": [
+    "tests/checkout.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/checkout.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0721756,
+   "elapsed_ms": 27877,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 1,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat README.md playwright.config.mjs && ls tests && cat tests/*.spec.*",
+     "node_modules/.bin/playwright test --repeat-each 2 2>&1 | tail -40"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.4
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.4
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.4
+    }
+   ],
+   "faults": {
+    "f1-confirm-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.3,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-back-loses-address": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.9,
+     "killed": true,
+     "class": "recovery"
+    },
+    "f3-order-not-stored": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.3,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f4-express-total-wrong": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.3,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-declined-order-stored": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.9,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 2,
+    "failed": 3,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 18.7
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 28,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 28,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-07-no-skill-r1",
+   "case": "v2-07",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 35,
+   "spec_files": [
+    "tests/inbox.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/inbox.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.056767200000000004,
+   "elapsed_ms": 20922,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Bash": 2,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": false,
+    "playwright_test_runs": 0,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 0,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat app.mjs README.md playwright.config.mjs; ls tests; cat tests/*.spec.*",
+     "cat > tests/inbox.spec.mjs <<'EOF'\nimport { expect, test } from \"@playwright/test\";\n\ntest.beforeEach(async ({ page, request }) => {\n  const res = await request.post(\"/api/reset\");\n  expect(res.ok()).toBeTruthy();\n  await page.goto(\"/\");\n  await expect(page.getByRole(\"heading\", { name: \"Inbox (3)\" })).toBeVisible();\n});\n\nconst unreadButtons = (page) => page.getByRole(\"button\", { name: /^Open unread"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    }
+   ],
+   "faults": {
+    "f1-open-noop": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.0,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-read-not-persisted": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.6,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f3-mark-all-keeps-count": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.5,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-filter-shows-read": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.5,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-open-marks-neighbor": {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1,
+     "killed": false,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 7,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.1
+   },
+   "clean": true,
+   "kill_rate": 0.8,
+   "primary": 0.8,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 31,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 31,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-03-no-skill-r1",
+   "case": "v2-03",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 36,
+   "spec_files": [
+    "tests/discussion.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/discussion.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.07685320000000001,
+   "elapsed_ms": 26115,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cd <work>; cat README.md playwright.config.mjs; ls tests; cat tests/*",
+     "cd <work>; node_modules/.bin/playwright test 2>&1 | tail -40"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 1,
+     "passed": 7,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.5
+    },
+    {
+     "exit": 1,
+     "passed": 8,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.4
+    },
+    {
+     "exit": 1,
+     "passed": 7,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.9
+    }
+   ],
+   "faults": {
+    "f1-post-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 8,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 114.5,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-reply-under-first-comment": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 39.1,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-dismiss-still-deletes": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 19.1,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-edit-not-persisted": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.6,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-count-ignores-replies": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 19.1,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 9,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 51.9
+   },
+   "clean": false,
+   "kill_rate": 1.0,
+   "primary": 0.0,
+   "refactor_pass": null,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 20,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 20,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-11-no-skill-r2",
+   "case": "v2-11",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 37,
+   "spec_files": [
+    "tests/file-manager.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/file-manager.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0634312,
+   "elapsed_ms": 24236,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Bash": 2,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": false,
+    "playwright_test_runs": 0,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 0,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat app.mjs README.md playwright.config.mjs; ls tests; cat tests/*.spec.*",
+     "cat > tests/file-manager.spec.mjs <<'EOF'\nimport { expect, test } from \"@playwright/test\";\n\nconst NAMES = [\"budget.xlsx\", \"contract.pdf\", \"draft.docx\", \"logo.svg\", \"minutes.txt\", \"photo.jpg\", \"roadmap.md\"];\n\ntest.beforeEach(async ({ page, request }) => {\n  await request.post(\"/api/reset\");\n  await page.goto(\"/\");\n  await expect(page.getByRole(\"checkbox\", { name: /^Select (?!all)/ })).toHaveCount(7"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.7
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.6
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.6
+    }
+   ],
+   "faults": {
+    "f1-delete-noop": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.0,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-select-all-skips-last": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 3.3,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f3-indeterminate-missing": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 3.1,
+     "killed": true,
+     "class": "a11y"
+    },
+    "f4-undo-client-only": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.6,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-confirm-count-wrong": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.4,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 7,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.7
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 18,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 18,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-15-no-skill-r2",
+   "case": "v2-15",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 38,
+   "spec_files": [
+    "tests/address-book.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/address-book.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0912142,
+   "elapsed_ms": 32346,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "ls tests && cat tests/* playwright.config.mjs README.md",
+     "node_modules/.bin/playwright test 2>&1 | tail -40"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 24,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 5.4
+    },
+    {
+     "exit": 0,
+     "passed": 24,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 5.4
+    },
+    {
+     "exit": 0,
+     "passed": 24,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 5.4
+    }
+   ],
+   "faults": {
+    "f1-save-noop": {
+     "exit": 1,
+     "passed": 15,
+     "failed": 9,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 63.8,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-region-preselected": {
+     "exit": 1,
+     "passed": 23,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 11.0,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f3-germany-accepts-four-digits": {
+     "exit": 1,
+     "passed": 23,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 11.2,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f4-two-defaults": {
+     "exit": 1,
+     "passed": 23,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 11.0,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-default-not-persisted": {
+     "exit": 1,
+     "passed": 23,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 11.2,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 24,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 5.5
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 22,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 22,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-10-no-skill-r2",
+   "case": "v2-10",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 39,
+   "spec_files": [
+    "tests/inventory-sort.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/inventory-sort.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.077277,
+   "elapsed_ms": 33625,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 1,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "ls tests && cat tests/*.spec.* README.md playwright.config.mjs",
+     "node_modules/.bin/playwright test --repeat-each 2 2>&1 | tail -30"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 16,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.3
+    },
+    {
+     "exit": 0,
+     "passed": 16,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.3
+    },
+    {
+     "exit": 0,
+     "passed": 16,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.4
+    }
+   ],
+   "faults": {
+    "f1-sort-noop": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 13,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 62.9,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-aria-sort-stale": {
+     "exit": 1,
+     "passed": 8,
+     "failed": 8,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 46.8,
+     "killed": true,
+     "class": "a11y"
+    },
+    "f3-descending-ignored": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 9,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 46.6,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f4-numeric-as-text": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 10,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 46.9,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-url-not-read": {
+     "exit": 1,
+     "passed": 8,
+     "failed": 8,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 47.0,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 16,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 172.3
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 4,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 4,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-15-no-skill-r1",
+   "case": "v2-15",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 40,
+   "spec_files": [
+    "tests/address-book.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/address-book.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0785406,
+   "elapsed_ms": 79236,
+   "num_turns": 7,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Bash": 4,
+     "Edit": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": false,
+    "playwright_test_runs": 2,
+    "repeat_each_runs": 2,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 1,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "ls; ls tests; cat README.md app.mjs playwright.config.mjs tests/*",
+     "cat > tests/address-book.spec.mjs <<'EOF'\nimport { expect, test } from \"@playwright/test\";\n\ntest.beforeEach(async ({ page, request }) => {\n  await request.post(\"/api/reset\");\n  await page.goto(\"/\");\n});\n\nasync function save(page, country, region, postal) {\n  await page.getByLabel(\"Country\").selectOption({ label: country });\n  await page.getByLabel(\"Region\").selectOption(region);\n  await page.getBy",
+     "sed -i 's|getByRole(\"button\", { name: \"Set as default\" })|getByRole(\"button\", { name: /^Set .* as default$/ })|' tests/address-book.spec.mjs\nnode_modules/.bin/playwright test --repeat-each 3 2>&1 | tail -8; git status --short",
+     "node_modules/.bin/playwright test --repeat-each 3 2>&1 | tail -8"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.3
+    },
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.2
+    },
+    {
+     "exit": 0,
+     "passed": 10,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.2
+    }
+   ],
+   "faults": {
+    "f1-save-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 8,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 47.0,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-region-preselected": {
+     "exit": 1,
+     "passed": 9,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 9.0,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f3-germany-accepts-four-digits": {
+     "exit": 1,
+     "passed": 9,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.7,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f4-two-defaults": {
+     "exit": 1,
+     "passed": 9,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.4,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-default-not-persisted": {
+     "exit": 1,
+     "passed": 9,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.8,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 10,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 3.3
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 9,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 9,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-12-no-skill-r2",
+   "case": "v2-12",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 41,
+   "spec_files": [
+    "tests/expenses.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/expenses.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.08131060000000001,
+   "elapsed_ms": 36411,
+   "num_turns": 7,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 3,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 2,
+    "repeat_each_runs": 1,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cd <work>; cat README.md playwright.config.mjs; ls tests; cat tests/*.spec.*",
+     "cd <work>; node_modules/.bin/playwright test --reporter line 2>&1 | tail -40",
+     "cd <work>; node_modules/.bin/playwright test tests/expenses.spec.mjs --repeat-each 3 --reporter line 2>&1 | tail -3"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.2
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.2
+    },
+    {
+     "exit": 0,
+     "passed": 8,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 3.2
+    }
+   ],
+   "faults": {
+    "f1-add-noop": {
+     "exit": 1,
+     "passed": 0,
+     "failed": 8,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 46.4,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-blur-validation-missing": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 25.1,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f3-total-ignores-edit": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.8,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-edit-not-persisted": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.6,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-oldest-first": {
+     "exit": 1,
+     "passed": 5,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 19.6,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 0,
+    "failed": 8,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 47.0
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 25,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 25,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-13-no-skill-r1",
+   "case": "v2-13",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 42,
+   "spec_files": [
+    "tests/board.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/board.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.05847960000000001,
+   "elapsed_ms": 19855,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Bash": 2,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": false,
+    "playwright_test_runs": 0,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 0,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat app.mjs README.md playwright.config.mjs; ls tests; cat tests/*.spec.*",
+     "cat > tests/board.spec.mjs <<'EOF'\nimport { expect, test } from \"@playwright/test\";\n\nconst column = (page, name) => page.locator(`section[data-column=\"${name}\"]`);\nconst cardIn = (page, name, title) => column(page, name).getByRole(\"listitem\").filter({ hasText: title });\n\ntest.beforeEach(async ({ page, request }) => {\n  await request.post(\"/api/reset\");\n  await page.goto(\"/\");\n  await expect(column"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.0
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.0
+    },
+    {
+     "exit": 0,
+     "passed": 6,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.0
+    }
+   ],
+   "faults": {
+    "f1-move-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 5,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 28.9,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-limit-off-by-one": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 12.4,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f3-card-in-both-columns": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.4,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-move-not-persisted": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.8,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-counts-stale": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.8,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 1.9
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 0,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 0,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": []
+   }
+  },
+  {
+   "call_id": "v2-09-no-skill-r2",
+   "case": "v2-09",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 43,
+   "spec_files": [
+    "tests/sign-in.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/sign-in.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0674652,
+   "elapsed_ms": 24893,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 1,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "ls tests && cat tests/*.spec.* playwright.config.mjs README.md",
+     "node_modules/.bin/playwright test --repeat-each 3 2>&1 | tail -20"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.3
+    },
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.3
+    },
+    {
+     "exit": 0,
+     "passed": 4,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.2
+    }
+   ],
+   "faults": {
+    "f1-send-noop": {
+     "exit": 1,
+     "passed": 0,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.0,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-lock-not-enforced": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.7,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f3-lock-carries-over": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.2,
+     "killed": true,
+     "class": "recovery"
+    },
+    "f4-session-not-persisted": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.7,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-wrong-code-text": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.0,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 4,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.2
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 7,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 7,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-21-no-skill-r2",
+   "case": "v2-21",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 44,
+   "spec_files": [
+    "tests/language.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/language.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.05895260000000001,
+   "elapsed_ms": 21453,
+   "num_turns": 9,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 4,
+     "Glob": 1,
+     "Write": 1,
+     "Bash": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 1,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "node_modules/.bin/playwright test --repeat-each 2"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.7
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.7
+    },
+    {
+     "exit": 0,
+     "passed": 5,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.7
+    }
+   ],
+   "faults": {
+    "f1-switch-noop": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.1,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-lang-attribute-stale": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.0,
+     "killed": true,
+     "class": "a11y"
+    },
+    "f3-button-untranslated": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.1,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-date-not-localized": {
+     "exit": 1,
+     "passed": 1,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 23.1,
+     "killed": true,
+     "class": "precision"
+    },
+    "f5-not-persisted": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.2,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 1.7
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 4,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 4,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-19-no-skill-r1",
+   "case": "v2-19",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 45,
+   "spec_files": [
+    "tests/profile.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/profile.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0496438,
+   "elapsed_ms": 18255,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Bash": 2,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": false,
+    "playwright_test_runs": 0,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 0,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat app.mjs README.md playwright.config.mjs; ls tests; cat tests/*.spec.*",
+     "cat > tests/profile.spec.mjs <<'EOF'\nimport { expect, test } from \"@playwright/test\";\n\nconst ERROR = \"Name must be 2\u201330 characters\";\n\ntest.beforeEach(async ({ page, request }) => {\n  await request.post(\"/api/reset\");\n  await page.goto(\"/\");\n  // Wait for the initial profile fetch so it cannot overwrite what we type.\n  await expect(page.getByLabel(\"Display name\")).toHaveValue(\"Ada Lovelace\");\n});\n\n"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 9,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.5
+    },
+    {
+     "exit": 0,
+     "passed": 9,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.5
+    },
+    {
+     "exit": 0,
+     "passed": 9,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.5
+    }
+   ],
+   "faults": {
+    "f1-save-noop": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 6,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 34.6,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-initials-only-on-save": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.5,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-accepts-31-characters": {
+     "exit": 1,
+     "passed": 8,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.9,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f4-not-persisted": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.5,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-single-word-two-letters": {
+     "exit": 1,
+     "passed": 7,
+     "failed": 2,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 13.5,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 3,
+    "failed": 6,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 35.2
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 2,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 2,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-20-no-skill-r2",
+   "case": "v2-20",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 46,
+   "spec_files": [
+    "tests/reading-list.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/reading-list.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.059259000000000006,
+   "elapsed_ms": 35616,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Bash": 4,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": false,
+    "playwright_test_runs": 2,
+    "repeat_each_runs": 2,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 2,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 0,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat app.mjs README.md playwright.config.mjs; ls tests; cat tests/*.spec.*",
+     "cat > tests/reading-list.spec.mjs <<'EOF'\nimport { expect, test } from \"@playwright/test\";\n\nconst items = (page) => page.getByRole(\"list\", { name: \"Articles\" }).getByRole(\"listitem\");\n\ntest.beforeEach(async ({ page, request }) => {\n  await request.post(\"/api/reset\");\n  await page.goto(\"/\");\n  await expect(items(page)).toHaveCount(10);\n});\n\ntest(\"loads ten articles at a time without repeats\", async",
+     "sed -i -E 's/\\{ name: \"(Mark as (un)?read: Article [0-9]+)\" \\}/{ name: \"\\1\", exact: true }/' tests/reading-list.spec.mjs\nnode_modules/.bin/playwright test --repeat-each 3 --reporter line 2>&1 | tail -8; git status --short",
+     "sed -i '' -E 's/\\{ name: \"(Mark as (un)?read: Article [0-9]+)\" \\}/{ name: \"\\1\", exact: true }/' tests/reading-list.spec.mjs\nnode_modules/.bin/playwright test --repeat-each 3 --reporter line 2>&1 | tail -8; git status --short"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 3,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.6
+    },
+    {
+     "exit": 0,
+     "passed": 3,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.7
+    },
+    {
+     "exit": 0,
+     "passed": 3,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 1.6
+    }
+   ],
+   "faults": {
+    "f1-load-more-noop": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.1,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-load-more-repeats": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.1,
+     "killed": true,
+     "class": "ordering"
+    },
+    "f3-not-disabled-at-end": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.1,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f4-read-not-persisted": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.1,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-hide-read-count-stale": {
+     "exit": 1,
+     "passed": 2,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 6.7,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 1.6
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 4,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 4,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c",
+     "#4i"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-06-no-skill-r1",
+   "case": "v2-06",
+   "arm": "no-skill",
+   "repetition": 1,
+   "ordinal": 47,
+   "spec_files": [
+    "tests/tag-editor.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/tag-editor.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.052753799999999997,
+   "elapsed_ms": 21711,
+   "num_turns": 4,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Bash": 2,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": false,
+    "playwright_test_runs": 0,
+    "repeat_each_runs": 0,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 0,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "cat app.mjs README.md playwright.config.mjs; ls tests; cat tests/*.spec.*",
+     "cat > tests/tag-editor.spec.mjs <<'EOF'\nimport { expect, test } from \"@playwright/test\";\n\nasync function open(page) {\n  const loaded = page.waitForResponse((r) => r.url().endsWith(\"/api/tags\") && r.request().method() === \"GET\");\n  await page.goto(\"/\");\n  await loaded;\n}\n\nasync function addTag(page, tag) {\n  await page.getByLabel(\"Add a tag\").fill(tag);\n  await page.getByLabel(\"Add a tag\").press(\"E"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.0
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.1
+    }
+   ],
+   "faults": {
+    "f1-enter-noop": {
+     "exit": 1,
+     "passed": 0,
+     "failed": 7,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 49.8,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-duplicate-case-sensitive": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.5,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f3-limit-off-by-one": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.5,
+     "killed": true,
+     "class": "boundary"
+    },
+    "f4-backspace-removes-first": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.6,
+     "killed": true,
+     "class": "interaction"
+    },
+    "f5-not-persisted": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.1,
+     "killed": true,
+     "class": "persistence"
+    }
+   },
+   "refactor": {
+    "exit": 0,
+    "passed": 7,
+    "failed": 0,
+    "skipped": 0,
+    "errors": [],
+    "ok": true,
+    "seconds": 2.0
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": true,
+   "refactor_score": 1.0,
+   "scan": {
+    "total": 4,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 4,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10c"
+    ]
+   }
+  },
+  {
+   "call_id": "v2-08-no-skill-r2",
+   "case": "v2-08",
+   "arm": "no-skill",
+   "repetition": 2,
+   "ordinal": 48,
+   "spec_files": [
+    "tests/storefront.spec.mjs"
+   ],
+   "tests_files": [
+    "tests/storefront.spec.mjs"
+   ],
+   "out_of_scope_writes": [],
+   "cost_usd": 0.0719184,
+   "elapsed_ms": 26815,
+   "num_turns": 6,
+   "timeout": false,
+   "deliverable": true,
+   "compliance": {
+    "tool_counts": {
+     "Read": 1,
+     "Bash": 2,
+     "Write": 1,
+     "StructuredOutput": 1
+    },
+    "read_generator_skill": false,
+    "read_lean_skill": false,
+    "generator_reference_files_read": [],
+    "read_reviewer_skill": false,
+    "read_app_source": true,
+    "playwright_test_runs": 1,
+    "repeat_each_runs": 1,
+    "scanner_runs": 0,
+    "exploration_commands": 0,
+    "git_status_calls": 0,
+    "agent_spawns": 0,
+    "write_or_edit_calls": 1,
+    "writes_outside_tests": [],
+    "bash_commands": [
+     "ls tests && cat tests/* playwright.config.mjs README.md",
+     "node_modules/.bin/playwright test --repeat-each 2 2>&1 | tail -30"
+    ]
+   },
+   "self_reported_status": "complete",
+   "clean_runs": [
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.6
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.5
+    },
+    {
+     "exit": 0,
+     "passed": 7,
+     "failed": 0,
+     "skipped": 0,
+     "errors": [],
+     "ok": true,
+     "seconds": 2.5
+    }
+   ],
+   "faults": {
+    "f1-add-noop": {
+     "exit": 1,
+     "passed": 3,
+     "failed": 4,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 24.0,
+     "killed": true,
+     "class": "surface"
+    },
+    "f2-detail-off-by-one": {
+     "exit": 1,
+     "passed": 4,
+     "failed": 3,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 18.7,
+     "killed": true,
+     "class": "precision"
+    },
+    "f3-list-header-count-stale": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 7.9,
+     "killed": true,
+     "class": "precision"
+    },
+    "f4-remove-client-only": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 8.0,
+     "killed": true,
+     "class": "persistence"
+    },
+    "f5-unknown-product-blank": {
+     "exit": 1,
+     "passed": 6,
+     "failed": 1,
+     "skipped": 0,
+     "errors": [],
+     "ok": false,
+     "seconds": 2.6,
+     "killed": true,
+     "class": "precision"
+    }
+   },
+   "refactor": {
+    "exit": 1,
+    "passed": 6,
+    "failed": 1,
+    "skipped": 0,
+    "errors": [],
+    "ok": false,
+    "seconds": 7.9
+   },
+   "clean": true,
+   "kill_rate": 1.0,
+   "primary": 1.0,
+   "refactor_pass": false,
+   "refactor_score": 0.0,
+   "scan": {
+    "total": 25,
+    "p0": 0,
+    "p1p2": 0,
+    "triage": 25,
+    "p0_candidate": 0,
+    "exit": 0,
+    "pattern_ids": [
+     "#10a",
+     "#10c",
+     "#4i"
+    ]
+   }
+  }
+ ]
+}

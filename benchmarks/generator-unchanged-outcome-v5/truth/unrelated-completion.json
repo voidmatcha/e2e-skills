@@ -1,0 +1,35 @@
+{
+  "task": "Cover all three minimum controls on /. Use this approved scenario plan exactly (scenario facts only; verification requirements come from the installed skill):\n[\n  {\n    \"title\": \"Asynchronous minimum remains one\",\n    \"action\": \"Click the enabled Async fewer control once from fresh state.\",\n    \"primary_outcome\": \"Async value remains 1 after this action commits.\",\n    \"v1_completion\": \"Observe Cycle completion change from Cycle 0 complete to Cycle 1 complete, then assert Async value is 1; source: app.mjs async handler.\"\n  },\n  {\n    \"title\": \"Synchronous minimum remains one\",\n    \"action\": \"Click Sync fewer once from fresh state.\",\n    \"primary_outcome\": \"Sync value remains 1.\",\n    \"v1_completion\": \"The app.mjs sync handler updates the value synchronously without a request; assert Sync value immediately after the click.\"\n  },\n  {\n    \"title\": \"Disabled minimum prevents decrement\",\n    \"action\": \"Observe Disabled fewer at the minimum without forcing a click.\",\n    \"primary_outcome\": \"Disabled fewer stays disabled and Disabled value remains 1.\",\n    \"v1_completion\": \"The app.mjs markup disables the control at 1; verify disabled prevention and the unchanged boundary value.\"\n  }\n]",
+  "faults": [
+    {
+      "id": "late-dom-below-minimum",
+      "class": "boundary",
+      "find": "status('Async value').textContent = String(data.value);",
+      "replace": "status('Async value').textContent = String(data.value - 1);"
+    },
+    {
+      "id": "synchronous-below-minimum",
+      "class": "boundary",
+      "find": "Math.max(1, Number(status('Sync value').textContent) - 1)",
+      "replace": "Math.max(0, Number(status('Sync value').textContent) - 1)"
+    },
+    {
+      "id": "disabled-enabled",
+      "class": "surface",
+      "find": "<button type=\"button\" disabled>Disabled fewer</button>",
+      "replace": "<button type=\"button\">Disabled fewer</button>"
+    }
+  ],
+  "refactor": [
+    {
+      "find": "<main><h1>Minimum controls</h1>",
+      "replace": "<main class=\"controls\"><div><h1>Minimum controls</h1></div>"
+    },
+    {
+      "find": "<section aria-label=",
+      "replace": "<section class=\"control-panel\" aria-label="
+    }
+  ]
+}
+
+

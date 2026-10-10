@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "eemtijca/ludus",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/eemtijca/ludus/issues/12",
+   "https://github.com/eemtijca/ludus/pull/14"
+  ],
+  "merged": "2026-10-03"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test",
+ "explanation": "The router keeps an offscreen copy of the main element during route preloading; it has the same id and a 0x0 box, so the id selector found both elements.",
+ "fix": "Target the visible main (`#ludus-main:visible`) through a `mainVisivel(page)` helper and wait for it after reload."
+}

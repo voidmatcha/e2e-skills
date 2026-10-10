@@ -1,0 +1,1353 @@
+{
+  "schema_version": 1,
+  "corpus_visibility": "public-development",
+  "intended_use": "Preregistered public development reviewer holdout v17 of 36 original synthetic Playwright and Cypress suites for a three-arm formal-severity-prompt comparison; not sealed generalization evidence.",
+  "contamination_risk": "Public cases and labels authored by an AI model from the current reviewer references; future evaluations may have been exposed to this corpus.",
+  "labeling": {
+    "procedure": "An AI model (Codex gpt-6-sol) authored the cases and labels from the current reviewer references. A Claude subagent and Codex gpt-6-sol then labeled all 36 cases blind from sources and skill only; 35 of 40 author findings matched both. A Claude subagent arbiter resolved the disputes from quoted reference text on 2026-09-28. No human labeled cases. No evaluation model run has been made on this corpus.",
+    "limitations": "All author, blind labeler, and arbiter decisions came from AI models, not human experts. Optional labels mark tolerated contract boundaries. The corpus is public development evidence, synthetic and original, and its author had the current references in view.",
+    "instance_severities": "#1 P1 when one title promise is verified; #23 P0 when a guard-suppressed fixture makes a negative assertion pass; other severities follow the current reviewer reference and the blind adjudication."
+  },
+  "cases": [
+    {
+      "id": "v17-pw-01",
+      "split": "public-development-v17",
+      "framework": "playwright",
+      "design_note": "#1 partial versus zero promise verification; pattern-reference.md #1 and reporting.md P0 boundary. Focus: instance severity decisions.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-pw-01/tests/estuary.spec.ts",
+          "path": "tests/estuary.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-001",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/estuary.spec.ts",
+          "line": 2,
+          "source_line": "test('shows water height and tide phase', async ({ page }) => {",
+          "reason": "pattern-reference.md #1: height has evidence but phase does not; one verified promise makes this P1, anchored at the declaration per semantic-review.md."
+        },
+        {
+          "finding_id": "V17-002",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/estuary.spec.ts",
+          "line": 2,
+          "source_line": "test('shows water height and tide phase', async ({ page }) => {",
+          "reason": "reporting.md P0 requires no real verification; height is checked."
+        },
+        {
+          "finding_id": "V17-003",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/estuary.spec.ts",
+          "line": 6,
+          "source_line": "test('shows salinity and sampling time', async ({ page }) => {",
+          "reason": "pattern-reference.md #1: URL proves neither title outcome, meeting reporting.md P0 boundary."
+        }
+      ]
+    },
+    {
+      "id": "v17-pw-02",
+      "split": "public-development-v17",
+      "framework": "playwright",
+      "design_note": "#23 negative assertion made green by fixture render guard; pattern-reference.md #23 field anchor. Focus: anchoring decisions.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-pw-02/src/BloomTray.tsx",
+          "path": "src/BloomTray.tsx"
+        },
+        {
+          "source": "files/holdout-v17/v17-pw-02/tests/fixtures/bulbs.ts",
+          "path": "tests/fixtures/bulbs.ts"
+        },
+        {
+          "source": "files/holdout-v17/v17-pw-02/tests/bloom.spec.ts",
+          "path": "tests/bloom.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-004",
+          "kind": "finding",
+          "pattern_id": "#23",
+          "severity": "P0",
+          "file": "tests/fixtures/bulbs.ts",
+          "line": 2,
+          "source_line": "{ id: 'iris-7', sprouted: false },",
+          "reason": "Blind-label adjudication (2026-09-28): references/patterns/4.md:117 'SKIP - the test is an empty-state / no-results case that also asserts a positive counterpart ... It does not cover the `#23` case: when a render guard suppresses seeded items ... the positive counterpart proves nothing.' | references/patterns/4.md:119 'FLAG P1 - the locator appears nowhere else on that test's execution path ... and nothing positive is asserted alongside.' | references/patterns/23.md:14 'The negative assertion or missing-element failure it causes is supporting evidence, not the causal line.' The #4i FLAG conditions are met literally, and 4.md:117 explicitly says #4i's skip does not rescue a #23 case, so flagging #4i there cannot be a false positive. On the other side, 23.md:14 and semantic-review.md:93 support treating the assertion as #23 evidence only, so neither reading is mandatory."
+        },
+        {
+          "finding_id": "V17-005",
+          "kind": "optional",
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "tests/bloom.spec.ts",
+          "line": 7,
+          "source_line": "await expect(page.getByTestId('sprout')).toHaveCount(0);",
+          "reason": "Blind-label adjudication (2026-09-28): references/patterns/4.md:117 'SKIP - the test is an empty-state / no-results case that also asserts a positive counterpart ... It does not cover the `#23` case: when a render guard suppresses seeded items ... the positive counterpart proves nothing.' | references/patterns/4.md:119 'FLAG P1 - the locator appears nowhere else on that test's execution path ... and nothing positive is asserted alongside.' | references/patterns/23.md:14 'The negative assertion or missing-element failure it causes is supporting evidence, not the causal line.' The #4i FLAG conditions are met literally, and 4.md:117 explicitly says #4i's skip does not rescue a #23 case, so flagging #4i there cannot be a false positive. On the other side, 23.md:14 and semantic-review.md:93 support treating the assertion as #23 evidence only, so neither reading is mandatory."
+        }
+      ]
+    },
+    {
+      "id": "v17-pw-03",
+      "split": "public-development-v17",
+      "framework": "playwright",
+      "design_note": "#5a conditional assertion versus optional action branch; semantic-review.md #5a.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-pw-03/tests/meteor.spec.ts",
+          "path": "tests/meteor.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-006",
+          "kind": "finding",
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "tests/meteor.spec.ts",
+          "line": 5,
+          "source_line": "if (await warning.isVisible()) {",
+          "reason": "pattern-reference.md #5a: false branch skips the only promised warning assertion."
+        },
+        {
+          "finding_id": "V17-007",
+          "kind": "fp_guard",
+          "pattern_id": "#5a",
+          "severity": "P0",
+          "file": "tests/meteor.spec.ts",
+          "line": 12,
+          "source_line": "if (await tip.isVisible()) await tip.getByRole('button', { name: 'Close' }).click();",
+          "reason": "semantic-review.md #5a excludes action-only optional blocker branches with unconditional outcome assertion."
+        }
+      ]
+    },
+    {
+      "id": "v17-pw-04",
+      "split": "public-development-v17",
+      "framework": "playwright",
+      "design_note": "#3 swallowed assertion in reached helper; semantic-review.md swallowed-operation anchor and consolidation. Focus: anchoring and consolidation decisions.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-pw-04/tests/support/compass.ts",
+          "path": "tests/support/compass.ts"
+        },
+        {
+          "source": "files/holdout-v17/v17-pw-04/tests/compass.spec.ts",
+          "path": "tests/compass.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-008",
+          "kind": "finding",
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "tests/support/compass.ts",
+          "line": 4,
+          "source_line": "await expect(page.getByTestId('bearing')).toHaveText('North');",
+          "reason": "pattern-reference.md #3: reached helper swallows its sole assertion without rethrow; anchor the protected assertion."
+        },
+        {
+          "finding_id": "V17-009",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/compass.spec.ts",
+          "line": 3,
+          "source_line": "test('shows north bearing', async ({ page }) => {",
+          "reason": "semantic-review.md consolidation keeps the causal swallow as one #3 finding."
+        }
+      ]
+    },
+    {
+      "id": "v17-pw-05",
+      "split": "public-development-v17",
+      "framework": "playwright",
+      "design_note": "#4a invariant versus #4c-4e Locator one-shot state; pattern-reference.md #4. Also consolidates #4f and #6 on one invariant expression at worst severity per semantic-review.md consolidation. Focus: consolidation decisions.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-pw-05/tests/kiln.spec.ts",
+          "path": "tests/kiln.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-010",
+          "kind": "finding",
+          "pattern_id": "#4a",
+          "severity": "P0",
+          "file": "tests/kiln.spec.ts",
+          "line": 5,
+          "source_line": "expect(temperature).toBeGreaterThan(0);",
+          "reason": "Blind-label adjudication (2026-09-28): references/semantic-review.md:89 'If a single code block triggers multiple checks ... report it as ONE finding with all rule numbers in the heading (e.g., `[P0] #4f + #6: ...`).' | references/patterns/1.md:28 'Anchor #1 to the test/setup declaration whose title contains the unverified promise. A constant or unrelated assertion that fails to prove the noun is supporting evidence, not a second #1 finding.' | references/semantic-review.md:93 'Report the single causal line ... An adjacent explanatory or assertion line is evidence, not a second finding.' Codex's '#4f + #6' is the exact heading form the consolidation rule prescribes, so it should score as the #4f P0 label. For #1, patterns/1.md:28 reads a constant assertion as evidence for a #1 finding at the title. The single-causal-line contract, though, supports reporting the invariant assertion as the one finding. No text picks between the two, so #1 at the title is tolerated rather than required. Line 11 has the same shape (its only assertion is the invariant #4f), so the same treatment applies there."
+        },
+        {
+          "finding_id": "V17-011",
+          "kind": "finding",
+          "pattern_id": "#4c-4e",
+          "severity": "P1",
+          "file": "tests/kiln.spec.ts",
+          "line": 9,
+          "source_line": "expect(await page.getByTestId('cooling').isVisible()).toBe(true);",
+          "reason": "Blind-label adjudication (2026-09-28): references/semantic-review.md:89 'If a single code block triggers multiple checks ... report it as ONE finding with all rule numbers in the heading (e.g., `[P0] #4f + #6: ...`).' | references/patterns/1.md:28 'Anchor #1 to the test/setup declaration whose title contains the unverified promise. A constant or unrelated assertion that fails to prove the noun is supporting evidence, not a second #1 finding.' | references/semantic-review.md:93 'Report the single causal line ... An adjacent explanatory or assertion line is evidence, not a second finding.' Codex's '#4f + #6' is the exact heading form the consolidation rule prescribes, so it should score as the #4f P0 label. For #1, patterns/1.md:28 reads a constant assertion as evidence for a #1 finding at the title. The single-causal-line contract, though, supports reporting the invariant assertion as the one finding. No text picks between the two, so #1 at the title is tolerated rather than required. Line 11 has the same shape (its only assertion is the invariant #4f), so the same treatment applies there."
+        },
+        {
+          "finding_id": "V17-012",
+          "kind": "finding",
+          "pattern_id": "#4f",
+          "severity": "P0",
+          "file": "tests/kiln.spec.ts",
+          "line": 13,
+          "source_line": "expect(await page.evaluate(() => document.querySelector('[data-testid=seal]')) || page.locator('[data-testid=seal]')).toBeTruthy();",
+          "reason": "Blind-label adjudication (2026-09-28): references/semantic-review.md:89 'If a single code block triggers multiple checks ... report it as ONE finding with all rule numbers in the heading (e.g., `[P0] #4f + #6: ...`).' | references/patterns/1.md:28 'Anchor #1 to the test/setup declaration whose title contains the unverified promise. A constant or unrelated assertion that fails to prove the noun is supporting evidence, not a second #1 finding.' | references/semantic-review.md:93 'Report the single causal line ... An adjacent explanatory or assertion line is evidence, not a second finding.' Codex's '#4f + #6' is the exact heading form the consolidation rule prescribes, so it should score as the #4f P0 label. For #1, patterns/1.md:28 reads a constant assertion as evidence for a #1 finding at the title. The single-causal-line contract, though, supports reporting the invariant assertion as the one finding. No text picks between the two, so #1 at the title is tolerated rather than required. Line 11 has the same shape (its only assertion is the invariant #4f), so the same treatment applies there. Composite headings #4f + #6, #4f #6 are scored as #4f."
+        },
+        {
+          "finding_id": "V17-013",
+          "kind": "fp_guard",
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "tests/kiln.spec.ts",
+          "line": 13,
+          "source_line": "expect(await page.evaluate(() => document.querySelector('[data-testid=seal]')) || page.locator('[data-testid=seal]')).toBeTruthy();",
+          "reason": "Blind-label adjudication (2026-09-28): references/semantic-review.md:89 'If a single code block triggers multiple checks ... report it as ONE finding with all rule numbers in the heading (e.g., `[P0] #4f + #6: ...`).' | references/patterns/1.md:28 'Anchor #1 to the test/setup declaration whose title contains the unverified promise. A constant or unrelated assertion that fails to prove the noun is supporting evidence, not a second #1 finding.' | references/semantic-review.md:93 'Report the single causal line ... An adjacent explanatory or assertion line is evidence, not a second finding.' Codex's '#4f + #6' is the exact heading form the consolidation rule prescribes, so it should score as the #4f P0 label. For #1, patterns/1.md:28 reads a constant assertion as evidence for a #1 finding at the title. The single-causal-line contract, though, supports reporting the invariant assertion as the one finding. No text picks between the two, so #1 at the title is tolerated rather than required. Line 11 has the same shape (its only assertion is the invariant #4f), so the same treatment applies there."
+        },
+        {
+          "finding_id": "V17-072",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/kiln.spec.ts",
+          "line": 2,
+          "source_line": "test('fires above minimum heat', async ({ page }) => {",
+          "kind": "optional",
+          "reason": "Blind-label adjudication (2026-09-28): references/semantic-review.md:89 'If a single code block triggers multiple checks ... report it as ONE finding with all rule numbers in the heading (e.g., `[P0] #4f + #6: ...`).' | references/patterns/1.md:28 'Anchor #1 to the test/setup declaration whose title contains the unverified promise. A constant or unrelated assertion that fails to prove the noun is supporting evidence, not a second #1 finding.' | references/semantic-review.md:93 'Report the single causal line ... An adjacent explanatory or assertion line is evidence, not a second finding.' Codex's '#4f + #6' is the exact heading form the consolidation rule prescribes, so it should score as the #4f P0 label. For #1, patterns/1.md:28 reads a constant assertion as evidence for a #1 finding at the title. The single-causal-line contract, though, supports reporting the invariant assertion as the one finding. No text picks between the two, so #1 at the title is tolerated rather than required. Line 11 has the same shape (its only assertion is the invariant #4f), so the same treatment applies there."
+        },
+        {
+          "finding_id": "V17-073",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/kiln.spec.ts",
+          "line": 11,
+          "source_line": "test('shows the kiln seal', async ({ page }) => {",
+          "kind": "optional",
+          "reason": "Blind-label adjudication (2026-09-28): references/semantic-review.md:89 'If a single code block triggers multiple checks ... report it as ONE finding with all rule numbers in the heading (e.g., `[P0] #4f + #6: ...`).' | references/patterns/1.md:28 'Anchor #1 to the test/setup declaration whose title contains the unverified promise. A constant or unrelated assertion that fails to prove the noun is supporting evidence, not a second #1 finding.' | references/semantic-review.md:93 'Report the single causal line ... An adjacent explanatory or assertion line is evidence, not a second finding.' Codex's '#4f + #6' is the exact heading form the consolidation rule prescribes, so it should score as the #4f P0 label. For #1, patterns/1.md:28 reads a constant assertion as evidence for a #1 finding at the title. The single-causal-line contract, though, supports reporting the invariant assertion as the one finding. No text picks between the two, so #1 at the title is tolerated rather than required. Line 11 has the same shape (its only assertion is the invariant #4f), so the same treatment applies there."
+        }
+      ]
+    },
+    {
+      "id": "v17-pw-06",
+      "split": "public-development-v17",
+      "framework": "playwright",
+      "design_note": "#10a POM position and adjacent count exemption; pattern-reference.md #10a.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-pw-06/pages/MineralShelf.ts",
+          "path": "pages/MineralShelf.ts"
+        },
+        {
+          "source": "files/holdout-v17/v17-pw-06/tests/mineral.spec.ts",
+          "path": "tests/mineral.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-014",
+          "kind": "finding",
+          "pattern_id": "#10a",
+          "severity": "P1",
+          "file": "pages/MineralShelf.ts",
+          "line": 4,
+          "source_line": "specimen() { return this.page.getByTestId('mineral').nth(1); }",
+          "reason": "pattern-reference.md #10a: nth(1) selects by order; POM encapsulation is not an exemption."
+        },
+        {
+          "finding_id": "V17-015",
+          "kind": "fp_guard",
+          "pattern_id": "#10a",
+          "severity": "P1",
+          "file": "pages/MineralShelf.ts",
+          "line": 5,
+          "source_line": "onlyCertificate() { return this.page.getByTestId('certificate').first(); }",
+          "reason": "pattern-reference.md #10a exempts first after adjacent toHaveCount(1) of the same collection in the caller."
+        }
+      ]
+    },
+    {
+      "id": "v17-pw-07",
+      "split": "public-development-v17",
+      "framework": "playwright",
+      "design_note": "#15 unawaited matcher and #16 unawaited action; semantic-review.md operation anchors. Focus: anchoring decisions.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-pw-07/tests/aurora.spec.ts",
+          "path": "tests/aurora.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-016",
+          "kind": "finding",
+          "pattern_id": "#16",
+          "severity": "P1",
+          "file": "tests/aurora.spec.ts",
+          "line": 4,
+          "source_line": "page.getByRole('button', { name: 'Open map' }).click();",
+          "reason": "Blind-label adjudication (2026-09-28): references/patterns/4.md:4 'An assertion is logically unable to fail' | references/patterns/4.md:39 '#4a and #4f are P0 because their predicates are true independently of product behavior.' 2 + 2 === 4 is a literal invariant independent of the product, the same class the author labels #4a P0 in v17-pw-05:5 (literal 1200) and v17-cy-15:5 (Math.abs(-5)); omitting it here is inconsistent with the contract."
+        },
+        {
+          "finding_id": "V17-017",
+          "kind": "finding",
+          "pattern_id": "#15",
+          "severity": "P1",
+          "file": "tests/aurora.spec.ts",
+          "line": 5,
+          "source_line": "expect(page.getByTestId('map')).toBeVisible();",
+          "reason": "Blind-label adjudication (2026-09-28): references/patterns/4.md:4 'An assertion is logically unable to fail' | references/patterns/4.md:39 '#4a and #4f are P0 because their predicates are true independently of product behavior.' 2 + 2 === 4 is a literal invariant independent of the product, the same class the author labels #4a P0 in v17-pw-05:5 (literal 1200) and v17-cy-15:5 (Math.abs(-5)); omitting it here is inconsistent with the contract."
+        },
+        {
+          "finding_id": "V17-075",
+          "pattern_id": "#4a",
+          "severity": "P0",
+          "file": "tests/aurora.spec.ts",
+          "line": 6,
+          "source_line": "expect(2 + 2).toBe(4);",
+          "kind": "finding",
+          "reason": "Blind-label adjudication (2026-09-28): references/patterns/4.md:4 'An assertion is logically unable to fail' | references/patterns/4.md:39 '#4a and #4f are P0 because their predicates are true independently of product behavior.' 2 + 2 === 4 is a literal invariant independent of the product, the same class the author labels #4a P0 in v17-pw-05:5 (literal 1200) and v17-cy-15:5 (Math.abs(-5)); omitting it here is inconsistent with the contract."
+        },
+        {
+          "finding_id": "V17-018",
+          "kind": "fp_guard",
+          "pattern_id": "#15",
+          "severity": "P1",
+          "file": "tests/aurora.spec.ts",
+          "line": 6,
+          "source_line": "expect(2 + 2).toBe(4);",
+          "reason": "Blind-label adjudication (2026-09-28): references/patterns/4.md:4 'An assertion is logically unable to fail' | references/patterns/4.md:39 '#4a and #4f are P0 because their predicates are true independently of product behavior.' 2 + 2 === 4 is a literal invariant independent of the product, the same class the author labels #4a P0 in v17-pw-05:5 (literal 1200) and v17-cy-15:5 (Math.abs(-5)); omitting it here is inconsistent with the contract."
+        }
+      ]
+    },
+    {
+      "id": "v17-pw-08",
+      "split": "public-development-v17",
+      "framework": "playwright",
+      "design_note": "Clean absence case with prior selector proof and positive counterpart; semantic-review.md #4i. Focus: anchoring decisions.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-pw-08/tests/reef.spec.ts",
+          "path": "tests/reef.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-077",
+          "kind": "fp_guard",
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "tests/reef.spec.ts",
+          "line": 7,
+          "source_line": "await expect(sample).toHaveCount(0);",
+          "reason": "The positive sample assertion and the checked empty state make an unproven absence finding inapplicable."
+        }
+      ]
+    },
+    {
+      "id": "v17-pw-09",
+      "split": "public-development-v17",
+      "framework": "playwright",
+      "design_note": "#20 confirmed shared persistent backend write; pattern-reference.md #20 action anchor. Focus: anchoring decisions.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-pw-09/src/TagForge.tsx",
+          "path": "src/TagForge.tsx"
+        },
+        {
+          "source": "files/holdout-v17/v17-pw-09/tests/tag-forge.spec.ts",
+          "path": "tests/tag-forge.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-019",
+          "kind": "finding",
+          "pattern_id": "#20",
+          "severity": "P1",
+          "file": "tests/tag-forge.spec.ts",
+          "line": 5,
+          "source_line": "await page.getByRole('button', { name: 'Forge tag' }).click();",
+          "reason": "Blind-label adjudication (2026-09-28): references/patterns/22.md:21 'Flag P1 only when the test or supplied acceptance contract promises a backend call or persisted result, repository evidence proves the asserted UI state is optimistic, and no assertion proves the promised backend effect. ... a test scoped to client-visible UI state may intentionally prove only that state' | references/patterns/22.md:23 'Do not infer a backend contract or optimistic behavior from a write-shaped action name alone.' The optimistic 'Tag queued' state is proven from source, but neither the title 'forges a lunar tag' nor any acceptance contract promises a backend call or persisted result; the comment only describes the CI environment, which is #20's evidence, so #22's first precondition fails."
+        },
+        {
+          "finding_id": "V17-020",
+          "kind": "fp_guard",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "tests/tag-forge.spec.ts",
+          "line": 6,
+          "source_line": "await expect(page.getByText('Tag queued')).toBeVisible();",
+          "reason": "Blind-label adjudication (2026-09-28): references/patterns/22.md:21 'Flag P1 only when the test or supplied acceptance contract promises a backend call or persisted result, repository evidence proves the asserted UI state is optimistic, and no assertion proves the promised backend effect. ... a test scoped to client-visible UI state may intentionally prove only that state' | references/patterns/22.md:23 'Do not infer a backend contract or optimistic behavior from a write-shaped action name alone.' The optimistic 'Tag queued' state is proven from source, but neither the title 'forges a lunar tag' nor any acceptance contract promises a backend call or persisted result; the comment only describes the CI environment, which is #20's evidence, so #22's first precondition fails."
+        }
+      ]
+    },
+    {
+      "id": "v17-pw-10",
+      "split": "public-development-v17",
+      "framework": "playwright",
+      "design_note": "#22 optimistic UI only despite promised persistence; pattern-reference.md #22 action anchor. Focus: anchoring decisions.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-pw-10/src/StarPin.tsx",
+          "path": "src/StarPin.tsx"
+        },
+        {
+          "source": "files/holdout-v17/v17-pw-10/tests/star-pin.spec.ts",
+          "path": "tests/star-pin.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-021",
+          "kind": "finding",
+          "pattern_id": "#22",
+          "severity": "P1",
+          "file": "tests/star-pin.spec.ts",
+          "line": 4,
+          "source_line": "await page.getByRole('button', { name: 'Pin star' }).click();",
+          "reason": "pattern-reference.md #22: title promises server persistence, but aria-pressed flips before the POST and no request or reload is checked."
+        },
+        {
+          "finding_id": "V17-022",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/star-pin.spec.ts",
+          "line": 2,
+          "source_line": "test('persists star pin on server', async ({ page }) => {",
+          "reason": "semantic-review.md acceptance-target rule classifies this backend proof gap as #22, avoiding duplicate #1."
+        }
+      ]
+    },
+    {
+      "id": "v17-pw-11",
+      "split": "public-development-v17",
+      "framework": "playwright",
+      "design_note": "#8a dead intended verification versus #8b precheck with later failure evidence; semantic-review.md #8.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-pw-11/tests/sundial.spec.ts",
+          "path": "tests/sundial.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-023",
+          "kind": "finding",
+          "pattern_id": "#8a",
+          "severity": "P0",
+          "file": "tests/sundial.spec.ts",
+          "line": 4,
+          "source_line": "page.getByTestId('noon-shadow');",
+          "reason": "pattern-reference.md #8a: discarded locator is the sole intended verification."
+        },
+        {
+          "finding_id": "V17-024",
+          "kind": "fp_guard",
+          "pattern_id": "#8b",
+          "severity": "P0",
+          "file": "tests/sundial.spec.ts",
+          "line": 9,
+          "source_line": "await guide.isVisible();",
+          "reason": "semantic-review.md #8 excludes a dead precheck followed by action on the same locator and independent panel assertion."
+        }
+      ]
+    },
+    {
+      "id": "v17-pw-12",
+      "split": "public-development-v17",
+      "framework": "playwright",
+      "design_note": "#12 protected route whose login surface satisfies weak assertion; pattern-reference.md #12 config check.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-pw-12/playwright.config.ts",
+          "path": "playwright.config.ts"
+        },
+        {
+          "source": "files/holdout-v17/v17-pw-12/src/routes.ts",
+          "path": "src/routes.ts"
+        },
+        {
+          "source": "files/holdout-v17/v17-pw-12/tests/atlas.spec.ts",
+          "path": "tests/atlas.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-025",
+          "kind": "finding",
+          "pattern_id": "#12",
+          "severity": "P0",
+          "file": "tests/atlas.spec.ts",
+          "line": 3,
+          "source_line": "await page.goto('/private/atlas');",
+          "reason": "pattern-reference.md #12: protected route without config auth renders login, whose Welcome heading satisfies the only assertion; navigation anchor."
+        },
+        {
+          "finding_id": "V17-026",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/atlas.spec.ts",
+          "line": 2,
+          "source_line": "test('opens private atlas', async ({ page }) => {",
+          "reason": "semantic-review.md consolidation assigns the wrong-surface defect to #12 at the causal navigation."
+        }
+      ]
+    },
+    {
+      "id": "v17-pw-13",
+      "split": "public-development-v17",
+      "framework": "playwright",
+      "design_note": "#19 mutable test module container versus application context; review-scope.md.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-pw-13/src/planetCounter.ts",
+          "path": "src/planetCounter.ts"
+        },
+        {
+          "source": "files/holdout-v17/v17-pw-13/tests/support/visits.ts",
+          "path": "tests/support/visits.ts"
+        },
+        {
+          "source": "files/holdout-v17/v17-pw-13/tests/planetarium.spec.ts",
+          "path": "tests/planetarium.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-027",
+          "kind": "finding",
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "tests/support/visits.ts",
+          "line": 1,
+          "source_line": "export const seenPlanets = new Set<string>();",
+          "reason": "pattern-reference.md #19: top-level test utility Set is mutated across tests, anchored at declaration."
+        },
+        {
+          "finding_id": "V17-028",
+          "kind": "fp_guard",
+          "pattern_id": "#19",
+          "severity": "P1",
+          "file": "src/planetCounter.ts",
+          "line": 1,
+          "source_line": "export let planetVisits = 0;",
+          "reason": "review-scope.md: application source is context only, not an E2E finding."
+        }
+      ]
+    },
+    {
+      "id": "v17-pw-14",
+      "split": "public-development-v17",
+      "framework": "playwright",
+      "design_note": "Clean Playwright test and out-of-scope Vitest .spec file; review-scope.md provenance.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-pw-14/tests/fossil.spec.ts",
+          "path": "tests/fossil.spec.ts"
+        },
+        {
+          "source": "files/holdout-v17/v17-pw-14/src/math/strata.spec.ts",
+          "path": "src/math/strata.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-029",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "src/math/strata.spec.ts",
+          "line": 3,
+          "source_line": "it('sorts layers', () => { expect([3, 1].sort()).toEqual([1, 3]); });",
+          "reason": "review-scope.md: Vitest .spec.ts is not Playwright/Cypress E2E."
+        }
+      ]
+    },
+    {
+      "id": "v17-pw-15",
+      "split": "public-development-v17",
+      "framework": "playwright",
+      "design_note": "#4j role-only snapshot and #4k unproven assertion loop; semantic-review.md rows.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-pw-15/tests/chimes.spec.ts",
+          "path": "tests/chimes.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-030",
+          "kind": "finding",
+          "pattern_id": "#4j",
+          "severity": "P1",
+          "file": "tests/chimes.spec.ts",
+          "line": 4,
+          "source_line": "await expect(page.getByTestId('panel')).toMatchAriaSnapshot(`- button`);",
+          "reason": "semantic-review.md #4j: role-only snapshot omits the promised accessible name."
+        },
+        {
+          "finding_id": "V17-031",
+          "kind": "finding",
+          "pattern_id": "#4k",
+          "severity": "P1",
+          "file": "tests/chimes.spec.ts",
+          "line": 8,
+          "source_line": "for (const chime of await page.getByTestId('chime').all()) {",
+          "reason": "semantic-review.md #4k: .all() may return zero, skipping the only assertions without collection-size proof."
+        }
+      ]
+    },
+    {
+      "id": "v17-cy-01",
+      "split": "public-development-v17",
+      "framework": "cypress",
+      "design_note": "#1 title with partial verification versus no promised verification; pattern-reference.md #1, reporting.md P0. Focus: instance severity decisions.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-cy-01/cypress/e2e/salt-marsh.cy.ts",
+          "path": "cypress/e2e/salt-marsh.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-032",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "cypress/e2e/salt-marsh.cy.ts",
+          "line": 2,
+          "source_line": "it('shows dissolved oxygen and turbidity', () => {",
+          "reason": "pattern-reference.md #1: oxygen is asserted, turbidity is not; one promise verified makes P1."
+        },
+        {
+          "finding_id": "V17-033",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/salt-marsh.cy.ts",
+          "line": 2,
+          "source_line": "it('shows dissolved oxygen and turbidity', () => {",
+          "reason": "reporting.md P0 requires no real verification; oxygen is verified."
+        },
+        {
+          "finding_id": "V17-034",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/salt-marsh.cy.ts",
+          "line": 6,
+          "source_line": "it('shows conductivity and sensor age', () => {",
+          "reason": "pattern-reference.md #1: URL proves neither promised sensor result; declaration anchor."
+        }
+      ]
+    },
+    {
+      "id": "v17-cy-02",
+      "split": "public-development-v17",
+      "framework": "cypress",
+      "design_note": "#23 usual P2 fixture-render mismatch when positive assertion fails; pattern-reference.md #23 field anchor. Focus: anchoring decisions.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-cy-02/src/SeedDrawer.tsx",
+          "path": "src/SeedDrawer.tsx"
+        },
+        {
+          "source": "files/holdout-v17/v17-cy-02/cypress/fixtures/seed-packets.json",
+          "path": "cypress/fixtures/seed-packets.json"
+        },
+        {
+          "source": "files/holdout-v17/v17-cy-02/cypress/e2e/seed-drawer.cy.ts",
+          "path": "cypress/e2e/seed-drawer.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-035",
+          "kind": "finding",
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "cypress/fixtures/seed-packets.json",
+          "line": 2,
+          "source_line": "{\"id\": \"elm-42\", \"viable\": false}",
+          "reason": "pattern-reference.md #23: viable:false fails the component filter, so the positive packet check fails misleadingly; usual P2, anchored at fixture field."
+        },
+        {
+          "finding_id": "V17-036",
+          "kind": "fp_guard",
+          "pattern_id": "#23",
+          "severity": "P0",
+          "file": "cypress/fixtures/seed-packets.json",
+          "line": 2,
+          "source_line": "{\"id\": \"elm-42\", \"viable\": false}",
+          "reason": "reporting.md P0 requires a silent green result; the positive assertion fails, so this instance remains P2."
+        }
+      ]
+    },
+    {
+      "id": "v17-cy-03",
+      "split": "public-development-v17",
+      "framework": "cypress",
+      "design_note": "#3b global uncaught exception suppression; pattern-reference.md #3b declaration rule. Focus: anchoring decisions.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-cy-03/cypress/support/e2e.ts",
+          "path": "cypress/support/e2e.ts"
+        },
+        {
+          "source": "files/holdout-v17/v17-cy-03/cypress/e2e/observatory.cy.ts",
+          "path": "cypress/e2e/observatory.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-037",
+          "kind": "finding",
+          "pattern_id": "#3b",
+          "severity": "P0",
+          "file": "cypress/support/e2e.ts",
+          "line": 1,
+          "source_line": "Cypress.on('uncaught:exception', () => false);",
+          "reason": "pattern-reference.md #3b: global false return suppresses every application exception; declaration anchor."
+        },
+        {
+          "finding_id": "V17-038",
+          "kind": "fp_guard",
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "cypress/support/e2e.ts",
+          "line": 1,
+          "source_line": "Cypress.on('uncaught:exception', () => false);",
+          "reason": "pattern-reference.md names the Cypress global suppression #3b; #3 would be the wrong canonical sub-ID."
+        }
+      ]
+    },
+    {
+      "id": "v17-cy-04",
+      "split": "public-development-v17",
+      "framework": "cypress",
+      "design_note": "#4i unproven absence versus positive counterpart exemption; semantic-review.md #4i.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-cy-04/cypress/e2e/lichen.cy.ts",
+          "path": "cypress/e2e/lichen.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-039",
+          "kind": "finding",
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "cypress/e2e/lichen.cy.ts",
+          "line": 4,
+          "source_line": "cy.get('.retired-legend').should('not.exist');",
+          "reason": "semantic-review.md #4i: this locator appears nowhere else on the execution path, and no positive outcome is asserted; zero matches can pass."
+        },
+        {
+          "finding_id": "V17-040",
+          "kind": "fp_guard",
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "cypress/e2e/lichen.cy.ts",
+          "line": 8,
+          "source_line": "cy.get('[data-cy=sample]').should('not.exist');",
+          "reason": "semantic-review.md #4i excludes an empty-state check with a positive empty-message counterpart."
+        }
+      ]
+    },
+    {
+      "id": "v17-cy-05",
+      "split": "public-development-v17",
+      "framework": "cypress",
+      "design_note": "#9b hard-coded Cypress sleep and #5b unjustified force option; pattern-reference.md #9 and #5b.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-cy-05/cypress/e2e/glassworks.cy.ts",
+          "path": "cypress/e2e/glassworks.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-041",
+          "kind": "finding",
+          "pattern_id": "#9b",
+          "severity": "P1",
+          "file": "cypress/e2e/glassworks.cy.ts",
+          "line": 4,
+          "source_line": "cy.wait(850);",
+          "reason": "pattern-reference.md #9: fixed numeric Cypress wait is a hard-coded sleep."
+        },
+        {
+          "finding_id": "V17-042",
+          "kind": "finding",
+          "pattern_id": "#5b",
+          "severity": "P1",
+          "file": "cypress/e2e/glassworks.cy.ts",
+          "line": 5,
+          "source_line": "cy.get('[data-cy=door]').click({ force: true });",
+          "reason": "pattern-reference.md #5b: action bypasses actionability without an adjacent concrete JUSTIFIED comment."
+        }
+      ]
+    },
+    {
+      "id": "v17-cy-06",
+      "split": "public-development-v17",
+      "framework": "cypress",
+      "design_note": "Clean Cypress E2E and out-of-scope Jest test; review-scope.md framework provenance.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-cy-06/cypress/e2e/orchard.cy.ts",
+          "path": "cypress/e2e/orchard.cy.ts"
+        },
+        {
+          "source": "files/holdout-v17/v17-cy-06/src/math/yield.test.ts",
+          "path": "src/math/yield.test.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-043",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "src/math/yield.test.ts",
+          "line": 3,
+          "source_line": "it('doubles', () => expect(2 * 2).toBe(4));",
+          "reason": "review-scope.md: Jest unit test is outside Playwright/Cypress E2E scope despite .test.ts suffix."
+        }
+      ]
+    },
+    {
+      "id": "v17-cy-07",
+      "split": "public-development-v17",
+      "framework": "cypress",
+      "design_note": "#10d async Cypress callback with queued command; pattern-reference.md #10d.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-cy-07/cypress/e2e/radio-dial.cy.ts",
+          "path": "cypress/e2e/radio-dial.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-044",
+          "kind": "finding",
+          "pattern_id": "#10d",
+          "severity": "P1",
+          "file": "cypress/e2e/radio-dial.cy.ts",
+          "line": 2,
+          "source_line": "it('tunes a station', async () => {",
+          "reason": "pattern-reference.md #10d: async test callback returns a Promise while queuing cy commands; anchor at callback declaration."
+        }
+      ]
+    },
+    {
+      "id": "v17-cy-08",
+      "split": "public-development-v17",
+      "framework": "cypress",
+      "design_note": "#10e assigned Cypress Chainable mistaken for yielded value; pattern-reference.md #10e.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-cy-08/cypress/e2e/ink-vats.cy.ts",
+          "path": "cypress/e2e/ink-vats.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-045",
+          "kind": "finding",
+          "pattern_id": "#10e",
+          "severity": "P1",
+          "file": "cypress/e2e/ink-vats.cy.ts",
+          "line": 4,
+          "source_line": "const vats = cy.get('[data-cy=cyan-vat]');",
+          "reason": "pattern-reference.md #10e: assigned cy.get result is a Chainable, not yielded DOM elements; declaration is causal."
+        },
+        {
+          "finding_id": "V17-046",
+          "kind": "fp_guard",
+          "pattern_id": "#4a",
+          "severity": "P0",
+          "file": "cypress/e2e/ink-vats.cy.ts",
+          "line": 5,
+          "source_line": "expect(vats).to.have.length(3);",
+          "reason": "The assertion is incorrect because vats is a Chainable; semantic-review.md consolidation assigns the single block to #10e."
+        }
+      ]
+    },
+    {
+      "id": "v17-cy-09",
+      "split": "public-development-v17",
+      "framework": "cypress",
+      "design_note": "#10f continued action chain on possibly detached subject; pattern-reference.md #10f.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-cy-09/src/PalettePicker.tsx",
+          "path": "src/PalettePicker.tsx"
+        },
+        {
+          "source": "files/holdout-v17/v17-cy-09/cypress/e2e/palette.cy.ts",
+          "path": "cypress/e2e/palette.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-047",
+          "kind": "finding",
+          "pattern_id": "#10f",
+          "severity": "P1",
+          "file": "cypress/e2e/palette.cy.ts",
+          "line": 4,
+          "source_line": "cy.get('[data-cy=palette]').click().should('have.attr', 'data-state', 'changed');",
+          "reason": "pattern-reference.md #10f: click continues on the old subject while source replaces the node; re-query is required."
+        },
+        {
+          "finding_id": "V17-048",
+          "kind": "fp_guard",
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "src/PalettePicker.tsx",
+          "line": 2,
+          "source_line": "return <button data-cy='palette' onClick={() => document.querySelector('[data-cy=palette]')?.replaceWith(document.createElement('div'))}>Change palette</button>;",
+          "reason": "review-scope.md: application source is context only; its DOM query is not an E2E finding."
+        }
+      ]
+    },
+    {
+      "id": "v17-cy-10",
+      "split": "public-development-v17",
+      "framework": "cypress",
+      "design_note": "#2 action without final state verification; semantic-review.md action anchor. Focus: anchoring decisions.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-cy-10/cypress/e2e/terrarium.cy.ts",
+          "path": "cypress/e2e/terrarium.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-049",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "cypress/e2e/terrarium.cy.ts",
+          "line": 5,
+          "source_line": "cy.get('[data-cy=save-humidity]').click();",
+          "reason": "Blind-label adjudication (2026-09-28): references/patterns/10.md:55 '10f ... an action such as `.click()` or `.type()` is followed by another assertion/action in the same chain ... Skip when project evidence proves the subject remains stable and the chain is intentionally atomic.' | references/semantic-review.md:50 'Bounded opening-token sweep (MANDATORY, exactly this list - no more, no less)' with semantic-review.md:73 '#10f | Cypress actions beyond the scanner's list: ... `.clear` ... followed by `.should(` on the same chain'. The definition covers any action followed by another action, and .clear() is named as an action, so Codex's hit fits the contract. The mandated sweep, however, only reaches .clear when .should( follows, and the scanner (actions click/type/check/... followed by more chain) does not fire here, so a reviewer following the procedure would not find it. Both readings are text-supported."
+        },
+        {
+          "finding_id": "V17-050",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/terrarium.cy.ts",
+          "line": 2,
+          "source_line": "it('saves humidity setting', () => {",
+          "reason": "Blind-label adjudication (2026-09-28): references/patterns/10.md:55 '10f ... an action such as `.click()` or `.type()` is followed by another assertion/action in the same chain ... Skip when project evidence proves the subject remains stable and the chain is intentionally atomic.' | references/semantic-review.md:50 'Bounded opening-token sweep (MANDATORY, exactly this list - no more, no less)' with semantic-review.md:73 '#10f | Cypress actions beyond the scanner's list: ... `.clear` ... followed by `.should(` on the same chain'. The definition covers any action followed by another action, and .clear() is named as an action, so Codex's hit fits the contract. The mandated sweep, however, only reaches .clear when .should( follows, and the scanner (actions click/type/check/... followed by more chain) does not fire here, so a reviewer following the procedure would not find it. Both readings are text-supported."
+        },
+        {
+          "finding_id": "V17-076",
+          "pattern_id": "#10f",
+          "severity": "P1",
+          "file": "cypress/e2e/terrarium.cy.ts",
+          "line": 4,
+          "source_line": "cy.get('[data-cy=humidity]').clear().type('60');",
+          "kind": "optional",
+          "reason": "Blind-label adjudication (2026-09-28): references/patterns/10.md:55 '10f ... an action such as `.click()` or `.type()` is followed by another assertion/action in the same chain ... Skip when project evidence proves the subject remains stable and the chain is intentionally atomic.' | references/semantic-review.md:50 'Bounded opening-token sweep (MANDATORY, exactly this list - no more, no less)' with semantic-review.md:73 '#10f | Cypress actions beyond the scanner's list: ... `.clear` ... followed by `.should(` on the same chain'. The definition covers any action followed by another action, and .clear() is named as an action, so Codex's hit fits the contract. The mandated sweep, however, only reaches .clear when .should( follows, and the scanner (actions click/type/check/... followed by more chain) does not fire here, so a reviewer following the procedure would not find it. Both readings are text-supported."
+        }
+      ]
+    },
+    {
+      "id": "v17-cy-11",
+      "split": "public-development-v17",
+      "framework": "cypress",
+      "design_note": "#11c unreasoned skip versus dated reasoned quarantine; pattern-reference.md #11c.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-cy-11/cypress/e2e/canal-lock.cy.ts",
+          "path": "cypress/e2e/canal-lock.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-051",
+          "kind": "finding",
+          "pattern_id": "#11c",
+          "severity": "P2",
+          "file": "cypress/e2e/canal-lock.cy.ts",
+          "line": 2,
+          "source_line": "it.skip('cycles the lower gate', () => {",
+          "reason": "pattern-reference.md #11c: bare skip lacks reason, ticket, date, or condition; declaration anchor."
+        },
+        {
+          "finding_id": "V17-052",
+          "kind": "fp_guard",
+          "pattern_id": "#11c",
+          "severity": "P2",
+          "file": "cypress/e2e/canal-lock.cy.ts",
+          "line": 6,
+          "source_line": "it.skip('cycles the upper gate', () => {",
+          "reason": "semantic-review.md #11c excludes a skip with adjacent JUSTIFIED ticket and revisit date."
+        }
+      ]
+    },
+    {
+      "id": "v17-cy-12",
+      "split": "public-development-v17",
+      "framework": "cypress",
+      "design_note": "#4k unproven Cypress each assertion loop versus length guard; semantic-review.md #4k.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-cy-12/cypress/e2e/bell-tower.cy.ts",
+          "path": "cypress/e2e/bell-tower.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-053",
+          "kind": "fp_guard",
+          "pattern_id": "#4k",
+          "severity": "P1",
+          "file": "cypress/e2e/bell-tower.cy.ts",
+          "line": 4,
+          "source_line": "cy.get('[data-cy=bell]').each($bell => {",
+          "reason": "Blind-label adjudication (2026-09-28): references/patterns/4.md:179 '`cy.get()`, `.find()`, and `.filter()` are retryable DOM queries with implicit existence checks; appending `.each()` does not remove those checks. Do not report ... as silent empty iteration merely because the selector might match nothing.' | references/patterns/4.md:188 'SKIP - Cypress DOM queries retain an implicit existence check on the iterated subject; a missing expected count is not by itself proof of silent empty iteration.' cy.get('[data-cy=bell]') fails when nothing matches, so the .each() loop cannot silently run zero times; the #4k contract explicitly skips this shape, which contradicts the author's finding (and the author's design note)."
+        },
+        {
+          "finding_id": "V17-054",
+          "kind": "fp_guard",
+          "pattern_id": "#4k",
+          "severity": "P1",
+          "file": "cypress/e2e/bell-tower.cy.ts",
+          "line": 10,
+          "source_line": "cy.get('[data-cy=rope]').should('have.length', 3).each($rope => {",
+          "reason": "Blind-label adjudication (2026-09-28): references/patterns/4.md:179 '`cy.get()`, `.find()`, and `.filter()` are retryable DOM queries with implicit existence checks; appending `.each()` does not remove those checks. Do not report ... as silent empty iteration merely because the selector might match nothing.' | references/patterns/4.md:188 'SKIP - Cypress DOM queries retain an implicit existence check on the iterated subject; a missing expected count is not by itself proof of silent empty iteration.' cy.get('[data-cy=bell]') fails when nothing matches, so the .each() loop cannot silently run zero times; the #4k contract explicitly skips this shape, which contradicts the author's finding (and the author's design note)."
+        }
+      ]
+    },
+    {
+      "id": "v17-cy-13",
+      "split": "public-development-v17",
+      "framework": "cypress",
+      "design_note": "#3 catch suppressing failed Cypress command in custom support command; pattern-reference.md #3 reached-file rule.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-cy-13/cypress/support/commands.ts",
+          "path": "cypress/support/commands.ts"
+        },
+        {
+          "source": "files/holdout-v17/v17-cy-13/cypress/e2e/vault.cy.ts",
+          "path": "cypress/e2e/vault.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-055",
+          "kind": "finding",
+          "pattern_id": "#3",
+          "severity": "P0",
+          "file": "cypress/support/commands.ts",
+          "line": 5,
+          "source_line": "expect($vault).to.have.text('Open');",
+          "reason": "pattern-reference.md #3: a synchronous Chai matcher in the reached Cypress command is caught and logged without rethrow; semantic-review.md anchors at the protected assertion."
+        },
+        {
+          "finding_id": "V17-056",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/vault.cy.ts",
+          "line": 2,
+          "source_line": "it('verifies the vault seal', () => {",
+          "reason": "semantic-review.md consolidation attributes failed verification to the swallowed command, not a duplicate title finding."
+        }
+      ]
+    },
+    {
+      "id": "v17-cy-14",
+      "split": "public-development-v17",
+      "framework": "cypress",
+      "design_note": "Clean Cypress query with retrying existence and meaningful state assertion; semantic-review.md #8a Cypress exclusion. Focus: anchoring decisions.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-cy-14/cypress/e2e/moon-phase.cy.ts",
+          "path": "cypress/e2e/moon-phase.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-078",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/moon-phase.cy.ts",
+          "line": 3,
+          "source_line": "cy.visit('/moon-phase');",
+          "reason": "The title promise is verified by the phase text assertion."
+        }
+      ]
+    },
+    {
+      "id": "v17-cy-15",
+      "split": "public-development-v17",
+      "framework": "cypress",
+      "design_note": "#4a invariant Cypress assertion despite UI setup; pattern-reference.md #4a, reporting.md P0. Focus: consolidation decisions.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-cy-15/cypress/e2e/compost.cy.ts",
+          "path": "cypress/e2e/compost.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-057",
+          "kind": "finding",
+          "pattern_id": "#4a",
+          "severity": "P0",
+          "file": "cypress/e2e/compost.cy.ts",
+          "line": 5,
+          "source_line": "expect(mass).to.be.greaterThan(0);",
+          "reason": "Blind-label adjudication (2026-09-28): references/patterns/1.md:26 'P0 when no promised outcome in the title has evidence' | references/patterns/1.md:28 'A constant or unrelated assertion that fails to prove the noun is supporting evidence, not a second #1 finding.' | references/semantic-review.md:89 consolidation applies to 'the same lines of code'. The fp_guard's premise, that consolidation absorbs #1 into #4a, is not in the text: consolidation covers the same lines, and patterns/1.md:28 treats a constant assertion as evidence for #1 at the title. The only #1 exclusions in the text are for #2, #20/#22 and #23, never #4a. The single-causal-line contract still makes #4a alone a valid report, so #1 is tolerated rather than required."
+        },
+        {
+          "finding_id": "V17-058",
+          "kind": "optional",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/compost.cy.ts",
+          "line": 2,
+          "source_line": "it('reports nonnegative pile mass', () => {",
+          "reason": "Blind-label adjudication (2026-09-28): references/patterns/1.md:26 'P0 when no promised outcome in the title has evidence' | references/patterns/1.md:28 'A constant or unrelated assertion that fails to prove the noun is supporting evidence, not a second #1 finding.' | references/semantic-review.md:89 consolidation applies to 'the same lines of code'. The fp_guard's premise, that consolidation absorbs #1 into #4a, is not in the text: consolidation covers the same lines, and patterns/1.md:28 treats a constant assertion as evidence for #1 at the title. The only #1 exclusions in the text are for #2, #20/#22 and #23, never #4a. The single-causal-line contract still makes #4a alone a valid report, so #1 is tolerated rather than required."
+        }
+      ]
+    },
+    {
+      "id": "v17-pw-16",
+      "split": "public-development-v17",
+      "framework": "playwright",
+      "design_note": "#4k instance P0: the only assertions are in an unproven locator.all loop, so zero rows produce a green test. Focus: instance severity decisions.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-pw-16/tests/beacon-readings.spec.ts",
+          "path": "tests/beacon-readings.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-059",
+          "kind": "finding",
+          "pattern_id": "#4k",
+          "severity": "P1",
+          "file": "tests/beacon-readings.spec.ts",
+          "line": 4,
+          "source_line": "for (const reading of await page.getByTestId('beacon-reading').all()) {",
+          "reason": "Blind-label adjudication (2026-09-28): references/reporting.md:134 'A pattern's severity is its usual case; an instance can be reported higher when it meets the P0 definition outright, the way `#12` already conditions P0 on the wrong surface actually satisfying the test's assertions.' | references/patterns/4.md:39 '#4b-#4e and #4g-#4k are P1: they can fail, but provide weak, non-retrying, or under-specified evidence ...' | references/patterns/4.md:191 'FLAG P1 - the loop body holds the only assertions and nothing constrains the collection size.' The #4k contract assigns P1 to exactly this shape (only assertions in the loop, no count proof), and 'outright' escalation needs evidence that the broken state actually satisfies the assertions (the #12 analogue); here rendered rows would still be checked for 'Healthy', and nothing in the case shows the collection is empty, so the test can fail and P0 is not met outright."
+        }
+      ]
+    },
+    {
+      "id": "v17-cy-16",
+      "split": "public-development-v17",
+      "framework": "cypress",
+      "design_note": "#4i instance P0: the sole assertion targets an obsolete selector that can match zero nodes regardless of whether archiving works. Focus: instance severity decisions.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-cy-16/cypress/e2e/map-archive.cy.ts",
+          "path": "cypress/e2e/map-archive.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-061",
+          "kind": "finding",
+          "pattern_id": "#4i",
+          "severity": "P1",
+          "file": "cypress/e2e/map-archive.cy.ts",
+          "line": 5,
+          "source_line": "cy.get('[data-cy=retired-map-ribbon]').should('not.exist');",
+          "reason": "Blind-label adjudication (2026-09-28): references/patterns/4.md:93 '4i. Absence assertion never proven able to match ... [P1]' | references/patterns/4.md:119 'FLAG P1 - the locator appears nowhere else on that test's execution path ... and nothing positive is asserted alongside.' | references/reporting.md:134 (escalation only 'when it meets the P0 definition outright'). The case matches the #4i FLAG P1 condition word for word, and nothing supplied (no source or fixture) shows the ribbon selector matches nothing, so the silent pass is possible but not proven; the text therefore does not support P0 outright."
+        }
+      ]
+    },
+    {
+      "id": "v17-pw-17",
+      "split": "public-development-v17",
+      "framework": "playwright",
+      "design_note": "One statement triggers #6 raw DOM query and #4f invariant Locator truthiness; semantic-review.md requires one consolidated finding at the causal assertion line. Focus: consolidation decisions.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-pw-17/tests/lantern-signal.spec.ts",
+          "path": "tests/lantern-signal.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-063",
+          "kind": "finding",
+          "pattern_id": "#4f",
+          "severity": "P0",
+          "file": "tests/lantern-signal.spec.ts",
+          "line": 4,
+          "source_line": "expect(page.locator(await page.evaluate(() => document.querySelector('[data-testid=signal]')?.id || '#signal'))).toBeTruthy();",
+          "reason": "Blind-label adjudication (2026-09-28): references/semantic-review.md:89 'report it as ONE finding with all rule numbers in the heading (e.g., `[P0] #4f + #6: ...`)'; references/reporting.md:94 'When one block reports several patterns, list every ID, such as `#9 #10a`.' The composite ID is the prescribed consolidated heading, not a separate finding, so it must match the author's #4f P0; only a separate #6 P1 row is excluded. Composite headings #4f + #6, #4f #6 are scored as #4f."
+        },
+        {
+          "finding_id": "V17-064",
+          "kind": "fp_guard",
+          "pattern_id": "#6",
+          "severity": "P1",
+          "file": "tests/lantern-signal.spec.ts",
+          "line": 4,
+          "source_line": "expect(page.locator(await page.evaluate(() => document.querySelector('[data-testid=signal]')?.id || '#signal'))).toBeTruthy();",
+          "reason": "Blind-label adjudication (2026-09-28): references/semantic-review.md:89 'report it as ONE finding with all rule numbers in the heading (e.g., `[P0] #4f + #6: ...`)'; references/reporting.md:94 'When one block reports several patterns, list every ID, such as `#9 #10a`.' The composite ID is the prescribed consolidated heading, not a separate finding, so it must match the author's #4f P0; only a separate #6 P1 row is excluded."
+        },
+        {
+          "finding_id": "V17-074",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/lantern-signal.spec.ts",
+          "line": 2,
+          "source_line": "test('shows the active lantern signal', async ({ page }) => {",
+          "kind": "optional",
+          "reason": "Blind-label adjudication (2026-09-28): references/semantic-review.md:89 'report it as ONE finding with all rule numbers in the heading (e.g., `[P0] #4f + #6: ...`)'; references/reporting.md:94 'When one block reports several patterns, list every ID, such as `#9 #10a`.' The composite ID is the prescribed consolidated heading, not a separate finding, so it must match the author's #4f P0; only a separate #6 P1 row is excluded."
+        }
+      ]
+    },
+    {
+      "id": "v17-cy-17",
+      "split": "public-development-v17",
+      "framework": "cypress",
+      "design_note": "A fixed wait and an unverified state-changing action occur on separate causal lines in one test block; report #9b P1 and #2 P0 separately. Focus: anchoring decisions.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-cy-17/cypress/e2e/sluice-gate.cy.ts",
+          "path": "cypress/e2e/sluice-gate.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-065",
+          "kind": "finding",
+          "pattern_id": "#9b",
+          "severity": "P1",
+          "file": "cypress/e2e/sluice-gate.cy.ts",
+          "line": 4,
+          "source_line": "cy.wait(900);",
+          "reason": "patterns/9.md #9b: a numeric cy.wait is a fixed sleep; this timing defect has its own causal line, distinct from the missing save postcondition."
+        },
+        {
+          "finding_id": "V17-066",
+          "kind": "finding",
+          "pattern_id": "#2",
+          "severity": "P0",
+          "file": "cypress/e2e/sluice-gate.cy.ts",
+          "line": 5,
+          "source_line": "cy.get('[data-cy=save-opening]').click();",
+          "reason": "patterns/2.md and semantic-review.md acceptance-target rule: save action has no observed completion or postcondition; reporting.md P0 applies because nothing promised is verified and the test can remain green when saving breaks. Primary-line contract anchors #2 at the action."
+        },
+        {
+          "finding_id": "V17-067",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "cypress/e2e/sluice-gate.cy.ts",
+          "line": 2,
+          "source_line": "it('saves the gate opening', () => {",
+          "reason": "semantic-review.md acceptance-target rule assigns this one missing save effect to #2 at the action, not duplicate #1 at the title; the separate #9b wait remains a distinct finding."
+        }
+      ]
+    },
+    {
+      "id": "v17-pw-18",
+      "split": "public-development-v17",
+      "framework": "playwright",
+      "design_note": "#1 multi-promise title: navigation only observes a route and none of the promised receipt nouns. Focus: instance severity decisions.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-pw-18/tests/harbor-receipt.spec.ts",
+          "path": "tests/harbor-receipt.spec.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-068",
+          "kind": "finding",
+          "pattern_id": "#1",
+          "severity": "P0",
+          "file": "tests/harbor-receipt.spec.ts",
+          "line": 2,
+          "source_line": "test('shows harbor fee and permit number', async ({ page }) => {",
+          "reason": "patterns/1.md requires evidence for every explicit title promise: the URL checks neither harbor fee nor permit number. reporting.md P0 applies because no promised outcome is verified and navigation can stay green when receipt rendering breaks; anchor the title declaration."
+        },
+        {
+          "finding_id": "V17-069",
+          "kind": "fp_guard",
+          "pattern_id": "#1",
+          "severity": "P1",
+          "file": "tests/harbor-receipt.spec.ts",
+          "line": 2,
+          "source_line": "test('shows harbor fee and permit number', async ({ page }) => {",
+          "reason": "patterns/1.md reserves P1 for a title with at least one promised outcome actually verified; the route is not either promised noun, so this is P0."
+        }
+      ]
+    },
+    {
+      "id": "v17-cy-18",
+      "split": "public-development-v17",
+      "framework": "cypress",
+      "design_note": "#23 usual P2: the fixture fails the component render guard and a positive assertion fails instead of silently passing. Focus: instance severity decisions.",
+      "source_files": [
+        {
+          "source": "files/holdout-v17/v17-cy-18/src/SpecimenShelf.tsx",
+          "path": "src/SpecimenShelf.tsx"
+        },
+        {
+          "source": "files/holdout-v17/v17-cy-18/cypress/fixtures/specimens.json",
+          "path": "cypress/fixtures/specimens.json"
+        },
+        {
+          "source": "files/holdout-v17/v17-cy-18/cypress/e2e/specimen-shelf.cy.ts",
+          "path": "cypress/e2e/specimen-shelf.cy.ts"
+        }
+      ],
+      "labels": [
+        {
+          "finding_id": "V17-070",
+          "kind": "finding",
+          "pattern_id": "#23",
+          "severity": "P2",
+          "file": "cypress/fixtures/specimens.json",
+          "line": 2,
+          "source_line": "{\"id\": \"moss-91\", \"catalogued\": false}",
+          "reason": "patterns/23.md: catalogued:false violates the shelf filter, so the positive specimen assertion fails with missing element; its usual P2 applies and the primary line is the fixture field."
+        },
+        {
+          "finding_id": "V17-071",
+          "kind": "fp_guard",
+          "pattern_id": "#23",
+          "severity": "P0",
+          "file": "cypress/fixtures/specimens.json",
+          "line": 2,
+          "source_line": "{\"id\": \"moss-91\", \"catalogued\": false}",
+          "reason": "reporting.md P0 requires silent green while the feature is broken; the positive cy.get assertion fails, so patterns/23.md reserves P0 for its different negative/empty-state pass variant."
+        }
+      ]
+    }
+  ]
+}

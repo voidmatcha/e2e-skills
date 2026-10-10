@@ -1,0 +1,3 @@
+# Minimum controls
+
+The async fewer control is enabled at the minimum value, 1. Clicking it sends POST /api/fewer; the server clamps the result to 1. The successful response arrives before the scheduled UI render; response completion alone does not establish DOM completion. Completion changes from Ready to Updating N and then Update N complete, where N identifies that click. Completion means the DOM update has committed. The synchronous control clamps immediately without a request. The third control is disabled at 1 and should remain disabled. State starts fresh on navigation. Run `node app.mjs` or the existing Playwright config; no package installation is needed.

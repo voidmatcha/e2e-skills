@@ -1,0 +1,185 @@
+{
+  "id": "real-fix-tool-workflow-v2",
+  "status": "PREREGISTERED_NO_MODEL_CALLS",
+  "claim": "Fresh recovery after v1 scanner temp creation failed under read-only sandbox; same-window public development comparison of full tool workflow versus legend-only equal-tools baseline, not an isolated scanner effect",
+  "model": "gpt-6-sol",
+  "effort": "medium",
+  "runner_version": "codex-cli 0.159.3",
+  "runner_sha256": "697796c8180069c1df13a5df538cf5959d9c134f20924f054dd028fb21fdc394",
+  "skill_tree_sha256": "8a2082ef62337f9413e4e40bc567030f3f72a4c6b8bd4f2845e8c285f231ff9a",
+  "schema_sha256": "0e79b040aab2b47865ca13a6a484fb3bcad617ef16bcc38b4de7a49b12498d93",
+  "legend_sha256": "b54e19ebf9b97d4a9f60a874e2ff81926c5740f4fe2c92a1807d7d6c405d6b2a",
+  "targets": {
+    "growi": {
+      "pattern": "#16",
+      "before_lines": [
+        29
+      ],
+      "after_range": [
+        27,
+        31
+      ]
+    },
+    "chronograf": {
+      "pattern": "#2",
+      "before_lines": [
+        139
+      ],
+      "after_range": [
+        134,
+        145
+      ]
+    },
+    "opensearch": {
+      "pattern": "#4a",
+      "before_lines": [
+        61,
+        71
+      ],
+      "after_range": [
+        42,
+        90
+      ]
+    }
+  },
+  "source_sha256": {
+    "growi:before": {
+      "revision": "f6c5b34d143e27fcf4bc09bac548b3b28eefa79d",
+      "files": {
+        "apps/app/playwright/60-home/home.spec.ts": "a72ca8ad3fcd30c1880cb20cc9745c8f55fe0ae809dd2af25b3a67994b664eaf"
+      }
+    },
+    "growi:after": {
+      "revision": "171ace0e5c16d00888b8cc74c6e64b319ecc293a",
+      "files": {
+        "apps/app/playwright/60-home/home.spec.ts": "9ef609dfffa918453b1e36231ca6f88b024d66c4f0735959da8504aa84c7517c"
+      }
+    },
+    "chronograf:before": {
+      "revision": "22d67c5e727ffb2cd2412d1259c8d23f5a41dadc",
+      "files": {
+        "ui/cypress/integration/admin_chronograf.test.ts": "1ceed5ead83ebc5b62373b1ba4954b35097745c8c5628b25915c7f0deb96148f"
+      }
+    },
+    "chronograf:after": {
+      "revision": "23d6e913eb8bbc946af866c58df2729925fe3732",
+      "files": {
+        "ui/cypress/integration/admin_chronograf.test.ts": "8008d0a599bc65959c70eb413d82b27c52e01c65ba67dbbb6b8a5144da3da1bb"
+      }
+    },
+    "opensearch:before": {
+      "revision": "b0c0a51714ee485daa659374f4657e61bab8080f",
+      "files": {
+        "cypress/e2e/qi/1_top_queries.cy.js": "217fc456b4452e7cbd8c0da4d698451b131567edd65099bd866dac2c242077e7",
+        "cypress/fixtures/stub_top_queries.json": "e823fcbb02841c8b947920423185151316a829056379594279051be8ab766a1e"
+      }
+    },
+    "opensearch:after": {
+      "revision": "3c1706ac4a1fa821e429b8301d3eeb2f3b24813f",
+      "files": {
+        "cypress/e2e/qi/1_top_queries.cy.js": "9101cce61bf9891b63686453617a8a8b3566f7deeaff66c0b2a37ce1ec368f2f",
+        "cypress/fixtures/stub_top_queries.json": "e823fcbb02841c8b947920423185151316a829056379594279051be8ab766a1e"
+      }
+    }
+  },
+  "prompt_sha256": {
+    "growi:workflow": "4c437029c50197a7754cff6aa78a14fd40c0cb9711065cc4e635f9452b5da47d",
+    "growi:legend-only": "de016861d478929b28f9c00e07a718a09b745f5beba7d6ee19cc52585fdb0c2d",
+    "chronograf:workflow": "727a99d571d0287b2f1bc35aae5c13f49f2b8ee7a974dbc53f2d3ecdaea5579d",
+    "chronograf:legend-only": "a352f4c58ec650fb3d1568c8d28279fe936e3a423e264ca7cae9b29a8f3ff018",
+    "opensearch:workflow": "8d2fcf04651f8121a58c92db9132ebaa752a2daf160c4d8f98a5642021d48340",
+    "opensearch:legend-only": "d41e6b146eff48fb0e8ba89dd98f853b3b8f39625273f024181b93bede35b0f9"
+  },
+  "schedule": [
+    {
+      "case": "growi",
+      "side": "before",
+      "arm": "workflow"
+    },
+    {
+      "case": "growi",
+      "side": "before",
+      "arm": "legend-only"
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "arm": "legend-only"
+    },
+    {
+      "case": "growi",
+      "side": "after",
+      "arm": "workflow"
+    },
+    {
+      "case": "chronograf",
+      "side": "before",
+      "arm": "legend-only"
+    },
+    {
+      "case": "chronograf",
+      "side": "before",
+      "arm": "workflow"
+    },
+    {
+      "case": "chronograf",
+      "side": "after",
+      "arm": "workflow"
+    },
+    {
+      "case": "chronograf",
+      "side": "after",
+      "arm": "legend-only"
+    },
+    {
+      "case": "opensearch",
+      "side": "before",
+      "arm": "workflow"
+    },
+    {
+      "case": "opensearch",
+      "side": "before",
+      "arm": "legend-only"
+    },
+    {
+      "case": "opensearch",
+      "side": "after",
+      "arm": "legend-only"
+    },
+    {
+      "case": "opensearch",
+      "side": "after",
+      "arm": "workflow"
+    }
+  ],
+  "call_timeout_seconds": 480,
+  "repetitions": 1,
+  "model_tools": "Same shell tool in both arms, Codex workspace-write sandbox on disposable staged workspace plus system temp; no project code execution, web/apps/image/multi-agent disabled; private HOME with only Codex auth, no user config or automatic global skills; every staged path is digested before/after each call",
+  "workflow_arm": "Explicitly read the staged e2e-reviewer SKILL.md and perform its scanner, semantic, and confirmation steps; scanner execution checked from raw Codex tool events",
+  "baseline_arm": "Same source, output legend, schema, model, tools, sandbox, and time ceiling, but no staged reviewer skill; model may choose its own read-only process",
+  "primary_metric": "Exact BEFORE target detection for three source-repaired clusters, one vote per cluster",
+  "secondary_metrics": [
+    "mapped same-pattern AFTER alarm",
+    "scanner command and Summary provenance",
+    "other-prediction source adjudication",
+    "within-host input/output tokens",
+    "model wall time"
+  ],
+  "stop_policy": "Any missing source, drift, scanner command without complete Summary in workflow arm, timeout, bad exit, invalid structured answer, or source mutation stops without retry or imputation; incomplete arms are not scored as a full comparison",
+  "limits": [
+    "Selected public cases",
+    "One model and one repetition",
+    "The arms differ in all skill instructions plus scanner workflow, so scanner-only effect is not isolated",
+    "The model is asked to return structured findings rather than the full prose report",
+    "Read-only sandbox and prompt boundary do not attest a sealed isolation wrapper",
+    "V1 read-only attempt stopped after three calls; v2 uses fresh calls only and changes sandbox to permit trusted scanner temp creation"
+  ],
+  "predecessor": {
+    "protocol_sha256": "9413f9c1bceac0ddb35122d53c3fe863ce411c1f458632b5a70aa44fa1f2203f",
+    "completed_calls": 3,
+    "planned_calls": 12,
+    "reason": "The first workflow call invoked scan.sh but Codex read-only sandbox denied trusted temporary-file creation; no Summary was emitted. The attempt was stopped after three calls and none are reused."
+  },
+  "v1_runner_sha256": "697796c8180069c1df13a5df538cf5959d9c134f20924f054dd028fb21fdc394",
+  "wrapper_sha256": "f448fe6abc367cf3b6d1576f9613809372628bea6c0ef4803237c1cb9bab78ae"
+}

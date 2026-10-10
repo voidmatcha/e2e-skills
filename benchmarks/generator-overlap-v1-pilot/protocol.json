@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "protocol_id": "generator-overlap-v1-pilot",
+  "status": "NOT_RUN",
+  "evidence_scope": "public-development",
+  "release_eligible": false,
+  "arms": ["before", "after"],
+  "cases": ["v3-13"],
+  "repetitions": 3,
+  "workers": 1,
+  "seed": 20261009,
+  "model": "gpt-5.5",
+  "reasoning_effort": "medium",
+  "timeout_s": 1500,
+  "per_call_budget_usd": null,
+  "spend_cap_usd": null,
+  "container_image": "sha256:687b18c424d01c3af69efa921eaa824b48eb737d46492da334405e348da73881",
+  "docker_context": "colima",
+  "minimum_free_disk_bytes": 4294967296,
+  "snapshot": "Before is the frozen browser-choice v2 explicit-browser skill. After is the current product skill. The only two differing files are scenario-design.md and verification-rules.md, and their diff is the overlapping asynchronous V1 completion guidance. Evals are excluded from both snapshots. The shared reviewer, fixture, model, container, approvals, scorer, and fault operators are unchanged.",
+  "schedule": "Three fresh paired repetitions of the public spent v3-13 search-race task, one worker, alternating arm order before/after, after/before, before/after. No previous generated test is reused.",
+  "common_prompt_appendix": "Additional explicit command approvals for BOTH arms: the already-approved project-local Playwright CLI prefix may use --browser chromium, --config <outside-worktree guard JSON>, and -s=<fresh unique session> for the skill's origin-guarded exploration only. Its named eval and requests subcommands for the skill's blocked-origin proof are approved, as is goto on the exact preflighted app origin. Creating that guard config outside the target worktree is approved. This does not approve another origin, a package install, changing project controls, skipping the preflight, or terminating a process the invocation did not start. Record these exact command rows as already approved. Follow the unchanged skill safety gate, guard, V4/V5/V6, and completion rules in both arms.",
+  "decision_rule": {
+    "primary": "Independent scorer's f2-stale-response-wins kill on each newly generated spec. Directional signal requires at least two of three after kills, more after kills than before kills, and all after clean 3/3, refactor survival, zero P0, no timeout, no out-of-scope writes, and self-reported complete. Every other seeded fault must have no aggregate after-kill decline. Any infrastructure attempt or incomplete cell makes the result inconclusive.",
+    "secondary": "Report all six fault vectors, per-arm fault-kill counts, parent-attempt usage, and paired elapsed differences descriptively. No speed or cost threshold or savings claim is defined.",
+    "interpretation": "A three-pair public-development signal cannot prove causation, non-inferiority, release readiness, actual V4/V6 correctness, billed cost, or generalization to other tasks."
+  },
+  "prerequisite_probe": "Reuse the pinned image's passing model-free successor probe for explicit Chromium CLI, pre-dispatch origin rejection, owned cleanup, and clean smoke tests.",
+  "process_audit": "Actual V4 and V6 correctness require transcript adjudication; tool counters and self-reports do not prove compliance."
+}

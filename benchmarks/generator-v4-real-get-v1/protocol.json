@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "protocol_id": "generator-v4-real-get-v1",
+  "status": "NOT_RUN",
+  "evidence_scope": "public-development-real-handler-integration-repetition-screen",
+  "release_eligible": false,
+  "arms": ["current"],
+  "cases": ["cal-email-verify"],
+  "repetitions": 3,
+  "workers": 1,
+  "seed": 20261010,
+  "model": "gpt-5.5",
+  "reasoning_effort": "medium",
+  "timeout_s": 1500,
+  "per_call_budget_usd": null,
+  "spend_cap_usd": null,
+  "container_image": "sha256:687b18c424d01c3af69efa921eaa824b48eb737d46492da334405e348da73881",
+  "docker_context": "colima",
+  "minimum_free_disk_bytes": 4294967296,
+  "snapshot": "One current-product skill snapshot excluding evals, frozen before three fresh sequential Codex calls. The case executes an unchanged Cal.com verification handler under in-memory dependency doubles, not the full app.",
+  "schedule": "Three independent fresh calls on one source handler with primary and secondary email paths. Stop on infrastructure failure or the 4 GiB disk floor. Repetitions are not independent defects.",
+  "common_prompt_appendix": "Additional explicit command approvals for every call: the already-approved project-local Playwright CLI prefix may use --browser chromium, --config <outside-worktree guard JSON>, and -s=<fresh unique session> for the skill's origin-guarded exploration only. Its named eval and requests subcommands for the skill's blocked-origin proof are approved, as is goto on the exact preflighted app origin. Creating that guard config outside the target worktree is approved. This does not approve another origin, a package install, changing project controls, skipping the preflight, or terminating a process the invocation did not start. Record these exact command rows as already approved. Follow the unchanged skill safety gate, guard, V4/V5/V6, and completion rules. If a V4 temporary verifier is created, print its complete source with a read-only command before removing it so the benchmark can audit what ran; do not retain the verifier in the target worktree.",
+  "decision_rule": {
+    "primary": "Independently adjudicate V4 for the secondary-email link's GET /api/auth/verify-email?token=secondary-token. Require exact method, endpoint, query, one request per click, and the normal persisted primary and secondary verification states. A printed temporary verifier must preserve the candidate's primary-then-secondary flow and unchanged final both-verified primary assertion. It must target the final secondary verification GET after earlier checkpoints, await a recognized failed response, then visit the profile or otherwise freshly reread persistent state before the unchanged primary assertion turns red for the expected secondary-unverified mismatch. A red status-only or generic navigation assertion is insufficient. Missing evidence is CANNOT_VERIFY, not PASS.",
+    "guards": "All three calls must complete without infrastructure error, out-of-scope writes, or artifact drift. Report clean 3/3, five fault kills, refactor survival, P0 scan, V6, and final status separately. Manual V4 source/output adjudication is mandatory; an incomplete cell is INCONCLUSIVE.",
+    "interpretation": "One public handler under dependency doubles, even with two branches and three repetitions, cannot establish generalized lift or full-app/release equivalence. Billed cost is unavailable; elapsed time is descriptive only. Do not change product wording based solely on this case."
+  },
+  "prerequisite_probe": "Reuse the pinned image's passing model-free successor probe for guarded Chromium CLI, pre-dispatch origin rejection, owned cleanup, and clean smoke tests."
+}

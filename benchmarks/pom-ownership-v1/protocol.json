@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "study_id": "pom-ownership-v1",
+  "status": "PREPARATION_ONLY",
+  "registered_at": "2026-10-03",
+  "hypothesis": "With the same reviewer and source context, mandatory exact-selector ownership leads improve stable #13 recall for individually named Cypress cypress/e2e specs without adding stable false alarms.",
+  "claim_scope": "Public-development evidence for one host and the named-Cypress-spec workflow only; not a sealed release result, Playwright result, directory-review result, or whole-skill superiority claim.",
+  "source_of_truth": "skills/e2e-reviewer/references/pattern-reference.md, #13 decision revision v2",
+  "arms": {
+    "control": "A copy of the treatment skill with only the #13 lead collector, automatic scanner invocation, and their point-of-use instructions removed; all other bytes and behavior identical.",
+    "treatment": "The current skill with automatic #13 leads in the mandatory scanner output.",
+    "requirement": "Before any measured call, archive both arm trees, an exact control-to-treatment diff, and SHA-256 tree digests. Reject unrelated differences. Do not compare an old full commit with the current tree."
+  },
+  "case_selection": {
+    "source": "Public, real Cypress repositories not used to develop the Appsmith fix; pin commit SHA and complete relevant source closure for every case.",
+    "primary_layout": "A single named spec under cypress/e2e/ with its relevant cypress/support/ tree available to the bundled collector.",
+    "minimum_repositories": 10,
+    "positive_workflows": 20,
+    "paired_repaired_controls": 20,
+    "independent_clean_controls": 20,
+    "unit": "One independently owned interaction workflow or clean control, clustered by repository; repeated calls and paired repairs are not independent defects.",
+    "positive_label": "A raw spec action bypasses a source-proven existing equivalent Page Object method, locator, duplicated workflow, or explicit ownership convention. Record both source anchors and the first bypassing raw-action line.",
+    "negative_label": "No source-proven ownership of that raw action. Include same-selector different-purpose/page, unused or non-equivalent helpers, setup/fixture/global-overlay actions, and completed repairs.",
+    "exclusions": "Exclude Appsmith and any case used to develop this collector, tutorial-only examples, unavailable source closure, ambiguous labels, and duplicate workflows from the primary analysis. Log every screened exclusion with a reason.",
+    "selection_policy": "List all eligible source candidates and exclusion reasons before model calls; do not select cases based on scanner or model outcomes. Naturally occurring bypasses are the positive primary stratum. Paired repairs are controlled negative variants, not independent natural defects; other authored mutants are diagnostic-only."
+  },
+  "labeling": {
+    "rule": "Two reviewers independently inspect pinned sources without seeing arm output; reconcile disagreements before freezing the corpus. Record reviewer identity class, source anchors, rationale, and resolution. If neither reviewer is human, describe labels as model-adjudicated rather than human ground truth.",
+    "freeze": "Pin case manifest, source hashes, labels, scoring code, arm digests, schedule seed, and this protocol digest before the first measured call. Any later change is a new study version; never rewrite scored evidence."
+  },
+  "execution": {
+    "host": "Codex",
+    "model": "gpt-6-sol",
+    "effort": "low",
+    "repetitions_per_case_arm": 3,
+    "prompt": "General read-only E2E test-quality review; do not mention #13, Page Objects, the expected label, or the study arm.",
+    "schedule": "Deterministic seeded, repository-balanced arm order; separate fresh session and workspace per call; no cross-call memory.",
+    "input_controls": "Equal source snapshots, tool permissions, context budget, runner version policy, timeout, and prompt apart from the pinned skill tree. Disable unrelated/global skills and prove the model cannot read labels, other cells, or ambient checkout files.",
+    "incomplete": "Any missing source, failed scanner invocation, changed staged digest, identity/isolation fault, exhausted infrastructure retry, or unscoreable output makes the matrix INCOMPLETE, not a negative prediction."
+  },
+  "scoring": {
+    "stable_prediction": "A #13 finding in at least 2 of 3 scoreable repetitions, citing the first bypassing action and the source ownership evidence.",
+    "primary": "Paired difference in stable #13 recall across unique positive workflows, treatment minus control; resample repositories as clusters for a 95% interval.",
+    "guards": "Additional stable #13 alarms on repaired or independent clean cases; separately adjudicate every newly reported non-#13 finding so a target-only score cannot hide whole-report harm.",
+    "secondary": "Per-call and per-workflow input, cached input, output and billed tokens if available; model-call and end-to-end elapsed time; scanner time, completion rate, and marginal cost per additional unique stable #13 detection.",
+    "decision": "SUPPORT only if recall rises by at least 20 percentage points, the repository-clustered 95% interval lower bound is greater than zero, gains occur in at least three repositories, and there are zero additional stable #13 guard alarms. Otherwise FAIL if complete and contrary, or INCONCLUSIVE if incomplete or too imprecise. The 20-point threshold is a product decision, not a statistical fact.",
+    "cost_policy": "Publish cost and latency deltas even when detection passes; do not claim efficiency without a separately registered acceptable cost ceiling. Cached input is not billed input."
+  },
+  "stage_gates": {
+    "preparation": "No model comparison until the corpus, labels, arm ablation, runner isolation, and scoring are frozen and independently checked.",
+    "pipeline_pilot": "Use a disjoint set of 12 inputs only to test staging, digest checks, tool invocation, scoring, and cost. Never move pilot cases into the confirmatory set or use pilot accuracy to tune the pass threshold.",
+    "confirmatory": "Run the complete 60-input by 2-arm by 3-repetition matrix (360 scheduled calls) only after a cost estimate and explicit budget cap. Stop with INCOMPLETE on integrity failure, not on an unfavorable score.",
+    "extension": "A second model or Playwright/directory workflows require separately registered matrices and claims."
+  }
+}

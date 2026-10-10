@@ -1,0 +1,241 @@
+{
+ "protocol_id": "generator-skill-effect-v1",
+ "status": "INCONCLUSIVE",
+ "problems": [
+  "ceiling: no-skill primary at or above the preregistered ceiling"
+ ],
+ "checks": {
+  "lift_at_least_min": false,
+  "ci_lower_above_zero": false,
+  "clean_pass_not_worse": true,
+  "baseline_below_ceiling": false
+ },
+ "primary": {
+  "metric": "effective fault-kill rate (fault-kill rate, counted 0 unless the specs pass the correct app 3/3)",
+  "skill": 1.0,
+  "no_skill": 0.9267,
+  "paired_lift": 0.0733,
+  "bootstrap_95ci": [
+   0.0,
+   0.1667
+  ],
+  "cases_better": 3,
+  "cases_worse": 0,
+  "cases_tied": 7,
+  "paired_cases": 10
+ },
+ "cost_multiple_skill_over_no_skill": 6.05,
+ "arm_metrics": {
+  "skill": {
+   "calls": 30,
+   "primary": 1.0,
+   "deliverable_rate": 1.0,
+   "clean_pass_rate": 1.0,
+   "kill_rate_given_clean": 1.0,
+   "refactor_survival_given_clean": 0.7667,
+   "kill_rate_by_class_given_clean": {
+    "boundary": 1.0,
+    "interaction": 1.0,
+    "persistence": 1.0,
+    "precision": 1.0,
+    "surface": 1.0
+   },
+   "flaky_calls": 0,
+   "scan_p0_total": 0,
+   "scan_p0_calls": 0,
+   "scan_p1p2_total": 0,
+   "scan_p1p2_mean": 0.0,
+   "scan_triage_total": 313,
+   "scanned_calls": 30,
+   "self_reported_status": {
+    "complete": 3,
+    "partial_or_blocked": 27,
+    "nothing_written": 0,
+    "other": 0,
+    "null": 0
+   },
+   "timeouts": 0,
+   "out_of_scope_write_calls": 0,
+   "cost_usd": 10.058,
+   "cost_usd_mean": 0.3353,
+   "elapsed_s": 2463.4,
+   "turns": 281,
+   "input_tokens": 6363789,
+   "output_tokens": 124326
+  },
+  "no-skill": {
+   "calls": 30,
+   "primary": 0.9267,
+   "deliverable_rate": 1.0,
+   "clean_pass_rate": 0.9333,
+   "kill_rate_given_clean": 0.9929,
+   "refactor_survival_given_clean": 0.4286,
+   "kill_rate_by_class_given_clean": {
+    "boundary": 0.9091,
+    "interaction": 1.0,
+    "persistence": 1.0,
+    "precision": 1.0,
+    "surface": 1.0
+   },
+   "flaky_calls": 1,
+   "scan_p0_total": 0,
+   "scan_p0_calls": 0,
+   "scan_p1p2_total": 0,
+   "scan_p1p2_mean": 0.0,
+   "scan_triage_total": 339,
+   "scanned_calls": 30,
+   "self_reported_status": {
+    "complete": 30,
+    "partial_or_blocked": 0,
+    "nothing_written": 0,
+    "other": 0,
+    "null": 0
+   },
+   "timeouts": 0,
+   "out_of_scope_write_calls": 0,
+   "cost_usd": 1.663,
+   "cost_usd_mean": 0.0554,
+   "elapsed_s": 779.1,
+   "turns": 155,
+   "input_tokens": 1170032,
+   "output_tokens": 60112
+  }
+ },
+ "spent_usd": 11.7203,
+ "model": "claude-sonnet-5-5",
+ "cli": "2.1.289 (Claude Code)",
+ "per_case": {
+  "gen-01": {
+   "no-skill": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "skill": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  "gen-02": {
+   "no-skill": [
+    1.0,
+    1.0,
+    0.0
+   ],
+   "skill": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  "gen-03": {
+   "no-skill": [
+    0.8,
+    1.0,
+    1.0
+   ],
+   "skill": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  "gen-04": {
+   "no-skill": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "skill": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  "gen-05": {
+   "no-skill": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "skill": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  "gen-06": {
+   "no-skill": [
+    1.0,
+    0.0,
+    1.0
+   ],
+   "skill": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  "gen-07": {
+   "no-skill": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "skill": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  "gen-08": {
+   "no-skill": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "skill": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  "gen-09": {
+   "no-skill": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "skill": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  "gen-10": {
+   "no-skill": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "skill": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  }
+ },
+ "per_case_diff": {
+  "gen-01": 0.0,
+  "gen-02": 0.3333,
+  "gen-03": 0.0667,
+  "gen-04": 0.0,
+  "gen-05": 0.0,
+  "gen-06": 0.3333,
+  "gen-07": 0.0,
+  "gen-08": 0.0,
+  "gen-09": 0.0,
+  "gen-10": 0.0
+ }
+}

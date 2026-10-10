@@ -1,0 +1,57 @@
+{
+  "task": "Cover the issue list (`/`) for the signed-in user Ada: five seeded issues (#101 to #105; #105 is already Ada's, #102 is Grace's). Assign to me sets that issue's assignee line to `Assigned to Ada` and its button becomes Unassign; Unassign reverts it to `Unassigned`. The filter chips carry live counts (`All (5)`, `Mine (2)`, `Unassigned (2)`) and the Mine chip shows only Ada's issues. Changing an issue's priority with its Priority select updates its `Priority: <level>` badge and the list is ordered high, then medium, then low. Assignments and priorities are stored on the server and survive a reload.",
+  "faults": [
+    {
+      "id": "f1-assign-noop",
+      "class": "surface",
+      "brief_phrase": "Assign to me sets that issue's assignee line to `Assigned to Ada`",
+      "description": "Assign to me sends the request but the card does not change until a reload.",
+      "find": "        const updated = await api(\"PATCH\", \"/api/issues/\" + issue.id, { assignee: mine ? null : ME });\n        if (!updated) return;\n        state = state.map((i) => (i.id === updated.id ? updated : i));\n        render();\n",
+      "replace": "        const updated = await api(\"PATCH\", \"/api/issues/\" + issue.id, { assignee: mine ? null : ME });\n        void updated;\n"
+    },
+    {
+      "id": "f2-counts-stale",
+      "class": "precision",
+      "brief_phrase": "The filter chips carry live counts",
+      "description": "The chip counts keep the numbers from page load.",
+      "find": "      const c = counts();\n",
+      "replace": "      const c = window.__counts || (window.__counts = counts());\n"
+    },
+    {
+      "id": "f3-mine-shows-all",
+      "class": "precision",
+      "brief_phrase": "the Mine chip shows only Ada's issues",
+      "description": "The Mine chip highlights but the list keeps showing every issue.",
+      "find": "      if (filter === \"mine\") visible = state.filter((i) => i.assignee === ME);\n",
+      "replace": "      if (filter === \"mine\") visible = state;\n"
+    },
+    {
+      "id": "f4-priority-order-ignored",
+      "class": "precision",
+      "brief_phrase": "the list is ordered high, then medium, then low",
+      "description": "The list stays in id order whatever the priorities.",
+      "find": "const ordered = [...visible].sort((a, b) => RANK[a.priority] - RANK[b.priority] || a.id - b.id);",
+      "replace": "const ordered = [...visible].sort((a, b) => a.id - b.id);"
+    },
+    {
+      "id": "f5-priority-not-persisted",
+      "class": "persistence",
+      "brief_phrase": "Assignments and priorities are stored on the server and survive a reload",
+      "description": "The server answers with the new priority but keeps the old one; assignments persist, priorities do not.",
+      "find": "      if (\"priority\" in body && PRIORITIES.includes(body.priority)) issue.priority = body.priority;\n      return json(res, 200, issue);\n",
+      "replace": "      if (\"priority\" in body && PRIORITIES.includes(body.priority)) return json(res, 200, { ...issue, priority: body.priority });\n      return json(res, 200, issue);\n"
+    }
+  ],
+  "refactor": [
+    {"find": "<div id=\"is-list\" class=\"issues\"></div>", "replace": "<div class=\"board\"><div id=\"is-list\" class=\"board__cards\"></div></div>"},
+    {"find": "<div id=\"is-filters\" class=\"filters\" role=\"group\" aria-label=\"Filters\">", "replace": "<div id=\"is-filters\" class=\"toolbar toolbar--filters\" role=\"group\" aria-label=\"Filters\">"},
+    {"find": "chip.className = filter === key ? \"chip chip-on\" : \"chip\";", "replace": "chip.className = filter === key ? \"pill pill--active\" : \"pill\";"},
+    {"find": "article.className = \"issue priority-\" + issue.priority;", "replace": "article.className = \"ticket ticket--\" + issue.priority;"},
+    {"find": "labels.className = \"labels\";", "replace": "labels.className = \"ticket__tags\";"},
+    {"find": "s.className = \"label\";", "replace": "s.className = \"tag\";"},
+    {"find": "priorityBadge.className = \"priority\";", "replace": "priorityBadge.className = \"ticket__level\";"},
+    {"find": "assignee.className = \"assignee\";", "replace": "assignee.className = \"ticket__owner\";"},
+    {"find": "is-filters", "replace": "views"},
+    {"find": "is-list", "replace": "tickets"}
+  ]
+}

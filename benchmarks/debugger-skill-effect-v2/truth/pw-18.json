@@ -1,0 +1,14 @@
+{
+ "source": {
+  "repo": "datahub-project/datahub",
+  "license": "Apache-2.0",
+  "urls": [
+   "https://github.com/datahub-project/datahub/pull/19051"
+  ],
+  "merged": "2026-08-10"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test",
+ "explanation": "The node is visible before the upload response has set `data-file-url`; the page object read the attribute once, non-retrying, and threw when it was still null (timing/race).",
+ "fix": "Wait with `expect(fileNode).toHaveAttribute('data-file-url', urlPattern, { timeout })` before asserting the text."
+}

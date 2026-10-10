@@ -1,0 +1,99 @@
+{
+  "task": "Cover the garden planner (`/`): four beds (Bed 1 watered yesterday, Bed 2 four days ago, Bed 3 three days ago, Bed 4 today); a bed needs water after three or more days. Water sets a bed's `Last watered` line to `today` and removes its Needs water badge, and the summary line (`2 beds need water`, or `No beds need water`) follows. Choosing a plant in a bed's Plant select changes that bed's plant. The Show only beds that need water filter hides the other beds and shows `All beds are watered` when no bed needs water. Watering and plant choices are stored on the server and survive a reload.",
+  "faults": [
+    {
+      "id": "f1-water-noop",
+      "class": "surface",
+      "brief_phrase": "Water sets a bed's `Last watered` line to `today`",
+      "description": "Water sends the request but the card does not change until a reload.",
+      "find": "        const updated = await api(\"POST\", \"/api/beds/\" + bed.id + \"/water\");\n        if (!updated) return;\n        state = state.map((b) => (b.id === updated.id ? updated : b));\n        render();\n",
+      "replace": "        const updated = await api(\"POST\", \"/api/beds/\" + bed.id + \"/water\");\n        void updated;\n"
+    },
+    {
+      "id": "f2-summary-stale",
+      "class": "precision",
+      "brief_phrase": "the summary line (`2 beds need water`, or `No beds need water`) follows",
+      "description": "The summary keeps the count from page load.",
+      "edits": [
+        {
+          "find": "      el(\"gp-summary\").textContent = thirsty === 0 ? \"No beds need water\" : thirsty + (thirsty === 1 ? \" bed needs water\" : \" beds need water\");\n",
+          "replace": "      if (!el(\"gp-summary\").dataset.set) { el(\"gp-summary\").dataset.set = \"1\"; el(\"gp-summary\").textContent = thirsty === 0 ? \"No beds need water\" : thirsty + (thirsty === 1 ? \" bed needs water\" : \" beds need water\"); }\n"
+        }
+      ]
+    },
+    {
+      "id": "f3-all-watered-message-missing",
+      "class": "precision",
+      "brief_phrase": "shows `All beds are watered` when no bed needs water",
+      "description": "With the filter on and every bed watered, the list is empty but the message never appears.",
+      "find": "      el(\"gp-all-watered\").hidden = !(only && visible.length === 0);\n",
+      "replace": "      el(\"gp-all-watered\").hidden = true;\n"
+    },
+    {
+      "id": "f4-plant-not-persisted",
+      "class": "persistence",
+      "brief_phrase": "plant choices are stored on the server and survive a reload",
+      "description": "The server answers with the new plant but keeps the old one.",
+      "find": "      bed.plant = plant;\n      return json(res, 200, bed);\n",
+      "replace": "      return json(res, 200, { ...bed, plant });\n"
+    },
+    {
+      "id": "f5-badge-stays",
+      "class": "precision",
+      "brief_phrase": "removes its Needs water badge",
+      "description": "After watering, the Last watered line reads `today` but the Needs water badge stays until a reload.",
+      "find": "      badge.hidden = !needsWater(bed);\n",
+      "replace": "      const thirstyOnce = (window.__thirstyOnce ||= new Set());\n      if (needsWater(bed)) thirstyOnce.add(bed.id);\n      badge.hidden = !(needsWater(bed) || thirstyOnce.has(bed.id));\n"
+    }
+  ],
+  "refactor": [
+    {
+      "find": "<div id=\"gp-beds\" class=\"beds\"></div>",
+      "replace": "<div class=\"plot\"><div id=\"gp-beds\" class=\"plot__cells\"></div></div>"
+    },
+    {
+      "find": "<p id=\"gp-summary\" class=\"summary-line\">",
+      "replace": "<p id=\"gp-summary\" class=\"overview\">"
+    },
+    {
+      "find": "<div id=\"gp-filter-row\" class=\"filter-row\">",
+      "replace": "<div id=\"gp-filter-row\" class=\"toolbar\">"
+    },
+    {
+      "find": "<p id=\"gp-all-watered\" class=\"all-watered\" hidden>",
+      "replace": "<p id=\"gp-all-watered\" class=\"notice notice--ok\" hidden>"
+    },
+    {
+      "find": "article.className = needsWater(bed) ? \"bed thirsty\" : \"bed\";",
+      "replace": "article.className = needsWater(bed) ? \"tile tile--dry\" : \"tile\";"
+    },
+    {
+      "find": "watered.className = \"watered-line\";",
+      "replace": "watered.className = \"tile__meta\";"
+    },
+    {
+      "find": "badge.className = \"badge-thirsty\";",
+      "replace": "badge.className = \"pill pill--dry\";"
+    },
+    {
+      "find": "gp-filter-row",
+      "replace": "view-options"
+    },
+    {
+      "find": "gp-all-watered",
+      "replace": "nothing-dry"
+    },
+    {
+      "find": "gp-needs-only",
+      "replace": "dry-only"
+    },
+    {
+      "find": "gp-summary",
+      "replace": "overview"
+    },
+    {
+      "find": "gp-beds",
+      "replace": "plots"
+    }
+  ]
+}

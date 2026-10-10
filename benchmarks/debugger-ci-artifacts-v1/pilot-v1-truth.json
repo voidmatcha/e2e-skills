@@ -1,0 +1,10 @@
+{
+  "schema": "debugger-ci-artifact-pilot-truth-v1",
+  "case_id": "superset-mobile-empty-dashboard-2026-09-28",
+  "source_adjudication": "adjudication-v1.json",
+  "expected_mechanism": "cross_test_state",
+  "expected_diagnosis": "test_defect",
+  "supported_explanation": "The test opens the first dashboard card, which in this failed run was an empty xref dashboard left by a separate save flow; the chart assertion therefore targets the wrong dashboard.",
+  "supported_fix_direction": "Prevent the duplicate dashboard and open the known sample dashboard instead of whichever card sorts first.",
+  "outcome_limit": "Maintainer-linked cause, not an independently reproduced post-fix result. No single-case skill-lift claim."
+}

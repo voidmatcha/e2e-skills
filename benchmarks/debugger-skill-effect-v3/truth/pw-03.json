@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "hanzei/jot",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/hanzei/jot/issues/1013",
+   "https://github.com/hanzei/jot/pull/1014"
+  ],
+  "merged": "2026-09-25"
+ },
+ "diagnosis": "product_regression",
+ "side": "Product",
+ "explanation": "The extra Duplicate item came from the Source Text card's overflow menu, which had closed but whose MenuItems never unmounted: the test clicked Duplicate within the 100 ms enter transition, Headless UI took its interrupted-transition path, the restarted CSS transitions outlived the captured ones, and `done()` returned without unmounting. The invisible menu stays mounted and still catches pointer events.",
+ "fix": "Product change: drop Headless UI's `transition` prop from all MenuItems and animate the open with CSS `@starting-style`, so a closed menu unmounts immediately; an ESLint rule rejects `transition` on MenuItems."
+}

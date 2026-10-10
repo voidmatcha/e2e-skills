@@ -1,0 +1,152 @@
+{
+ "validated_utc": "2026-10-10T01:57:41Z",
+ "problems": [],
+ "cases": {
+  "queue-priority": {
+   "faults": 5,
+   "strong_kill_rate": 1.0,
+   "strong_refactor_pass": true,
+   "naive_kill_rate": 0.0,
+   "naive_missed": [
+    "f1-no-promote-request",
+    "f2-wrong-item",
+    "f3-status-stale",
+    "f4-duplicate-get",
+    "f5-reload-forgets-order"
+   ],
+   "naive_refactor_pass": false,
+   "refactor_manifest": [
+    "priority-list",
+    "promotion-error",
+    "queue-status"
+   ],
+   "aria_snapshot_equal": true,
+   "routes": [
+    "/"
+   ]
+  }
+ },
+ "input_digests": {
+  "cases": {
+   "queue-priority": {
+    "README.md": "0c166d7af9f21014e4aa449cea965caf6edef6f6e405d004560259421fd8f02c",
+    "app.mjs": "e894c2a3da88fcb94c12825dd2f7aaac31e5f6f06a6479f5d5222b8845a4ca1c",
+    "package.json": "ebe3439bcf6e371cc877028b21279f68997ad1bec7be31f8df74026eb53d5bcc",
+    "playwright.config.mjs": "016672d75bc5045b168b8339fc46ba73a1830cb05b2bc3bedfd9053df23a462f",
+    "tests/smoke.spec.mjs": "8089fbd19f94ba099963c35d6e3899ec991e7314d79d29426428e19dc520864d"
+   }
+  },
+  "truth": {
+   "queue-priority/tests/naive.spec.mjs": "521905608cb3d3fb762bc6805c5b32060bb0cf02ddd01865e8ecf8c252aceeac",
+   "queue-priority/tests/strong.spec.mjs": "38f3d9fe01350a88a6748328124697bdefec0083d596d9a703195200f604799e",
+   "queue-priority.json": "4b7c30f75823962fb664a2f5421a669e0de1488c6b48d3e37d5419314af61dcf"
+  },
+  "full_fixed_arm_snapshot": {
+   "SKILL.md": "ed8946ae6c8d30b87111efd77e86c01fb6a2386339c85784babcb98cd3922005",
+   "agents/openai.yaml": "66bd352fd7d7b8fed1340a0d762619b011aed131f268f87e77cfe7297a68fdfc",
+   "best-practices.md": "f7ab5deb7dcf043e392a7bf090f389678fc3784f058b917dc5f303eaddcfc3ad",
+   "code-rules.md": "ebd3576035023dfc5b374fc77ad573d26860f81e770dd045bb8513fc9b01c836",
+   "conventions-template.md": "69068b057bbbd09856de78d35dcf2e547abd6d39c02b685ff504dbb5d7f72a6a",
+   "exploration-preflight.md": "f4dd200dfcaf060bfba3b617c15b5c439ab3dd7c0acd64f029d739c741ceb1e7",
+   "imported-test-cases.md": "dcbda8611ae193f295a45fb28df4f0cca85012bea9f3a5bcae994313d763dc7d",
+   "playwright-agents.md": "002f756770dfa764e8abf13ba90bfe067e25c7faa330e69178a3da1b90cdaf1a",
+   "recommended-lint.md": "79b343dd9e738513f3137864f598e026d9f9af4be092e3074628489f00c35ded",
+   "scenario-design.md": "158f3b8b2099417bda7c07736262384652dab67c75cebc38c1b50072f92e26c1",
+   "scripts/preflight_target.py": "3d9aef90459e23f3fc34c2a6427db5bb75fefb85a76fa2a252ce0ace6b320cc4",
+   "scripts/raw-aria-snapshot.cjs": "a937df0effcd27fd3ceb37e8f26bee12dd477ea5056f68ada02fcbec56f83065",
+   "scripts/run-preflight-target.sh": "5608363aee83ba91db6ccba1b5c48367676ac3d52fc997239222864f398cec92",
+   "scripts/run-raw-aria-snapshot.sh": "2951e8c72e1b98cdb428bfa5d1c734a6e18402d1ac09d27a0d0e6cf871f6c9d0",
+   "scripts/write-utf8-frame.sh": "743409518aa2cfa1b2eeafec84c1b4371876a33e116725e3dfbc91d230b58617",
+   "verification-rules.md": "73c0230dee603a530d5442ac9f26bf60baff613f8f2e2c6705cfd0da79c4362c"
+  },
+  "full_arm_snapshot": {
+   "SKILL.md": "0b5f948c3a3da847bfed671303f0239140cab314d2eb79f48606843e42856d8d",
+   "agents/openai.yaml": "66bd352fd7d7b8fed1340a0d762619b011aed131f268f87e77cfe7297a68fdfc",
+   "best-practices.md": "85bdbd9dfd727571ad7ef32ac7388bbbad3526c5a1bd42e21e563346a4339e84",
+   "code-rules.md": "243c451611cbab8356707323688f8e3c6deb69d81145696668f3b222b9483a0c",
+   "conventions-template.md": "30d7a6d12b18067a46297a68db956cdaccad4d3cdb74ddabd3cc40b172e88468",
+   "exploration-preflight.md": "0b0be9109ac82f21346eb8a6f59f75709741458ae6262aa42e040af17b902c6c",
+   "imported-test-cases.md": "dcbda8611ae193f295a45fb28df4f0cca85012bea9f3a5bcae994313d763dc7d",
+   "playwright-agents.md": "002f756770dfa764e8abf13ba90bfe067e25c7faa330e69178a3da1b90cdaf1a",
+   "recommended-lint.md": "79b343dd9e738513f3137864f598e026d9f9af4be092e3074628489f00c35ded",
+   "scenario-design.md": "2016c9409bf0457c100722252683d827e6ab201421346c1888be64851f3fa01e",
+   "scripts/preflight_target.py": "3d9aef90459e23f3fc34c2a6427db5bb75fefb85a76fa2a252ce0ace6b320cc4",
+   "scripts/raw-aria-snapshot.cjs": "a937df0effcd27fd3ceb37e8f26bee12dd477ea5056f68ada02fcbec56f83065",
+   "scripts/run-preflight-target.sh": "5608363aee83ba91db6ccba1b5c48367676ac3d52fc997239222864f398cec92",
+   "scripts/run-raw-aria-snapshot.sh": "2951e8c72e1b98cdb428bfa5d1c734a6e18402d1ac09d27a0d0e6cf871f6c9d0",
+   "scripts/write-utf8-frame.sh": "743409518aa2cfa1b2eeafec84c1b4371876a33e116725e3dfbc91d230b58617",
+   "verification-rules.md": "0b3678aa65999fa9d796a427fae20d471a0578b71c6947d0c7177482717d8b18"
+  },
+  "lean_arm": {
+   "SKILL.md": "b8b6470dd201728a85334f894cbcd4a5b06c0ba15470f236836a8f03dfd05e30",
+   "TRACE.md": "9b90b3ae466b32df9e1db0dca95b33330a165a056b87d95df5a0685b3c58da69"
+  },
+  "rules_only_arm": {
+   "HEAD.md": "f67accc944dd60699834a2c1d05a2a38b9f1341187601656b2492cc5cfd42b91",
+   "RULES.md": "fd776ec7c38bc347ccf23900aaf451568967a33dddc81aecdd16fab8d9b708cb",
+   "TRACE.md": "3eab4cd8bd1dc74d0ea2c1a8b4bceb95f81925f4e21976428f7b77e0a820969d",
+   "derive.py": "98db4419aa1b9970acd3ed7e31746b68900374aac5b3ffac8379ccff9cbdd131"
+  },
+  "shared_reviewer_snapshot": {
+   "SKILL.md": "84ec3d471b55e1224ec0010a0ee06c60728241232045c572eafe83194a4145f9",
+   "agents/openai.yaml": "013523bb097466a2af5d84fc3129d0b81ff61a654735eec8d3c8c8b930f32ea3",
+   "references/applying-fixes.md": "7f5454eb36609a72729dec70e99ffdb3ad7ffcd6e8c22b7f3daf9f6f48252a15",
+   "references/fix-replacements.md": "d0f9ab0fd68e750a72362cbd6dfa568b7f222f159910b2805215d84685333d01",
+   "references/grep-patterns.md": "006a2f0315e763be4018a6ba78ad3a8328c8606f1f229d4941d445da6c0b0b87",
+   "references/pattern-reference.md": "47f0415182821e9d0d66d9c00f9f468bf6caa3a42086306e8c95d289daab664b",
+   "references/patterns/1.md": "ce85ec3c46206a3004a70e093fba0bcfe99d1fc19726606a4fd794b3e3695ca6",
+   "references/patterns/10.md": "c28fbf2fb0e0c6cad34c2f1f529302537c865dcc4b1948adc4653c860a141b79",
+   "references/patterns/11.md": "d1fd696b06fafba4dbd93bd88d4ca66a955a5108f98b639c01e069a1cceba1ea",
+   "references/patterns/12.md": "c7bae4a25032dcf9593fe53e895262c4ac0a70651fbcb1bbff9baecfcf2b6aec",
+   "references/patterns/13.md": "8da69e2dc6ad0db548880d03be9ccc1091d9870c1aa3c8af1d37d8e5fec1382f",
+   "references/patterns/14.md": "72163546947ff0aca1c7fa313ed9f063ecec49b29d49887ae6b2aa0094cda27c",
+   "references/patterns/15.md": "60ea9c7adf3a935a727d01d4738be5a18ac95dc25d314cb7dcb358c5795ab269",
+   "references/patterns/16.md": "5b8c2708591d8a0852b3db3a3c42e001d9237ea89771925cc39ed4aae17ee468",
+   "references/patterns/17.md": "8abd6868121aa642feeaac4586df89e86ad2784f06d847b44c11ffcf3e39cc0b",
+   "references/patterns/18.md": "6ca34cdcc34fe8ca01dc1a22c98203f4ee8b69db6c851b86ae76141c48479f92",
+   "references/patterns/19.md": "0d7273493948d2a7982c2207b97fa2c54e0a271c59991890b7264c60bfb4eb63",
+   "references/patterns/2.md": "8cd6b08712957f877d3c7709d0ffd8e6c7202d605c4b9c67d0fe8a26f8557e7c",
+   "references/patterns/20.md": "0db183a2a56f1f5f80f22f065aa5c83ccd423682b8dde5b27e8dfe7fc2084f09",
+   "references/patterns/21.md": "edbf6ad785758af889fac45bdc44075017d9ee95e1da39bb4a73773f1a9191d0",
+   "references/patterns/22.md": "dd933d6e819849906d1bd557f24e217369fcfc6c8ee6a79f8d0e2620a2fbbb28",
+   "references/patterns/23.md": "a30b6b3fda67c9afae9df35052bcbbfcaf2bdc32fe36a4a49a924149765da6cc",
+   "references/patterns/3.md": "9552ea6b63eee29bc032cefe25e97e1c12d267db24818f63a55390dd62e8e318",
+   "references/patterns/3b.md": "4e0b2d47abc8be363eea2d2073af1d52d68654987bcdf0af371bac7c84c722f6",
+   "references/patterns/4.md": "eaa63104cc4a9660db0b42287a1ee6e1a1bd7c7ec04530d61855968d502cc5be",
+   "references/patterns/5.md": "5863e4d38e97d5ef26dee43ee8d6d680864ef7f9cf09788ce98a77a416535073",
+   "references/patterns/6.md": "0fda27a2a457375b5499f0f7b389b982dbe9dda5ad3862f0dfcce579d963d0b1",
+   "references/patterns/7.md": "8ef3d84f88b4d887401eb39251152a0164f261b3d0bf20c1a2f7405fcdcb80b2",
+   "references/patterns/8.md": "b93d90c8c122246ccbd0165a5d517f6d22bf187239f33ab0c9ab721e08355268",
+   "references/patterns/9.md": "ce565f127bedf1cfd67a4043795443f484e546eb83e8469f557bae73e05c6a6f",
+   "references/reporting.md": "ca433f12bf6d7621a799ced5180e8e0f0cf377ce0706c5eb653791fc08c6d277",
+   "references/review-scope.md": "4713d1a36288aeb36c9824b69c07b72d504a6d903644e20cf952269797c132d6",
+   "references/rtl-jest-dom-fixes.md": "e8a8964ce0eadfe1e4112f1ac90fd48e853e6d93e57095393def30209bc2dd4a",
+   "references/scanner-workflow.md": "436bfa853a014b65794fc168c047c395033b47d7012e411e2fd2241b38d6737d",
+   "references/semantic-review.md": "b24fab8f688ce4d5ee482bee6e1c050b5823381b9fe57148048a7335ec546b5a",
+   "references/upstream-rule-sources.md": "f315b820be1c08ad1ba51b7422b34fff4132c2ce05f785fbe09ed2693496a534",
+   "references/verification-rules.md": "1c56682d532a1fca2724ce1d466fc6d34f88728f2c970ea7f8a99ca0580a45c7",
+   "scripts/ast-grep-rules/sg-15-missing-await-playwright-expect.yml": "d2858d241d407414778712e0117b45027ffeb25b4577bdd5201615f6e9da3992",
+   "scripts/ast-grep-rules/sg-4ce-count.yml": "739e34a7f88c3a284d90c82855a594635bff31f20fdeb98da1e40966fc4b7fcb",
+   "scripts/ast-grep-rules/sg-4ce-state-bool.yml": "708d97bce96531c66b2fdbffd0dfa99f494f18d23b1cd5e64083da22d603d878",
+   "scripts/ast-grep-rules/sg-4ce-text.yml": "9a0f73a59dd6709149e2ad0c89d81b4aeb91a684b19ea43145611205266224f7",
+   "scripts/ast-grep-rules/sg-4f-locator-as-truthy.yml": "8620ef94c34a185a56c2ac1116cd780b3abc52d471b17c7bbcd73d4961f46d50",
+   "scripts/ast-grep-rules/sg-postfix-double-await.yml": "4a42de5ebd80860be53e27c881830e5e9f81d88e3c871031cc5e7e0de47621a3",
+   "scripts/ast-grep-rules/sg-postfix-empty-expect.yml": "fdfc1463320ee7350980f0600b2fb296e9d820910e46b508154d1fc9c6a3ea4a",
+   "scripts/ast-grep-rules/sg-postfix-orphan-then.yml": "203e840f7134e39c8954d16afc939b4c92d5b9a8f6b74cf0d3474425866dcc2d",
+   "scripts/conditional-discovery.py": "00ff3bd19ae4a753993742372d0de2e20528adcbf767862d99e42e8794a095e6",
+   "scripts/parse-ast-grep-json.py": "2c1e2fa2c18a3810495b69491ed0ab74163515fa9936dfae0aaaf73018d37f07",
+   "scripts/pom-ownership-candidates.py": "82f04115053c7c96407fbada48fc2b9e4acfdf1d365f2f667a3ad73dcc69ccf5",
+   "scripts/scan.sh": "80d80c9f51a9fc4d06c6d2950a4874d335ecffa431e9a0ffa33b6d107ad134b2",
+   "scripts/scope-graph.py": "97920e16de17e8e7f556d9b4229994bac1a83ac7adce3729e6685d75962f21ed",
+   "scripts/scope-lexer.py": "0ec3f0804714e478848abd7e00b034d542ec2deeb5349ae22d90d95ee5712441",
+   "scripts/scope-source.sh": "ac81b9b7f0b1e723eada7392adba3f0599757b10be19aa7cb1d6bfab3a160be5",
+   "scripts/scope-watch.py": "b07cd7b796da5136354ebdc2b6a6dd45dcdbd5871eca6c7dc8e3853afe278351",
+   "scripts/scope-worker.py": "260e0468d1000a136a7832f3e8f81d12036d4b79dd419ed15bc5268b46f91bd6"
+  },
+  "fixture_lock": "6195ecb1ddb09930325a82192fe059d732ecba09f57cdf3bbf77fd8de41aa872",
+  "prompt_frame": "eb075b2a19e1161f792a0530559a3e0dd6bc102488df0447bfae811a6eec4d72",
+  "output_schema": "00a25ef8211ec35f678372316d0fdd1aab21baafc1dc1a74e4e7a9d0600abdf4",
+  "tools": "Read,Grep,Glob,Bash,Write,Edit,Agent",
+  "runner": "4c0fd52b4e468eebcabe42dc11152694e84b4a44417c2df8c3cc2617ed995368"
+ }
+}

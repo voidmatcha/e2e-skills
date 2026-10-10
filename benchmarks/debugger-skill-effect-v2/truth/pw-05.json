@@ -1,0 +1,14 @@
+{
+ "source": {
+  "repo": "open-metadata/OpenMetadata",
+  "license": "Apache-2.0",
+  "urls": [
+   "https://github.com/open-metadata/OpenMetadata/pull/31539"
+  ],
+  "merged": "2026-08-16"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test",
+ "explanation": "On repeat navigations within the same Playwright worker, React Query serves the result from its in-memory cache without making a network request, so `waitForResponse` hangs for the full 60 s timeout.",
+ "fix": "Replace the `waitForResponse` intercept with a `toBeVisible()` check on the first table row."
+}

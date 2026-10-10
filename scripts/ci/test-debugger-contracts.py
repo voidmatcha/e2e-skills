@@ -80,6 +80,119 @@ def assert_debugger_reference_routing() -> None:
             assert pointer not in mutated, (skill, pointer)
 
 
+def assert_classification_evidence_contract() -> None:
+    playwright = (
+        ROOT / "skills/playwright-debugger/references/classification-procedure.md"
+    ).read_text(encoding="utf-8")
+    cypress = (
+        ROOT / "skills/cypress-debugger/references/classification-procedure.md"
+    ).read_text(encoding="utf-8")
+
+    for framework, text in (("Playwright", playwright), ("Cypress", cypress)):
+        assert "roughly half the time" not in text, framework
+        assert "A bounded sample changes confidence; it does not prove" in text, framework
+        assert "CANNOT_VERIFY" in text, framework
+
+    assert "cy.window().its('__APP_READY__').should('eq', true)" in cypress
+    assert "`cacheAcrossSpecs` defaults to `false`" in cypress
+    assert "does not by itself prove an intercept race" in cypress
+    assert "retrying DOM assertion may already wait" in cypress
+
+    for relative, eval_id in (
+        ("skills/playwright-debugger/evals/evals.json", 14),
+        ("skills/cypress-debugger/evals/evals.json", 16),
+    ):
+        payload = json.loads((ROOT / relative).read_text(encoding="utf-8"))
+        case = next(item for item in payload["evals"] if item["id"] == eval_id)
+        assertions = "\n".join(case["assertions"])
+        assert "True positive:" in assertions, relative
+        assert "False-positive guard:" in assertions, relative
+        assert "does not prove" in assertions, relative
+
+    cypress_evals = json.loads(
+        (ROOT / "skills/cypress-debugger/evals/evals.json").read_text(
+            encoding="utf-8"
+        )
+    )["evals"]
+    timing_case = next(item for item in cypress_evals if item["id"] == 20)
+    timing_contract = "\n".join(
+        [timing_case["expected_output"], *timing_case["assertions"]]
+    )
+    assert "exists as false" in timing_case["prompt"]
+    assert "cy.window().its('__APP_READY__').should('eq', true)" in timing_contract
+    assert "post-visit intercept plus alias timeout" in timing_contract
+    assert "does not classify the early-registered intercept as F11" in timing_contract
+
+
+def assert_debugger_input_and_gate_contracts() -> None:
+    cores = {
+        skill: (ROOT / "skills" / skill / "SKILL.md").read_text(encoding="utf-8")
+        for skill in ("playwright-debugger", "cypress-debugger")
+    }
+    token_contract = (
+        "pass `GH_TOKEN` or `GITHUB_TOKEN` only when that variable is the "
+        "credential source actually needed for this download, and pass neither "
+        "token when the stored credentials under `HOME` suffice"
+    )
+    f1_f7_scope = (
+        "When F1 versus F7 remains the undecided pair after the classification steps"
+    )
+    for skill, core in cores.items():
+        flat = " ".join(core.split())
+        assert token_contract in flat, skill
+        assert "because `gh` cannot authenticate without one of them" not in flat, skill
+        assert f1_f7_scope in flat, skill
+        assert "Other F-codes with sufficient artifact evidence remain classifiable" in flat
+        mutated = flat.replace(f1_f7_scope, "For every failure", 1)
+        assert mutated != flat and f1_f7_scope not in mutated, skill
+
+    for skill, eval_id in (("playwright-debugger", 15), ("cypress-debugger", 17)):
+        cases = {
+            entry["id"]: entry
+            for entry in json.loads(
+                (ROOT / "skills" / skill / "evals/evals.json").read_text(
+                    encoding="utf-8"
+                )
+            )["evals"]
+        }
+        deterministic = "\n".join(
+            [cases[eval_id]["expected_output"], *cases[eval_id]["assertions"]]
+        )
+        assert "Classifies as F2 or F12, not F1 or F7" in deterministic, skill
+        assert "Does NOT run the repeat/isolation probe" in deterministic, skill
+
+    playwright = cores["playwright-debugger"]
+    for phrase in (
+        "at most 500 Unicode characters",
+        "`bundled reader`, `safely redacted direct input`, or `unavailable placeholder`",
+        "remove Bearer/Basic credentials",
+        "verify no residual credential shape remains; then truncate",
+        '"[error excerpt unavailable: safe redaction not verified]"',
+        "Never truncate first",
+    ):
+        assert phrase in playwright, phrase
+
+    evals = {
+        entry["id"]: entry
+        for entry in json.loads(
+            (ROOT / "skills/playwright-debugger/evals/evals.json").read_text(
+                encoding="utf-8"
+            )
+        )["evals"]
+    }
+    direct = "\n".join(
+        [evals[21]["prompt"], evals[21]["expected_output"], *evals[21]["assertions"]]
+    )
+    unavailable = "\n".join(
+        [evals[22]["prompt"], evals[22]["expected_output"], *evals[22]["assertions"]]
+    )
+    assert "True positive:" in direct and "safely redacted direct input" in direct
+    assert "before truncating" in direct and "abc123secret" in direct
+    assert "False-positive guard:" in unavailable
+    assert "[error excerpt unavailable: safe redaction not verified]" in unavailable
+    assert "does not echo any portion" in unavailable
+
+
 def assert_readme_f11_contract() -> None:
     expected_rows = {
         "README.md": (
@@ -279,7 +392,7 @@ def assert_debugger_repository_commands_use_empty_environment() -> None:
             ROOT / "skills" / skill / "references/classification-procedure.md"
         ).read_text(encoding="utf-8")
         probe_fence = SHELL_FENCE.search(
-            text, text.index("decided by an isolation probe")
+            text, text.index("needs an isolation probe plus causal evidence")
         )
         assert probe_fence is not None, skill
         probe_commands = [
@@ -348,7 +461,7 @@ def assert_isolation_probe_waits_for_safety_and_trust_gates() -> None:
         procedure = (
             ROOT / "skills" / skill / "references/classification-procedure.md"
         ).read_text(encoding="utf-8")
-        probe_start = procedure.index("decided by an isolation probe")
+        probe_start = procedure.index("needs an isolation probe plus causal evidence")
         probe_fence = SHELL_FENCE.search(procedure, probe_start)
         assert probe_fence is not None, skill
         for heading in (
@@ -2406,6 +2519,8 @@ def assert_bundled_scripts_match_the_launcher_minimum_python() -> None:
 
 def main() -> None:
     assert_debugger_reference_routing()
+    assert_classification_evidence_contract()
+    assert_debugger_input_and_gate_contracts()
     assert_readme_f11_contract()
     assert_debugger_repository_commands_use_empty_environment()
     assert_isolation_probe_waits_for_safety_and_trust_gates()
@@ -5805,12 +5920,17 @@ def main() -> None:
     assert "**Test-reliability urgency:**" in playwright_text
     assert "**Test-quality severity:**" in playwright_text
     assert (
-        '- **Error excerpt:** `"<sanitized, bounded error excerpt from bundled '
-        'artifact-reader output>"`'
+        '- **Error excerpt source:** `bundled reader` | '
+        '`safely redacted direct input` | `unavailable placeholder`'
+        in playwright_text
+    )
+    assert (
+        '- **Error excerpt:** `"<sanitized bounded excerpt or unavailable '
+        'placeholder, max 500 characters>"`'
         in playwright_text
     )
     assert "<raw error message>" not in playwright_text
-    assert "Never copy direct or raw artifact text into the finding" in playwright_flat
+    assert "never reopen an artifact or copy raw artifact text into the finding" in playwright_flat
     assert (
         "Preserve enough emitted context to identify the failing assertion or action"
         in playwright_flat
