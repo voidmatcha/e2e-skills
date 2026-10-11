@@ -2,7 +2,7 @@
 
 ## [2.0.1] - 2026-10-11
 
-Playwright debugger only. Apart from the version field, the reviewer, generator, Cypress debugger, scanner, installs, pattern IDs, F-codes, and every existing safety rule are unchanged (no rule is weakened; one bounded spec-source path rule is added to the Playwright debugger); the reviewer's evidence digest is refreshed only because that field is part of its bytes.
+Playwright debugger only. Apart from the version field, the reviewer, generator, Cypress debugger, scanner, installs, pattern IDs, F-codes, and every existing safety rule are unchanged (no rule is weakened; one bounded spec-source path rule is added to the Playwright debugger and mirrored in the shared failure-classifier subagent, both its Claude Code and Codex copies); the reviewer's evidence digest is refreshed only because that field is part of its bytes.
 
 ### Changed
 
@@ -19,7 +19,7 @@ This is a major version because the evaluation and evidence system was rebuilt w
 
 ### Tag note
 
-A `v2.0.0` tag was published earlier at `8ec2cb8`, a 2026-09-30 scanner snapshot that no release or GitHub Release ever referenced. On 2026-10-11 it was re-pointed to this release commit (`6ded5e9`); anyone who fetched the old tag must delete it locally (`git tag -d v2.0.0`) and fetch again.
+A `v2.0.0` tag was published earlier at `8ec2cb8`, a 2026-09-30 scanner snapshot that no release or GitHub Release ever referenced. On 2026-10-10 it was re-pointed to this release commit (`6ded5e9`); anyone who fetched the old tag must delete it locally (`git tag -d v2.0.0`) and fetch again.
 
 ### Evidence
 
