@@ -1,12 +1,12 @@
 # Roadmap and Upstream Contributions
 
-## Current reviewer-evidence work
+## Evidence status at 2.0.1
 
-The active goal is to measure clean-case false positives and the full reviewer's added value over no-skill and catalog-only baselines. The [current execution plan](plans/reviewer-evidence-next-steps.md) separates completed development work, unresolved evidence gaps, ordered next steps and an optional Jev shadow experiment. [Benchmark status](../benchmarks/STATUS.md) remains the source of truth for measured outcomes.
+[Benchmark status](../benchmarks/STATUS.md) is the source of truth for measured outcomes; this section only says what is still open. The reviewer passed a same-corpus release confirmation for its pre-release 2.0.0 candidate, and the shipped reviewer differs from that candidate by later changes no holdout has measured. The project does not yet have a passing release-grade benchmark for generalized reviewer accuracy, and every corpus it has run is public development evidence.
 
-**Next:** obtain a complete, auditable setup/caller/reverse-user boundary and independent clean labels before registering another counted feasibility batch. The unresolved-context admission gate is already enforced. Only after feasibility may a new protocol admit a corpus and run the three-arm comparison. Frozen specificity v4 remains blocked; the separate development work has not produced a release corpus or a specificity result. Jev requires separate API-access/cost confirmation and does not block the Codex path.
+**Open:** independent clean-case labels with a complete, auditable setup/caller/reverse-user boundary, so that false positives and the full reviewer's added value over no-skill and catalog-only baselines can be measured on a corpus the skill was not tuned on. Frozen specificity v4 remains blocked; the separate development work has not produced a release corpus or a specificity result. The [execution plan](plans/reviewer-evidence-next-steps.md) keeps the exact replay counts, hashes, and verification limits.
 
-**Execution update:** the unresolved-context admission gate and an opt-in TypeScript AST diagnostic are implemented and tested. Offline replays on three existing cases now bind staged aliases/re-exports and extract literal setup-project dependencies, without executing target code or promoting static bindings to runtime proof. Bounded source expansion still covers only part of the Mermaid test root, and the earlier sixty-request budget remains exhausted. Complete usage boundaries, setup/runtime evidence and independent labels remain missing; later evaluation stages are not complete. See the current plan for exact replay counts, hashes and verification limits.
+**Debuggers:** no measured lift over a taxonomy-free prompt on real failures, and only four independent real CI cases with a maintainer-linked cause are available, so a held-out test needs new cases captured while CI artifacts are still retained (about two weeks).
 
 ## Upstream contribution track
 

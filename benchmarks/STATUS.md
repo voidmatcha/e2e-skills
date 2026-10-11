@@ -4,6 +4,13 @@ This directory preserves the benchmark inputs, protocols, raw reports, and negat
 
 Historical raw archives may retain normalized host-path shapes, temporary workspace paths, process identifiers, invocation identifiers, and runner diagnostics when those bytes are bound by evidence hashes. Generic account components such as `/Users/user/` and `/home/user/` are placeholders, not a contributor identity. Treat those fields as local run provenance, not as setup instructions or evidence that another machine will use the same paths. New producers must redact credentials and normalize real account names before committing artifacts; do not rewrite a frozen archive merely to make its diagnostics look platform-neutral.
 
+## At a glance (2.0.1)
+
+- **Reviewer:** the pre-release 2.0.0 candidate passed its frozen full-versus-no-skill release confirmation (v18/v19); the shipped reviewer differs from that candidate by later changes no holdout has measured, and v21 did not support the explicit `#2` wording. There is no passing release-grade benchmark for generalized reviewer accuracy.
+- **Generator:** v8 passed on the public v3 pool for markup-refactor survival (0.954 versus 0.435); fault-detection improvement was not shown and generation took 6.74 times as long.
+- **Debuggers:** no measured lift over a taxonomy-free prompt on real failures (v2–v5); the claimed value is safe artifact handling. The 2.0.1 [development comparison](debugger-dev-comparison-v1/README.md) is a tuned-on-the-same-cases signal, not a held-out result.
+- **Limits:** every corpus here is public development evidence, mostly model-authored or single-host, and only four independent real CI cases carry a maintainer-linked cause. Treat the numbers below as development measurements, not accuracy estimates.
+
 ## Current conclusion
 
 A separate [current-tree public-development replay](../docs/plans/reviewer-evidence-next-steps.md#follow-through-outcome-and-presentation-claims) completed all 180 scheduled tool-free Codex calls on 2026-09-24 with no infrastructure errors. Stable F1 was full `0.923077`, catalog-only `0.960000`, and no-skill `0.508475`; full had four stable extra predictions and failed its absolute precision and clean-specificity gates. The comparator returned `FAIL`, with no eligible skill-lift claim. This is twenty previously observed public cases, not a replacement for the historical counted v7 run or a sealed release evaluation. The source audit also found a possible #13/clean-label conflict; the frozen labels and official score remain unchanged.
