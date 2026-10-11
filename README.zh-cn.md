@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=5393241c6bc625270631405e4f56c1a9355c4f8bd177a29e47e88ca90e318e00; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=2408a5aa368472b3dc5542a32558b7941c73a6aefb15206870a532c78cfc5475; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 Evidence scope: the 15 merged PRs shown here are curated examples, not a total. Field review v1 separately records 29 submitted / 16 merged / 6 closed / 7 open under its skill-name inclusion rule; do not combine the two denominators. These are recorded snapshots, not current GitHub totals.
 
@@ -34,6 +34,8 @@ Evidence scope: the 15 merged PRs shown here are curated examples, not a total. 
 </p>
 
 对于人工或 AI 编写的测试，可以把 `e2e-reviewer` 用作独立的质量门禁。它会检查一个通过的测试是否真的证明了标题所描述的行为。
+
+各 Skill 的证据水平不同：审查器拥有最强的实测结果，生成器在公开任务上有实测，调试器则是只报告产物所支持原因的安全产物读取器，并未被测出比普通提示更准确。[基准状态](benchmarks/STATUS.md)为每个 Skill 提供了一张证据卡。
 
 | 需求 | Skill | 结果 |
 | --- | --- | --- |

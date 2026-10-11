@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=5393241c6bc625270631405e4f56c1a9355c4f8bd177a29e47e88ca90e318e00; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=2408a5aa368472b3dc5542a32558b7941c73a6aefb15206870a532c78cfc5475; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 Evidence scope: the 15 merged PRs shown here are curated examples, not a total. Field review v1 separately records 29 submitted / 16 merged / 6 closed / 7 open under its skill-name inclusion rule; do not combine the two denominators. These are recorded snapshots, not current GitHub totals.
 
@@ -35,6 +35,8 @@ Evidence scope: the 15 merged PRs shown here are curated examples, not a total. 
 </p>
 
 `e2e-reviewer`는 사람이나 AI가 작성한 테스트의 품질을 독립적으로 검증하는 스킬입니다. 테스트가 통과하더라도 제목에 적힌 동작을 실제로 검증하는지 확인합니다.
+
+스킬마다 증거 수준이 다릅니다. 리뷰어가 가장 강한 측정 결과를 갖고 있고, 제너레이터는 공개 과제에서 측정됐으며, 디버거는 일반 프롬프트보다 정확하다고 측정된 것이 아니라 아티팩트가 뒷받침하는 원인만 보고하는 안전한 아티팩트 리더입니다. [벤치마크 상태](benchmarks/STATUS.md)에 스킬별 증거 카드가 있습니다.
 
 | 필요 | 스킬 | 결과 |
 | --- | --- | --- |

@@ -32,6 +32,8 @@
 
 Use `e2e-reviewer` as an independent quality gate for human-written or AI-generated specs: it checks whether a passing test actually proves the behavior named in its title.
 
+Evidence differs by skill: the reviewer carries the strongest measured results, the generator is measured on public tasks, and the debuggers are safe artifact readers that report only a cause the artifact supports, not a measured accuracy gain over a plain prompt. [Benchmark status](benchmarks/STATUS.md) has one evidence card per skill.
+
 | Need | Skill | Result |
 | --- | --- | --- |
 | Generate new Playwright coverage | `playwright-test-generator` | Explored, approved, reviewed Playwright specs |

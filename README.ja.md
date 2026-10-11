@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <strong>🇯🇵 日本語</strong> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=5393241c6bc625270631405e4f56c1a9355c4f8bd177a29e47e88ca90e318e00; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=2408a5aa368472b3dc5542a32558b7941c73a6aefb15206870a532c78cfc5475; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 Evidence scope: the 15 merged PRs shown here are curated examples, not a total. Field review v1 separately records 29 submitted / 16 merged / 6 closed / 7 open under its skill-name inclusion rule; do not combine the two denominators. These are recorded snapshots, not current GitHub totals.
 
@@ -35,6 +35,8 @@ Evidence scope: the 15 merged PRs shown here are curated examples, not a total. 
 </p>
 
 人間または AI が作成したテストでは、`e2e-reviewer` を独立した品質ゲートとして利用できます。合格したテストが、タイトルに書かれた動作を本当に証明しているかを確認します。
+
+スキルごとに証拠の水準は異なります。レビュアーが最も強い測定結果を持ち、ジェネレーターは公開タスクで測定され、デバッガーは通常のプロンプトより正確だと測定されたものではなく、アーティファクトが裏付ける原因だけを報告する安全なアーティファクトリーダーです。[ベンチマーク状況](benchmarks/STATUS.md)にスキルごとの証拠カードがあります。
 
 | 必要なこと | スキル | 結果 |
 | --- | --- | --- |
