@@ -59,3 +59,4 @@ scripts/evals/generator-live/*/playwright-report/
 
 # claude plugin eval run output
 /evals/results/
+/test-results/
