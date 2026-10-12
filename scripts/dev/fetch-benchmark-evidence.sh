@@ -90,9 +90,23 @@ command -v hf >/dev/null 2>&1 || {
 stage="$(mktemp -d)"
 trap 'rm -rf "$stage"' EXIT
 
+# rm -rf and mv must stay inside this checkout: refuse a symlink anywhere between
+# the target and the repository root.
+check_no_symlink() {
+  local p="$1"
+  while [ "$p" != "$repo_root" ] && [ "$p" != "/" ]; do
+    if [ -L "$p" ]; then
+      echo "refusing a symlink in the target path: $p" >&2
+      exit 1
+    fi
+    p="$(dirname "$p")"
+  done
+}
+
 fetched=0
 for d in "${dirs[@]}"; do
   target="$repo_root/benchmarks/$d"
+  check_no_symlink "$target"
   if [ -e "$target" ] && [ "$FORCE" -ne 1 ]; then
     continue
   fi

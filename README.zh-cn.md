@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=743629897252f8f70826b7cf3f1c5f1f58bf63f913219ceb13a9790d88086836; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=24f5c4af18fd3658fc0cefe9de09ff699661bed2f1848b23395c5d73a994dc2a; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 Evidence scope: the 15 merged PRs shown here are curated examples, not a total. Field review v1 separately records 29 submitted / 16 merged / 6 closed / 7 open under its skill-name inclusion rule; do not combine the two denominators. These are recorded snapshots, not current GitHub totals.
 
@@ -262,7 +262,7 @@ The bundled shell scripts and artifact readers target conventional macOS/Linux l
 - 浏览器故障注入已完成 **12 个故障算子与 3 种预期结果组合形成的全部 36 个 Playwright/Cypress 单元**。这是对测试台自身的检验：应用、健壮的测试、注入的故障和脆弱的测试都由本仓库编写，因此它只能说明检测器按设计触发，并不代表可以泛化。
 - [Healer perturbation v1](benchmarks/healer-perturbation-v1/README.md) 已完成**全部 30 个冻结的 Codex 单元**并返回 `REJECT`：带保护约束的官方 healer prompt 与本仓库提议的 Step 7 工作流，都削弱了全部 3 个不可修复的诚实性对照项。该结果否决了把这两条 healer 路径作为安全默认值；它没有测量 Claude、通用 healer 质量或审查准确率，也没有修改产品指令。
 - Exact reviewer benchmark 覆盖 **12 个已证实的 false-green cases 和 12 个 clean guards**；其中 10 个 fault cases 是 byte-identical operator mutants。
-- [真实代码修复前后配对](benchmarks/fixpair-v1/README.md)的 B+C+D 批次中，`gpt-6-sol` 的严格召回率为**使用技能 25/33、未使用 13/33**，修复后（AFTER）误报均为 **0/33**。受控的三模型重跑使差距缩小且因模型而异：修复后 33 项中 `gpt-6-sol` **26 对 14**、`gpt-6-astra` **27 对 22**、`claude-sonnet-5-5` **27 对 21**。第二个模型 `gpt-6-astra` 在 B 批次得到 **10/15 对 10/15**，两组误报均为 **0/15**。
+- [真实代码修复前后配对](benchmarks/fixpair-v1/README.md)的 B+C+D 批次中，`gpt-6-sol` 的严格召回率为**使用技能 25/33、未使用 13/33**，修复后（AFTER）误报均为 **0/33**。受控的三模型重跑使差距缩小且因模型而异：扫描器修复后重跑的 BEFORE 33 项中 `gpt-6-sol` **26 对 14**、`gpt-6-astra` **27 对 22**、`claude-sonnet-5-5` **27 对 21**。第二个模型 `gpt-6-astra` 在 B 批次得到 **10/15 对 10/15**，两组误报均为 **0/15**。
 - [语义变异样本 v1](benchmarks/semantic-mutants-v1/README.md)记录了模型注入真实测试文件的缺陷：S1 的严格召回率为 **7/10 对 5/10**。原始对照组中双方各有 1 次计分警报，均来自同一案例：声称测试“编辑页面”的用例仍跳转到创建页面。S2 为 **8/9 对 2/9**（双方均为 0 次警报），S3 为 **5/6 对 2/6**（0 次对 2 次）。这些是每个样本运行一次的开发测量；未覆盖 #12。
 - [Debugger skill-effect v1](benchmarks/debugger-skill-effect-v1/README.md)是调试器技能的首次实测：在 30 个新编写的 F1–F15 案例上，技能正文在两个主机上都比仅给类别列表的提示提高了无工具 F 码准确率，Claude Sonnet **0.944 vs 0.756**，Codex Sol **1.000 vs 0.800**，配对 95% 区间高于零。这些是作者植入相似症状的模型编写公开案例，基线也只有类别列表，不是发布级主张，也未显示能推广到真实故障（见 v2）。[Debugger skill-effect v2](benchmarks/debugger-skill-effect-v2/README.md)随后以 26 个真实上游修复为真值并设置无分类基线：严格机制匹配率**技能 0.872 vs 无分类 0.897**（lift −0.026，CI −0.090 至 +0.026），结果为 `FAIL`；两名盲评映射者仅对 26 个真实修复中的 15 个达成 F 码一致。[Debugger skill-effect v3](benchmarks/debugger-skill-effect-v3/README.md)随后在另外 28 个真实修复上测试了一条候选 F1/F14/F11/F7 判定规则：机制匹配率未变（**0.810 vs 0.798**，`FAIL`），一致标签上的 F 码准确率 **0.638 → 0.812**（CI 下限 0.000），但这些标签由新表赋予且 5 个分歧案例被排除，对新文本有利，不能证明诊断更好；映射者一致 28 个中 23 个。该判定规则仅在 v3 中测试，未包含在 2.0.0 中。[Debugger skill-effect v4](benchmarks/debugger-skill-effect-v4/README.md)让带工具的调用读取真实 Playwright 报告并做确定性评分，结果为 `INCONCLUSIVE`（完全匹配 **有技能 0.882 vs 无技能 0.917**，成本 2.6 倍）。v1–v4 整体未显示根因识别有提升。
 - [Debugger skill-effect v5](benchmarks/debugger-skill-effect-v5/README.md) 在 14 个真实修复案例上测试了更轻量的回答格式，与现行发布文本无法区分（strict 匹配 0.762 对 0.738，无分类提示 0.786），因此 2.0.0 的调试器文本未更改；2.0.1 在[本地开发性对比](benchmarks/debugger-dev-comparison-v1/README.md)之后修改了 Root Cause 与 Fix 的措辞。调试器所宣称的价值是安全的产物处理，而不是比普通的“诊断根本原因”提示更高的准确率。

@@ -7,7 +7,7 @@ Playwright debugger only. Apart from the version field, the reviewer, generator,
 ### Changed
 
 - `playwright-debugger` states a root cause only as far as the artifact evidences it and marks anything beyond that as a hypothesis with the missing evidence named; without the spec source it describes the fix in prose instead of inventing selectors, endpoints, or line numbers. Findings with an `unknown` axis use one line per field.
-- The Phase 1 report-reader command in `references/artifact-extraction.md` is now one line with a literal absolute `--project-root`. The previous `PROJECT_ROOT=$(...)` form could not be matched by Claude Code's command check, so a non-interactive run spent one or two turns on rejected attempts before the reader ran. The spec source is read only from a user-supplied path or a relative, non-traversing path under the project root, and it is never searched for. The other reader commands in the debugger references still use the older form and are not changed here.
+- The Phase 1 report-reader command in `references/artifact-extraction.md` is now one line with a literal absolute `--project-root`. The previous `PROJECT_ROOT=$(...)` form could not be matched by Claude Code's command check, so a non-interactive run spent one or two turns on rejected attempts before the reader ran. The spec source is read only from a user-supplied path or a relative, non-traversing path under the project root that is a regular file (not a symlink) named like a test file (`*.spec.*`, `*.test.*`, `*.cy.*`), so a report cannot point it at `.env` or other config files, and it is never searched for. The other reader commands in the debugger references still use the older form and are not changed here.
 
 ### Docs
 

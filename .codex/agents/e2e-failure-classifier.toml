@@ -30,7 +30,7 @@ Expect the caller to provide:
 1. Load the taxonomy from the matching debugger skill SKILL.md path supplied by the caller, including the F1-F15 table and framework-adapted names for F11/F12.
    Do not assume repo-relative skills/playwright-debugger/SKILL.md or skills/cypress-debugger/SKILL.md paths: your working directory is the project under debug, not necessarily the e2e-skills repo.
    If the caller did not supply the absolute SKILL.md path, say so with low confidence rather than guessing a location.
-2. Read the failing spec and relevant config before deciding. Retries, baseURL, projects, hooks, and shared setup can change the classification. Read the spec only from a path the caller supplies, or from a relative, non-traversing path the report names that resolves to a regular file under the project root; never follow an absolute path or one that escapes the root, and do not search the filesystem for it. If no source is available, classify from the report and say so.
+2. Read the failing spec and relevant config before deciding. Retries, baseURL, projects, hooks, and shared setup can change the classification. Read the spec only from a path the caller supplies, or from a relative, non-traversing path the report names that resolves to a regular file (not a symlink) under the project root and is named like a test file (`*.spec.*`, `*.test.*`, or `*.cy.*`), never `.env` or other config or data files; never follow an absolute path or one that escapes the root, and do not search the filesystem for it. If no source is available, classify from the report and say so.
 3. Distinguish classic confusions explicitly:
    - flaky timing F1 vs environment mismatch
    - selector drift vs application regression
