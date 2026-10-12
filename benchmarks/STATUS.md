@@ -8,7 +8,7 @@ Historical raw archives may retain normalized host-path shapes, temporary worksp
 
 The per-run artifact folders (23 of them, 2,152 files, about 51 MB) were moved out of this tree in 2.0.1. Protocols, freeze records, results, adjudications, and the runners stay here, and nothing in CI reads the moved files. They are pinned in [`external-evidence.json`](external-evidence.json) to one revision of the `voidmatcha/e2e-skills-benchmarks` Hugging Face dataset and are byte-identical to what 2.0.0 tracked (each was verified against its git blob hash). To audit a number or rerun a comparison, run `scripts/dev/fetch-benchmark-evidence.sh` (`--dry-run` shows the plan). The fetched folders are gitignored.
 
-This shrinks the checkout, not the clone: 2.0.0 already carries these files in its history, so `git clone` stays about 34 MB; use `git clone --depth 1` if you only need the current tree.
+This shrinks the checkout, not the clone: 2.0.0 already carries these files in its history, so `git clone` stays about 28 MB (the checkout drops from about 173 MB to about 120 MB); use `git clone --depth 1` if you only need the current tree.
 
 ## At a glance (2.0.1)
 

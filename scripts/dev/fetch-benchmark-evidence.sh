@@ -2,7 +2,7 @@
 # Fetch the raw benchmark run artifacts that 2.0.1 moved out of this tree.
 #
 # Why this exists: the per-run artifacts under benchmarks/ (hundreds of files per
-# run) made the checkout about 180 MB while the four skills are about 2 MB. The
+# run) made the checkout about 173 MB while the four skills are about 2 MB. The
 # protocols, freeze records, results, and adjudications stay in the tree; the raw
 # artifacts live in a pinned revision of a Hugging Face dataset and are listed in
 # benchmarks/external-evidence.json. Nothing in CI needs them. Fetch them only to
