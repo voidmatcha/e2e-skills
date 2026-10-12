@@ -1,3 +1,0 @@
-NOFIX — the target passed via Playwright MCP (`1 passed`), so no repair was justified.
-
-Changed files: none.

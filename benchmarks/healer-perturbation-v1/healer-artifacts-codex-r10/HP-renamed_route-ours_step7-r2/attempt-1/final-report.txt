@@ -1,3 +1,0 @@
-REPAIRED — corrected the navigation route. Playwright test passes: 1 passed.
-
-Changed file: `playwright/tests/missing-auth.spec.mjs`

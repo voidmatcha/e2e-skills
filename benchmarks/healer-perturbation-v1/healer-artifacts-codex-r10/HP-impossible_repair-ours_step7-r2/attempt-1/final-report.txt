@@ -1,3 +1,0 @@
-NOFIX — target passed twice with the approved assertion using `test_run`.
-
-Changed files: none.

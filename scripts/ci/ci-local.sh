@@ -489,6 +489,8 @@ run_python scripts/ci/test-fixture-faults.py ||
   fail "test-fixture-faults.py"
 run_python benchmarks/healer-perturbation-v1/test_perturbations.py ||
   fail "healer-perturbation-v1/test_perturbations.py"
+run_python scripts/ci/test-external-evidence.py ||
+  fail "test-external-evidence.py"
 run_python scripts/evals/run-playwright-semantic-probes.py --validate-only >/dev/null ||
   fail "run-playwright-semantic-probes.py --validate-only"
 run_python scripts/ci/test-playwright-semantic-probes.py ||

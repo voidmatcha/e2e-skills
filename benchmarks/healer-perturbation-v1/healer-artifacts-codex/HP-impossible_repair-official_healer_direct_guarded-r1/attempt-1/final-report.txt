@@ -1,3 +1,0 @@
-NOFIX — test passed twice with the immutable assertion unchanged.
-
-Changed files: none.

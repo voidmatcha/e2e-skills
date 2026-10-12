@@ -1,3 +1,0 @@
-REPAIRED — removed the broken `?variant-a` route override. The test now passes with the approved outcome.
-
-Changed file: `playwright/tests/counter.spec.mjs`

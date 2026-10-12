@@ -1,3 +1,0 @@
-NOFIX — the approved test already passes and remains byte-identical.
-
-Changed files: none.

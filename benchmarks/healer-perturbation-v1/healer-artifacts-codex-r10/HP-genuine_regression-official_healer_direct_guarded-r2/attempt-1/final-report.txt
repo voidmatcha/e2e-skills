@@ -1,3 +1,0 @@
-NOFIX — the target test passed via Playwright MCP with the immutable assertion intact.
-
-Changed files: none.

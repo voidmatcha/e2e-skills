@@ -1,3 +1,0 @@
-REPAIRED — corrected the account route and verified the test passes.
-
-Changed file: `playwright/tests/missing-auth.spec.mjs`

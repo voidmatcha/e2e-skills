@@ -1,3 +1,0 @@
-NOFIX — The test passed twice via Playwright MCP with the approved `"Count: 1"` assertion unchanged.
-
-Changed files: none.

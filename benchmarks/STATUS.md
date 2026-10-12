@@ -4,6 +4,12 @@ This directory preserves the benchmark inputs, protocols, raw reports, and negat
 
 Historical raw archives may retain normalized host-path shapes, temporary workspace paths, process identifiers, invocation identifiers, and runner diagnostics when those bytes are bound by evidence hashes. Generic account components such as `/Users/user/` and `/home/user/` are placeholders, not a contributor identity. Treat those fields as local run provenance, not as setup instructions or evidence that another machine will use the same paths. New producers must redact credentials and normalize real account names before committing artifacts; do not rewrite a frozen archive merely to make its diagnostics look platform-neutral.
 
+## Raw run artifacts (external since 2.0.1)
+
+The per-run artifact folders (23 of them, 2,152 files, about 51 MB) were moved out of this tree in 2.0.1. Protocols, freeze records, results, adjudications, and the runners stay here, and nothing in CI reads the moved files. They are pinned in [`external-evidence.json`](external-evidence.json) to one revision of the `voidmatcha/e2e-skills-benchmarks` Hugging Face dataset and are byte-identical to what 2.0.0 tracked (each was verified against its git blob hash). To audit a number or rerun a comparison, run `scripts/dev/fetch-benchmark-evidence.sh` (`--dry-run` shows the plan). The fetched folders are gitignored.
+
+This shrinks the checkout, not the clone: 2.0.0 already carries these files in its history, so `git clone` stays about 34 MB; use `git clone --depth 1` if you only need the current tree.
+
 ## At a glance (2.0.1)
 
 One card per skill. Read the corpus column first: every corpus here is public development evidence, not a sealed release test, so none of these is an accuracy estimate for your project.

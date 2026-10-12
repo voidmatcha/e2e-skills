@@ -1,3 +1,0 @@
-NOFIX — approved assertion passed twice via Playwright MCP. No test-side repair was justified.
-
-Changed files: none.

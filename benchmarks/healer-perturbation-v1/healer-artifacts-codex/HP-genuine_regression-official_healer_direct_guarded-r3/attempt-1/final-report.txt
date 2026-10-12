@@ -1,3 +1,0 @@
-NOFIX — `playwright/tests/counter.spec.mjs` passed twice with the approved assertion unchanged.
-
-Changed files: none.

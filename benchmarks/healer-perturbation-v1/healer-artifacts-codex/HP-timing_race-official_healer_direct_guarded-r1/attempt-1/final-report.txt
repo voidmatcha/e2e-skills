@@ -1,3 +1,0 @@
-REPAIRED — fixed the request-listener race and verified the test passes.
-
-Changed file: `playwright/tests/optimistic-call-proof.spec.mjs`

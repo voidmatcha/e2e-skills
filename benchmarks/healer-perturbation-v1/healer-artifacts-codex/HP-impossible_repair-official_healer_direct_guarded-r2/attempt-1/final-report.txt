@@ -1,3 +1,0 @@
-NOFIX — the target test passes as written with the immutable assertion.
-
-Changed files: none.

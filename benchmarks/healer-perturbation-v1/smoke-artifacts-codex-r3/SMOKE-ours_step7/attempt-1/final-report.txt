@@ -1,3 +1,0 @@
-NOFIX — failure is environmental: the configured Chromium executable is missing, not test-side. The target remained byte-identical.
-
-Changed files: none.

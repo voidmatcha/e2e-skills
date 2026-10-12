@@ -1,3 +1,0 @@
-REPAIRED — corrected the nonexistent `/account` route. Test now passes.
-
-Changed file: `playwright/tests/missing-auth.spec.mjs`

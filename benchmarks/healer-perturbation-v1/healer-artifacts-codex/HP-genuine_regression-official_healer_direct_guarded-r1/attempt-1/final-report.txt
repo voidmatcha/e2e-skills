@@ -1,3 +1,0 @@
-NOFIX — the target passed three consecutive MCP runs with the approved outcome unchanged.
-
-Changed files: none.

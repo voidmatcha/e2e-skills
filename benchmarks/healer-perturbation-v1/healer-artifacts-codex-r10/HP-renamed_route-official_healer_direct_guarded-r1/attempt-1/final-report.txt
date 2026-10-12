@@ -1,3 +1,0 @@
-REPAIRED — corrected navigation to the authenticated account view. Playwright verification: **1 passed**.
-
-Changed file: `playwright/tests/missing-auth.spec.mjs`

@@ -1,3 +1,0 @@
-REPAIRED — removed the contradictory `variant-b` query parameter. The approved assertion now passes.
-
-Changed file: `playwright/tests/missing-auth.spec.mjs`
