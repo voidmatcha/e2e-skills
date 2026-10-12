@@ -62,6 +62,16 @@ HOL_SCANNER_FALSE_POSITIVE_PATHS = {
     "skills/playwright-test-generator/scenario-design.md",
     "skills/playwright-test-generator/verification-rules.md",
     "skills/playwright-test-generator/scripts/preflight_target.py",
+    "scripts/evals/reviewer-holdout-v10.json",
+    "scripts/evals/files/holdout-v10/v10-cy-12/cypress/e2e/timesheets.cy.ts",
+    "scripts/ci/test-reviewer-stream-retry.py",
+    "scripts/ci/test-reviewer-usage-capture.py",
+    "scripts/ci/test-reviewer-holdout-v15.py",
+    "scripts/ci/test-reviewer-auth-retry.py",
+    "benchmarks/generator-v4-real-get-v1/cases/cal-email-verify/app.mjs",
+    "benchmarks/generator-skill-effect-v2/arms/shared/e2e-reviewer/scripts/scan.sh",
+    "benchmarks/generator-skill-effect-v3/arms/shared/e2e-reviewer/scripts/scan.sh",
+    "benchmarks/generator-skill-effect-v8/reports/final-artifacts/v3-02-no-skill-r3/tests/recipe-browser.spec.mjs",
     "benchmarks/healer-perturbation-v1/source-snapshots/0fc0e0687ab31d7e4d652578b947114cf1f472639b037fc6c9b37b1d8404a8e2.json",
 }
 COMMAND_TIMEOUT_SECONDS = 90

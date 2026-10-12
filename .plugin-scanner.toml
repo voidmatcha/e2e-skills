@@ -75,6 +75,16 @@
 # agent-interoperability, and verification detail moved verbatim into its
 # root-level point-of-use references. They inherit the entrypoint's command,
 # network, credential, and untrusted-input examples.
+#
+# 2026-10-12: push 6ded5e9 (2.0.0) failed the scan for the first time since
+# 2026-09-18, reproduced locally with plugin-scanner==2.0.864 against
+# `git archive 6ded5e9`: nine HARDCODED_SECRET hits and one
+# DANGEROUS_DYNAMIC_EXECUTION, all reviewed and all false positives. They are
+# stub credentials in test doubles (test-only/stub-oauth strings), a fixture
+# login in the v10 holdout case and its JSON copy, a fake session token in the
+# v4 generator fixture app, the `assertion_token=` variable inside two frozen
+# byte copies of scan.sh, and an eval of a fixed string in a frozen v8 arm
+# output. Each is exact-path and, for the benchmark files, immutable evidence.
 [scanner]
 ignore_paths = [
   "skills/cypress-debugger/scripts/publish-mochawesome-report.py",
@@ -117,5 +127,15 @@ ignore_paths = [
   "skills/playwright-test-generator/scenario-design.md",
   "skills/playwright-test-generator/verification-rules.md",
   "skills/playwright-test-generator/scripts/preflight_target.py",
+  "scripts/evals/reviewer-holdout-v10.json",
+  "scripts/evals/files/holdout-v10/v10-cy-12/cypress/e2e/timesheets.cy.ts",
+  "scripts/ci/test-reviewer-stream-retry.py",
+  "scripts/ci/test-reviewer-usage-capture.py",
+  "scripts/ci/test-reviewer-holdout-v15.py",
+  "scripts/ci/test-reviewer-auth-retry.py",
+  "benchmarks/generator-v4-real-get-v1/cases/cal-email-verify/app.mjs",
+  "benchmarks/generator-skill-effect-v2/arms/shared/e2e-reviewer/scripts/scan.sh",
+  "benchmarks/generator-skill-effect-v3/arms/shared/e2e-reviewer/scripts/scan.sh",
+  "benchmarks/generator-skill-effect-v8/reports/final-artifacts/v3-02-no-skill-r3/tests/recipe-browser.spec.mjs",
   "benchmarks/healer-perturbation-v1/source-snapshots/0fc0e0687ab31d7e4d652578b947114cf1f472639b037fc6c9b37b1d8404a8e2.json",
 ]
