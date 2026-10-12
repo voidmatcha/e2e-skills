@@ -3,7 +3,7 @@
   "repo_type": "dataset",
   "revision": "f8188280b5ca85abbf39ac7ae214e197cb30f782",
   "path_prefix_in_dataset": "raw/",
-  "note": "Raw run artifacts moved out of the tree in 2.0.1. Paths are relative to benchmarks/. The dataset snapshot is the 2.0.0 tree (6ded5e9) minus __pycache__; the moved files are byte-identical to what 2.0.0 tracked.",
+  "note": "Raw run artifacts moved out of the tree in 2.0.1. Paths are relative to benchmarks/. The dataset is a snapshot of four benchmark folders (ours-vs-planner-pilot-v1, subagent-routing-v1, healer-perturbation-v1, independent-product-review-v1) at the 2.0.0 tree (6ded5e9) minus __pycache__; the listed directories are the subset removed from this tree and are byte-identical to what 2.0.0 tracked.",
   "file_count": 2152,
   "total_bytes": 51412196,
   "directories": [

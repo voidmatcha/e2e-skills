@@ -9,6 +9,10 @@ Playwright debugger only. Apart from the version field, the reviewer, generator,
 - `playwright-debugger` states a root cause only as far as the artifact evidences it and marks anything beyond that as a hypothesis with the missing evidence named; without the spec source it describes the fix in prose instead of inventing selectors, endpoints, or line numbers. Findings with an `unknown` axis use one line per field.
 - The Phase 1 report-reader command in `references/artifact-extraction.md` is now one line with a literal absolute `--project-root`. The previous `PROJECT_ROOT=$(...)` form could not be matched by Claude Code's command check, so a non-interactive run spent one or two turns on rejected attempts before the reader ran. The spec source is read only from a user-supplied path or a relative, non-traversing path under the project root, and it is never searched for. The other reader commands in the debugger references still use the older form and are not changed here.
 
+### Docs
+
+- The per-skill evidence paragraphs in `README.md` and its Korean, Japanese, and Simplified Chinese copies, the cards and intro in `benchmarks/STATUS.md`, `docs/roadmap.md`, and one line in `docs/debugger-benchmark/README.md` now describe the 2.0.1 evidence, including the per-model fix-pair numbers. `/test-results/` is gitignored.
+
 ### Repository
 
 - Raw benchmark run artifacts (23 folders, 2,152 files, about 51 MB) moved to a pinned Hugging Face dataset revision, listed in `benchmarks/external-evidence.json`; `scripts/dev/fetch-benchmark-evidence.sh` restores them byte-identically. The checkout shrinks; the clone does not, because 2.0.0 history keeps the files.

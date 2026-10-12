@@ -11,8 +11,8 @@
 # Usage: scripts/dev/fetch-benchmark-evidence.sh [--dry-run] [--force]
 #   --dry-run  print what would be downloaded and exit without touching anything
 #   --force    replace a directory that already exists locally
-# Needs: python3 and the `hf` CLI (pip install -U huggingface_hub). A private
-# dataset also needs `hf auth login`.
+# Needs: python3 and the `hf` CLI (pip install -U huggingface_hub). The dataset is
+# public; signing in with `hf auth login` only makes the download faster.
 
 set -euo pipefail
 set -f
@@ -53,6 +53,13 @@ expected_files="$(read_manifest file_count)"
 
 case "$revision" in
   *[!0-9a-f]* | "") echo "manifest revision is not a hex commit id: $revision" >&2; exit 1 ;;
+esac
+# These two values reach the hf command line; refuse anything that could read as an option.
+case "$dataset" in
+  -* | *[!A-Za-z0-9._/-]* | "") echo "manifest dataset is not owner/name: $dataset" >&2; exit 1 ;;
+esac
+case "$prefix" in
+  -* | /* | *..* | *[!A-Za-z0-9._/-]*) echo "manifest path_prefix_in_dataset is unsafe: $prefix" >&2; exit 1 ;;
 esac
 [ "${#revision}" -eq 40 ] || { echo "manifest revision must be 40 hex characters" >&2; exit 1; }
 
@@ -108,4 +115,12 @@ for d in "${dirs[@]}"; do
   fetched=$((fetched + 1))
 done
 
-echo "fetched $fetched directories. They are gitignored; do not commit them."
+found=0
+for d in "${dirs[@]}"; do
+  found=$((found + $(find "$repo_root/benchmarks/$d" -type f 2>/dev/null | wc -l)))
+done
+if [ "$found" -ne "$expected_files" ]; then
+  echo "expected $expected_files files but found $found; rerun with --force" >&2
+  exit 1
+fi
+echo "fetched $fetched directories ($found files). They are gitignored; do not commit them."
