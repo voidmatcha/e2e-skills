@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=24f5c4af18fd3658fc0cefe9de09ff699661bed2f1848b23395c5d73a994dc2a; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=172832ef44041af6194d787889e6883811a6158ee6ff88aeefa921c46d63c0e4; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 Evidence scope: the 15 merged PRs shown here are curated examples, not a total. Field review v1 separately records 29 submitted / 16 merged / 6 closed / 7 open under its skill-name inclusion rule; do not combine the two denominators. These are recorded snapshots, not current GitHub totals.
 
@@ -293,6 +293,8 @@ merge 건수를 전체 제출 건수와 함께 볼 수 있습니다. [Field revi
 
 점수, 실패한 게이트, 대체된 실행, 주장 범위는 [벤치마크 현황](benchmarks/STATUS.md)을 참고하세요. [연구 근거 원장](docs/llm-generated-e2e-test-evidence.md)은 인접 분야의 단위 테스트나 맞춤형 에이전트 연구를 이 프로젝트가 직접 측정한 결과처럼 취급하지 않고, 외부 출처 62개를 구분해 리뷰합니다.
 
+이 점수들의 근거가 되는 실행별 원본 아티팩트(폴더 23개, 파일 2,152개, 약 51 MB)는 Hugging Face의 [`voidmatcha/e2e-skills-benchmarks`](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks) 데이터셋에 있고, [`benchmarks/external-evidence.json`](benchmarks/external-evidence.json)에서 한 리비전으로 고정됩니다. 숫자를 감사하거나 비교를 다시 돌리기 전에 `scripts/dev/fetch-benchmark-evidence.sh`(`--dry-run`은 계획만 보여 줍니다)를 실행하면 바이트 단위로 같게 복원됩니다.
+
 ## E2E 리뷰 목록
 
 목록에는 ID가 안정적으로 유지되는 Playwright/Cypress `test smell` 24개가 들어 있습니다. 대표적인 허위 통과 유형으로는 Locator의 true/false 판정, 검증문 누락, 오류 무시, focused test, 인증 누락, 네트워크 호출을 입증하지 않는 `optimistic UI` 검증이 있습니다. [전체 분류와 근거](docs/e2e-test-smells.md)를 참고하세요.
@@ -448,6 +450,7 @@ Claude Code와 Codex, 그리고 `skills` CLI가 지원하는 55개 이상의 실
 - [규칙 자체 감사](docs/rule-self-audit.md)
 - [오픈소스 사례 연구](docs/case-studies.md)
 - [벤치마크 현황과 실패 결과](benchmarks/STATUS.md)
+- [원본 벤치마크 실행 아티팩트(Hugging Face 데이터셋)](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)
 - [외부 연구 근거 원장](docs/llm-generated-e2e-test-evidence.md)
 - [과거 AI 리뷰어 벤치마크](docs/ai-reviewer-benchmark.md)
 - [`debugger` 벤치마크 프로토콜](docs/debugger-benchmark/README.md)

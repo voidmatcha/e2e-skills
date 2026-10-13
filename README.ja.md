@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <strong>🇯🇵 日本語</strong> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=24f5c4af18fd3658fc0cefe9de09ff699661bed2f1848b23395c5d73a994dc2a; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=172832ef44041af6194d787889e6883811a6158ee6ff88aeefa921c46d63c0e4; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 Evidence scope: the 15 merged PRs shown here are curated examples, not a total. Field review v1 separately records 29 submitted / 16 merged / 6 closed / 7 open under its skill-name inclusion rule; do not combine the two denominators. These are recorded snapshots, not current GitHub totals.
 
@@ -282,6 +282,8 @@ The bundled shell scripts and artifact readers target conventional macOS/Linux l
 
 スコア、失敗したゲート、置き換えられた実行、主張の境界については [ベンチマーク状況](benchmarks/STATUS.md) を参照してください。[研究根拠台帳](docs/llm-generated-e2e-test-evidence.md) は、隣接する unit-test や custom-agent studies をこのプロジェクトの測定値として扱わず、62 件の外部 source を監査しています。
 
+これらのスコアの根拠となる実行ごとの生アーティファクト(フォルダ 23 個、ファイル 2,152 個、約 51 MB)は Hugging Face の [`voidmatcha/e2e-skills-benchmarks`](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks) データセットにあり、[`benchmarks/external-evidence.json`](benchmarks/external-evidence.json) で 1 つのリビジョンに固定されています。数値を監査したり比較を再実行したりする前に `scripts/dev/fetch-benchmark-evidence.sh`(`--dry-run` は計画のみ表示)を実行すると、バイト単位で同一に復元されます。
+
 ## E2E レビューカタログ
 
 カタログには、24 個の安定した Playwright/Cypress test smells が含まれます。代表的な false-green には、Locator truthiness、assertion の欠落、握りつぶされたエラー、focused tests、認証の欠落、network proof のない optimistic UI checks があります。[分類体系と根拠の詳細](docs/e2e-test-smells.md) を参照してください。
@@ -433,6 +435,7 @@ Claude Code、Codex、そして `skills` CLI がサポートする 55+ hosts は
 - [ルールの自己監査](docs/rule-self-audit.md)
 - [オープンソースの事例集](docs/case-studies.md)
 - [ベンチマーク状況と否定的結果](benchmarks/STATUS.md)
+- [生のベンチマーク実行アーティファクト(Hugging Face データセット)](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)
 - [外部根拠台帳](docs/llm-generated-e2e-test-evidence.md)
 - [過去の AI レビューベンチマーク](docs/ai-reviewer-benchmark.md)
 - [デバッガーベンチマーク手順](docs/debugger-benchmark/README.md)

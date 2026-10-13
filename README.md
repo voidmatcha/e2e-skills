@@ -276,6 +276,8 @@ The deterministic scanner is measured separately. [Field scan v1](benchmarks/fie
 
 See [benchmark status](benchmarks/STATUS.md) for scores, failed gates, superseded runs, and claim boundaries. The [research evidence ledger](docs/llm-generated-e2e-test-evidence.md) audits 62 external sources instead of treating adjacent unit-test or custom-agent studies as measurements of this project.
 
+The raw per-run artifacts behind those scores (23 folders, 2,152 files, about 51 MB) are in the [`voidmatcha/e2e-skills-benchmarks`](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks) dataset on Hugging Face, pinned to one revision in [`benchmarks/external-evidence.json`](benchmarks/external-evidence.json). Run `scripts/dev/fetch-benchmark-evidence.sh` (`--dry-run` shows the plan) to restore them byte-identically before auditing a number or rerunning a comparison.
+
 ## E2E review catalog
 
 The catalog contains 24 stable Playwright/Cypress test smells. The most common false-green shapes include Locator truthiness, missing assertions, swallowed errors, focused tests, missing authentication, and optimistic UI checks without network proof. See the [full taxonomy and rationale](docs/e2e-test-smells.md).
@@ -427,6 +429,7 @@ Claude Code, Codex, and the 55+ hosts supported by the `skills` CLI can load the
 - [Self-audit of the rules](docs/rule-self-audit.md)
 - [Open-source case studies](docs/case-studies.md)
 - [Benchmark status and negative results](benchmarks/STATUS.md)
+- [Raw benchmark run artifacts (Hugging Face dataset)](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)
 - [External evidence ledger](docs/llm-generated-e2e-test-evidence.md)
 - [Invalidated historical AI reviewer pilot](docs/ai-reviewer-benchmark.md)
 - [Debugger benchmark protocol](docs/debugger-benchmark/README.md)

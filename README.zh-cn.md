@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=24f5c4af18fd3658fc0cefe9de09ff699661bed2f1848b23395c5d73a994dc2a; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=172832ef44041af6194d787889e6883811a6158ee6ff88aeefa921c46d63c0e4; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 Evidence scope: the 15 merged PRs shown here are curated examples, not a total. Field review v1 separately records 29 submitted / 16 merged / 6 closed / 7 open under its skill-name inclusion rule; do not combine the two denominators. These are recorded snapshots, not current GitHub totals.
 
@@ -281,6 +281,8 @@ The bundled shell scripts and artifact readers target conventional macOS/Linux l
 
 查看 [基准状态](benchmarks/STATUS.md) 了解分数、失败的 gates、被取代的 runs 和声明边界。[研究证据台账](docs/llm-generated-e2e-test-evidence.md) 审计了 62 个外部来源，避免把相邻的 unit-test 或 custom-agent 研究当作本项目的测量结果。
 
+这些分数背后的逐次运行原始产物（23 个文件夹、2,152 个文件，约 51 MB）位于 Hugging Face 的 [`voidmatcha/e2e-skills-benchmarks`](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks) 数据集中，并在 [`benchmarks/external-evidence.json`](benchmarks/external-evidence.json) 中固定到同一个修订版本。审计某个数字或重跑比较之前，运行 `scripts/dev/fetch-benchmark-evidence.sh`（`--dry-run` 只显示计划），即可按字节一致地还原。
+
 ## E2E 审查目录
 
 该目录包含 24 个稳定的 Playwright/Cypress 测试异味。最常见的 false-green 形态包括 Locator 真值判断、缺失断言、吞掉错误、focused tests、缺失认证，以及没有网络调用证明的乐观 UI 检查。参见 [完整分类与依据](docs/e2e-test-smells.md)。
@@ -432,6 +434,7 @@ Claude Code、Codex，以及 `skills` CLI 支持的 55+ 宿主都可以加载公
 - [规则自审](docs/rule-self-audit.md)
 - [开源案例研究](docs/case-studies.md)
 - [基准状态与负面结果](benchmarks/STATUS.md)
+- [原始基准运行产物（Hugging Face 数据集）](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)
 - [外部证据台账](docs/llm-generated-e2e-test-evidence.md)
 - [历史 AI 审查器基准](docs/ai-reviewer-benchmark.md)
 - [调试器基准协议](docs/debugger-benchmark/README.md)

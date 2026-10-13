@@ -11,7 +11,7 @@ Playwright debugger only. Apart from the version field, the reviewer, generator,
 
 ### Docs
 
-- The per-skill evidence paragraphs in `README.md` and its Korean, Japanese, and Simplified Chinese copies, the cards and intro in `benchmarks/STATUS.md`, `docs/roadmap.md`, and one line in `docs/debugger-benchmark/README.md` now describe the 2.0.1 evidence, including the per-model fix-pair numbers. `/test-results/` is gitignored.
+- The per-skill evidence paragraphs in `README.md` and its Korean, Japanese, and Simplified Chinese copies, the cards and intro in `benchmarks/STATUS.md`, `docs/roadmap.md`, and one line in `docs/debugger-benchmark/README.md` now describe the 2.0.1 evidence, including the per-model fix-pair numbers. `/test-results/` is gitignored. `README.md` and its translations now link the `voidmatcha/e2e-skills-benchmarks` Hugging Face dataset that holds the raw benchmark run artifacts, with the fetch command.
 
 ### Repository
 
