@@ -1,0 +1,82 @@
+[
+  {
+    "id": "add-checkout-playwright-coverage",
+    "query": "Add Playwright E2E tests for the checkout happy path and card decline flow.",
+    "should_trigger": true
+  },
+  {
+    "id": "create-login-reset-specs",
+    "query": "Create new Playwright specs for login, logout, and password reset using our existing fixtures.",
+    "should_trigger": true
+  },
+  {
+    "id": "scaffold-first-playwright-suite",
+    "query": "This project has no E2E coverage yet; scaffold the first Playwright test for the onboarding wizard.",
+    "should_trigger": true
+  },
+  {
+    "id": "cover-unchecked-route",
+    "query": "Write Playwright coverage for the /settings/billing route that is missing from tests/e2e.",
+    "should_trigger": true
+  },
+  {
+    "id": "generate-flow-from-ticket",
+    "query": "Generate a Playwright E2E test for the invite teammate flow described in this ticket.",
+    "should_trigger": true
+  },
+  {
+    "id": "add-pom-based-tests",
+    "query": "Add Page Object based Playwright tests for the admin user search and role update screens.",
+    "should_trigger": true
+  },
+  {
+    "id": "new-mobile-playwright-flow",
+    "query": "Create a Playwright mobile viewport E2E test for the responsive navigation menu.",
+    "should_trigger": true
+  },
+  {
+    "id": "fill-coverage-gap",
+    "query": "Find the missing Playwright E2E scenarios around saved addresses and add the specs.",
+    "should_trigger": true
+  },
+  {
+    "id": "write-cypress-coverage",
+    "query": "Add Cypress tests for the checkout flow and wire them into cypress.config.ts.",
+    "should_trigger": false
+  },
+  {
+    "id": "review-existing-playwright-spec",
+    "query": "Review tests/e2e/search.spec.ts for flaky waits and weak assertions.",
+    "should_trigger": false
+  },
+  {
+    "id": "debug-failing-playwright-report",
+    "query": "Use playwright-report/trace.zip to diagnose why the existing checkout test failed in CI.",
+    "should_trigger": false
+  },
+  {
+    "id": "add-vitest-unit-tests",
+    "query": "Write Vitest unit tests for the cart price calculation helper.",
+    "should_trigger": false
+  },
+  {
+    "id": "component-testing-request",
+    "query": "Create React Testing Library component tests for the date picker keyboard interactions.",
+    "should_trigger": false
+  },
+  {
+    "id": "speed-up-existing-suite",
+    "query": "Optimize the Playwright suite so it runs faster on GitHub Actions.",
+    "should_trigger": false
+  },
+  {
+    "id": "fix-selector-timeout",
+    "query": "Fix the existing Playwright spec that times out waiting for the Save button.",
+    "should_trigger": false
+  },
+  {
+    "id": "document-test-strategy",
+    "query": "Write a README section explaining when we use unit, integration, and E2E tests.",
+    "should_trigger": false
+  }
+]

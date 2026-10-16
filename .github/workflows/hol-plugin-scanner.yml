@@ -43,4 +43,9 @@ jobs:
           # reliably pin down either way. This repo's own security gates
           # (ci-local.sh, pre-push-security.sh) are unaffected; this only
           # disables an additional third-party marketplace-quality check.
+          # 3.0.0: the generator is now a router (SKILL.md plus thin-rules.md);
+          # its former pipeline references and scripts live under
+          # benchmarks/generator-skill-v2.0.1-archive/ and keep their
+          # .plugin-scanner.toml entries at the archived paths. Re-test
+          # before turning this back on.
           cisco_skill_scan: "off"
