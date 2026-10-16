@@ -7,8 +7,8 @@
     {
       "name": "e2e-skills",
       "source": "./",
-      "description": "Four agent skills for Playwright and Cypress end-to-end tests: generate new Playwright coverage with live exploration only on local/disposable or externally isolated approved non-production targets, review existing specs or PR diffs, and debug failed runs.",
-      "version": "2.0.1",
+      "description": "Four agent skills for Playwright and Cypress end-to-end tests: generate new Playwright specs through the Playwright CLI or the official Playwright agents with a scanner gate, review existing specs or PR diffs, and debug failed runs.",
+      "version": "3.0.0",
       "author": {
         "name": "YONGJAE LEE"
       },
@@ -34,7 +34,6 @@
         "always-passing",
         "error-swallowing",
         "dom-queries",
-        "coverage-gap",
         "coverage",
         "severity",
         "ci",
@@ -54,9 +53,7 @@
         "brittle-test",
         "static-analysis",
         "test-maintenance",
-        "yagni",
         "bdd",
-        "scenario",
         "ai-agent-testing",
         "e2e-test-automation",
         "playwright-test-generator",

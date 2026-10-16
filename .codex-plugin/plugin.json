@@ -1,7 +1,7 @@
 {
   "name": "e2e-skills",
-  "version": "2.0.1",
-  "description": "Four agent skills for Playwright and Cypress end-to-end tests: generate new Playwright coverage with live exploration only on local/disposable or externally isolated approved non-production targets, review existing specs or PR diffs, and debug failed runs.",
+  "version": "3.0.0",
+  "description": "Four agent skills for Playwright and Cypress end-to-end tests: generate new Playwright specs through the Playwright CLI or the official Playwright agents with a scanner gate, review existing specs or PR diffs, and debug failed runs.",
   "author": {
     "name": "YONGJAE LEE"
   },
@@ -27,7 +27,6 @@
     "always-passing",
     "error-swallowing",
     "dom-queries",
-    "coverage-gap",
     "coverage",
     "severity",
     "ci",
@@ -47,9 +46,7 @@
     "brittle-test",
     "static-analysis",
     "test-maintenance",
-    "yagni",
     "bdd",
-    "scenario",
     "ai-agent-testing",
     "e2e-test-automation",
     "playwright-test-generator",
@@ -65,7 +62,7 @@
   "interface": {
     "displayName": "e2e-skills",
     "shortDescription": "Generate, review, debug E2E",
-    "longDescription": "AI agent testing toolkit with four skills shared between Claude Code and Codex from ./skills/: playwright-test-generator (live-browser exploration → approval gate → reviewed Playwright tests), e2e-reviewer (static review of Playwright and Cypress specs or PR/diff-scoped test changes against 24 anti-patterns grouped P0/P1/P2 by severity — silent always-pass, poor diagnostics, maintenance), playwright-debugger (root-cause diagnosis from playwright-report/), cypress-debugger (root-cause diagnosis from cypress/reports/ mochawesome or JUnit). Use it for E2E test automation, Playwright test generation, Cypress test review, PR/diff review, flaky test debugging, false-positive detection, and test smell scanning. Includes a standalone scanner (skills/e2e-reviewer/scripts/scan.sh) for CI use without an agent runtime.",
+    "longDescription": "AI agent testing toolkit with four skills shared between Claude Code and Codex from ./skills/: playwright-test-generator (router: Playwright CLI exploration or installed official agents → specs under a short rules checklist → e2e-reviewer scanner gate → one test run), e2e-reviewer (static review of Playwright and Cypress specs or PR/diff-scoped test changes against 24 anti-patterns grouped P0/P1/P2 by severity — silent always-pass, poor diagnostics, maintenance), playwright-debugger (root-cause diagnosis from playwright-report/), cypress-debugger (root-cause diagnosis from cypress/reports/ mochawesome or JUnit). Use it for E2E test automation, Playwright test generation, Cypress test review, PR/diff review, flaky test debugging, false-positive detection, and test smell scanning. Includes a standalone scanner (skills/e2e-reviewer/scripts/scan.sh) for CI use without an agent runtime.",
     "developerName": "YONGJAE LEE",
     "category": "Developer Tools",
     "capabilities": [
@@ -75,7 +72,7 @@
     ],
     "websiteURL": "https://github.com/voidmatcha/e2e-skills",
     "defaultPrompt": [
-      "Generate Playwright E2E tests with live-browser exploration and approval gate.",
+      "Generate Playwright E2E tests for a named page or flow with a scanner gate.",
       "Review existing Playwright/Cypress specs or PR/diff-scoped test changes for 24 P0/P1/P2 anti-patterns.",
       "Diagnose failed Playwright/Cypress tests with root-cause classification."
     ],
