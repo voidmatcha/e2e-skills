@@ -1,5 +1,7 @@
 ## Prerequisites: Get the Report
 
+Before any execution, browser request, or artifact write in this procedure, read `references/safety-procedures.md` and apply its gates.
+
 Determine the report source in this order:
 
 Use the repository's existing Cypress script when it already preserves the required reporter and flags. Otherwise use the project-local `node_modules/.bin/cypress` commands below. If package-manager resolution is required, replace that prefix with `npx --no-install cypress`; never use a plain `npx` invocation, which may install a different version.
@@ -13,6 +15,8 @@ Use the repository's existing Cypress script when it already preserves the requi
 **1. A report already exists locally** → find it (see Phase 1) and check for the multi-spec trap below before trusting it.
 
 **2. No report → run with a structured reporter** (do NOT rely on Cypress stdout):
+
+Command form: write `<absolute-project-root>` literally, as the physical (symlink-resolved) absolute project root (run `/bin/pwd -P` once as its own command to learn it). Use no shell variables, `$()`, or `cd`, so an exact-command approval can match each command.
 
 ```bash
 # mochawesome (recommended). overwrite=false is REQUIRED on multi-spec runs:
@@ -28,9 +32,8 @@ Use the repository's existing Cypress script when it already preserves the requi
 # auto-install a changing latest package during diagnosis. If the local binary
 # is absent, inspect the per-spec JSON files independently instead.
 test -x node_modules/.bin/mochawesome-merge &&
-  PROJECT_ROOT=$(/bin/pwd -P) &&
   <skill-dir>/scripts/run-artifact-reader.sh \
-    --project-root "$PROJECT_ROOT" \
+    --project-root <absolute-project-root> \
     --reader publish-mochawesome-report.py --pass-env PATH -- \
     --pass-env PATH \
     cypress/reports/merged.json -- \

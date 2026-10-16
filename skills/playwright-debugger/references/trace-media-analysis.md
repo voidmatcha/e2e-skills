@@ -1,18 +1,21 @@
 # Trace and media analysis (Phase 3 detail)
 
+Before any execution, browser request, or artifact write in this procedure, read `references/safety-procedures.md` and apply its gates.
+
 Read this when an HTML/trace-only report sends you directly to trace analysis, or when Phase 2 (report-based classification) left the root cause unclear. Most failures are identifiable from Phase 1/2 alone.
 
 Find trace files (restrict to regular files under `playwright-report/`): `find playwright-report -type f -name "*.zip" | head -10`
 
 Validate and read the archive with the bundled reader before any viewer. First list only recognized trace JSON entries, then read the needed entry:
 
+Command form: write `<absolute-project-root>` literally, as the physical (symlink-resolved) absolute project root (run `/bin/pwd -P` once as its own command to learn it). Use no shell variables, `$()`, or `cd`, so an exact-command approval can match each command.
+
 ```bash
-PROJECT_ROOT=$(/bin/pwd -P)
-<skill-dir>/scripts/run-artifact-reader.sh --project-root "$PROJECT_ROOT" -- trace \
+<skill-dir>/scripts/run-artifact-reader.sh --project-root <absolute-project-root> -- trace \
   --report-root playwright-report playwright-report/path/to/trace.zip --list
-<skill-dir>/scripts/run-artifact-reader.sh --project-root "$PROJECT_ROOT" -- trace \
+<skill-dir>/scripts/run-artifact-reader.sh --project-root <absolute-project-root> -- trace \
   --report-root playwright-report playwright-report/path/to/trace.zip --entry trace.trace
-<skill-dir>/scripts/run-artifact-reader.sh --project-root "$PROJECT_ROOT" -- trace \
+<skill-dir>/scripts/run-artifact-reader.sh --project-root <absolute-project-root> -- trace \
   --report-root playwright-report playwright-report/path/to/trace.zip --entry trace.network
 ```
 
@@ -46,27 +49,25 @@ Two trace comparisons that resolve timing and dependency hypotheses faster than 
 If a screenshot or recorded video is needed, first create a bounded immutable snapshot:
 
 ```bash
-PROJECT_ROOT=$(/bin/pwd -P)
-<skill-dir>/scripts/run-artifact-reader.sh --project-root "$PROJECT_ROOT" -- media \
+<skill-dir>/scripts/run-artifact-reader.sh --project-root <absolute-project-root> -- media \
   --report-root playwright-report playwright-report/path/to/failure.png
-<skill-dir>/scripts/run-artifact-reader.sh --project-root "$PROJECT_ROOT" -- media \
+<skill-dir>/scripts/run-artifact-reader.sh --project-root <absolute-project-root> -- media \
   --report-root playwright-report playwright-report/path/to/video.webm
 ```
 
-Media mode accepts the formats Playwright produces: PNG and JPEG screenshots (`.png`, `.jpg`, or `.jpeg`) and WebM video (`.webm`). It verifies the corresponding PNG, JPEG, or EBML/WebM signature while streaming through a held no-follow descriptor, enforces the image/video ceilings, and rejects a source whose descriptor fingerprint changes. It emits the path and SHA-256 of a new owner-only directory containing a read-only snapshot. Open only that emitted snapshot path in a browser, image tool, video player, or browser agent; never reopen the original media path. Delete the emitted `snapshot_directory` after the viewer closes. Failed validation removes any partial snapshot.
+Media mode accepts the formats Playwright produces: PNG and JPEG screenshots (`.png`, `.jpg`, or `.jpeg`) and WebM video (`.webm`). It verifies the corresponding PNG, JPEG, or EBML/WebM signature while streaming through a held no-follow descriptor, enforces the image/video ceilings, and rejects a source whose descriptor fingerprint changes. It emits the path and SHA-256 of a new owner-only directory containing a read-only snapshot. Open only that emitted snapshot path in a browser, image tool, video player, or browser agent; never reopen the original media path. After the viewer closes, delete only the reader-emitted snapshot file at `path`, then delete the exact `snapshot_directory` with `rmdir`; never use a broad temporary-directory glob. Failed validation removes any partial snapshot.
 
 The official trace viewer can render the timeline, DOM snapshots, network, and console only from a separately validated snapshot:
 
 ```bash
-PROJECT_ROOT=$(/bin/pwd -P)
 <skill-dir>/scripts/run-artifact-reader.sh \
-  --project-root "$PROJECT_ROOT" -- trace-snapshot \
+  --project-root <absolute-project-root> -- trace-snapshot \
   --report-root playwright-report playwright-report/path/to/trace.zip
 /usr/bin/env -i PATH="$PATH" node_modules/.bin/playwright show-trace \
   <emitted-owner-only-snapshot-path>
 ```
 
-Use the exact emitted `.zip` path in the approved `show-trace` command; never give the viewer the original trace path. The snapshot command first performs the bounded, stable source read and the same safe-ZIP validation used above. It also streams every non-directory member to EOF before publication so corrupt compressed bodies, size contradictions, and CRC failures are rejected. It then publishes those exact validated bytes in a temporary owner-only directory as a read-only file. Delete the emitted `snapshot_directory` after the viewer closes. The repository execution gate must be satisfied and the user must approve the exact viewer command. Raw trace JSON is version-volatile and may contain secrets, so do not bypass the reader with archive extraction, general-purpose JSON tools, or direct file reads. Use the reader's safe projections as the automatable fallback when no viewer is available.
+Use the exact emitted `.zip` path in the approved `show-trace` command; never give the viewer the original trace path. The snapshot command first performs the bounded, stable source read and the same safe-ZIP validation used above. It also streams every non-directory member to EOF before publication so corrupt compressed bodies, size contradictions, and CRC failures are rejected. It then publishes those exact validated bytes in a temporary owner-only directory as a read-only file. After the viewer closes, delete only the reader-emitted snapshot file at `path`, then delete the exact `snapshot_directory` with `rmdir`; never use a broad temporary-directory glob. The repository execution gate must be satisfied and the user must approve the exact viewer command. Raw trace JSON is version-volatile and may contain secrets, so do not bypass the reader with archive extraction, general-purpose JSON tools, or direct file reads. Use the reader's safe projections as the automatable fallback when no viewer is available.
 
 **What to look for at each step:**
 

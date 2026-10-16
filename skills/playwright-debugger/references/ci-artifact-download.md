@@ -1,15 +1,18 @@
 # Downloading a CI-run report (Prerequisites detail)
 
+Before any execution, browser request, or artifact write in this procedure, read `references/safety-procedures.md` and apply its gates.
+
 Read this only when the report is from CI and you need to reproduce it locally for Phase 3 trace inspection.
 
 Download the CI artifact into a fresh local directory using a user-confirmed repository slug and numeric run ID. Confirm both values explicitly with the user; do not infer the repository from the checkout, a Git remote, `GH_REPO`, or other ambient state. Do **not** download artifacts from forked-PR runs or from arbitrary URLs.
 
+Command form: write `<absolute-project-root>` literally, as the physical (symlink-resolved) absolute project root (run `/bin/pwd -P` once as its own command to learn it). Use no shell variables, `$()`, or `cd` for the project root, so an exact-command approval can match the command.
+
 ```bash
 REPO=<user-confirmed-owner/repo>
 RUN_ID=<numeric-github-actions-run-id>
-PROJECT_ROOT=$(/bin/pwd -P)
 <skill-dir>/scripts/run-artifact-reader.sh \
-  --project-root "$PROJECT_ROOT" \
+  --project-root <absolute-project-root> \
   --reader download-playwright-report.py \
   --pass-env HOME --pass-env GH_TOKEN -- \
   --repo "$REPO" "$RUN_ID"

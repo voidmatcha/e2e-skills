@@ -1,15 +1,30 @@
 ## Phase 4: Fix Verification
 
+Before any execution, browser request, or artifact write in this procedure, read `references/safety-procedures.md` and apply its gates.
+
 ### Verification-rule handoff
 
-Preserve the F1–F15 classification and add the smallest relevant proof recommendation; V-rules do not replace F-codes:
+Preserve F1–F15; recommend the smallest applicable proof for every fix, including ordinary fixes:
+- V2 assertion falsification in a temporary inverted-primary-matcher copy: F4/F5/F6/F13 or other load-bearing assertion questions; unchanged normal candidate passes, inverted primary turns red.
+- V3 `page.route()` fault injection at an evidenced response/data dependency: F3/F9; unchanged primary assertion turns red.
+- V4 request method/endpoint/payload/cardinality proof plus an injected failed write: any write/optimistic UI, regardless of F-code; never accept optimistic state alone.
+- V5 repository-native solo/repeat/suite-context runs at normal supported parallelism: F1/F7/F8/F11/F14/F15; reuse classification's bounded isolation probes and replay gates.
+- V6 independent re-review after any generated-test repair: all F-codes; the caller owns the single pass. Emit `V6: required (caller)`; never PASS inline.
 
-- V2 assertion falsification for swallowed, conditional, missing-await, or load-bearing-assertion questions.
-- V3 `page.route()` fault injection for response/data dependency questions.
-- V4 request method/endpoint/payload/cardinality proof for writes and optimistic UI.
-- V5 repository-native solo/repeat/suite-context runs for timing, isolation, or retry evidence.
-- V6 independent re-review after any generated-test repair.
+Do not install a verifier or require `npx`; reuse the repository's targeted command. Label proof `recommended` unless an actual command/result shows it ran; use `CANNOT_VERIFY` with the exact missing evidence when no safe probe exists.
 
-For a generated candidate, obtain the approved scenario plan before changing it. Keep each scenario's title, action, primary outcome, V1 completion evidence or `CANNOT_VERIFY` reason, assertion target, and expected value available during repair. When dispatching V6 after a repair, copy those approved fields and the applicable generator V1 primary-outcome subsection **verbatim into the outgoing message** to the separate read-only reviewer, along with the repaired spec path. For `playwright-test-generator`, copy the single block from `## V1 — Primary Outcome` through the line immediately before `## V2 — Assertion Falsification`, preserving its heading, text, list, punctuation, and `Unchanged outcomes` wording. Ask the reviewer to trace the action-specific completion observation to the unchanged primary assertion. Inspect the message actually sent before dispatch and retain it or its transcript. A path, link, attachment reference, or instruction to read the V1 source is not the copied block; nor is a paraphrase. A reviewer `PASS` does not establish V6 when the literal approved fields or applicable V1 block are missing. Correct the packet with a fresh reviewer, or report `CANNOT_VERIFY`. Do not let this handoff substitute for browser-backed V1 evidence.
+### Generated-test repair boundary
 
-Do not install a verifier or require `npx`. Reuse the repository's existing targeted command and tooling. Label a proof `recommended` unless an actual command/result shows it ran; use `CANNOT_VERIFY` with the exact missing evidence when no safe probe exists.
+Obtain the approved plan (the user's request, a `specs/` plan, or an archived plan path) before changing a candidate; keep each scenario's title, action, primary outcome, V1 completion evidence or `CANNOT_VERIFY` reason, assertion target and expected value available.
+
+**Generated-test repair boundary:** when the failure came from a generated candidate or a verification probe, expected values, the approved primary outcome, assertion target, scenario count, request proof, and test enablement are immutable. Repair only evidence-backed mechanics (locator, wait strategy, navigation, fixture, setup order, or test data). Never delete/skip the test, remove request proof, or replace the assertion with ubiquitous text to manufacture green. Return `NOFIX: <evidence>` when the approved contract and observed product behavior disagree. Independent V6 remains required before completion; the debugger never approves its own repair.
+
+For generated-candidate repairs the debugger emits `V6: required (caller)` plus the approved-fields packet (the user's request, the `specs/` plan or archived plan path, the repaired spec path, and each scenario's title, action, primary outcome, assertion target and expected value). It never dispatches a reviewer and never quotes or invents a verdict; the caller (the user, or whoever generated the candidate) owns any independent re-review and a missing verdict leaves V6 pending, not passed.
+
+### Deterministic scan for edited files
+
+Resolve the reviewer only next to the actual loaded debugger skill; do not install or search for another copy. Under case 2's gates, run once per edited spec/POM, with one path per invocation:
+
+`E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN /bin/bash -p <e2e-reviewer skill-base>/scripts/scan.sh <one spec or POM path>`
+
+Read the scanner result by exit code: exit 0 means P0=0; exit 1 with a printed Summary means P0>0, so report the counts and do not call the edit clean; reserve `CANNOT_VERIFY` for exit 2, an INCOMPLETE result or a missing Summary. If absent or gated off, report `scan: not run (<reason>)`; the inline checklist still applies. P1/P2 counts remain visible. Changing the pinned settings requires repository trust and exact command/environment approval; never load the reviewer skill inline.

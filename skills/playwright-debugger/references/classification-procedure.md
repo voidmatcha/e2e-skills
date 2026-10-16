@@ -1,5 +1,7 @@
 ## Phase 2: Classification Procedure
 
+Before any execution, browser request, or artifact write in this procedure, read `references/safety-procedures.md` and apply its gates.
+
 Classification steps:
 
 **If delegating**, pass the failing test name, report excerpt (error, stack, attempt outcome), repo root, and the **absolute** path to this skill's `SKILL.md` (resolve the actual loaded skill from the host-provided file path or Base directory, not a conventional installation directory). Every delegated working directory is the project under debug, so a repo-relative `skills/...` path is invalid. Require the F-code with confidence, evidence, and a fix. All available paths use the same F1–F15 contract; resolve disagreements against source evidence and preserve uncertainty when unresolved.
@@ -47,7 +49,7 @@ Classification steps:
 - `fullyParallel` / `workers` / `test.describe.configure({ mode: 'serial' })` — each test gets a fresh browser context, but **worker-scoped fixtures and serial chains leak state across tests**. A test that passes alone but fails in-suite (F7) usually traces to a worker fixture or a serial chain relying on an earlier test's state; the fix is to seed the state explicitly (storageState, API setup), not to reorder tests or drop to one worker.
 - `use.baseURL` / `timeout` / `expect.timeout` / `webServer` — a CI-only failure (F8) often traces to a baseURL, timeout, or `webServer` target (which app build the tests even hit) that differs from local.
 
-**For F2 / F12 fixes — heal by intent, not by patching strings:** take a fresh snapshot of the live page, locate the element the failing step semantically targets (the role/name/label a user would see), and write a new locator at the highest stable tier (role+name > placeholder > testid). Tweaking the old selector string usually re-breaks on the next DOM change.
+**For F2 / F12 fixes — heal by intent, not by patching strings:** only against a target that passes the execution safety gate in `SKILL.md` (a read-only browser action is still an outbound request; otherwise ask the user for a sanitized snapshot), take a fresh snapshot of the live page, locate the element the failing step semantically targets (the role/name/label a user would see), and write a new locator at the highest stable tier (role+name > placeholder > testid). Tweaking the old selector string usually re-breaks on the next DOM change.
 
 **Accessible-name collisions (strict-mode violation on role+name):** when two semantically different controls share a name — e.g. a "Like" *tab* button and a per-card "Like" *toggle* — don't downgrade to `.nth()`. Disambiguate by the semantic attribute that distinguishes the roles: `getByRole('button', { name: 'Like' }).and(page.locator('[aria-pressed]'))` selects the toggle; `.and(page.locator(':not([aria-pressed])'))` selects the tab. The attribute encodes intent (`aria-pressed` = toggle semantics), so the locator survives reordering that breaks positional selection.
 

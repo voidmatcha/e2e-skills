@@ -78,5 +78,15 @@
     "id": "set-up-ci-sharding",
     "query": "Configure Playwright sharding in GitHub Actions to reduce suite runtime.",
     "should_trigger": false
+  },
+  {
+    "id": "ko-playwright-ci-only-failure",
+    "query": "Playwright 테스트가 CI에서만 실패해. playwright-report 폴더를 보고 원인을 알려줘.",
+    "should_trigger": true
+  },
+  {
+    "id": "ko-cypress-not-playwright",
+    "query": "Cypress 테스트가 CI에서 실패했어. cypress/reports의 mochawesome 결과를 보고 원인을 알려줘.",
+    "should_trigger": false
   }
 ]

@@ -9,6 +9,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 import hashlib
 from io import BytesIO
+import errno
 import json
 import math
 import os
@@ -185,6 +186,16 @@ def open_trusted_directory(path: Path, description: str) -> int:
     except OSError as exc:
         if current_fd is not None:
             os.close(current_fd)
+        if exc.errno == errno.ENOENT:
+            raise ValueError(
+                f"{description} does not exist: {path}: {exc} "
+                "(a relative path resolves against the current directory; "
+                "run from the project root or pass an absolute path)"
+            ) from exc
+        if exc.errno in (errno.ENOTDIR, errno.ELOOP):
+            raise ValueError(
+                f"{description} contains a symlink or is not a directory: {path}: {exc}"
+            ) from exc
         raise ValueError(
             f"{description} contains a symlink or is unavailable: {path}: {exc}"
         ) from exc

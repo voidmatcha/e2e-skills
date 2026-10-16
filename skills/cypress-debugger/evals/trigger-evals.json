@@ -78,5 +78,15 @@
     "id": "configure-cypress-dashboard",
     "query": "Configure Cypress Dashboard recording and parallelization for CI.",
     "should_trigger": false
+  },
+  {
+    "id": "ko-cypress-mochawesome-failure",
+    "query": "Cypress 테스트가 실패했어. cypress/reports의 mochawesome 리포트를 읽고 원인을 분석해줘.",
+    "should_trigger": true
+  },
+  {
+    "id": "ko-playwright-not-cypress",
+    "query": "Playwright 테스트가 실패했어. playwright-report를 보고 원인을 분석해줘.",
+    "should_trigger": false
   }
 ]

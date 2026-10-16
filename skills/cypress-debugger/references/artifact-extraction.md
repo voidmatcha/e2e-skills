@@ -1,5 +1,13 @@
 ## Phase 1: Extract Failures
 
+Validate `cypress/reports/` as a real, non-symlink directory; inputs must be regular non-symlink files resolved beneath it. Reject missing files, devices, FIFOs, sockets, symlinks and escapes before any parser/viewer. Fail closed on reader errors; never bypass it.
+
+Use the absolute bundled launcher outside the physical project, trusted root-owned system Python 3.9+ and a cleared environment; isolated mode disables bytecode writes. Never start helpers with ambient `python3`, `env python3`, project Python, or a PATH-resolved interpreter, even after `env -i`. Stop if a trusted interpreter/external bundled script is unavailable; never widen helper/environment allowlists.
+
+On Windows use WSL with artifacts in its filesystem; native Windows must fail closed. Never substitute path-only or symlink-following checks for POSIX descriptor-relative no-follow validation.
+
+Command form: write `<absolute-project-root>` literally, as the physical (symlink-resolved) absolute project root (run `/bin/pwd -P` once as its own command to learn it). Use no shell variables, `$()`, or `cd`, so an exact-command approval can match each command.
+
 ```bash
 # Find report if path not specified
 find . -name "mochawesome*.json" -path "*/cypress/*" | head -10
@@ -12,14 +20,9 @@ find . -name "*.xml" -path "*/cypress/*" | head -5
 
 # Resolve <skill-dir> as the directory containing this SKILL.md. Read a
 # mochawesome or merged JSON report through the bundled standard-library parser.
-# It carries the containing result/suite file into each failed test record and
-# emits a bounded stats summary plus failure title, fullTitle, duration, state,
-# error, stack, and screenshot paths.
-PROJECT_ROOT=$(/bin/pwd -P)
-<skill-dir>/scripts/run-artifact-reader.sh \
-  --project-root "$PROJECT_ROOT" -- mochawesome \
-  --artifact-root cypress/reports \
-  cypress/reports/mochawesome.json
+# Emits stats and failure title/fullTitle/duration/state/error/stack/screenshot
+# paths, with each test paired to its result/suite file.
+<skill-dir>/scripts/run-artifact-reader.sh --project-root <absolute-project-root> -- mochawesome --artifact-root cypress/reports cypress/reports/mochawesome.json
 
 # Flag retried tests — stock mochawesome has NO per-attempt data. Cypress replays
 # only the FINAL attempt to the mocha reporter, so a test that failed twice and
@@ -42,7 +45,7 @@ find cypress/screenshots -name "*(attempt *"               # retries happened at
 #     When the trusted project already saves this artifact:
 #     attempts [{state:"failed"},{state:"passed"}] + final "passed" → flaky (F1).
 <skill-dir>/scripts/run-artifact-reader.sh \
-  --project-root "$PROJECT_ROOT" -- run-results \
+  --project-root <absolute-project-root> -- run-results \
   --artifact-root cypress/reports \
   cypress/reports/run-results.json
 
@@ -57,8 +60,7 @@ find cypress/screenshots -name "*(attempt *"               # retries happened at
 # enforce 8 MiB input, 100-level/200,000-node JSON, 10,000-record,
 # 100-attempt-per-test, bounded-string, and 1 MiB output ceilings. Their schemas
 # are explicit; malformed or empty artifacts fail closed instead of producing a
-# misleading empty result. The smaller input ceiling bounds the JSON decoder's
-# unavoidable parse-time allocation before the post-parse depth/node checks.
+# misleading empty result.
 # run-results accepts only passed/failed/pending/skipped test and attempt states,
 # requires at least one attempt per test, and rejects a final test state that
 # contradicts the last attempt. Earlier attempts may contain any valid state
@@ -107,9 +109,8 @@ hook-only failure can never appear as an empty successful extraction.
 # every report before emitting atomic JSONL, so a malformed later report
 # produces no partial stdout. Aggregate output is limited to 10,000 rows and
 # 8 MiB of serialized UTF-8; per-field and message sizes are also bounded.
-PROJECT_ROOT=$(/bin/pwd -P)
 <skill-dir>/scripts/run-artifact-reader.sh \
-  --project-root "$PROJECT_ROOT" --reader extract-junit-failures.py -- \
+  --project-root <absolute-project-root> --reader extract-junit-failures.py -- \
   --report-root cypress/reports \
   cypress/reports/results-*.xml
 ```
