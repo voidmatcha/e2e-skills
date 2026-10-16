@@ -22,7 +22,7 @@
 
 <!-- README-CANONICAL-REVISION: sha256=e4d1fd57568f45c8e34591960d36d6db57781bfd204e71d54491169aea7f956e; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
-Evidence scope: the 15 merged PRs shown here are curated examples, not a total. Field review v1 separately records 29 submitted / 16 merged / 6 closed / 7 open under its skill-name inclusion rule; do not combine the two denominators. These are recorded snapshots, not current GitHub totals.
+근거 범위: 여기에 표시한 merge된 PR 15건은 선별한 사례이며 전체 수가 아닙니다. Field review v1은 skill 이름을 포함하는 기준에 따라 제출 29건, merge 16건, 닫힘 6건, 열림 7건을 별도로 기록합니다. 두 분모를 합쳐서 해석하지 마세요. 둘 다 기록 시점의 스냅샷이며 현재 GitHub 집계가 아닙니다.
 
 `e2e-skills`는 AI 코딩 에이전트가 Playwright와 Cypress E2E 테스트를 생성하고 리뷰하며 실패 원인을 분석할 때 쓰는 네 종류의 Agent Skills 모음입니다. 새 테스트 생성은 Playwright를 지원하고, 기존 테스트나 PR/diff 범위의 변경 사항 리뷰와 실패 분석은 Playwright와 Cypress를 지원합니다. 리뷰 목록 가운데 규칙만으로 판별할 수 있는 항목을 찾는 `deterministic scanner`도 포함합니다.
 
@@ -238,7 +238,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 새 E2E 테스트를 만들거나 기존 테스트를 리뷰하고, 실패한 Playwright/Cypress 실행의 원인을 분석할 때 이 스킬을 사용하세요. 이 도구는 실제 애플리케이션과 E2E 테스트 모음을 보완하며, 이를 대신하지 않습니다. 범용 `lint` preset도, 프레임워크 독립형 테스트 도구도 아닙니다. Playwright와 Cypress를 지원하되, 새 테스트 생성은 현재 Playwright만 지원합니다.
 
-The bundled shell scripts and artifact readers target conventional macOS/Linux layouts with `/bin/bash` and the fixed system executable paths required by their launchers. Windows users need a compatible WSL distribution and artifacts inside the WSL filesystem; native Windows is not supported. NixOS and Nix-, pyenv-, Conda-, or nvm-only tool installations are not universally auto-discovered. The reviewer scanner supports validated absolute `E2E_SMELL_*_BIN` overrides; this does not imply the same overrides exist in the debugger launchers. Missing trusted tools stop the affected operation; do not bypass that boundary with ambient `PATH` lookup. Resolve skill resources from the actual host-provided skill location, including plugin caches and custom installs, not a guessed home directory.
+번들된 셸 스크립트와 아티팩트 리더는 `/bin/bash`와 런처가 요구하는 고정된 시스템 실행 파일 경로를 쓰는 일반적인 macOS/Linux 구조를 대상으로 합니다. Windows 사용자는 호환되는 WSL 배포판이 필요하고 아티팩트도 WSL 파일 시스템 안에 있어야 합니다. 네이티브 Windows는 지원하지 않습니다. NixOS, 그리고 Nix, pyenv, Conda, nvm으로만 설치한 도구는 모두 자동으로 찾아지지는 않습니다. 리뷰어 스캐너는 검증된 절대 경로의 `E2E_SMELL_*_BIN` 오버라이드를 지원하지만, debugger 런처에도 같은 오버라이드가 있다는 뜻은 아닙니다. 신뢰할 수 있는 도구가 없으면 해당 작업을 중단합니다. 환경의 `PATH`를 뒤져서 이 경계를 우회하지 마세요. 스킬 리소스는 추측한 홈 디렉터리가 아니라, 플러그인 캐시와 사용자 지정 설치를 포함해 호스트가 실제로 제공한 스킬 위치에서 찾으세요.
 
 새로 만든 테스트가 통과하는 것만으로는 충분하지 않습니다. `Locator`나 `Promise` 자체를 검증하거나, 테스트 이름에 적힌 동작과 무관한 상태를 확인하거나, 핵심 검증문이 테스트 결과에 영향을 주지 않을 수도 있습니다. 그래서 generator는 `e2e-reviewer` 스캐너를 실행해 P0와 P1 항목을 모두 고친 뒤 프로젝트의 테스트를 한 번 실행합니다. deterministic scanner는 카탈로그의 기계적으로 검출 가능한 일부만 다룹니다. 검증문이 실패할 수 있음을 증명하지는 않습니다.
 

@@ -21,7 +21,7 @@
 </p>
 <!-- README-CANONICAL-REVISION: sha256=e4d1fd57568f45c8e34591960d36d6db57781bfd204e71d54491169aea7f956e; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
-Evidence scope: the 15 merged PRs shown here are curated examples, not a total. Field review v1 separately records 29 submitted / 16 merged / 6 closed / 7 open under its skill-name inclusion rule; do not combine the two denominators. These are recorded snapshots, not current GitHub totals.
+证据范围：这里展示的 15 个已合并 PR 是精选示例，并非总数。Field review v1 按其 Skill 名称纳入规则另行记录了提交 29 个、已合并 16 个、已关闭 6 个、仍开放 7 个；请勿把两个分母合并。这些都是记录时的快照，而不是 GitHub 当前的总数。
 
 `e2e-skills` 为 AI 编程代理提供四个面向 E2E 测试工作的聚焦工作流：生成 Playwright 覆盖、审查现有 spec 或 PR/diff 范围内的测试变更、调试失败的 Playwright 报告，以及调试失败的 Cypress 报告。它还包含一个确定性扫描器，用于发现审查目录中可机械判定的子集。
 
@@ -228,7 +228,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 这套 bundle 用于生成或审查 E2E 测试，以及分析失败的 Playwright/Cypress 运行。它应与应用及其真实 E2E suite 配合使用，而不是替代它们；它也不是通用 lint preset 或框架无关的测试工具。它支持 Playwright 和 Cypress；新测试生成目前只面向 Playwright。
 
-The bundled shell scripts and artifact readers target conventional macOS/Linux layouts with `/bin/bash` and the fixed system executable paths required by their launchers. Windows users need a compatible WSL distribution and artifacts inside the WSL filesystem; native Windows is not supported. NixOS and Nix-, pyenv-, Conda-, or nvm-only tool installations are not universally auto-discovered. The reviewer scanner supports validated absolute `E2E_SMELL_*_BIN` overrides; this does not imply the same overrides exist in the debugger launchers. Missing trusted tools stop the affected operation; do not bypass that boundary with ambient `PATH` lookup. Resolve skill resources from the actual host-provided skill location, including plugin caches and custom installs, not a guessed home directory.
+随附的 shell 脚本和 artifact 读取器面向常规的 macOS/Linux 布局，使用 `/bin/bash` 以及启动器所需的固定系统可执行文件路径。Windows 用户需要兼容的 WSL 发行版，并把 artifact 放在 WSL 文件系统内；不支持原生 Windows。NixOS，以及仅通过 Nix、pyenv、Conda 或 nvm 安装的工具，并不都能被自动发现。审查器的扫描器支持经过验证的绝对路径 `E2E_SMELL_*_BIN` 覆盖，但这并不意味着调试器的启动器也有相同的覆盖。缺少受信任的工具时，相关操作会停止；不要通过环境中的 `PATH` 查找绕过这一边界。请从宿主实际提供的 Skill 位置解析 Skill 资源，包括插件缓存和自定义安装位置，而不是猜测的主目录。
 
 生成的测试仅仅通过还不够：它可能断言的是 `Locator` 或 `Promise` 本身，观察的状态与测试名称所描述的行为无关，或者主要断言根本不影响测试结果。因此，生成器会运行 `e2e-reviewer` 扫描器并修复所有 P0 和 P1 命中，然后把项目测试运行一次。扫描器是确定性的，只覆盖目录中可机械检测的子集，并不能证明断言会失败。
 
