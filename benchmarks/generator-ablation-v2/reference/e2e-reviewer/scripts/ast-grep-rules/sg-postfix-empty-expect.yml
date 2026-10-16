@@ -1,0 +1,12 @@
+# Post-fix verification rule: empty expect() call
+#
+# Detects `expect()` with no args — sed sometimes strips the subject when
+# regex backreferences misalign. Always a runtime error in test execution.
+
+id: postfix-empty-expect
+language: TypeScript
+severity: error
+message: "Empty expect() call — sed bulk-replace likely stripped the subject"
+
+rule:
+  pattern: 'expect()'

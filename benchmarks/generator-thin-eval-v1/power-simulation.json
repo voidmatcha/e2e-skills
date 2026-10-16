@@ -1,0 +1,1077 @@
+{
+  "label": "offline exploratory decision sensitivity; not formal noninferiority power",
+  "seed": 20261016,
+  "simulations_per_scenario_effect": 2000,
+  "stage_1_default_models": 2,
+  "note": "Stage 1 freezes one or two models. A one-model design has no between-model variation to pool (minimum sign-flip p = 1) and a two-model design has minimum p = 0.5; the three-model design is retained for a later stage.",
+  "designs": {
+    "1": {
+      "label": "offline exploratory decision sensitivity; not formal noninferiority power",
+      "seed": 20261016,
+      "simulations_per_scenario_effect": 2000,
+      "models": 1,
+      "tasks": 6,
+      "repetitions_per_arm": 4,
+      "arms": {
+        "A": "official",
+        "B": "official plus reviewer of A output (optional)",
+        "C": "ours 2.0.1 (v3 reference by default)",
+        "D": "A plus thin rules",
+        "E": "D plus scanner-only gate",
+        "F": "CLI-first thin workflow (no official agent, no MCP)",
+        "G": "F plus scanner-only gate (default: the CLI plus scanner product path)"
+      },
+      "cells_per_arm_model": 24,
+      "cells_per_model_default_A_D_E_F_G": 120,
+      "cells_per_model_all_seven_arms": 168,
+      "default_scored_cells": 120,
+      "maximum_scored_cells": 168,
+      "comparisons": [
+        "D_minus_A",
+        "E_minus_D",
+        "E_minus_B",
+        "C_minus_E",
+        "F_minus_A",
+        "F_minus_D",
+        "F_minus_E",
+        "G_minus_F",
+        "G_minus_E",
+        "G_minus_A"
+      ],
+      "comparison_basis": {
+        "D_minus_A": "within campaign",
+        "E_minus_D": "within campaign",
+        "E_minus_B": "within campaign, only when optional arm B is scheduled",
+        "C_minus_E": "cross-campaign descriptive when C is the v3 reference; within campaign when C is re-run",
+        "F_minus_A": "within campaign",
+        "F_minus_D": "within campaign (surface effect: CLI versus MCP delegation)",
+        "F_minus_E": "within campaign but indirect: surface and scanner gate both differ",
+        "G_minus_F": "within campaign (scanner effect on the CLI surface)",
+        "G_minus_E": "within campaign (product paths at an equal scanner gate: CLI versus official agents)",
+        "G_minus_A": "within campaign (the CLI plus scanner product path against the official agent as it is)"
+      },
+      "quality_point_margin": 0.1,
+      "maximum_processed_token_ratio": 0.8,
+      "maximum_cli_token_ratio": 1.1,
+      "shipping_deficit": 0.2,
+      "scope": "The same two-arm sensitivity applies marginally to each declared contrast; probabilities are not joint or independent multi-arm power.",
+      "model_logit_sd": 0.35,
+      "task_logit_sd": 0.6,
+      "dropout": "independent per arm/repetition; complete task-arm means used; no outcome-dependent missingness simulated",
+      "trigger": "pooled first-minus-second point estimate >= 0.10, separately for each declared contrast",
+      "target_probability": 0.8,
+      "cheap_stack_margin_trigger": "For hypothetical B-E or C-E advantage on the risk-difference grid, pooled rival-minus-E estimate <= 0.10; descriptive one-metric point screen only.",
+      "unmodeled": [
+        "B reuses A generation output; generation/reviewer and shared-arm dependence",
+        "the time gap, harness difference and non-randomized allocation of a cross-campaign arm C reference",
+        "joint five-metric primary-plus-ITT E-versus-B and E-versus-C sufficiency decisions",
+        "outcome-dependent fidelity or missingness",
+        "token and elapsed-time variance, cost thresholds and quality per 100k tokens"
+      ],
+      "sign_flip_alpha": 0.05,
+      "sign_flip_min_p": 1.0,
+      "sign_flip_80_percent_mde": null,
+      "sign_flip_limitation": "With 1 model cluster the minimum two-sided exact sign-flip p is 1; alpha .05 detection is impossible for every effect.",
+      "scenarios": [
+        {
+          "baseline": 0.5,
+          "fidelity": 1.0,
+          "rows": [
+            {
+              "risk_difference": 0.0,
+              "trigger_probability": 0.2335,
+              "monte_carlo_se": 0.0095,
+              "cheap_stack_within_margin_probability": 0.7665,
+              "within_margin_monte_carlo_se": 0.0095
+            },
+            {
+              "risk_difference": 0.05,
+              "trigger_probability": 0.3725,
+              "monte_carlo_se": 0.0108,
+              "cheap_stack_within_margin_probability": 0.6275,
+              "within_margin_monte_carlo_se": 0.0108
+            },
+            {
+              "risk_difference": 0.1,
+              "trigger_probability": 0.4845,
+              "monte_carlo_se": 0.0112,
+              "cheap_stack_within_margin_probability": 0.5155,
+              "within_margin_monte_carlo_se": 0.0112
+            },
+            {
+              "risk_difference": 0.15,
+              "trigger_probability": 0.6155,
+              "monte_carlo_se": 0.0109,
+              "cheap_stack_within_margin_probability": 0.3845,
+              "within_margin_monte_carlo_se": 0.0109
+            },
+            {
+              "risk_difference": 0.2,
+              "trigger_probability": 0.771,
+              "monte_carlo_se": 0.0094,
+              "cheap_stack_within_margin_probability": 0.229,
+              "within_margin_monte_carlo_se": 0.0094
+            },
+            {
+              "risk_difference": 0.25,
+              "trigger_probability": 0.8595,
+              "monte_carlo_se": 0.0078,
+              "cheap_stack_within_margin_probability": 0.1405,
+              "within_margin_monte_carlo_se": 0.0078
+            },
+            {
+              "risk_difference": 0.3,
+              "trigger_probability": 0.9325,
+              "monte_carlo_se": 0.0056,
+              "cheap_stack_within_margin_probability": 0.0675,
+              "within_margin_monte_carlo_se": 0.0056
+            }
+          ],
+          "descriptive_80_percent_mde_on_grid": 0.25,
+          "null_false_trigger_probability": 0.2335
+        },
+        {
+          "baseline": 0.5,
+          "fidelity": 0.75,
+          "rows": [
+            {
+              "risk_difference": 0.0,
+              "trigger_probability": 0.252,
+              "monte_carlo_se": 0.0097,
+              "cheap_stack_within_margin_probability": 0.7505,
+              "within_margin_monte_carlo_se": 0.0097
+            },
+            {
+              "risk_difference": 0.05,
+              "trigger_probability": 0.3695,
+              "monte_carlo_se": 0.0108,
+              "cheap_stack_within_margin_probability": 0.632,
+              "within_margin_monte_carlo_se": 0.0108
+            },
+            {
+              "risk_difference": 0.1,
+              "trigger_probability": 0.488,
+              "monte_carlo_se": 0.0112,
+              "cheap_stack_within_margin_probability": 0.514,
+              "within_margin_monte_carlo_se": 0.0112
+            },
+            {
+              "risk_difference": 0.15,
+              "trigger_probability": 0.604,
+              "monte_carlo_se": 0.0109,
+              "cheap_stack_within_margin_probability": 0.3985,
+              "within_margin_monte_carlo_se": 0.0109
+            },
+            {
+              "risk_difference": 0.2,
+              "trigger_probability": 0.725,
+              "monte_carlo_se": 0.01,
+              "cheap_stack_within_margin_probability": 0.276,
+              "within_margin_monte_carlo_se": 0.01
+            },
+            {
+              "risk_difference": 0.25,
+              "trigger_probability": 0.828,
+              "monte_carlo_se": 0.0084,
+              "cheap_stack_within_margin_probability": 0.1735,
+              "within_margin_monte_carlo_se": 0.0085
+            },
+            {
+              "risk_difference": 0.3,
+              "trigger_probability": 0.8935,
+              "monte_carlo_se": 0.0069,
+              "cheap_stack_within_margin_probability": 0.1075,
+              "within_margin_monte_carlo_se": 0.0069
+            }
+          ],
+          "descriptive_80_percent_mde_on_grid": 0.25,
+          "null_false_trigger_probability": 0.252
+        },
+        {
+          "baseline": 0.7,
+          "fidelity": 1.0,
+          "rows": [
+            {
+              "risk_difference": 0.0,
+              "trigger_probability": 0.2165,
+              "monte_carlo_se": 0.0092,
+              "cheap_stack_within_margin_probability": 0.7835,
+              "within_margin_monte_carlo_se": 0.0092
+            },
+            {
+              "risk_difference": 0.05,
+              "trigger_probability": 0.331,
+              "monte_carlo_se": 0.0105,
+              "cheap_stack_within_margin_probability": 0.669,
+              "within_margin_monte_carlo_se": 0.0105
+            },
+            {
+              "risk_difference": 0.1,
+              "trigger_probability": 0.4935,
+              "monte_carlo_se": 0.0112,
+              "cheap_stack_within_margin_probability": 0.5065,
+              "within_margin_monte_carlo_se": 0.0112
+            },
+            {
+              "risk_difference": 0.15,
+              "trigger_probability": 0.6425,
+              "monte_carlo_se": 0.0107,
+              "cheap_stack_within_margin_probability": 0.3575,
+              "within_margin_monte_carlo_se": 0.0107
+            },
+            {
+              "risk_difference": 0.2,
+              "trigger_probability": 0.8085,
+              "monte_carlo_se": 0.0088,
+              "cheap_stack_within_margin_probability": 0.1915,
+              "within_margin_monte_carlo_se": 0.0088
+            },
+            {
+              "risk_difference": 0.25,
+              "trigger_probability": 0.8985,
+              "monte_carlo_se": 0.0068,
+              "cheap_stack_within_margin_probability": 0.1015,
+              "within_margin_monte_carlo_se": 0.0068
+            },
+            {
+              "risk_difference": 0.3,
+              "trigger_probability": 0.97,
+              "monte_carlo_se": 0.0038,
+              "cheap_stack_within_margin_probability": 0.03,
+              "within_margin_monte_carlo_se": 0.0038
+            }
+          ],
+          "descriptive_80_percent_mde_on_grid": 0.2,
+          "null_false_trigger_probability": 0.2165
+        },
+        {
+          "baseline": 0.7,
+          "fidelity": 0.75,
+          "rows": [
+            {
+              "risk_difference": 0.0,
+              "trigger_probability": 0.237,
+              "monte_carlo_se": 0.0095,
+              "cheap_stack_within_margin_probability": 0.764,
+              "within_margin_monte_carlo_se": 0.0095
+            },
+            {
+              "risk_difference": 0.05,
+              "trigger_probability": 0.365,
+              "monte_carlo_se": 0.0108,
+              "cheap_stack_within_margin_probability": 0.6375,
+              "within_margin_monte_carlo_se": 0.0107
+            },
+            {
+              "risk_difference": 0.1,
+              "trigger_probability": 0.486,
+              "monte_carlo_se": 0.0112,
+              "cheap_stack_within_margin_probability": 0.5165,
+              "within_margin_monte_carlo_se": 0.0112
+            },
+            {
+              "risk_difference": 0.15,
+              "trigger_probability": 0.6155,
+              "monte_carlo_se": 0.0109,
+              "cheap_stack_within_margin_probability": 0.3865,
+              "within_margin_monte_carlo_se": 0.0109
+            },
+            {
+              "risk_difference": 0.2,
+              "trigger_probability": 0.735,
+              "monte_carlo_se": 0.0099,
+              "cheap_stack_within_margin_probability": 0.2665,
+              "within_margin_monte_carlo_se": 0.0099
+            },
+            {
+              "risk_difference": 0.25,
+              "trigger_probability": 0.844,
+              "monte_carlo_se": 0.0081,
+              "cheap_stack_within_margin_probability": 0.1565,
+              "within_margin_monte_carlo_se": 0.0081
+            },
+            {
+              "risk_difference": 0.3,
+              "trigger_probability": 0.932,
+              "monte_carlo_se": 0.0056,
+              "cheap_stack_within_margin_probability": 0.069,
+              "within_margin_monte_carlo_se": 0.0057
+            }
+          ],
+          "descriptive_80_percent_mde_on_grid": 0.25,
+          "null_false_trigger_probability": 0.237
+        },
+        {
+          "baseline": 0.9,
+          "fidelity": 1.0,
+          "rows": [
+            {
+              "risk_difference": 0.0,
+              "trigger_probability": 0.111,
+              "monte_carlo_se": 0.007,
+              "cheap_stack_within_margin_probability": 0.889,
+              "within_margin_monte_carlo_se": 0.007
+            },
+            {
+              "risk_difference": 0.05,
+              "trigger_probability": 0.2265,
+              "monte_carlo_se": 0.0094,
+              "cheap_stack_within_margin_probability": 0.7735,
+              "within_margin_monte_carlo_se": 0.0094
+            },
+            {
+              "risk_difference": 0.1,
+              "trigger_probability": 0.4185,
+              "monte_carlo_se": 0.011,
+              "cheap_stack_within_margin_probability": 0.5815,
+              "within_margin_monte_carlo_se": 0.011
+            }
+          ],
+          "descriptive_80_percent_mde_on_grid": null,
+          "null_false_trigger_probability": 0.111
+        },
+        {
+          "baseline": 0.9,
+          "fidelity": 0.75,
+          "rows": [
+            {
+              "risk_difference": 0.0,
+              "trigger_probability": 0.1395,
+              "monte_carlo_se": 0.0077,
+              "cheap_stack_within_margin_probability": 0.8635,
+              "within_margin_monte_carlo_se": 0.0077
+            },
+            {
+              "risk_difference": 0.05,
+              "trigger_probability": 0.2475,
+              "monte_carlo_se": 0.0096,
+              "cheap_stack_within_margin_probability": 0.756,
+              "within_margin_monte_carlo_se": 0.0096
+            },
+            {
+              "risk_difference": 0.1,
+              "trigger_probability": 0.421,
+              "monte_carlo_se": 0.011,
+              "cheap_stack_within_margin_probability": 0.5835,
+              "within_margin_monte_carlo_se": 0.011
+            }
+          ],
+          "descriptive_80_percent_mde_on_grid": null,
+          "null_false_trigger_probability": 0.1395
+        }
+      ]
+    },
+    "2": {
+      "label": "offline exploratory decision sensitivity; not formal noninferiority power",
+      "seed": 20261016,
+      "simulations_per_scenario_effect": 2000,
+      "models": 2,
+      "tasks": 6,
+      "repetitions_per_arm": 4,
+      "arms": {
+        "A": "official",
+        "B": "official plus reviewer of A output (optional)",
+        "C": "ours 2.0.1 (v3 reference by default)",
+        "D": "A plus thin rules",
+        "E": "D plus scanner-only gate",
+        "F": "CLI-first thin workflow (no official agent, no MCP)",
+        "G": "F plus scanner-only gate (default: the CLI plus scanner product path)"
+      },
+      "cells_per_arm_model": 24,
+      "cells_per_model_default_A_D_E_F_G": 120,
+      "cells_per_model_all_seven_arms": 168,
+      "default_scored_cells": 240,
+      "maximum_scored_cells": 336,
+      "comparisons": [
+        "D_minus_A",
+        "E_minus_D",
+        "E_minus_B",
+        "C_minus_E",
+        "F_minus_A",
+        "F_minus_D",
+        "F_minus_E",
+        "G_minus_F",
+        "G_minus_E",
+        "G_minus_A"
+      ],
+      "comparison_basis": {
+        "D_minus_A": "within campaign",
+        "E_minus_D": "within campaign",
+        "E_minus_B": "within campaign, only when optional arm B is scheduled",
+        "C_minus_E": "cross-campaign descriptive when C is the v3 reference; within campaign when C is re-run",
+        "F_minus_A": "within campaign",
+        "F_minus_D": "within campaign (surface effect: CLI versus MCP delegation)",
+        "F_minus_E": "within campaign but indirect: surface and scanner gate both differ",
+        "G_minus_F": "within campaign (scanner effect on the CLI surface)",
+        "G_minus_E": "within campaign (product paths at an equal scanner gate: CLI versus official agents)",
+        "G_minus_A": "within campaign (the CLI plus scanner product path against the official agent as it is)"
+      },
+      "quality_point_margin": 0.1,
+      "maximum_processed_token_ratio": 0.8,
+      "maximum_cli_token_ratio": 1.1,
+      "shipping_deficit": 0.2,
+      "scope": "The same two-arm sensitivity applies marginally to each declared contrast; probabilities are not joint or independent multi-arm power.",
+      "model_logit_sd": 0.35,
+      "task_logit_sd": 0.6,
+      "dropout": "independent per arm/repetition; complete task-arm means used; no outcome-dependent missingness simulated",
+      "trigger": "pooled first-minus-second point estimate >= 0.10, separately for each declared contrast",
+      "target_probability": 0.8,
+      "cheap_stack_margin_trigger": "For hypothetical B-E or C-E advantage on the risk-difference grid, pooled rival-minus-E estimate <= 0.10; descriptive one-metric point screen only.",
+      "unmodeled": [
+        "B reuses A generation output; generation/reviewer and shared-arm dependence",
+        "the time gap, harness difference and non-randomized allocation of a cross-campaign arm C reference",
+        "joint five-metric primary-plus-ITT E-versus-B and E-versus-C sufficiency decisions",
+        "outcome-dependent fidelity or missingness",
+        "token and elapsed-time variance, cost thresholds and quality per 100k tokens"
+      ],
+      "sign_flip_alpha": 0.05,
+      "sign_flip_min_p": 0.5,
+      "sign_flip_80_percent_mde": null,
+      "sign_flip_limitation": "With 2 model clusters the minimum two-sided exact sign-flip p is 0.5; alpha .05 detection is impossible for every effect.",
+      "scenarios": [
+        {
+          "baseline": 0.5,
+          "fidelity": 1.0,
+          "rows": [
+            {
+              "risk_difference": 0.0,
+              "trigger_probability": 0.175,
+              "monte_carlo_se": 0.0085,
+              "cheap_stack_within_margin_probability": 0.825,
+              "within_margin_monte_carlo_se": 0.0085
+            },
+            {
+              "risk_difference": 0.05,
+              "trigger_probability": 0.3225,
+              "monte_carlo_se": 0.0105,
+              "cheap_stack_within_margin_probability": 0.6775,
+              "within_margin_monte_carlo_se": 0.0105
+            },
+            {
+              "risk_difference": 0.1,
+              "trigger_probability": 0.533,
+              "monte_carlo_se": 0.0112,
+              "cheap_stack_within_margin_probability": 0.467,
+              "within_margin_monte_carlo_se": 0.0112
+            },
+            {
+              "risk_difference": 0.15,
+              "trigger_probability": 0.718,
+              "monte_carlo_se": 0.0101,
+              "cheap_stack_within_margin_probability": 0.282,
+              "within_margin_monte_carlo_se": 0.0101
+            },
+            {
+              "risk_difference": 0.2,
+              "trigger_probability": 0.863,
+              "monte_carlo_se": 0.0077,
+              "cheap_stack_within_margin_probability": 0.137,
+              "within_margin_monte_carlo_se": 0.0077
+            },
+            {
+              "risk_difference": 0.25,
+              "trigger_probability": 0.9555,
+              "monte_carlo_se": 0.0046,
+              "cheap_stack_within_margin_probability": 0.0445,
+              "within_margin_monte_carlo_se": 0.0046
+            },
+            {
+              "risk_difference": 0.3,
+              "trigger_probability": 0.9855,
+              "monte_carlo_se": 0.0027,
+              "cheap_stack_within_margin_probability": 0.0145,
+              "within_margin_monte_carlo_se": 0.0027
+            }
+          ],
+          "descriptive_80_percent_mde_on_grid": 0.2,
+          "null_false_trigger_probability": 0.175
+        },
+        {
+          "baseline": 0.5,
+          "fidelity": 0.75,
+          "rows": [
+            {
+              "risk_difference": 0.0,
+              "trigger_probability": 0.2025,
+              "monte_carlo_se": 0.009,
+              "cheap_stack_within_margin_probability": 0.7975,
+              "within_margin_monte_carlo_se": 0.009
+            },
+            {
+              "risk_difference": 0.05,
+              "trigger_probability": 0.3435,
+              "monte_carlo_se": 0.0106,
+              "cheap_stack_within_margin_probability": 0.657,
+              "within_margin_monte_carlo_se": 0.0106
+            },
+            {
+              "risk_difference": 0.1,
+              "trigger_probability": 0.5005,
+              "monte_carlo_se": 0.0112,
+              "cheap_stack_within_margin_probability": 0.4995,
+              "within_margin_monte_carlo_se": 0.0112
+            },
+            {
+              "risk_difference": 0.15,
+              "trigger_probability": 0.672,
+              "monte_carlo_se": 0.0105,
+              "cheap_stack_within_margin_probability": 0.328,
+              "within_margin_monte_carlo_se": 0.0105
+            },
+            {
+              "risk_difference": 0.2,
+              "trigger_probability": 0.8,
+              "monte_carlo_se": 0.0089,
+              "cheap_stack_within_margin_probability": 0.2,
+              "within_margin_monte_carlo_se": 0.0089
+            },
+            {
+              "risk_difference": 0.25,
+              "trigger_probability": 0.9055,
+              "monte_carlo_se": 0.0065,
+              "cheap_stack_within_margin_probability": 0.0945,
+              "within_margin_monte_carlo_se": 0.0065
+            },
+            {
+              "risk_difference": 0.3,
+              "trigger_probability": 0.9635,
+              "monte_carlo_se": 0.0042,
+              "cheap_stack_within_margin_probability": 0.0365,
+              "within_margin_monte_carlo_se": 0.0042
+            }
+          ],
+          "descriptive_80_percent_mde_on_grid": 0.2,
+          "null_false_trigger_probability": 0.2025
+        },
+        {
+          "baseline": 0.7,
+          "fidelity": 1.0,
+          "rows": [
+            {
+              "risk_difference": 0.0,
+              "trigger_probability": 0.139,
+              "monte_carlo_se": 0.0077,
+              "cheap_stack_within_margin_probability": 0.861,
+              "within_margin_monte_carlo_se": 0.0077
+            },
+            {
+              "risk_difference": 0.05,
+              "trigger_probability": 0.2925,
+              "monte_carlo_se": 0.0102,
+              "cheap_stack_within_margin_probability": 0.7075,
+              "within_margin_monte_carlo_se": 0.0102
+            },
+            {
+              "risk_difference": 0.1,
+              "trigger_probability": 0.522,
+              "monte_carlo_se": 0.0112,
+              "cheap_stack_within_margin_probability": 0.478,
+              "within_margin_monte_carlo_se": 0.0112
+            },
+            {
+              "risk_difference": 0.15,
+              "trigger_probability": 0.748,
+              "monte_carlo_se": 0.0097,
+              "cheap_stack_within_margin_probability": 0.252,
+              "within_margin_monte_carlo_se": 0.0097
+            },
+            {
+              "risk_difference": 0.2,
+              "trigger_probability": 0.9015,
+              "monte_carlo_se": 0.0067,
+              "cheap_stack_within_margin_probability": 0.0985,
+              "within_margin_monte_carlo_se": 0.0067
+            },
+            {
+              "risk_difference": 0.25,
+              "trigger_probability": 0.9715,
+              "monte_carlo_se": 0.0037,
+              "cheap_stack_within_margin_probability": 0.0285,
+              "within_margin_monte_carlo_se": 0.0037
+            },
+            {
+              "risk_difference": 0.3,
+              "trigger_probability": 0.9935,
+              "monte_carlo_se": 0.0018,
+              "cheap_stack_within_margin_probability": 0.0065,
+              "within_margin_monte_carlo_se": 0.0018
+            }
+          ],
+          "descriptive_80_percent_mde_on_grid": 0.2,
+          "null_false_trigger_probability": 0.139
+        },
+        {
+          "baseline": 0.7,
+          "fidelity": 0.75,
+          "rows": [
+            {
+              "risk_difference": 0.0,
+              "trigger_probability": 0.18,
+              "monte_carlo_se": 0.0086,
+              "cheap_stack_within_margin_probability": 0.8205,
+              "within_margin_monte_carlo_se": 0.0086
+            },
+            {
+              "risk_difference": 0.05,
+              "trigger_probability": 0.3225,
+              "monte_carlo_se": 0.0105,
+              "cheap_stack_within_margin_probability": 0.678,
+              "within_margin_monte_carlo_se": 0.0104
+            },
+            {
+              "risk_difference": 0.1,
+              "trigger_probability": 0.5015,
+              "monte_carlo_se": 0.0112,
+              "cheap_stack_within_margin_probability": 0.499,
+              "within_margin_monte_carlo_se": 0.0112
+            },
+            {
+              "risk_difference": 0.15,
+              "trigger_probability": 0.6975,
+              "monte_carlo_se": 0.0103,
+              "cheap_stack_within_margin_probability": 0.3025,
+              "within_margin_monte_carlo_se": 0.0103
+            },
+            {
+              "risk_difference": 0.2,
+              "trigger_probability": 0.8475,
+              "monte_carlo_se": 0.008,
+              "cheap_stack_within_margin_probability": 0.1525,
+              "within_margin_monte_carlo_se": 0.008
+            },
+            {
+              "risk_difference": 0.25,
+              "trigger_probability": 0.9415,
+              "monte_carlo_se": 0.0052,
+              "cheap_stack_within_margin_probability": 0.0585,
+              "within_margin_monte_carlo_se": 0.0052
+            },
+            {
+              "risk_difference": 0.3,
+              "trigger_probability": 0.9905,
+              "monte_carlo_se": 0.0022,
+              "cheap_stack_within_margin_probability": 0.0095,
+              "within_margin_monte_carlo_se": 0.0022
+            }
+          ],
+          "descriptive_80_percent_mde_on_grid": 0.2,
+          "null_false_trigger_probability": 0.18
+        },
+        {
+          "baseline": 0.9,
+          "fidelity": 1.0,
+          "rows": [
+            {
+              "risk_difference": 0.0,
+              "trigger_probability": 0.052,
+              "monte_carlo_se": 0.005,
+              "cheap_stack_within_margin_probability": 0.948,
+              "within_margin_monte_carlo_se": 0.005
+            },
+            {
+              "risk_difference": 0.05,
+              "trigger_probability": 0.1875,
+              "monte_carlo_se": 0.0087,
+              "cheap_stack_within_margin_probability": 0.8125,
+              "within_margin_monte_carlo_se": 0.0087
+            },
+            {
+              "risk_difference": 0.1,
+              "trigger_probability": 0.502,
+              "monte_carlo_se": 0.0112,
+              "cheap_stack_within_margin_probability": 0.498,
+              "within_margin_monte_carlo_se": 0.0112
+            }
+          ],
+          "descriptive_80_percent_mde_on_grid": null,
+          "null_false_trigger_probability": 0.052
+        },
+        {
+          "baseline": 0.9,
+          "fidelity": 0.75,
+          "rows": [
+            {
+              "risk_difference": 0.0,
+              "trigger_probability": 0.0825,
+              "monte_carlo_se": 0.0062,
+              "cheap_stack_within_margin_probability": 0.918,
+              "within_margin_monte_carlo_se": 0.0061
+            },
+            {
+              "risk_difference": 0.05,
+              "trigger_probability": 0.209,
+              "monte_carlo_se": 0.0091,
+              "cheap_stack_within_margin_probability": 0.791,
+              "within_margin_monte_carlo_se": 0.0091
+            },
+            {
+              "risk_difference": 0.1,
+              "trigger_probability": 0.4555,
+              "monte_carlo_se": 0.0111,
+              "cheap_stack_within_margin_probability": 0.547,
+              "within_margin_monte_carlo_se": 0.0111
+            }
+          ],
+          "descriptive_80_percent_mde_on_grid": null,
+          "null_false_trigger_probability": 0.0825
+        }
+      ]
+    },
+    "3": {
+      "label": "offline exploratory decision sensitivity; not formal noninferiority power",
+      "seed": 20261016,
+      "simulations_per_scenario_effect": 2000,
+      "models": 3,
+      "tasks": 6,
+      "repetitions_per_arm": 4,
+      "arms": {
+        "A": "official",
+        "B": "official plus reviewer of A output (optional)",
+        "C": "ours 2.0.1 (v3 reference by default)",
+        "D": "A plus thin rules",
+        "E": "D plus scanner-only gate",
+        "F": "CLI-first thin workflow (no official agent, no MCP)",
+        "G": "F plus scanner-only gate (default: the CLI plus scanner product path)"
+      },
+      "cells_per_arm_model": 24,
+      "cells_per_model_default_A_D_E_F_G": 120,
+      "cells_per_model_all_seven_arms": 168,
+      "default_scored_cells": 360,
+      "maximum_scored_cells": 504,
+      "comparisons": [
+        "D_minus_A",
+        "E_minus_D",
+        "E_minus_B",
+        "C_minus_E",
+        "F_minus_A",
+        "F_minus_D",
+        "F_minus_E",
+        "G_minus_F",
+        "G_minus_E",
+        "G_minus_A"
+      ],
+      "comparison_basis": {
+        "D_minus_A": "within campaign",
+        "E_minus_D": "within campaign",
+        "E_minus_B": "within campaign, only when optional arm B is scheduled",
+        "C_minus_E": "cross-campaign descriptive when C is the v3 reference; within campaign when C is re-run",
+        "F_minus_A": "within campaign",
+        "F_minus_D": "within campaign (surface effect: CLI versus MCP delegation)",
+        "F_minus_E": "within campaign but indirect: surface and scanner gate both differ",
+        "G_minus_F": "within campaign (scanner effect on the CLI surface)",
+        "G_minus_E": "within campaign (product paths at an equal scanner gate: CLI versus official agents)",
+        "G_minus_A": "within campaign (the CLI plus scanner product path against the official agent as it is)"
+      },
+      "quality_point_margin": 0.1,
+      "maximum_processed_token_ratio": 0.8,
+      "maximum_cli_token_ratio": 1.1,
+      "shipping_deficit": 0.2,
+      "scope": "The same two-arm sensitivity applies marginally to each declared contrast; probabilities are not joint or independent multi-arm power.",
+      "model_logit_sd": 0.35,
+      "task_logit_sd": 0.6,
+      "dropout": "independent per arm/repetition; complete task-arm means used; no outcome-dependent missingness simulated",
+      "trigger": "pooled first-minus-second point estimate >= 0.10, separately for each declared contrast",
+      "target_probability": 0.8,
+      "cheap_stack_margin_trigger": "For hypothetical B-E or C-E advantage on the risk-difference grid, pooled rival-minus-E estimate <= 0.10; descriptive one-metric point screen only.",
+      "unmodeled": [
+        "B reuses A generation output; generation/reviewer and shared-arm dependence",
+        "the time gap, harness difference and non-randomized allocation of a cross-campaign arm C reference",
+        "joint five-metric primary-plus-ITT E-versus-B and E-versus-C sufficiency decisions",
+        "outcome-dependent fidelity or missingness",
+        "token and elapsed-time variance, cost thresholds and quality per 100k tokens"
+      ],
+      "sign_flip_alpha": 0.05,
+      "sign_flip_min_p": 0.25,
+      "sign_flip_80_percent_mde": null,
+      "sign_flip_limitation": "With 3 model clusters the minimum two-sided exact sign-flip p is 0.25; alpha .05 detection is impossible for every effect.",
+      "scenarios": [
+        {
+          "baseline": 0.5,
+          "fidelity": 1.0,
+          "rows": [
+            {
+              "risk_difference": 0.0,
+              "trigger_probability": 0.086,
+              "monte_carlo_se": 0.0063,
+              "cheap_stack_within_margin_probability": 0.914,
+              "within_margin_monte_carlo_se": 0.0063
+            },
+            {
+              "risk_difference": 0.05,
+              "trigger_probability": 0.256,
+              "monte_carlo_se": 0.0098,
+              "cheap_stack_within_margin_probability": 0.744,
+              "within_margin_monte_carlo_se": 0.0098
+            },
+            {
+              "risk_difference": 0.1,
+              "trigger_probability": 0.491,
+              "monte_carlo_se": 0.0112,
+              "cheap_stack_within_margin_probability": 0.509,
+              "within_margin_monte_carlo_se": 0.0112
+            },
+            {
+              "risk_difference": 0.15,
+              "trigger_probability": 0.7155,
+              "monte_carlo_se": 0.0101,
+              "cheap_stack_within_margin_probability": 0.2845,
+              "within_margin_monte_carlo_se": 0.0101
+            },
+            {
+              "risk_difference": 0.2,
+              "trigger_probability": 0.889,
+              "monte_carlo_se": 0.007,
+              "cheap_stack_within_margin_probability": 0.111,
+              "within_margin_monte_carlo_se": 0.007
+            },
+            {
+              "risk_difference": 0.25,
+              "trigger_probability": 0.9745,
+              "monte_carlo_se": 0.0035,
+              "cheap_stack_within_margin_probability": 0.0255,
+              "within_margin_monte_carlo_se": 0.0035
+            },
+            {
+              "risk_difference": 0.3,
+              "trigger_probability": 0.993,
+              "monte_carlo_se": 0.0019,
+              "cheap_stack_within_margin_probability": 0.007,
+              "within_margin_monte_carlo_se": 0.0019
+            }
+          ],
+          "descriptive_80_percent_mde_on_grid": 0.2,
+          "null_false_trigger_probability": 0.086
+        },
+        {
+          "baseline": 0.5,
+          "fidelity": 0.75,
+          "rows": [
+            {
+              "risk_difference": 0.0,
+              "trigger_probability": 0.162,
+              "monte_carlo_se": 0.0082,
+              "cheap_stack_within_margin_probability": 0.8385,
+              "within_margin_monte_carlo_se": 0.0082
+            },
+            {
+              "risk_difference": 0.05,
+              "trigger_probability": 0.298,
+              "monte_carlo_se": 0.0102,
+              "cheap_stack_within_margin_probability": 0.702,
+              "within_margin_monte_carlo_se": 0.0102
+            },
+            {
+              "risk_difference": 0.1,
+              "trigger_probability": 0.503,
+              "monte_carlo_se": 0.0112,
+              "cheap_stack_within_margin_probability": 0.497,
+              "within_margin_monte_carlo_se": 0.0112
+            },
+            {
+              "risk_difference": 0.15,
+              "trigger_probability": 0.7215,
+              "monte_carlo_se": 0.01,
+              "cheap_stack_within_margin_probability": 0.279,
+              "within_margin_monte_carlo_se": 0.01
+            },
+            {
+              "risk_difference": 0.2,
+              "trigger_probability": 0.849,
+              "monte_carlo_se": 0.008,
+              "cheap_stack_within_margin_probability": 0.1515,
+              "within_margin_monte_carlo_se": 0.008
+            },
+            {
+              "risk_difference": 0.25,
+              "trigger_probability": 0.9455,
+              "monte_carlo_se": 0.0051,
+              "cheap_stack_within_margin_probability": 0.0545,
+              "within_margin_monte_carlo_se": 0.0051
+            },
+            {
+              "risk_difference": 0.3,
+              "trigger_probability": 0.986,
+              "monte_carlo_se": 0.0026,
+              "cheap_stack_within_margin_probability": 0.014,
+              "within_margin_monte_carlo_se": 0.0026
+            }
+          ],
+          "descriptive_80_percent_mde_on_grid": 0.2,
+          "null_false_trigger_probability": 0.162
+        },
+        {
+          "baseline": 0.7,
+          "fidelity": 1.0,
+          "rows": [
+            {
+              "risk_difference": 0.0,
+              "trigger_probability": 0.0715,
+              "monte_carlo_se": 0.0058,
+              "cheap_stack_within_margin_probability": 0.9285,
+              "within_margin_monte_carlo_se": 0.0058
+            },
+            {
+              "risk_difference": 0.05,
+              "trigger_probability": 0.222,
+              "monte_carlo_se": 0.0093,
+              "cheap_stack_within_margin_probability": 0.778,
+              "within_margin_monte_carlo_se": 0.0093
+            },
+            {
+              "risk_difference": 0.1,
+              "trigger_probability": 0.4705,
+              "monte_carlo_se": 0.0112,
+              "cheap_stack_within_margin_probability": 0.5295,
+              "within_margin_monte_carlo_se": 0.0112
+            },
+            {
+              "risk_difference": 0.15,
+              "trigger_probability": 0.762,
+              "monte_carlo_se": 0.0095,
+              "cheap_stack_within_margin_probability": 0.238,
+              "within_margin_monte_carlo_se": 0.0095
+            },
+            {
+              "risk_difference": 0.2,
+              "trigger_probability": 0.918,
+              "monte_carlo_se": 0.0061,
+              "cheap_stack_within_margin_probability": 0.082,
+              "within_margin_monte_carlo_se": 0.0061
+            },
+            {
+              "risk_difference": 0.25,
+              "trigger_probability": 0.981,
+              "monte_carlo_se": 0.0031,
+              "cheap_stack_within_margin_probability": 0.019,
+              "within_margin_monte_carlo_se": 0.0031
+            },
+            {
+              "risk_difference": 0.3,
+              "trigger_probability": 0.998,
+              "monte_carlo_se": 0.001,
+              "cheap_stack_within_margin_probability": 0.002,
+              "within_margin_monte_carlo_se": 0.001
+            }
+          ],
+          "descriptive_80_percent_mde_on_grid": 0.2,
+          "null_false_trigger_probability": 0.0715
+        },
+        {
+          "baseline": 0.7,
+          "fidelity": 0.75,
+          "rows": [
+            {
+              "risk_difference": 0.0,
+              "trigger_probability": 0.147,
+              "monte_carlo_se": 0.0079,
+              "cheap_stack_within_margin_probability": 0.853,
+              "within_margin_monte_carlo_se": 0.0079
+            },
+            {
+              "risk_difference": 0.05,
+              "trigger_probability": 0.3045,
+              "monte_carlo_se": 0.0103,
+              "cheap_stack_within_margin_probability": 0.6955,
+              "within_margin_monte_carlo_se": 0.0103
+            },
+            {
+              "risk_difference": 0.1,
+              "trigger_probability": 0.522,
+              "monte_carlo_se": 0.0112,
+              "cheap_stack_within_margin_probability": 0.4795,
+              "within_margin_monte_carlo_se": 0.0112
+            },
+            {
+              "risk_difference": 0.15,
+              "trigger_probability": 0.716,
+              "monte_carlo_se": 0.0101,
+              "cheap_stack_within_margin_probability": 0.284,
+              "within_margin_monte_carlo_se": 0.0101
+            },
+            {
+              "risk_difference": 0.2,
+              "trigger_probability": 0.8845,
+              "monte_carlo_se": 0.0071,
+              "cheap_stack_within_margin_probability": 0.116,
+              "within_margin_monte_carlo_se": 0.0072
+            },
+            {
+              "risk_difference": 0.25,
+              "trigger_probability": 0.9675,
+              "monte_carlo_se": 0.004,
+              "cheap_stack_within_margin_probability": 0.0325,
+              "within_margin_monte_carlo_se": 0.004
+            },
+            {
+              "risk_difference": 0.3,
+              "trigger_probability": 0.9955,
+              "monte_carlo_se": 0.0015,
+              "cheap_stack_within_margin_probability": 0.0045,
+              "within_margin_monte_carlo_se": 0.0015
+            }
+          ],
+          "descriptive_80_percent_mde_on_grid": 0.2,
+          "null_false_trigger_probability": 0.147
+        },
+        {
+          "baseline": 0.9,
+          "fidelity": 1.0,
+          "rows": [
+            {
+              "risk_difference": 0.0,
+              "trigger_probability": 0.021,
+              "monte_carlo_se": 0.0032,
+              "cheap_stack_within_margin_probability": 0.979,
+              "within_margin_monte_carlo_se": 0.0032
+            },
+            {
+              "risk_difference": 0.05,
+              "trigger_probability": 0.1005,
+              "monte_carlo_se": 0.0067,
+              "cheap_stack_within_margin_probability": 0.8995,
+              "within_margin_monte_carlo_se": 0.0067
+            },
+            {
+              "risk_difference": 0.1,
+              "trigger_probability": 0.409,
+              "monte_carlo_se": 0.011,
+              "cheap_stack_within_margin_probability": 0.591,
+              "within_margin_monte_carlo_se": 0.011
+            }
+          ],
+          "descriptive_80_percent_mde_on_grid": null,
+          "null_false_trigger_probability": 0.021
+        },
+        {
+          "baseline": 0.9,
+          "fidelity": 0.75,
+          "rows": [
+            {
+              "risk_difference": 0.0,
+              "trigger_probability": 0.04,
+              "monte_carlo_se": 0.0044,
+              "cheap_stack_within_margin_probability": 0.96,
+              "within_margin_monte_carlo_se": 0.0044
+            },
+            {
+              "risk_difference": 0.05,
+              "trigger_probability": 0.178,
+              "monte_carlo_se": 0.0086,
+              "cheap_stack_within_margin_probability": 0.822,
+              "within_margin_monte_carlo_se": 0.0086
+            },
+            {
+              "risk_difference": 0.1,
+              "trigger_probability": 0.457,
+              "monte_carlo_se": 0.0111,
+              "cheap_stack_within_margin_probability": 0.5435,
+              "within_margin_monte_carlo_se": 0.0111
+            }
+          ],
+          "descriptive_80_percent_mde_on_grid": null,
+          "null_false_trigger_probability": 0.04
+        }
+      ]
+    }
+  }
+}

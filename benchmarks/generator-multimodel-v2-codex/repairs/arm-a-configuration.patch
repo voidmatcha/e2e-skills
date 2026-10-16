@@ -1,0 +1,528 @@
+--- a/benchmarks/generator-multimodel-v2-codex/README.md
++++ b/benchmarks/generator-multimodel-v2-codex/README.md
+@@ -11,11 +11,11 @@
+ | Change | v1 | v2 | Why (diagnosis, partly verified) |
+ |---|---|---|---|
+ | Adapter, all arms | `codex exec --ephemeral ...` | no `--ephemeral` | With `multi_agent_version v2` a spawned agent forks the parent rollout; an ephemeral parent has none (`no rollout found`). Not re-observed by me. |
+-| Adapter, arm A only | the `playwright-test` MCP server exists only inside the role TOML | five `-c mcp_servers.playwright-test.*` overrides (`npx playwright run-test-mcp-server`, `PLAYWRIGHT_BROWSERS_PATH`, `HOME`) | A v2 `spawn_agent` cannot select a custom role, so the role-scoped server is unreachable. The same server and command are declared session-wide. The pinned role's 19-tool generator/browser `enabled_tools` allowlist is carried session-wide and the session sandbox requests `read-only` for the parent and generating child (see Arm A fidelity). |
++| Adapter, arm A only | the `playwright-test` MCP server exists only inside the role TOML | six `-c mcp_servers.playwright-test.*` overrides (`npx playwright run-test-mcp-server`, `PLAYWRIGHT_BROWSERS_PATH`, `HOME`) | A v2 `spawn_agent` cannot select a custom role, so the role-scoped server is unreachable. The same server and command are declared session-wide. The pinned role's 19-tool generator/browser `enabled_tools` allowlist is carried session-wide and the container supplies isolation, the shell sandbox is `danger-full-access`, and server tool approvals use `approve` (see Arm A fidelity). |
+ | Arm A prompt line | "spawn it as a native agent" named `playwright_test_generator` | spawn a generic native agent, give it the generator TOML as instructions, MCP server already configured session-wide | Stored v1 transcripts: astra 12 of 12 "cannot select the custom playwright_test_generator agent or load its MCP tools"; sol 9 of 12 blocked (8 "tools unavailable", 1 failed to spawn). |
+ | Arm C line | forbids writes outside `tests/` | adds one sentence approving scratch and guard-config files outside the project (for example under `/tmp`) | The skill asks for a guard config outside the worktree, which the frame forbade. |
+ 
+-The compat adapter is `scripts/evals/generator_codex_official_adapter_compat.py`; the frozen adapter file is untouched and stays bound by the v1 freeze. Offline argv tests compare the compat adapter with the frozen adapter: removal of `--ephemeral`, per-cell sessions persistence, and arm A's MCP configuration, 19-tool allowlist and read-only sandbox. Arms B and C retain their existing sandbox.
++The compat adapter is `scripts/evals/generator_codex_official_adapter_compat.py`; the frozen adapter file is untouched and stays bound by the v1 freeze. Offline argv tests compare the compat adapter with the frozen adapter: removal of `--ephemeral`, per-cell sessions persistence, and arm A's MCP configuration, 19-tool allowlist, working shell and explicit server approvals. Arms B and C retain their existing sandbox.
+ 
+ Verified for this protocol: the host's Codex model cache lists `multi_agent_version v2` for gpt-6.1-sol, gpt-6-astra, gpt-6-sol, gpt-6-luna, gpt-5.6-sol and gpt-5.6-terra and `v1` for gpt-5.6-luna; the stored transcripts contain the refusals above; one or two compat-diag runs each produced specs on astra and sol. Not verified: that the compat changes, rather than run-to-run variation, caused those specs (no control run), and the container's own bundled catalog (the host cache was read).
+ 
+@@ -42,9 +42,11 @@
+ python3 scripts/evals/run-generator-multimodel-v2-codex.py harness-check --allow-live [--model gpt-6-sol]   # exit 0 pass, 5 not a pass
+ ```
+ 
+-`preflight` runs this check first (before its first entry call) and exits 5 without any entry call if it does not pass; `drive` refuses without a pass bound to the freeze. The diagnostic uses session-wide `playwright-test`, persisted sessions and read-only sandbox with a separate `test_list`-only allowlist (it is not an arm-A generator call) on the unscheduled task `v2-01`: the parent must spawn exactly one native agent whose only job is one `test_list` call of the `playwright-test` server (no browser, no file written), wait for it and stop. It passes only if all of these hold: the call succeeded; sessions were persisted; the parent's rollout was identified; the persistence census is clean; every unique spawned thread ID in the parent stream and all descendants has a persisted rollout with the expected parent relationship; a child rollout whose parent chain leads to it was found; that child rollout holds a completed `playwright-test.test_list` call; every child rollout has token usage. `inconclusive` means the model did not spawn a child or the child made no call (model behaviour; rerun with another `--model`); `aborted` means an infrastructure outcome (rate limit, schema error, container error) that says nothing about persistence: rerun when healthy; `fail` means persistence or parsing is broken (including a spawn the parent stream shows as completed with no persisted child rollout, or a persistence census with skipped or errored files) and the freeze must not be relied on. It also records, informationally, that the parent stream is blind to the child and whether the parent's reported usage equals its own rollout total (a hint that child tokens are additive). The result is kept in `_entry/harness-check.json`, bound to the freeze, and is never data.
++`preflight` runs this check first and exits 5 without entry calls unless it passes; `drive` refuses without a passing check bound to the freeze. The diagnostic uses the same session-wide `playwright-test` configuration as arm A: the exact 19 generator/browser tools, `danger-full-access` shell sandbox, `approval_policy="never"` and `mcp_servers.playwright-test.default_tools_approval_mode="approve"`. The container supplies isolation (cap-drop, no-new-privileges, read-only root, tmpfs and scoped bind mounts). Its staged seed opens `about:blank` and its config has no app server. One child must successfully run `ls specs/plan.md`, call `generator_setup_page` with the staged plan and seed, then call the mutating-class `browser_navigate` to `about:blank`. This harmless navigation checks the approval path without an app server.
+ 
+-Open live items besides this check: that Codex accepts the arm-A allowlist and sandbox overrides; that the generating child inherits read-only, cannot use direct shell writes, sees no planner/healer MCP tools and can deliver through `generator_write_test`; that `reuseExistingServer: true` removes the port conflict for Codex arm A (read the first preflight cells for a parent `playwright test` result without the "is already used" error); that bind-mounting a host directory works under the container runtime in use (the symlinked `/sessions-out` mount is the thing the check exercises).
++All recorded criteria must pass: call success, persisted sessions, identified root, clean persistence census, reconciled spawned rollouts, a child with generator setup and usage, **child_shell_works**, and **child_mutating_mcp_ok**. Entry decisions record these criteria, and admission loading rejects legacy decisions lacking the two new checks. Successful read-only MCP calls alone cannot validate this configuration. A missing child/tool can be inconclusive; failed shell execution, denied mutating MCP calls or broken persistence fail the check. `aborted` means an infrastructure outcome. Check results are never data. The deterministic campaign order remains **freeze, harness-check, preflight, drive**.
++
++Live checks still needed: container Codex accepts the approval mode and allowlist; child inheritance; planner/healer invisibility; successful `generator_write_test` delivery; parent Playwright verification without bwrap or port conflicts; and complete session persistence and child-token accounting.
+ 
+ ## Cost endpoints (pre-declared, descriptive)
+ 
+@@ -75,7 +77,9 @@
+ 
+ **The `// spec:` and `// seed:` headers are not evidence.** `generator_write_test` writes the model's `code` argument verbatim (playwright 1.62.0 `lib/mcp/test/generatorTools.js`); the headers come from the agent definition's example, so a model following the definition by hand writes them too. Checked on the stored gpt-5.5 pilot cells: 5 of the 6 cells whose child said the tools were not exposed carry both headers (11 of 12 A cells carry them). v1's `official_signature` column and its comment ("first-party generator_write_test output carries ...") overstate fidelity; the v1 files are not edited and the column is kept here only as a labelled non-discriminating proxy.
+ 
+-**Arm A carries the official generator role restrictions as far as the Codex configuration allows (approved 2026-10-15).** The pinned generator definition supplies 19 `playwright-test` generator/browser tools; the compat adapter restricts the session's MCP `enabled_tools` to that exact list and requests `sandbox_mode = read-only`. A generic generating child inherits the session configuration because the v2 spawn tool cannot select the custom role. The parent shares the read-only sandbox; native tools remain for reads and delegation, while specs are written through `generator_write_test`. The diagnostic `harness-check` instead exposes only `test_list`. Offline argv tests prove the requested configuration, not live acceptance or enforcement: before relying on arm A, verify child inheritance, denied direct shell writes, planner/healer tool invisibility and successful `generator_write_test` delivery. `generator_write_test` writes `code` verbatim, so headers cannot prove authorship; `official-tool` still means observed generator MCP use.
++**Arm A configuration correction (approved 2026-10-15) preserves the official generator's 19-tool MCP allowlist.** The generic generating child inherits the session configuration because the v2 spawn tool cannot select the custom role. Shell execution uses `danger-full-access` inside the isolation container. Session-wide `playwright-test` calls are explicitly pre-approved with `default_tools_approval_mode="approve"`; `approval_policy="never"` remains explicit. Specs must still be written through `generator_write_test`, and planner/healer tools remain excluded. Offline argv and parser probes establish requested configuration, not live acceptance or inheritance.
++
++**First campaign attempt invalidation (harness defect).** Our `read-only` sandbox caused every arm-A cell's shell commands to fail with a bwrap namespace error, and our approval configuration denied mutating MCP browser calls. This crippled arm A and its admission checks. Arm A and dependent arm B results for gpt-6-sol, gpt-6-luna and partial gpt-5.6-terra in `~/.cache/e2e-skills-bench/multimodel-v2-codex` are **INVALID**. Arm C results remain valid for that attempt, but are **not carried forward**: the corrected protocol reruns every arm and every entry decision. The broken configuration's freeze is retired, never reused. No corrected freeze or live result was created in this offline repair.
+ 
+ The classifier, run read-only over stored cells: gpt-5.5 pilot A cells 6 `manual-follow` (all six "not exposed" cells) and 6 `unverified` (absence of a denial is not evidence of use); gpt-6-sol A cells 3 `official-tool` (parent: "the agent confirmed the approved Playwright generator tools are working", one with 33 `.playwright-mcp/` files) and 9 `blocked`; gpt-6-astra 12 `blocked`; the compat-diag astra run `official-tool` (20 `.playwright-mcp/` files, "browser setup succeeded"). One compat-diag sol run classifies `unverified` although its summary describes the generator's browser session (the parent deleted the snapshot files first): the primary view is conservative and can drop genuine cells. The first regular expressions were written after reading only those transcripts. A review found that they accepted negations ("was not working", "isn't available", "never called") and plan narration ("ask it to write via `generator_write_test`") as affirmation; the revised patterns judge sentence by sentence with negation and intent guards, no longer accept "via/through <tool>", and the test suite carries those sentences as negative controls. They are still tuned on a small stored sample and not validated on unseen transcripts.
+ 
+@@ -132,7 +136,7 @@
+ 
+ ## Limitations
+ 
+-Six task clusters and four repetitions per arm and model; the same synthetic fixtures. The classifier needs positive evidence and under-counts genuine runs. Under multi_agent v2 the child's tool calls are not in the parent stream; the persisted child rollouts are the primary fidelity signal now, but the rollout schema was read from host Codex CLI 0.157 to 0.159 rollouts and the persistence mount has never run live, so until the live check passes fidelity is inferred, not observed. Arm A is a generic native agent following the generator definition with the server session-wide, not the role-scoped agent v1 asked for, and it requests the role's read-only sandbox and 19-tool generator/browser allowlist; live acceptance and child inheritance remain unverified. The host catalog lists `multi_agent_reasoning_effort` xhigh for gpt-6.1-sol and gpt-6-astra while every cell runs at medium; whether a spawned child inherits that setting was not verified, so arm A's child may run at a different effort than arm C's parent for those two models. The compat flags also change arm B's command line. The generation-phase config (reuseExistingServer true) differs from the scoring config (false) by design; it changes what every arm's model observes when it runs its own tests, not the arms' relative treatment. The as_treated view and the fidelity tables select on post-randomisation behaviour (per-protocol); step detection is textual and reads the parent stream only (a command run by a spawned agent, for example a reviewer child running the scanner, is not seen); the scanner step counts an executed `scan.sh` (a bash/sh invocation or a direct run), the looser mention count is kept beside it. The headline metric is, empirically, a selector-hygiene indicator; the secondary refactor classes that would separate hygiene from robustness are not built. The cross-model rule remains descriptive and now exceeds the earlier 1% simulated false-agreement target; threshold recalibration remains an owner decision. A systematic harness difference between arms on these six fixtures looks like an effect to any cross-model rule. Models run on different days and loads; model ids are provenance. Before writing this protocol the authors read the stored cells of gpt-5.5 (pilots), gpt-6-sol, gpt-6-astra, claude-sonnet-5-5 and the compat-diag runs, and no other v1 model.
++Six task clusters and four repetitions per arm and model; the same synthetic fixtures. The classifier needs positive evidence and under-counts genuine runs. Under multi_agent v2 the child's tool calls are not in the parent stream; the persisted child rollouts are the primary fidelity signal now, but the rollout schema was read from host Codex CLI 0.157 to 0.159 rollouts and the persistence mount has never run live, so until the live check passes fidelity is inferred, not observed. Arm A is a generic native agent following the generator definition with the server session-wide, not the role-scoped agent v1 asked for, and it preserves the 19-tool generator/browser allowlist while using the container as its isolation boundary and explicitly approving that server's tools; live acceptance and child inheritance remain unverified. The host catalog lists `multi_agent_reasoning_effort` xhigh for gpt-6.1-sol and gpt-6-astra while every cell runs at medium; whether a spawned child inherits that setting was not verified, so arm A's child may run at a different effort than arm C's parent for those two models. The compat flags also change arm B's command line. The generation-phase config (reuseExistingServer true) differs from the scoring config (false) by design; it changes what every arm's model observes when it runs its own tests, not the arms' relative treatment. The as_treated view and the fidelity tables select on post-randomisation behaviour (per-protocol); step detection is textual and reads the parent stream only (a command run by a spawned agent, for example a reviewer child running the scanner, is not seen); the scanner step counts an executed `scan.sh` (a bash/sh invocation or a direct run), the looser mention count is kept beside it. The headline metric is, empirically, a selector-hygiene indicator; the secondary refactor classes that would separate hygiene from robustness are not built. The cross-model rule remains descriptive and now exceeds the earlier 1% simulated false-agreement target; threshold recalibration remains an owner decision. A systematic harness difference between arms on these six fixtures looks like an effect to any cross-model rule. Models run on different days and loads; model ids are provenance. Before writing this protocol the authors read the stored cells of gpt-5.5 (pilots), gpt-6-sol, gpt-6-astra, claude-sonnet-5-5 and the compat-diag runs, and no other v1 model.
+ 
+ ## Results
+ 
+--- a/benchmarks/generator-multimodel-v2-codex/protocol.json
++++ b/benchmarks/generator-multimodel-v2-codex/protocol.json
+@@ -53,8 +53,8 @@
+   "adapter_flags": {
+    "file": "scripts/evals/generator_codex_official_adapter_compat.py (separate file; the frozen generator_codex_official_adapter.py is untouched and stays bound by the v1 freeze)",
+    "removed_all_arms": "--ephemeral. Diagnosis: with multi_agent_version v2 a spawned agent forks the parent rollout, and an ephemeral parent has none ('no rollout found').",
+-   "added_arm_a_only": "Session-wide playwright-test MCP command, args, PLAYWRIGHT_BROWSERS_PATH and HOME; enabled_tools restricted to the 19 generator/browser tools in the pinned official generator definition; read-only session sandbox so the generating generic child inherits the official role restriction as far as Codex configuration allows. Native tools remain available for delegation and reads. Configuration acceptance, child inheritance, denied direct writes and hidden planner/healer tools require a live check. Approved 2026-10-15.",
+-   "identical_otherwise": "Arms B and C retain the frozen argv apart from removal of --ephemeral and per-cell sessions persistence. Arm A additionally sets the generator-only MCP allowlist and read-only sandbox; offline argv tests verify the differences.",
++   "added_arm_a_only": "Arm A retains the exact 19 generator/browser enabled_tools session-wide. The container is the isolation boundary; danger-full-access provides a working shell and playwright-test.default_tools_approval_mode approve bypasses tool prompts while approval_policy never remains explicit. Specs use generator_write_test; planner/healer tools are excluded. Live acceptance and child inheritance must pass the corrected harness check.",
++   "identical_otherwise": "B/C retain the frozen argv except removal of --ephemeral and session persistence. Arm A adds its exact tool allowlist and explicit server approvals, using the existing danger-full-access sandbox.",
+    "added_all_arms_sessions": "A per-call host directory is bind-mounted at /sessions-out and symlinked as $CODEX_HOME/sessions (one extra `ln -s` line in the container script, a symlink rather than a nested mount so that no root-owned directory is created inside the /codex-home tmpfs). After the container is removed its rollouts are copied, sanitised like the transcript, to <model dir>/codex-sessions/<transcript stem>/. Same for every arm. The argv helper without a sessions argument is unchanged, which the offline test diffs against the frozen adapter."
+   },
+   "arm_a_prompt_line": {
+@@ -188,7 +188,11 @@
+   "data_status": "Preflight calls are never data: they are not scored, not analysed and not counted in any cell or N. Nothing is tuned on them.",
+   "undecided": "A model whose preflight was interrupted by infrastructure before it has an admitting attempt or 2 real attempts is UNDECIDED: no decision file is written, the command exits 4, and the owner reruns it when the infrastructure is healthy. Infrastructure outages therefore never exclude a model. drive refuses to start while any roster model is undecided.",
+   "go_no_go": "After the preflights, drive proceeds only if at least 4 models (decision.cross_model.min_models) over both lineages are admitted. Otherwise no cross-model verdict is possible and drive refuses unless the owner passes --descriptive-only, which runs the admitted models for per-model descriptive results only.",
+-  "live_check_first": "preflight runs the harness live check (harness_fixes.H3_child_agents.live_check) before its first entry call and exits 5 without any entry call if it is not a pass; a pass is kept in _entry/harness-check.json bound to the freeze and is not repeated. Exit codes: 0 decided, 4 undecided (infrastructure), 5 harness check not passed."
++  "live_check_first": "preflight runs the harness live check (harness_fixes.H3_child_agents.live_check) before its first entry call and exits 5 without any entry call if it is not a pass; a pass is kept in _entry/harness-check.json bound to the freeze and is not repeated. Exit codes: 0 decided, 4 undecided (infrastructure), 5 harness check not passed.",
++  "harness_admission_criteria": [
++   "child_shell_works",
++   "child_mutating_mcp_ok"
++  ]
+  },
+  "fidelity": {
+   "scope": "Arm A cells of every model; arm B cells inherit the class of their source arm A cell; arm C is not classified.",
+@@ -209,7 +213,7 @@
+    "load_clean": "Sensitivity: primary without cells whose load_at_start is above 40.",
+    "as_treated": "Sensitivity next to every primary label: arm A cells of class official-tool; arm B cells whose source A cell is official-tool and whose reviewer call read the e2e-reviewer SKILL.md and ran the scanner; arm C cells with treated_core (see fidelity.treatment). Aborted cells removed."
+   },
+-  "role_differences": "The pinned official generator definition restricts playwright-test to 19 generator/browser tools and sets sandbox_mode read-only. Compat arm A carries that allowlist session-wide and requests the read-only sandbox for both the parent and its generic generating child because the v2 spawn interface cannot select the custom role. The child follows the generator definition and writes through generator_write_test; planner/healer MCP tools are excluded. Configuration acceptance, generic-child inheritance and direct-write denial are unverified offline. generator_write_test writes code verbatim, so authorship is not recovered from headers; official-tool still means observed generator MCP use, never proof of authorship.",
++  "role_differences": "Arm A retains the exact 19 generator/browser enabled_tools session-wide. The container is the isolation boundary; danger-full-access provides a working shell and playwright-test.default_tools_approval_mode approve bypasses tool prompts while approval_policy never remains explicit. Specs use generator_write_test; planner/healer tools are excluded. Live acceptance and child inheritance must pass the corrected harness check.",
+   "known_false_positives": "A message that affirms the tools in wording the guards do not recognise as negated or intended can still classify a cell as official-tool on message evidence alone (the entry rule is stricter: hard evidence only).",
+   "treatment": {
+    "purpose": "Treatment fidelity differs strongly by model (v1: gpt-5.5 arm C all key steps 10/12, gpt-6-sol 5/12, sonnet 0/12), so every per-model contrast is read with a fidelity table and an as-treated sensitivity, both defined here in advance.",
+@@ -303,7 +307,7 @@
+  "limits": [
+   "6 tasks x 4 repetitions per arm per model: tiny. The 6 tasks are the v1 synthetic fixtures with author-written faults.",
+   "The classifier is conservative by construction: official-tool needs positive evidence, and some genuine official runs classify as unverified. The primary view can therefore drop genuine cells; the upper view is the other bound.",
+-  "The pinned official generator definition restricts playwright-test to 19 generator/browser tools and sets sandbox_mode read-only. Compat arm A carries that allowlist session-wide and requests the read-only sandbox for both the parent and its generic generating child because the v2 spawn interface cannot select the custom role. The child follows the generator definition and writes through generator_write_test; planner/healer MCP tools are excluded. Configuration acceptance, generic-child inheritance and direct-write denial are unverified offline. generator_write_test writes code verbatim, so authorship is not recovered from headers; official-tool still means observed generator MCP use, never proof of authorship.",
++  "Arm A retains the exact 19 generator/browser enabled_tools session-wide. The container is the isolation boundary; danger-full-access provides a working shell and playwright-test.default_tools_approval_mode approve bypasses tool prompts while approval_policy never remains explicit. Specs use generator_write_test; planner/healer tools are excluded. Live acceptance and child inheritance must pass the corrected harness check.",
+   "The compat adapter changes arm B's flags too (no --ephemeral); the effect on B is not separated.",
+   "Child-agent tool calls are not in the parent's JSON event stream under multi_agent v2. The adapter now persists each cell's CODEX_HOME sessions and the classifier reads the child rollouts as its primary signal, but the rollout schema was read from host Codex CLI 0.157 to 0.159 rollouts, not from the container's build, and the persistence mount has never run live: until the harness live check passes, fidelity is inferred, not observed. Whether child token usage is additive to the parent's reported usage is a hint from the live check, not a verified fact.",
+   "The cross-model rule has low power by design of the per-model sign rule (see justification); 'not consistent' is not evidence of no effect.",
+@@ -5150,7 +5154,7 @@
+    "schema_basis": "Rollout structure read from Codex CLI 0.157 to 0.159 rollouts on the host (types and keys only). The container's Codex build may differ; this is what the live check settles.",
+    "live_check": {
+     "name": "harness live check (command: harness-check --allow-live [--model <id>]; preflight runs it first and refuses to run any entry call until it passes; drive refuses without a pass bound to the freeze)",
+-    "call": "One arm-A-shaped call (playwright-test MCP server declared session-wide, sessions persisted) on the unscheduled task v2-01 with a dedicated prompt: spawn exactly one native agent whose only job is one `test_list` call of the playwright-test server (no browser, no file written, per playwright 1.62.0 lib/mcp/test/testTools.js), wait, finish with status `other`. Timeout 420 s, one call.",
++    "call": "One arm-A-configured call with the exact generator allowlist, danger-full-access and playwright-test default_tools_approval_mode approve. One child runs ls specs/plan.md, generator_setup_page on the staged about:blank seed, and browser_navigate to about:blank. No app server or spec write; timeout 420 seconds.",
+     "pass_requires_all_of": [
+      "call_ok (no infrastructure error or timeout, transcript present)",
+      "sessions_persisted (at least one rollout copied)",
+@@ -5158,19 +5162,21 @@
+      "persistence_census_clean (no skipped or errored file in the cell's persistence census)",
+      "child_rollout_found (a rollout whose parent chain leads to the root)",
+      "spawns_have_rollouts (unique spawn IDs in the parent and all descendants match persisted parent relationships; unknown identities and duplicate thread rollouts fail)",
+-     "child_called_test_list (a completed playwright-test.test_list call in a child rollout)",
+-     "child_token_usage_present (child usage total above 0 in every child rollout)"
++     "child_called_generator_setup_page (a completed playwright-test.generator_setup_page call in a child rollout)",
++     "child_token_usage_present (child usage total above 0 in every child rollout)",
++     "child_shell_works (observed successful child shell command reading specs/plan.md)",
++     "child_mutating_mcp_ok (completed child playwright-test.browser_navigate call)"
+     ],
+-    "inconclusive": "Sessions persisted and the root found, but the model spawned no child, or the child made no test_list call: model behaviour, rerun with another model (--model). Not a statement about persistence.",
++    "inconclusive": "Model spawned no child or did not perform generator setup; retry the non-data check with another model. Observed shell or approval failures cannot pass.",
+     "aborted": "An infrastructure outcome (rate limit, output-schema error, container error): says nothing about persistence; rerun when healthy.",
+     "fail": "The call timed out, the sessions were not persisted, the root or child usage could not be parsed, the census has skipped or errored files, or the parent stream shows a completed spawn without a persisted child rollout: the harness is broken; do not rely on this freeze (delete freeze.json, fix, refreeze, rerun the check).",
+-    "order": "freeze first (every campaign live command needs freeze.json; the separate non-data smoke command does not and the result is bound to its digest), then harness-check, then preflight. If code must change after a failed check, delete freeze.json and refreeze; an earlier freeze's result is never reused.",
++    "order": "freeze, harness-check, preflight, drive. Retire the invalid first-attempt freeze; no prior check or entry decision is reused.",
+     "recorded_informational": [
+      "parent_stream_blind_to_child (no mcp_tool_call in the parent stream: confirms the premise)",
+      "parent_usage_matches_root_rollout (parent stream usage equals the parent's own rollout total: hints that child tokens are NOT folded into the parent usage, so the pipeline sums parent plus children; a mismatch must be read before cost totals are quoted)"
+     ],
+     "cost": "One short call of one model; the result is kept in _entry/harness-check.json bound to the freeze and is never data.",
+-    "role_check": "The diagnostic uses its own test_list-only MCP allowlist under read-only sandbox, not the generator allowlist. Before campaign reliance, verify the ordinary arm-A allowlist is accepted, child sandbox inherits read-only, planner/healer tools are invisible, shell writes are denied and generator_write_test can deliver specs."
++    "role_check": "Exactly the arm-A 19-tool allowlist, danger-full-access shell and session-wide playwright-test approval mode approve. Child shell and mutating MCP success are mandatory and recorded for entry admission; planner/healer remain excluded."
+    },
+    "approval": "approved 2026-10-15: per-cell CODEX_HOME sessions persistence is the primary arm-A fidelity signal and the source of child token usage; message/artifact evidence remains secondary."
+   },
+@@ -5302,5 +5308,28 @@
+   ],
+   "analysis": "Never scored, never imported by analyze or summary; non-data schema and markers refuse benchmark ingestion. Does not satisfy freeze-bound harness-check or entry decisions.",
+   "execution_status": "not run in the offline build; no freeze created."
++ },
++ "first_attempt_invalidation": {
++  "reason": "Harness defect: read-only shell sandbox failed with bwrap namespace errors and approval never denied mutating MCP tools.",
++  "models": [
++   "gpt-6-sol",
++   "gpt-6-luna",
++   "gpt-5.6-terra (partial)"
++  ],
++  "arm_a": "INVALID",
++  "arm_b": "INVALID (dependent on arm A)",
++  "arm_c": "valid for first attempt; not carried forward",
++  "corrected_campaign": "rerun every arm, harness check and entry decision; no prior freeze/configuration dependence",
++  "results_location": "~/.cache/e2e-skills-bench/multimodel-v2-codex",
++  "offline_repair": "no freeze created; live configuration acceptance not verified"
++ },
++ "arm_a_execution": {
++  "sandbox_mode": "danger-full-access",
++  "approval_policy": "never",
++  "mcp_server": "playwright-test",
++  "default_tools_approval_mode": "approve",
++  "enabled_tools": "exact 19 official generator/browser tools",
++  "isolation": "container cap-drop ALL, no-new-privileges, read-only root, tmpfs and bind mounts",
++  "offline_configuration_evidence": "Codex CLI 0.159.3 help and binary RawMcpServerConfig/AppToolApproval strings; codex mcp get static config parse accepted approve, rejected invalid sentinel with enum auto/prompt/writes/approve; no MCP server or model executed."
+  }
+ }
+--- a/scripts/ci/test-generator-multimodel-v2-codex.py
++++ b/scripts/ci/test-generator-multimodel-v2-codex.py
+@@ -211,15 +211,15 @@
+         for arm in (B, C, None):
+             self.assertEqual(self.argv(arm), expected, arm)
+ 
+-    def test_arm_a_carries_generator_allowlist_and_read_only_sandbox(self):
++    def test_arm_a_carries_generator_allowlist_with_working_shell_and_approvals(self):
+         base = [x for x in self.frozen() if x != "--ephemeral"]
+         argv = self.argv(A)
+-        base[base.index("--sandbox") + 1] = "read-only"
++        base[base.index("--sandbox") + 1] = "danger-full-access"
+         tools = list(m.compat.GENERATOR_TOOLS)
+-        extra = [part for config in self.mcp + ["mcp_servers.playwright-test.enabled_tools=" + json.dumps(tools, separators=(",", ":"))] for part in ("-c", config)]
++        extra = [part for config in ['approval_policy="never"'] + self.mcp + ['mcp_servers.playwright-test.default_tools_approval_mode="approve"', "mcp_servers.playwright-test.enabled_tools=" + json.dumps(tools, separators=(",", ":"))] for part in ("-c", config)]
+         self.assertEqual(argv, base[:-1] + extra + ["-"])
+-        self.assertEqual(argv[argv.index("--sandbox") + 1], "read-only")
+-        self.assertNotIn("danger-full-access", argv)
++        self.assertEqual(argv[argv.index("--sandbox") + 1], "danger-full-access")
++        self.assertIn('mcp_servers.playwright-test.default_tools_approval_mode="approve"', argv)
+         self.assertEqual(tools, [
+             "browser_click", "browser_drag", "browser_evaluate", "browser_file_upload", "browser_handle_dialog",
+             "browser_hover", "browser_navigate", "browser_press_key", "browser_select_option", "browser_snapshot",
+@@ -230,7 +230,7 @@
+         self.assertTrue(all(t.startswith(("browser_", "generator_")) for t in tools))
+         self.assertFalse(set(tools) & {"test_list", "test_run", "test_debug", "planner_setup_page", "planner_save_plan"})
+         self.assertNotIn("--ephemeral", argv)
+-        for token in ("--strict-config", "--model", "gpt-6-sol", 'model_reasoning_effort="medium"', "read-only", "--output-schema"):
++        for token in ("--strict-config", "--model", "gpt-6-sol", 'model_reasoning_effort="medium"', "danger-full-access", "--output-schema"):
+             self.assertIn(token, argv)
+         self.assertEqual(argv[0:3], ["/usr/bin/docker", "--context", "colima"])
+         self.assertEqual(argv[-1], "-")
+--- a/scripts/ci/test-generator-v2-codex-harness-fixes.py
++++ b/scripts/ci/test-generator-v2-codex-harness-fixes.py
+@@ -429,11 +429,11 @@
+         self.assertEqual(compat.START_SESSIONS.replace("ln -s /sessions-out /codex-home/.codex/sessions\n", ""), compat.START)
+         self.assertEqual(frozen_adapter.START, compat.START)  # without the sessions argument the script is the frozen one
+         harness = compat.command(eng, "/w", "/p", "c1", "gpt-6-sol", compat.HARNESS_CHECK_ARM)
+-        self.assertEqual(sum("mcp_servers.playwright-test" in x for x in harness), 5)
++        self.assertEqual(sum("mcp_servers.playwright-test" in x for x in harness), 6)
+         configs = [harness[i + 1] for i, token in enumerate(harness[:-1]) if token == "-c"]
+         allow = next(c for c in configs if c.startswith("mcp_servers.playwright-test.enabled_tools="))
+-        self.assertEqual(json.loads(allow.split("=", 1)[1]), ["test_list"])
+-        self.assertEqual(harness[harness.index("--sandbox") + 1], "read-only")
++        self.assertEqual(json.loads(allow.split("=", 1)[1]), list(compat.GENERATOR_TOOLS))
++        self.assertEqual(harness[harness.index("--sandbox") + 1], "danger-full-access")
+         self.assertEqual(sum("mcp_servers" in x for x in compat.command(eng, "/w", "/p", "c1", "gpt-6-sol", C)), 0)
+         self.assertIn(compat.HARNESS_CHECK_ARM, m.arm_lines())
+         with tempfile.TemporaryDirectory() as tmp:
+@@ -622,7 +622,7 @@
+                       lambda d: rollout(d, 1, parent=UUIDS[0], tokens=(2, 0, 1), extra=function_result("test_list", output))]
+             result = self.evaluate(stream() + [spawn_item(UUIDS[1])], builds)
+             self.assertNotEqual(result["status"], "pass", output)
+-            self.assertFalse(result["criteria"]["child_called_test_list"], output)
++            self.assertFalse(result["criteria"]["child_called_generator_setup_page"], output)
+ 
+     def evaluate(self, events, rollouts, **rec):
+         with tempfile.TemporaryDirectory() as tmp:
+@@ -630,7 +630,7 @@
+             return m.evaluate_harness_check(arm_rec(**rec), tdir)
+ 
+     good = [lambda d: rollout(d, 0, tokens=(300, 200, 20)),
+-            lambda d: rollout(d, 1, parent=UUIDS[0], calls=[("playwright-test", "test_list", "completed")], tokens=(120, 0, 12))]
++            lambda d: rollout(d, 1, parent=UUIDS[0], calls=[("playwright-test", "generator_setup_page", "completed"), ("playwright-test", "browser_navigate", "completed")], tokens=(120, 0, 12), extra=[{"type":"event_msg","payload":{"type":"exec_command_end","command":["ls","specs/plan.md"],"exit_code":0}}])]
+ 
+     def test_pass_requires_every_criterion(self):
+         out = self.evaluate(stream(), self.good, usage={"input_tokens": 300, "cached_input_tokens": 200, "output_tokens": 20},
+@@ -639,7 +639,7 @@
+         self.assertTrue(all(out["criteria"][k] for k in m.HARNESS_REQUIRED))
+         self.assertTrue(out["info"]["parent_stream_blind_to_child"])
+         self.assertTrue(out["info"]["parent_usage_matches_root_rollout"])
+-        self.assertEqual((out["info"]["child_test_list_calls"], out["info"]["child_total_tokens"]), (1, 132))
++        self.assertEqual((out["info"]["child_generator_setup_page_calls"], out["info"]["child_total_tokens"]), (1, 132))
+ 
+     def test_inconclusive_when_no_child_or_no_call_and_fail_when_persistence_or_usage_is_broken(self):
+         no_child = self.evaluate(stream(), [lambda d: rollout(d, 0, tokens=(1, 0, 1))])
+@@ -668,6 +668,34 @@
+         self.assertEqual(self.evaluate(stream(), root_only, compliance={"sessions": skipped})["status"], "fail")  # not inconclusive either
+         ok = {"files": 2, "bytes": 1, "skipped": [], "dir": "t"}
+         self.assertEqual(self.evaluate(stream() + [spawn], self.good, compliance={"sessions": ok})["status"], "pass")
++
++    def test_child_shell_and_mutating_tool_success_are_both_required(self):
++        for shell_code, navigation in ((1, "completed"), (0, "failed"), (1, "failed")):
++            builds = [lambda d: rollout(d, 0, tokens=(1, 0, 1)),
++                      lambda d: rollout(d, 1, parent=UUIDS[0], tokens=(2, 0, 1),
++                        calls=[("playwright-test", "generator_setup_page", "completed"),
++                               ("playwright-test", "browser_navigate", navigation)],
++                        extra=[{"type": "event_msg", "payload": {"type": "exec_command_end",
++                            "command": ["ls", "specs/plan.md"], "exit_code": shell_code}}])]
++            check = self.evaluate(stream(), builds)
++            self.assertEqual(check["status"], "fail")
++            self.assertEqual(check["criteria"]["child_shell_works"], shell_code == 0)
++            self.assertEqual(check["criteria"]["child_mutating_mcp_ok"], navigation == "completed")
++
++    def test_parent_shell_success_does_not_validate_the_child(self):
++        shell = {"type": "event_msg", "payload": {"type": "exec_command_end", "command": ["ls", "specs/plan.md"], "exit_code": 0}}
++        builds = [lambda d: rollout(d, 0, tokens=(1, 0, 1), extra=[shell]),
++                  lambda d: rollout(d, 1, parent=UUIDS[0], tokens=(2, 0, 1), calls=[
++                    ("playwright-test", "generator_setup_page", "completed"), ("playwright-test", "browser_navigate", "completed")])]
++        self.assertFalse(self.evaluate(stream(), builds)["criteria"]["child_shell_works"])
++
++    def test_native_shell_output_needs_observed_success(self):
++        call = {"type":"response_item", "payload":{"type":"function_call", "name":"exec_command", "call_id":"shell", "arguments":'{"cmd":"ls specs/plan.md"}'}}
++        for output, success in (("Process exited with code 0\nspecs/plan.md", 1),
++                ("Process exited with code 1\nbwrap: No permissions to create a new namespace", 0),
++                ('{"exit_code":0,"output":"specs/plan.md"}', 1), ("I listed specs/plan.md successfully", 0)):
++            result = {"type":"response_item", "payload":{"type":"function_call_output", "call_id":"shell", "output":output}}
++            self.assertEqual(ev.successful_plan_shell([call,result]), success)
+ 
+     def test_result_is_bound_to_the_freeze_and_only_a_bound_pass_loads(self):
+         with tempfile.TemporaryDirectory() as tmp, memory_freeze(Path(tmp) / "freeze.json"), patch.object(m, "BASE", Path(tmp)):
+@@ -722,8 +750,8 @@
+                 m.drive(argparse.Namespace(allow_live=True, only=None, descriptive_only=False))
+ 
+     def test_the_check_prompt_and_command_are_cheap_and_bound(self):
+-        self.assertIn("test_list", m.HARNESS_CHECK_LINE)
+-        self.assertIn("do not create or edit any file", m.HARNESS_CHECK_LINE)
++        self.assertIn("browser_navigate", m.HARNESS_CHECK_LINE)
++        self.assertIn("Do not create or edit spec files", m.HARNESS_CHECK_LINE)
+         self.assertEqual(m.bindings()["harness_check_line"], m.orig.sha(m.HARNESS_CHECK_LINE))
+         with patch("subprocess.run", side_effect=AssertionError("executed")), patch("subprocess.Popen", side_effect=AssertionError("executed")):
+             with self.assertRaisesRegex(ValueError, "--allow-live"):
+@@ -764,7 +792,7 @@
+                                     calls=[("playwright-test", "test_list", "completed")])]
+         events = stream() + [spawn_item(UUIDS[1]), spawn_item(UUIDS[1])]
+         fid, tokens, check = self.observe(events, builds)
+-        self.assertEqual(check["status"], "pass")
++        self.assertEqual(check["status"], "inconclusive")
+         self.assertEqual(fid["evidence"]["primary_signal"], "rollout-absence")
+         self.assertTrue(fid["evidence"]["primary_signal_complete"])
+         self.assertTrue(tokens["complete"])
+@@ -820,7 +848,7 @@
+         self.assertTrue(fid["evidence"]["primary_signal_complete"])
+         self.assertTrue(tokens["complete"])
+         self.assertEqual(tokens["child_output"], 9)
+-        self.assertEqual(check["status"], "pass")
++        self.assertEqual(check["status"], "inconclusive")
+ 
+     def test_unknown_ids_wrong_parents_and_duplicate_rollouts_are_incomplete(self):
+         for failure in ("parent", "duplicate"):
+@@ -846,7 +874,7 @@
+         fid, tokens, check = self.observe(stream() + [spawn_item()], [lambda d: rollout(d, 0, tokens=(10, 0, 1)), build_child])
+         self.assertTrue(fid["evidence"]["primary_signal_complete"])
+         self.assertTrue(tokens["complete"])
+-        self.assertEqual(check["status"], "pass")
++        self.assertEqual(check["status"], "inconclusive")
+         # negative control: a spawn whose child rollout was never persisted stays a gap
+         fid, tokens, check = self.observe(stream() + [spawn_item()], [lambda d: rollout(d, 0, tokens=(10, 0, 1))])
+         self.assertFalse(fid["evidence"]["primary_signal_complete"])
+--- a/scripts/evals/generator_codex_official_adapter_compat.py
++++ b/scripts/evals/generator_codex_official_adapter_compat.py
+@@ -93,7 +93,7 @@
+         argv += ["--env", f"{key}={value}"]
+     argv += [engine.CODEX_CONTAINER_IMAGE, "/bin/sh", "-c", START if sessions is None else START_SESSIONS, "container-codex",
+              "exec", "--json", "--ignore-user-config", "--ignore-rules",  # compat: no --ephemeral (v2 spawn_agent forks the parent rollout; ephemeral -> "no rollout found")
+-             "--strict-config", "--sandbox", "read-only" if arm in ("official-generator", HARNESS_CHECK_ARM) else "danger-full-access", "--disable", "shell_snapshot",
++             "--strict-config", "--sandbox", "danger-full-access", "--disable", "shell_snapshot",
+              "-c", "allow_login_shell=false", "--output-schema", "/auth-source/output-schema.json",
+              "--model", model, "-c", 'model_reasoning_effort="medium"',
+              "--disable", "apps", "--disable", "image_generation", "-c", 'web_search="disabled"',
+@@ -104,12 +104,13 @@
+     if arm in ("official-generator", HARNESS_CHECK_ARM):
+         # compat: v2 spawn_agent has no agent-type selector, so the role-scoped [mcp_servers.playwright-test] of the generator
+         # TOML is unreachable; declare the same server session-wide (same command as the TOML) with the browser env. Arm A only.
+-        argv += ["-c", 'mcp_servers.playwright-test.command="npx"',
++        argv += ["-c", 'approval_policy="never"',
++                 "-c", 'mcp_servers.playwright-test.command="npx"',
+                  "-c", 'mcp_servers.playwright-test.args=["playwright","run-test-mcp-server"]',
+                  "-c", 'mcp_servers.playwright-test.env.PLAYWRIGHT_BROWSERS_PATH="/ms-playwright"',
+                  "-c", 'mcp_servers.playwright-test.env.HOME="/codex-home"',
+-                 "-c", "mcp_servers.playwright-test.enabled_tools=" + json.dumps(
+-                     ["test_list"] if arm == HARNESS_CHECK_ARM else GENERATOR_TOOLS, separators=(",", ":"))]
++                 "-c", 'mcp_servers.playwright-test.default_tools_approval_mode="approve"',
++                 "-c", "mcp_servers.playwright-test.enabled_tools=" + json.dumps(GENERATOR_TOOLS, separators=(",", ":"))]
+     return argv + ["-"]
+ 
+ 
+--- a/scripts/evals/generator_v2_codex_evidence.py
++++ b/scripts/evals/generator_v2_codex_evidence.py
+@@ -135,6 +135,36 @@
+         ids.update(found)
+         unknown += not bool(found)
+     return {"thread_ids": sorted(ids), "unresolved": unknown}
++
++
++
++def successful_plan_shell(events):
++    """Observed successful shell execution reading the staged plan; narration never counts."""
++    calls, outputs, succeeded = {}, {}, 0
++    def plan_command(command):
++        return bool(re.search(r"\b(?:cat|ls|stat)\b", str(command)) and "specs/plan.md" in str(command))
++    for event in events:
++        payload = event.get("payload") or {}
++        item = event.get("item") or payload.get("item") or {}
++        if event.get("type") == "response_item":
++            if payload.get("type") == "function_call":
++                name = str(payload.get("name") or "").rsplit(".", 1)[-1]
++                if name in ("exec_command", "exec") and plan_command(payload.get("arguments")):
++                    calls[payload.get("call_id")] = payload
++            elif payload.get("type") == "function_call_output":
++                outputs[payload.get("call_id")] = payload.get("output")
++        if payload.get("type") == "exec_command_end":
++            succeeded += payload.get("exit_code") == 0 and plan_command(payload.get("command"))
++        elif (event.get("type") == "item.completed" or payload.get("type") == "item_completed") and str(item.get("type")).lower() in ("commandexecution", "command_execution"):
++            succeeded += item.get("exit_code") == 0 and plan_command(item.get("command"))
++    for call_id in calls:
++        output = outputs.get(call_id)
++        parsed = _result_object(output)
++        if isinstance(parsed, dict) and parsed.get("exit_code") == 0:
++            succeeded += 1
++        elif isinstance(output, str) and re.search(r"(?:Process exited with code|[Ee]xit code:)\s*0\b", output) and not re.search(r"bwrap:|requires approval|permission denied", output, re.I):
++            succeeded += 1
++    return succeeded
+ 
+ 
+ def parse_rollout(path) -> dict:
+@@ -210,7 +240,7 @@
+             "agent_role": meta.get("agent_role") or subagent.get("agent_role"), "agent_path": meta.get("agent_path") or subagent.get("agent_path"),
+             "depth": subagent.get("depth"), "has_meta": bool(meta), "models": sorted(models), "lines": lines, "malformed_lines": malformed,
+             "mcp_calls": calls, "mcp_source": source, "usage": usage, "usage_source": usage_source,
+-            "spawns": spawn_observation(events)}
++            "spawns": spawn_observation(events), "plan_shell_successes": successful_plan_shell(events)}
+ 
+ 
+ def load_sessions(directory) -> list:
+@@ -305,6 +335,7 @@
+             "generator_surface_completed": sum(1 for c in done(all_calls) if is_generator_surface_tool(c.get("tool"))),
+             "other_playwright_test_completed": sum(1 for c in done(all_calls) if not is_generator_surface_tool(c.get("tool"))),
+             "child_playwright_test_completed": len(done(child_calls)), "child_mcp_calls": _tally(child_calls),
++            "child_plan_shell_successes": sum(r.get("plan_shell_successes", 0) for r in children),
+             "generator_tool_completed": sum(1 for c in done(all_calls) if str(c.get("tool")).startswith("generator_")),
+             "generator_write_test_completed": sum(1 for c in done(all_calls) if c.get("tool") == "generator_write_test"),
+             "child_usage": child_usage, "root_rollout_usage": root["usage"] if root else None,
+--- a/scripts/evals/run-generator-multimodel-v2-codex.py
++++ b/scripts/evals/run-generator-multimodel-v2-codex.py
+@@ -61,10 +61,10 @@
+ ARM_A_LINE_V2 = """
+ 
+ Generate the tests with the first-party Playwright Test Agents generator. It was initialized in this project with `npx --no-install playwright init-agents --loop=codex`; its custom agent definition is `playwright_test_generator` in `.codex/agents/`. Delegate generation to a native agent: spawn one, give it the generator definition from `.codex/agents/playwright_test_generator.toml` as its instructions, the plan scenarios from `specs/plan.md` and the seed `tests/seed.spec.ts`, and let it write the test file(s). In this Codex build the spawn tool has no agent-type selector and a spawned agent has the same tools as you, so spawning a generic agent that follows that definition is the intended way to run the generator; the generator's MCP server (`playwright-test`, the same `npx playwright run-test-mcp-server` its definition declares) is already configured for the whole session, so you and the spawned agent both have its tools. Do not write or edit the spec files yourself and do not use the planner or healer agents. When it finishes you may run `node_modules/.bin/playwright test <the written files>` once to report whether they pass, but do not modify them. One additional per-row approval: the exact project-local command `npx playwright run-test-mcp-server`. If no agent can be spawned or it cannot set up its browser, stop and say so in the summary with status `partial_or_blocked`."""
+-ARM_A_LINE_V2 += " The session and the generating child use the generator role's read-only sandbox and its MCP enabled_tools allowlist; write specs only through generator_write_test."
++ARM_A_LINE_V2 += " The container is the isolation boundary. The session and generating child use danger-full-access for working shell commands, with the generator role's MCP enabled_tools allowlist and pre-approved playwright-test calls; write specs only through generator_write_test."
+ HARNESS_CHECK_LINE = """
+ 
+-This is a harness check, not a test-writing task: do not create or edit any file. Spawn exactly one native agent and tell it to call the tool `test_list` of the MCP server `playwright-test` exactly once with no arguments, to call no other tool, and to reply with the tool's raw result. Wait for that agent to finish. Do not call any `playwright-test` tool yourself. Then finish with status `other` and the summary `harness check`."""
++This is a harness check, not a test-writing task. Spawn exactly one native agent. Tell it to run the shell command `ls specs/plan.md`, read the staged plan and seed, call `generator_setup_page` of `playwright-test` with that plan and seedFile `tests/seed.spec.ts`, then call `browser_navigate` with url `about:blank` exactly once and report the raw results. The seed and config are prepared for an empty page without any app server. Do not create or edit spec files. Wait for that agent to finish. Do not call playwright-test tools yourself. Then finish with status `other` and summary `harness check`."""
+ SCORING_REUSE, GENERATION_REUSE = "reuseExistingServer: false", "reuseExistingServer: true"
+ C_SCRATCH = (" Writing the skill's temporary exploration/guard config and scratch files outside the project directory "
+              "(for example under /tmp) is also approved; it does not count as editing files outside tests/ in the project.")
+@@ -853,7 +853,7 @@
+ # ------------------------------------------------------------------------------------------------ harness live check
+ 
+ HARNESS_REQUIRED = ("call_ok", "sessions_persisted", "root_rollout_identified", "persistence_census_clean", "child_rollout_found",
+-                    "spawns_have_rollouts", "child_called_test_list", "child_token_usage_present")
++                    "spawns_have_rollouts", "child_called_generator_setup_page", "child_token_usage_present", "child_shell_works", "child_mutating_mcp_ok")
+ 
+ 
+ def harness_check_path():
+@@ -862,7 +862,7 @@
+ 
+ def evaluate_harness_check(rec, transcripts_dir, sessions_dir=None):
+     """Criteria of the live harness check, from one cheap call: a parent that must spawn one child whose only job is a single
+-    `playwright-test` `test_list` call (no browser, no file written). All of HARNESS_REQUIRED must hold for `pass`.
++    `generator_setup_page`, a harmless mutating-class `browser_navigate` to about:blank, and a plan shell read. All of HARNESS_REQUIRED must hold for `pass`.
+     `inconclusive` = the harness persisted the sessions but the model did not spawn a child or the child made no call (model
+     behaviour: rerun with another model). `aborted` = an infrastructure outcome (rate limit, schema error, container error) that
+     says nothing about persistence: rerun when healthy. `fail` = persistence or parsing is broken, including a spawn that the
+@@ -873,7 +873,7 @@
+     sess = rollout_summary(rec, transcripts_dir, events, sessions_dir)
+     spawns = evidence.compliance_from_events(events)["agent_spawns_in_stream"] if events else 0
+     child_calls = (sess or {}).get("child_mcp_calls", {})
+-    list_done = sum(v["completed"] for k, v in child_calls.items() if k.endswith(".test_list") and evidence.is_mcp_server(k.rsplit(".", 1)[0]))
++    list_done = sum(v["completed"] for k, v in child_calls.items() if k.endswith(".generator_setup_page") and evidence.is_mcp_server(k.rsplit(".", 1)[0]))
+     child_total = ((sess or {}).get("child_usage") or {}).get("total_tokens", 0)
+     parent_mcp = sum(1 for e in events or [] if (e.get("item") or {}).get("type") == "mcp_tool_call" and e.get("type") == "item.completed")
+     infra = bool(rec.get("infrastructure_error"))
+@@ -885,14 +885,17 @@
+         "child_rollout_found": bool(sess and sess["children_total"]),
+         "spawns_have_rollouts": bool(sess and not sess.get("spawn_observation_gaps")
+                                      and (not spawns or "parent_stream_spawns" in sess)),
+-        "child_called_test_list": list_done > 0,
++        "child_called_generator_setup_page": list_done > 0,
++        "child_shell_works": bool((sess or {}).get("child_plan_shell_successes", 0)),
++        "child_mutating_mcp_ok": any(v["completed"] > 0 for k, v in child_calls.items()
++                                     if k.endswith(".browser_navigate") and evidence.is_mcp_server(k.rsplit(".", 1)[0])),
+         "child_token_usage_present": bool(sess and sess["children_total"] and child_total > 0 and not sess["children_without_usage"])}
+     turns = [u for u in (rec.get("usage_all_turns") or []) if u] or ([rec["usage"]] if rec.get("usage") else [])
+     stream_total = evidence.usage_dict({k: sum(int(u.get(k) or 0) for u in turns) for k in evidence.USAGE_KEYS})["total_tokens"] if turns else None
+     root_usage = (sess or {}).get("root_rollout_usage")
+     info = {"parent_stream_mcp_calls": parent_mcp, "parent_stream_blind_to_child": parent_mcp == 0, "spawns_in_parent_stream": spawns,
+             "parent_stream_total_tokens": stream_total, "root_rollout_total_tokens": root_usage["total_tokens"] if root_usage else None,
+-            "child_total_tokens": child_total, "child_test_list_calls": list_done,
++            "child_total_tokens": child_total, "child_generator_setup_page_calls": list_done,
+             "rollouts_found": (sess or {}).get("rollouts_found", 0), "child_rollouts": (sess or {}).get("children_total", 0)}
+     if stream_total and root_usage:
+         info["parent_usage_matches_root_rollout"] = abs(stream_total - root_usage["total_tokens"]) <= 0.02 * max(stream_total, 1)
+@@ -904,7 +907,7 @@
+             and criteria["spawns_have_rollouts"] and not criteria["child_rollout_found"]:
+         status = "inconclusive"  # nothing was spawned: not evidence about persistence
+     elif criteria["call_ok"] and criteria["child_rollout_found"] and criteria["persistence_census_clean"] and criteria["spawns_have_rollouts"] \
+-            and not criteria["child_called_test_list"] and criteria["child_token_usage_present"]:
++            and not criteria["child_called_generator_setup_page"] and criteria["child_token_usage_present"]:
+         status = "inconclusive"  # a child ran but did not call the tool: model behaviour
+     else:
+         status = "fail"
+@@ -921,7 +924,7 @@
+     result = evaluate_harness_check(rec, tdir)
+     previous = read(harness_check_path()).get("attempts", 0) if harness_check_path().exists() else 0
+     data = dict(result, model=model_id, freeze_sha256=digest(LOCK), decided_utc=engine.utc_now(), attempts=previous + 1,
+-                task="ask one spawned child for one playwright-test test_list call", elapsed_s=round((rec.get("elapsed_ms") or 0) / 1000, 1))
++                task="ask one spawned child for a plan shell read, generator setup and about:blank navigation", elapsed_s=round((rec.get("elapsed_ms") or 0) / 1000, 1))
+     harness_check_path().parent.mkdir(parents=True, exist_ok=True)
+     engine.write_json(harness_check_path(), data)
+     return data
+@@ -932,7 +935,7 @@
+     if not f.exists():
+         raise ValueError("no harness live check recorded; run `harness-check --allow-live` (preflight runs it first)")
+     data = read(f)
+-    if data.get("freeze_sha256") != digest(LOCK) or data.get("status") != "pass":
++    if data.get("freeze_sha256") != digest(LOCK) or data.get("status") != "pass" or not all(data.get("criteria", {}).get(k) for k in HARNESS_REQUIRED):
+         raise ValueError("the harness live check is not a pass bound to this freeze (status %s); rerun it" % data.get("status"))
+     return data
+ 
+@@ -942,7 +945,7 @@
+     f = harness_check_path()
+     if f.exists():
+         data = read(f)
+-        if data.get("freeze_sha256") == digest(LOCK) and data.get("status") == "pass":
++        if data.get("freeze_sha256") == digest(LOCK) and data.get("status") == "pass" and all(data.get("criteria", {}).get(k) for k in HARNESS_REQUIRED):
+             return data
+     ports = engine.Ports(6700)
+     task = p["entry_rule"]["task"]
+@@ -952,6 +955,10 @@
+         work = Path(tempfile.mkdtemp(prefix="mm2-harness-")).resolve()
+         try:
+             project = engine.stage(engine.CASES / task, ports.take(), work, git=True)
++            (project / "specs").mkdir(exist_ok=True)
++            (project / "specs/plan.md").write_text("# Harness plan\n\n## Test Scenarios\n\n### 1. Empty page\n\n**Seed:** `tests/seed.spec.ts`\n")
++            (project / "tests/seed.spec.ts").write_text("import { test } from '@playwright/test';\ntest('seed', async ({ page }) => { await page.goto('about:blank'); });\n")
++            (project / "playwright.config.mjs").write_text("import { defineConfig } from '@playwright/test';\nexport default defineConfig({ testDir: './tests', use: { headless: true } });\n")
+             return dict(engine.call_model(project, work, compat.HARNESS_CHECK_ARM, "Run the harness check described below; there is nothing to implement.",
+                                           m["id"], 420, None),
+                         arm=compat.HARNESS_CHECK_ARM, spec_files=[])
+@@ -1080,7 +1087,7 @@
+         len(state["attempts"]), ", ".join(a["fidelity"]["class"] for a in state["attempts"]))
+     engine.write_json(entry_path(args.model), {"model": args.model, "decision": decision, "reason": reason, "attempts": state["attempts"],
+                                               "aborted_calls": state["aborted_calls"], "freeze_sha256": digest(LOCK),
+-                                              "decided_utc": engine.utc_now()})
++                                              "harness_criteria": check["criteria"], "decided_utc": engine.utc_now()})
+     print(json.dumps({"model": args.model, "decision": decision, "reason": reason}, indent=1))
+     return 0
+ 
+@@ -1095,6 +1102,8 @@
+         data = read(f)
+         if data["freeze_sha256"] != digest(LOCK):
+             raise ValueError(f"entry decision for {m['id']} is not bound to this freeze")
++        if data.get("decision") == "admitted" and not all(data.get("harness_criteria", {}).get(k) for k in ("child_shell_works", "child_mutating_mcp_ok")):
++            raise ValueError("entry admission lacks working-child shell and mutating MCP evidence")
+         out[m["id"]] = data
+     return out
+ 
+@@ -1317,7 +1326,7 @@
+             "observation_gaps": gaps, "child_rollout_parsing": sess, "tokens": tokens,
+             "mcp_reachable": bool((sess or {}).get("playwright_test_completed") or fidelity_evidence(rec, events)["mcp_tool_events"]),
+             "fidelity": classify_fidelity(rec, transcripts_dir) if rec["arm"] == ARM_A else None,
+-            "role_controls": {"sandbox": "read-only", "enabled_tools": list(compat.GENERATOR_TOOLS), "live_verified": False}
++            "role_controls": {"sandbox": "danger-full-access", "mcp_approval_mode": "approve", "enabled_tools": list(compat.GENERATOR_TOOLS), "live_verified": False}
+                              if rec["arm"] == ARM_A else None}
+ 
+ 

@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "protocol_id": "generator-official-pilot-v1",
+  "status": "NOT_RUN",
+  "evidence_scope": "public-development-pilot",
+  "release_eligible": false,
+  "arms": [
+    "official-generator",
+    "ours-2.0.1"
+  ],
+  "repetitions": 2,
+  "workers": 1,
+  "seed": 20261014,
+  "selection_rule": {
+    "seed": 20261013,
+    "strata": "v3 historical no-skill mean refactor score: floor == 0, middle in (0,1), ceiling == 1 (from benchmarks/generator-skill-effect-v3/protocol.json screening)",
+    "per_stratum": {
+      "floor": 3,
+      "middle": 2,
+      "ceiling": 1
+    },
+    "method": "random.Random(seed).sample over the ID-sorted stratum, strata drawn in the order floor, middle, ceiling; final list sorted"
+  },
+  "tasks": [
+    "v2-06",
+    "v2-22",
+    "v2-23",
+    "v3-04",
+    "v3-06",
+    "v3-09"
+  ],
+  "model": "gpt-5.5",
+  "reasoning_effort": "medium",
+  "timeout_s": 1500,
+  "container_image": "sha256:687b18c424d01c3af69efa921eaa824b48eb737d46492da334405e348da73881",
+  "docker_context": "colima",
+  "minimum_free_disk_bytes": 4294967296,
+  "load": {
+    "pause_threshold": 40,
+    "note": "v8 inherited 20; the maintainer asked for 40 on this shared host. Scoring uses the same threshold."
+  },
+  "official_arm": {
+    "initializer": "npx --no-install playwright init-agents --loop=codex, run inside each official-arm workspace on the host with the frozen fixture Playwright 1.62.0 (docs verify 1.62.1; 1.62.0 is the fixture version and supports the command, probed before freeze)",
+    "init_agents_agent_file_sha256": {
+      "playwright_test_generator.toml": "32d2d579dce02dc6533bd95e813eca802ba6b7273f85c1ad1ee8183489fd3f25",
+      "playwright_test_healer.toml": "71763806b1029f8bed9f6d9433c8c8b7887d05beb3aec21336e0fef26773f5f1",
+      "playwright_test_planner.toml": "8303c51570904031880e91013cfe1a8cfd71068b0f7187f59ddc459693e1a83c"
+    },
+    "unavailable_rule": "A cell is UNAVAILABLE, never an app failure, when init-agents exits nonzero, omits the generator definition, or its three agent-file digests differ from the frozen ones. No model call is made for it. It is reported separately and excluded from the available-only view; the as-run view scores it 0.",
+    "invocation": "Codex parent (gpt-5.5, medium) is told to spawn the initialized playwright_test_generator custom agent natively with specs/plan.md and tests/seed.spec.ts, not to hand-write specs, not to use the planner or healer, and may run the written files once without editing them.",
+    "healer": "Not invoked. Planner not invoked.",
+    "engagement_proxy": "Parent transcripts do not expose child MCP tool calls, so engagement is reported by a file-signature proxy: every delivered spec carries the first-party `// spec:` and `// seed:` header comments. This is a proxy, not proof of tool use."
+  },
+  "ours_arm": {
+    "snapshot": "skills/playwright-test-generator and skills/e2e-reviewer (evals/ excluded) from base commit f83962e9 (release/2.0.1), tree-digested in freeze.json; staged under /work/skill and invoked with the v8 SKILL_LINE",
+    "note": "v8's `full-fixed` snapshot is NOT used; this arm is the 2.0.1 release skill."
+  },
+  "shared_inputs": {
+    "plan": "benchmarks/generator-official-pilot-v1/plans/<case>/plan.md, derived mechanically (runner write-plans) from the v3 task text: overview = verbatim brief; each sentence after a bare 'Cover ...' scope sentence becomes one scenario with the sentence as step and expected result. Both arms receive the identical file plus the identical tests/seed.spec.ts (init-agents seed with `await page.goto('/')` added) and the identical PLAN_LINE appended to the brief.",
+    "frame": "v8/v3 FRAME unchanged (approvals, deliverable rules, JSON schema). Arm-specific line differs only in the generator instruction. Official arm also gets the per-row approval for `npx playwright run-test-mcp-server`.",
+    "workspace_difference": "Official arm additionally contains .codex/agents/*.toml and specs/README.md from init-agents. Both are committed in the baseline so they are not counted as writes."
+  },
+  "scoring": "Unchanged v3 engine and v8 shared scanner snapshot: clean x3, 5 seeded-fault kills, one markup refactor (primary), scanner counts, flaky clean runs, plus a text probe for weakening constructs (test.skip/fixme, empty catch, expect(true), toBeTruthy, waitForTimeout). Scoring runs on the macOS host as in v8.",
+  "primary": "Per-cell markup-refactor survival (1 only if clean 3/3 and refactor passes). Guards: clean-all-three rate, effective fault kill, scanner P0 and P1/P2 counts. Also recorded: flaky scoring calls, generation seconds (setup excluded), parent-reported token usage.",
+  "decision": "DESCRIPTIVE ONLY. No PASS/FAIL, no confidence interval, no significance claim. Per-task paired outcomes (official minus ours) and as-run plus available-only views are reported.",
+  "evidence_interpretation": {
+    "counts_as_suggestive": "Same sign on the refactor-survival difference in at least 5 of 6 tasks with both guards not worse for the same arm; this only motivates a full run.",
+    "counts_as_nothing": "Anything else, including a 3-3 split, a single-task swing, or differences carried by UNAVAILABLE or blocked cells.",
+    "weakening": "Reported as the union of scanner P0 hits, weakening-text-probe hits, clean-passing specs that leave a stated-behavior fault unkilled (faults_escaped) and any manual transcript reading, each labeled by method; absence of a hit is not a proof of no weakening."
+  },
+  "stop_rules": [
+    "Pause and retry when `uptime` load average (1 min) exceeds 40, up to 1800 s per wait (engine wait_for_load threshold set to 40); never more than one model call at a time.",
+    "Stop on any infrastructure error after the inherited single retry, on usage/rate limits, on disk below 4 GiB, or on any digest drift. The partial report is preserved and the resume command is `run --allow-live --resume --output <same path>`.",
+    "Never edit this protocol, runner, plans or freeze after the first scheduled call; a change needs a successor protocol."
+  ],
+  "preflight": {
+    "purpose": "Two unscheduled setup calls on task v2-01 (not in the pilot set), run before freeze: one per arm. They proved the container, init-agents, agent spawn and scoring pipeline work. Results: official arm delivered 5 spec files in 216.7 s, clean 3/3, refactor survived, effective kill 0.8 (one fault missed); ours delivered 1 spec in 530.3 s, clean 3/3, refactor survived, kill 1.0. These are setup evidence, not pilot data, and were not used to choose tasks, arms or metrics. They did cause two fixes before freeze: the adapter's event-census merge and the file-signature engagement proxy."
+  },
+  "limits": [
+    "6 public development tasks x 2 repetitions: 12 cells per arm, 6 task clusters. Nothing here is a release or a general accuracy claim.",
+    "One host/model (Codex CLI 0.159.3, gpt-5.5, medium) in a Linux container; the official generator is designed for its own agent loop, and the Codex custom-agent path is one of several documented hosts.",
+    "The frozen plan is a mechanical transform of a brief. It is not what the official planner would write and it may under- or over-constrain either arm; the 2.0.1 skill normally designs its own scenarios.",
+    "Parent JSON usage excludes child agents' tokens for both arms, so token totals undercount the official arm (generation happens in a child) and ours (reviewer children) by unknown amounts.",
+    "Engagement of the official generator's MCP tools is inferred from a file signature, not observed.",
+    "Healer, planner, and Playwright 1.62.1 were not part of this pilot; the fixture pins 1.62.0.",
+    "Scoring uses the v3 author-written faults and a single id/class refactor per task; task selection used historical no-skill results for strata only."
+  ],
+  "full_run_requirements": "All 36 validated tasks x 3 repetitions x 2 arms = 216 calls (~several hours of model time at v8 per-call times), a sealed or externally held task pool for any release claim, the planner-produced plan as an additional arm, and a stop on a pre-set paired decision rule; at paired SD 0.35 the detectable lift at 80% power with 36 tasks is about 0.16."
+}

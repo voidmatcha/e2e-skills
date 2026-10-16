@@ -1,0 +1,4943 @@
+{
+ "full": {
+  "removes": [],
+  "counts": {
+   "API": 6,
+   "CONDITIONAL": 11,
+   "EXAMPLE": 17,
+   "PLANNING": 14,
+   "REPAIR": 1,
+   "RULE": 33,
+   "SAFETY": 3,
+   "STRUCTURE": 18
+  },
+  "lines": [
+   {
+    "file": "SKILL.md",
+    "line": 47,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "The hot workflow references are `best-practices.md`, `scenario-design.md` (scenario and lo"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 84,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "**Do not guess selectors from source code alone.** Use live browser exploration to discove"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 100,
+    "category": "SAFETY",
+    "class": "SAF12",
+    "text": "**Snapshot handling:** For a user-provided snapshot from a shared, production, or unknown "
+   },
+   {
+    "file": "SKILL.md",
+    "line": 102,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "Before collecting locator candidates or interaction-dependent states for Step 4, read `sce"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 112,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "Reuse the intact `scenario-design.md` content loaded in Step 3. If it is no longer complet"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 116,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "List every file Step 5 will create or modify, not only the files that hold locators:"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 122,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "| tests/pages/checkout-page.ts | New | Locators from the table above |"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 127,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "Include specs, Page Objects, helpers, fixtures, setup projects, any `playwright.config.*` "
+   },
+   {
+    "file": "SKILL.md",
+    "line": 159,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "**Approval gate:** Do not proceed to Step 5 until the user explicitly approves the scenari"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 165,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Follow `code-rules.md` for structure detection, selector priority, POM rules, composition "
+   },
+   {
+    "file": "SKILL.md",
+    "line": 169,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "When Step 4 requires a tracer scenario, generate only that scenario first and run it throu"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 187,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "Before auditing generated locators, read `code-rules.md` § YAGNI audit and follow it in fu"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 3,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Condensed from [playwright.dev/docs/best-practices](https://playwright.dev/docs/best-pract"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 34,
+    "category": "RULE",
+    "class": "rule",
+    "text": "## Locators"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 38,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| User-facing first | Prefer `getByRole`, `getByLabel`, `getByText` over CSS/XPath — they "
+   },
+   {
+    "file": "best-practices.md",
+    "line": 39,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Test ids when configured | If the loaded Playwright config (Step 1) sets `use: { testIdA"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 40,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Chain + filter | `getByRole('listitem').filter({ hasText: 'X' }).getByRole('button')` to"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 41,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Text-only elements | A counter or status line with no role or label is located by its vi"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 42,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| No XPath / styling CSS | XPath locators still participate in Playwright's locator auto-w"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 52,
+    "category": "EXAMPLE",
+    "class": "EXA3",
+    "text": "| `toMatchAriaSnapshot` for structure | Assert a subtree's roles + accessible names as a u"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 74,
+    "category": "SAFETY",
+    "class": "SAF13",
+    "text": "| Snapshot sanitization | Before using a user-provided snapshot from a shared, production,"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 89,
+    "category": "API",
+    "class": "API9",
+    "text": "| `page.click(selector)` / `page.fill(selector, v)` | Prefer locator-first actions (`page."
+   },
+   {
+    "file": "best-practices.md",
+    "line": 92,
+    "category": "API",
+    "class": "API9",
+    "text": "Raw `locator.count()` is not categorically wrong. Do not use one sampled count as the sole"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 9,
+    "category": "API",
+    "class": "API8",
+    "text": "- **`await` everything** — every `expect()` on a Locator and every Playwright action (`.cl"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 12,
+    "category": "SAFETY",
+    "class": "SAF14",
+    "text": "- **Freeze network identity before exploration** — use one approved DNS address snapshot, "
+   },
+   {
+    "file": "code-rules.md",
+    "line": 22,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "| POM directory exists, POM for this page already exists | Extend existing POM — add new l"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 25,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "**Local POM style is authoritative:** For every new or modified POM, inspect relevant sibl"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 29,
+    "category": "RULE",
+    "class": "rule",
+    "text": "## Selector Priority (best → worst)"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 31,
+    "category": "RULE",
+    "class": "rule",
+    "text": "1. `getByRole('button', { name: 'Submit' })` — role + accessible name"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 32,
+    "category": "RULE",
+    "class": "rule",
+    "text": "2. `getByLabel('Email')` — form label — **only when the label/aria-label actually exists**"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 33,
+    "category": "RULE",
+    "class": "rule",
+    "text": "3. `getByPlaceholder('Email')` — only for an actual `placeholder` attribute"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 34,
+    "category": "RULE",
+    "class": "rule",
+    "text": "4. `getByTitle('Email')` — only for an actual `title` attribute; do not treat `title` as a"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 35,
+    "category": "RULE",
+    "class": "rule",
+    "text": "5. `getByTestId('submit-btn')` / `[data-testid=\"submit-btn\"]` — explicit test hook"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 36,
+    "category": "RULE",
+    "class": "rule",
+    "text": "6. `getByText('Save')` / `.filter({ hasText: 'text' })` — visible text"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 37,
+    "category": "RULE",
+    "class": "rule",
+    "text": "7. attribute selector `[formControlName=\"email\"]` — stable attribute"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 38,
+    "category": "RULE",
+    "class": "rule",
+    "text": "8. CSS `#id` / `.class` — last resort, `// JUSTIFIED:` required (see **Text-bearing elemen"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 39,
+    "category": "RULE",
+    "class": "rule",
+    "text": "9. `.nth()` / `.first()` / `.last()` — **forbidden** without `// JUSTIFIED:` on the line a"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 41,
+    "category": "RULE",
+    "class": "rule",
+    "text": "**Project-configured test ids rank with role+name.** When the loaded Playwright config (St"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 43,
+    "category": "RULE",
+    "class": "rule",
+    "text": "**Text-bearing elements without a role, label, or test id.** A counter, status line, badge"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 45,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Never use XPath. Never use CSS class chains that couple to styling."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 52,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "import { Page, Locator } from '@playwright/test';"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 56,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    emailInput: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 57,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    passwordInput: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 58,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    submitButton: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 60,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "  readonly errorMessage: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 64,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      emailInput: page.getByLabel('Email'),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 65,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      passwordInput: page.getByLabel('Password'),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 66,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      submitButton: page.getByRole('button', { name: 'Sign in' }),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 68,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    this.errorMessage = page.getByText('Invalid credentials');"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 77,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "- Expose locators as direct `readonly` properties rather than getter methods"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 78,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "- Group related locators into named composition objects"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 141,
+    "category": "API",
+    "class": "API8",
+    "text": "| `expect(locator).toBeTruthy()` | Replace it with a web-first matcher that expresses the "
+   },
+   {
+    "file": "code-rules.md",
+    "line": 142,
+    "category": "API",
+    "class": "API8",
+    "text": "| `page.click(selector)` / `page.fill(selector, v)` | `page.locator(selector).click()` / `"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 146,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Framework component selectors in spec (`app-button`, `my-component`) | POM only |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 147,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| XPath selectors | `getByRole` / `getByLabel` / `getByTestId` |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 149,
+    "category": "API",
+    "class": "API8",
+    "text": "**Await rule:** Every `expect()` on a Locator and every Playwright action (`.click()`, `.f"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 220,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "  1. An app-provided hydration marker: `await expect(page.locator('html[data-hydrated]'))."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 248,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "1. List every locator defined in the generated/modified POM file(s)."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 249,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "2. Search each locator name across the relevant specs, POMs, and test"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 251,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   a spec may call a POM method without referencing its locator property"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 253,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "3. Delete a locator only when that complete search finds zero usages. Never"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 254,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   delete a locator used by a POM or utility method merely because no spec"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 255,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   references the locator property directly."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 259,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "| Locator        | File           | Used in          | Status  |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 262,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "| unusedLocator  | login-page.ts  | (none)           | DELETED |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 270,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- `.nth()` / `.first()` / `.last()` — explain why positional selection is required"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 271,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- `#id` / `.class` selectors — explain why no role, label, test id, or visible text locate"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 11,
+    "category": "STRUCTURE",
+    "class": "STR7",
+    "text": "2. Designate the best generated spec as the seed by path in the conventions doc (\"copy the"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 29,
+    "category": "RULE",
+    "class": "rule",
+    "text": "### Locator strategy (this app's reality)"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 30,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- Buttons / links: `getByRole('button' | 'link', { name })`"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 31,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- Form inputs: `<\"getByLabel — labels exist\" | \"inputs have NO labels — use getByPlacehold"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 32,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- Last resort: `data-testid`. Text-only elements (counters, status lines): `getByText` or "
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 57,
+    "category": "STRUCTURE",
+    "class": "STR7",
+    "text": "To add E2E coverage for feature X: copy the shape of `<seed spec path>`, add locators only"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 3,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "Playwright v1.56+ ships three first-party AI agents — **planner** (explores the app, write"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 32,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "When `npx --no-install playwright help init-agents` confirms project-local first-party age"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 52,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "- The healer's intent-based locator re-resolution is the same approach as this skill's Ste"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 62,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "Use the first-party planner as a second set of browser-grounded eyes when the approved sce"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 68,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "   A locator is observed only when the planner resolved it against the live"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 75,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "   and state-transition checks. Do not copy inferred locators into the final"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 84,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "If the planner could not perform live exploration, its output is still useful as a checkli"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 86,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "The first-party generator becomes an optional second candidate only after the planner prod"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 26,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| no locator-as-truthy assertions | Playwright `no-unnecessary-assertions` | #4f |"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 29,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| no unused/discarded verification | `expect-expect`, `no-unused-locators`, Cypress return"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 30,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| stable locator and chain discipline | locator/nth/unsafe-chain precedents | #6/#10/#17 |"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 3,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "Read this file before drafting the Step 4 scenario and locator plan."
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 5,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "Parse the ARIA snapshot for roles, names, and structure, then fill the Locator Mapping Tab"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 9,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "- Locator candidates: role+name pairs, label text, data-testid values, attribute selectors"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 10,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- **Accessible-name reality check:** confirm from the snapshot whether form inputs actuall"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 26,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "Treat an exploration observation as sufficient without another probe only when it directly"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 68,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "For a failure branch whose outcome is that nothing was stored, follow V4's re-read rule in"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 70,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "Mark one approved scenario as the **tracer scenario** when this is the first generated tes"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 72,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "### Locator Mapping Table"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 75,
+    "category": "EXAMPLE",
+    "class": "EXA2",
+    "text": "| Locator name   | File              | Selector                                 | Used in "
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 77,
+    "category": "EXAMPLE",
+    "class": "EXA2",
+    "text": "| submitButton   | login-page.ts     | getByRole('button', { name: 'Sign in' }) | 1, 2    "
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 78,
+    "category": "EXAMPLE",
+    "class": "EXA2",
+    "text": "| emailInput     | login-page.ts     | getByLabel('Email')                      | 1, 2    "
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 79,
+    "category": "EXAMPLE",
+    "class": "EXA2",
+    "text": "| errorMessage   | login-page.ts     | getByText('Invalid credentials')         | 2       "
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 83,
+    "category": "STRUCTURE",
+    "class": "STR5",
+    "text": "- Do not create any locator not listed in this table"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 84,
+    "category": "STRUCTURE",
+    "class": "STR5",
+    "text": "- No getter methods — locators are exposed directly as `readonly` properties"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 85,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- `.nth()`, `.first()`, `.last()` require `// JUSTIFIED: <reason>` on the line immediately"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 86,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- `#id` and `.class` selectors require the same `// JUSTIFIED:` line unless the project co"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 87,
+    "category": "STRUCTURE",
+    "class": "STR5",
+    "text": "- **Flat (non-POM) specs:** the \"File\" column is the spec file itself and locators are inl"
+   },
+   {
+    "file": "verification-rules.md",
+    "line": 109,
+    "category": "REPAIR",
+    "class": "REP17",
+    "text": "Run this independent review after generation and again after any debugger repair. During r"
+   },
+   {
+    "file": "verification-rules.md",
+    "line": 140,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Per attempt, diagnose the actual failure and apply the matching fix: heal selectors by re-"
+   }
+  ]
+ },
+ "minus-L": {
+  "removes": [
+   "L"
+  ],
+  "counts": {
+   "API": 6,
+   "CONDITIONAL": 11,
+   "EXAMPLE": 17,
+   "PLANNING": 14,
+   "REPAIR": 2,
+   "SAFETY": 3,
+   "STRUCTURE": 18
+  },
+  "lines": [
+   {
+    "file": "SKILL.md",
+    "line": 47,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "The hot workflow references are `best-practices.md`, `scenario-design.md` (scenario and lo"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 84,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "**Do not guess selectors from source code alone.** Use live browser exploration to discove"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 100,
+    "category": "SAFETY",
+    "class": "SAF12",
+    "text": "**Snapshot handling:** For a user-provided snapshot from a shared, production, or unknown "
+   },
+   {
+    "file": "SKILL.md",
+    "line": 102,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "Before collecting locator candidates or interaction-dependent states for Step 4, read `sce"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 112,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "Reuse the intact `scenario-design.md` content loaded in Step 3. If it is no longer complet"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 116,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "List every file Step 5 will create or modify, not only the files that hold locators:"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 122,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "| tests/pages/checkout-page.ts | New | Locators from the table above |"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 127,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "Include specs, Page Objects, helpers, fixtures, setup projects, any `playwright.config.*` "
+   },
+   {
+    "file": "SKILL.md",
+    "line": 159,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "**Approval gate:** Do not proceed to Step 5 until the user explicitly approves the scenari"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 169,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "When Step 4 requires a tracer scenario, generate only that scenario first and run it throu"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 187,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "Before auditing generated locators, read `code-rules.md` § YAGNI audit and follow it in fu"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 42,
+    "category": "EXAMPLE",
+    "class": "EXA3",
+    "text": "| `toMatchAriaSnapshot` for structure | Assert a subtree's roles + accessible names as a u"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 64,
+    "category": "SAFETY",
+    "class": "SAF13",
+    "text": "| Snapshot sanitization | Before using a user-provided snapshot from a shared, production,"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 79,
+    "category": "API",
+    "class": "API9",
+    "text": "| `page.click(selector)` / `page.fill(selector, v)` | Prefer locator-first actions (`page."
+   },
+   {
+    "file": "best-practices.md",
+    "line": 82,
+    "category": "API",
+    "class": "API9",
+    "text": "Raw `locator.count()` is not categorically wrong. Do not use one sampled count as the sole"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 9,
+    "category": "API",
+    "class": "API8",
+    "text": "- **`await` everything** — every `expect()` on a Locator and every Playwright action (`.cl"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 12,
+    "category": "SAFETY",
+    "class": "SAF14",
+    "text": "- **Freeze network identity before exploration** — use one approved DNS address snapshot, "
+   },
+   {
+    "file": "code-rules.md",
+    "line": 22,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "| POM directory exists, POM for this page already exists | Extend existing POM — add new l"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 25,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "**Local POM style is authoritative:** For every new or modified POM, inspect relevant sibl"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 32,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "import { Page, Locator } from '@playwright/test';"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 36,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    emailInput: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 37,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    passwordInput: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 38,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    submitButton: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 40,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "  readonly errorMessage: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 44,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      emailInput: page.getByLabel('Email'),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 45,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      passwordInput: page.getByLabel('Password'),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 46,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      submitButton: page.getByRole('button', { name: 'Sign in' }),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 48,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    this.errorMessage = page.getByText('Invalid credentials');"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 57,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "- Expose locators as direct `readonly` properties rather than getter methods"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 58,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "- Group related locators into named composition objects"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 121,
+    "category": "API",
+    "class": "API8",
+    "text": "| `expect(locator).toBeTruthy()` | Replace it with a web-first matcher that expresses the "
+   },
+   {
+    "file": "code-rules.md",
+    "line": 122,
+    "category": "API",
+    "class": "API8",
+    "text": "| `page.click(selector)` / `page.fill(selector, v)` | `page.locator(selector).click()` / `"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 127,
+    "category": "API",
+    "class": "API8",
+    "text": "**Await rule:** Every `expect()` on a Locator and every Playwright action (`.click()`, `.f"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 198,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "  1. An app-provided hydration marker: `await expect(page.locator('html[data-hydrated]'))."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 226,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "1. List every locator defined in the generated/modified POM file(s)."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 227,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "2. Search each locator name across the relevant specs, POMs, and test"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 229,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   a spec may call a POM method without referencing its locator property"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 231,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "3. Delete a locator only when that complete search finds zero usages. Never"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 232,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   delete a locator used by a POM or utility method merely because no spec"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 233,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   references the locator property directly."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 237,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "| Locator        | File           | Used in          | Status  |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 240,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "| unusedLocator  | login-page.ts  | (none)           | DELETED |"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 11,
+    "category": "STRUCTURE",
+    "class": "STR7",
+    "text": "2. Designate the best generated spec as the seed by path in the conventions doc (\"copy the"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 52,
+    "category": "STRUCTURE",
+    "class": "STR7",
+    "text": "To add E2E coverage for feature X: copy the shape of `<seed spec path>`, add locators only"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 3,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "Playwright v1.56+ ships three first-party AI agents — **planner** (explores the app, write"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 32,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "When `npx --no-install playwright help init-agents` confirms project-local first-party age"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 52,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "- The healer's intent-based locator re-resolution is the same approach as this skill's Ste"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 62,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "Use the first-party planner as a second set of browser-grounded eyes when the approved sce"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 68,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "   A locator is observed only when the planner resolved it against the live"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 75,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "   and state-transition checks. Do not copy inferred locators into the final"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 84,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "If the planner could not perform live exploration, its output is still useful as a checkli"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 86,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "The first-party generator becomes an optional second candidate only after the planner prod"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 26,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| no locator-as-truthy assertions | Playwright `no-unnecessary-assertions` | #4f |"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 29,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| no unused/discarded verification | `expect-expect`, `no-unused-locators`, Cypress return"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 30,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| stable locator and chain discipline | locator/nth/unsafe-chain precedents | #6/#10/#17 |"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 3,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "Read this file before drafting the Step 4 scenario and locator plan."
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 5,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "Parse the ARIA snapshot for roles, names, and structure, then fill the Locator Mapping Tab"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 9,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "- Locator candidates: role+name pairs, label text, data-testid values, attribute selectors"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 25,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "Treat an exploration observation as sufficient without another probe only when it directly"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 67,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "For a failure branch whose outcome is that nothing was stored, follow V4's re-read rule in"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 69,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "Mark one approved scenario as the **tracer scenario** when this is the first generated tes"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 71,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "### Locator Mapping Table"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 74,
+    "category": "EXAMPLE",
+    "class": "EXA2",
+    "text": "| Locator name   | File              | Selector                                 | Used in "
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 76,
+    "category": "EXAMPLE",
+    "class": "EXA2",
+    "text": "| submitButton   | login-page.ts     | getByRole('button', { name: 'Sign in' }) | 1, 2    "
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 77,
+    "category": "EXAMPLE",
+    "class": "EXA2",
+    "text": "| emailInput     | login-page.ts     | getByLabel('Email')                      | 1, 2    "
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 78,
+    "category": "EXAMPLE",
+    "class": "EXA2",
+    "text": "| errorMessage   | login-page.ts     | getByText('Invalid credentials')         | 2       "
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 82,
+    "category": "STRUCTURE",
+    "class": "STR5",
+    "text": "- Do not create any locator not listed in this table"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 83,
+    "category": "STRUCTURE",
+    "class": "STR5",
+    "text": "- No getter methods — locators are exposed directly as `readonly` properties"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 84,
+    "category": "STRUCTURE",
+    "class": "STR5",
+    "text": "- **Flat (non-POM) specs:** the \"File\" column is the spec file itself and locators are inl"
+   },
+   {
+    "file": "verification-rules.md",
+    "line": 109,
+    "category": "REPAIR",
+    "class": "REP17",
+    "text": "Run this independent review after generation and again after any debugger repair. During r"
+   },
+   {
+    "file": "verification-rules.md",
+    "line": 140,
+    "category": "REPAIR",
+    "class": "REP17",
+    "text": "Per attempt, diagnose the actual failure and apply the matching fix: heal selectors by re-"
+   }
+  ]
+ },
+ "minus-EPRV": {
+  "removes": [
+   "E",
+   "P",
+   "R",
+   "V"
+  ],
+  "counts": {
+   "API": 6,
+   "CONDITIONAL": 11,
+   "EXAMPLE": 13,
+   "PLANNING": 1,
+   "REPAIR": 1,
+   "RULE": 30,
+   "SAFETY": 2,
+   "STRUCTURE": 14
+  },
+  "lines": [
+   {
+    "file": "SKILL.md",
+    "line": 94,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "List every file Step 5 will create or modify, not only the files that hold locators:"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 100,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "| tests/pages/checkout-page.ts | New | Locators from the table above |"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 137,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "**Approval gate:** Do not proceed to Step 5 until the user explicitly approves the scenari"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 143,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Follow `code-rules.md` for structure detection, selector priority, POM rules, composition "
+   },
+   {
+    "file": "best-practices.md",
+    "line": 3,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Condensed from [playwright.dev/docs/best-practices](https://playwright.dev/docs/best-pract"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 34,
+    "category": "RULE",
+    "class": "rule",
+    "text": "## Locators"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 38,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| User-facing first | Prefer `getByRole`, `getByLabel`, `getByText` over CSS/XPath — they "
+   },
+   {
+    "file": "best-practices.md",
+    "line": 39,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Test ids when configured | If the loaded Playwright config (Step 1) sets `use: { testIdA"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 40,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Chain + filter | `getByRole('listitem').filter({ hasText: 'X' }).getByRole('button')` to"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 41,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Text-only elements | A counter or status line with no role or label is located by its vi"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 42,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| No XPath / styling CSS | XPath locators still participate in Playwright's locator auto-w"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 52,
+    "category": "EXAMPLE",
+    "class": "EXA3",
+    "text": "| `toMatchAriaSnapshot` for structure | Assert a subtree's roles + accessible names as a u"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 74,
+    "category": "SAFETY",
+    "class": "SAF13",
+    "text": "| Snapshot sanitization | Before using a user-provided snapshot from a shared, production,"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 89,
+    "category": "API",
+    "class": "API9",
+    "text": "| `page.click(selector)` / `page.fill(selector, v)` | Prefer locator-first actions (`page."
+   },
+   {
+    "file": "best-practices.md",
+    "line": 92,
+    "category": "API",
+    "class": "API9",
+    "text": "Raw `locator.count()` is not categorically wrong. Do not use one sampled count as the sole"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 9,
+    "category": "API",
+    "class": "API8",
+    "text": "- **`await` everything** — every `expect()` on a Locator and every Playwright action (`.cl"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 12,
+    "category": "SAFETY",
+    "class": "SAF14",
+    "text": "- **Freeze network identity before exploration** — use one approved DNS address snapshot, "
+   },
+   {
+    "file": "code-rules.md",
+    "line": 22,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "| POM directory exists, POM for this page already exists | Extend existing POM — add new l"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 25,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "**Local POM style is authoritative:** For every new or modified POM, inspect relevant sibl"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 29,
+    "category": "RULE",
+    "class": "rule",
+    "text": "## Selector Priority (best → worst)"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 31,
+    "category": "RULE",
+    "class": "rule",
+    "text": "1. `getByRole('button', { name: 'Submit' })` — role + accessible name"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 32,
+    "category": "RULE",
+    "class": "rule",
+    "text": "2. `getByLabel('Email')` — form label — **only when the label/aria-label actually exists**"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 33,
+    "category": "RULE",
+    "class": "rule",
+    "text": "3. `getByPlaceholder('Email')` — only for an actual `placeholder` attribute"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 34,
+    "category": "RULE",
+    "class": "rule",
+    "text": "4. `getByTitle('Email')` — only for an actual `title` attribute; do not treat `title` as a"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 35,
+    "category": "RULE",
+    "class": "rule",
+    "text": "5. `getByTestId('submit-btn')` / `[data-testid=\"submit-btn\"]` — explicit test hook"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 36,
+    "category": "RULE",
+    "class": "rule",
+    "text": "6. `getByText('Save')` / `.filter({ hasText: 'text' })` — visible text"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 37,
+    "category": "RULE",
+    "class": "rule",
+    "text": "7. attribute selector `[formControlName=\"email\"]` — stable attribute"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 38,
+    "category": "RULE",
+    "class": "rule",
+    "text": "8. CSS `#id` / `.class` — last resort, `// JUSTIFIED:` required (see **Text-bearing elemen"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 39,
+    "category": "RULE",
+    "class": "rule",
+    "text": "9. `.nth()` / `.first()` / `.last()` — **forbidden** without `// JUSTIFIED:` on the line a"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 41,
+    "category": "RULE",
+    "class": "rule",
+    "text": "**Project-configured test ids rank with role+name.** When the loaded Playwright config (St"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 43,
+    "category": "RULE",
+    "class": "rule",
+    "text": "**Text-bearing elements without a role, label, or test id.** A counter, status line, badge"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 45,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Never use XPath. Never use CSS class chains that couple to styling."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 52,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "import { Page, Locator } from '@playwright/test';"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 56,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    emailInput: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 57,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    passwordInput: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 58,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    submitButton: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 60,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "  readonly errorMessage: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 64,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      emailInput: page.getByLabel('Email'),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 65,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      passwordInput: page.getByLabel('Password'),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 66,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      submitButton: page.getByRole('button', { name: 'Sign in' }),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 68,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    this.errorMessage = page.getByText('Invalid credentials');"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 77,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "- Expose locators as direct `readonly` properties rather than getter methods"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 78,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "- Group related locators into named composition objects"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 141,
+    "category": "API",
+    "class": "API8",
+    "text": "| `expect(locator).toBeTruthy()` | Replace it with a web-first matcher that expresses the "
+   },
+   {
+    "file": "code-rules.md",
+    "line": 142,
+    "category": "API",
+    "class": "API8",
+    "text": "| `page.click(selector)` / `page.fill(selector, v)` | `page.locator(selector).click()` / `"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 146,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Framework component selectors in spec (`app-button`, `my-component`) | POM only |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 147,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| XPath selectors | `getByRole` / `getByLabel` / `getByTestId` |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 149,
+    "category": "API",
+    "class": "API8",
+    "text": "**Await rule:** Every `expect()` on a Locator and every Playwright action (`.click()`, `.f"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 220,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "  1. An app-provided hydration marker: `await expect(page.locator('html[data-hydrated]'))."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 248,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "1. List every locator defined in the generated/modified POM file(s)."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 249,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "2. Search each locator name across the relevant specs, POMs, and test"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 251,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   a spec may call a POM method without referencing its locator property"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 253,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "3. Delete a locator only when that complete search finds zero usages. Never"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 254,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   delete a locator used by a POM or utility method merely because no spec"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 255,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   references the locator property directly."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 259,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "| Locator        | File           | Used in          | Status  |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 262,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "| unusedLocator  | login-page.ts  | (none)           | DELETED |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 270,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- `.nth()` / `.first()` / `.last()` — explain why positional selection is required"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 271,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- `#id` / `.class` selectors — explain why no role, label, test id, or visible text locate"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 11,
+    "category": "STRUCTURE",
+    "class": "STR7",
+    "text": "2. Designate the best generated spec as the seed by path in the conventions doc (\"copy the"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 29,
+    "category": "RULE",
+    "class": "rule",
+    "text": "### Locator strategy (this app's reality)"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 30,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- Buttons / links: `getByRole('button' | 'link', { name })`"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 31,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- Form inputs: `<\"getByLabel — labels exist\" | \"inputs have NO labels — use getByPlacehold"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 32,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- Last resort: `data-testid`. Text-only elements (counters, status lines): `getByText` or "
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 57,
+    "category": "STRUCTURE",
+    "class": "STR7",
+    "text": "To add E2E coverage for feature X: copy the shape of `<seed spec path>`, add locators only"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 3,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "Playwright v1.56+ ships three first-party AI agents — **planner** (explores the app, write"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 32,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "When `npx --no-install playwright help init-agents` confirms project-local first-party age"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 52,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "- The healer's intent-based locator re-resolution is the same approach as this skill's Ste"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 62,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "Use the first-party planner as a second set of browser-grounded eyes when the approved sce"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 68,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "   A locator is observed only when the planner resolved it against the live"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 75,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "   and state-transition checks. Do not copy inferred locators into the final"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 84,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "If the planner could not perform live exploration, its output is still useful as a checkli"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 86,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "The first-party generator becomes an optional second candidate only after the planner prod"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 26,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| no locator-as-truthy assertions | Playwright `no-unnecessary-assertions` | #4f |"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 29,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| no unused/discarded verification | `expect-expect`, `no-unused-locators`, Cypress return"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 30,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| stable locator and chain discipline | locator/nth/unsafe-chain precedents | #6/#10/#17 |"
+   },
+   {
+    "file": "verification-rules.md",
+    "line": 109,
+    "category": "REPAIR",
+    "class": "REP17",
+    "text": "Run this independent review after generation and again after any debugger repair. During r"
+   },
+   {
+    "file": "verification-rules.md",
+    "line": 140,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Per attempt, diagnose the actual failure and apply the matching fix: heal selectors by re-"
+   }
+  ]
+ },
+ "minus-LEPRV": {
+  "removes": [
+   "L",
+   "E",
+   "P",
+   "R",
+   "V"
+  ],
+  "counts": {
+   "API": 6,
+   "CONDITIONAL": 11,
+   "EXAMPLE": 13,
+   "PLANNING": 1,
+   "REPAIR": 2,
+   "SAFETY": 2,
+   "STRUCTURE": 14
+  },
+  "lines": [
+   {
+    "file": "SKILL.md",
+    "line": 94,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "List every file Step 5 will create or modify, not only the files that hold locators:"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 100,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "| tests/pages/checkout-page.ts | New | Locators from the table above |"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 137,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "**Approval gate:** Do not proceed to Step 5 until the user explicitly approves the scenari"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 42,
+    "category": "EXAMPLE",
+    "class": "EXA3",
+    "text": "| `toMatchAriaSnapshot` for structure | Assert a subtree's roles + accessible names as a u"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 64,
+    "category": "SAFETY",
+    "class": "SAF13",
+    "text": "| Snapshot sanitization | Before using a user-provided snapshot from a shared, production,"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 79,
+    "category": "API",
+    "class": "API9",
+    "text": "| `page.click(selector)` / `page.fill(selector, v)` | Prefer locator-first actions (`page."
+   },
+   {
+    "file": "best-practices.md",
+    "line": 82,
+    "category": "API",
+    "class": "API9",
+    "text": "Raw `locator.count()` is not categorically wrong. Do not use one sampled count as the sole"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 9,
+    "category": "API",
+    "class": "API8",
+    "text": "- **`await` everything** — every `expect()` on a Locator and every Playwright action (`.cl"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 12,
+    "category": "SAFETY",
+    "class": "SAF14",
+    "text": "- **Freeze network identity before exploration** — use one approved DNS address snapshot, "
+   },
+   {
+    "file": "code-rules.md",
+    "line": 22,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "| POM directory exists, POM for this page already exists | Extend existing POM — add new l"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 25,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "**Local POM style is authoritative:** For every new or modified POM, inspect relevant sibl"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 32,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "import { Page, Locator } from '@playwright/test';"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 36,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    emailInput: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 37,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    passwordInput: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 38,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    submitButton: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 40,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "  readonly errorMessage: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 44,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      emailInput: page.getByLabel('Email'),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 45,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      passwordInput: page.getByLabel('Password'),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 46,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      submitButton: page.getByRole('button', { name: 'Sign in' }),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 48,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    this.errorMessage = page.getByText('Invalid credentials');"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 57,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "- Expose locators as direct `readonly` properties rather than getter methods"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 58,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "- Group related locators into named composition objects"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 121,
+    "category": "API",
+    "class": "API8",
+    "text": "| `expect(locator).toBeTruthy()` | Replace it with a web-first matcher that expresses the "
+   },
+   {
+    "file": "code-rules.md",
+    "line": 122,
+    "category": "API",
+    "class": "API8",
+    "text": "| `page.click(selector)` / `page.fill(selector, v)` | `page.locator(selector).click()` / `"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 127,
+    "category": "API",
+    "class": "API8",
+    "text": "**Await rule:** Every `expect()` on a Locator and every Playwright action (`.click()`, `.f"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 198,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "  1. An app-provided hydration marker: `await expect(page.locator('html[data-hydrated]'))."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 226,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "1. List every locator defined in the generated/modified POM file(s)."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 227,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "2. Search each locator name across the relevant specs, POMs, and test"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 229,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   a spec may call a POM method without referencing its locator property"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 231,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "3. Delete a locator only when that complete search finds zero usages. Never"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 232,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   delete a locator used by a POM or utility method merely because no spec"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 233,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   references the locator property directly."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 237,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "| Locator        | File           | Used in          | Status  |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 240,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "| unusedLocator  | login-page.ts  | (none)           | DELETED |"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 11,
+    "category": "STRUCTURE",
+    "class": "STR7",
+    "text": "2. Designate the best generated spec as the seed by path in the conventions doc (\"copy the"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 52,
+    "category": "STRUCTURE",
+    "class": "STR7",
+    "text": "To add E2E coverage for feature X: copy the shape of `<seed spec path>`, add locators only"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 3,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "Playwright v1.56+ ships three first-party AI agents — **planner** (explores the app, write"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 32,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "When `npx --no-install playwright help init-agents` confirms project-local first-party age"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 52,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "- The healer's intent-based locator re-resolution is the same approach as this skill's Ste"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 62,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "Use the first-party planner as a second set of browser-grounded eyes when the approved sce"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 68,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "   A locator is observed only when the planner resolved it against the live"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 75,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "   and state-transition checks. Do not copy inferred locators into the final"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 84,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "If the planner could not perform live exploration, its output is still useful as a checkli"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 86,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "The first-party generator becomes an optional second candidate only after the planner prod"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 26,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| no locator-as-truthy assertions | Playwright `no-unnecessary-assertions` | #4f |"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 29,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| no unused/discarded verification | `expect-expect`, `no-unused-locators`, Cypress return"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 30,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| stable locator and chain discipline | locator/nth/unsafe-chain precedents | #6/#10/#17 |"
+   },
+   {
+    "file": "verification-rules.md",
+    "line": 109,
+    "category": "REPAIR",
+    "class": "REP17",
+    "text": "Run this independent review after generation and again after any debugger repair. During r"
+   },
+   {
+    "file": "verification-rules.md",
+    "line": 140,
+    "category": "REPAIR",
+    "class": "REP17",
+    "text": "Per attempt, diagnose the actual failure and apply the matching fix: heal selectors by re-"
+   }
+  ]
+ },
+ "minus-E": {
+  "removes": [
+   "E"
+  ],
+  "counts": {
+   "API": 6,
+   "CONDITIONAL": 11,
+   "EXAMPLE": 17,
+   "PLANNING": 12,
+   "REPAIR": 1,
+   "RULE": 32,
+   "SAFETY": 2,
+   "STRUCTURE": 18
+  },
+  "lines": [
+   {
+    "file": "SKILL.md",
+    "line": 47,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "The hot workflow references are `best-practices.md`, `scenario-design.md` (scenario and lo"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 86,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "Before collecting locator candidates or interaction-dependent states for Step 4, read `sce"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 96,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "Reuse the intact `scenario-design.md` content loaded in Step 3. If it is no longer complet"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 100,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "List every file Step 5 will create or modify, not only the files that hold locators:"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 106,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "| tests/pages/checkout-page.ts | New | Locators from the table above |"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 111,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "Include specs, Page Objects, helpers, fixtures, setup projects, any `playwright.config.*` "
+   },
+   {
+    "file": "SKILL.md",
+    "line": 143,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "**Approval gate:** Do not proceed to Step 5 until the user explicitly approves the scenari"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 149,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Follow `code-rules.md` for structure detection, selector priority, POM rules, composition "
+   },
+   {
+    "file": "SKILL.md",
+    "line": 153,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "When Step 4 requires a tracer scenario, generate only that scenario first and run it throu"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 171,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "Before auditing generated locators, read `code-rules.md` § YAGNI audit and follow it in fu"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 3,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Condensed from [playwright.dev/docs/best-practices](https://playwright.dev/docs/best-pract"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 34,
+    "category": "RULE",
+    "class": "rule",
+    "text": "## Locators"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 38,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| User-facing first | Prefer `getByRole`, `getByLabel`, `getByText` over CSS/XPath — they "
+   },
+   {
+    "file": "best-practices.md",
+    "line": 39,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Test ids when configured | If the loaded Playwright config (Step 1) sets `use: { testIdA"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 40,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Chain + filter | `getByRole('listitem').filter({ hasText: 'X' }).getByRole('button')` to"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 41,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Text-only elements | A counter or status line with no role or label is located by its vi"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 42,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| No XPath / styling CSS | XPath locators still participate in Playwright's locator auto-w"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 52,
+    "category": "EXAMPLE",
+    "class": "EXA3",
+    "text": "| `toMatchAriaSnapshot` for structure | Assert a subtree's roles + accessible names as a u"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 74,
+    "category": "SAFETY",
+    "class": "SAF13",
+    "text": "| Snapshot sanitization | Before using a user-provided snapshot from a shared, production,"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 89,
+    "category": "API",
+    "class": "API9",
+    "text": "| `page.click(selector)` / `page.fill(selector, v)` | Prefer locator-first actions (`page."
+   },
+   {
+    "file": "best-practices.md",
+    "line": 92,
+    "category": "API",
+    "class": "API9",
+    "text": "Raw `locator.count()` is not categorically wrong. Do not use one sampled count as the sole"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 9,
+    "category": "API",
+    "class": "API8",
+    "text": "- **`await` everything** — every `expect()` on a Locator and every Playwright action (`.cl"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 12,
+    "category": "SAFETY",
+    "class": "SAF14",
+    "text": "- **Freeze network identity before exploration** — use one approved DNS address snapshot, "
+   },
+   {
+    "file": "code-rules.md",
+    "line": 22,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "| POM directory exists, POM for this page already exists | Extend existing POM — add new l"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 25,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "**Local POM style is authoritative:** For every new or modified POM, inspect relevant sibl"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 29,
+    "category": "RULE",
+    "class": "rule",
+    "text": "## Selector Priority (best → worst)"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 31,
+    "category": "RULE",
+    "class": "rule",
+    "text": "1. `getByRole('button', { name: 'Submit' })` — role + accessible name"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 32,
+    "category": "RULE",
+    "class": "rule",
+    "text": "2. `getByLabel('Email')` — form label — **only when the label/aria-label actually exists**"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 33,
+    "category": "RULE",
+    "class": "rule",
+    "text": "3. `getByPlaceholder('Email')` — only for an actual `placeholder` attribute"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 34,
+    "category": "RULE",
+    "class": "rule",
+    "text": "4. `getByTitle('Email')` — only for an actual `title` attribute; do not treat `title` as a"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 35,
+    "category": "RULE",
+    "class": "rule",
+    "text": "5. `getByTestId('submit-btn')` / `[data-testid=\"submit-btn\"]` — explicit test hook"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 36,
+    "category": "RULE",
+    "class": "rule",
+    "text": "6. `getByText('Save')` / `.filter({ hasText: 'text' })` — visible text"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 37,
+    "category": "RULE",
+    "class": "rule",
+    "text": "7. attribute selector `[formControlName=\"email\"]` — stable attribute"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 38,
+    "category": "RULE",
+    "class": "rule",
+    "text": "8. CSS `#id` / `.class` — last resort, `// JUSTIFIED:` required (see **Text-bearing elemen"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 39,
+    "category": "RULE",
+    "class": "rule",
+    "text": "9. `.nth()` / `.first()` / `.last()` — **forbidden** without `// JUSTIFIED:` on the line a"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 41,
+    "category": "RULE",
+    "class": "rule",
+    "text": "**Project-configured test ids rank with role+name.** When the loaded Playwright config (St"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 43,
+    "category": "RULE",
+    "class": "rule",
+    "text": "**Text-bearing elements without a role, label, or test id.** A counter, status line, badge"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 45,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Never use XPath. Never use CSS class chains that couple to styling."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 52,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "import { Page, Locator } from '@playwright/test';"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 56,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    emailInput: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 57,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    passwordInput: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 58,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    submitButton: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 60,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "  readonly errorMessage: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 64,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      emailInput: page.getByLabel('Email'),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 65,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      passwordInput: page.getByLabel('Password'),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 66,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      submitButton: page.getByRole('button', { name: 'Sign in' }),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 68,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    this.errorMessage = page.getByText('Invalid credentials');"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 77,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "- Expose locators as direct `readonly` properties rather than getter methods"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 78,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "- Group related locators into named composition objects"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 141,
+    "category": "API",
+    "class": "API8",
+    "text": "| `expect(locator).toBeTruthy()` | Replace it with a web-first matcher that expresses the "
+   },
+   {
+    "file": "code-rules.md",
+    "line": 142,
+    "category": "API",
+    "class": "API8",
+    "text": "| `page.click(selector)` / `page.fill(selector, v)` | `page.locator(selector).click()` / `"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 146,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Framework component selectors in spec (`app-button`, `my-component`) | POM only |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 147,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| XPath selectors | `getByRole` / `getByLabel` / `getByTestId` |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 149,
+    "category": "API",
+    "class": "API8",
+    "text": "**Await rule:** Every `expect()` on a Locator and every Playwright action (`.click()`, `.f"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 220,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "  1. An app-provided hydration marker: `await expect(page.locator('html[data-hydrated]'))."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 248,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "1. List every locator defined in the generated/modified POM file(s)."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 249,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "2. Search each locator name across the relevant specs, POMs, and test"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 251,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   a spec may call a POM method without referencing its locator property"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 253,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "3. Delete a locator only when that complete search finds zero usages. Never"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 254,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   delete a locator used by a POM or utility method merely because no spec"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 255,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   references the locator property directly."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 259,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "| Locator        | File           | Used in          | Status  |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 262,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "| unusedLocator  | login-page.ts  | (none)           | DELETED |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 270,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- `.nth()` / `.first()` / `.last()` — explain why positional selection is required"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 271,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- `#id` / `.class` selectors — explain why no role, label, test id, or visible text locate"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 11,
+    "category": "STRUCTURE",
+    "class": "STR7",
+    "text": "2. Designate the best generated spec as the seed by path in the conventions doc (\"copy the"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 29,
+    "category": "RULE",
+    "class": "rule",
+    "text": "### Locator strategy (this app's reality)"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 30,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- Buttons / links: `getByRole('button' | 'link', { name })`"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 31,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- Form inputs: `<\"getByLabel — labels exist\" | \"inputs have NO labels — use getByPlacehold"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 32,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- Last resort: `data-testid`. Text-only elements (counters, status lines): `getByText` or "
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 57,
+    "category": "STRUCTURE",
+    "class": "STR7",
+    "text": "To add E2E coverage for feature X: copy the shape of `<seed spec path>`, add locators only"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 3,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "Playwright v1.56+ ships three first-party AI agents — **planner** (explores the app, write"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 32,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "When `npx --no-install playwright help init-agents` confirms project-local first-party age"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 52,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "- The healer's intent-based locator re-resolution is the same approach as this skill's Ste"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 62,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "Use the first-party planner as a second set of browser-grounded eyes when the approved sce"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 68,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "   A locator is observed only when the planner resolved it against the live"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 75,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "   and state-transition checks. Do not copy inferred locators into the final"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 84,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "If the planner could not perform live exploration, its output is still useful as a checkli"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 86,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "The first-party generator becomes an optional second candidate only after the planner prod"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 26,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| no locator-as-truthy assertions | Playwright `no-unnecessary-assertions` | #4f |"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 29,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| no unused/discarded verification | `expect-expect`, `no-unused-locators`, Cypress return"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 30,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| stable locator and chain discipline | locator/nth/unsafe-chain precedents | #6/#10/#17 |"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 3,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "Read this file before drafting the Step 4 scenario and locator plan."
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 7,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "- Locator candidates: role+name pairs, label text, data-testid values, attribute selectors"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 23,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "Treat an exploration observation as sufficient without another probe only when it directly"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 65,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "For a failure branch whose outcome is that nothing was stored, follow V4's re-read rule in"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 67,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "Mark one approved scenario as the **tracer scenario** when this is the first generated tes"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 69,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "### Locator Mapping Table"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 72,
+    "category": "EXAMPLE",
+    "class": "EXA2",
+    "text": "| Locator name   | File              | Selector                                 | Used in "
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 74,
+    "category": "EXAMPLE",
+    "class": "EXA2",
+    "text": "| submitButton   | login-page.ts     | getByRole('button', { name: 'Sign in' }) | 1, 2    "
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 75,
+    "category": "EXAMPLE",
+    "class": "EXA2",
+    "text": "| emailInput     | login-page.ts     | getByLabel('Email')                      | 1, 2    "
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 76,
+    "category": "EXAMPLE",
+    "class": "EXA2",
+    "text": "| errorMessage   | login-page.ts     | getByText('Invalid credentials')         | 2       "
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 80,
+    "category": "STRUCTURE",
+    "class": "STR5",
+    "text": "- Do not create any locator not listed in this table"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 81,
+    "category": "STRUCTURE",
+    "class": "STR5",
+    "text": "- No getter methods — locators are exposed directly as `readonly` properties"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 82,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- `.nth()`, `.first()`, `.last()` require `// JUSTIFIED: <reason>` on the line immediately"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 83,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- `#id` and `.class` selectors require the same `// JUSTIFIED:` line unless the project co"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 84,
+    "category": "STRUCTURE",
+    "class": "STR5",
+    "text": "- **Flat (non-POM) specs:** the \"File\" column is the spec file itself and locators are inl"
+   },
+   {
+    "file": "verification-rules.md",
+    "line": 109,
+    "category": "REPAIR",
+    "class": "REP17",
+    "text": "Run this independent review after generation and again after any debugger repair. During r"
+   },
+   {
+    "file": "verification-rules.md",
+    "line": 140,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Per attempt, diagnose the actual failure and apply the matching fix: heal selectors by re-"
+   }
+  ]
+ },
+ "minus-P": {
+  "removes": [
+   "P"
+  ],
+  "counts": {
+   "API": 6,
+   "CONDITIONAL": 11,
+   "EXAMPLE": 13,
+   "PLANNING": 3,
+   "REPAIR": 1,
+   "RULE": 30,
+   "SAFETY": 3,
+   "STRUCTURE": 15
+  },
+  "lines": [
+   {
+    "file": "SKILL.md",
+    "line": 84,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "**Do not guess selectors from source code alone.** Use live browser exploration to discove"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 100,
+    "category": "SAFETY",
+    "class": "SAF12",
+    "text": "**Snapshot handling:** For a user-provided snapshot from a shared, production, or unknown "
+   },
+   {
+    "file": "SKILL.md",
+    "line": 112,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "List every file Step 5 will create or modify, not only the files that hold locators:"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 118,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "| tests/pages/checkout-page.ts | New | Locators from the table above |"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 155,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "**Approval gate:** Do not proceed to Step 5 until the user explicitly approves the scenari"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 161,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Follow `code-rules.md` for structure detection, selector priority, POM rules, composition "
+   },
+   {
+    "file": "SKILL.md",
+    "line": 165,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "When Step 4 requires a tracer scenario, generate only that scenario first and run it throu"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 183,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "Before auditing generated locators, read `code-rules.md` § YAGNI audit and follow it in fu"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 3,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Condensed from [playwright.dev/docs/best-practices](https://playwright.dev/docs/best-pract"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 34,
+    "category": "RULE",
+    "class": "rule",
+    "text": "## Locators"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 38,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| User-facing first | Prefer `getByRole`, `getByLabel`, `getByText` over CSS/XPath — they "
+   },
+   {
+    "file": "best-practices.md",
+    "line": 39,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Test ids when configured | If the loaded Playwright config (Step 1) sets `use: { testIdA"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 40,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Chain + filter | `getByRole('listitem').filter({ hasText: 'X' }).getByRole('button')` to"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 41,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Text-only elements | A counter or status line with no role or label is located by its vi"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 42,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| No XPath / styling CSS | XPath locators still participate in Playwright's locator auto-w"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 52,
+    "category": "EXAMPLE",
+    "class": "EXA3",
+    "text": "| `toMatchAriaSnapshot` for structure | Assert a subtree's roles + accessible names as a u"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 74,
+    "category": "SAFETY",
+    "class": "SAF13",
+    "text": "| Snapshot sanitization | Before using a user-provided snapshot from a shared, production,"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 89,
+    "category": "API",
+    "class": "API9",
+    "text": "| `page.click(selector)` / `page.fill(selector, v)` | Prefer locator-first actions (`page."
+   },
+   {
+    "file": "best-practices.md",
+    "line": 92,
+    "category": "API",
+    "class": "API9",
+    "text": "Raw `locator.count()` is not categorically wrong. Do not use one sampled count as the sole"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 9,
+    "category": "API",
+    "class": "API8",
+    "text": "- **`await` everything** — every `expect()` on a Locator and every Playwright action (`.cl"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 12,
+    "category": "SAFETY",
+    "class": "SAF14",
+    "text": "- **Freeze network identity before exploration** — use one approved DNS address snapshot, "
+   },
+   {
+    "file": "code-rules.md",
+    "line": 22,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "| POM directory exists, POM for this page already exists | Extend existing POM — add new l"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 25,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "**Local POM style is authoritative:** For every new or modified POM, inspect relevant sibl"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 29,
+    "category": "RULE",
+    "class": "rule",
+    "text": "## Selector Priority (best → worst)"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 31,
+    "category": "RULE",
+    "class": "rule",
+    "text": "1. `getByRole('button', { name: 'Submit' })` — role + accessible name"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 32,
+    "category": "RULE",
+    "class": "rule",
+    "text": "2. `getByLabel('Email')` — form label — **only when the label/aria-label actually exists**"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 33,
+    "category": "RULE",
+    "class": "rule",
+    "text": "3. `getByPlaceholder('Email')` — only for an actual `placeholder` attribute"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 34,
+    "category": "RULE",
+    "class": "rule",
+    "text": "4. `getByTitle('Email')` — only for an actual `title` attribute; do not treat `title` as a"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 35,
+    "category": "RULE",
+    "class": "rule",
+    "text": "5. `getByTestId('submit-btn')` / `[data-testid=\"submit-btn\"]` — explicit test hook"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 36,
+    "category": "RULE",
+    "class": "rule",
+    "text": "6. `getByText('Save')` / `.filter({ hasText: 'text' })` — visible text"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 37,
+    "category": "RULE",
+    "class": "rule",
+    "text": "7. attribute selector `[formControlName=\"email\"]` — stable attribute"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 38,
+    "category": "RULE",
+    "class": "rule",
+    "text": "8. CSS `#id` / `.class` — last resort, `// JUSTIFIED:` required (see **Text-bearing elemen"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 39,
+    "category": "RULE",
+    "class": "rule",
+    "text": "9. `.nth()` / `.first()` / `.last()` — **forbidden** without `// JUSTIFIED:` on the line a"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 41,
+    "category": "RULE",
+    "class": "rule",
+    "text": "**Project-configured test ids rank with role+name.** When the loaded Playwright config (St"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 43,
+    "category": "RULE",
+    "class": "rule",
+    "text": "**Text-bearing elements without a role, label, or test id.** A counter, status line, badge"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 45,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Never use XPath. Never use CSS class chains that couple to styling."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 52,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "import { Page, Locator } from '@playwright/test';"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 56,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    emailInput: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 57,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    passwordInput: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 58,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    submitButton: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 60,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "  readonly errorMessage: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 64,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      emailInput: page.getByLabel('Email'),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 65,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      passwordInput: page.getByLabel('Password'),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 66,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      submitButton: page.getByRole('button', { name: 'Sign in' }),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 68,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    this.errorMessage = page.getByText('Invalid credentials');"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 77,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "- Expose locators as direct `readonly` properties rather than getter methods"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 78,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "- Group related locators into named composition objects"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 141,
+    "category": "API",
+    "class": "API8",
+    "text": "| `expect(locator).toBeTruthy()` | Replace it with a web-first matcher that expresses the "
+   },
+   {
+    "file": "code-rules.md",
+    "line": 142,
+    "category": "API",
+    "class": "API8",
+    "text": "| `page.click(selector)` / `page.fill(selector, v)` | `page.locator(selector).click()` / `"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 146,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Framework component selectors in spec (`app-button`, `my-component`) | POM only |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 147,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| XPath selectors | `getByRole` / `getByLabel` / `getByTestId` |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 149,
+    "category": "API",
+    "class": "API8",
+    "text": "**Await rule:** Every `expect()` on a Locator and every Playwright action (`.click()`, `.f"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 220,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "  1. An app-provided hydration marker: `await expect(page.locator('html[data-hydrated]'))."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 248,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "1. List every locator defined in the generated/modified POM file(s)."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 249,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "2. Search each locator name across the relevant specs, POMs, and test"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 251,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   a spec may call a POM method without referencing its locator property"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 253,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "3. Delete a locator only when that complete search finds zero usages. Never"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 254,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   delete a locator used by a POM or utility method merely because no spec"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 255,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   references the locator property directly."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 259,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "| Locator        | File           | Used in          | Status  |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 262,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "| unusedLocator  | login-page.ts  | (none)           | DELETED |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 270,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- `.nth()` / `.first()` / `.last()` — explain why positional selection is required"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 271,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- `#id` / `.class` selectors — explain why no role, label, test id, or visible text locate"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 11,
+    "category": "STRUCTURE",
+    "class": "STR7",
+    "text": "2. Designate the best generated spec as the seed by path in the conventions doc (\"copy the"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 29,
+    "category": "RULE",
+    "class": "rule",
+    "text": "### Locator strategy (this app's reality)"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 30,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- Buttons / links: `getByRole('button' | 'link', { name })`"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 31,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- Form inputs: `<\"getByLabel — labels exist\" | \"inputs have NO labels — use getByPlacehold"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 32,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- Last resort: `data-testid`. Text-only elements (counters, status lines): `getByText` or "
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 57,
+    "category": "STRUCTURE",
+    "class": "STR7",
+    "text": "To add E2E coverage for feature X: copy the shape of `<seed spec path>`, add locators only"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 3,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "Playwright v1.56+ ships three first-party AI agents — **planner** (explores the app, write"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 32,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "When `npx --no-install playwright help init-agents` confirms project-local first-party age"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 52,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "- The healer's intent-based locator re-resolution is the same approach as this skill's Ste"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 62,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "Use the first-party planner as a second set of browser-grounded eyes when the approved sce"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 68,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "   A locator is observed only when the planner resolved it against the live"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 75,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "   and state-transition checks. Do not copy inferred locators into the final"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 84,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "If the planner could not perform live exploration, its output is still useful as a checkli"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 86,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "The first-party generator becomes an optional second candidate only after the planner prod"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 26,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| no locator-as-truthy assertions | Playwright `no-unnecessary-assertions` | #4f |"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 29,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| no unused/discarded verification | `expect-expect`, `no-unused-locators`, Cypress return"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 30,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| stable locator and chain discipline | locator/nth/unsafe-chain precedents | #6/#10/#17 |"
+   },
+   {
+    "file": "verification-rules.md",
+    "line": 109,
+    "category": "REPAIR",
+    "class": "REP17",
+    "text": "Run this independent review after generation and again after any debugger repair. During r"
+   },
+   {
+    "file": "verification-rules.md",
+    "line": 140,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Per attempt, diagnose the actual failure and apply the matching fix: heal selectors by re-"
+   }
+  ]
+ },
+ "minus-R": {
+  "removes": [
+   "R"
+  ],
+  "counts": {
+   "API": 6,
+   "CONDITIONAL": 11,
+   "EXAMPLE": 17,
+   "PLANNING": 14,
+   "REPAIR": 1,
+   "RULE": 33,
+   "SAFETY": 3,
+   "STRUCTURE": 17
+  },
+  "lines": [
+   {
+    "file": "SKILL.md",
+    "line": 46,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "The hot workflow references are `best-practices.md`, `scenario-design.md` (scenario and lo"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 83,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "**Do not guess selectors from source code alone.** Use live browser exploration to discove"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 99,
+    "category": "SAFETY",
+    "class": "SAF12",
+    "text": "**Snapshot handling:** For a user-provided snapshot from a shared, production, or unknown "
+   },
+   {
+    "file": "SKILL.md",
+    "line": 101,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "Before collecting locator candidates or interaction-dependent states for Step 4, read `sce"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 111,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "Reuse the intact `scenario-design.md` content loaded in Step 3. If it is no longer complet"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 115,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "List every file Step 5 will create or modify, not only the files that hold locators:"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 121,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "| tests/pages/checkout-page.ts | New | Locators from the table above |"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 126,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "Include specs, Page Objects, helpers, fixtures, setup projects, any `playwright.config.*` "
+   },
+   {
+    "file": "SKILL.md",
+    "line": 158,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "**Approval gate:** Do not proceed to Step 5 until the user explicitly approves the scenari"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 164,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Follow `code-rules.md` for structure detection, selector priority, POM rules, composition "
+   },
+   {
+    "file": "SKILL.md",
+    "line": 168,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "When Step 4 requires a tracer scenario, generate only that scenario first and run it throu"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 3,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Condensed from [playwright.dev/docs/best-practices](https://playwright.dev/docs/best-pract"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 34,
+    "category": "RULE",
+    "class": "rule",
+    "text": "## Locators"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 38,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| User-facing first | Prefer `getByRole`, `getByLabel`, `getByText` over CSS/XPath — they "
+   },
+   {
+    "file": "best-practices.md",
+    "line": 39,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Test ids when configured | If the loaded Playwright config (Step 1) sets `use: { testIdA"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 40,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Chain + filter | `getByRole('listitem').filter({ hasText: 'X' }).getByRole('button')` to"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 41,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Text-only elements | A counter or status line with no role or label is located by its vi"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 42,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| No XPath / styling CSS | XPath locators still participate in Playwright's locator auto-w"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 52,
+    "category": "EXAMPLE",
+    "class": "EXA3",
+    "text": "| `toMatchAriaSnapshot` for structure | Assert a subtree's roles + accessible names as a u"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 74,
+    "category": "SAFETY",
+    "class": "SAF13",
+    "text": "| Snapshot sanitization | Before using a user-provided snapshot from a shared, production,"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 89,
+    "category": "API",
+    "class": "API9",
+    "text": "| `page.click(selector)` / `page.fill(selector, v)` | Prefer locator-first actions (`page."
+   },
+   {
+    "file": "best-practices.md",
+    "line": 92,
+    "category": "API",
+    "class": "API9",
+    "text": "Raw `locator.count()` is not categorically wrong. Do not use one sampled count as the sole"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 9,
+    "category": "API",
+    "class": "API8",
+    "text": "- **`await` everything** — every `expect()` on a Locator and every Playwright action (`.cl"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 12,
+    "category": "SAFETY",
+    "class": "SAF14",
+    "text": "- **Freeze network identity before exploration** — use one approved DNS address snapshot, "
+   },
+   {
+    "file": "code-rules.md",
+    "line": 22,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "| POM directory exists, POM for this page already exists | Extend existing POM — add new l"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 25,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "**Local POM style is authoritative:** For every new or modified POM, inspect relevant sibl"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 29,
+    "category": "RULE",
+    "class": "rule",
+    "text": "## Selector Priority (best → worst)"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 31,
+    "category": "RULE",
+    "class": "rule",
+    "text": "1. `getByRole('button', { name: 'Submit' })` — role + accessible name"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 32,
+    "category": "RULE",
+    "class": "rule",
+    "text": "2. `getByLabel('Email')` — form label — **only when the label/aria-label actually exists**"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 33,
+    "category": "RULE",
+    "class": "rule",
+    "text": "3. `getByPlaceholder('Email')` — only for an actual `placeholder` attribute"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 34,
+    "category": "RULE",
+    "class": "rule",
+    "text": "4. `getByTitle('Email')` — only for an actual `title` attribute; do not treat `title` as a"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 35,
+    "category": "RULE",
+    "class": "rule",
+    "text": "5. `getByTestId('submit-btn')` / `[data-testid=\"submit-btn\"]` — explicit test hook"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 36,
+    "category": "RULE",
+    "class": "rule",
+    "text": "6. `getByText('Save')` / `.filter({ hasText: 'text' })` — visible text"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 37,
+    "category": "RULE",
+    "class": "rule",
+    "text": "7. attribute selector `[formControlName=\"email\"]` — stable attribute"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 38,
+    "category": "RULE",
+    "class": "rule",
+    "text": "8. CSS `#id` / `.class` — last resort, `// JUSTIFIED:` required (see **Text-bearing elemen"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 39,
+    "category": "RULE",
+    "class": "rule",
+    "text": "9. `.nth()` / `.first()` / `.last()` — **forbidden** without `// JUSTIFIED:` on the line a"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 41,
+    "category": "RULE",
+    "class": "rule",
+    "text": "**Project-configured test ids rank with role+name.** When the loaded Playwright config (St"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 43,
+    "category": "RULE",
+    "class": "rule",
+    "text": "**Text-bearing elements without a role, label, or test id.** A counter, status line, badge"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 45,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Never use XPath. Never use CSS class chains that couple to styling."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 52,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "import { Page, Locator } from '@playwright/test';"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 56,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    emailInput: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 57,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    passwordInput: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 58,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    submitButton: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 60,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "  readonly errorMessage: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 64,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      emailInput: page.getByLabel('Email'),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 65,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      passwordInput: page.getByLabel('Password'),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 66,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      submitButton: page.getByRole('button', { name: 'Sign in' }),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 68,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    this.errorMessage = page.getByText('Invalid credentials');"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 77,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "- Expose locators as direct `readonly` properties rather than getter methods"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 78,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "- Group related locators into named composition objects"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 141,
+    "category": "API",
+    "class": "API8",
+    "text": "| `expect(locator).toBeTruthy()` | Replace it with a web-first matcher that expresses the "
+   },
+   {
+    "file": "code-rules.md",
+    "line": 142,
+    "category": "API",
+    "class": "API8",
+    "text": "| `page.click(selector)` / `page.fill(selector, v)` | `page.locator(selector).click()` / `"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 146,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Framework component selectors in spec (`app-button`, `my-component`) | POM only |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 147,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| XPath selectors | `getByRole` / `getByLabel` / `getByTestId` |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 149,
+    "category": "API",
+    "class": "API8",
+    "text": "**Await rule:** Every `expect()` on a Locator and every Playwright action (`.click()`, `.f"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 220,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "  1. An app-provided hydration marker: `await expect(page.locator('html[data-hydrated]'))."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 248,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "1. List every locator defined in the generated/modified POM file(s)."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 249,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "2. Search each locator name across the relevant specs, POMs, and test"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 251,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   a spec may call a POM method without referencing its locator property"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 253,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "3. Delete a locator only when that complete search finds zero usages. Never"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 254,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   delete a locator used by a POM or utility method merely because no spec"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 255,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   references the locator property directly."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 259,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "| Locator        | File           | Used in          | Status  |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 262,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "| unusedLocator  | login-page.ts  | (none)           | DELETED |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 270,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- `.nth()` / `.first()` / `.last()` — explain why positional selection is required"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 271,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- `#id` / `.class` selectors — explain why no role, label, test id, or visible text locate"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 11,
+    "category": "STRUCTURE",
+    "class": "STR7",
+    "text": "2. Designate the best generated spec as the seed by path in the conventions doc (\"copy the"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 29,
+    "category": "RULE",
+    "class": "rule",
+    "text": "### Locator strategy (this app's reality)"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 30,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- Buttons / links: `getByRole('button' | 'link', { name })`"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 31,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- Form inputs: `<\"getByLabel — labels exist\" | \"inputs have NO labels — use getByPlacehold"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 32,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- Last resort: `data-testid`. Text-only elements (counters, status lines): `getByText` or "
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 57,
+    "category": "STRUCTURE",
+    "class": "STR7",
+    "text": "To add E2E coverage for feature X: copy the shape of `<seed spec path>`, add locators only"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 3,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "Playwright v1.56+ ships three first-party AI agents — **planner** (explores the app, write"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 32,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "When `npx --no-install playwright help init-agents` confirms project-local first-party age"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 52,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "- The healer's intent-based locator re-resolution is the same approach as this skill's Ste"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 62,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "Use the first-party planner as a second set of browser-grounded eyes when the approved sce"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 68,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "   A locator is observed only when the planner resolved it against the live"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 75,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "   and state-transition checks. Do not copy inferred locators into the final"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 84,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "If the planner could not perform live exploration, its output is still useful as a checkli"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 86,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "The first-party generator becomes an optional second candidate only after the planner prod"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 26,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| no locator-as-truthy assertions | Playwright `no-unnecessary-assertions` | #4f |"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 29,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| no unused/discarded verification | `expect-expect`, `no-unused-locators`, Cypress return"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 30,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| stable locator and chain discipline | locator/nth/unsafe-chain precedents | #6/#10/#17 |"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 3,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "Read this file before drafting the Step 4 scenario and locator plan."
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 5,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "Parse the ARIA snapshot for roles, names, and structure, then fill the Locator Mapping Tab"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 9,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "- Locator candidates: role+name pairs, label text, data-testid values, attribute selectors"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 10,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- **Accessible-name reality check:** confirm from the snapshot whether form inputs actuall"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 26,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "Treat an exploration observation as sufficient without another probe only when it directly"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 68,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "For a failure branch whose outcome is that nothing was stored, follow V4's re-read rule in"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 70,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "Mark one approved scenario as the **tracer scenario** when this is the first generated tes"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 72,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "### Locator Mapping Table"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 75,
+    "category": "EXAMPLE",
+    "class": "EXA2",
+    "text": "| Locator name   | File              | Selector                                 | Used in "
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 77,
+    "category": "EXAMPLE",
+    "class": "EXA2",
+    "text": "| submitButton   | login-page.ts     | getByRole('button', { name: 'Sign in' }) | 1, 2    "
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 78,
+    "category": "EXAMPLE",
+    "class": "EXA2",
+    "text": "| emailInput     | login-page.ts     | getByLabel('Email')                      | 1, 2    "
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 79,
+    "category": "EXAMPLE",
+    "class": "EXA2",
+    "text": "| errorMessage   | login-page.ts     | getByText('Invalid credentials')         | 2       "
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 83,
+    "category": "STRUCTURE",
+    "class": "STR5",
+    "text": "- Do not create any locator not listed in this table"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 84,
+    "category": "STRUCTURE",
+    "class": "STR5",
+    "text": "- No getter methods — locators are exposed directly as `readonly` properties"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 85,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- `.nth()`, `.first()`, `.last()` require `// JUSTIFIED: <reason>` on the line immediately"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 86,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- `#id` and `.class` selectors require the same `// JUSTIFIED:` line unless the project co"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 87,
+    "category": "STRUCTURE",
+    "class": "STR5",
+    "text": "- **Flat (non-POM) specs:** the \"File\" column is the spec file itself and locators are inl"
+   },
+   {
+    "file": "verification-rules.md",
+    "line": 109,
+    "category": "REPAIR",
+    "class": "REP17",
+    "text": "Run this independent review after generation and again after any debugger repair. During r"
+   },
+   {
+    "file": "verification-rules.md",
+    "line": 140,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Per attempt, diagnose the actual failure and apply the matching fix: heal selectors by re-"
+   }
+  ]
+ },
+ "minus-V": {
+  "removes": [
+   "V"
+  ],
+  "counts": {
+   "API": 6,
+   "CONDITIONAL": 11,
+   "EXAMPLE": 17,
+   "PLANNING": 13,
+   "REPAIR": 1,
+   "RULE": 33,
+   "SAFETY": 3,
+   "STRUCTURE": 18
+  },
+  "lines": [
+   {
+    "file": "SKILL.md",
+    "line": 46,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "The hot workflow references are `best-practices.md`, `scenario-design.md` (scenario and lo"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 83,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "**Do not guess selectors from source code alone.** Use live browser exploration to discove"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 99,
+    "category": "SAFETY",
+    "class": "SAF12",
+    "text": "**Snapshot handling:** For a user-provided snapshot from a shared, production, or unknown "
+   },
+   {
+    "file": "SKILL.md",
+    "line": 101,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "Before collecting locator candidates or interaction-dependent states for Step 4, read `sce"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 111,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "Reuse the intact `scenario-design.md` content loaded in Step 3. If it is no longer complet"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 115,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "List every file Step 5 will create or modify, not only the files that hold locators:"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 121,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "| tests/pages/checkout-page.ts | New | Locators from the table above |"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 126,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "Include specs, Page Objects, helpers, fixtures, setup projects, any `playwright.config.*` "
+   },
+   {
+    "file": "SKILL.md",
+    "line": 158,
+    "category": "PLANNING",
+    "class": "PLA10",
+    "text": "**Approval gate:** Do not proceed to Step 5 until the user explicitly approves the scenari"
+   },
+   {
+    "file": "SKILL.md",
+    "line": 164,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Follow `code-rules.md` for structure detection, selector priority, POM rules, composition "
+   },
+   {
+    "file": "SKILL.md",
+    "line": 182,
+    "category": "STRUCTURE",
+    "class": "STR6",
+    "text": "Before auditing generated locators, read `code-rules.md` § YAGNI audit and follow it in fu"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 3,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Condensed from [playwright.dev/docs/best-practices](https://playwright.dev/docs/best-pract"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 34,
+    "category": "RULE",
+    "class": "rule",
+    "text": "## Locators"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 38,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| User-facing first | Prefer `getByRole`, `getByLabel`, `getByText` over CSS/XPath — they "
+   },
+   {
+    "file": "best-practices.md",
+    "line": 39,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Test ids when configured | If the loaded Playwright config (Step 1) sets `use: { testIdA"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 40,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Chain + filter | `getByRole('listitem').filter({ hasText: 'X' }).getByRole('button')` to"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 41,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Text-only elements | A counter or status line with no role or label is located by its vi"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 42,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| No XPath / styling CSS | XPath locators still participate in Playwright's locator auto-w"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 52,
+    "category": "EXAMPLE",
+    "class": "EXA3",
+    "text": "| `toMatchAriaSnapshot` for structure | Assert a subtree's roles + accessible names as a u"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 74,
+    "category": "SAFETY",
+    "class": "SAF13",
+    "text": "| Snapshot sanitization | Before using a user-provided snapshot from a shared, production,"
+   },
+   {
+    "file": "best-practices.md",
+    "line": 89,
+    "category": "API",
+    "class": "API9",
+    "text": "| `page.click(selector)` / `page.fill(selector, v)` | Prefer locator-first actions (`page."
+   },
+   {
+    "file": "best-practices.md",
+    "line": 92,
+    "category": "API",
+    "class": "API9",
+    "text": "Raw `locator.count()` is not categorically wrong. Do not use one sampled count as the sole"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 9,
+    "category": "API",
+    "class": "API8",
+    "text": "- **`await` everything** — every `expect()` on a Locator and every Playwright action (`.cl"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 12,
+    "category": "SAFETY",
+    "class": "SAF14",
+    "text": "- **Freeze network identity before exploration** — use one approved DNS address snapshot, "
+   },
+   {
+    "file": "code-rules.md",
+    "line": 22,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "| POM directory exists, POM for this page already exists | Extend existing POM — add new l"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 25,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "**Local POM style is authoritative:** For every new or modified POM, inspect relevant sibl"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 29,
+    "category": "RULE",
+    "class": "rule",
+    "text": "## Selector Priority (best → worst)"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 31,
+    "category": "RULE",
+    "class": "rule",
+    "text": "1. `getByRole('button', { name: 'Submit' })` — role + accessible name"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 32,
+    "category": "RULE",
+    "class": "rule",
+    "text": "2. `getByLabel('Email')` — form label — **only when the label/aria-label actually exists**"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 33,
+    "category": "RULE",
+    "class": "rule",
+    "text": "3. `getByPlaceholder('Email')` — only for an actual `placeholder` attribute"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 34,
+    "category": "RULE",
+    "class": "rule",
+    "text": "4. `getByTitle('Email')` — only for an actual `title` attribute; do not treat `title` as a"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 35,
+    "category": "RULE",
+    "class": "rule",
+    "text": "5. `getByTestId('submit-btn')` / `[data-testid=\"submit-btn\"]` — explicit test hook"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 36,
+    "category": "RULE",
+    "class": "rule",
+    "text": "6. `getByText('Save')` / `.filter({ hasText: 'text' })` — visible text"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 37,
+    "category": "RULE",
+    "class": "rule",
+    "text": "7. attribute selector `[formControlName=\"email\"]` — stable attribute"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 38,
+    "category": "RULE",
+    "class": "rule",
+    "text": "8. CSS `#id` / `.class` — last resort, `// JUSTIFIED:` required (see **Text-bearing elemen"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 39,
+    "category": "RULE",
+    "class": "rule",
+    "text": "9. `.nth()` / `.first()` / `.last()` — **forbidden** without `// JUSTIFIED:` on the line a"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 41,
+    "category": "RULE",
+    "class": "rule",
+    "text": "**Project-configured test ids rank with role+name.** When the loaded Playwright config (St"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 43,
+    "category": "RULE",
+    "class": "rule",
+    "text": "**Text-bearing elements without a role, label, or test id.** A counter, status line, badge"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 45,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Never use XPath. Never use CSS class chains that couple to styling."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 52,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "import { Page, Locator } from '@playwright/test';"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 56,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    emailInput: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 57,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    passwordInput: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 58,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    submitButton: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 60,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "  readonly errorMessage: Locator;"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 64,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      emailInput: page.getByLabel('Email'),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 65,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      passwordInput: page.getByLabel('Password'),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 66,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "      submitButton: page.getByRole('button', { name: 'Sign in' }),"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 68,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "    this.errorMessage = page.getByText('Invalid credentials');"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 77,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "- Expose locators as direct `readonly` properties rather than getter methods"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 78,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "- Group related locators into named composition objects"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 141,
+    "category": "API",
+    "class": "API8",
+    "text": "| `expect(locator).toBeTruthy()` | Replace it with a web-first matcher that expresses the "
+   },
+   {
+    "file": "code-rules.md",
+    "line": 142,
+    "category": "API",
+    "class": "API8",
+    "text": "| `page.click(selector)` / `page.fill(selector, v)` | `page.locator(selector).click()` / `"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 146,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| Framework component selectors in spec (`app-button`, `my-component`) | POM only |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 147,
+    "category": "RULE",
+    "class": "rule",
+    "text": "| XPath selectors | `getByRole` / `getByLabel` / `getByTestId` |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 149,
+    "category": "API",
+    "class": "API8",
+    "text": "**Await rule:** Every `expect()` on a Locator and every Playwright action (`.click()`, `.f"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 220,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "  1. An app-provided hydration marker: `await expect(page.locator('html[data-hydrated]'))."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 248,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "1. List every locator defined in the generated/modified POM file(s)."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 249,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "2. Search each locator name across the relevant specs, POMs, and test"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 251,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   a spec may call a POM method without referencing its locator property"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 253,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "3. Delete a locator only when that complete search finds zero usages. Never"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 254,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   delete a locator used by a POM or utility method merely because no spec"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 255,
+    "category": "STRUCTURE",
+    "class": "STR4",
+    "text": "   references the locator property directly."
+   },
+   {
+    "file": "code-rules.md",
+    "line": 259,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "| Locator        | File           | Used in          | Status  |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 262,
+    "category": "EXAMPLE",
+    "class": "EXA1",
+    "text": "| unusedLocator  | login-page.ts  | (none)           | DELETED |"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 270,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- `.nth()` / `.first()` / `.last()` — explain why positional selection is required"
+   },
+   {
+    "file": "code-rules.md",
+    "line": 271,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- `#id` / `.class` selectors — explain why no role, label, test id, or visible text locate"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 11,
+    "category": "STRUCTURE",
+    "class": "STR7",
+    "text": "2. Designate the best generated spec as the seed by path in the conventions doc (\"copy the"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 29,
+    "category": "RULE",
+    "class": "rule",
+    "text": "### Locator strategy (this app's reality)"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 30,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- Buttons / links: `getByRole('button' | 'link', { name })`"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 31,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- Form inputs: `<\"getByLabel — labels exist\" | \"inputs have NO labels — use getByPlacehold"
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 32,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- Last resort: `data-testid`. Text-only elements (counters, status lines): `getByText` or "
+   },
+   {
+    "file": "conventions-template.md",
+    "line": 57,
+    "category": "STRUCTURE",
+    "class": "STR7",
+    "text": "To add E2E coverage for feature X: copy the shape of `<seed spec path>`, add locators only"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 3,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "Playwright v1.56+ ships three first-party AI agents — **planner** (explores the app, write"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 32,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "When `npx --no-install playwright help init-agents` confirms project-local first-party age"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 52,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "- The healer's intent-based locator re-resolution is the same approach as this skill's Ste"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 62,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "Use the first-party planner as a second set of browser-grounded eyes when the approved sce"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 68,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "   A locator is observed only when the planner resolved it against the live"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 75,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "   and state-transition checks. Do not copy inferred locators into the final"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 84,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "If the planner could not perform live exploration, its output is still useful as a checkli"
+   },
+   {
+    "file": "playwright-agents.md",
+    "line": 86,
+    "category": "CONDITIONAL",
+    "class": "CON15",
+    "text": "The first-party generator becomes an optional second candidate only after the planner prod"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 26,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| no locator-as-truthy assertions | Playwright `no-unnecessary-assertions` | #4f |"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 29,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| no unused/discarded verification | `expect-expect`, `no-unused-locators`, Cypress return"
+   },
+   {
+    "file": "recommended-lint.md",
+    "line": 30,
+    "category": "CONDITIONAL",
+    "class": "CON16",
+    "text": "| stable locator and chain discipline | locator/nth/unsafe-chain precedents | #6/#10/#17 |"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 3,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "Read this file before drafting the Step 4 scenario and locator plan."
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 5,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "Parse the ARIA snapshot for roles, names, and structure, then fill the Locator Mapping Tab"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 9,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "- Locator candidates: role+name pairs, label text, data-testid values, attribute selectors"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 10,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- **Accessible-name reality check:** confirm from the snapshot whether form inputs actuall"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 26,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "Treat an exploration observation as sufficient without another probe only when it directly"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 68,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "For a failure branch whose outcome is that nothing was stored, follow V4's re-read rule in"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 70,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "Mark one approved scenario as the **tracer scenario** when this is the first generated tes"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 72,
+    "category": "PLANNING",
+    "class": "PLA11",
+    "text": "### Locator Mapping Table"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 75,
+    "category": "EXAMPLE",
+    "class": "EXA2",
+    "text": "| Locator name   | File              | Selector                                 | Used in "
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 77,
+    "category": "EXAMPLE",
+    "class": "EXA2",
+    "text": "| submitButton   | login-page.ts     | getByRole('button', { name: 'Sign in' }) | 1, 2    "
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 78,
+    "category": "EXAMPLE",
+    "class": "EXA2",
+    "text": "| emailInput     | login-page.ts     | getByLabel('Email')                      | 1, 2    "
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 79,
+    "category": "EXAMPLE",
+    "class": "EXA2",
+    "text": "| errorMessage   | login-page.ts     | getByText('Invalid credentials')         | 2       "
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 83,
+    "category": "STRUCTURE",
+    "class": "STR5",
+    "text": "- Do not create any locator not listed in this table"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 84,
+    "category": "STRUCTURE",
+    "class": "STR5",
+    "text": "- No getter methods — locators are exposed directly as `readonly` properties"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 85,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- `.nth()`, `.first()`, `.last()` require `// JUSTIFIED: <reason>` on the line immediately"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 86,
+    "category": "RULE",
+    "class": "rule",
+    "text": "- `#id` and `.class` selectors require the same `// JUSTIFIED:` line unless the project co"
+   },
+   {
+    "file": "scenario-design.md",
+    "line": 87,
+    "category": "STRUCTURE",
+    "class": "STR5",
+    "text": "- **Flat (non-POM) specs:** the \"File\" column is the spec file itself and locators are inl"
+   },
+   {
+    "file": "verification-rules.md",
+    "line": 109,
+    "category": "REPAIR",
+    "class": "REP17",
+    "text": "Run this independent review after generation and again after any debugger repair. During r"
+   },
+   {
+    "file": "verification-rules.md",
+    "line": 140,
+    "category": "RULE",
+    "class": "rule",
+    "text": "Per attempt, diagnose the actual failure and apply the matching fix: heal selectors by re-"
+   }
+  ]
+ }
+}

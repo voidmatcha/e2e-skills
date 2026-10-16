@@ -1,0 +1,479 @@
+--- a/scripts/evals/generator_v2_codex_evidence.py
++++ b/scripts/evals/generator_v2_codex_evidence.py
+@@ -106,13 +106,34 @@
+     return sorted({value for value in ids if isinstance(value, str) and value}) if isinstance(ids, list) else []
+ 
+ 
+-def spawn_observation(events):
+-    """Unique completed spawn identities in stream/rollout dialects; unknown identities stay gaps."""
++def spawn_observation(events, function_calls_only=False):
++    """Count spawn calls and successful matching outputs, including task-name-only outputs.
++    Root rollouts use response_item function calls exclusively; legacy stream/events are a fallback.
++    Duplicate call IDs are one call, but distinct calls count separately even with the same child identity."""
+     ids, unknown, calls, outputs = set(), 0, {}, {}
++    for index, event in enumerate(events or []):
++        payload = event.get("payload") or {}
++        if event.get("type") != "response_item":
++            continue
++        if payload.get("type") == "function_call" and str(payload.get("name") or "").rsplit(".", 1)[-1] == "spawn_agent":
++            calls[payload.get("call_id") or ("missing", index)] = payload
++        elif payload.get("type") == "function_call_output" and payload.get("call_id"):
++            outputs[payload["call_id"]] = payload.get("output")
++    if calls or function_calls_only:
++        completed = 0
++        for call_id in calls:
++            if call_id not in outputs:
++                unknown += 1
++                continue
++            result = _result_object(outputs[call_id])
++            if isinstance(result, dict) and (result.get("error") or result.get("isError") or "Err" in result):
++                continue
++            completed += 1
++            ids.update(_spawn_ids(result))
++        return {"thread_ids": sorted(ids), "unresolved": unknown, "calls": len(calls), "completed": completed}
++    # Historical stream and descendant schemas; repeated observations of an identity do not add another spawn.
+     for event in events or []:
+-        kind = event.get("type")
+-        payload = event.get("payload") or {}
+-        item = event.get("item") or {}
++        kind, payload, item = event.get("type"), event.get("payload") or {}, event.get("item") or {}
+         if kind == "event_msg" and payload.get("type") == "item_completed":
+             item = payload.get("item") or {}
+         elif kind == "event_msg" and payload.get("type") == "collab_agent_spawn_end":
+@@ -125,16 +146,25 @@
+                 found = _spawn_ids(item)
+                 ids.update(found)
+                 unknown += not bool(found)
+-        if kind == "response_item" and payload.get("type") == "function_call" \
+-                and str(payload.get("name") or "").rsplit(".", 1)[-1] == "spawn_agent":
+-            calls[payload.get("call_id")] = payload
+-        elif kind == "response_item" and payload.get("type") == "function_call_output":
+-            outputs[payload.get("call_id")] = payload.get("output")
+-    for call_id in calls:
+-        found = _spawn_ids(outputs.get(call_id))
+-        ids.update(found)
+-        unknown += not bool(found)
+-    return {"thread_ids": sorted(ids), "unresolved": unknown}
++    count = len(ids) + unknown
++    return {"thread_ids": sorted(ids), "unresolved": unknown, "calls": count, "completed": count}
++
++
++def parent_spawn_observation(sessions, events=None):
++    """One authoritative census for harness, fidelity and cost: root rollout, else parent stream."""
++    if sessions and sessions.get("root_found"):
++        return dict(sessions.get("root_rollout_spawns") or {}, source="root-rollout")
++    return dict(spawn_observation(events), source="parent-stream")
++
++
++def spawns_have_rollouts(sessions, expects_child=False):
++    """Every completed root spawn needs a child rollout; a child-check also needs a spawn call."""
++    if not sessions:
++        return False
++    spawns = sessions.get("parent_spawns") or {}
++    return (not sessions.get("spawn_observation_gaps")
++            and sessions.get("children_total", 0) >= spawns.get("completed", 0)
++            and (not expects_child or spawns.get("calls", 0) > 0))
+ 
+ 
+ def parse_rollout(path) -> dict:
+@@ -210,7 +240,7 @@
+             "agent_role": meta.get("agent_role") or subagent.get("agent_role"), "agent_path": meta.get("agent_path") or subagent.get("agent_path"),
+             "depth": subagent.get("depth"), "has_meta": bool(meta), "models": sorted(models), "lines": lines, "malformed_lines": malformed,
+             "mcp_calls": calls, "mcp_source": source, "usage": usage, "usage_source": usage_source,
+-            "spawns": spawn_observation(events)}
++            "spawns": spawn_observation(events), "function_spawns": spawn_observation(events, function_calls_only=True)}
+ 
+ 
+ def load_sessions(directory) -> list:
+@@ -262,13 +292,20 @@
+         spawn_gaps.append("duplicate thread rollout(s): " + ", ".join(sorted(set(duplicates))))
+     if any(not r.get("thread_id") for r in rollouts):
+         spawn_gaps.append("rollout thread identity missing")
+-    observations = [(r.get("thread_id"), r.get("spawns") or {"thread_ids": [], "unresolved": 0}) for r in rollouts]
+-    parent_spawns = spawn_observation(parent_events)
++    parent_stream_spawns = spawn_observation(parent_events)
++    root_spawns = root.get("function_spawns") if root else None
++    parent_spawns = dict(root_spawns if root else parent_stream_spawns,
++                         source="root-rollout" if root else "parent-stream")
++    observations = [(r.get("thread_id"), r.get("spawns") or {"thread_ids": [], "unresolved": 0})
++                    for r in rollouts if r is not root]
+     observations.append((root["thread_id"] if root else root_thread_id, parent_spawns))
+     expected = set()
+     for parent, observation in observations:
+         if observation["unresolved"]:
+             spawn_gaps.append("%d completed spawn(s) or spawn request(s) without resolved child identity" % observation["unresolved"])
++        persisted_children = sum(r.get("parent_thread_id") == parent for r in rollouts) if parent else 0
++        if persisted_children < observation.get("completed", 0):
++            spawn_gaps.append("completed spawn count exceeds persisted children for " + str(parent))
+         expected.update((parent, child) for child in observation["thread_ids"])
+     for parent, child in sorted(expected, key=str):
+         persisted = by_thread.get(child)
+@@ -286,7 +323,8 @@
+     return {"rollouts_found": len(rollouts), "root_found": root is not None, "root_thread_id": root["thread_id"] if root else None,
+             "children_linked": len(descendants), "children_unlinked": len(children) - len(descendants), "children_total": len(children),
+             "extra_root_rollouts": len(extra_roots),
+-            "spawn_observation_gaps": spawn_gaps, "parent_stream_spawns": parent_spawns,
++            "spawn_observation_gaps": spawn_gaps, "parent_stream_spawns": parent_stream_spawns,
++            "root_rollout_spawns": root_spawns, "parent_spawns": parent_spawns,
+             "children_without_usage": sum(1 for r in children if not r["usage"]),
+             "malformed_lines": sum(r["malformed_lines"] for r in rollouts),
+             "mcp_calls": _tally(all_calls), "mcp_source": sorted({r["mcp_source"] for r in rollouts if r["mcp_source"]}),
+@@ -507,12 +545,14 @@
+         if sessions["children_without_usage"]:
+             out.update(complete=False, child_status=f"{sessions['children_without_usage']} child rollout(s) without usage")
+         census = (rec.get("compliance") or {}).get("sessions") or {}
+-        spawns = (rec.get("compliance") or {}).get("agent_spawns", 0)
++        spawns = (sessions.get("parent_spawns") or {}).get("completed", (rec.get("compliance") or {}).get("agent_spawns", 0))
+         gaps = []
+         if not sessions.get("root_found") or not rollout_usage:
+             gaps.append("root rollout or root usage missing")
+         gaps.extend(sessions.get("spawn_observation_gaps") or [])
+-        if spawns and "parent_stream_spawns" not in sessions:
++        if not spawns_have_rollouts(sessions):
++            gaps.append("completed spawns lack persisted child rollouts")
++        if spawns and "parent_spawns" not in sessions:
+             gaps.append("spawned child identities unavailable")
+         if census.get("skipped") or census.get("error"):
+             gaps.append("persistence census incomplete")
+--- a/scripts/evals/run-generator-multimodel-v2-codex.py
++++ b/scripts/evals/run-generator-multimodel-v2-codex.py
+@@ -417,7 +417,9 @@
+     if not sess["root_found"]:
+         gaps.append("root rollout not identified")
+     gaps.extend(sess.get("spawn_observation_gaps") or [])
+-    if spawns and "parent_stream_spawns" not in sess:
++    if not evidence.spawns_have_rollouts(sess):
++        gaps.append("completed spawns lack persisted child rollouts")
++    if spawns and "parent_spawns" not in sess:
+         gaps.append("completed spawn identities unavailable")
+     if problem:
+         gaps.append("persistence census has skipped or errored entries")
+@@ -434,7 +436,7 @@
+     the generator agent definition) on the `playwright-test` server, in the parent JSON stream or in ANY rollout of the cell, child
+     agents included (a child's calls are invisible in the parent stream). Completed `test_*` and `planner_*` calls on the same server
+     are counted as information (`other_playwright_test_calls`) and are NOT evidence. The rollouts are the complete record only when
+-    there are no `observation_gaps`: the root rollout is identified, every completed spawn of the parent stream has a persisted child
++    there are no `observation_gaps`: the root rollout is identified, every completed spawn in the root rollout (stream fallback only without a root) has a persisted child
+     rollout, and the persistence census is clean. With a complete record, no generator call means none was made, and the secondary
+     evidence cannot turn the cell positive (a disagreement is flagged `signal_conflict`). SECONDARY evidence, used when the record
+     is not complete (rollouts absent, or with gaps): `.playwright-mcp/` snapshot files, then an affirming agent message. When rollouts
+@@ -450,7 +452,7 @@
+     ev = fidelity_evidence(rec, events)
+     sess = rollout_summary(rec, transcripts_dir, events, sessions_dir)
+     ev["rollouts"] = sess
+-    spawns = evidence.compliance_from_events(events)["agent_spawns_in_stream"] if events else 0
++    spawns = evidence.parent_spawn_observation(sess, events)["completed"]
+     gaps = observation_gaps(rec, sess, spawns)
+     rollout_gen = sess["generator_surface_completed"] if sess else 0
+     ev["generator_surface_calls"] = ev["generator_surface_events"] + rollout_gen
+@@ -554,9 +556,8 @@
+ 
+ def tokens_for_record(rec, transcripts_dir):
+     events = transcript_events(rec, transcripts_dir)
+-    comp = evidence.compliance_from_events(events or [])
+     sess = rollout_summary(rec, transcripts_dir, events)
+-    token_rec = dict(rec, compliance=dict(rec.get("compliance") or {}, agent_spawns=comp["agent_spawns_in_stream"]))
++    token_rec = dict(rec, compliance=dict(rec.get("compliance") or {}, agent_spawns=evidence.parent_spawn_observation(sess, events)["completed"]))
+     return evidence.cell_tokens(token_rec, sess)
+ 
+ 
+@@ -866,12 +867,13 @@
+     `inconclusive` = the harness persisted the sessions but the model did not spawn a child or the child made no call (model
+     behaviour: rerun with another model). `aborted` = an infrastructure outcome (rate limit, schema error, container error) that
+     says nothing about persistence: rerun when healthy. `fail` = persistence or parsing is broken, including a spawn that the
+-    parent stream shows as completed without a persisted child rollout, and a persistence census with skipped or errored files.
++    root rollout shows as completed without a persisted child rollout, and a persistence census with skipped or errored files.
+     The informational fields record that the parent stream is blind to the child and whether the parent's reported usage equals its
+     own rollout (children not folded in)."""
+     events = transcript_events(rec, transcripts_dir)
+     sess = rollout_summary(rec, transcripts_dir, events, sessions_dir)
+-    spawns = evidence.compliance_from_events(events)["agent_spawns_in_stream"] if events else 0
++    stream_spawns = evidence.spawn_observation(events)["completed"]
++    spawns = evidence.parent_spawn_observation(sess, events)
+     child_calls = (sess or {}).get("child_mcp_calls", {})
+     list_done = sum(v["completed"] for k, v in child_calls.items() if k.endswith(".test_list") and evidence.is_mcp_server(k.rsplit(".", 1)[0]))
+     child_total = ((sess or {}).get("child_usage") or {}).get("total_tokens", 0)
+@@ -883,14 +885,14 @@
+         "persistence_census_clean": not census_problem(rec) and not bool(sess and (
+             sess.get("malformed_lines") or sess.get("children_unlinked") or sess.get("extra_root_rollouts"))),
+         "child_rollout_found": bool(sess and sess["children_total"]),
+-        "spawns_have_rollouts": bool(sess and not sess.get("spawn_observation_gaps")
+-                                     and (not spawns or "parent_stream_spawns" in sess)),
++        "spawns_have_rollouts": evidence.spawns_have_rollouts(sess, expects_child=True),
+         "child_called_test_list": list_done > 0,
+         "child_token_usage_present": bool(sess and sess["children_total"] and child_total > 0 and not sess["children_without_usage"])}
+     turns = [u for u in (rec.get("usage_all_turns") or []) if u] or ([rec["usage"]] if rec.get("usage") else [])
+     stream_total = evidence.usage_dict({k: sum(int(u.get(k) or 0) for u in turns) for k in evidence.USAGE_KEYS})["total_tokens"] if turns else None
+     root_usage = (sess or {}).get("root_rollout_usage")
+-    info = {"parent_stream_mcp_calls": parent_mcp, "parent_stream_blind_to_child": parent_mcp == 0, "spawns_in_parent_stream": spawns,
++    info = {"parent_stream_mcp_calls": parent_mcp, "parent_stream_blind_to_child": parent_mcp == 0, "spawns_in_parent_stream": stream_spawns,
++            "spawn_source": spawns["source"], "spawn_calls": spawns["calls"], "completed_spawns": spawns["completed"],
+             "parent_stream_total_tokens": stream_total, "root_rollout_total_tokens": root_usage["total_tokens"] if root_usage else None,
+             "child_total_tokens": child_total, "child_test_list_calls": list_done,
+             "rollouts_found": (sess or {}).get("rollouts_found", 0), "child_rollouts": (sess or {}).get("children_total", 0)}
+@@ -901,7 +903,7 @@
+     elif all(criteria[k] for k in HARNESS_REQUIRED):
+         status = "pass"
+     elif criteria["call_ok"] and criteria["sessions_persisted"] and criteria["root_rollout_identified"] and criteria["persistence_census_clean"] \
+-            and criteria["spawns_have_rollouts"] and not criteria["child_rollout_found"]:
++            and not spawns["calls"] and not criteria["child_rollout_found"]:
+         status = "inconclusive"  # nothing was spawned: not evidence about persistence
+     elif criteria["call_ok"] and criteria["child_rollout_found"] and criteria["persistence_census_clean"] and criteria["spawns_have_rollouts"] \
+             and not criteria["child_called_test_list"] and criteria["child_token_usage_present"]:
+@@ -1306,7 +1308,7 @@
+     events = transcript_events(rec, transcripts_dir)
+     sess = rollout_summary(rec, transcripts_dir, events)
+     comp = evidence.compliance_from_events(events or [])
+-    token_rec = dict(rec, compliance=dict(rec.get("compliance") or {}, agent_spawns=comp["agent_spawns_in_stream"]))
++    token_rec = dict(rec, compliance=dict(rec.get("compliance") or {}, agent_spawns=evidence.parent_spawn_observation(sess, events)["completed"]))
+     tokens = evidence.codex_tokens(token_rec, sess)
+     gaps = observation_gaps(rec, sess, comp["agent_spawns_in_stream"])
+     error = str(rec.get("error") or "") + " " + str(rec.get("stderr") or "")
+--- a/scripts/ci/test-generator-v2-codex-harness-fixes.py
++++ b/scripts/ci/test-generator-v2-codex-harness-fixes.py
+@@ -101,6 +101,17 @@
+ def spawn_item(*children):
+     return {"type": "item.completed", "item": {"type": "collab_tool_call", "tool": "spawn_agent", "status": "completed",
+                                                 "receiver_thread_ids": list(children)}}
++
++
++def spawn_functions(*children):
++    events = []
++    for index, child in enumerate(children):
++        call_id = "root-spawn-" + str(index)
++        events += [{"type": "response_item", "payload": {"type": "function_call", "name": "spawn_agent",
++                    "namespace": "collaboration", "call_id": call_id, "arguments": "{}"}},
++                   {"type": "response_item", "payload": {"type": "function_call_output", "call_id": call_id,
++                    "output": json.dumps({"agent_id": child})}}]
++    return events
+ 
+ 
+ def function_result(tool, output, call_id="fallback"):
+@@ -530,10 +541,10 @@
+         self.assertEqual(self.classify(stream(), mixed)["evidence"]["generator_surface_calls"], 1)
+ 
+     def test_a_lost_child_rollout_is_not_an_observed_absence(self):
+-        """The parent stream shows a completed spawn, but only the root rollout was persisted: no signal, no absence."""
++        """The root rollout shows a completed spawn, but its child rollout was lost: no signal, no absence."""
+         spawn = spawn_item(UUIDS[1])
+         events = stream(messages=["The agent confirmed the approved Playwright generator tools are working."]) + [spawn]
+-        root_only = [lambda d: rollout(d, 0, tokens=(1, 0, 1))]
++        root_only = [lambda d: rollout(d, 0, tokens=(1, 0, 1), extra=spawn_functions(UUIDS[1]))]
+         out = self.classify(events, root_only)
+         ev_ = out["evidence"]
+         self.assertFalse(ev_["primary_signal_complete"])
+@@ -564,7 +575,7 @@
+         with tempfile.TemporaryDirectory() as tmp, patch.object(m, "BASE", Path(tmp)):
+             def call(n, tdir):
+                 jl(tdir / "t.jsonl", stream() + [spawn])
+-                rollout(tdir.parent / "codex-sessions" / "t", 0, tokens=(1, 0, 1))  # the child rollout was lost
++                rollout(tdir.parent / "codex-sessions" / "t", 0, tokens=(1, 0, 1), extra=spawn_functions(UUIDS[1]))  # the child rollout was lost
+                 return arm_rec(transcript_path=str(tdir / "t.jsonl"))
+             decision, state = m.run_entry("gpt-6-sol", rule, Path(tmp) / "root", call)
+         self.assertIsNone(decision)  # undecided, never excluded
+@@ -629,7 +640,7 @@
+             tdir, _ = make_cell_files(tmp, events, rollouts)
+             return m.evaluate_harness_check(arm_rec(**rec), tdir)
+ 
+-    good = [lambda d: rollout(d, 0, tokens=(300, 200, 20)),
++    good = [lambda d: rollout(d, 0, tokens=(300, 200, 20), extra=spawn_functions(UUIDS[1])),
+             lambda d: rollout(d, 1, parent=UUIDS[0], calls=[("playwright-test", "test_list", "completed")], tokens=(120, 0, 12))]
+ 
+     def test_pass_requires_every_criterion(self):
+@@ -644,9 +655,9 @@
+     def test_inconclusive_when_no_child_or_no_call_and_fail_when_persistence_or_usage_is_broken(self):
+         no_child = self.evaluate(stream(), [lambda d: rollout(d, 0, tokens=(1, 0, 1))])
+         self.assertEqual(no_child["status"], "inconclusive")
+-        no_call = self.evaluate(stream(), [lambda d: rollout(d, 0, tokens=(1, 0, 1)), lambda d: rollout(d, 1, parent=UUIDS[0], tokens=(2, 0, 1))])
++        no_call = self.evaluate(stream(), [lambda d: rollout(d, 0, tokens=(1, 0, 1), extra=spawn_functions(UUIDS[1])), lambda d: rollout(d, 1, parent=UUIDS[0], tokens=(2, 0, 1))])
+         self.assertEqual(no_call["status"], "inconclusive")
+-        wrong_tool = self.evaluate(stream(), [lambda d: rollout(d, 0, tokens=(1, 0, 1)),
++        wrong_tool = self.evaluate(stream(), [lambda d: rollout(d, 0, tokens=(1, 0, 1), extra=spawn_functions(UUIDS[1])),
+                                               lambda d: rollout(d, 1, parent=UUIDS[0], calls=[("playwright-test", "test_run", "completed")], tokens=(2, 0, 1))])
+         self.assertEqual(wrong_tool["status"], "inconclusive")
+         self.assertEqual(self.evaluate(stream(), None)["status"], "fail")  # nothing persisted
+@@ -659,10 +670,10 @@
+ 
+     def test_a_spawn_without_a_child_rollout_or_a_dirty_census_is_a_fail_not_an_inconclusive(self):
+         spawn = spawn_item(UUIDS[1])
+-        root_only = [lambda d: rollout(d, 0, tokens=(1, 0, 1))]
++        root_only = [lambda d: rollout(d, 0, tokens=(1, 0, 1), extra=spawn_functions(UUIDS[1]))]
+         lost = self.evaluate(stream() + [spawn], root_only)
+         self.assertEqual((lost["status"], lost["criteria"]["spawns_have_rollouts"], lost["info"]["spawns_in_parent_stream"]), ("fail", False, 1))
+-        self.assertEqual(self.evaluate(stream(), root_only)["status"], "inconclusive")  # nothing spawned: still model behaviour
++        self.assertEqual(self.evaluate(stream(), [lambda d: rollout(d, 0, tokens=(1, 0, 1))])["status"], "inconclusive")  # nothing spawned: still model behaviour
+         skipped = {"files": 2, "bytes": 1, "skipped": ["rollout-x.jsonl (oversize)"], "dir": "t"}
+         self.assertEqual(self.evaluate(stream(), self.good, compliance={"sessions": skipped})["status"], "fail")
+         self.assertEqual(self.evaluate(stream(), root_only, compliance={"sessions": skipped})["status"], "fail")  # not inconclusive either
+@@ -741,45 +752,24 @@
+             rec = arm_rec(compliance={"sessions": {"files": len(builds), "skipped": []}})
+             return m.classify_fidelity(rec, tdir), m.tokens_for_record(rec, tdir), m.evaluate_harness_check(rec, tdir)
+ 
+-    def test_root_rollout_does_not_discard_an_unmatched_parent_stream_spawn(self):
+-        builds = [lambda d: rollout(d, 0, tokens=(10, 0, 1)),
++    def test_root_rollout_ignores_stale_parent_stream_spawn_evidence(self):
++        builds = [lambda d: rollout(d, 0, tokens=(10, 0, 1), extra=spawn_functions(UUIDS[1])),
+                   lambda d: rollout(d, 1, parent=UUIDS[0], tokens=(20, 0, 2),
+                                     calls=[("playwright-test", "test_list", "completed")])]
+-        # A persisted root and a usable child do not establish that an additional stream spawn is stale.
+-        fid, tokens, check = self.observe(stream() + [spawn_item(UUIDS[7])], builds)
+-        self.assertEqual(check["status"], "fail")
+-        self.assertFalse(check["criteria"]["spawns_have_rollouts"])
+-        self.assertFalse(fid["evidence"]["primary_signal_complete"])
+-        self.assertTrue(fid["evidence"]["observation_incomplete"])
+-        self.assertNotEqual(fid["evidence"]["primary_signal"], "rollout-absence")
+-        self.assertFalse(tokens["complete"])
+-        self.assertTrue(any(UUIDS[7] in gap for gap in tokens["observation_gaps"]))
+-
+-    def test_matching_root_and_stream_spawns_do_not_hide_an_additional_stream_identity(self):
+-        root_spawn = [{"type": "response_item", "payload": {"type": "function_call", "name": "spawn_agent", "call_id": "root-child"}},
+-                      {"type": "response_item", "payload": {"type": "function_call_output", "call_id": "root-child",
+-                                                            "output": json.dumps({"agent_id": UUIDS[1]})}}]
+-        builds = [lambda d: rollout(d, 0, tokens=(10, 0, 1), extra=root_spawn),
+-                  lambda d: rollout(d, 1, parent=UUIDS[0], tokens=(20, 0, 2),
+-                                    calls=[("playwright-test", "test_list", "completed")])]
+-        events = stream() + [spawn_item(UUIDS[1]), spawn_item(UUIDS[1])]
+-        fid, tokens, check = self.observe(events, builds)
+-        self.assertEqual(check["status"], "pass")
+-        self.assertEqual(fid["evidence"]["primary_signal"], "rollout-absence")
+-        self.assertTrue(fid["evidence"]["primary_signal_complete"])
+-        self.assertTrue(tokens["complete"])
+-        self.assertEqual(tokens["child_output"], 2)
+-        fid, tokens, check = self.observe(events + [spawn_item(UUIDS[7])], builds)
+-        self.assertEqual(check["status"], "fail")
+-        self.assertFalse(check["criteria"]["spawns_have_rollouts"])
+-        self.assertFalse(fid["evidence"]["primary_signal_complete"])
+-        self.assertNotEqual(fid["evidence"]["primary_signal"], "rollout-absence")
+-        self.assertFalse(tokens["complete"])
+-        self.assertTrue(any(UUIDS[7] in gap for gap in tokens["observation_gaps"]))
++        for events in (stream(), stream() + [spawn_item(UUIDS[7])],
++                       stream() + [spawn_item(UUIDS[1]), spawn_item(UUIDS[1]), spawn_item(UUIDS[7])]):
++            fid, tokens, check = self.observe(events, builds)
++            self.assertEqual(check["status"], "pass")
++            self.assertEqual((check["info"]["spawn_source"], check["info"]["spawn_calls"], check["info"]["completed_spawns"]),
++                             ("root-rollout", 1, 1))
++            self.assertEqual(fid["evidence"]["primary_signal"], "rollout-absence")
++            self.assertTrue(fid["evidence"]["primary_signal_complete"])
++            self.assertTrue(tokens["complete"])
++            self.assertEqual(tokens["child_output"], 2)
+ 
+     def test_grandchild_cannot_replace_missing_direct_child(self):
+         events = stream() + [spawn_item(UUIDS[1]), spawn_item(UUIDS[2])]
+-        builds = [lambda d: rollout(d, 0, tokens=(10, 0, 1)),
++        builds = [lambda d: rollout(d, 0, tokens=(10, 0, 1), extra=spawn_functions(UUIDS[1], UUIDS[2])),
+                   lambda d: rollout(d, 1, parent=UUIDS[0], tokens=(20, 0, 2), extra=[spawn_item(UUIDS[3])]),
+                   lambda d: rollout(d, 3, parent=UUIDS[1], tokens=(30, 0, 3), calls=[("playwright-test", "test_list", "completed")])]
+         fid, tokens, check = self.observe(events, builds)
+@@ -812,7 +802,7 @@
+ 
+     def test_matching_unique_identities_at_every_level_are_complete(self):
+         events = stream() + [spawn_item(UUIDS[1]), spawn_item(UUIDS[2]), spawn_item(UUIDS[1])]
+-        builds = [lambda d: rollout(d, 0, tokens=(10, 0, 1), extra=[spawn_item(UUIDS[1]), spawn_item(UUIDS[2])]),
++        builds = [lambda d: rollout(d, 0, tokens=(10, 0, 1), extra=spawn_functions(UUIDS[1], UUIDS[2])),
+                   lambda d: rollout(d, 1, parent=UUIDS[0], tokens=(20, 0, 2), extra=[spawn_item(UUIDS[3])]),
+                   lambda d: rollout(d, 2, parent=UUIDS[0], tokens=(30, 0, 3)),
+                   lambda d: rollout(d, 3, parent=UUIDS[1], tokens=(40, 0, 4), calls=[("playwright-test", "test_list", "completed")])]
+@@ -823,9 +813,10 @@
+         self.assertEqual(check["status"], "pass")
+ 
+     def test_unknown_ids_wrong_parents_and_duplicate_rollouts_are_incomplete(self):
+-        for failure in ("unknown", "parent", "duplicate"):
+-            events = stream() + [spawn_item() if failure == "unknown" else spawn_item(UUIDS[1])]
+-            builds = [lambda d: rollout(d, 0, tokens=(10, 0, 1)),
++        for failure in ("pending", "parent", "duplicate"):
++            events = stream() + [spawn_item(UUIDS[1])]
++            root_spawn = spawn_functions(UUIDS[1])[:1] if failure == "pending" else spawn_functions(UUIDS[1])
++            builds = [lambda d: rollout(d, 0, tokens=(10, 0, 1), extra=root_spawn),
+                       lambda d: rollout(d, 1, parent=UUIDS[7] if failure == "parent" else UUIDS[0], tokens=(20, 0, 2),
+                                         calls=[("playwright-test", "test_list", "completed")])]
+             if failure == "duplicate":
+@@ -839,6 +830,78 @@
+             self.assertEqual(check["status"], "fail", failure)
+             if failure == "duplicate":
+                 self.assertEqual(tokens["child_output"], 2)  # duplicate identity is never counted twice
++
++
++class NativeRootSpawns(unittest.TestCase):
++    fixture = ROOT / "benchmarks/generator-multimodel-v2-codex/fixtures/harness-check"
++
++    def observe(self, root):
++        rec = json.loads((root / "call.json").read_text())
++        tdir = root / "transcripts"
++        return m.classify_fidelity(rec, tdir), m.tokens_for_record(rec, tdir), m.evaluate_harness_check(rec, tdir)
++
++    def test_scrubbed_real_pair_with_blind_stream_is_complete(self):
++        fid, cost, check = self.observe(self.fixture)
++        self.assertEqual(check["status"], "pass")
++        self.assertTrue(check["criteria"]["spawns_have_rollouts"])
++        self.assertEqual((check["info"]["spawns_in_parent_stream"], check["info"]["spawn_source"],
++                          check["info"]["spawn_calls"], check["info"]["completed_spawns"], check["info"]["child_rollouts"]),
++                         (0, "root-rollout", 1, 1, 1))
++        self.assertEqual(fid["evidence"]["primary_signal"], "rollout-absence")
++        self.assertTrue(fid["evidence"]["primary_signal_complete"])
++        self.assertTrue(cost["complete"])
++        self.assertEqual(cost["total"], 33329 + 21689)
++        rollouts = ev.load_sessions(self.fixture / "codex-sessions")
++        parent = next(r for r in rollouts if not r["parent_thread_id"])
++        self.assertEqual(parent["function_spawns"]["completed"], 1)  # wait_agent is not a spawn
++        self.assertEqual(parent["function_spawns"]["thread_ids"], [])  # real output has task_name only
++        raw = "".join(p.read_text() for p in self.fixture.rglob("*.jsonl"))
++        for forbidden in ("/" + "Users/", "/" + "home/", "encrypted", "instructions", "prompt", '"message"'):
++            self.assertNotIn(forbidden, raw)
++        self.assertIn('"inter_agent_communication_metadata"', raw)
++
++    def test_two_completed_calls_one_child_fail_all_three_surfaces(self):
++        import shutil
++        with tempfile.TemporaryDirectory() as tmp:
++            root = Path(tmp) / "fixture"
++            shutil.copytree(self.fixture, root)
++            parent = next(p for p in root.rglob("rollout-*.jsonl") if "0004-7850" in p.name)
++            events = ev.read_events(parent)
++            # Same task name and result, different call: counts must not collapse to unique identities.
++            extra = [dict(e, payload=dict(e["payload"], call_id="second-spawn")) for e in events
++                     if e["type"] == "response_item" and e["payload"].get("call_id") == "call_a2251767835540a6ac87cd911fe6eda2"]
++            jl(parent, events + extra)
++            fid, cost, check = self.observe(root)
++            self.assertEqual((check["info"]["spawn_calls"], check["info"]["completed_spawns"], check["info"]["child_rollouts"]), (2, 2, 1))
++            self.assertEqual(check["status"], "fail")
++            self.assertFalse(check["criteria"]["spawns_have_rollouts"])
++            self.assertFalse(fid["evidence"]["primary_signal_complete"])
++            self.assertNotEqual(fid["evidence"]["primary_signal"], "rollout-absence")
++            self.assertFalse(cost["complete"])
++
++    def test_unfinished_call_counts_as_requested_but_not_completed(self):
++        events = spawn_functions(UUIDS[1])
++        requested = ev.spawn_observation(events[:1], function_calls_only=True)
++        self.assertEqual((requested["calls"], requested["completed"], requested["unresolved"]), (1, 0, 1))
++        failed = dict(events[1], payload=dict(events[1]["payload"], output='{"error": "spawn failed"}'))
++        self.assertEqual(ev.spawn_observation([events[0], failed], function_calls_only=True)["completed"], 0)
++
++    def test_child_check_needs_a_spawn_even_if_child_rollout_exists(self):
++        builds = [lambda d: rollout(d, 0, tokens=(10, 0, 1)),
++                  lambda d: rollout(d, 1, parent=UUIDS[0], tokens=(20, 0, 2), calls=[("playwright-test", "test_list", "completed")])]
++        _, _, check = SpawnLineage().observe(stream(), builds)
++        self.assertFalse(check["criteria"]["spawns_have_rollouts"])
++        self.assertEqual(check["status"], "fail")
++
++    def test_stream_is_used_only_without_root_rollout(self):
++        events = stream() + [spawn_item(UUIDS[1])]
++        with tempfile.TemporaryDirectory() as tmp:
++            tdir, sdir = make_cell_files(tmp, events, [lambda d: rollout(d, 1, parent=UUIDS[0], tokens=(20, 0, 2))])
++            summary = m.rollout_summary(arm_rec(), tdir, events, sdir)
++            census = ev.parent_spawn_observation(summary, events)
++            self.assertEqual((census["source"], census["calls"], census["completed"]), ("parent-stream", 1, 1))
++            self.assertFalse(summary["root_found"])
++
+ 
+ 
+ class CostAndTreatment(unittest.TestCase):
+--- a/scripts/ci/test-generator-v2-codex-smoke.py
++++ b/scripts/ci/test-generator-v2-codex-smoke.py
+@@ -103,7 +103,7 @@
+         with canonical_tempdir() as tmp:
+             spawn = {"type": "item.completed", "item": {"type": "collab_tool_call", "tool": "spawn_agent", "status": "completed", "receiver_thread_ids": [f.UUIDS[1]]}}
+             tdir, sdir = f.make_cell_files(tmp, f.stream() + [spawn], [
+-                lambda d: f.rollout(d, 0, tokens=(1000, 800, 100)),
++                lambda d: f.rollout(d, 0, tokens=(1000, 800, 100), extra=f.spawn_functions(f.UUIDS[1])),
+                 lambda d: f.rollout(d, 1, parent=f.UUIDS[0], calls=[("playwright-test", "generator_write_test", "completed")], tokens=(500, 200, 50)),
+             ])
+             rec = f.arm_rec(compliance={"sessions": {"files": 2, "skipped": []}}, usage=f.usage(1000, 800, 100))

@@ -1,0 +1,618 @@
+{
+  "schema_version": 1,
+  "purpose": "Secondary refactor classes for generator-multimodel-v2-claude. Each class is a list of find/replace edits applied to app.mjs (replace_all semantics, like the primary refactor in the v3 truth files) after the staging port is substituted. 'count' is the expected number of occurrences of 'find' in the unmodified app.mjs and is checked by the offline test.",
+  "classes": {
+    "text_label": {
+      "description": "Visible text and accessible-name change: field labels, button names, status copy and aria-labels are reworded. The h1 headings are left alone because the case's existing smoke spec asserts them and must pass on every variant. Element ids, classes, roles and DOM structure are unchanged. Every new text avoids the old text as a substring so that default (substring, case-insensitive) role-name matching cannot survive by accident. Measures coupling to exact copy.",
+      "cases": {
+        "v2-06": [
+          {
+            "find": "<label for=\"tg-input\">Add a tag</label>",
+            "replace": "<label for=\"tg-input\">New label name</label>",
+            "old_text": "Add a tag",
+            "new_text": "New label name",
+            "count": 1
+          },
+          {
+            "find": "<button type=\"button\" id=\"tg-save\">Save</button>",
+            "replace": "<button type=\"button\" id=\"tg-save\">Store</button>",
+            "old_text": "Save",
+            "new_text": "Store",
+            "count": 1
+          },
+          {
+            "find": "\"Tag limit reached\"",
+            "replace": "\"Maximum labels reached\"",
+            "old_text": "Tag limit reached",
+            "new_text": "Maximum labels reached",
+            "count": 1
+          },
+          {
+            "find": "\"Already added\"",
+            "replace": "\"Duplicate label\"",
+            "old_text": "Already added",
+            "new_text": "Duplicate label",
+            "count": 1
+          },
+          {
+            "find": "\"Tags saved\"",
+            "replace": "\"Labels stored\"",
+            "old_text": "Tags saved",
+            "new_text": "Labels stored",
+            "count": 1
+          },
+          {
+            "find": "remove.setAttribute(\"aria-label\", \"Remove \" + tag);",
+            "replace": "remove.setAttribute(\"aria-label\", \"Delete label \" + tag);",
+            "old_text": "Remove",
+            "new_text": "Delete label",
+            "count": 1
+          },
+          {
+            "find": "<ul id=\"tg-chips\" aria-label=\"Tags\"></ul>",
+            "replace": "<ul id=\"tg-chips\" aria-label=\"Labels\"></ul>",
+            "old_text": "Tags",
+            "new_text": "Labels",
+            "count": 1
+          }
+        ],
+        "v2-22": [
+          {
+            "find": "<label for=\"or-status\">Status</label>",
+            "replace": "<label for=\"or-status\">Stage</label>",
+            "old_text": "Status",
+            "new_text": "Stage",
+            "count": 1
+          },
+          {
+            "find": "<label for=\"or-search\">Search</label>",
+            "replace": "<label for=\"or-search\">Find</label>",
+            "old_text": "Search",
+            "new_text": "Find",
+            "count": 1
+          },
+          {
+            "find": "placeholder=\"Order number\"",
+            "replace": "placeholder=\"Reference\"",
+            "old_text": "Order number",
+            "new_text": "Reference",
+            "count": 1
+          },
+          {
+            "find": "<option value=\"\">Any status</option>",
+            "replace": "<option value=\"\">All stages</option>",
+            "old_text": "Any status",
+            "new_text": "All stages",
+            "count": 1
+          },
+          {
+            "find": "<button type=\"button\" id=\"or-clear\">Clear filters</button>",
+            "replace": "<button type=\"button\" id=\"or-clear\">Reset</button>",
+            "old_text": "Clear filters",
+            "new_text": "Reset",
+            "count": 1
+          },
+          {
+            "find": "matches.length === 1 ? \"1 order\" : matches.length + \" orders\"",
+            "replace": "matches.length === 1 ? \"1 result\" : matches.length + \" results\"",
+            "old_text": "orders",
+            "new_text": "results",
+            "count": 1
+          },
+          {
+            "find": "<ul id=\"or-list\" aria-label=\"Orders\"></ul>",
+            "replace": "<ul id=\"or-list\" aria-label=\"Purchases\"></ul>",
+            "old_text": "Orders",
+            "new_text": "Purchases",
+            "count": 1
+          }
+        ],
+        "v2-23": [
+          {
+            "find": "<button type=\"button\" id=\"ac-open\">Delete account</button>",
+            "replace": "<button type=\"button\" id=\"ac-open\">Close profile</button>",
+            "old_text": "Delete account",
+            "new_text": "Close profile",
+            "count": 1
+          },
+          {
+            "find": "<p role=\"status\">Your account has been deleted</p>",
+            "replace": "<p role=\"status\">Profile closed</p>",
+            "old_text": "Your account has been deleted",
+            "new_text": "Profile closed",
+            "count": 1
+          },
+          {
+            "find": "<h2 id=\"ac-dialog-title\">Delete your account?</h2>",
+            "replace": "<h2 id=\"ac-dialog-title\">Close this profile?</h2>",
+            "old_text": "Delete your account?",
+            "new_text": "Close this profile?",
+            "count": 1
+          },
+          {
+            "find": "<p>This cannot be undone. Type <strong>DELETE</strong> to confirm.</p>",
+            "replace": "<p>Closing is permanent. Enter <strong>DELETE</strong> below.</p>",
+            "old_text": "This cannot be undone",
+            "new_text": "Closing is permanent",
+            "count": 1
+          },
+          {
+            "find": "<label for=\"ac-confirm-text\">Type DELETE to confirm</label>",
+            "replace": "<label for=\"ac-confirm-text\">Confirmation word</label>",
+            "old_text": "Type DELETE to confirm",
+            "new_text": "Confirmation word",
+            "count": 1
+          },
+          {
+            "find": "<button type=\"button\" id=\"ac-cancel\">Cancel</button>",
+            "replace": "<button type=\"button\" id=\"ac-cancel\">Keep profile</button>",
+            "old_text": "Cancel",
+            "new_text": "Keep profile",
+            "count": 1
+          },
+          {
+            "find": "<button type=\"button\" id=\"ac-confirm\" disabled>Delete my account</button>",
+            "replace": "<button type=\"button\" id=\"ac-confirm\" disabled>Confirm closure</button>",
+            "old_text": "Delete my account",
+            "new_text": "Confirm closure",
+            "count": 1
+          }
+        ],
+        "v3-04": [
+          {
+            "find": "<button type=\"button\" id=\"pl-repeat\" aria-pressed=\"false\">Repeat</button>",
+            "replace": "<button type=\"button\" id=\"pl-repeat\" aria-pressed=\"false\">Loop</button>",
+            "old_text": "Repeat",
+            "new_text": "Loop",
+            "count": 1
+          },
+          {
+            "find": "<span id=\"pl-total\" class=\"total\">Total 0:00</span>",
+            "replace": "<span id=\"pl-total\" class=\"total\">Duration 0:00</span>",
+            "old_text": "Total",
+            "new_text": "Duration",
+            "count": 1
+          },
+          {
+            "find": "\"Total \" + clock(total)",
+            "replace": "\"Duration \" + clock(total)",
+            "old_text": "Total",
+            "new_text": "Duration",
+            "count": 1
+          },
+          {
+            "find": "<span class=\"now-label\">Now playing:</span>",
+            "replace": "<span class=\"now-label\">Currently on:</span>",
+            "old_text": "Now playing:",
+            "new_text": "Currently on:",
+            "count": 1
+          },
+          {
+            "find": "<button type=\"button\" id=\"pl-stop\">Stop</button>",
+            "replace": "<button type=\"button\" id=\"pl-stop\">Pause</button>",
+            "old_text": "Stop",
+            "new_text": "Pause",
+            "count": 1
+          },
+          {
+            "find": "<ol id=\"pl-tracks\" class=\"tracks\" aria-label=\"Tracks\"></ol>",
+            "replace": "<ol id=\"pl-tracks\" class=\"tracks\" aria-label=\"Songs\"></ol>",
+            "old_text": "Tracks",
+            "new_text": "Songs",
+            "count": 1
+          },
+          {
+            "find": "play.textContent = \"Play\";",
+            "replace": "play.textContent = \"Start\";",
+            "old_text": "Play",
+            "new_text": "Start",
+            "count": 1
+          },
+          {
+            "find": "play.setAttribute(\"aria-label\", \"Play \" + track.title);",
+            "replace": "play.setAttribute(\"aria-label\", \"Start \" + track.title);",
+            "old_text": "Play",
+            "new_text": "Start",
+            "count": 1
+          },
+          {
+            "find": "up.textContent = \"Move up\";",
+            "replace": "up.textContent = \"Raise\";",
+            "old_text": "Move up",
+            "new_text": "Raise",
+            "count": 1
+          },
+          {
+            "find": "up.setAttribute(\"aria-label\", \"Move \" + track.title + \" up\");",
+            "replace": "up.setAttribute(\"aria-label\", \"Raise \" + track.title);",
+            "old_text": "Move",
+            "new_text": "Raise",
+            "count": 1
+          },
+          {
+            "find": "down.textContent = \"Move down\";",
+            "replace": "down.textContent = \"Lower\";",
+            "old_text": "Move down",
+            "new_text": "Lower",
+            "count": 1
+          },
+          {
+            "find": "down.setAttribute(\"aria-label\", \"Move \" + track.title + \" down\");",
+            "replace": "down.setAttribute(\"aria-label\", \"Lower \" + track.title);",
+            "old_text": "Move",
+            "new_text": "Lower",
+            "count": 1
+          },
+          {
+            "find": "remove.textContent = \"Remove\";",
+            "replace": "remove.textContent = \"Drop\";",
+            "old_text": "Remove",
+            "new_text": "Drop",
+            "count": 1
+          },
+          {
+            "find": "remove.setAttribute(\"aria-label\", \"Remove \" + track.title);",
+            "replace": "remove.setAttribute(\"aria-label\", \"Drop \" + track.title);",
+            "old_text": "Remove",
+            "new_text": "Drop",
+            "count": 1
+          }
+        ],
+        "v3-06": [
+          {
+            "find": "<p id=\"bg-total\" class=\"total-line\">Total $0 of $0</p>",
+            "replace": "<p id=\"bg-total\" class=\"total-line\">Overall $0 of $0</p>",
+            "old_text": "Total",
+            "new_text": "Overall",
+            "count": 1
+          },
+          {
+            "find": "\"Total $\" + spent + \" of $\" + limit",
+            "replace": "\"Overall $\" + spent + \" of $\" + limit",
+            "old_text": "Total",
+            "new_text": "Overall",
+            "count": 1
+          },
+          {
+            "find": "amounts.textContent = \"$\" + env.spent + \" of $\" + env.limit;",
+            "replace": "amounts.textContent = \"$\" + env.spent + \" / $\" + env.limit;",
+            "old_text": " of $",
+            "new_text": " / $",
+            "count": 1
+          },
+          {
+            "find": "bar.setAttribute(\"aria-label\", env.name + \" spending\");",
+            "replace": "bar.setAttribute(\"aria-label\", env.name + \" usage\");",
+            "old_text": "spending",
+            "new_text": "usage",
+            "count": 1
+          },
+          {
+            "find": "badge.textContent = \"Over budget\";",
+            "replace": "badge.textContent = \"Limit exceeded\";",
+            "old_text": "Over budget",
+            "new_text": "Limit exceeded",
+            "count": 1
+          },
+          {
+            "find": "label.textContent = \"Add spending\";",
+            "replace": "label.textContent = \"New expense\";",
+            "old_text": "Add spending",
+            "new_text": "New expense",
+            "count": 1
+          },
+          {
+            "find": "add.textContent = \"Add\";",
+            "replace": "add.textContent = \"Log\";",
+            "old_text": "Add",
+            "new_text": "Log",
+            "count": 1
+          },
+          {
+            "find": "add.setAttribute(\"aria-label\", \"Add spending to \" + env.name);",
+            "replace": "add.setAttribute(\"aria-label\", \"Log expense for \" + env.name);",
+            "old_text": "Add spending to",
+            "new_text": "Log expense for",
+            "count": 1
+          },
+          {
+            "find": "reset.textContent = \"Reset envelope\";",
+            "replace": "reset.textContent = \"Clear pot\";",
+            "old_text": "Reset envelope",
+            "new_text": "Clear pot",
+            "count": 1
+          },
+          {
+            "find": "reset.setAttribute(\"aria-label\", \"Reset \" + env.name);",
+            "replace": "reset.setAttribute(\"aria-label\", \"Clear \" + env.name);",
+            "old_text": "Reset",
+            "new_text": "Clear",
+            "count": 1
+          }
+        ],
+        "v3-09": [
+          {
+            "find": "line.textContent = deck.cards.length + \" cards \u00b7 \" + learned + \" learned\";",
+            "replace": "line.textContent = deck.cards.length + \" items \u00b7 \" + learned + \" mastered\";",
+            "old_text": "learned",
+            "new_text": "mastered",
+            "count": 1
+          },
+          {
+            "find": "study.textContent = \"Study\";",
+            "replace": "study.textContent = \"Practice\";",
+            "old_text": "Study",
+            "new_text": "Practice",
+            "count": 1
+          },
+          {
+            "find": "study.setAttribute(\"aria-label\", \"Study \" + deck.name);",
+            "replace": "study.setAttribute(\"aria-label\", \"Practice \" + deck.name);",
+            "old_text": "Study",
+            "new_text": "Practice",
+            "count": 1
+          },
+          {
+            "find": "<section id=\"fc-study\" class=\"study\" aria-label=\"Study\" hidden>",
+            "replace": "<section id=\"fc-study\" class=\"study\" aria-label=\"Practice\" hidden>",
+            "old_text": "Study",
+            "new_text": "Practice",
+            "count": 1
+          },
+          {
+            "find": "\"Studying \" + deck.name",
+            "replace": "\"Practising \" + deck.name",
+            "old_text": "Studying",
+            "new_text": "Practising",
+            "count": 1
+          },
+          {
+            "find": "\"All \" + deck.cards.length + \" cards reviewed\"",
+            "replace": "\"Finished all \" + deck.cards.length + \" items\"",
+            "old_text": "cards reviewed",
+            "new_text": "items",
+            "count": 1
+          },
+          {
+            "find": "\"Card \" + (session.index + 1) + \" of \" + deck.cards.length",
+            "replace": "\"Item \" + (session.index + 1) + \"/\" + deck.cards.length",
+            "old_text": "Card",
+            "new_text": "Item",
+            "count": 1
+          },
+          {
+            "find": "<button type=\"button\" id=\"fc-flip\">Flip</button>",
+            "replace": "<button type=\"button\" id=\"fc-flip\">Reveal</button>",
+            "old_text": "Flip",
+            "new_text": "Reveal",
+            "count": 1
+          },
+          {
+            "find": "<button type=\"button\" id=\"fc-got\">Got it</button>",
+            "replace": "<button type=\"button\" id=\"fc-got\">Know it</button>",
+            "old_text": "Got it",
+            "new_text": "Know it",
+            "count": 1
+          },
+          {
+            "find": "<button type=\"button\" id=\"fc-again\">Again</button>",
+            "replace": "<button type=\"button\" id=\"fc-again\">Retry</button>",
+            "old_text": "Again",
+            "new_text": "Retry",
+            "count": 1
+          },
+          {
+            "find": "<p id=\"fc-done\" class=\"done\" hidden>Session done</p>",
+            "replace": "<p id=\"fc-done\" class=\"done\" hidden>Round complete</p>",
+            "old_text": "Session done",
+            "new_text": "Round complete",
+            "count": 1
+          },
+          {
+            "find": "<button type=\"button\" id=\"fc-close\">Back to decks</button>",
+            "replace": "<button type=\"button\" id=\"fc-close\">Return</button>",
+            "old_text": "Back to decks",
+            "new_text": "Return",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "structure": {
+      "description": "DOM-structure change that keeps roles and accessible names: extra wrapper elements around the page content, the heading text, control groups and list-item children. Element ids, classes (none added to existing elements, none removed), roles, accessible names and visible text are unchanged. Measures coupling to DOM position (child combinators, nth-child, positional locators).",
+      "cases": {
+        "v2-06": [
+          {
+            "find": "<main>",
+            "replace": "<main><div class=\"layout\"><div class=\"layout__inner\">",
+            "count": 1
+          },
+          {
+            "find": "</main>",
+            "replace": "</div></div></main>",
+            "count": 1
+          },
+          {
+            "find": "<h1>Article tags</h1>",
+            "replace": "<h1><span>Article tags</span></h1>",
+            "count": 1
+          },
+          {
+            "find": "<button type=\"button\" id=\"tg-save\">Save</button>",
+            "replace": "<div class=\"actions\"><button type=\"button\" id=\"tg-save\">Save</button></div>",
+            "count": 1
+          },
+          {
+            "find": "li.append(text, remove);",
+            "replace": "const inner = document.createElement(\"div\"); inner.append(text, remove); li.append(inner);",
+            "count": 1
+          }
+        ],
+        "v2-22": [
+          {
+            "find": "<main>",
+            "replace": "<main><div class=\"layout\"><div class=\"layout__inner\">",
+            "count": 1
+          },
+          {
+            "find": "</main>",
+            "replace": "</div></div></main>",
+            "count": 1
+          },
+          {
+            "find": "<h1>Orders</h1>",
+            "replace": "<h1><span>Orders</span></h1>",
+            "count": 1
+          },
+          {
+            "find": "<label for=\"or-status\">Status</label>",
+            "replace": "<div class=\"field\"><label for=\"or-status\">Status</label>",
+            "count": 1
+          },
+          {
+            "find": "</select>",
+            "replace": "</select></div>",
+            "count": 1
+          },
+          {
+            "find": "<label for=\"or-search\">Search</label>",
+            "replace": "<div class=\"field\"><label for=\"or-search\">Search</label>",
+            "count": 1
+          },
+          {
+            "find": "placeholder=\"Order number\">",
+            "replace": "placeholder=\"Order number\"></div>",
+            "count": 1
+          }
+        ],
+        "v2-23": [
+          {
+            "find": "<main>",
+            "replace": "<main><div class=\"layout\"><div class=\"layout__inner\">",
+            "count": 1
+          },
+          {
+            "find": "</main>",
+            "replace": "</div></div></main>",
+            "count": 1
+          },
+          {
+            "find": "<h1>Account</h1>",
+            "replace": "<h1><span>Account</span></h1>",
+            "count": 1
+          },
+          {
+            "find": "<p id=\"ac-name\"></p>",
+            "replace": "<div class=\"details\"><p id=\"ac-name\"></p>",
+            "count": 1
+          },
+          {
+            "find": "<p id=\"ac-email\"></p>",
+            "replace": "<p id=\"ac-email\"></p></div>",
+            "count": 1
+          },
+          {
+            "find": "<button type=\"button\" id=\"ac-cancel\">Cancel</button>",
+            "replace": "<div class=\"dialog-actions\"><button type=\"button\" id=\"ac-cancel\">Cancel</button>",
+            "count": 1
+          },
+          {
+            "find": "<button type=\"button\" id=\"ac-confirm\" disabled>Delete my account</button>",
+            "replace": "<button type=\"button\" id=\"ac-confirm\" disabled>Delete my account</button></div>",
+            "count": 1
+          }
+        ],
+        "v3-04": [
+          {
+            "find": "<main>",
+            "replace": "<main><div class=\"layout\"><div class=\"layout__inner\">",
+            "count": 1
+          },
+          {
+            "find": "</main>",
+            "replace": "</div></div></main>",
+            "count": 1
+          },
+          {
+            "find": "<h1>Playlist</h1>",
+            "replace": "<h1><span>Playlist</span></h1>",
+            "count": 1
+          },
+          {
+            "find": "<button type=\"button\" id=\"pl-repeat\" aria-pressed=\"false\">Repeat</button>",
+            "replace": "<div class=\"toolbar__group\"><button type=\"button\" id=\"pl-repeat\" aria-pressed=\"false\">Repeat</button></div>",
+            "count": 1
+          },
+          {
+            "find": "li.append(title, length, play, up, down, remove);",
+            "replace": "const meta = document.createElement(\"div\"); meta.append(title, length); const actions = document.createElement(\"div\"); actions.append(play, up, down, remove); li.append(meta, actions);",
+            "count": 1
+          }
+        ],
+        "v3-06": [
+          {
+            "find": "<main>",
+            "replace": "<main><div class=\"layout\"><div class=\"layout__inner\">",
+            "count": 1
+          },
+          {
+            "find": "</main>",
+            "replace": "</div></div></main>",
+            "count": 1
+          },
+          {
+            "find": "<h1>Budget envelopes</h1>",
+            "replace": "<h1><span>Budget envelopes</span></h1>",
+            "count": 1
+          },
+          {
+            "find": "article.append(heading, amounts, bar, badge, form);",
+            "replace": "const body = document.createElement(\"div\"); body.append(amounts, bar, badge, form); article.append(heading, body);",
+            "count": 1
+          },
+          {
+            "find": "form.append(label, input, add, reset);",
+            "replace": "const buttons = document.createElement(\"div\"); buttons.append(add, reset); form.append(label, input, buttons);",
+            "count": 1
+          }
+        ],
+        "v3-09": [
+          {
+            "find": "<main>",
+            "replace": "<main><div class=\"layout\"><div class=\"layout__inner\">",
+            "count": 1
+          },
+          {
+            "find": "</main>",
+            "replace": "</div></div></main>",
+            "count": 1
+          },
+          {
+            "find": "<h1>Flashcards</h1>",
+            "replace": "<h1><span>Flashcards</span></h1>",
+            "count": 1
+          },
+          {
+            "find": "<button type=\"button\" id=\"fc-flip\">Flip</button>",
+            "replace": "<div class=\"study-actions\"><button type=\"button\" id=\"fc-flip\">Flip</button>",
+            "count": 1
+          },
+          {
+            "find": "<button type=\"button\" id=\"fc-again\">Again</button>",
+            "replace": "<button type=\"button\" id=\"fc-again\">Again</button></div>",
+            "count": 1
+          },
+          {
+            "find": "article.append(heading, line, study);",
+            "replace": "const foot = document.createElement(\"div\"); foot.append(line, study); article.append(heading, foot);",
+            "count": 1
+          }
+        ]
+      }
+    }
+  },
+  "scoring": "A cell scores 1.0 for a class iff it is clean 3/3 on the original app (the primary scoring result) and its spec files pass on the app with that class's edits applied; otherwise 0.0. Secondary metric only; it never enters a decision rule.",
+  "validation": "Static only when written: markers exist, edits parse (node --check), static markup census. Rendering-level equivalence (ARIA snapshot equality for the structure class, ids and classes for the text class) is checked by the `validate-refactors` subcommand on the host, before the freeze, and is not claimed here.",
+  "provenance": "NOT authored blind. The edit lists were written after the authors had read the stored v1 claude-sonnet-5-5 specs and transcripts (see the README limitations), so they are not derived from app.mjs alone before any arm output was seen. The Codex successor's build procedure for its own classes (edit lists authored from app.mjs only, before arm output is opened) was not followed here. No other Claude model's cells were read.",
+  "validation_limits": "`validate-refactors` takes ARIA snapshots at the initial route of each case only. Edits that act on nodes the initial route does not show are therefore NOT checked for ARIA equality or difference: the confirmation dialog of v2-23 (its title text edit and the `dialog-actions` wrapper), the study view and the done line of v3-09 (the `study-actions` wrapper and the `foot` wrapper), and every wrapper created from script (`inner` in v2-06, `meta` and `actions` in v3-04, `body` and `buttons` in v3-06, `foot` in v3-09). The static markup census cannot see script-created nodes either, and the text-class checks are substring-level. The existing smoke spec of each case still has to pass on every variant, which covers only what that spec touches."
+}

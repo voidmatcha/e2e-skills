@@ -1,0 +1,34 @@
+--- a/SKILL.md
++++ b/SKILL.md
+@@ -34,5 +34,4 @@
+ Step 4: Scenario Design        (risk admission → plan → user approval)
+ Step 5: Code Generation        (baseline run, then tracer when required; see code-rules.md)
+-Step 6: YAGNI Audit + e2e-reviewer
+ Step 7: V1–V6 Verification     (project-native runner; constrained debugging)
+ Step 5b: Conventions & Seed    (inside Step 7 after final verdicts allow Complete; before write-set comparison and completion report)
+@@ -178,25 +177,4 @@
+ 
+ Before writing any approved first-run convention or seed artifact, read `conventions-template.md` from the beginning and follow its procedure and template.
+-
+----
+-
+-## Step 6: YAGNI Audit + e2e-reviewer
+-
+-### YAGNI audit (run immediately after writing code)
+-
+-Before auditing generated locators, read `code-rules.md` § YAGNI audit and follow it in full.
+-
+-### e2e-reviewer (automatic quality gate)
+-
+-Run the bundled mechanical scanner (`e2e-reviewer` Phase 1) once per generated spec or POM file, one path per invocation, under exactly this pinned invocation: `E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN /bin/bash -p <e2e-reviewer skill-base>/scripts/scan.sh <one spec or POM path>`. Under exactly this invocation the scanner is a skill-owned tool and needs no Step 4 row: Tier 1 project ESLint and every download are off, Tier 2 is off so that this exemption never depends on a host `ast-grep` binary (the scanner pins a skill-owned `--config` and starts ast-grep outside the project directory, where ast-grep otherwise honors a project-provided `sgconfig.yml`; keep Tier 2 off here until that scanner change is verified on a live run), and tool-path overrides are cleared. Any other `E2E_SMELL_*` setting is a target-controlled command that needs repository trust and its own exact Step 4 row; an environment variable alone is never approval. The Phase 2 LLM review runs once, by the V6 reviewer in Step 7, which applies `<e2e-reviewer skill-base>/SKILL.md` in full with the zero-P0 gate: a writer-side Phase 2 cannot count toward V6 and only repeats that work, so while a separate reviewer actor is available do not run it here and do not invoke `e2e-reviewer` through the `Skill` tool from the writer context. Only when no separate reviewer actor exists (V6 will be `CANNOT_VERIFY`), read `<e2e-reviewer skill-base>/SKILL.md` and run its Phase 2 inline on the spec **and** POM paths so its findings still reach the report; that inline review changes no V6 verdict. Fall back to a manual P0 pass (always-true/weak assertions, missing `await`, focused tests) **only** when the e2e-reviewer files are absent entirely, and state the review ran in reduced form. Never silently skip it.
+-
+-- **P0 issues found:** fix immediately, rerun the scanner. **Max 3
+-  attempts** — if any P0 remains after 3 fix passes (e.g. intentional
+-  `test.only` left for development, an unavoidable bypass with no
+-  `// JUSTIFIED:` rationale), report `CANNOT_COMPLETE/BLOCKED`, list every
+-  remaining P0 and stop. Do not proceed to Step 7, do not emit the completion
+-  report, and do not hand the candidate back as complete. Do not loop
+-  indefinitely.
+-- **P1/P2 issues found:** output in the final report, do not block Step 7
+ 
+ ---

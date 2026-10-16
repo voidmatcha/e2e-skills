@@ -1,5 +1,7 @@
 # Live generator run: writescope-demo
 
+> 3.0.0 note: `playwright-test-generator` is now a router (CLI exploration or installed official agents, scanner gate, one test run). The Step 3 and Step 4 tables, write-set check, and V1-V6 verification this runbook was written to exercise were removed and are kept at tag `v2.0.1`. Use the app below as the loopback target for the manual host smoke runs in `CONTRIBUTING.md` (CLI path end to end, scanner gate on a seeded `#id` selector, one run). The 2.x procedure below is historical and describes behavior that no longer ships.
+
 A small todo app for running `playwright-test-generator` end to end against a real browser and a real Playwright project. It is not part of CI: a run needs a model, a browser, and a user to answer the approval gates. Rerun it after changing the generator's Step 3, Step 4 tables, write-set check, verification rules, or completion status.
 
 The app is a Node standard-library server (`server.mjs`) with an in-memory todo list: `POST /api/todos` (400 `Title is required` for an empty title, 400 `Title must be 60 characters or fewer` above 60 characters), `PATCH /api/todos/:id`, and `POST /api/reset`. The page does not re-fetch the list after a failed POST, which is what makes the failed-write re-read rule observable. `.gitignore` lists only `node_modules/` on purpose, so Playwright's `test-results/` shows up as untracked and must be classified as runtime output.

@@ -1,0 +1,214 @@
+{
+  "schema_version": 1,
+  "protocol_id": "generator-multimodel-v1",
+  "status": "NOT_RUN",
+  "evidence_scope": "public-development-pilot",
+  "release_eligible": false,
+  "extends": [
+    "generator-official-pilot-v1",
+    "generator-official-reviewer-pilot-v1"
+  ],
+  "arms": [
+    "official-generator",
+    "official+reviewer",
+    "ours-2.0.1"
+  ],
+  "arm_labels": {
+    "A": "official-generator",
+    "B": "official+reviewer",
+    "C": "ours-2.0.1"
+  },
+  "repetitions": 2,
+  "workers": 1,
+  "seed": 20261016,
+  "tasks": [
+    "v2-06",
+    "v2-22",
+    "v2-23",
+    "v3-04",
+    "v3-06",
+    "v3-09"
+  ],
+  "reasoning_effort": "medium",
+  "timeout_s": 1500,
+  "call_budget_usd_claude_safety_cap": 30.0,
+  "container_image": "sha256:687b18c424d01c3af69efa921eaa824b48eb737d46492da334405e348da73881",
+  "docker_context": "colima",
+  "minimum_free_disk_bytes": 4294967296,
+  "load": {
+    "pause_threshold": 40,
+    "note": "Inherited from the two pilots."
+  },
+  "output_root": "~/.cache/e2e-skills-bench/multimodel-v1 (override: MULTIMODEL_V1_DIR); per model: <root>/<model>/final.json, scores.json, results.json, final-artifacts/, final-transcripts/; progress in <root>/STATUS.md",
+  "models": [
+    {
+      "order": 1,
+      "id": "gpt-6-sol",
+      "runner": "codex",
+      "family": "codex"
+    },
+    {
+      "order": 2,
+      "id": "claude-sonnet-5-5",
+      "runner": "claude",
+      "family": "claude"
+    },
+    {
+      "order": 3,
+      "id": "gpt-6-astra",
+      "runner": "codex",
+      "family": "codex"
+    },
+    {
+      "order": 4,
+      "id": "claude-opus-5-5",
+      "runner": "claude",
+      "family": "claude"
+    },
+    {
+      "order": 5,
+      "id": "claude-fable-5-1",
+      "runner": "claude",
+      "family": "claude"
+    },
+    {
+      "order": 6,
+      "id": "claude-haiku-5-5",
+      "runner": "claude",
+      "family": "claude"
+    },
+    {
+      "order": 7,
+      "id": "gpt-6.1-sol",
+      "runner": "codex",
+      "family": "codex"
+    },
+    {
+      "order": 8,
+      "id": "gpt-6-luna",
+      "runner": "codex",
+      "family": "codex"
+    },
+    {
+      "order": 9,
+      "id": "gpt-5.6-sol",
+      "runner": "codex",
+      "family": "codex"
+    },
+    {
+      "order": 10,
+      "id": "gpt-5.6-terra",
+      "runner": "codex",
+      "family": "codex"
+    },
+    {
+      "order": 11,
+      "id": "gpt-5.6-luna",
+      "runner": "codex",
+      "family": "codex"
+    }
+  ],
+  "model_availability_probe": {
+    "date": "2026-10-14",
+    "method": "One trivial prompt per model, no tools: `claude -p --model <id>` (Claude Code 2.1.299) and `codex exec --model <id> -c model_reasoning_effort=medium` (codex-cli 0.159.3, host). All 4 Claude and all 9 listed Codex ids returned 'ok'. Models are entered in the order above so that any partial run still contains both families early.",
+    "included": "Every model that answered, except the exclusions below.",
+    "excluded": [
+      {
+        "id": "gpt-5.5",
+        "reason": "Not re-run: it is the reference model of generator-official-pilot-v1 and generator-official-reviewer-pilot-v1 (same tasks, same harness). Its saved numbers are shown as a reference row only, with the caveat that they came from a different day and, for arms A and C, a different B-input pipeline."
+      },
+      {
+        "id": "gpt-daybreak-blue-latest",
+        "reason": "Callable, but a moving codename alias ('-latest'): the model behind it can change between cells, so a 36-cell run is not reproducible. Excluded to keep the matrix pinned."
+      },
+      {
+        "id": "gpt-reserve",
+        "reason": "Listed as hidden (visibility 'hide') in the local Codex model cache; not offered for general use. Not probed."
+      },
+      {
+        "id": "codex-auto-review",
+        "reason": "Hidden, purpose-built approval-reviewer model, not a general code-generation model. Not probed."
+      }
+    ]
+  },
+  "per_model_schedule": "Each model runs the same 36 cells: 6 tasks x 3 arms x 2 repetitions. Phase 1 = the 24 arm A and arm C cells, built in (repetition, task, arm A then C) order and shuffled with random.Random(seed); phase 2 = the 12 arm B cells, built in (repetition, task) order and shuffled with random.Random(seed + 1), run after phase 1 because B reviews and fixes THAT model's own arm A deliverable of the same task and repetition. One model call at a time across the entire campaign; models run one after another in the order above.",
+  "arm_B_input": "The same model's own arm A deliverable (final-artifacts/<task>-official-generator-r<rep>/tests/) from this run, copied into a fresh baseline project as untracked files. If that A cell has no spec file, the B cell is UNAVAILABLE (no call) and scores 0 like its A cell.",
+  "transports": {
+    "codex": "The pilot container adapter (generator_codex_official_adapter.py, unchanged): codex-cli 0.159.3 in the pinned Docker image, `--model <id>`, model_reasoning_effort=medium, same prompts as the pilots. Arm A uses `init-agents --loop=codex` and the frozen toml digests of generator-official-pilot-v1.",
+    "claude": "generator_claude_multimodel_adapter.py: Claude Code 2.1.299 `claude -p` on the host, `--model <id> --effort medium --output-format stream-json --json-schema`, max budget 30 USD as a safety cap only. Skill isolation: `--disable-slash-commands` plus `--strict-mcp-config` on every call, and the runner verifies the system/init event of every call (skills list empty; official playwright agents and the playwright-test MCP server visible only in arm A; no web tools; Write/Edit absent for the arm A parent and present for arms B and C); a violating call is an infrastructure error, never data. The official generator definition pins `model: sonnet` in its frontmatter, which a pre-freeze preflight showed overrides CLAUDE_CODE_SUBAGENT_MODEL (the subagent ran on claude-sonnet-5-5 under a haiku parent). After the digest check, the runner therefore replaces exactly that one line with `model: inherit` in the staged copy (nothing else in the definition changes) and also sets CLAUDE_CODE_SUBAGENT_MODEL for the general-purpose subagents of arms B and C; every Claude cell reports modelUsage, and cells whose modelUsage names any other model are counted (cells_with_other_models_used). Tool scope: arm A parent Read, Grep, Glob, Bash, Agent plus the `playwright-test` MCP tools from the project's `.mcp.json` (project settings source only, so `.claude/agents/*.md` from `init-agents --loop=claude` load); arms B and C Read, Grep, Glob, Bash, Write, Edit, Agent, no settings source, no MCP. A deny list blocks Read of the repository's skills/benchmarks/docs, sibling benchmark worktrees and the saved evidence directories; Bash is not path-restricted, so every call is audited afterward (compliance.home_paths_touched_outside_work).",
+    "claude_official_arm": {
+      "initializer": "npx --no-install playwright init-agents --loop=claude, run in each arm A workspace with the fixture Playwright 1.62.0",
+      "init_agents_file_sha256": {
+        ".claude/agents/playwright-test-generator.md": "d267d66831af32d6db4d3d8c4c742cd0882e47897871082993fb15b03e77d094",
+        ".claude/agents/playwright-test-healer.md": "7ace70bce4716641633a46a6c5f41773277812a046cba517be616e677e7ccdf8",
+        ".claude/agents/playwright-test-planner.md": "4566f7ea58d11ceb8e65b7992c658d959cb610df4b9949e370cfbfb1f3ea310b",
+        ".mcp.json": "4d5cb64e14d92e37d7eb368b126394b67a791867986559ac950ca072f95703fd"
+      },
+      "model_line": "After the digest check the staged playwright-test-generator.md has its single `model: sonnet` line replaced by `model: inherit` (documented divergence from the shipped definition).",
+      "unavailable_rule": "Same as the pilot: UNAVAILABLE (no call, scored 0 as-run) when init-agents fails or any digest differs.",
+      "playwright_cli": "Allowed in all arms through the shared FRAME approvals (`npx --no-install playwright cli <subcommand>` against the app's loopback origin)."
+    }
+  },
+  "metrics": {
+    "primary": "Per-cell markup-refactor survival (1 only if clean 3/3 and the refactor passes), averaged over the 2 repetitions per task.",
+    "reported_per_model_and_arm": [
+      "refactor survival (primary)",
+      "valid-defect detection = effective fault kill (kill rate if clean 3/3 else 0) and raw kill rate",
+      "clean 3/3 rate",
+      "scanner P0 total and P1/P2 total (shared v8 scanner)",
+      "wall-clock seconds per call and sums",
+      "tokens (last-turn and sum-turns for Codex; Claude session totals with cache split) and, for Claude, reported total_cost_usd",
+      "delivered cells, unavailable cells, timeouts, flaky clean runs, weakening text-probe hits, out-of-scope writes",
+      "arm B: which official files the reviewer modified, removed or added; A+B totals of seconds and tokens",
+      "arm A: official-generator file-signature proxy and (Claude) count of generator_write_test MCP calls"
+    ],
+    "cost_comparability": "Codex and Claude token counts and wall times are not comparable across families (different tokenizers, caching, tool loops); they are compared within a family and shown across families only as raw numbers."
+  },
+  "decision": {
+    "no_p_values": "DESCRIPTIVE ONLY. No confidence interval, no significance claim, no PASS/FAIL release verdict.",
+    "contrasts": [
+      "C_minus_A",
+      "B_minus_A",
+      "C_minus_B"
+    ],
+    "per_model_label": "For each model with all 36 cells scored and each contrast X vs Y: the contrast is EVALUABLE for that model only if both arms delivered at least one spec file in at least 6 of their 12 cells (an arm the model could not drive is a harness-compatibility result, not a quality difference; it is reported as-run in the tables but never turned into a label). If evaluable: 'suggestive: X better' if the per-task refactor survival (mean of 2 repetitions) has the same sign for X in at least 5 of the 6 tasks AND for X the clean-3/3 rate, effective fault kill, scanner P0 total and scanner P1/P2 total are each not worse than for Y (<= for scanner totals); symmetric for Y; otherwise 'nothing'. Ties and 3-3 splits are 'nothing'. Same rule as both pilots (min_tasks_same_sign = 5). Otherwise the label is 'not evaluable'.",
+    "cross_model_consistency": "Per contrast, let N be the number of complete models for which that contrast is evaluable. The contrast is 'replicated across models' only if N >= 4 and (a) at least ceil(2N/3) of those models carry the same 'suggestive: X better' label, (b) none of them carries the opposite suggestive label, and (c) the agreeing models include at least one Claude-family and one Codex-family model. If N < 4 the verdict is 'not evaluable'; otherwise 'not replicated' with the exact counts. No intermediate wording such as 'partly replicated' is used.",
+    "incomplete_models": "A model that is stopped (usage limit, disk, repeated infrastructure failure) before 36 cells are scored is listed as incomplete, shown descriptively, and excluded from the labels and from N.",
+    "pooled_view": "Descriptive only: per-arm means across complete models and per-task sign counts of the pooled model-level differences; it never substitutes for the rule above.",
+    "reference_row": "gpt-5.5 from the two pilots is printed as a reference row, never part of N."
+  },
+  "stop_rules": [
+    "One model call at a time across the whole campaign; load pause at 1-min load average > 40 (up to 1800 s per wait).",
+    "Stop the whole campaign when free disk on the work volume is below 4 GiB (4294967296 bytes), before every call and before every scoring cell batch; resume with `drive --allow-live` (resumes every model from its saved final.json).",
+    "Stop on a usage/rate limit or any digest drift.",
+    "A cell whose call is an infrastructure error after the inherited single retry is retried again at most twice by later resumes; after that it stays a recorded infrastructure failure, scores 0 as-run, and the campaign continues. Three consecutive infrastructure-error cells stop the campaign.",
+    "Never edit this protocol, the runners, adapters or freeze after the first scheduled call; a change needs a successor protocol."
+  ],
+  "limits": [
+    "6 task clusters x 2 repetitions per arm per model: tiny, descriptive only. The 6 tasks are the same synthetic fixtures as the pilots, author-written faults, one refactor per task.",
+    "Arm A and arm C are not the same agent loop on Claude and Codex: the official generator is a host-specific subagent loop (`--loop=claude` vs `--loop=codex`) and arm A's Claude parent has no Write/Edit tools by design; the Codex arm A parent keeps its default tools and is only instructed not to write specs. This asymmetry is intentional (mechanical enforcement of 'the agent writes the spec') and is a confound across families.",
+    "Claude runs on the host (real browser, no container); Codex runs in the pinned Linux container. Claude Bash is not path-sandboxed; only a Read deny list and an after-the-fact audit protect against reading the saved evidence.",
+    "Arm B reviews the same model's own arm A output, so B and A cells are not independent; arm B fixes are written by a model that also wrote the code.",
+    "Models are run on different days and times: host load and provider-side drift are not controlled. Model identifiers are what the local CLI accepted; they are provenance, not attestation.",
+    "Parent token usage excludes child agents for Codex; Claude session totals include subagents. Not comparable across families.",
+    "The 2.0.1 skills are the pilots' skills; nothing here is a release claim."
+  ],
+  "engagement_preflight": {
+    "date": "2026-10-14",
+    "task": "v2-01 (outside the preregistered set), arm A only, medium effort, same pinned container as the pilots; one call per model; never data, nothing was tuned on it except the model pin below.",
+    "codex_results": {
+      "gpt-5.5 (control, not in matrix)": "engaged: 2 spec files, status complete, 287 s",
+      "gpt-6-sol": "not engaged: 0 spec files in 38 s",
+      "gpt-6-astra": "not engaged: 0 spec files in 23 s",
+      "gpt-6.1-sol": "not engaged: 0 spec files in 33 s",
+      "gpt-6-luna": "not engaged: 0 spec files in 12 s",
+      "gpt-5.6-sol": "engaged: spec files delivered, 643 s",
+      "gpt-5.6-terra": "not engaged: 0 spec files in 35 s",
+      "gpt-5.6-luna": "engaged: spec files delivered, status complete, 168 s"
+    },
+    "claude_results": {
+      "claude-haiku-5-5": "A, B and C all delivered; isolation check passed; the official subagent ran on claude-sonnet-5-5 until the `model: inherit` pin was added, then only on claude-haiku-5-5"
+    },
+    "consequence": "Four gpt-6 models and gpt-5.6-terra are expected to leave arm A (and therefore arm B, which reviews A's output) mostly empty in the Codex native-subagent loop. They stay in the matrix, because the harness is unchanged from the pilots (the gpt-5.5 control still engages) and the outcome is itself a result; the evaluability rule above stops those cells from being read as a quality difference, and a secondary view restricted to task/repetition pairs where A delivered is reported."
+  }
+}
