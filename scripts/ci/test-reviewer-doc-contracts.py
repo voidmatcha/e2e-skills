@@ -1559,7 +1559,7 @@ def verify_release_candidate_docs() -> None:
     contributing = normalized(CONTRIBUTING)
     for contract in (
         "do not change installed skill behavior, regardless of file location",
-        "`classification-procedure.md`, `scenario-design.md`, and `semantic-review.md`",
+        "`classification-procedure.md`, `safety-procedures.md`, and `semantic-review.md`",
         "The latest completed reviewer development holdout is [v21]",
         "`scripts/ci/lib/reviewer_taxonomy_contract.py`",
     ):
@@ -1576,17 +1576,18 @@ def verify_release_candidate_docs() -> None:
 
     agents = normalized(AGENTS)
     for reference in (
-        "scenario-design.md",
+        "thin-rules.md",
         "verification-rules.md",
         "scanner-workflow.md",
         "classification-procedure.md",
+        "safety-procedures.md",
     ):
         require_contract(agents, reference, "AGENTS.md layout")
-    require_contract(
-        normalized(GENERATOR_SKILL),
-        "`scenario-design.md` (scenario and locator planning)",
-        "generator sibling list",
-    )
+    # The 3.0.0 router ships one sibling; its SKILL.md must name it and nothing
+    # from the retired pipeline.
+    generator = normalized(GENERATOR_SKILL)
+    require_contract(generator, "thin-rules.md", "generator sibling")
+    assert "scenario-design.md" not in generator
 
     readme_bytes = README.read_bytes()
     canonical_hash = hashlib.sha256(readme_bytes).hexdigest()

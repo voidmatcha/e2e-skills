@@ -327,6 +327,11 @@ def validate_remediation_ledger(protocol: dict[str, Any]) -> dict[str, Any]:
         # still names an executable verification, which ci-local runs on every commit.
         for relative in source_hashes:
             source_path = ROOT / relative
+            if relative.startswith("skills/playwright-test-generator/") and not source_path.exists():
+                # 3.0.0 retired the 2.x generator pipeline; its bytes live in the archive.
+                source_path = ROOT / "benchmarks/generator-skill-v2.0.1-archive" / relative.split("/", 2)[2]
+            elif relative == "scripts/ci/test-generator-contracts.py" and not source_path.exists():
+                source_path = ROOT / "benchmarks/generator-skill-v2.0.1-archive/test-generator-contracts.py"
             if not source_path.is_file() or source_path.is_symlink():
                 fail(f"v6 remediation target source missing or symlinked: {target['target_id']}: {relative}")
         verification_ids = target.get("verification_ids")

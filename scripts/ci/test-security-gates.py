@@ -23,7 +23,6 @@ HOL_WORKFLOW = ROOT / ".github/workflows/hol-plugin-scanner.yml"
 HOL_CONFIG = ROOT / ".plugin-scanner.toml"
 HOL_SCANNER_FALSE_POSITIVE_PATHS = {
     "skills/cypress-debugger/scripts/publish-mochawesome-report.py",
-    "skills/playwright-test-generator/scripts/raw-aria-snapshot.cjs",
     "scripts/ci/test-codex-smoke-contract.py",
     "scripts/ci/test-debugger-contracts.py",
     "scripts/ci/test-debugger-holdout-v1.py",
@@ -53,15 +52,17 @@ HOL_SCANNER_FALSE_POSITIVE_PATHS = {
     "skills/cypress-debugger/references/classification-procedure.md",
     "skills/cypress-debugger/references/fix-verification.md",
     "skills/playwright-test-generator/SKILL.md",
-    "skills/playwright-test-generator/best-practices.md",
-    "skills/playwright-test-generator/code-rules.md",
-    "skills/playwright-test-generator/conventions-template.md",
-    "skills/playwright-test-generator/exploration-preflight.md",
-    "skills/playwright-test-generator/imported-test-cases.md",
-    "skills/playwright-test-generator/playwright-agents.md",
-    "skills/playwright-test-generator/scenario-design.md",
-    "skills/playwright-test-generator/verification-rules.md",
-    "skills/playwright-test-generator/scripts/preflight_target.py",
+    "benchmarks/generator-skill-v2.0.1-archive/SKILL.md",
+    "benchmarks/generator-skill-v2.0.1-archive/best-practices.md",
+    "benchmarks/generator-skill-v2.0.1-archive/code-rules.md",
+    "benchmarks/generator-skill-v2.0.1-archive/conventions-template.md",
+    "benchmarks/generator-skill-v2.0.1-archive/exploration-preflight.md",
+    "benchmarks/generator-skill-v2.0.1-archive/imported-test-cases.md",
+    "benchmarks/generator-skill-v2.0.1-archive/playwright-agents.md",
+    "benchmarks/generator-skill-v2.0.1-archive/scenario-design.md",
+    "benchmarks/generator-skill-v2.0.1-archive/verification-rules.md",
+    "benchmarks/generator-skill-v2.0.1-archive/scripts/preflight_target.py",
+    "benchmarks/generator-skill-v2.0.1-archive/scripts/raw-aria-snapshot.cjs",
     "scripts/evals/reviewer-holdout-v10.json",
     "scripts/evals/files/holdout-v10/v10-cy-12/cypress/e2e/timesheets.cy.ts",
     "scripts/ci/test-reviewer-stream-retry.py",
@@ -110,7 +111,7 @@ def main() -> None:
         "run_python scripts/ci/test-reviewer-evidence-v3.py",
         "run_python scripts/ci/test-reviewer-release-v1.py",
         "run_python scripts/ci/test-reviewer-release-runner-v1.py",
-        "run_python scripts/ci/test-generator-contracts.py",
+        "run_python scripts/ci/test-generator-router.py",
     )
     for check in early_checks:
         assert ci_local.count(check) == 1, f"CI must run {check} exactly once"

@@ -181,8 +181,12 @@ else
 fi
 
 step "Generator contracts"
-run_python scripts/ci/test-generator-contracts.py ||
-  fail "test-generator-contracts.py"
+run_python scripts/ci/test-generator-router.py ||
+  fail "test-generator-router.py"
+run_python scripts/ci/test-release-claims.py ||
+  fail "test-release-claims.py"
+run_python scripts/ci/test-pending-markers.py ||
+  fail "test-pending-markers.py"
 run_python scripts/ci/test-generator-unchanged-outcome.py ||
   fail "test-generator-unchanged-outcome.py"
 run_python scripts/ci/test-generator-unchanged-outcome-v1.py ||

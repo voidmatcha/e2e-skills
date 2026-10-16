@@ -169,6 +169,20 @@ def _frozen_build_packet(root, protocol):
 RUNNER.build_packet = _frozen_build_packet
 
 
+_LIVE_TREE_INTEGRITY_SNAPSHOT = RUNNER.integrity_snapshot
+
+
+def _frozen_integrity_snapshot(root, *args, **kwargs):
+    # The reviewed surfaces are the frozen bytes, so hash them rather than the
+    # live tree (3.0.0 replaced the generator pipeline these phases reviewed).
+    return _LIVE_TREE_INTEGRITY_SNAPSHOT(
+        archived_source_root() if Path(root) == ROOT else root, *args, **kwargs
+    )
+
+
+RUNNER.integrity_snapshot = _frozen_integrity_snapshot
+
+
 def review_payload(
     packet: dict,
     *,

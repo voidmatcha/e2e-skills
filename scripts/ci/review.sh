@@ -1348,6 +1348,13 @@ for path in sorted(p for p in repo_files() if p.suffix == '.md'):
         except ValueError:
             continue
         if not target_path.exists():
+            # Frozen benchmark evidence written before 3.0.0 may link to generator reference files that moved
+            # byte-for-byte into the v2.0.1 archive; accept the link when the archive holds the same file.
+            rel = target_path.relative_to(pathlib.Path('.').resolve())
+            if (path.parts[:1] == ('benchmarks',)
+                    and rel.parts[:2] == ('skills', 'playwright-test-generator')
+                    and (pathlib.Path('benchmarks/generator-skill-v2.0.1-archive') / pathlib.Path(*rel.parts[2:])).exists()):
+                continue
             errors.append(f"{path}: broken local link {raw}")
 
 if errors:
@@ -1530,9 +1537,8 @@ def check_codex_install_and_delegation_contract(path, text, errors):
         "`playwright-debugger`",
         "`cypress-debugger`",
         "`playwright-test-generator`",
-        "V6",
-        "`CANNOT_VERIFY`",
-        "`PARTIAL/BLOCKED`",
+        "`playwright-test`",
+        "session-wide",
     )
     missing = [token for token in delegation_tokens if token not in section]
     if missing:
@@ -1718,10 +1724,10 @@ contract_re = re.compile(
     re.S,
 )
 contract_hashes = {
-    "README.md": "ac9a9be1d95d6519bb06901a8c29c997dfad01a03909fe890c28cc629ffd15da",
-    "README.ko.md": "2672a2493936395827f324378d305605c23b09ac7976e505f8b30de884274426",
-    "README.ja.md": "53ba87e9d0211ebbd56d8ab6c86a587f5003be4167ca171e7fdfde9c37c4857f",
-    "README.zh-cn.md": "5f1646eeff6d91174af04e396eabf2a4eb954bbe16b373f43c1fb6e70e89efb0",
+    "README.md": "6eb8a1fc9cd62b9fa2e29fa8d31818f50a9835083dbeb0ede25512e42f14f446",
+    "README.ko.md": "8f5be5f8815055d562d2b09a8a414bc5b9653a1dbcfc984624e8c2867f03a4e8",
+    "README.ja.md": "4ea36636e043250993db7ec5728cfd663783fb68a10c128411cc3fc78feac923",
+    "README.zh-cn.md": "0e3238cf1e62f2954bcf1f1b9e62f3e7275e0104a53abf8ebbbe374dd0a106ba",
 }
 contract_tokens = (
     "24",

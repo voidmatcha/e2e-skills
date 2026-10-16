@@ -1053,7 +1053,7 @@ restore "$file"
 # caller side.
 file="skills/playwright-debugger/SKILL.md"
 backup "$file"
-mutate "$file" "the **absolute** path to this skill" "the path to this skill"
+mutate "$file" "pass the actual absolute skill path" "pass the actual skill path"
 assert_fails "Subagent parity SP2 — delegation line drops absolute-path contract" "delegation line must pass the subagent an absolute"
 restore "$file"
 
@@ -1153,8 +1153,8 @@ restore "$file"
 file="skills/playwright-debugger/references/fix-verification.md"
 backup "$file"
 mutate "$file" \
-  "assertion falsification for swallowed, conditional, missing-await, or load-bearing-assertion questions" \
-  "assertion falsification for swallowed, conditional, missing-await, or load-bearing-assertion questions with method endpoint payload cardinality context"
+  "F4/F5/F6/F13 or other load-bearing assertion questions" \
+  "F4/F5/F6/F13 or other load-bearing assertion questions with method endpoint payload cardinality context"
 mutate "$file" \
   "request method/endpoint/payload/cardinality proof" \
   "request proof"
@@ -1173,10 +1173,10 @@ restore "$file"
 
 file="skills/playwright-debugger/references/fix-verification.md"
 backup "$file"
-mutate "$file" 'verbatim into the outgoing message' 'by reference in the outgoing message'
+mutate "$file" 'never dispatches a reviewer' 'may dispatch a reviewer'
 assert_verification_parity_fails \
-  "Verification parity — Playwright debugger V1 packet verbatim rule drift" \
-  'Playwright debugger missing proof boundary verbatim into the outgoing message'
+  "Verification parity — Playwright debugger V6 no-dispatch rule drift" \
+  'Playwright debugger missing proof boundary never dispatches a reviewer'
 restore "$file"
 
 # Case 23: named custom agents are optional; standard Codex native roles must
@@ -1279,8 +1279,8 @@ assert_fails \
   "README.md manual Claude Code clone must expose four direct per-skill roots"
 restore "$file"
 
-# Codex installation is host-specific, and generator V6 needs independent
-# context rather than the equivalent inline-fallback contract used elsewhere.
+# Codex installation is host-specific, and the generator's optional official-agent
+# path needs a session-wide playwright-test MCP server on Codex (no role selector).
 file="README.md"
 backup "$file"
 mutate \
@@ -1294,9 +1294,17 @@ restore "$file"
 
 file="README.md"
 backup "$file"
-mutate "$file" '`CANNOT_VERIFY` and' '`UNVERIFIED` and'
+mutate "$file" 'session-wide `playwright-test` MCP server' 'session-wide `playwright-tests` MCP server'
 assert_fails \
-  "README Codex delegation — generator independent-context limit is required" \
+  "README Codex delegation — generator official-agent MCP limit is required" \
+  "README.md Codex delegation limits missing tokens"
+restore "$file"
+
+file="README.md"
+backup "$file"
+mutate "$file" 'works only with a session-wide' 'works with a'
+assert_fails \
+  "README Codex delegation — session-wide MCP scope is required" \
   "README.md Codex delegation limits missing tokens"
 restore "$file"
 

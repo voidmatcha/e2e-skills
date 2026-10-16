@@ -25,9 +25,7 @@ CYPRESS_READER = (
     ROOT / "skills/cypress-debugger/scripts/read-cypress-artifact.py"
 )
 GENERATOR = ROOT / "skills/playwright-test-generator/SKILL.md"
-GENERATOR_PREFLIGHT = (
-    ROOT / "skills/playwright-test-generator/exploration-preflight.md"
-)
+GENERATOR_THIN_RULES = ROOT / "skills/playwright-test-generator/thin-rules.md"
 
 
 def main() -> None:
@@ -35,33 +33,18 @@ def main() -> None:
     ci_local = CI_LOCAL.read_text(encoding="utf-8")
     python_isolation_init = PYTHON_ISOLATION_INIT.read_text(encoding="utf-8")
     generator = GENERATOR.read_text(encoding="utf-8")
-    generator_preflight = GENERATOR_PREFLIGHT.read_text(encoding="utf-8")
+    thin_rules = GENERATOR_THIN_RULES.read_text(encoding="utf-8")
 
-    current_probe_token = "--framed-stdin"
-    assert current_probe_token in generator_preflight
+    # Check 5 recalls the origin-allowlist config key from the router SKILL.md,
+    # which the 3.0.0 CLI workflow writes before opening any page.
+    current_probe_token = "allowedOrigins"
+    assert current_probe_token in generator
+    assert "Playwright thin rules" in thin_rules
     assert f'check "test-generator" "{current_probe_token}"' in smoke
-    assert "Before running the exact-target preflight, read `exploration-preflight.md`" in generator
-    assert '--target "$TARGET_URL"' not in generator_preflight
-    assert '--approved-origin "$BASE_URL"' not in generator_preflight
-    assert "| \"$SKILL_ROOT/scripts/run-preflight-target.sh\" --framed-stdin" in generator_preflight
-    assert 'write_frame="$SKILL_ROOT/scripts/write-utf8-frame.sh"' in generator_preflight
-    for framed_value in (
-        '"$TARGET_URL"',
-        '"$BASE_URL"',
-        '"${LOGIN_URL-}"',
-        '"${ALLOW_LOOPBACK:-0}"',
-    ):
-        assert f"printf '%s' {framed_value} | \"$write_frame\"" in generator_preflight
-    assert (
-        "printf '%s' \"$TARGET_URL\" |\n"
-        '  "$SKILL_ROOT/scripts/write-utf8-frame.sh" |\n'
-        '  "$SKILL_ROOT/scripts/run-raw-aria-snapshot.sh" --framed-stdin'
-    ) in generator_preflight
-    assert '--target "$TARGET_URL"' not in generator_preflight
-    assert "four bounded length-prefixed UTF-8 frames on stdin" in smoke
-    assert "never raw URL-valued arguments" in smoke
-    assert "complete fenced shell command" in smoke
-    assert "exploration-preflight.md point-of-use reference" in smoke
+    assert "playwright-test-generator/thin-rules.md" in smoke
+    assert "exploration-preflight" not in smoke
+    assert "--framed-stdin" not in smoke
+    assert "run-preflight-target" not in smoke
     assert "curl -fsS -o /dev/null -w" not in smoke
     assert "CODEX_ISOLATION=(--ephemeral --ignore-user-config)" in smoke
     assert "CODEX_ISOLATION=(-c 'mcp_servers={}')" not in smoke
