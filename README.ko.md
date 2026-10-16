@@ -36,7 +36,7 @@ Evidence scope: the 15 merged PRs shown here are curated examples, not a total. 
 
 `e2e-reviewer`는 사람이나 AI가 작성한 테스트의 품질을 독립적으로 검증하는 스킬입니다. 테스트가 통과하더라도 제목에 적힌 동작을 실제로 검증하는지 확인합니다.
 
-스킬마다 증거 수준이 다릅니다. 리뷰어가 가장 강한 측정 결과를 갖고 있고, 제너레이터는 2.x 파이프라인만 공개 과제에서 측정됐고 3.0.0 라우터는 공식 에이전트와의 개발 단계 비교(모델 2개, 합성 과제 6개)만 있으며, 디버거는 일반 프롬프트보다 정확하다고 측정된 것이 아니라 아티팩트가 뒷받침하는 원인만 보고하는 안전한 아티팩트 리더입니다. [벤치마크 상태](benchmarks/STATUS.md)에 스킬별 증거 카드가 있습니다.
+스킬마다 증거 수준이 다릅니다. 리뷰어가 가장 강한 측정 결과를 갖고 있고, generator는 2.x 파이프라인만 공개 과제에서 측정됐고 3.0.0 router는 공식 에이전트와의 개발 단계 비교(모델 2개, 합성 과제 6개)만 있으며, debugger는 일반 프롬프트보다 정확하다고 측정된 것이 아니라 아티팩트가 뒷받침하는 원인만 보고하는 안전한 아티팩트 리더입니다. [벤치마크 상태](benchmarks/STATUS.md)에 스킬별 증거 카드가 있습니다.
 
 | 필요 | 스킬 | 결과 |
 | --- | --- | --- |
@@ -48,7 +48,7 @@ Evidence scope: the 15 merged PRs shown here are curated examples, not a total. 
 
 `e2e-reviewer`의 각 결과에는 그 판단에 사용한 근거가 함께 제공됩니다.
 
-generator는 라우터입니다. Playwright CLI로 실제 화면을 탐색하거나, 이미 설정된 공식 Playwright 에이전트에 위임하고, 짧은 규칙 체크리스트에 따라 테스트를 작성한 뒤 리뷰어 스캐너를 실행하고 테스트를 한 번 실행합니다. 개발 단계 비교에서 CLI 경로는 공식 에이전트 대비 사전 등록한 품질 기준 안에 있었고, 측정된 처리 토큰 비용은 공식 에이전트의 0.56~0.60배였습니다(95% 구간 0.45~0.74). 품질이 더 좋다고 주장하지는 않습니다([thin-eval](benchmarks/generator-thin-eval-v1/README.md)). `playwright-debugger`와 `cypress-debugger`는 실패한 실행 산출물을 바탕으로 근본 원인을 분류하고, 판단 근거와 구체적인 수정안을 제시합니다.
+generator는 router입니다. Playwright CLI로 실제 화면을 탐색하거나, 이미 설정된 공식 Playwright 에이전트에 위임하고, 짧은 규칙 체크리스트에 따라 테스트를 작성한 뒤 리뷰어 스캐너를 실행하고 테스트를 한 번 실행합니다. 개발 단계 비교에서 CLI 경로는 공식 에이전트 대비 사전 등록한 품질 기준 안에 있었고, 측정된 처리 토큰 비용은 공식 에이전트의 0.56~0.60배였습니다(95% 신뢰구간 0.45~0.74). 품질이 더 좋다고 주장하지는 않습니다([thin-eval](benchmarks/generator-thin-eval-v1/README.md)). `playwright-debugger`와 `cypress-debugger`는 실패한 실행 산출물을 바탕으로 근본 원인을 분류하고, 판단 근거와 구체적인 수정안을 제시합니다.
 
 false-green 탐지는 테스트 리뷰 기능의 중요한 부분이지만, 프로젝트 전체를 대표하지는 않습니다. `e2e-reviewer`가 찾은 문제를 고친 PR 15건이 Storybook, SvelteKit, code-server, Strapi, Carbon Design System, Ghost, MUI X를 비롯한 [upstream 프로젝트에 merge되었습니다](#merged-upstream-fixes).
 
@@ -137,7 +137,7 @@ Summary: 2 total hit(s), 2 P0
 
 ## 생성한 테스트를 신뢰하기 전에 확인하기
 
-좋은 matcher만으로는 부족합니다. 동작이 깨지면 테스트가 실제로 실패해야 합니다. 3.0.0부터 generator는 이를 증명하지 않습니다. `e2e-reviewer`가 설치되어 있으면 스캐너를 실행해 P0와 P1 결과를 모두 수정하고(최대 3회), 프로젝트의 테스트를 한 번 실행하며, 건너뛴 게이트나 실행은 완료가 아니라고 보고합니다. 핵심 검증문 반전, 결함 주입, 독립 재리뷰는 더 이상 수행하지 않으므로 필요하면 `e2e-reviewer`에 리뷰를 요청하세요. 2.x의 해당 단계는 태그 `v2.0.1`에 남아 있습니다.
+좋은 matcher만으로는 부족합니다. 제품 동작이 잘못되면 테스트가 실제로 실패해야 합니다. 3.0.0부터 generator는 이를 증명하지 않습니다. `e2e-reviewer`가 설치되어 있으면 스캐너를 실행해 P0와 P1 항목을 모두 고치고(최대 3회), 프로젝트의 테스트를 한 번 실행하며, 건너뛴 게이트나 실행은 완료가 아니라고 보고합니다. 핵심 검증문 반전, 결함 주입, 독립 재리뷰는 더 이상 수행하지 않으므로 필요하면 `e2e-reviewer`에 리뷰를 요청하세요. 2.x의 해당 단계는 태그 `v2.0.1`에 남아 있습니다.
 
 ## 설치하고 사용해 보기
 
@@ -164,7 +164,7 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a claude-code
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a codex
 ```
 
-Codex에서는 `e2e-reviewer`, `playwright-debugger`, `cypress-debugger` 작업을 전용 에이전트에 위임을 시도하거나 현재 세션에서 같은 절차를 직접 수행할 수 있습니다. `playwright-test-generator`는 기본 경로에서 위임이 필요 없습니다. Playwright CLI 워크플로가 Codex 셸에서 실행되기 때문입니다. 공식 Playwright generator에 위임하는 것은 선택 사항이며, `spawn_agent`가 역할을 선택할 수 없으므로 session-wide `playwright-test` MCP 서버가 있을 때만 동작합니다.
+Codex에서는 `e2e-reviewer`, `playwright-debugger`, `cypress-debugger` 작업을 전용 에이전트에 위임을 시도하거나 현재 세션에서 같은 절차를 직접 수행할 수 있습니다. `playwright-test-generator`는 기본 경로에서 위임이 필요 없습니다. Playwright CLI 워크플로가 Codex shell에서 실행되기 때문입니다. 공식 Playwright generator에 위임하는 것은 선택 사항이며, `spawn_agent`가 역할을 선택할 수 없으므로 session-wide `playwright-test` MCP 서버가 있을 때만 동작합니다.
 
 **2026-09 기준, Codex의 전용 에이전트 위임은 정상 작동이 검증되지 않았으므로 의존하지 마세요.** 실제 파일럿에서는 세션 중 위임이 내부 `collab spawn failed: no thread with id` 오류로 매번 실패했습니다. 아직 해결되지 않은 upstream 이슈입니다. ([openai/codex#41474](https://github.com/openai/codex/issues/41474), [#33672](https://github.com/openai/codex/issues/33672)) 오류가 발생하지 않더라도 모델이 스스로 보고한 성공 여부는 신뢰할 수 없습니다. 전체 근거는 [`benchmarks/subagent-routing-v1/`](benchmarks/subagent-routing-v1/README.md)에서 확인할 수 있습니다. 각 스킬의 inline fallback이 동일한 결론에 도달하므로 정확성에는 영향이 없지만, 현재 이 에이전트들을 설치해도 Codex에서 확인된 이점은 없습니다.
 
@@ -240,7 +240,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 The bundled shell scripts and artifact readers target conventional macOS/Linux layouts with `/bin/bash` and the fixed system executable paths required by their launchers. Windows users need a compatible WSL distribution and artifacts inside the WSL filesystem; native Windows is not supported. NixOS and Nix-, pyenv-, Conda-, or nvm-only tool installations are not universally auto-discovered. The reviewer scanner supports validated absolute `E2E_SMELL_*_BIN` overrides; this does not imply the same overrides exist in the debugger launchers. Missing trusted tools stop the affected operation; do not bypass that boundary with ambient `PATH` lookup. Resolve skill resources from the actual host-provided skill location, including plugin caches and custom installs, not a guessed home directory.
 
-새로 만든 테스트가 통과하는 것만으로는 충분하지 않습니다. `Locator`나 `Promise` 자체를 검증하거나, 테스트 이름에 적힌 동작과 무관한 상태를 확인하거나, 핵심 검증문이 테스트 결과에 영향을 주지 않을 수도 있습니다. 그래서 generator는 `e2e-reviewer` 스캐너를 실행해 P0와 P1 결과를 모두 고친 뒤 프로젝트의 테스트를 한 번 실행합니다. 스캐너는 결정론적이며 카탈로그의 기계적으로 검출 가능한 일부만 다룹니다. 검증문이 실패할 수 있음을 증명하지는 않습니다.
+새로 만든 테스트가 통과하는 것만으로는 충분하지 않습니다. `Locator`나 `Promise` 자체를 검증하거나, 테스트 이름에 적힌 동작과 무관한 상태를 확인하거나, 핵심 검증문이 테스트 결과에 영향을 주지 않을 수도 있습니다. 그래서 generator는 `e2e-reviewer` 스캐너를 실행해 P0와 P1 항목을 모두 고친 뒤 프로젝트의 테스트를 한 번 실행합니다. deterministic scanner는 카탈로그의 기계적으로 검출 가능한 일부만 다룹니다. 검증문이 실패할 수 있음을 증명하지는 않습니다.
 
 generator는 `playwright.config.*`에서 `baseURL`을 읽고, 공식 Playwright planner와 generator의 에이전트 정의와 `playwright-test` MCP 도구가 이미 있을 때만 이를 사용합니다. 그렇지 않으면 셸과 Playwright만으로 Playwright CLI를 직접 사용해 탐색합니다. MCP 설정을 요구하지 않고, 아무것도 설치하지 않으며, 공식 healer를 실행하지 않고, 테스트를 통과시키려고 검증문을 약화하지 않습니다. 실패한 테스트는 `playwright-debugger`로 넘기거나 직접 고칩니다.
 
@@ -281,7 +281,7 @@ merge 건수를 전체 제출 건수와 함께 볼 수 있습니다. [Field revi
 - 폐기된 2.x generator 대상: [Generator skill-effect v1](benchmarks/generator-skill-effect-v1/README.md)은 생성기의 첫 실측입니다. 새로 만든 소형 앱 10개에서 결정론적 결함 검출 채점을 적용했을 때, 스킬을 사용한 `claude-sonnet-5-5`는 30/30 호출에서 정상 앱에 통과하고 주입 결함 **150/150**을 잡는 테스트를 작성했고, 미사용 시 유효 검출률은 **0.927**이었으며 비용은 6.05배였습니다. 사전 등록된 판정은 `INCONCLUSIVE`입니다. 기준군이 상한 0.90을 넘어 향상을 주장할 수 없습니다. 스킬로 작성한 테스트는 마크업 리팩터링에서 23/30 호출이 통과했고, 미사용 시 12/28이었습니다.
 - 폐기된 2.x generator 대상: [Generator skill-effect v2](benchmarks/generator-skill-effect-v2/README.md)는 더 어려운 브리프형 과제 24개를 군 비교 전에 무스킬 군으로 먼저 선별했습니다. 사전에 정한 0.40–0.80 구간에 든 과제는 **24개 중 3개**뿐이었고(정상 앱을 통과한 무스킬 결과물 44개가 주입 결함 **216/220**을 잡음), 계획했던 full / lean / 무스킬 비교는 실행하지 않아 판정은 `INCONCLUSIVE`(풀 부족)입니다. 이 모델에서 결함 검출률은 두 프로토콜 연속으로 상한에 닿았고, 리팩터링 생존과 정상 앱 통과 여부만 아직 편차가 있습니다.
 - 폐기된 2.x generator 대상: [Generator skill-effect v3](benchmarks/generator-skill-effect-v3/README.md)는 동작을 유지하는 마크업 리팩터링에서 테스트가 통과하는지를 주 지표로 삼아 검증된 과제 36개를 선별했습니다. 사전 등록한 3회차 확장 뒤에도 0.25–0.75 구간에 든 과제는 **36개 중 9개**로 최소 기준 12개에 못 미쳤습니다. 이에 따라 다섯 군 비교를 실행하지 않았고 판정은 `INCONCLUSIVE`(풀 부족)입니다. skill을 사용하지 않은 결과물 101개는 모두 정상 앱에서 통과했고, 37개가 리팩터링 뒤에도 통과했으며 주입 결함 **498/505**를 잡았습니다. skill을 적용한 군은 실행하지 않았으므로 generator skill의 효과는 어느 방향으로도 측정되지 않았습니다.
-- 폐기된 2.x generator 대상: [Generator skill-effect v8](benchmarks/generator-skill-effect-v8/README.md)은 공개 v3 풀에서 Codex 호출 216/216을 채점했고 통과했습니다. 마크업 리팩터 생존율은 **0.954 대 0.435**(+0.519, 95% CI +0.398~+0.630)입니다. 결함 검출 향상은 입증되지 않았고(+0.017, CI가 0을 포함), 생성 시간은 6.74배였으며, 공개 개발 증거이지 릴리스 주장이 아닙니다. v8은 고정된 v3 full-fixed 2.x 생성기 텍스트를 측정했으며, 3.0.0 라우터는 그 텍스트를 포함하지 않고 자체 측정도 없습니다. 이 결과가 다룬 승인 표와 V1–V6 인수 단계를 포함한 2.x 생성기는 태그 `v2.0.1`과 `benchmarks/generator-skill-v2.0.1-archive/`에 남아 있습니다.
+- 폐기된 2.x generator 대상: [Generator skill-effect v8](benchmarks/generator-skill-effect-v8/README.md)은 공개 v3 풀에서 Codex 호출 216/216을 채점했고 통과했습니다. 마크업 리팩터 생존율은 **0.954 대 0.435**(+0.519, 95% CI +0.398~+0.630)입니다. 결함 검출 향상은 입증되지 않았고(+0.017, CI가 0을 포함), 생성 시간은 6.74배였으며, 공개 개발 증거이지 릴리스 주장이 아닙니다. v8은 고정된 v3 full-fixed 2.x 생성기 텍스트를 측정했으며, 3.0.0 router는 그 텍스트를 포함하지 않고 자체 측정도 없습니다. 이 결과가 다룬 승인 표와 V1–V6 인수 단계를 포함한 2.x 생성기는 태그 `v2.0.1`과 `benchmarks/generator-skill-v2.0.1-archive/`에 남아 있습니다.
 - [Reviewer holdout v19](benchmarks/reviewer-holdout-v19/README.md)는 **출시 전 2.0.0 후보** 리뷰어(스킬 digest `aa88145d…`, 커밋 `976c3fa`)에 대해 릴리스 확인 게이트를 통과했습니다(full − no-skill 안정 F1 **+0.571**, 95% CI +0.411~+0.738, 540회 호출). 같은 코퍼스의 [v18](benchmarks/reviewer-holdout-v18/README.md)은 `INCONCLUSIVE`였습니다. 출하된 리뷰어는 그 후보와 이후 변경(Tier 2 ast-grep 설정 고정, `#14` `cy.env()` 제외, `#4h` 수정과 경계 명확화 4건, `#8c`, `#3b` fail 핸들러 계약)만큼 다르며, 이 변경은 어떤 holdout도 측정하지 않았습니다.
 - [Reviewer holdout v21](benchmarks/reviewer-holdout-v21/README.md)은 명시적인 #2 문구를 지지하지 않았습니다. 480회 호출에서 full의 안정 F1이 **1.000 → 0.980**으로 떨어졌습니다. 2.0.0 문구를 유지하며, 부분적으로 검증된 #2는 두 군 모두 이미 P1로 판정했습니다.
 - 공개하지 않은 로컬 전용 AGPL 배치를 포함한 전체 집계는 **36/44 대 23/44**이며, 수정 후(AFTER) 오탐은 **0 대 1**입니다. [현장 모델 비교](docs/ai-reviewer-benchmark.md#field-model-comparison)는 실제 저장소의 테스트 파일 19개에 대한 별도의 로컬 측정 결과를 보고합니다.
