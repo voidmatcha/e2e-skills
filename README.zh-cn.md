@@ -45,7 +45,7 @@ Evidence scope: the 15 merged PRs shown here are curated examples, not a total. 
 | 调试失败的 Cypress 运行 | `cypress-debugger` | F1–F15 根本原因、证据和修复 |
 | 运行确定性本地扫描 | `skills/e2e-reviewer/scripts/scan.sh` | 不依赖目标项目 package 的机械候选项 |
 
-生成器是一个路由器：它用 Playwright CLI 探索真实页面，或在官方 Playwright agents 已就绪时委派给它们；按简短的规则清单编写 spec，运行审查器的扫描器，然后把测试运行一次。开发阶段的对比显示，CLI 路径相对官方 agents 处于预先登记的质量范围内，实测处理 token 成本为官方 agents 的 0.56 至 0.60 倍(95% 区间 0.45 至 0.74)。 不主张质量更好([thin-eval](benchmarks/generator-thin-eval-v1/README.md))。两个调试器从失败运行的 artifact 入手，返回已分类的根本原因、支持证据和具体修复。
+生成器是一个路由器：它用 Playwright CLI 探索真实页面，或在官方 Playwright agents 已就绪时委派给它们；按简短的规则清单编写 spec，运行审查器的扫描器，然后把测试运行一次。开发阶段的对比显示，CLI 路径相对官方 agents 处于预先登记的质量范围内，实测处理 token 成本为官方 agents 的 0.56 至 0.60 倍(95% 区间 0.45 至 0.74)。不主张质量更好([thin-eval](benchmarks/generator-thin-eval-v1/README.md))。两个调试器从失败运行的 artifact 入手，返回已分类的根本原因、支持证据和具体修复。
 
 false-green 检测是审查工作流的重要组成部分，但不是整个 bundle 的唯一用途。基于 `e2e-reviewer` 发现的修复已通过 [15 个合入上游的 PR](#merged-upstream-fixes) 合入，其中包括 Storybook、SvelteKit、code-server、Strapi、Carbon Design System、Ghost 和 MUI X。
 
@@ -232,7 +232,7 @@ The bundled shell scripts and artifact readers target conventional macOS/Linux l
 
 生成的测试仅仅通过还不够：它可能断言的是 `Locator` 或 `Promise` 本身，观察的状态与测试名称所描述的行为无关，或者主要断言根本不影响测试结果。因此，生成器会运行 `e2e-reviewer` 扫描器并修复所有 P0 和 P1 命中，然后把项目测试运行一次。扫描器是确定性的，只覆盖目录中可机械检测的子集，并不能证明断言会失败。
 
-生成器从 `playwright.config.*` 读取 `baseURL`，只有在官方 Playwright planner 和 generator 的 agent 定义及 `playwright-test` MCP 工具已经存在时才使用它们；否则它只需 shell 和 Playwright，自己用 Playwright CLI 探索。 它不会要求你配置 MCP，不安装任何东西，不运行官方 healer，也不会为了让测试通过而削弱断言；失败的测试交给 `playwright-debugger` 或手动修复。
+生成器从 `playwright.config.*` 读取 `baseURL`，只有在官方 Playwright planner 和 generator 的 agent 定义及 `playwright-test` MCP 工具已经存在时才使用它们；否则它只需 shell 和 Playwright，自己用 Playwright CLI 探索。它不会要求你配置 MCP，不安装任何东西，不运行官方 healer，也不会为了让测试通过而削弱断言；失败的测试交给 `playwright-debugger` 或手动修复。
 
 探索只在 loopback 目标上允许；远程 origin 仅当你在聊天中指明并声明它是一次性的非生产环境时才允许，并且该 origin 会固定在 CLI 的 origin 允许列表（`network.allowedOrigins`）中。生产、共享或未指明的目标会被拒绝；由于官方 agent 委派路径无法固定 origin，它只限 loopback。如果没有可用的 CLI，生成器会请你提供脱敏快照或自行安装 CLI，并把 locator 标为未验证。
 

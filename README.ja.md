@@ -46,7 +46,7 @@ Evidence scope: the 15 merged PRs shown here are curated examples, not a total. 
 | 失敗した Cypress 実行をデバッグ | `cypress-debugger` | F1–F15 の根本原因、根拠、修正 |
 | 決定論的なローカルスキャンを実行 | `skills/e2e-reviewer/scripts/scan.sh` | 対象プロジェクトの package に依存しない機械的候補 |
 
-生成器はルーターです。Playwright CLI でライブページを探索するか、すでにセットアップ済みの公式 Playwright エージェントへ委譲し、短いルールのチェックリストに従って仕様を書き、レビュアーのスキャナーを実行してから、テストを 1 回実行します。開発段階の比較では、CLI 経路は公式エージェントに対して事前登録した品質基準の範囲内で、測定した処理トークンのコストは公式エージェントの 0.56〜0.60 倍でした(95% 区間 0.45〜0.74)。 品質向上は主張しません([thin-eval](benchmarks/generator-thin-eval-v1/README.md))。2 つのデバッガーは失敗した実行の artifact から始め、分類した根本原因、根拠、具体的な修正を返します。
+生成器はルーターです。Playwright CLI でライブページを探索するか、すでにセットアップ済みの公式 Playwright エージェントへ委譲し、短いルールのチェックリストに従って仕様を書き、レビュアーのスキャナーを実行してから、テストを 1 回実行します。開発段階の比較では、CLI 経路は公式エージェントに対して事前登録した品質基準の範囲内で、測定した処理トークンのコストは公式エージェントの 0.56〜0.60 倍でした(95% 区間 0.45〜0.74)。品質向上は主張しません([thin-eval](benchmarks/generator-thin-eval-v1/README.md))。2 つのデバッガーは失敗した実行の artifact から始め、分類した根本原因、根拠、具体的な修正を返します。
 
 false-green 検出はレビューワークフローの重要な一部ですが、このバンドル全体の目的ではありません。`e2e-reviewer` の指摘に基づく修正は、Storybook、SvelteKit、code-server、Strapi、Carbon Design System、Ghost、MUI X などの [15 件のマージ済み upstream PR](#merged-upstream-fixes) に取り込まれています。
 
