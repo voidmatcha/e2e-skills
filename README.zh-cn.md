@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=1b1571bdba4ea0ec8a980eb1f0f06357d933d14ec732c8d0869c30838470f47c; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=e4d1fd57568f45c8e34591960d36d6db57781bfd204e71d54491169aea7f956e; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 Evidence scope: the 15 merged PRs shown here are curated examples, not a total. Field review v1 separately records 29 submitted / 16 merged / 6 closed / 7 open under its skill-name inclusion rule; do not combine the two denominators. These are recorded snapshots, not current GitHub totals.
 
@@ -35,7 +35,7 @@ Evidence scope: the 15 merged PRs shown here are curated examples, not a total. 
 
 对于人工或 AI 编写的测试，可以把 `e2e-reviewer` 用作独立的质量门禁。它会检查一个通过的测试是否真的证明了标题所描述的行为。
 
-各 Skill 的证据水平不同：审查器拥有最强的实测结果，生成器仅有 2.x 流水线在公开任务上有实测，3.0.0 的路由器没有自己的实测，调试器则是只报告产物所支持原因的安全产物读取器，并未被测出比普通提示更准确。[基准状态](benchmarks/STATUS.md)为每个 Skill 提供了一张证据卡。
+各 Skill 的证据水平不同：审查器拥有最强的实测结果，生成器仅有 2.x 流水线在公开任务上有实测，3.0.0 的路由器只有与官方 agents 的开发阶段对比（2 个模型、6 个合成任务），调试器则是只报告产物所支持原因的安全产物读取器，并未被测出比普通提示更准确。[基准状态](benchmarks/STATUS.md)为每个 Skill 提供了一张证据卡。
 
 | 需求 | Skill | 结果 |
 | --- | --- | --- |

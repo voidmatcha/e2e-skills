@@ -32,7 +32,7 @@
 
 Use `e2e-reviewer` as an independent quality gate for human-written or AI-generated specs: it checks whether a passing test actually proves the behavior named in its title.
 
-Evidence differs by skill: the reviewer carries the strongest measured results, the generator's earlier 2.x pipeline was measured on public tasks and the 3.0.0 router has no measurement of its own, and the debuggers are safe artifact readers that report only a cause the artifact supports, not a measured accuracy gain over a plain prompt. [Benchmark status](benchmarks/STATUS.md) has one evidence card per skill.
+Evidence differs by skill: the reviewer carries the strongest measured results, the generator's earlier 2.x pipeline was measured on public tasks and the 3.0.0 router has only a development-stage comparison with the official agents (two models, six synthetic tasks), and the debuggers are safe artifact readers that report only a cause the artifact supports, not a measured accuracy gain over a plain prompt. [Benchmark status](benchmarks/STATUS.md) has one evidence card per skill.
 
 | Need | Skill | Result |
 | --- | --- | --- |
