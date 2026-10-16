@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=172832ef44041af6194d787889e6883811a6158ee6ff88aeefa921c46d63c0e4; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=1b1571bdba4ea0ec8a980eb1f0f06357d933d14ec732c8d0869c30838470f47c; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 Evidence scope: the 15 merged PRs shown here are curated examples, not a total. Field review v1 separately records 29 submitted / 16 merged / 6 closed / 7 open under its skill-name inclusion rule; do not combine the two denominators. These are recorded snapshots, not current GitHub totals.
 
@@ -35,17 +35,17 @@ Evidence scope: the 15 merged PRs shown here are curated examples, not a total. 
 
 对于人工或 AI 编写的测试，可以把 `e2e-reviewer` 用作独立的质量门禁。它会检查一个通过的测试是否真的证明了标题所描述的行为。
 
-各 Skill 的证据水平不同：审查器拥有最强的实测结果，生成器在公开任务上有实测，调试器则是只报告产物所支持原因的安全产物读取器，并未被测出比普通提示更准确。[基准状态](benchmarks/STATUS.md)为每个 Skill 提供了一张证据卡。
+各 Skill 的证据水平不同：审查器拥有最强的实测结果，生成器仅有 2.x 流水线在公开任务上有实测，3.0.0 的路由器没有自己的实测，调试器则是只报告产物所支持原因的安全产物读取器，并未被测出比普通提示更准确。[基准状态](benchmarks/STATUS.md)为每个 Skill 提供了一张证据卡。
 
 | 需求 | Skill | 结果 |
 | --- | --- | --- |
-| 生成新的 Playwright 覆盖 | `playwright-test-generator` | 经过探索、批准和审查的 Playwright spec |
+| 生成新的 Playwright 覆盖 | `playwright-test-generator` | 依据观察到的 locator 编写、经过扫描器检查并运行一次的 Playwright spec |
 | 审查 Playwright/Cypress 测试或 PR/diff 变更 | `e2e-reviewer` | 带有具体修复建议及 introduced/worsened/pre-existing 归属的已验证 P0/P1/P2 发现，每项都附带作出判断所依据的证据 |
 | 调试失败的 Playwright 运行 | `playwright-debugger` | F1–F15 根本原因、证据和修复 |
 | 调试失败的 Cypress 运行 | `cypress-debugger` | F1–F15 根本原因、证据和修复 |
 | 运行确定性本地扫描 | `skills/e2e-reviewer/scripts/scan.sh` | 不依赖目标项目 package 的机械候选项 |
 
-生成器先分析覆盖缺口并通过真实浏览器探索，再在场景获批后生成测试并验证每个候选。两个调试器从失败运行的 artifact 入手，返回已分类的根本原因、支持证据和具体修复。
+生成器是一个路由器：它用 Playwright CLI 探索真实页面，或在官方 Playwright agents 已就绪时委派给它们；按简短的规则清单编写 spec，运行审查器的扫描器，然后把测试运行一次。开发阶段的对比显示，CLI 路径相对官方 agents 处于预先登记的质量范围内，实测处理 token 成本为官方 agents 的 0.56 至 0.60 倍(95% 区间 0.45 至 0.74)。 不主张质量更好([thin-eval](benchmarks/generator-thin-eval-v1/README.md))。两个调试器从失败运行的 artifact 入手，返回已分类的根本原因、支持证据和具体修复。
 
 false-green 检测是审查工作流的重要组成部分，但不是整个 bundle 的唯一用途。基于 `e2e-reviewer` 发现的修复已通过 [15 个合入上游的 PR](#merged-upstream-fixes) 合入，其中包括 Storybook、SvelteKit、code-server、Strapi、Carbon Design System、Ghost 和 MUI X。
 
@@ -132,9 +132,9 @@ Summary: 2 total hit(s), 2 P0
 
 `eslint-plugin-playwright` 也会通过 `no-unnecessary-assertions` 标记这种写法。请启用该规则，让提交时的 lint 负责它能捕获的问题，其余由扫描器补充。
 
-## 证明测试会失败
+## 信任生成的测试之前先检查
 
-好的 matcher 还不够；行为损坏时测试必须变红。对每个候选，V2 会反转主断言，V3 会在已批准的临时副本中注入有依据的产品缺陷，并要求它在预定位置以预期的不匹配失败。源候选文件保持 byte-identical；超时、浏览器崩溃和配置错误不算，无法安全验证的探针会报告为 `CANNOT_VERIFY`。
+好的 matcher 还不够；行为损坏时测试必须变红。自 3.0.0 起，生成器不再证明这一点。已安装 `e2e-reviewer` 时，它会运行扫描器并修复所有 P0 和 P1 命中（最多三轮），然后把项目测试运行一次；跳过的门禁或运行会被报告为未完成。它不再反转断言、注入缺陷或请求独立复审，需要时请让 `e2e-reviewer` 做审查。这些 2.x 步骤保留在标签 `v2.0.1`。
 
 ## 安装并试用
 
@@ -161,7 +161,7 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a claude-code
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a codex
 ```
 
-对于 Codex 委派，`e2e-reviewer`、`playwright-debugger` 和 `cypress-debugger` 可以尝试 native role 委派，也可以使用等价的 inline fallback。`playwright-test-generator` 的 V6 边界更严格：如果没有独立的 fresh-context reviewer，它会报告 `CANNOT_VERIFY` 和 `PARTIAL/BLOCKED`。
+对于 Codex 委派，`e2e-reviewer`、`playwright-debugger` 和 `cypress-debugger` 可以尝试 native role 委派，也可以使用等价的 inline fallback。`playwright-test-generator` 在默认路径上不需要委派，因为 Playwright CLI 工作流直接在 Codex 的 shell 中运行；委派给官方 Playwright generator 是可选的，并且由于 `spawn_agent` 无法选择 role，只有存在 session-wide 的 `playwright-test` MCP 服务器时才可用。
 
 **截至 2026 年 9 月，Codex 上的 native role 委派尚未验证能正常工作，不应依赖它。** 实测发现会话内委派会确定性地失败，报出内部错误 `collab spawn failed: no thread with id` —— 这是一个已知的、仍未解决的上游问题（[openai/codex#41474](https://github.com/openai/codex/issues/41474)、[#33672](https://github.com/openai/codex/issues/33672)）。即使没有报错，模型自己声称委派成功的说法也不可信。完整证据见 [`benchmarks/subagent-routing-v1/`](benchmarks/subagent-routing-v1/README.md)。每个 skill 的 inline fallback 都会得出相同结论，所以正确性不受影响——但目前安装这些 named agent 在 Codex 上并不能带来任何实测到的好处。
 
@@ -228,13 +228,15 @@ Debug the failed Cypress report in cypress/reports/.
 
 这套 bundle 用于生成或审查 E2E 测试，以及分析失败的 Playwright/Cypress 运行。它应与应用及其真实 E2E suite 配合使用，而不是替代它们；它也不是通用 lint preset 或框架无关的测试工具。它支持 Playwright 和 Cypress；新测试生成目前只面向 Playwright。
 
-The bundled shell scripts and artifact readers target conventional macOS/Linux layouts with `/bin/bash` and the fixed system executable paths required by their launchers. Windows users need a compatible WSL distribution and artifacts inside the WSL filesystem; native Windows is not supported. NixOS and Nix-, pyenv-, Conda-, or nvm-only tool installations are not universally auto-discovered. The reviewer scanner supports validated absolute `E2E_SMELL_*_BIN` overrides; this does not imply the same overrides exist in the generator or debugger launchers. Missing trusted tools stop the affected operation; do not bypass that boundary with ambient `PATH` lookup. Resolve skill resources from the actual host-provided skill location, including plugin caches and custom installs, not a guessed home directory.
+The bundled shell scripts and artifact readers target conventional macOS/Linux layouts with `/bin/bash` and the fixed system executable paths required by their launchers. Windows users need a compatible WSL distribution and artifacts inside the WSL filesystem; native Windows is not supported. NixOS and Nix-, pyenv-, Conda-, or nvm-only tool installations are not universally auto-discovered. The reviewer scanner supports validated absolute `E2E_SMELL_*_BIN` overrides; this does not imply the same overrides exist in the debugger launchers. Missing trusted tools stop the affected operation; do not bypass that boundary with ambient `PATH` lookup. Resolve skill resources from the actual host-provided skill location, including plugin caches and custom installs, not a guessed home directory.
 
-生成的测试仅仅通过还不够：它可能断言的是 `Locator` 或 `Promise` 本身，观察的状态与测试名称所描述的行为无关，或者主要断言根本不影响测试结果。因此，在所有适用的 [V1–V6 验证](skills/playwright-test-generator/verification-rules.md) 通过之前，生成器始终把新 spec 视为候选项。
+生成的测试仅仅通过还不够：它可能断言的是 `Locator` 或 `Promise` 本身，观察的状态与测试名称所描述的行为无关，或者主要断言根本不影响测试结果。因此，生成器会运行 `e2e-reviewer` 扫描器并修复所有 P0 和 P1 命中，然后把项目测试运行一次。扫描器是确定性的，只覆盖目录中可机械检测的子集，并不能证明断言会失败。
 
-在生成完整测试集之前，生成器会确认每个场景是否覆盖与现有测试不同的用户风险、E2E 是否是合适的测试层，以及是否有可用于定位失败原因的证据。首次引入测试或处理高风险工作时，会先通过 `e2e-reviewer` 和 V1–V6 验证一个代表性场景，再生成其余测试。在此之前，会用已批准的命令把目标区域的现有测试运行一次，把原本就失败的测试记录下来，而不是算到新测试头上。错误场景必须写明能把该失败原因与其他原因区分开的信号。生成器要写入的每个文件，包括辅助函数、setup 项目和配置修改，都会列入审批表；探索前会记录 `git status` 和文件哈希，并用它们核对实际写入的内容。用户未提交的工作不会被还原；超出已批准行的写入会被报告，且任务不能以 `Complete` 结束。
+生成器从 `playwright.config.*` 读取 `baseURL`，只有在官方 Playwright planner 和 generator 的 agent 定义及 `playwright-test` MCP 工具已经存在时才使用它们；否则它只需 shell 和 Playwright，自己用 Playwright CLI 探索。 它不会要求你配置 MCP，不安装任何东西，不运行官方 healer，也不会为了让测试通过而削弱断言；失败的测试交给 `playwright-debugger` 或手动修复。
 
-测试生成遵循 CLI-first、verification-first 流程。实时探索依次优先使用与项目兼容的 Playwright CLI（`playwright cli`）、单独安装的 `@playwright/cli` 包所提供的命令（`playwright-cli`）、`agent-browser`、运行环境中已经连接的 Playwright MCP，以及受限的 ARIA fallback。已弃用的无作用域 `playwright-cli` 包不会被使用。这些工具只用于探索，不是测试运行器；生成的候选测试仍必须使用仓库原生的 Playwright Test 命令运行。当项目支持 Playwright Test Agents 且已经完成初始化时，它们可以在满足 admission gate 后提供带证据的规划建议；最终实现仍由本生成器负责，V1–V6 验证仍是验收边界。Playwright CLI 探索在 origin 允许列表下进行，并在首次导航前确认未批准的 origin 确实被拦截。
+探索只在 loopback 目标上允许；远程 origin 仅当你在聊天中指明并声明它是一次性的非生产环境时才允许，并且该 origin 会固定在 CLI 的 origin 允许列表（`network.allowedOrigins`）中。生产、共享或未指明的目标会被拒绝；由于官方 agent 委派路径无法固定 origin，它只限 loopback。如果没有可用的 CLI，生成器会请你提供脱敏快照或自行安装 CLI，并把 locator 标为未验证。
+
+要回到 2.x 生成器（审批表和 V1–V6），请安装 `v2.0.1` 标签：skills CLI 使用 `npx --yes skills@1.5.21 add voidmatcha/e2e-skills#v2.0.1 --skill '*' -g -a claude-code`，Claude Code 市场使用 `/plugin marketplace add voidmatcha/e2e-skills#v2.0.1`，然后执行 `/plugin install e2e-skills@voidmatcha`。两种方式都在临时目录中针对该标签验证过（skills CLI 在不带 `-g` 的项目范围内验证）；替换已存在的 `voidmatcha` 市场条目未验证。
 
 ## 审查如何工作
 
@@ -265,11 +267,11 @@ The bundled shell scripts and artifact readers target conventional macOS/Linux l
 - [真实代码修复前后配对](benchmarks/fixpair-v1/README.md)的 B+C+D 批次中，`gpt-6-sol` 的严格召回率为**使用技能 25/33、未使用 13/33**，修复后（AFTER）误报均为 **0/33**。受控的三模型重跑使差距缩小且因模型而异：扫描器修复后重跑的 BEFORE 33 项中 `gpt-6-sol` **26 对 14**、`gpt-6-astra` **27 对 22**、`claude-sonnet-5-5` **27 对 21**。第二个模型 `gpt-6-astra` 在 B 批次得到 **10/15 对 10/15**，两组误报均为 **0/15**。
 - [语义变异样本 v1](benchmarks/semantic-mutants-v1/README.md)记录了模型注入真实测试文件的缺陷：S1 的严格召回率为 **7/10 对 5/10**。原始对照组中双方各有 1 次计分警报，均来自同一案例：声称测试“编辑页面”的用例仍跳转到创建页面。S2 为 **8/9 对 2/9**（双方均为 0 次警报），S3 为 **5/6 对 2/6**（0 次对 2 次）。这些是每个样本运行一次的开发测量；未覆盖 #12。
 - [Debugger skill-effect v1](benchmarks/debugger-skill-effect-v1/README.md)是调试器技能的首次实测：在 30 个新编写的 F1–F15 案例上，技能正文在两个主机上都比仅给类别列表的提示提高了无工具 F 码准确率，Claude Sonnet **0.944 vs 0.756**，Codex Sol **1.000 vs 0.800**，配对 95% 区间高于零。这些是作者植入相似症状的模型编写公开案例，基线也只有类别列表，不是发布级主张，也未显示能推广到真实故障（见 v2）。[Debugger skill-effect v2](benchmarks/debugger-skill-effect-v2/README.md)随后以 26 个真实上游修复为真值并设置无分类基线：严格机制匹配率**技能 0.872 vs 无分类 0.897**（lift −0.026，CI −0.090 至 +0.026），结果为 `FAIL`；两名盲评映射者仅对 26 个真实修复中的 15 个达成 F 码一致。[Debugger skill-effect v3](benchmarks/debugger-skill-effect-v3/README.md)随后在另外 28 个真实修复上测试了一条候选 F1/F14/F11/F7 判定规则：机制匹配率未变（**0.810 vs 0.798**，`FAIL`），一致标签上的 F 码准确率 **0.638 → 0.812**（CI 下限 0.000），但这些标签由新表赋予且 5 个分歧案例被排除，对新文本有利，不能证明诊断更好；映射者一致 28 个中 23 个。该判定规则仅在 v3 中测试，未包含在 2.0.0 中。[Debugger skill-effect v4](benchmarks/debugger-skill-effect-v4/README.md)让带工具的调用读取真实 Playwright 报告并做确定性评分，结果为 `INCONCLUSIVE`（完全匹配 **有技能 0.882 vs 无技能 0.917**，成本 2.6 倍）。v1–v4 整体未显示根因识别有提升。
-- [Debugger skill-effect v5](benchmarks/debugger-skill-effect-v5/README.md) 在 14 个真实修复案例上测试了更轻量的回答格式，与现行发布文本无法区分（strict 匹配 0.762 对 0.738，无分类提示 0.786），因此 2.0.0 的调试器文本未更改；2.0.1 在[本地开发性对比](benchmarks/debugger-dev-comparison-v1/README.md)之后修改了 Root Cause 与 Fix 的措辞。调试器所宣称的价值是安全的产物处理，而不是比普通的“诊断根本原因”提示更高的准确率。
-- [Generator skill-effect v1](benchmarks/generator-skill-effect-v1/README.md)是生成器的首次实测：在 10 个新编写的小型应用上采用确定性的缺陷检出评分，使用技能的 `claude-sonnet-5-5` 在 30/30 次调用中写出的测试都在正确应用上通过，并捕获了 **150/150** 个注入缺陷；不使用技能时有效检出率为 **0.927**，而技能的成本为 6.05 倍。预注册判定为 `INCONCLUSIVE`：基线高于 0.90 的上限，因此不能声称有提升。使用技能写出的测试在标记重构后有 23/30 次调用仍然通过，不使用时为 12/28。
-- [Generator skill-effect v2](benchmarks/generator-skill-effect-v2/README.md)在比较各组之前，先用无技能组筛选了 24 个更难的简述式任务：落入预先设定的 0.40–0.80 区间的只有 **24 个中的 3 个**（在正确应用上通过的 44 个无技能产出捕获了 **216/220** 个注入缺陷），因此计划中的 full / lean / 无技能比较未执行，判定为 `INCONCLUSIVE`（任务池不足）。对这一模型，缺陷检出率已在两个协议中连续触顶；仍有差异的只剩重构存活率和在正确应用上是否通过。
-- [Generator skill-effect v3](benchmarks/generator-skill-effect-v3/README.md)把测试能否在保持行为不变的标记重构后继续通过设为主要指标，并筛选了 36 个经过验证的任务。加入预注册的第三次重复后，仍只有 **36 个中的 9 个**落入 0.25–0.75 区间，未达到至少 12 个的要求。因此五组比较未执行，判定为 `INCONCLUSIVE`（任务池不足）。无技能组的 101 个产出都在正确应用上通过，其中 37 个在重构后仍通过，并捕获了 **498/505** 个注入缺陷。使用技能的组没有运行，因此没有测量出任何方向的生成器技能效果。
-- [Generator skill-effect v8](benchmarks/generator-skill-effect-v8/README.md) 在公开 v3 池上完成了 216/216 次 Codex 调用的评分并通过：标记重构存活率 **0.954 对 0.435**（+0.519，95% CI +0.398 至 +0.630）。未证明缺陷检测有提升（+0.017，CI 包含 0），生成耗时为 6.74 倍，这是公开开发证据，而不是发布声明。。v8 测量的是固定的 v3 full-fixed 文本，而不是本次发布的生成器文本；本次新增的 V4 效果分类和 V1 数据包变更尚未测量。
+- [Debugger skill-effect v5](benchmarks/debugger-skill-effect-v5/README.md) 在 14 个真实修复案例上测试了更轻量的回答格式，与现行发布文本无法区分（strict 匹配 0.762 对 0.738，无分类提示 0.786），因此 2.0.0 的调试器文本未更改；2.0.1 在[本地开发性对比](benchmarks/debugger-dev-comparison-v1/README.md)之后修改了 Root Cause 与 Fix 的措辞，3.0.0 精简了两个调试器的入口，但没有测得诊断准确率的变化。调试器所宣称的价值是安全的产物处理，而不是比普通的“诊断根本原因”提示更高的准确率。
+- 针对已停用的 2.x 生成器：[Generator skill-effect v1](benchmarks/generator-skill-effect-v1/README.md)是生成器的首次实测：在 10 个新编写的小型应用上采用确定性的缺陷检出评分，使用技能的 `claude-sonnet-5-5` 在 30/30 次调用中写出的测试都在正确应用上通过，并捕获了 **150/150** 个注入缺陷；不使用技能时有效检出率为 **0.927**，而技能的成本为 6.05 倍。预注册判定为 `INCONCLUSIVE`：基线高于 0.90 的上限，因此不能声称有提升。使用技能写出的测试在标记重构后有 23/30 次调用仍然通过，不使用时为 12/28。
+- 针对已停用的 2.x 生成器：[Generator skill-effect v2](benchmarks/generator-skill-effect-v2/README.md)在比较各组之前，先用无技能组筛选了 24 个更难的简述式任务：落入预先设定的 0.40–0.80 区间的只有 **24 个中的 3 个**（在正确应用上通过的 44 个无技能产出捕获了 **216/220** 个注入缺陷），因此计划中的 full / lean / 无技能比较未执行，判定为 `INCONCLUSIVE`（任务池不足）。对这一模型，缺陷检出率已在两个协议中连续触顶；仍有差异的只剩重构存活率和在正确应用上是否通过。
+- 针对已停用的 2.x 生成器：[Generator skill-effect v3](benchmarks/generator-skill-effect-v3/README.md)把测试能否在保持行为不变的标记重构后继续通过设为主要指标，并筛选了 36 个经过验证的任务。加入预注册的第三次重复后，仍只有 **36 个中的 9 个**落入 0.25–0.75 区间，未达到至少 12 个的要求。因此五组比较未执行，判定为 `INCONCLUSIVE`（任务池不足）。无技能组的 101 个产出都在正确应用上通过，其中 37 个在重构后仍通过，并捕获了 **498/505** 个注入缺陷。使用技能的组没有运行，因此没有测量出任何方向的生成器技能效果。
+- 针对已停用的 2.x 生成器：[Generator skill-effect v8](benchmarks/generator-skill-effect-v8/README.md) 在公开 v3 池上完成了 216/216 次 Codex 调用的评分并通过：标记重构存活率 **0.954 对 0.435**（+0.519，95% CI +0.398 至 +0.630）。未证明缺陷检测有提升（+0.017，CI 包含 0），生成耗时为 6.74 倍，这是公开开发证据，而不是发布声明。。v8 测量的是固定的 v3 full-fixed 2.x 生成器文本；3.0.0 的路由器不包含该文本，也没有自己的实测。这些结果所涉及的审批表和 V1–V6 验收步骤，连同 2.x 生成器，保留在标签 `v2.0.1` 和 `benchmarks/generator-skill-v2.0.1-archive/` 中。
 - [Reviewer holdout v19](benchmarks/reviewer-holdout-v19/README.md)在**发布前的 2.0.0 候选**审查器（技能 digest `aa88145d…`，提交 `976c3fa`）上通过了发布确认门槛（full − no-skill 稳定 F1 **+0.571**，95% CI +0.411 至 +0.738，540 次调用）；同一语料上的 [v18](benchmarks/reviewer-holdout-v18/README.md) 为 `INCONCLUSIVE`。已发布的审查器与该候选的差异在于后续变更（Tier 2 ast-grep 配置固定、`#14` 的 `cy.env()` 排除、`#4h` 修复与 4 项边界澄清、`#8c`、`#3b` fail 处理器契约），这些变更没有任何 holdout 测量过。
 - [Reviewer holdout v21](benchmarks/reviewer-holdout-v21/README.md)未支持明确的 #2 措辞：480 次调用中，full 的稳定 F1 从 **1.000 降至 0.980**。保留 2.0.0 措辞；两组已将部分验证的 #2 判为 P1。
 - 加上未公开、仅在本地使用的 AGPL 批次，全部批次的汇总为 **36/44 对 23/44**，修复后（AFTER）误报为 **0 对 1**。[现场模型比较](docs/ai-reviewer-benchmark.md#field-model-comparison)另行报告了对 19 个真实仓库测试文件的本地测量。
@@ -400,7 +402,7 @@ linter 可以捕获直接的 Locator 真值断言或缺失的 `await`。它无�
 <!-- README-I18N-CONTRACT:CORE-SAFETY:START -->
 `e2e-reviewer` Skill 会用稳定 IDs 和 P0/P1/P2 severity 审查目录中的全部 24 个模式。它的独立 `scan.sh` 扫描器只覆盖确定性的机械子集。扫描器命中是候选项，不是最终发现；该 Skill 会先检查意图和周边代码，再报告 verdict。
 
-debuggers 会按稳定的 F1–F15 taxonomy 对 failures 分类。只有在你信任该仓库并批准精确命令（包括其 environment 和 flags）之后，它们和 generator 才会执行 target-controlled code。
+debuggers 会按稳定的 F1–F15 taxonomy 对 failures 分类。只有在你信任该仓库并批准精确命令（包括其 environment 和 flags）之后，它们才会执行 target-controlled code。generator 只会对自己写的 spec 运行一次审查器扫描器和项目自己的测试命令。
 
 对于非公开 benchmark runs，`--isolation-wrapper` 是必需 hook，而不是 isolation proof。Continuous integration (CI) 会验证 wrapper contract，但不会证明 filesystem、process 或 network isolation。
 <!-- README-I18N-CONTRACT:CORE-SAFETY:END -->
@@ -439,6 +441,7 @@ Claude Code、Codex，以及 `skills` CLI 支持的 55+ 宿主都可以加载公
 - [历史 AI 审查器基准](docs/ai-reviewer-benchmark.md)
 - [调试器基准协议](docs/debugger-benchmark/README.md)
 - [框架范围](docs/framework-scope.md)
+- [本地 E2E 规则桥接与推荐 lint](docs/recommended-lint.md)
 - [路线图](docs/roadmap.md)
 - [Reviewer evidence execution plan and optional Jev experiment](docs/plans/reviewer-evidence-next-steps.md)
 
@@ -451,3 +454,5 @@ Claude Code、Codex，以及 `skills` CLI 支持的 55+ 宿主都可以加载公
 ## 许可证
 
 Apache-2.0 &copy; [voidmatcha](https://github.com/voidmatcha)。参见 [LICENSE](LICENSE)。
+
+部分基准测试记录引用了 Playwright 官方代理定义（Apache-2.0，Microsoft），详见 [NOTICE](NOTICE)。Playwright 是 Microsoft Corporation 的商标，本项目与 Microsoft 没有关联，也未获其认可。

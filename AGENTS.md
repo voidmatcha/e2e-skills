@@ -8,7 +8,7 @@ Guidance for AI coding agents (Claude Code, Codex, and other AGENTS.md-compatibl
 
 `e2e-skills` is a bundle of four Agent Skills for end-to-end test work on Playwright and Cypress projects:
 
-- `playwright-test-generator` — generates Playwright E2E tests from scratch (coverage-gap analysis → live-browser exploration → approval gate → review).
+- `playwright-test-generator` — routes new-test generation: a Playwright CLI workflow by default, the official Playwright agents when already set up, then the `e2e-reviewer` scanner gate and one test run. A router, not a pipeline; the 2.x pipeline is archived at tag `v2.0.1`.
 - `e2e-reviewer` — static review of existing Playwright/Cypress specs against 24 anti-patterns grouped P0/P1/P2.
 - `playwright-debugger` — root-cause diagnosis from `playwright-report/`.
 - `cypress-debugger` — root-cause diagnosis from `cypress/reports/` (mochawesome / JUnit).
@@ -43,21 +43,19 @@ The repo doubles as a Claude Code plugin (`.claude-plugin/`), a Codex plugin (`.
 │   ├── e2e-finding-verifier.toml   # behavior-synced with agents/*.md; guarded by SP5
 │   └── e2e-failure-classifier.toml
 ├── benchmarks/             # immutable public benchmark evidence + adjudication ledgers
+│   └── generator-skill-v2.0.1-archive/  # byte copy of the retired 2.x generator pipeline (SKILL.md, references, scripts, evals)
 ├── skills/                 # Four Agent Skills (the public surface)
 │   ├── playwright-test-generator/
-│   │   ├── SKILL.md        # Required: skill frontmatter + body
-│   │   ├── best-practices.md
-│   │   ├── code-rules.md
-│   │   ├── scenario-design.md
-│   │   ├── verification-rules.md
+│   │   ├── SKILL.md        # Required: skill frontmatter + body (at most 7,168 bytes)
+│   │   ├── thin-rules.md   # the 11-rule checklist, byte-pinned by test-generator-router.py to the thin-layer arm D file
 │   │   ├── evals/evals.json
 │   │   └── agents/openai.yaml
 │   ├── e2e-reviewer/
-│   │   └── references/      # e.g. scanner-workflow.md, semantic-review.md
+│   │   └── references/      # e.g. scanner-workflow.md, semantic-review.md, verification-rules.md
 │   ├── playwright-debugger/
-│   │   └── references/      # e.g. artifact-extraction.md, classification-procedure.md
+│   │   └── references/      # e.g. artifact-extraction.md, classification-procedure.md, safety-procedures.md
 │   └── cypress-debugger/
-│       └── references/      # e.g. artifact-extraction.md, classification-procedure.md
+│       └── references/      # e.g. artifact-extraction.md, classification-procedure.md, safety-procedures.md
 ├── scripts/
 │   ├── ci/                 # CI parity, security, eval-metadata checks
 │   ├── dev/                # contributor reinstall + git hook setup
@@ -124,7 +122,8 @@ python3 scripts/ci/test-cypress-timeout-zero-probe.py
 python3 scripts/dev/refresh-reviewer-evidence-digest.py  # after any skills/e2e-reviewer byte change
 python3 scripts/dev/reviewer-contract.py --write --lean   # after a pattern ID or severity change; --lean needs a Lean 4 toolchain
 /bin/bash -p scripts/dev/linux-script-check.sh           # shipped-script suites on Linux (needs Docker)
-# generator behavior changes: live run per scripts/evals/generator-live/writescope-demo/RUNBOOK.md (manual; needs a model + browser)
+# generator behavior changes: manual host smoke runs per CONTRIBUTING.md item 6 (needs a model + browser); offline contract: python3 scripts/ci/test-generator-router.py
+python3 scripts/ci/check-pending-markers.py  # release gate (not in ci-local): fails while an unresolved pending-evaluation marker remains in a release version
 bash scripts/ci/codex-smoke.sh      # manual Codex cross-host smoke (skips if codex absent)
 # Claude Code plugin eval (manual; uses Claude usage): skill triggering and routing, with a no-plugin baseline.
 # Run it on a clean export: the checkout's testbed/ and worktrees exceed the 20,000-entry plugin scan limit.

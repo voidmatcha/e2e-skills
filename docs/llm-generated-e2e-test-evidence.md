@@ -216,7 +216,7 @@ These controls make the repository’s executable Playwright/Cypress fixtures us
 
 ## Transferable workflow patterns
 
-The following ideas are worth borrowing as workflow design, not as direct performance evidence:
+The following ideas are worth borrowing as workflow design, not as direct performance evidence. As of 3.0.0 `playwright-test-generator` is a router and no longer ships the approval tables, V1–V6 acceptance steps, or reference files that the "Adaptation in this repo" column below names. Those rows describe the 2.x generator; its text stays at tag `v2.0.1` and its former files at `benchmarks/generator-skill-v2.0.1-archive/`, and the reviewer-side V1–V6 reference is `skills/e2e-reviewer/references/verification-rules.md`.
 
 | Source | Borrowed idea | Adaptation in this repo | What to keep visible |
 | --- | --- | --- | --- |

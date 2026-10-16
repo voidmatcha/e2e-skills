@@ -1,8 +1,8 @@
 # Roadmap and Upstream Contributions
 
-## Evidence status at 2.0.1
+## Evidence status at 3.0.0
 
-[Benchmark status](../benchmarks/STATUS.md) is the source of truth for measured outcomes; this section only says what is still open. The reviewer passed a same-corpus release confirmation for its pre-release 2.0.0 candidate, and the shipped reviewer differs from that candidate by later changes no holdout has measured. The project does not yet have a passing release-grade benchmark for generalized reviewer accuracy, and every corpus it has run is public development evidence.
+[Benchmark status](../benchmarks/STATUS.md) is the source of truth for measured outcomes; this section only says what is still open. The reviewer passed a same-corpus release confirmation for its pre-release 2.0.0 candidate, and the shipped reviewer differs from that candidate by later changes no holdout has measured. 3.0.0 replaced the generator pipeline with a thin router and minimized both debugger entrypoints; no holdout has measured either change, and the earlier generator chains measured the 2.x generator text. The project does not yet have a passing release-grade benchmark for generalized reviewer accuracy, and every corpus it has run is public development evidence.
 
 **Open:** independent clean-case labels with a complete, auditable setup/caller/reverse-user boundary, so that false positives and the full reviewer's added value over no-skill and catalog-only baselines can be measured on a corpus the skill was not tuned on. Frozen specificity v4 remains blocked; the separate development work has not produced a release corpus or a specificity result. The [execution plan](plans/reviewer-evidence-next-steps.md) keeps the exact replay counts, hashes, and verification limits.
 

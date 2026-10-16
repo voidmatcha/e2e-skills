@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=172832ef44041af6194d787889e6883811a6158ee6ff88aeefa921c46d63c0e4; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=1b1571bdba4ea0ec8a980eb1f0f06357d933d14ec732c8d0869c30838470f47c; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 Evidence scope: the 15 merged PRs shown here are curated examples, not a total. Field review v1 separately records 29 submitted / 16 merged / 6 closed / 7 open under its skill-name inclusion rule; do not combine the two denominators. These are recorded snapshots, not current GitHub totals.
 
@@ -36,11 +36,11 @@ Evidence scope: the 15 merged PRs shown here are curated examples, not a total. 
 
 `e2e-reviewer`는 사람이나 AI가 작성한 테스트의 품질을 독립적으로 검증하는 스킬입니다. 테스트가 통과하더라도 제목에 적힌 동작을 실제로 검증하는지 확인합니다.
 
-스킬마다 증거 수준이 다릅니다. 리뷰어가 가장 강한 측정 결과를 갖고 있고, 제너레이터는 공개 과제에서 측정됐으며, 디버거는 일반 프롬프트보다 정확하다고 측정된 것이 아니라 아티팩트가 뒷받침하는 원인만 보고하는 안전한 아티팩트 리더입니다. [벤치마크 상태](benchmarks/STATUS.md)에 스킬별 증거 카드가 있습니다.
+스킬마다 증거 수준이 다릅니다. 리뷰어가 가장 강한 측정 결과를 갖고 있고, 제너레이터는 2.x 파이프라인만 공개 과제에서 측정됐고 3.0.0 라우터는 자체 측정이 없으며, 디버거는 일반 프롬프트보다 정확하다고 측정된 것이 아니라 아티팩트가 뒷받침하는 원인만 보고하는 안전한 아티팩트 리더입니다. [벤치마크 상태](benchmarks/STATUS.md)에 스킬별 증거 카드가 있습니다.
 
 | 필요 | 스킬 | 결과 |
 | --- | --- | --- |
-| 새 Playwright 테스트 생성 | `playwright-test-generator` | 탐색, 승인, 리뷰를 거친 Playwright 테스트 |
+| 새 Playwright 테스트 생성 | `playwright-test-generator` | 관찰한 로케이터로 작성한 뒤 스캐너 검사와 1회 실행을 거친 Playwright 테스트 |
 | Playwright/Cypress 테스트 또는 PR/diff 변경 사항 리뷰 | `e2e-reviewer` | 구체적인 수정안과 새로 생긴 문제, 악화된 문제, 기존 문제를 구분한 검증된 P0/P1/P2 문제 목록 |
 | 실패한 Playwright 실행 분석 | `playwright-debugger` | F1–F15 근본 원인, 근거, 수정안 |
 | 실패한 Cypress 실행 분석 | `cypress-debugger` | F1–F15 근본 원인, 근거, 수정안 |
@@ -48,7 +48,7 @@ Evidence scope: the 15 merged PRs shown here are curated examples, not a total. 
 
 `e2e-reviewer`의 각 결과에는 그 판단에 사용한 근거가 함께 제공됩니다.
 
-generator는 테스트가 부족한 영역을 분석하고 실제 브라우저에서 대상 흐름을 탐색합니다. 시나리오가 승인되면 테스트를 생성하고 각 후보를 검증합니다. `playwright-debugger`와 `cypress-debugger`는 실패한 실행 산출물을 바탕으로 근본 원인을 분류하고, 판단 근거와 구체적인 수정안을 제시합니다.
+generator는 라우터입니다. Playwright CLI로 실제 화면을 탐색하거나, 이미 설정된 공식 Playwright 에이전트에 위임하고, 짧은 규칙 체크리스트에 따라 테스트를 작성한 뒤 리뷰어 스캐너를 실행하고 테스트를 한 번 실행합니다. 개발 단계 비교에서 CLI 경로는 공식 에이전트 대비 사전 등록한 품질 기준 안에 있었고, 측정된 처리 토큰 비용은 공식 에이전트의 0.56~0.60배였습니다(95% 구간 0.45~0.74). 품질이 더 좋다고 주장하지는 않습니다([thin-eval](benchmarks/generator-thin-eval-v1/README.md)). `playwright-debugger`와 `cypress-debugger`는 실패한 실행 산출물을 바탕으로 근본 원인을 분류하고, 판단 근거와 구체적인 수정안을 제시합니다.
 
 false-green 탐지는 테스트 리뷰 기능의 중요한 부분이지만, 프로젝트 전체를 대표하지는 않습니다. `e2e-reviewer`가 찾은 문제를 고친 PR 15건이 Storybook, SvelteKit, code-server, Strapi, Carbon Design System, Ghost, MUI X를 비롯한 [upstream 프로젝트에 merge되었습니다](#merged-upstream-fixes).
 
@@ -135,11 +135,9 @@ Summary: 2 total hit(s), 2 P0
 
 `eslint-plugin-playwright`도 `no-unnecessary-assertions` 규칙으로 이 형태를 찾습니다. 커밋 시점의 `lint`가 잡을 수 있는 문제는 이 규칙에 맡기고, 나머지는 스캐너로 보완하세요.
 
-## 테스트가 실패할 수 있음을 증명하기
+## 생성한 테스트를 신뢰하기 전에 확인하기
 
-좋은 matcher만으로는 부족합니다. 동작이 깨지면 테스트가 실제로 실패해야 합니다. V2는 각 후보의 핵심 검증문을 뒤집습니다. V3는 승인된 임시 복사본에 근거가 확인된 제품 결함을 주입하고, 테스트가 미리 지정한 위치에서 예상한 불일치로 실패하는지 확인합니다.
-
-이때 원본은 바이트 단위로 그대로 유지합니다. 제한 시간 초과, 브라우저 충돌, 설정 오류로 인한 실패는 인정하지 않으며, 안전하게 검증할 수 없는 경우에는 `CANNOT_VERIFY`로 보고합니다.
+좋은 matcher만으로는 부족합니다. 동작이 깨지면 테스트가 실제로 실패해야 합니다. 3.0.0부터 generator는 이를 증명하지 않습니다. `e2e-reviewer`가 설치되어 있으면 스캐너를 실행해 P0와 P1 결과를 모두 수정하고(최대 3회), 프로젝트의 테스트를 한 번 실행하며, 건너뛴 게이트나 실행은 완료가 아니라고 보고합니다. 핵심 검증문 반전, 결함 주입, 독립 재리뷰는 더 이상 수행하지 않으므로 필요하면 `e2e-reviewer`에 리뷰를 요청하세요. 2.x의 해당 단계는 태그 `v2.0.1`에 남아 있습니다.
 
 ## 설치하고 사용해 보기
 
@@ -166,7 +164,7 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a claude-code
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a codex
 ```
 
-Codex에서는 `e2e-reviewer`, `playwright-debugger`, `cypress-debugger` 작업을 전용 에이전트에 위임을 시도하거나 현재 세션에서 같은 절차를 직접 수행할 수 있습니다. `playwright-test-generator`에는 더 엄격한 V6 경계가 적용됩니다. 새 문맥에서 리뷰할 별도 리뷰어가 없으면 `CANNOT_VERIFY`와 `PARTIAL/BLOCKED`를 보고합니다.
+Codex에서는 `e2e-reviewer`, `playwright-debugger`, `cypress-debugger` 작업을 전용 에이전트에 위임을 시도하거나 현재 세션에서 같은 절차를 직접 수행할 수 있습니다. `playwright-test-generator`는 기본 경로에서 위임이 필요 없습니다. Playwright CLI 워크플로가 Codex 셸에서 실행되기 때문입니다. 공식 Playwright generator에 위임하는 것은 선택 사항이며, `spawn_agent`가 역할을 선택할 수 없으므로 session-wide `playwright-test` MCP 서버가 있을 때만 동작합니다.
 
 **2026-09 기준, Codex의 전용 에이전트 위임은 정상 작동이 검증되지 않았으므로 의존하지 마세요.** 실제 파일럿에서는 세션 중 위임이 내부 `collab spawn failed: no thread with id` 오류로 매번 실패했습니다. 아직 해결되지 않은 upstream 이슈입니다. ([openai/codex#41474](https://github.com/openai/codex/issues/41474), [#33672](https://github.com/openai/codex/issues/33672)) 오류가 발생하지 않더라도 모델이 스스로 보고한 성공 여부는 신뢰할 수 없습니다. 전체 근거는 [`benchmarks/subagent-routing-v1/`](benchmarks/subagent-routing-v1/README.md)에서 확인할 수 있습니다. 각 스킬의 inline fallback이 동일한 결론에 도달하므로 정확성에는 영향이 없지만, 현재 이 에이전트들을 설치해도 Codex에서 확인된 이점은 없습니다.
 
@@ -240,13 +238,15 @@ Debug the failed Cypress report in cypress/reports/.
 
 새 E2E 테스트를 만들거나 기존 테스트를 리뷰하고, 실패한 Playwright/Cypress 실행의 원인을 분석할 때 이 스킬을 사용하세요. 이 도구는 실제 애플리케이션과 E2E 테스트 모음을 보완하며, 이를 대신하지 않습니다. 범용 `lint` preset도, 프레임워크 독립형 테스트 도구도 아닙니다. Playwright와 Cypress를 지원하되, 새 테스트 생성은 현재 Playwright만 지원합니다.
 
-The bundled shell scripts and artifact readers target conventional macOS/Linux layouts with `/bin/bash` and the fixed system executable paths required by their launchers. Windows users need a compatible WSL distribution and artifacts inside the WSL filesystem; native Windows is not supported. NixOS and Nix-, pyenv-, Conda-, or nvm-only tool installations are not universally auto-discovered. The reviewer scanner supports validated absolute `E2E_SMELL_*_BIN` overrides; this does not imply the same overrides exist in the generator or debugger launchers. Missing trusted tools stop the affected operation; do not bypass that boundary with ambient `PATH` lookup. Resolve skill resources from the actual host-provided skill location, including plugin caches and custom installs, not a guessed home directory.
+The bundled shell scripts and artifact readers target conventional macOS/Linux layouts with `/bin/bash` and the fixed system executable paths required by their launchers. Windows users need a compatible WSL distribution and artifacts inside the WSL filesystem; native Windows is not supported. NixOS and Nix-, pyenv-, Conda-, or nvm-only tool installations are not universally auto-discovered. The reviewer scanner supports validated absolute `E2E_SMELL_*_BIN` overrides; this does not imply the same overrides exist in the debugger launchers. Missing trusted tools stop the affected operation; do not bypass that boundary with ambient `PATH` lookup. Resolve skill resources from the actual host-provided skill location, including plugin caches and custom installs, not a guessed home directory.
 
-새로 만든 테스트가 통과하는 것만으로는 충분하지 않습니다. `Locator`나 `Promise` 자체를 검증하거나, 테스트 이름에 적힌 동작과 무관한 상태를 확인하거나, 핵심 검증문이 테스트 결과에 영향을 주지 않을 수도 있습니다. 그래서 generator는 적용 가능한 [V1–V6 검증](skills/playwright-test-generator/verification-rules.md)을 모두 통과하기 전까지 새 테스트를 후보로 취급합니다.
+새로 만든 테스트가 통과하는 것만으로는 충분하지 않습니다. `Locator`나 `Promise` 자체를 검증하거나, 테스트 이름에 적힌 동작과 무관한 상태를 확인하거나, 핵심 검증문이 테스트 결과에 영향을 주지 않을 수도 있습니다. 그래서 generator는 `e2e-reviewer` 스캐너를 실행해 P0와 P1 결과를 모두 고친 뒤 프로젝트의 테스트를 한 번 실행합니다. 스캐너는 결정론적이며 카탈로그의 기계적으로 검출 가능한 일부만 다룹니다. 검증문이 실패할 수 있음을 증명하지는 않습니다.
 
-전체 테스트를 생성하기 전에 각 시나리오가 기존 테스트와 다른 사용자 위험을 다루는지, E2E가 적절한 테스트 계층인지, 실패 원인을 확인할 근거가 있는지 리뷰합니다. 첫 도입이나 위험도가 높은 작업에서는 대표 시나리오 하나를 `e2e-reviewer`와 V1–V6로 검증한 뒤 나머지 테스트를 생성합니다. 그 전에 대상 영역의 기존 테스트를 승인된 명령으로 한 번 실행해, 원래 실패하던 테스트를 새 테스트 탓으로 돌리지 않고 기록합니다. 에러 시나리오는 그 실패 원인을 다른 원인과 구분해 주는 신호를 반드시 적습니다. 헬퍼, setup 프로젝트, 설정 수정까지 생성기가 쓸 파일은 모두 승인 표에 올립니다. 탐색 전에 `git status`와 파일 해시를 기록해 두고, 실제로 쓴 파일을 그 기록과 대조합니다. 커밋하지 않은 사용자 작업은 되돌리지 않으며, 승인되지 않은 파일을 쓰면 보고하고 `Complete`로 끝내지 않습니다.
+generator는 `playwright.config.*`에서 `baseURL`을 읽고, 공식 Playwright planner와 generator의 에이전트 정의와 `playwright-test` MCP 도구가 이미 있을 때만 이를 사용합니다. 그렇지 않으면 셸과 Playwright만으로 Playwright CLI를 직접 사용해 탐색합니다. MCP 설정을 요구하지 않고, 아무것도 설치하지 않으며, 공식 healer를 실행하지 않고, 테스트를 통과시키려고 검증문을 약화하지 않습니다. 실패한 테스트는 `playwright-debugger`로 넘기거나 직접 고칩니다.
 
-테스트는 CLI로 먼저 탐색하고, 검증을 거쳐 확정합니다. 실제 화면을 탐색할 때는 프로젝트에 호환되는 Playwright CLI(`playwright cli`), 별도로 설치된 `@playwright/cli` 패키지의 명령(`playwright-cli`), `agent-browser`, 실행 환경에 이미 연결된 Playwright MCP, 제한된 ARIA 대체 경로 순으로 사용합니다. 스코프 없이 배포된 기존 `playwright-cli` 패키지는 더 이상 권장되지 않으므로 사용하지 않습니다. 이 도구들은 탐색에만 쓰며 테스트 실행기를 대신하지 않습니다. 생성한 후보는 반드시 저장소에서 사용하는 Playwright Test 명령으로 실행해야 합니다. 프로젝트가 Playwright Test Agents를 지원하고 해당 에이전트가 이미 설정돼 있다면, 도입 기준을 통과한 근거 기반 계획 제안에 활용할 수 있습니다. 다만 최종 구현은 이 generator가 맡고, V1–V6 검증을 통과해야만 결과를 받아들입니다. Playwright CLI 탐색은 origin 허용 목록을 켠 상태로 진행하며, 첫 페이지를 열기 전에 승인되지 않은 origin이 실제로 차단되는지 확인합니다.
+탐색은 loopback 대상에서 허용됩니다. 원격 origin은 사용자가 채팅에서 직접 지정하고 폐기 가능한 비프로덕션 환경이라고 밝힌 경우에만 허용되며, 해당 origin은 CLI origin 허용 목록(`network.allowedOrigins`)에 고정됩니다. 프로덕션, 공유 환경, 지정되지 않은 대상은 거부하며, 공식 에이전트 위임 경로는 origin을 고정할 수 없으므로 loopback 전용입니다. 사용할 CLI가 없으면 sanitize한 스냅샷이나 사용자가 직접 설치한 CLI를 요청하고 로케이터를 미검증으로 표시합니다.
+
+2.x generator(승인 표와 V1–V6)로 되돌리려면 `v2.0.1` 태그를 설치하세요. skills CLI는 `npx --yes skills@1.5.21 add voidmatcha/e2e-skills#v2.0.1 --skill '*' -g -a claude-code`, Claude Code 마켓플레이스는 `/plugin marketplace add voidmatcha/e2e-skills#v2.0.1` 다음 `/plugin install e2e-skills@voidmatcha`입니다. 두 방식 모두 임시 디렉터리에서 해당 태그로 확인했으며(skills CLI는 `-g` 없이 프로젝트 범위로 확인), 이미 있는 `voidmatcha` 마켓플레이스 항목을 교체하는 경우는 확인하지 않았습니다.
 
 ## 리뷰 방식
 
@@ -277,11 +277,11 @@ merge 건수를 전체 제출 건수와 함께 볼 수 있습니다. [Field revi
 - [실제 코드 수정 전후 쌍](benchmarks/fixpair-v1/README.md)의 B+C+D 배치에서 `gpt-6-sol`의 엄격한 재현율은 **스킬 사용 시 25/33, 미사용 시 13/33**이고, 수정 후(AFTER) 오탐은 양쪽 모두 **0/33**입니다. 통제된 3개 모델 재실행에서는 격차가 줄고 모델마다 달라, 스캐너 수정 뒤 재실행한 BEFORE 33건 중 `gpt-6-sol` **26 대 14**, `gpt-6-astra` **27 대 22**, `claude-sonnet-5-5` **27 대 21**입니다. 두 번째 모델 `gpt-6-astra`의 B 배치 결과는 **10/15 대 10/15**이며, 양쪽 모두 오탐은 **0/15**입니다.
 - [의미 기반 변이 테스트 v1](benchmarks/semantic-mutants-v1/README.md)은 실제 테스트 파일에 모델이 주입한 결함을 다룹니다. S1의 엄격한 재현율은 **7/10 대 5/10**입니다. 원본 대조군에서 각 1건으로 집계된 경보는 모두 ‘수정 화면’ 테스트가 여전히 생성 화면으로 이동하는 사례에서 나왔습니다. S2는 **8/9 대 2/9**(경보 각 0건), S3는 **5/6 대 2/6**(경보 0건 대 2건)입니다. 각각 한 번 실행한 개발 측정이며 #12는 다루지 않았습니다.
 - [Debugger skill-effect v1](benchmarks/debugger-skill-effect-v1/README.md)은 디버거 스킬의 첫 실측입니다. 새로 작성한 30개 F1–F15 케이스에서 스킬 본문은 범례만 준 프롬프트보다 도구 없는 F-code 정확도를 두 호스트 모두에서 높였습니다. Claude Sonnet **0.944 vs 0.756**, Codex Sol **1.000 vs 0.800**이며 짝지은 95% 구간은 0을 넘습니다. 작성자가 유사 증상을 심은 모델 작성 공개 케이스이고 기준선도 범례뿐이라 릴리스 주장이 아니며, 실제 실패로 일반화된다고 보일 수 없습니다(v2 참조). [Debugger skill-effect v2](benchmarks/debugger-skill-effect-v2/README.md)는 실제 업스트림 수정 26건을 정답으로 삼고 분류 체계 없는 기준선을 두었습니다. 엄격한 기전 일치율은 **스킬 0.872 vs 분류 체계 없음 0.897**(lift −0.026, CI −0.090~+0.026)로 `FAIL`이며, 블라인드 매퍼 두 명이 F-code에 합의한 실제 수정은 26건 중 15건뿐이었습니다. [Debugger skill-effect v3](benchmarks/debugger-skill-effect-v3/README.md)는 F1/F14/F11/F7 타이브레이크 후보를 실제 수정 28건에서 측정했습니다. 기전 일치율은 변하지 않았고(**0.810 vs 0.798**, `FAIL`), 합의 라벨의 F-code 정확도는 **0.638 → 0.812**(CI 하한 0.000)이지만, 이 라벨은 새 표로 부여됐고 이견 5건이 제외돼 새 텍스트에 유리하므로 진단이 나아졌다는 증거가 아닙니다. 매퍼 합의는 28건 중 23건이었습니다. 이 타이브레이크는 v3에서만 시험했고 2.0.0에는 포함하지 않았습니다. [Debugger skill-effect v4](benchmarks/debugger-skill-effect-v4/README.md)는 도구를 쓰는 호출에 실제 Playwright 리포트를 주고 결정론적으로 채점했으며 `INCONCLUSIVE`였습니다(전체 일치 **스킬 0.882 vs 없음 0.917**, 비용 2.6배). v1–v4 전체에서 근본 원인 식별의 개선은 확인되지 않았습니다.
-- [Debugger skill-effect v5](benchmarks/debugger-skill-effect-v5/README.md)는 더 가벼운 응답 형식을 실제 수정 사례 14건에서 시험했으나 현재 출하 텍스트와 구분되지 않았고(strict 일치 0.762 대 0.738, 분류 체계 없는 프롬프트 0.786), 그래서 2.0.0의 디버거 텍스트는 바뀌지 않았고, 2.0.1에서 [로컬 개발용 비교](benchmarks/debugger-dev-comparison-v1/README.md) 후 Root Cause와 Fix 문구를 바꿨습니다. 디버거가 내세우는 가치는 일반 "근본 원인을 진단해" 프롬프트보다 높은 정확도가 아니라 안전한 아티팩트 처리입니다.
-- [Generator skill-effect v1](benchmarks/generator-skill-effect-v1/README.md)은 생성기의 첫 실측입니다. 새로 만든 소형 앱 10개에서 결정론적 결함 검출 채점을 적용했을 때, 스킬을 사용한 `claude-sonnet-5-5`는 30/30 호출에서 정상 앱에 통과하고 주입 결함 **150/150**을 잡는 테스트를 작성했고, 미사용 시 유효 검출률은 **0.927**이었으며 비용은 6.05배였습니다. 사전 등록된 판정은 `INCONCLUSIVE`입니다. 기준군이 상한 0.90을 넘어 향상을 주장할 수 없습니다. 스킬로 작성한 테스트는 마크업 리팩터링에서 23/30 호출이 통과했고, 미사용 시 12/28이었습니다.
-- [Generator skill-effect v2](benchmarks/generator-skill-effect-v2/README.md)는 더 어려운 브리프형 과제 24개를 군 비교 전에 무스킬 군으로 먼저 선별했습니다. 사전에 정한 0.40–0.80 구간에 든 과제는 **24개 중 3개**뿐이었고(정상 앱을 통과한 무스킬 결과물 44개가 주입 결함 **216/220**을 잡음), 계획했던 full / lean / 무스킬 비교는 실행하지 않아 판정은 `INCONCLUSIVE`(풀 부족)입니다. 이 모델에서 결함 검출률은 두 프로토콜 연속으로 상한에 닿았고, 리팩터링 생존과 정상 앱 통과 여부만 아직 편차가 있습니다.
-- [Generator skill-effect v3](benchmarks/generator-skill-effect-v3/README.md)는 동작을 유지하는 마크업 리팩터링에서 테스트가 통과하는지를 주 지표로 삼아 검증된 과제 36개를 선별했습니다. 사전 등록한 3회차 확장 뒤에도 0.25–0.75 구간에 든 과제는 **36개 중 9개**로 최소 기준 12개에 못 미쳤습니다. 이에 따라 다섯 군 비교를 실행하지 않았고 판정은 `INCONCLUSIVE`(풀 부족)입니다. skill을 사용하지 않은 결과물 101개는 모두 정상 앱에서 통과했고, 37개가 리팩터링 뒤에도 통과했으며 주입 결함 **498/505**를 잡았습니다. skill을 적용한 군은 실행하지 않았으므로 generator skill의 효과는 어느 방향으로도 측정되지 않았습니다.
-- [Generator skill-effect v8](benchmarks/generator-skill-effect-v8/README.md)은 공개 v3 풀에서 Codex 호출 216/216을 채점했고 통과했습니다. 마크업 리팩터 생존율은 **0.954 대 0.435**(+0.519, 95% CI +0.398~+0.630)입니다. 결함 검출 향상은 입증되지 않았고(+0.017, CI가 0을 포함), 생성 시간은 6.74배였으며, 공개 개발 증거이지 릴리스 주장이 아닙니다. v8은 이번 릴리스의 생성기 텍스트가 아니라 고정된 v3 full-fixed 텍스트를 측정했으며, 이번 릴리스가 추가한 V4 효과 분류와 V1 패킷 변경은 측정되지 않았습니다.
+- [Debugger skill-effect v5](benchmarks/debugger-skill-effect-v5/README.md)는 더 가벼운 응답 형식을 실제 수정 사례 14건에서 시험했으나 현재 출하 텍스트와 구분되지 않았고(strict 일치 0.762 대 0.738, 분류 체계 없는 프롬프트 0.786), 그래서 2.0.0의 디버거 텍스트는 바뀌지 않았고, 2.0.1에서 [로컬 개발용 비교](benchmarks/debugger-dev-comparison-v1/README.md) 후 Root Cause와 Fix 문구를 바꿨고, 3.0.0은 진단 정확도의 측정된 변화 없이 두 디버거의 진입점을 줄였습니다. 디버거가 내세우는 가치는 일반 "근본 원인을 진단해" 프롬프트보다 높은 정확도가 아니라 안전한 아티팩트 처리입니다.
+- 폐기된 2.x generator 대상: [Generator skill-effect v1](benchmarks/generator-skill-effect-v1/README.md)은 생성기의 첫 실측입니다. 새로 만든 소형 앱 10개에서 결정론적 결함 검출 채점을 적용했을 때, 스킬을 사용한 `claude-sonnet-5-5`는 30/30 호출에서 정상 앱에 통과하고 주입 결함 **150/150**을 잡는 테스트를 작성했고, 미사용 시 유효 검출률은 **0.927**이었으며 비용은 6.05배였습니다. 사전 등록된 판정은 `INCONCLUSIVE`입니다. 기준군이 상한 0.90을 넘어 향상을 주장할 수 없습니다. 스킬로 작성한 테스트는 마크업 리팩터링에서 23/30 호출이 통과했고, 미사용 시 12/28이었습니다.
+- 폐기된 2.x generator 대상: [Generator skill-effect v2](benchmarks/generator-skill-effect-v2/README.md)는 더 어려운 브리프형 과제 24개를 군 비교 전에 무스킬 군으로 먼저 선별했습니다. 사전에 정한 0.40–0.80 구간에 든 과제는 **24개 중 3개**뿐이었고(정상 앱을 통과한 무스킬 결과물 44개가 주입 결함 **216/220**을 잡음), 계획했던 full / lean / 무스킬 비교는 실행하지 않아 판정은 `INCONCLUSIVE`(풀 부족)입니다. 이 모델에서 결함 검출률은 두 프로토콜 연속으로 상한에 닿았고, 리팩터링 생존과 정상 앱 통과 여부만 아직 편차가 있습니다.
+- 폐기된 2.x generator 대상: [Generator skill-effect v3](benchmarks/generator-skill-effect-v3/README.md)는 동작을 유지하는 마크업 리팩터링에서 테스트가 통과하는지를 주 지표로 삼아 검증된 과제 36개를 선별했습니다. 사전 등록한 3회차 확장 뒤에도 0.25–0.75 구간에 든 과제는 **36개 중 9개**로 최소 기준 12개에 못 미쳤습니다. 이에 따라 다섯 군 비교를 실행하지 않았고 판정은 `INCONCLUSIVE`(풀 부족)입니다. skill을 사용하지 않은 결과물 101개는 모두 정상 앱에서 통과했고, 37개가 리팩터링 뒤에도 통과했으며 주입 결함 **498/505**를 잡았습니다. skill을 적용한 군은 실행하지 않았으므로 generator skill의 효과는 어느 방향으로도 측정되지 않았습니다.
+- 폐기된 2.x generator 대상: [Generator skill-effect v8](benchmarks/generator-skill-effect-v8/README.md)은 공개 v3 풀에서 Codex 호출 216/216을 채점했고 통과했습니다. 마크업 리팩터 생존율은 **0.954 대 0.435**(+0.519, 95% CI +0.398~+0.630)입니다. 결함 검출 향상은 입증되지 않았고(+0.017, CI가 0을 포함), 생성 시간은 6.74배였으며, 공개 개발 증거이지 릴리스 주장이 아닙니다. v8은 고정된 v3 full-fixed 2.x 생성기 텍스트를 측정했으며, 3.0.0 라우터는 그 텍스트를 포함하지 않고 자체 측정도 없습니다. 이 결과가 다룬 승인 표와 V1–V6 인수 단계를 포함한 2.x 생성기는 태그 `v2.0.1`과 `benchmarks/generator-skill-v2.0.1-archive/`에 남아 있습니다.
 - [Reviewer holdout v19](benchmarks/reviewer-holdout-v19/README.md)는 **출시 전 2.0.0 후보** 리뷰어(스킬 digest `aa88145d…`, 커밋 `976c3fa`)에 대해 릴리스 확인 게이트를 통과했습니다(full − no-skill 안정 F1 **+0.571**, 95% CI +0.411~+0.738, 540회 호출). 같은 코퍼스의 [v18](benchmarks/reviewer-holdout-v18/README.md)은 `INCONCLUSIVE`였습니다. 출하된 리뷰어는 그 후보와 이후 변경(Tier 2 ast-grep 설정 고정, `#14` `cy.env()` 제외, `#4h` 수정과 경계 명확화 4건, `#8c`, `#3b` fail 핸들러 계약)만큼 다르며, 이 변경은 어떤 holdout도 측정하지 않았습니다.
 - [Reviewer holdout v21](benchmarks/reviewer-holdout-v21/README.md)은 명시적인 #2 문구를 지지하지 않았습니다. 480회 호출에서 full의 안정 F1이 **1.000 → 0.980**으로 떨어졌습니다. 2.0.0 문구를 유지하며, 부분적으로 검증된 #2는 두 군 모두 이미 P1로 판정했습니다.
 - 공개하지 않은 로컬 전용 AGPL 배치를 포함한 전체 집계는 **36/44 대 23/44**이며, 수정 후(AFTER) 오탐은 **0 대 1**입니다. [현장 모델 비교](docs/ai-reviewer-benchmark.md#field-model-comparison)는 실제 저장소의 테스트 파일 19개에 대한 별도의 로컬 측정 결과를 보고합니다.
@@ -416,7 +416,7 @@ Tier 3는 기본으로 제공되는 대체 경로입니다. 선택적으로 사�
 <!-- README-I18N-CONTRACT:CORE-SAFETY:START -->
 `e2e-reviewer`는 목록에 있는 패턴 24개를 모두 리뷰합니다. 각 패턴에는 고정 ID와 P0/P1/P2 심각도가 지정돼 있습니다. 독립 실행 `scan.sh` 스캐너는 규칙만으로 판별할 수 있는 일부 항목만 다룹니다. 스캐너 결과는 리뷰 후보일 뿐 확정된 문제가 아닙니다. 이 스킬은 판정을 내리기 전에 테스트 의도와 주변 코드를 확인합니다.
 
-두 `debugger` 스킬은 고정된 F1–F15 분류 체계에 따라 실패를 분류합니다. 이 스킬들과 generator는 저장소를 신뢰하고 환경 변수와 플래그를 포함한 정확한 명령을 승인한 뒤에만 대상 프로젝트가 제어하는 코드를 실행합니다.
+두 `debugger` 스킬은 고정된 F1–F15 분류 체계에 따라 실패를 분류합니다. 이 스킬들은 저장소를 신뢰하고 환경 변수와 플래그를 포함한 정확한 명령을 승인한 뒤에만 대상 프로젝트가 제어하는 코드를 실행합니다. generator는 자신이 작성한 테스트에 대해 리뷰어 스캐너와 프로젝트의 테스트 명령만 한 번 실행합니다.
 
 비공개 벤치마크 실행에서는 `--isolation-wrapper`가 필수 훅이지만, 그 자체로 실제 격리를 보장하지는 않습니다. 지속적 통합(CI)은 래퍼 계약을 검증하지만 파일시스템, 프로세스, 네트워크 격리를 입증하지는 않습니다.
 <!-- README-I18N-CONTRACT:CORE-SAFETY:END -->
@@ -455,6 +455,7 @@ Claude Code와 Codex, 그리고 `skills` CLI가 지원하는 55개 이상의 실
 - [과거 AI 리뷰어 벤치마크](docs/ai-reviewer-benchmark.md)
 - [`debugger` 벤치마크 프로토콜](docs/debugger-benchmark/README.md)
 - [지원 프레임워크 범위](docs/framework-scope.md)
+- [로컬 E2E 규칙 브리지와 권장 lint](docs/recommended-lint.md)
 - [로드맵](docs/roadmap.md)
 - [Reviewer evidence execution plan and optional Jev experiment](docs/plans/reviewer-evidence-next-steps.md)
 
@@ -467,3 +468,5 @@ Claude Code와 Codex, 그리고 `skills` CLI가 지원하는 55개 이상의 실
 ## 라이선스
 
 Apache-2.0 &copy; [voidmatcha](https://github.com/voidmatcha). [LICENSE](LICENSE)를 참고하세요.
+
+일부 벤치마크 기록에는 Playwright 공식 에이전트 정의(Apache-2.0, Microsoft)가 인용되어 있습니다. 자세한 내용은 [NOTICE](NOTICE)를 참고하세요. Playwright는 Microsoft Corporation의 상표이며, 이 프로젝트는 Microsoft와 제휴하거나 보증을 받은 관계가 아닙니다.
