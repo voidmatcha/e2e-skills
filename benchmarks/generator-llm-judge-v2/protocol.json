@@ -1,0 +1,9 @@
+{
+  "protocol_id": "generator-llm-judge-v2",
+  "status": "PREREGISTERED_NOT_FROZEN_DESCRIPTIVE_REFERENCE_ONLY",
+  "extends": "generator-llm-judge-v1",
+  "seed": "20261016-llm-judge",
+  "m1": {"bands": [1.25, 1.5], "primary_band": 1.25, "min_decisive": 8, "length_unit": "non-blank lines of anonymised shown code"},
+  "m2": {"judge": "claude sonnet", "tier": "reduced", "pairs": 36, "calls": 72, "max_excluded_pairs": 6, "min_decisive": 8,
+         "weakened_drop": 0.25, "consistency_min": 0.60, "codex": "not run in this freeze"}
+}
