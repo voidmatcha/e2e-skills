@@ -1,0 +1,140 @@
+{
+ "tool": "gyojeong@0.3.0 check --json (translate mode)",
+ "version_output": "0.3.0",
+ "rules_sha256": "8833c2e1216f37ea8085ba6341736a8abd4aeb75eecf213d91b8b4d09992111f",
+ "translations_ko_sha256": "e5f5ebfd2af9868cbe382800780a0c95014b343284e2d7cfeee248034a1ffcbc",
+ "all_exit_zero": true,
+ "checks": {
+  "v2-06-task": {
+   "exit_code": 0,
+   "result": "pass",
+   "findings": 0,
+   "blocks": {
+    "source_blocks": 1,
+    "draft_blocks": 1,
+    "paired": true
+   }
+  },
+  "v2-06-scen": {
+   "exit_code": 0,
+   "result": "pass",
+   "findings": 0,
+   "blocks": {
+    "source_blocks": 3,
+    "draft_blocks": 3,
+    "paired": true
+   }
+  },
+  "v2-22-task": {
+   "exit_code": 0,
+   "result": "pass",
+   "findings": 0,
+   "blocks": {
+    "source_blocks": 1,
+    "draft_blocks": 1,
+    "paired": true
+   }
+  },
+  "v2-22-scen": {
+   "exit_code": 0,
+   "result": "pass",
+   "findings": 0,
+   "blocks": {
+    "source_blocks": 4,
+    "draft_blocks": 4,
+    "paired": true
+   }
+  },
+  "v2-23-task": {
+   "exit_code": 0,
+   "result": "pass",
+   "findings": 0,
+   "blocks": {
+    "source_blocks": 1,
+    "draft_blocks": 1,
+    "paired": true
+   }
+  },
+  "v2-23-scen": {
+   "exit_code": 0,
+   "result": "pass",
+   "findings": 0,
+   "blocks": {
+    "source_blocks": 3,
+    "draft_blocks": 3,
+    "paired": true
+   }
+  },
+  "v3-04-task": {
+   "exit_code": 0,
+   "result": "pass",
+   "findings": 0,
+   "blocks": {
+    "source_blocks": 1,
+    "draft_blocks": 1,
+    "paired": true
+   }
+  },
+  "v3-04-scen": {
+   "exit_code": 0,
+   "result": "pass",
+   "findings": 0,
+   "blocks": {
+    "source_blocks": 5,
+    "draft_blocks": 5,
+    "paired": true
+   }
+  },
+  "v3-06-task": {
+   "exit_code": 0,
+   "result": "pass",
+   "findings": 0,
+   "blocks": {
+    "source_blocks": 1,
+    "draft_blocks": 1,
+    "paired": true
+   }
+  },
+  "v3-06-scen": {
+   "exit_code": 0,
+   "result": "pass",
+   "findings": 0,
+   "blocks": {
+    "source_blocks": 5,
+    "draft_blocks": 5,
+    "paired": true
+   }
+  },
+  "v3-09-task": {
+   "exit_code": 0,
+   "result": "pass",
+   "findings": 0,
+   "blocks": {
+    "source_blocks": 1,
+    "draft_blocks": 1,
+    "paired": true
+   }
+  },
+  "v3-09-scen": {
+   "exit_code": 0,
+   "result": "pass",
+   "findings": 0,
+   "blocks": {
+    "source_blocks": 7,
+    "draft_blocks": 7,
+    "paired": true
+   }
+  },
+  "rubric": {
+   "exit_code": 0,
+   "result": "pass",
+   "findings": 0,
+   "blocks": {
+    "source_blocks": 5,
+    "draft_blocks": 5,
+    "paired": true
+   }
+  }
+ },
+ "note": "check compares block pairing and obligation/number/identifier fidelity of the Korean draft against the English source; it does not assess naturalness. Source = English task/scenario text and protocol rubric table."
+}

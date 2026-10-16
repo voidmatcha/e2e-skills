@@ -1,0 +1,193 @@
+{
+ "tasks": {
+  "v2-06": {
+   "en_task": "Cover the article tag editor (`/`). Typing a tag and pressing Enter adds it as a chip and clears the box; a tag that is already there, compared without regard to letter case, is rejected with `Already added`; pressing Backspace in the empty box removes the last chip; each chip's remove button removes that chip. At most five tags can be added: once there are five, `Tag limit reached` is shown and the box is disabled until a chip is removed. Save stores the tags, shows `Tags saved`, and a reload shows the saved tags.",
+   "en_scenarios": [
+    "Typing a tag and pressing Enter adds it as a chip and clears the box; a tag that is already there, compared without regard to letter case, is rejected with `Already added`; pressing Backspace in the empty box removes the last chip; each chip's remove button removes that chip.",
+    "At most five tags can be added: once there are five, `Tag limit reached` is shown and the box is disabled until a chip is removed.",
+    "Save stores the tags, shows `Tags saved`, and a reload shows the saved tags."
+   ],
+   "ko_task": "기사 태그 편집기(`/`)를 다룬다. 태그를 입력하고 Enter를 누르면 칩으로 추가되고 입력란이 비워진다. 이미 있는 태그는 대소문자를 구분하지 않고 비교해 `Already added`와 함께 거부된다. 입력란이 빈 상태에서 Backspace를 누르면 마지막 칩이 지워진다. 각 칩의 삭제 버튼은 해당 칩을 지운다. 태그는 최대 5개까지 추가할 수 있다. 5개가 되면 `Tag limit reached`가 표시되고, 칩 하나가 지워질 때까지 입력란이 비활성화된다. Save를 누르면 태그가 저장되고 `Tags saved`가 표시되며, 새로고침하면 저장된 태그가 보인다.",
+   "ko_scenarios": [
+    "태그를 입력하고 Enter를 누르면 칩으로 추가되고 입력란이 비워진다. 이미 있는 태그는 대소문자를 구분하지 않고 비교해 `Already added`와 함께 거부된다. 입력란이 빈 상태에서 Backspace를 누르면 마지막 칩이 지워진다. 각 칩의 삭제 버튼은 해당 칩을 지운다.",
+    "태그는 최대 5개까지 추가할 수 있다. 5개가 되면 `Tag limit reached`가 표시되고, 칩 하나가 지워질 때까지 입력란이 비활성화된다.",
+    "Save를 누르면 태그가 저장되고 `Tags saved`가 표시되며, 새로고침하면 저장된 태그가 보인다."
+   ]
+  },
+  "v2-22": {
+   "en_task": "Cover the orders page (`/`): eight orders with numbers like `1001`, `1010`, `2010` and a status of paid, shipped or refunded. The Status filter and the Search box (matches order numbers containing the typed digits) narrow the list together, so both conditions must hold; the `N orders` line follows the list. The filters are mirrored in the URL (`?status=shipped&q=101`), so a reload, or opening such a URL directly, shows the same filtered list with the controls set accordingly. Clear filters empties both controls and shows every order again.",
+   "en_scenarios": [
+    "Cover the orders page (`/`): eight orders with numbers like `1001`, `1010`, `2010` and a status of paid, shipped or refunded.",
+    "The Status filter and the Search box (matches order numbers containing the typed digits) narrow the list together, so both conditions must hold; the `N orders` line follows the list.",
+    "The filters are mirrored in the URL (`?status=shipped&q=101`), so a reload, or opening such a URL directly, shows the same filtered list with the controls set accordingly.",
+    "Clear filters empties both controls and shows every order again."
+   ],
+   "ko_task": "주문 페이지(`/`)를 다룬다. 주문은 8개이며 번호는 `1001`, `1010`, `2010` 같은 형태이고 상태는 paid, shipped, refunded 중 하나다. Status 필터와 Search 입력란(입력한 숫자가 포함된 주문 번호와 일치)은 함께 목록을 좁히므로 두 조건을 모두 만족해야 하고, `N orders` 줄이 목록을 따라간다. 필터는 URL(`?status=shipped&q=101`)에 그대로 반영되므로, 새로고침하거나 그런 URL을 직접 열면 같은 필터링 결과가 나오고 컨트롤도 그에 맞게 설정된다. Clear filters를 누르면 두 컨트롤이 모두 비워지고 모든 주문이 다시 표시된다.",
+   "ko_scenarios": [
+    "주문 페이지(`/`)를 다룬다. 주문은 8개이며 번호는 `1001`, `1010`, `2010` 같은 형태이고 상태는 paid, shipped, refunded 중 하나다.",
+    "Status 필터와 Search 입력란(입력한 숫자가 포함된 주문 번호와 일치)은 함께 목록을 좁히므로 두 조건을 모두 만족해야 하고, `N orders` 줄이 목록을 따라간다.",
+    "필터는 URL(`?status=shipped&q=101`)에 그대로 반영되므로, 새로고침하거나 그런 URL을 직접 열면 같은 필터링 결과가 나오고 컨트롤도 그에 맞게 설정된다.",
+    "Clear filters를 누르면 두 컨트롤이 모두 비워지고 모든 주문이 다시 표시된다."
+   ]
+  },
+  "v2-23": {
+   "en_task": "Cover account deletion on the account page (`/`). Delete account opens a confirmation dialog whose Delete my account button stays disabled until the box contains exactly `DELETE` (lower-case or partial text does not count). Escape, like Cancel, closes the dialog without deleting and moves focus back to the Delete account button. Confirming deletes the account on the server and shows `Your account has been deleted` in place of the profile; after a reload the page still shows the account as deleted.",
+   "en_scenarios": [
+    "Delete account opens a confirmation dialog whose Delete my account button stays disabled until the box contains exactly `DELETE` (lower-case or partial text does not count).",
+    "Escape, like Cancel, closes the dialog without deleting and moves focus back to the Delete account button.",
+    "Confirming deletes the account on the server and shows `Your account has been deleted` in place of the profile; after a reload the page still shows the account as deleted."
+   ],
+   "ko_task": "계정 페이지(`/`)의 계정 삭제를 다룬다. Delete account를 누르면 확인 대화상자가 열리고, 입력란에 정확히 `DELETE`가 들어 있기 전까지 Delete my account 버튼은 비활성화된 상태로 유지된다(소문자나 일부만 입력한 텍스트는 인정되지 않는다). Escape는 Cancel과 마찬가지로 삭제하지 않고 대화상자를 닫으며 포커스를 Delete account 버튼으로 되돌린다. 삭제를 확정하면 서버에서 계정이 삭제되고 프로필 자리에 `Your account has been deleted`가 표시되며, 새로고침한 뒤에도 페이지는 계정이 삭제된 상태로 보인다.",
+   "ko_scenarios": [
+    "Delete account를 누르면 확인 대화상자가 열리고, 입력란에 정확히 `DELETE`가 들어 있기 전까지 Delete my account 버튼은 비활성화된 상태로 유지된다(소문자나 일부만 입력한 텍스트는 인정되지 않는다).",
+    "Escape는 Cancel과 마찬가지로 삭제하지 않고 대화상자를 닫으며 포커스를 Delete account 버튼으로 되돌린다.",
+    "삭제를 확정하면 서버에서 계정이 삭제되고 프로필 자리에 `Your account has been deleted`가 표시되며, 새로고침한 뒤에도 페이지는 계정이 삭제된 상태로 보인다."
+   ]
+  },
+  "v3-04": {
+   "en_task": "Cover the playlist editor (`/`), seeded with four tracks (Blue in Green 5:37, So What 9:22, Freddie Freeloader 9:49, All Blues 11:33). Play shows the Now playing panel with that track's title and Stop hides the panel. Move up and Move down reorder the tracks and the new order survives a reload. The Total line (`Total 36:21`) sums the track lengths and follows a removal; Remove deletes a track. The Repeat toggle reports its state through aria-pressed and the setting is remembered on the server across a reload.",
+   "en_scenarios": [
+    "Cover the playlist editor (`/`), seeded with four tracks (Blue in Green 5:37, So What 9:22, Freddie Freeloader 9:49, All Blues 11:33).",
+    "Play shows the Now playing panel with that track's title and Stop hides the panel.",
+    "Move up and Move down reorder the tracks and the new order survives a reload.",
+    "The Total line (`Total 36:21`) sums the track lengths and follows a removal; Remove deletes a track.",
+    "The Repeat toggle reports its state through aria-pressed and the setting is remembered on the server across a reload."
+   ],
+   "ko_task": "플레이리스트 편집기(`/`)를 다룬다. 트랙 4개(Blue in Green 5:37, So What 9:22, Freddie Freeloader 9:49, All Blues 11:33)가 미리 들어 있다. Play를 누르면 해당 트랙의 제목과 함께 Now playing 패널이 표시되고, Stop을 누르면 패널이 숨겨진다. Move up과 Move down은 트랙 순서를 바꾸며, 바뀐 순서는 새로고침 뒤에도 유지된다. Total 줄(`Total 36:21`)은 트랙 길이의 합계이며 트랙을 지우면 그에 맞게 바뀐다. Remove는 트랙을 삭제한다. Repeat 토글은 aria-pressed로 상태를 알리며, 이 설정은 새로고침 뒤에도 서버에 기억된다.",
+   "ko_scenarios": [
+    "플레이리스트 편집기(`/`)를 다룬다. 트랙 4개(Blue in Green 5:37, So What 9:22, Freddie Freeloader 9:49, All Blues 11:33)가 미리 들어 있다.",
+    "Play를 누르면 해당 트랙의 제목과 함께 Now playing 패널이 표시되고, Stop을 누르면 패널이 숨겨진다.",
+    "Move up과 Move down은 트랙 순서를 바꾸며, 바뀐 순서는 새로고침 뒤에도 유지된다.",
+    "Total 줄(`Total 36:21`)은 트랙 길이의 합계이며 트랙을 지우면 그에 맞게 바뀐다. Remove는 트랙을 삭제한다.",
+    "Repeat 토글은 aria-pressed로 상태를 알리며, 이 설정은 새로고침 뒤에도 서버에 기억된다."
+   ]
+  },
+  "v3-06": {
+   "en_task": "Cover the budget envelopes page (`/`): three cards (Groceries $120 of $300, Transport $150 of $150, Fun $0 of $100). Adding spending to an envelope raises its `$spent of $limit` line and its progress bar's aria-valuenow (the percentage of the limit, capped at 100), and the Total line (`Total $270 of $550`) sums every envelope. An envelope whose spending exceeds its limit shows the Over budget badge; spending exactly the limit does not. Reset envelope sets its spending back to $0 and removes the badge. Spending is stored on the server and survives a reload.",
+   "en_scenarios": [
+    "Cover the budget envelopes page (`/`): three cards (Groceries $120 of $300, Transport $150 of $150, Fun $0 of $100).",
+    "Adding spending to an envelope raises its `$spent of $limit` line and its progress bar's aria-valuenow (the percentage of the limit, capped at 100), and the Total line (`Total $270 of $550`) sums every envelope.",
+    "An envelope whose spending exceeds its limit shows the Over budget badge; spending exactly the limit does not.",
+    "Reset envelope sets its spending back to $0 and removes the badge.",
+    "Spending is stored on the server and survives a reload."
+   ],
+   "ko_task": "예산 봉투 페이지(`/`)를 다룬다. 카드는 3개다(Groceries $120 of $300, Transport $150 of $150, Fun $0 of $100). 봉투에 지출을 추가하면 `$spent of $limit` 줄의 지출 금액과 진행 막대의 aria-valuenow(한도 대비 백분율이며 최대 100)가 올라가고, Total 줄(`Total $270 of $550`)은 모든 봉투의 합계다. 지출이 한도를 넘은 봉투에는 Over budget 배지가 표시되고, 지출이 한도와 정확히 같으면 표시되지 않는다. Reset envelope는 지출을 다시 $0으로 되돌리고 배지를 없앤다. 지출은 서버에 저장되며 새로고침 뒤에도 유지된다.",
+   "ko_scenarios": [
+    "예산 봉투 페이지(`/`)를 다룬다. 카드는 3개다(Groceries $120 of $300, Transport $150 of $150, Fun $0 of $100).",
+    "봉투에 지출을 추가하면 `$spent of $limit` 줄의 지출 금액과 진행 막대의 aria-valuenow(한도 대비 백분율이며 최대 100)가 올라가고, Total 줄(`Total $270 of $550`)은 모든 봉투의 합계다.",
+    "지출이 한도를 넘은 봉투에는 Over budget 배지가 표시되고, 지출이 한도와 정확히 같으면 표시되지 않는다.",
+    "Reset envelope는 지출을 다시 $0으로 되돌리고 배지를 없앤다.",
+    "지출은 서버에 저장되며 새로고침 뒤에도 유지된다."
+   ]
+  },
+  "v3-09": {
+   "en_task": "Cover the flashcards app (`/`): two decks, Spanish basics (hola, gracias, adiós; gracias already learned) and Capitals (Norway, Peru). Study on a deck opens the Study panel titled `Studying <deck>` with the first card's front and `Card 1 of N`. Flip reveals the back. Got it marks the card learned and Again leaves it unlearned; both advance to the next card and the `Card N of M` line follows. After the last card the panel shows `Session done` and `All N cards reviewed`, and the deck's `N cards · M learned` line reflects the learned count. Learned state is stored on the server and survives a reload. Back to decks closes the panel.",
+   "en_scenarios": [
+    "Cover the flashcards app (`/`): two decks, Spanish basics (hola, gracias, adiós; gracias already learned) and Capitals (Norway, Peru).",
+    "Study on a deck opens the Study panel titled `Studying <deck>` with the first card's front and `Card 1 of N`.",
+    "Flip reveals the back.",
+    "Got it marks the card learned and Again leaves it unlearned; both advance to the next card and the `Card N of M` line follows.",
+    "After the last card the panel shows `Session done` and `All N cards reviewed`, and the deck's `N cards · M learned` line reflects the learned count.",
+    "Learned state is stored on the server and survives a reload.",
+    "Back to decks closes the panel."
+   ],
+   "ko_task": "플래시카드 앱(`/`)을 다룬다. 덱은 2개이며 Spanish basics(hola, gracias, adiós; gracias는 이미 학습됨)와 Capitals(Norway, Peru)다. 덱에서 Study를 누르면 `Studying <deck>`이라는 제목의 Study 패널이 열리고 첫 카드의 앞면과 `Card 1 of N`이 표시된다. Flip은 뒷면을 보여 준다. Got it은 카드를 학습함으로 표시하고 Again은 학습하지 않음 상태로 둔다. 둘 다 다음 카드로 넘어가며 `Card N of M` 줄이 그에 따라 바뀐다. 마지막 카드 다음에는 패널에 `Session done`과 `All N cards reviewed`가 표시되고, 덱의 `N cards · M learned` 줄에 학습한 카드 수가 반영된다. 학습 상태는 서버에 저장되며 새로고침 뒤에도 유지된다. Back to decks는 패널을 닫는다.",
+   "ko_scenarios": [
+    "플래시카드 앱(`/`)을 다룬다. 덱은 2개이며 Spanish basics(hola, gracias, adiós; gracias는 이미 학습됨)와 Capitals(Norway, Peru)다.",
+    "덱에서 Study를 누르면 `Studying <deck>`이라는 제목의 Study 패널이 열리고 첫 카드의 앞면과 `Card 1 of N`이 표시된다.",
+    "Flip은 뒷면을 보여 준다.",
+    "Got it은 카드를 학습함으로 표시하고 Again은 학습하지 않음 상태로 둔다. 둘 다 다음 카드로 넘어가며 `Card N of M` 줄이 그에 따라 바뀐다.",
+    "마지막 카드 다음에는 패널에 `Session done`과 `All N cards reviewed`가 표시되고, 덱의 `N cards · M learned` 줄에 학습한 카드 수가 반영된다.",
+    "학습 상태는 서버에 저장되며 새로고침 뒤에도 유지된다.",
+    "Back to decks는 패널을 닫는다."
+   ]
+  }
+ },
+ "rubric": {
+  "c1": {
+   "en": {
+    "name": "Scenario coverage",
+    "def": "each listed behaviour tested at least once",
+    "a1": "most listed behaviours untested",
+    "a3": "about half tested; some behaviour (e.g. persistence across reload) missing",
+    "a5": "every behaviour verified at least once"
+   },
+   "ko": {
+    "name": "시나리오 충족",
+    "def": "나열된 각 동작을 한 번 이상 테스트했는가",
+    "a1": "나열된 동작 대부분이 테스트되지 않았다.",
+    "a3": "절반쯤 테스트되었고 일부 동작(예: 새로고침 뒤에도 유지되는지)이 빠졌다.",
+    "a5": "모든 동작이 최소 한 번은 검증된다."
+   }
+  },
+  "c2": {
+   "en": {
+    "name": "Assertion meaning",
+    "def": "assertions check the promised outcome or state",
+    "a1": "only checks that elements are visible; promised values, states or texts not asserted",
+    "a3": "some steps assert the outcome, some only existence",
+    "a5": "each key step asserts the promised value, state or text"
+   },
+   "ko": {
+    "name": "검증의 의미",
+    "def": "단언이 약속된 결과나 상태를 확인하는가",
+    "a1": "요소가 보이는지만 확인하고 약속된 값, 상태, 문구는 단언하지 않는다.",
+    "a3": "일부 단계는 결과를 단언하고 일부는 존재 여부만 확인한다.",
+    "a5": "핵심 단계마다 약속된 값, 상태, 문구를 단언한다."
+   }
+  },
+  "c3": {
+   "en": {
+    "name": "Locator robustness",
+    "def": "roles, labels, accessible names over position or structure",
+    "a1": "mostly position, order or CSS-structure selectors",
+    "a3": "role/label selectors mixed with structural ones",
+    "a5": "almost all located by role, label or accessible name"
+   },
+   "ko": {
+    "name": "로케이터 견고성",
+    "def": "위치나 구조보다 role, label, 접근 가능한 이름으로 요소를 찾는가",
+    "a1": "대부분 위치, 순서, CSS 구조에 의존하는 선택자다.",
+    "a3": "role이나 label 기반 선택자와 구조에 의존하는 선택자가 섞여 있다.",
+    "a5": "거의 모두 role, label, 접근 가능한 이름으로 찾는다."
+   }
+  },
+  "c4": {
+   "en": {
+    "name": "Readability and style",
+    "def": "naming, structure, length",
+    "a1": "unclear names; long tests that are hard to follow",
+    "a3": "readable, but repetition or vague names stand out",
+    "a5": "names state intent; consistent structure; reads in one pass"
+   },
+   "ko": {
+    "name": "가독성과 스타일",
+    "def": "이름, 구조, 길이가 적절한가",
+    "a1": "이름이 불분명하고 테스트가 길어 따라가기 어렵다.",
+    "a3": "읽을 수는 있지만 반복이나 모호한 이름이 눈에 띈다.",
+    "a5": "이름에 의도가 드러나고 구조가 일관되어 한 번에 읽힌다."
+   }
+  },
+  "c5": {
+   "en": {
+    "name": "Economy",
+    "def": "no redundant, duplicated or dead code (5 = nothing to remove)",
+    "a1": "much duplication, dead code or needless waits/helpers",
+    "a3": "a few places could be shortened",
+    "a5": "almost nothing to remove"
+   },
+   "ko": {
+    "name": "불필요한 코드 없음",
+    "def": "중복되거나 쓰이지 않는 코드가 없는가(5점은 지울 것이 없음)",
+    "a1": "중복, 쓰이지 않는 코드, 불필요한 대기나 helper가 많다.",
+    "a3": "줄일 수 있는 곳이 몇 군데 있다.",
+    "a5": "지울 것이 거의 없다."
+   }
+  }
+ },
+ "en_source_sha256": "68355e55a9bce62236d823eb2d7125f6c00537cb9c3ea42ec53cc473fe35826d",
+ "sources": {
+  "tasks": "generator-skill-effect-v3/truth/<id>.json task; scenarios: generator-official-pilot-v1/plans/<id>/plan.md Expected Results lines",
+  "rubric": "protocol.md rubric table"
+ }
+}
