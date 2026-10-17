@@ -1,0 +1,15 @@
+{
+  "action": "PROCEED: the canary is clean; archive it as non-data and start the full stage with drive.",
+  "anomalies": [],
+  "archived": true,
+  "freeze_sha256": "91643b1dafa6cd49588359737782b48b89af7c48ba786a2b50d498635925c21c",
+  "models": {
+    "gpt-6.1-sol": {
+      "action": null,
+      "anomalies": [],
+      "verdict": "proceed"
+    }
+  },
+  "non_data": true,
+  "verdict": "proceed"
+}

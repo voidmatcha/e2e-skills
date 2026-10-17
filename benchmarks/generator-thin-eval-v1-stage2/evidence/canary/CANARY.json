@@ -1,0 +1,53 @@
+{
+  "archived": true,
+  "extra_spend": true,
+  "freeze_sha256": "91643b1dafa6cd49588359737782b48b89af7c48ba786a2b50d498635925c21c",
+  "models": [
+    "gpt-6.1-sol"
+  ],
+  "non_data": true,
+  "plan": {
+    "arm": "cli-first+thin-rules",
+    "cells": [
+      {
+        "arm": "cli-first+thin-rules",
+        "case": "v2-06",
+        "repetition": 1
+      },
+      {
+        "arm": "cli-first+thin-rules",
+        "case": "v3-09",
+        "repetition": 1
+      },
+      {
+        "arm": "cli-first+thin-rules",
+        "case": "v2-06",
+        "repetition": 2
+      },
+      {
+        "arm": "cli-first+thin-rules",
+        "case": "v3-09",
+        "repetition": 2
+      },
+      {
+        "arm": "cli-first+thin-rules",
+        "case": "v2-06",
+        "repetition": 3
+      },
+      {
+        "arm": "cli-first+thin-rules",
+        "case": "v3-09",
+        "repetition": 3
+      }
+    ],
+    "count": 6,
+    "repetitions": 3,
+    "stop_rule": "ANY anomaly stops: archive the canary output as invalid, fix the cause, and restart as a NEW protocol version (new id, new freeze). A frozen campaign is never patched and a stopped canary is never resumed or partially counted.",
+    "tasks": [
+      "v2-06",
+      "v3-09"
+    ],
+    "wiring": "canary --output OUT --allow-live (run_canary); unit-tested with stubs only, never run live"
+  },
+  "protocol_id": "generator-thin-eval-v1-s3"
+}

@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=79b0cbd3931bc84a8c791e11f7486732cfd98b408730be420a617b641e988498; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=7d4c1d5ad80522625a91af66ce321f5b56e5727bbcd3f938e670c309ccb0ee32; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 근거 범위: 여기에 표시한 merge된 PR 15건은 선별한 사례이며 전체 수가 아닙니다. Field review v1은 skill 이름을 포함하는 기준에 따라 제출 29건, merge 16건, 닫힘 6건, 열림 7건을 별도로 기록합니다. 두 분모를 합쳐서 해석하지 마세요. 둘 다 기록 시점의 스냅샷이며 현재 GitHub 집계가 아닙니다.
 
@@ -36,7 +36,7 @@
 
 `e2e-reviewer`는 사람이나 AI가 작성한 테스트의 품질을 독립적으로 검증하는 스킬입니다. 테스트가 통과하더라도 제목에 적힌 동작을 실제로 검증하는지 확인합니다.
 
-스킬마다 증거 수준이 다릅니다. 리뷰어가 가장 강한 측정 결과를 갖고 있고, generator는 2.x 파이프라인만 공개 과제에서 측정됐고 3.0.0 router는 공식 에이전트와의 개발 단계 비교(모델 2개, 합성 과제 6개)만 있으며, debugger는 일반 프롬프트보다 정확하다고 측정된 것이 아니라 아티팩트가 뒷받침하는 원인만 보고하는 안전한 아티팩트 리더입니다. [벤치마크 상태](benchmarks/STATUS.md)에 스킬별 증거 카드가 있습니다.
+스킬마다 증거 수준이 다릅니다. 리뷰어가 가장 강한 측정 결과를 갖고 있고, generator는 2.x 파이프라인만 공개 과제에서 측정됐고 3.0.0 router는 공식 에이전트와의 개발 단계 비교(모델 3개, 합성 과제 6개)만 있으며, debugger는 일반 프롬프트보다 정확하다고 측정된 것이 아니라 아티팩트가 뒷받침하는 원인만 보고하는 안전한 아티팩트 리더입니다. [벤치마크 상태](benchmarks/STATUS.md)에 스킬별 증거 카드가 있습니다.
 
 | 필요 | 스킬 | 결과 |
 | --- | --- | --- |
@@ -48,7 +48,7 @@
 
 `e2e-reviewer`의 각 결과에는 그 판단에 사용한 근거가 함께 제공됩니다.
 
-generator는 router입니다. Playwright CLI로 실제 화면을 탐색하거나, 이미 설정된 공식 Playwright 에이전트에 위임하고, 짧은 규칙 체크리스트에 따라 테스트를 작성한 뒤 리뷰어 스캐너를 실행하고 테스트를 한 번 실행합니다. 개발 단계 비교에서 CLI 경로는 공식 에이전트 대비 사전 등록한 품질 기준 안에 있었고, 측정된 처리 토큰 비용은 공식 에이전트의 0.56~0.60배였습니다(95% 신뢰구간 0.45~0.74). 품질이 더 좋다고 주장하지는 않습니다([thin-eval](benchmarks/generator-thin-eval-v1/README.md)). `playwright-debugger`와 `cypress-debugger`는 실패한 실행 산출물을 바탕으로 근본 원인을 분류하고, 판단 근거와 구체적인 수정안을 제시합니다.
+generator는 router입니다. Playwright CLI로 실제 화면을 탐색하거나, 이미 설정된 공식 Playwright 에이전트에 위임하고, 짧은 규칙 체크리스트에 따라 테스트를 작성한 뒤 리뷰어 스캐너를 실행하고 테스트를 한 번 실행합니다. 공식 에이전트와의 개발 단계 비교는 사전 등록한 채택 규칙을 충족해 "CLI-first thin workflow adopted as default path (development point rule)"가 발행됐습니다(개발 단계, 모델 3개, 합성 과제 6개). CLI 경로의 품질 점추정 차이는 다섯 지표 모두 사전 등록한 -0.10 기준 안이었고, 측정된 처리 토큰 비용은 공식 에이전트의 0.54~0.59배였으며(95% 신뢰구간 0.43~0.77) 사전 등록한 상한은 1.10입니다. 품질 향상은 주장하지 않습니다. 이 채택은 러너의 도구 사용 분류에 근거하며, 두 모델에서는 롤아웃 정규식이 더 적은 CLI 셀을 셉니다([결과](benchmarks/generator-thin-eval-v1-stage2/RESULTS.md), [thin-eval](benchmarks/generator-thin-eval-v1/README.md)). `playwright-debugger`와 `cypress-debugger`는 실패한 실행 산출물을 바탕으로 근본 원인을 분류하고, 판단 근거와 구체적인 수정안을 제시합니다.
 
 false-green 탐지는 테스트 리뷰 기능의 중요한 부분이지만, 프로젝트 전체를 대표하지는 않습니다. `e2e-reviewer`가 찾은 문제를 고친 PR 15건이 Storybook, SvelteKit, code-server, Strapi, Carbon Design System, Ghost, MUI X를 비롯한 [upstream 프로젝트에 merge되었습니다](#merged-upstream-fixes).
 
@@ -281,7 +281,7 @@ merge 건수를 전체 제출 건수와 함께 볼 수 있습니다. [Field revi
 - 폐기된 2.x generator 대상: [Generator skill-effect v1](benchmarks/generator-skill-effect-v1/README.md)은 생성기의 첫 실측입니다. 새로 만든 소형 앱 10개에서 결정론적 결함 검출 채점을 적용했을 때, 스킬을 사용한 `claude-sonnet-5-5`는 30/30 호출에서 정상 앱에 통과하고 주입 결함 **150/150**을 잡는 테스트를 작성했고, 미사용 시 유효 검출률은 **0.927**이었으며 비용은 6.05배였습니다. 사전 등록된 판정은 `INCONCLUSIVE`입니다. 기준군이 상한 0.90을 넘어 향상을 주장할 수 없습니다. 스킬로 작성한 테스트는 마크업 리팩터링에서 23/30 호출이 통과했고, 미사용 시 12/28이었습니다.
 - 폐기된 2.x generator 대상: [Generator skill-effect v2](benchmarks/generator-skill-effect-v2/README.md)는 더 어려운 브리프형 과제 24개를 군 비교 전에 무스킬 군으로 먼저 선별했습니다. 사전에 정한 0.40–0.80 구간에 든 과제는 **24개 중 3개**뿐이었고(정상 앱을 통과한 무스킬 결과물 44개가 주입 결함 **216/220**을 잡음), 계획했던 full / lean / 무스킬 비교는 실행하지 않아 판정은 `INCONCLUSIVE`(풀 부족)입니다. 이 모델에서 결함 검출률은 두 프로토콜 연속으로 상한에 닿았고, 리팩터링 생존과 정상 앱 통과 여부만 아직 편차가 있습니다.
 - 폐기된 2.x generator 대상: [Generator skill-effect v3](benchmarks/generator-skill-effect-v3/README.md)는 동작을 유지하는 마크업 리팩터링에서 테스트가 통과하는지를 주 지표로 삼아 검증된 과제 36개를 선별했습니다. 사전 등록한 3회차 확장 뒤에도 0.25–0.75 구간에 든 과제는 **36개 중 9개**로 최소 기준 12개에 못 미쳤습니다. 이에 따라 다섯 군 비교를 실행하지 않았고 판정은 `INCONCLUSIVE`(풀 부족)입니다. skill을 사용하지 않은 결과물 101개는 모두 정상 앱에서 통과했고, 37개가 리팩터링 뒤에도 통과했으며 주입 결함 **498/505**를 잡았습니다. skill을 적용한 군은 실행하지 않았으므로 generator skill의 효과는 어느 방향으로도 측정되지 않았습니다.
-- 폐기된 2.x generator 대상: [Generator skill-effect v8](benchmarks/generator-skill-effect-v8/README.md)은 공개 v3 풀에서 Codex 호출 216/216을 채점했고 통과했습니다. 마크업 리팩터 생존율은 **0.954 대 0.435**(+0.519, 95% CI +0.398~+0.630)입니다. 결함 검출 향상은 입증되지 않았고(+0.017, CI가 0을 포함), 생성 시간은 6.74배였으며, 공개 개발 증거이지 릴리스 주장이 아닙니다. v8은 고정된 v3 full-fixed 2.x 생성기 텍스트를 측정했으며, 3.0.0 router는 그 텍스트를 포함하지 않습니다. router에는 공식 에이전트와의 개발 단계 비교(모델 2개, 합성 과제 6개)가 따로 있습니다. CLI 경로는 사전 등록한 품질 기준 안이었고 처리 토큰은 공식 에이전트의 0.56~0.60배였으며, 품질이 더 좋다고 주장하지 않습니다([thin-eval](benchmarks/generator-thin-eval-v1/README.md)). 이 결과가 다룬 승인 표와 V1–V6 인수 단계를 포함한 2.x 생성기는 태그 `v2.0.1`과 `benchmarks/generator-skill-v2.0.1-archive/`에 남아 있습니다.
+- 폐기된 2.x generator 대상: [Generator skill-effect v8](benchmarks/generator-skill-effect-v8/README.md)은 공개 v3 풀에서 Codex 호출 216/216을 채점했고 통과했습니다. 마크업 리팩터 생존율은 **0.954 대 0.435**(+0.519, 95% CI +0.398~+0.630)입니다. 결함 검출 향상은 입증되지 않았고(+0.017, CI가 0을 포함), 생성 시간은 6.74배였으며, 공개 개발 증거이지 릴리스 주장이 아닙니다. v8은 고정된 v3 full-fixed 2.x 생성기 텍스트를 측정했으며, 3.0.0 router는 그 텍스트를 포함하지 않습니다. router에는 공식 에이전트와의 개발 단계 비교(모델 3개, 합성 과제 6개)가 따로 있습니다. 사전 등록한 규칙이 "CLI-first thin workflow adopted as default path (development point rule)"를 발행했습니다(개발 단계, 모델 3개, 합성 과제 6개). CLI 경로는 사전 등록한 품질 기준 안이었고 처리 토큰은 공식 에이전트의 0.54~0.59배(사전 등록한 상한 1.10)였으며, 품질 향상은 주장하지 않습니다. 러너의 도구 사용 분류와 롤아웃 정규식이 두 모델에서 서로 다르다는 점은 결과 문서에 밝혀 두었습니다([결과](benchmarks/generator-thin-eval-v1-stage2/RESULTS.md), [thin-eval](benchmarks/generator-thin-eval-v1/README.md)). 이 결과가 다룬 승인 표와 V1–V6 인수 단계를 포함한 2.x 생성기는 태그 `v2.0.1`과 `benchmarks/generator-skill-v2.0.1-archive/`에 남아 있습니다.
 - [Reviewer holdout v19](benchmarks/reviewer-holdout-v19/README.md)는 **출시 전 2.0.0 후보** 리뷰어(스킬 digest `aa88145d…`, 커밋 `976c3fa`)에 대해 릴리스 확인 게이트를 통과했습니다(full − no-skill 안정 F1 **+0.571**, 95% CI +0.411~+0.738, 540회 호출). 같은 코퍼스의 [v18](benchmarks/reviewer-holdout-v18/README.md)은 `INCONCLUSIVE`였습니다. 출하된 리뷰어는 그 후보와 이후 변경(Tier 2 ast-grep 설정 고정, `#14` `cy.env()` 제외, `#4h` 수정과 경계 명확화 4건, `#8c`, `#3b` fail 핸들러 계약)만큼 다르며, 이 변경은 어떤 holdout도 측정하지 않았습니다.
 - [Reviewer holdout v21](benchmarks/reviewer-holdout-v21/README.md)은 명시적인 #2 문구를 지지하지 않았습니다. 480회 호출에서 full의 안정 F1이 **1.000 → 0.980**으로 떨어졌습니다. 2.0.0 문구를 유지하며, 부분적으로 검증된 #2는 두 군 모두 이미 P1로 판정했습니다.
 - 공개하지 않은 로컬 전용 AGPL 배치를 포함한 전체 집계는 **36/44 대 23/44**이며, 수정 후(AFTER) 오탐은 **0 대 1**입니다. [현장 모델 비교](docs/ai-reviewer-benchmark.md#field-model-comparison)는 실제 저장소의 테스트 파일 19개에 대한 별도의 로컬 측정 결과를 보고합니다.
