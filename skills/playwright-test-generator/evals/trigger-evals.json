@@ -90,13 +90,18 @@
     "should_trigger": false
   },
   {
-    "id": "generate-without-mcp",
-    "query": "I have no MCP set up; use the Playwright CLI to explore the pricing page and write E2E tests for it.",
+    "id": "generate-before-agents-set-up",
+    "query": "We have not set up the Playwright agents or MCP yet; add Playwright E2E tests for the pricing page.",
     "should_trigger": true
   },
   {
     "id": "use-official-agents-if-ready",
     "query": "I already ran init-agents; use the official Playwright planner and generator to add tests for the invoice export flow.",
     "should_trigger": true
+  },
+  {
+    "id": "run-official-healer",
+    "query": "Run the Playwright healer agent to repair our failing checkout spec.",
+    "should_trigger": false
   }
 ]
