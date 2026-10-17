@@ -2,8 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 """Release gate: no PENDING-THIN-EVAL marker may ship in a release version.
 
-The marker flags every line that states the CLI-first default before the
-thin-eval result is known. While the manifest version is a plain release string
+The marker flags every line whose wording depends on a thin-eval result that
+was not yet known when it was written (historically, the CLI-first default; the
+released 3.0.0 router has no CLI path). While the manifest version is a plain release string
 (MAJOR.MINOR.PATCH, no prerelease suffix), the markers must already have been
 rewritten or removed. Not part of ci-local.sh by design: it is a named release
 gate (run it, and fix the wording, before tagging).
