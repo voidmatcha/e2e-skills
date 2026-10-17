@@ -35,9 +35,9 @@ def main() -> None:
     generator = GENERATOR.read_text(encoding="utf-8")
     thin_rules = GENERATOR_THIN_RULES.read_text(encoding="utf-8")
 
-    # Check 5 recalls the origin-allowlist config key from the router SKILL.md,
-    # which the 3.0.0 CLI workflow writes before opening any page.
-    current_probe_token = "allowedOrigins"
+    # Check 5 recalls the MCP tool name from the router SKILL.md, which the
+    # 3.0.0 official-first router checks before delegating.
+    current_probe_token = "generator_write_test"
     assert current_probe_token in generator
     assert "Playwright thin rules" in thin_rules
     assert f'check "test-generator" "{current_probe_token}"' in smoke

@@ -22,7 +22,7 @@ This repository ships agent skills, plugin manifests, documentation, and local/C
 
 ## Network behavior
 
-`playwright-test-generator` is a router. It opens pages only on loopback targets, or on a remote origin the user names in the chat and states is a disposable non-production environment; that origin is pinned in the Playwright CLI origin allowlist (`network.allowedOrigins`). It refuses production, shared, and unnamed targets, installs nothing, and runs only the reviewer scanner and the project's own test command. The official-agent path it can delegate to has no origin allowlist, so the skill uses it on loopback targets only.
+`playwright-test-generator` is a router. It delegates browsing to the official Playwright agents only on loopback targets, because their browser has no origin allowlist; it refuses production, shared, unnamed and remote targets, installs nothing, writes no agent or MCP configuration, and runs only the reviewer scanner and the project's own test command. When the official agents are not set up it shows the setup guide and stops.
 
 Loading the skills, plugin manifests, and documentation does not itself initiate network activity. Agents and explicitly enabled runtime paths may execute tools with network capability, so the applicable boundary depends on the operation. The standalone scanner (`skills/e2e-reviewer/scripts/scan.sh`) has the following explicit trust boundary:
 

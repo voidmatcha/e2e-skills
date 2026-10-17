@@ -8,7 +8,7 @@ Guidance for AI coding agents (Claude Code, Codex, and other AGENTS.md-compatibl
 
 `e2e-skills` is a bundle of four Agent Skills for end-to-end test work on Playwright and Cypress projects:
 
-- `playwright-test-generator` — routes new-test generation: a Playwright CLI workflow by default, the official Playwright agents when already set up, then the `e2e-reviewer` scanner gate and one test run. A router, not a pipeline; the 2.x pipeline is archived at tag `v2.0.1`.
+- `playwright-test-generator` — routes new-test generation to the official Playwright planner and generator when they are installed and their MCP tools are visible, with the 11 thin rules and safety instructions prepended, then the `e2e-reviewer` scanner gate and one test run; when the agents are not set up it shows the setup guide and stops. A router, not a pipeline; the 2.x pipeline is archived at tag `v2.0.1`.
 - `e2e-reviewer` — static review of existing Playwright/Cypress specs against 24 anti-patterns grouped P0/P1/P2.
 - `playwright-debugger` — root-cause diagnosis from `playwright-report/`.
 - `cypress-debugger` — root-cause diagnosis from `cypress/reports/` (mochawesome / JUnit).
