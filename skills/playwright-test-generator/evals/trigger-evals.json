@@ -81,12 +81,12 @@
   },
   {
     "id": "ko-generate-login",
-    "query": "\uc6b0\ub9ac Playwright \ud504\ub85c\uc81d\ud2b8\uc5d0 \ub85c\uadf8\uc778 \ud398\uc774\uc9c0 E2E \ud14c\uc2a4\ud2b8\ub97c \uc0c8\ub85c \ub9cc\ub4e4\uc5b4\uc918.",
+    "query": "우리 Playwright 프로젝트에 로그인 페이지 E2E 테스트를 새로 만들어줘.",
     "should_trigger": true
   },
   {
     "id": "ko-review-not-generate",
-    "query": "\uc774\ubbf8 \uc788\ub294 settings.spec.ts\uac00 \uc81c\ub300\ub85c \uac80\uc99d\ud558\ub294\uc9c0 \ub9ac\ubdf0\ud574\uc918.",
+    "query": "이미 있는 settings.spec.ts가 제대로 검증하는지 리뷰해줘.",
     "should_trigger": false
   },
   {
@@ -102,6 +102,16 @@
   {
     "id": "run-official-healer",
     "query": "Run the Playwright healer agent to repair our failing checkout spec.",
+    "should_trigger": false
+  },
+  {
+    "id": "ko-set-up-agents-then-generate",
+    "query": "공식 Playwright 에이전트 설정부터 도와주고, 그다음 결제 페이지 E2E 테스트를 만들어줘.",
+    "should_trigger": true
+  },
+  {
+    "id": "configure-mcp-server-only",
+    "query": "Add a playwright-test MCP server entry to our team's shared Codex config.toml template.",
     "should_trigger": false
   }
 ]
