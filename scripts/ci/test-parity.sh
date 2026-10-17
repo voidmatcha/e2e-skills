@@ -1300,6 +1300,9 @@ assert_fails \
   "README.md Codex delegation limits missing tokens"
 restore "$file"
 
+# review.sh requires the exact "works only with a session-wide ... MCP server"
+# sentence, not a bare "session-wide" token: the section mentions session-wide
+# scope several more times, so dropping "only" must still be caught.
 file="README.md"
 backup "$file"
 mutate "$file" 'works only with a session-wide' 'works with a'
@@ -1307,6 +1310,21 @@ assert_fails \
   "README Codex delegation — session-wide MCP scope is required" \
   "README.md Codex delegation limits missing tokens"
 restore "$file"
+
+# Each translation carries the same scope sentence in its own words; weakening
+# "only when" to "when" must be caught per language.
+for spec in \
+  'README.ko.md|있을 때만 동작합니다|있을 때 동작합니다' \
+  'README.ja.md|がある場合にのみ動作します|がある場合に動作します' \
+  'README.zh-cn.md|只有存在 session-wide 的|存在 session-wide 的'; do
+  IFS='|' read -r file old new <<<"$spec"
+  backup "$file"
+  mutate "$file" "$old" "$new"
+  assert_fails \
+    "README Codex delegation — $file session-wide MCP scope is required" \
+    "$file Codex delegation limits missing tokens"
+  restore "$file"
+done
 
 # The translated taxonomy tables must retain the canonical pattern IDs,
 # severities, and two complete F1-F15 debugger tables.

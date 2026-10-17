@@ -1532,13 +1532,39 @@ def check_codex_install_and_delegation_contract(path, text, errors):
             f"README i18n parity: {path} Codex install must target only "
             "-a codex and disclose Claude Code separately"
         )
+    # The generator's official-agent path works only with a session-wide
+    # `playwright-test` MCP server on Codex. The section mentions "session-wide"
+    # several times (the harness declaration, the config.toml entry), so the
+    # scope limit is checked as its exact sentence per language, not as a
+    # bare token that any of those other mentions would satisfy.
+    scope_phrases = {
+        "README.md": (
+            "works only with a session-wide `playwright-test` MCP server"
+        ),
+        "README.ko.md": (
+            "session-wide `playwright-test` MCP 서버가 있을 때만 동작합니다"
+        ),
+        "README.ja.md": (
+            "session-wide な `playwright-test` MCP サーバーがある場合にのみ動作します"
+        ),
+        "README.zh-cn.md": (
+            "只有存在 session-wide 的 `playwright-test` MCP 服务器时才可用"
+        ),
+    }
+    scope_phrase = scope_phrases.get(pathlib.Path(path).name)
+    if scope_phrase is None:
+        errors.append(
+            f"README i18n parity: {path} has no Codex delegation scope phrase "
+            "registered in review.sh"
+        )
+        return
     delegation_tokens = (
         "`e2e-reviewer`",
         "`playwright-debugger`",
         "`cypress-debugger`",
         "`playwright-test-generator`",
         "`playwright-test`",
-        "session-wide",
+        scope_phrase,
     )
     missing = [token for token in delegation_tokens if token not in section]
     if missing:
