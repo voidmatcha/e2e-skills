@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=1ebd045a7e23136a1d351091651b954dbcd7b6b15fd45cc6dadb8f0e8daddbb5; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=3378db164350bfc700ce5391a2ee8c2adfbad987354d54f6eeb197c29333b73e; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 근거 범위: 여기에 표시한 merge된 PR 15건은 선별한 사례이며 전체 수가 아닙니다. Field review v1은 skill 이름을 포함하는 기준에 따라 제출 29건, merge 16건, 닫힘 6건, 열림 7건을 별도로 기록합니다. 두 분모를 합쳐서 해석하지 마세요. 둘 다 기록 시점의 스냅샷이며 현재 GitHub 집계가 아닙니다.
 
@@ -48,7 +48,7 @@
 
 `e2e-reviewer`의 각 결과에는 그 판단에 사용한 근거가 함께 제공됩니다.
 
-generator는 router입니다. 공식 Playwright planner와 generator가 설치되어 있고 그 MCP 도구가 보이면, 짧은 규칙 체크리스트(`thin-rules.md`)와 안전 지시를 프롬프트 앞에 붙여 그들에게 위임한 뒤 리뷰어 스캐너를 실행하고 테스트를 한 번 실행합니다. 설정되어 있지 않으면 설정 안내를 보여 주고 멈춥니다. 근거는 [thin-eval](benchmarks/generator-thin-eval-v1/README.md)([2단계 결과](benchmarks/generator-thin-eval-v1-stage2/RESULTS.md))의 D군(공식 generator + thin 규칙)과 E군(D + P0/P1을 고치고 테스트를 한 번 실행하는 스캐너 단계)입니다(개발 단계, 모델 3개, 합성 과제 6개, Codex 전용). D와 E의 모든 셀이 공식 MCP 도구를 사용했고 타임아웃, 재시도, 안전 위반은 없었습니다. 출하 스킬은 planner 단계, 안전 문구, 파일별 강화 스캐너 호출과 3회 패스 상한, baseURL과 폐기 가능 스택 확인을 더했는데 이들은 측정되지 않았으므로, 출하 스캐너 게이트는 측정된 E 절차가 아니라 E와 유사한 게이트입니다. 품질이나 비용에 대한 주장은 하지 않습니다. 비교에 있던 CLI 군은 출하하지 않습니다. CLI 경로는 공식 에이전트와의 동등성이 입증되지 않아 제거했습니다. `playwright-debugger`와 `cypress-debugger`는 실패한 실행 산출물을 바탕으로 근본 원인을 분류하고, 판단 근거와 구체적인 수정안을 제시합니다.
+generator는 router입니다. 공식 Playwright planner와 generator가 설치되어 있고 그 MCP 도구가 보이면, 짧은 규칙 체크리스트(`thin-rules.md`)와 안전 지시를 프롬프트 앞에 붙여 그들에게 위임한 뒤 리뷰어 스캐너를 실행하고 테스트를 한 번 실행합니다. 설정되어 있지 않으면 설정 안내를 보여 주고 멈춥니다. 근거는 [thin-eval](benchmarks/generator-thin-eval-v1/README.md)([2단계 결과](benchmarks/generator-thin-eval-v1-stage2/RESULTS.md))의 D군(공식 generator + thin 규칙)과 E군(D + P0/P1을 고치고 테스트를 한 번 실행하는 스캐너 단계)입니다(개발 단계, 모델 3개, 합성 과제 6개, Codex 전용). D와 E의 모든 셀이 공식 MCP 도구를 사용했고 타임아웃, 재시도, 안전 위반은 없었습니다. 출하 스킬은 planner 단계, 안전 문구, 파일별 강화 스캐너 호출과 3회 패스 상한, baseURL과 폐기 가능 스택 확인을 더했는데 이들은 측정되지 않았으므로, 출하 스캐너 게이트는 측정된 E 절차가 아니라 E와 유사한 게이트입니다. 품질이나 비용에 대한 주장은 하지 않습니다. 비교에 있던 CLI 군은 출하하지 않습니다. CLI 경로는 공식 에이전트와의 동등성이 입증되지 않아 제거했습니다. 이는 사전 등록된 출하 매핑(`ship_thin`: 공식 에이전트가 있으면 그것, 없으면 CLI)에서 owner 결정으로 벗어난 것입니다. 출하 라우터에는 CLI 대체 경로가 없고 대신 설정 안내를 보여 주며, 동결된 벤치마크 파일은 손대지 않았습니다. `playwright-debugger`와 `cypress-debugger`는 실패한 실행 산출물을 바탕으로 근본 원인을 분류하고, 판단 근거와 구체적인 수정안을 제시합니다.
 
 false-green 탐지는 테스트 리뷰 기능의 중요한 부분이지만, 프로젝트 전체를 대표하지는 않습니다. `e2e-reviewer`가 찾은 문제를 고친 PR 15건이 Storybook, SvelteKit, code-server, Strapi, Carbon Design System, Ghost, MUI X를 비롯한 [upstream 프로젝트에 merge되었습니다](#merged-upstream-fixes).
 
@@ -164,7 +164,7 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a claude-code
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a codex
 ```
 
-Codex에서는 `e2e-reviewer`, `playwright-debugger`, `cypress-debugger` 작업을 전용 에이전트에 위임을 시도하거나 현재 세션에서 같은 절차를 직접 수행할 수 있습니다. `playwright-test-generator`는 공식 Playwright generator에 위임하며, `spawn_agent`가 역할을 선택할 수 없으므로 session-wide `playwright-test` MCP 서버가 있을 때만 동작합니다. 서버가 없으면 설정 안내를 보여 주고 멈춥니다.
+Codex에서는 `e2e-reviewer`, `playwright-debugger`, `cypress-debugger` 작업을 전용 에이전트에 위임을 시도하거나 현재 세션에서 같은 절차를 직접 수행할 수 있습니다. `playwright-test-generator`는 공식 Playwright generator에 위임하며, session-wide `playwright-test` MCP 서버가 있을 때만 동작합니다. [`benchmarks/subagent-routing-v1/`](benchmarks/subagent-routing-v1/README.md)에서 측정한 Codex CLI 빌드(0.153.4와 0.154.0)에서는 `spawn_agent`가 역할을 선택할 수 없어 `init-agents`가 선언하는 에이전트 범위 서버에 닿지 못하며, thin-eval 하네스(Codex 0.159.3)도 그 이유로 에이전트 범위 경로를 시험하는 대신 서버를 session-wide로 선언했습니다. 더 새로운 빌드는 다시 측정하지 않았습니다. `init-agents`는 session-wide 항목을 추가하지 않으므로 사용자가 `~/.codex/config.toml`에 직접 추가합니다. 서버가 없으면 스킬은 설정 안내를 보여 주고 멈춥니다.
 
 **2026-09 기준, Codex의 전용 에이전트 위임은 정상 작동이 검증되지 않았으므로 의존하지 마세요.** 실제 파일럿에서는 세션 중 위임이 내부 `collab spawn failed: no thread with id` 오류로 매번 실패했습니다. 아직 해결되지 않은 upstream 이슈입니다. ([openai/codex#41474](https://github.com/openai/codex/issues/41474), [#33672](https://github.com/openai/codex/issues/33672)) 오류가 발생하지 않더라도 모델이 스스로 보고한 성공 여부는 신뢰할 수 없습니다. 전체 근거는 [`benchmarks/subagent-routing-v1/`](benchmarks/subagent-routing-v1/README.md)에서 확인할 수 있습니다. 각 스킬의 inline fallback이 동일한 결론에 도달하므로 정확성에는 영향이 없지만, 현재 이 에이전트들을 설치해도 Codex에서 확인된 이점은 없습니다.
 
@@ -242,7 +242,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 새로 만든 테스트가 통과하는 것만으로는 충분하지 않습니다. `Locator`나 `Promise` 자체를 검증하거나, 테스트 이름에 적힌 동작과 무관한 상태를 확인하거나, 핵심 검증문이 테스트 결과에 영향을 주지 않을 수도 있습니다. 그래서 generator는 `e2e-reviewer` 스캐너를 실행해 P0와 P1 항목을 모두 고친 뒤 프로젝트의 테스트를 한 번 실행합니다. deterministic scanner는 카탈로그의 기계적으로 검출 가능한 일부만 다룹니다. 검증문이 실패할 수 있음을 증명하지는 않습니다.
 
-generator는 `playwright.config.*`에서 `baseURL`을 읽고, 공식 Playwright planner와 generator의 에이전트 정의와 `playwright-test` MCP 도구가 이미 있을 때만 `thin-rules.md`와 안전 지시를 프롬프트 앞에 붙여 위임합니다. 설정되어 있지 않으면 설정 안내(`init-agents`, 그다음 도구 승인과 함께 MCP 서버 선언)를 보여 주고 멈춥니다. 아무것도 설치하지 않고, 에이전트나 MCP 설정을 쓰지 않으며, 공식 healer를 실행하지 않고, 테스트를 통과시키려고 검증문을 약화하지 않습니다. 실패한 테스트는 `playwright-debugger`로 넘기거나 직접 고칩니다.
+generator는 `playwright.config.*`에서 `baseURL`을 읽고, 공식 Playwright planner와 generator의 에이전트 정의와 `playwright-test` MCP 도구가 이미 있을 때만 `thin-rules.md`와 안전 지시를 프롬프트 앞에 붙여 위임합니다. 설정되어 있지 않으면 설정 안내(`init-agents`는 에이전트 정의, `specs/README.md`, seed spec을 저장소에 씁니다; 그다음 도구 승인과 함께 MCP 서버 선언인데, Claude Code에서는 `init-agents`가 쓴 `.mcp.json` 프롬프트를 승인하는 것이고 Codex에서는 별도의 session-wide 항목입니다)를 보여 주고 멈춥니다. 위임 후에는 작성된 spec과 generator 출력에서 loopback이 아닌 URL을 grep하고, 하나라도 있으면 BLOCKED로 보고합니다. 아무것도 설치하지 않고, 에이전트나 MCP 설정을 쓰지 않으며, 공식 healer를 실행하지 않고, 테스트를 통과시키려고 검증문을 약화하지 않습니다. 실패한 테스트는 `playwright-debugger`로 넘기거나 직접 고칩니다.
 
 위임은 loopback 전용입니다. 공식 에이전트의 브라우저는 origin을 고정할 수 없으므로 프로덕션, 공유 환경, 지정되지 않은 대상과 원격 대상은 거부하며, 사용자가 폐기 가능하다고 밝힌 원격 origin도 마찬가지로 거부하고 대신 loopback 스택을 요청합니다. 보고서에는 수행하지 않은 확인 항목을 모두 적고, 리뷰어 fault check를 사용할 수 있으면 측정됐다고 보고하지 않고 선택 후속 작업으로만 제안합니다.
 

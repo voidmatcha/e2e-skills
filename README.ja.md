@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <strong>🇯🇵 日本語</strong> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=1ebd045a7e23136a1d351091651b954dbcd7b6b15fd45cc6dadb8f0e8daddbb5; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=3378db164350bfc700ce5391a2ee8c2adfbad987354d54f6eeb197c29333b73e; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 証拠の範囲: ここに示した merge 済み PR 15 件は選んだ例であり、総数ではありません。Field review v1 は、スキル名を含めるという基準のもとで、提出 29 件、merge 16 件、クローズ 6 件、オープン 7 件を別に記録しています。2 つの母数を合算しないでください。いずれも記録時点のスナップショットで、現在の GitHub の集計ではありません。
 
@@ -46,7 +46,7 @@
 | 失敗した Cypress 実行をデバッグ | `cypress-debugger` | F1–F15 の根本原因、根拠、修正 |
 | 決定論的なローカルスキャンを実行 | `skills/e2e-reviewer/scripts/scan.sh` | 対象プロジェクトの package に依存しない機械的候補 |
 
-生成器はルーターです。公式 Playwright planner と generator がインストールされ、その MCP ツールが見える場合、短いルールのチェックリスト（`thin-rules.md`）と安全指示をプロンプトの先頭に付けてそれらへ委譲し、レビュアーのスキャナーを実行してから、テストを 1 回実行します。セットアップされていない場合はセットアップ手順を示して停止します。根拠は [thin-eval](benchmarks/generator-thin-eval-v1/README.md)（[ステージ 2 の結果](benchmarks/generator-thin-eval-v1-stage2/RESULTS.md)）のアーム D（公式 generator + thin ルール）と E（D + P0/P1 を修正しテストを 1 回実行するスキャナー手順）です（開発段階、モデル 3 つ、合成タスク 6 つ、Codex のみ）。D と E のすべてのセルが公式 MCP ツールを使い、タイムアウト、リトライ、安全違反はありませんでした。出荷するスキルは planner 手順、安全文、ファイルごとの強化したスキャナー呼び出しと 3 パス上限、baseURL と使い捨てスタックの確認を追加していますが、これらは測定されていないため、出荷するスキャナーゲートは測定した E の手順ではなく、E に似たゲートです。品質やコストの主張はしません。比較にあった CLI アームは出荷しません。CLI 経路は公式エージェントとの同等性が示されていないため削除しました。2 つのデバッガーは失敗した実行の artifact から始め、分類した根本原因、根拠、具体的な修正を返します。
+生成器はルーターです。公式 Playwright planner と generator がインストールされ、その MCP ツールが見える場合、短いルールのチェックリスト（`thin-rules.md`）と安全指示をプロンプトの先頭に付けてそれらへ委譲し、レビュアーのスキャナーを実行してから、テストを 1 回実行します。セットアップされていない場合はセットアップ手順を示して停止します。根拠は [thin-eval](benchmarks/generator-thin-eval-v1/README.md)（[ステージ 2 の結果](benchmarks/generator-thin-eval-v1-stage2/RESULTS.md)）のアーム D（公式 generator + thin ルール）と E（D + P0/P1 を修正しテストを 1 回実行するスキャナー手順）です（開発段階、モデル 3 つ、合成タスク 6 つ、Codex のみ）。D と E のすべてのセルが公式 MCP ツールを使い、タイムアウト、リトライ、安全違反はありませんでした。出荷するスキルは planner 手順、安全文、ファイルごとの強化したスキャナー呼び出しと 3 パス上限、baseURL と使い捨てスタックの確認を追加していますが、これらは測定されていないため、出荷するスキャナーゲートは測定した E の手順ではなく、E に似たゲートです。品質やコストの主張はしません。比較にあった CLI アームは出荷しません。CLI 経路は公式エージェントとの同等性が示されていないため削除しました。これは事前登録した出荷マッピング（`ship_thin`：公式エージェントがあればそれ、なければ CLI）からオーナー判断で外れたものです。出荷するルーターに CLI へのフォールバックはなく、代わりにセットアップ手順を示します。凍結したベンチマークファイルには手を加えていません。2 つのデバッガーは失敗した実行の artifact から始め、分類した根本原因、根拠、具体的な修正を返します。
 
 false-green 検出はレビューワークフローの重要な一部ですが、このバンドル全体の目的ではありません。`e2e-reviewer` の指摘に基づく修正は、Storybook、SvelteKit、code-server、Strapi、Carbon Design System、Ghost、MUI X などの [15 件のマージ済み upstream PR](#merged-upstream-fixes) に取り込まれています。
 
@@ -162,7 +162,7 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a claude-code
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a codex
 ```
 
-Codex の delegation では、`e2e-reviewer`、`playwright-debugger`、`cypress-debugger` が native role の delegation を試みるか、同等の inline fallback を使えます。`playwright-test-generator` は公式 Playwright generator へ delegation し、`spawn_agent` では role を選べないため、session-wide な `playwright-test` MCP サーバーがある場合にのみ動作します。サーバーがなければセットアップ手順を示して停止します。
+Codex の delegation では、`e2e-reviewer`、`playwright-debugger`、`cypress-debugger` が native role の delegation を試みるか、同等の inline fallback を使えます。`playwright-test-generator` は公式 Playwright generator へ delegation し、session-wide な `playwright-test` MCP サーバーがある場合にのみ動作します。[`benchmarks/subagent-routing-v1/`](benchmarks/subagent-routing-v1/README.md) で測定した Codex CLI ビルド（0.153.4 と 0.154.0）では `spawn_agent` が role を選べず、`init-agents` が宣言するエージェント範囲のサーバーには届きません。thin-eval のハーネス（Codex 0.159.3）も同じ理由で、エージェント範囲の経路を試す代わりにサーバーを session-wide で宣言しました。より新しいビルドは再測定していません。`init-agents` は session-wide の項目を追加しないため、ユーザーが `~/.codex/config.toml` に自分で追加します。サーバーがなければスキルはセットアップ手順を示して停止します。
 
 **2026-09 時点で、Codex 上の native role delegation は動作が検証されておらず、依存すべきではありません。** 実測パイロットで、セッション内 delegation が内部の `collab spawn failed: no thread with id` エラーで決定的に失敗することが分かりました — 既知の、まだ open な upstream issue([openai/codex#41474](https://github.com/openai/codex/issues/41474)、[#33672](https://github.com/openai/codex/issues/33672))です。エラーが出ない場合でも、モデル自身の成功の自己申告は信用できません。詳しい根拠は [`benchmarks/subagent-routing-v1/`](benchmarks/subagent-routing-v1/README.md) を参照。各 skill の inline fallback が同じ verdict に到達するため正確性自体には影響しませんが、現時点では named agent を install しても Codex 上で実測された利点はありません。
 
@@ -233,7 +233,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 生成したテストが通るだけでは不十分です。`Locator` や `Promise` 自体を検証していたり、テスト名に記した動作と無関係な状態を見ていたり、主要な assertion がテストの成否に影響していないことがあります。そのため生成器は `e2e-reviewer` のスキャナーを実行して P0 と P1 の検出をすべて修正してから、プロジェクトのテストを 1 回実行します。スキャナーは決定的で、カタログのうち機械的に検出できる一部だけを扱います。assertion が失敗しうることの証明にはなりません。
 
-生成器は `playwright.config.*` から `baseURL` を読み、公式 Playwright planner と generator のエージェント定義と `playwright-test` MCP ツールがすでにある場合にのみ、`thin-rules.md` と安全指示をプロンプトの先頭に付けて委譲します。セットアップされていない場合はセットアップ手順（`init-agents`、次にツール承認付きの MCP サーバー宣言）を示して停止します。何もインストールせず、エージェントや MCP の設定を書かず、公式 healer を実行せず、テストを通すために assertion を弱めません。失敗したテストは `playwright-debugger` に渡すか、手で修正します。
+生成器は `playwright.config.*` から `baseURL` を読み、公式 Playwright planner と generator のエージェント定義と `playwright-test` MCP ツールがすでにある場合にのみ、`thin-rules.md` と安全指示をプロンプトの先頭に付けて委譲します。セットアップされていない場合はセットアップ手順（`init-agents` はエージェント定義、`specs/README.md`、seed spec をリポジトリに書き込みます。次にツール承認付きの MCP サーバー宣言で、Claude Code では `init-agents` が書いた `.mcp.json` のプロンプトを承認すること、Codex では別途 session-wide の項目を追加することです）を示して停止します。委譲の後は、書かれた spec と generator の出力から loopback 以外の URL を grep し、1 つでもあれば BLOCKED と報告します。何もインストールせず、エージェントや MCP の設定を書かず、公式 healer を実行せず、テストを通すために assertion を弱めません。失敗したテストは `playwright-debugger` に渡すか、手で修正します。
 
 委譲は loopback 専用です。公式エージェントのブラウザーは origin を固定できないため、本番、共有、未指定、リモートの対象は拒否され、ユーザーが使い捨てだと明言したリモート origin も同様に拒否して、代わりに loopback スタックを求めます。レポートには実施しなかった確認をすべて列挙し、レビュアーの fault check が使える場合は測定済みとは報告せず、任意の後続作業としてのみ提案します。
 

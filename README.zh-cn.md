@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=1ebd045a7e23136a1d351091651b954dbcd7b6b15fd45cc6dadb8f0e8daddbb5; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=3378db164350bfc700ce5391a2ee8c2adfbad987354d54f6eeb197c29333b73e; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 证据范围：这里展示的 15 个已合并 PR 是精选示例，并非总数。Field review v1 按其 Skill 名称纳入规则另行记录了提交 29 个、已合并 16 个、已关闭 6 个、仍开放 7 个；请勿把两个分母合并。这些都是记录时的快照，而不是 GitHub 当前的总数。
 
@@ -45,7 +45,7 @@
 | 调试失败的 Cypress 运行 | `cypress-debugger` | F1–F15 根本原因、证据和修复 |
 | 运行确定性本地扫描 | `skills/e2e-reviewer/scripts/scan.sh` | 不依赖目标项目 package 的机械候选项 |
 
-生成器是一个路由器：当官方 Playwright planner 和 generator 已安装且其 MCP 工具可见时，它把简短的规则清单（`thin-rules.md`）和安全指令前置到提示中并委派给它们，运行审查器的扫描器，然后把测试运行一次；未设置时，它展示设置指南并停止。其证据是 [thin-eval](benchmarks/generator-thin-eval-v1/README.md)（[第 2 阶段结果](benchmarks/generator-thin-eval-v1-stage2/RESULTS.md)）的 D 臂（官方 generator 加 thin 规则）和 E 臂（D 加一个修复 P0/P1 并运行一次测试的扫描器步骤）（开发阶段，3 个模型，6 个合成任务，仅 Codex）。D 和 E 的每个单元都使用了官方 MCP 工具，没有超时、重试或安全违规。发布的 skill 增加了 planner 步骤、安全文本、按文件的加固扫描器调用与 3 轮上限，以及 baseURL 和一次性栈检查，这些都未经测量，因此其扫描器门禁只是与 E 相似的门禁，而不是测得的 E 流程。不主张质量或成本结果。对比中的 CLI 臂不随版本发布：CLI 路径已移除，因为它与官方 agents 的等价性未被证明。两个调试器从失败运行的 artifact 入手，返回已分类的根本原因、支持证据和具体修复。
+生成器是一个路由器：当官方 Playwright planner 和 generator 已安装且其 MCP 工具可见时，它把简短的规则清单（`thin-rules.md`）和安全指令前置到提示中并委派给它们，运行审查器的扫描器，然后把测试运行一次；未设置时，它展示设置指南并停止。其证据是 [thin-eval](benchmarks/generator-thin-eval-v1/README.md)（[第 2 阶段结果](benchmarks/generator-thin-eval-v1-stage2/RESULTS.md)）的 D 臂（官方 generator 加 thin 规则）和 E 臂（D 加一个修复 P0/P1 并运行一次测试的扫描器步骤）（开发阶段，3 个模型，6 个合成任务，仅 Codex）。D 和 E 的每个单元都使用了官方 MCP 工具，没有超时、重试或安全违规。发布的 skill 增加了 planner 步骤、安全文本、按文件的加固扫描器调用与 3 轮上限，以及 baseURL 和一次性栈检查，这些都未经测量，因此其扫描器门禁只是与 E 相似的门禁，而不是测得的 E 流程。不主张质量或成本结果。对比中的 CLI 臂不随版本发布：CLI 路径已移除，因为它与官方 agents 的等价性未被证明。这偏离了预注册的发布映射（`ship_thin`：有官方 agents 则用官方 agents，否则用 CLI），属于所有者决定；发布的路由器没有 CLI 回退，而是展示设置指南，冻结的基准文件未被改动。两个调试器从失败运行的 artifact 入手，返回已分类的根本原因、支持证据和具体修复。
 
 false-green 检测是审查工作流的重要组成部分，但不是整个 bundle 的唯一用途。基于 `e2e-reviewer` 发现的修复已通过 [15 个合入上游的 PR](#merged-upstream-fixes) 合入，其中包括 Storybook、SvelteKit、code-server、Strapi、Carbon Design System、Ghost 和 MUI X。
 
@@ -161,7 +161,7 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a claude-code
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a codex
 ```
 
-对于 Codex 委派，`e2e-reviewer`、`playwright-debugger` 和 `cypress-debugger` 可以尝试 native role 委派，也可以使用等价的 inline fallback。`playwright-test-generator` 委派给官方 Playwright generator，由于 `spawn_agent` 无法选择 role，只有存在 session-wide 的 `playwright-test` MCP 服务器时才可用；没有该服务器时，skill 展示设置指南并停止。
+对于 Codex 委派，`e2e-reviewer`、`playwright-debugger` 和 `cypress-debugger` 可以尝试 native role 委派，也可以使用等价的 inline fallback。`playwright-test-generator` 委派给官方 Playwright generator，只有存在 session-wide 的 `playwright-test` MCP 服务器时才可用：在 [`benchmarks/subagent-routing-v1/`](benchmarks/subagent-routing-v1/README.md) 测得的 Codex CLI 构建（0.153.4 和 0.154.0）上，`spawn_agent` 无法选择 role，因此 `init-agents` 声明的 agent 范围服务器不可达；thin-eval 的测试框架（Codex 0.159.3）出于同一原因把服务器声明为 session-wide，而没有测试 agent 范围的路径；更新的构建未重新测量。`init-agents` 不会添加 session-wide 条目，需要用户自行加入 `~/.codex/config.toml`。没有该服务器时，skill 展示设置指南并停止。
 
 **截至 2026 年 9 月，Codex 上的 native role 委派尚未验证能正常工作，不应依赖它。** 实测发现会话内委派会确定性地失败，报出内部错误 `collab spawn failed: no thread with id` —— 这是一个已知的、仍未解决的上游问题（[openai/codex#41474](https://github.com/openai/codex/issues/41474)、[#33672](https://github.com/openai/codex/issues/33672)）。即使没有报错，模型自己声称委派成功的说法也不可信。完整证据见 [`benchmarks/subagent-routing-v1/`](benchmarks/subagent-routing-v1/README.md)。每个 skill 的 inline fallback 都会得出相同结论，所以正确性不受影响——但目前安装这些 named agent 在 Codex 上并不能带来任何实测到的好处。
 
@@ -232,7 +232,7 @@ Debug the failed Cypress report in cypress/reports/.
 
 生成的测试仅仅通过还不够：它可能断言的是 `Locator` 或 `Promise` 本身，观察的状态与测试名称所描述的行为无关，或者主要断言根本不影响测试结果。因此，生成器会运行 `e2e-reviewer` 扫描器并修复所有 P0 和 P1 命中，然后把项目测试运行一次。扫描器是确定性的，只覆盖目录中可机械检测的子集，并不能证明断言会失败。
 
-生成器从 `playwright.config.*` 读取 `baseURL`，只有在官方 Playwright planner 和 generator 的 agent 定义及 `playwright-test` MCP 工具已经存在时才委派给它们，并把 `thin-rules.md` 和安全指令前置到提示中。未设置时，它展示设置指南（`init-agents`，然后带工具审批地声明 MCP 服务器）并停止。它不安装任何东西，不写入 agent 或 MCP 配置，不运行官方 healer，也不会为了让测试通过而削弱断言；失败的测试交给 `playwright-debugger` 或手动修复。
+生成器从 `playwright.config.*` 读取 `baseURL`，只有在官方 Playwright planner 和 generator 的 agent 定义及 `playwright-test` MCP 工具已经存在时才委派给它们，并把 `thin-rules.md` 和安全指令前置到提示中。未设置时，它展示设置指南（`init-agents` 会把 agent 定义、`specs/README.md` 和一个 seed spec 写入仓库；然后带工具审批地声明 MCP 服务器，在 Claude Code 上这是批准 `init-agents` 写入的 `.mcp.json` 提示，在 Codex 上则是单独的 session-wide 条目）并停止；委派之后，它会在写出的 spec 和 generator 输出中 grep 非 loopback URL，发现任何一个即报告 BLOCKED。它不安装任何东西，不写入 agent 或 MCP 配置，不运行官方 healer，也不会为了让测试通过而削弱断言；失败的测试交给 `playwright-debugger` 或手动修复。
 
 委派只限 loopback：官方 agents 的浏览器无法固定 origin，因此生产、共享、未指明和远程目标都会被拒绝，包括你声明为一次性的远程 origin，skill 会转而请你提供 loopback 栈。报告列出所有未执行的检查；如果审查器的 fault check 可用，只作为可选的后续步骤提供，绝不报告为已测量。
 
