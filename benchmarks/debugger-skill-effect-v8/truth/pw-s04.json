@@ -1,0 +1,13 @@
+{
+ "source": {
+  "repo": "synthetic-authored",
+  "license": "Apache-2.0",
+  "urls": [],
+  "merged": null,
+  "origin": "synthetic-authored"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (missing wait)",
+ "explanation": "The test reloads immediately after clicking Save. The PATCH request is still in flight on slower runs, so the reload aborts it or reads the old profile. Nothing in the test waits for the save to finish.",
+ "fix": "Wait for the save to complete before reloading (await the PATCH response, or assert the 'Saved' toast), then reload and check the value."
+}

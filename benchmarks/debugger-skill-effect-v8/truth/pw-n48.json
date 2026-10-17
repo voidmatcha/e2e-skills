@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "jakemismas/QREP",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/jakemismas/QREP/pull/235"
+  ],
+  "merged": "2026-10-13",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (viewport during capture)",
+ "explanation": "In headless Chromium a full-page capture can report a 1 x 1 window for a moment. That flips the min-width media query, so the app swaps the desktop editor for the phone editor and back; the new desktop editor opens on its default Fabrics tab, where no round-trip panel exists, and the locator waits for a panel that never returns.",
+ "fix": "Wait for the Pattern tab to settle, measure the panel in one evaluate before any capture, and record it with a viewport capture (which never captures beyond the viewport) instead of a full-page screenshot."
+}

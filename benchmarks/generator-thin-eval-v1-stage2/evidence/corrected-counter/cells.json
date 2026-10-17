@@ -1,0 +1,7675 @@
+{
+ "gpt-6-sol|official-generator|v2-06|1": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v2-06#1",
+  "uid": "4e3ab68678004c53b3655cc13887ca9f",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 14,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v2-06|1": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-06#1",
+  "uid": "da35bec141114d7d925d6b00f3c8d740",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 10,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v2-06|1": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-06#1",
+  "uid": "f7082231a6544b8fbc67058f5c16a992",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 16,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v2-06|1": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-06#1",
+  "uid": "88500e814f5d470f88e9b871367bb700",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 15,
+   "fill": 5,
+   "press": 5,
+   "click": 3,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "--help": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 10,
+   "fill": 4,
+   "press": 4,
+   "click": 1,
+   "close": 1
+  },
+  "out_markers": 24,
+  "shapes": {
+   "literal": 25,
+   "dynamic_loop": 2
+  },
+  "new_explore": 17,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v2-06|1": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-06#1",
+  "uid": "f2f8147211e3456e9299d0b95adbfa47",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 14,
+   "fill": 4,
+   "press": 5,
+   "click": 3,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1,
+   "close": 1
+  },
+  "out_markers": 9,
+  "shapes": {
+   "literal": 7,
+   "dynamic_loop": 5
+  },
+  "new_explore": 17,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v3-09|1": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v3-09#1",
+  "uid": "8c389705cbb5407b8754d6103f34010a",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 22,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v3-09|1": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-09#1",
+  "uid": "e90eb30d9fe24d32867c167d5bffde61",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 53,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v3-09|1": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-09#1",
+  "uid": "d12b4daf706e457d9f74c219de37f898",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 26,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v3-09|1": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-09#1",
+  "uid": "6d1841b38df14f1988c747221d6c4aa1",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 11,
+   "click": 10,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 11,
+   "click": 10,
+   "close": 1
+  },
+  "out_markers": 24,
+  "shapes": {
+   "literal": 27
+  },
+  "new_explore": 13,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v3-09|1": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-09#1",
+  "uid": "722f6b0d695f4944af4d14ced3ac1364",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 11,
+   "click": 10,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 11,
+   "click": 10,
+   "close": 1
+  },
+  "out_markers": 24,
+  "shapes": {
+   "literal": 27
+  },
+  "new_explore": 13,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v2-23|1": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v2-23#1",
+  "uid": "efa036542d0d426184d4a478973b1031",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 36,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v2-23|1": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-23#1",
+  "uid": "ef3203545df5466685e29b6e12dda21f",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 33,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v2-23|1": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-23#1",
+  "uid": "cfce90c3bdc54364922e8bbedc5e2528",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 25,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v2-23|1": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-23#1",
+  "uid": "fd9c7404d5bc4ca5b2b4fd9590536a9b",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 11,
+   "click": 5,
+   "fill": 4,
+   "press": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 2,
+   "click": 1,
+   "close": 1
+  },
+  "out_markers": 9,
+  "shapes": {
+   "literal": 12
+  },
+  "new_explore": 13,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v2-23|1": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-23#1",
+  "uid": "a66947f57f8349e8b0f233728aae969c",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 13,
+   "click": 5,
+   "fill": 5,
+   "press": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 13,
+   "click": 5,
+   "fill": 5,
+   "press": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "out_markers": 28,
+  "shapes": {
+   "literal": 31
+  },
+  "new_explore": 15,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v3-04|1": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v3-04#1",
+  "uid": "0c6af25148fe45c38b83263d3a2c30c1",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 30,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v3-04|1": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-04#1",
+  "uid": "13d62d8f480e489a91396bac9b0f07fd",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 31,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v3-04|1": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-04#1",
+  "uid": "8e07e7b01dce4d6a95d0525f4ab81341",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 26,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v3-04|1": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-04#1",
+  "uid": "9a45aeb302ff400da281d2b07e50b4e7",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 4,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 7,
+   "click": 6,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 4,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 7,
+   "click": 6,
+   "close": 1
+  },
+  "out_markers": 17,
+  "shapes": {
+   "literal": 20
+  },
+  "new_explore": 9,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v3-04|1": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-04#1",
+  "uid": "325a2c1d95294b5ea19bffe9f7d2cec2",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 9,
+   "click": 7,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "--help": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1,
+   "close": 1
+  },
+  "out_markers": 10,
+  "shapes": {
+   "literal": 13
+  },
+  "new_explore": 11,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v3-06|1": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v3-06#1",
+  "uid": "66391efb28fe479f8387fb37c1b79710",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 17,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v3-06|1": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-06#1",
+  "uid": "b2633351261649f697127e2a8def87ee",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 16,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v3-06|1": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-06#1",
+  "uid": "751bb05ed7214177badd0eb56206c39c",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 14,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v3-06|1": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-06#1",
+  "uid": "9182e3737f6e4f86bbb73bdea8fb0086",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 6,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 6,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "out_markers": 14,
+  "shapes": {
+   "literal": 17
+  },
+  "new_explore": 8,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v3-06|1": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-06#1",
+  "uid": "d2b4e59ee8b84d0bafb8fa904bf6fdf5",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 6,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 6,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "out_markers": 14,
+  "shapes": {
+   "literal": 17
+  },
+  "new_explore": 8,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v2-22|1": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v2-22#1",
+  "uid": "4fb4a26de3ab46bb88df69fed27017e2",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 15,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v2-22|1": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-22#1",
+  "uid": "9384f35c54034ac18d363c08a2a98b57",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 17,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v2-22|1": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-22#1",
+  "uid": "1cb4591723ef4c209e87267dd944d3a6",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 19,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v2-22|1": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-22#1",
+  "uid": "fc1f33630a6e44ba8741e596d6d3ab6a",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 7,
+   "click": 2,
+   "select": 1,
+   "fill": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 7,
+   "click": 2,
+   "--help": 1,
+   "select": 1,
+   "fill": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "out_markers": 16,
+  "shapes": {
+   "literal": 19
+  },
+  "new_explore": 10,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v2-22|1": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-22#1",
+  "uid": "8c0c2168375d4ac7ac32cbfa7b54b477",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 5,
+   "select": 2,
+   "fill": 1,
+   "click": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 5,
+   "select": 2,
+   "fill": 1,
+   "click": 1,
+   "close": 1
+  },
+  "out_markers": 12,
+  "shapes": {
+   "literal": 16
+  },
+  "new_explore": 8,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v3-06|2": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v3-06#2",
+  "uid": "e990d143ac144068856c7a519518d57f",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 21,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v3-06|2": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-06#2",
+  "uid": "bb8584d8f8ac4cad8bdf384db61f04b4",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 13,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v3-06|2": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-06#2",
+  "uid": "06030120be2e4be186f7000ab801ec5a",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 12,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v3-06|2": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-06#2",
+  "uid": "e4295c60fabc4e2eb949a5ee05361a9b",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 6,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 6,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "out_markers": 14,
+  "shapes": {
+   "literal": 17
+  },
+  "new_explore": 8,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v3-06|2": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-06#2",
+  "uid": "b6c8b38e32924e569a7cd0c1453c77e6",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 5,
+   "fill": 1,
+   "click": 2,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "--help": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 5,
+   "fill": 1,
+   "click": 2,
+   "reload": 1,
+   "close": 1
+  },
+  "out_markers": 8,
+  "shapes": {
+   "literal": 11
+  },
+  "new_explore": 7,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v3-09|2": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v3-09#2",
+  "uid": "a3a4d8503db14856bd1e97b2bccbbf2d",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 32,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v3-09|2": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-09#2",
+  "uid": "df0193a000884452a9a0bb25432d177b",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 29,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v3-09|2": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-09#2",
+  "uid": "a7328bf62b60468a9ab986683414d4e5",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 22,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v3-09|2": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-09#2",
+  "uid": "3c341c8d8f9b4cbcb65b9d9b94c6795b",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 2,
+   "goto": 1,
+   "snapshot": 11,
+   "click": 10,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 2,
+   "goto": 1,
+   "snapshot": 11,
+   "click": 10,
+   "close": 1
+  },
+  "out_markers": 13,
+  "shapes": {
+   "literal": 15
+  },
+  "new_explore": 13,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v3-09|2": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-09#2",
+  "uid": "fe25b1a138a9481e8056d17a80dc3550",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 2,
+   "goto": 1,
+   "snapshot": 12,
+   "click": 11,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 2,
+   "goto": 1,
+   "snapshot": 12,
+   "click": 11,
+   "close": 1
+  },
+  "out_markers": 14,
+  "shapes": {
+   "literal": 16
+  },
+  "new_explore": 14,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v2-23|2": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v2-23#2",
+  "uid": "2749d544b2b64d5388da6d42b1b223d5",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 15,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v2-23|2": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-23#2",
+  "uid": "ff281613698c44ceb080f8321af767b8",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 25,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v2-23|2": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-23#2",
+  "uid": "515c3f32fd674c9381287482d7f2c9d6",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 27,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v2-23|2": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-23#2",
+  "uid": "cfdc13d80a334d8bb3685ba600cf050e",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 12,
+   "click": 5,
+   "fill": 4,
+   "press": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 12,
+   "click": 5,
+   "fill": 4,
+   "press": 1,
+   "close": 1
+  },
+  "out_markers": 26,
+  "shapes": {
+   "literal": 29
+  },
+  "new_explore": 15,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v2-23|2": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-23#2",
+  "uid": "a84dd764992e4796a03d8f6e2af00c4b",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 13,
+   "click": 5,
+   "fill": 5,
+   "press": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "--help": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 13,
+   "click": 5,
+   "fill": 5,
+   "press": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "out_markers": 28,
+  "shapes": {
+   "literal": 31
+  },
+  "new_explore": 15,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v2-06|2": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v2-06#2",
+  "uid": "49510d4faac541418ff460e6ba7d82e5",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 14,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v2-06|2": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-06#2",
+  "uid": "2a2e9017c07e4bccab27a6f92d27df59",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 11,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v2-06|2": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-06#2",
+  "uid": "39dd617f00bb471ab5dd2392e7f12670",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 33,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v2-06|2": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-06#2",
+  "uid": "dad01969ae424cdf812fd3efc9138779",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 2,
+   "goto": 1,
+   "snapshot": 20,
+   "fill": 9,
+   "press": 10,
+   "click": 4,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 2,
+   "goto": 1,
+   "snapshot": 1,
+   "close": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 5,
+   "dynamic_loop": 4
+  },
+  "new_explore": 22,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v2-06|2": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-06#2",
+  "uid": "96632500667d499faa77d81daadf6bdf",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 14,
+   "fill": 5,
+   "press": 5,
+   "click": 3,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 14,
+   "fill": 3,
+   "press": 5,
+   "click": 3,
+   "close": 1
+  },
+  "out_markers": 27,
+  "shapes": {
+   "literal": 30,
+   "dynamic_loop": 1
+  },
+  "new_explore": 17,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v2-22|2": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v2-22#2",
+  "uid": "7d1ab9aa1eab460bab3f9baca3b4520e",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 16,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v2-22|2": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-22#2",
+  "uid": "d09fe1b614f342e098f6a75905ba02c5",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 15,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v2-22|2": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-22#2",
+  "uid": "2e06860f6bba4120a4fbb7868a5dfb01",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 34,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v2-22|2": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-22#2",
+  "uid": "520ea8a0db6b4056b30babb245b12836",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 7,
+   "select": 1,
+   "fill": 2,
+   "reload": 1,
+   "click": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 7,
+   "--help": 1,
+   "select": 1,
+   "fill": 2,
+   "reload": 1,
+   "click": 1,
+   "close": 1
+  },
+  "out_markers": 16,
+  "shapes": {
+   "literal": 19
+  },
+  "new_explore": 10,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v2-22|2": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-22#2",
+  "uid": "84acf69213a7473699142e9850650dba",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 8,
+   "click": 2,
+   "press": 1,
+   "select": 1,
+   "fill": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 8,
+   "click": 2,
+   "press": 1,
+   "--help": 1,
+   "select": 1,
+   "fill": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "out_markers": 18,
+  "shapes": {
+   "literal": 21
+  },
+  "new_explore": 11,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v3-04|2": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v3-04#2",
+  "uid": "644adb450fe1489d941a13310195cb98",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 17,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v3-04|2": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-04#2",
+  "uid": "a8f711fe81ac404ab6e4dcc27448a3f6",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 18,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v3-04|2": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-04#2",
+  "uid": "8a2a252bedf94a0a8da3fc820c436a21",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 28,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v3-04|2": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-04#2",
+  "uid": "c3b7ce54360b472a85a82db3ff5c99c4",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 3,
+   "snapshot": 9,
+   "click": 6,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 3,
+   "snapshot": 9,
+   "click": 6,
+   "close": 1
+  },
+  "out_markers": 20,
+  "shapes": {
+   "literal": 22
+  },
+  "new_explore": 13,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v3-04|2": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-04#2",
+  "uid": "1b13c4d82929416886e2d29c1dfdd850",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 2,
+   "goto": 1,
+   "snapshot": 9,
+   "click": 6,
+   "reload": 2,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 2,
+   "--help": 1,
+   "goto": 1,
+   "snapshot": 9,
+   "click": 6,
+   "reload": 2,
+   "close": 1
+  },
+  "out_markers": 11,
+  "shapes": {
+   "literal": 13
+  },
+  "new_explore": 11,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v2-22|3": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v2-22#3",
+  "uid": "83fbadf3650c488483c1506bc53a67f1",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 23,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v2-22|3": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-22#3",
+  "uid": "410f1afe8c894d77b4e7821480ec829e",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 26,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v2-22|3": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-22#3",
+  "uid": "d979e73efeaf4bc1b34f385c4c7e1f70",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 28,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v2-22|3": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-22#3",
+  "uid": "66b7ebe346504d9894362c057507f51b",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 7,
+   "select": 1,
+   "fill": 2,
+   "reload": 1,
+   "click": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "--help": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 7,
+   "select": 1,
+   "fill": 2,
+   "reload": 1,
+   "click": 1,
+   "close": 1
+  },
+  "out_markers": 16,
+  "shapes": {
+   "literal": 19
+  },
+  "new_explore": 10,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v2-22|3": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-22#3",
+  "uid": "31e241e82c4f43e2aa23c99e172e8f19",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 6,
+   "select": 1,
+   "fill": 1,
+   "reload": 1,
+   "click": 1,
+   "close": 1
+  },
+  "old": {
+   "--help": 1,
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 6,
+   "select": 1,
+   "fill": 1,
+   "reload": 1,
+   "click": 1,
+   "close": 1
+  },
+  "out_markers": 14,
+  "shapes": {
+   "literal": 17
+  },
+  "new_explore": 9,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v3-09|3": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v3-09#3",
+  "uid": "584310cc709641e7b3a2a38f3557aa11",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 24,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v3-09|3": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-09#3",
+  "uid": "42992f62d7b54dd2b0046d34ba3b00ea",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 29,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v3-09|3": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-09#3",
+  "uid": "273634c8679442ceb5571eccd8e75c10",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 33,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v3-09|3": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-09#3",
+  "uid": "6db1e33c047848daac8fc3253fef1856",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 11,
+   "click": 10,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 11,
+   "click": 10,
+   "close": 1
+  },
+  "out_markers": 24,
+  "shapes": {
+   "literal": 27
+  },
+  "new_explore": 13,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v3-09|3": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-09#3",
+  "uid": "234e55178df943e1aff3ec966ad6aa13",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 11,
+   "click": 10,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "--help": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 11,
+   "click": 10,
+   "close": 1
+  },
+  "out_markers": 24,
+  "shapes": {
+   "literal": 27
+  },
+  "new_explore": 13,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v3-04|3": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v3-04#3",
+  "uid": "60c4076f4d5948fa80f2af48309ccfd5",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 29,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v3-04|3": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-04#3",
+  "uid": "3fc347a7e08d42edaabbb6d02b10a11b",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 30,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v3-04|3": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-04#3",
+  "uid": "841d8ffe8bf04d3c9a90e5a81e273f6b",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 27,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v3-04|3": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-04#3",
+  "uid": "3643939c5ecd4ca784b97eb810d27b6d",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 8,
+   "click": 6,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "--help": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 8,
+   "click": 6,
+   "reload": 1,
+   "close": 1
+  },
+  "out_markers": 18,
+  "shapes": {
+   "literal": 21
+  },
+  "new_explore": 10,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v3-04|3": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-04#3",
+  "uid": "7b6e0bc840f1418aa43b60c6f7555b47",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 3,
+   "snapshot": 9,
+   "click": 6,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 3,
+   "snapshot": 9,
+   "click": 6,
+   "close": 1
+  },
+  "out_markers": 20,
+  "shapes": {
+   "literal": 23
+  },
+  "new_explore": 13,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v2-06|3": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v2-06#3",
+  "uid": "a5a8cf9a7e0b43f3afec8f8aefa1db3c",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 15,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v2-06|3": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-06#3",
+  "uid": "7207ce190abc49a79408efcaf33538da",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 31,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v2-06|3": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-06#3",
+  "uid": "3e6e58982ef24628969e747d5132bb2b",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 12,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v2-06|3": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-06#3",
+  "uid": "ea3d27deca844d3db0dd6ea8e3f65c64",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 3,
+   "snapshot": 25,
+   "fill": 7,
+   "press": 9,
+   "click": 5,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 3,
+   "fill": 1,
+   "press": 1,
+   "close": 1
+  },
+  "out_markers": 15,
+  "shapes": {
+   "literal": 11,
+   "dynamic_loop": 7
+  },
+  "new_explore": 29,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v2-06|3": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-06#3",
+  "uid": "f0894303070b41639927e25e00fb67d5",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 16,
+   "fill": 5,
+   "press": 5,
+   "click": 3,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 8,
+   "fill": 3,
+   "press": 4,
+   "close": 1
+  },
+  "out_markers": 21,
+  "shapes": {
+   "literal": 24,
+   "dynamic_loop": 1
+  },
+  "new_explore": 19,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v2-23|3": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v2-23#3",
+  "uid": "e1663e730e62422885af1e637e959263",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 16,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v2-23|3": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-23#3",
+  "uid": "cb41fdcb162a401da6a4838a8b137d43",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 29,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v2-23|3": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-23#3",
+  "uid": "ab10796a91a5494a8724400e88af5440",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 9,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v2-23|3": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-23#3",
+  "uid": "ed508a53f9b3496286029f02e9c08e08",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 12,
+   "click": 5,
+   "fill": 4,
+   "press": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 12,
+   "click": 5,
+   "fill": 4,
+   "press": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "out_markers": 26,
+  "shapes": {
+   "literal": 29
+  },
+  "new_explore": 14,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v2-23|3": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-23#3",
+  "uid": "bf0589d3bbad4b8c89c6baa8f0eb9f11",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 2,
+   "goto": 1,
+   "snapshot": 13,
+   "click": 5,
+   "fill": 5,
+   "press": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 2,
+   "goto": 1,
+   "snapshot": 2,
+   "click": 1,
+   "close": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 6,
+   "dynamic_loop": 3
+  },
+  "new_explore": 15,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v3-06|3": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v3-06#3",
+  "uid": "2dccdad8b7384d4d936264d5eab63592",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 30,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v3-06|3": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-06#3",
+  "uid": "b1f7242a5060484bb849fd7b818c65fd",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 17,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v3-06|3": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-06#3",
+  "uid": "eaaefdd3a2964065b8697a8194b21ff2",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 29,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v3-06|3": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-06#3",
+  "uid": "0a08a0cd333442dfa84f049f98590286",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 6,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 6,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "out_markers": 14,
+  "shapes": {
+   "literal": 17
+  },
+  "new_explore": 8,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v3-06|3": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-06#3",
+  "uid": "7ff47bb4bca1454890af352159e0a789",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 6,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 6,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "out_markers": 14,
+  "shapes": {
+   "literal": 17
+  },
+  "new_explore": 8,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v3-06|4": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v3-06#4",
+  "uid": "b527fa0cceae4705bf24d947e929ff69",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 10,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v3-06|4": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-06#4",
+  "uid": "9e369217b46c466ea8cb0553111edd7e",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 17,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v3-06|4": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-06#4",
+  "uid": "84bf0cc8cf3244649f3470ab167ef307",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 12,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v3-06|4": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-06#4",
+  "uid": "67f4166364e94ffdb6bab8bbef46e639",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 6,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 6,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "out_markers": 14,
+  "shapes": {
+   "literal": 17
+  },
+  "new_explore": 8,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v3-06|4": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-06#4",
+  "uid": "5fd71bc770ea432faa4516b5e6d7cbd4",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 6,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 6,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "out_markers": 14,
+  "shapes": {
+   "literal": 17
+  },
+  "new_explore": 8,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v2-23|4": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v2-23#4",
+  "uid": "db42a81932354fdf9a69fa43224a8da5",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 29,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v2-23|4": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-23#4",
+  "uid": "d9f0c73dda934c31a6561c95962a12b4",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 32,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v2-23|4": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-23#4",
+  "uid": "0c9a65a26af94fc493a9bbbc80632fc3",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 31,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v2-23|4": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-23#4",
+  "uid": "93d0720ae4634c62b7dfa023a8c665ec",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 12,
+   "click": 5,
+   "fill": 4,
+   "press": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 12,
+   "click": 5,
+   "fill": 4,
+   "press": 1,
+   "close": 1
+  },
+  "out_markers": 26,
+  "shapes": {
+   "literal": 29
+  },
+  "new_explore": 15,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v2-23|4": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-23#4",
+  "uid": "ae06cd81db694595aea447d4fcc443f2",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 11,
+   "click": 5,
+   "fill": 4,
+   "press": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 11,
+   "click": 5,
+   "fill": 4,
+   "press": 1,
+   "close": 1
+  },
+  "out_markers": 24,
+  "shapes": {
+   "literal": 27
+  },
+  "new_explore": 13,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v2-22|4": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v2-22#4",
+  "uid": "c8db5e4aadf1470eaca853e37bc1879b",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 19,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v2-22|4": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-22#4",
+  "uid": "64cbab49e9cd43c29793a88ee936590f",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 22,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v2-22|4": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-22#4",
+  "uid": "603f10a0f64d406d9dfa1beb09cdf934",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 15,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v2-22|4": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-22#4",
+  "uid": "074fec022339404fb68e8d8e90e7f989",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 7,
+   "click": 2,
+   "select": 1,
+   "fill": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 7,
+   "click": 2,
+   "--help": 1,
+   "select": 1,
+   "fill": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "out_markers": 16,
+  "shapes": {
+   "literal": 19
+  },
+  "new_explore": 10,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v2-22|4": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-22#4",
+  "uid": "6ac916bed29341408354362ff2149b31",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 9,
+   "click": 2,
+   "press": 1,
+   "select": 2,
+   "fill": 2,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 9,
+   "click": 2,
+   "press": 1,
+   "select-option": 1,
+   "select": 1,
+   "fill": 2,
+   "reload": 1,
+   "close": 1
+  },
+  "out_markers": 20,
+  "shapes": {
+   "literal": 24
+  },
+  "new_explore": 12,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v3-04|4": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v3-04#4",
+  "uid": "783f605732d04a54b1438d0301db87b2",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 30,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v3-04|4": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-04#4",
+  "uid": "caed6cfc2ef4420eb766764e6520ca41",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 31,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v3-04|4": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-04#4",
+  "uid": "1c99b296d5064321a67f60510a77dcd7",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 35,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v3-04|4": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-04#4",
+  "uid": "9e16831783dc466b935b7b4f10592880",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 7,
+   "click": 6,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 7,
+   "click": 6,
+   "close": 1
+  },
+  "out_markers": 16,
+  "shapes": {
+   "literal": 19
+  },
+  "new_explore": 9,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v3-04|4": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-04#4",
+  "uid": "972e6bdbed604f0cb974ba891f2fb039",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 3,
+   "snapshot": 9,
+   "click": 6,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 3,
+   "snapshot": 9,
+   "click": 6,
+   "close": 1
+  },
+  "out_markers": 20,
+  "shapes": {
+   "literal": 23
+  },
+  "new_explore": 13,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v2-06|4": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v2-06#4",
+  "uid": "8ef0fabae47f4f39af770e63790d36dc",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 31,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v2-06|4": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-06#4",
+  "uid": "d33d5940150b4c0a9012ea1235a402f5",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 13,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v2-06|4": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-06#4",
+  "uid": "86254557ec364ab1bdc183044bcd21ce",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 10,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v2-06|4": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-06#4",
+  "uid": "e5c745df4ce14f1ba5e962171df8aa24",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 14,
+   "fill": 4,
+   "press": 5,
+   "click": 3,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 14,
+   "fill": 4,
+   "press": 5,
+   "-s": 5,
+   "click": 3,
+   "reload": 1,
+   "close": 1
+  },
+  "out_markers": 14,
+  "shapes": {
+   "literal": 12,
+   "dynamic_loop": 5
+  },
+  "new_explore": 16,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v2-06|4": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-06#4",
+  "uid": "cb180909e5ff451081735c2d4a10f01b",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 14,
+   "fill": 4,
+   "press": 5,
+   "click": 3,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "--help": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 14,
+   "fill": 3,
+   "press": 5,
+   "click": 3,
+   "reload": 1,
+   "close": 1
+  },
+  "out_markers": 25,
+  "shapes": {
+   "literal": 27,
+   "dynamic_loop": 1
+  },
+  "new_explore": 16,
+  "old_ok": true
+ },
+ "gpt-6-sol|official-generator|v3-09|4": {
+  "model": "gpt-6-sol",
+  "arm": "official-generator",
+  "cell": "v3-09#4",
+  "uid": "2e1be809c5d5439eb6339d8e87bcfaa4",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 19,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules|v3-09|4": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-09#4",
+  "uid": "bae00601c72643c7a00b43668c1cdd9e",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 22,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|official+thin-rules+scanner|v3-09|4": {
+  "model": "gpt-6-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-09#4",
+  "uid": "a5711e0040f54ad4b494c17952df0122",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 24,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-sol|cli-first+thin-rules|v3-09|4": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-09#4",
+  "uid": "115b8561723a43689cc657264ed79152",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 11,
+   "click": 10,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 11,
+   "click": 10,
+   "close": 1
+  },
+  "out_markers": 24,
+  "shapes": {
+   "literal": 27
+  },
+  "new_explore": 13,
+  "old_ok": true
+ },
+ "gpt-6-sol|cli-first+thin-rules+scanner|v3-09|4": {
+  "model": "gpt-6-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-09#4",
+  "uid": "6a293237a227485dbdab3279a84ab715",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 2,
+   "requests": 2,
+   "goto": 1,
+   "snapshot": 14,
+   "click": 13,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 2,
+   "requests": 2,
+   "goto": 1,
+   "snapshot": 14,
+   "click": 13,
+   "close": 1
+  },
+  "out_markers": 16,
+  "shapes": {
+   "literal": 18
+  },
+  "new_explore": 16,
+  "old_ok": true
+ },
+ "gpt-6-astra|official-generator|v2-06|1": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v2-06#1",
+  "uid": "69eaec93dc82439f85d9595baa8faef6",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 9,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v2-06|1": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v2-06#1",
+  "uid": "2162e9b7dca9497e862bc8f2abcff0f5",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 9,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v2-06|1": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-06#1",
+  "uid": "65b86e79779542a4b0756106a0e1a356",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v2-06|1": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-06#1",
+  "uid": "6f9d6ba405e9477f83e0a6875899cf7e",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 13,
+   "fill": 4,
+   "press": 5,
+   "click": 2,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 13,
+   "-s": 4,
+   "fill": 4,
+   "press": 5,
+   "click": 2,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 3,
+   "dynamic_loop": 3
+  },
+  "new_explore": 16,
+  "old_ok": true
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v2-06|1": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-06#1",
+  "uid": "0387a0182bfd41ac88e9192bddbd3fb1",
+  "files": 1,
+  "new": {
+   "open": 2,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 12,
+   "fill": 3,
+   "press": 4,
+   "click": 3,
+   "close": 1
+  },
+  "old": {
+   "open": 2,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 12,
+   "-s": 3,
+   "fill": 3,
+   "press": 4,
+   "click": 3,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 4,
+   "dynamic_loop": 3
+  },
+  "new_explore": 16,
+  "old_ok": true
+ },
+ "gpt-6-astra|official-generator|v3-09|1": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v3-09#1",
+  "uid": "563b280988de4f4d813bacd81af321c9",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v3-09|1": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v3-09#1",
+  "uid": "79ad4d8a9c484a7a932baebe55abb9ed",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v3-09|1": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-09#1",
+  "uid": "1bc38d0164534ce2977cf5508769e4d4",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v3-09|1": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-09#1",
+  "uid": "a65b6d575b6f49489a84c692b4d2a6d6",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 11,
+   "click": 10,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 4,
+   "click": 3
+  },
+  "out_markers": 8,
+  "shapes": {
+   "literal": 5,
+   "dynamic_loop": 3
+  },
+  "new_explore": 13,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v3-09|1": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-09#1",
+  "uid": "2188e70fbef245139dbd6e1fc92018bf",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 14,
+   "click": 13,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 14,
+   "click": 13,
+   "close": 1
+  },
+  "out_markers": 9,
+  "shapes": {
+   "literal": 10
+  },
+  "new_explore": 16,
+  "old_ok": true
+ },
+ "gpt-6-astra|official-generator|v2-23|1": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v2-23#1",
+  "uid": "87e3d80073b44e7aaf4c00cc61ffd543",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v2-23|1": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v2-23#1",
+  "uid": "53b7562e5ec3415d922a04ae1041e17a",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v2-23|1": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-23#1",
+  "uid": "33c18ecf33354410a81fa9a40a998c31",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 5,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v2-23|1": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-23#1",
+  "uid": "47a8a7fe9c5448cea5cabd8852b20eca",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 12,
+   "click": 5,
+   "fill": 4,
+   "press": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 3,
+   "click": 1,
+   "close": 1
+  },
+  "out_markers": 5,
+  "shapes": {
+   "literal": 4,
+   "dynamic_loop": 1
+  },
+  "new_explore": 15,
+  "old_ok": true
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v2-23|1": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-23#1",
+  "uid": "7b9b8e8c1dee4fe39d182e7155b9616d",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 12,
+   "click": 5,
+   "fill": 4,
+   "press": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 2,
+   "click": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 4,
+   "dynamic_loop": 2
+  },
+  "new_explore": 14,
+  "old_ok": false
+ },
+ "gpt-6-astra|official-generator|v3-04|1": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v3-04#1",
+  "uid": "9e47e5c9b4164db19ccc414dcb6d5207",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v3-04|1": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v3-04#1",
+  "uid": "c82d0675193f4fe796ed637de4c7156c",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v3-04|1": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-04#1",
+  "uid": "f4d708f3126c4e95ba0c8648e958254f",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v3-04|1": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-04#1",
+  "uid": "c6949a70fcfa41dc8bfcfc60a001a5a2",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 7,
+   "click": 6,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 7,
+   "click": 6,
+   "close": 1
+  },
+  "out_markers": 8,
+  "shapes": {
+   "literal": 8
+  },
+  "new_explore": 9,
+  "old_ok": true
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v3-04|1": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-04#1",
+  "uid": "474bbd5840ff40449648040054d87d51",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 9,
+   "click": 7,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 2,
+   "click": 1
+  },
+  "out_markers": 8,
+  "shapes": {
+   "literal": 8
+  },
+  "new_explore": 11,
+  "old_ok": false
+ },
+ "gpt-6-astra|official-generator|v3-06|1": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v3-06#1",
+  "uid": "96716306c8c84cecbdce311ff08fb136",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v3-06|1": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v3-06#1",
+  "uid": "33dbd6a55d124909b0765adecff338da",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v3-06|1": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-06#1",
+  "uid": "ec1114cb4c624226af6745fd00ea3319",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v3-06|1": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-06#1",
+  "uid": "c0c8dd3f1cbb47dfb3c65a20d3d4679f",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 9,
+   "fill": 3,
+   "click": 4,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 7
+  },
+  "new_explore": 12,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v3-06|1": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-06#1",
+  "uid": "9e978899c4b34b02bf6ea0734aefb93f",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 7,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 3,
+   "fill": 1,
+   "click": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 4,
+   "dynamic_loop": 3
+  },
+  "new_explore": 10,
+  "old_ok": false
+ },
+ "gpt-6-astra|official-generator|v2-22|1": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v2-22#1",
+  "uid": "142414d0bf61434386f7d7ae6b83f4e3",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v2-22|1": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v2-22#1",
+  "uid": "e5e95b721e3948279adf54054371afb0",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 9,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v2-22|1": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-22#1",
+  "uid": "b6bf52570ebd43eab0326c29c2a048dc",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v2-22|1": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-22#1",
+  "uid": "9f116749a7204b5392afef4971cf3e24",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 9,
+   "select": 2,
+   "fill": 2,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 9,
+   "select": 2,
+   "fill": 2,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 6
+  },
+  "new_explore": 12,
+  "old_ok": true
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v2-22|1": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-22#1",
+  "uid": "c97f4b2822e94e52bc9486dbc7a12213",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 10,
+   "select": 2,
+   "fill": 3,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 10,
+   "select": 2,
+   "fill": 3,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 6
+  },
+  "new_explore": 13,
+  "old_ok": true
+ },
+ "gpt-6-astra|official-generator|v3-06|2": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v3-06#2",
+  "uid": "d6506132346a4f79bec887ef2a22b7d6",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v3-06|2": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v3-06#2",
+  "uid": "bcc6e269ed514ec89142f2505deaa6f5",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v3-06|2": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-06#2",
+  "uid": "080bc151688948fd883b0d5adf50f5ec",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v3-06|2": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-06#2",
+  "uid": "71f24e2f60ac44399cbebb9a77bd820f",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 7,
+   "fill": 2,
+   "click": 3,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 7
+  },
+  "new_explore": 9,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v3-06|2": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-06#2",
+  "uid": "3ee32c81d81f4248b25d479e4af31bc2",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 10,
+   "fill": 3,
+   "click": 5,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 3,
+   "dynamic_loop": 3
+  },
+  "new_explore": 12,
+  "old_ok": false
+ },
+ "gpt-6-astra|official-generator|v3-09|2": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v3-09#2",
+  "uid": "917e569a1fe04d15876904569d6d329d",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v3-09|2": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v3-09#2",
+  "uid": "d328e93bec1742f3b53408b1e1f9cbe9",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v3-09|2": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-09#2",
+  "uid": "3a049d386bb44e1cb2b89d2be8656c2e",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v3-09|2": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-09#2",
+  "uid": "ae65271f2cce4adc917fa9a408ec6100",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 14,
+   "click": 13,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 2,
+   "click": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 3,
+   "dynamic_loop": 4
+  },
+  "new_explore": 16,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v3-09|2": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-09#2",
+  "uid": "379561ded5e5456b9aff52cab1751f28",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 15,
+   "click": 14,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 2,
+   "click": 1
+  },
+  "out_markers": 9,
+  "shapes": {
+   "literal": 4,
+   "dynamic_loop": 5
+  },
+  "new_explore": 17,
+  "old_ok": false
+ },
+ "gpt-6-astra|official-generator|v2-23|2": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v2-23#2",
+  "uid": "eba22d4af7fc4395aeb592eadc0b4dce",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 4,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v2-23|2": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v2-23#2",
+  "uid": "774ab5e353a94e419c95faedc504479d",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 4,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v2-23|2": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-23#2",
+  "uid": "1597bfd7477240bcaa5b9e795c2a18ab",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 5,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v2-23|2": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-23#2",
+  "uid": "1941091ebed14191ab4ae14b9a20fbf5",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 10,
+   "click": 5,
+   "fill": 2,
+   "press": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 4,
+   "click": 1,
+   "press": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 5,
+   "dynamic_loop": 3
+  },
+  "new_explore": 12,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v2-23|2": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-23#2",
+  "uid": "105ab6e2577b44f1aa80de3db9fdabac",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 12,
+   "click": 5,
+   "fill": 4,
+   "press": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 2,
+   "click": 1,
+   "close": 1
+  },
+  "out_markers": 5,
+  "shapes": {
+   "literal": 5,
+   "dynamic_loop": 1
+  },
+  "new_explore": 14,
+  "old_ok": true
+ },
+ "gpt-6-astra|official-generator|v2-06|2": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v2-06#2",
+  "uid": "299a10483e244fe1853e8803721a9347",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v2-06|2": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v2-06#2",
+  "uid": "7ab6608489fd4efba9357484710f99f8",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v2-06|2": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-06#2",
+  "uid": "f99f05baabd34d0f972639885cb67127",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v2-06|2": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-06#2",
+  "uid": "3d5308c640674bd992988b67cb20a29f",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 12,
+   "fill": 3,
+   "press": 4,
+   "click": 3,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 3,
+   "dynamic_loop": 3
+  },
+  "new_explore": 14,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v2-06|2": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-06#2",
+  "uid": "801d46ed7c54443b901ee411e3728708",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 19,
+   "fill": 7,
+   "press": 8,
+   "click": 2,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 3,
+   "dynamic_loop": 3
+  },
+  "new_explore": 21,
+  "old_ok": false
+ },
+ "gpt-6-astra|official-generator|v2-22|2": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v2-22#2",
+  "uid": "f93cf7b5b0984ad1a3d944e3325bfe47",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 9,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v2-22|2": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v2-22#2",
+  "uid": "15806497901b4ef1af8540f4124fafa9",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v2-22|2": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-22#2",
+  "uid": "78810c465fa54037a418593b68445e5b",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v2-22|2": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-22#2",
+  "uid": "fe3f38a59b884b7e8044549d26062e84",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 10,
+   "select": 2,
+   "fill": 3,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 3,
+   "select": 1,
+   "fill": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 6
+  },
+  "new_explore": 13,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v2-22|2": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-22#2",
+  "uid": "f5323eb1254e4a8a90076c7c46aabd14",
+  "files": 1,
+  "new": {
+   "open": 2,
+   "eval": 2,
+   "requests": 2,
+   "goto": 3,
+   "snapshot": 11,
+   "select": 2,
+   "fill": 3,
+   "reload": 1,
+   "click": 2,
+   "close": 2
+  },
+  "old": {
+   "open": 2,
+   "eval": 2,
+   "requests": 2,
+   "goto": 3,
+   "snapshot": 11,
+   "select": 2,
+   "fill": 3,
+   "reload": 1,
+   "click": 2,
+   "close": 2
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 7
+  },
+  "new_explore": 16,
+  "old_ok": true
+ },
+ "gpt-6-astra|official-generator|v3-04|2": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v3-04#2",
+  "uid": "3cc6c32e08db4897a217f38a2c8865f3",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v3-04|2": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v3-04#2",
+  "uid": "8a27c9427d1b42caa491f33bd75258a3",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 13,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v3-04|2": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-04#2",
+  "uid": "0b7627b72a0f4350a85961fbebd61046",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v3-04|2": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-04#2",
+  "uid": "6181bc05f0a44937bdeb6557d6d3da83",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 7,
+   "click": 6,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 7,
+   "click": 6,
+   "close": 1
+  },
+  "out_markers": 8,
+  "shapes": {
+   "literal": 8
+  },
+  "new_explore": 9,
+  "old_ok": true
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v3-04|2": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-04#2",
+  "uid": "b205eed12f794b229973a5f5be945421",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 8,
+   "click": 6,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 8,
+   "click": 6,
+   "close": 1
+  },
+  "out_markers": 8,
+  "shapes": {
+   "literal": 8
+  },
+  "new_explore": 11,
+  "old_ok": true
+ },
+ "gpt-6-astra|official-generator|v2-22|3": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v2-22#3",
+  "uid": "a045d2d603fb4cbea7781c6c27721e18",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 9,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v2-22|3": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v2-22#3",
+  "uid": "2daee2e8fa4d497281e648ea3f8de6f8",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 9,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v2-22|3": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-22#3",
+  "uid": "209f268d6ef3461495456ecaad6aa29d",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 9,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v2-22|3": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-22#3",
+  "uid": "6654175c2c6e4bfab1ee524a6632478b",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 9,
+   "fill": 3,
+   "select": 1,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 9,
+   "fill": 3,
+   "select": 1,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 6
+  },
+  "new_explore": 12,
+  "old_ok": true
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v2-22|3": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-22#3",
+  "uid": "c2fda62a40a34f7ebb4a315ac244b38e",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 10,
+   "select": 2,
+   "fill": 3,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 10,
+   "select": 2,
+   "fill": 3,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 6
+  },
+  "new_explore": 13,
+  "old_ok": true
+ },
+ "gpt-6-astra|official-generator|v3-09|3": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v3-09#3",
+  "uid": "c6881f44d9154178af385c8e7d67d4ce",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 10,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v3-09|3": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v3-09#3",
+  "uid": "a5231a273ac24f94bab9094b72c4e248",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 10,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v3-09|3": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-09#3",
+  "uid": "1232d9a540c148c3b6b9c41cccef4178",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v3-09|3": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-09#3",
+  "uid": "d52a9c6447ca437bb44b99c15052814c",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 15,
+   "click": 13,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 15,
+   "click": 13,
+   "-s": 5,
+   "reload": 1,
+   "close": 1
+  },
+  "out_markers": 9,
+  "shapes": {
+   "literal": 4,
+   "dynamic_loop": 5
+  },
+  "new_explore": 17,
+  "old_ok": true
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v3-09|3": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-09#3",
+  "uid": "d0a44aaf30f649e396463d9014c76081",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 17,
+   "click": 15,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1
+  },
+  "out_markers": 10,
+  "shapes": {
+   "literal": 3,
+   "dynamic_loop": 7
+  },
+  "new_explore": 19,
+  "old_ok": false
+ },
+ "gpt-6-astra|official-generator|v3-04|3": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v3-04#3",
+  "uid": "8ecffd3c44224d4297c2ed6a1b71858f",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v3-04|3": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v3-04#3",
+  "uid": "b9869d04ad334519be05d527ca949783",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v3-04|3": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-04#3",
+  "uid": "7fba9b7d6a784fedbdf5ba5013df189a",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v3-04|3": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-04#3",
+  "uid": "d8849732d7da4da7ab48194610fb9149",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 10,
+   "click": 7,
+   "reload": 2,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 10,
+   "click": 7,
+   "reload": 2,
+   "close": 1
+  },
+  "out_markers": 9,
+  "shapes": {
+   "literal": 9
+  },
+  "new_explore": 12,
+  "old_ok": true
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v3-04|3": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-04#3",
+  "uid": "94a9cea3cba94d78bbcb4fc3a30f40c7",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 8,
+   "click": 6,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 8,
+   "click": 6,
+   "reload": 1,
+   "close": 1
+  },
+  "out_markers": 9,
+  "shapes": {
+   "literal": 9
+  },
+  "new_explore": 10,
+  "old_ok": true
+ },
+ "gpt-6-astra|official-generator|v2-06|3": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v2-06#3",
+  "uid": "b365ce606a7f43b4bde5edb4a1e54abf",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 4,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v2-06|3": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v2-06#3",
+  "uid": "4aa49507d9824e448f56d0fd8a498aa7",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v2-06|3": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-06#3",
+  "uid": "48649c509c38419699deaa7ea692741b",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 12,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v2-06|3": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-06#3",
+  "uid": "4b18a5979d4f440b86209585f6b820cf",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 12,
+   "fill": 3,
+   "press": 4,
+   "click": 3,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 3,
+   "dynamic_loop": 3
+  },
+  "new_explore": 14,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v2-06|3": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-06#3",
+  "uid": "731dd9f057294357b23dbd4345d581c1",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 17,
+   "fill": 5,
+   "press": 6,
+   "click": 4,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 3,
+   "dynamic_loop": 4
+  },
+  "new_explore": 19,
+  "old_ok": false
+ },
+ "gpt-6-astra|official-generator|v2-23|3": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v2-23#3",
+  "uid": "c1a2020f0241483a806e7fdace442be1",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 5,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v2-23|3": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v2-23#3",
+  "uid": "75c90072ddfc4940889c89ae348dabd3",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 4,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v2-23|3": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-23#3",
+  "uid": "01f5a90772314f94b64760c267ce5680",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v2-23|3": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-23#3",
+  "uid": "954dd17d95db41da99086a8316f98610",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 5,
+   "click": 5,
+   "fill": 2,
+   "press": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 5,
+   "click": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 7,
+   "dynamic_loop": 2
+  },
+  "new_explore": 7,
+  "old_ok": true
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v2-23|3": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-23#3",
+  "uid": "139752aa88454f3f8e5b100130fe9ce8",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 12,
+   "click": 5,
+   "fill": 4,
+   "press": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 2,
+   "click": 1,
+   "close": 1
+  },
+  "out_markers": 5,
+  "shapes": {
+   "literal": 5,
+   "dynamic_loop": 1
+  },
+  "new_explore": 14,
+  "old_ok": true
+ },
+ "gpt-6-astra|official-generator|v3-06|3": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v3-06#3",
+  "uid": "d32bfe05d94b4497a14fc1183fb6f724",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v3-06|3": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v3-06#3",
+  "uid": "425c5a18eec746769b36501e6e2f7842",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v3-06|3": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-06#3",
+  "uid": "97d57445355b411f9a777fd4c0867d7b",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v3-06|3": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-06#3",
+  "uid": "3e27ab08607440d1b777991c2f24c8b6",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 8,
+   "fill": 3,
+   "click": 4,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 6
+  },
+  "new_explore": 10,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v3-06|3": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-06#3",
+  "uid": "b4be492174b1412c8aa8d9f671bb591d",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 7,
+   "fill": 2,
+   "click": 3,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 4,
+   "fill": 1,
+   "click": 2,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 5,
+   "dynamic_loop": 1
+  },
+  "new_explore": 9,
+  "old_ok": true
+ },
+ "gpt-6-astra|official-generator|v3-06|4": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v3-06#4",
+  "uid": "d998c244885949529df47d502747501a",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v3-06|4": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v3-06#4",
+  "uid": "20779bac16024fa4a38cafe3b1f09fc9",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v3-06|4": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-06#4",
+  "uid": "fe5a1df6ffd046b4b208d7917688e631",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v3-06|4": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-06#4",
+  "uid": "57b86c850f8243329421021beca1b884",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 7,
+   "fill": 2,
+   "click": 3,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 7
+  },
+  "new_explore": 9,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v3-06|4": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-06#4",
+  "uid": "98b59ee466154fb8a1c137a969e61a39",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 6,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 2,
+   "click": 1,
+   "close": 1
+  },
+  "out_markers": 5,
+  "shapes": {
+   "literal": 5
+  },
+  "new_explore": 9,
+  "old_ok": true
+ },
+ "gpt-6-astra|official-generator|v2-23|4": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v2-23#4",
+  "uid": "5388e4d14e8b401f9cf1aa8881bbf627",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 5,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v2-23|4": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v2-23#4",
+  "uid": "cc912a70afc0460996e55280cfee180b",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v2-23|4": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-23#4",
+  "uid": "47ea3fd141344e67b3364370f7cb952f",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 5,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v2-23|4": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-23#4",
+  "uid": "8e06ce4d1d574cf49fe7572553ec4e2f",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 10,
+   "click": 5,
+   "fill": 2,
+   "press": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 4,
+   "click": 1,
+   "press": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 5,
+   "dynamic_loop": 2
+  },
+  "new_explore": 13,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v2-23|4": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-23#4",
+  "uid": "b9fb2611fc074506a7729f615af51256",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 4,
+   "click": 5,
+   "fill": 4,
+   "press": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 4,
+   "click": 1,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 6,
+   "dynamic_loop": 1
+  },
+  "new_explore": 7,
+  "old_ok": true
+ },
+ "gpt-6-astra|official-generator|v2-22|4": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v2-22#4",
+  "uid": "edb2e65d665e4375a65d5755adefa18e",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 9,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v2-22|4": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v2-22#4",
+  "uid": "0a9946f3e3084170816aae50e0f057b5",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v2-22|4": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-22#4",
+  "uid": "4a66374149dc4fca957fd42d5c28beb5",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v2-22|4": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-22#4",
+  "uid": "e578394e24184c27969b86597b45a948",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 9,
+   "select": 2,
+   "fill": 2,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 9,
+   "select": 2,
+   "fill": 2,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 6
+  },
+  "new_explore": 12,
+  "old_ok": true
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v2-22|4": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-22#4",
+  "uid": "8c5c599d04114fab8c47716efefbd0d4",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 9,
+   "select": 1,
+   "fill": 3,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 9,
+   "select": 1,
+   "fill": 3,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 7
+  },
+  "new_explore": 12,
+  "old_ok": true
+ },
+ "gpt-6-astra|official-generator|v3-04|4": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v3-04#4",
+  "uid": "d16e97c6cf744be0b37d3a62d7f5826f",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v3-04|4": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v3-04#4",
+  "uid": "2079e16cc5e047b4afb01e902fc04941",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 11,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v3-04|4": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-04#4",
+  "uid": "f768fbd7baf5442a9ce8db59d063681c",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 13,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v3-04|4": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-04#4",
+  "uid": "ce20b847f2db46fb989d9147b1d45932",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 7,
+   "click": 6,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 7,
+   "click": 6,
+   "close": 1
+  },
+  "out_markers": 8,
+  "shapes": {
+   "literal": 9
+  },
+  "new_explore": 9,
+  "old_ok": true
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v3-04|4": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-04#4",
+  "uid": "44d4c3f87dd44a52bf08edf05d3a94e9",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 7,
+   "click": 6,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 7,
+   "click": 6,
+   "close": 1
+  },
+  "out_markers": 8,
+  "shapes": {
+   "literal": 8
+  },
+  "new_explore": 9,
+  "old_ok": true
+ },
+ "gpt-6-astra|official-generator|v2-06|4": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v2-06#4",
+  "uid": "da7292a80d4345eca4e4c72704864416",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 4,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v2-06|4": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v2-06#4",
+  "uid": "832cc47e8a284398b1eec44d12a36df4",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 5,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v2-06|4": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-06#4",
+  "uid": "59e4c5b560234f27b6cf299810d7c038",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v2-06|4": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-06#4",
+  "uid": "41b41eb1da5c41aba92a1db2cc40edd2",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 15,
+   "fill": 4,
+   "press": 5,
+   "click": 4,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "--help": 1,
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 3,
+   "dynamic_loop": 4
+  },
+  "new_explore": 17,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v2-06|4": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-06#4",
+  "uid": "fc68679461d14b35898906f6ec5f1eae",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 15,
+   "fill": 4,
+   "press": 5,
+   "click": 4,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 3,
+   "dynamic_loop": 4
+  },
+  "new_explore": 18,
+  "old_ok": false
+ },
+ "gpt-6-astra|official-generator|v3-09|4": {
+  "model": "gpt-6-astra",
+  "arm": "official-generator",
+  "cell": "v3-09#4",
+  "uid": "06837056b80941adaf6730917bb5cbfe",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 12,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules|v3-09|4": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules",
+  "cell": "v3-09#4",
+  "uid": "685b9aabdf2b475f98f0af95185f0089",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|official+thin-rules+scanner|v3-09|4": {
+  "model": "gpt-6-astra",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-09#4",
+  "uid": "1e5d593fb4624484a3353d07836d1a10",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules|v3-09|4": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-09#4",
+  "uid": "57a7aae328c4491b864f927a7729609a",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 14,
+   "click": 13,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 2,
+   "click": 1
+  },
+  "out_markers": 8,
+  "shapes": {
+   "literal": 4,
+   "dynamic_loop": 4
+  },
+  "new_explore": 16,
+  "old_ok": false
+ },
+ "gpt-6-astra|cli-first+thin-rules+scanner|v3-09|4": {
+  "model": "gpt-6-astra",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-09#4",
+  "uid": "296dcbdd5f6a41dcb3de37f7c3fe2b86",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 15,
+   "click": 13,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 2,
+   "click": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 4,
+   "dynamic_loop": 3
+  },
+  "new_explore": 17,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official-generator|v2-06|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v2-06#1",
+  "uid": "56b42813c1104959871a45296ce68be7",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v2-06|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-06#1",
+  "uid": "c0a46ec5d65d48198623e7dc776226f5",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v2-06|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-06#1",
+  "uid": "e60574de842845178b7bebb7ca4c22ad",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v2-06|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-06#1",
+  "uid": "82b153b8595a4e04b23517e069001b21",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 8,
+   "fill": 6,
+   "press": 7,
+   "close": 1,
+   "click": 3
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 4,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 6,
+   "dynamic_loop": 2
+  },
+  "new_explore": 11,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v2-06|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-06#1",
+  "uid": "92aab4eee40e4f2f92bebcbb05b878ff",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 22,
+   "fill": 8,
+   "press": 9,
+   "click": 3,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 4,
+   "dynamic_loop": 2
+  },
+  "new_explore": 25,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official-generator|v3-09|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v3-09#1",
+  "uid": "af88a6fc88594f51b5a7aa1222962fc3",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v3-09|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-09#1",
+  "uid": "a02539c7ce204eff9e8f88fffb3bd57b",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v3-09|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-09#1",
+  "uid": "7b0899e67edc488c8af86b93f978347a",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v3-09|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-09#1",
+  "uid": "468fbdfb5e28403abecfd55b76a13bfc",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 15,
+   "click": 14,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 15,
+   "click": 14,
+   "close": 1
+  },
+  "out_markers": 9,
+  "shapes": {
+   "literal": 9
+  },
+  "new_explore": 17,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v3-09|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-09#1",
+  "uid": "2958d679adce4582ac0f73e3476ee414",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 15,
+   "click": 14,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 15,
+   "click": 14,
+   "close": 1
+  },
+  "out_markers": 14,
+  "shapes": {
+   "literal": 15
+  },
+  "new_explore": 17,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|official-generator|v2-23|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v2-23#1",
+  "uid": "46056fc66779420fa5939d2d42334f94",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v2-23|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-23#1",
+  "uid": "8373d35f636b42818ddb583adb62d05e",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 4,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v2-23|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-23#1",
+  "uid": "ce26db4f81784df3a76599ca1c1c18b9",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v2-23|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-23#1",
+  "uid": "11e7df44746e48e8a775db698f67b1dc",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 10,
+   "click": 5,
+   "fill": 2,
+   "press": 1,
+   "close": 1,
+   "reload": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 4,
+   "click": 1,
+   "press": 1,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 6,
+   "dynamic_loop": 2
+  },
+  "new_explore": 12,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v2-23|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-23#1",
+  "uid": "8d9d6c822e7649b983200e37c82467a2",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 12,
+   "click": 5,
+   "fill": 4,
+   "press": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 2,
+   "click": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 6
+  },
+  "new_explore": 15,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official-generator|v3-04|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v3-04#1",
+  "uid": "8d5bf3572d454e3890136bfc1cb91dcd",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v3-04|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-04#1",
+  "uid": "78dd19206cf542a3bc732560a18fabad",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v3-04|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-04#1",
+  "uid": "68a0da4488c24af482c0c399df23e42b",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 11,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v3-04|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-04#1",
+  "uid": "4ac58e032edd46e6ae979f2bf9415087",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 8,
+   "click": 6,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 8,
+   "click": 6,
+   "close": 1
+  },
+  "out_markers": 8,
+  "shapes": {
+   "literal": 8
+  },
+  "new_explore": 11,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v3-04|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-04#1",
+  "uid": "881317c49a98433694c22e92a16b5cdc",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 3,
+   "snapshot": 9,
+   "click": 6,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 3,
+   "snapshot": 9,
+   "click": 6,
+   "close": 1
+  },
+  "out_markers": 9,
+  "shapes": {
+   "literal": 9
+  },
+  "new_explore": 13,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|official-generator|v3-06|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v3-06#1",
+  "uid": "1b8207f856204fe5889ee16dd7a9a844",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v3-06|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-06#1",
+  "uid": "6fc5a69cc3554051937609d0d68cfdd6",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 5,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v3-06|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-06#1",
+  "uid": "099c101df8df48548e76d3ef0448e770",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v3-06|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-06#1",
+  "uid": "e9da04d18a9f43ee8b58b0b0f802a933",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 8,
+   "fill": 2,
+   "click": 4,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 8,
+   "fill": 2,
+   "click": 4,
+   "reload": 1,
+   "close": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 7
+  },
+  "new_explore": 10,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v3-06|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-06#1",
+  "uid": "142eea8f85184d63972436f83903d612",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 6,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 6,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 6
+  },
+  "new_explore": 8,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|official-generator|v2-22|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v2-22#1",
+  "uid": "56007d752479463eb1c46435fbb19de2",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v2-22|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-22#1",
+  "uid": "45c7c6bf3cd94e7092ec86aabd5a1d83",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 10,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v2-22|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-22#1",
+  "uid": "bf837b9550c243deae62703550a547a9",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 10,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v2-22|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-22#1",
+  "uid": "3248517c9ecd419d9b66e206140b4452",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 8,
+   "select": 1,
+   "fill": 2,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "old": {
+   "--help": 1,
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 8,
+   "select": 1,
+   "fill": 2,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 6
+  },
+  "new_explore": 11,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v2-22|1": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-22#1",
+  "uid": "9320e9473eeb4f579a67f57ea2327162",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 10,
+   "select": 2,
+   "fill": 3,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 10,
+   "select": 2,
+   "fill": 3,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 7
+  },
+  "new_explore": 13,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|official-generator|v3-06|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v3-06#2",
+  "uid": "b12b3b0060e84608a95c841fc07d2079",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v3-06|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-06#2",
+  "uid": "73bf535da88944d4bbc283517e1e7905",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v3-06|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-06#2",
+  "uid": "e3ba5daf57fe4430bb95448ec90d5fec",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v3-06|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-06#2",
+  "uid": "7fa5eea196394eed916b7d98f65a0737",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 8,
+   "fill": 2,
+   "click": 4,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 3,
+   "fill": 1,
+   "click": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 7
+  },
+  "new_explore": 11,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v3-06|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-06#2",
+  "uid": "c3959690bfb94accb3ba30bf4e1a35e1",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 7,
+   "fill": 2,
+   "click": 4,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 6
+  },
+  "new_explore": 9,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official-generator|v3-09|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v3-09#2",
+  "uid": "6f3e7cd6cf624eaf91238d6dca69f222",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v3-09|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-09#2",
+  "uid": "f94a76bdba834f648ef931b322a30a53",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v3-09|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-09#2",
+  "uid": "77d191898f72423c81258ae1dc3ba9d3",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 5,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v3-09|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-09#2",
+  "uid": "7c31ae758bc940f28cfc9e722850f3dd",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 14,
+   "click": 13,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 14,
+   "click": 13,
+   "close": 1
+  },
+  "out_markers": 8,
+  "shapes": {
+   "literal": 9
+  },
+  "new_explore": 16,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v3-09|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-09#2",
+  "uid": "da54b79d96d44d1a9e984c990ab8fb88",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 16,
+   "click": 15,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1
+  },
+  "out_markers": 8,
+  "shapes": {
+   "literal": 8
+  },
+  "new_explore": 18,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official-generator|v2-23|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v2-23#2",
+  "uid": "672838215036427db331c1f136e71223",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 4,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v2-23|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-23#2",
+  "uid": "f2169aba71164a3ebe3941ceffe35aed",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 14,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v2-23|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-23#2",
+  "uid": "77a30d16076043e4b04f25fa7619079d",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v2-23|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-23#2",
+  "uid": "344ad333a7de45778a3c6cd47d8a33e9",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 10,
+   "click": 5,
+   "fill": 2,
+   "press": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "--help": 1,
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 10,
+   "click": 5,
+   "press": 1,
+   "fill": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 8,
+   "dynamic_loop": 1
+  },
+  "new_explore": 12,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v2-23|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-23#2",
+  "uid": "365722208bf54512adf01dc3061269d7",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 10,
+   "click": 5,
+   "fill": 2,
+   "press": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "--help": 1,
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 4,
+   "click": 1,
+   "press": 1,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 6,
+   "dynamic_loop": 2
+  },
+  "new_explore": 12,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|official-generator|v2-06|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v2-06#2",
+  "uid": "f88ffef0df8f400796d68ae31c4d3f03",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 4,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v2-06|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-06#2",
+  "uid": "dae48a5abbaa48d0b5148326f1d7a55f",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 5,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v2-06|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-06#2",
+  "uid": "701faeda16b246b9a77404edc991cdd1",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 5,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v2-06|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-06#2",
+  "uid": "ad02c5e3a003410db9b6050f133b701a",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 22,
+   "fill": 8,
+   "press": 9,
+   "click": 3,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1
+  },
+  "out_markers": 5,
+  "shapes": {
+   "literal": 3,
+   "dynamic_loop": 2
+  },
+  "new_explore": 24,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v2-06|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-06#2",
+  "uid": "d1198f8a088046479ecd405d52390202",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 16,
+   "fill": 5,
+   "press": 6,
+   "click": 3,
+   "close": 1,
+   "reload": 1
+  },
+  "old": {
+   "--help": 1,
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1,
+   "close": 1
+  },
+  "out_markers": 5,
+  "shapes": {
+   "literal": 3,
+   "dynamic_loop": 3
+  },
+  "new_explore": 18,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|official-generator|v2-22|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v2-22#2",
+  "uid": "eb12a707982d426ba095853b1c7c57b1",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 5,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v2-22|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-22#2",
+  "uid": "9a02e4b0b6684289af21d0e74adc5a07",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 9,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v2-22|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-22#2",
+  "uid": "08067cd20a1d465db3698a43e3fdd9d4",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 12,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v2-22|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-22#2",
+  "uid": "9c999a835e664a99be6d6299d5b57331",
+  "files": 1,
+  "new": {
+   "open": 2,
+   "eval": 2,
+   "requests": 2,
+   "goto": 3,
+   "snapshot": 11,
+   "select": 3,
+   "fill": 2,
+   "reload": 1,
+   "click": 2,
+   "close": 2
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 3,
+   "select-option": 1,
+   "fill": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 6
+  },
+  "new_explore": 16,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v2-22|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-22#2",
+  "uid": "96f7928d07b648708422476bff14f4cd",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 9,
+   "select": 2,
+   "fill": 2,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 9,
+   "select": 2,
+   "fill": 2,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 7
+  },
+  "new_explore": 12,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|official-generator|v3-04|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v3-04#2",
+  "uid": "3d4aa99b73c043ffa1a55003128576c8",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 11,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v3-04|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-04#2",
+  "uid": "8871d7435b3e4a4b93ba771422667ec5",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v3-04|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-04#2",
+  "uid": "d10ca6545f204e91af300673f926adcc",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v3-04|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-04#2",
+  "uid": "564e32988c3a430e870cf531f5496d1f",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 11,
+   "click": 7,
+   "reload": 3,
+   "close": 1
+  },
+  "old": {
+   "--help": 1,
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 2,
+   "click": 1,
+   "close": 1
+  },
+  "out_markers": 8,
+  "shapes": {
+   "literal": 5,
+   "dynamic_loop": 4
+  },
+  "new_explore": 13,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v3-04|2": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-04#2",
+  "uid": "e97bb203b03f43ebbc9baf67a0c1d0c7",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 7,
+   "click": 6,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 7
+  },
+  "new_explore": 9,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official-generator|v2-22|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v2-22#3",
+  "uid": "0460aa1f2f1945f7806035b65ece4c79",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 10,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v2-22|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-22#3",
+  "uid": "3fa1ba961f7641f8842e9d0c2d548efa",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 9,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v2-22|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-22#3",
+  "uid": "7288104c48c0435c8df88761864fa05a",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v2-22|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-22#3",
+  "uid": "a9af803dd76246a884d188b381e7cab5",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 9,
+   "select": 2,
+   "fill": 2,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "old": {
+   "--help": 1,
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 9,
+   "select": 2,
+   "fill": 2,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 7
+  },
+  "new_explore": 12,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v2-22|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-22#3",
+  "uid": "95aab5fcda254c47af8cf03f23ee125a",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 8,
+   "select": 2,
+   "fill": 2,
+   "reload": 1,
+   "click": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 8,
+   "select": 2,
+   "fill": 2,
+   "reload": 1,
+   "click": 1,
+   "close": 1
+  },
+  "out_markers": 8,
+  "shapes": {
+   "literal": 8
+  },
+  "new_explore": 11,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|official-generator|v3-09|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v3-09#3",
+  "uid": "7de36499852e4762be02400ed184e8e0",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v3-09|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-09#3",
+  "uid": "ea54ba14fbf94613805e686c008d0f26",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v3-09|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-09#3",
+  "uid": "b0216e0b1f7d459582ec555ae340b80f",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 10,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v3-09|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-09#3",
+  "uid": "990be8fd40f0485e9e4b1ab3f63347a8",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 11,
+   "click": 10,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 11,
+   "click": 10,
+   "close": 1
+  },
+  "out_markers": 9,
+  "shapes": {
+   "literal": 9
+  },
+  "new_explore": 13,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v3-09|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-09#3",
+  "uid": "78894215e91943129849f536b5c35584",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 15,
+   "click": 14,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 15,
+   "click": 14,
+   "close": 1
+  },
+  "out_markers": 9,
+  "shapes": {
+   "literal": 9
+  },
+  "new_explore": 17,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|official-generator|v3-04|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v3-04#3",
+  "uid": "cc66f600181d457486f6ef9e979deb73",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v3-04|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-04#3",
+  "uid": "85148b06b343423099271a877b3f64be",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v3-04|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-04#3",
+  "uid": "775f292c5d2442ec8c4a0bb3c83e4c7f",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v3-04|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-04#3",
+  "uid": "83279f2d111148ad852cb2fba8188d9f",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 8,
+   "click": 6,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 8,
+   "click": 6,
+   "reload": 1,
+   "close": 1
+  },
+  "out_markers": 12,
+  "shapes": {
+   "literal": 10
+  },
+  "new_explore": 10,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v3-04|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-04#3",
+  "uid": "aeed07bdb471454ebb1f7efc96a02c00",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 8,
+   "click": 6,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 8,
+   "click": 6,
+   "close": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 7
+  },
+  "new_explore": 11,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|official-generator|v2-06|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v2-06#3",
+  "uid": "159b4af24b4940ddac89feb8ab75edfe",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v2-06|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-06#3",
+  "uid": "ab959edfeb574b9fbfa5d4e3decb5211",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v2-06|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-06#3",
+  "uid": "7857567f31414fb199f886a99b63b551",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 4,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v2-06|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-06#3",
+  "uid": "cdd71cdbe8424bafa4dc3dbc495dd61b",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 23,
+   "fill": 8,
+   "press": 9,
+   "click": 4,
+   "close": 1,
+   "reload": 1
+  },
+  "old": {
+   "--help": 1,
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 3,
+   "dynamic_loop": 4
+  },
+  "new_explore": 25,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v2-06|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-06#3",
+  "uid": "585acff158b446b0b42d8f40570a0667",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 23,
+   "fill": 8,
+   "press": 9,
+   "click": 4,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "--help": 1,
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 3,
+   "dynamic_loop": 4
+  },
+  "new_explore": 25,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official-generator|v2-23|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v2-23#3",
+  "uid": "6ae1deeea14a4d83929d45fb5e79dd5a",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v2-23|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-23#3",
+  "uid": "874df86f2c974873a555bddd7800d866",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v2-23|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-23#3",
+  "uid": "c6cfab3881b7453abd214898d965450f",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v2-23|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-23#3",
+  "uid": "853410b7dc5c4b6a93a7e5980837283a",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 12,
+   "click": 5,
+   "fill": 4,
+   "press": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 2,
+   "click": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 4,
+   "dynamic_loop": 2
+  },
+  "new_explore": 14,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v2-23|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-23#3",
+  "uid": "661e48a6b7d5433983ea3cc2b0c8d81a",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 10,
+   "click": 5,
+   "fill": 2,
+   "press": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 4,
+   "click": 1,
+   "press": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 5,
+   "dynamic_loop": 3
+  },
+  "new_explore": 12,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official-generator|v3-06|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v3-06#3",
+  "uid": "2841ac0d4d6b401a91106a414bba640e",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v3-06|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-06#3",
+  "uid": "02c03a6860314712ad775ba095e3a189",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v3-06|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-06#3",
+  "uid": "16ce2d9e8a574e139bc9eddd7a82e381",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v3-06|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-06#3",
+  "uid": "97952d41c8354651a3211f34e1c93fc7",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 10,
+   "fill": 3,
+   "click": 5,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "--help": 1,
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 4,
+   "fill": 1,
+   "click": 2,
+   "close": 1
+  },
+  "out_markers": 5,
+  "shapes": {
+   "literal": 4,
+   "dynamic_loop": 1
+  },
+  "new_explore": 12,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v3-06|3": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-06#3",
+  "uid": "9afce7999b1442bea030edf7562542ba",
+  "files": 1,
+  "new": {
+   "open": 2,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 7,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "old": {
+   "open": 2,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 7,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 7
+  },
+  "new_explore": 11,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|official-generator|v3-06|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v3-06#4",
+  "uid": "e9b2d3a8c3d14cd89a6415059bbd1d64",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 6,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v3-06|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-06#4",
+  "uid": "2a170e83885542cca16fe3b0bea228a4",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 5,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v3-06|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-06#4",
+  "uid": "d08c2e5764a447599fa6fec0f523f51a",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 5,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v3-06|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-06#4",
+  "uid": "72f9be86da38443aa44457dd4966ef1c",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 6,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 6,
+   "fill": 2,
+   "click": 3,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 6
+  },
+  "new_explore": 8,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v3-06|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-06#4",
+  "uid": "a4e604274ad44056872799c80e4a89f1",
+  "files": 1,
+  "new": {
+   "open": 2,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 9,
+   "fill": 3,
+   "click": 4,
+   "close": 1
+  },
+  "old": {
+   "open": 2,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 2,
+   "click": 1,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 7
+  },
+  "new_explore": 13,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|official-generator|v2-23|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v2-23#4",
+  "uid": "28ab4e0b0c774677abd40ed67f5317d0",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 5,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v2-23|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-23#4",
+  "uid": "50137f66f8394ea4a6916c1ebe853391",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 4,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v2-23|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-23#4",
+  "uid": "c8811ed48d2b4b8c83068bfa1cde5f56",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 4,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v2-23|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-23#4",
+  "uid": "775118df6a2248f4849e5a51880d2bc8",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 10,
+   "click": 5,
+   "fill": 2,
+   "press": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "--help": 1,
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 10,
+   "click": 5,
+   "press": 1,
+   "fill": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "out_markers": 5,
+  "shapes": {
+   "literal": 6,
+   "dynamic_loop": 1
+  },
+  "new_explore": 12,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v2-23|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-23#4",
+  "uid": "fd145b755c5a407ea5770ad30d4aaad4",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 12,
+   "click": 5,
+   "fill": 4,
+   "press": 1,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "--help": 1,
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 2,
+   "click": 1,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 7
+  },
+  "new_explore": 14,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|official-generator|v2-22|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v2-22#4",
+  "uid": "ef1bce12e2a649b1944c36c7ab3ff289",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v2-22|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-22#4",
+  "uid": "5bd6490139394c0aa592299442257a15",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 9,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v2-22|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-22#4",
+  "uid": "1b7d003c32c04faf806df890f9695b05",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 11,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v2-22|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-22#4",
+  "uid": "c9184079d52e4ab899d620134924bcba",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 10,
+   "select": 2,
+   "fill": 3,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 10,
+   "select": 2,
+   "fill": 3,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 7
+  },
+  "new_explore": 13,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v2-22|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-22#4",
+  "uid": "898d9681f1ef439f917b72575a18a4c0",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 8,
+   "select": 1,
+   "fill": 2,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 8,
+   "select": 1,
+   "fill": 2,
+   "reload": 1,
+   "click": 2,
+   "close": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 6
+  },
+  "new_explore": 11,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|official-generator|v3-04|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v3-04#4",
+  "uid": "9656fc79601c412e975750ee8e91dbc9",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v3-04|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-04#4",
+  "uid": "31c9abc022174eddacb72a6658d59d7b",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v3-04|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-04#4",
+  "uid": "1f9c8742ebe04b71bec7e5d5fd51130f",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 12,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v3-04|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-04#4",
+  "uid": "26c7f2b0a5694a3f912403b46ca42904",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 11,
+   "click": 7,
+   "reload": 3,
+   "close": 1
+  },
+  "old": {
+   "--help": 1,
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 4,
+   "click": 3,
+   "close": 1
+  },
+  "out_markers": 8,
+  "shapes": {
+   "literal": 9
+  },
+  "new_explore": 13,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v3-04|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-04#4",
+  "uid": "53dc5ec6da64475ba46ee60b18f398eb",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 8,
+   "click": 7,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 5,
+   "click": 4,
+   "close": 1
+  },
+  "out_markers": 7,
+  "shapes": {
+   "literal": 6,
+   "dynamic_loop": 1
+  },
+  "new_explore": 10,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|official-generator|v2-06|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v2-06#4",
+  "uid": "a77fd77fdb4b4ed5bbdd7edda459e7c1",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 7,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v2-06|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v2-06#4",
+  "uid": "42d5cbbd11da4f418d813a74016ab38e",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 5,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v2-06|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v2-06#4",
+  "uid": "3cdffe3d5a6942cb836a8c086acbdcad",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 4,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v2-06|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v2-06#4",
+  "uid": "45875c38f86f4b5e8a1d60b169186612",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 25,
+   "fill": 9,
+   "press": 10,
+   "click": 4,
+   "reload": 1,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 2,
+   "dynamic_loop": 4
+  },
+  "new_explore": 27,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v2-06|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v2-06#4",
+  "uid": "a11f3180969b4b8ba582809d21a6ff4c",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 2,
+   "snapshot": 12,
+   "fill": 3,
+   "press": 4,
+   "click": 3,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 1
+  },
+  "out_markers": 6,
+  "shapes": {
+   "literal": 6,
+   "dynamic_loop": 1
+  },
+  "new_explore": 15,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official-generator|v3-09|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "official-generator",
+  "cell": "v3-09#4",
+  "uid": "887ad4da3eec46a1a7996080b26cfd07",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 9,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules|v3-09|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules",
+  "cell": "v3-09#4",
+  "uid": "0b20ea1f6cfe43868d553533f4680150",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|official+thin-rules+scanner|v3-09|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "official+thin-rules+scanner",
+  "cell": "v3-09#4",
+  "uid": "389b2d68f8184c9988a417981ab5aaae",
+  "files": 2,
+  "new": {},
+  "old": {},
+  "out_markers": 8,
+  "shapes": {},
+  "new_explore": 0,
+  "old_ok": false
+ },
+ "gpt-6.1-sol|cli-first+thin-rules|v3-09|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules",
+  "cell": "v3-09#4",
+  "uid": "d62ec7317ff64374bfedcc562b35c8af",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 14,
+   "click": 13,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 14,
+   "click": 13,
+   "close": 1
+  },
+  "out_markers": 9,
+  "shapes": {
+   "literal": 9
+  },
+  "new_explore": 16,
+  "old_ok": true
+ },
+ "gpt-6.1-sol|cli-first+thin-rules+scanner|v3-09|4": {
+  "model": "gpt-6.1-sol",
+  "arm": "cli-first+thin-rules+scanner",
+  "cell": "v3-09#4",
+  "uid": "09355d0ab5444d2aa77ae647adc3a4bb",
+  "files": 1,
+  "new": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 15,
+   "click": 14,
+   "close": 1
+  },
+  "old": {
+   "open": 1,
+   "eval": 1,
+   "requests": 1,
+   "goto": 1,
+   "snapshot": 4,
+   "click": 3
+  },
+  "out_markers": 8,
+  "shapes": {
+   "literal": 5,
+   "dynamic_loop": 3
+  },
+  "new_explore": 17,
+  "old_ok": false
+ }
+}

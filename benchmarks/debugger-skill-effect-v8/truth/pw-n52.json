@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "joseamaya/edades-del-peru",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/joseamaya/edades-del-peru/pull/47"
+  ],
+  "merged": "2026-10-15",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (fixed sleep)",
+ "explanation": "The test clicks the first unit after a fixed 4 s wait. Under load the camera may not have finished centering on the base, so the unit sits off-screen or under a HUD panel; the mousedown never reaches the canvas and nothing is selected.",
+ "fix": "Centre the camera on the player's town centre, move the pointer to the canvas centre, poll until a unit projects onto the canvas, then stop the loop and click; assert that selectedUnits contains the clicked id."
+}

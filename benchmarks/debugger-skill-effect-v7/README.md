@@ -65,3 +65,34 @@ python3 scripts/evals/run-debugger-skill-effect-v7.py analyze /abs/judged.json -
 Time estimate (from v3's measured summed call times of about 9 s per skill-arm call and 26 s per judge call): canary about 3 minutes, the 336 model calls about 15 to 25 minutes at four workers, the 56 judge calls about 8 to 12 minutes at three workers, analysis seconds. About 30 to 45 minutes of wall time plus the canary check. Claude usage: 336 calls of roughly 13 to 15 thousand input tokens each; Codex usage: 56 judge calls.
 
 Offline tests: `python3 scripts/ci/test-debugger-skill-effect-v7.py` (26 tests, including synthetic end-to-end PASS, FAIL and INCONCLUSIVE analyses).
+
+## Results
+
+Written after the run (2026-10-17). This section is not bound by `freeze.json`; nothing above it was edited.
+
+**Status update, 2026-10-17.** The `Status` line at the top of this file ("PREPARED, NOT FROZEN, NOT RUN") is the pre-run text and is left as written. The protocol was frozen on 2026-10-16T00:25:24Z (`freeze.json`: protocol sha256 `b4b6ed93...f3336c`, runner script sha256 `de77447b...bde5`), the canary was run, and the full run completed. Current status: **RUN, verdict FAIL by its rule.**
+
+Source files are in [evidence/](evidence/) (`analyze.out`, `results.json`, run and judge logs, digests in `SHA256SUMS`). Machine-specific home paths in `results.json` and the logs were replaced by `/Users/example/` and nothing else changed. The full model and judge transcripts (`model.json`, `judged.json`) stay in `~/.cache/e2e-skills-bench/debugger-v7/`.
+
+### Run
+
+Generation: Claude `sonnet` (`claude-sonnet-5-5`, Claude Code 2.1.300), every tool disabled. Judge: Codex `gpt-6-sol` (codex-cli 0.159.3). 336 of 336 model calls and 56 of 56 judge calls were scored; infrastructure errors, invalid predictions, judge failures, unjudged runs, prompt-digest mismatches and retries were all 0. 28 development cases (14 Playwright, 14 Cypress), 3 repetitions, 4 arms.
+
+### Verdict: FAIL (new-lean minus old)
+
+| # | Check | Bar | Measured | Result |
+|---|---|---|---|---|
+| 1 | strict match, 95% lower bound | >= -0.05 | +0.024, interval 0.000 to +0.060 (0.821 against 0.798) | met |
+| 2 | strict match, point estimate | >= -0.05 | +0.024 | met |
+| 3 | F-code exact, 23 labeled cases, 95% lower bound | >= -0.10 | -0.029, interval -0.116 to +0.058 (0.609 against 0.638) | **not met** |
+| 4 | product/test diagnosis accuracy | >= old - 0.05 | 0.798 against 0.786 | met |
+| 5 | unsupported claims per answer | new-lean - old <= +0.30 | -0.036 (1.381 against 1.417) | met |
+| 6 | input tokens | <= 0.80 x old | 0.740 | met |
+
+Only check 3 failed. Its interval reaches below -0.10 because only 23 cases carry F-code labels (3 better, 4 worse, 16 tied); the result is "not proven", not a measured loss, and it does not show equivalence either. `new-full` against `old` and `new-lean` against `new-full` fail the same check (lower bounds -0.116 for both) and never change the verdict. The 3.0.0 `classification-procedure.md` differs from the text the labels were agreed on, so F-code agreement favors the new arms; that is why this check is a development-only reading, and why v8 was prepared on a larger corpus.
+
+Descriptive: against the taxonomy-free `free` arm, strict match was 0.821 for the lean text and for `free` (difference 0.000, interval -0.083 to +0.095), and the skill texts made fewer unsupported claims (lean 1.38, old 1.42, `free` 2.01). No accuracy lift over a taxonomy-free prompt is claimed. Input tokens: lean 2,301,175, old 3,108,830, `new-full` 3,574,170 (1.15 of old), `free` 306,850.
+
+### Limits
+
+Development set, not a holdout; one generator model, one judge family, three repetitions; truth is the merged fix, not independent human adjudication; zero-tool prompts do not test the tool-using flow, the conditional load of `safety-procedures.md` or the post-diagnosis review. This result is kept as run; [v8](../debugger-skill-effect-v8/README.md) is the larger follow-up and does not replace it.

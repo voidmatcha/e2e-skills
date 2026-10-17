@@ -1,0 +1,13 @@
+{
+ "source": {
+  "repo": "synthetic-authored",
+  "license": "Apache-2.0",
+  "urls": [],
+  "merged": null,
+  "origin": "synthetic-authored"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (fixed sleep)",
+ "explanation": "The test sleeps a fixed 3 seconds and then asserts, but generation takes 1 to 6 seconds, so on slow runs only a part of the rows has arrived.",
+ "fix": "Remove the cy.wait(3000) and rely on a retrying assertion with a timeout that covers the slowest report (should('have.length', 5, { timeout: 15000 }))."
+}

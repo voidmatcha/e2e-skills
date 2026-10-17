@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "piconic-ai/barefootjs",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/piconic-ai/barefootjs/pull/3077"
+  ],
+  "merged": "2026-09-19",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (interaction before hydration)",
+ "explanation": "The first-slide disabled state of Previous is baked into the server-rendered HTML, so the assertion used as the readiness signal passes before the carousel library's dynamic import has resolved and wired its click handlers. A click in that window does nothing and Previous stays disabled.",
+ "fix": "Retry the click until Previous becomes enabled with expect(async () => { await nextBtn.click(); await expect(prevBtn).not.toBeDisabled({ timeout: 500 }) }).toPass(); remove the fixed 300 ms sleeps."
+}

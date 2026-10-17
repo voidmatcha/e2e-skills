@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "ShyME/Pictogram",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/ShyME/Pictogram/pull/217"
+  ],
+  "merged": "2026-09-09",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (page object locator)",
+ "explanation": "The new chat rail renders an <li>@handle</li> row for everyone the viewer follows, so on the following page a followed user has a row in both the rail and the list. FollowListPage's unscoped listitem locator resolves to two elements. The collision appears only once the rail's follow list has been fetched.",
+ "fix": "Scope every FollowListPage locator to the page's own <main>; the rail <aside> is a sibling."
+}

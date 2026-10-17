@@ -1,0 +1,17 @@
+{
+ "runner": "codex",
+ "model": "gpt-6-sol",
+ "cli_identity": "codex-cli 0.159.3",
+ "prompt_sha256": "68832cc4c605232e73730b99f944ad9497c30d28cbdf0031a792bf3e51cc0d9e",
+ "infrastructure_error": false,
+ "error": null,
+ "elapsed_ms": 8058,
+ "usage": {
+  "source": "codex-json-events",
+  "input_tokens": 12729,
+  "cached_input_tokens": 0,
+  "cache_write_tokens": null,
+  "output_tokens": 183,
+  "reasoning_output_tokens": 49
+ }
+}

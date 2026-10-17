@@ -1,0 +1,13 @@
+{
+ "source": {
+  "repo": "synthetic-authored",
+  "license": "Apache-2.0",
+  "urls": [],
+  "merged": null,
+  "origin": "synthetic-authored"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (interaction before hydration)",
+ "explanation": "The page is server-rendered and the burger button is visible and actionable before Vue has attached its click handler. A click in that window is swallowed, so the drawer never opens.",
+ "fix": "Wait until the app is hydrated (for example a data-hydrated attribute set on mount) before clicking, or retry the click until the drawer is visible."
+}

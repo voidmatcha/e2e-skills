@@ -1,0 +1,13 @@
+{
+ "source": {
+  "repo": "synthetic-authored",
+  "license": "Apache-2.0",
+  "urls": [],
+  "merged": null,
+  "origin": "synthetic-authored"
+ },
+ "diagnosis": "product_regression",
+ "side": "Product (search)",
+ "explanation": "The search endpoint matches a query against the product description as well as the name since the catalogue import, so 'Standing desk' (whose description mentions a lamp holder) is returned for 'lamp'. The test's check that no non-matching product appears is correct and is now failing for a real reason.",
+ "fix": "Restrict the search to the name and tags field (or weight description matches below a threshold) and keep the negative assertion."
+}

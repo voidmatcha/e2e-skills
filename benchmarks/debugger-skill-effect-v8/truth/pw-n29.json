@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "LodyAI/Lody",
+  "license": "Apache-2.0",
+  "urls": [
+   "https://github.com/LodyAI/Lody/pull/895"
+  ],
+  "merged": "2026-09-23",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (page object locator)",
+ "explanation": "The menu item's accessible name contains the binding subtitle in addition to the role title. An exact name match against the title alone can therefore never succeed.",
+ "fix": "Select the radio menu item that contains the exact visible title: getByRole('menuitemradio').filter({ has: page.getByText(roleName, { exact: true }) })."
+}

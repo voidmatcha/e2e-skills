@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "antoniohg/astro-image-zoom",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/antoniohg/astro-image-zoom/pull/47"
+  ],
+  "merged": "2026-10-10",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (shared state across tests)",
+ "explanation": "The Ctrl+wheel of the pinch test zooms the page out to 90%, and Firefox remembers page zoom per site for the whole browser, so the next test of the same worker starts in a zoomed page where its click lands elsewhere. The state leaks from one test to the next in the same browser.",
+ "fix": "Set the Firefox user pref browser.zoom.siteSpecific to false in the project's launch options so the zoom dies with its tab."
+}

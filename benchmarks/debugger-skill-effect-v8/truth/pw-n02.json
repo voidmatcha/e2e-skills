@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "thunder-id/javascript-sdks",
+  "license": "Apache-2.0",
+  "urls": [
+   "https://github.com/thunder-id/javascript-sdks/pull/87"
+  ],
+  "merged": "2026-08-20",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (page object)",
+ "explanation": "The server-rendered trigger is visible before the client framework attaches its click handler. Under CPU contention the gap is wide enough that the first click is swallowed without any error, so the menu never opens.",
+ "fix": "A private openDropdown() helper in the page object clicks the trigger, verifies the target menu item actually appeared, and retries the click up to three times; logout(), openTokenDebug() and openManageProfile() use it."
+}

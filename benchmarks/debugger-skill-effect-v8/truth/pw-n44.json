@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "super-productivity/super-productivity",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/super-productivity/super-productivity/pull/10596"
+  ],
+  "merged": "2026-10-09",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (race with an animation)",
+ "explanation": "After the mark-done, the old row stays on screen while it animates out and the done row is already there, so for a short window two rows contain the same title. The click runs inside that window and the locator matches both.",
+ "fix": "Before the click, wait for the done row to appear (done-toggle[aria-checked=\"true\"] count 1) and then for the open-list row to leave (the row locator count 1), then click."
+}

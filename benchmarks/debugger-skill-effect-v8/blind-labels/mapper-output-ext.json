@@ -1,0 +1,212 @@
+{
+ "item-61": {
+  "f_code": "F14",
+  "fit": "clean",
+  "reason": "The URL changes before the new page renders, leaving a brief window in which the click targets links on the old page.",
+  "second_choice": "F2"
+ },
+ "item-62": {
+  "f_code": "F5",
+  "fit": "clean",
+  "reason": "The visible status reflects an earlier sync, so the test proceeds while the newly requested content is still missing.",
+  "second_choice": "F11"
+ },
+ "item-63": {
+  "f_code": "F3",
+  "fit": "clean",
+  "reason": "The download fails because the redirected network request reaches an IPv6 address where the service is not listening.",
+  "second_choice": "F8"
+ },
+ "item-64": {
+  "f_code": "F3",
+  "fit": "clean",
+  "reason": "A reset socket connection raises an unhandled network error in the fixture server.",
+  "second_choice": null
+ },
+ "item-65": {
+  "f_code": "F2",
+  "fit": "clean",
+  "reason": "Substring text selectors match several elements instead of identifying the intended one.",
+  "second_choice": null
+ },
+ "item-66": {
+  "f_code": "F11",
+  "fit": "clean",
+  "reason": "The option click races the dropdown's asynchronous poller fetch because the test does not wait for it.",
+  "second_choice": "F1"
+ },
+ "item-67": {
+  "f_code": "F2",
+  "fit": "clean",
+  "reason": "An unscoped button locator also matches the Dev Tools button when it appears.",
+  "second_choice": null
+ },
+ "item-68": {
+  "f_code": "F2",
+  "fit": "clean",
+  "reason": "The page-wide link locator became ambiguous after another New session link was added.",
+  "second_choice": "F12"
+ },
+ "item-69": {
+  "f_code": "F2",
+  "fit": "clean",
+  "reason": "An over-broad selector matches footnotes before the intended feed rows render.",
+  "second_choice": "F14"
+ },
+ "item-70": {
+  "f_code": "F1",
+  "fit": "clean",
+  "reason": "A fixed wall-clock delay does not allow enough simulation ticks on a slower runner.",
+  "second_choice": "F8"
+ },
+ "item-71": {
+  "f_code": "F14",
+  "fit": "clean",
+  "reason": "A refetch replaces the matched row during the brief window before its button is clicked.",
+  "second_choice": "F1"
+ },
+ "item-72": {
+  "f_code": "F1",
+  "fit": "clean",
+  "reason": "A transient lack of focus and slower Tab traversal make the fixed traversal loop time out.",
+  "second_choice": null
+ },
+ "item-73": {
+  "f_code": "F2",
+  "fit": "clean",
+  "reason": "The locator targets an obsolete headline and therefore finds no element.",
+  "second_choice": "F4"
+ },
+ "item-74": {
+  "f_code": "F14",
+  "fit": "clean",
+  "reason": "The earlier toast remains visible briefly and makes the next toast locator ambiguous.",
+  "second_choice": "F2"
+ },
+ "item-75": {
+  "f_code": "F14",
+  "fit": "clean",
+  "reason": "The assertion can read the old layout before the resize listener runs on a later frame.",
+  "second_choice": "F1"
+ },
+ "item-76": {
+  "f_code": "F11",
+  "fit": "clean",
+  "reason": "The test can miss the on-mount request and interact with the form before both required fetches finish.",
+  "second_choice": "F1"
+ },
+ "item-77": {
+  "f_code": "F2",
+  "fit": "clean",
+  "reason": "The substring label locator matches both the main form input and the newly added footer input.",
+  "second_choice": null
+ },
+ "item-78": {
+  "f_code": "F15",
+  "fit": "clean",
+  "reason": "The server-rendered disabled state passes the readiness check before the carousel's click handlers are attached.",
+  "second_choice": null
+ },
+ "item-79": {
+  "f_code": "F14",
+  "fit": "clean",
+  "reason": "The outgoing row and incoming done row coexist during an animation, making the title locator ambiguous.",
+  "second_choice": "F2"
+ },
+ "item-80": {
+  "f_code": "F14",
+  "fit": "clean",
+  "reason": "An asynchronous update replaces the radio input after Cypress locates it but before the click.",
+  "second_choice": "F1"
+ },
+ "item-81": {
+  "f_code": "F12",
+  "fit": "clean",
+  "reason": "The screen's DOM and test IDs changed while the spec still targets the old interface.",
+  "second_choice": "F4"
+ },
+ "item-82": {
+  "f_code": "F2",
+  "fit": "clean",
+  "reason": "An unscoped text locator briefly matches two Appearance labels and triggers strict mode.",
+  "second_choice": "F14"
+ },
+ "item-83": {
+  "f_code": "F14",
+  "fit": "clean",
+  "reason": "The scan runs before the first paint settles, so the styles needed for contrast are not ready.",
+  "second_choice": "F1"
+ },
+ "item-84": {
+  "f_code": "F11",
+  "fit": "clean",
+  "reason": "Sign-in navigation starts before sign-out finishes and cancels the action that would clear the session.",
+  "second_choice": "F5"
+ },
+ "item-85": {
+  "f_code": "F14",
+  "fit": "clean",
+  "reason": "Keyboard input runs while the old survey has unmounted and the new controls have not rendered.",
+  "second_choice": "F1"
+ },
+ "item-86": {
+  "f_code": "F11",
+  "fit": "clean",
+  "reason": "The test fills the editor before its asynchronous prefill completes, producing the wrong draft text.",
+  "second_choice": "F5"
+ },
+ "item-87": {
+  "f_code": "F12",
+  "fit": "clean",
+  "reason": "The page object locator was updated for one client version and no longer matches the released clients' textarea.",
+  "second_choice": "F2"
+ },
+ "item-88": {
+  "f_code": "F14",
+  "fit": "clean",
+  "reason": "The test adds text before the portrait template finishes loading and changes the canvas layout.",
+  "second_choice": "F1"
+ },
+ "item-89": {
+  "f_code": "F2",
+  "fit": "clean",
+  "reason": "The link locator uses an obsolete accessible name and finds no link.",
+  "second_choice": null
+ },
+ "item-90": {
+  "f_code": "F11",
+  "fit": "clean",
+  "reason": "A periodic poll response races the sort response and is mistaken for the response to the click.",
+  "second_choice": "F1"
+ },
+ "item-91": {
+  "f_code": "F1",
+  "fit": "clean",
+  "reason": "Cold module transforms consume most of the timeout under parallel load, causing a later step to exceed the limit.",
+  "second_choice": null
+ },
+ "item-92": {
+  "f_code": "F2",
+  "fit": "clean",
+  "reason": "A substring heading locator matches both the Billing heading and the new Billing details heading.",
+  "second_choice": null
+ },
+ "item-93": {
+  "f_code": "F14",
+  "fit": "clean",
+  "reason": "The helper counts elements before a later element renders and follows a branch based on that transient count.",
+  "second_choice": "F6"
+ },
+ "item-94": {
+  "f_code": "F14",
+  "fit": "clean",
+  "reason": "The form is temporarily replaced during a data reload, so the next typing command targets an outgoing input.",
+  "second_choice": "F1"
+ },
+ "item-95": {
+  "f_code": "F2",
+  "fit": "clean",
+  "reason": "The exact accessible-name locator cannot match a menu item whose name also includes a subtitle.",
+  "second_choice": null
+ }
+}

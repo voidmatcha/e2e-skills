@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "stackrox/stackrox",
+  "license": "Apache-2.0",
+  "urls": [
+   "https://github.com/stackrox/stackrox/pull/22436"
+  ],
+  "merged": "2026-08-26",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (race on unordered async results)",
+ "explanation": "The violations page polls the server every 5 seconds. When the test reaches the sort click at about 4 seconds, the poll fires at 5 seconds and its response, sorted by violation time, is intercepted by interactAndWaitForViolationsResponses before the sort-click response arrives. The assertion then runs on time-sorted data. The race existed since polling was introduced; the extra page content only moved the test into that window.",
+ "fix": "Freeze setInterval at the start of the test with cy.clock(Date.now(), ['setInterval']) so the poll cannot fire during the test."
+}

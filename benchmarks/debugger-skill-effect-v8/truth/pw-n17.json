@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "openkaiden/kaiden",
+  "license": "Apache-2.0",
+  "urls": [
+   "https://github.com/openkaiden/kaiden/pull/2888"
+  ],
+  "merged": "2026-09-14",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (page object locator)",
+ "explanation": "Sub-pages rendered inside the Preferences layout contain links with the same names as the sidebar links, so the page object's page-wide link locators resolve to two elements (the sidebar link and the skill details tab).",
+ "fix": "Scope all SettingsPage sidebar link locators to the nav with aria-label 'PreferencesNavigation'."
+}

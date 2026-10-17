@@ -1,0 +1,13 @@
+{
+ "source": {
+  "repo": "synthetic-authored",
+  "license": "Apache-2.0",
+  "urls": [],
+  "merged": null,
+  "origin": "synthetic-authored"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (unconditional step)",
+ "explanation": "The cookie dialog is only rendered when no consent cookie exists. The test clicks 'Accept all' unconditionally, so with a reused browser profile the button never appears and the click waits until it times out.",
+ "fix": "Handle the conditional dialog: click 'Accept all' only when it is visible (or seed the consent cookie in the fixture) and then continue."
+}

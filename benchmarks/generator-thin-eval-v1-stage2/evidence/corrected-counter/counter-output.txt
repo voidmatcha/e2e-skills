@@ -1,0 +1,16 @@
+model         arm                              cells   old o&c    new>=1     new=0 outmk0
+gpt-6-sol     official-generator                  24         0         0        24      0
+gpt-6-sol     official+thin-rules                 24         0         0        24      0
+gpt-6-sol     official+thin-rules+scanner         24         0         0        24      0
+gpt-6-sol     cli-first+thin-rules                24        24        24         0      0
+gpt-6-sol     cli-first+thin-rules+scanner        24        24        24         0      0
+gpt-6-astra   official-generator                  24         0         0        24      0
+gpt-6-astra   official+thin-rules                 24         0         0        24      0
+gpt-6-astra   official+thin-rules+scanner         24         0         0        24      0
+gpt-6-astra   cli-first+thin-rules                24        11        24         0      0
+gpt-6-astra   cli-first+thin-rules+scanner        24        14        24         0      0
+gpt-6.1-sol   official-generator                  24         0         0        24      0
+gpt-6.1-sol   official+thin-rules                 24         0         0        24      0
+gpt-6.1-sol   official+thin-rules+scanner         24         0         0        24      0
+gpt-6.1-sol   cli-first+thin-rules                24        19        24         0      0
+gpt-6.1-sol   cli-first+thin-rules+scanner        24        15        24         0      0

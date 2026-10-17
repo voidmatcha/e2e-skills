@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "frappe/frappe",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/frappe/frappe/pull/41306"
+  ],
+  "merged": "2026-07-28",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (shared state across tests)",
+ "explanation": "The spec reuses one page across tests, so the second test inherits the first test's dialog state. Reading win.frappe immediately after the visit also raced with the app boot.",
+ "fix": "Visit the page in beforeEach so each test gets a fresh page, and use cy.window().its('frappe') so Cypress retries until boot completes."
+}

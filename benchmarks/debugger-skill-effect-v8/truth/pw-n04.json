@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "global-121/121-platform",
+  "license": "Apache-2.0",
+  "urls": [
+   "https://github.com/global-121/121-platform/pull/8920"
+  ],
+  "merged": "2026-10-06",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (missing wait)",
+ "explanation": "The test moved on to the reconciliation import right after the start toast. The backend rejects a reconciliation import while the payment is still in progress, so the dialog state was reset and the button stayed disabled.",
+ "fix": "Call the existing waitForPaymentToComplete() helper after the payment is started, and drop the redundant page-title check."
+}

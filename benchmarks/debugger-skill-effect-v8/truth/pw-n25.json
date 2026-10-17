@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "raphaeldenis/openfleet",
+  "license": "Apache-2.0",
+  "urls": [
+   "https://github.com/raphaeldenis/openfleet/pull/248"
+  ],
+  "merged": "2026-10-05",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (locator not updated)",
+ "explanation": "The sidebar change added a plus link named New session to each group, so the project home's quick action of the same name is no longer the only match. The page-wide locator was written before the sidebar link existed.",
+ "fix": "Scope the locator to the project home region: page.getByTestId('project-home').getByRole('link', { name: 'New session', exact: true })."
+}

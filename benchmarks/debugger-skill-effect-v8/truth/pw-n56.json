@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "kubeflow/kale",
+  "license": "Apache-2.0",
+  "urls": [
+   "https://github.com/kubeflow/kale/pull/982"
+  ],
+  "merged": "2026-10-02",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (locator)",
+ "explanation": "getByLabel matches by substring and ignores the element type, so the label Mount path also matches the label of the 'Expose mount path as env var' checkbox, and the locator resolves to two elements.",
+ "fix": "Use the role and name: dialog.getByRole('textbox', { name: 'Mount path' })."
+}

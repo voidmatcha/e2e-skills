@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "cieyhomelab/mounjaro-przepisy",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/cieyhomelab/mounjaro-przepisy/pull/72"
+  ],
+  "merged": "2026-10-10",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (missing wait)",
+ "explanation": "Under load the form can still be loading, and can remount once its values arrive, when the network is cut. The remount resets the checkbox, so Save has nothing to save offline and the offline alert never shows.",
+ "fix": "Wait for the checkbox to be visible and the loading text to be hidden before going offline, and assert toBeChecked after checking it and before pressing Save."
+}

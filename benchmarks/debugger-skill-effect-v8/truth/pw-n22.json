@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "samuel-burke/shiftview",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/samuel-burke/shiftview/pull/116"
+  ],
+  "merged": "2026-10-14",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (locator)",
+ "explanation": "While Settings is still streaming and hydrating, the page briefly holds two Appearance labels, only one of them inside main. A strict mode violation fails the expect at once instead of retrying, so a poll that lands in that window ends the test after about 400 ms. Once loading finishes only one label is visible.",
+ "fix": "Scope both readiness checks to main: getByRole('main').getByText('Appearance'), which targets the copy that becomes visible."
+}

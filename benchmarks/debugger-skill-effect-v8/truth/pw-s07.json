@@ -1,0 +1,13 @@
+{
+ "source": {
+  "repo": "synthetic-authored",
+  "license": "Apache-2.0",
+  "urls": [],
+  "merged": null,
+  "origin": "synthetic-authored"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (shared state)",
+ "explanation": "Both tests share a page and browser context created in beforeAll. The cart is stored in localStorage, so the item added by the first test is still there when the second test starts.",
+ "fix": "Create a fresh context and page per test (use the default fixtures instead of a beforeAll page) or clear storage in beforeEach."
+}

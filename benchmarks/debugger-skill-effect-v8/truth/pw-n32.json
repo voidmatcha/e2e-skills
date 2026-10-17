@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "oxyc/den-edge",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/oxyc/den-edge/pull/401"
+  ],
+  "merged": "2026-10-11",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (fixed sleep)",
+ "explanation": "The hero re-measures from a resize listener that the page runs on a frame after setViewportSize has returned. The test slept a fixed 100 ms and read the height; on a slow runner the listener has not run yet and the old pin is still in place.",
+ "fix": "Register a one-shot resize listener (plus a frame) before resizing and await it instead of sleeping; use the same signal in the touch case that asserts nothing changes."
+}

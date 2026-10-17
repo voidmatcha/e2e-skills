@@ -1,0 +1,13 @@
+{
+ "source": {
+  "repo": "synthetic-authored",
+  "license": "Apache-2.0",
+  "urls": [],
+  "merged": null,
+  "origin": "synthetic-authored"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (non-retrying read)",
+ "explanation": "invoke('text') followed by .then() reads the counter once, immediately after the click, before the PATCH request returns and the UI updates. Cypress does not retry an assertion made inside .then().",
+ "fix": "Use a retrying assertion on the element (should(($el) => expect(Number($el.text())).to.equal(before - 1))) or wait on the intercepted PATCH request before reading."
+}

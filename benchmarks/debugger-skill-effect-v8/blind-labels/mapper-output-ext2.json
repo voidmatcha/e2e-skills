@@ -1,0 +1,44 @@
+{
+ "item-100": {
+  "f_code": "F11",
+  "fit": "clean",
+  "reason": "The waiter races an earlier in-flight request and can resolve on the wrong response.",
+  "second_choice": "F1"
+ },
+ "item-101": {
+  "f_code": "F14",
+  "fit": "clean",
+  "reason": "A brief viewport change replaces the desktop editor, leaving the expected panel absent when the locator runs.",
+  "second_choice": "F8"
+ },
+ "item-102": {
+  "f_code": "F11",
+  "fit": "clean",
+  "reason": "The test goes offline before form loading finishes, allowing a later remount to reset the checked state.",
+  "second_choice": "F14"
+ },
+ "item-96": {
+  "f_code": "F2",
+  "fit": "clean",
+  "reason": "The locator matches both the visible shell and its hidden streamed copy.",
+  "second_choice": "F14"
+ },
+ "item-97": {
+  "f_code": "F1",
+  "fit": "clean",
+  "reason": "Host load changes how many frames render during the fixed measurement interval.",
+  "second_choice": null
+ },
+ "item-98": {
+  "f_code": "F14",
+  "fit": "clean",
+  "reason": "The click can occur while the camera is still moving, before the unit is reliably reachable on the canvas.",
+  "second_choice": "F1"
+ },
+ "item-99": {
+  "f_code": "F7",
+  "fit": "clean",
+  "reason": "Firefox retains page zoom from one test and leaks it into the next test in the same browser.",
+  "second_choice": null
+ }
+}

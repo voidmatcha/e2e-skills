@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "Jahia/javascript-modules",
+  "license": "Apache-2.0",
+  "urls": [
+   "https://github.com/Jahia/javascript-modules/pull/800"
+  ],
+  "merged": "2026-09-22",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (environment-specific URL)",
+ "explanation": "Cypress appends a relative request URL to baseUrl, and baseUrl already carries the servlet context path, so the explicit JAHIA_CONTEXT prefix is applied twice. The doubled path matches no servlet, Jahia routes it to the render servlet, which reads 'custom-context' as a locale and answers 400. The plain SN entry cannot reproduce it because its context path is empty.",
+ "fix": "Request the liveness probe with a relative URL and let baseUrl supply the context path; remove the unused JAHIA_CONTEXT import."
+}

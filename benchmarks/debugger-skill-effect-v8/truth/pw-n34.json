@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "kernelKain/footwork",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/kernelKain/footwork/pull/11"
+  ],
+  "merged": "2026-10-11",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (non-retrying read)",
+ "explanation": "After a Tab press the focus can briefly be on nothing or on the body. Reading innerText of the :focus locator then waits for an element until the test timeout, and a slower runner needs more than eight Tab presses to reach the button.",
+ "fix": "Raise the traversal budget to twelve presses, skip iterations where nothing or BODY has focus, and read the text with a short 250 ms timeout and a fallback."
+}

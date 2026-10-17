@@ -1,0 +1,13 @@
+{
+ "source": {
+  "repo": "synthetic-authored",
+  "license": "Apache-2.0",
+  "urls": [],
+  "merged": null,
+  "origin": "synthetic-authored"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (timeout budget)",
+ "explanation": "The background export legitimately takes between about 2 and 7.5 seconds, and the Cypress default command timeout of 4 seconds is shorter than the slow end of that range, so the test fails when the job is slow and passes when it is fast.",
+ "fix": "Give the download-csv lookup an explicit timeout of about 15 s (cy.get(..., { timeout: 15000 }))."
+}

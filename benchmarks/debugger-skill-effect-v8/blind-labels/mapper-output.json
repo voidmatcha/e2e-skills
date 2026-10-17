@@ -1,0 +1,362 @@
+{
+ "item-01": {
+  "f_code": "F7",
+  "fit": "clean",
+  "reason": "Disabled test isolation lets a locale preference leak from one spec into another.",
+  "second_choice": null
+ },
+ "item-02": {
+  "f_code": "F14",
+  "fit": "clean",
+  "reason": "The one-time read can occur before the grid renders its headers.",
+  "second_choice": "F1"
+ },
+ "item-03": {
+  "f_code": "F1",
+  "fit": "clean",
+  "reason": "The export sometimes takes longer than the command timeout.",
+  "second_choice": null
+ },
+ "item-04": {
+  "f_code": "F2",
+  "fit": "clean",
+  "reason": "The page-wide text locator matches two toast elements and violates strict mode.",
+  "second_choice": null
+ },
+ "item-05": {
+  "f_code": "F14",
+  "fit": "clean",
+  "reason": "A one-time assertion can catch or miss the brief error-counter flash.",
+  "second_choice": "F1"
+ },
+ "item-06": {
+  "f_code": "F7",
+  "fit": "clean",
+  "reason": "A shared browser context carries cart state from the first test into the second.",
+  "second_choice": null
+ },
+ "item-07": {
+  "f_code": "F10",
+  "fit": "clean",
+  "reason": "Visiting the protected page before login produces an unauthorized request.",
+  "second_choice": "F11"
+ },
+ "item-08": {
+  "f_code": "F14",
+  "fit": "clean",
+  "reason": "The one-time counter read happens before the request completes and the UI updates.",
+  "second_choice": "F1"
+ },
+ "item-09": {
+  "f_code": "F8",
+  "fit": "clean",
+  "reason": "The expected day changes with the machine's clock and time zone.",
+  "second_choice": "F9"
+ },
+ "item-10": {
+  "f_code": "F6",
+  "fit": "clean",
+  "reason": "The test always seeks a button that appears only for cancellable orders.",
+  "second_choice": "F9"
+ },
+ "item-11": {
+  "f_code": "F10",
+  "fit": "clean",
+  "reason": "The saved session cookie has expired and requests redirect to login.",
+  "second_choice": null
+ },
+ "item-12": {
+  "f_code": "F15",
+  "fit": "clean",
+  "reason": "A click on the server-rendered button is swallowed before hydration attaches its handler.",
+  "second_choice": null
+ },
+ "item-13": {
+  "f_code": "F11",
+  "fit": "clean",
+  "reason": "The test assumes the feed response has arrived when only the counts response was awaited.",
+  "second_choice": null
+ },
+ "item-14": {
+  "f_code": "F5",
+  "fit": "clean",
+  "reason": "The helper returns after clicking without waiting for the start operation to finish.",
+  "second_choice": "F11"
+ },
+ "item-15": {
+  "f_code": "F2",
+  "fit": "clean",
+  "reason": "Additional rendered text makes the page-wide locator resolve to multiple elements.",
+  "second_choice": "F12"
+ },
+ "item-16": {
+  "f_code": "F11",
+  "fit": "clean",
+  "reason": "The test treats whichever randomized response finishes first as sufficient for a global chip count.",
+  "second_choice": "F14"
+ },
+ "item-17": {
+  "f_code": "F9",
+  "fit": "clean",
+  "reason": "The mock listing lacks fields required for rendering, while its price assertion also needs updating.",
+  "second_choice": "F4"
+ },
+ "item-18": {
+  "f_code": "F10",
+  "fit": "clean",
+  "reason": "The session created before the specs expires before the audit log spec runs.",
+  "second_choice": null
+ },
+ "item-19": {
+  "f_code": "F11",
+  "fit": "clean",
+  "reason": "An older search response can arrive after a newer one and overwrite its results.",
+  "second_choice": null
+ },
+ "item-20": {
+  "f_code": "F7",
+  "fit": "clean",
+  "reason": "A request from a sibling test reaches the next test's broadly scoped intercept.",
+  "second_choice": "F2"
+ },
+ "item-21": {
+  "f_code": "F2",
+  "fit": "clean",
+  "reason": "The bare alert-role selector now matches both the inline error and the toast.",
+  "second_choice": "F12"
+ },
+ "item-22": {
+  "f_code": "F14",
+  "fit": "clean",
+  "reason": "A scroll triggered while the menu opens closes the transient menu before selection.",
+  "second_choice": "F2"
+ },
+ "item-23": {
+  "f_code": "F5",
+  "fit": "clean",
+  "reason": "The test reloads after clicking Save without waiting for the save request to finish.",
+  "second_choice": "F11"
+ },
+ "item-24": {
+  "f_code": "F13",
+  "fit": "clean",
+  "reason": "A catch block logs and suppresses the failed avatar assertion.",
+  "second_choice": null
+ },
+ "item-25": {
+  "f_code": "F4",
+  "fit": "clean",
+  "reason": "The hand-calculated expected total is rounded incorrectly.",
+  "second_choice": null
+ },
+ "item-26": {
+  "f_code": "F12",
+  "fit": "clean",
+  "reason": "The page object's unscoped sidebar locators no longer identify unique elements after sub-pages added matching links.",
+  "second_choice": "F2"
+ },
+ "item-27": {
+  "f_code": "F15",
+  "fit": "clean",
+  "reason": "The first click can be swallowed before the server-rendered trigger hydrates.",
+  "second_choice": null
+ },
+ "item-28": {
+  "f_code": "F6",
+  "fit": "clean",
+  "reason": "The test unconditionally closes a modal that appears only when its seen flag is absent.",
+  "second_choice": "F7"
+ },
+ "item-29": {
+  "f_code": "F13",
+  "fit": "clean",
+  "reason": "Allowing the failed 404 request without checking its response hides the search URL failure.",
+  "second_choice": "F3"
+ },
+ "item-30": {
+  "f_code": "F4",
+  "fit": "forced",
+  "reason": "The search behavior violates a valid negative assertion, and assertion mismatch is the closest category for this product behavior bug.",
+  "second_choice": null
+ },
+ "item-31": {
+  "f_code": "F2",
+  "fit": "clean",
+  "reason": "A new demo adds a second button matching the page-wide locator.",
+  "second_choice": "F12"
+ },
+ "item-32": {
+  "f_code": "F14",
+  "fit": "clean",
+  "reason": "The form remains in the DOM briefly after the row appears, so the snapshot catches transient content.",
+  "second_choice": null
+ },
+ "item-33": {
+  "f_code": "F11",
+  "fit": "clean",
+  "reason": "Two waits use the same response pattern and assume a completion order that varies.",
+  "second_choice": null
+ },
+ "item-34": {
+  "f_code": "F8",
+  "fit": "clean",
+  "reason": "The page and test use different time zones to calculate today's date.",
+  "second_choice": null
+ },
+ "item-35": {
+  "f_code": "F6",
+  "fit": "clean",
+  "reason": "The test always clicks a banner button that exists only for non-paid accounts.",
+  "second_choice": null
+ },
+ "item-36": {
+  "f_code": "F9",
+  "fit": "clean",
+  "reason": "The required user exists in an old database but is missing from the current seed.",
+  "second_choice": null
+ },
+ "item-37": {
+  "f_code": "F6",
+  "fit": "clean",
+  "reason": "The test always clicks a consent button that is absent when consent was already recorded.",
+  "second_choice": "F7"
+ },
+ "item-38": {
+  "f_code": "F13",
+  "fit": "clean",
+  "reason": "An empty catch suppresses the failed refund response wait.",
+  "second_choice": "F3"
+ },
+ "item-39": {
+  "f_code": "F15",
+  "fit": "clean",
+  "reason": "Input on the server-rendered fallback is lost when hydration replaces its controls.",
+  "second_choice": null
+ },
+ "item-40": {
+  "f_code": "F3",
+  "fit": "clean",
+  "reason": "A duplicated context path sends the request to the wrong servlet and yields HTTP 400.",
+  "second_choice": "F8"
+ },
+ "item-41": {
+  "f_code": "F2",
+  "fit": "clean",
+  "reason": "The substring heading locator matches two headings and triggers strict mode.",
+  "second_choice": null
+ },
+ "item-42": {
+  "f_code": "F5",
+  "fit": "clean",
+  "reason": "The test begins reconciliation after the start toast without waiting for payment completion.",
+  "second_choice": "F11"
+ },
+ "item-43": {
+  "f_code": "F3",
+  "fit": "clean",
+  "reason": "Proxying many tile requests makes the preview server occasionally drop a socket under CI load.",
+  "second_choice": "F8"
+ },
+ "item-44": {
+  "f_code": "F4",
+  "fit": "clean",
+  "reason": "The expected status label was not updated after the product changed it.",
+  "second_choice": null
+ },
+ "item-45": {
+  "f_code": "F12",
+  "fit": "clean",
+  "reason": "The page object's unscoped list-item locator now also matches the new chat rail.",
+  "second_choice": "F2"
+ },
+ "item-46": {
+  "f_code": "F15",
+  "fit": "clean",
+  "reason": "The native checkbox changes before hydration, but its client-side change handler does not run.",
+  "second_choice": null
+ },
+ "item-47": {
+  "f_code": "F14",
+  "fit": "clean",
+  "reason": "Staged subscription rendering replaces a captured card and briefly exposes an empty list.",
+  "second_choice": "F1"
+ },
+ "item-48": {
+  "f_code": "F1",
+  "fit": "clean",
+  "reason": "Report generation can exceed the fixed three-second wait.",
+  "second_choice": "F14"
+ },
+ "item-49": {
+  "f_code": "F14",
+  "fit": "clean",
+  "reason": "The closing dialog briefly retains an input that collides with the next view's input.",
+  "second_choice": "F2"
+ },
+ "item-50": {
+  "f_code": "F2",
+  "fit": "clean",
+  "reason": "A substring heading locator matches both Tasks and All tasks after the list loads.",
+  "second_choice": null
+ },
+ "item-51": {
+  "f_code": "F10",
+  "fit": "clean",
+  "reason": "The standard-user session lacks the manager role required to render Approve.",
+  "second_choice": "F6"
+ },
+ "item-52": {
+  "f_code": "F1",
+  "fit": "clean",
+  "reason": "The export sometimes exceeds the assertion's five-second timeout.",
+  "second_choice": null
+ },
+ "item-53": {
+  "f_code": "F13",
+  "fit": "clean",
+  "reason": "The command converts errors into an ignored false value, hiding the declined payment.",
+  "second_choice": null
+ },
+ "item-54": {
+  "f_code": "F9",
+  "fit": "clean",
+  "reason": "The hardcoded order ID exists only in old staging data.",
+  "second_choice": null
+ },
+ "item-55": {
+  "f_code": "F10",
+  "fit": "clean",
+  "reason": "An unmocked cart request returns 401 and causes the app to clear the session.",
+  "second_choice": "F3"
+ },
+ "item-56": {
+  "f_code": "F3",
+  "fit": "clean",
+  "reason": "Navigating to an external site makes the test depend on that site's availability from CI.",
+  "second_choice": null
+ },
+ "item-57": {
+  "f_code": "F15",
+  "fit": "clean",
+  "reason": "The Pricing click is swallowed before the server-rendered page attaches its handlers.",
+  "second_choice": null
+ },
+ "item-58": {
+  "f_code": "F7",
+  "fit": "clean",
+  "reason": "Reusing the page lets dialog state leak from the first test into the second.",
+  "second_choice": "F14"
+ },
+ "item-59": {
+  "f_code": "F3",
+  "fit": "clean",
+  "reason": "The live third-party forecast request is refused from the CI network.",
+  "second_choice": null
+ },
+ "item-60": {
+  "f_code": "F1",
+  "fit": "clean",
+  "reason": "Runner-dependent timing makes the simulated flick fall below the speed threshold on slow runs.",
+  "second_choice": null
+ }
+}

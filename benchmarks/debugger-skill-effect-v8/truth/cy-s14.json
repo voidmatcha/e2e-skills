@@ -1,0 +1,13 @@
+{
+ "source": {
+  "repo": "synthetic-authored",
+  "license": "Apache-2.0",
+  "urls": [],
+  "merged": null,
+  "origin": "synthetic-authored"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (swallowed failure)",
+ "explanation": "The custom command converts any error into a false return value that the test ignores, and the final assertion checks something that is always true, so the declined payment never fails the test.",
+ "fix": "Let the command fail (remove the error handler) and assert the visible outcome, e.g. the order confirmation after a successful payment."
+}

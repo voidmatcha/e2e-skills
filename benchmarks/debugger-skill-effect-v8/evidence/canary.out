@@ -1,0 +1,3 @@
+canary: 6 calls on claude model='sonnet' canonical='claude-sonnet-5-5' cli='2.1.300 (Claude Code)'
+  6/6 done
+wrote /Users/example/.cache/e2e-skills-bench/debugger-v8/canary.json

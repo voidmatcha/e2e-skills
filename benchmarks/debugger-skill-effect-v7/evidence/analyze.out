@@ -1,0 +1,357 @@
+{
+ "decision": {
+  "status": "FAIL",
+  "detail": {
+   "strict_ci_lower_ge_margin": true,
+   "strict_point_ge_margin": true,
+   "fcode_ci_lower_ge_margin": false,
+   "diagnosis_side_not_worse": true,
+   "unsupported_claims_not_higher": true,
+   "input_tokens_at_most_ratio": true
+  },
+  "rule": {
+   "bootstrap_resamples": 10000,
+   "strict_ci_lower_margin": 0.05,
+   "strict_point_margin": 0.05,
+   "fcode_ci_lower_margin": 0.1,
+   "diagnosis_drop": 0.05,
+   "unsupported_point_margin": 0.3,
+   "max_input_token_ratio": 0.8,
+   "primary": "new-lean minus old",
+   "PASS": "all calls scored and judged, no digest or prompt-digest mismatch, and every check holds for new-lean minus old: (1) strict-match paired difference 95% case-cluster bootstrap lower bound >= -0.05; (2) its point estimate >= -0.05; (3) F-code exact paired difference on the 23 labeled cases, 95% lower bound >= -0.10; (4) product/test diagnosis accuracy >= old - 0.05; (5) unsupported claims per answer new-lean - old <= +0.30; (6) new-lean total input tokens <= 0.80 x old.",
+   "FAIL": "all calls scored and judged and any check false",
+   "INCONCLUSIVE": "any unscored model call after the retry policy, any unparsed or incomplete judge entry after the judge retry policy, any input or prompt digest mismatch, or a canary report",
+   "secondary": "new-full minus old and new-lean minus new-full get the same five checks (no token check) and are reported as non-inferior or not; they never change the verdict. free is compared descriptively with the same paired statistics.",
+   "wording": "A PASS supports exactly one sentence: on the 28 development cases, the 3.0.0 lean text was not worse than the 2.0.1 text on zero-tool diagnosis by more than the stated margins, at about the stated share of the input tokens. It never supports 'better', 'safer', or any statement about the full workflow."
+  },
+  "primary": "new-lean minus old"
+ },
+ "noninferiority": {
+  "new-lean_vs_old": {
+   "strict_ci_lower_ge_margin": true,
+   "strict_point_ge_margin": true,
+   "fcode_ci_lower_ge_margin": false,
+   "diagnosis_side_not_worse": true,
+   "unsupported_claims_not_higher": true,
+   "input_tokens_at_most_ratio": true
+  },
+  "new-full_vs_old": {
+   "strict_ci_lower_ge_margin": true,
+   "strict_point_ge_margin": true,
+   "fcode_ci_lower_ge_margin": false,
+   "diagnosis_side_not_worse": true,
+   "unsupported_claims_not_higher": true
+  },
+  "new-lean_vs_new-full": {
+   "strict_ci_lower_ge_margin": true,
+   "strict_point_ge_margin": true,
+   "fcode_ci_lower_ge_margin": false,
+   "diagnosis_side_not_worse": true,
+   "unsupported_claims_not_higher": true
+  }
+ },
+ "arm_metrics": {
+  "new-full": {
+   "strict": 0.8214285714285714,
+   "lenient": 1.0,
+   "diag": 0.7857142857142857,
+   "unsupported": 1.619047619047619,
+   "any_unsupported": 0.7142857142857143,
+   "fcode": 0.6376811594202898
+  },
+  "new-lean": {
+   "strict": 0.8214285714285714,
+   "lenient": 1.0,
+   "diag": 0.7976190476190477,
+   "unsupported": 1.380952380952381,
+   "any_unsupported": 0.7261904761904762,
+   "fcode": 0.6086956521739131
+  },
+  "old": {
+   "strict": 0.7976190476190477,
+   "lenient": 1.0,
+   "diag": 0.7857142857142857,
+   "unsupported": 1.4166666666666667,
+   "any_unsupported": 0.6785714285714286,
+   "fcode": 0.6376811594202898
+  },
+  "free": {
+   "strict": 0.8214285714285714,
+   "lenient": 1.0,
+   "diag": 0.7976190476190477,
+   "unsupported": 2.011904761904762,
+   "any_unsupported": 0.8452380952380952,
+   "fcode": 0.0
+  }
+ },
+ "paired": {
+  "strict:new-lean_minus_old": {
+   "diff": 0.023809523809523808,
+   "ci95": [
+    0.0,
+    0.05952380952380952
+   ],
+   "cases_better": 2,
+   "cases_worse": 0,
+   "cases_tied": 26,
+   "n": 28
+  },
+  "lenient:new-lean_minus_old": {
+   "diff": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "cases_better": 0,
+   "cases_worse": 0,
+   "cases_tied": 28,
+   "n": 28
+  },
+  "unsupported:new-lean_minus_old": {
+   "diff": -0.03571428571428574,
+   "ci95": [
+    -0.45238095238095244,
+    0.35714285714285715
+   ],
+   "cases_better": 13,
+   "cases_worse": 10,
+   "cases_tied": 5,
+   "n": 28
+  },
+  "fcode:new-lean_minus_old": {
+   "diff": -0.02898550724637681,
+   "ci95": [
+    -0.11594202898550726,
+    0.05797101449275363
+   ],
+   "cases_better": 3,
+   "cases_worse": 4,
+   "cases_tied": 16,
+   "n": 23
+  },
+  "strict:new-full_minus_old": {
+   "diff": 0.023809523809523808,
+   "ci95": [
+    0.0,
+    0.05952380952380952
+   ],
+   "cases_better": 2,
+   "cases_worse": 0,
+   "cases_tied": 26,
+   "n": 28
+  },
+  "lenient:new-full_minus_old": {
+   "diff": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "cases_better": 0,
+   "cases_worse": 0,
+   "cases_tied": 28,
+   "n": 28
+  },
+  "unsupported:new-full_minus_old": {
+   "diff": 0.2023809523809524,
+   "ci95": [
+    -0.20238095238095233,
+    0.5952380952380952
+   ],
+   "cases_better": 16,
+   "cases_worse": 8,
+   "cases_tied": 4,
+   "n": 28
+  },
+  "fcode:new-full_minus_old": {
+   "diff": 2.413528314402514e-18,
+   "ci95": [
+    -0.11594202898550726,
+    0.11594202898550726
+   ],
+   "cases_better": 5,
+   "cases_worse": 5,
+   "cases_tied": 13,
+   "n": 23
+  },
+  "strict:new-lean_minus_new-full": {
+   "diff": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "cases_better": 0,
+   "cases_worse": 0,
+   "cases_tied": 28,
+   "n": 28
+  },
+  "lenient:new-lean_minus_new-full": {
+   "diff": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "cases_better": 0,
+   "cases_worse": 0,
+   "cases_tied": 28,
+   "n": 28
+  },
+  "unsupported:new-lean_minus_new-full": {
+   "diff": -0.23809523809523814,
+   "ci95": [
+    -0.6071428571428573,
+    0.059523809523809514
+   ],
+   "cases_better": 11,
+   "cases_worse": 12,
+   "cases_tied": 5,
+   "n": 28
+  },
+  "fcode:new-lean_minus_new-full": {
+   "diff": -0.02898550724637681,
+   "ci95": [
+    -0.11594202898550723,
+    0.043478260869565216
+   ],
+   "cases_better": 2,
+   "cases_worse": 3,
+   "cases_tied": 18,
+   "n": 23
+  },
+  "strict:new-lean_minus_free": {
+   "diff": -3.96508223080413e-18,
+   "ci95": [
+    -0.08333333333333334,
+    0.09523809523809523
+   ],
+   "cases_better": 1,
+   "cases_worse": 2,
+   "cases_tied": 25,
+   "n": 28
+  },
+  "lenient:new-lean_minus_free": {
+   "diff": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "cases_better": 0,
+   "cases_worse": 0,
+   "cases_tied": 28,
+   "n": 28
+  },
+  "unsupported:new-lean_minus_free": {
+   "diff": -0.630952380952381,
+   "ci95": [
+    -1.0476190476190477,
+    -0.21428571428571427
+   ],
+   "cases_better": 7,
+   "cases_worse": 19,
+   "cases_tied": 2,
+   "n": 28
+  },
+  "strict:new-full_minus_free": {
+   "diff": -3.96508223080413e-18,
+   "ci95": [
+    -0.08333333333333334,
+    0.09523809523809523
+   ],
+   "cases_better": 1,
+   "cases_worse": 2,
+   "cases_tied": 25,
+   "n": 28
+  },
+  "lenient:new-full_minus_free": {
+   "diff": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "cases_better": 0,
+   "cases_worse": 0,
+   "cases_tied": 28,
+   "n": 28
+  },
+  "unsupported:new-full_minus_free": {
+   "diff": -0.39285714285714285,
+   "ci95": [
+    -0.8928571428571429,
+    0.13095238095238096
+   ],
+   "cases_better": 10,
+   "cases_worse": 17,
+   "cases_tied": 1,
+   "n": 28
+  },
+  "strict:old_minus_free": {
+   "diff": -0.02380952380952381,
+   "ci95": [
+    -0.13095238095238096,
+    0.08333333333333333
+   ],
+   "cases_better": 1,
+   "cases_worse": 2,
+   "cases_tied": 25,
+   "n": 28
+  },
+  "lenient:old_minus_free": {
+   "diff": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "cases_better": 0,
+   "cases_worse": 0,
+   "cases_tied": 28,
+   "n": 28
+  },
+  "unsupported:old_minus_free": {
+   "diff": -0.5952380952380952,
+   "ci95": [
+    -1.0357142857142858,
+    -0.14285714285714293
+   ],
+   "cases_better": 3,
+   "cases_worse": 18,
+   "cases_tied": 7,
+   "n": 28
+  }
+ },
+ "f_code_exact": {
+  "labeled_cases": 23,
+  "new-full": 0.6376811594202898,
+  "new-lean": 0.6086956521739131,
+  "old": 0.6376811594202898
+ },
+ "input_token_ratios": {
+  "new-lean_over_old": 0.7402061225605775,
+  "new-full_over_old": 1.149683321378139,
+  "new-lean_over_new-full": 0.6438347924133435
+ },
+ "usage": {
+  "new-full": {
+   "calls": 84,
+   "total_input": 3574170,
+   "output": 67692,
+   "elapsed_ms": 811309
+  },
+  "new-lean": {
+   "calls": 84,
+   "total_input": 2301175,
+   "output": 66870,
+   "elapsed_ms": 785541
+  },
+  "old": {
+   "calls": 84,
+   "total_input": 3108830,
+   "output": 55614,
+   "elapsed_ms": 701928
+  },
+  "free": {
+   "calls": 84,
+   "total_input": 306850,
+   "output": 31686,
+   "elapsed_ms": 517446
+  }
+ }
+}

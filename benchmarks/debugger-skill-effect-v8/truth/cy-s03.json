@@ -1,0 +1,13 @@
+{
+ "source": {
+  "repo": "synthetic-authored",
+  "license": "Apache-2.0",
+  "urls": [],
+  "merged": null,
+  "origin": "synthetic-authored"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (external dependency)",
+ "explanation": "The test depends on a live third-party API; from the CI network the request is refused, so the widget never receives a forecast.",
+ "fix": "Stub the forecast request with cy.intercept and a fixture so the test does not depend on the third-party service or the network policy."
+}

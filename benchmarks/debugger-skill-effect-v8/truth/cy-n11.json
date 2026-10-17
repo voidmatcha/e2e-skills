@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "centreon/centreon",
+  "license": "Apache-2.0",
+  "urls": [
+   "https://github.com/centreon/centreon/pull/12013"
+  ],
+  "merged": "2026-10-13",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (missing wait)",
+ "explanation": "The command closes and reopens the dropdown immediately before asserting on an option. Every open re-fetches the pollers and clears them on close, so the click on the option races that fetch: fine locally, occasionally too slow under CI load.",
+ "fix": "Intercept GET /configuration/monitoring-servers as @getPollers (also in 05-ACC-check-permissions), open the dropdown once and cy.wait('@getPollers') before clicking the option; remove the stray double click."
+}

@@ -1,0 +1,13 @@
+{
+ "source": {
+  "repo": "synthetic-authored",
+  "license": "Apache-2.0",
+  "urls": [],
+  "merged": null,
+  "origin": "synthetic-authored"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (expired session)",
+ "explanation": "The login happens once, before all specs, and the cookie it sets expires after 30 minutes. By the time the audit log spec runs the session is no longer valid and the app redirects to the sign-in page.",
+ "fix": "Use cy.session (or log in in beforeEach) so each spec obtains a fresh, validated session."
+}

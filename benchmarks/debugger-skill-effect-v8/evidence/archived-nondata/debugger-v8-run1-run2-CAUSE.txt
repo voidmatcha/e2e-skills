@@ -1,0 +1,11 @@
+debugger-v8 invalid (non-data) attempts, recorded 2026-10-17
+
+run1: stopped by the operator (the assistant, at the user's request to relieve host load) at 720/963 calls.
+      Cause: host swap pressure while thin-eval s3 ran. The v8 runner writes results only at the end and has no resume,
+      so no data from run1 can be used. Log: run1.out.
+run2: restarted automatically, then stopped by the operator at 10/963 calls (about 1.5 min) because the host was still
+      above the swap threshold and the restart went against the host-relief intent. Not a process crash of the runner.
+      Log: run2.out.
+run3: ran 963/963 and is the only source of the v8 results (run3.out, results.json, judged.json, analyze.out).
+
+Neither run1 nor run2 produced results; neither is cited. They are archived, not deleted.

@@ -1,0 +1,273 @@
+{
+ "status": "final",
+ "mapper": "codex gpt-6-sol (cli 0.159.3), zero-tool, five calls on 2026-10-16: items 1-60, extension items 61-95, 96-102, 103-104 and 105-107",
+ "mapper_output_sha256": "67ef36abb9061223b1da3bf3a6f3205d84e84e639e1948e4206a8b9a4e584abd",
+ "mapper_output_ext_sha256": "d46f195a29bbc84380ce22820c5dcc79168110e23b235c22e7fc8d21d22e6f85",
+ "mapper_output_ext2_sha256": "764cbc2ded8e550cf0a205bc1aa66c717c0e3024c965a6389f0bc18f27658d5c",
+ "mapper_output_ext3_sha256": "b9d701808c2e4c00f9a779b8c8048a2a3ccfb8eaa4758b2202ad0b04cb2f1a32",
+ "mapper_output_ext4_sha256": "b51a7541e1446c39bfa41b1636f8b6581487d2a0acc48f78f16e8c862a6d11dc",
+ "rule": "primary = blind f_code equals the author label; the author label stays the truth",
+ "total": 107,
+ "agreed": 82,
+ "primary": [
+  "cy-n01",
+  "cy-n02",
+  "cy-n03",
+  "cy-n04",
+  "cy-n05",
+  "cy-n06",
+  "cy-n07",
+  "cy-n09",
+  "cy-n11",
+  "cy-n13",
+  "cy-n14",
+  "cy-n15",
+  "cy-n16",
+  "cy-n17",
+  "cy-s01",
+  "cy-s02",
+  "cy-s03",
+  "cy-s04",
+  "cy-s06",
+  "cy-s07",
+  "cy-s08",
+  "cy-s09",
+  "cy-s10",
+  "cy-s11",
+  "cy-s12",
+  "cy-s13",
+  "cy-s14",
+  "cy-s15",
+  "cy-s16",
+  "pw-n01",
+  "pw-n02",
+  "pw-n03",
+  "pw-n04",
+  "pw-n05",
+  "pw-n06",
+  "pw-n07",
+  "pw-n08",
+  "pw-n10",
+  "pw-n11",
+  "pw-n12",
+  "pw-n13",
+  "pw-n15",
+  "pw-n17",
+  "pw-n18",
+  "pw-n19",
+  "pw-n20",
+  "pw-n21",
+  "pw-n22",
+  "pw-n28",
+  "pw-n30",
+  "pw-n31",
+  "pw-n33",
+  "pw-n34",
+  "pw-n35",
+  "pw-n36",
+  "pw-n38",
+  "pw-n42",
+  "pw-n44",
+  "pw-n45",
+  "pw-n47",
+  "pw-n49",
+  "pw-n50",
+  "pw-n53",
+  "pw-n55",
+  "pw-n56",
+  "pw-n57",
+  "pw-s01",
+  "pw-s02",
+  "pw-s03",
+  "pw-s04",
+  "pw-s05",
+  "pw-s06",
+  "pw-s07",
+  "pw-s08",
+  "pw-s09",
+  "pw-s10",
+  "pw-s11",
+  "pw-s12",
+  "pw-s13",
+  "pw-s14",
+  "pw-s15",
+  "pw-s16"
+ ],
+ "disagreements": [
+  {
+   "case_id": "cy-s05",
+   "author": "F5",
+   "blind": "F14",
+   "blind_second": "F1",
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "pw-n16",
+   "author": "F12",
+   "blind": "F2",
+   "blind_second": "F12",
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "pw-n14",
+   "author": "F12",
+   "blind": "F2",
+   "blind_second": "F12",
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "cy-n08",
+   "author": "F8",
+   "blind": "F3",
+   "blind_second": "F8",
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "cy-n10",
+   "author": "F3",
+   "blind": "F10",
+   "blind_second": "F3",
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "pw-n09",
+   "author": "F8",
+   "blind": "F1",
+   "blind_second": null,
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "pw-n41",
+   "author": "F5",
+   "blind": "F14",
+   "blind_second": "F2",
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "pw-n25",
+   "author": "F12",
+   "blind": "F2",
+   "blind_second": "F12",
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "pw-n26",
+   "author": "F12",
+   "blind": "F2",
+   "blind_second": "F4",
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "pw-n43",
+   "author": "F7",
+   "blind": "F14",
+   "blind_second": "F2",
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "pw-n32",
+   "author": "F1",
+   "blind": "F14",
+   "blind_second": "F1",
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "pw-n24",
+   "author": "F12",
+   "blind": "F2",
+   "blind_second": null,
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "pw-n46",
+   "author": "F10",
+   "blind": "F11",
+   "blind_second": "F5",
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "pw-n39",
+   "author": "F11",
+   "blind": "F14",
+   "blind_second": "F1",
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "pw-n37",
+   "author": "F11",
+   "blind": "F14",
+   "blind_second": "F1",
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "pw-n27",
+   "author": "F12",
+   "blind": "F2",
+   "blind_second": null,
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "pw-n23",
+   "author": "F12",
+   "blind": "F2",
+   "blind_second": null,
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "pw-n40",
+   "author": "F11",
+   "blind": "F14",
+   "blind_second": "F6",
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "cy-n12",
+   "author": "F11",
+   "blind": "F14",
+   "blind_second": "F1",
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "pw-n29",
+   "author": "F12",
+   "blind": "F2",
+   "blind_second": null,
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "pw-n51",
+   "author": "F14",
+   "blind": "F2",
+   "blind_second": "F14",
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "pw-n52",
+   "author": "F1",
+   "blind": "F14",
+   "blind_second": "F1",
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "pw-n48",
+   "author": "F8",
+   "blind": "F14",
+   "blind_second": "F8",
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "cy-n18",
+   "author": "F11",
+   "blind": "F3",
+   "blind_second": "F1",
+   "blind_fit": "clean"
+  },
+  {
+   "case_id": "pw-n54",
+   "author": "F5",
+   "blind": "F14",
+   "blind_second": "F2",
+   "blind_fit": "clean"
+  }
+ ]
+}

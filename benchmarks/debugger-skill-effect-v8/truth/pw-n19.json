@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "adrirubio/claude-deck",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/adrirubio/claude-deck/pull/692"
+  ],
+  "merged": "2026-10-13",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (over-broad locator)",
+ "explanation": "The last alternative of the selector, main ol li, also matches the ten footnotes of the collapsed All metrics block. The feed renders after the names request ends, and network idle can return before that, so until then .first() resolves to a footnote far below the feed. The test then clicks and measures a different element than the one it means.",
+ "fix": "Remove the main ol li alternative so the selector matches only feed rows; Playwright then waits until the feed exists."
+}

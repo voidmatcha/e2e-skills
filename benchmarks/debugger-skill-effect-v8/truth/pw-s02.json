@@ -1,0 +1,13 @@
+{
+ "source": {
+  "repo": "synthetic-authored",
+  "license": "Apache-2.0",
+  "urls": [],
+  "merged": null,
+  "origin": "synthetic-authored"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (expected value)",
+ "explanation": "The expected value was computed by hand and rounded up. 24.48 plus 12.3% tax is 27.49104, which the page correctly shows as $27.49; the test's hand-written $27.50 is simply wrong.",
+ "fix": "Correct the expected total to $27.49 (or compute it from the seeded prices and the documented tax rate)."
+}

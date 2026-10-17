@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "sean1093/kaeru",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/sean1093/kaeru/pull/112"
+  ],
+  "merged": "2026-10-05",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (read inside a transient window)",
+ "explanation": "axe computes contrast from resolved styles. When the scan runs before the first paint has settled it cannot resolve an element's background and substitutes #c0c0c0, which is a sign that it ran too early rather than that a contrast defect exists.",
+ "fix": "Before scanning, wait for the page's own first heading, document.fonts.ready and two animation frames, rather than for a duration."
+}

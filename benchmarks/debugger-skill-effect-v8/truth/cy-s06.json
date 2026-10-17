@@ -1,0 +1,13 @@
+{
+ "source": {
+  "repo": "synthetic-authored",
+  "license": "Apache-2.0",
+  "urls": [],
+  "merged": null,
+  "origin": "synthetic-authored"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (unconditional step)",
+ "explanation": "The What's new modal is shown only once per browser profile, but the test closes it unconditionally. When it has already been dismissed (in the session of an earlier spec) the click target does not exist, and when it is shown late it covers the link.",
+ "fix": "Dismiss the modal conditionally or pre-set the 'seen' flag in localStorage before the visit, then click the navigation link."
+}

@@ -1,0 +1,13 @@
+{
+ "source": {
+  "repo": "synthetic-authored",
+  "license": "Apache-2.0",
+  "urls": [],
+  "merged": null,
+  "origin": "synthetic-authored"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (swallowed failure)",
+ "explanation": "The assertion is inside a try/catch that only logs, so a failing avatar check never fails the test. The upload really does not update the avatar.",
+ "fix": "Remove the try/catch so the assertion fails the test, then fix the upload flow it exposes."
+}

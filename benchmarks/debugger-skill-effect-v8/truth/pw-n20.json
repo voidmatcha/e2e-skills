@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "cipansor/cipansor",
+  "license": "Apache-2.0",
+  "urls": [
+   "https://github.com/cipansor/cipansor/pull/427"
+  ],
+  "merged": "2026-09-01",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (locator)",
+ "explanation": "The text= selector matches by substring, and the phrase Perjanjian Kinerja appears in several places on the page (headings, card titles, menu labels). The locator was never specific enough to name one element.",
+ "fix": "Use exact, specific text locators: page.getByText('Perjanjian Kinerja (PK)', { exact: true }) and page.getByText('Evaluasi & Perilaku SAFTI', { exact: true })."
+}

@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "BabylonJS/Babylon.js",
+  "license": "Apache-2.0",
+  "urls": [
+   "https://github.com/BabylonJS/Babylon.js/pull/18973"
+  ],
+  "merged": "2026-10-05",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (locator)",
+ "explanation": "Fluent renders the toast message twice: once in its screen-reader live region and once in the visible toast title. The page-wide exact getByText locator intermittently matched both elements, which is a strict mode violation.",
+ "fix": "Scope the assertion to the visible title: page.locator('.fui-ToastTitle').filter({ hasText: /^Phase 3 toast bridge$/ })."
+}

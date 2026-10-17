@@ -1,0 +1,2513 @@
+{
+ "schema_version": 1,
+ "corpus_id": "debugger-skill-effect-v8-corpus",
+ "status": "prepared-not-frozen",
+ "description": "107 labeled E2E failures for a powered F-code non-inferiority check of the 3.0.0 lean debuggers: 75 restated from real merged public fixes in 67 repositories (MIT/Apache/BSD, merged 2026-07-27 to 2026-10-16, none in the v1 to v7 corpora or the 2.0.1 tuning reports; 28 prepared first, 47 added in the extension) and 32 authored failure artifacts built to fill the F-codes that real fixes rarely cover (F4, F6, F13, F1, F9, F10).",
+ "construction_rule": "Each artifact contains only observations: the test identifier, the failure text as reported (verbatim where the source quoted it, otherwise minimally shaped into a Playwright/Cypress error form), pre-fix test code from the merged diff's removed lines and unchanged context, frequency or attempt pattern, and environment facts a report would show. Cause and fix sentences are held in truth/. Label rationale, second choice and fit (clean or forced) are in label-ledger.json and are never shown to a model. Synthetic artifacts are labeled by construction before any model call; real artifacts are labeled from the merged fix.",
+ "cases": [
+  {
+   "id": "pw-n01",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n01.json",
+    "sha256": "1b3e071e9f9472ac78c0ab68eb11d5e637c774a6cc526e92d24cb986e0c03047"
+   },
+   "truth": {
+    "source": "truth/pw-n01.json",
+    "sha256": "a4328743f07c71f8cb2fdd29e2e490a9fbfaf53de661e2d6facf489f699dfeb6"
+   },
+   "source_repo": "roonga/qcms",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/roonga/qcms/pull/161"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F15"
+   }
+  },
+  {
+   "id": "pw-n02",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n02.json",
+    "sha256": "cab749cc543f7960c2817923b2793a6a38d61094a7577347d3dad313971e1508"
+   },
+   "truth": {
+    "source": "truth/pw-n02.json",
+    "sha256": "3599e3078fa30d1fbcc307bec63127c152d6a850b994f662b47475751659612e"
+   },
+   "source_repo": "thunder-id/javascript-sdks",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/thunder-id/javascript-sdks/pull/87"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F15"
+   }
+  },
+  {
+   "id": "pw-n03",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n03.json",
+    "sha256": "53bad47695f6c700ba6cb2333b55664906ff6e34a76c78dcdd38d3c17e6ca2ee"
+   },
+   "truth": {
+    "source": "truth/pw-n03.json",
+    "sha256": "577d48881ee70819ede14f989035a2d23b5d90f122aede21f8c9d2a0870ad26a"
+   },
+   "source_repo": "Guillaume-Docquier/text-based-browser-game-1",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/Guillaume-Docquier/text-based-browser-game-1/pull/476"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F5"
+   }
+  },
+  {
+   "id": "pw-n04",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n04.json",
+    "sha256": "f582a8d5813ee4dd8de2b7d9e1a5f5192313e36de4fb3cb49f86fa2214e14196"
+   },
+   "truth": {
+    "source": "truth/pw-n04.json",
+    "sha256": "c6bb5e82d71f8251990194861c24f8881415c91c925d8852549a4b1606c8fb4d"
+   },
+   "source_repo": "global-121/121-platform",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/global-121/121-platform/pull/8920"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F5"
+   }
+  },
+  {
+   "id": "pw-n05",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n05.json",
+    "sha256": "e297d887c91df33362941d31cd2b1e8c27a895bab4df8d4313b0d7ea0dab9927"
+   },
+   "truth": {
+    "source": "truth/pw-n05.json",
+    "sha256": "c69573d76f0673756e6b0f61a282f67bf22d1dd8a038705b469b7bb88d4ae06b"
+   },
+   "source_repo": "datawarsaw/x-scanner",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/datawarsaw/x-scanner/pull/1"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F11"
+   }
+  },
+  {
+   "id": "pw-n06",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n06.json",
+    "sha256": "c2b8ca5a6c5e23d3e957fd2e7c6b0789efcc3e9b112694feb80a2d33fbae1c4e"
+   },
+   "truth": {
+    "source": "truth/pw-n06.json",
+    "sha256": "56cbedcafcf0fcc974eff1fc76a43cc44701bbcf742689808080c279c01053ec"
+   },
+   "source_repo": "adarbari/algo-trading",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/adarbari/algo-trading/pull/196"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F14"
+   }
+  },
+  {
+   "id": "pw-n07",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n07.json",
+    "sha256": "e074cce4c254f6d5440d8b3563adcc1e2130fb49c87e49dd1345e7ec727ac249"
+   },
+   "truth": {
+    "source": "truth/pw-n07.json",
+    "sha256": "1dd466bc0cf47952fe6bfb4ba428e2220452ee10a688b0a5b530ee38107a73f9"
+   },
+   "source_repo": "seslab-muni/AutoGenBook",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/seslab-muni/AutoGenBook/pull/123"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F14"
+   }
+  },
+  {
+   "id": "pw-n08",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n08.json",
+    "sha256": "2ac5e5920400625c57dbf03c8f3fde1c16ab88de7f5197173705b191c4594b00"
+   },
+   "truth": {
+    "source": "truth/pw-n08.json",
+    "sha256": "f343eefcb760039d33928de2c3b4b4bb959b49bae6f143f41ecbf798b816b309"
+   },
+   "source_repo": "Final-Factory/ff-factory",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/Final-Factory/ff-factory/pull/272"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F14"
+   }
+  },
+  {
+   "id": "pw-n09",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n09.json",
+    "sha256": "ee8e08ed127088334d226ecccd2f138dc11dd8506c52afa1f6b6ed5f7b319675"
+   },
+   "truth": {
+    "source": "truth/pw-n09.json",
+    "sha256": "c05e368aa01a77b938543d94f401731114babdc0c473f6d363102f2a83160131"
+   },
+   "source_repo": "stephenlthorn/dunder-mifflin-os",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/stephenlthorn/dunder-mifflin-os/pull/1"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F8"
+   }
+  },
+  {
+   "id": "pw-n10",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n10.json",
+    "sha256": "0c06f604b702d2323e6d90aedee12fde0bf9309838222399f3ad1651e0076341"
+   },
+   "truth": {
+    "source": "truth/pw-n10.json",
+    "sha256": "9262dbc966115ae6c414cde6382512f4a6ac8f0be40300c6624b20d2d553cbc9"
+   },
+   "source_repo": "BabylonJS/Babylon.js",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/BabylonJS/Babylon.js/pull/18973"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F2"
+   }
+  },
+  {
+   "id": "pw-n11",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n11.json",
+    "sha256": "375dff3f442485dae263b05f3bb7e46713cf4587f275b70ba8504e1a75662692"
+   },
+   "truth": {
+    "source": "truth/pw-n11.json",
+    "sha256": "145577932d237ad51011df06f35e08222d52debfaab7fbc8ebc05fec37d42418"
+   },
+   "source_repo": "Airtrust-Org/airtrust",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/Airtrust-Org/airtrust/pull/598"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F2"
+   }
+  },
+  {
+   "id": "pw-n12",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n12.json",
+    "sha256": "57590250f88a96f439026b00943910c6e72fd9c6bd34b814a8a32fd16060ec1e"
+   },
+   "truth": {
+    "source": "truth/pw-n12.json",
+    "sha256": "6caa790b10d93abc7d26968a192657bf7d6a45b174d846359df5c1b00a1375b0"
+   },
+   "source_repo": "maxfain/basedagents",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/maxfain/basedagents/pull/94"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F2"
+   }
+  },
+  {
+   "id": "pw-n13",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n13.json",
+    "sha256": "a35475d82c2243da5a7e8abdfb5218ed6adeace6aaaefea4063a40eac369cdd3"
+   },
+   "truth": {
+    "source": "truth/pw-n13.json",
+    "sha256": "f3ceb071a99034c4ce290879adb35eb8d399c48284c4626197bd51f41ac86718"
+   },
+   "source_repo": "quay/quay",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/quay/quay/pull/7686"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F2"
+   }
+  },
+  {
+   "id": "pw-n14",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n14.json",
+    "sha256": "f2473a1eef9262bd7754a953d1711965c75fc4247b4ff42a8892dcdb5f867743"
+   },
+   "truth": {
+    "source": "truth/pw-n14.json",
+    "sha256": "ae0544d40ee89415b280b43da96e8e9359217fe575038828cd05bf0b065bc3a3"
+   },
+   "source_repo": "vdokkupalle-ebsco/flixel-pixi",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/vdokkupalle-ebsco/flixel-pixi/pull/58"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F12"
+   }
+  },
+  {
+   "id": "pw-n15",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n15.json",
+    "sha256": "3479e89139a37664bc29e014839c39634c1b8db5ad966e14a4b35ce0c0040849"
+   },
+   "truth": {
+    "source": "truth/pw-n15.json",
+    "sha256": "80236235762b5efbd87d2d0d1cc176d337afac5260c9a178399f1709298d4897"
+   },
+   "source_repo": "ShyME/Pictogram",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/ShyME/Pictogram/pull/217"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F12"
+   }
+  },
+  {
+   "id": "pw-n16",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n16.json",
+    "sha256": "f7c211fdb8535342c301e20000ea5b99e310d3a61afc3bc9480d4de8b5b89c91"
+   },
+   "truth": {
+    "source": "truth/pw-n16.json",
+    "sha256": "531b9825b1981d104523680651e274206d84049face19267d68c8d2e15bf0c95"
+   },
+   "source_repo": "textadventures/quest",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/textadventures/quest/pull/2159"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F12"
+   }
+  },
+  {
+   "id": "pw-n17",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n17.json",
+    "sha256": "d44af450a88b5ff7565c700e285da292308dde361664394957cf22e4f56afde0"
+   },
+   "truth": {
+    "source": "truth/pw-n17.json",
+    "sha256": "fe64c5fb257703aee3c4e5e770830004f8827fd4ee2f92eb5d79c7c9afc01532"
+   },
+   "source_repo": "openkaiden/kaiden",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/openkaiden/kaiden/pull/2888"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F12"
+   }
+  },
+  {
+   "id": "pw-n18",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n18.json",
+    "sha256": "c9ec46becfba9d08f50d7fd4af2b0f899a628a16be4fb113da3828b2e3bf3f62"
+   },
+   "truth": {
+    "source": "truth/pw-n18.json",
+    "sha256": "c22b9c95575f20f0442c3da136b01d3628c93d3c201be7d7dd4249b461fe88d9"
+   },
+   "source_repo": "realfamousbae/Veil",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/realfamousbae/Veil/pull/12"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F3"
+   }
+  },
+  {
+   "id": "pw-s01",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-s01.json",
+    "sha256": "027fceb34a342c47ec235345cf78bb93c7e90e068383db40e2107eb40e3e4e2d"
+   },
+   "truth": {
+    "source": "truth/pw-s01.json",
+    "sha256": "1a3b5223ed42997822e7983b42b454d94a20bd7d948f51704b0bcfdcf8247eb0"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F1"
+   }
+  },
+  {
+   "id": "pw-s02",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-s02.json",
+    "sha256": "16daaea25799e5dcd9f38aa0bd662ff85042c85a66c65e40c22973fc44a7304d"
+   },
+   "truth": {
+    "source": "truth/pw-s02.json",
+    "sha256": "6f0c0ede55c5793f4e2df28f13a4f50581bf788e69c3f8f822efa1dabaef69c5"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F4"
+   }
+  },
+  {
+   "id": "pw-s03",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-s03.json",
+    "sha256": "573cc04d4012cda3696c496d4f89b408e4ac88204010c119cd6d6c64d3eda15b"
+   },
+   "truth": {
+    "source": "truth/pw-s03.json",
+    "sha256": "24a2a407d8f9bd92dc9a99befc6a42bd3bb3d0f8c725ecf7c0f58184cd1aa044"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "product_regression",
+    "f_code": "F4"
+   }
+  },
+  {
+   "id": "pw-s04",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-s04.json",
+    "sha256": "130790d5d7d6fde8b1c27edd0af1a4f5b308e3bbf06bbc91713cf66498aebfa0"
+   },
+   "truth": {
+    "source": "truth/pw-s04.json",
+    "sha256": "07e6f1d996fabe38228ce7981a5189d35ce42ba906448a5f100a51e4adec7775"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F5"
+   }
+  },
+  {
+   "id": "pw-s05",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-s05.json",
+    "sha256": "5ec60331f3a17015ea25acb44bde4c1747353355594bd5e595dcac17e765d1ab"
+   },
+   "truth": {
+    "source": "truth/pw-s05.json",
+    "sha256": "1472cdb78c522d3f6eef061824ce2d4d197aaed653566f378351d43f80e6a08e"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F6"
+   }
+  },
+  {
+   "id": "pw-s06",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-s06.json",
+    "sha256": "9a51f023c739eabef5195345540bc0ad7daa089cb682e5f489cb8f18bf748206"
+   },
+   "truth": {
+    "source": "truth/pw-s06.json",
+    "sha256": "92b33c20e3b79aea9ce21258a2db9399bdc529bf7f2807716078883bc9a973e2"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F6"
+   }
+  },
+  {
+   "id": "pw-s07",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-s07.json",
+    "sha256": "fb363179c3c3d7808f2fe43c73c72c9178edbdf40d79656295af8904985ad36f"
+   },
+   "truth": {
+    "source": "truth/pw-s07.json",
+    "sha256": "cc558bcf8a5b6e7c557d0555f09f5800ae90f2b8258a437da4a5bac92e86fb53"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F7"
+   }
+  },
+  {
+   "id": "pw-s08",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-s08.json",
+    "sha256": "2ac2af83665dbbf135fedc4ea700a7c3fecd42882bd23695dc94cc7c5fe77f49"
+   },
+   "truth": {
+    "source": "truth/pw-s08.json",
+    "sha256": "13007987fc3e11a99bfb5aa0fc83b919e3253b43d70d22269619830e79529b18"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F8"
+   }
+  },
+  {
+   "id": "pw-s09",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-s09.json",
+    "sha256": "547e8d1afca368366f3c935c20e867feb8767f511201b860978680d666205e2b"
+   },
+   "truth": {
+    "source": "truth/pw-s09.json",
+    "sha256": "d8bc0d84b5ee976cfab025fe6acd7c886a30bb06312cfa1a24776276a3f6d254"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F9"
+   }
+  },
+  {
+   "id": "pw-s10",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-s10.json",
+    "sha256": "113f5123493a8768b48b29078361d0f4d88316453ae5c29ff8b811c718dea3bf"
+   },
+   "truth": {
+    "source": "truth/pw-s10.json",
+    "sha256": "ab114d6a2586262b2b52f047703e8f793cd326e418579f9b5aa5e77e8df6d3af"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F10"
+   }
+  },
+  {
+   "id": "pw-s11",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-s11.json",
+    "sha256": "5695fd95748c21cb7c550d7b59a3af4438d13df90fc1929470be931eee2884e0"
+   },
+   "truth": {
+    "source": "truth/pw-s11.json",
+    "sha256": "9fceace29f8bbdf8855b97b582837f5d1c9fc39e3085745bbe0eb7a5bf7a3646"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F10"
+   }
+  },
+  {
+   "id": "pw-s12",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-s12.json",
+    "sha256": "73cd2b238e7d6815fc98d8004218ec08e40d5db177546eae82af26bc5a11dd5c"
+   },
+   "truth": {
+    "source": "truth/pw-s12.json",
+    "sha256": "c323ac783f1018cac54b4367a59df607266afad13ee05ac23922afccd78cd0d2"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F11"
+   }
+  },
+  {
+   "id": "pw-s13",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-s13.json",
+    "sha256": "ff692dcbc103e0715919f991373aa38006eadf5982f429a3e4622d0e573bc2a9"
+   },
+   "truth": {
+    "source": "truth/pw-s13.json",
+    "sha256": "6b9ced293d4ae985e9815e157d66266c68e0bbe8b9e890928ce486c70d3d536c"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F13"
+   }
+  },
+  {
+   "id": "pw-s14",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-s14.json",
+    "sha256": "fb642681fdd5f6264a654704f03626f5e66874e35d8a180e30f3270e4de7210d"
+   },
+   "truth": {
+    "source": "truth/pw-s14.json",
+    "sha256": "2dfac11aad4036ad4994c8701de6dcf95d2d81dcd2b3c38dfd80725e0967068f"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F13"
+   }
+  },
+  {
+   "id": "pw-s15",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-s15.json",
+    "sha256": "c6580b2e6ae3a11af3dd9f705bb3fce1ccb3b08778e07f4049577815c70c6f53"
+   },
+   "truth": {
+    "source": "truth/pw-s15.json",
+    "sha256": "b5f9bc15040ebb71695b6c0499192a616ec3cc660f6956c2332087e3e1eb90af"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F15"
+   }
+  },
+  {
+   "id": "pw-s16",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-s16.json",
+    "sha256": "e6f2d9cd7c7f76ca9fb59be5c925cdd3479a6dfdaf0e8b19f4968cefefc947b0"
+   },
+   "truth": {
+    "source": "truth/pw-s16.json",
+    "sha256": "884b3e2416c4b7b34de7bd9e4079ede13b677bde0d4262bbaf39572ebc14d917"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F15"
+   }
+  },
+  {
+   "id": "cy-n01",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-n01.json",
+    "sha256": "3fd1b274253980f6ce77c854c7648c1ce63ee4c60a461f4f2ba767661c9fe960"
+   },
+   "truth": {
+    "source": "truth/cy-n01.json",
+    "sha256": "1a4ca71181265b550f9c41e5818353fc65dd1a63ae3301efff054c97b8c24fa0"
+   },
+   "source_repo": "cypress-io/cypress",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/cypress-io/cypress/pull/34446"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F7"
+   }
+  },
+  {
+   "id": "cy-n02",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-n02.json",
+    "sha256": "a746047765a1157e395485f748a0d3000b90522477eea68e10507de06880acdb"
+   },
+   "truth": {
+    "source": "truth/cy-n02.json",
+    "sha256": "179ae96139e37de93ce7f2ffa3912dcd9a52ef11b9871e328b6312e6a51c397f"
+   },
+   "source_repo": "frappe/frappe",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/frappe/frappe/pull/41306"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F7"
+   }
+  },
+  {
+   "id": "cy-n03",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-n03.json",
+    "sha256": "ea8e638e39150492214086bc2a38936f69f403767b0261b798ff58450cbdc39a"
+   },
+   "truth": {
+    "source": "truth/cy-n03.json",
+    "sha256": "1b22f485a332aa0884fcd3ce143670b5812561f1f3eea1f8ef5c3a0a0bd2345e"
+   },
+   "source_repo": "appsmithorg/appsmith",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/appsmithorg/appsmith/pull/42359"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F14"
+   }
+  },
+  {
+   "id": "cy-n04",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-n04.json",
+    "sha256": "913a9bf0f7298ed78757029048898bd0a6ce1bd12028fbcc0cf2edcbb799e57c"
+   },
+   "truth": {
+    "source": "truth/cy-n04.json",
+    "sha256": "aa8545fdbe3157fc8053622adefc3408205a019ef053c31e872bf2003106b66f"
+   },
+   "source_repo": "cypress-io/cypress",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/cypress-io/cypress/pull/34449"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F14"
+   }
+  },
+  {
+   "id": "cy-n05",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-n05.json",
+    "sha256": "7a96bf9f7097e56c18c311d377a9c2432fcd11ac08549d41a23d2227b414ff43"
+   },
+   "truth": {
+    "source": "truth/cy-n05.json",
+    "sha256": "ac70971aadff79f526370a3c23ac22b0a342996d6928cdb85726d3fb2b8ce39d"
+   },
+   "source_repo": "GladysAssistant/Gladys",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/GladysAssistant/Gladys/pull/3037"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "product_regression",
+    "f_code": "F14"
+   }
+  },
+  {
+   "id": "cy-n06",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-n06.json",
+    "sha256": "506449deb4c785be237f811a6226e59975e86cd40ac398ace6ca2d23dffb0204"
+   },
+   "truth": {
+    "source": "truth/cy-n06.json",
+    "sha256": "e98fdb17ce1ba2ec0326439eca8585ba43abd0392aef5ff1b4bdc6fc689b4404"
+   },
+   "source_repo": "appsmithorg/appsmith",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/appsmithorg/appsmith/pull/42211"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F10"
+   }
+  },
+  {
+   "id": "cy-n07",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-n07.json",
+    "sha256": "5172cdb837b8caf5b8de59915ad113a42441b1f44ac26cfafb4085fbcff5863f"
+   },
+   "truth": {
+    "source": "truth/cy-n07.json",
+    "sha256": "d5a6049ea0dadba84ffd4f4076c75238a4bfdb50e2110db84430977ad7f31d03"
+   },
+   "source_repo": "MUDST-2026-Pegasus/pegasus-tcg-web",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/MUDST-2026-Pegasus/pegasus-tcg-web/pull/220"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F9"
+   }
+  },
+  {
+   "id": "cy-n08",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-n08.json",
+    "sha256": "7ca378f322e3fe766d3ea9b600c73609a1ed8643c865541696e4fad3bfb3e9aa"
+   },
+   "truth": {
+    "source": "truth/cy-n08.json",
+    "sha256": "73810c123dc5125ffcd03d8db8947b05bf67c03cd30bcfa040852a9d9cefcdc9"
+   },
+   "source_repo": "Jahia/javascript-modules",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/Jahia/javascript-modules/pull/800"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F8"
+   }
+  },
+  {
+   "id": "cy-n09",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-n09.json",
+    "sha256": "724b158b1b56da347d655b03df8474ecff7d38c8e0feb8d3d3e764ebe45c1864"
+   },
+   "truth": {
+    "source": "truth/cy-n09.json",
+    "sha256": "8aa5a5f5c8ea34f5b92ea082130d575314ef307a44ae3ffc7f14c8a0f12e51be"
+   },
+   "source_repo": "appsmithorg/appsmith",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/appsmithorg/appsmith/pull/42201"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F3"
+   }
+  },
+  {
+   "id": "cy-n10",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-n10.json",
+    "sha256": "eb22ab55a632aa1514cd941d08af9ccb7fc5efcecc8627b2e27e757e690c70cd"
+   },
+   "truth": {
+    "source": "truth/cy-n10.json",
+    "sha256": "3be18b25153586fb80024f9b665f8631b87308c325070b8b4ee12883b67be454"
+   },
+   "source_repo": "MUDST-2026-Pegasus/pegasus-tcg-web",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/MUDST-2026-Pegasus/pegasus-tcg-web/pull/188"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F3"
+   }
+  },
+  {
+   "id": "cy-s01",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-s01.json",
+    "sha256": "efaaac60a50d1fc204be003112c16ad3a74ba92737beea7303f62a555e6c2da5"
+   },
+   "truth": {
+    "source": "truth/cy-s01.json",
+    "sha256": "5da6bd2cdc7d083e1cecd70858bd6f52ec81ebfc0d3eaf244a2304a1f42137ea"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F1"
+   }
+  },
+  {
+   "id": "cy-s02",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-s02.json",
+    "sha256": "93945b4adaa4686dbff46c46fe25ddfb92003a406a19a3794c9572eccbde9a61"
+   },
+   "truth": {
+    "source": "truth/cy-s02.json",
+    "sha256": "a9eb6503b70d2135a63e1c3dc1ea232dceb95a13cca2977b340fead3008004c4"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F1"
+   }
+  },
+  {
+   "id": "cy-s03",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-s03.json",
+    "sha256": "50d6f1947e3e63dce90c0956b5cf3670d6aeb6aa3e9ff3ee5efd06e1043d6e5a"
+   },
+   "truth": {
+    "source": "truth/cy-s03.json",
+    "sha256": "ba3603b15c394cdb1c7674612271ef7a76fafbecc1e27c4ed9e670ecf8de2628"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F3"
+   }
+  },
+  {
+   "id": "cy-s04",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-s04.json",
+    "sha256": "82719d43d873ccd8e98b2eb34018a372983aeec16a81ef710b0e3846ed765cf1"
+   },
+   "truth": {
+    "source": "truth/cy-s04.json",
+    "sha256": "43d124fabf232598c8d10cc774ed6b6e25889ab80642597904e722a529416c9a"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F4"
+   }
+  },
+  {
+   "id": "cy-s05",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-s05.json",
+    "sha256": "075c7eb5b5f31ae91e24f0d0259bd2881cbc5ae45b849760252bdecc35299d2f"
+   },
+   "truth": {
+    "source": "truth/cy-s05.json",
+    "sha256": "065a77074f66364f82a790fc288cab982865bde995c8105f7e56cb2d74de5b3d"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F5"
+   }
+  },
+  {
+   "id": "cy-s06",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-s06.json",
+    "sha256": "d7f6ff158746e6f12ab3e1e580c924384c39a73cf8e8b0f5e7efeda93f98899d"
+   },
+   "truth": {
+    "source": "truth/cy-s06.json",
+    "sha256": "a96ccb0b2451d9d551afaca362fed875596f90dd6b71ff9317039c5afa554885"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F6"
+   }
+  },
+  {
+   "id": "cy-s07",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-s07.json",
+    "sha256": "a932356548c7c5fd59b752d31c3827fb339871b28daef203fbe0b4007395cb18"
+   },
+   "truth": {
+    "source": "truth/cy-s07.json",
+    "sha256": "2054cb5fb1341065235df9d4c43edcb47f86ca5686c1b039ce41eb7082efde29"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F6"
+   }
+  },
+  {
+   "id": "cy-s08",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-s08.json",
+    "sha256": "00382f3b62c96fd3c20968d09360ad47e71411d2db050400eeebf099cc4a672e"
+   },
+   "truth": {
+    "source": "truth/cy-s08.json",
+    "sha256": "f5d296510c05d401b3e5238c48cf126f0b8e55ec2e9f292e32eb76e477ac8e4c"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F7"
+   }
+  },
+  {
+   "id": "cy-s09",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-s09.json",
+    "sha256": "c7750a9b5e9e1ebec3065c61cd0695cf95d29c6eb8ec183d7228663b4585af86"
+   },
+   "truth": {
+    "source": "truth/cy-s09.json",
+    "sha256": "e9eb6dd05b95bc00ff26d5bf573b16412f3d968d17e147c1f273907746f01a49"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F8"
+   }
+  },
+  {
+   "id": "cy-s10",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-s10.json",
+    "sha256": "d42f9d2aebfd1f986da5a2bbbcda40e47201a9e8d806153b227c70205460c07c"
+   },
+   "truth": {
+    "source": "truth/cy-s10.json",
+    "sha256": "350973df90fb282038f30762b3b86fff587d6301f18e3b2bef904964ed411d07"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F9"
+   }
+  },
+  {
+   "id": "cy-s11",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-s11.json",
+    "sha256": "b7901b096d86435c37df45151879be31b5471cb0b1c761bfde1b9a19b8234bb3"
+   },
+   "truth": {
+    "source": "truth/cy-s11.json",
+    "sha256": "b326cffe8f653caddc224ce6735e6aa117ecad43e50bab940b42135091845596"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F10"
+   }
+  },
+  {
+   "id": "cy-s12",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-s12.json",
+    "sha256": "2e78c5c6d63c081ae7cbfc4ff6c0fe89f20259089fd27c1ebc905514fbb90ea8"
+   },
+   "truth": {
+    "source": "truth/cy-s12.json",
+    "sha256": "c665646e41627430183cef2c291adc30b18e4fabf948b13dad3c72d1f1064913"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "product_regression",
+    "f_code": "F11"
+   }
+  },
+  {
+   "id": "cy-s13",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-s13.json",
+    "sha256": "b05120be7b9d85b50f53f66ce4dd5559fbc94e77ed1a5c738464a5390cafc353"
+   },
+   "truth": {
+    "source": "truth/cy-s13.json",
+    "sha256": "5ae61d82353247977076f1df7b2b8b4eb8494c04186ea1d481b23501daee0c85"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F11"
+   }
+  },
+  {
+   "id": "cy-s14",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-s14.json",
+    "sha256": "b9ba9363d6bcb9f203a702320b58555634df064e4220d4af2a44b001d6e2e0a2"
+   },
+   "truth": {
+    "source": "truth/cy-s14.json",
+    "sha256": "2a0ae89f81d7021b70b0e0dbc7a584d1b5590f75883480a7aae4c684209d3d3f"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F13"
+   }
+  },
+  {
+   "id": "cy-s15",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-s15.json",
+    "sha256": "2eb343188933cda5baf508d08576039217f953fb9fbf45cfc0f5ac33a4e36c70"
+   },
+   "truth": {
+    "source": "truth/cy-s15.json",
+    "sha256": "b6623c08980443cb35d4c4eee0c3effe63ee756f3b459da125844b6fddbf5cf0"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F13"
+   }
+  },
+  {
+   "id": "cy-s16",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-s16.json",
+    "sha256": "ce28008c48ba6afe0b926501aeccba52150d6440694fb84a460dbfb725337dae"
+   },
+   "truth": {
+    "source": "truth/cy-s16.json",
+    "sha256": "e466dc4436e6e9c5234f069fff4e7633db36c1b8808fdb6e70cb3e3de6da5a66"
+   },
+   "source_repo": "synthetic-authored",
+   "license": "Apache-2.0",
+   "source_urls": [],
+   "origin": "synthetic",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F15"
+   }
+  },
+  {
+   "id": "pw-n19",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n19.json",
+    "sha256": "10d7bdd488bd28de17c5f001d6779bb13ba57c6159015cdbcd01aa84298fd0ec"
+   },
+   "truth": {
+    "source": "truth/pw-n19.json",
+    "sha256": "12ce564901e560aff873532fe3f2312a075436df2f72106fcef4a9f01c7d45a7"
+   },
+   "source_repo": "adrirubio/claude-deck",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/adrirubio/claude-deck/pull/692"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F2"
+   }
+  },
+  {
+   "id": "pw-n20",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n20.json",
+    "sha256": "0606cd05e20baf36fb37a07274338bf1b30600658e0912195fe7d61fd3fed32e"
+   },
+   "truth": {
+    "source": "truth/pw-n20.json",
+    "sha256": "4e69bc8788ec34f18d1a9e5984dd8631cffe6e6dc35fc63fef0e416ef98d17df"
+   },
+   "source_repo": "cipansor/cipansor",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/cipansor/cipansor/pull/427"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F2"
+   }
+  },
+  {
+   "id": "pw-n21",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n21.json",
+    "sha256": "28816500cbe4a56101c814325d78cf35ef3cda6671abb73e1d101d025e0d12e8"
+   },
+   "truth": {
+    "source": "truth/pw-n21.json",
+    "sha256": "08ce9435fd99ab12a546d16c862d0932680d47d49507b8594cca65ab01a2b959"
+   },
+   "source_repo": "rust-js-lang/rust-js",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/rust-js-lang/rust-js/pull/20"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F2"
+   }
+  },
+  {
+   "id": "pw-n22",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n22.json",
+    "sha256": "a28f85b0f44d4a643c73b387f5f2b07aaca0ac9ef244724ce75a9a352604c5e4"
+   },
+   "truth": {
+    "source": "truth/pw-n22.json",
+    "sha256": "ca5daecd82a044abea3f047cdac9acaf27ef45878253ee844f67a47c6c1977f5"
+   },
+   "source_repo": "samuel-burke/shiftview",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/samuel-burke/shiftview/pull/116"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F2"
+   }
+  },
+  {
+   "id": "pw-n23",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n23.json",
+    "sha256": "65c2550d21d9b45e3b710f9b79c68a3eccfc1fc29f102e909630d9f07f60f0a6"
+   },
+   "truth": {
+    "source": "truth/pw-n23.json",
+    "sha256": "88816b6d1391385c1b760c97ba6d420cfdf002dcc2d86a5f2e6f4b0a84fbdb58"
+   },
+   "source_repo": "akash-network/console",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/akash-network/console/pull/4381"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F12"
+   }
+  },
+  {
+   "id": "pw-n24",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n24.json",
+    "sha256": "3fa3e17267c987c447a3fb211bfe645f10ce68e1a3d334d837c3e1664f271175"
+   },
+   "truth": {
+    "source": "truth/pw-n24.json",
+    "sha256": "51bfb2d495a7c108a608ab8d0082b1329b76544947b063104886f1b8ddc49002"
+   },
+   "source_repo": "OBLIQ-in/OBLIQ-Website",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/OBLIQ-in/OBLIQ-Website/pull/163"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F12"
+   }
+  },
+  {
+   "id": "pw-n25",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n25.json",
+    "sha256": "ba59fb8d87faee068225ae77f49c41654e5b945de269db23bd16c403428210d0"
+   },
+   "truth": {
+    "source": "truth/pw-n25.json",
+    "sha256": "a806d34b6ae283f7506c87c7a7639e00ae5afa637631defdc9bfadb1cd63f342"
+   },
+   "source_repo": "raphaeldenis/openfleet",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/raphaeldenis/openfleet/pull/248"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F12"
+   }
+  },
+  {
+   "id": "pw-n26",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n26.json",
+    "sha256": "3d21a3dbc44cc3d2d48bb69996ef6fbdee95153e52498279ecae78c334ddfce0"
+   },
+   "truth": {
+    "source": "truth/pw-n26.json",
+    "sha256": "8d7cbfe1d508a0c39f1572ae3b654b007432d00ecfbaf5f28b6a6b9f1fcd2d93"
+   },
+   "source_repo": "LumenWipe/lumenwipe",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/LumenWipe/lumenwipe/pull/607"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F12"
+   }
+  },
+  {
+   "id": "pw-n27",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n27.json",
+    "sha256": "a402ccec7d5ca10477ef44011419ace8a1f4e5337378f0ce7e0e36b541f270f1"
+   },
+   "truth": {
+    "source": "truth/pw-n27.json",
+    "sha256": "6d398996bb18c1dfc5994beba5bf4f3042c7f9dae511905257dca5a16e3946e5"
+   },
+   "source_repo": "redhat-developer/rhdh-plugin-export-overlays",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/redhat-developer/rhdh-plugin-export-overlays/pull/4332"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F12"
+   }
+  },
+  {
+   "id": "pw-n28",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n28.json",
+    "sha256": "69e30d576b2a2ea79cf75aabea232f1d5a36a0bd3d38d7aba78d0418f661a0ea"
+   },
+   "truth": {
+    "source": "truth/pw-n28.json",
+    "sha256": "2d3690d9ffc20196aebdbf4c8fd4470ebe441eaf4fe9021f3b082a97a2c23fce"
+   },
+   "source_repo": "super-productivity/super-productivity",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/super-productivity/super-productivity/pull/10816"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F12"
+   }
+  },
+  {
+   "id": "pw-n29",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n29.json",
+    "sha256": "e061a74a3878e66e1511296b06daa2f98583296816a5238623f293e7dc09068a"
+   },
+   "truth": {
+    "source": "truth/pw-n29.json",
+    "sha256": "d680e002433e20081fd11475f72836ed2560aee09bae371970879e2f88bfc79c"
+   },
+   "source_repo": "LodyAI/Lody",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/LodyAI/Lody/pull/895"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F12"
+   }
+  },
+  {
+   "id": "pw-n30",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n30.json",
+    "sha256": "0426b86f4470102fe9e4590b08e06f425d562392890fa880a1624cd224727033"
+   },
+   "truth": {
+    "source": "truth/pw-n30.json",
+    "sha256": "f1b36446523cd6302f47221908f2c3d6d68704da93c51580f415a3453a220e27"
+   },
+   "source_repo": "wcpos/monorepo",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/wcpos/monorepo/pull/2340"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F12"
+   }
+  },
+  {
+   "id": "pw-n31",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n31.json",
+    "sha256": "08658118758ed0b3f91c06c6e384c9c377ab51897c69666be10718f7b5dd5aa9"
+   },
+   "truth": {
+    "source": "truth/pw-n31.json",
+    "sha256": "df7d417e8ae88204535ad1fc24449bfe7c67353971e27a308000b3ecd89a8327"
+   },
+   "source_repo": "joshuasundance-swca/throttlebrawl",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/joshuasundance-swca/throttlebrawl/pull/507"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F1"
+   }
+  },
+  {
+   "id": "pw-n32",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n32.json",
+    "sha256": "bac0c18b07b29558b81fe2e6a3b9f2a3838d49398283b3fd1fd07493d05d38f0"
+   },
+   "truth": {
+    "source": "truth/pw-n32.json",
+    "sha256": "a74ff09e73b903ae67cd4507c42c53421656876c4c60b157f9a5de6faca120c8"
+   },
+   "source_repo": "oxyc/den-edge",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/oxyc/den-edge/pull/401"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F1"
+   }
+  },
+  {
+   "id": "pw-n33",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n33.json",
+    "sha256": "b139899ab2441a3dd97c3cdcc068015eb05c3bb2190019b3e18501779eaceb2a"
+   },
+   "truth": {
+    "source": "truth/pw-n33.json",
+    "sha256": "d895588098e8e64b5a795816bf0d48bc01abd63a8a87aa1fb29eb5c2b3918cb0"
+   },
+   "source_repo": "smart-ssh/smart_ssh",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/smart-ssh/smart_ssh/pull/438"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F1"
+   }
+  },
+  {
+   "id": "cy-n11",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-n11.json",
+    "sha256": "5d60d0b4361ac0c18c7cf54c8c6f9a6c10e4871be23fdb9883415733b9644ff3"
+   },
+   "truth": {
+    "source": "truth/cy-n11.json",
+    "sha256": "a9d0ac2500f3fe7c13fefd7e9e2a6210a9181e6951746cbd494e001bf4014e34"
+   },
+   "source_repo": "centreon/centreon",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/centreon/centreon/pull/12013"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F11"
+   }
+  },
+  {
+   "id": "pw-n34",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n34.json",
+    "sha256": "543916242b4b7a3d03298ee3993ba0f4063800f64f2245f5175610fd37776828"
+   },
+   "truth": {
+    "source": "truth/pw-n34.json",
+    "sha256": "f7e72255542bb7e436c8325c9e6a37b5205d68e17d492ed3425a7692f0b3d4fa"
+   },
+   "source_repo": "kernelKain/footwork",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/kernelKain/footwork/pull/11"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F1"
+   }
+  },
+  {
+   "id": "pw-n35",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n35.json",
+    "sha256": "2b170678ba89de597271932791b1ca64d5e671775649420b6ce95581bae17b5d"
+   },
+   "truth": {
+    "source": "truth/pw-n35.json",
+    "sha256": "0439262c8360912f038804b8467c2d3650e6258dbac52418f3c1a59c88bc5c4b"
+   },
+   "source_repo": "sean1093/kaeru",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/sean1093/kaeru/pull/112"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F14"
+   }
+  },
+  {
+   "id": "pw-n36",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n36.json",
+    "sha256": "90a27dbca255f3fca441086f4981cf48b634e1a6fa03a1364a903dc09ed45ded"
+   },
+   "truth": {
+    "source": "truth/pw-n36.json",
+    "sha256": "1f3cbdc82a5f754ab7ac0ec8c7bd9deec63dddea6d5043ff760dab8ad9d94dff"
+   },
+   "source_repo": "piconic-ai/barefootjs",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/piconic-ai/barefootjs/pull/3077"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F15"
+   }
+  },
+  {
+   "id": "cy-n12",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-n12.json",
+    "sha256": "73ecc10398f1e83420b7d1f9f7e3241ec151f95f12f271cf44b847c9ba5651b5"
+   },
+   "truth": {
+    "source": "truth/cy-n12.json",
+    "sha256": "fd360ad89b9150c7c60114574ffc59b97143aa6d8c9ae2e5f599f770299c502d"
+   },
+   "source_repo": "dominiksmolinski3/KanbanProject",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/dominiksmolinski3/KanbanProject/pull/219"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F11"
+   }
+  },
+  {
+   "id": "pw-n37",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n37.json",
+    "sha256": "204cd504c37829f65689068cfeb28477946a9743bd782cc15dba9107853ea399"
+   },
+   "truth": {
+    "source": "truth/pw-n37.json",
+    "sha256": "7daf0d520cca181be8db4087dc5d127690dbae749680dac473846eb4c7b45b9a"
+   },
+   "source_repo": "garaemon/meme-generator",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/garaemon/meme-generator/pull/17"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F11"
+   }
+  },
+  {
+   "id": "cy-n13",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-n13.json",
+    "sha256": "bb68dea276e0f790535406453a03b3305f1867e6d72e621cbd0825b3c7a4c6b7"
+   },
+   "truth": {
+    "source": "truth/cy-n13.json",
+    "sha256": "d762d84ddb4551367957219f207e2b73a8700792869a3450d52c819010bf0149"
+   },
+   "source_repo": "wso2/apim-apps",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/wso2/apim-apps/pull/1423"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F11"
+   }
+  },
+  {
+   "id": "cy-n14",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-n14.json",
+    "sha256": "375447add283893a9d0c6f35f72f5dbf35e1d059c07d7f0fc78c144444910cbc"
+   },
+   "truth": {
+    "source": "truth/cy-n14.json",
+    "sha256": "935e040fb96419ba3fa51c81117bb629f20cdc89c6a0255add3282d8491bdd8e"
+   },
+   "source_repo": "stackrox/stackrox",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/stackrox/stackrox/pull/22436"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F11"
+   }
+  },
+  {
+   "id": "pw-n38",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n38.json",
+    "sha256": "7a05c8d9984ff7c636e860ff7b33c44719d08e390922cd57435f7e49b7a2db23"
+   },
+   "truth": {
+    "source": "truth/pw-n38.json",
+    "sha256": "80cbb696d527b0887ae35d075d5c819cdbfebd455abb94ddaf30b0c6fd03a927"
+   },
+   "source_repo": "openooxml/betteroffice",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/openooxml/betteroffice/pull/1386"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F11"
+   }
+  },
+  {
+   "id": "pw-n39",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n39.json",
+    "sha256": "e28c716b15a495019bc2793e22ebc91428db7b702a49f96ab86fcd1a4d2a1638"
+   },
+   "truth": {
+    "source": "truth/pw-n39.json",
+    "sha256": "11ab54bc5a769aa4abdbb0fe34e22195fa7eaf8356f6ffcee614102a7029ded3"
+   },
+   "source_repo": "surveyjs/survey-library",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/surveyjs/survey-library/pull/11955"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F11"
+   }
+  },
+  {
+   "id": "pw-n40",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n40.json",
+    "sha256": "7a0f375cc37bd5e0638d069c4be05bc72f26f65c8892c8fd2595f45f2fce05bf"
+   },
+   "truth": {
+    "source": "truth/pw-n40.json",
+    "sha256": "8013393aafa21519aed4ba3587ba9c29a7d9f6753181bd802f218e7a0a0904e7"
+   },
+   "source_repo": "Inkaengine/inka",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/Inkaengine/inka/pull/483"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F11"
+   }
+  },
+  {
+   "id": "pw-n41",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n41.json",
+    "sha256": "f1a67f77faf8cfc639c0cde137030ae60eb189b23d401a3a81c1497b8be2ff20"
+   },
+   "truth": {
+    "source": "truth/pw-n41.json",
+    "sha256": "04939aefe58165e47dfc9bbe2b64d880d8fbc05442924632af8153beb470955b"
+   },
+   "source_repo": "eddieland/canopy",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/eddieland/canopy/pull/367"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F5"
+   }
+  },
+  {
+   "id": "pw-n42",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n42.json",
+    "sha256": "0eb4d763867a1a7a540a55fe1450559cc71e6cd88cb34cbd395a998ee471c49c"
+   },
+   "truth": {
+    "source": "truth/pw-n42.json",
+    "sha256": "8a02852f71b5950d1e00ae9b49f111d533a45eb6ba984ae7e02a3535e5609344"
+   },
+   "source_repo": "cieyhomelab/mounjaro-przepisy",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/cieyhomelab/mounjaro-przepisy/pull/89"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F5"
+   }
+  },
+  {
+   "id": "pw-n43",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n43.json",
+    "sha256": "0ee8c83ccc088532d1c6ccefa7a0f1b6429cb92df03aa0de7ab21bc4f86fd2ed"
+   },
+   "truth": {
+    "source": "truth/pw-n43.json",
+    "sha256": "66eef5401e802724f884f248d2da4fdee3d20b95ee44285495ea2dc35a3cf96b"
+   },
+   "source_repo": "dam-agents/dam",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/dam-agents/dam/pull/4396"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F7"
+   }
+  },
+  {
+   "id": "pw-n44",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n44.json",
+    "sha256": "96ce8b702ba3373493224a396f45142d26e6aead1d909c46eef35845662841dd"
+   },
+   "truth": {
+    "source": "truth/pw-n44.json",
+    "sha256": "68dd5589e4eabea0960c975bcd6b58695b509b620657b5f19edcd11c1b929050"
+   },
+   "source_repo": "super-productivity/super-productivity",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/super-productivity/super-productivity/pull/10596"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F14"
+   }
+  },
+  {
+   "id": "cy-n15",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-n15.json",
+    "sha256": "2a0055851dcad2b65ba1b0a7cfe1757eeed6a987cd8922c911fccec34e121221"
+   },
+   "truth": {
+    "source": "truth/cy-n15.json",
+    "sha256": "ae73bc82b224b6c34b42183a643204815b538088b75ad808230d300f5d0395f7"
+   },
+   "source_repo": "opensearch-project/opensearch-dashboards-functional-test",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/opensearch-project/opensearch-dashboards-functional-test/pull/2171"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F14"
+   }
+  },
+  {
+   "id": "cy-n16",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-n16.json",
+    "sha256": "ff680bc3a61a41a669139063efe609c7f4aa337901742ea2a6fd9bc5292b8f01"
+   },
+   "truth": {
+    "source": "truth/cy-n16.json",
+    "sha256": "a560ae43523ac664e7dadd6d96d083c2fcbed5b06044c0bf3558a5aeb4a124a6"
+   },
+   "source_repo": "SAP/spartacus",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/SAP/spartacus/pull/21798"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F14"
+   }
+  },
+  {
+   "id": "cy-n17",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-n17.json",
+    "sha256": "dc7154c28e9c3b5b1dfa63333615b9bc38b37ab66c069a5b84aeead0dd0e146b"
+   },
+   "truth": {
+    "source": "truth/cy-n17.json",
+    "sha256": "23fe37ec7c9117195f1bfafc845fc4379b9ea3c23102bd37ca5cad70a99553d0"
+   },
+   "source_repo": "IQSS/dataverse-frontend",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/IQSS/dataverse-frontend/pull/1086"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F3"
+   }
+  },
+  {
+   "id": "pw-n45",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n45.json",
+    "sha256": "82bb455b15dc63c497e6a9eabf1c5717e211aee5bc78bdae920e9786c74a8df3"
+   },
+   "truth": {
+    "source": "truth/pw-n45.json",
+    "sha256": "335c6afeeee6e6f7fc931736d17e754389f8aef874251857ce5bbb8330d8466b"
+   },
+   "source_repo": "funsaized/herdr-mise",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/funsaized/herdr-mise/pull/283"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F3"
+   }
+  },
+  {
+   "id": "pw-n46",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n46.json",
+    "sha256": "af13eb80753ab211b0b1503124740bc4713958cbc4eedc264c9dd9353fd8471b"
+   },
+   "truth": {
+    "source": "truth/pw-n46.json",
+    "sha256": "95b14ac5433a30a016fe8c8f42b393f98e171b17c3bc3908bbb02c50dd03f7f3"
+   },
+   "source_repo": "kiani66/hospital-shift-planning",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/kiani66/hospital-shift-planning/pull/16"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F10"
+   }
+  },
+  {
+   "id": "pw-n47",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n47.json",
+    "sha256": "a6dd4f5eefaa709160fdc56f385161b534916377a4f1491deafd4a2b7991d75d"
+   },
+   "truth": {
+    "source": "truth/pw-n47.json",
+    "sha256": "0672b0401b2a9d91194998780a821213121ad4bee9214f979e7bd077f58aa87d"
+   },
+   "source_repo": "antoniohg/astro-image-zoom",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/antoniohg/astro-image-zoom/pull/47"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F7"
+   }
+  },
+  {
+   "id": "pw-n48",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n48.json",
+    "sha256": "915d8864d82ddaca10c3b724fcb4f935d1e3c773f9428fb050c1cb6b0924d271"
+   },
+   "truth": {
+    "source": "truth/pw-n48.json",
+    "sha256": "5506a971aae84c7805fe2d78867500fe2edea238e1415fe6905ff629d338dfb5"
+   },
+   "source_repo": "jakemismas/QREP",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/jakemismas/QREP/pull/235"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F8"
+   }
+  },
+  {
+   "id": "pw-n49",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n49.json",
+    "sha256": "097499efeee0f7f8231b5266b34c7a6ae10f45612b33c023e0af7d833ec14385"
+   },
+   "truth": {
+    "source": "truth/pw-n49.json",
+    "sha256": "785aeb676f65da5b43d981b789791375d1f1bc115cfd3bc630241496156a03c6"
+   },
+   "source_repo": "microting/eform-backendconfiguration-plugin",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/microting/eform-backendconfiguration-plugin/pull/1319"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F11"
+   }
+  },
+  {
+   "id": "pw-n50",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n50.json",
+    "sha256": "cb93ce1957e992daed52e19fad3ec0834f01f517b6843df7c1e6912af00cd61d"
+   },
+   "truth": {
+    "source": "truth/pw-n50.json",
+    "sha256": "48ec381d7cbef7186cfca0baeb8ff81aaef3f3bda21e2fd2cd6f4de18611667b"
+   },
+   "source_repo": "royerlab/luxar",
+   "license": "BSD-3-Clause",
+   "source_urls": [
+    "https://github.com/royerlab/luxar/pull/3076"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F1"
+   }
+  },
+  {
+   "id": "pw-n51",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n51.json",
+    "sha256": "7fb08c8c7cdba9fb47c30872ee7d79d2cf7b2e909cb90f096f1af8e07515b38e"
+   },
+   "truth": {
+    "source": "truth/pw-n51.json",
+    "sha256": "c3a4910b200aa31420c56cbe22294f6bc868119b80b1b7f4c2480bf2e0c44379"
+   },
+   "source_repo": "simstudioai/sim",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/simstudioai/sim/pull/8951"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F14"
+   }
+  },
+  {
+   "id": "pw-n52",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n52.json",
+    "sha256": "3e9f3a5624730412f30e50e600d7fc6ad2a6c616569d7740f9bda2b16b2aecc0"
+   },
+   "truth": {
+    "source": "truth/pw-n52.json",
+    "sha256": "8e7e4ecb345a497021c41996b40136182b57a164cf712c0b078bd25a04199422"
+   },
+   "source_repo": "joseamaya/edades-del-peru",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/joseamaya/edades-del-peru/pull/47"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F1"
+   }
+  },
+  {
+   "id": "pw-n53",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n53.json",
+    "sha256": "2abc8bb08fd0b0ced57f3586f93f4fd51fde1f7433d57ed3b74ee9b1a49a936a"
+   },
+   "truth": {
+    "source": "truth/pw-n53.json",
+    "sha256": "9612b7e9ee49ce8f8ae92b3b9983010c02010568ee517eb3b72763efa99677d1"
+   },
+   "source_repo": "cieyhomelab/mounjaro-przepisy",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/cieyhomelab/mounjaro-przepisy/pull/72"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F11"
+   }
+  },
+  {
+   "id": "cy-n18",
+   "framework": "cypress",
+   "artifact": {
+    "source": "cases/cy-n18.json",
+    "sha256": "6e17b599773440d8a6d24314fcb7906fb832bc1ad159faecb3665f8895e5b3b3"
+   },
+   "truth": {
+    "source": "truth/cy-n18.json",
+    "sha256": "fe6e324a259b030d637e993d80d69424b9d97497b17f97f1ebd1e22d71053229"
+   },
+   "source_repo": "neurobagel/query-tool",
+   "license": "MIT",
+   "source_urls": [
+    "https://github.com/neurobagel/query-tool/pull/853"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F11"
+   }
+  },
+  {
+   "id": "pw-n54",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n54.json",
+    "sha256": "05ce9ad8986ae300a7281e39f804bc83c17e0d41dd74cc47a05c59c54264e28f"
+   },
+   "truth": {
+    "source": "truth/pw-n54.json",
+    "sha256": "02b2f1c6a027332fbfeee30a8655809885e7a523d607f720a9c7a132f3fc7b1d"
+   },
+   "source_repo": "maximhq/bifrost",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/maximhq/bifrost/pull/8365"
+   ],
+   "origin": "real",
+   "label_fit": "forced",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F5"
+   }
+  },
+  {
+   "id": "pw-n55",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n55.json",
+    "sha256": "168dc009da146dd0b0afcde68ba87df02ab9168996aed82597dcc54e06a4d3ab"
+   },
+   "truth": {
+    "source": "truth/pw-n55.json",
+    "sha256": "fb8e13f50efe821541e38a00ab9e8a2e0d1d3f96ef42b956d1a064eff23585ad"
+   },
+   "source_repo": "kubeflow/kale",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/kubeflow/kale/pull/982"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F2"
+   }
+  },
+  {
+   "id": "pw-n56",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n56.json",
+    "sha256": "c82638d6ad123895a39db27de5f885abb9173ab914ea9efcae400bbcd127089d"
+   },
+   "truth": {
+    "source": "truth/pw-n56.json",
+    "sha256": "9c6bcd19d562474dd221e8c151b7fcedb8bb629b454b34ad42e524a19a764717"
+   },
+   "source_repo": "kubeflow/kale",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/kubeflow/kale/pull/982"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F2"
+   }
+  },
+  {
+   "id": "pw-n57",
+   "framework": "playwright",
+   "artifact": {
+    "source": "cases/pw-n57.json",
+    "sha256": "7cecfee3ef303d9e98cb72a5158f21a23481a81d4979166a59219d48658469b2"
+   },
+   "truth": {
+    "source": "truth/pw-n57.json",
+    "sha256": "aa56935006cb90f6be573cca09577f10d064980a4f87fa9b8d5ec05eff10f6e1"
+   },
+   "source_repo": "kubeflow/kale",
+   "license": "Apache-2.0",
+   "source_urls": [
+    "https://github.com/kubeflow/kale/pull/982"
+   ],
+   "origin": "real",
+   "label_fit": "clean",
+   "raw_ci_log": false,
+   "expected": {
+    "diagnosis": "test_defect",
+    "f_code": "F7"
+   }
+  }
+ ]
+}

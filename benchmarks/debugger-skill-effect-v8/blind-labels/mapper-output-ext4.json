@@ -1,0 +1,20 @@
+{
+ "item-105": {
+  "f_code": "F2",
+  "fit": "clean",
+  "reason": "The aria-label selector matches both the Tooltip wrapper and the button, causing a locator count mismatch.",
+  "second_choice": null
+ },
+ "item-106": {
+  "f_code": "F7",
+  "fit": "clean",
+  "reason": "Notebooks left by earlier tests are restored in the shared server and cause a dialog that blocks the next test.",
+  "second_choice": null
+ },
+ "item-107": {
+  "f_code": "F2",
+  "fit": "clean",
+  "reason": "The substring label locator matches both the textbox and checkbox, causing a locator count mismatch.",
+  "second_choice": null
+ }
+}

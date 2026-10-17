@@ -1,0 +1,13 @@
+{
+ "source": {
+  "repo": "synthetic-authored",
+  "license": "Apache-2.0",
+  "urls": [],
+  "merged": null,
+  "origin": "synthetic-authored"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (hard-coded data)",
+ "explanation": "The test relies on an order with id 10482 that exists in the old staging data but not in a database created by migrations alone.",
+ "fix": "Create the order through the API or a seed fixture in the test and use its returned id."
+}

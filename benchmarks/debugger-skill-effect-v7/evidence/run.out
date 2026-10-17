@@ -1,0 +1,36 @@
+model: 336 calls on claude model='sonnet' canonical='claude-sonnet-5-5' cli='2.1.300 (Claude Code)'
+  10/336 done
+  20/336 done
+  30/336 done
+  40/336 done
+  50/336 done
+  60/336 done
+  70/336 done
+  80/336 done
+  90/336 done
+  100/336 done
+  110/336 done
+  120/336 done
+  130/336 done
+  140/336 done
+  150/336 done
+  160/336 done
+  170/336 done
+  180/336 done
+  190/336 done
+  200/336 done
+  210/336 done
+  220/336 done
+  230/336 done
+  240/336 done
+  250/336 done
+  260/336 done
+  270/336 done
+  280/336 done
+  290/336 done
+  300/336 done
+  310/336 done
+  320/336 done
+  330/336 done
+  336/336 done
+wrote /Users/example/.cache/e2e-skills-bench/debugger-v7/model.json

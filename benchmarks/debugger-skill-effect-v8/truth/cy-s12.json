@@ -1,0 +1,13 @@
+{
+ "source": {
+  "repo": "synthetic-authored",
+  "license": "Apache-2.0",
+  "urls": [],
+  "merged": null,
+  "origin": "synthetic-authored"
+ },
+ "diagnosis": "product_regression",
+ "side": "Product (stale response overwrites newer)",
+ "explanation": "The search box fires a request for each input without cancelling or ignoring the older ones. When the response to q=a arrives after the response to q=ab, it overwrites the newer result. The assertion is correct.",
+ "fix": "Cancel the previous request (AbortController) or ignore responses that do not belong to the latest query."
+}

@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "cypress-io/cypress",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/cypress-io/cypress/pull/34446"
+  ],
+  "merged": "2026-08-02",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (shared route)",
+ "explanation": "The body-parsing intercepts match any HTTP method on the shared /post-only URL. A request fired by the sibling test (a GET with no content-type header) can arrive after its test ended and is matched against the next test's still-registered route, so the handler sees content-type undefined. The proxy matches incoming requests only by URL and method against whichever routes are registered, with no marker of which test they came from.",
+ "fix": "Scope the three body-parsing intercepts to POST ({ method: 'POST', url: '/post-only' }) so a leaked GET can no longer match."
+}

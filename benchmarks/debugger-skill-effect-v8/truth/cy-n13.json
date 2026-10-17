@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "wso2/apim-apps",
+  "license": "Apache-2.0",
+  "urls": [
+   "https://github.com/wso2/apim-apps/pull/1423"
+  ],
+  "merged": "2026-09-07",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (race on unordered async results)",
+ "explanation": "The intercept is registered after the visit, so it can miss the app's own on-mount fetch, and the test waits only for the attribute request, not for the tiers request. Save can run its validation before the attribute list has loaded and fail.",
+ "fix": "Register both intercepts (@attrGet and @tiersGet) before cy.visit() and cy.wait(['@attrGet', '@tiersGet']) before touching the form."
+}

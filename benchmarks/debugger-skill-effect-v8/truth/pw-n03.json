@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "Guillaume-Docquier/text-based-browser-game-1",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/Guillaume-Docquier/text-based-browser-game-1/pull/476"
+  ],
+  "merged": "2026-09-26",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (page object)",
+ "explanation": "startGame() returned right after the click while the start mutation was still in progress, so Bob's reload could happen before the game entered its started state and left him on the stale lobby view.",
+ "fix": "Wait for Alice's galaxy URL (which is reached only after the start mutation succeeds) before startGame() returns."
+}

@@ -1,0 +1,15 @@
+{
+ "source": {
+  "repo": "funsaized/herdr-mise",
+  "license": "MIT",
+  "urls": [
+   "https://github.com/funsaized/herdr-mise/pull/283"
+  ],
+  "merged": "2026-09-25",
+  "origin": "real-merged-fix"
+ },
+ "diagnosis": "test_defect",
+ "side": "Test (external dependency)",
+ "explanation": "The fixture socket server has no error handler on accepted sockets. When the app resets a subscription, which happens often on a loaded runner, a later write raises EPIPE or ECONNRESET as an unhandled error that Playwright attributes to the running test.",
+ "fix": "Add socket.on('error', () => socket.destroy()) so the reset connection is dropped instead of surfacing as an unhandled error."
+}
