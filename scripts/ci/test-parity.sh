@@ -244,6 +244,19 @@ path.write_text(text.replace(old, new, 1))
 PY
 }
 
+mutate_all() {
+  python3 - "$1" "$2" "$3" <<'PY'
+import pathlib, sys
+path = pathlib.Path(sys.argv[1])
+old = sys.argv[2]
+new = sys.argv[3]
+text = path.read_text()
+if old not in text:
+    sys.exit(f"mutate_all: substring not found in {path}: {old!r}")
+path.write_text(text.replace(old, new))
+PY
+}
+
 echo "-- Drift smoke test --"
 
 # Case 1: bogus pattern id in grep-patterns.md (Check 1)
@@ -1300,26 +1313,27 @@ assert_fails \
   "README.md Codex delegation limits missing tokens"
 restore "$file"
 
-# review.sh requires the exact "works only with a session-wide ... MCP server"
-# sentence, not a bare "session-wide" token: the section mentions session-wide
-# scope several more times, so dropping "only" must still be caught.
+# review.sh requires the exact scope phrase, not a bare "session-wide" token.
+# Remove every copy of that phrase so another mention cannot mask the drift.
 file="README.md"
 backup "$file"
-mutate "$file" 'works only with a session-wide' 'works with a'
+mutate_all "$file" \
+  'works only with a session-wide `playwright-test` MCP server' \
+  'works with a `playwright-test` MCP server'
 assert_fails \
   "README Codex delegation — session-wide MCP scope is required" \
   "README.md Codex delegation limits missing tokens"
 restore "$file"
 
-# Each translation carries the same scope sentence in its own words; weakening
-# "only when" to "when" must be caught per language.
+# Each translation carries the same scope sentence in its own words; removing
+# every copy of its required phrase must be caught per language.
 for spec in \
-  'README.ko.md|있을 때만 동작합니다|있을 때 동작합니다' \
-  'README.ja.md|がある場合にのみ動作します|がある場合に動作します' \
-  'README.zh-cn.md|只有存在 session-wide 的|存在 session-wide 的'; do
+  'README.ko.md|session-wide `playwright-test` MCP 서버가 있을 때만 동작합니다|`playwright-test` MCP 서버가 있을 때 동작합니다' \
+  'README.ja.md|session-wide な `playwright-test` MCP サーバーがある場合にのみ動作します|`playwright-test` MCP サーバーがある場合に動作します' \
+  'README.zh-cn.md|只有存在 session-wide 的 `playwright-test` MCP 服务器时才可用|存在 `playwright-test` MCP 服务器时可用'; do
   IFS='|' read -r file old new <<<"$spec"
   backup "$file"
-  mutate "$file" "$old" "$new"
+  mutate_all "$file" "$old" "$new"
   assert_fails \
     "README Codex delegation — $file session-wide MCP scope is required" \
     "$file Codex delegation limits missing tokens"

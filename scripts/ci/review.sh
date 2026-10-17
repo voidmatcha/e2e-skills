@@ -1751,7 +1751,7 @@ contract_re = re.compile(
 )
 contract_hashes = {
     "README.md": "6eb8a1fc9cd62b9fa2e29fa8d31818f50a9835083dbeb0ede25512e42f14f446",
-    "README.ko.md": "8f5be5f8815055d562d2b09a8a414bc5b9653a1dbcfc984624e8c2867f03a4e8",
+    "README.ko.md": "408d3e5fc8ae3ae7b2f7c67ec01980dab331a67217e1e663e5be18231eb37dbd",
     "README.ja.md": "4ea36636e043250993db7ec5728cfd663783fb68a10c128411cc3fc78feac923",
     "README.zh-cn.md": "0e3238cf1e62f2954bcf1f1b9e62f3e7275e0104a53abf8ebbbe374dd0a106ba",
 }
