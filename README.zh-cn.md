@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=3c5ae18b965c890663f206ac2fe883ee60dad469dab63e0f8c846dcca120f335; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=1ebd045a7e23136a1d351091651b954dbcd7b6b15fd45cc6dadb8f0e8daddbb5; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 证据范围：这里展示的 15 个已合并 PR 是精选示例，并非总数。Field review v1 按其 Skill 名称纳入规则另行记录了提交 29 个、已合并 16 个、已关闭 6 个、仍开放 7 个；请勿把两个分母合并。这些都是记录时的快照，而不是 GitHub 当前的总数。
 
@@ -35,7 +35,7 @@
 
 对于人工或 AI 编写的测试，可以把 `e2e-reviewer` 用作独立的质量门禁。它会检查一个通过的测试是否真的证明了标题所描述的行为。
 
-各 Skill 的证据水平不同：审查器拥有最强的实测结果，生成器仅有 2.x 流水线在公开任务上有实测，3.0.0 的路由器只有与官方 agents 的开发阶段对比（3 个模型、6 个合成任务），调试器则是只报告产物所支持原因的安全产物读取器，并未被测出比普通提示更准确。[基准状态](benchmarks/STATUS.md)为每个 Skill 提供了一张证据卡。
+各 Skill 的证据水平不同：审查器拥有最强的实测结果，生成器仅有 2.x 流水线在公开任务上有实测，3.0.0 的路由器只有在官方 agents 之上加入 thin 规则和扫描器门禁的开发阶段运行（3 个模型、6 个合成任务），调试器则是只报告产物所支持原因的安全产物读取器，并未被测出比普通提示更准确。[基准状态](benchmarks/STATUS.md)为每个 Skill 提供了一张证据卡。
 
 | 需求 | Skill | 结果 |
 | --- | --- | --- |
@@ -45,7 +45,7 @@
 | 调试失败的 Cypress 运行 | `cypress-debugger` | F1–F15 根本原因、证据和修复 |
 | 运行确定性本地扫描 | `skills/e2e-reviewer/scripts/scan.sh` | 不依赖目标项目 package 的机械候选项 |
 
-生成器是一个路由器：它用 Playwright CLI 探索真实页面，或在官方 Playwright agents 已就绪时委派给它们；按简短的规则清单编写 spec，运行审查器的扫描器，然后把测试运行一次。与官方 agents 的开发阶段对比满足了预先登记的采用规则，并发布了“CLI-first thin workflow adopted as default path (development point rule)”（开发阶段，3 个模型，6 个合成任务）。CLI 路径的质量点估计差异在五项指标上都处于预先登记的 -0.10 范围内，实测处理 token 成本为官方 agents 的 0.54 至 0.59 倍(95% 区间 0.43 至 0.77)，预先登记的上限为 1.10。不主张质量提升。该采用依据运行器对工具使用的分类；基于日志的重新统计在全部 144 个 CLI 臂单元上复现了该分类，此前在两个模型上统计更少的 rollout 正则表达式存在缺陷（[结果](benchmarks/generator-thin-eval-v1-stage2/RESULTS.md)，[thin-eval](benchmarks/generator-thin-eval-v1/README.md)）。两个调试器从失败运行的 artifact 入手，返回已分类的根本原因、支持证据和具体修复。
+生成器是一个路由器：当官方 Playwright planner 和 generator 已安装且其 MCP 工具可见时，它把简短的规则清单（`thin-rules.md`）和安全指令前置到提示中并委派给它们，运行审查器的扫描器，然后把测试运行一次；未设置时，它展示设置指南并停止。其证据是 [thin-eval](benchmarks/generator-thin-eval-v1/README.md)（[第 2 阶段结果](benchmarks/generator-thin-eval-v1-stage2/RESULTS.md)）的 D 臂（官方 generator 加 thin 规则）和 E 臂（D 加一个修复 P0/P1 并运行一次测试的扫描器步骤）（开发阶段，3 个模型，6 个合成任务，仅 Codex）。D 和 E 的每个单元都使用了官方 MCP 工具，没有超时、重试或安全违规。发布的 skill 增加了 planner 步骤、安全文本、按文件的加固扫描器调用与 3 轮上限，以及 baseURL 和一次性栈检查，这些都未经测量，因此其扫描器门禁只是与 E 相似的门禁，而不是测得的 E 流程。不主张质量或成本结果。对比中的 CLI 臂不随版本发布：CLI 路径已移除，因为它与官方 agents 的等价性未被证明。两个调试器从失败运行的 artifact 入手，返回已分类的根本原因、支持证据和具体修复。
 
 false-green 检测是审查工作流的重要组成部分，但不是整个 bundle 的唯一用途。基于 `e2e-reviewer` 发现的修复已通过 [15 个合入上游的 PR](#merged-upstream-fixes) 合入，其中包括 Storybook、SvelteKit、code-server、Strapi、Carbon Design System、Ghost 和 MUI X。
 
@@ -161,7 +161,7 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a claude-code
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a codex
 ```
 
-对于 Codex 委派，`e2e-reviewer`、`playwright-debugger` 和 `cypress-debugger` 可以尝试 native role 委派，也可以使用等价的 inline fallback。`playwright-test-generator` 在默认路径上不需要委派，因为 Playwright CLI 工作流直接在 Codex 的 shell 中运行；委派给官方 Playwright generator 是可选的，并且由于 `spawn_agent` 无法选择 role，只有存在 session-wide 的 `playwright-test` MCP 服务器时才可用。
+对于 Codex 委派，`e2e-reviewer`、`playwright-debugger` 和 `cypress-debugger` 可以尝试 native role 委派，也可以使用等价的 inline fallback。`playwright-test-generator` 委派给官方 Playwright generator，由于 `spawn_agent` 无法选择 role，只有存在 session-wide 的 `playwright-test` MCP 服务器时才可用；没有该服务器时，skill 展示设置指南并停止。
 
 **截至 2026 年 9 月，Codex 上的 native role 委派尚未验证能正常工作，不应依赖它。** 实测发现会话内委派会确定性地失败，报出内部错误 `collab spawn failed: no thread with id` —— 这是一个已知的、仍未解决的上游问题（[openai/codex#41474](https://github.com/openai/codex/issues/41474)、[#33672](https://github.com/openai/codex/issues/33672)）。即使没有报错，模型自己声称委派成功的说法也不可信。完整证据见 [`benchmarks/subagent-routing-v1/`](benchmarks/subagent-routing-v1/README.md)。每个 skill 的 inline fallback 都会得出相同结论，所以正确性不受影响——但目前安装这些 named agent 在 Codex 上并不能带来任何实测到的好处。
 
@@ -232,9 +232,9 @@ Debug the failed Cypress report in cypress/reports/.
 
 生成的测试仅仅通过还不够：它可能断言的是 `Locator` 或 `Promise` 本身，观察的状态与测试名称所描述的行为无关，或者主要断言根本不影响测试结果。因此，生成器会运行 `e2e-reviewer` 扫描器并修复所有 P0 和 P1 命中，然后把项目测试运行一次。扫描器是确定性的，只覆盖目录中可机械检测的子集，并不能证明断言会失败。
 
-生成器从 `playwright.config.*` 读取 `baseURL`，只有在官方 Playwright planner 和 generator 的 agent 定义及 `playwright-test` MCP 工具已经存在时才使用它们；否则它只需 shell 和 Playwright，自己用 Playwright CLI 探索。它不会要求你配置 MCP，不安装任何东西，不运行官方 healer，也不会为了让测试通过而削弱断言；失败的测试交给 `playwright-debugger` 或手动修复。
+生成器从 `playwright.config.*` 读取 `baseURL`，只有在官方 Playwright planner 和 generator 的 agent 定义及 `playwright-test` MCP 工具已经存在时才委派给它们，并把 `thin-rules.md` 和安全指令前置到提示中。未设置时，它展示设置指南（`init-agents`，然后带工具审批地声明 MCP 服务器）并停止。它不安装任何东西，不写入 agent 或 MCP 配置，不运行官方 healer，也不会为了让测试通过而削弱断言；失败的测试交给 `playwright-debugger` 或手动修复。
 
-探索只在 loopback 目标上允许；远程 origin 仅当你在聊天中指明并声明它是一次性的非生产环境时才允许，并且该 origin 会固定在 CLI 的 origin 允许列表（`network.allowedOrigins`）中。生产、共享或未指明的目标会被拒绝；由于官方 agent 委派路径无法固定 origin，它只限 loopback。如果没有可用的 CLI，生成器会请你提供脱敏快照或自行安装 CLI，并把 locator 标为未验证。
+委派只限 loopback：官方 agents 的浏览器无法固定 origin，因此生产、共享、未指明和远程目标都会被拒绝，包括你声明为一次性的远程 origin，skill 会转而请你提供 loopback 栈。报告列出所有未执行的检查；如果审查器的 fault check 可用，只作为可选的后续步骤提供，绝不报告为已测量。
 
 要回到 2.x 生成器（审批表和 V1–V6），请安装 `v2.0.1` 标签：skills CLI 使用 `npx --yes skills@1.5.21 add voidmatcha/e2e-skills#v2.0.1 --skill '*' -g -a claude-code`，Claude Code 市场使用 `/plugin marketplace add voidmatcha/e2e-skills#v2.0.1`，然后执行 `/plugin install e2e-skills@voidmatcha`。两种方式都在临时目录中针对该标签验证过（skills CLI 在不带 `-g` 的项目范围内验证）；替换已存在的 `voidmatcha` 市场条目未验证。
 
@@ -271,7 +271,7 @@ Debug the failed Cypress report in cypress/reports/.
 - 针对已停用的 2.x 生成器：[Generator skill-effect v1](benchmarks/generator-skill-effect-v1/README.md)是生成器的首次实测：在 10 个新编写的小型应用上采用确定性的缺陷检出评分，使用技能的 `claude-sonnet-5-5` 在 30/30 次调用中写出的测试都在正确应用上通过，并捕获了 **150/150** 个注入缺陷；不使用技能时有效检出率为 **0.927**，而技能的成本为 6.05 倍。预注册判定为 `INCONCLUSIVE`：基线高于 0.90 的上限，因此不能声称有提升。使用技能写出的测试在标记重构后有 23/30 次调用仍然通过，不使用时为 12/28。
 - 针对已停用的 2.x 生成器：[Generator skill-effect v2](benchmarks/generator-skill-effect-v2/README.md)在比较各组之前，先用无技能组筛选了 24 个更难的简述式任务：落入预先设定的 0.40–0.80 区间的只有 **24 个中的 3 个**（在正确应用上通过的 44 个无技能产出捕获了 **216/220** 个注入缺陷），因此计划中的 full / lean / 无技能比较未执行，判定为 `INCONCLUSIVE`（任务池不足）。对这一模型，缺陷检出率已在两个协议中连续触顶；仍有差异的只剩重构存活率和在正确应用上是否通过。
 - 针对已停用的 2.x 生成器：[Generator skill-effect v3](benchmarks/generator-skill-effect-v3/README.md)把测试能否在保持行为不变的标记重构后继续通过设为主要指标，并筛选了 36 个经过验证的任务。加入预注册的第三次重复后，仍只有 **36 个中的 9 个**落入 0.25–0.75 区间，未达到至少 12 个的要求。因此五组比较未执行，判定为 `INCONCLUSIVE`（任务池不足）。无技能组的 101 个产出都在正确应用上通过，其中 37 个在重构后仍通过，并捕获了 **498/505** 个注入缺陷。使用技能的组没有运行，因此没有测量出任何方向的生成器技能效果。
-- 针对已停用的 2.x 生成器：[Generator skill-effect v8](benchmarks/generator-skill-effect-v8/README.md) 在公开 v3 池上完成了 216/216 次 Codex 调用的评分并通过：标记重构存活率 **0.954 对 0.435**（+0.519，95% CI +0.398 至 +0.630）。未证明缺陷检测有提升（+0.017，CI 包含 0），生成耗时为 6.74 倍，这是公开开发证据，而不是发布声明。v8 测量的是固定的 v3 full-fixed 2.x 生成器文本；3.0.0 的路由器不包含该文本。路由器另有与官方 agents 的开发阶段对比（3 个模型，6 个合成任务）：预先登记的规则发布了“CLI-first thin workflow adopted as default path (development point rule)”（开发阶段，3 个模型，6 个合成任务）。其 CLI 路径在预先登记的质量标准之内，处理 token 为官方 agents 的 0.54 至 0.59 倍（预先登记的上限为 1.10），不主张质量提升；运行器的工具使用分类已被基于日志的重新统计在全部 144 个 CLI 臂单元上复现，此前在两个模型上统计更少的 rollout 正则表达式存在缺陷，结果文件中已如实说明（[结果](benchmarks/generator-thin-eval-v1-stage2/RESULTS.md)，[thin-eval](benchmarks/generator-thin-eval-v1/README.md)）。这些结果所涉及的审批表和 V1–V6 验收步骤，连同 2.x 生成器，保留在标签 `v2.0.1` 和 `benchmarks/generator-skill-v2.0.1-archive/` 中。
+- 针对已停用的 2.x 生成器：[Generator skill-effect v8](benchmarks/generator-skill-effect-v8/README.md) 在公开 v3 池上完成了 216/216 次 Codex 调用的评分并通过：标记重构存活率 **0.954 对 0.435**（+0.519，95% CI +0.398 至 +0.630）。未证明缺陷检测有提升（+0.017，CI 包含 0），生成耗时为 6.74 倍，这是公开开发证据，而不是发布声明。v8 测量的是固定的 v3 full-fixed 2.x 生成器文本；3.0.0 的路由器不包含该文本。路由器自身的证据是 thin-eval 的 D 臂和 E 臂（官方 generator 加 thin 规则，不带和带扫描器步骤；开发阶段，3 个模型，6 个合成任务）：D 和 E 的每个单元都使用了官方 MCP 工具，不主张质量或成本结果，对比中的 CLI 臂因与官方 agents 的等价性未被证明而不随版本发布（[结果](benchmarks/generator-thin-eval-v1-stage2/RESULTS.md)，[thin-eval](benchmarks/generator-thin-eval-v1/README.md)）。审批表和 V1–V6 验收步骤连同 2.x 生成器，保留在标签 `v2.0.1` 和 `benchmarks/generator-skill-v2.0.1-archive/` 中。
 - [Reviewer holdout v19](benchmarks/reviewer-holdout-v19/README.md)在**发布前的 2.0.0 候选**审查器（技能 digest `aa88145d…`，提交 `976c3fa`）上通过了发布确认门槛（full − no-skill 稳定 F1 **+0.571**，95% CI +0.411 至 +0.738，540 次调用）；同一语料上的 [v18](benchmarks/reviewer-holdout-v18/README.md) 为 `INCONCLUSIVE`。已发布的审查器与该候选的差异在于后续变更（Tier 2 ast-grep 配置固定、`#14` 的 `cy.env()` 排除、`#4h` 修复与 4 项边界澄清、`#8c`、`#3b` fail 处理器契约），这些变更没有任何 holdout 测量过。
 - [Reviewer holdout v21](benchmarks/reviewer-holdout-v21/README.md)未支持明确的 #2 措辞：480 次调用中，full 的稳定 F1 从 **1.000 降至 0.980**。保留 2.0.0 措辞；两组已将部分验证的 #2 判为 P1。
 - 加上未公开、仅在本地使用的 AGPL 批次，全部批次的汇总为 **36/44 对 23/44**，修复后（AFTER）误报为 **0 对 1**。[现场模型比较](docs/ai-reviewer-benchmark.md#field-model-comparison)另行报告了对 19 个真实仓库测试文件的本地测量。

@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <strong>🇯🇵 日本語</strong> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=3c5ae18b965c890663f206ac2fe883ee60dad469dab63e0f8c846dcca120f335; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=1ebd045a7e23136a1d351091651b954dbcd7b6b15fd45cc6dadb8f0e8daddbb5; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 証拠の範囲: ここに示した merge 済み PR 15 件は選んだ例であり、総数ではありません。Field review v1 は、スキル名を含めるという基準のもとで、提出 29 件、merge 16 件、クローズ 6 件、オープン 7 件を別に記録しています。2 つの母数を合算しないでください。いずれも記録時点のスナップショットで、現在の GitHub の集計ではありません。
 
@@ -36,7 +36,7 @@
 
 人間または AI が作成したテストでは、`e2e-reviewer` を独立した品質ゲートとして利用できます。合格したテストが、タイトルに書かれた動作を本当に証明しているかを確認します。
 
-スキルごとに証拠の水準は異なります。レビュアーが最も強い測定結果を持ち、ジェネレーターは 2.x パイプラインのみが公開タスクで測定され、3.0.0 のルーターには公式エージェントとの開発段階の比較（モデル 3 つ、合成タスク 6 件）しかなく、デバッガーは通常のプロンプトより正確だと測定されたものではなく、アーティファクトが裏付ける原因だけを報告する安全なアーティファクトリーダーです。[ベンチマーク状況](benchmarks/STATUS.md)にスキルごとの証拠カードがあります。
+スキルごとに証拠の水準は異なります。レビュアーが最も強い測定結果を持ち、ジェネレーターは 2.x パイプラインのみが公開タスクで測定され、3.0.0 のルーターには公式エージェントに thin ルールとスキャナーゲートを加えて実行した開発段階の実行（モデル 3 つ、合成タスク 6 件）しかなく、デバッガーは通常のプロンプトより正確だと測定されたものではなく、アーティファクトが裏付ける原因だけを報告する安全なアーティファクトリーダーです。[ベンチマーク状況](benchmarks/STATUS.md)にスキルごとの証拠カードがあります。
 
 | 必要なこと | スキル | 結果 |
 | --- | --- | --- |
@@ -46,7 +46,7 @@
 | 失敗した Cypress 実行をデバッグ | `cypress-debugger` | F1–F15 の根本原因、根拠、修正 |
 | 決定論的なローカルスキャンを実行 | `skills/e2e-reviewer/scripts/scan.sh` | 対象プロジェクトの package に依存しない機械的候補 |
 
-生成器はルーターです。Playwright CLI でライブページを探索するか、すでにセットアップ済みの公式 Playwright エージェントへ委譲し、短いルールのチェックリストに従って仕様を書き、レビュアーのスキャナーを実行してから、テストを 1 回実行します。公式エージェントとの開発段階の比較は、事前登録した採用ルールを満たし、「CLI-first thin workflow adopted as default path (development point rule)」が発行されました（開発段階、モデル 3 つ、合成タスク 6 つ）。CLI 経路の品質の点推定差は 5 つの指標すべてで事前登録した -0.10 の基準内で、測定した処理トークンのコストは公式エージェントの 0.54〜0.59 倍でした(95% 区間 0.43〜0.77)。事前登録した上限は 1.10 です。品質向上は主張しません。この採用はランナーによるツール使用の分類に基づいており、ログに基づく再集計が CLI アームの全 144 セルでこれを再現しており、2 つのモデルで少なく数えていた以前のロールアウト正規表現は正規表現側の不具合でした([結果](benchmarks/generator-thin-eval-v1-stage2/RESULTS.md)、[thin-eval](benchmarks/generator-thin-eval-v1/README.md))。2 つのデバッガーは失敗した実行の artifact から始め、分類した根本原因、根拠、具体的な修正を返します。
+生成器はルーターです。公式 Playwright planner と generator がインストールされ、その MCP ツールが見える場合、短いルールのチェックリスト（`thin-rules.md`）と安全指示をプロンプトの先頭に付けてそれらへ委譲し、レビュアーのスキャナーを実行してから、テストを 1 回実行します。セットアップされていない場合はセットアップ手順を示して停止します。根拠は [thin-eval](benchmarks/generator-thin-eval-v1/README.md)（[ステージ 2 の結果](benchmarks/generator-thin-eval-v1-stage2/RESULTS.md)）のアーム D（公式 generator + thin ルール）と E（D + P0/P1 を修正しテストを 1 回実行するスキャナー手順）です（開発段階、モデル 3 つ、合成タスク 6 つ、Codex のみ）。D と E のすべてのセルが公式 MCP ツールを使い、タイムアウト、リトライ、安全違反はありませんでした。出荷するスキルは planner 手順、安全文、ファイルごとの強化したスキャナー呼び出しと 3 パス上限、baseURL と使い捨てスタックの確認を追加していますが、これらは測定されていないため、出荷するスキャナーゲートは測定した E の手順ではなく、E に似たゲートです。品質やコストの主張はしません。比較にあった CLI アームは出荷しません。CLI 経路は公式エージェントとの同等性が示されていないため削除しました。2 つのデバッガーは失敗した実行の artifact から始め、分類した根本原因、根拠、具体的な修正を返します。
 
 false-green 検出はレビューワークフローの重要な一部ですが、このバンドル全体の目的ではありません。`e2e-reviewer` の指摘に基づく修正は、Storybook、SvelteKit、code-server、Strapi、Carbon Design System、Ghost、MUI X などの [15 件のマージ済み upstream PR](#merged-upstream-fixes) に取り込まれています。
 
@@ -162,7 +162,7 @@ npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a claude-code
 npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a codex
 ```
 
-Codex の delegation では、`e2e-reviewer`、`playwright-debugger`、`cypress-debugger` が native role の delegation を試みるか、同等の inline fallback を使えます。`playwright-test-generator` は既定の経路では delegation を必要としません。Playwright CLI のワークフローは Codex のシェルで動くためです。公式 Playwright generator への delegation は任意で、`spawn_agent` では role を選べないため、session-wide な `playwright-test` MCP サーバーがある場合にのみ動作します。
+Codex の delegation では、`e2e-reviewer`、`playwright-debugger`、`cypress-debugger` が native role の delegation を試みるか、同等の inline fallback を使えます。`playwright-test-generator` は公式 Playwright generator へ delegation し、`spawn_agent` では role を選べないため、session-wide な `playwright-test` MCP サーバーがある場合にのみ動作します。サーバーがなければセットアップ手順を示して停止します。
 
 **2026-09 時点で、Codex 上の native role delegation は動作が検証されておらず、依存すべきではありません。** 実測パイロットで、セッション内 delegation が内部の `collab spawn failed: no thread with id` エラーで決定的に失敗することが分かりました — 既知の、まだ open な upstream issue([openai/codex#41474](https://github.com/openai/codex/issues/41474)、[#33672](https://github.com/openai/codex/issues/33672))です。エラーが出ない場合でも、モデル自身の成功の自己申告は信用できません。詳しい根拠は [`benchmarks/subagent-routing-v1/`](benchmarks/subagent-routing-v1/README.md) を参照。各 skill の inline fallback が同じ verdict に到達するため正確性自体には影響しませんが、現時点では named agent を install しても Codex 上で実測された利点はありません。
 
@@ -233,9 +233,9 @@ Debug the failed Cypress report in cypress/reports/.
 
 生成したテストが通るだけでは不十分です。`Locator` や `Promise` 自体を検証していたり、テスト名に記した動作と無関係な状態を見ていたり、主要な assertion がテストの成否に影響していないことがあります。そのため生成器は `e2e-reviewer` のスキャナーを実行して P0 と P1 の検出をすべて修正してから、プロジェクトのテストを 1 回実行します。スキャナーは決定的で、カタログのうち機械的に検出できる一部だけを扱います。assertion が失敗しうることの証明にはなりません。
 
-生成器は `playwright.config.*` から `baseURL` を読み、公式 Playwright planner と generator のエージェント定義と `playwright-test` MCP ツールがすでにある場合にのみそれらを使います。そうでなければ、シェルと Playwright だけで Playwright CLI を自ら使って探索します。 MCP の設定を求めず、何もインストールせず、公式 healer を実行せず、テストを通すために assertion を弱めません。失敗したテストは `playwright-debugger` に渡すか、手で修正します。
+生成器は `playwright.config.*` から `baseURL` を読み、公式 Playwright planner と generator のエージェント定義と `playwright-test` MCP ツールがすでにある場合にのみ、`thin-rules.md` と安全指示をプロンプトの先頭に付けて委譲します。セットアップされていない場合はセットアップ手順（`init-agents`、次にツール承認付きの MCP サーバー宣言）を示して停止します。何もインストールせず、エージェントや MCP の設定を書かず、公式 healer を実行せず、テストを通すために assertion を弱めません。失敗したテストは `playwright-debugger` に渡すか、手で修正します。
 
-探索は loopback の対象で許可されます。リモート origin は、ユーザーがチャットで指定し、使い捨ての非本番環境だと明言した場合にのみ許可され、その origin は CLI の origin allowlist（`network.allowedOrigins`）に固定されます。本番、共有、または未指定の対象は拒否され、公式エージェントへの delegation 経路は origin を固定できないため loopback 専用です。CLI が使えない場合は、サニタイズ済みスナップショットかユーザー自身がインストールした CLI を求め、ロケーターを未検証と表示します。
+委譲は loopback 専用です。公式エージェントのブラウザーは origin を固定できないため、本番、共有、未指定、リモートの対象は拒否され、ユーザーが使い捨てだと明言したリモート origin も同様に拒否して、代わりに loopback スタックを求めます。レポートには実施しなかった確認をすべて列挙し、レビュアーの fault check が使える場合は測定済みとは報告せず、任意の後続作業としてのみ提案します。
 
 2.x の生成器（承認表と V1–V6）に戻すには `v2.0.1` タグをインストールします。skills CLI は `npx --yes skills@1.5.21 add voidmatcha/e2e-skills#v2.0.1 --skill '*' -g -a claude-code`、Claude Code マーケットプレイスは `/plugin marketplace add voidmatcha/e2e-skills#v2.0.1` の後に `/plugin install e2e-skills@voidmatcha` です。どちらも使い捨てディレクトリでそのタグに対して確認しました（skills CLI は `-g` なしのプロジェクトスコープ）。既存の `voidmatcha` マーケットプレイス項目の置き換えは確認していません。
 
@@ -272,7 +272,7 @@ Debug the failed Cypress report in cypress/reports/.
 - 廃止された 2.x ジェネレーターについて: [Generator skill-effect v1](benchmarks/generator-skill-effect-v1/README.md) はジェネレーターの初のライブ測定です。新規作成した 10 件の小さなアプリで決定論的な欠陥検出スコアリングを行ったところ、スキルを使った `claude-sonnet-5-5` は 30/30 の呼び出しで正常なアプリに通り、注入した欠陥 **150/150** を検出するテストを書きました。スキルなしの有効検出率は **0.927**、コストは 6.05 倍でした。事前登録した判定は `INCONCLUSIVE` です。ベースラインが上限 0.90 を超えたため、向上は主張できません。スキルで書いたテストはマークアップのリファクタリングに 23/30 の呼び出しで耐え、スキルなしでは 12/28 でした。
 - 廃止された 2.x ジェネレーターについて: [Generator skill-effect v2](benchmarks/generator-skill-effect-v2/README.md) は、より難しいブリーフ形式の 24 タスクを、群比較の前にスキルなし群だけでスクリーニングしました。事前に定めた 0.40–0.80 の帯に入ったのは **24 件中 3 件**のみで（正常なアプリで緑になったスキルなしの成果物 44 件が注入欠陥 **216/220** を検出）、予定していた full / lean / スキルなしの比較は実行せず、判定は `INCONCLUSIVE`（プール不足）です。このモデルでは欠陥検出率が 2 つのプロトコル続けて上限に達し、リファクタリング耐性と正常アプリでの成功だけが依然ばらついています。
 - 廃止された 2.x ジェネレーターについて: [Generator skill-effect v3](benchmarks/generator-skill-effect-v3/README.md) は、動作を保持するマークアップのリファクタリング後もテストが通るかを主要指標として、検証済みの 36 タスクをスクリーニングしました。事前登録した 3 回目の反復を追加しても、0.25–0.75 の帯に入ったのは **36 件中 9 件**で、最低条件の 12 件に届きませんでした。そのため 5 群比較は実行せず、判定は `INCONCLUSIVE`（プール不足）です。スキルなしの成果物 101 件はすべて正常なアプリで通り、37 件がリファクタリング後も通過し、注入欠陥 **498/505** を検出しました。スキルを使う群は実行していないため、ジェネレータースキルの効果はどちらの方向にも測定されていません。
-- 廃止された 2.x ジェネレーターについて: [Generator skill-effect v8](benchmarks/generator-skill-effect-v8/README.md) は公開 v3 プールで Codex 呼び出し 216/216 を採点し、合格しました。マークアップ・リファクタ生存率は **0.954 対 0.435**（+0.519、95% CI +0.398〜+0.630）です。欠陥検出の向上は示されておらず（+0.017、CI は 0 を含む）、生成時間は 6.74 倍で、公開開発エビデンスでありリリース主張ではありません。 v8 は固定された v3 full-fixed の 2.x 生成テキストを測定しており、3.0.0 のルーターはそのテキストを含みません。ルーターには、公式エージェントとの開発段階の比較（モデル 3 つ、合成タスク 6 つ）が別にあります。事前登録したルールは「CLI-first thin workflow adopted as default path (development point rule)」を発行しました（開発段階、モデル 3 つ、合成タスク 6 つ）。CLI 経路は事前登録した品質基準の範囲内で、処理トークンは公式エージェントの 0.54〜0.59 倍（事前登録した上限は 1.10）でした。品質向上は主張しません。ランナーのツール使用の分類はログに基づく再集計が CLI アームの全 144 セルで再現し、2 つのモデルで少なく数えていた以前のロールアウト正規表現は正規表現側の不具合だったことを、結果ファイルに明記しています（[結果](benchmarks/generator-thin-eval-v1-stage2/RESULTS.md)、[thin-eval](benchmarks/generator-thin-eval-v1/README.md)）。これらの結果が扱う承認表と V1–V6 受け入れ手順を含む 2.x の生成器は、タグ `v2.0.1` と `benchmarks/generator-skill-v2.0.1-archive/` に残っています。
+- 廃止された 2.x ジェネレーターについて: [Generator skill-effect v8](benchmarks/generator-skill-effect-v8/README.md) は公開 v3 プールで Codex 呼び出し 216/216 を採点し、合格しました。マークアップ・リファクタ生存率は **0.954 対 0.435**（+0.519、95% CI +0.398〜+0.630）です。欠陥検出の向上は示されておらず（+0.017、CI は 0 を含む）、生成時間は 6.74 倍で、公開開発エビデンスでありリリース主張ではありません。 v8 は固定された v3 full-fixed の 2.x 生成テキストを測定しており、3.0.0 のルーターはそのテキストを含みません。ルーター自身の根拠は thin-eval のアーム D と E（公式 generator + thin ルール、スキャナー手順なしとあり。開発段階、モデル 3 つ、合成タスク 6 つ）です。D と E のすべてのセルが公式 MCP ツールを使い、品質やコストの主張はせず、比較にあった CLI アームは公式エージェントとの同等性が示されていないため出荷しません（[結果](benchmarks/generator-thin-eval-v1-stage2/RESULTS.md)、[thin-eval](benchmarks/generator-thin-eval-v1/README.md)）。承認表と V1–V6 受け入れ手順を含む 2.x の生成器は、タグ `v2.0.1` と `benchmarks/generator-skill-v2.0.1-archive/` に残っています。
 - [Reviewer holdout v19](benchmarks/reviewer-holdout-v19/README.md) は**リリース前の 2.0.0 候補**レビュアー（スキル digest `aa88145d…`、コミット `976c3fa`）に対してリリース確認ゲートを通過しました（full − no-skill の安定 F1 **+0.571**、95% CI +0.411〜+0.738、540 回の呼び出し）。同じコーパスの [v18](benchmarks/reviewer-holdout-v18/README.md) は `INCONCLUSIVE` でした。出荷されたレビュアーはその候補から後続の変更（Tier 2 ast-grep 設定の固定、`#14` の `cy.env()` 除外、`#4h` の修正と 4 件の境界明確化、`#8c`、`#3b` fail ハンドラ契約）の分だけ異なり、これらはどの holdout でも測定されていません。
 - [Reviewer holdout v21](benchmarks/reviewer-holdout-v21/README.md) は #2 の明示的な文言を支持しませんでした。480 回の呼び出しで full の安定 F1 は **1.000 → 0.980** に低下しました。2.0.0 の文言を維持します。部分的に検証された #2 は両群ですでに P1 と判定されました。
 - 公開対象から除いたローカル専用の AGPL バッチを含む全バッチの集計は **36/44 対 23/44**、修正後（AFTER）の誤検出は **0 対 1** でした。[フィールドモデル比較](docs/ai-reviewer-benchmark.md#field-model-comparison)では、実リポジトリのテストファイル 19 件について別のローカル測定を報告しています。
