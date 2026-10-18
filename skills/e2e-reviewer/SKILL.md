@@ -1,6 +1,6 @@
 ---
 name: e2e-reviewer
-description: 'Use when reviewing Playwright or Cypress E2E specs, Page Objects (POM), PRs, pull requests, patches, diffs, or changed test files — asked to review tests, audit test quality, or find weak, flaky, or silently-passing tests; when tests pass CI but prove nothing or miss bugs; when auditing missing awaits, vacuous or always-passing assertions, anti-patterns, or coverage gaps. Not for debugging a test that is currently failing at runtime (use playwright-debugger / cypress-debugger).'
+description: 'Use when reviewing Playwright or Cypress E2E specs, Page Objects (POM), PRs, pull requests, patches, diffs, or changed test files — asked to review tests, audit test quality, or find weak, flaky, or silently-passing tests; when tests pass CI but prove nothing or miss bugs; when auditing missing awaits, vacuous or always-passing assertions, anti-patterns, or coverage gaps; or when validating passing tests with assertion mutation or app-fault probes. Not for debugging a test that is currently failing at runtime (use playwright-debugger / cypress-debugger).'
 license: Apache-2.0
 metadata:
   author: voidmatcha
@@ -72,6 +72,14 @@ Before resolving any candidate, read `references/semantic-review.md` (in a tool 
 
 Before a Phase 2 finding is reported, verify it survives its real context — refute first. **Verify inline by default:** this covers every stratum — decided fully by the flagged snippet, needing more context from elsewhere in the same file, or depending on another file or repo config the snippet doesn't show. The named `e2e-finding-verifier`, when registered by a Claude Code plugin or by a Codex `.codex/agents/` / `~/.codex/agents/` TOML, or the native `verifier` role when Codex exposes native role routing, remain available as an optional second opinion, never a required step; named registration is an optimization, not a correctness dependency. **Delegate only when uncertain** (the finding cannot yet be resolved either way from the flagged snippet alone). **On disagreement, reconcile against source evidence:** inspect both cited paths, correct either verdict when refuted, and never prefer an actor merely because it was first or delegated. Keep unresolved cases explicitly uncertain; do not emit an unresolved finding as CONFIRMED. **If delegating**, pass the pattern ID, `file:line`, flagged snippet, repo root, and the **absolute** path to that pattern's `<skill-base>/references/patterns/<id>.md` — every delegated working directory is the project under review, so a repo-relative `skills/...` path is invalid. Require CONFIRMED / FALSE-POSITIVE / NEEDS-CONTEXT with evidence; drop refuted findings — all available paths must use the same source-of-truth contract.
 
+### Optional portable V2/V3 probes
+
+When the user requests assertion mutation or app-fault evidence, read `references/runtime-probes.md`. Prepare one source-backed JSON plan for `<skill-base>/scripts/run-probe.py`; preview it without executing project code, then execute within the recorded checkout trust and exact command/environment approval. Existing approval for that scope remains valid. Use fresh normal/changed/restored copies and retain native reports plus observer evidence. V2 `ASSERTION_SENSITIVE` is not V3 behavior proof; V3 `DETECTED` or `SURVIVED` covers only the exercised fault. Missing prepared runner, dependencies, evidence, or authority means `recommended/unexecuted` or `CANNOT_VERIFY`, never an invented runtime verdict. Continue static review when execution is unavailable.
+
+### Optional V3 mutation fault check
+
+When execution evidence is requested, read `references/verification-rules.md` § Optional V3 adapter before invoking `<skill-base>/scripts/check.py`. Anchor one fault to one exact test and a sourced behavior promise; never infer a product requirement from its test title alone. Use the registered adapter preview, then execute only within recorded checkout trust and approval of its exact commands, environment, and flags. Missing promise, adapter, or approval means `recommended/unexecuted`; continue static review. Attach `DETECTED`, `SURVIVED`, or `CANNOT_VERIFY` to `Runtime evidence`. `SURVIVED` alone never creates a catalog finding or changes severity.
+
 ---
 
 ## Phases 2.5 and 3: Systemic Issues and Coverage Gaps
@@ -133,7 +141,7 @@ This table is a **numerical index for scanning** — pattern # → severity, pha
 | 19 | Module-Level Mutable State | P1 | grep+LLM | `let x = ...`, `var x = ...`, or a mutated `const` container at column 0 in test code — survives across tests within a worker |
 | 20 | Unmocked Real-Backend Writes | P1 | LLM | Confirmed write reaches shared/persistent state with no stub or documented disposable/isolated backend boundary |
 | 21 | Manual Session-File Dependency | P2 | LLM | `storageState` JSON produced only by a manual capture script |
-| 22 | Optimistic UI Without Call Proof | P1 | LLM | Write-control click asserted only via optimistically-updated UI state — no `waitForRequest`/route-hit proof |
+| 22 | Optimistic UI Without Call Proof | P1 | LLM | Promised backend call or persistence asserted only through optimistic UI; require call evidence for a call, server-backed state evidence for persistence |
 | 23 | Fixture Ignores Render Guards | P2 | LLM | Seeded item fails the display component's early-return guards (e.g. `liked: false` in a Liked view). P0 when a negative or empty-state assertion passes because the guard suppressed the seeded items |
 | 3b | Cypress uncaught:exception suppression | P0 | grep | `cy.on('uncaught:exception', () => false)` globally swallows app errors; a `Cypress.on('fail', …)` handler that does not rethrow the error is the same P0 |
 

@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <strong>🇨🇳 简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=3378db164350bfc700ce5391a2ee8c2adfbad987354d54f6eeb197c29333b73e; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=cbac9f0b8297e0e5a9c19e880fc72a3ed3c266f0c2e1b18a85eea34d641a9f74; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 证据范围：这里展示的 15 个已合并 PR 是精选示例，并非总数。Field review v1 按其 Skill 名称纳入规则另行记录了提交 29 个、已合并 16 个、已关闭 6 个、仍开放 7 个；请勿把两个分母合并。这些都是记录时的快照，而不是 GitHub 当前的总数。
 
@@ -135,6 +135,10 @@ Summary: 2 total hit(s), 2 P0
 ## 信任生成的测试之前先检查
 
 好的 matcher 还不够；行为损坏时测试必须变红。自 3.0.0 起，生成器不再证明这一点。已安装 `e2e-reviewer` 时，它会运行扫描器并修复所有 P0 和 P1 命中（最多三轮），然后把项目测试运行一次；跳过的门禁或运行会被报告为未完成。它不再反转断言、注入缺陷或请求独立复审，需要时请让 `e2e-reviewer` 做审查。这些 2.x 步骤保留在标签 `v2.0.1`。
+
+按请求，reviewer 可以在已准备现有 runner 的可信本地项目中执行 [portable assertion 或应用缺陷 probe](skills/e2e-reviewer/references/runtime-probes.md)。固定的 JSON 计划驱动正常、修改、恢复三个副本的执行，并保留 native 报告和观测资料。断言敏感性和应用缺陷检测是不同的结果，不能自动证明整个测试的充分性。仍需准备项目并批准执行命令；执行器不会安装依赖，也不提供 OS sandbox。
+
+显式的 portable 计划使用 `run-probe.py`；已注册的 adapter 覆盖准确的项目快照时使用仅限源代码 checkout 的 pilot `check.py`。安装后的技能副本使用 `run-probe.py`；固定的 `check.py` adapter 不包含在技能副本中。两者都是 reviewer 的 helper，不是新增的公开技能。[开发阶段集成验证](benchmarks/release-readiness-v1/README.md#portable-integration) 在两个已研究的 OSS 案例中执行了两种框架，不能证明自主缺陷发现能力或一般准确率。
 
 ## 安装并试用
 

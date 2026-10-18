@@ -825,6 +825,11 @@ def run_result_records(report: object) -> list[dict[str, object]]:
                     "title": bounded_string(" ".join(test["title"])),
                     "state": bounded_string(test_state),
                     "duration": bounded_scalar(test.get("duration")),
+                    "error": (
+                        error_text(test.get("displayError"))
+                        if test_state == "failed"
+                        else None
+                    ),
                     "attempts": attempts,
                 }
             )

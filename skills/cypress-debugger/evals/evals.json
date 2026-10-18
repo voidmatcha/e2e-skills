@@ -430,6 +430,18 @@
         "True positive: deletes only the emitted path file before rmdir of the exact emitted snapshot_directory; rmdir alone cannot remove the nonempty snapshot directory",
         "False-positive guard: never deletes the original artifact or uses recursive cleanup, a broad temporary-directory glob, or deletion of an unexpected second file to force rmdir to succeed"
       ]
+    },
+    {
+      "id": 29,
+      "prompt": "Read the Cypress after:run fixture in evals/files/cypress-run-results-top-level-error.json with the bundled run-results reader. Report the failed assertion evidence and the clean control. No app source or state oracle is supplied.",
+      "expected_output": "The failed test's top-level displayError identifies an assertion expecting value Z at persistence.cy.cjs:24:23. Its attempt has only a failed state, so the error must come from the test-level field. The passed clean control has no current failure error even though the fixture contains stale displayError text. Without source and state evidence, classify the product/test cause as unknown rather than claiming a product regression.",
+      "files": [
+        "evals/files/cypress-run-results-top-level-error.json"
+      ],
+      "assertions": [
+        "True positive: quotes the failed test's test-level assertion error and source line from bounded reader output even when its attempt has no error field",
+        "False-positive guard: does not surface the passed clean control's stale displayError as a current failure or claim a proven product cause without source/state evidence"
+      ]
     }
   ]
 }

@@ -1,0 +1,40 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+# 3.0.0 candidate readiness summary
+
+Status: **not release-ready**. This is a derived development summary, not a frozen accuracy benchmark or an independently reproducible public evidence bundle. The original local receipts and failed attempts remain unchanged. [Source digests](sources.json) identify the retained records without publishing account-specific paths. A digest identifies bytes; it does not make unavailable raw evidence independently auditable.
+
+## Workflow applicability
+
+Retained generator evidence includes an official native child, the scanner gate, and the parent actor's exact-scope `test_run`. The current generator's 13 files match the exercised snapshot. Playwright F2 and Cypress F11 controlled failure/diagnosis/minimal-fix/recovery workflows match the current debugger trees (26 and 32 files). Original assertions were preserved. These are bounded workflows, not measured accuracy gains.
+
+## Portable integration
+
+Six accepted plans ran eighteen native phases across two previously studied OSS cases, Playwright/Vexus and Cypress/Ace. In both cases, the original test survived the observed app fault, its strengthening detected the same fault, and a separate assertion inversion failed. V2 assertion sensitivity does not prove V3 behavior detection or overall V1–V6 PASS. The standalone runner was copied outside the source repository. This is known-case integration, not autonomous discovery or prospective accuracy.
+
+## Prospective submission
+
+One preregistered actor submission produced **0/1 valid behavior proofs**. Its observer seeded through the faulted update, so the required starting state was absent. Native normal/fault/restored outcomes were pass/fail/pass, but the runner correctly returned `CANNOT_VERIFY`. The authored baseline test was not an upstream test. The original actor submission was not repaired or rerun.
+
+A subsequent guidance paragraph requires checking starting conditions and setup interactions, while allowing an unaffected branch of the same API. Two synthetic controls bring the targeted probe suite to 34 passing tests on macOS and Linux. These controls do not establish improved model behavior or real-browser coverage.
+
+A separately frozen, leader-informed successor on the same app and authored test returned `DETECTED`: normal/fault/restored outcomes were pass/fail/pass, with valid initial API/DOM state in every phase and independent observation of the failed persistence operation. One tool-free actor call authored the fault and observer; the evaluator executed its submission without scientific repairs. This establishes one same-case workflow result, not an independent new case, weak-test discovery, a causal benefit of the guidance, or general accuracy. The original 0/1 result above remains unchanged.
+
+## Installation and discovery
+
+The cached official skills CLI delivered all four skills as project-local copies to both Codex and Claude Code surfaces (219 files per host, byte and mode equality). This is delivery evidence, not proof of host discovery or a global reinstall. A later cache lookup located the exact pinned yaml artifact. Its integrity and all eight pinned package trees passed the unmodified installer closure verifier in a separate local directory, without downloads or package installation. The global reinstaller itself was not executed.
+
+Codex discovery previously timed out before an initial response. A later prepared-project catalog canary responded after approximately 91 seconds, with the generator enabled and the reviewer disabled; it does not prove the reviewer was physically uninstalled. A subsequent model-free catalog check discovered all four current installed copies as enabled at their exact project installation paths, from both the project root and a nested working directory; global shadows were counted separately. A later Claude control-protocol initialization, without a user message or model request, returned all four commands with project scope and descriptions matching the installed copies. Installed files remained unchanged. That initialization response alone does not expose absolute skill paths or prove authenticated model use. A later fresh authenticated Claude process exposed all four installed skills and read the current generator contract and thin rules, then stopped at missing official-agent readiness. This closes the bounded authentication/readiness gap, not Claude generation/browser/test parity; the earlier OAuth 401 remains retained. No alternate identity was tried. Existing user-level Codex and Claude skill copies were subsequently refreshed with their eight original directories preserved and all 219 product files verified on each surface; this was a staged-copy/rename refresh, not execution or certification of the canonical global reinstaller.
+
+## Generator guards
+
+An actual non-loopback invocation refused the remote target, requested a loopback stack, and performed no delegation, remote command or project write. The prompt also prohibited external application contact, so this is observed behavior rather than causal isolation of the skill instruction.
+
+An earlier missing-agent invocation timed out after reading the skill without a final setup guide. A timeout-only successor completed in 104.05 seconds, showed the setup guide and listed unperformed checks, without delegation, installation, configuration changes or spec writes; the whole project was unchanged. This proves the missing-readiness guard in that project, not exhaustive absence of globally available agents. A reviewer-disabled catalog is not an uninstalled scanner. A later authenticated Codex continuation used a clean container with only the generator installed; filesystem checks before and after confirmed reviewer absence. The actor read the installed contract, reported the scanner gate skipped, suggested reviewer installation without executing it, ran the exact retained generated spec once (1 passed, 0 failed/skipped/retried), and correctly kept overall completion incomplete. The initial inner-sandbox attempt failed before file reads. The successful retry used explicitly user-authorized Docker outer isolation with no host mounts and all capabilities dropped; it does not prove default inner-sandbox compatibility or a new official-generation workflow. Product, test, fixture and config bytes remained unchanged. No prepared-project catalog result is counted as a completed generation/native workflow.
+
+## Packaging and remaining gates
+
+A fresh draft export contains byte-identical product files and the explicit fixed-adapter dependency closure. On that draft, the unmodified security gate and 58 targeted probe/check/adapter tests passed. The experimental checkout's retained generated caches caused errors in a separate gate attempt; those artifacts were neither deleted nor hidden by changing the gate.
+
+Canonical full CI passed on an earlier allowlisted draft export with byte-identical product files at that time. A later narrow scanner compatibility fix addressed ripgrep 14 filename discovery; the full Linux scanner suite, targeted macOS regressions and exported security passed on the corrected bytes. The earlier full-CI result remains tied to its pre-fix snapshot; final candidate-wide checks are still pending. Its self-scan verifies the frozen Notepad negative control's two expected candidates separately, then applies the unchanged P0-candidate gate to an identity-checked temporary view excluding only that exact path and digest. Optional TypeScript AST integration and the old pinned-Claude live round trip were skipped; neither is claimed as executed.
+
+The export is a packaging canary, not the final release payload. The raw native/model/session/CI receipts remain local and are not included in this public summary. Public evidence delivery and independent replay remain unverified. An immutable candidate revision and final Linux/security gates are still pending. No release, commit, push, tag, deletion, reset, or global configuration change is implied by these results.

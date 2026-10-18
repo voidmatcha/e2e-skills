@@ -796,7 +796,9 @@
       "id": 45,
       "prompt": "Review and propose fixes for evals/files/assertion-contracts.spec.ts. Preserve each test's specified predicate while adding retries where appropriate.",
       "expected_output": "Report #4 P1 at lines 5, 10, and 17. Preserve raw text equality, exact array membership, and OR visibility with expect.poll. Do not replace array membership with scalar toContainText, normalize the raw receipt text, or collapse the OR into a strict multi-element locator. Skip line 22 because it already polls the exact predicate.",
-      "files": ["evals/files/assertion-contracts.spec.ts"],
+      "files": [
+        "evals/files/assertion-contracts.spec.ts"
+      ],
       "assertions": [
         "Reports line 5 as #4 P1 and proposes expect.poll of textContent with exact spaces preserved",
         "Reports line 10 as #4 P1 and preserves array toContain membership rather than scalar substring matching",
@@ -809,7 +811,9 @@
       "id": 46,
       "prompt": "Review evals/files/cypress-query-contracts.cy.ts. Distinguish empty iteration, implicit query assertions, and object assertions. Explain what can fail when the DOM rows are absent.",
       "expected_output": "Report #4k P1 at line 18 for an empty ordinary array whose callback never verifies a label. Do not report lines 4 or 11 as silent empty iteration: find and filter retain implicit existence checks. The outer assertion on line 25 is redundant but its queued cy.get can fail; do not label that test always-passing. Report line 30 as #4 P0 because the synchronous jQuery object's existence proves no row exists. Recommend the intended DOM presence check without inventing visibility.",
-      "files": ["evals/files/cypress-query-contracts.cy.ts"],
+      "files": [
+        "evals/files/cypress-query-contracts.cy.ts"
+      ],
       "assertions": [
         "Reports line 18 as #4k P1 because cy.wrap([]).each executes no callback assertion",
         "False-positive guard: does not report lines 4 and 11 as silent empty iteration because find/filter retry with implicit existence assertions",
@@ -822,7 +826,9 @@
       "id": 47,
       "prompt": "Review evals/files/cypress-force-snapshot.cy.ts and propose fixes. You cannot run the target application and have no evidence explaining the forced click. Preserve the stated snapshot contract.",
       "expected_output": "Report the unexplained force on line 4 as #5b P1, but do not mechanically remove it based on visibility. Identify the actual actionability blocker and validate a proposed default click before accepting removal. Do not report the intentionally justified, causally gated snapshot on line 15 as #4g. It verifies absence at the saved state, not absence at every moment; a retrying negative assertion would not prove continuous absence either.",
-      "files": ["evals/files/cypress-force-snapshot.cy.ts"],
+      "files": [
+        "evals/files/cypress-force-snapshot.cy.ts"
+      ],
       "assertions": [
         "True positive: reports line 4 as #5b P1 while requiring blocker evidence and a relevant runtime test before accepting force removal",
         "False-positive guard: does not treat visibility of the same button as proof of all actionability checks or invent a JUSTIFIED reason",
@@ -834,7 +840,9 @@
       "id": 48,
       "prompt": "Review evals/files/recovery-oracle.spec.ts for conditional assertion bypasses. Distinguish a similar-looking assertion fallback from an optional blocker cleanup before the required assertion. You have no runtime evidence that the tip appears.",
       "expected_output": "Report #5a P0 at line 11: when the exact transfer confirmation is absent, the test checks only the generic Transfers link, which can exist without a completed transfer and does not prove the promised destination confirmation. Keep the exact confirmation as an unconditional postcondition; do not substitute a similar or generic UI element. Do not report line 21: the optional tip branch only dismisses a blocker, and line 25 unconditionally asserts the exact transfer confirmation. Do not claim the tip actually appears or that the first transfer fails in a real app without runtime evidence.",
-      "files": ["evals/files/recovery-oracle.spec.ts"],
+      "files": [
+        "evals/files/recovery-oracle.spec.ts"
+      ],
       "assertions": [
         "True positive: reports #5a P0 at line 11 because the fallback link on line 14 does not prove the promised confirmation",
         "Preserves the exact destination confirmation as the required unconditional postcondition in the proposed fix",
@@ -899,7 +907,7 @@
     {
       "id": 52,
       "prompt": "Review only #22 optimistic UI call proof in evals/files/optimistic-write-contract.spec.ts using evals/files/support/optimistic-profile-handler.ts as the supplied implementation evidence. Judge the outcome each test promises.",
-      "expected_output": "Report exactly one #22 P1 at optimistic-write-contract.spec.ts line 5. The first title explicitly promises PATCH /api/profile, while the supplied handler sets Saved before fetch, so the line 6 UI assertion can pass without proving the promised request. Recommend request/response or mock-capture evidence established before the click. Do not report line 11: that test promises only immediate visible feedback. Do not report line 18: the reload followed by the server-backed value assertion is equivalent persistence evidence for its persistence promise.",
+      "expected_output": "Report exactly two #22 P1 findings at optimistic-write-contract.spec.ts lines 5 and 20. The first title explicitly promises PATCH /api/profile, while the supplied handler sets Saved before fetch, so the line 6 UI assertion can pass without proving the promised request. Recommend request/response or mock-capture evidence established before the click. The third test promises persistence, but its request capture and optimistic Saved status do not prove stored state; recommend a server-backed reload/re-fetch or independent persisted-state observation on a disposable backend. Do not report line 11: that test promises only immediate visible feedback. Do not report line 28: the reload followed by the server-backed value assertion is equivalent persistence evidence for its persistence promise, because the supplied page initialization loads that value from the server.",
       "files": [
         "evals/files/optimistic-write-contract.spec.ts",
         "evals/files/support/optimistic-profile-handler.ts"
@@ -907,8 +915,10 @@
       "assertions": [
         "True positive: reports #22 P1 at line 5 because the test promises PATCH /api/profile and the supplied handler proves Saved is set optimistically before fetch",
         "Anchors the finding at the write-control action and treats line 6 only as evidence that the optimistic UI is the sole proof",
+        "True positive: reports #22 P1 at line 20 because the test promises persistence but the request capture at line 17 and optimistic status at line 22 do not prove stored state",
+        "Recommends server-backed reload/re-fetch or independent persisted-state observation against a disposable backend for line 20, not another request capture or stub",
         "False-positive guard: does NOT report line 11 because its test contract promises immediate UI feedback, not a backend call or persisted result",
-        "False-positive guard: does NOT report line 18 because reload plus the server-backed value assertion on line 20 supplies equivalent persistence evidence",
+        "False-positive guard: does NOT report line 28 because reload plus the line 30 value assertion is server-backed by loadProfileFromServer() in the supplied page initialization",
         "Does not require a request assertion from every write-shaped interaction or infer optimistic behavior without supplied implementation evidence"
       ]
     },
@@ -1066,6 +1076,123 @@
         "False-positive guard: do not report #8c at exact line 12, because the assignment stores the matcher that line 13 calls",
         "False-positive guard: do not report #8c at exact lines 14 or 15, because the shape appears only in a comment and a string literal",
         "Recommends calling the matcher (toBeVisible()) with await rather than deleting the statements, and does not downgrade #8c to triage because other assertions exist on lines 6 and 16"
+      ]
+    },
+    {
+      "id": 65,
+      "prompt": "Review the Playwright spec in evals/files/inline-helper-await.spec.ts for missing awaits and report every finding in the standard output format.",
+      "expected_output": "Report one #15 P1 at line 4: unchecked() discards the Playwright assertion Promise even though the caller awaits the helper. Do not flag the awaited matcher on line 6, the returned matcher on line 8, the locally shadowed expect on line 10, or synchronous class method declarations on lines 12-13.",
+      "files": [
+        "evals/files/inline-helper-await.spec.ts"
+      ],
+      "assertions": [
+        "True positive: report #15 P1 at exact line 4 because awaiting unchecked() does not await the assertion Promise it discards",
+        "False-positive guard: do not report #15 at exact line 6 because checked() awaits the matcher",
+        "False-positive guard: do not report #15 at exact line 8 because returned() returns the matcher Promise to its awaited caller",
+        "False-positive guard: do not report #15 at exact line 10 because expect is a local helper, not Playwright expect",
+        "False-positive guard: do not report #15 at exact line 12 because SyncAssertions.expect is a synchronous method declaration returning its receiver's method call, not an invocation of imported Playwright expect",
+        "False-positive guard: do not report #15 at exact line 13 because NestedDefaultAssertions.expect has a nested default argument but is still a method declaration, not an imported Playwright expect invocation",
+        "Classify the finding as a sequencing and diagnostic risk, not a proven silent pass"
+      ]
+    },
+    {
+      "id": 66,
+      "prompt": "Review the Playwright spec in evals/files/awaited-locator-truthiness.spec.ts and report every finding in the standard output format.",
+      "expected_output": "Report #4f P0 at line 10: awaiting a toBeDefined matcher on a Locator still proves only that the Locator object exists, so the test can pass when the target element is absent. The other awaited assertions are valid for their subjects. A same-named non-Locator binding in another test must not inherit Locator provenance.",
+      "files": [
+        "evals/files/awaited-locator-truthiness.spec.ts"
+      ],
+      "assertions": [
+        "True positive: report #4f P0 at exact line 10 because the awaited Locator object assertion survives zero DOM matches",
+        "False-positive guard: do not report #4f at line 5 because toBeVisible is a web-first element assertion",
+        "False-positive guard: do not report #4f at line 12 because loaded is a scalar boolean",
+        "False-positive guard: do not report #4f at line 17 because this test's locator is a plain object despite the same name in an earlier test",
+        "False-positive guard: do not report #4f at line 21, even as a generic query triage candidate, because the inner await resolves count() to a numeric scalar before the assertion",
+        "Recommend toBeAttached or another behavior-specific web-first assertion for line 10"
+      ]
+    },
+    {
+      "id": 67,
+      "prompt": "Review evals/files/optimistic-write-contract.spec.ts. The user separately supplied a source-backed requirement that saving a display name persists after reload, and explicitly asks whether the optional fixed-fault V3 check would add evidence. The checkout has not been trusted and no exact command or environment has been approved.",
+      "expected_output": "Identify the line 15 persistence promise as a semantic candidate and recommend V3 without executing it. Explain that a registered adapter matching this app and behavior, an exact test selector, trusted checkout, and exact command/environment approval are still required; the Notepad pilot adapter cannot be reused for this profile app. Do not call the candidate a proven failure or assign a new severity from an unexecuted fault.",
+      "files": [
+        "evals/files/optimistic-write-contract.spec.ts"
+      ],
+      "assertions": [
+        "True positive: line 15's persistence claim and immediate Saved status make a behavior candidate for independent fault validation because the separately supplied requirement establishes persistence",
+        "False-positive guard: do not execute check.py or claim DETECTED/SURVIVED without a matching registered adapter and explicit checkout/command/environment approval",
+        "False-positive guard: line 9 promises immediate feedback only and must not be relabeled as a persistence defect",
+        "Do not auto-promote V3 candidate or any eventual SURVIVED result into a new catalog severity"
+      ]
+    },
+    {
+      "id": 68,
+      "prompt": "Review evals/files/optimistic-write-contract.spec.ts. No product requirement, acceptance criterion, or external behavior promise is supplied; only the test file is available. Should the optional fixed-fault V3 check run?",
+      "expected_output": "Do not infer a product promise solely from a narrow test or its title. V3 remains unexecuted because there is no externally anchored behavior promise, trusted checkout, matching registered adapter, or exact command/environment approval. Static review may report only independently proven catalog findings.",
+      "files": [
+        "evals/files/optimistic-write-contract.spec.ts"
+      ],
+      "assertions": [
+        "False-positive guard: do not treat the line 9 immediate-feedback test as a persistence promise",
+        "False-positive guard: do not run a fault, report SURVIVED, or infer a P0 from test title alone",
+        "If a behavior promise is needed for V3, request its source and leave runtime evidence recommended/unexecuted"
+      ]
+    },
+    {
+      "id": 69,
+      "prompt": "Review evals/files/progress-output-contracts.spec.ts with support/preview-progress.ts as application context. Apply the current reviewer contract and report confirmed findings only. No runtime execution is requested.",
+      "expected_output": "Report one P1 #1 at the line 4 declaration: its title promises preview frames as well as progress, but the ticker/status assertions do not observe canvas output. Trace the producer in the supplied source. Preserve the meaningful progress checks. The clock-only test and the rendering-only visibility test are not #1 findings.",
+      "files": [
+        "evals/files/progress-output-contracts.spec.ts",
+        "evals/files/support/preview-progress.ts"
+      ],
+      "assertions": [
+        "True positive: report P1 #1 at progress-output-contracts.spec.ts:4 because the preview-frame promise lacks output evidence and the ticker advances without reading the produced canvas; do not call the whole test P0",
+        "False-positive guard: progress-output-contracts.spec.ts:12 promises only clock progress, and lines 14-16 verify it; require no image or pixel assertion",
+        "False-positive guard: progress-output-contracts.spec.ts:19 promises only a visible canvas, and line 21 verifies it; do not require content, nonblank pixels or screenshots",
+        "Do not invent a backend write, change taxonomy/severity, or report source context as an E2E finding"
+      ]
+    },
+    {
+      "id": 70,
+      "prompt": "The user requests a V3 behavior-fault probe for evals/files/optimistic-write-contract.spec.ts. A separately sourced acceptance contract promises persistence after reload. The prepared trusted local project has an existing native runner and observer, and the user has authorized those exact local commands. No fixed registered adapter matches. Explain how to proceed with the current reviewer; do not execute this eval fixture.",
+      "expected_output": "Propose a portable run-probe.py plan anchored to the supplied persistence promise and exact selected test, preview it and use the existing authorized scope. A fixed-project adapter is not required for the portable path. Preserve all original assertions. Require real phase-copy app provenance and raw observer artifacts before accepting any behavior result.",
+      "files": [
+        "evals/files/optimistic-write-contract.spec.ts"
+      ],
+      "assertions": [
+        "True positive: propose the portable V3 behavior-fault workflow for the line 15 persistence test when a sourced contract, prepared runner, observer and exact execution authorization exist; do not stop solely because the legacy registry lacks this project",
+        "False-positive guard: do not execute this static eval fixture or invent a SURVIVED verdict; real native normal/fault/restored and raw observation evidence are still required",
+        "False-positive guard: do not reinterpret line 9 immediate feedback as a promised persistence test",
+        "Do not ask for authorization again for the exact scope the user already approved"
+      ]
+    },
+    {
+      "id": 71,
+      "prompt": "The user asks whether mutating the assertion in evals/files/optimistic-write-contract.spec.ts:9 can prove the app saves data persistently. A temporary-copy assertion inversion failed as expected, but no app fault, observer, or source-linked server evidence exists. Report the result under the current reviewer.",
+      "expected_output": "Report V2 ASSERTION_SENSITIVE only if the native failure is linked to the inverted assertion and normal/restored phases pass. Do not claim V3 DETECTED, persistence coverage, or complete V1-V6 verification. Missing runtime evidence stays explicitly unverified.",
+      "files": [
+        "evals/files/optimistic-write-contract.spec.ts"
+      ],
+      "assertions": [
+        "True positive: distinguish a linked assertion inversion at the line 9 immediate-feedback test from app behavior-fault detection",
+        "False-positive guard: V2 ASSERTION_SENSITIVE cannot become V3 DETECTED or evidence that persistence after reload is covered",
+        "False-positive guard: do not accept phase-derived booleans or a static source hash as independent app observation",
+        "Do not invent a catalog finding or change severity from a runtime probe alone"
+      ]
+    },
+    {
+      "id": 72,
+      "prompt": "Review two proposed V3 observers for the line 15 persistence test in evals/files/optimistic-write-contract.spec.ts against a separately supplied persistence contract. A fault removes the update assignment. Observer A creates an empty record, seeds content through the faulted update branch, then attempts the observed update without checking that seeded content exists; its native test fails at the intended assertion. Observer B uses the same public API but its unaffected create branch establishes content, records that verified starting content in every phase, then performs the observed update and records actual persisted values. Existing authorization covers both local commands. Assess their admissibility without executing this eval fixture.",
+      "expected_output": "Reject A as CANNOT_VERIFY: a linked native failure cannot replace a valid observed starting state or prove that the intended action reached the fault. Inspect setup interactions before executing a future probe. B is not disqualified merely for sharing an API; an evidenced unaffected branch and verified starting state can support observation. Accept no final V3 result before reviewing real phase evidence.",
+      "files": [
+        "evals/files/optimistic-write-contract.spec.ts"
+      ],
+      "assertions": [
+        "True positive: flag observer A setup contamination and require actual starting-state evidence rather than forcing fault_reached true after a linked native assertion failure",
+        "False-positive guard: observer B may use an unaffected create branch of the same API when it establishes and records the required starting state; do not require direct database writes or a separate API",
+        "False-positive guard: optimistic-write-contract.spec.ts:9 promises immediate feedback only; this persistence probe must not turn that test into a persistence finding",
+        "Do not execute this eval fixture, invent a native outcome, repair a frozen submitted observer, or claim that these static assertions prove model behavior improved"
       ]
     }
   ]

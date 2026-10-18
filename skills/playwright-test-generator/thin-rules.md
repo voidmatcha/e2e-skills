@@ -11,6 +11,7 @@ description: Apply a compact checklist for stable Playwright locators, meaningfu
 - [ ] Use `.nth()`, `.first()`, or `.last()` only with `// JUSTIFIED: <reason>` immediately above the locator explaining why position is required; ordering otherwise hides ambiguity.
 - [ ] Await Playwright actions and retrying web-first assertions; this keeps steps ordered and lets asynchronous outcomes settle.
 - [ ] Assert the promised observable outcome or ARIA state; never use `toHaveClass` or styling-class checks to prove state because appearance is not the product contract.
+- [ ] For an operation with an explicit ownership or filtering boundary, include an unaffected witness outside that boundary and verify that it remains unchanged.
 - [ ] Wait for an observable condition, never a hard sleep or `waitForTimeout`; readiness varies across machines.
 - [ ] Reject vacuous checks, including locator truthiness and constant assertions such as `expect(true)`; an assertion must fail when the promised outcome is absent.
 - [ ] Give every test a title describing its action and expected behaviour; never use generic numbered placeholders because failures need useful names.

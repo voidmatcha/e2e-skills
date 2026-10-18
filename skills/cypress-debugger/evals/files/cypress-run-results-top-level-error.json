@@ -1,0 +1,24 @@
+{
+  "cypressVersion": "15.19.0",
+  "runs": [
+    {
+      "spec": {"relative": "cypress/e2e/persistence.cy.cjs"},
+      "tests": [
+        {
+          "title": ["note persistence", "detects a missing save"],
+          "state": "failed",
+          "duration": 4500,
+          "displayError": "AssertionError: expected textarea to have value 'Z', but the value was ''\n    at Context.eval (cypress/e2e/persistence.cy.cjs:24:23)",
+          "attempts": [{"state": "failed"}]
+        },
+        {
+          "title": ["note persistence", "clean control"],
+          "state": "passed",
+          "duration": 1000,
+          "displayError": "stale prior-run text must not become a current failure",
+          "attempts": [{"state": "passed"}]
+        }
+      ]
+    }
+  ]
+}

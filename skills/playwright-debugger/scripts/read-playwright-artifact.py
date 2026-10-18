@@ -43,6 +43,7 @@ MAX_JSON_NODES = 200_000
 MAX_OUTPUT_BYTES = 1024 * 1024
 MAX_OUTPUT_RECORDS = 10_000
 MAX_ATTEMPTS_PER_TEST = 100
+MAX_ERRORS_PER_ATTEMPT = 100
 MAX_STRING_CHARS = 4_000
 MAX_ZIP_ENTRIES = 10_000
 MAX_ZIP_ENTRY_BYTES = 64 * 1024 * 1024
@@ -974,30 +975,48 @@ def report_records(report: object) -> list[dict[str, object]]:
                         continue
                     retry = result.get("retry")
                     error = result.get("error")
+                    raw_errors = result.get("errors", [])
+                    if not isinstance(raw_errors, list):
+                        raise ValueError("result.errors must be an array")
+                    if len(raw_errors) > MAX_ERRORS_PER_ATTEMPT:
+                        raise ValueError(
+                            f"result exceeds the {MAX_ERRORS_PER_ATTEMPT}-error limit"
+                        )
+                    if any(not isinstance(item, dict) for item in raw_errors):
+                        raise ValueError("result.errors must contain error objects")
+                    if (not isinstance(error, dict) or not error_message(error)) and raw_errors:
+                        error = raw_errors[0]
                     nested_error_location = (
                         error.get("location")
                         if isinstance(error, dict)
                         else None
                     )
-                    attempts.append(
-                        {
-                            # bool is an int subclass; a JSON true/false or a
-                            # negative number is not a retry index.
-                            "attempt": (
-                                retry
-                                if type(retry) is int and retry >= 0
-                                else index
-                            ),
-                            "status": bounded_string(result.get("status")),
-                            "duration": bounded_scalar(result.get("duration")),
-                            "error": error_message(error),
-                            "errorLocation": bounded_location(
-                                nested_error_location
-                                if isinstance(nested_error_location, dict)
-                                else result.get("errorLocation")
-                            ),
-                        }
-                    )
+                    attempt = {
+                        # bool is an int subclass; a JSON true/false or a
+                        # negative number is not a retry index.
+                        "attempt": (
+                            retry
+                            if type(retry) is int and retry >= 0
+                            else index
+                        ),
+                        "status": bounded_string(result.get("status")),
+                        "duration": bounded_scalar(result.get("duration")),
+                        "error": error_message(error),
+                        "errorLocation": bounded_location(
+                            nested_error_location
+                            if isinstance(nested_error_location, dict)
+                            else result.get("errorLocation")
+                        ),
+                    }
+                    if len(raw_errors) > 1:
+                        attempt["errors"] = [
+                            {
+                                "message": error_message(item),
+                                "location": bounded_location(item.get("location")),
+                            }
+                            for item in raw_errors
+                        ]
+                    attempts.append(attempt)
             records.append(
                 {
                     "title": bounded_string(spec.get("title")),
@@ -1173,6 +1192,55 @@ def projected_trace_location(value: object) -> dict[str, object] | None:
     }
 
 
+def validate_request_filter(method: str, path: str) -> tuple[str, str]:
+    """Accept an explicit static route literal; never echo captured URL material."""
+    if method not in {"GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}:
+        raise ValueError("request method must be an uppercase HTTP method")
+    if not re.fullmatch(r"/(?:[a-z][a-z-]{0,31})(?:/[a-z][a-z-]{0,31}){0,7}", path):
+        raise ValueError("request path must be a bounded static lowercase route literal")
+    if any(word in path for word in (*SENSITIVE_KEY_FRAGMENTS, "auth", "session", "reset", "verify", "code", "key")):
+        raise ValueError("request path must not contain sensitive route segments")
+    if has_residual_credential(path) or redact_string(path) != path:
+        raise ValueError("request path contains sensitive material")
+    return method, path
+
+
+def project_request_metadata(record: object, selection: tuple[str, str]) -> dict[str, object] | None:
+    """Project eligible completed snapshots, not a claim of capture completeness."""
+    if not isinstance(record, dict) or record.get("type") != "resource-snapshot":
+        return None
+    snapshot = record.get("snapshot")
+    if not isinstance(snapshot, dict):
+        raise ValueError("invalid network resource snapshot")
+    request = snapshot.get("request")
+    if not isinstance(request, dict):
+        raise ValueError("network snapshot lacks request metadata")
+    method, path = selection
+    if request.get("method") != method:
+        return None
+    raw_url = request.get("url")
+    if not isinstance(raw_url, str) or len(raw_url) > MAX_STRING_CHARS:
+        raise ValueError("network snapshot lacks bounded URL metadata")
+    try:
+        url = urlsplit(raw_url)
+        # Exclude even empty query/fragment delimiters and encoded paths. Paths
+        # are compared literally; no percent-decoding or captured path is emitted.
+        if (url.scheme not in {"http", "https"} or not url.hostname
+                or url.username is not None or url.password is not None
+                or "?" in raw_url or "#" in raw_url or "%" in url.path
+                or any(ord(c) < 33 for c in raw_url)):
+            return None
+    except ValueError:
+        raise ValueError("invalid network URL metadata") from None
+    if url.path != path:
+        return None
+    response = snapshot.get("response")
+    status = response.get("status") if isinstance(response, dict) else None
+    if type(status) is not int or not 100 <= status <= 599:
+        raise ValueError("matching snapshot lacks a completed integer HTTP status")
+    return {"method": method, "path": path, "status": status}
+
+
 def project_trace_record(record: object, entry: str) -> dict[str, object] | None:
     if not isinstance(record, dict):
         return None
@@ -1258,7 +1326,13 @@ def project_trace_record(record: object, entry: str) -> dict[str, object] | None
     return None
 
 
-def read_trace_entry(data: bytes, entry: str) -> list[object]:
+def read_trace_entry(
+    data: bytes, entry: str, request_filter: tuple[str, str] | None = None
+) -> list[object]:
+    if request_filter is not None:
+        validate_request_filter(*request_filter)
+        if not entry.endswith("trace.network"):
+            raise ValueError("request metadata requires a trace.network entry")
     if not EXPECTED_TRACE_ENTRY.fullmatch(entry):
         raise ValueError(
             "entry is not an expected trace entry "
@@ -1315,7 +1389,11 @@ def read_trace_entry(data: bytes, entry: str) -> list[object]:
                             f"invalid trace JSON on line {line_number}: {exc}"
                         ) from exc
                     validate_json_shape(record)
-                    projected = project_trace_record(record, entry)
+                    projected = (
+                        project_request_metadata(record, request_filter)
+                        if request_filter is not None
+                        else project_trace_record(record, entry)
+                    )
                     if projected is None:
                         continue
                     encoded = json.dumps(
@@ -1378,6 +1456,8 @@ def main() -> None:
         )
         command.add_argument("artifact", type=Path)
         if mode == "trace":
+            command.add_argument("--request-method", help="opt-in exact HTTP method filter; requires --request-path")
+            command.add_argument("--request-path", help="opt-in static route literal; empty results never prove request absence")
             selection = command.add_mutually_exclusive_group(required=True)
             selection.add_argument("--entry")
             selection.add_argument(
@@ -1396,6 +1476,11 @@ def main() -> None:
             )
             emit_json(validate_report_json(data))
         elif args.mode == "trace":
+            request_filter = None
+            if args.request_method is not None or args.request_path is not None:
+                if args.request_method is None or args.request_path is None or args.list:
+                    raise ValueError("request metadata requires --entry, --request-method and --request-path together")
+                request_filter = validate_request_filter(args.request_method, args.request_path)
             data = read_bounded_file(
                 args.report_root,
                 args.artifact,
@@ -1413,7 +1498,7 @@ def main() -> None:
                         )
                     )
             else:
-                emit_json(read_trace_entry(data, args.entry))
+                emit_json(read_trace_entry(data, args.entry, request_filter))
         elif args.mode == "media":
             emit_json(media_metadata(args.report_root, args.artifact))
         else:

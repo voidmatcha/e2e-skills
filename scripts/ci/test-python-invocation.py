@@ -213,7 +213,9 @@ def main() -> None:
     assert '/bin/bash -p "$SHELL_ENUMERATOR" "$REPO_ROOT"' in source
     assert "/bin/bash -p scripts/ci/review.sh" in source
     assert "/bin/bash -p scripts/ci/check-verification-parity.sh" in source
-    assert "/bin/bash -p ./skills/e2e-reviewer/scripts/scan.sh" in source
+    assert 'run_python scripts/ci/lib/self-scan-view.py "$REPO_ROOT"' in source
+    self_scan_source = (ROOT / "scripts/ci/lib/self-scan-view.py").read_text(encoding="utf-8")
+    assert '["/bin/bash", "-p", str(source / SCANNER), target]' in self_scan_source
     assert "/bin/bash ./scripts/validate-evals.sh" in review_source
     assert "/bin/bash -p scripts/ci/pre-push-security.sh" in review_source
     assert "repo_files() { /usr/bin/git " in review_source

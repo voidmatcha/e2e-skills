@@ -2697,7 +2697,191 @@ def assert_bundled_scripts_match_the_launcher_minimum_python() -> None:
     print(f"bundled script Python floor ({floor}): pass")
 
 
+def assert_playwright_request_projection() -> None:
+    """Opt-in completed-request metadata stays bounded and excludes secret URLs."""
+    reader = ROOT / "skills/playwright-debugger/scripts/read-playwright-artifact.py"
+    module = load_contract_module("request_projection_contract", reader)
+    selection = ("POST", "/clear-completed")
+    def resource(url="http://example.test/clear-completed", status=302, method="POST"):
+        return {"type": "resource-snapshot", "snapshot": {
+            "request": {"method": method, "url": url, "postData": "BODY_SENTINEL", "headers": [{"name": "Authorization", "value": "Bearer HEADER_SENTINEL"}]},
+            "response": {"status": status, "statusText": "STATUS_SENTINEL"}}}
+    expected = {"method": "POST", "path": "/clear-completed", "status": 302}
+    assert module.project_request_metadata(resource(), selection) == expected
+    assert module.project_trace_record(resource(), "trace.network") is None
+    assert module.project_request_metadata(resource(method="GET"), selection) is None
+    assert module.project_request_metadata(resource(url="http://example.test/elsewhere"), selection) is None
+    for url in ("http://user:URL_SENTINEL@example.test/clear-completed",
+                "http://example.test/clear-completed?token=URL_SENTINEL",
+                "http://example.test/clear-completed#URL_SENTINEL",
+                "http://example.test/clear-completed?", "http://example.test/clear-completed#",
+                "http://example.test/%63lear-completed", "file:///clear-completed",
+                "http://example.test/clear-completed\n", "http://example.test/secret/URL_SENTINEL"):
+        assert module.project_request_metadata(resource(url=url), selection) is None
+    for status in (None, True, 302.0, -1, 0, 600, "302"):
+        try:
+            module.project_request_metadata(resource(status=status), selection)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("invalid status must fail closed")
+    for path in ("/reset/secret-value", "/auth", "/api/token", "/users/123", "/%61pi", "/api?x=y", "/api#x", "/"+"a"*33):
+        try:
+            module.validate_request_filter("POST", path)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("unsafe filter must fail closed")
+    with tempfile.TemporaryDirectory(prefix="request-projection-") as name:
+        root = Path(name).resolve(); archive_path = root / "trace.zip"
+        def write(records):
+            with zipfile.ZipFile(archive_path, "w") as archive:
+                archive.writestr("trace.network", "\n".join(json.dumps(r) for r in records))
+        write([resource(), resource(method="GET")])
+        args=("--entry", "trace.network", "--request-method", "POST", "--request-path", "/clear-completed")
+        good=run_playwright_reader(reader,"trace",root,archive_path,*args)
+        assert good.returncode == 0,good.stderr
+        assert json.loads(good.stdout)==[expected]
+        assert "SENTINEL" not in good.stdout
+        for extra in (("--entry","trace.network","--request-method","POST"),
+                      ("--list","--request-method","POST","--request-path","/clear-completed")):
+            assert run_playwright_reader(reader,"trace",root,archive_path,*extra).returncode != 0
+        original = module.MAX_OUTPUT_BYTES
+        try:
+            module.MAX_OUTPUT_BYTES = 20
+            try:
+                module.read_trace_entry(archive_path.read_bytes(), "trace.network", selection)
+            except ValueError as exc:
+                assert "output limit" in str(exc)
+            else:
+                raise AssertionError("opt-in output must obey byte bound")
+        finally:
+            module.MAX_OUTPUT_BYTES = original
+        original_records = module.MAX_OUTPUT_RECORDS
+        try:
+            module.MAX_OUTPUT_RECORDS = 0
+            try:
+                module.read_trace_entry(archive_path.read_bytes(), "trace.network", selection)
+            except ValueError as exc:
+                assert "output limit" in str(exc)
+            else:
+                raise AssertionError("opt-in output must obey record bound")
+        finally:
+            module.MAX_OUTPUT_RECORDS = original_records
+        try:
+            module.read_trace_entry(archive_path.read_bytes(), "trace.trace", selection)
+        except ValueError as exc:
+            assert "trace.network" in str(exc)
+        else:
+            raise AssertionError("request metadata accepts network entries only")
+        with zipfile.ZipFile(archive_path,"w") as archive:
+            archive.writestr("trace.network", "{bad-json")
+        invalid=run_playwright_reader(reader,"trace",root,archive_path,*args)
+        assert invalid.returncode != 0 and not invalid.stdout
+        with zipfile.ZipFile(archive_path,"w") as archive:
+            archive.writestr("../trace.network", "{}")
+        invalid=run_playwright_reader(reader,"trace",root,archive_path,*args)
+        assert invalid.returncode != 0 and not invalid.stdout
+        write([resource(status=None)])
+        invalid=run_playwright_reader(reader,"trace",root,archive_path,*args)
+        assert invalid.returncode != 0 and not invalid.stdout
+        with zipfile.ZipFile(archive_path,"w") as archive:
+            archive.writestr("trace.trace", "{}")
+        invalid=run_playwright_reader(reader,"trace",root,archive_path,*args)
+        assert invalid.returncode != 0 and not invalid.stdout
+
+
+def assert_playwright_multiple_attempt_errors() -> None:
+    """Preserve both native soft failures without changing single-error rows."""
+    reader = ROOT / "skills/playwright-debugger/scripts/read-playwright-artifact.py"
+    report = {
+        "stats": {"expected": 0, "skipped": 0, "unexpected": 1, "flaky": 0},
+        "suites": [{"suites": [], "specs": [{
+            "title": "two symptoms", "file": "persist.spec.ts", "line": 3,
+            "ok": False, "tests": [{
+                "projectName": "chromium", "status": "unexpected",
+                "results": [{
+                    "status": "failed", "retry": 0,
+                    "error": {"message": "first symptom", "location": {
+                        "file": "persist.spec.ts", "line": 8, "column": 2}},
+                    "errors": [
+                        {"message": "first symptom", "location": {
+                            "file": "persist.spec.ts", "line": 8, "column": 2}},
+                        {"message": "second symptom", "location": {
+                            "file": "persist.spec.ts", "line": 9, "column": 3}},
+                    ],
+                }],
+            }],
+        }]}],
+    }
+    with tempfile.TemporaryDirectory(prefix="playwright-multi-error-") as name:
+        root = Path(name).resolve()
+        artifact = root / "report.json"
+
+        def read() -> subprocess.CompletedProcess[str]:
+            artifact.write_text(json.dumps(report), encoding="utf-8")
+            return run_playwright_reader(reader, "report", root, artifact)
+
+        result = read()
+        assert result.returncode == 0, result.stderr
+        attempt = json.loads(result.stdout)[0]["attempts"][0]
+        assert attempt["error"] == "first symptom"
+        assert [(item["message"], item["location"]["line"])
+                for item in attempt["errors"]] == [
+                    ("first symptom", 8), ("second symptom", 9)]
+
+        errors = report["suites"][0]["specs"][0]["tests"][0]["results"][0]["errors"]
+        errors[1]["message"] = "Authorization: Bearer SECOND_SECRET"
+        result = read()
+        assert result.returncode == 0, result.stderr
+        assert "SECOND_SECRET" not in result.stdout
+        assert "[REDACTED]" in result.stdout
+        errors[1]["message"] = "second symptom"
+
+        native_result = report["suites"][0]["specs"][0]["tests"][0]["results"][0]
+        primary = native_result.pop("error")
+        result = read()
+        assert result.returncode == 0, result.stderr
+        assert json.loads(result.stdout)[0]["attempts"][0]["error"] == "first symptom"
+        native_result["error"] = primary
+
+        errors.pop()
+        result = read()
+        assert result.returncode == 0, result.stderr
+        assert "errors" not in json.loads(result.stdout)[0]["attempts"][0]
+
+        # Playwright serializes a thrown non-Error as `value` in the primary
+        # slot and formats it as `message` in the errors array.
+        native_result["error"] = {"value": "'second native symptom'"}
+        errors[:] = [{"message": "'second native symptom'", "location": {
+            "file": "persist.spec.ts", "line": 11, "column": 4}}]
+        result = read()
+        assert result.returncode == 0, result.stderr
+        attempt = json.loads(result.stdout)[0]["attempts"][0]
+        assert attempt["error"] == "'second native symptom'", attempt
+        assert attempt["errorLocation"]["line"] == 11, attempt
+
+        native_result["error"] = {"value": "Authorization: Bearer NONERROR_SECRET"}
+        errors[:] = [{"message": "Authorization: Bearer NONERROR_SECRET"}]
+        result = read()
+        assert result.returncode == 0, result.stderr
+        assert "NONERROR_SECRET" not in result.stdout
+        assert "[REDACTED]" in result.stdout
+
+        errors.append("malformed")
+        result = read()
+        assert result.returncode != 0 and not result.stdout
+        assert "result.errors" in result.stderr
+
+        errors[:] = [{"message": "extra"}] * 101
+        result = read()
+        assert result.returncode != 0 and not result.stdout
+        assert "100-error limit" in result.stderr
+
+
 def main() -> None:
+    assert_playwright_multiple_attempt_errors()
+    assert_playwright_request_projection()
     assert_debugger_reference_routing()
     assert_classification_evidence_contract()
     assert_debugger_input_and_gate_contracts()
@@ -3287,6 +3471,19 @@ def main() -> None:
         {"attempt": 1, "error": None, "state": "passed"},
     ]
 
+    top_level_error = run_cypress_reader(
+        cypress_reader,
+        "run-results",
+        cypress_fixtures,
+        cypress_fixtures / "cypress-run-results-top-level-error.json",
+    )
+    assert top_level_error.returncode == 0, top_level_error.stderr
+    top_level_records = json.loads(top_level_error.stdout)
+    assert "to have value 'Z'" in top_level_records[0]["error"]
+    assert "persistence.cy.cjs:24:23" in top_level_records[0]["error"]
+    assert top_level_records[1]["state"] == "passed"
+    assert top_level_records[1]["error"] is None
+
     with tempfile.TemporaryDirectory(
         prefix="e2e-cypress-artifact-contract-",
     ) as temp_dir:
@@ -3408,6 +3605,7 @@ def main() -> None:
                                 {
                                     "title": ["redacts credentials"],
                                     "state": "failed",
+                                    "displayError": cypress_secret_text,
                                     "attempts": [
                                         {
                                             "state": "failed",

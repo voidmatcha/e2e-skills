@@ -137,6 +137,8 @@ run_python scripts/ci/test-eval-schema.py ||
   fail "test-eval-schema.py"
 run_python scripts/ci/test-evidence-ledger.py ||
   fail "test-evidence-ledger.py"
+run_python scripts/ci/test-self-scan-view.py ||
+  fail "test-self-scan-view.py"
 
 step "Release contract preflight"
 # Keep cheap, high-signal release blockers ahead of the multi-minute review
@@ -181,6 +183,8 @@ else
 fi
 
 step "Generator contracts"
+# Router gate checks both the archived measured thin rules and the current
+# witness addendum pinned from the retained Notepad development comparison.
 run_python scripts/ci/test-generator-router.py ||
   fail "test-generator-router.py"
 run_python scripts/ci/test-release-claims.py ||
@@ -517,6 +521,14 @@ run_python scripts/ci/test-reviewer-trust-contract.py ||
 # these development contracts never rewrite frozen holdout labels.
 run_python scripts/ci/test-reviewer-doc-contracts.py ||
   fail "test-reviewer-doc-contracts.py"
+run_python scripts/ci/test-reviewer-check.py ||
+  fail "test-reviewer-check.py"
+run_python scripts/ci/test-reviewer-probe.py ||
+  fail "test-reviewer-probe.py"
+run_python scripts/evals/hybrid-check-pilot/check-docker-matrix/test_notepad_adapter_v1.py ||
+  fail "test_notepad_adapter_v1.py"
+run_python scripts/evals/hybrid-check-pilot/check-docker-matrix/test_passport_adapter_v1.py ||
+  fail "test_passport_adapter_v1.py"
 run_python scripts/dev/reviewer-contract.py ||
   fail "reviewer-contract.py"
 run_python scripts/ci/test-reviewer-output-discipline-v2.py ||
@@ -565,15 +577,17 @@ done
 if [ -z "$SELF_SCAN_AST_GREP" ]; then
   echo "ci-local: WARNING: ast-grep not found; the self-scan P0 gate below covers Tier 3 only (hosted CI also runs Tier 2)" >&2
 fi
-for SELF_SCAN_ROOT in skills scripts; do
-  if [ "$QUIET" = "1" ]; then
-    E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_FAIL_ON=p0-candidate /bin/bash -p ./skills/e2e-reviewer/scripts/scan.sh "$SELF_SCAN_ROOT" >/dev/null 2>&1 ||
-      fail "skills/e2e-reviewer/scripts/scan.sh $SELF_SCAN_ROOT"
-  else
-    E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_FAIL_ON=p0-candidate /bin/bash -p ./skills/e2e-reviewer/scripts/scan.sh "$SELF_SCAN_ROOT" ||
-      fail "skills/e2e-reviewer/scripts/scan.sh $SELF_SCAN_ROOT"
-  fi
-done
+# The fixed Notepad pilot is an intentional negative control required by the
+# adapter contracts. Verify its original findings, then scan an identity-checked
+# temporary view excluding only that exact frozen file. Product bytes and the
+# p0-candidate threshold remain unchanged; drift or any other candidate fails.
+if [ "$QUIET" = "1" ]; then
+  run_python scripts/ci/lib/self-scan-view.py "$REPO_ROOT" >/dev/null 2>&1 ||
+    fail "repository self-scan view"
+else
+  run_python scripts/ci/lib/self-scan-view.py "$REPO_ROOT" ||
+    fail "repository self-scan view"
+fi
 
 [ "$QUIET" = "1" ] || {
   print_timing_summary

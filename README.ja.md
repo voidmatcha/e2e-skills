@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <a href="README.ko.md">🇰🇷 한국어</a> | <strong>🇯🇵 日本語</strong> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=3378db164350bfc700ce5391a2ee8c2adfbad987354d54f6eeb197c29333b73e; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=cbac9f0b8297e0e5a9c19e880fc72a3ed3c266f0c2e1b18a85eea34d641a9f74; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 証拠の範囲: ここに示した merge 済み PR 15 件は選んだ例であり、総数ではありません。Field review v1 は、スキル名を含めるという基準のもとで、提出 29 件、merge 16 件、クローズ 6 件、オープン 7 件を別に記録しています。2 つの母数を合算しないでください。いずれも記録時点のスナップショットで、現在の GitHub の集計ではありません。
 
@@ -136,6 +136,10 @@ Summary: 2 total hit(s), 2 P0
 ## 生成したテストを信頼する前に確認する
 
 良い matcher だけでは不十分で、挙動が壊れたときにテストが red になる必要があります。3.0.0 から生成器はこれを証明しません。`e2e-reviewer` がインストールされていればスキャナーを実行して P0 と P1 の検出をすべて修正し（最大 3 回）、プロジェクトのテストを 1 回実行します。スキップしたゲートや実行は完了ではないと報告します。主要な assertion の反転、障害注入、独立した再レビューはもう行わないため、必要なら `e2e-reviewer` にレビューを依頼してください。これらの 2.x の手順はタグ `v2.0.1` に残っています。
+
+依頼に応じて reviewer は、既存の runner が準備された信頼できるローカルプロジェクトで [portable assertion またはアプリ障害 probe](skills/e2e-reviewer/references/runtime-probes.md) を実行できます。固定した JSON 計画に従って正常・変更・復元のコピーを実行し、native レポートと観測資料を保存します。Assertion の感度とアプリ障害の検出は別の結果であり、テスト全体の十分性を自動的に証明しません。プロジェクトの準備と承認されたコマンドが必要で、実行器は依存関係のインストールも OS sandbox の提供もしません。
+
+明示的な portable 計画には `run-probe.py` を使い、登録済み adapter が正確なプロジェクトスナップショットを対象にする場合はソース checkout 専用 pilot の `check.py` を使います。インストールされたスキルのコピーでは `run-probe.py` を使います。固定の `check.py` adapter はスキルのコピーに含まれません。両方とも reviewer の helper であり、追加の公開スキルではありません。[開発段階の統合検証](benchmarks/release-readiness-v1/README.md#portable-integration) は既知の OSS 事例二つで両フレームワークを実行した結果で、自律的な障害発見や一般的な精度を証明しません。
 
 ## インストールして試す
 

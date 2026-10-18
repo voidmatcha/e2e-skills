@@ -8,7 +8,7 @@ Guidance for AI coding agents (Claude Code, Codex, and other AGENTS.md-compatibl
 
 `e2e-skills` is a bundle of four Agent Skills for end-to-end test work on Playwright and Cypress projects:
 
-- `playwright-test-generator` — routes new-test generation to the official Playwright planner and generator when they are installed and their MCP tools are visible, with the 11 thin rules and safety instructions prepended, then the `e2e-reviewer` scanner gate and one test run; when the agents are not set up it shows the setup guide and stops. A router, not a pipeline; the 2.x pipeline is archived at tag `v2.0.1`.
+- `playwright-test-generator` — routes new-test generation to the official Playwright planner and generator when they are installed and their MCP tools are visible, with the 12 thin rules and safety instructions prepended, then the `e2e-reviewer` scanner gate and one test run; when the agents are not set up it shows the setup guide and stops. A router, not a pipeline; the 2.x pipeline is archived at tag `v2.0.1`.
 - `e2e-reviewer` — static review of existing Playwright/Cypress specs against 24 anti-patterns grouped P0/P1/P2.
 - `playwright-debugger` — root-cause diagnosis from `playwright-report/`.
 - `cypress-debugger` — root-cause diagnosis from `cypress/reports/` (mochawesome / JUnit).
@@ -47,7 +47,7 @@ The repo doubles as a Claude Code plugin (`.claude-plugin/`), a Codex plugin (`.
 ├── skills/                 # Four Agent Skills (the public surface)
 │   ├── playwright-test-generator/
 │   │   ├── SKILL.md        # Required: skill frontmatter + body (at most 7,168 bytes)
-│   │   ├── thin-rules.md   # the 11-rule checklist, byte-pinned by test-generator-router.py to the thin-layer arm D file
+│   │   ├── thin-rules.md   # the 12-rule checklist; test-generator-router.py pins the historical arm D plus this revision
 │   │   ├── evals/evals.json
 │   │   └── agents/openai.yaml
 │   ├── e2e-reviewer/

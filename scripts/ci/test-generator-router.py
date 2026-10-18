@@ -22,10 +22,16 @@ SKILL = SKILL_DIR / "SKILL.md"
 THIN = SKILL_DIR / "thin-rules.md"
 ARCHIVE = ROOT / "benchmarks/generator-skill-v2.0.1-archive"
 
-SKILL_MAX_BYTES = 6400
+SKILL_MAX_BYTES = 7168
 THIN_MAX_BYTES = 2500
-# Byte-identical to the arm D rules file the generator-thin-layer benchmark measured.
-THIN_SHA256 = "f693fad9a421c6e247a77d5b1b380e499c53dfeedae5bdc85bb3b84729024f5a"
+# The archived arm D remains byte-identical to its frozen benchmark. The
+# current product adds one provisional unaffected-witness line, supported by
+# the retained Notepad normal/fault/recovery comparison in
+# scripts/evals/generator-value/notepad-official-pair-v4/RESULT.md
+# (one actual defining-tool pair, six native normal/fault/recovery cells).
+# This is one direct-actor effect case, not native-child or cross-app lift.
+ARCHIVED_THIN_SHA256 = "f693fad9a421c6e247a77d5b1b380e499c53dfeedae5bdc85bb3b84729024f5a"
+THIN_SHA256 = "49425994fbddd05d3178cd57150f2589fcbd1c6ce4f2004b943b795c9cb5b83b"
 
 ALLOWED_TOP_LEVEL = {"SKILL.md", "thin-rules.md", "agents", "evals"}
 REMOVED_REFERENCES = (
@@ -61,7 +67,11 @@ REQUIRED_STATEMENTS = {
     "guide says init-agents writes repo files": "It writes files into the repository (agent definitions, `specs/README.md`, a seed spec)",
     "guide says the skill never runs init-agents": "this skill never runs it",
     "guide Claude Code step is the .mcp.json approval": "Claude Code: `init-agents` wrote `.mcp.json`; approve its prompt.",
-    "guide Codex session-wide is an extra step": "Codex: `init-agents` declares it only inside the agent file; add it session-wide (`~/.codex/config.toml`) yourself.",
+    "guide Codex session-wide is an extra step": "Codex: `init-agents` declares it only inside the agent file; declare it in trusted-project `.codex/config.toml` or user `~/.codex/config.toml` yourself.",
+    "MCP native execution must select files": "never omit `locations`",
+    "MCP native execution must preserve scope": "Prove its loaded config, environment, project and origin match the approved command.",
+    "MCP transport is not native success": "MCP transport success alone is not test success.",
+    "evaluator is not actor execution": "An evaluator's separate run is not the agent's completed run.",
     "guide step new session": "Start a new session and ask again.",
     "scanner env pinned": "E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN",
     "scanner command pinned": "/bin/bash -p <its skill dir>/scripts/scan.sh <one spec file>",
@@ -141,8 +151,11 @@ def main() -> None:
     thin_bytes = THIN.read_bytes()
     if len(thin_bytes) > THIN_MAX_BYTES:
         fail(f"thin-rules.md is {len(thin_bytes)} bytes, budget {THIN_MAX_BYTES}")
+    archived_thin = ROOT / "benchmarks/generator-thin-layer-v1/THIN-RULES.md"
+    if hashlib.sha256(archived_thin.read_bytes()).hexdigest() != ARCHIVED_THIN_SHA256:
+        fail("archived arm D thin rules differ from the frozen benchmark")
     if hashlib.sha256(thin_bytes).hexdigest() != THIN_SHA256:
-        fail("thin-rules.md differs from the measured arm D rules; update the pin only together with the benchmark")
+        fail("thin-rules.md differs from the pinned product rules; update the pin only with retained comparison evidence")
 
     entries = {path.name for path in SKILL_DIR.iterdir()}
     if entries != ALLOWED_TOP_LEVEL:

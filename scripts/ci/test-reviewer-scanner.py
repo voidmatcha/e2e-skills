@@ -548,6 +548,190 @@ def section(output: str, heading: str) -> str:
     return remainder if next_heading == -1 else remainder[:next_heading]
 
 
+def assert_awaited_locator_truthiness_from_real_shape() -> None:
+    """An awaited matcher still cannot establish Locator existence."""
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-awaited-locator-") as temp:
+        root = Path(temp)
+        (root / "cal-shape.spec.ts").write_text(
+            "import { test, expect } from '@playwright/test';\n"
+            "test('earlier route', async ({ page }) => {\n"
+            "  const locator = page.getByText('Messaging');\n"
+            "  await expect(locator).toBeVisible();\n"
+            "});\n"
+            "test('bookings route', async ({ page }) => {\n"
+            "  const locator = page.getByTestId('horizontal-tab-upcoming');\n"
+            "  await expect(locator).toBeDefined();\n"
+            "  const loaded = true;\n"
+            "  await expect(loaded).toBeDefined();\n"
+            "  await expect(page.getByRole('heading')).toBeVisible();\n"
+            "});\n"
+            "test('local non-Locator binding', async () => {\n"
+            "  const locator = { loaded: true };\n"
+            "  await expect(locator).toBeDefined();\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        (root / "direct.spec.ts").write_text(
+            "import { test, expect } from '@playwright/test';\n"
+            "test('direct locator', async ({ page }) => {\n"
+            "  await expect(page.getByTestId('missing')).toBeDefined();\n"
+            "  await expect(await page.getByTestId('missing').count()).toBeDefined();\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        (root / "parameter-shadow.spec.ts").write_text(
+            "import { test, expect } from '@playwright/test';\n"
+            "test('first', async ({ page }) => {\n"
+            "  const locator = page.getByTestId('real');\n"
+            "  await expect(locator).toBeDefined();\n"
+            "});\n"
+            "test('scalar', async () => {\n"
+            "  async function check(locator: number) {\n"
+            "    await expect(locator).toBeDefined();\n"
+            "  }\n"
+            "  await check(42);\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        (root / "multiline-parameter-shadow.spec.ts").write_text(
+            "import { test, expect } from '@playwright/test';\n"
+            "test('first', async ({ page }) => {\n"
+            "  const locator = page.getByTestId('real');\n"
+            "  await expect(locator).toBeDefined();\n"
+            "});\n"
+            "test('scalar', async () => {\n"
+            "  async function check(\n"
+            "    locator: number\n"
+            "  ) {\n"
+            "    await expect(locator).toBeDefined();\n"
+            "  }\n"
+            "  await check(42);\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        (root / "destructured-shadow.spec.ts").write_text(
+            "import { test, expect } from '@playwright/test';\n"
+            "test('first', async ({ page }) => {\n"
+            "  const locator = page.getByTestId('real');\n"
+            "  await expect(locator).toBeDefined();\n"
+            "});\n"
+            "test('scalar', async () => {\n"
+            "  const { locator } = { locator: 42 };\n"
+            "  await expect(locator).toBeDefined();\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
+        assert result.returncode == 0, result.stdout
+        hits = section(
+            result.stdout,
+            "[P0] #4f Locator always-true assertion (truthy/defined/not-null)",
+        )
+        assert "cal-shape.spec.ts:8:" in hits, result.stdout
+        assert "direct.spec.ts:3:" in hits, result.stdout
+        assert "direct.spec.ts:4:" not in hits, result.stdout
+        assert "parameter-shadow.spec.ts:4:" in hits, result.stdout
+        assert "parameter-shadow.spec.ts:8:" not in hits, result.stdout
+        assert "multiline-parameter-shadow.spec.ts:4:" in hits, result.stdout
+        assert "multiline-parameter-shadow.spec.ts:10:" not in hits, result.stdout
+        assert "destructured-shadow.spec.ts:4:" in hits, result.stdout
+        assert "destructured-shadow.spec.ts:8:" not in hits, result.stdout
+        for line in (4, 10, 11, 15):
+            assert f"cal-shape.spec.ts:{line}:" not in hits, result.stdout
+
+
+def assert_awaited_value_reads_are_not_generic_locator_candidates() -> None:
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-generic-value-read-") as temp:
+        root = Path(temp)
+        (root / "generic-values.spec.ts").write_text(
+            "import { expect, test } from '@playwright/test';\n"
+            "test('resolved values and unknown query', async ({ page }) => {\n"
+            "  await expect(await page.getByRole('status').count()).toBeDefined();\n"
+            "  await expect(await page.getByRole('status').textContent()).toBeTruthy();\n"
+            "  await expect(await page.getByRole('status').getAttribute('id')).toBeDefined();\n"
+            "  const app = createCustomWrapper();\n"
+            "  await expect(app.getByRole('status')).toBeTruthy();\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
+        assert result.returncode == 0, result.stdout
+        generic = section(
+            result.stdout,
+            "[P0?][LLM-TRIAGE] #4f Possible generic getBy/query truthiness assertion",
+        )
+        assert "generic-values.spec.ts:7:" in generic, result.stdout
+        for line in (3, 4, 5):
+            assert f"generic-values.spec.ts:{line}:" not in generic, result.stdout
+        value_reads = section(
+            result.stdout, "[P1?][LLM-TRIAGE] #4c-4e One-shot Playwright state/content assertion"
+        )
+        for line in (3, 4, 5):
+            assert f"generic-values.spec.ts:{line}:" in value_reads, result.stdout
+
+
+def assert_same_line_helper_missing_await() -> None:
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-inline-helper-") as temp:
+        root = Path(temp)
+        (root / "inline.spec.ts").write_text(
+            "import { expect, test } from '@playwright/test';\n"
+            "test('checks status', async ({ page }) => {\n"
+            "  async function check() { expect(page.getByRole('status')).toBeVisible(); }\n"
+            "  await check();\n"
+            "  async function observed() { await expect(page.getByRole('main')).toBeVisible(); }\n"
+            "  await observed();\n"
+            "  async function returned() { return expect(page.getByRole('footer')).toBeVisible(); }\n"
+            "  await returned();\n"
+            "  // async function comment() { expect(page.getByRole('aside')).toBeVisible(); }\n"
+            "  const literal = \"{ expect(page.getByRole('nav')).toBeVisible(); }\";\n"
+            "  { const expect = (_value: unknown) => ({ toBeVisible: () => true }); async function local() { expect(page.getByRole('status')).toBeVisible(); } await local(); }\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
+        assert result.returncode == 0, result.stdout
+        missing = section(result.stdout, "[P1] #15 Missing await on Playwright expect")
+        assert "inline.spec.ts:3:" in missing, result.stdout
+        for line in (5, 7, 9, 10, 11):
+            assert f"inline.spec.ts:{line}:" not in missing, result.stdout
+
+        (root / "method.spec.ts").write_text(
+            "import { expect, test } from '@playwright/test';\n"
+            "class Assertions { expect(value) { return value.toBeVisible(); } }\n"
+            "class WithCheck { expect(value) { expect(value).toBeVisible(); } }\n"
+            "class NestedDefault { expect(value = fallback()) { return value.toBeVisible(); } }\n"
+            "test('safe', async ({ page }) => { await expect(page.getByRole('status')).toBeVisible(); });\n",
+            encoding="utf-8",
+        )
+        result = scan_path(root, {"E2E_SMELL_FAIL_ON": "none"})
+        assert result.returncode == 0, result.stdout
+        missing = section(result.stdout, "[P1] #15 Missing await on Playwright expect")
+        assert "method.spec.ts:2:" not in missing, result.stdout
+        assert "method.spec.ts:3:" in missing, result.stdout
+        assert "method.spec.ts:4:" not in missing, result.stdout
+
+        (root / "mixed-inline.spec.ts").write_text(
+            "import { expect, test } from '@playwright/test';\n"
+            "test('multiple assertions', async ({ page }) => {\n"
+            "  async function safe() { expect(42).toBe(42); await expect(page.getByRole('status')).toBeVisible(); }\n"
+            "  await safe();\n"
+            "  async function missing() { expect(page.getByRole('status')).toBeVisible(); await expect(page.getByRole('main')).toBeVisible(); }\n"
+            "  await missing();\n"
+            "  expect(page.getByRole('footer')).toBeVisible(); if (true) { expect(42).toBe(42); }\n"
+            "  expect(42).toBe(42); await expect(page.getByRole('aside')).toBeVisible();\n"
+            "  expect(42).toBe(42); expect(page.getByRole('nav')).toBeVisible();\n"
+            "});\n",
+            encoding="utf-8",
+        )
+        result = scan_path(root / "mixed-inline.spec.ts", {"E2E_SMELL_FAIL_ON": "none"})
+        assert result.returncode == 0, result.stdout
+        assert "mixed-inline.spec.ts:3:" not in result.stdout, result.stdout
+        assert "mixed-inline.spec.ts:5:" in result.stdout, result.stdout
+        assert "mixed-inline.spec.ts:7:" in result.stdout, result.stdout
+        assert "mixed-inline.spec.ts:8:" not in result.stdout, result.stdout
+        assert "mixed-inline.spec.ts:9:" in result.stdout, result.stdout
+
+
 def assert_ast_scope() -> None:
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-ast-scope-") as temp:
         root = Path(temp) / "project with spaces"
@@ -6472,8 +6656,10 @@ def assert_inherited_path_and_output_are_untrusted() -> None:
         assert "ci-local-report` artifact" in workflow
         assert "skills/e2e-reviewer/scripts/scan.sh ." not in workflow
         ci_local = CI_LOCAL.read_text(encoding="utf-8")
-        assert "for SELF_SCAN_ROOT in skills scripts; do" in ci_local
-        assert 'scan.sh "$SELF_SCAN_ROOT"' in ci_local
+        assert 'run_python scripts/ci/lib/self-scan-view.py "$REPO_ROOT"' in ci_local
+        self_scan_view = (ROOT / "scripts/ci/lib/self-scan-view.py").read_text(encoding="utf-8")
+        assert '"skills", "scripts"' in self_scan_view
+        assert '"p0-candidate"' in self_scan_view
         assert "scan.sh . " not in ci_local
 
         project_rg = root / "project-rg"
@@ -7140,6 +7326,9 @@ def main() -> None:
     # pickling, which keeps the checks ordinary functions. The suite was 630s of ci-local's
     # 1027s of Python stages; nothing else came close.
     run_checks_in_parallel(
+        assert_awaited_locator_truthiness_from_real_shape,
+        assert_awaited_value_reads_are_not_generic_locator_candidates,
+        assert_same_line_helper_missing_await,
         assert_ast_scope,
         assert_eslint_registry_fallback_uses_reviewed_exact_pins,
         assert_eslint_download_path_delegates_every_npx_call,

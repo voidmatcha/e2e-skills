@@ -1,0 +1,47 @@
+{
+  "stats": {"expected": 1, "skipped": 0, "unexpected": 1, "flaky": 0},
+  "suites": [
+    {
+      "suites": [],
+      "specs": [
+        {
+          "title": "edited note survives reload",
+          "file": "tests/note.spec.ts",
+          "line": 4,
+          "ok": false,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "unexpected",
+              "results": [
+                {
+                  "retry": 0,
+                  "status": "failed",
+                  "duration": 203,
+                  "error": {"message": "persisted-editor-value-after-reload: expected Z, received empty", "location": {"file": "tests/note.spec.ts", "line": 18, "column": 7}},
+                  "errors": [
+                    {"message": "persisted-editor-value-after-reload: expected Z, received empty", "location": {"file": "tests/note.spec.ts", "line": 18, "column": 7}},
+                    {"message": "persisted-raw-value-after-reload: expected Z, received empty", "location": {"file": "tests/note.spec.ts", "line": 19, "column": 7}}
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "editor loads empty initial note",
+          "file": "tests/note.spec.ts",
+          "line": 24,
+          "ok": true,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "expected",
+              "results": [{"retry": 0, "status": "passed", "duration": 62, "errors": []}]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

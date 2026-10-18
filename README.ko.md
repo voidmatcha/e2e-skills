@@ -20,7 +20,7 @@
 <a href="README.md">🇺🇸 English</a> | <strong>🇰🇷 한국어</strong> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=3378db164350bfc700ce5391a2ee8c2adfbad987354d54f6eeb197c29333b73e; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=cbac9f0b8297e0e5a9c19e880fc72a3ed3c266f0c2e1b18a85eea34d641a9f74; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 근거 범위: 여기에 표시한 merge된 PR 15건은 선별한 사례이며 전체 수가 아닙니다. Field review v1은 skill 이름을 포함하는 기준에 따라 제출 29건, merge 16건, 닫힘 6건, 열림 7건을 별도로 기록합니다. 두 분모를 합쳐서 해석하지 마세요. 둘 다 기록 시점의 스냅샷이며 현재 GitHub 집계가 아닙니다.
 
@@ -138,6 +138,10 @@ Summary: 2 total hit(s), 2 P0
 ## 생성한 테스트를 신뢰하기 전에 확인하기
 
 좋은 matcher만으로는 부족합니다. 제품 동작이 잘못되면 테스트가 실제로 실패해야 합니다. 3.0.0부터 generator는 이를 증명하지 않습니다. `e2e-reviewer`가 설치되어 있으면 스캐너를 실행해 P0와 P1 항목을 모두 고치고(최대 3회), 프로젝트의 테스트를 한 번 실행하며, 건너뛴 게이트나 실행은 완료가 아니라고 보고합니다. 핵심 검증문 반전, 결함 주입, 독립 재리뷰는 더 이상 수행하지 않으므로 필요하면 `e2e-reviewer`에 리뷰를 요청하세요. 2.x의 해당 단계는 태그 `v2.0.1`에 남아 있습니다.
+
+요청하면 reviewer는 기존 runner가 준비된 신뢰할 수 있는 로컬 프로젝트에서 [portable assertion 또는 앱 결함 probe](skills/e2e-reviewer/references/runtime-probes.md)를 실행할 수 있습니다. 고정한 JSON 계획에 따라 정상, 변경, 복원 복사본을 실행하고 native 보고서와 관측 자료를 보존합니다. Assertion 민감도와 앱 결함 검출은 별도 결과이며, 이것만으로 테스트 전체의 적절성을 증명하지는 않습니다. 프로젝트 준비와 승인된 명령이 필요하며, 실행기는 의존성을 설치하거나 OS sandbox를 제공하지 않습니다.
+
+명시적인 portable 계획에는 `run-probe.py`를 사용하고, 등록된 adapter가 정확한 프로젝트 스냅샷을 지원하면 소스 checkout 전용 pilot인 `check.py`를 사용합니다. 설치된 스킬 복사본에서는 `run-probe.py`를 사용합니다. 고정된 `check.py` adapter는 스킬 복사본에 포함되지 않습니다. 두 도구는 reviewer의 helper이며 별도의 공개 스킬이 아닙니다. [개발 단계 통합 검증](benchmarks/release-readiness-v1/README.md#portable-integration)은 이미 분석한 OSS 사례 두 개에서 두 프레임워크를 실행한 결과이며, 자율적인 결함 발견이나 일반 정확도를 입증하지 않습니다.
 
 ## 설치하고 사용해 보기
 

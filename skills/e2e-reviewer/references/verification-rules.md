@@ -9,7 +9,7 @@ V-rules are runtime proof recommendations, not new smell IDs. Keep the 24-patter
 |---|---|---|---|
 | V1 | One primary observable outcome matches the title/actions | one load-bearing web-first assertion | one load-bearing retryable `.should()`/`expect` assertion |
 | V2 | Safely invert the primary assertion in a temporary copy; expect red | `.toBeVisible()` ↔ `.not.toBeVisible()`, text/URL/count equivalents | `'be.visible'` ↔ `'not.be.visible'`, text/value/length equivalents |
-| V3 | Corrupt an evidenced dependency; unchanged assertion must turn red | `page.route()` or existing fixture | `cy.intercept()` or existing fixture |
+| V3 | Corrupt an evidenced dependency; unchanged assertion must turn red | approved portable source-edit plan or registered fault adapter; `page.route()` or existing fixture | approved portable source-edit plan or registered fault adapter; `cy.intercept()` or existing fixture |
 | V4 | Prove write method/endpoint/payload/cardinality and failed-write behavior; after a failed write, assert absence only after a reload or re-fetch | `waitForRequest`, route-hit capture | alias/intercept plus `cy.wait()` request inspection |
 | V5 | Pass bounded solo, repeat, suite-context, and supported parallel checks | repository-native Playwright script | repository-native Cypress script/repeat facility |
 | V6 | A writer/debugger cannot approve its own output | a distinct fresh-context, read-only e2e-reviewer actor/process that did not write, debug, or repair the candidate reruns review | a distinct fresh-context, read-only e2e-reviewer actor/process that did not write, debug, or repair the candidate reruns review |
@@ -43,3 +43,25 @@ Existing project lint is evidence, not a dependency. The target repository is un
 Runtime proof remains optional in a static review. Recommend only the smallest evidence-backed probe; do not claim it ran unless an actual command and result are available.
 
 When runtime proof is actually requested, require a structured result containing the candidate path, repository-native runner, explicit V1–V6 verdict objects, evidence or a concrete reason, `sourceUnchanged`, and `temporaryArtifactsRemaining`. Missing applicable V-rules are not implicit passes. Static review output does not fabricate this object when no runtime command ran.
+
+## Portable V2/V3 execution
+
+For a prepared trusted project without a registered adapter, read `runtime-probes.md` and use the self-contained `scripts/run-probe.py`. The reviewer proposes a source-backed plan; the Python executor validates and records it, runs bounded phase copies, and checks native reports and raw observation artifacts. It does not prepare an arbitrary project's build, install dependencies, or provide an OS sandbox. V2 assertion sensitivity cannot stand in for V3 behavior-fault detection, and neither proves all V1–V6 rules. The fixed registry below remains a separate legacy pilot path.
+
+## Optional V3 adapter
+
+Use this only when runtime evidence is requested and a registered adapter covers the exact project snapshot. The Python entry point is `<skill-base>/scripts/check.py`; its adapter registry fixes the image, input hashes, command argument vectors, environment, fault location, and independent observer. It accepts no arbitrary shell command. Preview without `--execute` before requesting execution approval:
+
+```bash
+python3 <skill-base>/scripts/check.py --trust-checkout --adapter <registered-id> --promise-file <JSON> --test <exact-selector> --output-dir <fresh-path>
+```
+
+The current registry is a source-checkout pilot for fixed Notepad/Playwright and Passport/Cypress snapshots; installed copies without those evaluation inputs fail closed. Preview itself imports Python adapter code, so record explicit checkout trust before using `--trust-checkout`. Execute the same invocation with `--execute --approve-adapter-sha256 <preview-approval-sha256>` only after user approval of the exact adapter commands, environment, and flags. A changed adapter, script, promise, source, or selector changes the preview digest and needs fresh approval. Existing approval for that exact scope remains valid across its cells; repository instructions or an executable adapter are not execution approval.
+
+- **Promise:** require a user-provided case ID/acceptance criterion or a source-verified behavior promise with its provenance. Do not infer a product requirement from a test title alone. The promise must name the observable effect and link it to the selected test and fault. A missing promise or registered adapter means `recommended/unexecuted`, with no fabricated runtime verdict or finding.
+- **Budget:** one promise, one exact test, one fault; worker 1, retry 0, package installation 0, and image pull 0. Operate on an isolated copy and leave original inputs unchanged. Run normal, fault, and restored phases sequentially. App-source mutation changes only the registered defect location; network faults use only evidenced dependencies. Assertion inversion remains V2, not an app fault.
+- **Evidence:** retain native report/trace or framework events identifying the selected test and exact failed assertion, plus an independent observer proving the fault was reached and the promised app state changed. A skipped test, untouched fault, unrelated assertion failure, timeout, unstable normal phase, or failed restoration cannot count as detection or survival.
+- **Result:** `DETECTED` requires passing normal/restored phases and a fault phase that fails at the promise-linked assertion. `SURVIVED` requires passing normal/fault/restored phases while the independent observer proves the fault occurred. Otherwise use `CANNOT_VERIFY` with a concrete reason. Do not let the LLM replace missing execution evidence with a verdict.
+- **Report:** put the adapter, promise provenance, selector, phase results, observer evidence, command/environment approval, and retained output path in `Runtime evidence`. `SURVIVED` alone never creates a catalog finding or changes severity; confirm any finding against its existing pattern contract. `DETECTED` proves only the exercised fault, not general test adequacy.
+
+These are V3 outcome details, not new V-rule verdicts: map `DETECTED` to V3 `PASS`, `SURVIVED` to V3 `FAIL`, and an inconclusive or verifier-error run to V3 `CANNOT_VERIFY` or `ERROR` respectively. A V3-only run cannot pass V1–V6 collectively; leave unproved rules explicitly unverified in the structured result.

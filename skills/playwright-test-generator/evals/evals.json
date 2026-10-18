@@ -190,12 +190,13 @@
       "id": 12,
       "title": "Setup guide is shown, never executed",
       "prompt": "I would like to use the official Playwright agents for generating tests in evals/files/project-flat/. How do I set them up?",
-      "expected_output": "States the setup guide: npx --no-install playwright init-agents --loop=<claude|codex> (saying it writes files into the repository: agent definitions, specs/README.md and a seed spec), then declare the playwright-test MCP server (npx playwright run-test-mcp-server) with tool approval (Claude Code: approve the .mcp.json prompt init-agents wrote; Codex: add the server session-wide in ~/.codex/config.toml yourself, because init-agents declares it only inside the agent file), then a new session. Does not run it or edit host configuration; the skill never runs init-agents.",
+      "expected_output": "States the setup guide: npx --no-install playwright init-agents --loop=<claude|codex> (saying it writes files into the repository: agent definitions, specs/README.md and a seed spec), then declare the playwright-test MCP server (npx playwright run-test-mcp-server) with tool approval (Claude Code: approve the .mcp.json prompt init-agents wrote; Codex: add the server session-wide in trusted-project .codex/config.toml or user ~/.codex/config.toml yourself, because init-agents declares it only inside the agent file), then a new session. Does not run it or edit host configuration; the skill never runs init-agents.",
       "assertions": [
         "Mentions npx --no-install playwright init-agents --loop= and says it writes files into the repository (agent definitions, specs/README.md, a seed spec)",
         "Mentions declaring the playwright-test MCP server with tool approval, with the .mcp.json prompt as the Claude Code step and a separate session-wide declaration as the Codex step",
         "Says the skill never runs init-agents",
-        "FALSE-POSITIVE GUARD: does not run init-agents or edit host configuration itself, and does not present the Codex session-wide declaration as something init-agents did"
+        "FALSE-POSITIVE GUARD: does not run init-agents or edit host configuration itself, and does not present the Codex session-wide declaration as something init-agents did",
+        "FALSE-POSITIVE GUARD: a trusted-project .codex/config.toml declaration does not require changing global user configuration; setup guidance is not authority to write either config"
       ],
       "files": [
         "evals/files/project-flat/playwright.config.ts",
@@ -399,6 +400,42 @@
         "evals/files/project-flat/tests/login.spec.ts",
         "evals/files/project-flat/src/app/page.tsx"
       ]
+    },
+    {
+      "id": 25,
+      "title": "Explicit ownership boundary preserves an unaffected witness",
+      "prompt": "The official generator is ready on an approved disposable loopback stack. The accepted scenario is: save the content of note Target without changing note Witness, owned by a different record. Both notes and their initial contents were observed in the browser. In a separate accepted scenario, toggle the visible password field between masked and unmasked; it promises only that field's immediate UI state, with no ownership or filtering boundary.",
+      "expected_output": "The delegated thin rules include the unaffected-witness rule. For the scoped save, the generated test proves the saved Target value and reopens Witness to assert its observed content remains unchanged. The UI-only password scenario stays within its accepted scope.",
+      "assertions": [
+        "For the note-save scenario, preserves the primary saved-value assertion and checks the independently observed Witness value after saving Target",
+        "The delegated prompt includes the unaffected-witness rule, either via the readable thin-rules.md path or the full inline rules when the child cannot read files",
+        "FALSE-POSITIVE GUARD: the password visibility scenario does not acquire an unrelated record, backend persistence requirement, or cross-user setup merely to satisfy the witness rule"
+      ],
+      "files": []
+    },
+    {
+      "id": 26,
+      "title": "Approved official MCP native execution preserves command scope",
+      "prompt": "Official generator ready on an approved disposable loopback project. The accepted new spec is tests/login.spec.ts; the sole configured project is chromium. The existing playwright-test server loaded the same config and sanitized environment as the approved native command. User explicitly approved test_run locations=[tests/login.spec.ts], projects=[chromium] instead of the shell command. Generate, scan and run once.",
+      "expected_output": "Uses the official child and scanner, then the existing official test_run with exact approved locations/projects. Reports native counts and execution owner; does not also execute the shell command.",
+      "assertions": [
+        "Uses explicit locations restricted to tests/login.spec.ts and the approved chromium project with the same server config/environment/origin",
+        "Reports actual native passed/failed/skipped counts; a successful tool response containing failed tests is failure",
+        "FALSE-POSITIVE GUARD: an explicitly approved equivalent MCP path is permitted even when the shell cannot launch Chromium; no sandbox disabling or evaluator result is substituted"
+      ],
+      "files": []
+    },
+    {
+      "id": 27,
+      "title": "MCP native scope mismatch and transport-only success are blocked",
+      "prompt": "A generator produced tests/login.spec.ts. The existing test_run tool defaults to all files and projects and its server config origin has not been established. A previous tool response was transport-successful but reported 1 failed. User approved only the narrow login spec on localhost:3000.",
+      "expected_output": "Does not run test_run with omitted locations or unknown config/project/origin. Reports BLOCKED or requests exact scope approval. Does not claim pass from successful MCP transport or a separate evaluator run.",
+      "assertions": [
+        "Rejects omitted locations, unapproved projects and unknown server config/environment/origin; never broadens to all tests",
+        "Treats native 1 failed as failure despite successful transport and distinguishes evaluator execution",
+        "FALSE-POSITIVE GUARD: a sole known approved project need not be invented or renamed; an approved shell command remains valid without test_run"
+      ],
+      "files": []
     }
   ]
 }

@@ -1,0 +1,29 @@
+{
+  "status": "DERIVED_SUMMARY_LOCAL_RAW_NOT_DISTRIBUTED",
+  "source_sha256": {
+    "scripts/evals/release-readiness-v1/workflows/applicability.json": "0241c439070009888fac649fbf72efa866cfdd669778ef6361b6881627a34862",
+    "scripts/evals/portable-probe-v1/accepted-receipts.json": "6db3b638d779c153a8d6d1ade3c50337290158781126e3c6b6cfa0ee9a7e6ed0",
+    "scripts/evals/portable-probe-v1/verification.json": "2e4bd6c91f6a9b4e110b7b23547a84d417b85e8e35c01503ed4f62feca32f7af",
+    "benchmarks/portable-probe-release-v1/result-index.json": "4008beaca6e852b00e124b96236191c49c949d3ab8391a3b9384a0dd656d2a0c",
+    "scripts/evals/release-readiness-v1/reviewer/initial-state-controls-v1.json": "e9e2826c6e1b4a7be36d777319dcc964f10a053f1dafb36ec6bcfefcc965b625",
+    "scripts/evals/release-readiness-v1/installation/result.json": "8088bb73449ee4ae4d3940245923311d199c668fb7c04f7f2bdea435b64522e8",
+    "scripts/evals/release-readiness-v1/workflows/guards/nonloopback-assessment.json": "381d3a62173df9f6d2e421012be3bfcb99e81337321fea9aa02b40e5361f0c27",
+    "scripts/evals/release-readiness-v1/packaging/canary-v2.json": "72aee93d2dd6ab845e4d12728600c20a8d7887ea0aaed91703b47b7abec94b33",
+    "scripts/evals/release-readiness-v1/linux/portable-probe-v2.json": "94ad3efda85ebcaf68d6656e760a65a996b1499ba94fad3728dd40b03b0929b0",
+    "scripts/evals/release-readiness-v1/installation/result-v2.json": "35a9a09357054bf26e1337fcd7ae2e7da4f8f5c49e66a4d2ca049ced801256df",
+    "scripts/evals/release-readiness-v1/workflows/guards/missing-window-v2/assessment.json": "ce5357a453dcfd99c1dc04835810180c01919bdbceb3643fda4916d006f7d5ce",
+    "scripts/evals/release-readiness-v1/reviewer-successor-v1/result.json": "1ac51d7529792da9e122fa45f99f5a85f1349c29deaa84f8aaf53a0f6f649040",
+    "scripts/evals/release-readiness-v1/reviewer-successor-parent-audit-v1.json": "58c1ac0b93f98922a0b520198446935498c6765ff5882d6928a5204b6e171169",
+    "scripts/evals/release-readiness-v1/installation/claude-init-v1/result.json": "5325f49d77274c935639f3dcce1ed7f60268665879d9dcc65c624fbfe0aac387",
+    "scripts/evals/release-readiness-v1/installation/pinned-closure-v1/result.json": "bb3a693fba309e1413c0c2bcafd2a1066922b9af28e75a2f0803bd6b870cde40",
+    "scripts/evals/release-readiness-v1/installation/host-gap-progress-v1.json": "57dbf3f8077b227e17fdb72fad53f2a84c82031481a1ebdb9912a36cc492a4bf",
+    "scripts/evals/release-readiness-v1/ci-result-v1.json": "ddbaea91afcf267130d2a4c135e0a7313d75e03c988b397a0b3edd9518440d54",
+    "scripts/evals/release-readiness-v1/claude-authenticated-readiness-v1.json": "687c9fac048baf03368ff30f942a66d0767d5c1df10420eaad16e4c3cf10fd15",
+    "scripts/evals/release-readiness-v1/runtime-refresh-v1.json": "60ff150f3b5034b2253d7608501a6a004102da63f210ac472498660be3634434",
+    "scripts/evals/release-readiness-v1/absent-reviewer-attempt-v1.json": "3c0370b9a416ada18c13589d82d554eac7de5f662f5c019955830d1a06317338",
+    "scripts/evals/release-readiness-v1/absent-reviewer-continuation-v2.json": "c8981f6148b4e68b150ed6d059221fd7e82bd3faee444704090b6eebbc145aba",
+    "scripts/evals/release-readiness-v1/linux-scanner-fix-v1.json": "671dc9ed3adee544c85d64693db6376b9728ef78de4eccf0f7e1da9972c1fa8f",
+    "scripts/evals/release-readiness-v1/qalendar-original-case-v1.json": "145e275c59b1e90f54939ca868b1621e82c23bd3b13ea7169fcb9ec46eba2a4e"
+  },
+  "limitation": "Source paths are logical repository-relative identifiers. Underlying receipts also reference local retained artifacts and session files; the hashes alone do not enable independent public replay."
+}

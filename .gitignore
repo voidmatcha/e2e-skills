@@ -44,6 +44,9 @@ node_modules/
 .venv/
 venv/
 
+# Private Codex authentication snapshots retained by bounded local eval runs.
+**/.codex/auth.json
+
 # Runtime state locks the independent-review runner creates beside an archive
 benchmarks/.*.state.lock
 

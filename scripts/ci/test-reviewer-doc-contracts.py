@@ -1388,6 +1388,9 @@ def verify_overprescription_contracts() -> None:
     assert handler_source.index("status.textContent = 'Saved'") < handler_source.index(
         "await fetch('/api/profile'"
     )
+    assert "window.addEventListener('DOMContentLoaded'" in handler_source
+    assert "const response = await fetch('/api/profile')" in handler_source
+    assert "input.value = displayName" in handler_source
     case_52_text = " ".join(
         [evals[52]["expected_output"], *evals[52]["assertions"]]
     )
@@ -1671,7 +1674,72 @@ def verify_positional_selector_boundary() -> None:
         raise AssertionError("#10a class-selector mutation survived")
 
 
+def assert_v3_adapter_contract(skill: str, rules: str, reporting: str) -> None:
+    for contract in (
+        "read `references/verification-rules.md` § Optional V3 adapter",
+        "never infer a product requirement from its test title alone",
+        "Missing promise, adapter, or approval means `recommended/unexecuted`",
+        "`SURVIVED` alone never creates a catalog finding or changes severity",
+    ):
+        require_normalized_contract(skill, contract, "V3 skill routing")
+    for contract in (
+        "accepts no arbitrary shell command",
+        "--trust-checkout --adapter <registered-id> --promise-file <JSON> --test <exact-selector> --output-dir <fresh-path>",
+        "record explicit checkout trust before using `--trust-checkout`",
+        "only after user approval of the exact adapter commands, environment, and flags",
+        "--execute --approve-adapter-sha256 <preview-approval-sha256>",
+        "one promise, one exact test, one fault; worker 1, retry 0, package installation 0, and image pull 0",
+        "A missing promise or registered adapter means `recommended/unexecuted`",
+        "A skipped test, untouched fault, unrelated assertion failure, timeout, unstable normal phase, or failed restoration cannot count as detection or survival",
+        "`DETECTED` requires passing normal/restored phases",
+        "`SURVIVED` requires passing normal/fault/restored phases while the independent observer proves the fault occurred",
+        "A V3-only run cannot pass V1–V6 collectively",
+    ):
+        require_normalized_contract(rules, contract, "V3 adapter boundary")
+    for contract in (
+        "normal/fault/restored phase results, independent observer evidence",
+        "approved commands/environment",
+        "Report missing promise, adapter, or approval as `recommended/unexecuted`",
+        "`SURVIVED` alone never creates a catalog finding or changes severity",
+    ):
+        require_normalized_contract(reporting, contract, "V3 runtime evidence")
+
+
+def verify_v3_adapter_contract() -> None:
+    skill = SKILL.read_text(encoding="utf-8")
+    rules = VERIFICATION_RULES.read_text(encoding="utf-8")
+    reporting = REPORTING.read_text(encoding="utf-8")
+    assert_v3_adapter_contract(skill, rules, reporting)
+    # Prove that removing either the execution boundary or the no-invented-
+    # findings boundary makes this contract guard fail.
+    originals = (skill, rules, reporting)
+    for replacements in (
+        (
+            skill,
+            rules.replace("record explicit checkout trust before using `--trust-checkout`", "adapter availability"),
+            reporting,
+        ),
+        (
+            skill.replace("never infer a product requirement", "infer a product requirement"),
+            rules,
+            reporting,
+        ),
+        (
+            skill,
+            rules,
+            reporting.replace("`SURVIVED` alone never creates", "`SURVIVED` alone creates"),
+        ),
+    ):
+        assert originals != replacements, "V3 contract mutation was a no-op"
+        try:
+            assert_v3_adapter_contract(*replacements)
+        except AssertionError:
+            continue
+        raise AssertionError("V3 adapter boundary survived a mutation")
+
+
 def main() -> None:
+    verify_v3_adapter_contract()
     verify_reference_routing_contract()
     verify_reference_reuse_contract()
     verify_upstream_reference_routing_contract()

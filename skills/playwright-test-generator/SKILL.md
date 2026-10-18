@@ -35,7 +35,7 @@ Broad request: planner first, show its plan, wait for approval; then generator. 
 Show this guide and stop. Do not run it, write no agent or MCP configuration, install nothing, write no specs:
 
 1. `npx --no-install playwright init-agents --loop=<claude|codex>` in the project. It writes files into the repository (agent definitions, `specs/README.md`, a seed spec); this skill never runs it.
-2. Declare the `playwright-test` MCP server (`npx playwright run-test-mcp-server`) in the host with tool approval. Claude Code: `init-agents` wrote `.mcp.json`; approve its prompt. Codex: `init-agents` declares it only inside the agent file; add it session-wide (`~/.codex/config.toml`) yourself.
+2. Declare the `playwright-test` MCP server (`npx playwright run-test-mcp-server`) in the host with tool approval. Claude Code: `init-agents` wrote `.mcp.json`; approve its prompt. Codex: `init-agents` declares it only inside the agent file; declare it in trusted-project `.codex/config.toml` or user `~/.codex/config.toml` yourself. Use the existing config and headless mode; expose `generator_write_test` and, for MCP execution, `test_run`. Check server errors if tools are absent; `required = true` and `mcp_optional_startup_grace_ms = 0` make startup wait. Native children need a persistent Codex session; ephemeral mode may lack their parent rollout.
 3. Start a new session and ask again.
 
 ## 5. Origin check, scanner gate, then run
@@ -43,6 +43,8 @@ Show this guide and stop. Do not run it, write no agent or MCP configuration, in
 First grep the written specs and the generator's output for non-loopback URLs; any hit: report BLOCKED. Then, if `e2e-reviewer` is installed, scan each changed spec file separately: `E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 /usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN -u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN /bin/bash -p <its skill dir>/scripts/scan.sh <one spec file>` (never a copy in the repo; set no other `E2E_SMELL_*`). Exit 0 = P0=0; exit 1 with a Summary = P0>0; exit 2, INCOMPLETE, or no Summary = not clean. Fix every P0 and P1 in the printed list, at most 3 passes; P0 left or scan not clean: report BLOCKED, never claim completion.
 
 Then run the approved test command once, on the new specs only, against a disposable stack: specs may write data. Confirm the effective `baseURL` (config plus env) is the approved origin; if not, do not run. A loopback frontend is not enough: if its API, database, or env points at a shared, production, link-local, metadata, or private host, do not run; ask for a disposable stack. Before rerunning specs that write data, confirm the stack can be reset.
+
+Alternatively, use existing official `test_run` once with approval of its exact `locations` and selected projects. List new specs; never omit `locations`. For multiple projects, supply the approved `projects`; otherwise confirm the sole project. Prove its loaded config, environment, project and origin match the approved command. Unknown or broader scope: BLOCKED. Never run both methods or disable the sandbox. Record the execution owner and native passed/failed/skipped counts; MCP transport success alone is not test success. An evaluator's separate run is not the agent's completed run.
 
 Not installed: report the gate skipped, suggest `npx skills add voidmatcha/e2e-skills --skill e2e-reviewer -g`. A skipped gate or run means not complete.
 

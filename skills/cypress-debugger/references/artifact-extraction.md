@@ -7,6 +7,10 @@ Use the absolute bundled launcher outside the physical project, trusted root-own
 On Windows use WSL with artifacts in its filesystem; native Windows must fail closed. Never substitute path-only or symlink-following checks for POSIX descriptor-relative no-follow validation.
 
 Command form: write `<absolute-project-root>` literally, as the physical (symlink-resolved) absolute project root (run `/bin/pwd -P` once as its own command to learn it). Use no shell variables, `$()`, or `cd`, so an exact-command approval can match each command.
+Invoke the reader from that project root when using relative `--artifact-root`
+and artifact paths. `--project-root` validates the project boundary but does
+not rebase relative paths; from another working directory, pass absolute
+artifact-root and artifact paths instead.
 
 ```bash
 # Find report if path not specified
@@ -42,6 +46,9 @@ find cypress/screenshots -name "*(attempt *"               # retries happened at
 #     the after:run / after:spec node events DO expose per-attempt data as
 #     runs[].tests[].attempts[] (since Cypress 13, after:run/module-API attempts
 #     carry only {state}; after:spec attempts keep per-attempt error details).
+#     A final failed test may also carry test-level displayError in after:run;
+#     the reader emits it as the test's error after redaction. A passed final
+#     state never inherits a stale test-level displayError.
 #     When the trusted project already saves this artifact:
 #     attempts [{state:"failed"},{state:"passed"}] + final "passed" → flaky (F1).
 <skill-dir>/scripts/run-artifact-reader.sh \

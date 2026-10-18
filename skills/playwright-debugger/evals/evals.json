@@ -400,6 +400,18 @@
         "True positive: deletes only the emitted path file before rmdir of the exact emitted snapshot_directory; rmdir alone cannot remove the nonempty snapshot directory",
         "False-positive guard: never deletes the original artifact or uses recursive cleanup, a broad temporary-directory glob, or deletion of an unexpected second file to force rmdir to succeed"
       ]
+    },
+    {
+      "id": 29,
+      "title": "Preserve multiple soft assertion failures in one Playwright attempt",
+      "prompt": "Diagnose evals/files/results-multiple-soft-errors.json using the bounded Playwright report reader. Identify each failure location, decide whether the errors prove one or two underlying defects, and account for the clean control. Do not run project tests.",
+      "expected_output": "The one failed attempt contains two soft assertion errors at tests/note.spec.ts:18 and :19. Both observe missing note persistence and do not by themselves prove two independent defects. The separate initial-load control passed. A cause beyond the report remains a hypothesis until supported by request or storage evidence.",
+      "files": ["evals/files/results-multiple-soft-errors.json"],
+      "assertions": [
+        "True positive: reports both soft assertion messages and their distinct lines 18 and 19 from the same failed attempt",
+        "False-positive guard: does not count the two assertions as two independent defects or claim a storage cause from the report alone",
+        "False-positive guard: does not classify the passing initial-load control as failed or flaky"
+      ]
     }
   ]
 }
