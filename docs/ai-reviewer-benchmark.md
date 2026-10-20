@@ -40,7 +40,7 @@ Our **scanner adds net-new mechanical coverage over lint in only 8 of 100 PRs** 
 This heading used to read "what only e2e-reviewer caught". That is no longer true, and the reason is worth stating: the first item below was upstreamed into `eslint-plugin-playwright` as `no-unnecessary-assertions` ([#470](https://github.com/playwright-community/eslint-plugin-playwright/pull/470), merged), so current lint catches it. The pattern definition being accepted into the official plugin is better evidence than the exclusivity claim it replaced — but it does mean this list describes tooling as it stood during the pilot, not as it stands now.
 
 - A wall of `expect(locator).toBeTruthy()` / `.not.toBeNull()` on Playwright Locators (always truthy, never null) as the sole assertion of 17 tests in one suite. **Now caught by lint** via the upstreamed rule above.
-- `expect(await locator).toBeVisible()` repeated 9 times — awaiting a Locator returns the Locator, so the construct never asserts.
+- `expect(await locator).toBeVisible()` repeated 9 times: awaiting a Locator returns the Locator, but leaves the async matcher's Promise unawaited. The matcher runs, but later work can race its result and failures can be attributed poorly.
 - Tautological assertions: `toBeGreaterThanOrEqual(0)` on a count, `toHaveTitle(/.*/)`, `expect([200, 401, 403]).toContain(status)` accepting a broken endpoint as a pass.
 - A delete test that clicks Delete and never asserts the entity is gone (pattern #2).
 - A "terms of use accepted" test asserting only the pre-state, never the post-accept state.

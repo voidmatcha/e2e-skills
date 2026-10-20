@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=a7803374d293beda48ce641f314235f195db1d50204caf70582f24e1a65eb9a0; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=040e99e88be1ff2c8533b60721bcf9c1780c8f61de612726b88b25ccd1e856dc; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 AI agent가 Playwright/Cypress E2E 테스트를 생성하고 리뷰하며 실패 원인을 분석할 때 쓰는 네 가지 skill입니다.
 
@@ -34,7 +34,7 @@
 
 테스트가 통과해도 제품의 결함을 놓칠 수 있습니다. `e2e-skills`는 테스트가 시나리오에 적힌 동작을 실제로 검증하는지 확인하도록 돕습니다.
 
-`e2e-reviewer`는 코드 scanner로 의심되는 부분을 찾고, 테스트와 연관된 코드를 읽어 실제 문제인지 판단합니다. 필요하면 검증 조건을 바꾸거나 원본과 분리한 앱 복사본에 결함을 넣어 테스트가 실패하는지 확인하는 방법도 제안합니다. 리뷰어가 추가 검증을 제안할 수 있으며, 실행에는 신뢰할 수 있는 로컬 환경과 명령 승인이 필요합니다. 이미 승인한 범위에서는 다시 승인받지 않습니다.
+`e2e-reviewer`는 코드 scanner로 의심되는 부분을 찾고, 테스트와 연관된 코드를 읽어 실제 문제인지 판단합니다. 필요하면 검증 조건을 바꾸거나 원본과 분리한 앱 복사본에 결함을 넣어 테스트가 실패하는지 확인하는 방법도 제안합니다. reviewer가 추가 검증을 제안할 수 있으며, 실행에는 신뢰할 수 있는 로컬 환경과 명령 승인이 필요합니다. 이미 승인한 범위에서는 다시 승인받지 않습니다.
 
 `e2e-reviewer`가 찾은 문제를 고친 [upstream PR 15건이 merge되었습니다](#merged-upstream-fixes). 아래에서 실제 수정 사례를 확인하세요.
 
@@ -60,7 +60,7 @@
 
 | 저장소 | GitHub Stars | PR | 수정한 패턴 |
 | --- | ---: | --- | --- |
-| Storybook | ★91.3k | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Playwright 검증문의 `await` 누락 |
+| Storybook | ★91.3k | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Playwright 동작 호출의 `await` 누락, 화면 표시 여부를 조회한 뒤 결과를 확인하지 않음 |
 | code-server | ★79.7k | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | focused test 유출, matcher 없는 `expect`, 사용하지 않는 가시성 확인 |
 | Strapi | ★73.3k | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | 사용하지 않는 탐색 및 상태 확인 |
 | Ghost | ★55.6k | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | Promise인 비활성화 상태를 직접 검증 |
@@ -216,9 +216,9 @@ Debug the failed Cypress report in cypress/reports/.
 
 실제 애플리케이션과 E2E 테스트 모음을 보완할 때 이 skill을 사용하세요. 리뷰와 실패 분석은 Playwright와 Cypress를, 생성은 Playwright만 지원합니다.
 
-번들된 shell script와 artifact 리더는 `/bin/bash`와 launcher가 요구하는 고정된 시스템 실행 파일 경로를 쓰는 일반적인 macOS/Linux 구조를 대상으로 합니다. Windows 사용자는 호환되는 WSL 배포판이 필요하고 artifact도 WSL 파일 시스템 안에 있어야 합니다. 네이티브 Windows는 지원하지 않습니다. NixOS, 그리고 Nix, pyenv, Conda, nvm으로만 설치한 도구는 모두 자동으로 찾아지지는 않습니다. 리뷰어 scanner는 검증된 절대 경로의 `E2E_SMELL_*_BIN` override를 지원하지만, debugger launcher에도 같은 override가 있다는 뜻은 아닙니다. 신뢰할 수 있는 도구가 없으면 해당 작업을 중단합니다. 환경의 `PATH`에서 다른 실행 파일을 찾아 이 제한을 우회하지 마세요. skill 리소스는 추측한 홈 디렉터리가 아니라, plugin 캐시와 사용자 지정 설치를 포함해 host가 실제로 제공한 skill 위치에서 찾으세요.
+번들된 shell script와 artifact 리더는 `/bin/bash`와 launcher가 요구하는 고정된 시스템 실행 파일 경로를 쓰는 일반적인 macOS/Linux 구조를 대상으로 합니다. Windows 사용자는 호환되는 WSL 배포판이 필요하고 artifact도 WSL 파일 시스템 안에 있어야 합니다. 네이티브 Windows는 지원하지 않습니다. NixOS, 그리고 Nix, pyenv, Conda, nvm으로만 설치한 도구는 모두 자동으로 찾아지지는 않습니다. reviewer scanner는 검증된 절대 경로의 `E2E_SMELL_*_BIN` override를 지원하지만, debugger launcher에도 같은 override가 있다는 뜻은 아닙니다. 신뢰할 수 있는 도구가 없으면 해당 작업을 중단합니다. 환경의 `PATH`에서 다른 실행 파일을 찾아 이 제한을 우회하지 마세요. skill 리소스는 추측한 홈 디렉터리가 아니라, plugin 캐시와 사용자 지정 설치를 포함해 host가 실제로 제공한 skill 위치에서 찾으세요.
 
-generator는 `thin-rules.md`와 작업 범위 및 실행 조건을 공식 planner와 generator에 전달한 뒤, 리뷰어 scanner와 새 테스트를 실행합니다. 아무것도 설치하지 않고 agent와 MCP 설정을 바꾸지 않으며, CLI 대체 경로나 healer를 사용하지 않습니다. 설정이 없으면 설정 안내를 보고합니다.
+generator는 `thin-rules.md`와 작업 범위 및 실행 조건을 공식 planner와 generator에 전달한 뒤, reviewer scanner와 새 테스트를 실행합니다. 아무것도 설치하지 않고 agent와 MCP 설정을 바꾸지 않으며, CLI 대체 경로나 healer를 사용하지 않습니다. 설정이 없으면 설정 안내를 보고합니다.
 
 생성에는 로컬 개발에서 흔히 쓰는 loopback 주소(`localhost`, `127.0.0.1`, `::1`)를 사용합니다. 읽기를 포함한 브라우저 작업 전에 프론트엔드, API, 데이터베이스와 환경 전체가 이름이 지정된 폐기 가능한 스택을 이뤄야 합니다. 실제로 탐색하거나 요청을 보내는 주소는 승인된 origin과 scheme, hostname, 유효 포트가 같아야 합니다. 별도로 승인된 loopback API 주소에도 요청을 보낼 수 있습니다. 승인되지 않은 주소나 확인할 수 없는 주소로의 접근은 BLOCKED로 보고합니다. 주소를 확인해도 브라우저가 다른 origin에 접근하는 것까지 차단하지는 않습니다.
 
@@ -239,7 +239,7 @@ debugger와 probe 실행에는 신뢰하는 프로젝트와 환경 변수와 플
 - **검증문 mutation:** 테스트 복사본에서 검증 조건을 반대로 바꿔 실제로 실패하는지 확인합니다. 앱에 실제 버그가 생겼을 때도 테스트가 이를 잡는지는 별도로 확인해야 합니다.
 - **앱 결함 주입:** 앱 복사본에 특정 버그를 넣고, 기존 테스트를 바꾸지 않은 채 그 버그를 잡는지 확인합니다.
 
-예를 들어 “저장 기능에 결함이 생기면 이 테스트도 실패하는지 확인해줘”라고 요청하세요. 리뷰어가 로컬 프로젝트를 살펴보고 검사 방법을 제안합니다. 실행하려면 신뢰할 수 있고 실행 준비가 된 로컬 환경과 명령 승인이 필요합니다. 결과는 선택한 검증문이나 버그에 한정되며, 모든 버그를 잡는다는 뜻은 아닙니다.
+예를 들어 “저장 기능에 결함이 생기면 이 테스트도 실패하는지 확인해줘”라고 요청하세요. reviewer가 로컬 프로젝트를 살펴보고 검사 방법을 제안합니다. 실행하려면 신뢰할 수 있고 실행 준비가 된 로컬 환경과 명령 승인이 필요합니다. 결과는 선택한 검증문이나 버그에 한정되며, 모든 버그를 잡는다는 뜻은 아닙니다.
 
 자세한 내용은 [실행 절차와 준비 조건](skills/e2e-reviewer/references/runtime-probes.md), [OSS 사례 두 개의 작업 절차 검증](benchmarks/release-readiness-v1/README.md#portable-integration)을 참고하세요.
 
@@ -252,7 +252,7 @@ debugger와 probe 실행에는 신뢰하는 프로젝트와 환경 변수와 플
 <details>
 <summary>벤치마크 측정 범위와 모델별 결과</summary>
 
-리뷰어 결과는 모델에 따라 달랐습니다. 같은 동결 스냅샷과 공개 개발 사례 36개를 각 arm에서 다섯 번씩 반복한 측정에서 `gpt-6-sol`은 [v22](benchmarks/reviewer-holdout-v22/README.md)를, `gpt-6.1-sol`은 [v24](benchmarks/reviewer-holdout-v24/README.md)를 통과했고, `gpt-6-luna`는 [v23](benchmarks/reviewer-holdout-v23/README.md)에서 실패했습니다. 각 실행 모두 540회를 완료했습니다. 도구를 끈 상태에서 주어진 지침을 평가한 결과이므로 scanner의 효과나 처음 보는 프로젝트의 정확도를 보여 주지는 않습니다. 모델별 점수와 스냅샷의 적용 범위는 [벤치마크 현황](benchmarks/STATUS.md)을 참고하세요.
+reviewer 결과는 모델에 따라 달랐습니다. 같은 동결 스냅샷과 공개 개발 사례 36개를 각 arm에서 다섯 번씩 반복한 측정에서 `gpt-6-sol`은 [v22](benchmarks/reviewer-holdout-v22/README.md)를, `gpt-6.1-sol`은 [v24](benchmarks/reviewer-holdout-v24/README.md)를 통과했고, `gpt-6-luna`는 [v23](benchmarks/reviewer-holdout-v23/README.md)에서 실패했습니다. 각 실행 모두 540회를 완료했습니다. 도구를 끈 상태에서 주어진 지침을 평가한 결과이므로 scanner의 효과나 처음 보는 프로젝트의 정확도를 보여 주지는 않습니다. 모델별 점수와 스냅샷의 적용 범위는 [벤치마크 현황](benchmarks/STATUS.md)을 참고하세요.
 
 과거 점수는 각 보고서에 명시된 버전에 적용되며, 모든 현재 지시문에 자동으로 적용되지는 않습니다. 프로토콜, 결과, 부정적 결과와 주장 범위는 [벤치마크 현황](benchmarks/STATUS.md)에, 동작 변경 이력은 [CHANGELOG.md](CHANGELOG.md)에 남겨 두었습니다.
 
@@ -404,7 +404,7 @@ plugin은 사용자가 명시적으로 실행을 허용했을 때 사용하며, 
 <!-- README-I18N-CONTRACT:CORE-SAFETY:START -->
 `e2e-reviewer`는 목록에 있는 패턴 24개를 모두 리뷰합니다. 각 패턴에는 고정 ID와 P0/P1/P2 심각도가 지정돼 있습니다. 독립 실행 `scan.sh` scanner는 규칙만으로 판별할 수 있는 일부 항목만 다룹니다. scanner가 찾은 항목은 실제 문제인지 추가로 확인해야 합니다. 테스트 의도와 연관된 코드까지 확인한 뒤 실제 문제인지 판단합니다.
 
-두 debugger skill은 고정된 F1–F15 분류 체계에 따라 실패를 분류합니다. 이 skill들은 저장소를 신뢰하고 환경 변수와 플래그를 포함한 정확한 명령을 승인한 뒤에만 대상 프로젝트에서 불러오는 코드를 실행합니다. generator는 자신이 작성한 테스트에 대해 리뷰어 scanner와 프로젝트의 테스트 명령만 실행합니다.
+두 debugger skill은 고정된 F1–F15 분류 체계에 따라 실패를 분류합니다. 이 skill들은 저장소를 신뢰하고 환경 변수와 플래그를 포함한 정확한 명령을 승인한 뒤에만 대상 프로젝트에서 불러오는 코드를 실행합니다. generator는 자신이 작성한 테스트에 대해 reviewer scanner와 프로젝트의 테스트 명령만 실행합니다.
 
 비공개 벤치마크 실행에서는 `--isolation-wrapper`가 필수 훅이지만, 그 자체로 실제 격리를 보장하지는 않습니다. 지속적 통합(CI)은 wrapper 계약을 검증하지만 파일시스템, 프로세스, 네트워크 격리를 입증하지는 않습니다.
 <!-- README-I18N-CONTRACT:CORE-SAFETY:END -->
@@ -444,7 +444,7 @@ Claude Code와 Codex, 그리고 `skills` CLI가 지원하는 55개 이상의 실
 - [오픈소스 사례 연구](docs/case-studies.md)
 - [원본 벤치마크 실행 artifact(Hugging Face 데이터셋)](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)
 - [외부 연구 근거 원장](docs/llm-generated-e2e-test-evidence.md)
-- [과거 AI 리뷰어 벤치마크](docs/ai-reviewer-benchmark.md)
+- [과거 AI reviewer 벤치마크](docs/ai-reviewer-benchmark.md)
 - [`debugger` 벤치마크 프로토콜](docs/debugger-benchmark/README.md)
 - [지원 framework 범위](docs/framework-scope.md)
 - [로컬 E2E 규칙 브리지와 권장 lint](docs/recommended-lint.md)

@@ -4,7 +4,7 @@
 
 ## Existing project rules
 
-Discover testing docs, package scripts, ESLint config, Playwright/Cypress config, CI workflows, custom fixtures/commands, and seed specs. When the project already has an E2E lint command, run that exact repository-native command and merge its results with `e2e-reviewer`:
+Discover testing docs, package scripts, ESLint config, Playwright/Cypress config, CI workflows, custom fixtures/commands, and seed specs. When the project already has an E2E lint command, run it only after explicit checkout trust and approval of the exact command, environment, and flags. Otherwise report it as `recommended/unexecuted`; project documentation is not execution approval. Merge approved lint results with `e2e-reviewer`:
 
 - Equivalent rule: one finding with both provenance sources.
 - Project rule is stronger: follow it for generated style/conventions.

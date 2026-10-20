@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=a7803374d293beda48ce641f314235f195db1d50204caf70582f24e1a65eb9a0; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=040e99e88be1ff2c8533b60721bcf9c1780c8f61de612726b88b25ccd1e856dc; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、AI コーディング agent が Playwright/Cypress の E2E テストを生成し、レビューし、失敗を診断するための 4 つの skill です。skill は agent が作業時に従う指示の集まりです。
 
@@ -60,7 +60,7 @@ P0/P1/P2 はレビューの重要度です。P0 は機能が壊れても成功�
 
 | リポジトリ | GitHub Stars | PR | 修正したパターン |
 | --- | ---: | --- | --- |
-| Storybook | ★91.3k | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Playwright assertions の missing `await` |
+| Storybook | ★91.3k | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Playwright 操作の `await` 漏れと可視性チェックの戻り値の未検証 |
 | code-server | ★79.7k | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | Focused test leak、matcher-less `expect`、discarded visibility read |
 | Strapi | ★73.3k | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | Discarded navigation/state checks |
 | Ghost | ★55.6k | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | Promise-valued disabled-state assertion |

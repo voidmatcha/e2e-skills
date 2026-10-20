@@ -58,7 +58,7 @@ The repositories below had **496,650 combined GitHub stars** on 2026-10-20 (GitH
 
 | Repository | GitHub Stars | PR | Pattern fixed |
 | --- | ---: | --- | --- |
-| Storybook | ★91.3k | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Missing `await` on Playwright assertions |
+| Storybook | ★91.3k | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Missing `await` on Playwright actions; discarded visibility checks |
 | code-server | ★79.7k | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | Focused test leak, matcher-less `expect`, discarded visibility read |
 | Strapi | ★73.3k | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | Discarded navigation/state checks |
 | Ghost | ★55.6k | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | Promise-valued disabled-state assertion |
@@ -438,7 +438,7 @@ Claude Code, Codex, and the 55+ hosts supported by the `skills` CLI can load the
 - [Open-source case studies](docs/case-studies.md)
 - [Raw benchmark run artifacts (Hugging Face dataset)](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)
 - [External evidence ledger](docs/llm-generated-e2e-test-evidence.md)
-- [Invalidated historical AI reviewer pilot](docs/ai-reviewer-benchmark.md)
+- [Historical AI reviewer pilot](docs/ai-reviewer-benchmark.md)
 - [Debugger benchmark protocol](docs/debugger-benchmark/README.md)
 - [Framework scope](docs/framework-scope.md)
 - [Local E2E rule bridge and recommended lint](docs/recommended-lint.md)

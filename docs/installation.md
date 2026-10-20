@@ -9,6 +9,8 @@ After installation, restart the host, approve the project MCP tools, and ask the
 
 The installer requires Python 3.11+ and Node.js 22.20+ with npm and npx at standard system or Homebrew locations. Node.js 24 LTS is recommended. Project setup also requires Playwright already installed in the project or workspace, plus an existing playwright.config.* file. It stops on conflicting configuration instead of overwriting it. Review the checkout and proposed project command before execution.
 
+The reviewer scanner, including the check after test generation, also requires ripgrep with PCRE2 support (`rg -P`). Use a supported system or Homebrew location, or configure an explicit absolute path as described in the [scanner prerequisites](../skills/e2e-reviewer/references/scanner-workflow.md#phase-1-mechanical-scan).
+
 After this setup, do not repeat the manual steps below. They are alternatives for users who want to run the commands themselves or troubleshoot configuration.
 
 ## Direct installer commands

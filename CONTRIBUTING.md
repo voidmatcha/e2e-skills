@@ -186,7 +186,7 @@ These are enforced by CI. Breaking one fails the build.
 - **Failure codes are frozen.** 15 debugger failure categories (`F1`–`F15`), shared by both debuggers. Do not renumber.
 - **English-only public surface.** `README.md`, `SKILL.md`, and `docs/` are English; CI enforces this. The sanctioned exception is root-level `README.<lang>.md` translations and the language-switcher line that links to them.
 - **Severity-first ordering.** Tables in `SKILL.md`, `README.md`, and `docs/e2e-test-smells.md` group by P0/P1/P2 in the same order.
-- **`// JUSTIFIED: <reason>` comments** suppress a scanner finding on the line (or block) below. Use them for documented intent, never to hide a real finding. `#7` (focused tests) has no exemption.
+- **`// JUSTIFIED: <reason>` comments** document an intentional exception at the matching expression or supported callback/chain boundary, not an entire test or `describe` block. P0 candidates remain visible until the rationale is verified; `#7` (focused tests) has no exemption. Follow the exact [suppression rules](skills/e2e-reviewer/references/scanner-workflow.md#phase-1-mechanical-scan), never use a marker to hide a real finding.
 - **A benchmark snapshot that copies a shipped script needs a HOL scanner exemption.** The hosted HOL Plugin Scanner reports the `#14` credential rule definitions inside any byte copy of `scan.sh` as a hardcoded secret. List the snapshot's exact path in `.plugin-scanner.toml` and in the pinned set in `scripts/ci/test-security-gates.py` in the same commit; that test fails when the two lists differ.
 
 ## Changing an anti-pattern or skill behavior

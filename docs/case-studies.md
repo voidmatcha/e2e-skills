@@ -71,7 +71,7 @@ Why it matters: replacing hard waits with web-first assertions makes tests fail 
 ## More merged examples
 
 - [Apache Zeppelin #5180](https://github.com/apache/zeppelin/pull/5180) — fixed always-true assertions and guarded checks that silently skipped verification.
-- [`usebruno/bruno#8317`](https://github.com/usebruno/bruno/pull/8317) — awaited a WebSocket visibility assertion so it actually ran.
+- [`usebruno/bruno#8317`](https://github.com/usebruno/bruno/pull/8317) — awaited a WebSocket visibility assertion so the test waited for its result.
 - [`QwikDev/qwik#8777`](https://github.com/QwikDev/qwik/pull/8777) — replaced discarded assertion promises, locator `toBeDefined()`, and bare locator checks.
 - [`element-hq/element-web#32801`](https://github.com/element-hq/element-web/pull/32801) — fixed always-passing assertions, unawaited checks, `toBeAttached()` misuse, and dead code.
 - [`mui/mui-x#22982`](https://github.com/mui/mui-x/pull/22982) — replaced an always-true Locator null check with a user-visible edit assertion.
