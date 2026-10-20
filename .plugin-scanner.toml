@@ -90,6 +90,11 @@
 # so the entries above that suppressed those exact files now name the archived
 # paths (same bytes, same reviewed false positives). The new SKILL.md keeps its
 # entry; thin-rules.md carries no network or credential text.
+# 2026-10-20: plugin-scanner==2.0.864 also matches `assertion_token=`
+# in the frozen generator-ablation-v2 scanner copy as HARDCODED_SECRET.
+# Line 6152 contains assertion matcher names, not credentials. Preserve
+# that immutable evidence and pin only its exact path, as for the two
+# already reviewed frozen scanner copies above.
 [scanner]
 ignore_paths = [
   "skills/cypress-debugger/scripts/publish-mochawesome-report.py",
@@ -140,6 +145,7 @@ ignore_paths = [
   "scripts/ci/test-reviewer-holdout-v15.py",
   "scripts/ci/test-reviewer-auth-retry.py",
   "benchmarks/generator-v4-real-get-v1/cases/cal-email-verify/app.mjs",
+  "benchmarks/generator-ablation-v2/reference/e2e-reviewer/scripts/scan.sh",
   "benchmarks/generator-skill-effect-v2/arms/shared/e2e-reviewer/scripts/scan.sh",
   "benchmarks/generator-skill-effect-v3/arms/shared/e2e-reviewer/scripts/scan.sh",
   "benchmarks/generator-skill-effect-v8/reports/final-artifacts/v3-02-no-skill-r3/tests/recipe-browser.spec.mjs",

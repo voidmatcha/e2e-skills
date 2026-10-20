@@ -70,6 +70,7 @@ HOL_SCANNER_FALSE_POSITIVE_PATHS = {
     "scripts/ci/test-reviewer-holdout-v15.py",
     "scripts/ci/test-reviewer-auth-retry.py",
     "benchmarks/generator-v4-real-get-v1/cases/cal-email-verify/app.mjs",
+    "benchmarks/generator-ablation-v2/reference/e2e-reviewer/scripts/scan.sh",
     "benchmarks/generator-skill-effect-v2/arms/shared/e2e-reviewer/scripts/scan.sh",
     "benchmarks/generator-skill-effect-v3/arms/shared/e2e-reviewer/scripts/scan.sh",
     "benchmarks/generator-skill-effect-v8/reports/final-artifacts/v3-02-no-skill-r3/tests/recipe-browser.spec.mjs",

@@ -2566,7 +2566,7 @@ class CliFirstArm(unittest.TestCase):
     def test_interaction_counts_split_acting_observing_session_and_the_guard_probe(self):
         counts = m.cli_interaction_counts(cli_events(REAL_ARM_C_CLI))
         self.assertEqual((counts["available"], counts["complete"], counts["source"]), (True, True, "root-command-stream"))
-        # acting: eval(probe), goto, fill, press x2, select = 6; observing: snapshot x2
+        # acting: guard probe evaluation, goto, fill, press x2, select = 6; observing: snapshot x2
         self.assertEqual((counts["browser_acting"], counts["browser_observing"], counts["browser_total"]), (6, 2, 8))
         self.assertEqual(counts["session_commands"], {"open": 2, "close": 1, "close-all": 0, "list": 0, "requests": 1})
         self.assertEqual((counts["failed_commands"], counts["guard_probe_evals"]), (2, 1))
