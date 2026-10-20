@@ -883,7 +883,7 @@ def assert_output_cannot_overwrite_run_inputs(temp: Path) -> None:
     link.symlink_to(skill)
     assert HOLDOUT.overwrites_run_input(link, inputs)
     assert not HOLDOUT.overwrites_run_input(
-        ROOT / "benchmarks/reviewer-holdout-v3/reports/new.json", inputs
+        ROOT / "results/reviewer-holdout/new.json", inputs
     )
     source = (HOLDOUT_PATH).read_text(encoding="utf-8")
     assert "if overwrites_run_input(output_path, run_inputs):" in source
@@ -940,7 +940,7 @@ def assert_durable_output_is_unaffected(temp: Path) -> None:
         ROOT / "results/reviewer-holdout" / "20260907T000000Z.json"
     )
     assert not HOLDOUT.is_volatile_output_path(
-        ROOT / "benchmarks/reviewer-holdout-v3/reports/full-codex.json"
+        ROOT / "results/reviewer-holdout/full-codex.json"
     )
     # An ordinary home-directory path is durable.
     assert not HOLDOUT.is_volatile_output_path(Path.home() / "reports/out.json")
@@ -1041,6 +1041,29 @@ printf '%s\n' '{"findings":[]}'
 
 def assert_development_status_state_end_to_end(temp: Path) -> None:
     _, cases = HOLDOUT.load_cases(HOLDOUT.DEFAULT_CASES)
+    # Budget only the independently enumerated semantic inputs. The old 200KB
+    # total became stale when those documents grew; this bounds prompt growth
+    # without crediting additional files. Framing/legend overhead is at most 4,551
+    # UTF-8 bytes for this corpus; reserve a fixed 6KiB, not renderer output.
+    semantic_files = (
+        "SKILL.md",
+        "references/review-scope.md",
+        "references/scanner-workflow.md",
+        "references/semantic-review.md",
+        "references/reporting.md",
+        "references/pattern-reference.md",
+        "references/verification-rules.md",
+    )
+    skill = ROOT / "skills/e2e-reviewer"
+    semantic_bytes = sum(len((skill / name).read_bytes()) for name in semantic_files)
+    source_bytes = max(
+        sum(
+            len((HOLDOUT.DEFAULT_CASES.parent / source["source"]).read_bytes())
+            for source in case["source_files"]
+        )
+        for case in cases
+    )
+    prompt_budget = semantic_bytes + source_bytes + 6_144
     outputs = {}
     for case in cases:
         key = "\0".join(sorted(source["path"] for source in case["source_files"]))
@@ -1066,7 +1089,7 @@ if "--version" in sys.argv:
     print("synthetic-codex 1.0")
     raise SystemExit(0)
 prompt = sys.stdin.read()
-if len(prompt.encode()) > 200_000:
+if len(prompt.encode()) > {prompt_budget}:
     raise SystemExit(91)
 if "BEGIN_REVIEWER_SKILL scripts/" in prompt or ".DS_Store" in prompt:
     raise SystemExit(92)
@@ -1082,6 +1105,31 @@ key = "\\0".join(sorted(paths))
 print(json.dumps(json.loads({mapping})[key], separators=(",", ":")))
 """,
     )
+    # Repeated allowed document blocks must not gain an unlimited budget.
+    block = (
+        "BEGIN_REVIEWER_SKILL SKILL.md\n"
+        + (skill / "SKILL.md").read_text(encoding="utf-8")
+        + "\nEND_REVIEWER_SKILL SKILL.md\n"
+    )
+    repeated_blocks = block * (prompt_budget // len(block.encode()) + 1)
+    for payload, expected in (
+        (repeated_blocks, 91),
+        ("BEGIN_REVIEWER_SKILL scripts/scan.sh\n", 92),
+        (".DS_Store", 92),
+    ):
+        rejected = subprocess.run(
+            [os.fspath(pass_runner)],
+            input=payload,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        assert rejected.returncode == expected, (
+            "synthetic prompt size/contamination guard did not reject payload",
+            rejected.returncode,
+            rejected.stderr,
+        )
     fail_runner = temp / "development-fail-codex"
     write_executable(
         fail_runner,

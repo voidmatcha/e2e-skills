@@ -74,6 +74,10 @@ Start every review with this evidence header:
 
 Every field is mandatory; use `none`, `unavailable`, or `not executed`. `Static evidence` records scanner tier coverage and semantic checks. `Runtime evidence` means target-controlled project runtime, never the bundled scanner. In diff mode, identify context-only files; when runtime was not executed, say so and recommend the relevant E2E run. Emit the section even for `no in-scope E2E diff`.
 
+For an executed portable probe, include its mode, frozen plan/digest, exact native selector, normal/changed/restored results, linked failure or observer artifacts, phase app provenance, approved commands/environment, original-input checks, and retained workspace paths in `Runtime evidence`. V2 `ASSERTION_SENSITIVE` proves assertion sensitivity only; it is not V3 `DETECTED`. Leave unmeasured V1–V6 rules explicitly unverified. Missing prepared runner or evidence means `recommended/unexecuted` or `CANNOT_VERIFY`, not a fabricated result.
+
+For an executed V3 adapter check, include its adapter ID, sourced behavior promise, exact test selector, normal/fault/restored phase results, independent observer evidence, approved commands/environment, retained output path, and `DETECTED` / `SURVIVED` / `CANNOT_VERIFY` in `Runtime evidence`. Report missing promise, adapter, or approval as `recommended/unexecuted`; do not manufacture a runtime result. `SURVIVED` alone never creates a catalog finding or changes severity. A valid `DETECTED` result proves only the exercised fault. Keep inconclusive runs and non-catalog observations in the evidence header rather than inventing a finding.
+
 Present findings grouped by severity:
 
 ```markdown
@@ -130,6 +134,8 @@ These constrain what the review says, not what it detects. They never change a p
 - **One fix per finding:** give the single minimal evidence-backed fix. Add a second only when the pattern contract genuinely requires coordinated changes across files, and then say which change forces the other.
 - **No weakening alternatives:** never offer an alternative that reduces what the test proves — relaxing a matcher, widening a timeout, deleting the assertion instead of proving the locator, or adding `force: true` to get past an actionability failure.
 - **Calibrated causal language:** write `always` only when the evidence proves an unconditional outcome (a locator that matches nothing under `toHaveCount(0)` does always pass). Otherwise write `can`, `may`, or `when <condition>`.
+
+**Final follow-up:** Before ending, check SKILL.md § Optional portable V2/V3 probes. If you recommend a useful, unexecuted V2/V3 probe, append one question **after** the review and priorities: name the test, mode, bounded benefit, and additional token/execution-time cost. A `Verification: recommended` bullet alone does not satisfy this step. State that execution has not occurred. Omit the question for explicit static-only requests, no meaningful candidate, or runtime work already authorized; proceed with existing authorization instead. This scoped offer is permitted by output discipline and is not another finding.
 
 **Severity classification:**
 - **P0 (Must fix):** Test silently passes when the feature is broken — no real verification happening. Both halves are required. Passing while the feature is broken is not enough on its own: if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1. `#22` sits there — the optimistic UI assertion does verify client behavior, and the unverified part is the write. A pattern's severity is its usual case; an instance can be reported higher when it meets the P0 definition outright, the way `#12` already conditions P0 on the wrong surface actually satisfying the test's assertions.

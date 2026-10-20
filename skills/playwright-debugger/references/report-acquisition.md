@@ -1,5 +1,7 @@
 ## Prerequisites: Get the Report
 
+Before any execution, browser request, or artifact write in this procedure, read `references/safety-procedures.md` and apply its gates.
+
 Determine the report source in this order:
 
 Use the repository's existing Playwright script when it already preserves the required reporter and flags. Otherwise use the project-local `node_modules/.bin/playwright` commands below. If package-manager resolution is required, replace that prefix with `npx --no-install playwright`; never use a plain `npx` invocation, which may install a different version.
@@ -11,6 +13,8 @@ Use the repository's existing Playwright script when it already preserves the re
 **Execution safety gate (before any Playwright test command):** Generate or reproduce a report only when the whole target stack, including its APIs and data stores, is `local/disposable` or an explicitly approved non-production test environment. A localhost frontend backed by shared or production services does not pass this gate. When the environment is production, shared, or unknown, do not run tests; analyze existing validated artifacts or request a disposable target. Warn that a rerun can replay non-idempotent writes such as submit, payment, delete, registration, message send, or toggle actions. Reset to a known disposable state first and run the narrowest spec once; never use retries to replay those writes unless system-boundary idempotence is proven.
 
 Playwright applies `--grep` to the full title path, not only the test title. Resolve the filter before every targeted run:
+
+Command form: write `<absolute-project-root>` literally, as the physical (symlink-resolved) absolute project root (run `/bin/pwd -P` once as its own command to learn it). Use no shell variables, `$()`, or `cd`, so an exact-command approval can match each command.
 
 ```bash
 /usr/bin/env -i PATH="$PATH" node_modules/.bin/playwright test path/to/spec.spec.ts \
@@ -35,9 +39,8 @@ ls blob-report/*.zip 2>/dev/null              # blob reporter (sharded CI runs)
 **2. No report (or HTML only and you want structured data)** → run tests locally and write JSON to a file (do NOT read stdout directly — output may be truncated):
 
 ```bash
-PROJECT_ROOT=$(/bin/pwd -P)
 <skill-dir>/scripts/run-artifact-reader.sh \
-  --project-root "$PROJECT_ROOT" \
+  --project-root <absolute-project-root> \
   --reader publish-json-report.py --pass-env PATH -- \
   --pass-env PATH \
   playwright-report/results.json -- \
@@ -51,9 +54,8 @@ The first `--pass-env PATH` lets the launcher forward the approved `PATH` into t
 For a sharded blob report, use the same publisher:
 
 ```bash
-PROJECT_ROOT=$(/bin/pwd -P)
 <skill-dir>/scripts/run-artifact-reader.sh \
-  --project-root "$PROJECT_ROOT" \
+  --project-root <absolute-project-root> \
   --reader publish-json-report.py --pass-env PATH -- \
   --pass-env PATH \
   playwright-report/results.json -- \

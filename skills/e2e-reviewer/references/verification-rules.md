@@ -9,7 +9,7 @@ V-rules are runtime proof recommendations, not new smell IDs. Keep the 24-patter
 |---|---|---|---|
 | V1 | One primary observable outcome matches the title/actions | one load-bearing web-first assertion | one load-bearing retryable `.should()`/`expect` assertion |
 | V2 | Safely invert the primary assertion in a temporary copy; expect red | `.toBeVisible()` ↔ `.not.toBeVisible()`, text/URL/count equivalents | `'be.visible'` ↔ `'not.be.visible'`, text/value/length equivalents |
-| V3 | Corrupt an evidenced dependency; unchanged assertion must turn red | `page.route()` or existing fixture | `cy.intercept()` or existing fixture |
+| V3 | Corrupt an evidenced dependency; unchanged assertion must turn red | approved portable source-edit plan or registered fault adapter; `page.route()` or existing fixture | approved portable source-edit plan or registered fault adapter; `cy.intercept()` or existing fixture |
 | V4 | Prove write method/endpoint/payload/cardinality and failed-write behavior; after a failed write, assert absence only after a reload or re-fetch | `waitForRequest`, route-hit capture | alias/intercept plus `cy.wait()` request inspection |
 | V5 | Pass bounded solo, repeat, suite-context, and supported parallel checks | repository-native Playwright script | repository-native Cypress script/repeat facility |
 | V6 | A writer/debugger cannot approve its own output | a distinct fresh-context, read-only e2e-reviewer actor/process that did not write, debug, or repair the candidate reruns review | a distinct fresh-context, read-only e2e-reviewer actor/process that did not write, debug, or repair the candidate reruns review |
@@ -42,4 +42,14 @@ Existing project lint is evidence, not a dependency. The target repository is un
 
 Runtime proof remains optional in a static review. Recommend only the smallest evidence-backed probe; do not claim it ran unless an actual command and result are available.
 
+For the post-review offer and approval reuse, follow SKILL.md § Optional portable V2/V3 probes.
+
 When runtime proof is actually requested, require a structured result containing the candidate path, repository-native runner, explicit V1–V6 verdict objects, evidence or a concrete reason, `sourceUnchanged`, and `temporaryArtifactsRemaining`. Missing applicable V-rules are not implicit passes. Static review output does not fabricate this object when no runtime command ran.
+
+## Portable V2/V3 execution
+
+When runtime proof is requested without a registered adapter, read `runtime-probes.md` and use the self-contained `scripts/run-probe.py`. The reviewer discovers the native setup and authors missing wrapper, observer, and plan artifacts in a disposable snapshot under the existing execution trust gate. The Python executor validates and records the frozen plan, runs bounded phase copies, and checks native reports and raw observation artifacts. It does not prepare an arbitrary project's build, install dependencies, or provide an OS sandbox. V2 assertion sensitivity cannot stand in for V3 behavior-fault detection, and neither proves all V1–V6 rules. For fixed project snapshots, the registered-adapter pilot in `v3-adapter.md` provides a separate execution path.
+
+## Optional registered V3 adapter
+
+Only when runtime evidence is requested for a registered adapter, read `v3-adapter.md` before previewing or executing `scripts/check.py`. Static review does not load that reference.

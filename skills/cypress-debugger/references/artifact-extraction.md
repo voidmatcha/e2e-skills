@@ -1,5 +1,17 @@
 ## Phase 1: Extract Failures
 
+Validate `cypress/reports/` as a real, non-symlink directory; inputs must be regular non-symlink files resolved beneath it. Reject missing files, devices, FIFOs, sockets, symlinks and escapes before any parser/viewer. Fail closed on reader errors; never bypass it.
+
+Use the absolute bundled launcher outside the physical project, trusted root-owned system Python 3.9+ and a cleared environment; isolated mode disables bytecode writes. Never start helpers with ambient `python3`, `env python3`, project Python, or a PATH-resolved interpreter, even after `env -i`. Stop if a trusted interpreter/external bundled script is unavailable; never widen helper/environment allowlists.
+
+On Windows use WSL with artifacts in its filesystem; native Windows must fail closed. Never substitute path-only or symlink-following checks for POSIX descriptor-relative no-follow validation.
+
+Command form: write `<absolute-project-root>` literally, as the physical (symlink-resolved) absolute project root (run `/bin/pwd -P` once as its own command to learn it). Use no shell variables, `$()`, or `cd`, so an exact-command approval can match each command.
+Invoke the reader from that project root when using relative `--artifact-root`
+and artifact paths. `--project-root` validates the project boundary but does
+not rebase relative paths; from another working directory, pass absolute
+artifact-root and artifact paths instead.
+
 ```bash
 # Find report if path not specified
 find . -name "mochawesome*.json" -path "*/cypress/*" | head -10
@@ -12,43 +24,53 @@ find . -name "*.xml" -path "*/cypress/*" | head -5
 
 # Resolve <skill-dir> as the directory containing this SKILL.md. Read a
 # mochawesome or merged JSON report through the bundled standard-library parser.
-# It carries the containing result/suite file into each failed test record and
-# emits a bounded stats summary plus failure title, fullTitle, duration, state,
-# error, stack, and screenshot paths.
-PROJECT_ROOT=$(/bin/pwd -P)
-<skill-dir>/scripts/run-artifact-reader.sh \
-  --project-root "$PROJECT_ROOT" -- mochawesome \
-  --artifact-root cypress/reports \
-  cypress/reports/mochawesome.json
+# Emits stats and failure title/fullTitle/duration/state/error/stack/screenshot
+# paths, with each test paired to its result/suite file.
+<skill-dir>/scripts/run-artifact-reader.sh --project-root <absolute-project-root> -- mochawesome --artifact-root cypress/reports cypress/reports/mochawesome.json
 
 # Flag retried tests — stock mochawesome has NO per-attempt data. Cypress replays
 # only the FINAL attempt to the mocha reporter, so a test that failed twice and
 # passed on attempt 3 appears as a plain `"state": "passed"`; there is no
 # attempts[] or currentRetry field in mochawesome JSON (same for JUnit XML).
-# Recover the retry signal from these real sources instead:
+# Prefer same-run native attempt records; screenshots need independent association:
 
-# (a) Failure screenshots on disk — every failed ATTEMPT writes one. Attempt 1 →
-#     "<test> (failed).png"; attempt N → "<test> (failed) (attempt N).png".
-#     Report says PASSED but "(failed)" screenshots exist → passed on retry →
-#     F1/F15 flaky signal. Report says FAILED with "(attempt N)" screenshots →
-#     failed every attempt → consistent failure, NOT flaky.
-find cypress/screenshots -name "*(failed)*.png"            # all failed attempts
-find cypress/screenshots -name "*(attempt *"               # retries happened at all
-
-# (b) Cypress's own run results, if the project saves them — the Module API and
+# (a) Cypress's own run results, if the project saves them — the Module API and
 #     the after:run / after:spec node events DO expose per-attempt data as
 #     runs[].tests[].attempts[] (since Cypress 13, after:run/module-API attempts
 #     carry only {state}; after:spec attempts keep per-attempt error details).
-#     When the trusted project already saves this artifact:
-#     attempts [{state:"failed"},{state:"passed"}] + final "passed" → flaky (F1).
+#     Establish that this artifact belongs to the report's run and match spec
+#     file plus full test title before combining records.
+#     A final failed test may also carry test-level displayError in after:run;
+#     the reader emits it as the test's error after redaction. A passed final
+#     state never inherits a stale test-level displayError.
+#     attempts [{state:"failed"},{state:"passed"}] + final "passed" confirms
+#     passed-on-retry; this is a flaky signal, not proof of an F1/F15 cause.
 <skill-dir>/scripts/run-artifact-reader.sh \
-  --project-root "$PROJECT_ROOT" -- run-results \
+  --project-root <absolute-project-root> -- run-results \
   --artifact-root cypress/reports \
   cypress/reports/run-results.json
 
-# If neither source exists and flakiness is suspected: check `retries` in
-# cypress.config first (runMode 0 → Cypress never retried, so passes-on-retry
-# cannot be diagnosed from this run), then recommend wiring the after:run dump.
+# (b) Failure screenshots — attempt 1 is conventionally "<test> (failed).png";
+#     attempt N is "<test> (failed) (attempt N).png". Names are candidates only.
+find cypress/screenshots -name "*(failed)*.png"
+find cypress/screenshots -name "*(attempt *"
+#     Require same-run/spec/test association from independent run metadata or
+#     an invocation-scoped artifact manifest linking the report and screenshot
+#     to the exact spec and full test title. Filename/title matches, timestamps,
+#     shared directories, safe media bytes and path validation alone do not
+#     prove this association. Only an associated failed-attempt screenshot plus
+#     a consistent final passed state supports passed-on-retry. A final failed
+#     state plus failure screenshots does not prove every attempt failed.
+#     Prefer native attempts when available. If they contradict screenshot
+#     evidence (e.g. one clean passed attempt), report the provenance conflict;
+#     do not override them or inflate confirmed flaky totals from a filename.
+
+# Missing association, mixed/stale screenshots or conflicting evidence means
+# retry history unknown; report a possible historical failure separately from
+# confirmed retries. Check the selected run's retries config when relevant
+# (runMode 0 does not support passes-on-retry), but config alone proves no
+# attempt history. Do not force reruns or install tools to resolve this gap;
+# optionally recommend saving same-run after:run data for future diagnosis.
 
 # Both JSON modes require --artifact-root, reject symlinks and special files,
 # open every artifact-root component from the filesystem root with
@@ -57,8 +79,7 @@ find cypress/screenshots -name "*(attempt *"               # retries happened at
 # enforce 8 MiB input, 100-level/200,000-node JSON, 10,000-record,
 # 100-attempt-per-test, bounded-string, and 1 MiB output ceilings. Their schemas
 # are explicit; malformed or empty artifacts fail closed instead of producing a
-# misleading empty result. The smaller input ceiling bounds the JSON decoder's
-# unavoidable parse-time allocation before the post-parse depth/node checks.
+# misleading empty result.
 # run-results accepts only passed/failed/pending/skipped test and attempt states,
 # requires at least one attempt per test, and rejects a final test state that
 # contradicts the last attempt. Earlier attempts may contain any valid state
@@ -107,9 +128,8 @@ hook-only failure can never appear as an empty successful extraction.
 # every report before emitting atomic JSONL, so a malformed later report
 # produces no partial stdout. Aggregate output is limited to 10,000 rows and
 # 8 MiB of serialized UTF-8; per-field and message sizes are also bounded.
-PROJECT_ROOT=$(/bin/pwd -P)
 <skill-dir>/scripts/run-artifact-reader.sh \
-  --project-root "$PROJECT_ROOT" --reader extract-junit-failures.py -- \
+  --project-root <absolute-project-root> --reader extract-junit-failures.py -- \
   --report-root cypress/reports \
   cypress/reports/results-*.xml
 ```

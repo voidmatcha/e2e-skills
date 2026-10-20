@@ -76,7 +76,7 @@ The scanner reports candidates. A semantic review verifies each candidate agains
 - **Independent verification:** V1 recommended; not executed
 - **Limitations/exclusions:** application runtime unavailable
 
-## P0 tests/login.spec.ts — #4f Locator object asserted instead of state
+## [P0] tests/login.spec.ts — #4f Locator object asserted instead of state
 
 ### `shows the welcome message`
 - **Issue:** `toBeDefined()` observes the Locator, not rendered text

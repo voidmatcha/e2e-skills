@@ -6,7 +6,8 @@ from pathlib import Path
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
-SKILL = ROOT / "skills/playwright-test-generator"
+# These guidance checks cover the 2.x pipeline text, archived byte-for-byte in 3.0.0.
+SKILL = ROOT / "benchmarks/generator-skill-v2.0.1-archive"
 
 
 def contract(text):

@@ -15,18 +15,12 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts/ci/lib"))
-from frozen_reviewer_inputs import stage_v17_formal_model  # noqa: E402
 
 RUNNER_PATH = ROOT / "scripts/evals/run-reviewer-holdout.py"
 spec = importlib.util.spec_from_file_location("auth_retry_runner", RUNNER_PATH)
 assert spec and spec.loader
 runner = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(runner)
-# v17's frozen protocol pins the Lean model of its own revision; stage that copy
-# so the frozen-policy loop below loads v17 without requiring the live model to
-# stay byte-identical to that release.
-_V17_LEAN_TEMP = tempfile.TemporaryDirectory(prefix="auth-retry-v17-lean-")
-runner.V17_FORMAL_MODEL = stage_v17_formal_model(Path(_V17_LEAN_TEMP.name))
 comparator_path = ROOT / "scripts/evals/compare-reviewer-holdouts.py"
 comparator_spec = importlib.util.spec_from_file_location("auth_retry_comparator", comparator_path)
 assert comparator_spec and comparator_spec.loader
@@ -40,24 +34,6 @@ TOKEN = "test-only-secret-token-should-never-appear"
 
 
 class AuthRetryTest(unittest.TestCase):
-    def test_frozen_policies_reject_auth_reason(self) -> None:
-        for version in range(11, 18):
-            path = ROOT / f"scripts/evals/reviewer-validation-protocol-v{version}.json"
-            protocol = runner.load_protocol(path)
-            self.assertEqual(runner.EXPECTED_INFRASTRUCTURE_RETRY,
-                             protocol["infrastructure_retry"])
-            self.assertNotIn("runner_auth_error", protocol["infrastructure_retry"]["retryable"])
-            changed = copy.deepcopy(protocol)
-            changed["infrastructure_retry"]["retryable"].append("runner_auth_error")
-            with tempfile.TemporaryDirectory() as temp:
-                trial = Path(temp) / "protocol.json"
-                trial.write_text(json.dumps(changed))
-                with self.assertRaises(ValueError):
-                    runner.load_protocol(trial)
-            self.assertIsNone(runner.retryable_failure_reason(
-                1, 1, "runner exited 1", '{"api_error_status":401}', "",
-                allow_auth_error="runner_auth_error" in protocol["infrastructure_retry"]["retryable"]))
-
     def test_auth_classification_is_opt_in_and_conservative(self) -> None:
         reason = runner.retryable_failure_reason
         for status in (401, 403):
@@ -78,6 +54,38 @@ class AuthRetryTest(unittest.TestCase):
                       '{"api_error_status":401}', "")):
             self.assertIsNone(reason(*args, allow_auth_error=True))
         runner.validate_future_infrastructure_retry(AUTH_POLICY, Path("future.json"))
+
+    def test_native_codex_429_capacity_envelope_and_exhausted_stop(self) -> None:
+        message = "exceeded retry limit, last status: 429 Too Many Requests"
+        reason = runner.retryable_failure_reason
+        expected = "runner_nonzero_exit_with_usage_limit_text"
+        events = [
+            {"type": "thread.started", "thread_id": "test-thread"},
+            {"type": "turn.started"},
+            {"type": "error", "message": message},
+            {"type": "turn.failed", "error": {"message": message}},
+        ]
+        output = "\n".join(json.dumps(event) for event in events)
+        for value in (output, json.dumps(events[2]), json.dumps(events[3])):
+            self.assertEqual(expected, reason(1, 1, "runner exited 1", value, ""))
+        record = {"score": None, "attempts": [{"reason": expected}, {"reason": expected}]}
+        self.assertTrue(runner.stop_v22_after_exhausted_identity_failure("reviewer-holdout-v23", record))
+        record["score"] = {"tp": 0, "fp": 0, "fn": 0}
+        self.assertFalse(runner.stop_v22_after_exhausted_identity_failure("reviewer-holdout-v23", record))
+        negatives = (
+            (0, 0, None, output, ""),
+            (1, 1, "staged workspace mutated during runner execution", output, ""),
+            (1, 126, "runner output contained credential-shaped data and was redacted", output, ""),
+            (1, 1, "runner exited 1", message, ""),
+            (1, 1, "runner exited 1", "", message),
+            (1, 1, "runner exited 1", json.dumps({"message": message}), ""),
+            (1, 1, "runner exited 1", json.dumps({"type": "item.completed", "item": {"type": "agent_message", "text": message}}), ""),
+            (1, 1, "runner exited 1", output + "\nnot-json", ""),
+            (1, 1, "runner exited 1", output.replace("429", "500"), ""),
+        )
+        for args in negatives:
+            with self.subTest(args=args):
+                self.assertIsNone(reason(*args))
 
     def test_stub_auth_failure_retries_once_and_scores_without_secret(self) -> None:
         cases_path = ROOT / "scripts/evals/reviewer-holdout-v10.json"

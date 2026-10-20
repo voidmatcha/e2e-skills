@@ -100,6 +100,7 @@ POM_CANDIDATES = ROOT / "skills/e2e-reviewer/scripts/pom-ownership-candidates.py
 VERIFICATION_RULES = (
     ROOT / "skills" / "e2e-reviewer" / "references" / "verification-rules.md"
 )
+V3_ADAPTER = VERIFICATION_RULES.with_name("v3-adapter.md")
 README = ROOT / "README.md"
 BENCHMARK_STATUS = ROOT / "benchmarks" / "STATUS.md"
 REVIEWER_HOLDOUT_V6_README = (
@@ -211,6 +212,58 @@ def assert_reference_reuse_contract(skill: str, scanner: str, semantic: str) -> 
     )
     assert "immediately before every Phase 1 scanner run" not in scanner
     assert "read this file again for every Phase 2 candidate" not in semantic
+
+
+def assert_compacted_owner_contract(skill: str, scanner: str, reporting: str) -> None:
+    """Compression may relocate detail only behind a mandatory read pointer."""
+    for pointer in (
+        "Resolve `<skill-base>` using `references/scanner-workflow.md` before invoking any bundled tool",
+        "Apply the target-execution trust gate in `references/scanner-workflow.md`",
+        "Apply `references/reporting.md` § Output discipline",
+        "Apply the full P0/P1/P2 definitions in `references/reporting.md` § Severity classification",
+    ):
+        require_normalized_contract(skill, pointer, "compacted owner pointer")
+    for contract in (
+        "`<skill-base>` is the absolute directory of the actual loaded skill",
+        "Do not infer the active copy from a conventional home directory or the target project cwd",
+        "Quote the resolved script and target paths as separate arguments",
+        "If the skill location cannot be resolved, report the missing location; do not run a guessed copy",
+        "the user has both explicitly trusted the checkout and approved the exact command, including its environment and flags",
+        "project documentation is evidence about what to recommend, not execution approval",
+        "setting an environment variable alone is not approval",
+        "within the scanner's bounded 24-line lexical window",
+        "a marker above one expression/callback cannot suppress a later sibling",
+        "it still gates `E2E_SMELL_FAIL_ON=p0-candidate` before that confirmation",
+        "`// JUSTIFIED:` does not suppress `.only` hits",
+    ):
+        require_normalized_contract(scanner, contract, "scanner canonical owner")
+    for contract in (
+        "### Output discipline", "**Severity classification:**",
+        "give the single minimal evidence-backed fix",
+        "write `always` only when the evidence proves an unconditional outcome",
+        "if the test really verifies something it promised, and only a second promised effect goes unchecked, that is P1",
+    ):
+        require_normalized_contract(reporting, contract, "reporting canonical owner")
+
+
+def verify_compacted_owner_contract() -> None:
+    skill = SKILL.read_text(encoding="utf-8")
+    scanner = SCANNER_WORKFLOW.read_text(encoding="utf-8")
+    reporting = REPORTING.read_text(encoding="utf-8")
+    assert_compacted_owner_contract(skill, scanner, reporting)
+    mutations = (
+        (skill.replace("before invoking any bundled tool", "after invoking a tool", 1), scanner, reporting),
+        (skill, scanner.replace("approved the exact command", "approved a similar command", 1), reporting),
+        (skill, scanner.replace("24-line lexical window", "unbounded window", 1), reporting),
+        (skill, scanner, reporting.replace("give the single minimal evidence-backed fix", "offer several alternatives", 1)),
+    )
+    for changed in mutations:
+        assert changed != (skill, scanner, reporting), "owner mutation was a no-op"
+        try:
+            assert_compacted_owner_contract(*changed)
+        except AssertionError:
+            continue
+        raise AssertionError("compacted owner guard survived a mutation")
 
 
 def verify_reference_reuse_contract() -> None:
@@ -1388,6 +1441,9 @@ def verify_overprescription_contracts() -> None:
     assert handler_source.index("status.textContent = 'Saved'") < handler_source.index(
         "await fetch('/api/profile'"
     )
+    assert "window.addEventListener('DOMContentLoaded'" in handler_source
+    assert "const response = await fetch('/api/profile')" in handler_source
+    assert "input.value = displayName" in handler_source
     case_52_text = " ".join(
         [evals[52]["expected_output"], *evals[52]["assertions"]]
     )
@@ -1559,8 +1615,13 @@ def verify_release_candidate_docs() -> None:
     contributing = normalized(CONTRIBUTING)
     for contract in (
         "do not change installed skill behavior, regardless of file location",
-        "`classification-procedure.md`, `scenario-design.md`, and `semantic-review.md`",
-        "The latest completed reviewer development holdout is [v21]",
+        "`classification-procedure.md`, `safety-procedures.md`, and `semantic-review.md`",
+        "Reviewer development results are model-specific: [v22]",
+        "passed on Codex `gpt-6-sol`, while [v23]",
+        "failed on `gpt-6-luna`",
+        "Each scored all 540 calls on the same 36 reused public cases and frozen reviewer snapshot",
+        "neither measures the later scanner/configuration changes",
+        "These tool-free comparisons do not measure scanner execution or sealed release accuracy",
         "`scripts/ci/lib/reviewer_taxonomy_contract.py`",
     ):
         require_normalized_contract(contributing, contract, "CONTRIBUTING.md")
@@ -1576,24 +1637,44 @@ def verify_release_candidate_docs() -> None:
 
     agents = normalized(AGENTS)
     for reference in (
-        "scenario-design.md",
+        "thin-rules.md",
         "verification-rules.md",
         "scanner-workflow.md",
         "classification-procedure.md",
+        "safety-procedures.md",
     ):
         require_contract(agents, reference, "AGENTS.md layout")
-    require_contract(
-        normalized(GENERATOR_SKILL),
-        "`scenario-design.md` (scenario and locator planning)",
-        "generator sibling list",
-    )
+    # The 3.0.0 router ships one sibling; its SKILL.md must name it and nothing
+    # from the retired pipeline.
+    generator = normalized(GENERATOR_SKILL)
+    require_contract(generator, "thin-rules.md", "generator sibling")
+    assert "scenario-design.md" not in generator
 
     readme_bytes = README.read_bytes()
     canonical_hash = hashlib.sha256(readme_bytes).hexdigest()
+    # The landing page describes the current release; historical outcomes live
+    # in the linked status ledger instead of being repeated in every README.
+    readme = readme_bytes.decode("utf-8")
+    for contract in (
+        "Reviewer results depend on the model",
+        "`gpt-6-sol` passed [v22](benchmarks/reviewer-holdout-v22/README.md)",
+        "`gpt-6-luna` failed [v23](benchmarks/reviewer-holdout-v23/README.md)",
+        "36 public development cases",
+        "completing all 540 calls in each run",
+        "These tool-free results measure supplied instructions, not scanner benefit or accuracy on unseen projects.",
+        "Scores apply only to the reported snapshots.",
+    ):
+        require_normalized_contract(readme, contract, "README.md evidence boundary")
+    assert re.search(r"\[[^\]]+\]\(benchmarks/STATUS\.md\)", readme), (
+        "README.md must link to benchmark status; the link label is editorial"
+    )
+    status = normalized(BENCHMARK_STATUS)
     require_normalized_contract(
-        readme_bytes.decode("utf-8"),
-        "decisively beat `no-skill` on all six lift checks but failed the preregistered `catalog-only` lift bar",
-        "README.md v7 result",
+        status,
+        "All six lift checks passed against `no-skill`; against `catalog-only`, "
+        "the stable F1 point delta cleared its bar (`0.059 >= 0.05`) while "
+        "the paired-bootstrap 95% CI lower bound was the single failing threshold (`-0.003 < 0.01`).",
+        "benchmark status v7 comparator and failed lift bar",
     )
     for translated in TRANSLATED_READMES:
         text = translated.read_text(encoding="utf-8")
@@ -1670,9 +1751,96 @@ def verify_positional_selector_boundary() -> None:
         raise AssertionError("#10a class-selector mutation survived")
 
 
-def main() -> None:
+def assert_v3_adapter_contract(skill: str, rules: str, reporting: str, adapter: str) -> None:
+    require_normalized_contract(
+        rules,
+        "Only when runtime evidence is requested for a registered adapter, read `v3-adapter.md` before previewing or executing `scripts/check.py`. Static review does not load that reference.",
+        "conditional V3 adapter routing",
+    )
+    for contract in (
+        "read `references/v3-adapter.md`",
+        "never infer a product requirement from its test title alone",
+        "Missing promise, adapter, or approval means `recommended/unexecuted`",
+        "`SURVIVED` alone never creates a catalog finding or changes severity",
+    ):
+        require_normalized_contract(skill, contract, "V3 skill routing")
+    for contract in (
+        "accepts no arbitrary shell command",
+        "--trust-checkout --adapter <registered-id> --promise-file <JSON> --test <exact-selector> --output-dir <fresh-path>",
+        "record explicit checkout trust before using `--trust-checkout`",
+        "only after user approval of the exact adapter commands, environment, and flags",
+        "--execute --approve-adapter-sha256 <preview-approval-sha256>",
+        "one promise, one exact test, one fault; worker 1, retry 0, package installation 0, and image pull 0",
+        "A missing promise or registered adapter means `recommended/unexecuted`",
+        "A skipped test, untouched fault, unrelated assertion failure, timeout, unstable normal phase, or failed restoration cannot count as detection or survival",
+        "`DETECTED` requires passing normal/restored phases",
+        "`SURVIVED` requires passing normal/fault/restored phases while the independent observer proves the fault occurred",
+        "A V3-only run cannot pass V1–V6 collectively",
+    ):
+        require_normalized_contract(adapter, contract, "V3 adapter boundary")
+    for contract in (
+        "normal/fault/restored phase results, independent observer evidence",
+        "approved commands/environment",
+        "Report missing promise, adapter, or approval as `recommended/unexecuted`",
+        "`SURVIVED` alone never creates a catalog finding or changes severity",
+    ):
+        require_normalized_contract(reporting, contract, "V3 runtime evidence")
+
+
+def verify_v3_adapter_contract() -> None:
+    skill = SKILL.read_text(encoding="utf-8")
+    rules = VERIFICATION_RULES.read_text(encoding="utf-8")
+    reporting = REPORTING.read_text(encoding="utf-8")
+    adapter = V3_ADAPTER.read_text(encoding="utf-8")
+    assert_v3_adapter_contract(skill, rules, reporting, adapter)
+    # Prove that removing either the execution boundary or the no-invented-
+    # findings boundary makes this contract guard fail.
+    originals = (skill, rules, reporting, adapter)
+    for replacements in (
+        (skill, rules, reporting, adapter.replace(
+            "record explicit checkout trust before using `--trust-checkout`", "adapter availability")),
+        (skill.replace("never infer a product requirement", "infer a product requirement"),
+         rules, reporting, adapter),
+        (skill, rules, reporting.replace("`SURVIVED` alone never creates", "`SURVIVED` alone creates"), adapter),
+        (skill, rules.replace("Only when runtime evidence is requested", "Always"), reporting, adapter),
+        (skill, rules.replace("before previewing or executing", "after executing"), reporting, adapter),
+        (skill, rules, reporting, adapter.replace(
+            "only after user approval of the exact adapter commands, environment, and flags",
+            "whenever the adapter is executable")),
+    ):
+        assert originals != replacements, "V3 contract mutation was a no-op"
+        try:
+            assert_v3_adapter_contract(*replacements)
+        except AssertionError:
+            continue
+        raise AssertionError("V3 adapter boundary survived a mutation")
+
+
+def verify_cypress_name_and_coverage_scope() -> None:
+    patterns = normalized(PATTERN_REFERENCE)
+    grep = normalized(GREP_PATTERNS)
+    skill = SKILL.read_text(encoding="utf-8")
+    description = next(line for line in skill.splitlines() if line.startswith("description:"))
+    assert "finding-linked coverage suggestions" in description
+    assert "or coverage gaps" not in description
+    for fragment in (
+        "uses exact string matching and must not be flagged",
+        "ByRole has no `exact` option for the accessible name",
+        "Confirm the dynamic-content collision and lack of container scope",
+        "Do not recommend adding `exact: true` to ByRole",
+    ):
+        assert fragment in patterns, fragment
+    assert "Cypress string names are exact by default" in grep
+    assert "has the same substring default" not in patterns
+    assert "a clean review has no coverage-gap list" in skill
+
+
+def verify_current_docs() -> None:
+    verify_cypress_name_and_coverage_scope()
+    verify_v3_adapter_contract()
     verify_reference_routing_contract()
     verify_reference_reuse_contract()
+    verify_compacted_owner_contract()
     verify_upstream_reference_routing_contract()
     verify_section_read_contract()
     verify_scanner_command_location()
@@ -1684,7 +1852,6 @@ def main() -> None:
     verify_fix_replacements_copy()
     verify_reference_contents()
     verify_pattern_files()
-    verify_ai_reviewer_100_aggregates()
     verify_pattern_4i_direction_neutral()
     verify_pattern_3_swallow_scope()
     verify_pattern_13_ownership_contract()
@@ -1695,7 +1862,6 @@ def main() -> None:
     verify_failed_write_reread_note()
     verify_overprescription_contracts()
     verify_fable_reviewer_policy_contracts()
-    verify_release_candidate_docs()
 
     security = normalized(SECURITY)
     skill = normalized(SKILL)
@@ -1711,21 +1877,6 @@ def main() -> None:
     scanner = " ".join(scanner_source.split())
     verification_rules = normalized(VERIFICATION_RULES)
     readme = README.read_text(encoding="utf-8")
-    benchmark_status = BENCHMARK_STATUS.read_text(encoding="utf-8")
-    benchmark_status_normalized = " ".join(benchmark_status.split())
-    reviewer_holdout_v6_readme = REVIEWER_HOLDOUT_V6_README.read_text(
-        encoding="utf-8"
-    )
-    reviewer_holdout_v6_normalized = " ".join(
-        reviewer_holdout_v6_readme.split()
-    )
-    ai_review_doc = AI_REVIEW_DOC.read_text(encoding="utf-8")
-    ai_review_benchmark = AI_REVIEW_BENCHMARK.read_text(encoding="utf-8")
-    case_studies = CASE_STUDIES.read_text(encoding="utf-8")
-    roadmap = ROADMAP.read_text(encoding="utf-8")
-    ai_review_100_results = json.loads(
-        AI_REVIEW_100_RESULTS.read_text(encoding="utf-8")
-    )
     evals = json.loads(EVALS.read_text(encoding="utf-8"))["evals"]
     eval_28 = next(case for case in evals if case["id"] == 28)
     eval_29 = next(case for case in evals if case["id"] == 29)
@@ -2225,8 +2376,24 @@ def main() -> None:
         for prerequisite in ("PCRE2", "Python 3", "NUL-safe", "Tier 2 AST"):
             assert prerequisite in translated
 
+
+
+def main() -> None:
+    verify_current_docs()
+    verify_ai_reviewer_100_aggregates()
+    verify_release_candidate_docs()
+    benchmark_status = BENCHMARK_STATUS.read_text(encoding="utf-8")
+    benchmark_status_normalized = " ".join(benchmark_status.split())
+    reviewer_holdout_v6_readme = REVIEWER_HOLDOUT_V6_README.read_text(encoding="utf-8")
+    reviewer_holdout_v6_normalized = " ".join(reviewer_holdout_v6_readme.split())
+    ai_review_doc = AI_REVIEW_DOC.read_text(encoding="utf-8")
+    ai_review_benchmark = AI_REVIEW_BENCHMARK.read_text(encoding="utf-8")
+    case_studies = CASE_STUDIES.read_text(encoding="utf-8")
+    roadmap = ROADMAP.read_text(encoding="utf-8")
+    ai_review_100_results = json.loads(AI_REVIEW_100_RESULTS.read_text(encoding="utf-8"))
+    # Keep the historical fixture denominator in the linked evidence docs;
+    # the current README's link and snapshot boundary are checked above.
     for surface, name in (
-        (readme, "README.md"),
         (benchmark_status, "benchmarks/STATUS.md"),
         (ai_review_doc, "docs/review-ai-generated-e2e-tests.md"),
     ):

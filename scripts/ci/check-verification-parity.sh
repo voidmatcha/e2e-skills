@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Keep independently installable skill copies of the V1-V6 behavior aligned.
+# Keep the reviewer's V1-V6 contract and the debuggers' handoff to it aligned.
+# The generator no longer ships a V1-V6 copy (3.0.0); its 2.0.1 copy is archived
+# evidence under benchmarks/generator-skill-v2.0.1-archive/ and is not compared.
 # Marker comments are informative only: parity is derived from the actionable
 # prose/table and the structured-result contract that agents actually read.
 
@@ -8,7 +10,6 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)" || exit 1
 REPO_ROOT="$ROOT"
 source "$REPO_ROOT/scripts/ci/lib/init-python-isolation.sh" || exit 2
-GEN="$ROOT/skills/playwright-test-generator/verification-rules.md"
 REV="$ROOT/skills/e2e-reviewer/references/verification-rules.md"
 PW_DBG="$ROOT/skills/playwright-debugger/references/fix-verification.md"
 CY_DBG="$ROOT/skills/cypress-debugger/references/fix-verification.md"
@@ -18,33 +19,21 @@ if ! command -v python3 >/dev/null 2>&1; then
   exit 1
 fi
 
-python3 - "$GEN" "$REV" "$PW_DBG" "$CY_DBG" <<'PY'
-import json
+python3 - "$REV" "$PW_DBG" "$CY_DBG" <<'PY'
 import pathlib
 import re
 import sys
 
-generator_path = pathlib.Path(sys.argv[1])
-reviewer_path = pathlib.Path(sys.argv[2])
-playwright_debugger_path = pathlib.Path(sys.argv[3])
-cypress_debugger_path = pathlib.Path(sys.argv[4])
+reviewer_path = pathlib.Path(sys.argv[1])
+playwright_debugger_path = pathlib.Path(sys.argv[2])
+cypress_debugger_path = pathlib.Path(sys.argv[3])
 try:
-    generator = generator_path.read_text(encoding="utf-8")
     reviewer = reviewer_path.read_text(encoding="utf-8")
     playwright_debugger = playwright_debugger_path.read_text(encoding="utf-8")
     cypress_debugger = cypress_debugger_path.read_text(encoding="utf-8")
 except (OSError, UnicodeError) as exc:
     print(f"verification parity: cannot read contract files: {exc}", file=sys.stderr)
     raise SystemExit(1)
-
-
-def generator_rules(text):
-    matches = list(re.finditer(r"^## (V[1-6])\s+—[^\n]*\n", text, re.M))
-    rules = {}
-    for index, match in enumerate(matches):
-        end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
-        rules[match.group(1)] = text[match.end():end]
-    return rules
 
 
 def reviewer_rules(text):
@@ -132,11 +121,7 @@ def normalize(label, rules):
     return normalized
 
 
-gen_contract = normalize("generator", generator_rules(generator))
-rev_contract = normalize("reviewer", reviewer_rules(reviewer))
-if gen_contract != rev_contract:
-    print("verification parity: generator/reviewer V-rule contracts differ", file=sys.stderr)
-    raise SystemExit(1)
+normalize("reviewer", reviewer_rules(reviewer))
 
 schema_fields = {
     "candidate",
@@ -152,26 +137,6 @@ schema_fields = {
 }
 
 
-def flatten(value, prefix=""):
-    fields = set()
-    if isinstance(value, dict):
-        for key, child in value.items():
-            path = f"{prefix}.{key}" if prefix else key
-            fields.add(path)
-            fields.update(flatten(child, path))
-    return fields
-
-
-json_blocks = re.findall(r"```json\s*\n(.*?)\n```", generator, re.S | re.I)
-if len(json_blocks) != 1:
-    print("verification parity: generator result schema is missing or ambiguous", file=sys.stderr)
-    raise SystemExit(1)
-try:
-    gen_fields = flatten(json.loads(json_blocks[0]))
-except (json.JSONDecodeError, TypeError) as exc:
-    print(f"verification parity: generator result schema is invalid JSON: {exc}", file=sys.stderr)
-    raise SystemExit(1)
-
 reviewer_schema_text = reviewer[reviewer.find("When runtime proof is actually requested"):]
 reviewer_fields = {
     field
@@ -186,8 +151,8 @@ reviewer_fields = {
         or (field == "runner" and "repository-native runner" in reviewer_schema_text)
     )
 }
-if not schema_fields.issubset(gen_fields) or reviewer_fields != schema_fields:
-    print("verification parity: generator/reviewer result schemas differ or are missing", file=sys.stderr)
+if reviewer_fields != schema_fields:
+    print("verification parity: reviewer result schemas differ or are missing", file=sys.stderr)
     raise SystemExit(1)
 
 
@@ -211,7 +176,7 @@ def debugger_handoff(label, text):
                 file=sys.stderr,
             )
             raise SystemExit(1)
-    for clause in ("recommended", "use `CANNOT_VERIFY` with the exact missing evidence", "Do not install a verifier", "verbatim into the outgoing message", "Inspect the message actually sent before dispatch"):
+    for clause in ("recommended", "use `CANNOT_VERIFY` with the exact missing evidence", "Do not install a verifier", "never dispatches a reviewer", "never quotes or invents a verdict", "exit 0 means P0=0"):
         if clause not in text:
             print(
                 f"verification parity: {label} missing proof boundary {clause}",
@@ -223,5 +188,5 @@ def debugger_handoff(label, text):
 debugger_handoff("Playwright debugger", playwright_debugger)
 debugger_handoff("Cypress debugger", cypress_debugger)
 
-print("verification parity: V1-V6 semantic contract and debugger handoffs aligned")
+print("verification parity: reviewer V1-V6 contract and debugger handoffs aligned")
 PY

@@ -44,6 +44,9 @@ node_modules/
 .venv/
 venv/
 
+# Private Codex authentication snapshots retained by bounded local eval runs.
+**/.codex/auth.json
+
 # Runtime state locks the independent-review runner creates beside an archive
 benchmarks/.*.state.lock
 
@@ -61,29 +64,7 @@ scripts/evals/generator-live/*/playwright-report/
 /evals/results/
 /test-results/
 
-# Raw run artifacts moved to the external dataset in 2.0.1 (see
-# benchmarks/external-evidence.json). Fetch them with
-# scripts/dev/fetch-benchmark-evidence.sh; they must never be committed back.
-/benchmarks/healer-perturbation-v1/healer-artifacts-codex/
-/benchmarks/healer-perturbation-v1/healer-artifacts-codex-r10/
-/benchmarks/healer-perturbation-v1/healer-artifacts-codex-r11/
-/benchmarks/healer-perturbation-v1/healer-artifacts-codex-r12/
-/benchmarks/healer-perturbation-v1/healer-artifacts-codex-r9/
-/benchmarks/healer-perturbation-v1/smoke-artifacts-codex/
-/benchmarks/healer-perturbation-v1/smoke-artifacts-codex-r10/
-/benchmarks/healer-perturbation-v1/smoke-artifacts-codex-r11/
-/benchmarks/healer-perturbation-v1/smoke-artifacts-codex-r12/
-/benchmarks/healer-perturbation-v1/smoke-artifacts-codex-r3/
-/benchmarks/healer-perturbation-v1/smoke-artifacts-codex-r4/
-/benchmarks/healer-perturbation-v1/smoke-artifacts-codex-r5/
-/benchmarks/healer-perturbation-v1/smoke-artifacts-codex-r6/
-/benchmarks/healer-perturbation-v1/smoke-artifacts-codex-r7/
-/benchmarks/healer-perturbation-v1/smoke-artifacts-codex-r8/
-/benchmarks/healer-perturbation-v1/smoke-artifacts-codex-r9/
-/benchmarks/ours-vs-planner-pilot-v1/pilot-artifacts/
-/benchmarks/ours-vs-planner-pilot-v1/smoke-artifacts/
-/benchmarks/subagent-routing-v1/routing-artifacts-claude/
-/benchmarks/subagent-routing-v1/routing-artifacts-codex/
-/benchmarks/subagent-routing-v1/smoke-artifacts-claude/
-/benchmarks/subagent-routing-v1/smoke-artifacts-codex/
-/benchmarks/subagent-routing-v1/smoke-incidents/
+# Historical evidence is preserved on Hugging Face. Keep local originals out of Git.
+/benchmarks/*
+!/benchmarks/STATUS.md
+!/benchmarks/external-evidence.json

@@ -37,7 +37,9 @@ OPERATORS_PATH = ROOT / "scripts/evals/run-fixture-faults.py"
 RUNTIME_EVIDENCE_PATH = (
     ROOT / "benchmarks/fixture-faults/2026-07-31-current.json"
 )
-SKILL_DIR = ROOT / "skills/playwright-test-generator"
+# The arms name the 2.x pipeline text (verification-rules.md and friends). As of
+# 3.0.0 that text lives byte-for-byte in the archive; the live skill is a router.
+SKILL_DIR = ROOT / "benchmarks/generator-skill-v2.0.1-archive"
 ARMS = ("full-skill", "rules-only", "no-skill")
 SKILL_FILES = {
     "full-skill": (

@@ -86,6 +86,12 @@ V17_CASES = ROOT / "scripts/evals/reviewer-holdout-v17.json"
 V17_PROTOCOL = ROOT / "scripts/evals/reviewer-validation-protocol-v17.json"
 V18_PROTOCOL = ROOT / "scripts/evals/reviewer-validation-protocol-v18.json"
 V19_PROTOCOL = ROOT / "scripts/evals/reviewer-validation-protocol-v19.json"
+V22_PROTOCOL = ROOT / "scripts/evals/reviewer-validation-protocol-v22.json"
+V22_PROTOCOL_SHA256 = "31e4bade6f05dccc0a2fed2ea68f437b8568dab8a3adfb5c95be7d6972017f8b"
+V23_PROTOCOL = ROOT / "scripts/evals/reviewer-validation-protocol-v23.json"
+V23_PROTOCOL_SHA256 = "dc28cb742e0451d1d16f8778c2a6d7dac6b5fce82e7eb7e1ada885c614ebbdec"
+V24_PROTOCOL = ROOT / "scripts/evals/reviewer-validation-protocol-v24.json"
+V24_PROTOCOL_SHA256 = "61d7fd03342e1a0bf5a56ee9f9464e7f1fc8e0b17abb1f4cec3f383648a0a9e2"
 V20_CASES = ROOT / "scripts/evals/reviewer-holdout-v20.json"
 V20_PROTOCOL = ROOT / "scripts/evals/reviewer-validation-protocol-v20.json"
 V20_PROTOCOL_SHA256 = "d61537729e94d115e1aeaacaf278ba396eeceb9f13840ba1e59b01497122f036"
@@ -251,6 +257,8 @@ SUPPORTED_PROTOCOL_IDS = {
     "reviewer-holdout-v17",
     "reviewer-holdout-v18",
     "reviewer-holdout-v19",
+    "reviewer-holdout-v22",
+    "reviewer-holdout-v23", "reviewer-holdout-v24",
     "reviewer-holdout-v20",
     "reviewer-holdout-v21",
     "reviewer-specificity-v1",
@@ -286,6 +294,8 @@ STRICT_MAJORITY_PROTOCOL_IDS = {
     "reviewer-holdout-v17",
     "reviewer-holdout-v18",
     "reviewer-holdout-v19",
+    "reviewer-holdout-v22",
+    "reviewer-holdout-v23", "reviewer-holdout-v24",
     "reviewer-holdout-v20",
     "reviewer-holdout-v21",
 }
@@ -310,6 +320,8 @@ PROMPT_ARM_PROTOCOL_IDS = {
     "reviewer-holdout-v17",
     "reviewer-holdout-v18",
     "reviewer-holdout-v19",
+    "reviewer-holdout-v22",
+    "reviewer-holdout-v23", "reviewer-holdout-v24",
     "reviewer-holdout-v20",
     "reviewer-holdout-v21",
 }
@@ -341,6 +353,8 @@ ARM_COMPARISON_PROTOCOL_IDS = {
     "reviewer-holdout-v17",
     "reviewer-holdout-v18",
     "reviewer-holdout-v19",
+    "reviewer-holdout-v22",
+    "reviewer-holdout-v23", "reviewer-holdout-v24",
 }
 # Single-host protocols: one preregistered host, three sequential arms (v16:
 # two arms under each of two skill revisions) (v7-v9, v11, v12, and v16 on
@@ -359,6 +373,8 @@ CODEX_ONLY_PROTOCOL_IDS = {
     "reviewer-holdout-v17",
     "reviewer-holdout-v18",
     "reviewer-holdout-v19",
+    "reviewer-holdout-v22",
+    "reviewer-holdout-v23", "reviewer-holdout-v24",
     "reviewer-holdout-v20",
     "reviewer-holdout-v21",
 }
@@ -377,6 +393,8 @@ NUMBERED_SOURCE_PROTOCOL_IDS = {
     "reviewer-holdout-v17",
     "reviewer-holdout-v18",
     "reviewer-holdout-v19",
+    "reviewer-holdout-v22",
+    "reviewer-holdout-v23", "reviewer-holdout-v24",
     "reviewer-holdout-v20",
     "reviewer-holdout-v21",
 }
@@ -395,6 +413,8 @@ REVISED_LABEL_PROTOCOL_IDS = {
     "reviewer-holdout-v17",
     "reviewer-holdout-v18",
     "reviewer-holdout-v19",
+    "reviewer-holdout-v22",
+    "reviewer-holdout-v23", "reviewer-holdout-v24",
     "reviewer-holdout-v20",
     "reviewer-holdout-v21",
 }
@@ -413,6 +433,8 @@ DESIGNED_LABEL_PROTOCOL_IDS = {
     "reviewer-holdout-v17",
     "reviewer-holdout-v18",
     "reviewer-holdout-v19",
+    "reviewer-holdout-v22",
+    "reviewer-holdout-v23", "reviewer-holdout-v24",
     "reviewer-holdout-v20",
     "reviewer-holdout-v21",
 }
@@ -431,6 +453,9 @@ REVISED_LABEL_HOSTS = {
     "reviewer-holdout-v17": {"runner": "codex", "model": "gpt-6-sol"},
     "reviewer-holdout-v18": {"runner": "codex", "model": "gpt-6-sol"},
     "reviewer-holdout-v19": {"runner": "codex", "model": "gpt-6-sol"},
+    "reviewer-holdout-v22": {"runner": "codex", "model": "gpt-6-sol"},
+    "reviewer-holdout-v23": {"runner": "codex", "model": "gpt-6-luna"},
+    "reviewer-holdout-v24": {"runner": "codex", "model": "gpt-6.1-sol"},
     "reviewer-holdout-v20": {"runner": "codex", "model": "gpt-6-sol"},
     "reviewer-holdout-v21": {"runner": "codex", "model": "gpt-6-sol"},
 }
@@ -448,6 +473,9 @@ REVISED_LABEL_CORPORA = {
     "reviewer-holdout-v17": V17_CASES,
     "reviewer-holdout-v18": V17_CASES,
     "reviewer-holdout-v19": V17_CASES,
+    "reviewer-holdout-v22": V17_CASES,
+    "reviewer-holdout-v23": V17_CASES,
+    "reviewer-holdout-v24": V17_CASES,
     "reviewer-holdout-v20": V20_CASES,
     "reviewer-holdout-v21": V21_CASES,
 }
@@ -464,6 +492,9 @@ SHARED_CORPUS_PROTOCOLS = {
     "reviewer-holdout-v16": "reviewer-holdout-v9",
     "reviewer-holdout-v18": "reviewer-holdout-v17",
     "reviewer-holdout-v19": "reviewer-holdout-v17",
+    "reviewer-holdout-v22": "reviewer-holdout-v17",
+    "reviewer-holdout-v23": "reviewer-holdout-v17",
+    "reviewer-holdout-v24": "reviewer-holdout-v17",
 }
 SHARED_CORPUS_OWNER_PROTOCOLS = {
     "reviewer-holdout-v9": V9_PROTOCOL,
@@ -486,6 +517,8 @@ INFRASTRUCTURE_RETRY_PROTOCOL_IDS = {
     "reviewer-holdout-v17",
     "reviewer-holdout-v18",
     "reviewer-holdout-v19",
+    "reviewer-holdout-v22",
+    "reviewer-holdout-v23", "reviewer-holdout-v24",
     "reviewer-holdout-v20",
     "reviewer-holdout-v21",
 }
@@ -544,6 +577,8 @@ USAGE_CAPTURE_PROTOCOL_IDS = {
     "reviewer-holdout-v17",
     "reviewer-holdout-v18",
     "reviewer-holdout-v19",
+    "reviewer-holdout-v22",
+    "reviewer-holdout-v23", "reviewer-holdout-v24",
     "reviewer-holdout-v20",
     "reviewer-holdout-v21",
 }
@@ -624,6 +659,8 @@ OUTPUT_SCHEMA_PROTOCOL_IDS = {
     "reviewer-holdout-v17",
     "reviewer-holdout-v18",
     "reviewer-holdout-v19",
+    "reviewer-holdout-v22",
+    "reviewer-holdout-v23", "reviewer-holdout-v24",
     "reviewer-holdout-v20",
     "reviewer-holdout-v21",
 }
@@ -691,6 +728,19 @@ EXPECTED_OUTPUT_SCHEMA = {
         "unchanged, and the schema applies identically to every arm."
     ),
 }
+# Current reviewer vocabulary is a separate frozen schema; historical protocols
+# continue to require EXPECTED_OUTPUT_SCHEMA byte for byte.
+V22_OUTPUT_SCHEMA = json.loads(json.dumps(EXPECTED_OUTPUT_SCHEMA))
+V22_OUTPUT_SCHEMA["schema"]["properties"]["findings"]["items"]["properties"]["pattern_id"]["enum"] = [
+    *OUTPUT_SCHEMA_PATTERN_IDS[:OUTPUT_SCHEMA_PATTERN_IDS.index("#9")],
+    "#8c",
+    *OUTPUT_SCHEMA_PATTERN_IDS[OUTPUT_SCHEMA_PATTERN_IDS.index("#9"):],
+]
+V22_OUTPUT_SCHEMA["schema_sha256"] = hashlib.sha256(
+    canonical_schema_text(V22_OUTPUT_SCHEMA["schema"]).encode("ascii")
+).hexdigest()
+
+
 # A revision-comparison protocol (only v16) runs the same corpus, host, and
 # prompts under two preregistered revisions of the evaluated skill and decides
 # on their paired after-minus-before difference. Each revision is pinned by the
@@ -892,6 +942,9 @@ FROZEN_EXECUTION_IDENTITY_POLICIES = {
     "reviewer-holdout-v17": "minimum",
     "reviewer-holdout-v18": "minimum",
     "reviewer-holdout-v19": "minimum",
+    "reviewer-holdout-v22": "minimum",
+    "reviewer-holdout-v23": "minimum",
+    "reviewer-holdout-v24": "minimum",
     "reviewer-holdout-v20": "minimum",
     "reviewer-holdout-v21": "minimum",
 }
@@ -953,6 +1006,9 @@ FROZEN_EXECUTION_IDENTITIES = {
     "reviewer-holdout-v17": {"codex": "codex-cli 0.155.1"},
     "reviewer-holdout-v18": {"codex": "codex-cli 0.155.1"},
     "reviewer-holdout-v19": {"codex": "codex-cli 0.155.1"},
+    "reviewer-holdout-v22": {"codex": "codex-cli 0.159.3"},
+    "reviewer-holdout-v23": {"codex": "codex-cli 0.159.3"},
+    "reviewer-holdout-v24": {"codex": "codex-cli 0.159.3"},
     "reviewer-holdout-v20": {"codex": "codex-cli 0.155.1"},
     "reviewer-holdout-v21": {"codex": "codex-cli 0.155.1"},
 }
@@ -1075,6 +1131,21 @@ PINNED_LIVE_INPUTS = {
         "cases_file_sha256": "2bc33896b64a9c0592552c77cfe2331635bcfa6f4f39c17a268f56eae8087164",
         "corpus_sha256": "c74538cdb005ef040428ad25b37c85bb31d432e069246338ee6d437efa214238",
         "protocol_sha256": V19_PROTOCOL_SHA256,
+    },
+    (V17_CASES, V22_PROTOCOL): {
+        "cases_file_sha256": "2bc33896b64a9c0592552c77cfe2331635bcfa6f4f39c17a268f56eae8087164",
+        "corpus_sha256": "c74538cdb005ef040428ad25b37c85bb31d432e069246338ee6d437efa214238",
+        "protocol_sha256": V22_PROTOCOL_SHA256,
+    },
+    (V17_CASES, V23_PROTOCOL): {
+        "cases_file_sha256": "2bc33896b64a9c0592552c77cfe2331635bcfa6f4f39c17a268f56eae8087164",
+        "corpus_sha256": "c74538cdb005ef040428ad25b37c85bb31d432e069246338ee6d437efa214238",
+        "protocol_sha256": V23_PROTOCOL_SHA256,
+    },
+    (V17_CASES, V24_PROTOCOL): {
+        "cases_file_sha256": "2bc33896b64a9c0592552c77cfe2331635bcfa6f4f39c17a268f56eae8087164",
+        "corpus_sha256": "c74538cdb005ef040428ad25b37c85bb31d432e069246338ee6d437efa214238",
+        "protocol_sha256": V24_PROTOCOL_SHA256,
     },
     (V20_CASES, V20_PROTOCOL): {
         "cases_file_sha256": "4c71dc456ec657e6de8affe999c3f6ca27bd246d52d08f084676d4df612bf1fb",
@@ -1451,6 +1522,12 @@ def load_protocol(path: Path) -> dict:
         raise ValueError(f"{path}: frozen v21 protocol digest mismatch")
     if protocol_id == "reviewer-holdout-v20" and sha256_file(path) != V20_PROTOCOL_SHA256:
         raise ValueError(f"{path}: frozen v20 protocol digest mismatch")
+    if protocol_id == "reviewer-holdout-v22" and sha256_file(path) != V22_PROTOCOL_SHA256:
+        raise ValueError(f"{path}: frozen v22 protocol digest mismatch")
+    if protocol_id == "reviewer-holdout-v23" and sha256_file(path) != V23_PROTOCOL_SHA256:
+        raise ValueError(f"{path}: frozen v23 protocol digest mismatch")
+    if protocol_id == "reviewer-holdout-v24" and sha256_file(path) != V24_PROTOCOL_SHA256:
+        raise ValueError(f"{path}: frozen v24 protocol digest mismatch")
     if protocol_id == "reviewer-holdout-v19" and sha256_file(path) != V19_PROTOCOL_SHA256:
         raise ValueError(f"{path}: frozen v19 protocol digest mismatch")
     if protocol_id == "reviewer-holdout-v18" and sha256_file(path) != V18_PROTOCOL_SHA256:
@@ -1493,7 +1570,7 @@ def load_protocol(path: Path) -> dict:
         required_keys.add("output_normalization")
     if protocol_id in OUTPUT_SCHEMA_PROTOCOL_IDS:
         required_keys.add("output_schema")
-    if protocol_id in {"reviewer-holdout-v18", "reviewer-holdout-v19"}:
+    if protocol_id in {"reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"}:
         required_keys.add("skill_sha256")
     if protocol_id in REVISION_COMPARISON_PROTOCOL_IDS:
         required_keys.update({"execution_identity", "revision_comparison"})
@@ -1710,7 +1787,7 @@ def load_protocol(path: Path) -> dict:
             or arm_comparison["requires_all_reports_execution_complete"] is not True
             or arm_comparison["requires_treatment_report_status"] != "PASS"
             or arm_comparison["requires_each_control_comparison_pass"]
-            is not (protocol_id not in {"reviewer-holdout-v18", "reviewer-holdout-v19"})
+            is not (protocol_id not in {"reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"})
             or arm_comparison["provider_aggregation"]
             != expected_provider_aggregation
             or arm_comparison["stability_basis"]
@@ -1819,7 +1896,7 @@ def load_protocol(path: Path) -> dict:
         if (
             uncertainty["method"] != "paired-stratified-case-bootstrap"
             or uncertainty["seed"] != (
-                schedule["seed"] if protocol_id in {"reviewer-holdout-v18", "reviewer-holdout-v19"} else 20260801
+                schedule["seed"] if protocol_id in {"reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"} else 20260801
             )
             or uncertainty["iterations"] != 10_000
             or uncertainty["confidence"] != 0.95
@@ -1853,7 +1930,7 @@ def load_protocol(path: Path) -> dict:
             "clean_case_specificity_delta_min": 0,
             "repeated_precision_delta_min": 0,
         }
-        if protocol_id in {"reviewer-holdout-v18", "reviewer-holdout-v19"}:
+        if protocol_id in {"reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"}:
             expected_arm_thresholds = {
                 "stable_f1_delta_min": 0.30,
                 "stable_f1_delta_ci95_lower_min_exclusive": 0.0,
@@ -1876,7 +1953,7 @@ def load_protocol(path: Path) -> dict:
             "stable F1 must be at least 0.30 with paired-bootstrap 95% lower "
             "bound greater than zero. Full minus catalog-only is descriptive "
             "and has no lift gate."
-            if protocol_id in {"reviewer-holdout-v18", "reviewer-holdout-v19"} else
+            if protocol_id in {"reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"} else
             "Every threshold must pass against each control. A complete matrix "
             "that misses any threshold is FAIL, not partial evidence."
         )
@@ -1907,13 +1984,13 @@ def load_protocol(path: Path) -> dict:
             raise ValueError(
                 f"{path}: {protocol_id} claim policy must fail closed"
             )
-    if protocol_id in {"reviewer-holdout-v18", "reviewer-holdout-v19"}:
+    if protocol_id in {"reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"}:
         _require_sha256(data["skill_sha256"], f"{path}: skill_sha256")
     if protocol_id in REVISED_LABEL_PROTOCOL_IDS:
         validate_revised_protocol_fields(data, path)
     if protocol_id in INFRASTRUCTURE_RETRY_PROTOCOL_IDS:
         policy = data["infrastructure_retry"]
-        if protocol_id not in {"reviewer-holdout-v19", "reviewer-holdout-v20", "reviewer-holdout-v21"} and CODEX_STREAM_RETRY_REASON in policy["retryable"]:
+        if protocol_id not in {"reviewer-holdout-v19", "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24", "reviewer-holdout-v20", "reviewer-holdout-v21"} and CODEX_STREAM_RETRY_REASON in policy["retryable"]:
             raise ValueError(f"{path}: unexpected stream retry is v19-only")
         if protocol_id in FROZEN_INFRASTRUCTURE_RETRY_PROTOCOL_IDS:
             if policy != EXPECTED_INFRASTRUCTURE_RETRY:
@@ -1944,12 +2021,14 @@ def load_protocol(path: Path) -> dict:
         raise ValueError(
             f"{path}: {protocol_id} output_normalization must be exact"
         )
+    expected_output_schema = (V22_OUTPUT_SCHEMA if protocol_id in {"reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"}
+                              else EXPECTED_OUTPUT_SCHEMA)
     if (
         protocol_id in OUTPUT_SCHEMA_PROTOCOL_IDS
         and (
             not isinstance(data["output_schema"], dict)
-            or data["output_schema"] != EXPECTED_OUTPUT_SCHEMA
-            or list(data["output_schema"]) != list(EXPECTED_OUTPUT_SCHEMA)
+            or data["output_schema"] != expected_output_schema
+            or list(data["output_schema"]) != list(expected_output_schema)
             or data["output_schema"]["schema_sha256"]
             != output_schema_sha256(data["output_schema"]["schema"])
         )
@@ -2023,7 +2102,7 @@ def revision_skill_digests(protocol: dict) -> dict[str, str] | None:
 
 def require_protocol_skill_digest(protocol: dict, actual: str) -> None:
     if (
-        protocol.get("protocol_id") in {"reviewer-holdout-v18", "reviewer-holdout-v19"}
+        protocol.get("protocol_id") in {"reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"}
         and actual != protocol["skill_sha256"]
     ):
         raise ValueError(
@@ -2298,6 +2377,26 @@ def usage_summary(runs: list[dict]) -> dict:
     }
 
 
+def codex_capacity_error(output: str) -> bool:
+    """Recognize native 429 errors only inside complete strict JSONL envelopes."""
+    try:
+        events = [loads_strict(line, context="Codex capacity event")
+                  for line in output.splitlines() if line.strip()]
+    except (ValueError, StrictJsonError):
+        return False
+    if not events or any(not isinstance(event, dict) for event in events):
+        return False
+    for event in events:
+        message = None
+        if event.get("type") == "error":
+            message = event.get("message")
+        elif event.get("type") == "turn.failed" and isinstance(event.get("error"), dict):
+            message = event["error"].get("message")
+        if isinstance(message, str) and re.search(r"\b429\s+Too Many Requests\b", message, re.IGNORECASE):
+            return True
+    return False
+
+
 def retryable_failure_reason(
     runner_exit_code: int | None,
     exit_code: int,
@@ -2347,6 +2446,7 @@ def retryable_failure_reason(
         and error == f"runner exited {runner_exit_code}"
         and (
             USAGE_LIMIT_TEXT.search(output) is not None
+            or codex_capacity_error(output)
             or USAGE_LIMIT_TEXT.search(stderr_text) is not None
         )
     ):
@@ -5934,6 +6034,19 @@ def execute_scheduled_attempt(
         return record, retry_reason
 
 
+def stop_v22_after_exhausted_identity_failure(protocol_id: str, record: dict) -> bool:
+    """Avoid spending another scheduled cell after bounded auth/capacity retries."""
+    attempts = record.get("attempts", [])
+    return (
+        protocol_id in {"reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"}
+        and record.get("score") is None
+        and bool(attempts)
+        and attempts[-1].get("reason") in {
+            AUTH_RETRY_REASON, "runner_nonzero_exit_with_usage_limit_text"
+        }
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--cases", type=Path, default=DEFAULT_CASES)
@@ -6433,7 +6546,7 @@ def main() -> int:
                 revised_labels,
                 capture_stderr=retry_policy is not None,
                 allow_stream_error=CODEX_STREAM_RETRY_REASON in retryable_reasons,
-                capture_stream_diagnostic=protocol_id in {"reviewer-holdout-v19", "reviewer-holdout-v20", "reviewer-holdout-v21"},
+                capture_stream_diagnostic=protocol_id in {"reviewer-holdout-v19", "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24", "reviewer-holdout-v20", "reviewer-holdout-v21"},
                 **({"allow_auth_error": True, "credential_snapshot": credential_snapshot,
                     "codex_auth_snapshot": codex_auth_snapshot}
                    if auth_retry_enabled else {}),
@@ -6485,6 +6598,9 @@ def main() -> int:
                 "runs": runs,
             },
         )
+
+        if stop_v22_after_exhausted_identity_failure(protocol_id, record):
+            break
 
     successful_runs = [run for run in runs if run["score"] is not None]
     totals = {

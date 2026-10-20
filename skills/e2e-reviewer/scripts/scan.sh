@@ -2386,7 +2386,7 @@ preflight_scanner_tree() {
     printf '%s\n' \
       'Remediation: no setting overrides this check. Following these entries could scan outside the requested root, and skipping them could hide source behind a clean result. Report this run as incomplete, then cover the requested tree with reruns; each rerun covers only its own root:' \
       '  - rerun on the largest directories inside the requested root that contain none of the listed entries, and on each regular file outside those directories as a file root;' \
-      '  - scan the target of each listed symbolic link as its own root by its real path (symbolic-link scan roots are rejected);' \
+      '  - scan a listed symbolic link target by its real path only when it is already within the user-authorized review scope (symbolic-link scan roots are rejected); otherwise identify the excluded target without reading its contents and keep the review incomplete;' \
       '  - until those reruns cover the whole requested tree, name each part left unscanned, such as a FIFO, socket, or device, and keep the review marked incomplete.' \
       'Alternatively, with approval from the repository owner, replace the symbolic link with a regular file or directory, or remove the FIFO, socket, or device, then rerun on the requested root.' \
       >&2
@@ -2976,7 +2976,20 @@ const bin = () => {
 };
 const r = (n) => {
   if (n === 'eslint#bin') return bin();
-  for (const c of cands) { try { return require.resolve(n, { paths: [c] }); } catch (e) {} }
+  for (const c of cands) {
+    try { return require.resolve(n, { paths: [c] }); } catch (e) {}
+    // Import-only exports cannot be resolved by CommonJS require.resolve.
+    // Resolve using Node's import condition without evaluating project modules.
+    try {
+      const { execFileSync } = require('node:child_process');
+      const { pathToFileURL } = require('node:url');
+      const parent = pathToFileURL(path.join(c, '__scanner_resolve__.mjs')).href;
+      const code = "import { fileURLToPath } from 'node:url'; console.log(fileURLToPath(import.meta.resolve(process.argv[1], process.argv[2])));";
+      return execFileSync(process.execPath,
+        ['--experimental-import-meta-resolve', '--input-type=module', '-e', code, n, parent],
+        { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    } catch (e) {}
+  }
   throw new Error('unresolvable: ' + n);
 };
 console.log(JSON.stringify(process.argv.slice(2).map(r)));
@@ -4361,7 +4374,7 @@ expect_call_pattern() {
   if [[ -n "$aliases" ]]; then
     aliases="|$aliases"
   fi
-  printf '^[[:space:]]*(?:(?:expect|assertion%s)|[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*[.][[:space:]]*expect)(?:[[:space:]]|/\\*.*?\\*/)*\\(' \
+  printf '^[[:space:]]*(?:await[[:space:]]+)?(?:(?:expect|assertion%s)|[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*[.][[:space:]]*expect)(?:[[:space:]]|/\\*.*?\\*/)*\\(' \
     "$aliases"
 }
 
@@ -4503,6 +4516,14 @@ source_declares_shadowing_test_binding_before() {
     NR <= last { print executable_source($0, 1) }
   ' "$file" 2>/dev/null |
     scanner_rg -qP "(^|[;{}[:space:]])(?:const|let|var|function|class)[[:space:]]+$binding\\b"
+}
+
+cypress_role_name_hit_matches() {
+  # Raw matching identifies a broad regex; lexical matching confirms that the
+  # query is executable rather than quoted or commented example text. Regex
+  # bodies are erased by lexical_target_line, so do not rerun the raw pattern.
+  lexical_target_line "$1" |
+    scanner_rg -qP '\bcy\.findByRole\([^\n)]*\bname\s*:'
 }
 
 executable_hit_matches() {
@@ -5092,6 +5113,7 @@ locator_assertion_source() {
           code ~ /[.]not[.]to([.]be)?[.](equal|undefined|null)/ ||
           code ~ /;[[:space:]]*$/) {
         gsub(/[[:space:]]+/, " ", code)
+        sub(/^ *await +/, "", code)
         print code
         exit
       }
@@ -5126,7 +5148,7 @@ expect_call_binding_at() {
   local hit="$1" code
   code=$(lexical_target_line "$hit")
   printf '%s\n' "$code" |
-    scanner_rg -oP '^[[:space:]]*\(?[[:space:]]*(?:[^,;()]+,[[:space:]]*)?\K[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*\.[[:space:]]*expect)?[[:space:]]*(?=\()' |
+    scanner_rg -oP '(?:^[[:space:]]*(?:await[[:space:]]+)?\(?[[:space:]]*(?:[^,;()]+,[[:space:]]*)?|\{[[:space:]]*)\K[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*\.[[:space:]]*expect)?[[:space:]]*(?=\()' |
     head -1 |
     sed -E 's/[[:space:]]//g'
 }
@@ -5218,10 +5240,23 @@ expect_in_observed_promise_aggregate_at() {
 }
 
 missing_await_expect_hit_matches() {
-  local hit="$1" file rest line binding code
+  local hit="$1" file rest line binding code leading_binding
   file=${hit%%:*}
   rest=${hit#*:}
   line=${rest%%:*}
+  code=$(lexical_target_line "$hit")
+  # locator_assertion_source normalizes away a leading await for other rules.
+  # Check the original statement before that normalization so wrapped expect
+  # expressions remain observed promises.
+  printf '%s\n' "$code" |
+    scanner_rg -q '^[[:space:]]*(await|return)([^A-Za-z0-9_$]|$)' &&
+    return 1
+  # A method named expect is a declaration, even if its body returns an
+  # unrelated receiver's async-looking matcher. Keep a later expect() call
+  # on the same line eligible for the normal binding/matcher checks.
+  printf '%s\n' "$code" |
+    scanner_rg -qP '\bexpect\s*(?<args>\((?:[^()]++|(?&args))*\))\s*\{(?:(?!\bexpect\s*\().)*$' &&
+    return 1
   binding=$(expect_call_binding_at "$hit")
   [[ -n "$binding" ]] || return 1
   playwright_expect_binding "$file" "$binding" "$line" || return 1
@@ -5230,6 +5265,30 @@ missing_await_expect_hit_matches() {
   printf '%s\n' "$code" |
     scanner_rg -q '^[[:space:]]*(await|return)([^A-Za-z0-9_$]|$)' &&
     return 1
+  # A leading synchronous expect must not borrow an async matcher from a
+  # later awaited statement on the same line. Keep a later bare expect
+  # eligible, since that call can still discard its own matcher promise.
+  if [[ "$binding" == expect ]] && printf '%s\n' "$code" |
+    scanner_rg -qP '^[[:space:]]*expect(?<args>\((?:[^()]++|(?&args))*\))[[:space:]]*(?:[.][[:space:]]*not[[:space:]]*)?[.][[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*\(' &&
+    ! printf '%s\n' "$code" |
+      scanner_rg -qP "^[[:space:]]*expect(?<args>\\((?:[^()]++|(?&args))*\\))[[:space:]]*(?:[.][[:space:]]*not[[:space:]]*)?[.][[:space:]]*(${PLAYWRIGHT_ASYNC_MATCHERS})[[:space:]]*\\("; then
+    printf '%s\n' "$code" |
+      scanner_rg -qP ";[[:space:]]*expect(?<args>\\((?:[^()]++|(?&args))*\\))[[:space:]]*(?:[.][[:space:]]*not[[:space:]]*)?[.][[:space:]]*(${PLAYWRIGHT_ASYNC_MATCHERS})[[:space:]]*\\(" ||
+      return 1
+  fi
+  # The same-line helper candidate begins at `{ expect(`. Apply this guard
+  # only when the selected expect did not already start the statement.
+  leading_binding=$(printf '%s\n' "$code" |
+    scanner_rg -oP '^[[:space:]]*\(?[[:space:]]*(?:[^,;()]+,[[:space:]]*)?\K[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*[.][[:space:]]*expect)?[[:space:]]*(?=\()' |
+    head -1 | sed -E 's/[[:space:]]//g')
+  if [[ "$leading_binding" != "$binding" ]] && printf '%s\n' "$code" |
+    scanner_rg -qP '\{[[:space:]]*(?:[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*[.][[:space:]]*)?expect[[:space:]]*\('; then
+    # Bind the async matcher to the brace call's balanced arguments; a later
+    # awaited assertion must not make an earlier synchronous expect a #15.
+    printf '%s\n' "$code" |
+      scanner_rg -qP "\\{[[:space:]]*(?:[A-Za-z_\\$][A-Za-z0-9_\\$]*[[:space:]]*[.][[:space:]]*)?expect[[:space:]]*(?<args>\\((?:[^()]++|(?&args))*\\))[[:space:]]*(?:[.][[:space:]]*not[[:space:]]*)?[.][[:space:]]*(${PLAYWRIGHT_ASYNC_MATCHERS})[[:space:]]*\\(" ||
+      return 1
+  fi
   printf '%s\n' "$code" |
     scanner_rg -q "[.](${PLAYWRIGHT_ASYNC_MATCHERS})[[:space:]]*[(]"
 }
@@ -5254,11 +5313,11 @@ retry_expect_hit_matches() {
 }
 
 proven_locator_binding() {
-  local file="$1" line="$2" binding="$3"
+  local file="$1" line="$2" binding="$3" declaration declaration_line
   case "$binding" in
     *[!A-Za-z0-9_$]*|'') return 1 ;;
   esac
-  awk -v last="$line" '
+  declaration=$(awk -v last="$line" '
     function executable_source(s, want_output,    out, i, c, nchar) {
       out = ""
       # A line this long is generated or vendored, never test source. The
@@ -5313,30 +5372,48 @@ proven_locator_binding() {
     }
     NR <= last { print executable_source($0, 1) }
   ' "$file" 2>/dev/null |
-    scanner_rg -qP "(?:\\b(?:const|let|var|readonly)[[:space:]]+$binding[[:space:]]*:[[:space:]]*(?:import[[:space:]]*\\([^)]*\\)[.]?)?Locator\\b|\\bconst[[:space:]]+$binding[[:space:]]*=[[:space:]]*page[.](?:locator|getBy[A-Z][A-Za-z]*)[[:space:]]*\\()"
+    scanner_rg -nP "\\b(?:const|let|var|readonly)[[:space:]]+$binding\\b" |
+    tail -1)
+  [[ -n "$declaration" ]] || return 1
+  declaration_line=${declaration%%:*}
+  printf '%s\n' "${declaration#*:}" |
+    scanner_rg -qP "(?:\\b(?:const|let|var|readonly)[[:space:]]+${binding}[[:space:]]*:[[:space:]]*(?:import[[:space:]]*\\([^)]*\\)[.]?)?Locator\\b|\\bconst[[:space:]]+${binding}[[:space:]]*=[[:space:]]*page[.](?:locator|getBy[A-Z][A-Za-z]*)[[:space:]]*\\()" ||
+    return 1
+  # A later parameter may replace the earlier Locator binding. If its scope
+  # cannot be established here, omit the P0 rather than promote a scalar.
+  if (( declaration_line < line )); then
+    source_executable_code "$file" |
+      sed -n "$((declaration_line + 1)),${line}p" |
+      scanner_rg -UqP "(?:\\b(?:function[[:space:]]*[A-Za-z_$]*[[:space:]]*|catch[[:space:]]*)\\([^)]*\\b$binding\\b[^)]*\\)|\\([^)]*\\b$binding\\b[^)]*\\)[[:space:]]*=>|\\b${binding}[[:space:]]*=>|\\b(?:const|let|var)[[:space:]]*(?:\\{[^}]*\\b$binding\\b[^}]*\\}|\\[[^]]*\\b$binding\\b[^]]*\\]))" &&
+      return 1
+  fi
+  return 0
 }
 
 locator_assertion_hit_matches() {
-  local hit="$1" file rest line code binding expect_binding
+  local hit="$1" file rest line code binding expect_binding direct_shape=0
   file=${hit%%:*}
   rest=${hit#*:}
   line=${rest%%:*}
+  code=$(locator_assertion_source "$file" "$line")
+  if printf '%s\n' "$code" |
+    scanner_rg -q '^[[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*(\s*\.\s*expect)?\s*\(\s*page\.(locator|getBy[A-Z][A-Za-z]*)\s*\(.*\)\s*(\.toBeTruthy\s*\(\s*\)|\.toBeDefined\s*\(\s*\)|\.not\.toBeNull\s*\(\s*\)|\.not\.toBeUndefined\s*\(\s*\)|\.not\.to\.equal\s*\(\s*null\s*\)|\.not\.to\.be\.null)'; then
+    direct_shape=1
+  else
+    binding=$(printf '%s\n' "$code" |
+      scanner_rg -o '[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*\([[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*' |
+      head -1 |
+      sed -E 's/^[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*\([[:space:]]*//')
+    [[ -n "$binding" ]] || return 1
+    printf '%s\n' "$code" |
+      scanner_rg -q '\)\s*(\.toBeTruthy\s*\(\s*\)|\.toBeDefined\s*\(\s*\)|\.not\.toBeNull\s*\(\s*\)|\.not\.toBeUndefined\s*\(\s*\)|\.not\.to\.equal\s*\(\s*null\s*\)|\.not\.to\.be\.null)' ||
+      return 1
+  fi
   expect_binding=$(expect_call_binding_at "$hit")
   [[ -n "$expect_binding" ]] || return 1
   playwright_expect_binding "$file" "$expect_binding" "$line" || return 1
   awaited_locator_value_read_at "$file" "$line" && return 1
-  code=$(locator_assertion_source "$file" "$line")
-  printf '%s\n' "$code" |
-    scanner_rg -q '^[[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*(\s*\.\s*expect)?\s*\(\s*page\.(locator|getBy[A-Z][A-Za-z]*)\s*\(.*\)\s*(\.toBeTruthy\s*\(\s*\)|\.toBeDefined\s*\(\s*\)|\.not\.toBeNull\s*\(\s*\)|\.not\.toBeUndefined\s*\(\s*\)|\.not\.to\.equal\s*\(\s*null\s*\)|\.not\.to\.be\.null)' &&
-    return 0
-  binding=$(printf '%s\n' "$code" |
-    scanner_rg -o '[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*\([[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*' |
-    head -1 |
-    sed -E 's/^[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*\([[:space:]]*//')
-  [[ -n "$binding" ]] || return 1
-  printf '%s\n' "$code" |
-    scanner_rg -q '\)\s*(\.toBeTruthy\s*\(\s*\)|\.toBeDefined\s*\(\s*\)|\.not\.toBeNull\s*\(\s*\)|\.not\.toBeUndefined\s*\(\s*\)|\.not\.to\.equal\s*\(\s*null\s*\)|\.not\.to\.be\.null)' ||
-    return 1
+  [[ "$direct_shape" -eq 1 ]] && return 0
   proven_locator_binding "$file" "$line" "$binding"
 }
 
@@ -5358,12 +5435,13 @@ wrapped_locator_assertion_hit_matches() {
   file=${hit%%:*}
   rest=${hit#*:}
   line=${rest%%:*}
-  expect_binding=$(expect_call_binding_at "$hit")
-  [[ -n "$expect_binding" ]] || return 1
-  playwright_expect_binding "$file" "$expect_binding" "$line" || return 1
   code=$(locator_assertion_source "$file" "$line")
   printf '%s\n' "$code" |
-    scanner_rg -q '^[[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*(\s*\.\s*expect)?\s*\(\s*[A-Za-z_$][A-Za-z0-9_$]*\s*\(\s*page\.(locator|getBy[A-Z][A-Za-z]*)\s*\(.*\)\s*\)\s*\)\s*(\.toBeTruthy\s*\(\s*\)|\.toBeDefined\s*\(\s*\)|\.not\.toBeNull\s*\(\s*\)|\.not\.toBeUndefined\s*\(\s*\))'
+    scanner_rg -q '^[[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*(\s*\.\s*expect)?\s*\(\s*[A-Za-z_$][A-Za-z0-9_$]*\s*\(\s*page\.(locator|getBy[A-Z][A-Za-z]*)\s*\(.*\)\s*\)\s*\)\s*(\.toBeTruthy\s*\(\s*\)|\.toBeDefined\s*\(\s*\)|\.not\.toBeNull\s*\(\s*\)|\.not\.toBeUndefined\s*\(\s*\))' ||
+    return 1
+  expect_binding=$(expect_call_binding_at "$hit")
+  [[ -n "$expect_binding" ]] || return 1
+  playwright_expect_binding "$file" "$expect_binding" "$line"
 }
 
 identifier_locator_assertion_hit_matches() {
@@ -5394,6 +5472,8 @@ generic_getby_assertion_hit_matches() {
   file=${hit%%:*}
   rest=${hit#*:}
   line=${rest%%:*}
+  # A resolved count/text/attribute is a value read (#4c-4e), not a Locator.
+  awaited_locator_value_read_at "$file" "$line" && return 1
   code=$(locator_assertion_source "$file" "$line")
   printf '%s\n' "$code" |
     scanner_rg -q '[A-Za-z_$][A-Za-z0-9_$]*\s*\(.*(\.getBy[A-Z][A-Za-z]*|\bgetBy[A-Z][A-Za-z]*)\s*\(.*\)\s*(\.toBeTruthy\s*\(\s*\)|\.toBeDefined\s*\(\s*\)|\.not\.toBeNull\s*\(\s*\)|\.not\.to\.equal\s*\(\s*null\s*\)|\.not\.to\.be\.null)' ||
@@ -5492,7 +5572,7 @@ conditional_assertion_hit_matches() {
   printf '%s\n' "$code" |
     scanner_rg -q '(^|[^A-Za-z0-9_$])(expect|assertion)[[:space:]]*\(|(^|[^A-Za-z0-9_$])assert([.][A-Za-z_$][A-Za-z0-9_$]*)?[[:space:]]*\(|[.]should[[:space:]]*\(' &&
     return 0
-  source_has_unresolved_test_import "$file" || return 1
+  rule_scope_predicate_or_abort source_has_unresolved_test_import "$file" || return 1
   while IFS= read -r alias; do
     [[ -n "$alias" ]] || continue
     source_binding_shadowed_at "$file" "$alias" "$line" && continue
@@ -6137,7 +6217,7 @@ run_check() {
   local pattern="$4"
   local glob="$5"
   local output="" p0_unproven_output="" p1_unproven_output=""
-  local flags=",${6:-}," assertion_token=""
+  local flags=",${6:-}," assertion_token="" filename_pattern="$4"
   local -a context_options=()
 
   # These predicates only accept a matcher reconstructed within the starting
@@ -6215,12 +6295,16 @@ run_check() {
     --glob '!.pnp.loader.mjs'
     ${EVAL_FIXTURE_EXCLUDES[@]+"${EVAL_FIXTURE_EXCLUDES[@]}"}
   )
+  # Keep filename discovery on the original line pattern. ripgrep 14.1 can
+  # miss files with multiline lookaheads in its -l existence fast path even
+  # when -n finds their matches. The bounded candidate stream below retains
+  # the complete lookahead and its assertion-window budget.
   # Matching filenames are bounded by the already validated manifest size,
   # independently of the raw candidate budget. No candidate lines are emitted
   # until exact file applicability has been decided.
   _prepass_bytes=$(wc -c < "$_filename_list" | tr -d '[:space:]')
   "$RG_BIN" -l0P --color never --hidden --no-ignore --sort path \
-    "${_discovery_options[@]}" "$pattern" -- "$ROOT" 2>&1 |
+    "${_discovery_options[@]}" "$filename_pattern" -- "$ROOT" 2>&1 |
     head -c "$((_prepass_bytes + 1))" > "$_matched_paths"
   _prepass_status=("${PIPESTATUS[@]}")
   if [[ "${_prepass_status[0]}" -gt 1 || "${_prepass_status[1]}" -ne 0 ||
@@ -6419,6 +6503,8 @@ run_check() {
     raw_output=$(filter_hits_by cypress_action_chain_hit_matches)
   elif [[ "$flags" == *",positive-attached,"* && -n "$raw_output" ]]; then
     raw_output=$(printf '%s\n' "$raw_output" | filter_positive_to_be_attached_hits)
+  elif [[ "$flags" == *",cypress-role-name,"* && -n "$raw_output" ]]; then
+    raw_output=$(filter_hits_by cypress_role_name_hit_matches)
   elif [[ "$flags" == *",executable-line,"* && -n "$raw_output" ]]; then
     raw_output=$(filter_hits_by executable_hit_matches "$pattern")
   elif [[ "$flags" == *",immutable-computed-truthy,"* && -n "$raw_output" ]]; then
@@ -7033,7 +7119,9 @@ run_check P1 '#10b' 'Serial Playwright suite' '\.describe[[:space:]]*\.configure
 # directly excludes container-scoped forms (`x.getByRole(...)`, `page.locator(...).getByRole(...)`).
 # Phase 2 LLM confirms the suite renders dynamic text that could substring-collide before flagging.
 run_check P1 '#10c' 'Unscoped accessible-name substring match' '(?<![.\w])page\.(getByRole|getByLabel|getByPlaceholder)\((?:(?!exact:)[^)])*name:(?:(?!exact:)[^)])*\)' "$ALL_CODE_GLOB" 'e2e,triage,playwright-only'
-run_check P1 '#10c' 'Cypress accessible-name substring match' '\bcy\.(?:findByRole|findByLabelText|findByPlaceholderText)\((?:(?!exact\s*:)[^)])*\bname\s*:(?:(?!exact\s*:)[^)])*\)' "$ALL_CODE_GLOB" 'e2e,triage,cypress-only,executable-line'
+# Testing Library string names are exact by default; only broad regex names are candidates.
+# Phase 2 confirms the actual matcher breadth, container scope, and dynamic collision.
+run_check P1 '#10c' 'Cypress accessible-name substring match' '\bcy\.findByRole\([^\n)]*\bname\s*:\s*/(?!\^)[^/\n]+/[a-z]*\s*[,}]' "$ALL_CODE_GLOB" 'e2e,triage,cypress-only,cypress-role-name'
 run_check P1 '#10d' 'Cypress async callback mixes promises with queued commands' '(?:(?:it|test|specify)\s*\([^;\n]*,\s*async\s*(?:function\b\s*(?:[A-Za-z_$][\w$]*)?\s*\([^)]*\)|(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>)|(?:before|beforeEach|after|afterEach)\s*\(\s*(?:[^,;\n]+,\s*)?async\s*(?:function\b\s*(?:[A-Za-z_$][\w$]*)?\s*\([^)]*\)|(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>))' "$ALL_CODE_GLOB" 'triage'
 run_check P1 '#10e' 'Cypress return value assigned outside the command chain' '\b(const|let|var)\s+[A-Za-z_$][\w$]*(?:\s*:[^=;\n]+)?\s*=\s*cy\.(?!spy\(|stub\()' "$ALL_CODE_GLOB"
 # Actions are one-shot; assertions chained after them do not retry the action. Phase 2 confirms
@@ -7045,6 +7133,9 @@ run_check P1 '#14' 'Hardcoded credential candidate' '(?i)(?:(?:password|passwd|s
 # .toBe(4)` — the `page)` substring) were misfiled as #15 (ag-grid field run: 25 of 33 #15
 # hits were really #4c-4e). Matcher-on-next-line splits are covered by Tier 2 (sg-15).
 run_check P1 '#15' 'Missing await on Playwright expect' '^[[:space:]]*\(?[[:space:]]*(?:[0-9]+[[:space:]]*,[[:space:]]*)?[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*\.[[:space:]]*expect)?(?:[[:space:]]|/\*.*?\*/)*\(' "$ALL_CODE_GLOB" 'e2e,missing-expect,playwright-only'
+# A one-line helper/callback can start the assertion after `{`; the shared
+# lexical/binding filter still rejects comments, strings, and consumed promises.
+run_check P1 '#15' 'Missing await on Playwright expect' '^[^;\n]{0,300}\{[[:space:]]*(?:[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*[.][[:space:]]*)?expect[[:space:]]*\(' "$ALL_CODE_GLOB" 'e2e,missing-expect,playwright-only'
 run_check P1 '#15' 'Possible missing await on expect from unresolved test-fixture source' "^[[:space:]]*expect[[:space:]]*\\([^;\\n]*\\)[[:space:]]*[.][[:space:]]*(${PLAYWRIGHT_ASYNC_MATCHERS})[[:space:]]*\\(" "$ALL_CODE_GLOB" 'triage,playwright-only,unresolved-test-source'
 run_check P1 '#15' 'Missing await on Playwright retry assertion' '^[[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*(?:[.][[:space:]]*poll[[:space:]]*[(]|[(])' "$ALL_CODE_GLOB" 'e2e,retry-expect,playwright-only'
 # #15 variant: the await is misplaced INSIDE expect() onto the locator (a no-op, since a Locator

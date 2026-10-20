@@ -184,10 +184,10 @@ class ReviewerHoldoutV12Test(unittest.TestCase):
             "SPECIFICITY_PROTOCOL_IDS",
         ):
             self.assertNotIn(PROTOCOL_ID, getattr(self.runner, id_set), id_set)
-        self.assertEqual(REUSERS | {V16_ID, V17_ID, V18_ID, V19_ID, V20_ID, V21_ID}, self.runner.INFRASTRUCTURE_RETRY_PROTOCOL_IDS)
+        self.assertEqual(REUSERS | {V16_ID, V17_ID, V18_ID, V19_ID, V20_ID, V21_ID, "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"}, self.runner.INFRASTRUCTURE_RETRY_PROTOCOL_IDS)
         self.assertEqual(V10_CASES_PATH, self.runner.REVISED_LABEL_CORPORA[PROTOCOL_ID])
         self.assertEqual(
-            {**{reuser: V10_ID for reuser in REUSERS}, V16_ID: V9_OWNER_ID, V18_ID: V17_ID, V19_ID: V17_ID},
+            {**{reuser: V10_ID for reuser in REUSERS}, V16_ID: V9_OWNER_ID, V18_ID: V17_ID, V19_ID: V17_ID, "reviewer-holdout-v22": V17_ID, "reviewer-holdout-v23": V17_ID, "reviewer-holdout-v24": V17_ID},
             self.runner.SHARED_CORPUS_PROTOCOLS,
         )
         self.assertEqual(
@@ -322,7 +322,7 @@ class ReviewerHoldoutV12Test(unittest.TestCase):
             self.v12["infrastructure_retry"],
             self.runner.infrastructure_retry_policy(self.v12),
         )
-        for protocol_id in sorted(self.runner.SUPPORTED_PROTOCOL_IDS - REUSERS - {V16_ID, V17_ID, V18_ID, V19_ID, V20_ID, V21_ID}):
+        for protocol_id in sorted(self.runner.SUPPORTED_PROTOCOL_IDS - REUSERS - {V16_ID, V17_ID, V18_ID, V19_ID, V20_ID, V21_ID, "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"}):
             self.assertIsNone(
                 self.runner.infrastructure_retry_policy({"protocol_id": protocol_id}),
                 protocol_id,

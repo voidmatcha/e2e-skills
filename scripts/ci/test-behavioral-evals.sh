@@ -402,7 +402,7 @@ generator_case = {
     "id": "generator-reference-snapshot",
     "skill": "playwright-test-generator",
     "task": "Generate coverage for {repo}/scripts/ci/fixtures/codex-smoke/silent.spec.ts",
-    "assertions": [{"type": "contains", "value": "Step 4"}],
+    "assertions": [{"type": "contains", "value": "thin-rules"}],
 }
 with tempfile.TemporaryDirectory() as prompt_dir:
     prompt_workspace = pathlib.Path(prompt_dir)
@@ -410,21 +410,15 @@ with tempfile.TemporaryDirectory() as prompt_dir:
     generator_prompt = module.render_prompt(
         generator_case, "with_skill", prompt_workspace
     )
-for reference in (
-    "best-practices.md",
-    "code-rules.md",
-    "conventions-template.md",
-    "exploration-preflight.md",
-    "imported-test-cases.md",
-    "playwright-agents.md",
-    "recommended-lint.md",
-    "scenario-design.md",
-    "verification-rules.md",
-):
-    assert (
-        "BEGIN_TRUSTED_SKILL_SNAPSHOT "
-        f"playwright-test-generator/{reference}"
-    ) in generator_prompt
+assert (
+    "BEGIN_TRUSTED_SKILL_SNAPSHOT playwright-test-generator/thin-rules.md"
+) in generator_prompt
+# The 3.0.0 router ships exactly one sibling reference; the 2.x pipeline
+# references live in the archive and must not be snapshotted into prompts.
+assert generator_prompt.count("BEGIN_TRUSTED_SKILL_SNAPSHOT playwright-test-generator/") == 2
+assert "BEGIN_TRUSTED_SKILL_SNAPSHOT playwright-test-generator/SKILL.md" in generator_prompt
+for removed in ("best-practices.md", "verification-rules.md", "scenario-design.md"):
+    assert f"playwright-test-generator/{removed}" not in generator_prompt
 
 # resolve_runner_executable delegates bare runner names to the shared,
 # version-aware resolver, so the trusted search path is the patch point that

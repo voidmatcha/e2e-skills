@@ -1,5 +1,6 @@
 #!/bin/bash -p
-# Local mirror of the e2e-skills GitHub Actions checks.
+# Current product and shared evaluation-harness checks (no historical raw data).
+# Use ci-evidence.sh with a verified HF restore for frozen historical replay.
 
 builtin set -uo pipefail
 
@@ -119,13 +120,6 @@ done <<< "$SHELL_FILES"
 [ "$SHELL_FILE_COUNT" -gt 0 ] || fail "shell enumeration returned zero files"
 [ "$QUIET" = "1" ] || echo "  all $SHELL_FILE_COUNT shell scripts parse"
 
-step "Evidence freshness preflight"
-# A stale evaluated-skill digest is a release blocker and takes well under a
-# second to detect. Keep it immediately after the shell trust-boundary check
-# and ahead of the multi-minute review stages.
-run_python scripts/ci/test-reviewer-evidence-v3.py ||
-  fail "test-reviewer-evidence-v3.py"
-
 step "Source and security contracts"
 run_python scripts/ci/test-shell-enumeration.py ||
   fail "test-shell-enumeration.py"
@@ -135,100 +129,24 @@ run_python scripts/ci/test-python-invocation.py ||
   fail "test-python-invocation.py"
 run_python scripts/ci/test-eval-schema.py ||
   fail "test-eval-schema.py"
-run_python scripts/ci/test-evidence-ledger.py ||
-  fail "test-evidence-ledger.py"
-
-step "Release contract preflight"
-# Keep cheap, high-signal release blockers ahead of the multi-minute review
-# checks. These checks are independent and still run exactly once; this changes
-# red-path latency without weakening the green path.
-run_python scripts/ci/test-reviewer-release-v1.py ||
-  fail "test-reviewer-release-v1.py"
-run_python scripts/ci/test-reviewer-release-runner-v1.py ||
-  fail "test-reviewer-release-runner-v1.py"
-run_python scripts/ci/test-reviewer-release-capture-v1.py ||
-  fail "test-reviewer-release-capture-v1.py"
-run_python scripts/ci/test-reviewer-release-witness-v1.py ||
-  fail "test-reviewer-release-witness-v1.py"
-run_python scripts/ci/test-reviewer-release-executor-v1.py ||
-  fail "test-reviewer-release-executor-v1.py"
-run_python scripts/ci/test-reviewer-release-attested-calls-v1.py ||
-  fail "test-reviewer-release-attested-calls-v1.py"
-run_python scripts/ci/test-reviewer-release-tool-surface-v1.py ||
-  fail "test-reviewer-release-tool-surface-v1.py"
-run_python scripts/ci/test-reviewer-release-codex-mcp-v1.py ||
-  fail "test-reviewer-release-codex-mcp-v1.py"
-run_python scripts/ci/test-reviewer-release-codex-transcript-v1.py ||
-  fail "test-reviewer-release-codex-transcript-v1.py"
-run_python scripts/ci/test-reviewer-release-normalizer-v1.py ||
-  fail "test-reviewer-release-normalizer-v1.py"
-run_python scripts/ci/test-reviewer-release-postrun-v1.py ||
-  fail "test-reviewer-release-postrun-v1.py"
-run_python scripts/ci/test-reviewer-release-findings-v1.py ||
-  fail "test-reviewer-release-findings-v1.py"
-run_python scripts/ci/test-reviewer-release-matrix-v1.py ||
-  fail "test-reviewer-release-matrix-v1.py"
-run_python scripts/ci/test-reviewer-release-scorer-v1.py ||
-  fail "test-reviewer-release-scorer-v1.py"
-run_python scripts/ci/test-runner-version-resolution-v1.py ||
-  fail "test-runner-version-resolution-v1.py"
+run_python scripts/ci/test-self-scan-view.py ||
+  fail "test-self-scan-view.py"
 
 step "Review checks"
+# Includes prompt-first installation, translated README parity, and model-specific evidence boundaries.
 if [ "$QUIET" = "1" ]; then
   /bin/bash -p scripts/ci/review.sh --quiet >/dev/null 2>&1 || fail "review.sh"
 else
   /bin/bash -p scripts/ci/review.sh || fail "review.sh"
 fi
 
+step "Current documentation contracts"
+run_python scripts/ci/test-current-docs.py || fail "test-current-docs.py"
+
 step "Generator contracts"
-run_python scripts/ci/test-generator-contracts.py ||
-  fail "test-generator-contracts.py"
-run_python scripts/ci/test-generator-unchanged-outcome.py ||
-  fail "test-generator-unchanged-outcome.py"
-run_python scripts/ci/test-generator-unchanged-outcome-v1.py ||
-  fail "test-generator-unchanged-outcome-v1.py"
-run_python scripts/ci/test-generator-unchanged-outcome-v2.py ||
-  fail "test-generator-unchanged-outcome-v2.py"
-run_python scripts/ci/test-generator-unchanged-outcome-v5.py ||
-  fail "test-generator-unchanged-outcome-v5.py"
-run_python scripts/ci/test-generator-unchanged-outcome-v6.py ||
-  fail "test-generator-unchanged-outcome-v6.py"
-run_python scripts/ci/test-generator-skill-effect-v8.py ||
-  fail "test-generator-skill-effect-v8.py"
-run_python scripts/ci/test-generator-skill-effect-v8-evidence.py ||
-  fail "test-generator-skill-effect-v8-evidence.py"
-run_python scripts/ci/test-generator-transcript-audit.py ||
-  fail "test-generator-transcript-audit.py"
-run_python scripts/ci/test-generator-environment-probe.py ||
-  fail "test-generator-environment-probe.py"
-run_python scripts/ci/test-generator-environment-successor-probe.py ||
-  fail "test-generator-environment-successor-probe.py"
-run_python scripts/ci/test-generator-environment-pilot-v1.py ||
-  fail "test-generator-environment-pilot-v1.py"
-run_python scripts/ci/test-generator-codex-container-adapter.py ||
-  fail "test-generator-codex-container-adapter.py"
-run_python scripts/ci/test-generator-codex-adapter.py ||
-  fail "test-generator-codex-adapter.py"
-run_python scripts/ci/test-generator-codex-adapter-v2.py ||
-  fail "test-generator-codex-adapter-v2.py"
-run_python scripts/ci/test-generator-v4-get-transfer-v1.py ||
-  fail "test-generator-v4-get-transfer-v1.py"
-run_python scripts/ci/test-generator-v4-get-transfer-v2.py ||
-  fail "test-generator-v4-get-transfer-v2.py"
-run_python scripts/ci/test-generator-v4-get-transfer-v3.py ||
-  fail "test-generator-v4-get-transfer-v3.py"
-run_python scripts/ci/test-generator-v4-get-transfer-v4.py ||
-  fail "test-generator-v4-get-transfer-v4.py"
-run_python scripts/ci/test-generator-v4-get-template-v1.py ||
-  fail "test-generator-v4-get-template-v1.py"
-run_python scripts/ci/test-generator-overlap-v1-pilot.py ||
-  fail "test-generator-overlap-v1-pilot.py"
-run_python scripts/ci/test-generator-v4-get-pilot-v1.py ||
-  fail "test-generator-v4-get-pilot-v1.py"
-run_python scripts/ci/test-generator-v4-get-pilot-v2.py ||
-  fail "test-generator-v4-get-pilot-v2.py"
-run_python scripts/ci/test-generator-v4-get-pilot-v3.py ||
-  fail "test-generator-v4-get-pilot-v3.py"
+run_python scripts/ci/test-generator-router.py || fail "test-generator-router.py"
+run_python scripts/ci/test-release-claims.py || fail "test-release-claims.py"
+run_python scripts/ci/test-pending-markers.py || fail "test-pending-markers.py"
 
 step "Verification-rule parity"
 # Check the terminal proof boundary itself, not incidental mentions in the V6 packet instructions.
@@ -245,6 +163,8 @@ run_python scripts/ci/test-codex-smoke-contract.py ||
   fail "test-codex-smoke-contract.py"
 run_python scripts/ci/test-reinstall-skills.py ||
   fail "test-reinstall-skills.py"
+run_python scripts/ci/test-all-in-one-install.py ||\
+  fail "test-all-in-one-install.py"
 
 step "Behavioral eval harness"
 /bin/bash -p scripts/ci/test-behavioral-evals.sh || fail "test-behavioral-evals.sh"
@@ -349,146 +269,16 @@ run_python scripts/ci/test-scanner-rule-scope-predicate-cache.py ||
 run_python scripts/ci/test-reviewer-scanner.py ||
   fail "test-reviewer-scanner.py"
 
-step "Reviewer benchmark contracts"
-run_python scripts/ci/test-fixpair-v1.py ||
-  fail "test-fixpair-v1.py"
-run_python scripts/ci/test-semantic-mutants-v1.py ||
-  fail "test-semantic-mutants-v1.py"
-run_python scripts/ci/test-reviewer-holdout-v3.py ||
-  fail "test-reviewer-holdout-v3.py"
-run_python scripts/ci/test-reviewer-fault-causal.py ||
-  fail "test-reviewer-fault-causal.py"
-run_python scripts/ci/test-reviewer-holdout-v4.py ||
-  fail "test-reviewer-holdout-v4.py"
-run_python scripts/ci/test-reviewer-fault-causal-v2.py ||
-  fail "test-reviewer-fault-causal-v2.py"
-run_python scripts/ci/test-reviewer-holdout-v5.py ||
-  fail "test-reviewer-holdout-v5.py"
-run_python scripts/ci/test-reviewer-holdout-v7.py ||
-  fail "test-reviewer-holdout-v7.py"
-run_python scripts/ci/test-reviewer-holdout-v8.py ||
-  fail "test-reviewer-holdout-v8.py"
-run_python scripts/ci/test-reviewer-holdout-v9.py ||
-  fail "test-reviewer-holdout-v9.py"
-run_python scripts/ci/test-reviewer-holdout-v10.py ||
-  fail "test-reviewer-holdout-v10.py"
-run_python scripts/ci/test-reviewer-holdout-v11.py ||
-  fail "test-reviewer-holdout-v11.py"
-run_python scripts/ci/test-reviewer-holdout-v12.py ||
-  fail "test-reviewer-holdout-v12.py"
-run_python scripts/ci/test-reviewer-holdout-v13.py ||
-  fail "test-reviewer-holdout-v13.py"
-run_python scripts/ci/test-reviewer-holdout-v14.py ||
-  fail "test-reviewer-holdout-v14.py"
-run_python scripts/ci/test-reviewer-holdout-v15.py ||
-  fail "test-reviewer-holdout-v15.py"
-run_python scripts/ci/test-reviewer-holdout-v16.py ||
-  fail "test-reviewer-holdout-v16.py"
-run_python scripts/ci/test-reviewer-holdout-v17.py ||
-  fail "test-reviewer-holdout-v17.py"
-run_python scripts/ci/test-reviewer-holdout-v18.py ||
-  fail "test-reviewer-holdout-v18.py"
-run_python scripts/ci/test-reviewer-holdout-v19.py ||
-  fail "test-reviewer-holdout-v19.py"
-run_python scripts/ci/test-reviewer-holdout-v20.py ||
-  fail "test-reviewer-holdout-v20.py"
-run_python scripts/ci/test-reviewer-holdout-v21.py ||
-  fail "test-reviewer-holdout-v21.py"
-run_python scripts/ci/test-reviewer-stream-retry.py ||
-  fail "test-reviewer-stream-retry.py"
-run_python scripts/ci/test-reviewer-auth-retry.py ||
-  fail "test-reviewer-auth-retry.py"
-run_python scripts/ci/test-reviewer-usage-capture.py ||
-  fail "test-reviewer-usage-capture.py"
-run_python scripts/ci/test-reviewer-specificity-v1.py ||
-  fail "test-reviewer-specificity-v1.py"
-run_python scripts/ci/test-reviewer-specificity-v2.py ||
-  fail "test-reviewer-specificity-v2.py"
-run_python scripts/ci/test-reviewer-specificity-v3.py ||
-  fail "test-reviewer-specificity-v3.py"
-run_python scripts/ci/test-reviewer-specificity-v4.py ||
-  fail "test-reviewer-specificity-v4.py"
-run_python scripts/ci/test-specificity-successor-rules.py ||
-  fail "test-specificity-successor-rules.py"
-run_python scripts/ci/test-specificity-context-ast.py ||
-  fail "test-specificity-context-ast.py"
-run_python scripts/ci/test-specificity-context-followup.py ||
-  fail "test-specificity-context-followup.py"
-run_python scripts/ci/test-specificity-transport.py ||
-  fail "test-specificity-transport.py"
-run_python scripts/ci/test-specificity-discovery-calibration.py ||
-  fail "test-specificity-discovery-calibration.py"
-run_python scripts/ci/test-specificity-fresh-pilot.py ||
-  fail "test-specificity-fresh-pilot.py"
-run_python scripts/ci/test-specificity-citations.py ||
-  fail "test-specificity-citations.py"
-run_python scripts/ci/test-specificity-primary-batch.py ||
-  fail "test-specificity-primary-batch.py"
-run_python scripts/ci/test-specificity-semantic-pilot.py ||
-  fail "test-specificity-semantic-pilot.py"
-run_python scripts/ci/test-reviewer-specificity-collector-v3.py ||
-  fail "test-reviewer-specificity-collector-v3.py"
-run_python scripts/ci/test-reviewer-fault-causal-v3.py ||
-  fail "test-reviewer-fault-causal-v3.py"
-run_python scripts/ci/test-debugger-holdout-v1.py ||
-  fail "test-debugger-holdout-v1.py"
-run_python scripts/ci/test-generator-faultkill-v1.py ||
-  fail "test-generator-faultkill-v1.py"
-run_python scripts/ci/test-generator-faultkill-runner.py ||
-  fail "test-generator-faultkill-runner.py"
-
-step "Independent review contracts"
-run_python scripts/ci/test-independent-review.py ||
-  fail "test-independent-review.py"
-run_python scripts/ci/test-independent-review-evidence.py ||
-  fail "test-independent-review-evidence.py"
-run_python scripts/ci/test-independent-review-v5-evidence.py ||
-  fail "test-independent-review-v5-evidence.py"
-run_python scripts/ci/test-independent-review-v6.py ||
-  fail "test-independent-review-v6.py"
-run_python scripts/ci/test-independent-review-v6-evidence.py ||
-  fail "test-independent-review-v6-evidence.py"
-# The v7, v8, v10 and v11 unit suites carry adversarial checks that require the
-# pinned reference tokenizer. run_python's interpreter has never had it, so those
-# checks used to skip themselves silently; the suites now fail closed and run
-# inside one hash-locked replay venv instead.
-#
-# v10 was briefly dropped from this list because its freeze integration rebuilt
-# the packet from the working tree and then enforced the caps recorded when the
-# phase froze, which left 61 tokens of headroom and failed unrelated product
-# edits. It now reproduces its packet from the frozen source snapshot, the way
-# v5 and v6 already did, so the archived round no longer budgets live work.
-#
-# v10 stays in this list after its supersession: its runner, validator and
-# canonical archive are frozen byte-for-byte, and its suite still exercises those
-# frozen contracts and replays that archive through its evidence wrapper.
-# v11 completes the v10 schedule with the consumed v10 r1 attempt carried, and
-# reads the inherited v10 packet by digest instead of rebuilding it. Without
-# E2E_SKILLS_V11_PINNED_CLAUDE_PATH the v11 suite prints one explicit SKIP for
-# its strict live-path round trip; every other check runs.
-step "Reference tokenizer contracts"
-/bin/bash -p scripts/ci/run-reference-tokenizer-suites.sh \
-  scripts/ci/test-independent-review-v7.py \
-  scripts/ci/test-independent-review-v8.py \
-  scripts/ci/test-independent-review-v10.py \
-  scripts/ci/test-independent-review-v11.py ||
-  fail "run-reference-tokenizer-suites.sh"
-# Each unit suite above also invokes its matching standalone evidence wrapper
-# under a poisoned environment and asserts the canonical result. Repeating the
-# same four wrappers here rebuilt four identical hash-locked venvs without
-# adding coverage. The wrappers remain standalone reproduction commands.
-
-step "Reviewer evidence contracts"
-run_python scripts/ci/test-reviewer-evidence.py ||
-  fail "test-reviewer-evidence.py"
+step "Current evaluation harness contracts"
+run_python scripts/ci/test-reviewer-harness.py || fail "test-reviewer-harness.py"
+run_python scripts/ci/test-reviewer-auth-retry.py || fail "test-reviewer-auth-retry.py"
+run_python scripts/ci/test-reviewer-usage-capture.py || fail "test-reviewer-usage-capture.py"
 
 step "Executable fixture contracts"
 run_python scripts/evals/run-fixture-faults.py --validate-only >/dev/null ||
   fail "run-fixture-faults.py --validate-only"
 run_python scripts/ci/test-fixture-faults.py ||
   fail "test-fixture-faults.py"
-run_python benchmarks/healer-perturbation-v1/test_perturbations.py ||
-  fail "healer-perturbation-v1/test_perturbations.py"
 run_python scripts/ci/test-external-evidence.py ||
   fail "test-external-evidence.py"
 run_python scripts/evals/run-playwright-semantic-probes.py --validate-only >/dev/null ||
@@ -505,14 +295,19 @@ run_python scripts/ci/test-cypress-timeout-zero-probe.py ||
   fail "test-cypress-timeout-zero-probe.py"
 
 step "Local ESLint path"
+run_python scripts/ci/test-eslint-import-resolution.py --node "$NODE_BIN" ||
+  fail "test-eslint-import-resolution.py"
 /bin/bash -p scripts/ci/test-local-eslint-path.sh || fail "test-local-eslint-path.sh"
 run_python scripts/ci/test-reviewer-trust-contract.py ||
   fail "test-reviewer-trust-contract.py"
-# Includes portable skill-root routing and evidence-based disagreement guards.
-# Includes the versioned #13 ownership boundary and #1 rendering guards;
-# these development contracts never rewrite frozen holdout labels.
-run_python scripts/ci/test-reviewer-doc-contracts.py ||
-  fail "test-reviewer-doc-contracts.py"
+run_python scripts/ci/test-reviewer-check.py ||
+  fail "test-reviewer-check.py"
+run_python scripts/ci/test-reviewer-probe.py ||
+  fail "test-reviewer-probe.py"
+run_python scripts/evals/hybrid-check-pilot/check-docker-matrix/test_notepad_adapter_v1.py ||
+  fail "test_notepad_adapter_v1.py"
+run_python scripts/evals/hybrid-check-pilot/check-docker-matrix/test_passport_adapter_v1.py ||
+  fail "test_passport_adapter_v1.py"
 run_python scripts/dev/reviewer-contract.py ||
   fail "reviewer-contract.py"
 run_python scripts/ci/test-reviewer-output-discipline-v2.py ||
@@ -561,15 +356,17 @@ done
 if [ -z "$SELF_SCAN_AST_GREP" ]; then
   echo "ci-local: WARNING: ast-grep not found; the self-scan P0 gate below covers Tier 3 only (hosted CI also runs Tier 2)" >&2
 fi
-for SELF_SCAN_ROOT in skills scripts; do
-  if [ "$QUIET" = "1" ]; then
-    E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_FAIL_ON=p0-candidate /bin/bash -p ./skills/e2e-reviewer/scripts/scan.sh "$SELF_SCAN_ROOT" >/dev/null 2>&1 ||
-      fail "skills/e2e-reviewer/scripts/scan.sh $SELF_SCAN_ROOT"
-  else
-    E2E_SMELL_NO_ESLINT_DOWNLOAD=1 E2E_SMELL_FAIL_ON=p0-candidate /bin/bash -p ./skills/e2e-reviewer/scripts/scan.sh "$SELF_SCAN_ROOT" ||
-      fail "skills/e2e-reviewer/scripts/scan.sh $SELF_SCAN_ROOT"
-  fi
-done
+# The fixed Notepad pilot is an intentional negative control required by the
+# adapter contracts. Verify its original findings, then scan an identity-checked
+# temporary view excluding only that exact frozen file. Product bytes and the
+# p0-candidate threshold remain unchanged; drift or any other candidate fails.
+if [ "$QUIET" = "1" ]; then
+  run_python scripts/ci/lib/self-scan-view.py "$REPO_ROOT" >/dev/null 2>&1 ||
+    fail "repository self-scan view"
+else
+  run_python scripts/ci/lib/self-scan-view.py "$REPO_ROOT" ||
+    fail "repository self-scan view"
+fi
 
 [ "$QUIET" = "1" ] || {
   print_timing_summary

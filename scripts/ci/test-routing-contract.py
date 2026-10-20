@@ -254,9 +254,17 @@ def assert_checks_reject_known_bad_wording() -> None:
 
 
 def assert_skill_roots_are_runtime_resolved() -> None:
-    for path in (REVIEWER, ROOT / "skills/e2e-reviewer/references/scanner-workflow.md"):
+    # Detailed root resolution lives behind the mandatory pre-tool read;
+    # do not require its prose to be duplicated in the entrypoint.
+    core = _read(REVIEWER)
+    assert (
+        "Resolve `<skill-base>` using `references/scanner-workflow.md` "
+        "before invoking any bundled tool; never guess the loaded copy."
+    ) in core, "Resolve the loaded root through its mandatory pre-tool reference"
+    workflow = ROOT / "skills/e2e-reviewer/references/scanner-workflow.md"
+    assert "actual loaded skill" in _read(workflow), "Resolve the runtime skill root"
+    for path in (REVIEWER, workflow):
         text = _read(path)
-        assert "actual loaded skill" in text, f"{path}: resolve the runtime skill root"
         assert "~/.agents/skills/e2e-reviewer/" not in text
         assert "~/.claude/skills/e2e-reviewer/" not in text
     for name in ("playwright-debugger", "cypress-debugger"):

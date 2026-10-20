@@ -8,6 +8,7 @@ import argparse
 from collections.abc import Iterator
 from contextlib import contextmanager
 import hashlib
+import errno
 import json
 import math
 import os
@@ -141,6 +142,16 @@ def open_trusted_directory(path: Path, description: str) -> int:
     except OSError as exc:
         if current_fd is not None:
             os.close(current_fd)
+        if exc.errno == errno.ENOENT:
+            raise ValueError(
+                f"{description} does not exist: {path}: {exc} "
+                "(a relative path resolves against the current directory; "
+                "run from the project root or pass an absolute path)"
+            ) from exc
+        if exc.errno in (errno.ENOTDIR, errno.ELOOP):
+            raise ValueError(
+                f"{description} contains a symlink or is not a directory: {path}: {exc}"
+            ) from exc
         raise ValueError(
             f"{description} contains a symlink or is unavailable: {path}: {exc}"
         ) from exc
@@ -814,6 +825,11 @@ def run_result_records(report: object) -> list[dict[str, object]]:
                     "title": bounded_string(" ".join(test["title"])),
                     "state": bounded_string(test_state),
                     "duration": bounded_scalar(test.get("duration")),
+                    "error": (
+                        error_text(test.get("displayError"))
+                        if test_state == "failed"
+                        else None
+                    ),
                     "attempts": attempts,
                 }
             )

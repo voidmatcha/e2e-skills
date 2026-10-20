@@ -99,7 +99,7 @@
         "Suggests gating the first interaction on a hydration signal (marker attribute / window readiness flag) and proposing the marker upstream if missing",
         "Does NOT suggest a blind cy.wait(ms) after cy.visit() as the fix",
         "Reports high test-reliability urgency for the hydration failure and uses P1 only if a test defect is confirmed",
-        "Summary table included"
+        "Triage summary counts-only table included"
       ]
     },
     {
@@ -115,24 +115,22 @@
         "Does NOT report or fabricate a screenshot path for 'Profile page saves the display name' — its context is a plain stringified message with no .png",
         "Carries the spec file (checkout.cy.ts / profile.cy.ts) for each failure",
         "Classifies both failures (e.g. F2 Selector Broken or F1 Flaky/Timing) with fix suggestions",
-        "Summary table included"
+        "Triage summary counts-only table included"
       ]
     },
     {
       "id": 7,
-      "prompt": "Analyze retries for the Cypress run reported in evals/files/mochawesome-retries.json. The project also saves Cypress's own run results via an after:run hook to evals/files/cypress-run-results-retries.json. Identify which tests passed only on retry, which failed every attempt, and which ran cleanly the first time.",
-      "expected_output": "Use the bundled bounded mochawesome and run-results readers. Stock mochawesome carries NO per-attempt data — 'Dashboard loads widgets after login' appears as a plain pass in mochawesome-retries.json. The retry evidence lives in the after:run results (runs[].tests[].attempts[]) and in validated screenshot filenames. Dashboard: attempts [failed, passed] plus a '(failed).png' screenshot despite the passing final state → passed on retry, an F1 flaky signal, NOT a hard failure. 'Payment charges the card': attempts [failed, failed, failed] with '(attempt 2)'/'(attempt 3)' screenshots → consistent failure across every retry, NOT flaky. 'Home page renders the hero heading': a single passed attempt and no failure screenshots → ran cleanly, must not be flagged.",
+      "prompt": "Analyze retries for the Cypress run reported in evals/files/mochawesome-retries.json. The project also saves Cypress's own run results via an after:run hook to evals/files/cypress-run-results-retries.json. Identify which tests passed only on retry, which failed every attempt, and which ran cleanly the first time. The two artifacts are independently associated with the same invocation and spec/test identities; screenshot filenames alone carry no such association.",
+      "expected_output": "Use the bundled bounded mochawesome and run-results readers. Stock mochawesome has no per-attempt data. Prefer the associated same-run native attempts: Dashboard [failed, passed] confirms passed-on-retry as a flaky signal, without proving an F1/F15 cause. Payment [failed, failed, failed] proves consistent failure across all three attempts. Home has one passed attempt and must not be flagged. Screenshot names alone cannot establish run identity or override attempt records.",
       "files": [
         "evals/files/mochawesome-retries.json",
         "evals/files/cypress-run-results-retries.json"
       ],
       "assertions": [
-        "Identifies 'Dashboard loads widgets after login' as passed-on-retry (F1 Flaky/Timing) using the after:run attempts[] data (failed then passed) and/or the '(failed).png' screenshot recorded for a test the mochawesome report marks passed",
-        "Does NOT claim mochawesome JSON contains attempts[] or currentRetry fields — sources per-attempt data from the after:run/module-API results or the '(failed)'/'(attempt N)' screenshot filenames instead",
-        "Identifies 'Payment charges the card' as a consistent failure across all 3 attempts (attempts all failed; '(attempt 2)' and '(attempt 3)' screenshots) — NOT flaky",
-        "Does NOT flag 'Home page renders the hero heading' — single passed attempt, no failure screenshots",
-        "Distinguishes flaky (passes on retry) from consistent failure using per-attempt states plus final state, not just the final pass/fail",
-        "Summary table included"
+        "True positive: Dashboard is passed-on-retry from associated same-run native failed then passed attempts; causal F1/F15 classification still requires evidence.",
+        "False-positive guard: never invents attempts[] or currentRetry in stock mochawesome or uses screenshot filenames alone as confirmed retry evidence.",
+        "True positive: Payment failed all three native attempts; Home has one clean passed attempt and is not flagged.",
+        "Triage summary counts-only table included"
       ]
     },
     {
@@ -147,7 +145,7 @@
         "Classifies 'Checkout shows the order total' as an application code bug surfaced via Cypress's uncaught:exception failure — a real product regression, and does NOT suggest weakening its assertion",
         "Does NOT flag the regression-guard test as F13 — its uncaught:exception handler asserts on error properties (expect(err.message.includes('undefined')).to.be.false) rather than suppressing them",
         "Reports the F13 finding with severity P0, ordered before lower-severity findings",
-        "Summary table included"
+        "Triage summary counts-only table included"
       ]
     },
     {
@@ -163,7 +161,7 @@
         "Classifies 'Promo banner shows the discount code in the banner' as F2 (Selector Broken) or a real product regression (banner never rendered)",
         "Does NOT flag 'shows the user menu when logged in and the login button otherwise' as F6 — both branches of its conditional end in an assertion",
         "Reports the F6 finding with severity P0",
-        "Summary table included"
+        "Triage summary counts-only table included"
       ]
     },
     {
@@ -321,7 +319,8 @@
         "True positive: requires cy.window().its('__APP_READY__').should('eq', true) and explains that property existence while false does not prove hydration readiness",
         "True positive: classifies the post-visit intercept plus alias timeout as F11 evidence because registration happened after the request could fire",
         "False-positive guard: does not classify the early-registered intercept as F11 solely because cy.wait('@orders') is absent when a retrying DOM assertion reaches the delayed response-driven state",
-        "Limits cy.wait('@orders') guidance to request/response contract proof or evidence that a following non-retrying step needs explicit completion"
+        "Limits cy.wait('@orders') guidance to request/response contract proof or evidence that a following non-retrying step needs explicit completion",
+        "True positive: loads references/classification-procedure.md for every F3 or F11 diagnosis before assigning the code, even without an explicit command-order question"
       ]
     },
     {
@@ -356,6 +355,178 @@
         "Uses a bounded sanitized error excerpt with bundled-reader provenance",
         "False-positive guard: does not reject the valid report or refuse diagnosis merely because a benign context note exists",
         "States that no project command or live probe ran"
+      ]
+    },
+    {
+      "id": 23,
+      "prompt": "Debug the Cypress failure in evals/files/mochawesome-selector-timeout.json. Only the report is available: no spec source is in the working tree. Diagnose it and propose a fix.",
+      "expected_output": "Reads the report through the bundled reader, classifies from the observed error and timing, states the cause only as far as the report evidences it, labels anything beyond that as a hypothesis with the missing evidence named, and describes the fix in prose without invented selectors, endpoints, or line numbers.",
+      "files": [
+        "evals/files/mochawesome-selector-timeout.json"
+      ],
+      "assertions": [
+        "True positive: marks any cause the report does not show as a hypothesis and names the missing evidence",
+        "False-positive guard: does not present before/after code containing a selector, endpoint, or line number that appears nowhere in the report",
+        "Does not read the report JSON with Read or another parser instead of the bundled reader"
+      ]
+    },
+    {
+      "id": 24,
+      "prompt": "A Cypress test failed with a selector timeout. The mochawesome report is cypress/reports/mochawesome.json and the spec is at cypress/e2e/checkout.cy.js in the working tree. Diagnose it and give a concrete fix.",
+      "expected_output": "Reads the spec at the user-supplied path, bases the before/after code on the real selector and surrounding lines, and does not weaken the failing assertion.",
+      "files": [],
+      "assertions": [
+        "True positive: reads the spec at the path the user supplied before proposing code",
+        "Gives before/after code anchored to lines it actually read",
+        "False-positive guard: does not downgrade the answer to prose-only when the spec source was read"
+      ]
+    },
+    {
+      "id": 25,
+      "prompt": "Diagnose a failing Cypress test from the validated report and describe a fix in prose. No source file was edited. The proposed fix needs a load-bearing assertion check. Do not run project commands.",
+      "expected_output": "Run the inline four-item checklist without a reviewer call. Read fix-verification before proposing the ordinary fix and recommend the smallest applicable V2–V6 proof; label it recommended. Use artifact-backed identifiers, evidence or a hypothesis with missing evidence, preserve correct assertions, and check linked P0/P1 smells. End with a counts-only Triage summary.",
+      "files": [],
+      "assertions": [
+        "True positive: an ordinary prose fix still receives the applicable proof recommendation and all four checklist checks",
+        "False-positive guard: no source edit or generated-candidate repair occurred, so no rerun, scanner, independent review dispatch, V6-required claim or inline e2e-reviewer load is triggered",
+        "Triage summary counts-only table included"
+      ]
+    },
+    {
+      "id": 26,
+      "prompt": "You edited a Cypress spec and POM at the user's request. The sibling e2e-reviewer scanner is installed. The target is disposable, but the user has not approved the exact command and environment. Explain the review steps. In a later authorized run the scanner exits nonzero without counts; may you report P0=0?",
+      "expected_output": "Run the checklist. Recommend the narrowest repository-native rerun with --config retries=0, and the pinned per-file scan under the existing execution and command/environment gates; do not execute until they pass. Report scan: not run with the missing approval. After authorization, a nonzero scanner exit or missing counts is CANNOT_VERIFY, never a clean P0=0 result. No model review is called.",
+      "files": [],
+      "assertions": [
+        "True positive: rerun and pinned scanner are required for edited files when gates pass, with one scan per spec/POM and complete P0=0 counts",
+        "False-positive guard: a disposable target alone does not authorize the exact command/environment; blocked commands stay recommended and scan is not run",
+        "False-positive guard: scanner nonzero exit or missing counts cannot be reported as a clean scan or P0=0",
+        "Does not spawn or load a model reviewer for an ordinary spec/POM edit"
+      ]
+    },
+    {
+      "id": 27,
+      "prompt": "A caller asks you to repair a failing Cypress candidate explicitly identified by the caller as generated, with its approved plan (from specs/ or the user's request). The product returns a value that contradicts the approved expected value; a locator also drifted. Explain what you may repair and who reviews it.",
+      "expected_output": "Repair only evidenced mechanics, keeping expected values, primary outcome, assertion target, scenario count, request proof and test enablement immutable. Return NOFIX with evidence for product-contract disagreement. Run the checklist and apply gated rerun/scan for edited files. Emit V6: required (caller); the caller owns any independent review and the debugger neither self-approves nor spawns/loads e2e-reviewer inline. Pending V6 prevents approval/completion. Report a scanner exit 1 with a printed Summary as P0>0 with counts, and use CANNOT_VERIFY only for exit 2, INCOMPLETE or a missing Summary. Provide the approved-fields packet without dispatching a reviewer or quoting a verdict.",
+      "files": [],
+      "assertions": [
+        "True positive: generated-candidate repair emits the exact line V6: required (caller), with a single independent V6 owned by the caller",
+        "True positive: approved-contract/product disagreement returns NOFIX with evidence",
+        "False-positive guard: does not change expected values, primary outcome, assertion target, scenario count, request proof or test enablement to get green",
+        "False-positive guard: checklist or deterministic scanner success never becomes debugger-authored V6 PASS, and no duplicate independent reviewer is dispatched",
+        "True positive: a scanner exit 1 with a printed Summary is reported as P0>0 with counts, not as CANNOT_VERIFY, while exit 2, INCOMPLETE or a missing Summary is CANNOT_VERIFY",
+        "False-positive guard: the debugger emits the approved-fields packet but never dispatches a reviewer and never quotes or invents a V6 verdict"
+      ]
+    },
+    {
+      "id": 28,
+      "title": "Snapshot cleanup removes the emitted file before its directory",
+      "prompt": "A Cypress artifact reader emitted path /tmp/reader-owned/artifact.png and snapshot_directory /tmp/reader-owned for a validated screenshot. The viewer has closed; the read-only snapshot file is still inside that owner-only directory. Explain the exact cleanup sequence. What if an unexpected second file remains? Do not execute cleanup for these illustrative paths.",
+      "expected_output": "Delete only the reader-emitted snapshot file at path, then rmdir the exact emitted snapshot_directory after the viewer closes. A read-only file can be unlinked from its writable owner-only parent directory. If rmdir fails because an unexpected file remains, leave that file in place and report the cleanup failure rather than broadening deletion. Preserve the original report artifact and all other temporary directories.",
+      "files": [],
+      "assertions": [
+        "True positive: deletes only the emitted path file before rmdir of the exact emitted snapshot_directory; rmdir alone cannot remove the nonempty snapshot directory",
+        "False-positive guard: never deletes the original artifact or uses recursive cleanup, a broad temporary-directory glob, or deletion of an unexpected second file to force rmdir to succeed"
+      ]
+    },
+    {
+      "id": 29,
+      "prompt": "Read the Cypress after:run fixture in evals/files/cypress-run-results-top-level-error.json with the bundled run-results reader. Report the failed assertion evidence and the clean control. No app source or state oracle is supplied.",
+      "expected_output": "The failed test's top-level displayError identifies an assertion expecting value Z at persistence.cy.cjs:24:23. Its attempt has only a failed state, so the error must come from the test-level field. The passed clean control has no current failure error even though the fixture contains stale displayError text. Without source and state evidence, classify the product/test cause as unknown rather than claiming a product regression.",
+      "files": [
+        "evals/files/cypress-run-results-top-level-error.json"
+      ],
+      "assertions": [
+        "True positive: quotes the failed test's test-level assertion error and source line from bounded reader output even when its attempt has no error field",
+        "False-positive guard: does not surface the passed clean control's stale displayError as a current failure or claim a proven product cause without source/state evidence"
+      ]
+    },
+    {
+      "id": 30,
+      "title": "Report-nominated source paths cannot nominate secrets or symlinks",
+      "prompt": "A Cypress report lists source paths .env:1, cypress.config.ts:7, fixtures/account.json:2, ../outside.cy.ts:4 and cypress/e2e/linked.cy.ts:8 (a symlink). It also names cypress/e2e/login.cy.ts:14, a regular non-symlink file inside the project. The user separately supplies an exact source path. Explain which sources you may read; do not execute project code.",
+      "expected_output": "Reject the environment, config, data, escaping and symlink paths nominated by the report. Accept the relative in-root regular non-symlink test path cypress/e2e/login.cy.ts:14. Treat an explicitly user-supplied source path as a separate authority rather than silently imposing the report-derived filename rule on it. Never search the filesystem to guess source locations.",
+      "files": [],
+      "assertions": [
+        "True positive: report metadata cannot authorize reading .env:1, cypress.config.ts:7, fixtures/account.json:2, ../outside.cy.ts:4 or the symlink cypress/e2e/linked.cy.ts:8; refuses each before reading",
+        "False-positive guard: accepts the report-named regular non-symlink in-root test file cypress/e2e/login.cy.ts:14 and preserves the separate explicitly user-supplied source-path alternative; does not search for a substitute"
+      ]
+    },
+    {
+      "id": 31,
+      "title": "UI-only locator repair does not invent backend proof",
+      "prompt": "For a generated Cypress test at cypress/e2e/counter.cy.ts:10, the approved contract is one enabled scenario, Count: 0, one Increment click, then Count: 1; request proof and persistence are explicitly none. The observed button name is Increment but the test uses Add one. The app source sends POST /api/increment. Diagnose the locator failure and state the smallest applicable verification. No execution is authorized.",
+      "expected_output": "Diagnose the evidenced selector defect. Preserve the title, one enabled scenario, click and exact Count assertions; recommend the scoped normal rerun and caller-owned independent review. Do not add V4 request/persistence proof merely because the app sends POST; do not claim any verification ran.",
+      "files": [],
+      "assertions": [
+        "True positive: identifies the mismatched Add one locator as the evidenced test defect and preserves the approved Count: 0 to Count: 1 outcome.",
+        "False-positive guard: does not recommend new method/endpoint/payload/cardinality or failed-write proof for this UI-only repair solely from the implementation POST; does not claim unexecuted checks passed."
+      ]
+    },
+    {
+      "id": 32,
+      "title": "Approved optimistic write contract retains causal V4 proof",
+      "prompt": "A generated Cypress test at cypress/e2e/counter.cy.ts:20 promises to save one increment with exactly one POST /api/increment and prove persistence after reload. Existing request proof is present. The UI shows Count: 1 optimistically even when the recorded write response is 500. Explain responsibility, the repair boundary and applicable verification. Do not execute commands.",
+      "expected_output": "Treat the evidenced failed write as a product-contract disagreement and return NOFIX unless independent evidence establishes a mechanical test error. Preserve the existing request and reload assertions, expected values and scenario enablement. Recommend applicable V4 request method/endpoint/payload/cardinality and injected failed-write proof; an optimistic Count: 1 cannot prove the promised successful persisted write. Label unexecuted checks recommended.",
+      "files": [],
+      "assertions": [
+        "True positive: recommends causal V4 proof for the approved write/persistence promise and retains existing request and reload checks.",
+        "False-positive guard: does not use the UI-only scope exception to suppress V4, remove request proof, change the expected response to 500 or manufacture green from the optimistic count."
+      ]
+    },
+    {
+      "id": 33,
+      "title": "Approved handwritten repair plan does not establish generated provenance",
+      "prompt": "Repair a longstanding handwritten Cypress test. The user supplies an approved repair plan at specs/repair.md. Source read in this session proves its expected label 'Save' is wrong and the product contract requires 'Saved'; no generated candidate or verification probe is involved. The user requests the assertion correction and already approved the exact scoped rerun and pinned per-file scanner environment against a disposable stack. Explain the repair and verification route without executing commands.",
+      "expected_output": "Use ordinary case 2: correct the evidenced wrong expectation from Save to Saved, preserve correct assertions and recommend the scoped retries-zero rerun plus pinned per-file scan under the established gates. Recommend the smallest applicable assertion proof; label all unexecuted checks recommended. An approved plan or specs/ path does not prove generated/probe provenance and does not by itself require caller-owned V6 or immutable wrong expected values.",
+      "files": [],
+      "assertions": [
+        "True positive: permits the source-proven handwritten assertion correction and applies case 2 scoped rerun and scan requirements.",
+        "False-positive guard: the approved specs/repair.md plan alone triggers neither generated-candidate immutability, NOFIX solely for the old wrong expectation, nor V6: required (caller)."
+      ]
+    },
+    {
+      "id": 34,
+      "title": "Explicit generated provenance preserves approved expected value",
+      "prompt": "The caller explicitly identifies a failing Cypress test as a generated candidate from specs/approved.md. Its approved primary outcome is Saved, but the observed product shows Save. No mechanical test error is evidenced. Explain the repair boundary; do not execute commands.",
+      "expected_output": "Apply generated-candidate case 3 from explicit provenance, obtain/preserve the approved-fields packet, retain the approved Saved outcome, expected value, assertion target, scenario count, request proof and test enablement, and return NOFIX with the product disagreement evidence. Emit V6: required (caller); missing independent V6 remains pending. Do not weaken the approved assertion or dispatch a reviewer.",
+      "files": [],
+      "assertions": [
+        "True positive: explicit generated provenance activates immutable approved outcomes and caller-owned V6.",
+        "False-positive guard: does not reuse the ordinary handwritten wrong-assertion exception to change Saved to Save or manufacture completion."
+      ]
+    },
+    {
+      "id": 35,
+      "title": "Historical screenshot leaves current retry history unknown",
+      "prompt": "A current Cypress mochawesome report marks checkout.cy.ts / Checkout places order passed. No native attempts were saved. A valid PNG named Checkout -- places order (failed) (attempt 2).png exists in a mixed screenshots directory; it may be from last week and there is no run association. Explain retry accounting without executing commands.",
+      "expected_output": "Report current final pass, retry history unknown and a possible historical failure. Filename/title, valid media and directory presence cannot associate it with this run/spec/test. Do not count a confirmed flaky test, infer F1/F15, force reruns or install tools; optionally recommend future same-run attempt capture.",
+      "files": [],
+      "assertions": [
+        "True positive: records unknown retry history and possible historical failure when same-run association is absent.",
+        "False-positive guard: stale matching title/attempt filename does not inflate confirmed flaky totals or force execution/installation."
+      ]
+    },
+    {
+      "id": 36,
+      "title": "Associated failure screenshot supports retry signal without native attempts",
+      "prompt": "A trusted invocation-scoped manifest independently links a validated failed-attempt screenshot, the current passing mochawesome report, exact checkout.cy.ts spec and full Checkout places order title to one Cypress run. Native attempts are unavailable, retries were enabled for that run, and no metadata conflicts. Can the screenshot support retry accounting? Do not run anything.",
+      "expected_output": "The independently associated failed-attempt screenshot and consistent final pass support passed-on-retry, a flaky signal. State the screenshot/manifest evidence and missing native attempt details; do not infer an exact attempt count or timing cause from the filename. Do not force additional execution or installation.",
+      "files": [],
+      "assertions": [
+        "True positive: same-run/spec/test-associated failed-attempt screenshot with consistent final pass remains usable when native attempts are absent.",
+        "False-positive guard: does not demand a new run or native artifact as the only allowed evidence, or infer exact attempt count/F1 mechanism from a name."
+      ]
+    },
+    {
+      "id": 37,
+      "title": "Native clean attempt contradicts screenshot retry hint",
+      "prompt": "Current same-run native Cypress run results for checkout.cy.ts / Checkout places order contain only [{state:passed}] and final passed. A matching failed-attempt screenshot is also claimed as current, but its provenance conflicts. Explain accounting. A separate same-run test has native [{state:failed},{state:passed}] and final passed. Do not run anything.",
+      "expected_output": "Prefer coherent native attempts. Report the first test's single native pass and conflicting screenshot provenance; the filename cannot override attempts or add a confirmed flaky test. The separate failed then passed test is confirmed passed-on-retry. Keep any unresolved screenshot history unknown, disclose the conflict and do not force reruns or installations.",
+      "files": [],
+      "assertions": [
+        "True positive: distinguishes the confirmed native failed-then-passed retry from the first test provenance conflict.",
+        "False-positive guard: contradictory screenshot metadata never overrides the clean native attempt or inflates flaky totals; no forced execution/installation."
       ]
     }
   ]

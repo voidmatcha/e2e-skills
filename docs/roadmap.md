@@ -1,10 +1,10 @@
 # Roadmap and Upstream Contributions
 
-## Evidence status at 2.0.1
+## Evidence status at 3.0.0
 
-[Benchmark status](../benchmarks/STATUS.md) is the source of truth for measured outcomes; this section only says what is still open. The reviewer passed a same-corpus release confirmation for its pre-release 2.0.0 candidate, and the shipped reviewer differs from that candidate by later changes no holdout has measured. The project does not yet have a passing release-grade benchmark for generalized reviewer accuracy, and every corpus it has run is public development evidence.
+[Benchmark status](../benchmarks/STATUS.md) records measured outcomes and their limits, including the reviewer, generator and debugger comparisons. This roadmap tracks remaining work and upstream contributions. All evaluated corpora are public development evidence; the project has no passing release-grade benchmark for generalized reviewer accuracy.
 
-**Open:** independent clean-case labels with a complete, auditable setup/caller/reverse-user boundary, so that false positives and the full reviewer's added value over no-skill and catalog-only baselines can be measured on a corpus the skill was not tuned on. Frozen specificity v4 remains blocked; the separate development work has not produced a release corpus or a specificity result. The [execution plan](plans/reviewer-evidence-next-steps.md) keeps the exact replay counts, hashes, and verification limits.
+**Open:** independent clean-case labels with a complete, auditable setup/caller/reverse-user boundary, so that false positives and the full reviewer's added value over no-skill and catalog-only baselines can be measured on a corpus the skill was not tuned on. Frozen specificity v4 remains blocked; the separate development work has not produced a release corpus or a specificity result. The [September planning snapshot](plans/reviewer-evidence-next-steps.md) preserves replay counts, hashes, and verification limits.
 
 **Debuggers:** no measured lift over a taxonomy-free prompt on real failures, and only four independent real CI cases with a maintainer-linked cause are available, so a held-out test needs new cases captured while CI artifacts are still retained (about two weeks).
 
@@ -21,7 +21,7 @@ This page tracks self-selected upstream contributions and future candidates. Mer
 - **Merged:** 15 upstream PRs accepted in real projects.
 - **In review:** 6 active/open upstream PRs.
 - **Closed without merge:** 5. Recorded below rather than dropped; the merge count above is meaningless without them.
-- **Generated ledger:** the counts above cover this hand-curated page. [Field review v1](../benchmarks/field-review-v1/README.md) is generated from GitHub for every pull request whose body names the skill and currently records more submissions, merges, and rejections than this page lists. Neither is complete: this page omits some marked pull requests, and the ledger cannot see an unmarked one such as [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486).
+- **Generated ledger:** the counts above cover this hand-curated page. [Field review v1](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/field-review-v1/README.md) is generated from GitHub for every pull request whose body names the skill and currently records more submissions, merges, and rejections than this page lists. Neither is complete: this page omits some marked pull requests, and the ledger cannot see an unmarked one such as [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486).
 - **Upstream tooling:** the always-passing-Locator-assertion smell (`#4f`) was contributed to the official [`eslint-plugin-playwright`](https://github.com/mskelton/eslint-plugin-playwright) as the `no-unnecessary-assertions` rule ([#470](https://github.com/mskelton/eslint-plugin-playwright/pull/470), merged) — tracked separately from the test-fix count below.
 - **Queue policy:** prefer high-signal P0 silent-pass fixes; accept concrete P1 sequencing or diagnostics fixes without relabeling them as P0 evidence, and avoid padding with subjective P1/P2 style findings.
 - **Submission policy:** one narrow anti-pattern per PR where possible, local verification first, and an `e2e-reviewer` footer only when it is useful context.

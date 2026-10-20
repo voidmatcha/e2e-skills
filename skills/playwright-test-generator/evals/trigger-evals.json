@@ -78,5 +78,40 @@
     "id": "document-test-strategy",
     "query": "Write a README section explaining when we use unit, integration, and E2E tests.",
     "should_trigger": false
+  },
+  {
+    "id": "ko-generate-login",
+    "query": "우리 Playwright 프로젝트에 로그인 페이지 E2E 테스트를 새로 만들어줘.",
+    "should_trigger": true
+  },
+  {
+    "id": "ko-review-not-generate",
+    "query": "이미 있는 settings.spec.ts가 제대로 검증하는지 리뷰해줘.",
+    "should_trigger": false
+  },
+  {
+    "id": "generate-before-agents-set-up",
+    "query": "We have not set up the Playwright agents or MCP yet; add Playwright E2E tests for the pricing page.",
+    "should_trigger": true
+  },
+  {
+    "id": "use-official-agents-if-ready",
+    "query": "I already ran init-agents; use the official Playwright planner and generator to add tests for the invoice export flow.",
+    "should_trigger": true
+  },
+  {
+    "id": "run-official-healer",
+    "query": "Run the Playwright healer agent to repair our failing checkout spec.",
+    "should_trigger": false
+  },
+  {
+    "id": "ko-set-up-agents-then-generate",
+    "query": "공식 Playwright 에이전트 설정부터 도와주고, 그다음 결제 페이지 E2E 테스트를 만들어줘.",
+    "should_trigger": true
+  },
+  {
+    "id": "configure-mcp-server-only",
+    "query": "Add a playwright-test MCP server entry to our team's shared Codex config.toml template.",
+    "should_trigger": false
   }
 ]

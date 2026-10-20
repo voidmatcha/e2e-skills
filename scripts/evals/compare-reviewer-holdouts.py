@@ -368,7 +368,7 @@ def load_report(path: Path) -> dict:
         if isinstance(run, dict) and NORMALIZED_KEY in run:
             expected_run_keys = expected_run_keys | {NORMALIZED_KEY}
         if isinstance(run, dict) and "unexpected_stream_item" in run:
-            if (report.get("protocol_id") not in {"reviewer-holdout-v19", "reviewer-holdout-v20", "reviewer-holdout-v21"}
+            if (report.get("protocol_id") not in {"reviewer-holdout-v19", "reviewer-holdout-v20", "reviewer-holdout-v21", "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"}
                     or run.get("error") != RUNNER.CODEX_STREAM_ERROR
                     or run.get("score") is not None):
                 raise ValueError("unexpected stream diagnostic is limited to failed v19/v20/v21 runs")
@@ -2300,7 +2300,7 @@ def compare_arm_reports(
                 "claim_policy": claim_policy,
             }
 
-    if protocol_id in {"reviewer-holdout-v18", "reviewer-holdout-v19"}:
+    if protocol_id in {"reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"}:
         thresholds = arm_contract["decision"]["thresholds"]
         control = "no-skill"
         delta = point_metrics[treatment]["stable_f1"] - point_metrics[control]["stable_f1"]

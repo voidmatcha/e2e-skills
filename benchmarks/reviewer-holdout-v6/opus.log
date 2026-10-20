@@ -1,6 +1,0 @@
-{"f1": 0.9251700680272109, "fn": 4, "fp": 7, "infrastructure_errors": 0, "precision": 0.9066666666666666, "recall": 0.9444444444444444, "runs": 60, "status": "FAIL", "successful_runs": 60, "tp": 68}
-report: /tmp/v6-reports/full-opus.json
-{"f1": 0.8533333333333334, "fn": 5, "fp": 6, "infrastructure_errors": 22, "precision": 0.8421052631578947, "recall": 0.8648648648648649, "runs": 60, "status": "INCONCLUSIVE", "successful_runs": 38, "tp": 32}
-report: /tmp/v6-reports/catalog-only-opus.json
-{"f1": 0.0, "fn": 0, "fp": 0, "infrastructure_errors": 60, "precision": 0.0, "recall": 0.0, "runs": 60, "status": "INCONCLUSIVE", "successful_runs": 0, "tp": 0}
-report: /tmp/v6-reports/no-skill-opus.json

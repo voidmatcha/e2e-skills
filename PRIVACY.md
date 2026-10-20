@@ -9,7 +9,7 @@ Last updated: August 16, 2026
 - Installing or reading the skills does not send data to this project.
 - Files, reports, screenshots, traces, and generated tests remain in the environment where the user or agent runs them unless that user explicitly sends them elsewhere.
 - Agent hosts, model providers, GitHub, npm, browsers, target applications, and other tools invoked by the user may process data under their own terms and privacy policies. `e2e-skills` does not control those services.
-- Some explicitly enabled workflows can access the network, download pinned tools, inspect a user-approved target, or call a configured model provider. The skills document those boundaries and require the applicable trust or approval gates before execution.
+- Some explicitly enabled workflows can access the network, download pinned tools, inspect a target the user names, or call a configured model provider. The skills document those boundaries and require the applicable trust or approval gates before execution. `playwright-test-generator` explores only loopback targets, or a remote origin the user names in the chat and states is a disposable non-production environment, and it refuses production, shared, or unnamed targets.
 
 Do not place credentials, session tokens, personal data, customer data, or other sensitive information in public issues, shared test fixtures, prompts, or reports. Sanitize artifacts before sharing them.
 

@@ -24,9 +24,6 @@ if str(CI_LIB) not in sys.path:
 from strict_json import StrictJsonError, load_strict
 
 MODULE_PATH = ROOT / "scripts/evals/run-fixture-faults.py"
-EVIDENCE_PATH = ROOT / "benchmarks/fixture-faults/2026-07-31-current.json"
-EVIDENCE_ROOT = ROOT / "benchmarks/fixture-faults"
-EVIDENCE_MANIFEST_PATH = EVIDENCE_ROOT / "evidence-manifest.json"
 CANONICAL_EVIDENCE = {
     "2026-07-31-current.json",
     "2026-07-30-cypress-15.19-timeout-zero.json",
@@ -47,8 +44,8 @@ SPEC.loader.exec_module(MODULE)
 
 
 def validate_evidence_manifest(
-    evidence_root: Path = EVIDENCE_ROOT,
-    manifest_path: Path = EVIDENCE_MANIFEST_PATH,
+    evidence_root: Path,
+    manifest_path: Path,
 ) -> None:
     manifest = load_strict(manifest_path)
     assert set(manifest) == {"schema_version", "artifacts"}
@@ -107,11 +104,19 @@ def validate_evidence_manifest(
 def test_evidence_manifest_rejects_tampering() -> None:
     with tempfile.TemporaryDirectory(prefix="e2e-fixture-manifest-") as raw:
         evidence_root = Path(raw)
-        for source in EVIDENCE_ROOT.glob("*.json"):
-            (evidence_root / source.name).write_bytes(source.read_bytes())
-        manifest_path = evidence_root / EVIDENCE_MANIFEST_PATH.name
-
-        manifest = load_strict(manifest_path)
+        # Synthetic reports prove manifest integrity independently of a run archive.
+        artifacts = []
+        for name in sorted(CANONICAL_EVIDENCE):
+            report = json.dumps({"complete": True, "runtime_complete": True}).encode()
+            (evidence_root / name).write_bytes(report)
+            artifacts.append({"path": name, "classification": "canonical",
+                              "sha256": hashlib.sha256(report).hexdigest(),
+                              "expected_complete": True, "expected_runtime_complete": True})
+        manifest_path = evidence_root / "evidence-manifest.json"
+        original_manifest = {"schema_version": 1, "artifacts": artifacts}
+        manifest_path.write_text(json.dumps(original_manifest), encoding="utf-8")
+        validate_evidence_manifest(evidence_root, manifest_path)
+        manifest = json.loads(json.dumps(original_manifest))
         manifest["artifacts"][0]["sha256"] = "0" * 64
         manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
         try:
@@ -121,7 +126,7 @@ def test_evidence_manifest_rejects_tampering() -> None:
         else:
             raise AssertionError("fixture evidence digest tampering was accepted")
 
-        manifest = load_strict(EVIDENCE_MANIFEST_PATH)
+        manifest = json.loads(json.dumps(original_manifest))
         manifest["artifacts"].pop()
         manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
         try:
@@ -625,7 +630,6 @@ def test_sanitizer_failure_becomes_runtime_error() -> None:
 
 
 def main() -> None:
-    validate_evidence_manifest()
     test_evidence_manifest_rejects_tampering()
     test_evidence_manifest_requires_strict_json()
     assert MODULE.validate_fixtures() == []
@@ -838,107 +842,7 @@ def main() -> None:
     )
     assert len(sanitized.encode()) <= MODULE.OUTPUT_LIMIT_BYTES
 
-    report = load_strict(EVIDENCE_PATH)
-    assert report["schema_version"] == 4
-    assert report["mode"] == "run"
-    assert report["complete"] is True
-    assert report["contracts_valid"] is True
-    assert report["runtime_complete"] is True
-    assert report["errors"] == []
-    assert report["output_limit_bytes"] == MODULE.OUTPUT_LIMIT_BYTES
-    assert (
-        report["process_output_limit_bytes"]
-        == MODULE.PROCESS_OUTPUT_LIMIT_BYTES
-    )
-    assert report["subprocess_timeout_seconds"] == 120
-    assert report["summary"] == {
-        "operators": 12,
-        "unique_pattern_ids": 12,
-        "expected_matrix_cases": 36,
-        "matrix_cases": 36,
-        "matched": 36,
-        "errors": 0,
-    }
-    assert len(report["results"]) == 36
-    assert all(result["matched"] for result in report["results"])
-    assert {
-        (result["operator"], result["case"])
-        for result in report["results"]
-    } == {
-        (operator.id, cell)
-        for operator in MODULE.OPERATORS
-        for cell, _, _, _ in MODULE.MATRIX
-    }
-    operators_by_id = {operator.id: operator for operator in MODULE.OPERATORS}
-    expected_codes_by_cell = {
-        cell: expected_code for cell, _, _, expected_code in MODULE.MATRIX
-    }
-    reclassified_matches = 0
-    for result in report["results"]:
-        actual, matched, evidence = MODULE.classify_result(
-            operators_by_id[result["operator"]],
-            result["case"],
-            result["exit_code"],
-            result["output"],
-            expected_codes_by_cell[result["case"]],
-        )
-        assert result["actual"] == actual
-        assert result["matched"] is matched
-        assert result["evidence"] == evidence
-        reclassified_matches += int(matched)
-    assert reclassified_matches == report["summary"]["matched"] == 36
-    assert report["provenance"]["fixture_tree_sha256"] == MODULE.fixture_tree_sha256()
-    assert report["provenance"]["operators_sha256"] == MODULE.operators_sha256()
-    # Historical reports are immutable snapshots. The runner is allowed to
-    # evolve; the evidence manifest authenticates the archived report itself.
-    assert re.fullmatch(
-        r"[0-9a-f]{64}",
-        report["provenance"]["evaluator_runner_sha256"],
-    )
-    assert report["provenance"]["capture_helper_sha256"] == hashlib.sha256(
-        (MODULE.EVALS_DIR / "bounded_process.py").read_bytes()
-    ).hexdigest()
-    assert report["provenance"]["package_lock_sha256"] == hashlib.sha256(
-        (MODULE.FIXTURES / "package-lock.json").read_bytes()
-    ).hexdigest()
-    # This digest describes the exact platform-dependent dependency tree that
-    # produced the archive. Ordinary CI verifies the archive manifest and the
-    # lockfile, but does not compare against an ignored local node_modules tree.
-    # An opt-in live run performs the complete dependency recheck.
-    for key in (
-        "selected_node_modules_tree_sha256",
-        "selected_playwright_executable_sha256",
-        "selected_playwright_package_json_sha256",
-        "selected_playwright_lock_record_sha256",
-        "selected_cypress_executable_sha256",
-        "selected_cypress_package_json_sha256",
-        "selected_cypress_lock_record_sha256",
-    ):
-        assert re.fullmatch(r"[0-9a-f]{64}", report["provenance"][key])
-    for result in report["results"]:
-        assert len(result["output_sha256"]) == 64
-        assert result["infrastructure_timeout"] is False
-        assert result["infrastructure_output_overflow"] is False
-        assert isinstance(result["output"], str) and result["output"]
-        assert result["output_sha256"] == hashlib.sha256(
-            result["output"].encode()
-        ).hexdigest()
-        assert result["output_truncated"] is False
-        assert result["output_original_bytes"] == len(result["output"].encode())
-        assert len(result["output"].encode()) <= MODULE.OUTPUT_LIMIT_BYTES
-        assert "\x1b" not in result["output"]
-        assert MODULE.ABSOLUTE_LOCAL_PATH_RE.search(
-            MODULE.HTTP_URL_RE.sub("", result["output"])
-        ) is None
-        assert "/private$" not in result["output"]
-        assert "/" + "Users/" not in result["output"]
-        assert MODULE.RESIDUAL_PATH_TOKEN_RE.search(result["output"]) is None
-        assert MODULE.RESIDUAL_SECRET_RE.search(result["output"]) is None
-        assert all("/private/" not in part for part in result["command"])
-        assert result["mutation_applied"] == (result["case"] == "fault-mutant")
-        assert (result["mutation_sha256"] is not None) == result["mutation_applied"]
-
-    print("fixture fault classifier: pass (36 synthetic + 36 browser cells)")
+    print("fixture-faults: current runtime, safety and classification contracts pass")
 
 
 if __name__ == "__main__":
