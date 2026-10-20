@@ -1,0 +1,951 @@
+{
+  "schema_version": 1,
+  "license": "Apache-2.0",
+  "date": "2026-10-20",
+  "kind": "Dated development successor; earlier cohorts and failed attempts remain unchanged",
+  "status": "BOUNDED_INSTALL_CYPRESS_AND_CURRENT_REVIEWER_EVIDENCE_FINAL_GATES_SEPARATE",
+  "availability": "This derived index contains relative local receipt identifiers and digests. Raw evidence remains local and has not been copied into the repository. It is not an independently replayable public raw-evidence bundle.",
+  "source_binding": {
+    "candidate_v6_digest": "b477e1a28faa23006ff053654bedd5e2d7970c0e10b7007ae72a131358350592",
+    "product_files": 229,
+    "product_unchanged_against_v6": true,
+    "boundary": "Product-byte equality supports applicability; environment and exercised-path limits still apply. The new documentation and v22 protocol/harness require their own final export and gates.",
+    "current_source_sha256": {
+      "install.sh": "8f2eeb3868f4da9341d71ef0e0d2825bc57e2fd57662b0775d312d64f5dd004f",
+      "scripts/dev/setup.py": "238d1e5d32f6c9362f87eb40e1502c16dce6a41686e609b3afd1bfce6f0255ce",
+      "scripts/dev/reinstall-skills.sh": "e057e450f6add251cfa3679e304f0c44d86bbddce2298bb9183339fa80eb6c89",
+      "scripts/dev/install-codex-agents.sh": "00bdf10513bf192244eaee48d38378ecbfe1f5844959d9cae67fb66be3104c60",
+      "scripts/dev/install-claude-agents.sh": "4aa4191022e8828712060087e9164af2c465e615cc0470092576356ea20415e3",
+      "scripts/dev/skills-cli-bootstrap-package.json": "77c3c1007e50b981ffdc3c4d1b5a2a0b925c5e80869356cd20794083e70221ba",
+      "scripts/dev/skills-cli-bootstrap-package-lock.json": "f5ca6fde39796c63ddfbf75b92b5b710728a77b62c5a8d01a0e05e628313b4a9",
+      "scripts/dev/skills-cli-installed-tree-sha256.json": "63c78c35f08046546f7e89f461ae234ae9800bed2e770a7c43c71e0ccb222fa6",
+      "skills/e2e-reviewer/SKILL.md": "caf1f20232408b285e55b795a9bb745fd9146cbffa20c566d618e7bfc484c29f",
+      "skills/e2e-reviewer/references/runtime-probes.md": "ce9b495db5e6a72fca7b0c2fad8ba90c546ee66cb119b78f4d1d503bd55550a2",
+      "skills/e2e-reviewer/references/verification-rules.md": "c5c6986a8edb230387b0e9bf12ecee54f3b416108caab6d716a91bdeabb158dd",
+      "skills/e2e-reviewer/scripts/run-probe.py": "d9f26a2ceb5af9d54fa3adf1e20107f4724d9a909ab16c17f5ecdf0d2b645d3c",
+      "docs/installation.md": "81c4cacce2f363839515a91923989ce2d9f36e8a7acd62f4fd83d9c3a9b84d8c"
+    },
+    "installation_document_change": "The installer lane separately re-read the concurrent manual-checkout collision/failure guard update; that documentation change did not change installer runtime commands."
+  },
+  "installation": {
+    "status": "PASS_INSTALL_AND_FRESH_NATIVE_HOST_INTEGRATION",
+    "actual_install": {
+      "passed": 4,
+      "scheduled": 4,
+      "scope": "Codex/Claude, each with and without a supplied project, in isolated receiving homes"
+    },
+    "dry_run": {
+      "passed": 4,
+      "scheduled": 4,
+      "destination_changes": false
+    },
+    "collision": {
+      "passed": 6,
+      "scheduled": 6,
+      "boundary": "Conflicts fail closed and preexisting destination bytes remain preserved."
+    },
+    "skill_delivery": {
+      "files_per_host": 229,
+      "canonical_and_claude_projection_byte_equality": true
+    },
+    "host_native_workflows": [
+      {
+        "host": "claude",
+        "case": "claude",
+        "status": "PASS",
+        "actual_tool_counts": {
+          "generator_setup_page": 1,
+          "browser_verify_text_visible": 1,
+          "generator_read_log": 1,
+          "generator_write_test": 1,
+          "test_run": 1
+        },
+        "native_counts": {
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0
+        },
+        "receipt": "install/live-claude/actual-evidence.json"
+      },
+      {
+        "host": "codex",
+        "case": "codex-successor",
+        "status": "PASS",
+        "actual_tool_counts": {
+          "test_run": 1,
+          "generator_setup_page": 1,
+          "browser_verify_text_visible": 1,
+          "generator_read_log": 1,
+          "generator_write_test": 1
+        },
+        "native_counts": {
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0
+        },
+        "receipt": "install/live-codex-successor/actual-evidence.json"
+      }
+    ],
+    "initial_codex_attempt": {
+      "status": "HARNESS_CONSTRAINT_ERROR_PRESERVED",
+      "reason": "A prompt prohibited shell reads even though Codex had no native filesystem reader. It made no official child or defining MCP call. A separately authorized corrected successor completed; it does not relabel the initial attempt."
+    },
+    "scope_limits": [
+      "Fresh installer-output and official-agent integration smoke, not a comparative model benchmark or full generator quality test.",
+      "Explicit existing Google Chrome executablePath; automatic managed-browser provisioning is untested.",
+      "The scanner/repair pipeline and dedicated verifier semantic behavior were not exercised in these narrow host workflows.",
+      "CLI invocation counts do not establish API request or token totals.",
+      "No global installation/configuration changes or publication actions."
+    ]
+  },
+  "cypress": {
+    "status": "BOUNDED_CYPRESS_PORTABLE_EXECUTOR_INTEGRATION_PROVEN",
+    "runtime": {
+      "node": "24.21.0",
+      "cypress": "15.19.0",
+      "browser": "Electron 138.0.7204.251"
+    },
+    "counts": {
+      "independent_authored_app_fixtures": 1,
+      "independent_app_faults": 1,
+      "matrix_native_phase_tests": 12,
+      "passed_native_phase_tests": 10,
+      "expected_assertion_failed_native_phase_tests": 2,
+      "separate_observer_browser_runs": 6,
+      "model_calls": 0,
+      "reviewer_actor_calls": 0
+    },
+    "results": {
+      "v3-strong": {
+        "verdict": "DETECTED",
+        "native_phases": {
+          "normal": "passed",
+          "fault": "failed",
+          "restored": "passed"
+        },
+        "plan_sha256": "d718bb0e65993cd05673021da894bd8a29b2004beb43f605abfc4abd73947e77",
+        "approval_sha256": "dbfe2359162bdebc7093f7dd01ce0441f88457a2f84571b8a4791d5a5eb7436a",
+        "result_sha256": "44e5dc020783a99d2bc39206398ac27716e43011c309cf301db0a0a92f5ead3a"
+      },
+      "v3-weak": {
+        "verdict": "SURVIVED",
+        "native_phases": {
+          "normal": "passed",
+          "fault": "passed",
+          "restored": "passed"
+        },
+        "plan_sha256": "546295db2e1705dbbad112769f81574caf46bf0270e764735cf30a63c71375e2",
+        "approval_sha256": "d28338daaa4e09d076ee4d1bc04ada6bf217bfa760679f2816fa3cea80984e3e",
+        "result_sha256": "d952cf673244d8bc8e5162f032bef2422a782715e702b3f6d349db764431d579"
+      },
+      "v2-strong": {
+        "verdict": "CANNOT_VERIFY",
+        "native_phases": {
+          "normal": "passed",
+          "fault": "passed",
+          "restored": "passed"
+        },
+        "plan_sha256": "1217ad680dd30a9dd7e4ff4960950a472704a89bb6b1854a6256c1ea6789c690",
+        "approval_sha256": "04463b126522de1facd5abadda7b0ee1a0dafbcbd48310a4bde5f12514b7b0c7",
+        "result_sha256": "aaf30fe692bea5e6bbe337fb919b81a95edfe51f7aaa0cde6f37ff781e331cd5"
+      },
+      "v2-sentinel": {
+        "verdict": "ASSERTION_SENSITIVE",
+        "native_phases": {
+          "normal": "passed",
+          "fault": "failed",
+          "restored": "passed"
+        },
+        "plan_sha256": "231065dbb258c862be35092b949fd9547b7c54b445446d07caba2ae66d2bfa27",
+        "approval_sha256": "36ded09df845e8ccddcb2028052b63fabdcd0a5aab03970ffc2253eecc768ddf",
+        "result_sha256": "67278efcf5608881033146c6bfcff529069671b1ccd22bf0b9ec536c221d87ab"
+      }
+    },
+    "original_v2_boundary": "Original positive-to-negative assertion mutation remained green and returned CANNOT_VERIFY. Asynchronous transient satisfaction is source-supported explanation, not a captured matcher-time DOM observation.",
+    "separate_v2_successor": "A separately authorized impossible-value sentinel changes the mutation choice, not the test result label: ASSERTION_SENSITIVE with pass/fail/pass. It does not show that the original inversion failed or that an app defect was detected.",
+    "caller_recheck": {
+      "native_reports_reparsed": 12,
+      "native_hashes_match": true,
+      "current_product_hashes_match": true
+    },
+    "preserved_attempts": [
+      "Historical Docker/browser-startup CANNOT_VERIFY remains unchanged; no startup root cause was established.",
+      "Initial native admission wrapper SyntaxError occurred before any app/test; its zero-test attempt remains retained.",
+      "Original V2 CANNOT_VERIFY remains distinct from the named sentinel successor."
+    ],
+    "scope_limits": [
+      "Known authored fixture, chosen assertion, chosen persistence omission and evaluator-authored wrapper/observer; no autonomous discovery, complete reviewer actor workflow or general efficacy estimate.",
+      "V3 strong DETECTED and weak SURVIVED apply to this one linked fault only; V2 sensitivity is not behavior-fault detection.",
+      "Separate observer used preexisting Playwright/Chromium; no Cypress-only dependency claim.",
+      "V1/V4/V5/V6 remain CANNOT_VERIFY; preparation-operator verification is not independent actor V6."
+    ]
+  },
+  "reviewer_holdout_v22": {
+    "status": "COMPLETE",
+    "protocol": "scripts/evals/reviewer-validation-protocol-v22.json",
+    "scheduled_calls": 540,
+    "design": "36 previously observed public development cases x 5 repetitions x 3 sequential arms; one Codex model, tools disabled",
+    "completed_calls": 540,
+    "comparison_verdict": "PASS",
+    "accuracy_or_lift_claim": "Development-only lift under the fixed reused public corpus/model/prompt controls; not unseen accuracy or scanner benefit.",
+    "independent_preexecution_review": "NO_BLOCKER_WITH_LIMITS",
+    "limits": [
+      "All540 final-answer JSON outputs independently reparsed and equal recorded findings, same identities and source/workspace digests.",
+      "Public reused corpus and one model do not establish sealed or general performance.",
+      "No model tool execution in scored arms by frozen CLI/live-parser control; raw native event streams are not retained for independent recount."
+    ],
+    "tool_free_evidence_boundary": {
+      "enforced": "Frozen CLI configuration disables model tools and the live event parser rejects non-message/reasoning items before accepting a scoreable answer.",
+      "retained": "Final-answer JSON and extracted usage; complete original CLI event streams are not retained.",
+      "not_proven_independently_afterward": "Per-run raw tool-event counts cannot be independently recounted from retained transcripts.",
+      "verdict_review": "Independent Astra NO_BLOCKER_WITH_LIMITS: execution control is supported; independent native tool-event recount is unavailable and not a v22 protocol condition."
+    },
+    "metrics": {
+      "arm_point_metrics": {
+        "full": {
+          "stable_precision": 0.975609756097561,
+          "stable_recall": 1.0,
+          "stable_f1": 0.9876543209876543,
+          "repeated_precision": 0.966183574879227,
+          "clean_case_specificity": 1.0
+        },
+        "catalog-only": {
+          "stable_precision": 0.8863636363636364,
+          "stable_recall": 0.975,
+          "stable_f1": 0.9285714285714285,
+          "repeated_precision": 0.8596491228070176,
+          "clean_case_specificity": 1.0
+        },
+        "no-skill": {
+          "stable_precision": 0.35555555555555557,
+          "stable_recall": 0.4,
+          "stable_f1": 0.3764705882352941,
+          "repeated_precision": 0.3373493975903614,
+          "clean_case_specificity": 1.0
+        }
+      },
+      "primary": {
+        "delta": 0.6111837327523602,
+        "paired_bootstrap_ci95": {
+          "method": "paired-stratified-case-bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "seed": 20260928,
+          "strata": [
+            "finding-cases",
+            "clean-cases"
+          ],
+          "percentile_method": "nearest-rank",
+          "lower": 0.46353224834237483,
+          "upper": 0.76
+        },
+        "decision_checks": [
+          {
+            "metric": "stable_f1_delta_min",
+            "actual": 0.6111837327523602,
+            "required": 0.3,
+            "comparator": ">=",
+            "passed": true
+          },
+          {
+            "metric": "stable_f1_delta_ci95_lower_min_exclusive",
+            "actual": 0.46353224834237483,
+            "required": 0.0,
+            "comparator": ">",
+            "passed": true
+          }
+        ]
+      },
+      "descriptive_full_minus_catalog_only_stable_f1": 0.059082892416225774,
+      "descriptive_full_minus_catalog_only": {
+        "point_deltas": {
+          "stable_precision": 0.0892461197339246,
+          "stable_recall": 0.025000000000000022,
+          "stable_f1": 0.059082892416225774,
+          "repeated_precision": 0.10653445207220946,
+          "clean_case_specificity": 0.0
+        },
+        "paired_bootstrap_ci95": {
+          "stable_precision": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260928,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.023170731707316983,
+            "upper": 0.16310975609756095
+          },
+          "stable_recall": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260928,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.0,
+            "upper": 0.07317073170731703
+          },
+          "stable_f1": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260928,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.01333333333333342,
+            "upper": 0.10165912518853693
+          },
+          "clean_case_specificity": {
+            "method": "paired-stratified-case-bootstrap",
+            "confidence": 0.95,
+            "iterations": 10000,
+            "seed": 20260928,
+            "strata": [
+              "finding-cases",
+              "clean-cases"
+            ],
+            "percentile_method": "nearest-rank",
+            "lower": 0.0,
+            "upper": 0.0
+          }
+        }
+      },
+      "historical_v17_full_stable_f1": 0.964
+    },
+    "infrastructure_errors": 0,
+    "retries": 0,
+    "release_eligible": false,
+    "leader_check": {
+      "path": "holdout-final-leader-check.json",
+      "sha256": "f7fc9431919ce211ee309f5828aca8b25d9af1cf822345ab0cf0f3c98c56a0dd"
+    },
+    "comparison_report": {
+      "path": "benchmarks/reviewer-holdout-v22/reports/arm-comparison.json",
+      "sha256": "53b1c104a8fd302cd0b4886263eca9db9a2fbe6f52da723aa2feb1a94620dacb"
+    }
+  },
+  "prior_generator_result_preserved": {
+    "official_completed": "6/6",
+    "current_completed": "5/6",
+    "current_observed_input_ratio_about": 2.05,
+    "replay": "The later successful attempt remains separate and does not replace the original failure or establish a reliability repair.",
+    "claim": "No general quality, reliability, non-inferiority, efficiency or billed-cost advantage established."
+  },
+  "final_validation": {
+    "status": "RECORDED_SEPARATELY_IN_OWNER_HANDOFF",
+    "required": [
+      "Exact final selected payload is frozen after documentation integration.",
+      "Canonical ci-local.sh, direct pre-push-security.sh and pending-marker receipts are recorded in the owner handoff, bound to that manifest.",
+      "Pre/post source and manifest integrity and independent final claim/package review are recorded in the owner handoff."
+    ],
+    "prior_gate_boundary": "Earlier candidate passes apply only to their own manifests and do not cover this new index, appended section or later release changes.",
+    "publication": "Reserved for owner authorization; no publication action claimed."
+  },
+  "provenance": {
+    "base": "maintainer-local release-run-v2; relative identifiers are not repository links",
+    "receipts": {
+      "install/install-final-receipt.json": {
+        "sha256": "78914f0b05f576b9a79141148e43ab1d1ccbb477097f9c610232bc73ab9f0277",
+        "bytes": 10972
+      },
+      "cypress/REPORT.json": {
+        "sha256": "412fb5a5d40eee109495094596dae889dc6b211f9ffe5773ef94f5b33e5e0527",
+        "bytes": 11077
+      },
+      "cypress-leader-check.json": {
+        "sha256": "524a2e9aa30d8fdc44ab243d3c922bc9262a234b1d1237190354fe0b14c332f3",
+        "bytes": 292
+      },
+      "product-applicability.json": {
+        "sha256": "196ed3d766f25fa118899dc06b1219f20ce43663bdc857a74cfb0d92466fe0f9",
+        "bytes": 383
+      },
+      "holdout-independent-review.json": {
+        "sha256": "391b118e523a6661a2d08335bf3e51a0a867c069b1e3f80faef7bf680a4984c5",
+        "bytes": 1112
+      },
+      "install/matrix-adjudicated.json": {
+        "sha256": "66ff6c9458f382d7918b85cc8d116951891bd66dff55035085994f0055d80d12",
+        "bytes": 14523
+      },
+      "install/live-claude/actual-evidence.json": {
+        "sha256": "6a1e7ed1dbfa5f9067c6b8a83027dc638b73af2f1539fa028a1fcd1301252dc8",
+        "bytes": 21807
+      },
+      "install/live-codex/actual-evidence.json": {
+        "sha256": "5b512ec86e4d2ffa773fa32fae102c2fd065ce366cfd15997abb5929633532bc",
+        "bytes": 45679
+      },
+      "install/live-codex-successor/actual-evidence.json": {
+        "sha256": "e7962413a4b75029f18d2594a6f121c2a15f30cc5ce07c4447c928f0acbf1037",
+        "bytes": 20412
+      },
+      "install/live-claude/events.jsonl": {
+        "sha256": "226c333ded786048cb75a5d0a8abb960ad14021c6941ba1ad50f300eafb0c8c5",
+        "bytes": 49101
+      },
+      "install/live-codex-successor/events.jsonl": {
+        "sha256": "b846bc30c00fcfd71515f38b615990d26b8afca68936b642b8e3c0e9a2b376ad",
+        "bytes": 26677
+      },
+      "install/live-claude/frozen-plan.json": {
+        "sha256": "3bebaa7c048017c6946b009345d2646715e80645c1f1b5ec0070e7a1be9e8de5",
+        "bytes": 1067
+      },
+      "install/live-codex-successor/frozen-plan.json": {
+        "sha256": "53f840a783639b4ee6c26aafcc8008a7fbac631170527be319da67e615234c1c",
+        "bytes": 1060
+      },
+      "cypress/matrix-freeze.json": {
+        "sha256": "ba120d27bea8ff2bed549e3822dd041c4d2f048c8b41c8e2a5e71b01918857f4",
+        "bytes": 1648
+      },
+      "cypress/v2-sentinel.schedule.json": {
+        "sha256": "0d19583fca8acefb9ed27861b67a7ea76f7368de23e46ca3ca459ac5bbeab244",
+        "bytes": 488
+      },
+      "cypress/evidence-rederived.final.json": {
+        "sha256": "4d782969968894084daa820574090ab81bfe5fcec82734f4ef8127864ae00be0",
+        "bytes": 6449
+      },
+      "cypress/runtime-inputs.json": {
+        "sha256": "e35146b7260d91aa2bcda0ce57e4522e2ea7d3a29cad4f93503ee7a66e48b55e",
+        "bytes": 1383
+      },
+      "cypress/verify-evidence.py": {
+        "sha256": "b17703b675c1f06ab66d52ee2d9ae4377f4e970db7f8f78e23d1b7e28de22521",
+        "bytes": 6358
+      },
+      "cypress/v3-strong.plan.json": {
+        "sha256": "d718bb0e65993cd05673021da894bd8a29b2004beb43f605abfc4abd73947e77",
+        "bytes": 1817
+      },
+      "cypress/v3-strong.run/result.json": {
+        "sha256": "44e5dc020783a99d2bc39206398ac27716e43011c309cf301db0a0a92f5ead3a",
+        "bytes": 10533
+      },
+      "cypress/v3-weak.plan.json": {
+        "sha256": "546295db2e1705dbbad112769f81574caf46bf0270e764735cf30a63c71375e2",
+        "bytes": 1812
+      },
+      "cypress/v3-weak.run/result.json": {
+        "sha256": "d952cf673244d8bc8e5162f032bef2422a782715e702b3f6d349db764431d579",
+        "bytes": 10259
+      },
+      "cypress/v2-strong.plan.json": {
+        "sha256": "1217ad680dd30a9dd7e4ff4960950a472704a89bb6b1854a6256c1ea6789c690",
+        "bytes": 1551
+      },
+      "cypress/v2-strong.run/result.json": {
+        "sha256": "aaf30fe692bea5e6bbe337fb919b81a95edfe51f7aaa0cde6f37ff781e331cd5",
+        "bytes": 5181
+      },
+      "cypress/v2-sentinel.plan.json": {
+        "sha256": "231065dbb258c862be35092b949fd9547b7c54b445446d07caba2ae66d2bfa27",
+        "bytes": 1571
+      },
+      "cypress/v2-sentinel.run/result.json": {
+        "sha256": "67278efcf5608881033146c6bfcff529069671b1ccd22bf0b9ec536c221d87ab",
+        "bytes": 5445
+      },
+      "cypress/v3-strong.run/normal/project/probe-results/native-report.json": {
+        "sha256": "50253967fb3eef32c02c682c15e33c1f461ca54b49dff0ad20e27311a38ada70",
+        "bytes": 5737
+      },
+      "cypress/v3-strong.run/fault/project/probe-results/native-report.json": {
+        "sha256": "a50e208a5d70e922096323c300532158ae7495d66ff970a05b3fdaf843cfef72",
+        "bytes": 5953
+      },
+      "cypress/v3-strong.run/restored/project/probe-results/native-report.json": {
+        "sha256": "fa68732068ec0adaf443a5ec878fab1f141cac7fda97853ac255bb2dc1f36606",
+        "bytes": 5753
+      },
+      "cypress/v3-weak.run/normal/project/probe-results/native-report.json": {
+        "sha256": "6686000be97b649c69245756fa1824b3b4d8d9982d3decb6cd4ca9e03abb82e4",
+        "bytes": 5712
+      },
+      "cypress/v3-weak.run/fault/project/probe-results/native-report.json": {
+        "sha256": "34dd7b6c61989f77c3fa521fedda7fadaeadc5196a5ea4a382044ca2e4a5e7d8",
+        "bytes": 5704
+      },
+      "cypress/v3-weak.run/restored/project/probe-results/native-report.json": {
+        "sha256": "aa0e166716941c1bf141b69c4ef76ac8b646e1bba9897633332d7a38e078424b",
+        "bytes": 5728
+      },
+      "cypress/v2-strong.run/normal/project/probe-results/native-report.json": {
+        "sha256": "cd21b9f8c6ef30696299547d5524c86cde48a73cc5a8ed9ac207e5295d641fb8",
+        "bytes": 5737
+      },
+      "cypress/v2-strong.run/fault/project/probe-results/native-report.json": {
+        "sha256": "502f3c85f1c897e374f8b0364684cf7896064fe1daac46b430278e16f1c89ff0",
+        "bytes": 5729
+      },
+      "cypress/v2-strong.run/restored/project/probe-results/native-report.json": {
+        "sha256": "0023adb7666bed4f2c44b721cb0080a683e06d3c1425684a41b2fb32db63d8a6",
+        "bytes": 5753
+      },
+      "cypress/v2-sentinel.run/normal/project/probe-results/native-report.json": {
+        "sha256": "34b5655a34b207bdccafd334eea52dceb067ef6373cfabd383206dab745a8201",
+        "bytes": 5753
+      },
+      "cypress/v2-sentinel.run/fault/project/probe-results/native-report.json": {
+        "sha256": "91266f01acddc2ce612a4c52991754325fd6a9580e91e15f8818f34353504ccc",
+        "bytes": 5982
+      },
+      "cypress/v2-sentinel.run/restored/project/probe-results/native-report.json": {
+        "sha256": "4cdc6945077e2d2e65dc398644f6ff6b561d16a0a24d729ed1bd8219f4b8f418",
+        "bytes": 5769
+      },
+      "cypress/source/BEHAVIOR.md": {
+        "sha256": "a5531d9c01e00d0a081355d3e0632f347187c6e1813be5ffd314e2dd1489fd8a",
+        "bytes": 516
+      },
+      "cypress/source/package.json": {
+        "sha256": "ced2456b3c6b27281023f23c164045d58a46cdc6f8937a68c86702cc8ba18ba2",
+        "bytes": 55
+      },
+      "cypress/source/server.cjs": {
+        "sha256": "f35426733cb14b578a4cf7d31ddce7e593c07a79f1577da8b016aa58b32500d1",
+        "bytes": 1787
+      },
+      "cypress/source/cypress.config.cjs": {
+        "sha256": "df89bea8e68011f362f41385dc1154da235defd856a6e85b8c75ff5bd62d24b3",
+        "bytes": 248
+      },
+      "cypress/source/tests/strong.cy.cjs": {
+        "sha256": "35609c1ab0847444b56f1db2bdb723144c03a99758e3be22d90f2e1e624f50f5",
+        "bytes": 559
+      },
+      "cypress/source/tests/weak.cy.cjs": {
+        "sha256": "3f28ca310981326c5ed59b790933952e378555bfc800775365c63adcd8d9ce66",
+        "bytes": 543
+      },
+      "cypress/source/probe/observer.cjs": {
+        "sha256": "f89c2814dafeaa41de4b984c228ccf4ee288510ce79b4109b142d19569cef15b",
+        "bytes": 6965
+      },
+      "cypress/source/probe/lifecycle.cjs": {
+        "sha256": "8125a1f7ce35b15afca5e23a229a168b803164a6b470481a4d9a2e7f544e7acf",
+        "bytes": 5803
+      },
+      "cypress/source/probe/server-host.cjs": {
+        "sha256": "74f3cbf5d53c35f51c41072bdd8de42ec20a32453c45554417b5bd9f383662d4",
+        "bytes": 1877
+      },
+      "cypress/source/probe/native.cjs": {
+        "sha256": "5f23247f65fe1ef79d5305ca2c80a403006de9d47eb85a48b9e605763505c871",
+        "bytes": 2619
+      },
+      "cypress/v3-strong.run/normal/project/observer-observation.json": {
+        "sha256": "1e5d3c67c4ef359a1cb119eeb5b40ff58f114ada38b9c61b1962e6b776be3748",
+        "bytes": 9310
+      },
+      "cypress/v3-strong.run/normal/project/observer-initial-state.json": {
+        "sha256": "da3ec61b9ec155a70a0a4a71138a0bcfe705718bd439456646e520253ca074fa",
+        "bytes": 45
+      },
+      "cypress/v3-strong.run/normal/project/observer-state.json": {
+        "sha256": "516d74e63213cdbfa24be76562a988de0488b001747553a31cfaf36a9417fd17",
+        "bytes": 44
+      },
+      "cypress/v3-strong.run/normal/project/observer-server-provenance.json": {
+        "sha256": "b8c887e9e90376024ebd96ade0c6ef7d5365d9718d3eaf9566138be26d4bf063",
+        "bytes": 921
+      },
+      "cypress/v3-strong.run/normal/project/observer-readiness.json": {
+        "sha256": "1ca93242dcd0e38187023fba381e412e3e5e5e1a44bedb796e429ceda2416530",
+        "bytes": 370
+      },
+      "cypress/v3-strong.run/normal/project/observer-http.jsonl": {
+        "sha256": "0db1ece0c0ba037e0dbdecbc64b90889fc77361a25e7b02cfbced15dad9b2ae8",
+        "bytes": 9419
+      },
+      "cypress/v3-strong.run/normal/project/observer-stdout.txt": {
+        "sha256": "c98699fe601afc3379d145163fb9a7cbb2f68533ad4a71457fba0869c6d1e894",
+        "bytes": 148
+      },
+      "cypress/v3-strong.run/normal/project/observer-stderr.txt": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "cypress/v3-strong.run/normal/project/observer-shutdown.json": {
+        "sha256": "6126b73d55ec310276aebf4e6b872d1fcbdc36d4cf332fd963173574d7aecc17",
+        "bytes": 514
+      },
+      "cypress/v3-strong.run/fault/project/observer-observation.json": {
+        "sha256": "2b00564e9ffebb53c5b0f1ee0563b975c48afa52f1fe6e534c7b1ba88007632f",
+        "bytes": 9311
+      },
+      "cypress/v3-strong.run/fault/project/observer-initial-state.json": {
+        "sha256": "da3ec61b9ec155a70a0a4a71138a0bcfe705718bd439456646e520253ca074fa",
+        "bytes": 45
+      },
+      "cypress/v3-strong.run/fault/project/observer-state.json": {
+        "sha256": "da3ec61b9ec155a70a0a4a71138a0bcfe705718bd439456646e520253ca074fa",
+        "bytes": 45
+      },
+      "cypress/v3-strong.run/fault/project/observer-server-provenance.json": {
+        "sha256": "d355b0378ffbce35b642147fb205ebd7231d37b5a435a7667a482ba554b5431b",
+        "bytes": 917
+      },
+      "cypress/v3-strong.run/fault/project/observer-readiness.json": {
+        "sha256": "31300616b0dfb93256ff8a6178e572a16b1e68ef57706b8b99eb023bf2b21b95",
+        "bytes": 370
+      },
+      "cypress/v3-strong.run/fault/project/observer-http.jsonl": {
+        "sha256": "98d50ee919ef2a221eae1a2a5a0b51366f21150b88fb59d57ab58e6e7265d4c8",
+        "bytes": 9414
+      },
+      "cypress/v3-strong.run/fault/project/observer-stdout.txt": {
+        "sha256": "ac802b33231dbb4b6a76f857ff5d1abae002792874c3efc2a4891b897e99db77",
+        "bytes": 147
+      },
+      "cypress/v3-strong.run/fault/project/observer-stderr.txt": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "cypress/v3-strong.run/fault/project/observer-shutdown.json": {
+        "sha256": "8b1e3baea43fb62c1c41f7f562f80fe5ed8ebda309cd22cfa574b48cb73b61f3",
+        "bytes": 512
+      },
+      "cypress/v3-strong.run/restored/project/observer-observation.json": {
+        "sha256": "f1b31289043375d6a4350c6102a5da7ae1505e350f2efde8d0b18f0a0a40eede",
+        "bytes": 9320
+      },
+      "cypress/v3-strong.run/restored/project/observer-initial-state.json": {
+        "sha256": "da3ec61b9ec155a70a0a4a71138a0bcfe705718bd439456646e520253ca074fa",
+        "bytes": 45
+      },
+      "cypress/v3-strong.run/restored/project/observer-state.json": {
+        "sha256": "516d74e63213cdbfa24be76562a988de0488b001747553a31cfaf36a9417fd17",
+        "bytes": 44
+      },
+      "cypress/v3-strong.run/restored/project/observer-server-provenance.json": {
+        "sha256": "9a42ea7e500b7cf57f6ca4aade4f3d8a1d3668920b7077fd2828da194af4858d",
+        "bytes": 929
+      },
+      "cypress/v3-strong.run/restored/project/observer-readiness.json": {
+        "sha256": "572064c3f060e4d0892dfd9f1b0f36b00484c1a3128e811271b877ce059baeaf",
+        "bytes": 370
+      },
+      "cypress/v3-strong.run/restored/project/observer-http.jsonl": {
+        "sha256": "776413d47bd989b424fc7ea9cf21d2eec2a1ea0401eb0cac2ed7073026563ef0",
+        "bytes": 9433
+      },
+      "cypress/v3-strong.run/restored/project/observer-stdout.txt": {
+        "sha256": "44df5db08f5ea6e0549e261c72a1f58e4b9a103b26adcba18a3591b6d99a6d4b",
+        "bytes": 150
+      },
+      "cypress/v3-strong.run/restored/project/observer-stderr.txt": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "cypress/v3-strong.run/restored/project/observer-shutdown.json": {
+        "sha256": "0251ce89abeb61297f318c29d14407aa2c4221ee5d2ab8c2ebdd16efd1280d93",
+        "bytes": 518
+      },
+      "cypress/v3-weak.run/normal/project/observer-observation.json": {
+        "sha256": "95a119f2e7881f104af9ab2b0211c6be55183b942f4f5e6e93fc994423c05dfb",
+        "bytes": 9300
+      },
+      "cypress/v3-weak.run/normal/project/observer-initial-state.json": {
+        "sha256": "da3ec61b9ec155a70a0a4a71138a0bcfe705718bd439456646e520253ca074fa",
+        "bytes": 45
+      },
+      "cypress/v3-weak.run/normal/project/observer-state.json": {
+        "sha256": "516d74e63213cdbfa24be76562a988de0488b001747553a31cfaf36a9417fd17",
+        "bytes": 44
+      },
+      "cypress/v3-weak.run/normal/project/observer-server-provenance.json": {
+        "sha256": "3e4bb6b5ee9dedbe628fc6b62c5b3bf18e26061cd3ab611b7ea9fddb49a4f78f",
+        "bytes": 913
+      },
+      "cypress/v3-weak.run/normal/project/observer-readiness.json": {
+        "sha256": "24aef102e35b5235f7789ffa9cec50ec0e23e5049c22cfc62177263400823610",
+        "bytes": 370
+      },
+      "cypress/v3-weak.run/normal/project/observer-http.jsonl": {
+        "sha256": "60735a96d1c7d347331bb211e8521e21b51eed346c1bcbb1acb7028f4506d5ea",
+        "bytes": 9405
+      },
+      "cypress/v3-weak.run/normal/project/observer-stdout.txt": {
+        "sha256": "5ee01f4890a69cb3b48b907e77a2fed7ef04078da8e7dcdfa61746034cb04148",
+        "bytes": 146
+      },
+      "cypress/v3-weak.run/normal/project/observer-stderr.txt": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "cypress/v3-weak.run/normal/project/observer-shutdown.json": {
+        "sha256": "6ba5f7d47cc240030eca549be9cf00f7ab32c6ea3690bfea70edf52d8d312a92",
+        "bytes": 510
+      },
+      "cypress/v3-weak.run/fault/project/observer-observation.json": {
+        "sha256": "fa9d241a50a447bd89cb5ba3e2c7cdf0b71c6123d818d2c4bf04e459f7a2b062",
+        "bytes": 9301
+      },
+      "cypress/v3-weak.run/fault/project/observer-initial-state.json": {
+        "sha256": "da3ec61b9ec155a70a0a4a71138a0bcfe705718bd439456646e520253ca074fa",
+        "bytes": 45
+      },
+      "cypress/v3-weak.run/fault/project/observer-state.json": {
+        "sha256": "da3ec61b9ec155a70a0a4a71138a0bcfe705718bd439456646e520253ca074fa",
+        "bytes": 45
+      },
+      "cypress/v3-weak.run/fault/project/observer-server-provenance.json": {
+        "sha256": "a0a90b9ca6e870a4301b304043aade63c0400bfd307817f07d2b0b039386f76c",
+        "bytes": 909
+      },
+      "cypress/v3-weak.run/fault/project/observer-readiness.json": {
+        "sha256": "2686ef58bb0c65fd8db2d4728ca07ff41ad6d8d4e170971c6e6546aac2b14fb2",
+        "bytes": 370
+      },
+      "cypress/v3-weak.run/fault/project/observer-http.jsonl": {
+        "sha256": "dce436075d21fa3af06332c313a9fd16efd679b1998e01e933574c89d245beaf",
+        "bytes": 9400
+      },
+      "cypress/v3-weak.run/fault/project/observer-stdout.txt": {
+        "sha256": "4648ed78004136e2bb876b335ed16b8e2fe18c2eacaf0d092194b0ec9404291f",
+        "bytes": 145
+      },
+      "cypress/v3-weak.run/fault/project/observer-stderr.txt": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "cypress/v3-weak.run/fault/project/observer-shutdown.json": {
+        "sha256": "3bdf4d39faf02f798f88addaf60c5724ac50c717770868ee46e00bcbf964c6f3",
+        "bytes": 508
+      },
+      "cypress/v3-weak.run/restored/project/observer-observation.json": {
+        "sha256": "29ecad9c8353b8fdc6eb248d443cd87a525f2786af444cbf35453cd1720242a7",
+        "bytes": 9310
+      },
+      "cypress/v3-weak.run/restored/project/observer-initial-state.json": {
+        "sha256": "da3ec61b9ec155a70a0a4a71138a0bcfe705718bd439456646e520253ca074fa",
+        "bytes": 45
+      },
+      "cypress/v3-weak.run/restored/project/observer-state.json": {
+        "sha256": "516d74e63213cdbfa24be76562a988de0488b001747553a31cfaf36a9417fd17",
+        "bytes": 44
+      },
+      "cypress/v3-weak.run/restored/project/observer-server-provenance.json": {
+        "sha256": "926e9506baee6151151d50e27b9c254548faebe23077d5e1259112699325dd61",
+        "bytes": 921
+      },
+      "cypress/v3-weak.run/restored/project/observer-readiness.json": {
+        "sha256": "9125de9b1de4fe4f50f154b7c44d3adbc3f9b583df168e4ffd2d5eceddddb691",
+        "bytes": 370
+      },
+      "cypress/v3-weak.run/restored/project/observer-http.jsonl": {
+        "sha256": "a4e06414244b9e93d9f59aa9670eac20785e2c8e7f044681828079bb9ae3e913",
+        "bytes": 9419
+      },
+      "cypress/v3-weak.run/restored/project/observer-stdout.txt": {
+        "sha256": "340f3e6085064e64c1ff7cd657c3a58ffb9f55c667507230be43f886e09448ac",
+        "bytes": 148
+      },
+      "cypress/v3-weak.run/restored/project/observer-stderr.txt": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "cypress/v3-weak.run/restored/project/observer-shutdown.json": {
+        "sha256": "e7bba196fda6339b72a9d1607ec6310730b9a3bd7e6bf0d1fab27172acd5f42d",
+        "bytes": 514
+      },
+      "cypress/runtime/package.json": {
+        "sha256": "e4220cea4008aebd5d6b9408633e4d4b82d39519b27e4d0de9b0c5d953e105d9",
+        "bytes": 107
+      },
+      "cypress/runtime/package-lock.json": {
+        "sha256": "f45cd044cc400cc8d173aa596ae472eaee6243f6153e74f37b091a3f3259424e",
+        "bytes": 71945
+      },
+      "native-applicability-audit.json": {
+        "sha256": "59aa0957e0007c1f4a853f56dec8395d927882f80b2f06dfaaa263fea1a2045b",
+        "bytes": 403762
+      },
+      "native-applicability-leader-check.json": {
+        "sha256": "f89e2ca9faa47da5e6d95e912e574815f2a259640b551938f0b0c3e88dca5472",
+        "bytes": 400
+      },
+      "codex-host-leader-check.json": {
+        "sha256": "ae5bcafa28391e3d6debd742156002b6a07e146a3a1070b993b40f8acb36aed5",
+        "bytes": 1195
+      },
+      "claude-host-leader-check.json": {
+        "sha256": "3c1a4bed7807211ead272b85b0520897c9c3eb8bc4cb5d8f416178f0ba2a9481",
+        "bytes": 825
+      },
+      "tool-surface-evidence-review.json": {
+        "sha256": "2b16e9072985691d087a1ff5c40282abc5e4075881d145034e0a7c415faddfeb",
+        "bytes": 1324
+      }
+    },
+    "fresh_verification": "Installer listed evidence and runtime source hashes, reviewer probe source hashes, lane-plan hashes, twelve native-report hashes and source-fixture freeze hashes match the inspected files. Six per-phase observer chains also match their result-bound digests."
+  },
+  "public_packaging_proposal": {
+    "status": "PROPOSAL_ONLY_NO_RAW_FILES_COPIED",
+    "explicit_candidate_files": [
+      "cypress-leader-check.json",
+      "cypress/REPORT.json",
+      "cypress/evidence-rederived.final.json",
+      "cypress/matrix-freeze.json",
+      "cypress/runtime-inputs.json",
+      "cypress/runtime/package-lock.json",
+      "cypress/runtime/package.json",
+      "cypress/source/BEHAVIOR.md",
+      "cypress/source/cypress.config.cjs",
+      "cypress/source/package.json",
+      "cypress/source/probe/lifecycle.cjs",
+      "cypress/source/probe/native.cjs",
+      "cypress/source/probe/observer.cjs",
+      "cypress/source/probe/server-host.cjs",
+      "cypress/source/server.cjs",
+      "cypress/source/tests/strong.cy.cjs",
+      "cypress/source/tests/weak.cy.cjs",
+      "cypress/v2-sentinel.plan.json",
+      "cypress/v2-sentinel.run/fault/project/probe-results/native-report.json",
+      "cypress/v2-sentinel.run/normal/project/probe-results/native-report.json",
+      "cypress/v2-sentinel.run/restored/project/probe-results/native-report.json",
+      "cypress/v2-sentinel.run/result.json",
+      "cypress/v2-sentinel.schedule.json",
+      "cypress/v2-strong.plan.json",
+      "cypress/v2-strong.run/fault/project/probe-results/native-report.json",
+      "cypress/v2-strong.run/normal/project/probe-results/native-report.json",
+      "cypress/v2-strong.run/restored/project/probe-results/native-report.json",
+      "cypress/v2-strong.run/result.json",
+      "cypress/v3-strong.plan.json",
+      "cypress/v3-strong.run/fault/project/observer-http.jsonl",
+      "cypress/v3-strong.run/fault/project/observer-initial-state.json",
+      "cypress/v3-strong.run/fault/project/observer-observation.json",
+      "cypress/v3-strong.run/fault/project/observer-readiness.json",
+      "cypress/v3-strong.run/fault/project/observer-server-provenance.json",
+      "cypress/v3-strong.run/fault/project/observer-shutdown.json",
+      "cypress/v3-strong.run/fault/project/observer-state.json",
+      "cypress/v3-strong.run/fault/project/observer-stderr.txt",
+      "cypress/v3-strong.run/fault/project/observer-stdout.txt",
+      "cypress/v3-strong.run/fault/project/probe-results/native-report.json",
+      "cypress/v3-strong.run/normal/project/observer-http.jsonl",
+      "cypress/v3-strong.run/normal/project/observer-initial-state.json",
+      "cypress/v3-strong.run/normal/project/observer-observation.json",
+      "cypress/v3-strong.run/normal/project/observer-readiness.json",
+      "cypress/v3-strong.run/normal/project/observer-server-provenance.json",
+      "cypress/v3-strong.run/normal/project/observer-shutdown.json",
+      "cypress/v3-strong.run/normal/project/observer-state.json",
+      "cypress/v3-strong.run/normal/project/observer-stderr.txt",
+      "cypress/v3-strong.run/normal/project/observer-stdout.txt",
+      "cypress/v3-strong.run/normal/project/probe-results/native-report.json",
+      "cypress/v3-strong.run/restored/project/observer-http.jsonl",
+      "cypress/v3-strong.run/restored/project/observer-initial-state.json",
+      "cypress/v3-strong.run/restored/project/observer-observation.json",
+      "cypress/v3-strong.run/restored/project/observer-readiness.json",
+      "cypress/v3-strong.run/restored/project/observer-server-provenance.json",
+      "cypress/v3-strong.run/restored/project/observer-shutdown.json",
+      "cypress/v3-strong.run/restored/project/observer-state.json",
+      "cypress/v3-strong.run/restored/project/observer-stderr.txt",
+      "cypress/v3-strong.run/restored/project/observer-stdout.txt",
+      "cypress/v3-strong.run/restored/project/probe-results/native-report.json",
+      "cypress/v3-strong.run/result.json",
+      "cypress/v3-weak.plan.json",
+      "cypress/v3-weak.run/fault/project/observer-http.jsonl",
+      "cypress/v3-weak.run/fault/project/observer-initial-state.json",
+      "cypress/v3-weak.run/fault/project/observer-observation.json",
+      "cypress/v3-weak.run/fault/project/observer-readiness.json",
+      "cypress/v3-weak.run/fault/project/observer-server-provenance.json",
+      "cypress/v3-weak.run/fault/project/observer-shutdown.json",
+      "cypress/v3-weak.run/fault/project/observer-state.json",
+      "cypress/v3-weak.run/fault/project/observer-stderr.txt",
+      "cypress/v3-weak.run/fault/project/observer-stdout.txt",
+      "cypress/v3-weak.run/fault/project/probe-results/native-report.json",
+      "cypress/v3-weak.run/normal/project/observer-http.jsonl",
+      "cypress/v3-weak.run/normal/project/observer-initial-state.json",
+      "cypress/v3-weak.run/normal/project/observer-observation.json",
+      "cypress/v3-weak.run/normal/project/observer-readiness.json",
+      "cypress/v3-weak.run/normal/project/observer-server-provenance.json",
+      "cypress/v3-weak.run/normal/project/observer-shutdown.json",
+      "cypress/v3-weak.run/normal/project/observer-state.json",
+      "cypress/v3-weak.run/normal/project/observer-stderr.txt",
+      "cypress/v3-weak.run/normal/project/observer-stdout.txt",
+      "cypress/v3-weak.run/normal/project/probe-results/native-report.json",
+      "cypress/v3-weak.run/restored/project/observer-http.jsonl",
+      "cypress/v3-weak.run/restored/project/observer-initial-state.json",
+      "cypress/v3-weak.run/restored/project/observer-observation.json",
+      "cypress/v3-weak.run/restored/project/observer-readiness.json",
+      "cypress/v3-weak.run/restored/project/observer-server-provenance.json",
+      "cypress/v3-weak.run/restored/project/observer-shutdown.json",
+      "cypress/v3-weak.run/restored/project/observer-state.json",
+      "cypress/v3-weak.run/restored/project/observer-stderr.txt",
+      "cypress/v3-weak.run/restored/project/observer-stdout.txt",
+      "cypress/v3-weak.run/restored/project/probe-results/native-report.json",
+      "cypress/v3-weak.run/result.json",
+      "cypress/verify-evidence.py",
+      "holdout-independent-review.json",
+      "install/install-final-receipt.json",
+      "install/live-claude/actual-evidence.json",
+      "install/live-claude/events.jsonl",
+      "install/live-claude/frozen-plan.json",
+      "install/live-codex-successor/actual-evidence.json",
+      "install/live-codex-successor/events.jsonl",
+      "install/live-codex-successor/frozen-plan.json",
+      "install/live-codex/actual-evidence.json",
+      "install/matrix-adjudicated.json",
+      "product-applicability.json"
+    ],
+    "bounded_content_check": {
+      "files_checked": 104,
+      "high_confidence_secret_pattern_hits": 0,
+      "scope": "Explicit textual receipt/fixture/report files only; inspected known fixture payloads and credential-routing descriptions. This check does not authorize bulk copying or replace final repository security validation."
+    },
+    "required_before_copy": [
+      "Normalize account-specific absolute paths consistently and create a new public manifest binding the normalized bytes to retained original digests.",
+      "Retain named failed attempts and source/protocol/plan/result/native report/observer chains; do not select only successful evidence.",
+      "For independent tool-use reparse, review and export only individually selected parent/official-child transcript records; the extracted actual-evidence files alone do not replace all original raw session logs.",
+      "For runnable reproduction, include the exact harness/fixture/dependency-lock sources and portable command substitutions, with their source digests and third-party notices where required."
+    ],
+    "excluded": [
+      "All auth.json and credential snapshots, private homes/configuration, credential-helper data and environment dumps.",
+      "Entire cache directories, browser binaries/profiles, installed dependencies and unrelated evidence.",
+      "Unreviewed original session logs; any separately selected transcript requires a dedicated content/path review."
+    ],
+    "observer_chain_note": "The six per-phase observer chains are individually named and hash-checked, alongside twelve native reports, the original and sentinel plans/results, fixture sources and the runtime lockfile. Proposed normalization and final security review remain required before any copy."
+  },
+  "retained_native_applicability": {
+    "status": "PASS_SCOPED_APPLICABILITY_AUDIT_WITH_EXPLICIT_LIVE_BOUNDARIES",
+    "scope_binding": {
+      "G07": {
+        "state": "PROVEN_BOUNDED_SUCCESS_AND_CONTRACT_GUARDS",
+        "native_success": "Oct19 frozen scored current router+reviewer/scanner snapshots verified exact current per six cells;5/6 original current versus6/6 official. Actual official child defining MCP calls, scanner and scoped parent test_run on successful current cells. New Oct20 fresh install canaries prove host integration only, not complete router scanner quality.",
+        "failure_guards": "Historical nonloopback/missing readiness/absent reviewer receipts preserve actual observed behavior, with older differing SKILL bytes and original caveats. Current generator-router static contract/eval guards cover changes; newly strengthened whole-stack-before-exploration and same-origin tuple dynamic behavior NOT_FRESH_NATIVE_TESTED.",
+        "not_claimed": [
+          "All failure branches live-tested on current instructions",
+          "General generator advantage",
+          "Replay replacing failed original cell8",
+          "Debugger scanner integration from B9/B11"
+        ]
+      },
+      "G08": {
+        "state": "PROVEN_BOUNDED_MAINTAINED_BRANCH_WITH_CURRENT_TARGETED_CHECKS",
+        "native_cases": "B9 PW UI repair + HTTP500 NOFIX; B11 CY UI repair + HTTP500 NOFIX. Prompt establishes explicit generated provenance. V4 prefix and immutable/NOFIX suffix byte-identical current; existing assertions preserved and caller normal/fault/restored evidence hash checked.",
+        "changed_paths_effect": "Narrowed generated provenance gate remains true for all four; CY same-run media retry rule irrelevant to these one-attempt non-media inferences. Current tests have explicit RED/GREEN mutation guards. No fresh native run required merely because surrounding SKILL bytes differ.",
+        "not_claimed": [
+          "Live current handwritten-plan-only repair classification",
+          "Live stale-screenshot retry conflict handling",
+          "Actor successful write/reload in NOFIX cases (caller only)",
+          "Full current debugger certification or broad accuracy"
+        ]
+      }
+    },
+    "verified_original_evidence_paths": 148,
+    "boundary": "Path-specific maintained contract branches, not full-current skill native certification. Older guard observations and current contract tests are separate from fresh native model compliance."
+  }
+}

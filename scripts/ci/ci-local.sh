@@ -141,6 +141,12 @@ run_python scripts/ci/test-self-scan-view.py ||
   fail "test-self-scan-view.py"
 
 step "Release contract preflight"
+# Check current README boundaries and linked historical results before long suites.
+# Includes portable skill-root routing and evidence-based disagreement guards.
+# Includes the versioned #13 ownership boundary and #1 rendering guards;
+# these development contracts never rewrite frozen holdout labels.
+run_python scripts/ci/test-reviewer-doc-contracts.py ||
+  fail "test-reviewer-doc-contracts.py"
 # Keep cheap, high-signal release blockers ahead of the multi-minute review
 # checks. These checks are independent and still run exactly once; this changes
 # red-path latency without weakening the green path.
@@ -176,6 +182,7 @@ run_python scripts/ci/test-runner-version-resolution-v1.py ||
   fail "test-runner-version-resolution-v1.py"
 
 step "Review checks"
+# Includes prompt-first installation, translated README parity, and model-specific evidence boundaries.
 if [ "$QUIET" = "1" ]; then
   /bin/bash -p scripts/ci/review.sh --quiet >/dev/null 2>&1 || fail "review.sh"
 else
@@ -253,6 +260,8 @@ run_python scripts/ci/test-codex-smoke-contract.py ||
   fail "test-codex-smoke-contract.py"
 run_python scripts/ci/test-reinstall-skills.py ||
   fail "test-reinstall-skills.py"
+run_python scripts/ci/test-all-in-one-install.py ||\
+  fail "test-all-in-one-install.py"
 
 step "Behavioral eval harness"
 /bin/bash -p scripts/ci/test-behavioral-evals.sh || fail "test-behavioral-evals.sh"
@@ -402,6 +411,12 @@ run_python scripts/ci/test-reviewer-holdout-v20.py ||
   fail "test-reviewer-holdout-v20.py"
 run_python scripts/ci/test-reviewer-holdout-v21.py ||
   fail "test-reviewer-holdout-v21.py"
+run_python scripts/ci/test-reviewer-holdout-v22.py ||
+  fail "test-reviewer-holdout-v22.py"
+run_python scripts/ci/test-reviewer-holdout-v23.py ||
+  fail "test-reviewer-holdout-v23.py"
+run_python scripts/ci/test-reviewer-holdout-v24.py ||
+  fail "test-reviewer-holdout-v24.py"
 run_python scripts/ci/test-reviewer-stream-retry.py ||
   fail "test-reviewer-stream-retry.py"
 run_python scripts/ci/test-reviewer-auth-retry.py ||
@@ -513,14 +528,11 @@ run_python scripts/ci/test-cypress-timeout-zero-probe.py ||
   fail "test-cypress-timeout-zero-probe.py"
 
 step "Local ESLint path"
+run_python scripts/ci/test-eslint-import-resolution.py --node "$NODE_BIN" ||
+  fail "test-eslint-import-resolution.py"
 /bin/bash -p scripts/ci/test-local-eslint-path.sh || fail "test-local-eslint-path.sh"
 run_python scripts/ci/test-reviewer-trust-contract.py ||
   fail "test-reviewer-trust-contract.py"
-# Includes portable skill-root routing and evidence-based disagreement guards.
-# Includes the versioned #13 ownership boundary and #1 rendering guards;
-# these development contracts never rewrite frozen holdout labels.
-run_python scripts/ci/test-reviewer-doc-contracts.py ||
-  fail "test-reviewer-doc-contracts.py"
 run_python scripts/ci/test-reviewer-check.py ||
   fail "test-reviewer-check.py"
 run_python scripts/ci/test-reviewer-probe.py ||

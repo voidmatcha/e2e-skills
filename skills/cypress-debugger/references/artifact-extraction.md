@@ -32,33 +32,45 @@ find . -name "*.xml" -path "*/cypress/*" | head -5
 # only the FINAL attempt to the mocha reporter, so a test that failed twice and
 # passed on attempt 3 appears as a plain `"state": "passed"`; there is no
 # attempts[] or currentRetry field in mochawesome JSON (same for JUnit XML).
-# Recover the retry signal from these real sources instead:
+# Prefer same-run native attempt records; screenshots need independent association:
 
-# (a) Failure screenshots on disk — every failed ATTEMPT writes one. Attempt 1 →
-#     "<test> (failed).png"; attempt N → "<test> (failed) (attempt N).png".
-#     Report says PASSED but "(failed)" screenshots exist → passed on retry →
-#     F1/F15 flaky signal. Report says FAILED with "(attempt N)" screenshots →
-#     failed every attempt → consistent failure, NOT flaky.
-find cypress/screenshots -name "*(failed)*.png"            # all failed attempts
-find cypress/screenshots -name "*(attempt *"               # retries happened at all
-
-# (b) Cypress's own run results, if the project saves them — the Module API and
+# (a) Cypress's own run results, if the project saves them — the Module API and
 #     the after:run / after:spec node events DO expose per-attempt data as
 #     runs[].tests[].attempts[] (since Cypress 13, after:run/module-API attempts
 #     carry only {state}; after:spec attempts keep per-attempt error details).
+#     Establish that this artifact belongs to the report's run and match spec
+#     file plus full test title before combining records.
 #     A final failed test may also carry test-level displayError in after:run;
 #     the reader emits it as the test's error after redaction. A passed final
 #     state never inherits a stale test-level displayError.
-#     When the trusted project already saves this artifact:
-#     attempts [{state:"failed"},{state:"passed"}] + final "passed" → flaky (F1).
+#     attempts [{state:"failed"},{state:"passed"}] + final "passed" confirms
+#     passed-on-retry; this is a flaky signal, not proof of an F1/F15 cause.
 <skill-dir>/scripts/run-artifact-reader.sh \
   --project-root <absolute-project-root> -- run-results \
   --artifact-root cypress/reports \
   cypress/reports/run-results.json
 
-# If neither source exists and flakiness is suspected: check `retries` in
-# cypress.config first (runMode 0 → Cypress never retried, so passes-on-retry
-# cannot be diagnosed from this run), then recommend wiring the after:run dump.
+# (b) Failure screenshots — attempt 1 is conventionally "<test> (failed).png";
+#     attempt N is "<test> (failed) (attempt N).png". Names are candidates only.
+find cypress/screenshots -name "*(failed)*.png"
+find cypress/screenshots -name "*(attempt *"
+#     Require same-run/spec/test association from independent run metadata or
+#     an invocation-scoped artifact manifest linking the report and screenshot
+#     to the exact spec and full test title. Filename/title matches, timestamps,
+#     shared directories, safe media bytes and path validation alone do not
+#     prove this association. Only an associated failed-attempt screenshot plus
+#     a consistent final passed state supports passed-on-retry. A final failed
+#     state plus failure screenshots does not prove every attempt failed.
+#     Prefer native attempts when available. If they contradict screenshot
+#     evidence (e.g. one clean passed attempt), report the provenance conflict;
+#     do not override them or inflate confirmed flaky totals from a filename.
+
+# Missing association, mixed/stale screenshots or conflicting evidence means
+# retry history unknown; report a possible historical failure separately from
+# confirmed retries. Check the selected run's retries config when relevant
+# (runMode 0 does not support passes-on-retry), but config alone proves no
+# attempt history. Do not force reruns or install tools to resolve this gap;
+# optionally recommend saving same-run after:run data for future diagnosis.
 
 # Both JSON modes require --artifact-root, reject symlinks and special files,
 # open every artifact-root component from the filesystem root with

@@ -132,7 +132,7 @@ class ReviewerHoldoutV9Test(unittest.TestCase):
         self.assertEqual(
             {PROTOCOL_ID, "reviewer-holdout-v10", "reviewer-holdout-v11",
              "reviewer-holdout-v12", "reviewer-holdout-v13", "reviewer-holdout-v14",
-             "reviewer-holdout-v15", "reviewer-holdout-v16", "reviewer-holdout-v17", "reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v20", "reviewer-holdout-v21"},
+             "reviewer-holdout-v15", "reviewer-holdout-v16", "reviewer-holdout-v17", "reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v20", "reviewer-holdout-v21", "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"},
             self.runner.DESIGNED_LABEL_PROTOCOL_IDS,
         )
         self.assertEqual(
@@ -148,7 +148,7 @@ class ReviewerHoldoutV9Test(unittest.TestCase):
                 "reviewer-holdout-v16": V9_CASES_PATH,
                 "reviewer-holdout-v17": ROOT / "scripts/evals/reviewer-holdout-v17.json",
                 "reviewer-holdout-v18": ROOT / "scripts/evals/reviewer-holdout-v17.json",
-                "reviewer-holdout-v19": ROOT / "scripts/evals/reviewer-holdout-v17.json",
+                "reviewer-holdout-v19": ROOT / "scripts/evals/reviewer-holdout-v17.json", "reviewer-holdout-v22": ROOT / "scripts/evals/reviewer-holdout-v17.json", "reviewer-holdout-v23": ROOT / "scripts/evals/reviewer-holdout-v17.json", "reviewer-holdout-v24": ROOT / "scripts/evals/reviewer-holdout-v17.json",
                 "reviewer-holdout-v20": ROOT / "scripts/evals/reviewer-holdout-v20.json",
                 "reviewer-holdout-v21": ROOT / "scripts/evals/reviewer-holdout-v21.json",
             },

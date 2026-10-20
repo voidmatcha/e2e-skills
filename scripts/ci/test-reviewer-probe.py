@@ -226,4 +226,48 @@ print(json.dumps({'project':str(p),'promised_effect':ready and after=='transferr
         r['runs'][0]['tests'][0]['attempts'].append({'state':'passed'})
         with self.assertRaises(ValueError):module.parse_native(r,'cypress-json','copies content',['test.spec.ts'],self.source)
 
+class PreparationGuidance(unittest.TestCase):
+    """Instruction regression guards; these do not certify actor behavior."""
+
+    def setUp(self):
+        self.guidance = ' '.join(
+            (RUNNER.parent.parent / 'references/runtime-probes.md').read_text().split()
+        )
+
+    def test_reviewer_owns_missing_project_glue(self):
+        self.assertIn('Create the missing native wrapper, V3 observer, and JSON plan yourself', self.guidance)
+        self.assertIn('Do not require the user to author these artifacts or register an adapter.', self.guidance)
+
+    def test_baseline_is_not_repaired_into_probe_success(self):
+        self.assertIn('First run the unchanged selected test in the disposable snapshot', self.guidance)
+        self.assertIn('A failing or skipped baseline is not mutation or fault evidence.', self.guidance)
+
+    def test_no_new_install_authority_or_original_edits(self):
+        self.assertIn('Reuse existing dependencies and browser binaries', self.guidance)
+        self.assertIn('Do not install packages, download tools, pull images', self.guidance)
+        self.assertIn('Existing approval for the exact scope remains valid', self.guidance)
+        self.assertIn('Keep the original checkout unchanged', self.guidance)
+
+    def test_modes_do_not_require_irrelevant_preparation(self):
+        self.assertIn('V2 needs no V3 observer', self.guidance)
+        self.assertIn('Do not substitute V2 for requested V3 evidence', self.guidance)
+        self.assertIn('one evidence-backed setup correction', self.guidance)
+
+    def test_ordinary_review_offers_a_bounded_followup(self):
+        skill = (RUNNER.parent.parent / 'SKILL.md').read_text()
+        self.assertIn('After completing the static review', skill)
+        self.assertIn('offer at most one source-backed mutation or app-fault probe', skill)
+        self.assertIn('Do not block the completed review on a reply', skill)
+        self.assertIn('already requested and authorized: proceed without asking again', skill)
+        self.assertIn('Static-only requests or no meaningful candidate: omit the offer', skill)
+        self.assertIn('Explain the additional token and execution-time cost', skill)
+        self.assertIn('do not promise higher overall accuracy', skill)
+
+    def test_followup_distinguishes_assertion_and_app_questions(self):
+        self.assertIn('Select V2 for an unresolved question', self.guidance)
+        self.assertIn('select V3 for an unresolved question', self.guidance)
+        self.assertIn('Offer both only when both questions matter', self.guidance)
+        self.assertIn('separate probes with separate verdicts', self.guidance)
+        self.assertIn('do not run both automatically for every review', self.guidance)
+
 if __name__=='__main__':unittest.main()

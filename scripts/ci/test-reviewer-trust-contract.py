@@ -30,17 +30,28 @@ def main() -> None:
         "exact command, including its environment and flags",
         "`recommended/unexecuted`",
     )
-    require(skill, shared, SKILL)
     require(scanner_workflow, shared, SCANNER_WORKFLOW)
     require(rules, shared, RULES)
-    require(
-        skill,
-        (
-            "The same two-part gate applies to a documented project lint command and Tier 1",
-            "Target-controlled package scripts, local binaries, plugins, parsers, and configs",
-        ),
-        SKILL,
+    # The entrypoint routes to the mandatory scanner reference; the full
+    # target-controlled tooling boundary is checked in that reference below.
+    skill_gate = (
+        "Apply the target-execution trust gate in `references/scanner-workflow.md`",
+        "explicit checkout trust and approval of the exact command, environment, and flags are both required",
+        "otherwise record `recommended/unexecuted`",
+        "Repository documentation is not approval",
     )
+    require(skill, skill_gate, SKILL)
+    for before, after in (
+        ("explicit checkout trust and approval", "checkout availability or approval"),
+        ("Apply the target-execution trust gate in `references/scanner-workflow.md`", "Apply the project documentation"),
+    ):
+        mutated = skill.replace(before, after, 1)
+        assert mutated != skill
+        try:
+            require(mutated, skill_gate, SKILL)
+        except AssertionError:
+            continue
+        raise AssertionError("entrypoint trust routing mutation survived")
     require(
         scanner_workflow,
         (

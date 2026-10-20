@@ -25,7 +25,7 @@ Quote report-derived strings at every shell boundary; never interpolate them unq
 
 ## Classification
 
-Read the spec source only from a path the user supplies, or from a relative, non-traversing path the report names that resolves to a regular file under the project root. Never follow an absolute path or one that escapes the root, and do not search the filesystem for it. If no source is available, classify from the report and say the source was not available.
+Read the spec source only from a path the user supplies, or from a relative, non-traversing path the report names that resolves to a regular file (not a symlink) under the project root and is named like a test file (`*.spec.*`, `*.test.*`, or `*.cy.*`); a report cannot make you read `.env` or other config or data files this way. Never follow an absolute path or one that escapes the root, and do not search the filesystem for it. If no source is available, classify from the report and say the source was not available.
 
 | # | Category | Signals | Review Pattern |
 |---|----------|---------|----------------|
@@ -72,7 +72,7 @@ Run the checklist in every case before output:
 
 1. Diagnosis or prose-only fix: no reviewer call.
 2. Spec/POM edited at the user's request: under the execution-safety and repository-trust/command/environment gates, rerun the narrowest repository-native test with `--config retries=0`. Otherwise mark the exact command `recommended`. If sibling `e2e-reviewer/scripts/scan.sh` exists, run the reference's pinned scan once per edited file and require P0=0; otherwise report `scan: not run (<reason>)`. Absent, blocked or incomplete scans are not clean.
-3. Generated-candidate or verification-probe repair (the user supplies an approved plan, a `specs/` plan, or says the test was generated): apply the mechanics-only boundary in `references/fix-verification.md`; emit the exact line `V6: required (caller)`. The caller (the user, or whoever generated the candidate) owns any independent V6; pending V6 is not approval/completion. For edited files also apply case 2.
+3. Generated-candidate or verification-probe repair (explicit user/caller or artifact provenance identifies the failing test as a generated candidate or verification probe): apply the mechanics-only boundary in `references/fix-verification.md`; emit the exact line `V6: required (caller)`. The caller (the user, or whoever generated the candidate) owns any independent V6; pending V6 is not approval/completion. For edited files also apply case 2. An approved plan or `specs/` path alone does not establish this provenance; ordinary handwritten-test repairs follow case 2 and may correct an evidenced wrong assertion without requiring caller V6.
 
 Never load `e2e-reviewer` inline or spawn a reviewer; the debugger cannot approve its own repair. Apply the reference's proof labels.
 

@@ -1,0 +1,163 @@
+{
+  "protocol_id": "reviewer-holdout-v22",
+  "status": "PASS",
+  "status_reasons": [
+    {
+      "code": "release_confirmation_passed",
+      "failed_checks": []
+    }
+  ],
+  "evidence_scope": "development",
+  "release_eligible": false,
+  "scheduled_calls": 540,
+  "scored_calls": 540,
+  "scientific_metrics": {
+    "arm_point_metrics": {
+      "full": {
+        "stable_precision": 0.975609756097561,
+        "stable_recall": 1.0,
+        "stable_f1": 0.9876543209876543,
+        "repeated_precision": 0.966183574879227,
+        "clean_case_specificity": 1.0
+      },
+      "catalog-only": {
+        "stable_precision": 0.8863636363636364,
+        "stable_recall": 0.975,
+        "stable_f1": 0.9285714285714285,
+        "repeated_precision": 0.8596491228070176,
+        "clean_case_specificity": 1.0
+      },
+      "no-skill": {
+        "stable_precision": 0.35555555555555557,
+        "stable_recall": 0.4,
+        "stable_f1": 0.3764705882352941,
+        "repeated_precision": 0.3373493975903614,
+        "clean_case_specificity": 1.0
+      }
+    },
+    "primary": {
+      "delta": 0.6111837327523602,
+      "paired_bootstrap_ci95": {
+        "method": "paired-stratified-case-bootstrap",
+        "confidence": 0.95,
+        "iterations": 10000,
+        "seed": 20260928,
+        "strata": [
+          "finding-cases",
+          "clean-cases"
+        ],
+        "percentile_method": "nearest-rank",
+        "lower": 0.46353224834237483,
+        "upper": 0.76
+      },
+      "decision_checks": [
+        {
+          "metric": "stable_f1_delta_min",
+          "actual": 0.6111837327523602,
+          "required": 0.3,
+          "comparator": ">=",
+          "passed": true
+        },
+        {
+          "metric": "stable_f1_delta_ci95_lower_min_exclusive",
+          "actual": 0.46353224834237483,
+          "required": 0.0,
+          "comparator": ">",
+          "passed": true
+        }
+      ]
+    },
+    "descriptive_full_minus_catalog_only_stable_f1": 0.059082892416225774,
+    "descriptive_full_minus_catalog_only": {
+      "point_deltas": {
+        "stable_precision": 0.0892461197339246,
+        "stable_recall": 0.025000000000000022,
+        "stable_f1": 0.059082892416225774,
+        "repeated_precision": 0.10653445207220946,
+        "clean_case_specificity": 0.0
+      },
+      "paired_bootstrap_ci95": {
+        "stable_precision": {
+          "method": "paired-stratified-case-bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "seed": 20260928,
+          "strata": [
+            "finding-cases",
+            "clean-cases"
+          ],
+          "percentile_method": "nearest-rank",
+          "lower": 0.023170731707316983,
+          "upper": 0.16310975609756095
+        },
+        "stable_recall": {
+          "method": "paired-stratified-case-bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "seed": 20260928,
+          "strata": [
+            "finding-cases",
+            "clean-cases"
+          ],
+          "percentile_method": "nearest-rank",
+          "lower": 0.0,
+          "upper": 0.07317073170731703
+        },
+        "stable_f1": {
+          "method": "paired-stratified-case-bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "seed": 20260928,
+          "strata": [
+            "finding-cases",
+            "clean-cases"
+          ],
+          "percentile_method": "nearest-rank",
+          "lower": 0.01333333333333342,
+          "upper": 0.10165912518853693
+        },
+        "clean_case_specificity": {
+          "method": "paired-stratified-case-bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "seed": 20260928,
+          "strata": [
+            "finding-cases",
+            "clean-cases"
+          ],
+          "percentile_method": "nearest-rank",
+          "lower": 0.0,
+          "upper": 0.0
+        }
+      }
+    },
+    "historical_v17_full_stable_f1": 0.964
+  },
+  "started_at": "2026-10-19T16:36:45.375188+00:00",
+  "completed_at": "2026-10-19T17:45:24.305899+00:00",
+  "maximum_matrix_elapsed_seconds": 43200,
+  "snapshot_postcheck": "PASS",
+  "raw_answer_reparse_rescore": "PASS",
+  "retries": 0,
+  "infrastructure_errors": 0,
+  "reported_stream_guard_violations": 0,
+  "event_stream_auditability": "Tool-free execution enforced by CLI configuration and live parser guard; report retains final-answer JSON and usage, not complete CLI event streams. Per-run raw tool-event counts cannot be independently recounted afterwards.",
+  "claim_limits": [
+    "Previously observed public AI-authored development corpus; not sealed or blind",
+    "One model and CLI identity; provider backend is not attested",
+    "Zero-tool semantic comparison does not execute the product scanner or runtime probes and does not prove scanner causal benefit",
+    "Scientific result does not establish overall release readiness"
+  ],
+  "artifacts": {
+    "reports/arm-comparison.json": "53b1c104a8fd302cd0b4886263eca9db9a2fbe6f52da723aa2feb1a94620dacb",
+    "reports/catalog-only.json": "acca687e5b13fcf321fac3a0730ebdeb74b438a7c28937144f2ce045cbf2213f",
+    "reports/full.json": "eaf21980aa02d88c48c83d743764cb00ca78c6dbc1d85a793a194cf2a4228a38",
+    "reports/no-skill.json": "3281af53e194d6f1ab9a609f17260f819bbfb84e02caee9569839a1a901c97c6"
+  },
+  "published_report_comparator_replay": {
+    "status": "PASS",
+    "metrics_and_verdict_identical": true,
+    "sha256": "2c95698d7c0a08bb099122eb6d8b2e2601cb5bc31b728cef99d52a3daf2532a4",
+    "output": "published-report-replay.json in retained run cache"
+  }
+}

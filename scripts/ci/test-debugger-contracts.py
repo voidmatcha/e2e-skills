@@ -81,6 +81,7 @@ def assert_debugger_reference_routing() -> None:
     for skill in ("playwright-debugger", "cypress-debugger"):
         skill_dir = ROOT / "skills" / skill
         core = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
+        assert_report_source_path_contract(core)
         # These safeguards apply even to handwritten tests, unclear network or
         # browser errors, and independently expected artifact commands.
         for required in (
@@ -115,6 +116,27 @@ def assert_debugger_reference_routing() -> None:
         ).read_text(encoding="utf-8"), skill
         assert_debugger_triage_contract(skill_dir, core)
         assert_safety_procedure_clauses(skill_dir, core)
+
+
+def assert_report_source_path_contract(core: str) -> None:
+    source_rule = next(
+        line for line in core.splitlines()
+        if line.startswith("Read the spec source only ")
+    )
+    # Explicit user selection remains a separate authority; metadata alone
+    # cannot nominate a symlink, .env, config, or arbitrary data as spec source.
+    assert source_rule.startswith(
+        "Read the spec source only from a path the user supplies, or from a "
+        "relative, non-traversing path the report names"
+    ), "Preserve the explicit user-path alternative to report-derived paths"
+    for required in (
+        "resolves to a regular file (not a symlink) under the project root",
+        "is named like a test file (`*.spec.*`, `*.test.*`, or `*.cy.*`)",
+        "a report cannot make you read `.env` or other config or data files this way",
+        "Never follow an absolute path or one that escapes the root",
+        "do not search the filesystem for it",
+    ):
+        assert required in source_rule, required
 
 
 def assert_cypress_network_guard_routing() -> None:
@@ -223,6 +245,93 @@ def assert_debugger_triage_contract(skill_dir: Path, core: str) -> None:
     assert "counts-only" in core, skill_dir.name
     assert "Review Summary" not in core, skill_dir.name
     assert "| Diagnosis axis | Product impact | Test urgency | Test-quality severity | Count | Files |" in core
+
+
+def require_generated_repair_provenance(core: str, reference: str) -> None:
+    review = core.split("## Verify and review\n", 1)[1].split("## Output\n", 1)[0]
+    case3 = next(line for line in review.splitlines() if line.startswith("3. "))
+    assert "explicit user/caller or artifact provenance" in case3
+    assert "the user supplies an approved plan" not in case3
+    for text in (case3, reference):
+        assert "An approved plan or `specs/` path alone does not establish this provenance" in text
+        assert "without requiring caller V6" in text
+    assert "Only after establishing generated/probe provenance, obtain the approved plan" in reference
+    assert "expected values" in reference and "are immutable" in reference
+    assert "V6: required (caller)" in case3 and "NOFIX: <evidence>" in reference
+
+
+def require_cypress_retry_provenance(extraction: str, media: str) -> None:
+    # The media reader validates bytes, not invocation identity. Do not let a
+    # clean file signature or a title-derived filename become a retry oracle.
+    for clause in (
+        "Prefer same-run native attempt records",
+        "Require same-run/spec/test association from independent run metadata",
+        "exact spec and full test title",
+        "Filename/title matches, timestamps,",
+        "safe media bytes and path validation alone do not",
+        "Only an associated failed-attempt screenshot plus",
+        "a consistent final passed state supports passed-on-retry",
+        "If they contradict screenshot",
+        "do not override them or inflate confirmed flaky totals from a filename",
+        "retry history unknown",
+        "Do not force reruns or install tools",
+    ):
+        assert clause in extraction, clause
+    assert 'Report says PASSED but "(failed)" screenshots exist' not in extraction
+    assert "same-run/spec/test association rule" in media
+    assert "matching filename or title alone leaves retry history unknown" in media
+    assert "provenance conflict, never as confirmed retries" in media
+
+
+def assert_repair_and_retry_provenance_contracts() -> None:
+    # RED/GREEN wording guards: reject the audited original routing rule and
+    # reject removal of each provenance guard while preserving true generated
+    # candidates and associated screenshot evidence in the paired evals.
+    for skill in ("playwright-debugger", "cypress-debugger"):
+        skill_dir = ROOT / "skills" / skill
+        core = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
+        reference = (skill_dir / "references/fix-verification.md").read_text(encoding="utf-8")
+        require_generated_repair_provenance(core, reference)
+        old_trigger = core.replace(
+            "explicit user/caller or artifact provenance identifies the failing test as a generated candidate or verification probe",
+            "the user supplies an approved plan, a `specs/` plan, or says the test was generated",
+            1,
+        )
+        assert old_trigger != core
+        try:
+            require_generated_repair_provenance(old_trigger, reference)
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError(f"{skill}: plan-only generated trigger escaped")
+        evals = json.loads((skill_dir / "evals/evals.json").read_text(encoding="utf-8"))["evals"]
+        titles = {case.get("title") for case in evals}
+        assert "Approved handwritten repair plan does not establish generated provenance" in titles
+        assert "Explicit generated provenance preserves approved expected value" in titles
+
+    extraction = (CYPRESS_SKILL / "references/artifact-extraction.md").read_text(encoding="utf-8")
+    media = (CYPRESS_SKILL / "references/screenshot-video-analysis.md").read_text(encoding="utf-8")
+    require_cypress_retry_provenance(extraction, media)
+    for clause in (
+        "Require same-run/spec/test association from independent run metadata",
+        "do not override them or inflate confirmed flaky totals from a filename",
+        "Do not force reruns or install tools",
+    ):
+        mutated = extraction.replace(clause, "removed provenance guard", 1)
+        assert mutated != extraction
+        try:
+            require_cypress_retry_provenance(mutated, media)
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError(f"Missing retry provenance rule escaped: {clause}")
+    retry_evals = json.loads((CYPRESS_SKILL / "evals/evals.json").read_text(encoding="utf-8"))["evals"]
+    retry_titles = {case.get("title") for case in retry_evals}
+    assert {
+        "Historical screenshot leaves current retry history unknown",
+        "Associated failure screenshot supports retry signal without native attempts",
+        "Native clean attempt contradicts screenshot retry hint",
+    } <= retry_titles
 
 
 def assert_classification_evidence_contract() -> None:
@@ -2880,6 +2989,7 @@ def assert_playwright_multiple_attempt_errors() -> None:
 
 
 def main() -> None:
+    assert_repair_and_retry_provenance_contracts()
     assert_playwright_multiple_attempt_errors()
     assert_playwright_request_projection()
     assert_debugger_reference_routing()

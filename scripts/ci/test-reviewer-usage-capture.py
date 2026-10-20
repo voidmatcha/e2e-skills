@@ -413,10 +413,10 @@ class UsageCaptureTest(unittest.TestCase):
             "claude", "claude", "PROMPT", "claude-opus-5"
         )
         self.assertEqual(["claude", *CLAUDE_PLAN_TEXT_COMMAND], command)
-        # Only v13-v21 opt in; v2-v12 have no usage-capture policy.
+        # Only v13-v24 opt in; v2-v12 have no usage-capture policy.
         self.assertEqual(
             {"reviewer-holdout-v13", "reviewer-holdout-v14", "reviewer-holdout-v15",
-             "reviewer-holdout-v16", "reviewer-holdout-v17", "reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v20", "reviewer-holdout-v21"},
+             "reviewer-holdout-v16", "reviewer-holdout-v17", "reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v20", "reviewer-holdout-v21", "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"},
             self.runner.USAGE_CAPTURE_PROTOCOL_IDS,
         )
         for protocol_id in sorted(self.runner.SUPPORTED_PROTOCOL_IDS):
@@ -424,7 +424,7 @@ class UsageCaptureTest(unittest.TestCase):
                 self.v13["usage_capture"]
                 if protocol_id
                 in {"reviewer-holdout-v13", "reviewer-holdout-v14", "reviewer-holdout-v15",
-                    "reviewer-holdout-v16", "reviewer-holdout-v17", "reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v20", "reviewer-holdout-v21"}
+                    "reviewer-holdout-v16", "reviewer-holdout-v17", "reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v20", "reviewer-holdout-v21", "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"}
                 else None
             )
             self.assertEqual(

@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/assets/hero.png" alt="e2e-skills — Agent skills for Playwright and Cypress: generate, review, and debug reliable end-to-end tests." width="100%" />
+  <img src="docs/assets/hero.png" alt="e2e-skills: Agent skills for Playwright and Cypress: generate, review, and debug reliable end-to-end tests." width="100%" />
 </div>
 
 <h1 align="center">E2E Skills</h1>
@@ -17,80 +17,74 @@
 </p>
 
 <p align="center">
-<strong>🇺🇸 English</strong> | <a href="README.ko.md">🇰🇷 한국어</a> | <a href="README.ja.md">🇯🇵 日本語</a> | <a href="README.zh-cn.md">🇨🇳 简体中文</a>
+<strong>English</strong> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-`e2e-skills` gives AI coding agents four focused workflows for Playwright and Cypress E2E work: generate Playwright coverage, review existing specs or PR/diff-scoped test changes for false greens, debug failed Playwright reports, and debug failed Cypress reports. It also includes a deterministic scanner for the mechanically detectable subset of the review catalog.
+`e2e-skills` gives AI coding agents four skills for generating, reviewing, and debugging Playwright/Cypress end-to-end (E2E) tests. A skill is a set of instructions the agent follows for a task.
 
 <p align="center">
   <a href="https://www.kimi.ai/resources/software-testing-skills">
     <img src="docs/assets/kimi-software-testing-skills.png" alt="Kimi's official website listing e2e-skills in AI Software Testing Skills for Smarter QA Automation" width="100%" />
   </a>
   <br />
-  <sub><a href="https://www.kimi.ai/resources/software-testing-skills">Featured on Kimi's official website: “AI Software Testing Skills for Smarter QA Automation”.</a></sub>
+  <sub><a href="https://www.kimi.ai/resources/software-testing-skills">Featured on Kimi's official website: "AI Software Testing Skills for Smarter QA Automation".</a></sub>
 </p>
 
-Use `e2e-reviewer` as an independent quality gate for human-written or AI-generated specs: it checks whether a passing test actually proves the behavior named in its title.
+A passing test can still miss a broken feature. `e2e-skills` helps check whether tests prove the behavior they name.
 
-Evidence differs by skill: the reviewer carries the strongest measured results, the generator's earlier 2.x pipeline was measured on public tasks and the 3.0.0 router has only development-stage runs of the official agents with its thin rules and scanner gate (three models, six synthetic tasks), and the debuggers are safe artifact readers that report only a cause the artifact supports, not a measured accuracy gain over a plain prompt. [Benchmark status](benchmarks/STATUS.md) has one evidence card per skill.
+`e2e-reviewer` uses a code scanner to find possible problems, then reads the test and surrounding code to decide whether they are real. When needed, it can propose changing an assertion or introducing a bug in an app copy to check what the test catches. These additional checks run on request in an approved local environment.
+
+`e2e-reviewer` findings led to [15 merged upstream PRs](#merged-upstream-fixes). See the fixes below.
 
 | Need | Skill | Result |
 | --- | --- | --- |
-| Generate new Playwright coverage | `playwright-test-generator` | Playwright specs written from observed locators, then scanner-checked and run once |
-| Review Playwright/Cypress tests or PR/diff changes | `e2e-reviewer` | P0/P1/P2 findings with concrete fixes and introduced/worsened/pre-existing attribution, each carrying the evidence it was decided on |
-| Debug a failed Playwright run | `playwright-debugger` | F1–F15 root cause, evidence, and fix |
-| Debug a failed Cypress run | `cypress-debugger` | F1–F15 root cause, evidence, and fix |
-| Run a deterministic local scan | `skills/e2e-reviewer/scripts/scan.sh` | Mechanical candidates without target-project packages |
+| Generate new Playwright coverage | `playwright-test-generator` | Playwright tests based on the observed page, with scanner and test-execution results |
+| Review Playwright/Cypress tests or PR/diff changes | `e2e-reviewer` | Problems ranked by severity, with evidence and suggested fixes; for changes, whether each problem is new, worsened, or pre-existing |
+| Debug a failed Playwright run | `playwright-debugger` | Likely cause, supporting evidence, and a suggested fix |
+| Debug a failed Cypress run | `cypress-debugger` | Likely cause, supporting evidence, and a suggested fix |
+| Run a deterministic local scan | `skills/e2e-reviewer/scripts/scan.sh` | Possible code problems without installing the target project’s packages |
 
-The generator is a router: when the official Playwright planner and generator are installed and their MCP tools are visible, it delegates to them with a short rules checklist (`thin-rules.md`) and safety instructions prepended, runs the reviewer scanner, and runs the tests once; when they are not set up, it shows the setup guide and stops. Its evidence is arms D (the official generator plus the thin rules) and E (D plus a scanner step that fixes P0 and P1 and runs the tests once) of [thin-eval](benchmarks/generator-thin-eval-v1/README.md) ([stage 2 results](benchmarks/generator-thin-eval-v1-stage2/RESULTS.md)) (development stage, 3 models, 6 synthetic tasks; Codex only): every D and E cell used the official MCP tools, with no timeouts, retries or safety hits. The shipped skill adds the planner step, the safety text, the per-file hardened scanner invocation with a 3-pass cap, and the baseURL and disposable-stack checks; none of these were measured, so its scanner gate is similar to E's, not the measured E procedure. No quality or cost claim is made. The comparison's CLI arms are not shipped: the CLI path was removed because its equivalence to the official agents is not shown. That departs from the preregistered shipping mapping (`ship_thin`: the official agents if present, otherwise the CLI) by owner decision; the shipped router has no CLI fallback and shows the setup guide instead, and the frozen benchmark files are untouched. The debuggers start from failed-run artifacts and return a classified root cause, supporting evidence, and a concrete fix.
+Review results use P0/P1/P2 for severity: P0 means a test can pass despite a broken feature, P1 concerns reliability or diagnosis, and P2 concerns maintenance. Debuggers use F1–F15 to label 15 failure categories, such as timing, selectors, and authentication.
 
-False-green detection is one important part of the review workflow, not the bundle's entire purpose. The curated examples below include [15 merged upstream PRs](#merged-upstream-fixes) based on `e2e-reviewer` findings, including Storybook, SvelteKit, code-server, Strapi, Carbon Design System, Ghost, and MUI X.
-
-> In code-server, a committed `it.only` silently disabled eight tests for seven months. One skipped test was already broken while CI remained green.
-
-**Executable example:** [React optimistic-write proof](examples/react-optimistic-write/README.md) shows why optimistic UI needs request and persistence proof, not just visible state.
-
-## How it fits
-
-If you're comparing framework-specific assistants, the split is simple:
-
-| Need | Best fit |
-| --- | --- |
-| Generate Playwright coverage from a plan | [Playwright Test Agents](https://playwright.dev/docs/test-agents) |
-| Author, explain, or tap into Cypress workflows with official docs | [Cypress AI Skills / Cypress AI Toolkit](https://docs.cypress.io/app/tooling/ai-skills) |
-| Review Playwright/Cypress specs for false greens and debug failing reports | `e2e-skills` |
-
-`e2e-skills` complements those official toolkits. It focuses on whether a test actually proves the behavior it names, whether a change introduced a silent pass, and what a failing Playwright or Cypress artifact says happened.
+**Test generation:** After installation, tell the agent which local project to test. It checks the required setup and guides you through anything missing.
 
 <a id="merged-upstream-fixes"></a>
 
 ## Merged upstream fixes
 
-The curated list below contains **15 merged upstream PRs**, not the total number of accepted contributions. These self-selected cases show practical use and let readers inspect the fixes; they are not a representative validation sample or an accuracy estimate. Separately, [Field review v1](benchmarks/field-review-v1/README.md) records a snapshot of this account's pull requests that name the skill — **29 submitted, 16 merged, 6 closed without merging, 7 open**. That mechanically selected snapshot and the curated list have different inclusion rules; do not divide one list's merge count by the other's submission count.
+`e2e-reviewer` findings have led to **15 merged upstream PRs**. Every patch is linked below.
 
-The repositories below had **493,657 combined GitHub stars** in a GitHub API snapshot taken on 2026-09-16. Stars indicate project scale and visibility, not reviewer accuracy or endorsement.
+The repositories below had **496,650 combined GitHub stars** on 2026-10-20 (GitHub API snapshot).
 
 | Repository | GitHub Stars | PR | Pattern fixed |
 | --- | ---: | --- | --- |
-| Storybook | ★91.1k | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Missing `await` on Playwright assertions |
-| code-server | ★79.3k | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | Focused test leak, matcher-less `expect`, discarded visibility read |
-| Strapi | ★73.2k | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | Discarded navigation/state checks |
-| Ghost | ★55.3k | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | Promise-valued disabled-state assertion |
-| Cal.com | ★48.5k | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | Weak assertion patterns in E2E flow |
-| Bruno | ★47.0k | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | Assertion and wait reliability fixes |
+| Storybook | ★91.3k | [storybookjs/storybook#34141](https://github.com/storybookjs/storybook/pull/34141) | Missing `await` on Playwright assertions |
+| code-server | ★79.7k | [coder/code-server#7845](https://github.com/coder/code-server/pull/7845) | Focused test leak, matcher-less `expect`, discarded visibility read |
+| Strapi | ★73.3k | [strapi/strapi#26630](https://github.com/strapi/strapi/pull/26630) | Discarded navigation/state checks |
+| Ghost | ★55.6k | [TryGhost/Ghost#28712](https://github.com/TryGhost/Ghost/pull/28712) | Promise-valued disabled-state assertion |
+| Cal.com | ★49.2k | [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486) | Weak assertion patterns in E2E flow |
+| Bruno | ★47.7k | [usebruno/bruno#8317](https://github.com/usebruno/bruno/pull/8317) | Assertion and wait reliability fixes |
 | Qwik | ★22.1k | [QwikDev/qwik#8777](https://github.com/QwikDev/qwik/pull/8777) | Locator/handle existence checks |
-| SvelteKit | ★20.8k | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Floating Playwright assertions |
-| Element Web | ★13.5k | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Locator null-check style assertions |
-| FiftyOne | ★11.1k | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Locator-defined check replaced with a visible duplicate-name error assertion |
-| Carbon Design System | ★9.5k | [carbon-design-system/carbon#22564](https://github.com/carbon-design-system/carbon/pull/22564) | Locator truthiness replaced with web-first assertions |
-| Rancher Desktop | ★7.3k | [rancher-sandbox/rancher-desktop#10557](https://github.com/rancher-sandbox/rancher-desktop/pull/10557) | `not.toBeNull()` locator checks replaced with visible WSL integration-name assertions |
+| SvelteKit | ★20.9k | [sveltejs/kit#16068](https://github.com/sveltejs/kit/pull/16068) | Floating Playwright assertions |
+| Element Web | ★13.6k | [element-hq/element-web#32801](https://github.com/element-hq/element-web/pull/32801) | Locator null-check style assertions |
+| FiftyOne | ★11.2k | [voxel51/fiftyone#7851](https://github.com/voxel51/fiftyone/pull/7851) | Locator-defined check replaced with a visible duplicate-name error assertion |
+| Carbon Design System | ★9.6k | [carbon-design-system/carbon#22564](https://github.com/carbon-design-system/carbon/pull/22564) | Locator truthiness replaced with web-first assertions |
+| Rancher Desktop | ★7.4k | [rancher-sandbox/rancher-desktop#10557](https://github.com/rancher-sandbox/rancher-desktop/pull/10557) | `not.toBeNull()` locator checks replaced with visible WSL integration-name assertions |
 | Apache Zeppelin | ★6.7k | [apache/zeppelin#5180](https://github.com/apache/zeppelin/pull/5180) | Always-true assertions and guarded checks that silently skipped |
-| MUI X | ★5.8k | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | UI handle checks replaced with state assertions |
-| module-federation/core | ★2.6k | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Redundant blanket `uncaught:exception` suppression in a Cypress spec |
+| MUI X | ★5.9k | [mui/mui-x#22982](https://github.com/mui/mui-x/pull/22982) | UI handle checks replaced with state assertions |
+| module-federation/core | ★2.7k | [module-federation/core#4826](https://github.com/module-federation/core/pull/4826) | Redundant blanket `uncaught:exception` suppression in a Cypress spec |
 
 ## See a false-green test
 
-A **false-green** test passes whether or not the behavior it names works. It is not a flaky test: a flaky test fails sometimes, so retry dashboards and flake analytics eventually see it. A false-green test never fails — including when the product is broken — so pass/fail monitoring alone will not surface it.
+A **false-green** test passes even when the behavior it is meant to check is broken. The change below checks the visible message instead of merely checking that a Locator object exists.
+
+```diff
+- expect(page.getByText('Welcome back')).toBeDefined()
++ await expect(page.getByText('Welcome back')).toBeVisible()
+```
+
+<details>
+<summary>Full example and scanner output</summary>
 
 This Playwright test looks reasonable but proves only that `Locator` objects were created:
 
@@ -104,14 +98,7 @@ test('shows the welcome message', async ({ page }) => {
 });
 ```
 
-A useful test verifies visible behavior and can fail when that behavior breaks:
-
-```diff
-- expect(page.getByText('Welcome back')).toBeDefined()
-+ await expect(page.getByText('Welcome back')).toBeVisible()
-```
-
-The bundled scanner catches the false-green assertions without project configuration. A shortened run shows the actionable lines:
+The bundled scanner catches the false-green assertions without project configuration. Here is the relevant output:
 
 ```console
 $ /bin/bash -p skills/e2e-reviewer/scripts/scan.sh tests/
@@ -127,91 +114,86 @@ Because this run reports P0 findings, `scan.sh` exits 1.
 
 `eslint-plugin-playwright` also flags this shape via `no-unnecessary-assertions`; enable it so commit-time lint owns what it can and the scanner fills the gaps.
 
-## Check generated tests before you trust them
+**Executable example:** [React optimistic-write proof](examples/react-optimistic-write/README.md) shows why optimistic UI needs request and persistence proof, not just visible state.
 
-A good matcher is not enough; the test must go red when behavior breaks. As of 3.0.0 the generator does not prove that. It runs the `e2e-reviewer` scanner when that skill is installed, fixes every P0 and P1 hit (at most three passes), and runs the project's tests once; it reports a skipped gate or run as not complete. It no longer inverts assertions, injects faults, or asks for an independent re-review, so ask `e2e-reviewer` for a review when you need one. The 2.x versions of those steps stay at tag `v2.0.1`.
+</details>
 
-On request, the reviewer can execute a [portable assertion or app-fault probe](skills/e2e-reviewer/references/runtime-probes.md) on a prepared, trusted local project using its existing runner. A frozen JSON plan drives normal/changed/restored copies and retains native reports and observation artifacts. Assertion sensitivity and app-fault detection are separate results; this does not automatically prove overall test adequacy. Project preparation and approved commands remain required; the executor does not install dependencies or provide an OS sandbox.
+## Talk: Can You Trust E2E Tests That Pass?
 
-Use `run-probe.py` for an explicit portable plan, or the source-checkout-only `check.py` pilot when a registered adapter covers the exact project snapshot. Installed skill copies use `run-probe.py`; the fixed `check.py` adapters are not bundled with them. Both are reviewer helpers, not additional public skills. [Development integration](benchmarks/release-readiness-v1/README.md#portable-integration) exercised both frameworks on two known OSS cases; it does not establish autonomous fault discovery or general accuracy.
+How the problem led to lint rules, a scanner, mutation and app-fault checks, and merged open-source fixes. Click the cover to read the slides.
+
+<p align="center">
+<a href="https://docs.google.com/presentation/d/15EJEATNRDfUeaNwVCpKsUMg066u5TzFepI5j1z8dSJE/">
+  <img src="docs/assets/talk-cover-v2.png" alt="Talk: Can You Trust E2E Tests That Pass?" width="640" />
+</a>
+</p>
+
+<p align="center">
+  <a href="https://docs.google.com/presentation/d/15EJEATNRDfUeaNwVCpKsUMg066u5TzFepI5j1z8dSJE/">Read the slides on Google Slides</a>
+</p>
 
 ## Install and try it
 
+### Install with your coding agent (recommended)
+
+To include test generation, paste the prompt below into Claude Code or Codex and identify your existing local Playwright project:
+
+```text
+Install https://github.com/voidmatcha/e2e-skills using its install.sh for my current host and Playwright project.
+```
+
+1. Tell your agent which existing local Playwright project to use. The installer prepares the skills, dedicated agents, official Playwright agents and project MCP configuration.
+2. Restart your coding agent and approve the MCP tools: the tools that let it control the browser and write Playwright tests.
+3. Ask it to generate tests. The agent checks readiness and guides you through anything missing.
+
+After this setup, you do not need to repeat the manual installation steps. Use the [installation guide](docs/installation.md) only for prerequisites, conflicts or manual setup.
+
+**Only reviewing or debugging?** Tell the agent to install the skills and dedicated agents only, without Playwright generator setup. Official Playwright agents and the `playwright-test` MCP server are required for generation, not for reviewing or diagnosing existing Playwright/Cypress tests.
+
+<details>
+<summary>Other installation methods: skills.sh and plugins</summary>
+
+### Install skills with skills.sh
+
+For all hosts supported by [skills.sh](https://skills.sh/voidmatcha/e2e-skills), install the four skills with one command:
+
+```bash
+npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
+```
+
+This installs skills only; dedicated agents and Playwright generator setup are separate. To target one host, replace `--all` with `-a <agent>` from the [supported agents](https://github.com/vercel-labs/skills#supported-agents). The CLI version is pinned.
+
 ### Claude Code
 
-Install from the plugin marketplace:
+Alternatively, install the plugin, which includes the four skills and two dedicated agents:
 
 ```text
 /plugin marketplace add voidmatcha/e2e-skills
 /plugin install e2e-skills@voidmatcha
 ```
 
-Or install copied skills through the pinned cross-agent CLI:
-
-```bash
-npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a claude-code
-```
+For generation, use the all-in-one setup above or follow the [installation guide](docs/installation.md).
 
 ### Codex
 
-Install the four skills into `~/.agents/skills/`:
-
-```bash
-npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a codex
-```
-
-For Codex delegation, `e2e-reviewer`, `playwright-debugger`, and `cypress-debugger` can attempt native-role delegation or fall back to their equivalent inline procedure. `playwright-test-generator` delegates to the official Playwright generator, which works only with a session-wide `playwright-test` MCP server: on the Codex CLI builds measured in [`benchmarks/subagent-routing-v1/`](benchmarks/subagent-routing-v1/README.md) (0.153.4 and 0.154.0) `spawn_agent` cannot select a role, so the agent-scoped server that `init-agents` declares is unreachable, and the thin-eval harness (Codex 0.159.3) declared the server session-wide for that reason rather than testing the agent-scoped route; newer builds are not re-measured. `init-agents` does not add the session-wide entry, so the user adds it to trusted-project `.codex/config.toml` or user `~/.codex/config.toml`. Without it the skill shows the setup guide and stops.
-
-**As of 2026-09, native-role delegation on Codex is not verified working and should not be relied on.** A measured pilot found it fails deterministically with an internal `collab spawn failed: no thread with id` error — a known, still-open upstream issue ([openai/codex#41474](https://github.com/openai/codex/issues/41474), [#33672](https://github.com/openai/codex/issues/33672)) — and that even without that error, the model's own self-reported success cannot be trusted. See [`benchmarks/subagent-routing-v1/`](benchmarks/subagent-routing-v1/README.md) for the full evidence. Every skill's inline fallback reaches the same verdict regardless, so correctness is unaffected — but installing the named agents currently buys no measured benefit on Codex.
-
-Those native roles are the two optional subagents `e2e-finding-verifier` and `e2e-failure-classifier`, and **Codex cannot install them from a plugin.** The Codex plugin manifest has no agents field, and agent roles load only from config layers, so neither `codex plugin add` nor the `skills` CLI registers them. Two supported paths do: run `bash scripts/dev/install-codex-agents.sh` to copy both into `~/.codex/agents/` globally, or work from a checkout of this repository, where a Codex session picks up `.codex/agents/` with no install step. Skipping both is fine — you get the inline fallback, which is the reliable path on this host today. See [AGENTS.md](AGENTS.md) for the packaging boundary.
-
-Alternative Codex plugin marketplace path:
+Alternatively, install the four skills through the plugin marketplace:
 
 ```text
 codex plugin marketplace add voidmatcha/e2e-skills
 codex plugin add e2e-skills@voidmatcha
 ```
 
-### Other agents
+The plugin does not install the two dedicated agents. For those, run `bash scripts/dev/install-codex-agents.sh` from this checkout. Review and debugging also work inline without them.
 
-Install globally for every host supported by the `skills` CLI:
+For generation, use the all-in-one setup above or follow the [installation guide](docs/installation.md#codex).
 
-```bash
-npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all
-```
-
-To target one host, replace `--all` with `-a <agent>`; see the [supported agents](https://github.com/vercel-labs/skills#supported-agents). The commands pin the reviewed CLI release instead of executing an unreviewed newer version.
-
-### Manual Claude Code checkout
-
-Keep the checkout outside `~/.claude/skills/`, then link each public skill directory:
-
-```bash
-git clone https://github.com/voidmatcha/e2e-skills.git "$HOME/.claude/e2e-skills"
-mkdir -p "$HOME/.claude/skills"
-
-skip_link=
-for skill in playwright-test-generator e2e-reviewer playwright-debugger cypress-debugger; do
-  if [ -e "$HOME/.claude/skills/$skill" ] || [ -L "$HOME/.claude/skills/$skill" ]; then
-    echo "Already exists, nothing linked: $HOME/.claude/skills/$skill" >&2
-    skip_link=1
-  fi
-done
-
-if [ -z "$skip_link" ]; then
-  for skill in playwright-test-generator e2e-reviewer playwright-debugger cypress-debugger; do
-    ln -s "$HOME/.claude/e2e-skills/skills/$skill" "$HOME/.claude/skills/$skill"
-  done
-fi
-```
-
-If any of the four names already exists under `~/.claude/skills/`, the commands print that path and link nothing, so an existing skill is never replaced and no link is nested inside it. Run `/skills` in Claude Code and confirm all four names appear.
+</details>
 
 ### First prompts
 
 ```text
 Review my Playwright tests in tests/e2e with e2e-reviewer.
+If useful, offer an assertion mutation or app-fault probe as a follow-up.
 ```
 
 ```text
@@ -223,66 +205,56 @@ Debug the failed Playwright report in playwright-report/.
 Debug the failed Cypress report in cypress/reports/.
 ```
 
-## Scope and limits
+## Supported environments
 
-This bundle keeps the browser-E2E layer thin and high-value, in line with the standard test-pyramid/hourglass guidance to spend E2E coverage on the checks that matter most rather than on test count. Use it to generate or review E2E tests and to diagnose failed Playwright/Cypress runs. Use it alongside the application and its real E2E suite, not instead of them; it is not a general lint preset or a framework-agnostic test tool. Playwright and Cypress are supported; new-test generation currently targets Playwright only.
+<details>
+<summary>Supported environments and execution requirements</summary>
+
+Use the skills alongside a real application and its E2E suite. Review and debugging support Playwright and Cypress; generation supports Playwright only.
 
 The bundled shell scripts and artifact readers target conventional macOS/Linux layouts with `/bin/bash` and the fixed system executable paths required by their launchers. Windows users need a compatible WSL distribution and artifacts inside the WSL filesystem; native Windows is not supported. NixOS and Nix-, pyenv-, Conda-, or nvm-only tool installations are not universally auto-discovered. The reviewer scanner supports validated absolute `E2E_SMELL_*_BIN` overrides; this does not imply the same overrides exist in the debugger launchers. Missing trusted tools stop the affected operation; do not bypass that boundary with ambient `PATH` lookup. Resolve skill resources from the actual host-provided skill location, including plugin caches and custom installs, not a guessed home directory.
 
-A green generated test is not enough: it may assert a `Locator` or `Promise`, observe state unrelated to the behavior named by the test, or leave its primary assertion non-load-bearing. The generator therefore runs the `e2e-reviewer` scanner and fixes every P0 and P1 hit before it runs the project's tests once. The scanner is deterministic and covers only the mechanical subset of the catalog; it does not show that an assertion can fail.
+The generator prepends `thin-rules.md` and safety instructions to the official planner and generator, then runs the reviewer scanner and the new tests. It installs nothing, changes no agent or MCP configuration, and uses no CLI fallback or healer. Missing configuration is reported with setup guidance.
 
-The generator reads `baseURL` from `playwright.config.*` and delegates to the official Playwright planner and generator only when their agent definitions and `playwright-test` MCP tools are already present, with `thin-rules.md` and the safety instructions prepended to the prompt. When they are not set up it shows the setup guide (`init-agents`, which writes agent definitions, `specs/README.md` and a seed spec into the repository; then the MCP server declaration with tool approval, which on Claude Code is approving the `.mcp.json` prompt `init-agents` wrote and on Codex is a separate session-wide entry) and stops; after delegation it greps the written specs and the generator output for non-loopback URLs and reports BLOCKED on any hit. It installs nothing, writes no agent or MCP configuration, never runs the official healer, and never weakens an assertion to make a test pass; a failing test goes to `playwright-debugger` or is fixed by hand.
+Generation uses the loopback addresses common in local development (`localhost`, `127.0.0.1`, or `::1`). Before any browser action, including reads, the frontend, API, database and environment must form a named disposable stack. Executable navigation and request destinations must resolve to approved origins, matching scheme, hostname and effective port; separately approved loopback API destinations are allowed. Other or unresolved destinations are BLOCKED. These checks do not provide browser-wide origin containment.
 
-Delegation is loopback-only because the official agents' browser cannot pin an origin: production, shared, unnamed and remote targets are refused, including a remote origin you name as disposable, and the skill asks for a loopback stack instead. The report lists every check that was not done; if a reviewer fault check is available it is offered as an opt-in follow-up, never reported as measured.
+Only proven generation errors permit up to two parent-owned repairs. Required outcomes and expected values stay intact; writes are safely reset and origin/scanner gates repeated using the same approved execution method. Product defects, uncertain causes, and remaining failures stay BLOCKED. See the [generator contract](skills/playwright-test-generator/SKILL.md) for the full procedure.
 
-To go back to the 2.x generator (approval tables and V1–V6), install the `v2.0.1` tag: `npx --yes skills@1.5.21 add voidmatcha/e2e-skills#v2.0.1 --skill '*' -g -a claude-code` for the skills CLI, or `/plugin marketplace add voidmatcha/e2e-skills#v2.0.1` followed by `/plugin install e2e-skills@voidmatcha` for the Claude Code marketplace. Both forms were checked against that tag in a throwaway directory (the skills CLI at project scope without `-g`); replacing an existing `voidmatcha` marketplace entry was not checked.
+Debugger and probe execution require a trusted project and approval of the exact command, including environment variables and flags. Reports identify skipped checks; mutation and app-fault probes are optional follow-ups, never reported as measured without execution.
 
-## How the review works
+Version history and the previous generator workflow are documented in [CHANGELOG.md](CHANGELOG.md).
 
-Generating valid test code is not the same as generating a test that fails when the product is wrong. The workflow separates mechanical detection from semantic judgment:
+</details>
 
-1. The scanner finds deterministic candidates such as Locator truthiness, focused tests, missing `await`, and blanket error suppression.
-2. `e2e-reviewer` reads test names, actions, assertions, helpers, Page Objects, fixtures, and configuration before confirming a finding.
-3. Findings use stable pattern IDs and P0/P1/P2 severity so fixes and regressions remain comparable.
-4. After a fix, the workflow reruns the scanner and the project's approved E2E or lint command.
+## Check whether generated tests catch bugs
 
-A scanner match is a candidate, not a verdict. Cross-file findings such as missing authentication, optimistic UI without call proof, name/assertion mismatch, and fixtures blocked by render guards require semantic review.
+The official Playwright agents handle generation. The generator skill then runs the `e2e-reviewer` scanner when installed, fixes P0/P1 findings in at most three passes, and runs the project's tests. Missing or skipped checks are reported as incomplete. Request `e2e-reviewer` separately for a semantic review of the generated tests.
+
+Start with a regular `e2e-reviewer` review of whether the tests check the intended behavior. When a specific question needs runtime evidence, add a probe for only that assertion or behavior. You choose where to spend the extra tokens and execution time; mutation and app-fault probes do not run automatically on every review:
+
+- **Assertion mutation:** reverse an assertion in a copy of the test and check whether it fails. This checks that the assertion can fail, not whether the original test catches an app bug.
+- **App-fault injection:** introduce a specific bug in a copy of the app and check whether the unchanged test catches it.
+
+For example: “Check whether this test catches a broken save operation.” The reviewer examines the local project and proposes a check. Execution requires a trusted, prepared local environment and your approval of the commands. Results apply to the selected assertion or bug; they do not prove that every bug will be caught.
+
+See the [execution procedure and requirements](skills/e2e-reviewer/references/runtime-probes.md) and [two OSS workflow examples](benchmarks/release-readiness-v1/README.md#portable-integration).
 
 ## Evidence and limits
 
-The current evidence supports a narrow claim: the project has behavior-backed development evidence and a curated list of 15 merged upstream fixes, but it does not claim generalized reviewer accuracy.
+The 3.0.0 checks cover installation, scanner behavior, safety rules, and selected Playwright/Cypress validation runs. The [validation record](benchmarks/release-readiness-v1/README.md) identifies the workflows exercised, the evidence retained, and the scope of each result.
 
-The mechanical snapshot publishes its own denominator, with one known limit. [Field review v1](benchmarks/field-review-v1/README.md) sweeps every pull request this account opened that names the skill and reports whatever GitHub says: 29 submitted across 26 repositories, 16 merged, 6 closed without merging, 7 open. Generating it from GitHub rather than from a hand-kept list found seven the roadmap had omitted — two merges and three rejections among them. A pull request that does not name the skill is invisible to the sweep, so the denominator is a lower bound: [calcom/cal.diy#28486](https://github.com/calcom/cal.diy/pull/28486), merged and listed above, is one such pull request.
+The [October 20 checks](benchmarks/release-readiness-v1/README.md#october-20-successor) exercise isolated installation, official-agent/MCP test generation and execution in Claude Code and Codex, and selected Cypress assertion-mutation and app-fault probes. The original generator cohort and later replay remain separately reported.
 
-That is still not a precision figure. A merge means a maintainer accepted a patch, not that a finding's severity was classified correctly, and the submission footer is optional, so an unmarked rejection would bias the rate upward. What it does give is adjudication this project does not control.
+<details>
+<summary>Benchmark scope and model results</summary>
 
-The deterministic scanner is measured separately. [Field scan v1](benchmarks/field-scan-v1/README.md) reruns the same 12 pinned public repositories with the original 30-minute budget and default candidate limits. **10/12 scans completed with no suppressed rules and reported 0 P0 hits**; 2 scans timed out. Those durations predate the 2026-09-18 hot-path change ([scanner hot path v1](benchmarks/scanner-hot-path-v1/README.md)), which cut per-hit cost about fourfold on a dense fixture; the ledger rows are not re-measured here. A 2026-09-19 change to scope validation took a full-root scan of `ever-gauzy`, one of the two timeouts, from 5,932 to 1,226 seconds with byte-identical output, measured outside this ledger's protocol. The ledger lists triage candidates separately and does not establish recall or precision. The earlier claim of 294 confirmed `#3` hits was a scanner classification defect; its correction and historical differential evidence are documented there. A separate [completion extension](benchmarks/field-scan-v1-extension/README.md), under a different disclosed protocol (no wall-clock cutoff, bounded limits raised to their documented hard ceilings), later completed the originally designed 12-repository sample: both former timeout repositories reached a natural scanner exit with 0 suppressed rules and 0 P0 hits. It does not rewrite the frozen v1 ledger above.
+Reviewer results depend on the model: on the same frozen snapshot and 36 public development cases with five repetitions per arm, `gpt-6-sol` passed [v22](benchmarks/reviewer-holdout-v22/README.md), `gpt-6.1-sol` passed [v24](benchmarks/reviewer-holdout-v24/README.md), and `gpt-6-luna` failed [v23](benchmarks/reviewer-holdout-v23/README.md), with all three models completing all 540 calls in each run. These tool-free results measure supplied instructions, not scanner benefit or accuracy on unseen projects. See [benchmark status](benchmarks/STATUS.md) for model-specific scores and snapshot limits.
 
-- The strongest independent signal is not a score: the always-passing-Locator-assertion pattern (`#4f`) was accepted into the official `eslint-plugin-playwright` as its `no-unnecessary-assertions` rule (see [roadmap](docs/roadmap.md) for the merged pull request). An external maintainer with no stake in this project adopted the rule definition. It also means current lint now catches that shape, so this project no longer claims it.
-- `docs/rule-self-audit.md` documents defects found in this project's *own* P0 rules by an adversarial two-model audit, including rules that a single reviewer had passed.
-- Browser fault injection completed **36/36 cells (12 fault operators x 3 expected outcomes)** across Playwright/Cypress fixtures. This is a harness self-test: the app, the strong test, the injected fault, and the weak test were all written here, so it shows the detector fires as designed, not that it generalizes.
-- [Healer perturbation v1](benchmarks/healer-perturbation-v1/README.md) completed **30/30 frozen Codex cells** and returned `REJECT`: both the guarded official-healer prompt and this repository's proposed Step 7 workflow weakened all three impossible-repair honesty controls. The result rejects those healer paths as safe defaults; it does not measure Claude, general healer quality, or reviewer accuracy, and it changed no product instructions.
-- The exact reviewer benchmark covers **12 proven false-green cases and 12 clean guards**; ten fault cases are byte-identical operator mutants.
-- [Real-code fix pairs](benchmarks/fixpair-v1/README.md) publish B+C+D: on `gpt-6-sol`, **25/33 strict recall with the skill versus 13/33 without it**, with **0/33 AFTER false alarms** in both arms. The controlled three-model rerun narrows and varies that gap: after the scanner fix, strict BEFORE hits are **26 versus 14** (`gpt-6-sol`), **27 versus 22** (`gpt-6-astra`), and **27 versus 21** (`claude-sonnet-5-5`) of 33. A second-model `gpt-6-astra` batch-B run scored **10/15 versus 10/15**, also with **0/15** alarms in both arms.
-- [Semantic mutants v1](benchmarks/semantic-mutants-v1/README.md) has model-injected defects in real specs: S1 strict **7/10 versus 5/10** (one scored original-control alarm each, both on a control that still has an edit/create mismatch); S2 **8/9 versus 2/9** (zero alarms each); S3 **5/6 versus 2/6** (zero versus two alarms). These are one-run development measurements; #12 is not covered.
-- [Debugger skill-effect v1](benchmarks/debugger-skill-effect-v1/README.md) is the first live debugger measurement: on 30 fresh F1–F15 cases, the skill text raised zero-tool F-code accuracy over a legend-only prompt on both hosts, Claude Sonnet **0.944 vs 0.756** and Codex Sol **1.000 vs 0.800**, with paired 95% intervals above zero; model-authored public cases with author-planted lookalikes and a legend-only baseline, not a release claim and not shown to carry over to real failures (see v2). [Debugger skill-effect v2](benchmarks/debugger-skill-effect-v2/README.md) then used 26 real upstream fixes as truth and a taxonomy-free baseline: strict mechanism match **0.872 skill vs 0.897 taxonomy-free** (lift −0.026, CI −0.090 to +0.026), `FAIL`; blind mappers agreed on an F-code for only 15/26 real fixes. [Debugger skill-effect v3](benchmarks/debugger-skill-effect-v3/README.md) then tested an F1/F14/F11/F7 tie-break on 28 further real fixes: mechanism match unchanged (**0.810 vs 0.798**, `FAIL`), F-code exact match on agreed labels **0.638 → 0.812** (CI lower bound 0.000), but those labels were assigned with the new tables and the 5 disputed cases were excluded, so it favours the new text and is not evidence of better diagnosis; mapper agreement 23/28. That tie-break was tested in v3 only and is not shipped in 2.0.0. [Debugger skill-effect v4](benchmarks/debugger-skill-effect-v4/README.md) gave tool-enabled calls raw Playwright reports with deterministic scoring and was `INCONCLUSIVE` (full match **0.882 with the skill vs 0.917 without**, 2.6× cost). Across v1–v4 no root-cause lift is shown.
-- [Debugger skill-effect v5](benchmarks/debugger-skill-effect-v5/README.md) tested a lighter answer contract on 14 real fixes and found it indistinguishable from the shipped text (strict match 0.762 vs 0.738, the taxonomy-free prompt 0.786), so the 2.0.0 debugger text was left unchanged; 2.0.1 later changed its Root Cause and Fix wording after a [local development comparison](benchmarks/debugger-dev-comparison-v1/README.md), and 3.0.0 minimized both debugger entrypoints; a zero-tool development comparison ([v8](benchmarks/debugger-skill-effect-v8/README.md); development stage, 1 model, 107 development cases) found the shipped lean text not worse than the 2.0.1 text by the preregistered margins, which is not an improvement. The claimed value of the debuggers is safe artifact handling, not higher accuracy than a plain "diagnose the root cause" prompt.
-- For the retired 2.x generator: [Generator skill-effect v1](benchmarks/generator-skill-effect-v1/README.md) is the first live measurement of the generator: on ten fresh small apps with deterministic fault-kill scoring, `claude-sonnet-5-5` with the skill delivered specs that were green 30/30 and killed **150/150** seeded faults, versus an effective kill rate of **0.927** without it, at 6.05 times the cost. The frozen verdict is `INCONCLUSIVE`: the baseline sat above the 0.90 ceiling, so no lift can be claimed. Skill-written specs survived a markup refactor in 23/30 calls versus 12/28.
-- For the retired 2.x generator: [Generator skill-effect v2](benchmarks/generator-skill-effect-v2/README.md) screened 24 new, harder brief-style tasks with the no-skill arm before comparing arms: only **3 of 24** fell in the pre-stated 0.40–0.80 band (the 44 green no-skill deliverables killed **216/220** seeded faults), so the planned full / lean / no-skill comparison was not run and the verdict is `INCONCLUSIVE` (thin pool). Fault-kill rate has hit a ceiling for this model in two protocols; refactor survival and green-on-correct-app still vary.
-- For the retired 2.x generator: [Generator skill-effect v3](benchmarks/generator-skill-effect-v3/README.md) made behavior-preserving markup-refactor survival the primary metric and screened 36 validated tasks. After the preregistered third-repetition extension, only **9 of 36** tasks fell in the 0.25–0.75 band, below the minimum of 12, so the five-arm comparison was not run and the verdict is `INCONCLUSIVE` (thin pool). All 101 no-skill deliverables were green on the correct app, 37 survived the refactor, and they killed **498/505** seeded faults. No skilled arm ran, so no generator-skill effect is claimed in either direction.
-- For the retired 2.x generator: [Generator skill-effect v8](benchmarks/generator-skill-effect-v8/README.md) completed 216/216 scored Codex calls on the public v3 pool and passed: markup-refactor survival **0.954 versus 0.435** (+0.519, 95% CI +0.398 to +0.630). Fault-detection improvement was not shown (+0.017, CI includes 0), generation took 6.74 times as long, and this is public development evidence, not a release claim. v8 measured the frozen v3 full-fixed 2.x generator text, not the 3.0.0 router, which ships none of that text. The router's own evidence is arms D and E of thin-eval (the official generator plus the thin rules, without and with the scanner step; development stage, 3 models, 6 synthetic tasks): every D and E cell used the official MCP tools, no quality or cost claim is made, and the comparison's CLI arms are not shipped because their equivalence to the official agents is not shown ([results](benchmarks/generator-thin-eval-v1-stage2/RESULTS.md), [thin-eval](benchmarks/generator-thin-eval-v1/README.md)). The 2.x generator, including the approval tables and V1–V6 acceptance steps those results cover, stays at tag `v2.0.1` and in `benchmarks/generator-skill-v2.0.1-archive/`.
-- [Reviewer holdout v19](benchmarks/reviewer-holdout-v19/README.md) passed its release-confirmation gate (full minus no-skill stable F1 **+0.571**, 95% CI +0.411 to +0.738, 540 calls) on the **pre-release 2.0.0 candidate** reviewer (skill digest `aa88145d…`, commit `976c3fa`), after [v18](benchmarks/reviewer-holdout-v18/README.md) was `INCONCLUSIVE` on the same corpus. The shipped reviewer differs from that candidate by later changes — the Tier 2 ast-grep config pin, the `#14` `cy.env()` exclusion, the `#4h` fix and four boundary clarifications, `#8c`, and the `#3b` fail-handler contract — which no holdout has measured.
-- [Reviewer holdout v21](benchmarks/reviewer-holdout-v21/README.md) did not support explicit #2 wording: full stable F1 **1.000 → 0.980** across 480 calls. The 2.0.0 wording stays; partial #2 verification already graded P1 in both arms.
-- Including a local-only AGPL batch excluded from publication, the all-batch aggregate was **36/44 versus 23/44** and **0 versus 1** AFTER false alarms. The [field model comparison](docs/ai-reviewer-benchmark.md#field-model-comparison) reports separate local measurements across 19 real-repository specs.
+Historical scores apply to the snapshots named in each report, rather than automatically to all current instructions. [Benchmark status](benchmarks/STATUS.md) retains the protocols, results, negative findings, and claim boundaries; [CHANGELOG.md](CHANGELOG.md) records the behavior changes.
 
-**Which model?** `gpt-6-sol` had the best recall with the skill in these local runs. `claude-sonnet-5-5` followed the procedure on all 19 field specs at the lowest measured input-token cost, but the skill added little recall on the small fixpair and semantic batches; its main gain was fewer false alarms. Strong models including `gpt-6-astra` and Sonnet 5.5 already caught many mechanical smells without the skill. `claude-fable-5` also scored strongly, but [Anthropic says Fable uses plan limits faster and is capped at 50% of the weekly Max limit](https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan). These are one-run, version-specific development measurements.
-- Reviewer holdout v7 decisively beat `no-skill` on all six lift checks but failed the preregistered `catalog-only` lift bar. Full improved precision (`0.956522` vs `0.884615`) and clean specificity (`1.0` vs `0.75`) but had lower recall (`0.916667` vs `0.958333`), so no skill-lift claim is made.
-- Independent product-review robustness gates v4, v5, v7, v8, and v11 failed their preregistered criteria. Independent product-review v6 and v9 were not run, and independent product-review v10 was superseded after one of its three attempts by v11, which reused its frozen review input; v1-v11 are retained as legacy robustness evidence, not current release gates.
-- The debugger protocol provides a replayable 30-case synthetic corpus, but no independently established debugger accuracy is claimed.
+Raw historical run artifacts are pinned in [the evidence manifest](benchmarks/external-evidence.json) and available from the [Hugging Face dataset](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks). Use `scripts/dev/fetch-benchmark-evidence.sh --dry-run` to inspect the restore plan before auditing a past score.
 
-See [benchmark status](benchmarks/STATUS.md) for scores, failed gates, superseded runs, and claim boundaries. The [research evidence ledger](docs/llm-generated-e2e-test-evidence.md) audits 62 external sources instead of treating adjacent unit-test or custom-agent studies as measurements of this project.
-
-The raw per-run artifacts behind those scores (23 folders, 2,152 files, about 51 MB) are in the [`voidmatcha/e2e-skills-benchmarks`](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks) dataset on Hugging Face, pinned to one revision in [`benchmarks/external-evidence.json`](benchmarks/external-evidence.json). Run `scripts/dev/fetch-benchmark-evidence.sh` (`--dry-run` shows the plan) to restore them byte-identically before auditing a number or rerunning a comparison.
+</details>
 
 ## E2E review catalog
 
@@ -290,25 +262,28 @@ The catalog contains 24 stable Playwright/Cypress test smells. The most common f
 
 Some patterns need the application in scope, not just the tests. `#22` optimistic UI is the clearest case: whether a click issues a mutation cannot be decided from a spec, so on a repository that holds tests alone the review reports nothing for it rather than guessing. That is deliberate false-positive control, and it is why the executable example ships with a component.
 
-### 24 Patterns Detected — Grouped by Severity
+<details>
+<summary>All 24 patterns by severity</summary>
 
-#### P0 — Must Fix (silent always-pass)
+### 24 Patterns Detected: Grouped by Severity
+
+#### P0: Must Fix (silent always-pass)
 
 Tests pass when the feature is broken. No real verification is happening.
 
 | # | Pattern | Before | After |
 |---|---------|--------|-------|
 | 1 | **Name-assertion mismatch** | Name says "status" but only checks `toBeVisible()` | Add assertion for status content, or rename to match actual check |
-| 2 | **Missing Then** | Cancel action, verify text restored — but input still visible? | Verify both restored state and dismissed state |
+| 2 | **Missing Then** | Cancel action, verify text restored: but input still visible? | Verify both restored state and dismissed state |
 | 3 | **Error swallowing** | `try/catch` in spec, `.catch(() => {})` in POM | Let errors fail; remove silent catch from POM methods |
 | 3b | **Cypress `uncaught:exception` suppression** | `cy.on('uncaught:exception', () => false)` blanket-swallows app errors; a `fail` handler that never rethrows passes every failing test | Scope handler to specific known errors; re-throw unknown errors; end `fail` handlers with `throw error` |
 | 4 | **Vacuous or retry-weakening assertion** (P0/P1) | P0: invariant predicates and Locator truthiness. P1: weak attachment proof; one-shot values/URL; zero-timeout retry/deadline hazards; unproven absence; assertion loops over possibly empty collections; ARIA snapshots that omit a promised accessible name | Use meaningful bounds and web-first auto-retrying assertions; prove presence before absence, prove collections non-empty before assertion loops, and keep promised accessible names load-bearing |
 | 5 | **Bypass patterns** (5a P0, 5b P1) | `if (await el.isVisible()) { expect(...) }`; `{ force: true }` without comment | Always assert; move env checks to `beforeEach`; add `// JUSTIFIED:` to force:true |
-| 7 | **Focused test leak** | `test.only(...)` committed — CI runs one test, silently skips the rest | Delete `.only`; use `--grep` or `--spec` for local focus |
+| 7 | **Focused test leak** | `test.only(...)` committed: CI runs one test, silently skips the rest | Delete `.only`; use `--grep` or `--spec` for local focus |
 | 8 | **Missing assertion** | Discarded locator/boolean is the scenario's only verification; `expect(x).toBeVisible;` never calls the matcher | Add `await expect(locator).toBeVisible()`; skip 8a/8b when independent verification/failure evidence already exists |
 | 12 | **Missing auth setup** | With no login/`storageState`/auth fixture, a protected-route spec passes because its generic assertion also matches the login/wrong surface | Add `beforeEach` login, configure `storageState`, or use an auth fixture; do not classify a normal auth-caused failure as P0 |
 
-#### P1 — Should Fix (poor diagnostics / wastes CI time)
+#### P1: Should Fix (poor diagnostics / wastes CI time)
 
 Tests work but mislead developers, waste CI time, or set up future regressions.
 
@@ -323,23 +298,28 @@ Tests work but mislead developers, waste CI time, or set up future regressions.
 | 16 | **Missing `await` on action** | Actionability, action ordering, or navigation can race later work; rejection usually surfaces later with worse attribution | `await` or return the action Promise |
 | 17 | **Discouraged direct Page selector API** | Selector-based `page.click`, `page.fill`, and related Page actions skip the Locator layer | Use Locator actions for composition, strictness, reuse, and clearer failures |
 | 18 | **`expect.soft()` overuse** | Critical soft assertions run before a hard scenario gate, so dependent work continues after a broken prerequisite | Hard-gate the primary state first; use `soft` only for independent details |
-| 19 | **Module-level mutable state in test code** | `let seq = 0;` or a mutated `const cache = new Map()` at column 0 in a test utility — persists across tests in a long-lived worker and collides across parallel workers | Drop the counter; derive uniqueness from `Date.now()` + `Math.random().toString(36).slice(2, 8)`, or move state into `test.beforeEach` |
+| 19 | **Module-level mutable state in test code** | `let seq = 0;` or a mutated `const cache = new Map()` at column 0 in a test utility: persists across tests in a long-lived worker and collides across parallel workers | Drop the counter; derive uniqueness from `Date.now()` + `Math.random().toString(36).slice(2, 8)`, or move state into `test.beforeEach` |
 | 20 | **Unmocked real-backend writes** | Signup/checkout spec reaches shared or persistent state with no controlled test boundary | Stub the write or prove a disposable container, rollback fixture, isolated tenant/database, or equivalent controlled backend |
-| 22 | **Optimistic UI without call proof** | Like-toggle test asserts `aria-pressed` flip — UI updates optimistically, passes with the POST deleted | Pair UI assertion with `page.waitForRequest()` (armed before the click) or a route-hit flag |
+| 22 | **Optimistic UI without call proof** | Like-toggle test asserts `aria-pressed` flip: UI updates optimistically, passes with the POST deleted | Pair UI assertion with `page.waitForRequest()` (armed before the click) or a route-hit flag |
 
-#### P2 — Nice to Fix (maintenance / robustness)
+#### P2: Nice to Fix (maintenance / robustness)
 
-Weak but not wrong — addressed when refactoring.
+Weak but not wrong: addressed when refactoring.
 
 | # | Pattern | Before | After |
 |---|---------|--------|-------|
 | 11 | **YAGNI + Zombie Specs** | `clickEdit()` never called; unjustified empty wrapper class; entire spec duplicated by another; unexplained skip | Delete unused members and zombie specs; explain remaining skips and add revisit anchors for long-lived ones; inline single-use helpers only when that clearly removes meaningless indirection |
-| 21 | **Manually-captured session-file dependency** | `storageState: 'auth/member.json'` produced only by a manual capture script — absent on CI, silently expires | Regenerate session programmatically (API-login helper or `setup` project); manual files only as a cache with a programmatic fallback |
-| 23 | **Fixture ignores render guards** | Liked-tab fixture seeds `liked: false`; the card component `return null`s every item — empty UI looks like infra flake | Read the item component's early returns/filters before seeding; seed fields to pass every guard for the view under test |
+| 21 | **Manually-captured session-file dependency** | `storageState: 'auth/member.json'` produced only by a manual capture script: absent on CI, silently expires | Regenerate session programmatically (API-login helper or `setup` project); manual files only as a cache with a programmatic fallback |
+| 23 | **Fixture ignores render guards** | Liked-tab fixture seeds `liked: false`; the card component `return null`s every item: empty UI looks like infra flake | Read the item component's early returns/filters before seeding; seed fields to pass every guard for the view under test |
+
+</details>
 
 ## Failure debugging
 
 Both debuggers use the same stable F1–F15 root-cause taxonomy. Playwright accepts `playwright-report/`, HTML reports, `trace.zip`, screenshots, and bounded GitHub Actions artifacts. Cypress accepts mochawesome or JUnit reports, screenshots, videos, and bounded CI artifacts.
+
+<details>
+<summary>All 15 failure categories</summary>
 
 | # | Category | Signals |
 |---|----------|---------|
@@ -357,20 +337,26 @@ Both debuggers use the same stable F1–F15 root-cause taxonomy. Playwright acce
 | F12 | **POM / Locator Drift** | DOM structure changed, POM not updated |
 | F13 | **Error Swallowing** | `.catch(() => {})` hiding actual failure |
 | F14 | **Animation Race** | Content not yet rendered, or a transient element removed before it is observed |
-| F15 | **Hydration Race** | Action succeeds but has no effect — SSR page not yet hydrated; fails at the next assertion |
+| F15 | **Hydration Race** | Action succeeds but has no effect: SSR page not yet hydrated; fails at the next assertion |
 
 F11 and F12 use unified cross-framework names here. Each debugger reports its framework-specific label for the same stable code.
 
+</details>
 
 The debuggers classify product regressions separately from brittle tests and return evidence plus a concrete fix. They do not diagnose an application or backend without a failing Playwright or Cypress test artifact.
 
 ## Standalone scanner
 
-Run the deterministic mechanical layer directly:
+Run the code scanner directly without asking an AI agent. It reports possible problems for review; it does not run your tests or decide whether they prove the intended behavior.
 
 ```bash
 /bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests
 ```
+
+Requires Python 3 and ripgrep (`rg`) with PCRE2 support. By default it neither runs the target project’s ESLint code nor downloads tools. If a required tool is missing or a file cannot be read, it reports an error rather than a clean result.
+
+<details>
+<summary>Advanced scanner options and file access</summary>
 
 The scanner requires a PCRE2-capable `rg` and Python 3. Python creates and validates NUL-safe candidate identity records so candidate drift or malformed records fail closed; this mandatory bookkeeping is separate from optional Tier 2 AST tooling. It does not execute target-controlled ESLint binaries, plugins, parsers, or configuration by default, and it does not download tools by default. `E2E_SMELL_ALLOW_PROJECT_ESLINT=1` opts a trusted checkout into project ESLint execution; `E2E_SMELL_NO_ESLINT_DOWNLOAD=0` and `E2E_SMELL_NO_AST_GREP_DOWNLOAD=0` separately opt into pinned downloads. Set `E2E_SMELL_DISABLE_AST_GREP=1` when a portability check must ignore preinstalled host binaries.
 
@@ -385,28 +371,37 @@ Bundled checks read `.ts`, `.js`, `.tsx`, `.jsx`, `.mts`, `.mjs`, `.cts`, and `.
 
 Tier 3 is the bundled fallback. Optional ESLint and ast-grep tiers add precision but do not replace semantic review. The scanner exits 2 on infrastructure or filesystem errors rather than reporting a false clean result. See [SECURITY.md](SECURITY.md) for the trust and network boundary.
 
+</details>
+
 ## How this differs from ESLint plugins
 
-`eslint-plugin-playwright` and `eslint-plugin-cypress` are good every-commit baselines for syntactic rules. `e2e-skills` adds two different layers:
+`eslint-plugin-playwright` and `eslint-plugin-cypress` catch common test-code mistakes. The `e2e-skills` scanner also uses these plugins as an optional checking layer.
 
-- A secure-default scanner that does not run the target project's lint stack unless explicitly enabled
-- Semantic review for findings that need test intent or cross-file context
+Plugin execution requires your explicit permission; the bundled checks run without it. On top of the plugin rules, `e2e-skills` provides:
 
-A linter can catch a direct Locator truthiness assertion or missing `await`. It cannot decide whether a test named “shows a duplicate-name error” ever checks the error, whether a protected-route test forgot authentication, or whether an optimistic UI assertion proves the backend request happened. Use the plugins for continuous linting and `e2e-reviewer` for test trustworthiness.
+- Its own code checks to complement the plugin rules
+- Review of test intent and surrounding code for problems that require context
+
+A linter can catch a direct Locator truthiness assertion or missing `await`. It cannot decide whether a test named "shows a duplicate-name error" ever checks the error, whether a protected-route test forgot authentication, or whether an optimistic UI assertion proves the backend request happened. Use the plugins for continuous linting and `e2e-reviewer` for test trustworthiness.
 
 ## Frequently asked questions
 
 ### How do I find Playwright or Cypress tests that pass but test nothing?
 
+Point `e2e-reviewer` at the relevant spec directory. It combines deterministic candidates with semantic review before returning findings.
+
+<details>
+<summary>Review coverage and execution safety details</summary>
+
 <!-- README-I18N-CONTRACT:CORE-SAFETY:START -->
 The `e2e-reviewer` skill reviews all 24 catalog patterns with stable IDs and P0/P1/P2 severity. Its standalone `scan.sh` scanner covers only a deterministic mechanical subset. Scanner matches are candidates, not final findings; the skill checks intent and surrounding code before reporting a verdict.
 
-The debuggers classify failures against the stable F1–F15 taxonomy. They execute target-controlled code only after you trust the repository and approve the exact command, including its environment and flags. The generator runs only the reviewer scanner and the project's own test command, once, on the specs it wrote.
+The debuggers classify failures against the stable F1–F15 taxonomy. They execute target-controlled code only after you trust the repository and approve the exact command, including its environment and flags. The generator runs only the reviewer scanner and the project's own test command on the specs it wrote.
 
 For non-public benchmark runs, `--isolation-wrapper` is a required hook, not proof of isolation. Continuous integration (CI) validates the wrapper contract but does not attest filesystem, process, or network isolation.
 <!-- README-I18N-CONTRACT:CORE-SAFETY:END -->
 
-Point `e2e-reviewer` at the relevant spec directory. It combines deterministic candidates with semantic review before returning findings.
+</details>
 
 ### Does this replace Playwright or Cypress test execution?
 
@@ -432,9 +427,13 @@ Claude Code, Codex, and the 55+ hosts supported by the `skills` CLI can load the
 
 - [How to review AI-generated Playwright and Cypress E2E tests](docs/review-ai-generated-e2e-tests.md)
 - [24 Playwright and Cypress E2E test smells](docs/e2e-test-smells.md)
+- [Benchmark status and negative results](benchmarks/STATUS.md)
+
+<details>
+<summary>More references</summary>
+
 - [Self-audit of the rules](docs/rule-self-audit.md)
 - [Open-source case studies](docs/case-studies.md)
-- [Benchmark status and negative results](benchmarks/STATUS.md)
 - [Raw benchmark run artifacts (Hugging Face dataset)](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)
 - [External evidence ledger](docs/llm-generated-e2e-test-evidence.md)
 - [Invalidated historical AI reviewer pilot](docs/ai-reviewer-benchmark.md)
@@ -444,7 +443,7 @@ Claude Code, Codex, and the 55+ hosts supported by the `skills` CLI can load the
 - [Roadmap](docs/roadmap.md)
 - [Reviewer evidence execution plan and optional Jev experiment](docs/plans/reviewer-evidence-next-steps.md)
 
-Planned work includes cross-model convention consistency and stronger deterministic detection. No roadmap item is described as shipped before its dedicated verification passes.
+</details>
 
 ## Contributing
 

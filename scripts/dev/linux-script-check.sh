@@ -49,6 +49,8 @@ LINUX_INPUT_PATHS=(
   .github/workflows/e2e-smell-scan.yml
   scripts/ci/ci-local.sh
   scripts/ci/test-reviewer-scanner.py
+  scripts/ci/test-eslint-import-resolution.py
+  scripts/ci/test-local-eslint-path.sh
   scripts/ci/test-debugger-contracts.py
   ':(glob)scripts/ci/test-*-debugger-*.py'
   scripts/dev/linux-script-check.sh
@@ -61,6 +63,8 @@ print_input_scope() {
   echo "  .github/workflows/e2e-smell-scan.yml"
   echo "  scripts/ci/ci-local.sh"
   echo "  scripts/ci/test-reviewer-scanner.py"
+  echo "  scripts/ci/test-eslint-import-resolution.py"
+  echo "  scripts/ci/test-local-eslint-path.sh"
   echo "  scripts/ci/test-debugger-contracts.py"
   echo "  scripts/ci/test-*-debugger-*.py"
   echo "  scripts/dev/linux-script-check.sh"
@@ -128,6 +132,8 @@ echo "==> linux-script-check: ${REV_SHA:0:7} in $IMAGE"
     cd /srv/repo
     for suite in \
       scripts/ci/test-reviewer-scanner.py \
+      scripts/ci/test-eslint-import-resolution.py \
+      scripts/ci/test-local-eslint-path.sh \
       scripts/ci/test-debugger-contracts.py \
       scripts/ci/test-playwright-debugger-artifact-download.py \
       scripts/ci/test-playwright-debugger-report-publish.py \
@@ -141,7 +147,11 @@ echo "==> linux-script-check: ${REV_SHA:0:7} in $IMAGE"
       # umask 022 matches the hosted runner; Ubuntu gives new users 002, which
       # makes test-created tool directories group-writable and correctly refused.
       # Any suite failure exits 1, which the pre-push hook treats as blocking.
-      su checker -s /bin/bash -c "umask 022 && python3 $suite" || exit 1
+      case "$suite" in
+        *.sh) suite_command="/bin/bash -p $suite" ;;
+        *) suite_command="python3 $suite" ;;
+      esac
+      su checker -s /bin/bash -c "umask 022 && $suite_command" || exit 1
     done
   '
 echo "==> linux-script-check: pass"

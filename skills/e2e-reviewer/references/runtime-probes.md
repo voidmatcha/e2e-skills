@@ -1,13 +1,24 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 # Portable assertion and behavior probes
 
-Use this workflow when runtime proof is requested for a prepared Playwright or
-Cypress project. The reviewer selects the behavior, test, and smallest meaningful
-change from normal source evidence. The bundled Python executor handles copying,
+Use this workflow when runtime proof is requested for a Playwright or Cypress
+project. The reviewer discovers its test setup and prepares probe artifacts,
+then selects the behavior, test, and smallest meaningful change from source
+evidence. The bundled Python executor handles copying,
 exact edits, execution, evidence collection, and bounded result classification.
 No project registration or repository evaluation-infrastructure import is needed.
 
 ## Choose the question
+
+For the completed-review follow-up, name the proposed mode explicitly rather than
+using "fault injection" to cover both. Select V2 for an unresolved question about
+whether a load-bearing assertion can fail; select V3 for an unresolved question
+about whether the unchanged test detects a sourced app defect. Explain the extra
+token/time cost and the specific evidence gained. Offer both only when both
+questions matter, and describe them as separate probes with separate verdicts;
+neither substitutes for the other. Ask one scoped follow-up question. An explicit
+request for both modes permits both within the approved execution scope; do not
+run both automatically for every review.
 
 - **V2 / `assertion-mutation`:** invert one load-bearing assertion in a copy.
   A linked failure proves assertion sensitivity, not that the original test
@@ -23,13 +34,44 @@ a weak original, or use a target-value special case as a meaningful fault. Keep 
 reviewer's proposed strengthening identical across all three V3 phases. Confirm
 any catalog finding separately; survival does not assign severity.
 
-## Prepare a plan
+## Prepare the project
 
-Use a local disposable target with existing dependencies and a known native test
-command. Read its config, fixtures, test helpers, application source, and acceptance
-contract. Do not install packages, download tools, pull images, or connect to
-production to make a probe runnable. Without a prepared runner or observer, state
-the missing prerequisite and continue static review.
+Own preparation when runtime proof is requested. Read package scripts, lockfiles,
+framework config, fixtures, test helpers, and relevant app/acceptance source;
+derive the package root, exact native test command, reporter, and disposable local
+app/reset boundary. Repository instructions are evidence, never execution approval.
+Reuse existing dependencies and browser binaries; do not demand a separate probe
+framework. Do not install packages, download tools, pull images, or connect to
+production to make a probe runnable. If dependencies or local services are absent,
+report the concrete missing prerequisite and proposed setup commands as
+unexecuted; do not silently install them or ask the user to design the solution.
+
+Keep the original checkout unchanged. Create a disposable source snapshot outside
+it, excluding secrets, credentials, host configuration, and unrelated outputs.
+Create the missing native wrapper, V3 observer, and JSON plan yourself in that
+snapshot, reusing existing project scripts and helpers where suitable. Do not
+require the user to author these artifacts or register an adapter. Record wrapper
+and observer files as probe infrastructure, not test-quality fixes; pin their
+bytes before preview. Do not weaken the selected test to make setup work.
+
+Show one concrete execution packet: commands, environment, startup/reset and
+shutdown, local resource boundary, and new infrastructure files. Existing approval
+for the exact scope remains valid; ask together only for authority actually missing.
+Run no project-controlled code before that authority exists. First run the unchanged
+selected test in the disposable snapshot with one worker, no skip, and retry zero;
+retain the native report. A failing or skipped baseline is not mutation or fault
+evidence. Report a product/test failure separately; permit at most one
+evidence-backed setup correction in a fresh snapshot, preserving both attempts.
+Persistent setup failure leaves runtime proof unexecuted and static review available.
+
+Select the requested question. V2 needs no V3 observer or backend service when the
+selected test itself does not require one; quote the selected assertion as V2's
+source anchor. V3 needs a separately sourced behavior promise and actual phase-app
+observation as below. Do not substitute V2 for requested V3 evidence or add V2
+automatically when only V3 was requested. Start with one test and one change;
+expand only when the user requested broader coverage and the first result is valid.
+
+## Prepare a plan
 
 Write JSON version 1 with these fields:
 

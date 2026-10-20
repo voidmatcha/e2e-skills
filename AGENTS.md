@@ -8,7 +8,7 @@ Guidance for AI coding agents (Claude Code, Codex, and other AGENTS.md-compatibl
 
 `e2e-skills` is a bundle of four Agent Skills for end-to-end test work on Playwright and Cypress projects:
 
-- `playwright-test-generator` — routes new-test generation to the official Playwright planner and generator when they are installed and their MCP tools are visible, with the 12 thin rules and safety instructions prepended, then the `e2e-reviewer` scanner gate and one test run; when the agents are not set up it shows the setup guide and stops. A router, not a pipeline; the 2.x pipeline is archived at tag `v2.0.1`.
+- `playwright-test-generator` — routes new-test generation to the official Playwright planner and generator when they are installed and their MCP tools are visible, with the 12 thin rules and safety instructions prepended, then the `e2e-reviewer` scanner gate and scoped test execution, with at most two parent-owned repairs for proven generation errors while preserving required behavior; when the agents are not set up it shows the setup guide and stops. A router, not a pipeline; the 2.x pipeline is archived at tag `v2.0.1`.
 - `e2e-reviewer` — static review of existing Playwright/Cypress specs against 24 anti-patterns grouped P0/P1/P2.
 - `playwright-debugger` — root-cause diagnosis from `playwright-report/`.
 - `cypress-debugger` — root-cause diagnosis from `cypress/reports/` (mochawesome / JUnit).
@@ -100,6 +100,7 @@ bash scripts/ci/test-local-eslint-path.sh
 bash scripts/validate-evals.sh      # eval JSON schema
 bash scripts/ci/test-reviewer-holdout.sh
 python3 scripts/ci/test-reviewer-holdout-v3.py
+python3 scripts/ci/test-reviewer-holdout-v22.py # current 3.0.0 public-corpus confirmation contract
 /bin/bash -p scripts/ci/run-reference-tokenizer-suites.sh \
   scripts/ci/test-independent-review-v7.py \
   scripts/ci/test-independent-review-v10.py \
@@ -224,14 +225,15 @@ When you bump the bundle version, touch all three manifests in one commit. The d
 
 ## Installation Paths Documented for Users
 
-`README.md` organizes the Install section (`## Install and try it`) as one short `###` subsection per host, with no separate anchor list. Keep this list and those subsections in lock-step:
+`README.md` starts its Install section with the all-in-one installer and one cross-agent skills CLI command, followed by Claude Code and Codex plugin alternatives. Keep these paths synchronized:
 
-- **Claude Code**: plugin marketplace — `/plugin marketplace add voidmatcha/e2e-skills` → `/plugin install e2e-skills@voidmatcha` (reads `.claude-plugin/plugin.json` + `marketplace.json`) — or the `skills` CLI with `-a claude-code`.
-- **Codex**: the recommended Codex-only path is `npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a codex`; Claude Code has its own `-a claude-code` command above. The skill copies land in `~/.agents/skills/`, where Codex/omx auto-discovers their `SKILL.md` files. This path does not install the root `.codex-plugin/plugin.json`; that interface manifest belongs to the alternative Codex plugin marketplace path: `codex plugin marketplace add voidmatcha/e2e-skills` → `codex plugin add e2e-skills@voidmatcha`.
-- **All other agents (Cursor, OpenCode, Gemini CLI, and more)**: one generalized section — the global install `npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all` is the primary command, with `-a <agent>` mentioned as the single-agent variant (agent names must be verified in the `vercel-labs/skills` supported-agents list; do not document names that are not in it).
+- **All-in-one**: from a reviewed checkout, `bash install.sh --host <claude|codex> [--project /path/to/project] [--dry-run]`. Reuses the verified skill/agent installers. Claude setup also prepares the shared canonical skill store through the Codex projection; dedicated agents target only the selected host. Project setup uses the installed Playwright CLI in a temporary workspace, copies official agent definitions without seed/spec files, and merges project MCP configuration after collision checks. It requires Python 3.11+ and Node.js 22.20+ with npm/npx at standard system or Homebrew locations. Restart, approval, live tool discovery, fixtures and browser readiness remain separate.
+- **Claude Code**: plugin marketplace — `/plugin marketplace add voidmatcha/e2e-skills` → `/plugin install e2e-skills@voidmatcha` (reads `.claude-plugin/plugin.json` + `marketplace.json`).
+- **Codex**: the skills-only Codex CLI variant is `npx --yes skills@1.5.21 add voidmatcha/e2e-skills --skill '*' -g -a codex`; Use `-a claude-code` for the Claude Code skills-only variant. The skill copies land in `~/.agents/skills/`, where Codex/omx auto-discovers their `SKILL.md` files. This path does not install the root `.codex-plugin/plugin.json`; that interface manifest belongs to the alternative Codex plugin marketplace path: `codex plugin marketplace add voidmatcha/e2e-skills` → `codex plugin add e2e-skills@voidmatcha`.
+- **skills.sh / other agents (Cursor, OpenCode, Gemini CLI, and more)**: one generalized section — the global install `npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all` is the primary command, with `-a <agent>` mentioned as the single-agent variant (agent names must be verified in the `vercel-labs/skills` supported-agents list; do not document names that are not in it).
 - **Manual clone for Claude Code**: clone the repository to `~/.claude/e2e-skills`, then symlink each of the four `skills/<name>` directories directly into `~/.claude/skills/<name>`; Claude Code documents direct per-skill roots and supports those symlinks. The README commands must fail rather than overwrite an existing same-named skill and must tell users to verify all four through `/skills`.
 
-The install paths above cover every supported host. Use the `skills` CLI route as the default cross-agent path (Claude Code, Codex, and the broader `vercel-labs/skills` ecosystem); the Codex plugin marketplace remains a supported alternative for Codex plugin installs.
+The install paths above cover every supported host. Use the all-in-one route for guided Claude Code/Codex setup and the single `skills` CLI command for skills-only cross-agent installation; the host plugin marketplaces remain supported alternatives.
 
 ## License
 

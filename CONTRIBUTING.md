@@ -86,6 +86,7 @@ bash scripts/ci/check-verification-parity.sh # reviewer V1-V6 contract and debug
 bash scripts/ci/test-codex-agents.sh # optional Codex agent packaging contract
 bash scripts/ci/test-claude-agents.sh # Claude Code agent packaging contract
 bash scripts/ci/test-local-eslint-path.sh # local lint + disabled-rule fail-closed path
+python3 scripts/ci/test-eslint-import-resolution.py # dependency-free import-only plugin resolution
 bash scripts/validate-evals.sh       # eval JSON schema
 bash scripts/ci/test-reviewer-holdout.sh # labeled TP/FP/FN scorer + isolation
 python3 scripts/ci/test-reviewer-holdout-v3.py # all-family corpus + N-configuration contracts
@@ -106,6 +107,7 @@ python3 scripts/ci/test-reviewer-holdout-v18.py # preregistered v18 release conf
 python3 scripts/ci/test-reviewer-holdout-v19.py # v19 rerun preregistration and frozen-corpus binding
 python3 scripts/ci/test-reviewer-holdout-v20.py # v20 #2 severity revision comparison preregistration
 python3 scripts/ci/test-reviewer-holdout-v21.py # v21 decisive #1/#2 severity replication preregistration
+python3 scripts/ci/test-reviewer-holdout-v22.py # current 3.0.0 confirmation on the frozen public v17 corpus
 python3 scripts/ci/test-reviewer-stream-retry.py # unexpected Codex event diagnostic and opt-in retry
 python3 scripts/ci/test-fixpair-v1.py # real-code BEFORE/AFTER fix-pair corpus and score contracts
 python3 scripts/ci/test-semantic-mutants-v1.py # semantic-mutant corpus and score contracts
@@ -134,7 +136,7 @@ bash scripts/ci/codex-smoke.sh       # manual Codex cross-host smoke (skips if c
 
 ### Reviewer accuracy and behavior validation
 
-The latest completed reviewer development holdout is [v21](benchmarks/reviewer-holdout-v21/README.md), a Codex `gpt-6-sol` before/after wording comparison on 48 public synthetic cases. Its complete 480-call matrix returned `NOT_SUPPORTED`: full-arm stable F1 fell from 1.000 to 0.980, and the 2.0.0 wording was retained. The prior [v20](benchmarks/reviewer-holdout-v20/README.md) comparison also returned `NOT_SUPPORTED`. The [v15](benchmarks/reviewer-holdout-v15/README.md) README records the latest Claude structured-output run. Earlier v3–v11 commands describe historical protocols; use their recorded model IDs only to reproduce those runs.
+Reviewer development results are model-specific: [v22](benchmarks/reviewer-holdout-v22/README.md) passed on Codex `gpt-6-sol`, while [v23](benchmarks/reviewer-holdout-v23/README.md) failed on `gpt-6-luna`. Each scored all 540 calls on the same 36 reused public cases and frozen reviewer snapshot; neither measures the later scanner/configuration changes. See [benchmark status](benchmarks/STATUS.md) for per-arm scores, failed gates and snapshot limits. These tool-free comparisons do not measure scanner execution or sealed release accuracy. The earlier [v21](benchmarks/reviewer-holdout-v21/README.md) and [v20](benchmarks/reviewer-holdout-v20/README.md) wording comparisons remain `NOT_SUPPORTED`. The [v15](benchmarks/reviewer-holdout-v15/README.md) README records the latest Claude structured-output run. Earlier v3–v11 commands describe historical protocols; use their recorded model IDs only to reproduce those runs.
 
 The [v8](benchmarks/reviewer-holdout-v8/README.md) and [v9](benchmarks/reviewer-holdout-v9/README.md) READMEs retain their own protocol and outcome details. Their results and subsequent runs are summarized in [benchmark status](benchmarks/STATUS.md).
 

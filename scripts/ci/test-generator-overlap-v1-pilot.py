@@ -13,6 +13,36 @@ spec = importlib.util.spec_from_file_location(
 )
 pilot = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(pilot)
+replay_spec = importlib.util.spec_from_file_location(
+    "historical_generator_root", ROOT / "scripts/evals/replay-generator-skill-effect-v8.py"
+)
+historical = importlib.util.module_from_spec(replay_spec)
+replay_spec.loader.exec_module(historical)
+
+
+@contextmanager
+def historical_overlap():
+    files = (
+        "scripts/evals/run-generator-overlap-v1-pilot.py",
+        "scripts/evals/run-generator-environment-pilot-v1.py",
+        "scripts/evals/generator-environment-probe.py",
+        "scripts/evals/generator-environment-successor-probe.py",
+        "benchmarks/generator-overlap-v1-pilot/protocol.json",
+        "benchmarks/generator-overlap-v1-pilot/freeze.json",
+        "benchmarks/generator-environment-pilot-v1/reports/environment-successor-probe.json",
+    )
+    snapshot = "benchmarks/generator-overlap-v1-pilot/arms"
+    with historical.historical_project(
+        extra_files=files, extra_trees=(snapshot,),
+        tree_aliases=((snapshot + "/after/playwright-test-generator",
+                       "skills/playwright-test-generator"),),
+    ) as root:
+        spec = importlib.util.spec_from_file_location(
+            "historical_overlap_pilot", root / "scripts/evals/run-generator-overlap-v1-pilot.py"
+        )
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        yield module
 
 
 @contextmanager
@@ -54,8 +84,15 @@ class OverlapPilotTests(unittest.TestCase):
 
     def test_frozen_inputs_and_schedule(self):
         if pilot.LOCK.exists():
-            with archived_product():
-                self.assertEqual(pilot.pilot.frozen()["schedule"], pilot.schedule())
+            with historical_overlap() as archived:
+                self.assertEqual(archived.pilot.frozen()["schedule"], archived.schedule())
+
+    def test_historical_frozen_guard_rejects_helper_drift(self):
+        with historical_overlap() as archived:
+            helper = archived.ROOT / historical.HELPER_PATH
+            helper.write_bytes(helper.read_bytes() + b"\n")
+            with self.assertRaisesRegex(ValueError, "frozen pilot inputs or schedule drift"):
+                archived.pilot.frozen()
 
     def test_frozen_runner_refuses_current_product_drift(self):
         current = pilot.pilot.engine.tree_digest(ROOT / "skills/playwright-test-generator", skip=("evals",))

@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "license": "Apache-2.0",
+  "date": "2026-10-20",
+  "kind": "Derived final local closeout; historical records remain unchanged",
+  "availability": "Raw receipts remain local and have not been uploaded. Relative identifiers and SHA256 receipts identify originals but do not make a publicly replayable raw-evidence bundle.",
+  "status": "LOCAL_PRODUCT_CHECKS_COMPLETE_FINAL_DOCUMENTATION_CHECKS_SEPARATE",
+  "supersedes_current_applicability_of": "oct20-successor.json",
+  "product": {
+    "files": 229,
+    "changed_since_frozen_reviewer_model_comparisons": [
+      "skills/e2e-reviewer/scripts/scan.sh",
+      "skills/e2e-reviewer/references/scanner-workflow.md"
+    ],
+    "scanner_sha256": "1c3fe8b5387b80b424912427d9aa67231cd2bd2b8e75f9b5dfba63cf002138f4",
+    "model_boundary": "v24 is a tool-free frozen-instruction comparison; it does not measure the later scanner correction or final exact-byte payload."
+  },
+  "reviewer_v24": {
+    "archive": "../reviewer-holdout-v24/outcome.json",
+    "calls": 540,
+    "comparison": "PASS",
+    "independent_audit": "PASS",
+    "full_repeated": {
+      "tp": 200,
+      "fp": 2,
+      "fn": 0
+    },
+    "full_unique_majority": {
+      "tp": 40,
+      "fp": 0,
+      "fn": 0
+    },
+    "infra_errors": 0,
+    "retries": 0,
+    "scope": "36 reused public authored cases, five repetitions, three sequential arms; not sealed or unseen-project accuracy."
+  },
+  "current_isolated_install": {
+    "hosts": [
+      "codex",
+      "claude"
+    ],
+    "skill_files_matching_per_host": 229,
+    "skills_per_host": 4,
+    "agent_definitions_matching_per_host": 2,
+    "installed_scanner_executed": true,
+    "node_runtime": "24.22.0",
+    "node_minimum_from_pinned_cli": ">=22.20.0",
+    "host_catalog_or_browser_rerun": false
+  },
+  "scanner_checks": {
+    "real_config_cases_per_os": 6,
+    "os": [
+      "macOS",
+      "Linux"
+    ],
+    "import_resolution_tests": 7,
+    "all_passed": true
+  },
+  "composition": {
+    "cases": 3,
+    "actor_spec_edits": 0,
+    "confirmed_findings": 0,
+    "native_oracle_phases_valid": 12,
+    "baseline_already_detected_fault_and_survived_refactor": true,
+    "detection_or_refactor_lift_observed": 0,
+    "review_elapsed_seconds_sum": 293.864,
+    "observed_input_plus_output_tokens": 952763,
+    "cached_input_tokens_subset": 805760,
+    "monetary_and_total_operator_cost_known": false,
+    "scope": "Three authored public cases, one repetition; preservation only. Actual correction path and general cost effectiveness unmeasured.",
+    "protocol_disclosure": "Primary v2 preceded calls; v3 guard/read-boundary amendment followed first actor start. Frozen v3 state label is inaccurate for v3 as a whole; original retained. Observed tool audit does not prove OS read isolation."
+  },
+  "validation": {
+    "candidate_files": 6106,
+    "base_ci": "PASS",
+    "base_direct_security": "PASS",
+    "base_pending": "PASS",
+    "base_manifest_sha256": "bc224c8a87a0bd971fb114ee95d350788493aeb63ca9c27f6eda4e2734cffa81",
+    "seven_file_documentation_successor_checks": [
+      "review",
+      "doc-contracts",
+      "pending",
+      "diff"
+    ],
+    "successor_status": "PASS",
+    "successor_manifest_sha256": "c7bf4737f77935d24d6f8fe4f098e6fef0a4ed14497f0a11940982764b8919f3",
+    "boundary": "These receipts precede this evidence-only successor. Its final checks are recorded separately, not retroactively attributed to the earlier manifest."
+  },
+  "local_receipts": [
+    {
+      "path": "project-eslint-config-real-20261020/integrated-gates-status.json",
+      "sha256": "ac340ffe7b3a40024befae9926a781077ce4036d8ad1b38d948e9363f93ca445"
+    },
+    {
+      "path": "project-eslint-config-real-20261020/readme-successor-status.json",
+      "sha256": "284cbab40af109ca29dd2ac0cb9ee4e9afabe879a8316fb88b0701c404f74c8a"
+    },
+    {
+      "path": "project-eslint-config-real-20261020/leader-final-manifest-verification.json",
+      "sha256": "2a0d837e814fad1da42d2094910ccbd839028475e0c88abaaa722fdc64605cc2"
+    },
+    {
+      "path": "release-additional-20261020/install-smoke/receipt.json",
+      "sha256": "2824d6af33c07742774aefca8f1ffb329e37f6214bb3c7a98263ebd194fd558a"
+    },
+    {
+      "path": "release-additional-20261020/install-smoke/leader-verification.json",
+      "sha256": "f938db9fc1f418496648436a666290ad319d1cee2643a265e204b379181274b1"
+    },
+    {
+      "path": "release-additional-20261020/composition/summary-corrected.json",
+      "sha256": "eb7746e1f2b454ec9e5613dbf34828eae344f1fe348f70a78c39d49453947315"
+    },
+    {
+      "path": "release-additional-20261020/composition/leader-verification.json",
+      "sha256": "4f6927250648126f33b80be11a2b1f36e2766ea186014a94e375d6b436f47e79"
+    },
+    {
+      "path": "release-additional-20261020/composition/astra-postrun-audit.json",
+      "sha256": "a8ff554b557483b7c394fac5efc5853beb4a62deb6a77c6aeec7073c9c8aeb3e"
+    },
+    {
+      "path": "release-additional-20261020/model-to-current-product-applicability.json",
+      "sha256": "c8c2eb2f449b6f52a90e18981e78babb8e8b7a4418d2a8903a653e0ca0d603b8"
+    },
+    {
+      "path": "reviewer-sol61-v24-20261020/release-model-final-summary.json",
+      "sha256": "791cb9382dd293c1d5f6007c20a05e8b9ebb61455d1b68a2bd4ef88cdfc985b9"
+    },
+    {
+      "path": "reviewer-sol61-v24-20261020/independent-audit.json",
+      "sha256": "3f071353c08f86ff61cb2fb5ec0cb226981fa68a3c02f4864c892e92082a6b8b"
+    },
+    {
+      "path": "reviewer-sol61-v24-20261020/leader-check-arm-comparison.json",
+      "sha256": "145441b165c83311aeef83b1ac2d839527bebe8136f725c4e67feb2b0ab710b6"
+    }
+  ],
+  "publication": "Owner action; no push, tag or release performed."
+}

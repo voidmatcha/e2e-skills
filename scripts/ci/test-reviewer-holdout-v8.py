@@ -150,20 +150,20 @@ class ReviewerHoldoutV8Test(unittest.TestCase):
         self.assertEqual(
             {"reviewer-holdout-v8", "reviewer-holdout-v9", "reviewer-holdout-v10",
              "reviewer-holdout-v11", "reviewer-holdout-v12", "reviewer-holdout-v13",
-             "reviewer-holdout-v14", "reviewer-holdout-v15", "reviewer-holdout-v16", "reviewer-holdout-v17", "reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v20", "reviewer-holdout-v21"},
+             "reviewer-holdout-v14", "reviewer-holdout-v15", "reviewer-holdout-v16", "reviewer-holdout-v17", "reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v20", "reviewer-holdout-v21", "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"},
             self.runner.NUMBERED_SOURCE_PROTOCOL_IDS,
         )
         self.assertEqual(
             {"reviewer-holdout-v8", "reviewer-holdout-v9", "reviewer-holdout-v10",
              "reviewer-holdout-v11", "reviewer-holdout-v12", "reviewer-holdout-v13",
-             "reviewer-holdout-v14", "reviewer-holdout-v15", "reviewer-holdout-v16", "reviewer-holdout-v17", "reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v20", "reviewer-holdout-v21"},
+             "reviewer-holdout-v14", "reviewer-holdout-v15", "reviewer-holdout-v16", "reviewer-holdout-v17", "reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v20", "reviewer-holdout-v21", "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"},
             self.runner.REVISED_LABEL_PROTOCOL_IDS,
         )
         # v8 runs every scheduled call once; v11-v21 declare a retry policy.
         self.assertIsNone(self.runner.infrastructure_retry_policy(self.v8))
         self.assertEqual(
             {"reviewer-holdout-v11", "reviewer-holdout-v12", "reviewer-holdout-v13",
-             "reviewer-holdout-v14", "reviewer-holdout-v15", "reviewer-holdout-v16", "reviewer-holdout-v17", "reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v20", "reviewer-holdout-v21"},
+             "reviewer-holdout-v14", "reviewer-holdout-v15", "reviewer-holdout-v16", "reviewer-holdout-v17", "reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v20", "reviewer-holdout-v21", "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"},
             self.runner.INFRASTRUCTURE_RETRY_PROTOCOL_IDS,
         )
 

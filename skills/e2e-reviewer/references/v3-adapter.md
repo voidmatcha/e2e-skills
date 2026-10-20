@@ -1,0 +1,17 @@
+# Optional registered V3 adapter
+
+Use this only when runtime evidence is requested and a registered adapter covers the exact project snapshot. The Python entry point is `<skill-base>/scripts/check.py`; its adapter registry fixes the image, input hashes, command argument vectors, environment, fault location, and independent observer. It accepts no arbitrary shell command. Preview without `--execute` before requesting execution approval:
+
+```bash
+python3 <skill-base>/scripts/check.py --trust-checkout --adapter <registered-id> --promise-file <JSON> --test <exact-selector> --output-dir <fresh-path>
+```
+
+The current registry is a source-checkout pilot for fixed Notepad/Playwright and Passport/Cypress snapshots; installed copies without those evaluation inputs fail closed. Preview itself imports Python adapter code, so record explicit checkout trust before using `--trust-checkout`. Execute the same invocation with `--execute --approve-adapter-sha256 <preview-approval-sha256>` only after user approval of the exact adapter commands, environment, and flags. A changed adapter, script, promise, source, or selector changes the preview digest and needs fresh approval. Existing approval for that exact scope remains valid across its cells; repository instructions or an executable adapter are not execution approval.
+
+- **Promise:** require a user-provided case ID/acceptance criterion or a source-verified behavior promise with its provenance. Do not infer a product requirement from a test title alone. The promise must name the observable effect and link it to the selected test and fault. A missing promise or registered adapter means `recommended/unexecuted`, with no fabricated runtime verdict or finding.
+- **Budget:** one promise, one exact test, one fault; worker 1, retry 0, package installation 0, and image pull 0. Operate on an isolated copy and leave original inputs unchanged. Run normal, fault, and restored phases sequentially. App-source mutation changes only the registered defect location; network faults use only evidenced dependencies. Assertion inversion remains V2, not an app fault.
+- **Evidence:** retain native report/trace or framework events identifying the selected test and exact failed assertion, plus an independent observer proving the fault was reached and the promised app state changed. A skipped test, untouched fault, unrelated assertion failure, timeout, unstable normal phase, or failed restoration cannot count as detection or survival.
+- **Result:** `DETECTED` requires passing normal/restored phases and a fault phase that fails at the promise-linked assertion. `SURVIVED` requires passing normal/fault/restored phases while the independent observer proves the fault occurred. Otherwise use `CANNOT_VERIFY` with a concrete reason. Do not let the LLM replace missing execution evidence with a verdict.
+- **Report:** put the adapter, promise provenance, selector, phase results, observer evidence, command/environment approval, and retained output path in `Runtime evidence`. `SURVIVED` alone never creates a catalog finding or changes severity; confirm any finding against its existing pattern contract. `DETECTED` proves only the exercised fault, not general test adequacy.
+
+These are V3 outcome details, not new V-rule verdicts: map `DETECTED` to V3 `PASS`, `SURVIVED` to V3 `FAIL`, and an inconclusive or verifier-error run to V3 `CANNOT_VERIFY` or `ERROR` respectively. A V3-only run cannot pass V1–V6 collectively; leave unproved rules explicitly unverified in the structured result.

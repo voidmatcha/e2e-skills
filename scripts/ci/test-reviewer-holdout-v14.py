@@ -202,12 +202,12 @@ class ReviewerHoldoutV14Test(unittest.TestCase):
         # v14 is the only protocol with output normalization.
         self.assertEqual({PROTOCOL_ID}, self.runner.OUTPUT_NORMALIZATION_PROTOCOL_IDS)
         self.assertEqual(
-            {V13_ID, PROTOCOL_ID, V15_ID, V16_ID, V17_ID, V18_ID, V19_ID, V20_ID, V21_ID}, self.runner.USAGE_CAPTURE_PROTOCOL_IDS
+            {V13_ID, PROTOCOL_ID, V15_ID, V16_ID, V17_ID, V18_ID, V19_ID, V20_ID, V21_ID, "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"}, self.runner.USAGE_CAPTURE_PROTOCOL_IDS
         )
-        self.assertEqual(REUSERS | {V16_ID, V17_ID, V18_ID, V19_ID, V20_ID, V21_ID}, self.runner.INFRASTRUCTURE_RETRY_PROTOCOL_IDS)
+        self.assertEqual(REUSERS | {V16_ID, V17_ID, V18_ID, V19_ID, V20_ID, V21_ID, "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"}, self.runner.INFRASTRUCTURE_RETRY_PROTOCOL_IDS)
         self.assertEqual(V10_CASES_PATH, self.runner.REVISED_LABEL_CORPORA[PROTOCOL_ID])
         self.assertEqual(
-            {**{reuser: V10_ID for reuser in REUSERS}, V16_ID: V9_OWNER_ID, V18_ID: V17_ID, V19_ID: V17_ID},
+            {**{reuser: V10_ID for reuser in REUSERS}, V16_ID: V9_OWNER_ID, V18_ID: V17_ID, V19_ID: V17_ID, "reviewer-holdout-v22": V17_ID, "reviewer-holdout-v23": V17_ID, "reviewer-holdout-v24": V17_ID},
             self.runner.SHARED_CORPUS_PROTOCOLS,
         )
         self.assertEqual(

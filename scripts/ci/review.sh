@@ -718,9 +718,9 @@ for i in range(1, len(sections), 2):
 
 # Check 3: README severity-section placement must agree with QR severity
 readme_sev_specs = [
-    ('P0', 'P0', r'#### P0 — Must Fix[^\n]*\n(.+?)(?=\n####|\n###|\Z)'),
-    ('P1', 'P1', r'#### P1 — Should Fix[^\n]*\n(.+?)(?=\n####|\n###|\Z)'),
-    ('P2', 'P2', r'#### P2 — Nice to Fix[^\n]*\n(.+?)(?=\n####|\n###|\Z)'),
+    ('P0', 'P0', r'#### P0: Must Fix[^\n]*\n(.+?)(?=\n####|\n###|\Z)'),
+    ('P1', 'P1', r'#### P1: Should Fix[^\n]*\n(.+?)(?=\n####|\n###|\Z)'),
+    ('P2', 'P2', r'#### P2: Nice to Fix[^\n]*\n(.+?)(?=\n####|\n###|\Z)'),
 ]
 for sev_name, required, pattern in readme_sev_specs:
     tm = re.search(pattern, readme_text, re.S)
@@ -1484,7 +1484,20 @@ def install_contract(text):
     return commands, repo_urls
 
 
+def installation_guide(path, text, errors):
+    guide_path = pathlib.Path("docs/installation.md")
+    if "(docs/installation.md" not in text:
+        errors.append(f"README i18n parity: {path} missing installation guide link")
+        return ""
+    try:
+        return guide_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        errors.append(f"README i18n parity: {path} cannot read installation guide: {exc}")
+        return ""
+
+
 def check_manual_clone_contract(path, text, errors):
+    text = installation_guide(path, text, errors)
     required = (
         'git clone https://github.com/voidmatcha/e2e-skills.git '
         '"$HOME/.claude/e2e-skills"',
@@ -1519,54 +1532,35 @@ def check_codex_install_and_delegation_contract(path, text, errors):
         return
     end = text.find("\n### ", start + len(codex_heading))
     section = text[start:end if end >= 0 else len(text)]
-    codex_only = (
-        "npx --yes skills@1.5.21 add voidmatcha/e2e-skills "
-        "--skill '*' -g -a codex"
+    install_prompt = (
+        "Install https://github.com/voidmatcha/e2e-skills using its install.sh "
+        "for my current host and Playwright project."
     )
-    combined = (
-        "npx --yes skills@1.5.21 add voidmatcha/e2e-skills "
-        "--skill '*' -g -a claude-code -a codex"
-    )
-    if codex_only not in section or combined in section:
+    shared_cli = "npx --yes skills@1.5.21 add voidmatcha/e2e-skills -g --all"
+    if text.count(install_prompt) != 1 or text.count(shared_cli) != 1:
         errors.append(
-            f"README i18n parity: {path} Codex install must target only "
-            "-a codex and disclose Claude Code separately"
+            f"README i18n parity: {path} install must keep one current-host "
+            "all-in-one prompt and one shared skills CLI command"
         )
-    # The generator's official-agent path works only with a session-wide
-    # `playwright-test` MCP server on Codex. The section mentions "session-wide"
-    # several times (the harness declaration, the config.toml entry), so the
-    # scope limit is checked as its exact sentence per language, not as a
-    # bare token that any of those other mentions would satisfy.
-    scope_phrases = {
-        "README.md": (
-            "works only with a session-wide `playwright-test` MCP server"
-        ),
-        "README.ko.md": (
-            "session-wide `playwright-test` MCP 서버가 있을 때만 동작합니다"
-        ),
-        "README.ja.md": (
-            "session-wide な `playwright-test` MCP サーバーがある場合にのみ動作します"
-        ),
-        "README.zh-cn.md": (
-            "只有存在 session-wide 的 `playwright-test` MCP 服务器时才可用"
-        ),
+    # Detailed setup lives in one linked guide; keep its session-wide MCP
+    # boundary and the README's inline fallback enforceable after relocation.
+    guide = installation_guide(path, text, errors)
+    scope_phrase = "works only with a session-wide `playwright-test` MCP server"
+    inline_phrases = {
+        "README.md": "Review and debugging also work inline without them.",
+        "README.ko.md": "리뷰와 실패 분석은 전용 agent 없이도 현재 세션에서 동작합니다.",
+        "README.ja.md": "レビューと失敗分析は専用エージェントなしでもインラインで動作します。",
+        "README.zh-cn.md": "审查和失败分析在没有专用代理时也可内联执行。",
     }
-    scope_phrase = scope_phrases.get(pathlib.Path(path).name)
-    if scope_phrase is None:
-        errors.append(
-            f"README i18n parity: {path} has no Codex delegation scope phrase "
-            "registered in review.sh"
-        )
-        return
     delegation_tokens = (
-        "`e2e-reviewer`",
-        "`playwright-debugger`",
-        "`cypress-debugger`",
         "`playwright-test-generator`",
         "`playwright-test`",
+        "bash scripts/dev/install-codex-agents.sh",
+        "`.codex/config.toml`",
+        inline_phrases[pathlib.Path(path).name],
         scope_phrase,
     )
-    missing = [token for token in delegation_tokens if token not in section]
+    missing = [token for token in delegation_tokens if token not in section + guide]
     if missing:
         errors.append(
             f"README i18n parity: {path} Codex delegation limits missing "
@@ -1719,10 +1713,10 @@ intro_contracts = {
     ),
 }
 scope_headings = {
-    canonical_path: "Scope and limits",
-    pathlib.Path("README.ko.md"): "범위와 한계",
-    pathlib.Path("README.ja.md"): "スコープと制限",
-    pathlib.Path("README.zh-cn.md"): "范围与限制",
+    canonical_path: "Supported environments",
+    pathlib.Path("README.ko.md"): "지원 환경",
+    pathlib.Path("README.ja.md"): "対応環境",
+    pathlib.Path("README.zh-cn.md"): "支持环境",
 }
 check_readme_intro_contract(
     canonical_path,
@@ -1750,10 +1744,10 @@ contract_re = re.compile(
     re.S,
 )
 contract_hashes = {
-    "README.md": "6eb8a1fc9cd62b9fa2e29fa8d31818f50a9835083dbeb0ede25512e42f14f446",
-    "README.ko.md": "408d3e5fc8ae3ae7b2f7c67ec01980dab331a67217e1e663e5be18231eb37dbd",
-    "README.ja.md": "4ea36636e043250993db7ec5728cfd663783fb68a10c128411cc3fc78feac923",
-    "README.zh-cn.md": "0e3238cf1e62f2954bcf1f1b9e62f3e7275e0104a53abf8ebbbe374dd0a106ba",
+    "README.md": "cbbd4e1b91f895b712d8d3aa042b1fccb8d76de80bcf4cd505388b9c51c99232",
+    "README.ko.md": "0a9da1504fcfee3d5258fae9f2b4bad46479107b992cdcec695456f503efa39e",
+    "README.ja.md": "1495195118011f8c46f2ca210c708aecb1bf65dcbe15730376b7c67f672e0b60",
+    "README.zh-cn.md": "5a5f90af2b35f7ddae068f6618a5efc1f7106e230ac6a89a5c97493542782b3b"
 }
 contract_tokens = (
     "24",
@@ -1880,7 +1874,7 @@ for path in translations:
         )
     if "docs/assets/hero.png" not in text:
         errors.append(f"README i18n parity: {path} missing hero image")
-    if 'README.md">🇺🇸 English' not in text:
+    if 'README.md">English' not in text:
         errors.append(f"README i18n parity: {path} missing language switcher")
     commands, urls = install_contract(text)
     if commands != canonical_commands:

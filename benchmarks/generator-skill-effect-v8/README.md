@@ -22,6 +22,27 @@ python3 scripts/evals/run-generator-skill-effect-v8.py score /absolute/cache/v8/
 python3 scripts/evals/run-generator-skill-effect-v8.py analyze /absolute/cache/v8/scores.json --output /absolute/cache/v8/results.json
 ```
 
+The commands above describe the original frozen source tree. The current shared
+reviewer harness also serves later protocols, so its complete file digest can
+change while v8 remains frozen. Replay the archived analysis from a current
+checkout with:
+
+```bash
+python3 scripts/evals/replay-generator-skill-effect-v8.py \
+  benchmarks/generator-skill-effect-v8/reports/scores.json \
+  --output /absolute/cache/v8-replay-results.json
+```
+
+This analysis-only wrapper copies the finite frozen dependency set into a
+temporary project tree and supplies the [original auth helper](../historical-sources/sha256/de2317a0fd133fa721e031ca48c4f336750aba596d1f6e64fb97dca0a5acf1e8.py),
+verified against SHA-256
+`de2317a0fd133fa721e031ca48c4f336750aba596d1f6e64fb97dca0a5acf1e8`.
+It runs the unchanged v8 runner's `analyze` command with all original freeze,
+input, schedule and report checks enabled. It cannot request live model or
+browser execution. The current helper, frozen runner, protocol and archived
+results are not replaced or rewritten. The historical helper is retained for
+reproduction and does not select the helper for new experiments.
+
 ## Results and interpretation
 
 | Measure | full-fixed | no-skill |

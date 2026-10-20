@@ -1,0 +1,765 @@
+{
+  "license": "Apache-2.0",
+  "schema_version": 1,
+  "kind": "Sanitized derived comparison, not raw replayable evidence",
+  "sources": [
+    "generator_comparison",
+    "generator_protocol",
+    "generator_replay"
+  ],
+  "date": "2026-10-19",
+  "status": "COMPLETE_DESCRIPTIVE_COMPARISON",
+  "canonical_release_verdict": "INCONCLUSIVE",
+  "design": {
+    "authored_synthetic_tasks": 3,
+    "declared_fault_mechanisms": 3,
+    "repetitions_per_task": 2,
+    "scheduled_attempts": 12,
+    "canary_attempts_included": 0,
+    "model": "gpt-6.1-sol",
+    "effort": "medium",
+    "codex_version": "0.159.3",
+    "playwright_version": "1.64.0",
+    "automatic_retries": 0,
+    "actor_timeout_seconds": 600,
+    "phases": [
+      "normal-1",
+      "normal-2",
+      "normal-3",
+      "fault",
+      "refactor",
+      "recovery"
+    ],
+    "planner": "Not evaluated",
+    "arm_definitions": {
+      "official": "Official Playwright generator defining-tool and native-test workflow.",
+      "current": "Current 3.0.0 official-agent router, thin rules, scanner and triage workflow."
+    },
+    "scoring": "Source, defining tool-call ancestry, mandatory coverage and native execution were adjudicated; successful artifacts were independently exercised through six native phases.",
+    "pre_scored_amendment": "An evaluator-only filter diagnostic flag used key-order-sensitive JSON serialization. It was corrected before any scored model call; actor inputs were unchanged."
+  },
+  "arms": {
+    "official": {
+      "scheduled_cells": 6,
+      "attempted_cells": 6,
+      "infra_invalid_or_unresolved_cells": 0,
+      "qualified_workflow_complete_cells": 6,
+      "artifact_eligible_cells": 6,
+      "metrics": {
+        "qualified_completion": {
+          "numerator": 6,
+          "scheduled_denominator": 6,
+          "evaluable_denominator": 6,
+          "incomplete": 0
+        },
+        "effective_fault_kill": {
+          "numerator": 6,
+          "scheduled_denominator": 6,
+          "evaluable_denominator": 6,
+          "incomplete": 0
+        },
+        "qualified_refactor_survival": {
+          "numerator": 6,
+          "scheduled_denominator": 6,
+          "evaluable_denominator": 6,
+          "incomplete": 0
+        }
+      },
+      "conditional_fault_kill": {
+        "numerator": 6,
+        "eligible_denominator": 6
+      },
+      "conditional_refactor_survival": {
+        "numerator": 6,
+        "eligible_denominator": 6
+      },
+      "usage": {
+        "observed_sum": {
+          "input_tokens": 2536816,
+          "cached_input_tokens": 2160896,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 21848,
+          "reasoning_output_tokens": 629,
+          "total_tokens": 2558664
+        },
+        "complete": true,
+        "billed_usd": null
+      },
+      "actor_elapsed_seconds_observed": 687.753
+    },
+    "current": {
+      "scheduled_cells": 6,
+      "attempted_cells": 6,
+      "infra_invalid_or_unresolved_cells": 0,
+      "qualified_workflow_complete_cells": 5,
+      "artifact_eligible_cells": 5,
+      "metrics": {
+        "qualified_completion": {
+          "numerator": 5,
+          "scheduled_denominator": 6,
+          "evaluable_denominator": 6,
+          "incomplete": 0
+        },
+        "effective_fault_kill": {
+          "numerator": 5,
+          "scheduled_denominator": 6,
+          "evaluable_denominator": 6,
+          "incomplete": 0
+        },
+        "qualified_refactor_survival": {
+          "numerator": 5,
+          "scheduled_denominator": 6,
+          "evaluable_denominator": 6,
+          "incomplete": 0
+        }
+      },
+      "conditional_fault_kill": {
+        "numerator": 5,
+        "eligible_denominator": 5
+      },
+      "conditional_refactor_survival": {
+        "numerator": 5,
+        "eligible_denominator": 5
+      },
+      "usage": {
+        "observed_sum": {
+          "input_tokens": 5210862,
+          "cached_input_tokens": 4652416,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 23884,
+          "reasoning_output_tokens": 1448,
+          "total_tokens": 5234746
+        },
+        "complete": true,
+        "billed_usd": null
+      },
+      "actor_elapsed_seconds_observed": 731.3299999999999
+    }
+  },
+  "cells": [
+    {
+      "cell_id": "cart-r1-official",
+      "task_id": "cart",
+      "repetition": 1,
+      "arm": "official",
+      "cell": 1,
+      "status": "PRODUCT_OBSERVATION",
+      "qualified_completion": true,
+      "effective_fault_kill": true,
+      "qualified_refactor_survival": true,
+      "conditional_fault_kill": true,
+      "conditional_refactor_survival": true,
+      "raw_actor_native_pass": true,
+      "failure_category": "none",
+      "parent_generation_repairs": 0,
+      "scanner_passes": 0,
+      "root_grade_sha256": "e6e7d950952984a482b34416b45281f4d792dd784da5f4ae185085b3e09fc777",
+      "root_phase_grade_sha256": "c9939fea41b3a36cb95de42dbc961b8500e8924a9d039d0f52c5e3f3ba6d8612",
+      "phase_observations": {
+        "normal-1": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-2": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-3": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "fault": {
+          "raw_native_pass": false,
+          "failure_kind": "required_assertion_after_action",
+          "oracle_valid": true
+        },
+        "refactor": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "recovery": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        }
+      }
+    },
+    {
+      "cell_id": "cart-r1-current",
+      "task_id": "cart",
+      "repetition": 1,
+      "arm": "current",
+      "cell": 2,
+      "status": "PRODUCT_OBSERVATION",
+      "qualified_completion": true,
+      "effective_fault_kill": true,
+      "qualified_refactor_survival": true,
+      "conditional_fault_kill": true,
+      "conditional_refactor_survival": true,
+      "raw_actor_native_pass": true,
+      "failure_category": "none",
+      "parent_generation_repairs": 0,
+      "scanner_passes": 1,
+      "root_grade_sha256": "ca6a1f0e0bd595b31c90dad65e474f2353e6166c1cb302d65cf92c8985190108",
+      "root_phase_grade_sha256": "e6566293cd3014311ebf6bc02d2dc4528990307248c30ae30dc1fc608ebddbf7",
+      "phase_observations": {
+        "normal-1": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-2": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-3": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "fault": {
+          "raw_native_pass": false,
+          "failure_kind": "required_assertion_after_action",
+          "oracle_valid": true
+        },
+        "refactor": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "recovery": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        }
+      }
+    },
+    {
+      "cell_id": "cart-r2-current",
+      "task_id": "cart",
+      "repetition": 2,
+      "arm": "current",
+      "cell": 3,
+      "status": "PRODUCT_OBSERVATION",
+      "qualified_completion": true,
+      "effective_fault_kill": true,
+      "qualified_refactor_survival": true,
+      "conditional_fault_kill": true,
+      "conditional_refactor_survival": true,
+      "raw_actor_native_pass": true,
+      "failure_category": "none",
+      "parent_generation_repairs": 0,
+      "scanner_passes": 1,
+      "root_grade_sha256": "a6385f40ab57987ccd368de6d08d944f98490fba2c9a2aa0a8ce07780b0841e2",
+      "root_phase_grade_sha256": "6029ed4bf62ea8ec1f39f7d5fa16887b78c835e756a24586121ab4fbf312ed81",
+      "phase_observations": {
+        "normal-1": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-2": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-3": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "fault": {
+          "raw_native_pass": false,
+          "failure_kind": "required_assertion_after_action",
+          "oracle_valid": true
+        },
+        "refactor": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "recovery": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        }
+      }
+    },
+    {
+      "cell_id": "cart-r2-official",
+      "task_id": "cart",
+      "repetition": 2,
+      "arm": "official",
+      "cell": 4,
+      "status": "PRODUCT_OBSERVATION",
+      "qualified_completion": true,
+      "effective_fault_kill": true,
+      "qualified_refactor_survival": true,
+      "conditional_fault_kill": true,
+      "conditional_refactor_survival": true,
+      "raw_actor_native_pass": true,
+      "failure_category": "none",
+      "parent_generation_repairs": 0,
+      "scanner_passes": 0,
+      "root_grade_sha256": "24913a25d65832c2c892bd7d4b55e0ccab7fa95d44e88d76a425c71551931c05",
+      "root_phase_grade_sha256": "60bb8d0f8fbad57d8580c050843649678229c0e610698e9c657a20987d0db666",
+      "phase_observations": {
+        "normal-1": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-2": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-3": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "fault": {
+          "raw_native_pass": false,
+          "failure_kind": "required_assertion_after_action",
+          "oracle_valid": true
+        },
+        "refactor": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "recovery": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        }
+      }
+    },
+    {
+      "cell_id": "filter-r1-current",
+      "task_id": "filter",
+      "repetition": 1,
+      "arm": "current",
+      "cell": 5,
+      "status": "PRODUCT_OBSERVATION",
+      "qualified_completion": true,
+      "effective_fault_kill": true,
+      "qualified_refactor_survival": true,
+      "conditional_fault_kill": true,
+      "conditional_refactor_survival": true,
+      "raw_actor_native_pass": true,
+      "failure_category": "none",
+      "parent_generation_repairs": 0,
+      "scanner_passes": 1,
+      "root_grade_sha256": "00995d92a50fca238fb7e7b40747d1772155ecca17fbe007dc0f5c24fd0dba70",
+      "root_phase_grade_sha256": "223f2e219dd12bdb1838372278ee7a28b5392fe73ef1265f936d9affd3a6db68",
+      "phase_observations": {
+        "normal-1": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-2": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-3": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "fault": {
+          "raw_native_pass": false,
+          "failure_kind": "required_assertion_after_action",
+          "oracle_valid": true
+        },
+        "refactor": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "recovery": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        }
+      }
+    },
+    {
+      "cell_id": "filter-r1-official",
+      "task_id": "filter",
+      "repetition": 1,
+      "arm": "official",
+      "cell": 6,
+      "status": "PRODUCT_OBSERVATION",
+      "qualified_completion": true,
+      "effective_fault_kill": true,
+      "qualified_refactor_survival": true,
+      "conditional_fault_kill": true,
+      "conditional_refactor_survival": true,
+      "raw_actor_native_pass": true,
+      "failure_category": "none",
+      "parent_generation_repairs": 0,
+      "scanner_passes": 0,
+      "root_grade_sha256": "0b8472ab438a11efb85b49055a06f70e4156be60c257b5a35b8c456d8b34a958",
+      "root_phase_grade_sha256": "44281fc6e7ecc765e051a793be92095efbb076792828f089e4cca47d5e89779e",
+      "phase_observations": {
+        "normal-1": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-2": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-3": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "fault": {
+          "raw_native_pass": false,
+          "failure_kind": "required_assertion_after_action",
+          "oracle_valid": true
+        },
+        "refactor": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "recovery": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        }
+      }
+    },
+    {
+      "cell_id": "filter-r2-official",
+      "task_id": "filter",
+      "repetition": 2,
+      "arm": "official",
+      "cell": 7,
+      "status": "PRODUCT_OBSERVATION",
+      "qualified_completion": true,
+      "effective_fault_kill": true,
+      "qualified_refactor_survival": true,
+      "conditional_fault_kill": true,
+      "conditional_refactor_survival": true,
+      "raw_actor_native_pass": true,
+      "failure_category": "none",
+      "parent_generation_repairs": 0,
+      "scanner_passes": 0,
+      "root_grade_sha256": "8b5f5ce6c252ee12ac1921e92c33a62828fab58176cf806d9056ffbd9ec767a9",
+      "root_phase_grade_sha256": "531ce3d11d567a26adab1d8a1f6a896cd9b673065e40e91740804c449bf6572f",
+      "phase_observations": {
+        "normal-1": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-2": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-3": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "fault": {
+          "raw_native_pass": false,
+          "failure_kind": "required_assertion_after_action",
+          "oracle_valid": true
+        },
+        "refactor": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "recovery": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        }
+      }
+    },
+    {
+      "cell_id": "filter-r2-current",
+      "task_id": "filter",
+      "repetition": 2,
+      "arm": "current",
+      "cell": 8,
+      "status": "PRODUCT_COMPLETION_FAILURE",
+      "qualified_completion": false,
+      "effective_fault_kill": false,
+      "qualified_refactor_survival": false,
+      "conditional_fault_kill": null,
+      "conditional_refactor_survival": null,
+      "raw_actor_native_pass": null,
+      "failure_category": "product",
+      "parent_generation_repairs": 0,
+      "scanner_passes": 0,
+      "root_grade_sha256": "8e769abb294ff00132030e3310f70d993c38ffdbad1fd82a035baafb9c0220e1"
+    },
+    {
+      "cell_id": "delete-r1-official",
+      "task_id": "delete",
+      "repetition": 1,
+      "arm": "official",
+      "cell": 9,
+      "status": "PRODUCT_OBSERVATION",
+      "qualified_completion": true,
+      "effective_fault_kill": true,
+      "qualified_refactor_survival": true,
+      "conditional_fault_kill": true,
+      "conditional_refactor_survival": true,
+      "raw_actor_native_pass": true,
+      "failure_category": "none",
+      "parent_generation_repairs": 0,
+      "scanner_passes": 0,
+      "root_grade_sha256": "986f21ee8b48dfbed483eb1e695662ef4f74312159ac6958eabd09b12dee92bf",
+      "root_phase_grade_sha256": "ec6ae7a53a25bf7862511fe7e49ffbc57aae0cc30ec674033c3222ae206007a1",
+      "phase_observations": {
+        "normal-1": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-2": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-3": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "fault": {
+          "raw_native_pass": false,
+          "failure_kind": "required_assertion_after_action",
+          "oracle_valid": true
+        },
+        "refactor": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "recovery": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        }
+      }
+    },
+    {
+      "cell_id": "delete-r1-current",
+      "task_id": "delete",
+      "repetition": 1,
+      "arm": "current",
+      "cell": 10,
+      "status": "PRODUCT_OBSERVATION",
+      "qualified_completion": true,
+      "effective_fault_kill": true,
+      "qualified_refactor_survival": true,
+      "conditional_fault_kill": true,
+      "conditional_refactor_survival": true,
+      "raw_actor_native_pass": true,
+      "failure_category": "none",
+      "parent_generation_repairs": 0,
+      "scanner_passes": 1,
+      "root_grade_sha256": "4ef90a438e862c90376aa004299cc537b8a0fef095674a72c98ee7c579fe59ae",
+      "root_phase_grade_sha256": "a100cee043fe11d654bc03c3afb0d52998c84bce2e10d2f9890f242a06ce1c7a",
+      "phase_observations": {
+        "normal-1": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-2": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-3": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "fault": {
+          "raw_native_pass": false,
+          "failure_kind": "required_assertion_after_action",
+          "oracle_valid": true
+        },
+        "refactor": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "recovery": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        }
+      }
+    },
+    {
+      "cell_id": "delete-r2-current",
+      "task_id": "delete",
+      "repetition": 2,
+      "arm": "current",
+      "cell": 11,
+      "status": "PRODUCT_OBSERVATION",
+      "qualified_completion": true,
+      "effective_fault_kill": true,
+      "qualified_refactor_survival": true,
+      "conditional_fault_kill": true,
+      "conditional_refactor_survival": true,
+      "raw_actor_native_pass": true,
+      "failure_category": "none",
+      "parent_generation_repairs": 0,
+      "scanner_passes": 1,
+      "root_grade_sha256": "f8400dd7a79fd75965637709b503688a8f026adda512f7e32f7d5d289a887566",
+      "root_phase_grade_sha256": "1a754ef765d3a910450e652be46cb2b6d45694b8defde43ef300a2667ed0e888",
+      "phase_observations": {
+        "normal-1": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-2": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-3": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "fault": {
+          "raw_native_pass": false,
+          "failure_kind": "required_assertion_after_action",
+          "oracle_valid": true
+        },
+        "refactor": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "recovery": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        }
+      }
+    },
+    {
+      "cell_id": "delete-r2-official",
+      "task_id": "delete",
+      "repetition": 2,
+      "arm": "official",
+      "cell": 12,
+      "status": "PRODUCT_OBSERVATION",
+      "qualified_completion": true,
+      "effective_fault_kill": true,
+      "qualified_refactor_survival": true,
+      "conditional_fault_kill": true,
+      "conditional_refactor_survival": true,
+      "raw_actor_native_pass": true,
+      "failure_category": "none",
+      "parent_generation_repairs": 0,
+      "scanner_passes": 0,
+      "root_grade_sha256": "e584f93deb2b1fc917ca1d412e54ff8b6750a65e6157b29d7303d749430c85af",
+      "root_phase_grade_sha256": "01e9ce240e718c39986e1f9c08fa5a17dd5a505fde2090f0d93b4940c05a3c75",
+      "phase_observations": {
+        "normal-1": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-2": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "normal-3": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "fault": {
+          "raw_native_pass": false,
+          "failure_kind": "required_assertion_after_action",
+          "oracle_valid": true
+        },
+        "refactor": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        },
+        "recovery": {
+          "raw_native_pass": true,
+          "failure_kind": "none",
+          "oracle_valid": true
+        }
+      }
+    }
+  ],
+  "post_cohort_replay": {
+    "status": "PASS_BOUNDED_POST_COHORT_REPLAY",
+    "attempts": 1,
+    "automatic_restarts": 0,
+    "product_changes": 0,
+    "qualified_workflow_complete": true,
+    "native_actor_test": "1 passed (12.3s)",
+    "actor_seconds": 135.195,
+    "normal_phase_passes": "3/3",
+    "declared_app_fault": "DETECTED at required exact result list assertion35 after Alice/Open apply",
+    "refactor_survival": true,
+    "recovery_pass": true,
+    "scanner_confirmed_p0_p1": 0,
+    "scanner_triage_candidates": 3,
+    "parent_generation_repairs": 0,
+    "spec_sha256": "8005239b76215ab788c6547240bb4260336ee15367118ec2d4647ec17f60ca8e",
+    "usage": {
+      "input_tokens": 885090,
+      "cached_input_tokens": 800256,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 4597,
+      "reasoning_output_tokens": 579,
+      "total_tokens": 889687
+    },
+    "billed_usd": null,
+    "original_cohort_preserved": true,
+    "original_comparison_sha256": "ab632d5f51dda01a52686e083a0fa957ad164182dc93350894b2724693078b03",
+    "interpretation": "Same product and prompt successfully completed a fresh user-authorized replay without product or prompt changes. This corroborates this filter scenario works, not a universal reliability or superiority claim. Original current5/6 and failedcell8 retained; do not replace or pool into frozen comparison."
+  },
+  "interpretation": [
+    "Original completion stays official 6/6 versus current 5/6. Conditional fault detection and refactor survival are 6/6 versus 5/5 among completed artifacts.",
+    "Cell 8 produced no generated test, scanner or native phase result. Its overall yield remains zero; conditional fault/refactor values are not available. It was not replaced or excluded.",
+    "The later successful replay is separate, not pooled into the original cohort.",
+    "Observed current input was higher. Cached input and reasoning output are subsets, not extra independent totals; no billed USD or cost ratio is available.",
+    "There are three independent task units, not twelve independent defects. No superiority, equivalence, scanner causality or efficiency claim is established."
+  ],
+  "limits": [
+    "Authored synthetic development tasks, not hidden/external release data.",
+    "12 cells are three independent task units, not 12 independent defects.",
+    "Full workflow treatment includes current scanner/repairs; no causal rule/scanner ablation.",
+    "OS isolation independently unproven; local runner/model identity is provenance only.",
+    "Cached input and reasoning output are subsets. Missing descendant usage makes cost incomplete. Billed USD null.",
+    "Infrastructure invalidity stops without replacements. Ties are complete; no additional task/repetition selection.",
+    "Canary/admission/prior-failure costs excluded from scored totals and retained in predecessor lanes."
+  ]
+}

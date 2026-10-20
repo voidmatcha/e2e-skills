@@ -1,6 +1,6 @@
-# Reviewer evidence: current plan
+# Reviewer evidence: September 29 planning snapshot
 
-Status snapshot: 2026-09-29. This page preserves the 2026-09-24 specificity and release-planning record below; it is not a frozen protocol. The current reviewer-evidence state and remaining work are summarized here.
+Status snapshot: 2026-09-29. This page preserves the 2026-09-24 specificity and release-planning record below; it is not a frozen protocol. For the current reviewer-evidence state and remaining work, see [benchmark status](../../benchmarks/STATUS.md). This dated snapshot summarizes the planning state at that time.
 
 ## Reviewer evidence update
 

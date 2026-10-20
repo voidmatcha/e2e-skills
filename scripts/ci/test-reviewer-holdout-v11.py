@@ -171,7 +171,7 @@ class ReviewerHoldoutV11Test(unittest.TestCase):
         # carries it on the reused v9 corpus; later preregistrations keep the policy.
         self.assertEqual(
             {PROTOCOL_ID, "reviewer-holdout-v12", "reviewer-holdout-v13", "reviewer-holdout-v14",
-             "reviewer-holdout-v15", "reviewer-holdout-v16", "reviewer-holdout-v17", "reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v20", "reviewer-holdout-v21"},
+             "reviewer-holdout-v15", "reviewer-holdout-v16", "reviewer-holdout-v17", "reviewer-holdout-v18", "reviewer-holdout-v19", "reviewer-holdout-v20", "reviewer-holdout-v21", "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"},
             self.runner.INFRASTRUCTURE_RETRY_PROTOCOL_IDS,
         )
         self.assertEqual(V10_CASES_PATH, self.runner.REVISED_LABEL_CORPORA[PROTOCOL_ID])
@@ -184,7 +184,7 @@ class ReviewerHoldoutV11Test(unittest.TestCase):
                 "reviewer-holdout-v15": V10_ID,
                 "reviewer-holdout-v16": "reviewer-holdout-v9",
                 "reviewer-holdout-v18": "reviewer-holdout-v17",
-                "reviewer-holdout-v19": "reviewer-holdout-v17",
+                "reviewer-holdout-v19": "reviewer-holdout-v17", "reviewer-holdout-v22": "reviewer-holdout-v17", "reviewer-holdout-v23": "reviewer-holdout-v17", "reviewer-holdout-v24": "reviewer-holdout-v17",
             },
             self.runner.SHARED_CORPUS_PROTOCOLS,
         )

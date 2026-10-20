@@ -36,8 +36,10 @@ PREFLIGHT_ABORT_REMEDIATION = (
     "  - rerun on the largest directories inside the requested root that "
     "contain none of the listed entries, and on each regular file outside "
     "those directories as a file root;",
-    "  - scan the target of each listed symbolic link as its own root by its "
-    "real path (symbolic-link scan roots are rejected);",
+    "  - scan a listed symbolic link target by its real path only when it is "
+    "already within the user-authorized review scope (symbolic-link scan roots "
+    "are rejected); otherwise identify the excluded target without reading "
+    "its contents and keep the review incomplete;",
     "  - until those reruns cover the whole requested tree, name each part "
     "left unscanned, such as a FIFO, socket, or device, and keep the review "
     "marked incomplete.",
@@ -4530,12 +4532,12 @@ def assert_preflight_abort_is_actionable(
 def assert_preflight_symlink_abort_remediation_is_actionable() -> None:
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-preflight-fix-") as temp:
         workspace = Path(temp) / "workspace"
-        shared_source = workspace / "shared/src"
+        app = workspace / "packages/app"
+        shared_source = app / "shared/src"
         shared_source.mkdir(parents=True)
         (shared_source / "index.ts").write_text(
             "export const shared = 1;\n", encoding="utf-8"
         )
-        app = workspace / "packages/app"
         e2e = app / "e2e"
         e2e.mkdir(parents=True)
         (e2e / "a.spec.ts").write_text(
@@ -4547,7 +4549,7 @@ def assert_preflight_symlink_abort_remediation_is_actionable() -> None:
         )
         linked_source = app / "src"
         linked_source.symlink_to(
-            Path("../../shared/src"), target_is_directory=True
+            Path("shared/src"), target_is_directory=True
         )
         # A loose spec beside the link: only a file-root rerun reaches it.
         (app / "smoke.spec.ts").write_text(
@@ -4579,8 +4581,8 @@ def assert_preflight_symlink_abort_remediation_is_actionable() -> None:
         assert "[P0] #4f" in loose.stdout, loose.stdout
         assert "smoke.spec.ts:3:" in loose.stdout, loose.stdout
 
-        # The link target by its real path completes the plan, while the link
-        # itself remains a rejected root.
+        # This target is inside the authorized app scope, so a real-path
+        # rerun is permitted; the link itself remains a rejected root.
         target = scan_path(linked_source.resolve())
         assert target.returncode == 0, target.stdout
         assert "Summary:" in target.stdout
@@ -4588,6 +4590,26 @@ def assert_preflight_symlink_abort_remediation_is_actionable() -> None:
         assert through_link.returncode == 2, through_link.stdout
         assert "symbolic-link scan roots are not supported" in through_link.stdout
         assert "Summary" not in through_link.stdout
+
+        # A different requested root links into another checkout. Its contents
+        # are not authorized by the link; retain INCOMPLETE without scanning
+        # the real target as the previous recovery example used to suggest.
+        outside = workspace / "other-project"
+        outside.mkdir()
+        (outside / "secret.spec.ts").write_text(
+            "import { test } from '@playwright/test';\n"
+            "test.only('OUTSIDE_SCOPE_SENTINEL', () => {});\n",
+            encoding="utf-8",
+        )
+        external_app = workspace / "external-app"
+        external_app.mkdir()
+        (external_app / "src").symlink_to(outside, target_is_directory=True)
+        external_abort = scan_path(external_app)
+        assert_preflight_abort_is_actionable(external_abort, entry_count=1)
+        assert "already within the user-authorized review scope" in external_abort.stdout
+        assert "otherwise identify the excluded target without reading its contents" in external_abort.stdout
+        assert "OUTSIDE_SCOPE_SENTINEL" not in external_abort.stdout
+        assert "secret.spec.ts" not in external_abort.stdout
 
     assert_tree_preflight_has_no_override()
 
@@ -4601,8 +4623,10 @@ def assert_preflight_symlink_abort_remediation_is_actionable() -> None:
         "review",
         "rerun on the largest directories that contain none of the listed "
         "entries and on each regular file outside them as a file root",
-        "scan each link's target as its own root by its real path, because "
-        "symbolic-link scan roots are rejected",
+        "scan a link's target as its own root by its real path only when that "
+        "target is already within the user's authorized review scope",
+        "identify the excluded link target without reading its contents",
+        "the link itself cannot authorize scope expansion",
         "Until the reruns cover the whole requested tree, name each part left "
         "unscanned and keep the review marked incomplete",
         "so suggest it to the user instead of doing it",
@@ -5598,10 +5622,7 @@ def assert_v14_product_boundaries() -> None:
             cypress_result.stdout,
             "[P1?][LLM-TRIAGE] #9b Possible variable Cypress wait",
         )
-        assert "variants.cy.ts:3:" in section(
-            cypress_result.stdout,
-            "[P1?][LLM-TRIAGE] #10c Cypress accessible-name substring match",
-        )
+        assert "#10c" not in cypress_result.stdout, cypress_result.stdout
 
         computed = root / "computed-cjs.spec.ts"
         computed.write_text(
@@ -5641,6 +5662,31 @@ def assert_v14_product_boundaries() -> None:
         assert "regex-keywords.spec.ts:3:" not in focused
         assert "regex-keywords.spec.ts:5:" in focused
         assert "regex-keywords.spec.ts:4:" not in regex_result.stdout
+
+
+def assert_cypress_role_name_matching_boundaries() -> None:
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-cypress-name-") as temp:
+        spec = Path(temp) / "role.cy.ts"
+        spec.write_text(
+            "cy.findByRole('link', { name: 'Job' }).click();\n"
+            "cy.findByRole('link', { name: /Job/ }).click();\n"
+            "cy.findByRole('link', { name: /^Job$/ }).click();\n"
+            "cy.findByLabelText('Job').type('value');\n"
+            "cy.findByPlaceholderText('Job').type('value');\n"
+            "// cy.findByRole('link', { name: /Job/ }).click();\n"
+            'const example = "cy.findByRole(\'link\', { name: /Job/ }).click()";\n',
+            encoding="utf-8",
+        )
+        result = scan_path(spec, {"E2E_SMELL_FAIL_ON": "none"})
+        assert result.returncode == 0, result.stdout
+        candidates = section(
+            result.stdout,
+            "[P1?][LLM-TRIAGE] #10c Cypress accessible-name substring match",
+        )
+        assert "role.cy.ts:2:" in candidates, result.stdout
+        for line in (1, 3, 4, 5, 6, 7):
+            assert f"role.cy.ts:{line}:" not in candidates, result.stdout
+        assert "[P1] #10c" not in result.stdout, result.stdout
 
 
 def assert_v15_blind_audit_boundaries() -> None:
@@ -7428,6 +7474,7 @@ def main() -> None:
         assert_v11_final_boundaries,
         assert_v12_final_boundaries,
         assert_v14_product_boundaries,
+        assert_cypress_role_name_matching_boundaries,
         assert_v15_blind_audit_boundaries,
         assert_binding_specific_playwright_expect_lineage,
         assert_binding_specific_focused_test_lineage,

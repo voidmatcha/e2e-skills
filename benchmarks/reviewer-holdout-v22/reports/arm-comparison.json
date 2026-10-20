@@ -1,0 +1,409 @@
+{
+  "schema_version": 1,
+  "comparator_sha256": "176048522a6632ec7cfff4c31ab2ddf4ab27f7294709a294dd388867acacb9b3",
+  "evaluator_sha256": "ee108e459e6a3bba232f5e9173c3fca86fb2d44be06ac0308bd296bcb7ba0817",
+  "comparison_mode": "arm-matrix",
+  "skill_lift_claim_eligible": true,
+  "evidence_scope": "development",
+  "release_eligible": false,
+  "protocol_id": "reviewer-holdout-v22",
+  "protocol_sha256": "31e4bade6f05dccc0a2fed2ea68f437b8568dab8a3adfb5c95be7d6972017f8b",
+  "corpus_sha256": "c74538cdb005ef040428ad25b37c85bb31d432e069246338ee6d437efa214238",
+  "reports": [
+    "/Users/user/.cache/e2e-skills-bench/release-next-20261019/release-run-v2/holdout/full.json",
+    "/Users/user/.cache/e2e-skills-bench/release-next-20261019/release-run-v2/holdout/catalog-only.json",
+    "/Users/user/.cache/e2e-skills-bench/release-next-20261019/release-run-v2/holdout/no-skill.json"
+  ],
+  "report_inputs": [
+    {
+      "path": "/Users/user/.cache/e2e-skills-bench/release-next-20261019/release-run-v2/holdout/full.json",
+      "sha256": "eaf21980aa02d88c48c83d743764cb00ca78c6dbc1d85a793a194cf2a4228a38"
+    },
+    {
+      "path": "/Users/user/.cache/e2e-skills-bench/release-next-20261019/release-run-v2/holdout/catalog-only.json",
+      "sha256": "acca687e5b13fcf321fac3a0730ebdeb74b438a7c28937144f2ce045cbf2213f"
+    },
+    {
+      "path": "/Users/user/.cache/e2e-skills-bench/release-next-20261019/release-run-v2/holdout/no-skill.json",
+      "sha256": "3281af53e194d6f1ab9a609f17260f819bbfb84e02caee9569839a1a901c97c6"
+    }
+  ],
+  "prompt_profiles": [
+    "catalog-only",
+    "full",
+    "no-skill"
+  ],
+  "status": "PASS",
+  "status_reasons": [
+    {
+      "code": "release_confirmation_passed",
+      "failed_checks": []
+    }
+  ],
+  "metrics": {
+    "arm_point_metrics": {
+      "full": {
+        "stable_precision": 0.975609756097561,
+        "stable_recall": 1.0,
+        "stable_f1": 0.9876543209876543,
+        "repeated_precision": 0.966183574879227,
+        "clean_case_specificity": 1.0
+      },
+      "catalog-only": {
+        "stable_precision": 0.8863636363636364,
+        "stable_recall": 0.975,
+        "stable_f1": 0.9285714285714285,
+        "repeated_precision": 0.8596491228070176,
+        "clean_case_specificity": 1.0
+      },
+      "no-skill": {
+        "stable_precision": 0.35555555555555557,
+        "stable_recall": 0.4,
+        "stable_f1": 0.3764705882352941,
+        "repeated_precision": 0.3373493975903614,
+        "clean_case_specificity": 1.0
+      }
+    },
+    "primary": {
+      "delta": 0.6111837327523602,
+      "paired_bootstrap_ci95": {
+        "method": "paired-stratified-case-bootstrap",
+        "confidence": 0.95,
+        "iterations": 10000,
+        "seed": 20260928,
+        "strata": [
+          "finding-cases",
+          "clean-cases"
+        ],
+        "percentile_method": "nearest-rank",
+        "lower": 0.46353224834237483,
+        "upper": 0.76
+      },
+      "decision_checks": [
+        {
+          "metric": "stable_f1_delta_min",
+          "actual": 0.6111837327523602,
+          "required": 0.3,
+          "comparator": ">=",
+          "passed": true
+        },
+        {
+          "metric": "stable_f1_delta_ci95_lower_min_exclusive",
+          "actual": 0.46353224834237483,
+          "required": 0.0,
+          "comparator": ">",
+          "passed": true
+        }
+      ]
+    },
+    "descriptive_full_minus_catalog_only_stable_f1": 0.059082892416225774,
+    "descriptive_full_minus_catalog_only": {
+      "point_deltas": {
+        "stable_precision": 0.0892461197339246,
+        "stable_recall": 0.025000000000000022,
+        "stable_f1": 0.059082892416225774,
+        "repeated_precision": 0.10653445207220946,
+        "clean_case_specificity": 0.0
+      },
+      "paired_bootstrap_ci95": {
+        "stable_precision": {
+          "method": "paired-stratified-case-bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "seed": 20260928,
+          "strata": [
+            "finding-cases",
+            "clean-cases"
+          ],
+          "percentile_method": "nearest-rank",
+          "lower": 0.023170731707316983,
+          "upper": 0.16310975609756095
+        },
+        "stable_recall": {
+          "method": "paired-stratified-case-bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "seed": 20260928,
+          "strata": [
+            "finding-cases",
+            "clean-cases"
+          ],
+          "percentile_method": "nearest-rank",
+          "lower": 0.0,
+          "upper": 0.07317073170731703
+        },
+        "stable_f1": {
+          "method": "paired-stratified-case-bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "seed": 20260928,
+          "strata": [
+            "finding-cases",
+            "clean-cases"
+          ],
+          "percentile_method": "nearest-rank",
+          "lower": 0.01333333333333342,
+          "upper": 0.10165912518853693
+        },
+        "clean_case_specificity": {
+          "method": "paired-stratified-case-bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "seed": 20260928,
+          "strata": [
+            "finding-cases",
+            "clean-cases"
+          ],
+          "percentile_method": "nearest-rank",
+          "lower": 0.0,
+          "upper": 0.0
+        }
+      }
+    },
+    "historical_v17_full_stable_f1": 0.964
+  },
+  "claim_policy": {
+    "pass": "Development skill-lift evidence is limited to this fixed public corpus, declared model identifiers, captured CLI versions, prompts, and schedule; provider backend snapshots are not attested.",
+    "fail": "No skill-lift claim is allowed.",
+    "inconclusive": "No skill-lift claim is allowed.",
+    "partial_results": "Descriptive arm metrics may be published, but never as a causal or partial skill-lift claim."
+  },
+  "infrastructure_retry": {
+    "policy": {
+      "max_attempts_per_call": 2,
+      "retryable": [
+        "timeout",
+        "runner_nonzero_exit_with_usage_limit_text",
+        "malformed_json_output",
+        "runner_auth_error",
+        "codex_unexpected_stream_item"
+      ],
+      "contract": "A scheduled call with a v11 retryable failure or a nonzero runner authentication-error envelope is retried once in a freshly prepared identical workspace at the same schedule position. Every attempt and retry reason is recorded; the final attempt is scored. A scoreable output is never retried. Authentication-error output is omitted from reports to avoid credential leakage. A Codex unexpected tool or item in the tools-disabled event stream is retryable once; a repeated event remains unscoreable and fail-closed."
+    },
+    "reports": [
+      {
+        "prompt_profile": "full",
+        "runner": "codex",
+        "model": "gpt-6-sol",
+        "infrastructure_retry_summary": {
+          "scheduled_calls": 180,
+          "total_attempts": 180,
+          "retried_calls": 0,
+          "retries": 0,
+          "retries_by_reason": {
+            "timeout": 0,
+            "runner_nonzero_exit_with_usage_limit_text": 0,
+            "malformed_json_output": 0,
+            "runner_auth_error": 0,
+            "codex_unexpected_stream_item": 0
+          },
+          "scored_after_retry": 0,
+          "unscoreable_with_retryable_reason": 0
+        }
+      },
+      {
+        "prompt_profile": "catalog-only",
+        "runner": "codex",
+        "model": "gpt-6-sol",
+        "infrastructure_retry_summary": {
+          "scheduled_calls": 180,
+          "total_attempts": 180,
+          "retried_calls": 0,
+          "retries": 0,
+          "retries_by_reason": {
+            "timeout": 0,
+            "runner_nonzero_exit_with_usage_limit_text": 0,
+            "malformed_json_output": 0,
+            "runner_auth_error": 0,
+            "codex_unexpected_stream_item": 0
+          },
+          "scored_after_retry": 0,
+          "unscoreable_with_retryable_reason": 0
+        }
+      },
+      {
+        "prompt_profile": "no-skill",
+        "runner": "codex",
+        "model": "gpt-6-sol",
+        "infrastructure_retry_summary": {
+          "scheduled_calls": 180,
+          "total_attempts": 180,
+          "retried_calls": 0,
+          "retries": 0,
+          "retries_by_reason": {
+            "timeout": 0,
+            "runner_nonzero_exit_with_usage_limit_text": 0,
+            "malformed_json_output": 0,
+            "runner_auth_error": 0,
+            "codex_unexpected_stream_item": 0
+          },
+          "scored_after_retry": 0,
+          "unscoreable_with_retryable_reason": 0
+        }
+      }
+    ]
+  },
+  "usage_capture": {
+    "policy": {
+      "enabled": true
+    },
+    "reports": [
+      {
+        "prompt_profile": "full",
+        "runner": "codex",
+        "model": "gpt-6-sol",
+        "usage_summary": {
+          "unit": "one-report-one-arm",
+          "final_attempts": {
+            "records": 180,
+            "records_with_usage": 180,
+            "records_without_usage": 0,
+            "sources": [
+              "codex-json-events"
+            ],
+            "totals": {
+              "input_tokens": 10058765,
+              "cached_input_tokens": 1645952,
+              "cache_write_tokens": null,
+              "output_tokens": 30969,
+              "reasoning_output_tokens": 22050
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 55882.02777777778,
+              "cached_input_tokens": 9144.177777777777,
+              "cache_write_tokens": null,
+              "output_tokens": 172.05,
+              "reasoning_output_tokens": 122.5
+            }
+          },
+          "all_attempts": {
+            "records": 180,
+            "records_with_usage": 180,
+            "records_without_usage": 0,
+            "sources": [
+              "codex-json-events"
+            ],
+            "totals": {
+              "input_tokens": 10058765,
+              "cached_input_tokens": 1645952,
+              "cache_write_tokens": null,
+              "output_tokens": 30969,
+              "reasoning_output_tokens": 22050
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 55882.02777777778,
+              "cached_input_tokens": 9144.177777777777,
+              "cache_write_tokens": null,
+              "output_tokens": 172.05,
+              "reasoning_output_tokens": 122.5
+            }
+          }
+        }
+      },
+      {
+        "prompt_profile": "catalog-only",
+        "runner": "codex",
+        "model": "gpt-6-sol",
+        "usage_summary": {
+          "unit": "one-report-one-arm",
+          "final_attempts": {
+            "records": 180,
+            "records_with_usage": 180,
+            "records_without_usage": 0,
+            "sources": [
+              "codex-json-events"
+            ],
+            "totals": {
+              "input_tokens": 6170243,
+              "cached_input_tokens": 1764224,
+              "cache_write_tokens": null,
+              "output_tokens": 28626,
+              "reasoning_output_tokens": 18731
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 34279.12777777778,
+              "cached_input_tokens": 9801.244444444445,
+              "cache_write_tokens": null,
+              "output_tokens": 159.03333333333333,
+              "reasoning_output_tokens": 104.06111111111112
+            }
+          },
+          "all_attempts": {
+            "records": 180,
+            "records_with_usage": 180,
+            "records_without_usage": 0,
+            "sources": [
+              "codex-json-events"
+            ],
+            "totals": {
+              "input_tokens": 6170243,
+              "cached_input_tokens": 1764224,
+              "cache_write_tokens": null,
+              "output_tokens": 28626,
+              "reasoning_output_tokens": 18731
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 34279.12777777778,
+              "cached_input_tokens": 9801.244444444445,
+              "cache_write_tokens": null,
+              "output_tokens": 159.03333333333333,
+              "reasoning_output_tokens": 104.06111111111112
+            }
+          }
+        }
+      },
+      {
+        "prompt_profile": "no-skill",
+        "runner": "codex",
+        "model": "gpt-6-sol",
+        "usage_summary": {
+          "unit": "one-report-one-arm",
+          "final_attempts": {
+            "records": 180,
+            "records_with_usage": 180,
+            "records_without_usage": 0,
+            "sources": [
+              "codex-json-events"
+            ],
+            "totals": {
+              "input_tokens": 2279499,
+              "cached_input_tokens": 1774080,
+              "cache_write_tokens": null,
+              "output_tokens": 49481,
+              "reasoning_output_tokens": 39769
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 12663.883333333333,
+              "cached_input_tokens": 9856.0,
+              "cache_write_tokens": null,
+              "output_tokens": 274.89444444444445,
+              "reasoning_output_tokens": 220.9388888888889
+            }
+          },
+          "all_attempts": {
+            "records": 180,
+            "records_with_usage": 180,
+            "records_without_usage": 0,
+            "sources": [
+              "codex-json-events"
+            ],
+            "totals": {
+              "input_tokens": 2279499,
+              "cached_input_tokens": 1774080,
+              "cache_write_tokens": null,
+              "output_tokens": 49481,
+              "reasoning_output_tokens": 39769
+            },
+            "means_per_record_with_usage": {
+              "input_tokens": 12663.883333333333,
+              "cached_input_tokens": 9856.0,
+              "cache_write_tokens": null,
+              "output_tokens": 274.89444444444445,
+              "reasoning_output_tokens": 220.9388888888889
+            }
+          }
+        }
+      }
+    ]
+  }
+}

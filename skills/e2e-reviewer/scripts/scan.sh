@@ -2386,7 +2386,7 @@ preflight_scanner_tree() {
     printf '%s\n' \
       'Remediation: no setting overrides this check. Following these entries could scan outside the requested root, and skipping them could hide source behind a clean result. Report this run as incomplete, then cover the requested tree with reruns; each rerun covers only its own root:' \
       '  - rerun on the largest directories inside the requested root that contain none of the listed entries, and on each regular file outside those directories as a file root;' \
-      '  - scan the target of each listed symbolic link as its own root by its real path (symbolic-link scan roots are rejected);' \
+      '  - scan a listed symbolic link target by its real path only when it is already within the user-authorized review scope (symbolic-link scan roots are rejected); otherwise identify the excluded target without reading its contents and keep the review incomplete;' \
       '  - until those reruns cover the whole requested tree, name each part left unscanned, such as a FIFO, socket, or device, and keep the review marked incomplete.' \
       'Alternatively, with approval from the repository owner, replace the symbolic link with a regular file or directory, or remove the FIFO, socket, or device, then rerun on the requested root.' \
       >&2
@@ -2976,7 +2976,20 @@ const bin = () => {
 };
 const r = (n) => {
   if (n === 'eslint#bin') return bin();
-  for (const c of cands) { try { return require.resolve(n, { paths: [c] }); } catch (e) {} }
+  for (const c of cands) {
+    try { return require.resolve(n, { paths: [c] }); } catch (e) {}
+    // Import-only exports cannot be resolved by CommonJS require.resolve.
+    // Resolve using Node's import condition without evaluating project modules.
+    try {
+      const { execFileSync } = require('node:child_process');
+      const { pathToFileURL } = require('node:url');
+      const parent = pathToFileURL(path.join(c, '__scanner_resolve__.mjs')).href;
+      const code = "import { fileURLToPath } from 'node:url'; console.log(fileURLToPath(import.meta.resolve(process.argv[1], process.argv[2])));";
+      return execFileSync(process.execPath,
+        ['--experimental-import-meta-resolve', '--input-type=module', '-e', code, n, parent],
+        { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    } catch (e) {}
+  }
   throw new Error('unresolvable: ' + n);
 };
 console.log(JSON.stringify(process.argv.slice(2).map(r)));
@@ -4503,6 +4516,14 @@ source_declares_shadowing_test_binding_before() {
     NR <= last { print executable_source($0, 1) }
   ' "$file" 2>/dev/null |
     scanner_rg -qP "(^|[;{}[:space:]])(?:const|let|var|function|class)[[:space:]]+$binding\\b"
+}
+
+cypress_role_name_hit_matches() {
+  # Raw matching identifies a broad regex; lexical matching confirms that the
+  # query is executable rather than quoted or commented example text. Regex
+  # bodies are erased by lexical_target_line, so do not rerun the raw pattern.
+  lexical_target_line "$1" |
+    scanner_rg -qP '\bcy\.findByRole\([^\n)]*\bname\s*:'
 }
 
 executable_hit_matches() {
@@ -6482,6 +6503,8 @@ run_check() {
     raw_output=$(filter_hits_by cypress_action_chain_hit_matches)
   elif [[ "$flags" == *",positive-attached,"* && -n "$raw_output" ]]; then
     raw_output=$(printf '%s\n' "$raw_output" | filter_positive_to_be_attached_hits)
+  elif [[ "$flags" == *",cypress-role-name,"* && -n "$raw_output" ]]; then
+    raw_output=$(filter_hits_by cypress_role_name_hit_matches)
   elif [[ "$flags" == *",executable-line,"* && -n "$raw_output" ]]; then
     raw_output=$(filter_hits_by executable_hit_matches "$pattern")
   elif [[ "$flags" == *",immutable-computed-truthy,"* && -n "$raw_output" ]]; then
@@ -7096,7 +7119,9 @@ run_check P1 '#10b' 'Serial Playwright suite' '\.describe[[:space:]]*\.configure
 # directly excludes container-scoped forms (`x.getByRole(...)`, `page.locator(...).getByRole(...)`).
 # Phase 2 LLM confirms the suite renders dynamic text that could substring-collide before flagging.
 run_check P1 '#10c' 'Unscoped accessible-name substring match' '(?<![.\w])page\.(getByRole|getByLabel|getByPlaceholder)\((?:(?!exact:)[^)])*name:(?:(?!exact:)[^)])*\)' "$ALL_CODE_GLOB" 'e2e,triage,playwright-only'
-run_check P1 '#10c' 'Cypress accessible-name substring match' '\bcy\.(?:findByRole|findByLabelText|findByPlaceholderText)\((?:(?!exact\s*:)[^)])*\bname\s*:(?:(?!exact\s*:)[^)])*\)' "$ALL_CODE_GLOB" 'e2e,triage,cypress-only,executable-line'
+# Testing Library string names are exact by default; only broad regex names are candidates.
+# Phase 2 confirms the actual matcher breadth, container scope, and dynamic collision.
+run_check P1 '#10c' 'Cypress accessible-name substring match' '\bcy\.findByRole\([^\n)]*\bname\s*:\s*/(?!\^)[^/\n]+/[a-z]*\s*[,}]' "$ALL_CODE_GLOB" 'e2e,triage,cypress-only,cypress-role-name'
 run_check P1 '#10d' 'Cypress async callback mixes promises with queued commands' '(?:(?:it|test|specify)\s*\([^;\n]*,\s*async\s*(?:function\b\s*(?:[A-Za-z_$][\w$]*)?\s*\([^)]*\)|(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>)|(?:before|beforeEach|after|afterEach)\s*\(\s*(?:[^,;\n]+,\s*)?async\s*(?:function\b\s*(?:[A-Za-z_$][\w$]*)?\s*\([^)]*\)|(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>))' "$ALL_CODE_GLOB" 'triage'
 run_check P1 '#10e' 'Cypress return value assigned outside the command chain' '\b(const|let|var)\s+[A-Za-z_$][\w$]*(?:\s*:[^=;\n]+)?\s*=\s*cy\.(?!spy\(|stub\()' "$ALL_CODE_GLOB"
 # Actions are one-shot; assertions chained after them do not retry the action. Phase 2 confirms

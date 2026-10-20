@@ -378,7 +378,7 @@
     },
     {
       "id": 27,
-      "prompt": "A caller asks you to repair a failing Playwright candidate with its approved plan (from specs/ or the user's request). The product returns a value that contradicts the approved expected value; a locator also drifted. Explain what you may repair and who reviews it.",
+      "prompt": "A caller asks you to repair a failing Playwright candidate explicitly identified by the caller as generated, with its approved plan (from specs/ or the user's request). The product returns a value that contradicts the approved expected value; a locator also drifted. Explain what you may repair and who reviews it.",
       "expected_output": "Repair only evidenced mechanics, keeping expected values, primary outcome, assertion target, scenario count, request proof and test enablement immutable. Return NOFIX with evidence for product-contract disagreement. Run the checklist and apply gated rerun/scan for edited files. Emit V6: required (caller); the caller owns any independent review and the debugger neither self-approves nor spawns/loads e2e-reviewer inline. Pending V6 prevents approval/completion. Report a scanner exit 1 with a printed Summary as P0>0 with counts, and use CANNOT_VERIFY only for exit 2, INCOMPLETE or a missing Summary. Provide the approved-fields packet without dispatching a reviewer or quoting a verdict.",
       "files": [],
       "assertions": [
@@ -406,11 +406,57 @@
       "title": "Preserve multiple soft assertion failures in one Playwright attempt",
       "prompt": "Diagnose evals/files/results-multiple-soft-errors.json using the bounded Playwright report reader. Identify each failure location, decide whether the errors prove one or two underlying defects, and account for the clean control. Do not run project tests.",
       "expected_output": "The one failed attempt contains two soft assertion errors at tests/note.spec.ts:18 and :19. Both observe missing note persistence and do not by themselves prove two independent defects. The separate initial-load control passed. A cause beyond the report remains a hypothesis until supported by request or storage evidence.",
-      "files": ["evals/files/results-multiple-soft-errors.json"],
+      "files": [
+        "evals/files/results-multiple-soft-errors.json"
+      ],
       "assertions": [
         "True positive: reports both soft assertion messages and their distinct lines 18 and 19 from the same failed attempt",
         "False-positive guard: does not count the two assertions as two independent defects or claim a storage cause from the report alone",
         "False-positive guard: does not classify the passing initial-load control as failed or flaky"
+      ]
+    },
+    {
+      "id": 30,
+      "title": "UI-only locator repair does not invent backend proof",
+      "prompt": "For a generated Playwright test at tests/counter.spec.ts:10, the approved contract is one enabled scenario, Count: 0, one Increment click, then Count: 1; request proof and persistence are explicitly none. The observed button name is Increment but the test uses Add one. The app source sends POST /api/increment. Diagnose the locator failure and state the smallest applicable verification. No execution is authorized.",
+      "expected_output": "Diagnose the evidenced selector defect. Preserve the title, one enabled scenario, click and exact Count assertions; recommend the scoped normal rerun and caller-owned independent review. Do not add V4 request/persistence proof merely because the app sends POST; do not claim any verification ran.",
+      "files": [],
+      "assertions": [
+        "True positive: identifies the mismatched Add one locator as the evidenced test defect and preserves the approved Count: 0 to Count: 1 outcome.",
+        "False-positive guard: does not recommend new method/endpoint/payload/cardinality or failed-write proof for this UI-only repair solely from the implementation POST; does not claim unexecuted checks passed."
+      ]
+    },
+    {
+      "id": 31,
+      "title": "Approved optimistic write contract retains causal V4 proof",
+      "prompt": "A generated Playwright test at tests/counter.spec.ts:20 promises to save one increment with exactly one POST /api/increment and prove persistence after reload. Existing request proof is present. The UI shows Count: 1 optimistically even when the recorded write response is 500. Explain responsibility, the repair boundary and applicable verification. Do not execute commands.",
+      "expected_output": "Treat the evidenced failed write as a product-contract disagreement and return NOFIX unless independent evidence establishes a mechanical test error. Preserve the existing request and reload assertions, expected values and scenario enablement. Recommend applicable V4 request method/endpoint/payload/cardinality and injected failed-write proof; an optimistic Count: 1 cannot prove the promised successful persisted write. Label unexecuted checks recommended.",
+      "files": [],
+      "assertions": [
+        "True positive: recommends causal V4 proof for the approved write/persistence promise and retains existing request and reload checks.",
+        "False-positive guard: does not use the UI-only scope exception to suppress V4, remove request proof, change the expected response to 500 or manufacture green from the optimistic count."
+      ]
+    },
+    {
+      "id": 32,
+      "title": "Approved handwritten repair plan does not establish generated provenance",
+      "prompt": "Repair a longstanding handwritten Playwright test. The user supplies an approved repair plan at specs/repair.md. Source read in this session proves its expected label 'Save' is wrong and the product contract requires 'Saved'; no generated candidate or verification probe is involved. The user requests the assertion correction and already approved the exact scoped rerun and pinned per-file scanner environment against a disposable stack. Explain the repair and verification route without executing commands.",
+      "expected_output": "Use ordinary case 2: correct the evidenced wrong expectation from Save to Saved, preserve correct assertions and recommend the scoped retries-zero rerun plus pinned per-file scan under the established gates. Recommend the smallest applicable assertion proof; label all unexecuted checks recommended. An approved plan or specs/ path does not prove generated/probe provenance and does not by itself require caller-owned V6 or immutable wrong expected values.",
+      "files": [],
+      "assertions": [
+        "True positive: permits the source-proven handwritten assertion correction and applies case 2 scoped rerun and scan requirements.",
+        "False-positive guard: the approved specs/repair.md plan alone triggers neither generated-candidate immutability, NOFIX solely for the old wrong expectation, nor V6: required (caller)."
+      ]
+    },
+    {
+      "id": 33,
+      "title": "Explicit generated provenance preserves approved expected value",
+      "prompt": "The caller explicitly identifies a failing Playwright test as a generated candidate from specs/approved.md. Its approved primary outcome is Saved, but the observed product shows Save. No mechanical test error is evidenced. Explain the repair boundary; do not execute commands.",
+      "expected_output": "Apply generated-candidate case 3 from explicit provenance, obtain/preserve the approved-fields packet, retain the approved Saved outcome, expected value, assertion target, scenario count, request proof and test enablement, and return NOFIX with the product disagreement evidence. Emit V6: required (caller); missing independent V6 remains pending. Do not weaken the approved assertion or dispatch a reviewer.",
+      "files": [],
+      "assertions": [
+        "True positive: explicit generated provenance activates immutable approved outcomes and caller-owned V6.",
+        "False-positive guard: does not reuse the ordinary handwritten wrong-assertion exception to change Saved to Save or manufacture completion."
       ]
     }
   ]

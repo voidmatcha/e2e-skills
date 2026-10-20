@@ -1,0 +1,185 @@
+{
+  "frozen_at": "2026-10-19T16:36:44.957053+00:00",
+  "protocol_id": "reviewer-holdout-v22",
+  "protocol_sha256": "31e4bade6f05dccc0a2fed2ea68f437b8568dab8a3adfb5c95be7d6972017f8b",
+  "skill_sha256": "7ff53a2999b80f2f777679fe8dd80941f6ad84b74d36ada43084573f3eeb3c10",
+  "evaluator_sha256": "ee108e459e6a3bba232f5e9173c3fca86fb2d44be06ac0308bd296bcb7ba0817",
+  "comparator_sha256": "176048522a6632ec7cfff4c31ab2ddf4ab27f7294709a294dd388867acacb9b3",
+  "corpus": {
+    "path": "scripts/evals/reviewer-holdout-v17.json",
+    "cases_file_sha256": "2bc33896b64a9c0592552c77cfe2331635bcfa6f4f39c17a268f56eae8087164",
+    "corpus_sha256": "c74538cdb005ef040428ad25b37c85bb31d432e069246338ee6d437efa214238"
+  },
+  "runner_sha256": "4d210f7c5a18fd0386434df23b5bdbb8c0e7257d3e8a2b30b0769c8bbe99a878",
+  "runner_identity": "codex-cli 0.159.3",
+  "model": "gpt-6-sol",
+  "reasoning_effort": "isolated-cli-default",
+  "env_allowlist_keys": [
+    "COLORTERM",
+    "LANG",
+    "LC_ALL",
+    "LC_CTYPE",
+    "PATH",
+    "TERM",
+    "TMPDIR"
+  ],
+  "auth_capability": "private owned auth.json snapshot only; values neither printed nor published",
+  "snapshot_manifest_sha256": "bd293879e36fb168b5b380c57857baafc60c3a23b3be685439ee5fca157b6b1c",
+  "snapshot_git_dirty_sha256": "6da0e7c4b3360171e1501fd3d57548688e3555f3d2ad3ea759f90e29d2149901",
+  "schedule_sha256": "17c4ae4202e2f4ae2820c3aab42e7d3d267fce95319512c9f9ed5d208c08da6a",
+  "arms": [
+    "full",
+    "catalog-only",
+    "no-skill"
+  ],
+  "attempt_timeout_seconds": 180,
+  "maximum_matrix_elapsed_seconds": 43200,
+  "retry_policy": {
+    "max_attempts_per_call": 2,
+    "retryable": [
+      "timeout",
+      "runner_nonzero_exit_with_usage_limit_text",
+      "malformed_json_output",
+      "runner_auth_error",
+      "codex_unexpected_stream_item"
+    ],
+    "contract": "A scheduled call with a v11 retryable failure or a nonzero runner authentication-error envelope is retried once in a freshly prepared identical workspace at the same schedule position. Every attempt and retry reason is recorded; the final attempt is scored. A scoreable output is never retried. Authentication-error output is omitted from reports to avoid credential leakage. A Codex unexpected tool or item in the tools-disabled event stream is retryable once; a repeated event remains unscoreable and fail-closed."
+  },
+  "abort_policy": "Stop before another cell after exhausted auth/capacity; halt matrix on any incomplete arm, integrity failure, or 12h deadline. No model/identity switch or cell replacement.",
+  "claim_limits": [
+    "Public previously observed AI-authored development corpus",
+    "One model and CLI identity; provider backend not attested",
+    "Zero tools does not prove scanner causal benefit",
+    "Scientific comparison is separate from release readiness"
+  ],
+  "source_head": "9ab9a0490c1c57cdab0971be893c9e67bf1e3e9f",
+  "preflight_attempt_1": {
+    "model_calls": 0,
+    "status": "REJECTED_BEFORE_EXECUTION",
+    "reason": "Historical strict schema omitted current #8c vocabulary. The v22-only schema was registered before scoring; historical schema was preserved."
+  },
+  "admission_attempt_2": {
+    "model_calls": 3,
+    "purpose": "Unscored schema and CLI compatibility admission, retained before v22-only exhausted-identity stop was added."
+  },
+  "admission_attempt_3": {
+    "model_calls": 3,
+    "purpose": "Final evaluated harness admission; every arm had strict-schema scoreable output, zero-tools stream validation, immutable inputs and raw parse/rescore agreement."
+  },
+  "python_runtime": "Python 3.9.6",
+  "offline_contract_runtime": "Original local Python3.9 invocation; v8 zip(strict=True) contract rerun passed on repository-supported Python3.12.14. All model calls keep the same original Python3.9.6 harness runtime.",
+  "event_stream_evidence": {
+    "retained": false,
+    "retained_answer": "runs[].output is final raw answer JSON; usage is extracted from the CLI event stream",
+    "binding": "frozen disabled-tool CLI argv and live fail-closed item parser",
+    "limitation": "Original CLI JSON event streams are not retained; independent retrospective per-call tool recount is unavailable. model_tool_surface none is execution-contract provenance, not raw tool-count attestation.",
+    "source_references": [
+      "scripts/evals/run-reviewer-holdout.py:4323",
+      "scripts/evals/run-reviewer-holdout.py:4577",
+      "scripts/evals/run-reviewer-holdout.py:4608",
+      "scripts/evals/run-reviewer-holdout.py:4709",
+      "scripts/evals/run-reviewer-holdout.py:5933",
+      "scripts/ci/test-reviewer-holdout-v22.py:72",
+      "scripts/ci/test-reviewer-stream-retry.py:54"
+    ]
+  },
+  "cohort_outcome": {
+    "scientific_status": "PASS",
+    "evidence_scope": "development",
+    "release_eligible": false,
+    "completed_calls": 540,
+    "started_at": "2026-10-19T16:36:45.375188+00:00",
+    "completed_at": "2026-10-19T17:45:24.305899+00:00",
+    "snapshot_postcheck": "PASS",
+    "total_retries": 0,
+    "reported_stream_guard_violations": 0,
+    "raw_answer_reparse_rescore": "PASS: 540 stored final-answer JSON payloads; complete event streams not retained"
+  },
+  "exact_scored_commands": {
+    "full": [
+      "/Library/Developer/CommandLineTools/usr/bin/python3",
+      "scripts/evals/run-reviewer-holdout.py",
+      "--cases",
+      "scripts/evals/reviewer-holdout-v17.json",
+      "--protocol",
+      "scripts/evals/reviewer-validation-protocol-v22.json",
+      "--runner",
+      "codex",
+      "--runner-path",
+      "/Users/user/.codex/packages/standalone/releases/0.159.3-aarch64-apple-darwin/bin/codex",
+      "--model",
+      "gpt-6-sol",
+      "--arm",
+      "full",
+      "--repetitions",
+      "5",
+      "--timeout",
+      "180",
+      "--allow-live",
+      "--report-only",
+      "--output",
+      "/Users/user/.cache/e2e-skills-bench/release-next-20261019/release-run-v2/holdout/full.json"
+    ],
+    "catalog-only": [
+      "/Library/Developer/CommandLineTools/usr/bin/python3",
+      "scripts/evals/run-reviewer-holdout.py",
+      "--cases",
+      "scripts/evals/reviewer-holdout-v17.json",
+      "--protocol",
+      "scripts/evals/reviewer-validation-protocol-v22.json",
+      "--runner",
+      "codex",
+      "--runner-path",
+      "/Users/user/.codex/packages/standalone/releases/0.159.3-aarch64-apple-darwin/bin/codex",
+      "--model",
+      "gpt-6-sol",
+      "--arm",
+      "catalog-only",
+      "--repetitions",
+      "5",
+      "--timeout",
+      "180",
+      "--allow-live",
+      "--report-only",
+      "--output",
+      "/Users/user/.cache/e2e-skills-bench/release-next-20261019/release-run-v2/holdout/catalog-only.json"
+    ],
+    "no-skill": [
+      "/Library/Developer/CommandLineTools/usr/bin/python3",
+      "scripts/evals/run-reviewer-holdout.py",
+      "--cases",
+      "scripts/evals/reviewer-holdout-v17.json",
+      "--protocol",
+      "scripts/evals/reviewer-validation-protocol-v22.json",
+      "--runner",
+      "codex",
+      "--runner-path",
+      "/Users/user/.codex/packages/standalone/releases/0.159.3-aarch64-apple-darwin/bin/codex",
+      "--model",
+      "gpt-6-sol",
+      "--arm",
+      "no-skill",
+      "--repetitions",
+      "5",
+      "--timeout",
+      "180",
+      "--allow-live",
+      "--report-only",
+      "--output",
+      "/Users/user/.cache/e2e-skills-bench/release-next-20261019/release-run-v2/holdout/no-skill.json"
+    ]
+  },
+  "original_report_sha256": {
+    "full.json": "eaf21980aa02d88c48c83d743764cb00ca78c6dbc1d85a793a194cf2a4228a38",
+    "catalog-only.json": "acca687e5b13fcf321fac3a0730ebdeb74b438a7c28937144f2ce045cbf2213f",
+    "no-skill.json": "3281af53e194d6f1ab9a609f17260f819bbfb84e02caee9569839a1a901c97c6"
+  },
+  "original_comparison_sha256": "53b1c104a8fd302cd0b4886263eca9db9a2fbe6f52da723aa2feb1a94620dacb",
+  "published_report_comparator_replay": {
+    "status": "PASS",
+    "metrics_and_verdict_identical": true,
+    "sha256": "2c95698d7c0a08bb099122eb6d8b2e2601cb5bc31b728cef99d52a3daf2532a4",
+    "output": "published-report-replay.json in retained run cache"
+  },
+  "public_metadata_normalization": "Derived public metadata: machine-specific command paths use placeholder account paths. Original private cache receipts and frozen report/comparison bytes remain unchanged."
+}

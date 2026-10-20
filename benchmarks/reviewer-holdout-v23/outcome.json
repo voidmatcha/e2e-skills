@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "derivation": {
+    "kind": "portable-derived-summary",
+    "source": "Completed Luna v23 cohort-2 local run cache; original reports and final-answer payloads remain there, unmodified and not copied into this archive.",
+    "policy": "Metrics and frozen gate values are selected without rescoring, rounding or changing the scientific verdict. This is not an original arm report or independent rerun.",
+    "source_sha256": {
+      "full.json": "54e6a3bf6125256e4f96f0803fd70213b3660456af418b1a1ed31122510067e7",
+      "catalog-only.json": "edefe2442a29e00d25a185f4930ea53eab96905ff3c3b9780b9cd3532c8e7fce",
+      "no-skill.json": "fc00d0935ca5be22d27b436be1aae815f8896bfc1ae578b141d57458b5d88d81",
+      "arm-comparison.json": "d5974c5c31943558a8e090d8b1837edd10f457323c2e261ffd3a0fec1a8e3e25",
+      "worker-final-summary.json": "62eb6046a1f8fb9a99832ca72692962417982e082049b7b8db27a19bf4521c2d",
+      "cohort-freeze.json": "29724c191610c03d697117b847872ad0e22fbd0edd0b7ef13ea45f065618454e"
+    }
+  },
+  "protocol_id": "reviewer-holdout-v23",
+  "protocol_sha256": "dc28cb742e0451d1d16f8778c2a6d7dac6b5fce82e7eb7e1ada885c614ebbdec",
+  "runner": "codex",
+  "runner_identity": "codex-cli 0.159.3",
+  "model": "gpt-6-luna",
+  "reasoning_effort": null,
+  "skill_sha256": "7ff53a2999b80f2f777679fe8dd80941f6ad84b74d36ada43084573f3eeb3c10",
+  "corpus_sha256": "c74538cdb005ef040428ad25b37c85bb31d432e069246338ee6d437efa214238",
+  "corpus_visibility": "public-development",
+  "cases": 36,
+  "repetitions_per_arm": 5,
+  "arms": [
+    "full",
+    "catalog-only",
+    "no-skill"
+  ],
+  "execution_status": "COMPLETE",
+  "scientific_status": "FAIL",
+  "skill_lift_claim_eligible": false,
+  "release_eligible": false,
+  "scored_calls": 540,
+  "infrastructure_errors": 0,
+  "retry_count": 0,
+  "independent_raw_parse_and_score_matches": 540,
+  "independent_comparator_matches_original": true,
+  "model_tool_surface": "none",
+  "metrics": {
+    "arm_point_metrics": {
+      "full": {
+        "stable_precision": 0.8974358974358975,
+        "stable_recall": 0.875,
+        "stable_f1": 0.8860759493670887,
+        "repeated_precision": 0.8512820512820513,
+        "clean_case_specificity": 1.0
+      },
+      "catalog-only": {
+        "stable_precision": 0.8888888888888888,
+        "stable_recall": 0.8,
+        "stable_f1": 0.8421052631578948,
+        "repeated_precision": 0.8031914893617021,
+        "clean_case_specificity": 1.0
+      },
+      "no-skill": {
+        "stable_precision": 0.2727272727272727,
+        "stable_recall": 0.225,
+        "stable_f1": 0.24657534246575344,
+        "repeated_precision": 0.22705314009661837,
+        "clean_case_specificity": 1.0
+      }
+    },
+    "primary": {
+      "delta": 0.6395006069013353,
+      "paired_bootstrap_ci95": {
+        "method": "paired-stratified-case-bootstrap",
+        "confidence": 0.95,
+        "iterations": 10000,
+        "seed": 20260928,
+        "strata": [
+          "finding-cases",
+          "clean-cases"
+        ],
+        "percentile_method": "nearest-rank",
+        "lower": 0.4431091296762939,
+        "upper": 0.820952380952381
+      },
+      "decision_checks": [
+        {
+          "metric": "stable_f1_delta_min",
+          "actual": 0.6395006069013353,
+          "required": 0.3,
+          "comparator": ">=",
+          "passed": true
+        },
+        {
+          "metric": "stable_f1_delta_ci95_lower_min_exclusive",
+          "actual": 0.4431091296762939,
+          "required": 0.0,
+          "comparator": ">",
+          "passed": true
+        },
+        {
+          "metric": "full_report_status",
+          "actual": "FAIL",
+          "required": "PASS",
+          "comparator": "==",
+          "passed": false
+        }
+      ]
+    },
+    "descriptive_full_minus_catalog_only_stable_f1": 0.043970686209193866,
+    "descriptive_full_minus_catalog_only": {
+      "point_deltas": {
+        "stable_precision": 0.008547008547008628,
+        "stable_recall": 0.07499999999999996,
+        "stable_f1": 0.043970686209193866,
+        "repeated_precision": 0.048090561920349106,
+        "clean_case_specificity": 0.0
+      },
+      "paired_bootstrap_ci95": {
+        "stable_precision": {
+          "method": "paired-stratified-case-bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "seed": 20260928,
+          "strata": [
+            "finding-cases",
+            "clean-cases"
+          ],
+          "percentile_method": "nearest-rank",
+          "lower": -0.0911764705882353,
+          "upper": 0.08735110606920027
+        },
+        "stable_recall": {
+          "method": "paired-stratified-case-bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "seed": 20260928,
+          "strata": [
+            "finding-cases",
+            "clean-cases"
+          ],
+          "percentile_method": "nearest-rank",
+          "lower": 0.0,
+          "upper": 0.16666666666666663
+        },
+        "stable_f1": {
+          "method": "paired-stratified-case-bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "seed": 20260928,
+          "strata": [
+            "finding-cases",
+            "clean-cases"
+          ],
+          "percentile_method": "nearest-rank",
+          "lower": -0.00766155896069276,
+          "upper": 0.10058159425248037
+        },
+        "clean_case_specificity": {
+          "method": "paired-stratified-case-bootstrap",
+          "confidence": 0.95,
+          "iterations": 10000,
+          "seed": 20260928,
+          "strata": [
+            "finding-cases",
+            "clean-cases"
+          ],
+          "percentile_method": "nearest-rank",
+          "lower": 0.0,
+          "upper": 0.0
+        }
+      }
+    },
+    "historical_v17_full_stable_f1": 0.964
+  },
+  "full_arm_failure_reasons": [
+    {
+      "code": "threshold_not_met",
+      "metric": "stable_precision_min",
+      "actual": 0.8974358974358975,
+      "required": 0.95,
+      "comparator": ">=",
+      "message": "stable_precision_min was 0.897436; required >= 0.950000"
+    },
+    {
+      "code": "threshold_not_met",
+      "metric": "repeated_precision_min",
+      "actual": 0.8512820512820513,
+      "required": 0.9,
+      "comparator": ">=",
+      "message": "repeated_precision_min was 0.851282; required >= 0.900000"
+    },
+    {
+      "code": "threshold_not_met",
+      "metric": "p0_stable_label_recall_min",
+      "actual": 0.8235294117647058,
+      "required": 0.9,
+      "comparator": ">=",
+      "message": "p0_stable_label_recall_min was 0.823529; required >= 0.900000"
+    },
+    {
+      "code": "threshold_not_met",
+      "metric": "stable_guard_hit_rate_max",
+      "actual": 0.06666666666666667,
+      "required": 0.05,
+      "comparator": "<=",
+      "message": "stable_guard_hit_rate_max was 0.066667; required <= 0.050000"
+    }
+  ],
+  "claim_limits": [
+    "Public previously observed development corpus, not a hidden release holdout.",
+    "Sol and Luna were measured at different times with model-specific isolated CLI default reasoning, not equal actual reasoning depth.",
+    "Luna cohort2 includes fixed10second pacing per attempt, so wall-time comparison includes deliberate pacing.",
+    "No paired randomized cross-model inference or cost claim.",
+    "Tool-free execution enforced by CLI configuration and live parser guard; report retains final-answer JSON and usage, not complete CLI event streams. Per-run raw tool-event counts cannot be independently recounted afterwards.",
+    "Zero tools does not establish scanner causal benefit.",
+    "Interrupted cohort1 retained and excluded; no selective scored-cell replacement."
+  ],
+  "excluded_attempt": "Interrupted cohort-1 is retained in the local cache and excluded; no scored-cell replacement."
+}

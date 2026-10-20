@@ -332,15 +332,15 @@ class ReviewerHoldoutV15Test(unittest.TestCase):
             self.assertNotIn(PROTOCOL_ID, getattr(self.runner, id_set), id_set)
         # v15 and later holdouts use an enforced schema, and v14
         # stays the only protocol with fence normalization.
-        self.assertEqual({PROTOCOL_ID, V16_ID, V17_ID, V18_ID, V19_ID, V20_ID, V21_ID}, self.runner.OUTPUT_SCHEMA_PROTOCOL_IDS)
+        self.assertEqual({PROTOCOL_ID, V16_ID, V17_ID, V18_ID, V19_ID, V20_ID, V21_ID, "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"}, self.runner.OUTPUT_SCHEMA_PROTOCOL_IDS)
         self.assertEqual({V14_ID}, self.runner.OUTPUT_NORMALIZATION_PROTOCOL_IDS)
         self.assertEqual(
-            {V13_ID, V14_ID, PROTOCOL_ID, V16_ID, V17_ID, V18_ID, V19_ID, V20_ID, V21_ID}, self.runner.USAGE_CAPTURE_PROTOCOL_IDS
+            {V13_ID, V14_ID, PROTOCOL_ID, V16_ID, V17_ID, V18_ID, V19_ID, V20_ID, V21_ID, "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"}, self.runner.USAGE_CAPTURE_PROTOCOL_IDS
         )
-        self.assertEqual(REUSERS | {V16_ID, V17_ID, V18_ID, V19_ID, V20_ID, V21_ID}, self.runner.INFRASTRUCTURE_RETRY_PROTOCOL_IDS)
+        self.assertEqual(REUSERS | {V16_ID, V17_ID, V18_ID, V19_ID, V20_ID, V21_ID, "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"}, self.runner.INFRASTRUCTURE_RETRY_PROTOCOL_IDS)
         self.assertEqual(V10_CASES_PATH, self.runner.REVISED_LABEL_CORPORA[PROTOCOL_ID])
         self.assertEqual(
-            {**{reuser: V10_ID for reuser in REUSERS}, V16_ID: V9_OWNER_ID, V18_ID: V17_ID, V19_ID: V17_ID},
+            {**{reuser: V10_ID for reuser in REUSERS}, V16_ID: V9_OWNER_ID, V18_ID: V17_ID, V19_ID: V17_ID, "reviewer-holdout-v22": V17_ID, "reviewer-holdout-v23": V17_ID, "reviewer-holdout-v24": V17_ID},
             self.runner.SHARED_CORPUS_PROTOCOLS,
         )
         self.assertEqual("minimum", self.runner.FROZEN_EXECUTION_IDENTITY_POLICIES[PROTOCOL_ID])
@@ -498,7 +498,7 @@ class ReviewerHoldoutV15Test(unittest.TestCase):
                 {"protocol_id": V16_ID, "output_schema": self.v15["output_schema"]}
             ),
         )
-        for protocol_id in sorted(self.runner.SUPPORTED_PROTOCOL_IDS - {PROTOCOL_ID, V16_ID, V17_ID, V18_ID, V19_ID, V20_ID, V21_ID}):
+        for protocol_id in sorted(self.runner.SUPPORTED_PROTOCOL_IDS - {PROTOCOL_ID, V16_ID, V17_ID, V18_ID, V19_ID, V20_ID, V21_ID, "reviewer-holdout-v22", "reviewer-holdout-v23", "reviewer-holdout-v24"}):
             self.assertIsNone(
                 self.runner.output_schema_policy(
                     {"protocol_id": protocol_id, "output_schema": self.v15["output_schema"]}

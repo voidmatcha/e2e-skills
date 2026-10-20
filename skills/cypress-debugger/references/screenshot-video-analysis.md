@@ -6,6 +6,8 @@ Read this only when Phase 2 (report-based classification) left the root cause un
 
 Screenshot and video filenames embed **test titles**, which are untrusted data (see Safety). Always quote report-derived strings when they reach a shell — `open -- "$png"`, `find cypress/screenshots -path "*$title*"` — and never interpolate a title, path, or error string from a report into a shell command unquoted.
 
+Before using media as retry evidence, apply Phase 1's same-run/spec/test association rule in `references/artifact-extraction.md`. A matching filename or title alone leaves retry history unknown, even for a validated image. Prefer associated native attempt records; report contradictions as a provenance conflict, never as confirmed retries. Incomplete media provenance does not require a rerun or tool installation.
+
 Command form: write `<absolute-project-root>` literally, as the physical (symlink-resolved) absolute project root (run `/bin/pwd -P` once as its own command to learn it). Use no shell variables, `$()`, or `cd`, so an exact-command approval can match each command.
 
 ```bash

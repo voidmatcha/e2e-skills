@@ -37,4 +37,13 @@ python3 scripts/evals/run-generator-overlap-v1-pilot.py analyze <external-scores
 
 Do not overwrite the frozen inputs or existing outputs. A future sealed or release claim needs a separate corpus and execution boundary.
 
+The offline contract test stages the original helper and the archived after-arm
+product in a temporary historical project tree before checking the complete
+freeze and schedule. It uses the shared
+[historical-root support](../../scripts/evals/replay-generator-skill-effect-v8.py)
+and validates the helper's content-addressed SHA-256. The original runners,
+protocol and hashes remain unchanged; altering the staged helper still fails
+the original freeze check. This offline reproduction does not run models or
+browsers, replace the current product, or authorize rerunning this spent pilot.
+
 License: Apache-2.0.

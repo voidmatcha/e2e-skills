@@ -7,15 +7,17 @@ Before any execution, browser request, or artifact write in this procedure, read
 Preserve F1–F15; recommend the smallest applicable proof for every fix, including ordinary fixes:
 - V2 assertion falsification by temporary inversion of a supported `.should()`/`expect` primary matcher: F4/F5/F6/F13 or other load-bearing assertion questions; unchanged normal candidate passes, inverted primary turns red.
 - V3 `cy.intercept()` fault injection at an evidenced response/data dependency: F3/F9; unchanged primary assertion turns red.
-- V4 intercept alias plus `cy.wait()` request method/URL/body/cardinality proof plus an injected failed write: any write/optimistic UI, regardless of F-code; never accept optimistic state alone.
+- V4 intercept alias plus `cy.wait()` request method/URL/body/cardinality proof plus an injected failed write: when the approved scenario promises request delivery/persistence or the diagnosis depends on write success/failure, regardless of F-code; never accept optimistic state alone as proof of that contract.
 - V5 repository-native solo/repeat/suite-context runs at normal supported parallelism: F1/F7/F8/F11/F14/F15; reuse classification's bounded isolation probes and replay gates.
 - V6 independent re-review after any generated-test repair: all F-codes; the caller owns the single pass. Emit `V6: required (caller)`; never PASS inline.
+
+Do not add a backend-proof requirement to a UI-only repair solely because the application sends a request. Preserve every existing approved request or persistence check; this scope rule does not exempt an evidenced write defect.
 
 Do not install a verifier or require `npx`; reuse the repository's targeted command. Label proof `recommended` unless an actual command/result shows it ran; use `CANNOT_VERIFY` with the exact missing evidence when no safe probe exists.
 
 ### Generated-test repair boundary
 
-Obtain the approved plan (the user's request, a `specs/` plan, or an archived plan path) before changing a candidate; keep each scenario's title, action, primary outcome, V1 completion evidence or `CANNOT_VERIFY` reason, assertion target and expected value available.
+First establish explicit user/caller or artifact provenance that the failure came from a generated candidate or verification probe. An approved plan or `specs/` path alone does not establish this provenance. Ordinary handwritten-test repairs may correct an evidenced wrong assertion under case 2 without requiring caller V6. Only after establishing generated/probe provenance, obtain the approved plan (the user's request, a `specs/` plan, or an archived plan path) before changing a candidate; keep each scenario's title, action, primary outcome, V1 completion evidence or `CANNOT_VERIFY` reason, assertion target and expected value available.
 
 **Generated-test repair boundary:** when the failure came from a generated candidate or a verification probe, expected values, the approved primary outcome, assertion target, scenario count, request proof, and test enablement are immutable. Repair only evidence-backed mechanics (selector, retryable command/query strategy, navigation, fixture, setup order, or test data). Never delete/skip the test, remove intercept/alias proof, or accept an optimistic toast in place of a write contract. Return `NOFIX: <evidence>` when the approved contract and observed product behavior disagree. Independent V6 remains required before completion; the debugger never approves its own repair.
 

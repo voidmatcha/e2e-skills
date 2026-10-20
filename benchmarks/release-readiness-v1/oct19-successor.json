@@ -1,0 +1,32 @@
+{
+  "license": "Apache-2.0",
+  "schema_version": 1,
+  "date": "2026-10-19",
+  "kind": "Dated successor to release-readiness-v1; historical observations are preserved",
+  "status": "BOUNDED_EVIDENCE_PREPARED_FINAL_EXPORT_VERIFICATION_SEPARATE",
+  "bundle": {
+    "index": "oct19-evidence/index.json",
+    "generator": "oct19-evidence/generator.json",
+    "validation": "oct19-evidence/validation.json"
+  },
+  "prior_exact_ci": {
+    "candidate": "ci-v5",
+    "selected_files": 6074,
+    "product_files": 229,
+    "digest": "d5864ea69fc7c1c81964d6a46c5b0202c353a60d0af348eb8732fb218ee90820",
+    "canonical_exit_code": 0,
+    "direct_security_exit_code": 0,
+    "applicability": "The prior exact selected export only; not automatic coverage of this successor bundle or later release export."
+  },
+  "conclusions": {
+    "generator": "Official 6/6 versus current 5/6 completed in the fixed original 12-attempt cohort. Completed artifacts detected their declared fault and survived the refactor, official 6/6 versus current 5/5. One successful later replay stays separate. Current observed input was higher; no general advantage established.",
+    "reviewer": "Selected public eight-case descriptive result only. Exact current 4TP/0FP/0FN versus plain 3TP/9FP/1FN includes one same-mechanism taxonomy coding mismatch; no recall-lift claim. One synthetic Playwright app-fault case and its assertion mutation were evaluator-executed, not autonomous full workflow evidence.",
+    "debugger": "One synthetic failure in two evidence conditions; both arms 2/2 narrative reviews, no measured lift and no executed repair.",
+    "cypress": "New V2/V3 runtime NOT_RUN: binary verification succeeded but browser startup/report was not established within the bounded attempt. Not a detection failure.",
+    "cli_and_hosts": "Strict 26 checks passed with mocked model/auth and zero model calls. Separate actual Claude installed-Chrome host smoke passed; Codex defining-tool/native execution is supported by later generator evidence. Exact pinned-Claude live roundtrip remains unexecuted.",
+    "audits": "Cached October 14 Snyk/Socket results and Trust Hub SAFE with unavailable date are historical only; not current candidate certification."
+  },
+  "canonical_efficacy_verdict": "INCONCLUSIVE",
+  "release_preparation_scope": "Evidence packaging and truthful bounded claims do not establish general skill efficacy. Final intended file list, applicable CI/security and any later document checks are recorded separately. No release/publication action is asserted.",
+  "availability": "Derived summaries are included; original receipts and raw logs remain in maintainer-local cache. Hashes preserve provenance but do not create a public raw reproducibility bundle."
+}

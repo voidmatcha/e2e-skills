@@ -1,0 +1,132 @@
+{
+  "license": "Apache-2.0",
+  "schema_version": 1,
+  "kind": "Provenance index for selected sanitized derived evidence",
+  "date": "2026-10-19",
+  "availability": {
+    "included": "Only generator.json, validation.json and this index are exported. These are derived summaries, not unchanged original receipts.",
+    "not_included": "Raw model sessions, native reports, source snapshots, complete CI manifest, runner, fixture/protocol originals and credential material remain outside this public bundle.",
+    "reproducibility": "Original SHA-256 values bind maintainer-local provenance but do not make unavailable raw evidence publicly reproducible or independently attest local execution. Relative cache IDs are identifiers, not repository links.",
+    "mutability": "Original receipts were read and hashed without modification. This derived bundle does not authorize publication or attest a future release candidate."
+  },
+  "originals": {
+    "generator_comparison": {
+      "cache_relative_id": "generator-scored-runner-v1/comparison-v1.json",
+      "sha256": "ab632d5f51dda01a52686e083a0fa957ad164182dc93350894b2724693078b03",
+      "bytes": 58309,
+      "availability": "Maintainer-local cache only; original not included in this public derived bundle."
+    },
+    "generator_protocol": {
+      "cache_relative_id": "generator-scored-runner-v1/protocol.json",
+      "sha256": "0f0c9a258ec74a5e3fbb209384d7623babc402badc314bc81409d7ed551fe6d2",
+      "bytes": 54449,
+      "availability": "Maintainer-local cache only; original not included in this public derived bundle."
+    },
+    "generator_replay": {
+      "cache_relative_id": "generator-cell8-replay-v1/final-root-review.json",
+      "sha256": "9a2f1afaf95d4f4fd49a9433e86acaa6ffda85d5e7adb63e054702ffa05613af",
+      "bytes": 2544,
+      "availability": "Maintainer-local cache only; original not included in this public derived bundle."
+    },
+    "ci_manifest": {
+      "cache_relative_id": "ci-v5/manifest.json",
+      "sha256": "ca7868a27f4c83daa7b0eceaad0138353d23326857de5219ec2108a13d2b4cf1",
+      "bytes": 1347346,
+      "availability": "Maintainer-local cache only; original not included in this public derived bundle."
+    },
+    "ci_receipt": {
+      "cache_relative_id": "ci-v5/ci-receipt.json",
+      "sha256": "0403a9cd2dd9b5f7f294276999078b7da615b58fd6f3c93b972328ebc298ad73",
+      "bytes": 844,
+      "availability": "Maintainer-local cache only; original not included in this public derived bundle."
+    },
+    "ci_skip_supplements": {
+      "cache_relative_id": "ci-skip-resolution.json",
+      "sha256": "f9037ad92df1a4818172aaee7bc9eba2810babb49d81d2ae56930e32743bca50",
+      "bytes": 1150,
+      "availability": "Maintainer-local cache only; original not included in this public derived bundle."
+    },
+    "linux_process": {
+      "cache_relative_id": "linux-v1/process-result.json",
+      "sha256": "cc5ed30ac6222d25949fd0fc6501cf03b80955e2cc5fd0747021406167a914d6",
+      "bytes": 866,
+      "availability": "Maintainer-local cache only; original not included in this public derived bundle."
+    },
+    "strict_cli": {
+      "cache_relative_id": "pinned-cli/strict-receipt.json",
+      "sha256": "de6f43a339ca4f2b6821cd027c72dd32e60d3d99c054580a7c20f014a2443763",
+      "bytes": 596,
+      "availability": "Maintainer-local cache only; original not included in this public derived bundle."
+    },
+    "optional_ast": {
+      "cache_relative_id": "optional-ast/result.json",
+      "sha256": "fa94c4a6c4c0c4df696ff61c8e1b352f68f40b57f185e475082bf10ac4a65bfb",
+      "bytes": 2644,
+      "availability": "Maintainer-local cache only; original not included in this public derived bundle."
+    },
+    "host_smoke": {
+      "cache_relative_id": "host-lane/host-receipt.json",
+      "sha256": "07ffaa02c061545e210b323b19f4259f3b5926f0e33c050f85d68ccf4244c785",
+      "bytes": 5997,
+      "availability": "Maintainer-local cache only; original not included in this public derived bundle."
+    },
+    "cypress_runtime": {
+      "cache_relative_id": "reviewer-lane/cy-runtime-admission-v1/result.json",
+      "sha256": "e68eaf61abb2b309ac02e028ea7e796cf0ec0a419a846b5e9f44495bb8416ef9",
+      "bytes": 1561,
+      "availability": "Maintainer-local cache only; original not included in this public derived bundle."
+    },
+    "reviewer_accuracy": {
+      "cache_relative_id": "reviewer-accuracy/adapter-v2/root-source-adjudication.json",
+      "sha256": "1a4c7bc22f0e9d46a5cda05f321c7a2972717513101d57d1fc47ad0d0544b450",
+      "bytes": 10231,
+      "availability": "Maintainer-local cache only; original not included in this public derived bundle."
+    },
+    "reviewer_assertion_mutation": {
+      "cache_relative_id": "reviewer-lane/pw-v2/root-runtime-review.json",
+      "sha256": "a6ec6b2feb43c2abe2be18552e545f55e2c2fd3a0a7edeb89b4ecf57d7abfcdf",
+      "bytes": 976,
+      "availability": "Maintainer-local cache only; original not included in this public derived bundle."
+    },
+    "reviewer_app_fault": {
+      "cache_relative_id": "reviewer-lane/root-runtime-review.json",
+      "sha256": "c22fea37de05fc4a42235831f3e4b5e7f0239fb6a966dcb7fd615863a415f396",
+      "bytes": 2765,
+      "availability": "Maintainer-local cache only; original not included in this public derived bundle."
+    },
+    "debugger": {
+      "cache_relative_id": "debugger-lane/narrative-review.json",
+      "sha256": "7fedb3ab9dd27567e216b506f2359097e53fee354c84263b415ce32d2c9900d3",
+      "bytes": 6386,
+      "availability": "Maintainer-local cache only; original not included in this public derived bundle."
+    },
+    "external_audits": {
+      "cache_relative_id": "audits/applicability.json",
+      "sha256": "57e6ee0f5da1788d044f6f82d787b055f05135be396d1ee57e8b54cfb7307e06",
+      "bytes": 1140,
+      "availability": "Maintainer-local cache only; original not included in this public derived bundle."
+    },
+    "translation_audit": {
+      "cache_relative_id": "translations/audit-summary.json",
+      "sha256": "580b99c26face2508896c8592cd6c2e20253568f671a3af4ac70125d4b34e916",
+      "bytes": 922,
+      "availability": "Maintainer-local cache only; original not included in this public derived bundle."
+    },
+    "linux_log": {
+      "cache_relative_id": "linux-v1/linux.log",
+      "sha256": "53e3c7594f9005227e5585d4d4ebd7628110e4ba990bd28ff1c633e6a4e57f3e",
+      "bytes": 4796,
+      "availability": "Maintainer-local cache only; original not included in this public derived bundle."
+    }
+  },
+  "derived_files": {
+    "generator.json": {
+      "sha256": "9d5f2c200142f39ab099109c4b815f64bebe0b56cc1fbb523f671129a214b0e5",
+      "bytes": 25010
+    },
+    "validation.json": {
+      "sha256": "6ab46542df60443d89ff88649c6c079a02cadda037cee467456ecd6844a23bbb",
+      "bytes": 16295
+    }
+  }
+}

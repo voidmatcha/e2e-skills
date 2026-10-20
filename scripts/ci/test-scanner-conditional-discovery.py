@@ -214,7 +214,9 @@ class DiscoveryTests(unittest.TestCase):
         scope_source = (ROOT / 'skills/e2e-reviewer/scripts/scope-source.sh').read_text()
         for name in ('run_source_lexer', 'source_executable_code'):
             shell += function(scope_source, name)
-        for name in ('source_has_unresolved_test_import', 'source_binding_shadowed_at', 'conditional_assertion_hit_matches'):
+        for name in ('source_has_unresolved_test_import', 'source_binding_shadowed_at',
+                     'rule_scope_predicate', 'rule_scope_predicate_or_abort',
+                     'conditional_assertion_hit_matches'):
             shell += function(SOURCE, name)
         controls = [
             (b'if(x) {\n' + b'\n'*39 + b'expect(x);\n}', 1, True),
@@ -227,11 +229,18 @@ class DiscoveryTests(unittest.TestCase):
             (b'if(x) assert.ok(x);', 1, True),
             (b'if(x) cy.get(x).should(x);', 1, True),
         ]
-        for source, line, expected in controls:
+        for index, (source, line, expected) in enumerate(controls):
             self.path.write_bytes(source)
+            # Production predicates now use a per-scan cache. Each fixture
+            # needs fresh state because they deliberately reuse source.ts.
+            state = self.root / f'predicate-state-{index}'
+            state.mkdir()
+            setup = ('SCOPE_STATE_DIR=' + shlex.quote(str(state)) + '\n' +
+                     'SCANNER_TEMP_ROOT=' + shlex.quote(str(state)) + '\n')
             hit = str(self.path) + ':' + str(line) + ':if(x)'
-            result = subprocess.run(['/bin/bash', '-p', '-c', shell + shlex.join(['conditional_assertion_hit_matches', hit])],
+            result = subprocess.run(['/bin/bash', '-p', '-c', shell + setup + shlex.join(['conditional_assertion_hit_matches', hit])],
                                     capture_output=True, timeout=10)
+            self.assertEqual(result.stderr, b'', (source, result.stderr))
             self.assertIn(result.returncode, (0, 1), result.stderr)
             self.assertEqual(result.returncode == 0, expected, source)
             if expected:

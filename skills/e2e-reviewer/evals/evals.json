@@ -1194,6 +1194,65 @@
         "False-positive guard: optimistic-write-contract.spec.ts:9 promises immediate feedback only; this persistence probe must not turn that test into a persistence finding",
         "Do not execute this eval fixture, invent a native outcome, repair a frozen submitted observer, or claim that these static assertions prove model behavior improved"
       ]
+    },
+    {
+      "id": 73,
+      "prompt": "The user requests assertion mutation for the visibility assertion on line 16 of evals/files/dashboard.spec.ts in a trusted disposable local project. Its existing Playwright dependencies, browser and native test command work, and the exact scoped execution commands are already approved. There is no probe wrapper, observer, plan JSON or registered adapter. Explain how to proceed; do not execute this static eval fixture.",
+      "expected_output": "The reviewer owns preparing a disposable snapshot, native wrapper and V2 plan from the existing test setup, then baseline, preview and bounded normal/mutated/restored execution within existing approval. An observer and registered adapter are not prerequisites for V2. Preserve the original checkout and report only assertion sensitivity.",
+      "files": [
+        "evals/files/dashboard.spec.ts"
+      ],
+      "assertions": [
+        "True positive: select the web-first visibility assertion on dashboard.spec.ts line 16 for the requested V2 and author the missing wrapper and plan; do not stop merely because no prebuilt probe infrastructure exists",
+        "False-positive guard: do not require a V3 observer, invent backend proof for line 16, or interpret assertion sensitivity as behavior-fault detection",
+        "False-positive guard: do not rewrite the weak count assertion on line 8 to manufacture a green baseline; baseline failures remain separate evidence",
+        "Reuse existing exact execution approval and installed dependencies; do not install packages or execute this static eval fixture"
+      ]
+    },
+    {
+      "id": 74,
+      "prompt": "The user requests app-fault proof for the line 15 persistence-promising test in evals/files/optimistic-write-contract.spec.ts with an independently sourced persistence promise. The project has ordinary Playwright/Cypress test tooling but no observer or native wrapper. On inspection the browser dependency is missing and the only configured backend is shared staging; the user has approved static review only. Explain next steps; do not execute the fixture.",
+      "expected_output": "Derive the specific missing local setup and propose the commands/resources needed. Missing wrapper/observer authoring belongs to the reviewer, but missing dependencies, disposable backend and execution authority block execution. Keep static review useful without installs, shared-state writes, fabricated results or substituting V2 for V3.",
+      "files": [
+        "evals/files/optimistic-write-contract.spec.ts"
+      ],
+      "assertions": [
+        "True positive: discover and report concrete missing browser, disposable backend and command approval instead of telling the user to implement a probe framework",
+        "False-positive guard: line 15 persistence does not authorize contacting staging, auto-installing a browser, executing project scripts or claiming DETECTED/SURVIVED",
+        "False-positive guard: line 9 immediate-feedback visibility is not a substitute for the requested line 15 persistence proof; do not silently run V2 instead",
+        "Prepare wrapper/observer/plan only in a disposable snapshot and preserve the original checkout; leave execution explicitly unperformed when prerequisites remain absent"
+      ]
+    },
+    {
+      "id": 75,
+      "prompt": "Finish an ordinary static review of evals/files/optimistic-write-contract.spec.ts. Independent application evidence promises persistence after reload, but the test at line 15 only checks immediate feedback; no runtime execution was requested or approved. Contrast this with an explicit static-only review of evals/files/dashboard.spec.ts. Do not execute the eval fixtures.",
+      "expected_output": "Complete the static review without waiting. For the persistence uncertainty, offer one sourced app-fault follow-up at the end, identifying the exact test and what fault survival/detection would prove; do not run it or report runtime evidence. An explicit static-only review receives no runtime follow-up offer. If execution were already requested and authorized, continue it without repeated confirmation. Explain additional token/execution-time cost and the specific uncertainty reduced without promising better general accuracy or inventing a token estimate.",
+      "files": [
+        "evals/files/optimistic-write-contract.spec.ts",
+        "evals/files/dashboard.spec.ts"
+      ],
+      "assertions": [
+        "True positive: after the completed ordinary review, proactively offer one behavior-fault follow-up for the promised persistence tested at optimistic-write-contract.spec.ts line 15, instead of relying on the user to know the probe feature",
+        "False-positive guard: the offer is not proof that line 15 survives a fault; do not execute project code, invent a runtime verdict or promote severity based on an unexecuted proposal",
+        "False-positive guard: line 9 immediate-feedback visibility alone does not promise persistence and is not the fault target",
+        "False-positive guard: honor an explicit static-only review of dashboard.spec.ts line 16 without offering or running mutation; do not delay the completed review for a reply",
+        "Explain the optional extra token/time cost and bounded evidence benefit; do not guarantee improved overall accuracy or invent an exact cost estimate",
+        "For the sourced persistence uncertainty at optimistic-write-contract.spec.ts line 15, name app-fault/V3 explicitly; do not describe assertion inversion as evidence of persistence-defect detection",
+        "Offer assertion-mutation/V2 separately only for an unresolved assertion-sensitivity question; when both questions matter, describe two probes with separate verdicts and cost rather than automatically executing both"
+      ]
+    },
+    {
+      "id": 76,
+      "prompt": "Review evals/files/cypress-role-name.cy.ts for #10c. Application evidence confirms the page renders both the fixed Job navigation link and a user-named Nightly Job Report link; these queries have no container scope. Review selectors only, with no runtime execution.",
+      "expected_output": "Report line 5 as #10c P1 because the unanchored regex can match both links. Do not flag line 2: Testing Library string names already match exactly. Do not flag the anchored regex on line 8 or recommend exact:true for ByRole.",
+      "files": [
+        "evals/files/cypress-role-name.cy.ts"
+      ],
+      "assertions": [
+        "True positive: line 5 is #10c P1, grounded in the two matching link names and absent container scope",
+        "False-positive guard: line 2 uses exact string matching by default and must not be flagged for omitting exact:true",
+        "False-positive guard: line 8 is a suitably anchored regex; ByRole has no exact option for the accessible name"
+      ]
     }
   ]
 }

@@ -844,8 +844,8 @@ backup "$file"
 bad_home="/""Users/machine-owner/e2e-skills"
 mutate \
   "$file" \
-  "four focused workflows for Playwright and Cypress E2E work" \
-  "four focused workflows for Playwright and Cypress E2E work from $bad_home"
+  "gives AI coding agents four skills" \
+  "gives AI coding agents four skills from $bad_home"
 assert_security_fails \
   "Pre-push hardcoded-home guard — public docs reject real user paths" \
   "machine-specific absolute user-home paths found in public artifacts"
@@ -857,7 +857,7 @@ file="README.md"
 backup "$file"
 mutate \
   "$file" \
-  "four focused workflows for Playwright and Cypress E2E work" \
+  "gives AI coding agents four skills" \
   "four focused workflows for Playwright and Cypress E2E 한국어 work"
 assert_fails "Language guard — Hangul outside switcher line in README.md" "Korean text found in public docs: README.md"
 restore "$file"
@@ -924,7 +924,7 @@ mutate \
   "Windows users need a compatible shell"
 assert_fails \
   "README i18n parity — Windows limitation keeps the WSL boundary" \
-  "README.md Scope and limits section missing platform-limit tokens ['WSL execution/filesystem boundary']"
+  "README.md Supported environments section missing platform-limit tokens ['WSL execution/filesystem boundary']"
 restore "$file"
 
 # Case 15a: every README accepts the centered display title while repository,
@@ -1220,8 +1220,8 @@ for framework in Puppeteer Selenium WebdriverIO TestCafe Nightwatch; do
   backup "$file"
   mutate \
     "$file" \
-    "Playwright and Cypress E2E work" \
-    "Playwright, Cypress, and $framework E2E work"
+    "Playwright/Cypress end-to-end (E2E) tests" \
+    "Playwright, Cypress, and $framework E2E tests"
   assert_fails \
     "Framework scope — $framework support claim rejected" \
     "unsupported framework reference: $framework"
@@ -1270,8 +1270,8 @@ for file in README.ko.md README.ja.md README.zh-cn.md; do
   backup "$file"
   mutate \
     "$file" \
-    "https://github.com/voidmatcha/e2e-skills.git" \
-    "https://github.com/voidmatcha/e2e-skillz.git"
+    "https://github.com/voidmatcha/e2e-skills" \
+    "https://github.com/voidmatcha/e2e-skillz"
   assert_fails \
     "README i18n parity — $file repository URL drift" \
     "$file canonical repository URLs differ from README.md"
@@ -1281,7 +1281,7 @@ done
 # A manual Claude Code source install must expose each skill directly under
 # ~/.claude/skills; Claude Code does not document recursive personal-skill
 # discovery through a bundle directory.
-file="README.md"
+file="docs/installation.md"
 backup "$file"
 mutate \
   "$file" \
@@ -1292,20 +1292,20 @@ assert_fails \
   "README.md manual Claude Code clone must expose four direct per-skill roots"
 restore "$file"
 
-# Codex installation is host-specific, and the generator's optional official-agent
+# The all-in-one prompt selects the current host; the optional official-agent
 # path needs a session-wide playwright-test MCP server on Codex (no role selector).
 file="README.md"
 backup "$file"
 mutate \
   "$file" \
-  "--skill '*' -g -a codex" \
-  "--skill '*' -g -a claude-code -a codex"
+  "for my current host and Playwright project." \
+  "for every host and Playwright project."
 assert_fails \
-  "README Codex install — host-specific command rejects hidden Claude install" \
-  "README.md Codex install must target only -a codex"
+  "README all-in-one install — current-host prompt rejects all-host installation" \
+  "README.md install must keep one current-host all-in-one prompt"
 restore "$file"
 
-file="README.md"
+file="docs/installation.md"
 backup "$file"
 mutate "$file" 'session-wide `playwright-test` MCP server' 'session-wide `playwright-tests` MCP server'
 assert_fails \
@@ -1315,7 +1315,7 @@ restore "$file"
 
 # review.sh requires the exact scope phrase, not a bare "session-wide" token.
 # Remove every copy of that phrase so another mention cannot mask the drift.
-file="README.md"
+file="docs/installation.md"
 backup "$file"
 mutate_all "$file" \
   'works only with a session-wide `playwright-test` MCP server' \
@@ -1325,18 +1325,13 @@ assert_fails \
   "README.md Codex delegation limits missing tokens"
 restore "$file"
 
-# Each translation carries the same scope sentence in its own words; removing
-# every copy of its required phrase must be caught per language.
-for spec in \
-  'README.ko.md|session-wide `playwright-test` MCP 서버가 있을 때만 동작합니다|`playwright-test` MCP 서버가 있을 때 동작합니다' \
-  'README.ja.md|session-wide な `playwright-test` MCP サーバーがある場合にのみ動作します|`playwright-test` MCP サーバーがある場合に動作します' \
-  'README.zh-cn.md|只有存在 session-wide 的 `playwright-test` MCP 服务器时才可用|存在 `playwright-test` MCP 服务器时可用'; do
-  IFS='|' read -r file old new <<<"$spec"
+# Every translation must retain its link to the one shared setup guide.
+for file in README.ko.md README.ja.md README.zh-cn.md; do
   backup "$file"
-  mutate_all "$file" "$old" "$new"
+  mutate_all "$file" 'docs/installation.md' 'docs/installations.md'
   assert_fails \
-    "README Codex delegation — $file session-wide MCP scope is required" \
-    "$file Codex delegation limits missing tokens"
+    "README setup — $file shared guide link is required" \
+    "$file missing installation guide link"
   restore "$file"
 done
 
@@ -1435,10 +1430,8 @@ restore "$file"
 
 file="README.md"
 backup "$file"
-mutate \
-  "$file" \
-  "False-green detection is one important part of the review workflow" \
-  "False-green detection is an important part of the review workflow"
+# A trailing newline changes canonical bytes without depending on prose wording.
+printf '\n' >> "$file"
 assert_fails \
   "README i18n canonical revision — canonical byte change requires review" \
   "canonical revision acknowledgement is stale"

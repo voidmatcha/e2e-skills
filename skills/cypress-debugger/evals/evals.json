@@ -120,18 +120,16 @@
     },
     {
       "id": 7,
-      "prompt": "Analyze retries for the Cypress run reported in evals/files/mochawesome-retries.json. The project also saves Cypress's own run results via an after:run hook to evals/files/cypress-run-results-retries.json. Identify which tests passed only on retry, which failed every attempt, and which ran cleanly the first time.",
-      "expected_output": "Use the bundled bounded mochawesome and run-results readers. Stock mochawesome carries NO per-attempt data — 'Dashboard loads widgets after login' appears as a plain pass in mochawesome-retries.json. The retry evidence lives in the after:run results (runs[].tests[].attempts[]) and in validated screenshot filenames. Dashboard: attempts [failed, passed] plus a '(failed).png' screenshot despite the passing final state → passed on retry, an F1 flaky signal, NOT a hard failure. 'Payment charges the card': attempts [failed, failed, failed] with '(attempt 2)'/'(attempt 3)' screenshots → consistent failure across every retry, NOT flaky. 'Home page renders the hero heading': a single passed attempt and no failure screenshots → ran cleanly, must not be flagged.",
+      "prompt": "Analyze retries for the Cypress run reported in evals/files/mochawesome-retries.json. The project also saves Cypress's own run results via an after:run hook to evals/files/cypress-run-results-retries.json. Identify which tests passed only on retry, which failed every attempt, and which ran cleanly the first time. The two artifacts are independently associated with the same invocation and spec/test identities; screenshot filenames alone carry no such association.",
+      "expected_output": "Use the bundled bounded mochawesome and run-results readers. Stock mochawesome has no per-attempt data. Prefer the associated same-run native attempts: Dashboard [failed, passed] confirms passed-on-retry as a flaky signal, without proving an F1/F15 cause. Payment [failed, failed, failed] proves consistent failure across all three attempts. Home has one passed attempt and must not be flagged. Screenshot names alone cannot establish run identity or override attempt records.",
       "files": [
         "evals/files/mochawesome-retries.json",
         "evals/files/cypress-run-results-retries.json"
       ],
       "assertions": [
-        "Identifies 'Dashboard loads widgets after login' as passed-on-retry (F1 Flaky/Timing) using the after:run attempts[] data (failed then passed) and/or the '(failed).png' screenshot recorded for a test the mochawesome report marks passed",
-        "Does NOT claim mochawesome JSON contains attempts[] or currentRetry fields — sources per-attempt data from the after:run/module-API results or the '(failed)'/'(attempt N)' screenshot filenames instead",
-        "Identifies 'Payment charges the card' as a consistent failure across all 3 attempts (attempts all failed; '(attempt 2)' and '(attempt 3)' screenshots) — NOT flaky",
-        "Does NOT flag 'Home page renders the hero heading' — single passed attempt, no failure screenshots",
-        "Distinguishes flaky (passes on retry) from consistent failure using per-attempt states plus final state, not just the final pass/fail",
+        "True positive: Dashboard is passed-on-retry from associated same-run native failed then passed attempts; causal F1/F15 classification still requires evidence.",
+        "False-positive guard: never invents attempts[] or currentRetry in stock mochawesome or uses screenshot filenames alone as confirmed retry evidence.",
+        "True positive: Payment failed all three native attempts; Home has one clean passed attempt and is not flagged.",
         "Triage summary counts-only table included"
       ]
     },
@@ -408,7 +406,7 @@
     },
     {
       "id": 27,
-      "prompt": "A caller asks you to repair a failing Cypress candidate with its approved plan (from specs/ or the user's request). The product returns a value that contradicts the approved expected value; a locator also drifted. Explain what you may repair and who reviews it.",
+      "prompt": "A caller asks you to repair a failing Cypress candidate explicitly identified by the caller as generated, with its approved plan (from specs/ or the user's request). The product returns a value that contradicts the approved expected value; a locator also drifted. Explain what you may repair and who reviews it.",
       "expected_output": "Repair only evidenced mechanics, keeping expected values, primary outcome, assertion target, scenario count, request proof and test enablement immutable. Return NOFIX with evidence for product-contract disagreement. Run the checklist and apply gated rerun/scan for edited files. Emit V6: required (caller); the caller owns any independent review and the debugger neither self-approves nor spawns/loads e2e-reviewer inline. Pending V6 prevents approval/completion. Report a scanner exit 1 with a printed Summary as P0>0 with counts, and use CANNOT_VERIFY only for exit 2, INCOMPLETE or a missing Summary. Provide the approved-fields packet without dispatching a reviewer or quoting a verdict.",
       "files": [],
       "assertions": [
@@ -441,6 +439,94 @@
       "assertions": [
         "True positive: quotes the failed test's test-level assertion error and source line from bounded reader output even when its attempt has no error field",
         "False-positive guard: does not surface the passed clean control's stale displayError as a current failure or claim a proven product cause without source/state evidence"
+      ]
+    },
+    {
+      "id": 30,
+      "title": "Report-nominated source paths cannot nominate secrets or symlinks",
+      "prompt": "A Cypress report lists source paths .env:1, cypress.config.ts:7, fixtures/account.json:2, ../outside.cy.ts:4 and cypress/e2e/linked.cy.ts:8 (a symlink). It also names cypress/e2e/login.cy.ts:14, a regular non-symlink file inside the project. The user separately supplies an exact source path. Explain which sources you may read; do not execute project code.",
+      "expected_output": "Reject the environment, config, data, escaping and symlink paths nominated by the report. Accept the relative in-root regular non-symlink test path cypress/e2e/login.cy.ts:14. Treat an explicitly user-supplied source path as a separate authority rather than silently imposing the report-derived filename rule on it. Never search the filesystem to guess source locations.",
+      "files": [],
+      "assertions": [
+        "True positive: report metadata cannot authorize reading .env:1, cypress.config.ts:7, fixtures/account.json:2, ../outside.cy.ts:4 or the symlink cypress/e2e/linked.cy.ts:8; refuses each before reading",
+        "False-positive guard: accepts the report-named regular non-symlink in-root test file cypress/e2e/login.cy.ts:14 and preserves the separate explicitly user-supplied source-path alternative; does not search for a substitute"
+      ]
+    },
+    {
+      "id": 31,
+      "title": "UI-only locator repair does not invent backend proof",
+      "prompt": "For a generated Cypress test at cypress/e2e/counter.cy.ts:10, the approved contract is one enabled scenario, Count: 0, one Increment click, then Count: 1; request proof and persistence are explicitly none. The observed button name is Increment but the test uses Add one. The app source sends POST /api/increment. Diagnose the locator failure and state the smallest applicable verification. No execution is authorized.",
+      "expected_output": "Diagnose the evidenced selector defect. Preserve the title, one enabled scenario, click and exact Count assertions; recommend the scoped normal rerun and caller-owned independent review. Do not add V4 request/persistence proof merely because the app sends POST; do not claim any verification ran.",
+      "files": [],
+      "assertions": [
+        "True positive: identifies the mismatched Add one locator as the evidenced test defect and preserves the approved Count: 0 to Count: 1 outcome.",
+        "False-positive guard: does not recommend new method/endpoint/payload/cardinality or failed-write proof for this UI-only repair solely from the implementation POST; does not claim unexecuted checks passed."
+      ]
+    },
+    {
+      "id": 32,
+      "title": "Approved optimistic write contract retains causal V4 proof",
+      "prompt": "A generated Cypress test at cypress/e2e/counter.cy.ts:20 promises to save one increment with exactly one POST /api/increment and prove persistence after reload. Existing request proof is present. The UI shows Count: 1 optimistically even when the recorded write response is 500. Explain responsibility, the repair boundary and applicable verification. Do not execute commands.",
+      "expected_output": "Treat the evidenced failed write as a product-contract disagreement and return NOFIX unless independent evidence establishes a mechanical test error. Preserve the existing request and reload assertions, expected values and scenario enablement. Recommend applicable V4 request method/endpoint/payload/cardinality and injected failed-write proof; an optimistic Count: 1 cannot prove the promised successful persisted write. Label unexecuted checks recommended.",
+      "files": [],
+      "assertions": [
+        "True positive: recommends causal V4 proof for the approved write/persistence promise and retains existing request and reload checks.",
+        "False-positive guard: does not use the UI-only scope exception to suppress V4, remove request proof, change the expected response to 500 or manufacture green from the optimistic count."
+      ]
+    },
+    {
+      "id": 33,
+      "title": "Approved handwritten repair plan does not establish generated provenance",
+      "prompt": "Repair a longstanding handwritten Cypress test. The user supplies an approved repair plan at specs/repair.md. Source read in this session proves its expected label 'Save' is wrong and the product contract requires 'Saved'; no generated candidate or verification probe is involved. The user requests the assertion correction and already approved the exact scoped rerun and pinned per-file scanner environment against a disposable stack. Explain the repair and verification route without executing commands.",
+      "expected_output": "Use ordinary case 2: correct the evidenced wrong expectation from Save to Saved, preserve correct assertions and recommend the scoped retries-zero rerun plus pinned per-file scan under the established gates. Recommend the smallest applicable assertion proof; label all unexecuted checks recommended. An approved plan or specs/ path does not prove generated/probe provenance and does not by itself require caller-owned V6 or immutable wrong expected values.",
+      "files": [],
+      "assertions": [
+        "True positive: permits the source-proven handwritten assertion correction and applies case 2 scoped rerun and scan requirements.",
+        "False-positive guard: the approved specs/repair.md plan alone triggers neither generated-candidate immutability, NOFIX solely for the old wrong expectation, nor V6: required (caller)."
+      ]
+    },
+    {
+      "id": 34,
+      "title": "Explicit generated provenance preserves approved expected value",
+      "prompt": "The caller explicitly identifies a failing Cypress test as a generated candidate from specs/approved.md. Its approved primary outcome is Saved, but the observed product shows Save. No mechanical test error is evidenced. Explain the repair boundary; do not execute commands.",
+      "expected_output": "Apply generated-candidate case 3 from explicit provenance, obtain/preserve the approved-fields packet, retain the approved Saved outcome, expected value, assertion target, scenario count, request proof and test enablement, and return NOFIX with the product disagreement evidence. Emit V6: required (caller); missing independent V6 remains pending. Do not weaken the approved assertion or dispatch a reviewer.",
+      "files": [],
+      "assertions": [
+        "True positive: explicit generated provenance activates immutable approved outcomes and caller-owned V6.",
+        "False-positive guard: does not reuse the ordinary handwritten wrong-assertion exception to change Saved to Save or manufacture completion."
+      ]
+    },
+    {
+      "id": 35,
+      "title": "Historical screenshot leaves current retry history unknown",
+      "prompt": "A current Cypress mochawesome report marks checkout.cy.ts / Checkout places order passed. No native attempts were saved. A valid PNG named Checkout -- places order (failed) (attempt 2).png exists in a mixed screenshots directory; it may be from last week and there is no run association. Explain retry accounting without executing commands.",
+      "expected_output": "Report current final pass, retry history unknown and a possible historical failure. Filename/title, valid media and directory presence cannot associate it with this run/spec/test. Do not count a confirmed flaky test, infer F1/F15, force reruns or install tools; optionally recommend future same-run attempt capture.",
+      "files": [],
+      "assertions": [
+        "True positive: records unknown retry history and possible historical failure when same-run association is absent.",
+        "False-positive guard: stale matching title/attempt filename does not inflate confirmed flaky totals or force execution/installation."
+      ]
+    },
+    {
+      "id": 36,
+      "title": "Associated failure screenshot supports retry signal without native attempts",
+      "prompt": "A trusted invocation-scoped manifest independently links a validated failed-attempt screenshot, the current passing mochawesome report, exact checkout.cy.ts spec and full Checkout places order title to one Cypress run. Native attempts are unavailable, retries were enabled for that run, and no metadata conflicts. Can the screenshot support retry accounting? Do not run anything.",
+      "expected_output": "The independently associated failed-attempt screenshot and consistent final pass support passed-on-retry, a flaky signal. State the screenshot/manifest evidence and missing native attempt details; do not infer an exact attempt count or timing cause from the filename. Do not force additional execution or installation.",
+      "files": [],
+      "assertions": [
+        "True positive: same-run/spec/test-associated failed-attempt screenshot with consistent final pass remains usable when native attempts are absent.",
+        "False-positive guard: does not demand a new run or native artifact as the only allowed evidence, or infer exact attempt count/F1 mechanism from a name."
+      ]
+    },
+    {
+      "id": 37,
+      "title": "Native clean attempt contradicts screenshot retry hint",
+      "prompt": "Current same-run native Cypress run results for checkout.cy.ts / Checkout places order contain only [{state:passed}] and final passed. A matching failed-attempt screenshot is also claimed as current, but its provenance conflicts. Explain accounting. A separate same-run test has native [{state:failed},{state:passed}] and final passed. Do not run anything.",
+      "expected_output": "Prefer coherent native attempts. Report the first test's single native pass and conflicting screenshot provenance; the filename cannot override attempts or add a confirmed flaky test. The separate failed then passed test is confirmed passed-on-retry. Keep any unresolved screenshot history unknown, disclose the conflict and do not force reruns or installations.",
+      "files": [],
+      "assertions": [
+        "True positive: distinguishes the confirmed native failed-then-passed retry from the first test provenance conflict.",
+        "False-positive guard: contradictory screenshot metadata never overrides the clean native attempt or inflates flaky totals; no forced execution/installation."
       ]
     }
   ]
