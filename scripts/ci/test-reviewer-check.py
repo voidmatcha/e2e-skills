@@ -124,7 +124,10 @@ class CheckBoundary(unittest.TestCase):
 class NotepadV2Admission(unittest.TestCase):
     """Exercise the real adapters after a simulated fixed runner, without Docker."""
     def setUp(self):
-        self.tmp = tempfile.TemporaryDirectory(dir=Path.home() / ".cache")
+        # Real adapters require durable external output; a fresh HOME has no cache yet.
+        cache = Path.home() / ".cache"
+        cache.mkdir(mode=0o700, parents=True, exist_ok=True)
+        self.tmp = tempfile.TemporaryDirectory(prefix="reviewer-check-", dir=cache.resolve())
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
         self.v1, _ = CHECK.load_adapter("notepad-playwright-v1")
