@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=26104e841bf7647c2a3371d853d3bffeb251e28407b1bafde58c06e55364bc6a; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=a7803374d293beda48ce641f314235f195db1d50204caf70582f24e1a65eb9a0; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 为 AI 编程 agent 提供四个 skill，用于生成、审查 Playwright/Cypress E2E 测试并诊断失败。skill 是 agent 执行任务时遵循的一组指令。
 
@@ -33,7 +33,7 @@
 
 测试通过也可能漏掉产品缺陷。`e2e-skills` 帮助检查测试是否真正验证了名称所描述的行为。
 
-`e2e-reviewer` 用代码扫描器查找候选问题，再阅读测试和周边代码，判断是否确实存在问题。需要时，它还会建议修改断言条件或在应用副本中加入缺陷，检查测试能否作出反应。这些额外验证按请求在获批的本地环境中执行。
+`e2e-reviewer` 用代码扫描器查找候选问题，再阅读测试和周边代码，判断是否确实存在问题。需要时，它还会建议修改断言条件或在与原应用分开的副本中加入缺陷，检查测试是否失败。审查者可以主动提出这些额外验证；执行需要可信的本地环境和命令批准。同一范围内已有的批准继续有效。
 
 `e2e-reviewer` 发现的问题促成了 [15 个合入上游的 PR](#merged-upstream-fixes)。下面列出实际修复案例。
 
@@ -121,16 +121,16 @@ Summary: 2 total hit(s), 2 P0
 
 ## 演示文稿：通过的 E2E 测试值得信任吗？
 
-从发现问题，到 lint 规则、扫描器、mutation 和应用缺陷注入验证，以及开源修复案例。点击封面即可阅读演示文稿。
+从通过却漏掉缺陷的测试案例出发，介绍结合 lint 与 LLM 审查的过程、通过 mutation 和应用缺陷注入进行验证的方法、基准测试结果，以及已合并的开源修复。点击封面即可阅读演示文稿。
 
 <p align="center">
-<a href="https://docs.google.com/presentation/d/15EJEATNRDfUeaNwVCpKsUMg066u5TzFepI5j1z8dSJE/">
-  <img src="docs/assets/talk-cover-v2.png" alt="演示文稿：通过的 E2E 测试值得信任吗？" width="640" />
+<a href="assets/talks/awskrug-e2e-2026-en.pdf">
+  <img src="docs/assets/talk-cover-en.png" alt="演示文稿：通过的 E2E 测试值得信任吗？" width="640" />
 </a>
 </p>
 
 <p align="center">
-  <a href="https://docs.google.com/presentation/d/15EJEATNRDfUeaNwVCpKsUMg066u5TzFepI5j1z8dSJE/">在 Google Slides 中阅读演示文稿</a>
+  <a href="assets/talks/awskrug-e2e-2026-en.pdf">查看演示文稿（英文 PDF）</a>
 </p>
 
 ## 安装并试用
@@ -150,6 +150,8 @@ Install https://github.com/voidmatcha/e2e-skills using its install.sh for my cur
 通过此方式完成设置后，无需重复手动安装步骤。[详细安装指南](docs/installation.md)用于检查前提条件、解决冲突或手动设置。
 
 **只需要审查或失败分析？** 请让 agent 仅安装技能和专用 agent，不配置 Playwright generator。官方 Playwright agent 和 `playwright-test` MCP 是生成功能所需，审查或诊断现有 Playwright/Cypress 测试不需要这些设置。
+
+官方 agent 负责规划和编写测试；本项目的 generator 添加规则、scanner 检查和测试执行。
 
 <details>
 <summary>其他安装方式：skills.sh 和插件</summary>
@@ -277,11 +279,11 @@ reviewer 的结果取决于模型：在相同的冻结 snapshot 和 36 个公开
 | 1 | **名称与断言不匹配** | 名称说的是 "status"，但只检查 `toBeVisible()` | 添加 status 内容断言，或重命名为匹配实际检查 |
 | 2 | **Then 缺失** | 执行 cancel action，验证文本已恢复，但输入框仍然可见？ | 同时验证已恢复状态和已关闭状态 |
 | 3 | **吞掉错误** | spec 中的 `try/catch`，POM 中的 `.catch(() => {})` | 让错误导致失败；从 POM methods 中移除 silent catch |
-| 3b | **Cypress `uncaught:exception` 抑制** | `cy.on('uncaught:exception', () => false)` blanket-swallows app errors | 将 handler 限定到特定已知错误；重新抛出未知错误 |
+| 3b | **Cypress `uncaught:exception` 抑制** | `cy.on('uncaught:exception', () => false)` 会忽略所有应用错误；不重新抛出错误的 `fail` handler 也会让失败的测试通过 | 将 handler 限定到特定已知错误；重新抛出未知错误；`fail` handler 必须以 `throw error` 结束 |
 | 4 | **空洞或削弱重试的断言** (P0/P1) | P0：不变量谓词和 Locator 真值判断。P1：较弱的挂载证明；一次性读取的值/URL；zero-timeout 重试/截止时间风险；未证明的缺失状态；可能为空的集合上的断言循环；遗漏已承诺 accessible name 的 ARIA snapshots | 使用有意义的边界和 web-first 自动重试断言；先证明存在，再证明不存在，在断言循环前证明集合非空，并让已承诺的 accessible names 保持 load-bearing |
 | 5 | **绕过模式** (5a P0, 5b P1) | `if (await el.isVisible()) { expect(...) }`；没有注释的 `{ force: true }` | 始终断言；把环境检查移到 `beforeEach`；给 force:true 添加 `// JUSTIFIED:` |
 | 7 | **Focused test 泄漏** | 提交了 `test.only(...)`: CI 只运行一个测试，默默跳过其余测试 | 删除 `.only`；使用 `--grep` 或 `--spec` 做本地聚焦 |
-| 8 | **断言缺失** | 被丢弃的 locator/boolean 是该场景唯一的验证 | 添加 `await expect(locator).toBeVisible()`；当独立 verification/failure evidence 已存在时跳过 #8 |
+| 8 | **断言缺失** | 被丢弃的 locator/boolean 是该场景唯一的验证，或像 `expect(x).toBeVisible;` 一样未调用 matcher | 添加 `await expect(locator).toBeVisible()`；当独立 verification/failure evidence 已存在时，仅排除 8a/8b |
 | 12 | **认证设置缺失** | 缺少 login/`storageState`/auth fixture 时，protected-route spec 会通过，因为泛化断言也匹配 login/wrong surface | 添加 `beforeEach` login，配置 `storageState`，或使用 auth fixture；不要把正常的 auth-caused failure 归类为 P0 |
 
 #### P1：应修复（诊断质量差 / 浪费 CI 时间）

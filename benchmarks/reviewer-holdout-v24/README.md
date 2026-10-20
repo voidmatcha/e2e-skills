@@ -30,7 +30,7 @@ The evaluated reviewer SHA-256 is `7ff53a2999b80f2f777679fe8dd80941f6ad84b74d36a
 
 The independent audit reparsed and rescored all 540 final-answer payloads, reran the frozen comparator, verified 6,102 frozen files, and checked wrapper/native hashes, the unchanged source product, and four historical Sol report/comparison hashes. A separate final summary reparsed and rescored all 1,620 payloads across the three model cohorts. [Outcome and provenance](outcome.json) retain exact metrics and SHA-256 receipts for those checks and their source reports.
 
-This archive is a portable derived summary. Original reports and raw final-answer payloads remain unmodified in the local run cache; they are not copied or uploaded here. Hash receipts identify those originals and do not prove that an external reader can access or independently reparse them.
+This archive is a portable derived summary. Original reports and raw final-answer payloads are available unchanged in the [revision-pinned Hugging Face evidence package](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/tree/ba80292b2531ddac654134ba4aa319da1e3a2b3a/raw/reviewer-holdout-v22-v24-20261020), together with the frozen evaluated skill, corpus, model-specific evaluators, SHA-256 receipts and an offline replay script. Complete original CLI event streams remain unavailable.
 
 ## Applicability
 

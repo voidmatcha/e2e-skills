@@ -53,3 +53,7 @@ python3 scripts/evals/compare-reviewer-holdouts.py \
 ```
 
 Runner exit codes are `PASS=0`, `FAIL=1`, `INCONCLUSIVE=2`. A complete control arm may fail the full skill's absolute thresholds; that alone does not invalidate its execution. Stop the matrix on an incomplete arm or a safety/integrity failure and preserve all original reports. The reproduction must enforce the registered 12-hour deadline; the comparator independently rejects a matrix outside it.
+
+## External evidence package
+
+The [revision-pinned Hugging Face package](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/tree/ba80292b2531ddac654134ba4aa319da1e3a2b3a/raw/reviewer-holdout-v22-v24-20261020) includes the unchanged v22–v24 original arm reports and comparisons, all 1,620 recorded final-answer payloads, frozen evaluated inputs, model-specific evaluators and offline replay. It preserves the v22 PASS, v23 FAIL and v24 PASS verdicts. Complete original CLI event streams were not retained.

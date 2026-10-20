@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=26104e841bf7647c2a3371d853d3bffeb251e28407b1bafde58c06e55364bc6a; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=a7803374d293beda48ce641f314235f195db1d50204caf70582f24e1a65eb9a0; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、AI コーディング agent が Playwright/Cypress の E2E テストを生成し、レビューし、失敗を診断するための 4 つの skill です。skill は agent が作業時に従う指示の集まりです。
 
@@ -34,7 +34,7 @@
 
 テストが成功しても、製品の不具合を見逃すことがあります。`e2e-skills` は、テストが名前どおりの動作を実際に検証しているかを確認する手助けをします。
 
-`e2e-reviewer` はコードスキャナーで候補を探し、テストと周辺コードを読んで実際の問題か判断します。必要なら、検証条件の変更やアプリのコピーへのバグ注入で、テストが反応するかを確認する方法も提案します。追加検証は依頼を受け、承認済みのローカル環境で実行します。
+`e2e-reviewer` はコードスキャナーで候補を探し、テストと周辺コードを読んで実際の問題か判断します。必要なら、検証条件の変更や元のアプリとは別のコピーへの不具合注入で、テストが失敗するかを確認する方法も提案します。追加検証はレビュー担当から提案できます。実行には信頼できるローカル環境とコマンドの承認が必要です。同じ範囲についてすでに得た承認は引き続き有効です。
 
 `e2e-reviewer` が見つけた問題の修正は [15 件のマージ済み upstream PR](#merged-upstream-fixes) につながりました。実際の修正例を以下に示します。
 
@@ -122,16 +122,16 @@ Summary: 2 total hit(s), 2 P0
 
 ## 発表資料: 成功する E2E テストを信頼できますか？
 
-問題の発見から lint ルール、スキャナー、mutation とアプリへの欠陥注入による検証、オープンソースの修正事例まで紹介します。表紙をクリックすると資料が開きます。
+欠陥を見逃しても成功するテストの事例から、lint と LLM レビューを組み合わせた過程、mutation とアプリへの欠陥注入による検証方法、ベンチマーク結果、オープンソースでの修正成果まで紹介します。表紙をクリックすると資料が開きます。
 
 <p align="center">
-<a href="https://docs.google.com/presentation/d/15EJEATNRDfUeaNwVCpKsUMg066u5TzFepI5j1z8dSJE/">
-  <img src="docs/assets/talk-cover-v2.png" alt="発表資料: 成功する E2E テストを信頼できますか？" width="640" />
+<a href="assets/talks/awskrug-e2e-2026-en.pdf">
+  <img src="docs/assets/talk-cover-en.png" alt="発表資料: 成功する E2E テストを信頼できますか？" width="640" />
 </a>
 </p>
 
 <p align="center">
-  <a href="https://docs.google.com/presentation/d/15EJEATNRDfUeaNwVCpKsUMg066u5TzFepI5j1z8dSJE/">Google Slides で発表資料を読む</a>
+  <a href="assets/talks/awskrug-e2e-2026-en.pdf">発表資料を見る（英語 PDF）</a>
 </p>
 
 ## インストールして試す
@@ -151,6 +151,8 @@ Install https://github.com/voidmatcha/e2e-skills using its install.sh for my cur
 この方法で設定した後は、手動インストールを繰り返す必要はありません。[詳細ガイド](docs/installation.md)は、前提条件の確認、競合の解決、手動設定が必要な場合に参照してください。
 
 **レビューや失敗分析だけを使う場合:** Playwright generator の設定なしで、スキルと専用 agent だけをインストールするよう依頼してください。公式 Playwright agent と `playwright-test` MCP は生成に必要であり、既存の Playwright/Cypress テストのレビューや失敗分析には不要です。
+
+公式 agent がテストを計画・作成し、この generator がルール、scanner による検査、テスト実行を追加します。
 
 <details>
 <summary>その他のインストール方法: skills.sh とプラグイン</summary>
@@ -278,11 +280,11 @@ reviewer の結果はモデルによって異なります。同じ固定 snapsho
 | 1 | **Name-assertion mismatch** | 名前は "status" と言っているのに `toBeVisible()` しか確認していない | `status` の内容に対する assertion を追加するか、実際の check に合わせて rename する |
 | 2 | **Missing Then** | Cancel 操作とテキスト復元は検証している。でも input はまだ visible? | restored state と dismissed state の両方を検証する |
 | 3 | **Error swallowing** | spec 内の `try/catch`、POM 内の `.catch(() => {})` | error で fail させる。POM methods から silent catch を取り除く |
-| 3b | **Cypress `uncaught:exception` suppression** | `cy.on('uncaught:exception', () => false)` がアプリケーションエラーを一律に握りつぶす | handler を特定の known errors に限定し、unknown errors は re-throw する |
+| 3b | **Cypress `uncaught:exception` suppression** | `cy.on('uncaught:exception', () => false)` がアプリケーションエラーを一律に握りつぶす。再 throw しない `fail` handler は失敗したテストも通してしまう | handler を特定の known errors に限定し、unknown errors は re-throw する。`fail` handler は `throw error` で終える |
 | 4 | **Vacuous or retry-weakening assertion** (P0/P1) | P0: invariant predicates と Locator truthiness。P1: weak attachment proof、one-shot values/URL、zero-timeout retry/deadline hazards、証明されていない absence、空の可能性があるコレクションの assertion loop、promised accessible name を省いた ARIA snapshots | 意味のある境界と web-first auto-retrying assertions を使う。absence の前に presence を証明し、assertion loop の前にコレクションが空でないことを証明し、promised accessible names を load-bearing に保つ |
 | 5 | **Bypass patterns** (5a P0, 5b P1) | `if (await el.isVisible()) { expect(...) }`; comment なしの `{ force: true }` | 常に assert する。env checks は `beforeEach` に移し、force:true には `// JUSTIFIED:` を追加する |
 | 7 | **Focused test leak** | `test.only(...)` が commit され、CI は 1 件だけ実行して残りを静かに skip する | `.only` を削除する。local focus には `--grep` または `--spec` を使う |
-| 8 | **Missing assertion** | 捨てられた locator/boolean が scenario 唯一の verification になっている | `await expect(locator).toBeVisible()` を追加する。independent verification/failure evidence がすでにある場合は #8 を skip する |
+| 8 | **Missing assertion** | 捨てられた locator/boolean が scenario 唯一の verification になっている。`expect(x).toBeVisible;` は matcher を呼び出していない | `await expect(locator).toBeVisible()` を追加する。independent verification/failure evidence がすでにある場合は 8a/8b を skip する |
 | 12 | **Missing auth setup** | login/`storageState`/auth fixture がなく、protected-route テスト仕様が汎用的なアサーションで login/wrong surface にも一致して通る | `beforeEach` login を追加する、`storageState` を設定する、または auth fixture を使う。通常の認証起因の失敗を P0 に分類しない |
 
 #### P1: 修正推奨 (診断が悪い / CI 時間を浪費)

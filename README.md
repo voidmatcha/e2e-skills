@@ -32,7 +32,7 @@
 
 A passing test can still miss a broken feature. `e2e-skills` helps check whether tests prove the behavior they name.
 
-`e2e-reviewer` uses a code scanner to find possible problems, then reads the test and surrounding code to decide whether they are real. When needed, it can propose changing an assertion or introducing a bug in an app copy to check what the test catches. These additional checks run on request in an approved local environment.
+`e2e-reviewer` uses a code scanner to find possible problems, then reads the test and surrounding code to decide whether they are real. When needed, it can propose changing an assertion or introducing a bug in a separate app copy to check whether the test fails. The reviewer can offer these additional checks; execution requires a trusted local environment and command approval. Existing approval for the same scope remains valid.
 
 `e2e-reviewer` findings led to [15 merged upstream PRs](#merged-upstream-fixes). See the fixes below.
 
@@ -120,16 +120,16 @@ Because this run reports P0 findings, `scan.sh` exits 1.
 
 ## Talk: Can You Trust E2E Tests That Pass?
 
-How the problem led to lint rules, a scanner, mutation and app-fault checks, and merged open-source fixes. Click the cover to read the slides.
+Starting with tests that pass while missing defects, the talk covers combining lint with LLM review, verification through assertion mutation and app-fault injection, benchmark results, and merged open-source fixes. Click the cover to read the slides.
 
 <p align="center">
-<a href="https://docs.google.com/presentation/d/15EJEATNRDfUeaNwVCpKsUMg066u5TzFepI5j1z8dSJE/">
-  <img src="docs/assets/talk-cover-v2.png" alt="Talk: Can You Trust E2E Tests That Pass?" width="640" />
+<a href="assets/talks/awskrug-e2e-2026-en.pdf">
+  <img src="docs/assets/talk-cover-en.png" alt="Talk: Can You Trust E2E Tests That Pass?" width="640" />
 </a>
 </p>
 
 <p align="center">
-  <a href="https://docs.google.com/presentation/d/15EJEATNRDfUeaNwVCpKsUMg066u5TzFepI5j1z8dSJE/">Read the slides on Google Slides</a>
+  <a href="assets/talks/awskrug-e2e-2026-en.pdf">Read the slides (English PDF)</a>
 </p>
 
 ## Install and try it
@@ -149,6 +149,8 @@ Install https://github.com/voidmatcha/e2e-skills using its install.sh for my cur
 After this setup, you do not need to repeat the manual installation steps. Use the [installation guide](docs/installation.md) only for prerequisites, conflicts or manual setup.
 
 **Only reviewing or debugging?** Tell the agent to install the skills and dedicated agents only, without Playwright generator setup. Official Playwright agents and the `playwright-test` MCP server are required for generation, not for reviewing or diagnosing existing Playwright/Cypress tests.
+
+The official agents plan and write tests; our generator adds rules, scanner checks, and test execution.
 
 <details>
 <summary>Other installation methods: skills.sh and plugins</summary>

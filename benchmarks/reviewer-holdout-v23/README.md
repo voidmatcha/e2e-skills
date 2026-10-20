@@ -18,7 +18,7 @@ The [v23 protocol](../../scripts/evals/reviewer-validation-protocol-v23.json) us
 
 All arms used the frozen output legend and strict schema with tools disabled. The local audit reparsed and rescored 540 final-answer payloads and reproduced the comparison. Original CLI event streams were not retained, so retrospective per-call tool-event recount is unavailable. Interrupted cohort-1 remains locally retained and excluded; no selective scored-cell replacement is counted.
 
-[Outcome and provenance](outcome.json) contain a portable derived summary with exact metrics, failed gates, model/CLI identity, input digests and SHA-256 receipts for the original reports. The original comparison, three arm reports and raw final-answer payloads remain unmodified in the local run cache. They are not copied or uploaded here. This derived archive cannot independently reparse those payloads; source hashes identify the originals rather than proving access to them.
+[Outcome and provenance](outcome.json) contain a portable derived summary with exact metrics, failed gates, model/CLI identity, input digests and SHA-256 receipts for the original reports. The original comparison, three arm reports and raw final-answer payloads remain unmodified. They are now available in the [revision-pinned Hugging Face evidence package](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/tree/ba80292b2531ddac654134ba4aa319da1e3a2b3a/raw/reviewer-holdout-v22-v24-20261020), together with the frozen evaluated skill, corpus, model-specific evaluators, SHA-256 receipts and an offline replay script. This repository directory remains a portable derived summary.
 
 ## Interpretation
 

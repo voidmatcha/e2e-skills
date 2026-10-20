@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "license": "Apache-2.0",
+  "date": "2026-10-20",
+  "kind": "Derived summary of a separate fixed complex-generator comparison",
+  "status": "COMPLETE_DESCRIPTIVE_COMPARISON",
+  "model": "gpt-6.1-sol",
+  "effort": "medium",
+  "independent_tasks": 3,
+  "actual_official_generations": 3,
+  "arms": [
+    "official",
+    "scanner_gate",
+    "generic_review",
+    "full_reviewer"
+  ],
+  "native_evaluation_phases": 96,
+  "per_arm": {
+    "normal_passes": "9/9",
+    "selected_behavior_faults_detected": "9/9",
+    "refactor_survived": "2/3",
+    "recovery_passes": "3/3"
+  },
+  "infra_errors": 0,
+  "conclusion": "All four arms tied on selected behavior faults and refactors. No incremental detection or maintenance gain from full static reviewer in this cohort.",
+  "limitations": [
+    "Three public authored development tasks; one actual generation per task. Not population superiority or sealed release validation.",
+    "Full reviewer was prompt-complete tool-free static review, not full autonomous probe workflow.",
+    "Board drag uses synthetic DOM events; actual menu UI route also tested.",
+    "Historical selected repair demo is separate; not pooled."
+  ],
+  "incremental_postprocessing_by_arm": {
+    "scanner_gate": {
+      "cells": 3,
+      "model_wall_seconds_sum": 37.409,
+      "usage": {
+        "input_tokens": 65920,
+        "cached_input_tokens": 16128,
+        "uncached_input_tokens": 49792,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 727,
+        "reasoning_output_tokens": 215,
+        "total_tokens": 66647
+      },
+      "source_changed_cells": 0,
+      "model_repair_turns_after_initial": 0,
+      "post_native_wall_seconds_sum": 40.296,
+      "mcp_calls": 0,
+      "scanner_wall_seconds_sum": 15.896
+    },
+    "full_reviewer": {
+      "cells": 3,
+      "model_wall_seconds_sum": 191.958,
+      "usage": {
+        "input_tokens": 202704,
+        "cached_input_tokens": 10112,
+        "uncached_input_tokens": 192592,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 6848,
+        "reasoning_output_tokens": 762,
+        "total_tokens": 209552
+      },
+      "source_changed_cells": 0,
+      "model_repair_turns_after_initial": 0,
+      "post_native_wall_seconds_sum": 40.108,
+      "mcp_calls": 0,
+      "scanner_wall_seconds_sum": 16.275
+    },
+    "generic_review": {
+      "cells": 3,
+      "model_wall_seconds_sum": 54.58,
+      "usage": {
+        "input_tokens": 50805,
+        "cached_input_tokens": 0,
+        "uncached_input_tokens": 50805,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2214,
+        "reasoning_output_tokens": 262,
+        "total_tokens": 53019
+      },
+      "source_changed_cells": 1,
+      "model_repair_turns_after_initial": 0,
+      "post_native_wall_seconds_sum": 40.418,
+      "mcp_calls": 0,
+      "scanner_wall_seconds_sum": 16.212
+    }
+  },
+  "wall_accounting": "Model subprocess wall includes tool/browser/native time for official baseline. Separate post-native wall is host subprocess duration. Sums are not elapsed campaign makespan; concurrent work overlaps.",
+  "usage_accounting": "Observed own-thread unique response totals reconciled against each thread final usage; cached input included in input and separately shown. Reasoning output is included within output, not additive. Local runner provenance is not cryptographic billing attestation. No USD estimate.",
+  "local_evidence": {
+    "availability": "Raw artifacts and root receipts remain local; this summary is not a public replay bundle.",
+    "comparison_final_sha256": "29be641e2c732f07883c6eaa3c9a9afff27b86d89af9c35ac6aeb157d29ab430",
+    "model_cost_provenance_sha256": "e76eaade6a4efa22fc2ba8e1557ae4dfb792dfe1e05afbb68a14b74fc3416b8b",
+    "frozen_inputs_sha256": "e56a936c13af35f5524c7bfaf18b93631842765bf7c9c482b82c3342bd94bd30",
+    "root_adjudications": [
+      {
+        "cell": 1,
+        "sha256": "e6064bf0cb878a14c7362d3491234a1446d3f75b8bbb817460c295a2955fa2f7"
+      },
+      {
+        "cell": 2,
+        "sha256": "1bbf855cd8484a212534d24218b44d92591db431b6a5834631d6a8a663796e62"
+      },
+      {
+        "cell": 3,
+        "sha256": "cdd636fafcf51fc2f3f5218032d22fcd70af8f9581e4275ca43c335c6b935312"
+      },
+      {
+        "cell": 4,
+        "sha256": "f1d1d1b1b79af096e8ceb4c8f2edbde08e56a15c2632df47a32cadf785e1121e"
+      },
+      {
+        "cell": 5,
+        "sha256": "62a36dfb8343f57f8893cc4a87bff8617763b033d101433ffd36d59554dded07"
+      },
+      {
+        "cell": 6,
+        "sha256": "bcfc432f3cba35fe687378a05a543a6d2d6961e494462a5b4716093007759d94"
+      },
+      {
+        "cell": 7,
+        "sha256": "aa9ac926ca010c8f0471753fe4df7dc7bfb2ee8237fff71e6fc562535cb176d8"
+      },
+      {
+        "cell": 8,
+        "sha256": "0a0420b7aae8d6688c4b4aaf2d8f0b711d3dc91e400f7a27fc35b7712a6e3b85"
+      },
+      {
+        "cell": 9,
+        "sha256": "e00e4842b59f8153290cb58c97a23e0ceca0096f99f26f3c576306b381b750c7"
+      },
+      {
+        "cell": 10,
+        "sha256": "5e7869deaffa91b9e0cf516e611d0652a6b6b29b43b79caba7fc997c863e034c"
+      },
+      {
+        "cell": 11,
+        "sha256": "899a1ffb5fb46b1d93bd00ff3f008f269c048abaae81b60c46aefdc0d83fe13d"
+      },
+      {
+        "cell": 12,
+        "sha256": "d99dc58528caa01cbfcfc31a57a33deea45004ab3c5650d48febfdbf33be9d11"
+      }
+    ]
+  },
+  "publication": "No push, tag or release performed."
+}
