@@ -642,16 +642,8 @@ class UsageCaptureTest(unittest.TestCase):
     # Registration ----------------------------------------------------------
 
     def test_suite_is_registered(self) -> None:
-        for path in (CI_LOCAL_PATH, CONTRIBUTING_PATH):
-            self.assertTrue(
-                "scripts/ci/test-reviewer-usage-capture.py"
-                in path.read_text(encoding="utf-8"),
-                path,
-            )
-        changelog = CHANGELOG_PATH.read_text(encoding="utf-8")
-        release_section = changelog.split("## [2.0.0]", 1)[1].split("\n## [", 1)[0]
-        added = release_section.split("### Added", 1)[1].split("\n### ", 1)[0]
-        self.assertIn("usage_capture", added)
+        self.assertIn("scripts/ci/test-reviewer-usage-capture.py",
+                      CI_LOCAL_PATH.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

@@ -1656,16 +1656,18 @@ def verify_release_candidate_docs() -> None:
     # in the linked status ledger instead of being repeated in every README.
     readme = readme_bytes.decode("utf-8")
     for contract in (
-        "[Benchmark status](benchmarks/STATUS.md)",
         "Reviewer results depend on the model",
         "`gpt-6-sol` passed [v22](benchmarks/reviewer-holdout-v22/README.md)",
         "`gpt-6-luna` failed [v23](benchmarks/reviewer-holdout-v23/README.md)",
         "36 public development cases",
         "completing all 540 calls in each run",
         "These tool-free results measure supplied instructions, not scanner benefit or accuracy on unseen projects.",
-        "Historical scores apply to the snapshots named in each report, rather than automatically to all current instructions.",
+        "Scores apply only to the reported snapshots.",
     ):
         require_normalized_contract(readme, contract, "README.md evidence boundary")
+    assert re.search(r"\[[^\]]+\]\(benchmarks/STATUS\.md\)", readme), (
+        "README.md must link to benchmark status; the link label is editorial"
+    )
     status = normalized(BENCHMARK_STATUS)
     require_normalized_contract(
         status,
@@ -1833,7 +1835,7 @@ def verify_cypress_name_and_coverage_scope() -> None:
     assert "a clean review has no coverage-gap list" in skill
 
 
-def main() -> None:
+def verify_current_docs() -> None:
     verify_cypress_name_and_coverage_scope()
     verify_v3_adapter_contract()
     verify_reference_routing_contract()
@@ -1850,7 +1852,6 @@ def main() -> None:
     verify_fix_replacements_copy()
     verify_reference_contents()
     verify_pattern_files()
-    verify_ai_reviewer_100_aggregates()
     verify_pattern_4i_direction_neutral()
     verify_pattern_3_swallow_scope()
     verify_pattern_13_ownership_contract()
@@ -1861,7 +1862,6 @@ def main() -> None:
     verify_failed_write_reread_note()
     verify_overprescription_contracts()
     verify_fable_reviewer_policy_contracts()
-    verify_release_candidate_docs()
 
     security = normalized(SECURITY)
     skill = normalized(SKILL)
@@ -1877,21 +1877,6 @@ def main() -> None:
     scanner = " ".join(scanner_source.split())
     verification_rules = normalized(VERIFICATION_RULES)
     readme = README.read_text(encoding="utf-8")
-    benchmark_status = BENCHMARK_STATUS.read_text(encoding="utf-8")
-    benchmark_status_normalized = " ".join(benchmark_status.split())
-    reviewer_holdout_v6_readme = REVIEWER_HOLDOUT_V6_README.read_text(
-        encoding="utf-8"
-    )
-    reviewer_holdout_v6_normalized = " ".join(
-        reviewer_holdout_v6_readme.split()
-    )
-    ai_review_doc = AI_REVIEW_DOC.read_text(encoding="utf-8")
-    ai_review_benchmark = AI_REVIEW_BENCHMARK.read_text(encoding="utf-8")
-    case_studies = CASE_STUDIES.read_text(encoding="utf-8")
-    roadmap = ROADMAP.read_text(encoding="utf-8")
-    ai_review_100_results = json.loads(
-        AI_REVIEW_100_RESULTS.read_text(encoding="utf-8")
-    )
     evals = json.loads(EVALS.read_text(encoding="utf-8"))["evals"]
     eval_28 = next(case for case in evals if case["id"] == 28)
     eval_29 = next(case for case in evals if case["id"] == 29)
@@ -2391,6 +2376,21 @@ def main() -> None:
         for prerequisite in ("PCRE2", "Python 3", "NUL-safe", "Tier 2 AST"):
             assert prerequisite in translated
 
+
+
+def main() -> None:
+    verify_current_docs()
+    verify_ai_reviewer_100_aggregates()
+    verify_release_candidate_docs()
+    benchmark_status = BENCHMARK_STATUS.read_text(encoding="utf-8")
+    benchmark_status_normalized = " ".join(benchmark_status.split())
+    reviewer_holdout_v6_readme = REVIEWER_HOLDOUT_V6_README.read_text(encoding="utf-8")
+    reviewer_holdout_v6_normalized = " ".join(reviewer_holdout_v6_readme.split())
+    ai_review_doc = AI_REVIEW_DOC.read_text(encoding="utf-8")
+    ai_review_benchmark = AI_REVIEW_BENCHMARK.read_text(encoding="utf-8")
+    case_studies = CASE_STUDIES.read_text(encoding="utf-8")
+    roadmap = ROADMAP.read_text(encoding="utf-8")
+    ai_review_100_results = json.loads(AI_REVIEW_100_RESULTS.read_text(encoding="utf-8"))
     # Keep the historical fixture denominator in the linked evidence docs;
     # the current README's link and snapshot boundary are checked above.
     for surface, name in (

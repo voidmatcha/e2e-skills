@@ -126,7 +126,7 @@ jobs:
         if: runner.os == 'macOS'
         run: brew install ripgrep
 
-      - name: Verify archived fixture evidence without node_modules
+      - name: Verify current fixture contracts without node_modules
         run: python3 scripts/ci/test-fixture-faults.py
 
       - name: Verify scanner no-follow preflight

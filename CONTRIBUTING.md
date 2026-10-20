@@ -25,25 +25,15 @@ Not every change needs the same amount of process. Which tier a change falls int
 | --- | --- | --- |
 | **0 — Docs & typos** | Wording, comments, and typo fixes that do not change installed skill behavior, regardless of file location | Nothing beyond `scripts/ci/review.sh`'s Markdown/link checks passing |
 | **1 — Skill behavior wording** | Any behavior-affecting instruction edit that does not change a pattern ID, F-code, or verdict term, including `skills/*/SKILL.md` and point-of-use procedure files such as `classification-procedure.md`, `safety-procedures.md`, and `semantic-review.md`. A mechanical sub-ID under an existing pattern (for example `#8c` under `#8`) is also Tier 1 when it changes no existing ID, title, or severity and its scanner shape is syntactically certain and contract-tested with a true positive and a false-positive guard; it claims no detection rate | A RED/GREEN contract test proving the old wording violated your intent and the new wording satisfies it (see `scripts/ci/test-routing-contract.py` for a worked example), then `ci-local.sh` green — `scripts/dev/tier1-check.sh` runs that gate for you |
-| **2 — Taxonomy / decision-surface change** | New or renumbered top-level pattern IDs, F-codes, verdict vocabulary, severity changes, or a delegation-routing decision not yet backed by measured evidence | A preregistered benchmark protocol under `benchmarks/`, per the pattern in `benchmarks/subagent-routing-v1/` (or `benchmarks/stub-echo-v1/`, where the same process refused a proposed rule) — the heavy path below, reserved for changes that make a new correctness claim about the skills themselves |
+| **2 — Taxonomy / decision-surface change** | New or renumbered top-level pattern IDs, F-codes, verdict vocabulary, severity changes, or a delegation-routing decision not yet backed by measured evidence | A new preregistered study preserved on Hugging Face, with its protocol and evidence linked from `benchmarks/STATUS.md`; use the archived routing and stub-echo studies as examples. Required for a new correctness claim about the skills themselves |
 
-Most contributions are Tier 0 or Tier 1. Tier 2 is rare by design and most
-contributors will never need it. Issues labeled `good first issue` are Tier
-0/1 — they don't require touching the frozen protocol surfaces in
-`benchmarks/`.
-
-The four directories under `skills/` are the product — what a user actually
-installs and runs. `benchmarks/`, most of `scripts/ci/`, and the eval
-harnesses below are this project's own verification infrastructure: the
-evidence backing the skills' claims, and the CI that keeps that evidence
-honest as the skills change. A typo fix or a Tier 1 wording change barely
-touches any of it.
+Most contributions are Tier 0 or Tier 1. Issues labeled `good first issue` do not require changing frozen studies. The four directories under `skills/` are the product. Current CI and eval harnesses remain in Git with small regression fixtures; historical reports, protocols and frozen inputs live in the pinned Hugging Face snapshot indexed by [benchmark status](benchmarks/STATUS.md).
 
 ## Development setup
 
 Bundled debugger helpers must remain compatible with Python 3.9, the oldest system interpreter their trusted launcher may select. Keep newer Python APIs out of those helpers; the launcher's fixed interpreter policy is not a dependency-upgrade mechanism.
 
-The full local CI mirror targets macOS and Linux with `/bin/bash`, a PCRE2-capable `rg`, and Python 3.10 or newer. Its frozen prompt-size replay also requires CPython 3.12 and access to the hash-locked Python packages (from a local cache or PyPI). For its trust boundary, the gate discovers interpreters only at standard system and Homebrew prefixes; a Nix-, Conda-, or pyenv-only layout is not currently auto-discovered. GitHub CI runs the full mirror on Ubuntu and a smaller portability contract on both Ubuntu and macOS.
+The default local CI mirror targets macOS and Linux with `/bin/bash`, a PCRE2-capable `rg`, and Python 3.10 or newer. The separate historical evidence replay may also require CPython 3.12 and hash-locked packages from a local cache or PyPI. Trusted interpreter discovery uses standard system and Homebrew prefixes; a Nix-, Conda-, or pyenv-only layout is not currently auto-discovered. GitHub CI runs the default mirror on Ubuntu and a smaller portability contract on Ubuntu and macOS.
 
 Write each ordinary prose paragraph as one physical line, not hard-wrapped at a fixed column: this repo cites exact `file:line` locations from eval assertions and CI parity checks, and a hard-wrapped paragraph cascades every following line number on any edit inside it, while a single-line paragraph only shifts line numbers when whole paragraphs are added or removed. Do not mechanically reflow Markdown table rows, shell commands, URLs, hashes, or frozen JSON/log evidence: their physical line boundaries are structural or evidence-bearing. Keep each table row on one physical line, and split a command only with an explicit shell continuation.
 
@@ -77,85 +67,32 @@ E2E_SKILLS_NODE_BIN="$(command -v node)" /bin/bash -p scripts/ci/ci-local.sh
 
 The override clears the same checks as the defaults: it must be an absolute path to a regular executable file that is not group- or world-writable and does not live inside the repository. A Node the gate cannot trust fails the stage rather than being used.
 
-Useful individual stages while iterating:
+Selected focused checks are listed below. The default gate validates the current product and common harness regressions using local fixtures; historical result replay is a separate opt-in command described under [Benchmark evidence](#benchmark-evidence).
 
 ```bash
-bash scripts/ci/review.sh            # parity, language, links, framework scope, orphans
-bash scripts/ci/test-parity.sh       # drift smoke test (mutate-and-detect) + scanner detection smoke
-bash scripts/ci/check-verification-parity.sh # reviewer V1-V6 contract and debugger handoff parity
-bash scripts/ci/test-codex-agents.sh # optional Codex agent packaging contract
-bash scripts/ci/test-claude-agents.sh # Claude Code agent packaging contract
-bash scripts/ci/test-local-eslint-path.sh # local lint + disabled-rule fail-closed path
-python3 scripts/ci/test-eslint-import-resolution.py # dependency-free import-only plugin resolution
-bash scripts/validate-evals.sh       # eval JSON schema
-bash scripts/ci/test-reviewer-holdout.sh # labeled TP/FP/FN scorer + isolation
-python3 scripts/ci/test-reviewer-holdout-v3.py # all-family corpus + N-configuration contracts
-python3 scripts/ci/test-reviewer-holdout-v4.py # v4 corpus and protocol contracts
-python3 scripts/ci/test-reviewer-holdout-v5.py # historical v5 corpus contracts
-python3 scripts/ci/test-reviewer-holdout-v7.py # Codex-only v7 protocol + committed-result contracts
-python3 scripts/ci/test-reviewer-holdout-v8.py # preregistered v8 protocol, revised labels, numbered prompts
-python3 scripts/ci/test-reviewer-holdout-v9.py # preregistered v9 protocol, designed corpus, instance severities
-python3 scripts/ci/test-reviewer-holdout-v10.py # preregistered v10 protocol, fresh designed corpus, severity exceptions
-python3 scripts/ci/test-reviewer-holdout-v11.py # preregistered v11 protocol, reused v10 corpus on Codex, infrastructure-retry policy
-python3 scripts/ci/test-reviewer-holdout-v12.py # preregistered v12 protocol, reused v10 corpus on Codex gpt-6-sol, pinned retry policy
-python3 scripts/ci/test-reviewer-holdout-v13.py # preregistered v13 protocol, reused v10 corpus on Claude claude-sonnet-5, pinned retry policy
-python3 scripts/ci/test-reviewer-holdout-v14.py # preregistered v14 protocol: v13 plus the pinned single-JSON-fence output normalization
-python3 scripts/ci/test-reviewer-holdout-v15.py # preregistered v15 protocol: v13 plus the pinned native JSON-schema structured output
-python3 scripts/ci/test-reviewer-holdout-v16.py # preregistered v16 protocol: pinned before/after skill revisions on the reused v9 corpus (Codex gpt-6-sol) and the paired revision analysis
-python3 scripts/ci/test-reviewer-holdout-v17.py # preregistered v17 AI-labeled corpus and catalog-formal comparison on Codex gpt-6-sol
-python3 scripts/ci/test-reviewer-holdout-v18.py # preregistered v18 release confirmation on the frozen v17 corpus, including auth retry
-python3 scripts/ci/test-reviewer-holdout-v19.py # v19 rerun preregistration and frozen-corpus binding
-python3 scripts/ci/test-reviewer-holdout-v20.py # v20 #2 severity revision comparison preregistration
-python3 scripts/ci/test-reviewer-holdout-v21.py # v21 decisive #1/#2 severity replication preregistration
-python3 scripts/ci/test-reviewer-holdout-v22.py # current 3.0.0 confirmation on the frozen public v17 corpus
-python3 scripts/ci/test-reviewer-stream-retry.py # unexpected Codex event diagnostic and opt-in retry
-python3 scripts/ci/test-fixpair-v1.py # real-code BEFORE/AFTER fix-pair corpus and score contracts
-python3 scripts/ci/test-semantic-mutants-v1.py # semantic-mutant corpus and score contracts
-python3 scripts/ci/test-reviewer-auth-retry.py # future-protocol opt-in auth retry and frozen-policy isolation
-python3 scripts/dev/reviewer-contract.py # generated Lean severity model drift check
-python3 scripts/ci/test-reviewer-usage-capture.py # opt-in token-usage capture (v13): Claude JSON envelope, Codex JSON events, unchanged opt-out commands
-/bin/bash -p scripts/ci/run-reference-tokenizer-suites.sh \
-  scripts/ci/test-independent-review-v7.py \
-  scripts/ci/test-independent-review-v10.py \
-  scripts/ci/test-independent-review-v11.py # v7/v10/v11 preregistration + runner fail-closed contracts
-                                     # (needs the pinned tokenizer venv; the suites fail closed without it)
-/bin/bash -p scripts/ci/run-independent-review-v10-evidence.sh # v10 archive state + prompt-size replay
-/bin/bash -p scripts/ci/run-independent-review-v11-evidence.sh # v11 archive state + carried v10 r1 + prompt-size replay
-python3 scripts/ci/test-reviewer-scanner.py # P0 gate + missing-await context regression
-python3 scripts/ci/test-debugger-contracts.py # debugger extraction + dedupe contracts
-python3 scripts/ci/test-residual-redos-budget.py # credential-regex linearity budget
-python3 scripts/ci/test-reviewer-evidence-v3.py # reparse and rescore v3 raw reports
-python3 scripts/ci/test-reviewer-evidence.py # immutable reports + aggregate replay
-python3 scripts/ci/test-fixture-faults.py # browser-free 36-cell classifier regression
-python3 scripts/evals/run-fixture-faults.py --validate-only # browser-free fixture contract
-bash scripts/ci/codex-smoke.sh       # manual Codex cross-host smoke (skips if codex absent)
-# Claude Code plugin eval (manual; uses Claude usage): skill triggering and routing, with a no-plugin baseline.
-# Run it on a clean export: the checkout's testbed/ and worktrees exceed the 20,000-entry plugin scan limit.
-#   S=$(mktemp -d) && git archive HEAD | tar -x -C "$S" && claude plugin eval "$S" --trust-plugin --no-publish
+bash scripts/ci/review.sh
+bash scripts/ci/test-parity.sh
+bash scripts/ci/check-verification-parity.sh
+bash scripts/ci/test-local-eslint-path.sh
+python3 scripts/ci/test-eslint-import-resolution.py
+bash scripts/validate-evals.sh
+bash scripts/ci/test-reviewer-holdout.sh
+python3 scripts/ci/test-reviewer-scanner.py
+python3 scripts/ci/test-debugger-contracts.py
+python3 scripts/ci/test-generator-router.py
+python3 scripts/ci/test-external-evidence.py
+python3 scripts/dev/reviewer-contract.py
 ```
 
 ### Reviewer accuracy and behavior validation
 
-Reviewer development results are model-specific: [v22](benchmarks/reviewer-holdout-v22/README.md) passed on Codex `gpt-6-sol`, while [v23](benchmarks/reviewer-holdout-v23/README.md) failed on `gpt-6-luna`. Each scored all 540 calls on the same 36 reused public cases and frozen reviewer snapshot; neither measures the later scanner/configuration changes. See [benchmark status](benchmarks/STATUS.md) for per-arm scores, failed gates and snapshot limits. These tool-free comparisons do not measure scanner execution or sealed release accuracy. The earlier [v21](benchmarks/reviewer-holdout-v21/README.md) and [v20](benchmarks/reviewer-holdout-v20/README.md) wording comparisons remain `NOT_SUPPORTED`. The [v15](benchmarks/reviewer-holdout-v15/README.md) README records the latest Claude structured-output run. Earlier v3–v11 commands describe historical protocols; use their recorded model IDs only to reproduce those runs.
+Reviewer development results are model-specific: [v22](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v22/README.md) passed on Codex `gpt-6-sol`, while [v23](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v23/README.md) failed on `gpt-6-luna`. Each scored all 540 calls on the same 36 reused public cases and frozen reviewer snapshot; neither measures the later scanner/configuration changes. These tool-free comparisons do not measure scanner execution or sealed release accuracy.
 
-The [v8](benchmarks/reviewer-holdout-v8/README.md) and [v9](benchmarks/reviewer-holdout-v9/README.md) READMEs retain their own protocol and outcome details. Their results and subsequent runs are summarized in [benchmark status](benchmarks/STATUS.md).
+Reviewer results apply to their recorded model, corpus and evaluated skill snapshot. See [benchmark status](benchmarks/STATUS.md) for outcomes and limits; study READMEs, reports and exact reproduction commands are preserved in the external snapshot. Historical measurements do not validate later product changes. Public cases and repeated runs do not establish sealed release accuracy or general cross-model superiority.
 
-`evals/evals.json` defines expected behavior, while the ordinary CI gate checks that those contracts and fixtures remain structurally valid. The labeled development holdout adds exact TP/FP/FN scoring over isolated multi-file Playwright/Cypress cases. For new runs, follow the current protocol README; [v3's exact commands](benchmarks/reviewer-holdout-v3/README.md) use a now-retired model and remain historical reproduction instructions.
+`evals/evals.json` defines expected behavior. Ordinary CI verifies product contracts, local fixtures and common harness regressions. New live studies require a preregistered protocol, immutable inputs, recorded model/CLI/environment identity and a complete schedule; preserve failures and incomplete attempts. Do not rewrite old reports or their digests after a product edit or adjudication: add a new study or explicit revision.
 
-The completed v3 public corpus has eight multi-file cases, 24 findings covering all 24 base pattern families, and 24 explicit false-positive guards. It is public, so it is a reproducible development holdout, not a secret release oracle. The historical v2/r3 corpus has 30 findings and 31 guards, but its performance estimate was oracle-invalidated after post-run adjudication. Pass an external corpus with `--cases` for a sealed run, inside an independently isolated environment supplied through `--isolation-wrapper <executable>`. The current preregistered v5 corpus remains pre-live; see [`benchmarks/STATUS.md`](benchmarks/STATUS.md) before making any accuracy claim. Reports under `benchmarks/reviewer-holdout-v3/reports/` include corpus/model/CLI/Git provenance, the evaluated-skill and protocol digests, seeded schedule, raw outputs, per-case TP/FP/FN, unique majority-stable precision/recall, repeated-run metrics, and Wilson intervals. Public runs use one immutable skill/corpus input snapshot, fresh temporary workspaces, Codex/Claude read-only controls, and pre/post digests of every staged path and original input. A changed digest is an infrastructure error and is not scored. The release gate also enforces repeated precision so rotating one-off false positives cannot disappear under majority aggregation. The runner does not provide a built-in sealed sandbox; non-public corpora fail closed without the external wrapper.
-
-The statement above that v5 "remains pre-live" is historical v5 context and is superseded by the completed v7 result. After all three historical v3 live reports complete, enforce that protocol's declared cross-configuration gate:
-
-```bash
-python3 scripts/evals/compare-reviewer-holdouts.py \
-  <codex-report.json> <opus-report.json> <fable-report.json> \
-  --cases scripts/evals/reviewer-holdout-v3.json \
-  --protocol scripts/evals/reviewer-validation-protocol-v3.json
-```
-
-The comparator requires the exact declared runner/model configuration matrix and identical skill, corpus, protocol, schedule, and repetition provenance. It re-parses raw outputs and re-derives every run score, metric, and status before checking that all three declared model configurations pass individually, the maximum pairwise stable-recall gap is at most 10 percentage points, and the minimum pairwise stable-prediction Jaccard agreement is at least 0.80. Runner/model/CLI fields are declared local provenance, not signed or remotely attested identity; a release claim needs an externally controlled runner if host authenticity matters.
-
-Historical v2 public-development reports and oracle corrections are frozen under `benchmarks/reviewer-holdout-v2/`. The v3 source-only oracle audit, completed Codex report, and preserved incomplete Claude attempts live under `benchmarks/reviewer-holdout-v3/`. CI accepts the v3 evidence manifest only after all three declared reports exist and re-derives the documented aggregates from raw model output. Never rewrite an old report after post-run adjudication; add an explicit revision or adjudication record instead.
+Follow [AGENTS.md's runner contract](AGENTS.md#local-development-commands) for built-in public versus external corpora, isolated workspaces, credential routing and pre/post input digests. External `--cases` bundles always require `--isolation-wrapper`, even when labeled public. The wrapper does not establish isolation by itself, and the bundled harness keeps wrapped evidence `INCONCLUSIVE`. Local runner/model strings are provenance, not signed identity. Comparators must reparse raw outputs, rederive scores and enforce the protocol's declared model matrix and thresholds before accepting any result.
 
 To prove the smell has a real behavioral consequence, install the fixture-only dependencies and run the fault matrix:
 
@@ -178,6 +115,27 @@ python3 scripts/evals/run-behavioral-evals.py --runner codex --allow-live
 
 Each case runs three times both with and without the skill. Reports are written under the gitignored `results/behavioral-evals/` directory and include pass rates, absolute lift, per-case results, timing, and saturated cases where the baseline already scores 100%. The hosted `main` workflow automatically reruns the pinned 36-cell browser fault matrix on a disposable runner. Pull-request and local CI remain dependency-free, while live model runs and the other browser probes stay opt-in because they are variable or consume tokens and downloads. A positive result on either small public set is evidence for those cases only, not a general cross-model superiority claim.
 
+## Benchmark evidence
+
+The authoritative historical research archive is the Hugging Face dataset [`voidmatcha/e2e-skills-benchmarks`](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks). The [source snapshot](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/tree/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254) is pinned to its publication revision. Git keeps [benchmark status](benchmarks/STATUS.md), the [snapshot manifest](benchmarks/external-evidence.json), current harness code and small regression fixtures under `scripts/`. Historical reports, protocols, frozen inputs, source snapshots, adjudications and raw artifacts belong in the external archive.
+
+The manifest pins a full 40-character dataset revision, source Git commit, archive and metadata paths, SHA-256 hashes, file count and byte count. The public restore tool needs only Python's standard library; it checks archive and metadata hashes, rejects unsafe tar entries, and verifies every original file's SHA-256, Git blob identity and mode. It creates a new external directory and refuses to overwrite an existing path.
+
+```bash
+/bin/bash -p scripts/dev/fetch-benchmark-evidence.sh --dry-run
+/bin/bash -p scripts/dev/fetch-benchmark-evidence.sh --output /absolute/new-evidence-root
+/bin/bash -p scripts/dev/fetch-benchmark-evidence.sh --verify-only --output /absolute/new-evidence-root
+/bin/bash -p scripts/ci/ci-evidence.sh /absolute/new-evidence-root
+```
+
+`ci-evidence.sh` verifies the restored snapshot, downloads and verifies the separately pinned source archive, and runs the original CI with the restored `benchmarks/` in a temporary workspace. The source commit need not exist locally. A synthetic Git HEAD supplies the tracked-file context; it is reported separately from the original `source_commit`. Its historical dependencies, including the pinned tokenizer environment, may be required. This reproduces historical checks; run `ci-local.sh` separately to verify the current product. Neither restoration nor replay authorizes live model or browser experiments.
+
+For a new study, preregister its protocol and retain the evaluated skill snapshot, corpus and protocol digests, execution environment, validity checks, licenses and redistribution rights. Distinguish unique cases from repetitions. Preserve negative, failed, incomplete and invalid outcomes with their limits; never amend frozen evidence to match a changed product.
+
+Build uploads from a strict file allowlist. Exclude credentials, auth files, environment files, cookies, browser profiles and home directories. Review transcripts and artifacts for sensitive content before upload. Preserve original evidence; record every redaction or normalization and both source and derived SHA-256 hashes.
+
+Upload only with explicit user authorization. Pin the resulting dataset commit, download it afresh and verify all hashes before removing tracked evidence. Audit CI dependencies and retain needed product regression fixtures locally. Preserve local originals and Git history; removal from the tip does not remove historical blobs from ordinary full clones. Keep default offline CI independent of network downloads. New publication batches get their own identifiers and receipts rather than replacing existing frozen paths.
+
 ## Conventions
 
 These are enforced by CI. Breaking one fails the build.
@@ -187,7 +145,7 @@ These are enforced by CI. Breaking one fails the build.
 - **English-only public surface.** `README.md`, `SKILL.md`, and `docs/` are English; CI enforces this. The sanctioned exception is root-level `README.<lang>.md` translations and the language-switcher line that links to them.
 - **Severity-first ordering.** Tables in `SKILL.md`, `README.md`, and `docs/e2e-test-smells.md` group by P0/P1/P2 in the same order.
 - **`// JUSTIFIED: <reason>` comments** document an intentional exception at the matching expression or supported callback/chain boundary, not an entire test or `describe` block. P0 candidates remain visible until the rationale is verified; `#7` (focused tests) has no exemption. Follow the exact [suppression rules](skills/e2e-reviewer/references/scanner-workflow.md#phase-1-mechanical-scan), never use a marker to hide a real finding.
-- **A benchmark snapshot that copies a shipped script needs a HOL scanner exemption.** The hosted HOL Plugin Scanner reports the `#14` credential rule definitions inside any byte copy of `scan.sh` as a hardcoded secret. List the snapshot's exact path in `.plugin-scanner.toml` and in the pinned set in `scripts/ci/test-security-gates.py` in the same commit; that test fails when the two lists differ.
+- **Keep security exemptions exact.** If a new tracked regression fixture copies a shipped scanner, record any justified HOL scanner false-positive exemption in both `.plugin-scanner.toml` and `scripts/ci/test-security-gates.py`. Historical copies stay in the external archive and do not need tracked-path exemptions.
 
 ## Changing an anti-pattern or skill behavior
 
@@ -206,10 +164,10 @@ Then:
 1. **Re-run the drift smoke test** (`scripts/ci/test-parity.sh`) and keep it green.
 2. **Add or update evals.** Each behavior change needs at least two assertions in the skill's `evals/evals.json`: one true positive that must be flagged, and one false-positive guard that names the exact line and why it must not be flagged.
 3. **Respect the severity contract.** P0 entries are silent-always-pass smells; do not downgrade them or promote P1/P2 into P0 just because they are easier to grep.
-4. **Record the new reviewer digest.** Any byte change under `skills/e2e-reviewer/`, including a version bump or a whitespace-only reflow, changes the digest `scripts/ci/test-reviewer-evidence-v3.py` checks. Run `python3 scripts/dev/refresh-reviewer-evidence-digest.py` rather than editing `benchmarks/reviewer-holdout-v3/evidence-status.json` by hand.
+4. **Preserve evaluated snapshot digests.** Product edits do not refresh old evidence. Run current contract tests; record a new evaluated-skill digest only in a new study or explicit evidence revision, keeping earlier results unchanged.
 5. **Run the shipped scripts on Linux.** `ci-local.sh` runs on macOS. After changes to shipped skills or their Linux suites are in a local commit, run `/bin/bash -p scripts/dev/linux-script-check.sh` from a worktree with no relevant dirty or untracked inputs. The default command archives `HEAD` and refuses worktree changes in `skills/**`, `README*.md`, `.github/workflows/e2e-smell-scan.yml`, `scripts/ci/ci-local.sh`, `scripts/ci/test-reviewer-scanner.py`, `scripts/ci/test-debugger-contracts.py`, `scripts/ci/test-*-debugger-*.py`, or `scripts/dev/linux-script-check.sh` rather than silently testing the previous commit. These paths are the product, documentation, workflow contract, and suites that the pinned Linux run actually reads. Passing an explicit `<revision>` intentionally validates only that immutable commit, which is how the pre-push hook checks the pushed revision. `--validate-inputs-only` checks this snapshot contract without Docker or network but does not run the Linux suites.
 6. **Run the generator host smoke tests** after changing `playwright-test-generator`'s `SKILL.md` or `thin-rules.md`: use the loopback app in [`scripts/evals/generator-live/writescope-demo/`](scripts/evals/generator-live/writescope-demo/RUNBOOK.md) and keep the transcripts. Cover the official-agent path when `init-agents` and MCP are already set up (thin rules prepended, scanner fix of a seeded `#id` selector, one run), the agents not set up (guide shown, nothing installed or configured, no spec written), `e2e-reviewer` absent (gate reported as skipped and listed as not done), and a non-loopback `baseURL` (not delegated; a loopback stack is requested). It needs a model and a browser, so it is not part of CI; `scripts/ci/test-generator-router.py` is the offline contract.
-7. **Know what the thin-eval pin compares against.** `scripts/ci/test-generator-thin-eval-v1.py` checks the frozen `benchmarks/generator-thin-eval-v1/shipped-skill/SKILL.md` (the 3.0.0 candidate's CLI router that arms F and G ran) against the sibling worktree `../e2e-skills-wt-300`, not against this repository's `skills/playwright-test-generator/SKILL.md`; the shipped 3.0.0 router differs from that pin by owner decision (no CLI fallback). The test skips when that worktree is absent and fails if its `SKILL.md` is ever updated to the shipped text; the frozen pin must not be edited to match, so update the test's comparison target instead.
+7. **Keep historical pins immutable.** Archived thin-eval and other study snapshots describe their original actors and inputs. A changed shipped router needs new evidence; do not update an archived pin or redirect its comparison to make an old result cover new bytes.
 
 ## Releases
 

@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <strong>한국어</strong> | <a href="README.ja.md">日本語</a> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=040e99e88be1ff2c8533b60721bcf9c1780c8f61de612726b88b25ccd1e856dc; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=2201126083b36a2a54455393e7476b288d152cba987b388e87bcc941f0a12d59; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills`는 AI agent가 Playwright/Cypress E2E 테스트를 생성하고 리뷰하며 실패 원인을 분석할 때 쓰는 네 가지 skill입니다.
 
@@ -36,7 +36,7 @@
 
 `e2e-reviewer`는 코드 scanner로 의심되는 부분을 찾고, 테스트와 연관된 코드를 읽어 실제 문제인지 판단합니다. 필요하면 검증 조건을 바꾸거나 원본과 분리한 앱 복사본에 결함을 넣어 테스트가 실패하는지 확인하는 방법도 제안합니다. reviewer가 추가 검증을 제안할 수 있으며, 실행에는 신뢰할 수 있는 로컬 환경과 명령 승인이 필요합니다. 이미 승인한 범위에서는 다시 승인받지 않습니다.
 
-`e2e-reviewer`가 찾은 문제를 고친 [upstream PR 15건이 merge되었습니다](#merged-upstream-fixes). 아래에서 실제 수정 사례를 확인하세요.
+`e2e-reviewer`가 찾은 문제를 고친 [upstream PR 15건이 merge되었습니다](#merged-upstream-fixes).
 
 | 필요 | skill | 결과 |
 | --- | --- | --- |
@@ -152,8 +152,6 @@ Install https://github.com/voidmatcha/e2e-skills using its install.sh for my cur
 
 **리뷰나 실패 분석만 사용하나요?** agent에 Playwright 생성기 설정 없이 skill과 전용 agent만 설치해 달라고 하세요. 공식 Playwright agent와 `playwright-test` MCP는 생성 기능에 필요하며, 기존 Playwright/Cypress 테스트의 리뷰나 실패 분석에는 필요하지 않습니다.
 
-공식 agent가 테스트를 계획하고 작성하면, 우리 generator가 규칙과 scanner 검사, 테스트 실행을 더합니다.
-
 <details>
 <summary>다른 설치 방법: skills.sh와 plugin</summary>
 
@@ -241,22 +239,20 @@ debugger와 probe 실행에는 신뢰하는 프로젝트와 환경 변수와 플
 
 예를 들어 “저장 기능에 결함이 생기면 이 테스트도 실패하는지 확인해줘”라고 요청하세요. reviewer가 로컬 프로젝트를 살펴보고 검사 방법을 제안합니다. 실행하려면 신뢰할 수 있고 실행 준비가 된 로컬 환경과 명령 승인이 필요합니다. 결과는 선택한 검증문이나 버그에 한정되며, 모든 버그를 잡는다는 뜻은 아닙니다.
 
-자세한 내용은 [실행 절차와 준비 조건](skills/e2e-reviewer/references/runtime-probes.md), [OSS 사례 두 개의 작업 절차 검증](benchmarks/release-readiness-v1/README.md#portable-integration)을 참고하세요.
+자세한 내용은 [실행 절차와 준비 조건](skills/e2e-reviewer/references/runtime-probes.md), [OSS 사례 두 개의 작업 절차 검증](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#portable-integration)을 참고하세요.
 
 ## 근거와 한계
 
-3.0.0에서는 설치, scanner 동작, 실행 안전 규칙, 일부 Playwright/Cypress 검증 실행을 확인했습니다. [검증 기록](benchmarks/release-readiness-v1/README.md)에는 실행한 절차, 보존한 근거와 각 결과가 적용되는 범위가 정리되어 있습니다.
+[3.0.0 검증 기록](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md)에는 설치, scanner 동작, 실행 안전 규칙, 일부 Playwright/Cypress 실행 결과와 보존한 근거, 적용 범위가 정리되어 있습니다.
 
-[10월 20일 검증](benchmarks/release-readiness-v1/README.md#october-20-successor)에서는 격리된 환경의 설치, Claude Code와 Codex에서 공식 agent/MCP로 테스트를 생성하고 실행하는 경로, 선정한 Cypress 검증문 mutation과 앱 결함 주입을 확인했습니다. generator의 원래 측정과 이후 재실행 결과는 계속 구분해 보고합니다.
+[10월 20일 검증](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#october-20-successor)에서는 격리된 환경의 설치, Claude Code와 Codex에서 공식 agent/MCP로 테스트를 생성하고 실행하는 경로, 선정한 Cypress 검증문 mutation과 앱 결함 주입을 확인했습니다. generator의 원래 측정과 이후 재실행 결과는 계속 구분해 보고합니다.
 
 <details>
 <summary>벤치마크 측정 범위와 모델별 결과</summary>
 
-reviewer 결과는 모델에 따라 달랐습니다. 같은 동결 스냅샷과 공개 개발 사례 36개를 각 arm에서 다섯 번씩 반복한 측정에서 `gpt-6-sol`은 [v22](benchmarks/reviewer-holdout-v22/README.md)를, `gpt-6.1-sol`은 [v24](benchmarks/reviewer-holdout-v24/README.md)를 통과했고, `gpt-6-luna`는 [v23](benchmarks/reviewer-holdout-v23/README.md)에서 실패했습니다. 각 실행 모두 540회를 완료했습니다. 도구를 끈 상태에서 주어진 지침을 평가한 결과이므로 scanner의 효과나 처음 보는 프로젝트의 정확도를 보여 주지는 않습니다. 모델별 점수와 스냅샷의 적용 범위는 [벤치마크 현황](benchmarks/STATUS.md)을 참고하세요.
+reviewer 결과는 모델에 따라 달랐습니다. 같은 동결 스냅샷과 공개 개발 사례 36개를 각 arm에서 다섯 번씩 반복한 측정에서 `gpt-6-sol`은 [v22](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v22/README.md)를, `gpt-6.1-sol`은 [v24](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v24/README.md)를 통과했고, `gpt-6-luna`는 [v23](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v23/README.md)에서 실패했습니다. 각 실행 모두 540회를 완료했습니다. 도구를 끈 상태에서 주어진 지침을 평가한 결과이므로 scanner의 효과나 처음 보는 프로젝트의 정확도를 보여 주지는 않습니다. 점수는 보고서에 명시된 스냅샷에만 적용됩니다. 모델별 점수, 프로토콜, 부정적 결과와 주장 범위는 [벤치마크 현황](benchmarks/STATUS.md)을, 동작 변경 이력은 [CHANGELOG.md](CHANGELOG.md)를 참고하세요.
 
-과거 점수는 각 보고서에 명시된 버전에 적용되며, 모든 현재 지시문에 자동으로 적용되지는 않습니다. 프로토콜, 결과, 부정적 결과와 주장 범위는 [벤치마크 현황](benchmarks/STATUS.md)에, 동작 변경 이력은 [CHANGELOG.md](CHANGELOG.md)에 남겨 두었습니다.
-
-과거 실행의 원본 자료는 [근거 manifest](benchmarks/external-evidence.json)에 고정되어 있으며 [Hugging Face 데이터셋](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)에서 받을 수 있습니다. 이전 점수를 검토하기 전 `scripts/dev/fetch-benchmark-evidence.sh --dry-run`으로 복원 계획을 확인하세요.
+프로토콜, 입력 자료, 요약, 원본 실행 artifact를 포함한 과거 벤치마크의 전체 동결 스냅샷은 [근거 manifest](benchmarks/external-evidence.json)에 고정되어 있으며 [Hugging Face 데이터셋](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)에서 받을 수 있습니다. 이전 점수를 검토하기 전 `scripts/dev/fetch-benchmark-evidence.sh --dry-run`으로 복원 계획을 확인하세요.
 
 </details>
 
@@ -415,21 +411,9 @@ plugin은 사용자가 명시적으로 실행을 허용했을 때 사용하며, 
 
 아니요. 변경할 때마다 애플리케이션과 실제 E2E 테스트 모음을 실행하세요. 이 skill은 테스트 품질을 리뷰하고, Playwright 테스트를 작성하며, 기존 실패를 진단합니다. 테스트 실행기는 아닙니다.
 
-### AI가 생성한 Playwright 또는 Cypress 테스트는 merge 전에 어떻게 리뷰하나요?
-
-merge하기 전에 생성된 테스트를 `e2e-reviewer`로 리뷰하세요. 각 테스트가 이름에 명시된 사용자 동작을 실제로 입증하는지 확인하고 false-green 문제를 찾아냅니다. 또한 규칙만으로 찾을 수 있는 후보와 테스트 의도 및 주변 코드를 함께 확인해야 판단할 수 있는 문제를 구분해 보고합니다.
-
-### Playwright뿐 아니라 Cypress도 지원하나요?
-
-리뷰와 실패 분석은 두 framework를 모두 지원합니다. 새 테스트 생성은 현재 Playwright만 지원합니다. `cypress-debugger`는 mochawesome과 JUnit 보고서를 받습니다.
-
 ### CI에서만 실패하는 테스트도 디버깅할 수 있나요?
 
 예. 로컬 보고서 산출물이나 지원되는 GitHub Actions 실행 정보를 제공하면 됩니다. `debugger`는 F1–F15 분류를 사용해 환경, 타이밍, selector, 데이터, 인증, 제품 회귀 원인을 구분합니다.
-
-### 어떤 AI 코딩 agent가 지원되나요?
-
-Claude Code와 Codex, 그리고 `skills` CLI가 지원하는 55개 이상의 실행 환경에서 공개 `SKILL.md` 계약을 불러올 수 있습니다. 전용 agent를 설치하면 리뷰 결과를 재검증하거나 실패 원인을 분류하는 일을 맡길 수 있습니다. 설치하지 않아도 skill은 사용할 수 있습니다.
 
 ## 상세 문서
 
@@ -442,7 +426,7 @@ Claude Code와 Codex, 그리고 `skills` CLI가 지원하는 55개 이상의 실
 
 - [규칙 자체 감사](docs/rule-self-audit.md)
 - [오픈소스 사례 연구](docs/case-studies.md)
-- [원본 벤치마크 실행 artifact(Hugging Face 데이터셋)](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)
+- [전체 과거 벤치마크 동결 스냅샷(Hugging Face 데이터셋)](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)
 - [외부 연구 근거 원장](docs/llm-generated-e2e-test-evidence.md)
 - [과거 AI reviewer 벤치마크](docs/ai-reviewer-benchmark.md)
 - [`debugger` 벤치마크 프로토콜](docs/debugger-benchmark/README.md)

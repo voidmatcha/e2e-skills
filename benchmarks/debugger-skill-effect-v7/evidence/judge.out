@@ -1,8 +1,0 @@
-judge: 56 calls on codex model='gpt-6-sol' canonical=None cli='codex-cli 0.159.3'
-  10/56 done
-  20/56 done
-  30/56 done
-  40/56 done
-  50/56 done
-  56/56 done
-wrote /Users/example/.cache/e2e-skills-bench/debugger-v7/judged.json

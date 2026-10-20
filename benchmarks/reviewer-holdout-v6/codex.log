@@ -1,6 +1,0 @@
-{"f1": 0.9090909090909091, "fn": 7, "fp": 6, "infrastructure_errors": 0, "precision": 0.9154929577464789, "recall": 0.9027777777777778, "runs": 60, "status": "PASS", "successful_runs": 60, "tp": 65}
-report: /tmp/v6-reports/full-codex.json
-{"f1": 0.8789808917197452, "fn": 3, "fp": 16, "infrastructure_errors": 0, "precision": 0.8117647058823529, "recall": 0.9583333333333334, "runs": 60, "status": "FAIL", "successful_runs": 60, "tp": 69}
-report: /tmp/v6-reports/catalog-only-codex.json
-{"f1": 0.39999999999999997, "fn": 32, "fp": 88, "infrastructure_errors": 0, "precision": 0.3125, "recall": 0.5555555555555556, "runs": 60, "status": "FAIL", "successful_runs": 60, "tp": 40}
-report: /tmp/v6-reports/no-skill-codex.json

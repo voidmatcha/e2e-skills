@@ -1,7 +1,0 @@
-{
-  "protocol_id": "generator-llm-judge-v1",
-  "status": "PREREGISTERED_NOT_FROZEN_DESCRIPTIVE_NOT_A_STATISTICAL_TEST",
-  "seed": "20261016-llm-judge",
-  "calls": {"core": 48, "reduced": 72, "full": 120},
-  "pairs": {"core": 24, "reduced": 36, "full": 60}
-}

@@ -20,17 +20,14 @@ ROOT = Path(__file__).resolve().parents[2]
 SKILL_DIR = ROOT / "skills/playwright-test-generator"
 SKILL = SKILL_DIR / "SKILL.md"
 THIN = SKILL_DIR / "thin-rules.md"
-ARCHIVE = ROOT / "benchmarks/generator-skill-v2.0.1-archive"
 
 SKILL_MAX_BYTES = 7168
 THIN_MAX_BYTES = 2500
-# The archived arm D remains byte-identical to its frozen benchmark. The
-# current product adds one provisional unaffected-witness line, supported by
+# The current product adds one provisional unaffected-witness line, supported by
 # the retained Notepad normal/fault/recovery comparison in
 # scripts/evals/generator-value/notepad-official-pair-v4/RESULT.md
 # (one actual defining-tool pair, six native normal/fault/recovery cells).
 # This is one direct-actor effect case, not native-child or cross-app lift.
-ARCHIVED_THIN_SHA256 = "f693fad9a421c6e247a77d5b1b380e499c53dfeedae5bdc85bb3b84729024f5a"
 THIN_SHA256 = "49425994fbddd05d3178cd57150f2589fcbd1c6ce4f2004b943b795c9cb5b83b"
 
 ALLOWED_TOP_LEVEL = {"SKILL.md", "thin-rules.md", "agents", "evals", "LICENSE", "NOTICE"}
@@ -164,9 +161,6 @@ def main() -> None:
     thin_bytes = THIN.read_bytes()
     if len(thin_bytes) > THIN_MAX_BYTES:
         fail(f"thin-rules.md is {len(thin_bytes)} bytes, budget {THIN_MAX_BYTES}")
-    archived_thin = ROOT / "benchmarks/generator-thin-layer-v1/THIN-RULES.md"
-    if hashlib.sha256(archived_thin.read_bytes()).hexdigest() != ARCHIVED_THIN_SHA256:
-        fail("archived arm D thin rules differ from the frozen benchmark")
     if hashlib.sha256(thin_bytes).hexdigest() != THIN_SHA256:
         fail("thin-rules.md differs from the pinned product rules; update the pin only with retained comparison evidence")
 
@@ -295,19 +289,12 @@ def main() -> None:
     if positive < 8 or len(triggers) - positive < 8:
         fail("trigger evals need at least 8 positive and 8 negative cases")
 
-    archived = (ARCHIVE / "SKILL.md").read_text(encoding="utf-8")
-    if 'version: "2.0.1"' not in archived or "name: playwright-test-generator" not in archived:
-        fail("the 2.0.1 generator archive must stay resolvable")
-    for name in ("verification-rules.md", "scenario-design.md", "best-practices.md",
-                 "code-rules.md", "exploration-preflight.md", "scripts/preflight_target.py"):
-        if not (ARCHIVE / name).is_file():
-            fail(f"archive is missing {name}")
-
     print(
         "generator router: pass "
         f"(SKILL.md {len(skill_bytes)} B <= {SKILL_MAX_BYTES}, thin-rules.md {len(thin_bytes)} B pinned, "
-        f"{len(evals)} evals, {len(triggers)} trigger cases, archive resolvable)"
+        f"{len(evals)} evals, {len(triggers)} trigger cases)"
     )
 
 
-main()
+if __name__ == "__main__":
+    main()

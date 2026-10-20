@@ -15,7 +15,7 @@ Guidance for AI coding agents (Claude Code, Codex, and other AGENTS.md-compatibl
 
 The repo doubles as a Claude Code plugin (`.claude-plugin/`), a Codex plugin (`.codex-plugin/`), a cross-agent skill source via the `skills` CLI, and a standalone scanner (`skills/e2e-reviewer/scripts/scan.sh`).
 
-**Product vs. infrastructure.** The four `skills/` directories above are the product — what a user installs and runs. `benchmarks/`, most of `scripts/ci/`, and the eval harnesses are this project's own verification infrastructure: the evidence backing the skills' claims, and the CI that keeps that evidence honest as the skills change. A typo fix or a small skill-wording change barely touches any of it — see `CONTRIBUTING.md`'s tier table before assuming a change needs the full process below.
+**Product vs. infrastructure.** The four `skills/` directories above are the product — what a user installs and runs. `scripts/ci/` and the eval harnesses verify the product. Historical research evidence lives in a pinned Hugging Face snapshot; `benchmarks/` keeps its status index and restoration manifest. A typo fix or a small skill-wording change barely touches any of it — see `CONTRIBUTING.md`'s tier table before assuming a change needs the full process below.
 
 ## Verification gate (must pass before commit)
 
@@ -42,12 +42,11 @@ The repo doubles as a Claude Code plugin (`.claude-plugin/`), a Codex plugin (`.
 ├── .codex/agents/          # Codex-native TOML ports of the two subagents (optional)
 │   ├── e2e-finding-verifier.toml   # behavior-synced with agents/*.md; guarded by SP5
 │   └── e2e-failure-classifier.toml
-├── benchmarks/             # immutable public benchmark evidence + adjudication ledgers
-│   └── generator-skill-v2.0.1-archive/  # byte copy of the retired 2.x generator pipeline (SKILL.md, references, scripts, evals)
+├── benchmarks/             # STATUS.md + external-evidence.json; historical study files live on Hugging Face
 ├── skills/                 # Four Agent Skills (the public surface)
 │   ├── playwright-test-generator/
 │   │   ├── SKILL.md        # Required: skill frontmatter + body (at most 7,168 bytes)
-│   │   ├── thin-rules.md   # the 12-rule checklist; test-generator-router.py pins the historical arm D plus this revision
+│   │   ├── thin-rules.md   # the current 12-rule checklist; test-generator-router.py pins its product digest
 │   │   ├── evals/evals.json
 │   │   └── agents/openai.yaml
 │   ├── e2e-reviewer/
@@ -85,88 +84,59 @@ Each `skills/<name>/SKILL.md` is the contract. Everything in the skill body shou
 
 Playwright and Cypress only. The skill does not produce code or advice for Puppeteer, Selenium, WebdriverIO, TestCafe, or Nightwatch. See `docs/framework-scope.md` for the rationale. CI fails on accidental support claims for out-of-scope frameworks.
 
+## Benchmark evidence storage
+
+- Keep only [STATUS.md](benchmarks/STATUS.md) and [external-evidence.json](benchmarks/external-evidence.json) under `benchmarks/` in Git. Store historical reports, protocols, frozen inputs, adjudications and raw artifacts in the authoritative `voidmatcha/e2e-skills-benchmarks` Hugging Face dataset. Keep current harness code and small regression fixtures under `scripts/`.
+- Default `ci-local.sh` verifies the current product, common harness contracts and local regression fixtures without downloading historical evidence. `/bin/bash -p scripts/ci/ci-evidence.sh /absolute/restored-root` is a separate opt-in replay of the original CI at the manifest's `source_commit`; it does not validate the current product.
+- The manifest pins a full dataset revision, archive and metadata SHA-256 hashes, the source Git commit, file count and byte count. Restore to a new external directory with `scripts/dev/fetch-benchmark-evidence.sh`; never restore into this checkout or overwrite local originals.
+- Preserve frozen attempts, negative results, original provenance and licenses. Do not refresh an old evidence digest to match a product edit. New results require a new study or explicit revision. Label derived or sanitized exports and record both source and exported hashes. Never export credentials, authentication homes, cookies, environment secrets, or browser profiles.
+- Upload only with user authorization. Verify a fresh download before removing tracked evidence, audit CI dependencies, and preserve Git history. Follow [CONTRIBUTING.md: Benchmark evidence](CONTRIBUTING.md#benchmark-evidence) for publication and restoration commands.
+
 ## Local Development Commands
 
 ```bash
-# Full CI mirror — run before every commit
+# Required current-product gates
 /bin/bash -p scripts/ci/ci-local.sh
-
-# Individual stages
-bash scripts/ci/review.sh           # parity, language, links, framework scope, orphans
-bash scripts/ci/test-parity.sh      # drift smoke test (mutate-and-detect)
-bash scripts/ci/check-verification-parity.sh
-bash scripts/ci/test-codex-agents.sh
-bash scripts/ci/test-local-eslint-path.sh
-bash scripts/validate-evals.sh      # eval JSON schema
-bash scripts/ci/test-reviewer-holdout.sh
-python3 scripts/ci/test-reviewer-holdout-v3.py
-python3 scripts/ci/test-reviewer-holdout-v22.py # current 3.0.0 public-corpus confirmation contract
-/bin/bash -p scripts/ci/run-reference-tokenizer-suites.sh \
-  scripts/ci/test-independent-review-v7.py \
-  scripts/ci/test-independent-review-v10.py \
-  scripts/ci/test-independent-review-v11.py
-/bin/bash -p scripts/ci/run-independent-review-v10-evidence.sh
-/bin/bash -p scripts/ci/run-independent-review-v11-evidence.sh
-python3 scripts/ci/test-reviewer-evidence-v3.py
-python3 scripts/ci/test-reviewer-evidence.py
-python3 scripts/ci/test-reviewer-scanner.py
-python3 scripts/ci/test-fixpair-v1.py
-python3 scripts/ci/test-reviewer-auth-retry.py
-python3 scripts/ci/test-debugger-contracts.py
-python3 scripts/ci/test-residual-redos-budget.py
-python3 scripts/ci/test-fixture-faults.py
-python3 scripts/evals/run-fixture-faults.py --validate-only
-python3 scripts/ci/test-playwright-semantic-probes.py
-python3 scripts/ci/test-playwright-timeout-zero-probe.py
-python3 scripts/ci/test-cypress-timeout-zero-probe.py
 /bin/bash -p scripts/ci/pre-push-security.sh
-python3 scripts/dev/refresh-reviewer-evidence-digest.py  # after any skills/e2e-reviewer byte change
-python3 scripts/dev/reviewer-contract.py --write --lean   # after a pattern ID or severity change; --lean needs a Lean 4 toolchain
-/bin/bash -p scripts/dev/linux-script-check.sh           # shipped-script suites on Linux (needs Docker)
-# generator behavior changes: manual host smoke runs per CONTRIBUTING.md item 6 (needs a model + browser); offline contract: python3 scripts/ci/test-generator-router.py
-python3 scripts/ci/check-pending-markers.py  # release gate (not in ci-local): fails while an unresolved pending-evaluation marker remains in a release version
-bash scripts/ci/codex-smoke.sh      # manual Codex cross-host smoke (skips if codex absent)
-# Claude Code plugin eval (manual; uses Claude usage): skill triggering and routing, with a no-plugin baseline.
-# Run it on a clean export: the checkout's testbed/ and worktrees exceed the 20,000-entry plugin scan limit.
-#   S=$(mktemp -d) && git archive HEAD | tar -x -C "$S" && claude plugin eval "$S" --trust-plugin --no-publish
-/bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests   # standalone scanner
 
-# Plugin manifest sanity
-python3 -m json.tool .claude-plugin/plugin.json
-python3 -m json.tool .claude-plugin/marketplace.json
+# Selected focused checks
+bash scripts/ci/review.sh
+bash scripts/ci/test-parity.sh
+bash scripts/ci/check-verification-parity.sh
+bash scripts/ci/test-local-eslint-path.sh
+bash scripts/validate-evals.sh
+python3 scripts/ci/test-reviewer-scanner.py
+python3 scripts/ci/test-debugger-contracts.py
+python3 scripts/ci/test-generator-router.py
+python3 scripts/ci/test-external-evidence.py
+python3 scripts/dev/reviewer-contract.py --write --lean # taxonomy changes; requires Lean 4
+
+# Historical evidence: explicit restoration and source-commit replay
+/bin/bash -p scripts/dev/fetch-benchmark-evidence.sh --dry-run
+/bin/bash -p scripts/dev/fetch-benchmark-evidence.sh --output /absolute/new-evidence-root
+/bin/bash -p scripts/dev/fetch-benchmark-evidence.sh --verify-only --output /absolute/new-evidence-root
+/bin/bash -p scripts/ci/ci-evidence.sh /absolute/new-evidence-root
+
+# Optional platform and host verification
+/bin/bash -p scripts/dev/linux-script-check.sh # needs Docker; see CONTRIBUTING.md
+bash scripts/ci/codex-smoke.sh
+/bin/bash -p skills/e2e-reviewer/scripts/scan.sh path/to/tests
+python3 scripts/ci/check-pending-markers.py # separate release gate
 ```
 
-`ci-local.sh` runs the repository CI mirror, including the security gate through `review.sh`, and must be green before opening a PR. The direct pre-push security rerun, manual Codex smoke, standalone scanner example, and manifest JSON sanity commands above remain separate invocations.
+`ci-local.sh` owns current-product CI and includes the security gate through `review.sh`; run the direct security gate again before pushing. Historical study READMEs in the restored snapshot own their frozen reproduction instructions. Evidence replay downloads the separately pinned source archive, verifies it and builds a temporary Git context; the original commit need not exist locally. Historical CI may require its pinned tokenizer environment. It does not run live models or authorize new benchmark calls.
 
-The hosted `main` workflow automatically reruns the pinned 36-cell browser fault matrix on a disposable runner. Pull-request and local CI remain dependency-free; other live browser/model evidence stays opt-in. For reviewer holdouts, follow each benchmark README's frozen protocol and run arms sequentially. For example, v17 used:
+The hosted `main` workflow reruns the pinned 36-cell browser fault matrix on a disposable runner. Pull-request and local CI remain dependency-free; live model runs and other browser probes are opt-in. For generator behavior changes, use the host smoke procedure in [CONTRIBUTING.md](CONTRIBUTING.md#changing-an-anti-pattern-or-skill-behavior). Run reviewer study arms sequentially under a new preregistered protocol; do not modify a frozen study to test new product bytes.
 
-```bash
-npm ci --prefix scripts/evals/fixtures
-python3 scripts/evals/run-fixture-faults.py
-python3 scripts/evals/run-playwright-semantic-probes.py
-python3 scripts/evals/run-playwright-timeout-zero-probe.py
-python3 scripts/evals/run-cypress-timeout-zero-probe.py
-CODEX_RUNNER=/absolute/path/to/codex
-OUT="${XDG_CACHE_HOME:-$HOME/.cache}/e2e-skills-bench/reviewer-holdout-v17"
-mkdir -p "$OUT"
-for arm in catalog-only catalog-formal full; do
-  python3 scripts/evals/run-reviewer-holdout.py \
-    --cases scripts/evals/reviewer-holdout-v17.json \
-    --protocol scripts/evals/reviewer-validation-protocol-v17.json \
-    --runner codex --runner-path "$CODEX_RUNNER" --model gpt-6-sol \
-    --arm "$arm" --repetitions 5 --allow-live --report-only \
-    --output "$OUT/$arm.json"
-done
-python3 scripts/evals/compare-reviewer-holdouts.py \
-  "$OUT/catalog-only.json" "$OUT/catalog-formal.json" "$OUT/full.json" \
-  --cases scripts/evals/reviewer-holdout-v17.json \
-  --protocol scripts/evals/reviewer-validation-protocol-v17.json \
-  --compare-arms --output "$OUT/arm-comparison.json"
-```
+The committed labeled corpus is a public development holdout. Use an external `--cases` bundle for a sealed release run; do not describe a public corpus as hidden. Wrapper-free live runs are limited to the exact built-in corpus/protocol paths and pinned digests. Every external `--cases` bundle requires `--isolation-wrapper`, regardless of its self-declared visibility. Built-in public live runs use one start-of-run skill/corpus snapshot, fresh temporary workspaces, prompt-complete Codex/Claude calls with every model tool disabled, and pre/post digests of every staged path and original input; any mutation makes the report incomplete.
 
-The v17 comparison is expected to return `FAIL`; see [v17](benchmarks/reviewer-holdout-v17/README.md) for its exact clean-tree reproduction and result. The latest Claude structured-output example is [v15](benchmarks/reviewer-holdout-v15/README.md), run on `claude-sonnet-5` with the v10 corpus, three arms and five repetitions.
+Corpus workspace paths must not enter runner-controlled surfaces (`.skill/`, `.git/`, `.codex/`, `.claude/`, `.agents/`, `.omx/`, `AGENTS.md`, or `CLAUDE.md`). The staged `.skill/e2e-reviewer` digest is checked against the frozen evaluated skill before and after every call.
 
-The committed labeled corpus is a public development holdout. Use an external `--cases` bundle for a sealed release run; do not describe a public corpus as hidden. Wrapper-free live runs are limited to the exact built-in corpus/protocol paths and pinned digests. Every external `--cases` bundle requires `--isolation-wrapper`, regardless of its self-declared visibility. Built-in public live runs use one start-of-run skill/corpus snapshot, fresh temporary workspaces, prompt-complete Codex/Claude calls with every model tool disabled, and pre/post digests of every staged path and original input; any mutation makes the report incomplete. Corpus workspace paths must not enter runner-controlled surfaces (`.skill/`, `.git/`, `.codex/`, `.claude/`, `.agents/`, `.omx/`, `AGENTS.md`, or `CLAUDE.md`). The staged `.skill/e2e-reviewer` digest is checked against the frozen evaluated skill before and after every call. The runner passes a strict environment allowlist. Codex receives only a private staged copy of the parent `auth.json`; Claude receives one validated `CLAUDE_CODE_OAUTH_TOKEN` snapshot but no ambient config directory or API key; custom executables receive no Codex/Claude credentials. Generic tokens, cloud credentials, proxy variables, and shell/runtime injection variables are removed. There is no built-in sealed sandbox. A non-public corpus requires `--isolation-wrapper <executable>` and an independently isolated release environment; the wrapper receives the runner command as its argument vector. The bundled harness records wrapper isolation as not proven and keeps the report `INCONCLUSIVE`; it never promotes a wrapped run to `PASS` merely because the wrapper is executable. The release protocol declares the host/model matrix and fixes the schedule and thresholds before execution. Local runner/model strings are provenance, not cryptographic attestation. Primary accuracy is computed on unique majority-stable labels and predictions; repeated totals also enforce a precision floor against rotating one-off false positives, but are not additional independent defects. A new protocol should declare `execution_identity.version_policy: "minimum"` and pin a floor rather than a single build. `exact` strands a protocol: v5 and v6 both stopped being runnable from an ordinary checkout once the Claude Code installer rotated the pinned build out of the local install. Those builds are still served by the vendor channel and `--runner-path` accepts a manually re-fetched binary, so the loss is recoverable rather than permanent — but a protocol that needs a manual download before it can start is one nobody reruns. One identity per runner family across a matrix is enforced by the comparator, so `minimum` costs nothing that matters. Never change the policy of an already frozen protocol.
+The runner passes a strict environment allowlist. Codex receives only a private staged copy of the parent `auth.json`; Claude receives one validated `CLAUDE_CODE_OAUTH_TOKEN` snapshot but no ambient config directory or API key; custom executables receive no Codex/Claude credentials. Generic tokens, cloud credentials, proxy variables, and shell/runtime injection variables are removed.
+
+There is no built-in sealed sandbox. A non-public corpus requires `--isolation-wrapper <executable>` and an independently isolated release environment; the wrapper receives the runner command as its argument vector. The bundled harness records wrapper isolation as not proven and keeps the report `INCONCLUSIVE`; it never promotes a wrapped run to `PASS` merely because the wrapper is executable.
+
+The release protocol declares the host/model matrix and fixes the schedule and thresholds before execution. Local runner/model strings are provenance, not cryptographic attestation. Primary accuracy is computed on unique majority-stable labels and predictions; repeated totals also enforce a precision floor against rotating one-off false positives, but are not additional independent defects. For a new protocol, use `execution_identity.version_policy: "minimum"` with a pinned version floor. The comparator enforces one identity per runner family across a matrix. Never change the policy of an already frozen protocol.
 
 ### Local dev workflow (testbed + auto-reinstall)
 

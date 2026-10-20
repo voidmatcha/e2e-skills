@@ -52,29 +52,12 @@ HOL_SCANNER_FALSE_POSITIVE_PATHS = {
     "skills/cypress-debugger/references/classification-procedure.md",
     "skills/cypress-debugger/references/fix-verification.md",
     "skills/playwright-test-generator/SKILL.md",
-    "benchmarks/generator-skill-v2.0.1-archive/SKILL.md",
-    "benchmarks/generator-skill-v2.0.1-archive/best-practices.md",
-    "benchmarks/generator-skill-v2.0.1-archive/code-rules.md",
-    "benchmarks/generator-skill-v2.0.1-archive/conventions-template.md",
-    "benchmarks/generator-skill-v2.0.1-archive/exploration-preflight.md",
-    "benchmarks/generator-skill-v2.0.1-archive/imported-test-cases.md",
-    "benchmarks/generator-skill-v2.0.1-archive/playwright-agents.md",
-    "benchmarks/generator-skill-v2.0.1-archive/scenario-design.md",
-    "benchmarks/generator-skill-v2.0.1-archive/verification-rules.md",
-    "benchmarks/generator-skill-v2.0.1-archive/scripts/preflight_target.py",
-    "benchmarks/generator-skill-v2.0.1-archive/scripts/raw-aria-snapshot.cjs",
     "scripts/evals/reviewer-holdout-v10.json",
     "scripts/evals/files/holdout-v10/v10-cy-12/cypress/e2e/timesheets.cy.ts",
     "scripts/ci/test-reviewer-stream-retry.py",
     "scripts/ci/test-reviewer-usage-capture.py",
     "scripts/ci/test-reviewer-holdout-v15.py",
     "scripts/ci/test-reviewer-auth-retry.py",
-    "benchmarks/generator-v4-real-get-v1/cases/cal-email-verify/app.mjs",
-    "benchmarks/generator-ablation-v2/reference/e2e-reviewer/scripts/scan.sh",
-    "benchmarks/generator-skill-effect-v2/arms/shared/e2e-reviewer/scripts/scan.sh",
-    "benchmarks/generator-skill-effect-v3/arms/shared/e2e-reviewer/scripts/scan.sh",
-    "benchmarks/generator-skill-effect-v8/reports/final-artifacts/v3-02-no-skill-r3/tests/recipe-browser.spec.mjs",
-    "benchmarks/healer-perturbation-v1/source-snapshots/0fc0e0687ab31d7e4d652578b947114cf1f472639b037fc6c9b37b1d8404a8e2.json",
 }
 COMMAND_TIMEOUT_SECONDS = 90
 SECURITY_GATE_TIMEOUT_SECONDS = 180
@@ -109,34 +92,15 @@ def run(
 def main() -> None:
     ci_local = CI_LOCAL.read_text(encoding="utf-8")
     early_checks = (
-        "run_python scripts/ci/test-reviewer-evidence-v3.py",
-        "run_python scripts/ci/test-reviewer-release-v1.py",
-        "run_python scripts/ci/test-reviewer-release-runner-v1.py",
+        "run_python scripts/ci/test-current-docs.py",
         "run_python scripts/ci/test-generator-router.py",
+        "run_python scripts/ci/test-reviewer-harness.py",
     )
     for check in early_checks:
         assert ci_local.count(check) == 1, f"CI must run {check} exactly once"
-    python_bootstrap_position = ci_local.index('step "Python isolation bootstrap"')
-    evidence_preflight_position = ci_local.index(
-        'step "Evidence freshness preflight"'
-    )
-    shell_syntax_position = ci_local.index('step "Shell syntax"')
-    review_position = ci_local.index('step "Review checks"')
-    preflight_position = ci_local.index('step "Release contract preflight"')
-    scanner_position = ci_local.index('step "Reviewer scanner contracts"')
-    evidence_check_position = ci_local.index(early_checks[0])
-    assert (
-        python_bootstrap_position
-        < shell_syntax_position
-        < evidence_preflight_position
-        < evidence_check_position
-        < ci_local.index('step "Source and security contracts"')
-    )
-    assert preflight_position < review_position < scanner_position
-    assert all(
-        preflight_position < ci_local.index(check) < scanner_position
-        for check in early_checks[1:]
-    )
+    assert ci_local.index('step "Python isolation bootstrap"') < ci_local.index('step "Shell syntax"') < ci_local.index('step "Source and security contracts"') < ci_local.index('step "Review checks"')
+    for historical in ("test-reviewer-evidence-v3.py", "test-reviewer-release-v1.py", "test-reviewer-holdout-v22.py"):
+        assert historical not in ci_local, "historical evidence belongs in ci-evidence.sh"
 
     workflow = WORKFLOW.read_text(encoding="utf-8")
     assert workflow.count("@ast-grep/cli-linux-x64-gnu@0.39.7") == 1
@@ -186,6 +150,8 @@ def main() -> None:
     assert set(hol_ignores) == HOL_SCANNER_FALSE_POSITIVE_PATHS
     assert len(hol_ignores) == len(HOL_SCANNER_FALSE_POSITIVE_PATHS)
     assert all(not any(token in path for token in "*?[") for path in hol_ignores)
+    assert all(not path.startswith("benchmarks/") for path in hol_ignores)
+    assert all((ROOT / path).is_file() for path in hol_ignores), "stale HOL suppression path"
 
     with tempfile.TemporaryDirectory(prefix="security-path-shadow-") as temporary:
         fake_bin = Path(temporary) / "bin"

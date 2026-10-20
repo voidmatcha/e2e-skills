@@ -1,100 +1,13 @@
-# HOL scans the full repository, including adversarial fixtures that exercise
-# credential redaction and dynamic-execution detection. It also treats a
-# descriptor-verified exact-byte module load as command injection, and confuses
-# length-framed stdin plus RegExp.exec with file exfiltration and code execution.
-# Suppress only those exact reviewed files; the repository's mandatory security
-# gate still scans every tracked and unignored artifact.
-#
-# 2026-09-11: the HOL Plugin Scanner run on push c5e331b failed for the first
-# time in 9 consecutive runs, with no relevant content change in the flagged
-# files since the prior pass -- reproduced locally against a clean `git
-# archive HEAD` checkout (matching exactly what actions/checkout provides,
-# excluding gitignored local-only content like testbed/ and .handover/) with
-# the pinned action's underlying `codex-plugin-scanner` package, which this
-# workflow does not pin to an exact version. Six confirmed false positives,
-# all on long-standing files, reviewed against the actual SARIF output:
-# - scan.sh: HARDCODED_SECRET / SECRET_PASSWORD_VAR fire on the scanner's own
-#   #14 "hardcoded credential candidate" rule definitions (the pattern source
-#   text, not an embedded secret).
-# - the three debugger/reviewer SKILL.md files: UNICODE_OBFUSCATED_INSTRUCTION
-#   fires on ordinary YAML frontmatter (`--- name: ... description: ...`).
-# - playwright-test-generator/scripts/preflight_target.py:
-#   DATA_EXFIL_SOCKET_CONNECT fires on a legitimate `socket.getaddrinfo()`
-#   target-reachability preflight check.
-# - playwright-test-generator/SKILL.md: TOOL_ABUSE_UNDECLARED_NETWORK and
-#   SOCIAL_ENG_MISLEADING_DESC fire on the skill's own documented browser
-#   automation and network capability.
-#
-# 2026-09-12: ignore_paths above did not actually suppress a recurrence of
-# TOOL_ABUSE_UNDECLARED_NETWORK on playwright-test-generator/SKILL.md in the
-# hosted GitHub code-scanning alert for push 43520af, even though that exact
-# file/rule pair is listed above and the false positive was already
-# confirmed on 2026-09-11. Reading plugin-scanner==2.0.864's own source
-# (codex_plugin_scanner/scanner.py's _rebase_plugin_result) shows every
-# other category's findings get their file_path rebased from an absolute
-# runner path to a repo-relative one before ignore_paths's fnmatch check
-# runs, but each IntegrationResult (which is where a Cisco skill-scanner
-# finding like this one originates) is only renamed, not rebased -- so
-# ignore_paths's relative-path patterns cannot reliably match it. A local
-# reproduction with the identical pinned scanner version did not reproduce
-# this specific finding at all, so the underlying Cisco skill-scanner may
-# also be non-deterministic; either way, path-based suppression is not a
-# dependable control for Cisco-sourced findings specifically. Rather than
-# keep re-confirming the same known false positive after every push,
-# .github/workflows/hol-plugin-scanner.yml now sets `cisco_skill_scan: off`
-# directly, with its own dated comment explaining why.
-#
-# 2026-09-18: push a8b9381 failed on HARDCODED_SECRET in one frozen
-# healer-perturbation-v1 source snapshot, reproduced locally with
-# plugin-scanner==2.0.864 against `git archive HEAD`. The snapshot embeds a
-# byte copy of skills/e2e-reviewer/scripts/scan.sh, so this is the same #14
-# rule-definition false positive already suppressed for scan.sh above. The
-# snapshot is digest-pinned evidence and must not be edited; suppress only
-# that exact file.
-# Correction to the 2026-09-11 note: the action commit pinned in
-# hol-plugin-scanner.yml reads plugin-scanner==2.0.864 from its own
-# scanner-version.txt and verifies PyPI provenance before installing, so the
-# scanner version does not drift between runs.
-# Any new benchmark source snapshot that embeds a byte copy of scan.sh trips
-# the same #14 finding; add its exact path here and to the pin in
-# scripts/ci/test-security-gates.py when creating it.
-#
-# 2026-09-19: playwright-test-generator/exploration-preflight.md and
-# imported-test-cases.md hold text moved verbatim out of that skill's
-# SKILL.md (preflight, browser-guard, and imported-case mechanics). They
-# document the same network capability the SKILL.md entry suppresses, so
-# they are listed beside it rather than left to re-trigger the same finding.
-# 2026-09-20: the four e2e-reviewer references hold Phase 0-3 and reporting
-# text moved verbatim from that skill's SKILL.md. They inherit its scanner,
-# network, credential, and untrusted-input examples, so keep their exact paths
-# beside the original entry and the matching security-gate pin.
-# 2026-09-20: debugger report acquisition, extraction, classification, and fix
-# verification text moved verbatim into parallel on-demand references. They
-# inherit the debugger entrypoints' command, credential, and artifact examples.
-# 2026-09-20: generator environment, exploration, scenario, code, convention,
-# agent-interoperability, and verification detail moved verbatim into its
-# root-level point-of-use references. They inherit the entrypoint's command,
-# network, credential, and untrusted-input examples.
-#
-# 2026-10-12: push 6ded5e9 (2.0.0) failed the scan for the first time since
-# 2026-09-18, reproduced locally with plugin-scanner==2.0.864 against
-# `git archive 6ded5e9`: nine HARDCODED_SECRET hits and one
-# DANGEROUS_DYNAMIC_EXECUTION, all reviewed and all false positives. They are
-# stub credentials in test doubles (test-only/stub-oauth strings), a fixture
-# login in the v10 holdout case and its JSON copy, a fake session token in the
-# v4 generator fixture app, the `assertion_token=` variable inside two frozen
-# byte copies of scan.sh, and an eval of a fixed string in a frozen v8 arm
-# output. Each is exact-path and, for the benchmark files, immutable evidence.
-# 3.0.0: playwright-test-generator became a router. Its pipeline references
-# and scripts moved byte-for-byte to benchmarks/generator-skill-v2.0.1-archive/,
-# so the entries above that suppressed those exact files now name the archived
-# paths (same bytes, same reviewed false positives). The new SKILL.md keeps its
-# entry; thin-rules.md carries no network or credential text.
-# 2026-10-20: plugin-scanner==2.0.864 also matches `assertion_token=`
-# in the frozen generator-ablation-v2 scanner copy as HARDCODED_SECRET.
-# Line 6152 contains assertion matcher names, not credentials. Preserve
-# that immutable evidence and pin only its exact path, as for the two
-# already reviewed frozen scanner copies above.
+# Exact reviewed false positives in current skills, helpers and test fixtures.
+# The pinned HOL scanner (plugin-scanner==2.0.864) flags credential-pattern
+# definitions, synthetic credentials and fixed-string test execution. Its Cisco
+# integration also flags documented browser/network capabilities and ordinary
+# skill frontmatter; the workflow separately disables that unreliable category.
+# Descriptor-verified module loads and length-framed stdin/RegExp.exec are
+# reviewed dynamic-execution/exfiltration false positives in the shipped helpers.
+# Historical benchmark files live in the pinned HF snapshot and have no ignores
+# here. Add a current path only after reviewing a reproduced scanner finding.
+# The mandatory repository security gate still scans every tracked/unignored file.
 [scanner]
 ignore_paths = [
   "skills/cypress-debugger/scripts/publish-mochawesome-report.py",
@@ -127,27 +40,10 @@ ignore_paths = [
   "skills/cypress-debugger/references/classification-procedure.md",
   "skills/cypress-debugger/references/fix-verification.md",
   "skills/playwright-test-generator/SKILL.md",
-  "benchmarks/generator-skill-v2.0.1-archive/SKILL.md",
-  "benchmarks/generator-skill-v2.0.1-archive/best-practices.md",
-  "benchmarks/generator-skill-v2.0.1-archive/code-rules.md",
-  "benchmarks/generator-skill-v2.0.1-archive/conventions-template.md",
-  "benchmarks/generator-skill-v2.0.1-archive/exploration-preflight.md",
-  "benchmarks/generator-skill-v2.0.1-archive/imported-test-cases.md",
-  "benchmarks/generator-skill-v2.0.1-archive/playwright-agents.md",
-  "benchmarks/generator-skill-v2.0.1-archive/scenario-design.md",
-  "benchmarks/generator-skill-v2.0.1-archive/verification-rules.md",
-  "benchmarks/generator-skill-v2.0.1-archive/scripts/preflight_target.py",
-  "benchmarks/generator-skill-v2.0.1-archive/scripts/raw-aria-snapshot.cjs",
   "scripts/evals/reviewer-holdout-v10.json",
   "scripts/evals/files/holdout-v10/v10-cy-12/cypress/e2e/timesheets.cy.ts",
   "scripts/ci/test-reviewer-stream-retry.py",
   "scripts/ci/test-reviewer-usage-capture.py",
   "scripts/ci/test-reviewer-holdout-v15.py",
   "scripts/ci/test-reviewer-auth-retry.py",
-  "benchmarks/generator-v4-real-get-v1/cases/cal-email-verify/app.mjs",
-  "benchmarks/generator-ablation-v2/reference/e2e-reviewer/scripts/scan.sh",
-  "benchmarks/generator-skill-effect-v2/arms/shared/e2e-reviewer/scripts/scan.sh",
-  "benchmarks/generator-skill-effect-v3/arms/shared/e2e-reviewer/scripts/scan.sh",
-  "benchmarks/generator-skill-effect-v8/reports/final-artifacts/v3-02-no-skill-r3/tests/recipe-browser.spec.mjs",
-  "benchmarks/healer-perturbation-v1/source-snapshots/0fc0e0687ab31d7e4d652578b947114cf1f472639b037fc6c9b37b1d8404a8e2.json",
 ]

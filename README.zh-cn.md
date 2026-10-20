@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=040e99e88be1ff2c8533b60721bcf9c1780c8f61de612726b88b25ccd1e856dc; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=2201126083b36a2a54455393e7476b288d152cba987b388e87bcc941f0a12d59; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 为 AI 编程 agent 提供四个 skill，用于生成、审查 Playwright/Cypress E2E 测试并诊断失败。skill 是 agent 执行任务时遵循的一组指令。
 
@@ -35,7 +35,7 @@
 
 `e2e-reviewer` 用代码扫描器查找候选问题，再阅读测试和周边代码，判断是否确实存在问题。需要时，它还会建议修改断言条件或在与原应用分开的副本中加入缺陷，检查测试是否失败。审查者可以主动提出这些额外验证；执行需要可信的本地环境和命令批准。同一范围内已有的批准继续有效。
 
-`e2e-reviewer` 发现的问题促成了 [15 个合入上游的 PR](#merged-upstream-fixes)。下面列出实际修复案例。
+`e2e-reviewer` 发现的问题促成了 [15 个合入上游的 PR](#merged-upstream-fixes)。
 
 | 需求 | Skill | 结果 |
 | --- | --- | --- |
@@ -151,8 +151,6 @@ Install https://github.com/voidmatcha/e2e-skills using its install.sh for my cur
 
 **只需要审查或失败分析？** 请让 agent 仅安装技能和专用 agent，不配置 Playwright generator。官方 Playwright agent 和 `playwright-test` MCP 是生成功能所需，审查或诊断现有 Playwright/Cypress 测试不需要这些设置。
 
-官方 agent 负责规划和编写测试；本项目的 generator 添加规则、scanner 检查和测试执行。
-
 <details>
 <summary>其他安装方式：skills.sh 和插件</summary>
 
@@ -240,22 +238,20 @@ debugger 和 probe 执行需要可信项目，以及对包括环境变量和 fla
 
 例如：“检查保存功能出错时，这个测试能否发现。”reviewer 会查看本地项目并提出检查方案。执行需要可信且准备好的本地环境，以及你对命令的批准。结果仅适用于选定的断言或缺陷，不代表能发现所有缺陷。
 
-详情请参阅[执行步骤和准备条件](skills/e2e-reviewer/references/runtime-probes.md)及[两个 OSS 工作流程验证案例](benchmarks/release-readiness-v1/README.md#portable-integration)。
+详情请参阅[执行步骤和准备条件](skills/e2e-reviewer/references/runtime-probes.md)及[两个 OSS 工作流程验证案例](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#portable-integration)。
 
 ## 证据与限制
 
-3.0.0 的检查涵盖安装、扫描器行为、执行安全规则，以及部分 Playwright/Cypress 验证运行。[验证记录](benchmarks/release-readiness-v1/README.md)列出了已执行的流程、保留的证据和各项结果的适用范围。
+[3.0.0 验证记录](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md)涵盖安装、扫描器行为、安全规则和部分 Playwright/Cypress 运行，并列出保留的证据和结果的适用范围。
 
-[10 月 20 日的验证](benchmarks/release-readiness-v1/README.md#october-20-successor)检查了隔离环境中的安装、Claude Code 和 Codex 通过官方 agent/MCP 生成并运行测试的流程，以及选定的 Cypress 断言 mutation 和应用故障注入。generator 的原始测量与后续重跑结果继续分别报告。
+[10 月 20 日的验证](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#october-20-successor)检查了隔离环境中的安装、Claude Code 和 Codex 通过官方 agent/MCP 生成并运行测试的流程，以及选定的 Cypress 断言 mutation 和应用故障注入。generator 的原始测量与后续重跑结果继续分别报告。
 
 <details>
 <summary>基准测量范围与模型结果</summary>
 
-reviewer 的结果取决于模型：在相同的冻结 snapshot 和 36 个公开开发案例上，每个 arm 重复五次，`gpt-6-sol` 通过了 [v22](benchmarks/reviewer-holdout-v22/README.md)，`gpt-6.1-sol` 通过了 [v24](benchmarks/reviewer-holdout-v24/README.md)，而 `gpt-6-luna` 未通过 [v23](benchmarks/reviewer-holdout-v23/README.md)。每次运行均完成了全部 540 次调用。这些禁用工具的测量评估了提供的指令，不能说明扫描器的效果或在未见项目上的准确率。模型分数和 snapshot 的适用范围见[基准状态](benchmarks/STATUS.md)。
+reviewer 的结果取决于模型：在相同的冻结 snapshot 和 36 个公开开发案例上，每个 arm 重复五次，`gpt-6-sol` 通过了 [v22](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v22/README.md)，`gpt-6.1-sol` 通过了 [v24](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v24/README.md)，而 `gpt-6-luna` 未通过 [v23](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v23/README.md)。每次运行均完成了全部 540 次调用。这些禁用工具的测量评估了提供的指令，不能说明扫描器的效果或在未见项目上的准确率。分数仅适用于各报告指定的 snapshot。模型分数、协议、负面发现和主张边界见[基准状态](benchmarks/STATUS.md)，行为变更见 [CHANGELOG.md](CHANGELOG.md)。
 
-历史分数仅适用于各报告指定的 snapshot，不会自动适用于当前的全部指令。[基准状态](benchmarks/STATUS.md)保留了协议、结果、负面发现和主张边界；[CHANGELOG.md](CHANGELOG.md)记录行为变更。
-
-历史运行原始资料由[证据 manifest](benchmarks/external-evidence.json)固定，可从 [Hugging Face 数据集](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)获取。审计旧分数前，使用 `scripts/dev/fetch-benchmark-evidence.sh --dry-run` 查看恢复计划。
+包含协议、输入资料、摘要和原始运行资料的完整历史基准冻结 snapshot 由[证据 manifest](benchmarks/external-evidence.json)固定，可从 [Hugging Face 数据集](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)获取。审计旧分数前，使用 `scripts/dev/fetch-benchmark-evidence.sh --dry-run` 查看恢复计划。
 
 </details>
 
@@ -410,21 +406,9 @@ debuggers 会按稳定的 F1–F15 taxonomy 对 failures 分类。只有在你�
 
 不会。每次修改后都要运行应用及其真实 E2E suite。这套 bundle 用于审查测试质量、生成 Playwright 覆盖，并诊断已有失败；它不是 test runner。
 
-### 如何在合并前审查 AI 生成的 Playwright 或 Cypress 测试？
-
-合并前，将生成的 spec 交给 `e2e-reviewer`。它会检查每个测试是否真正证明了名称所描述的用户可见结果，捕捉 false-green 风险，并区分确定性的扫描候选项和需要结合上下文判断的发现。
-
-### 它是否同时支持 Cypress 和 Playwright？
-
-审查和失败调试支持两个框架。新测试生成目前只支持 Playwright。Cypress 调试器接受 mochawesome 和 JUnit reports。
-
 ### 它能调试只在 CI 中失败的测试吗？
 
 可以，前提是你提供本地 report artifacts 或受支持的 GitHub Actions run。调试器会使用 F1–F15 taxonomy 区分 environment、timing、selector、data、authentication 和 product-regression causes。
-
-### 支持哪些 AI 编程代理？
-
-Claude Code、Codex，以及 `skills` CLI 支持的 55+ 宿主都可以加载公开的 `SKILL.md` contracts。可选的 host-specific agent files 会在可用时改善委派；即使没有这些文件，公开 Skills 仍然可用。
 
 ## 详细文档
 
@@ -437,7 +421,7 @@ Claude Code、Codex，以及 `skills` CLI 支持的 55+ 宿主都可以加载公
 
 - [规则自审](docs/rule-self-audit.md)
 - [开源案例研究](docs/case-studies.md)
-- [原始基准运行产物（Hugging Face 数据集）](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)
+- [完整历史基准冻结 snapshot（Hugging Face 数据集）](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)
 - [外部证据台账](docs/llm-generated-e2e-test-evidence.md)
 - [历史 AI 审查器基准](docs/ai-reviewer-benchmark.md)
 - [调试器基准协议](docs/debugger-benchmark/README.md)

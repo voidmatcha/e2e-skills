@@ -225,10 +225,17 @@ def assert_debugger_triage_contract(skill_dir: Path, core: str) -> None:
     retry_flag = "--retries=0" if skill_dir.name == "playwright-debugger" else "--config retries=0"
     assert retry_flag in review, skill_dir.name
     reference = (skill_dir / "references/fix-verification.md").read_text(encoding="utf-8")
-    writer = (ROOT / "benchmarks/generator-skill-v2.0.1-archive/SKILL.md").read_text(encoding="utf-8")
-    scanner = re.search(r"`(E2E_SMELL_ALLOW_PROJECT_ESLINT=0 [^`]+)`", writer)
-    assert scanner is not None
-    assert scanner.group(1) in reference, skill_dir.name
+    # Pin today's safe debugger scanner invocation directly. Its trust boundary
+    # must not depend on the bytes of the retired generator pipeline.
+    scanner_command = (
+        "E2E_SMELL_ALLOW_PROJECT_ESLINT=0 E2E_SMELL_NO_ESLINT_DOWNLOAD=1 "
+        "E2E_SMELL_NO_AST_GREP_DOWNLOAD=1 E2E_SMELL_DISABLE_AST_GREP=1 "
+        "/usr/bin/env -u E2E_SMELL_RG_BIN -u E2E_SMELL_NODE_BIN "
+        "-u E2E_SMELL_NPX_BIN -u E2E_SMELL_AST_GREP_BIN -u E2E_SMELL_PYTHON_BIN "
+        "/bin/bash -p <e2e-reviewer skill-base>/scripts/scan.sh <one spec or POM path>"
+    )
+    scanner = re.search(r"`(E2E_SMELL_ALLOW_PROJECT_ESLINT=0 [^`]+)`", reference)
+    assert scanner is not None and scanner.group(1) == scanner_command, skill_dir.name
     for clause in (
         "NOFIX: <evidence>", "expected values", "assertion target",
         "scenario count", "request proof", "test enablement",

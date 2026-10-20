@@ -883,7 +883,7 @@ def assert_output_cannot_overwrite_run_inputs(temp: Path) -> None:
     link.symlink_to(skill)
     assert HOLDOUT.overwrites_run_input(link, inputs)
     assert not HOLDOUT.overwrites_run_input(
-        ROOT / "benchmarks/reviewer-holdout-v3/reports/new.json", inputs
+        ROOT / "results/reviewer-holdout/new.json", inputs
     )
     source = (HOLDOUT_PATH).read_text(encoding="utf-8")
     assert "if overwrites_run_input(output_path, run_inputs):" in source
@@ -940,7 +940,7 @@ def assert_durable_output_is_unaffected(temp: Path) -> None:
         ROOT / "results/reviewer-holdout" / "20260907T000000Z.json"
     )
     assert not HOLDOUT.is_volatile_output_path(
-        ROOT / "benchmarks/reviewer-holdout-v3/reports/full-codex.json"
+        ROOT / "results/reviewer-holdout/full-codex.json"
     )
     # An ordinary home-directory path is durable.
     assert not HOLDOUT.is_volatile_output_path(Path.home() / "reports/out.json")

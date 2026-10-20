@@ -1,6 +1,0 @@
-import { defineConfig } from "cypress";
-
-export default defineConfig({
-  retries: { runMode: 1, openMode: 0 },
-  e2e: { baseUrl: "http://127.0.0.1:4180", testIsolation: true },
-});

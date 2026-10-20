@@ -34,7 +34,7 @@ A passing test can still miss a broken feature. `e2e-skills` helps check whether
 
 `e2e-reviewer` uses a code scanner to find possible problems, then reads the test and surrounding code to decide whether they are real. When needed, it can propose changing an assertion or introducing a bug in a separate app copy to check whether the test fails. The reviewer can offer these additional checks; execution requires a trusted local environment and command approval. Existing approval for the same scope remains valid.
 
-`e2e-reviewer` findings led to [15 merged upstream PRs](#merged-upstream-fixes). See the fixes below.
+`e2e-reviewer` findings led to [15 merged upstream PRs](#merged-upstream-fixes).
 
 | Need | Skill | Result |
 | --- | --- | --- |
@@ -150,8 +150,6 @@ After this setup, you do not need to repeat the manual installation steps. Use t
 
 **Only reviewing or debugging?** Tell the agent to install the skills and dedicated agents only, without Playwright generator setup. Official Playwright agents and the `playwright-test` MCP server are required for generation, not for reviewing or diagnosing existing Playwright/Cypress tests.
 
-The official agents plan and write tests; our generator adds rules, scanner checks, and test execution.
-
 <details>
 <summary>Other installation methods: skills.sh and plugins</summary>
 
@@ -239,22 +237,20 @@ Start with a regular `e2e-reviewer` review of whether the tests check the intend
 
 For example: “Check whether this test catches a broken save operation.” The reviewer examines the local project and proposes a check. Execution requires a trusted, prepared local environment and your approval of the commands. Results apply to the selected assertion or bug; they do not prove that every bug will be caught.
 
-See the [execution procedure and requirements](skills/e2e-reviewer/references/runtime-probes.md) and [two OSS workflow examples](benchmarks/release-readiness-v1/README.md#portable-integration).
+See the [execution procedure and requirements](skills/e2e-reviewer/references/runtime-probes.md) and [two OSS workflow examples](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#portable-integration).
 
 ## Evidence and limits
 
-The 3.0.0 checks cover installation, scanner behavior, safety rules, and selected Playwright/Cypress validation runs. The [validation record](benchmarks/release-readiness-v1/README.md) identifies the workflows exercised, the evidence retained, and the scope of each result.
+The [3.0.0 validation record](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md) covers installation, scanner behavior, safety rules, and selected Playwright/Cypress runs, with retained evidence and result scope.
 
-The [October 20 checks](benchmarks/release-readiness-v1/README.md#october-20-successor) exercise isolated installation, official-agent/MCP test generation and execution in Claude Code and Codex, and selected Cypress assertion-mutation and app-fault probes. The original generator cohort and later replay remain separately reported.
+The [October 20 checks](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/release-readiness-v1/README.md#october-20-successor) exercise isolated installation, official-agent/MCP test generation and execution in Claude Code and Codex, and selected Cypress assertion-mutation and app-fault probes. The original generator cohort and later replay remain separately reported.
 
 <details>
 <summary>Benchmark scope and model results</summary>
 
-Reviewer results depend on the model: on the same frozen snapshot and 36 public development cases with five repetitions per arm, `gpt-6-sol` passed [v22](benchmarks/reviewer-holdout-v22/README.md), `gpt-6.1-sol` passed [v24](benchmarks/reviewer-holdout-v24/README.md), and `gpt-6-luna` failed [v23](benchmarks/reviewer-holdout-v23/README.md), with all three models completing all 540 calls in each run. These tool-free results measure supplied instructions, not scanner benefit or accuracy on unseen projects. See [benchmark status](benchmarks/STATUS.md) for model-specific scores and snapshot limits.
+Reviewer results depend on the model: on the same frozen snapshot and 36 public development cases with five repetitions per arm, `gpt-6-sol` passed [v22](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v22/README.md), `gpt-6.1-sol` passed [v24](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v24/README.md), and `gpt-6-luna` failed [v23](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/2992d57564bb5b0d7eae0650a64f392481211d41/snapshots/git-93afd3b105b869b15589634c88676230c7d92254/benchmarks/reviewer-holdout-v23/README.md), with all three models completing all 540 calls in each run. These tool-free results measure supplied instructions, not scanner benefit or accuracy on unseen projects. Scores apply only to the reported snapshots. See [benchmark status](benchmarks/STATUS.md) for model-specific scores, protocols, negative findings, and claim boundaries, and [CHANGELOG.md](CHANGELOG.md) for behavior changes.
 
-Historical scores apply to the snapshots named in each report, rather than automatically to all current instructions. [Benchmark status](benchmarks/STATUS.md) retains the protocols, results, negative findings, and claim boundaries; [CHANGELOG.md](CHANGELOG.md) records the behavior changes.
-
-Raw historical run artifacts are pinned in [the evidence manifest](benchmarks/external-evidence.json) and available from the [Hugging Face dataset](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks). Use `scripts/dev/fetch-benchmark-evidence.sh --dry-run` to inspect the restore plan before auditing a past score.
+The entire frozen historical benchmark snapshot, including protocols, inputs, summaries and raw run artifacts, is pinned in [the evidence manifest](benchmarks/external-evidence.json) and available from the [Hugging Face dataset](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks). Use `scripts/dev/fetch-benchmark-evidence.sh --dry-run` to inspect the restore plan before auditing a past score.
 
 </details>
 
@@ -409,21 +405,9 @@ For non-public benchmark runs, `--isolation-wrapper` is a required hook, not pro
 
 No. Run the application and its real E2E suite after every change. This bundle reviews test quality, generates Playwright coverage, and diagnoses existing failures; it is not a test runner.
 
-### How do I review AI-generated Playwright or Cypress tests before merge?
-
-Point `e2e-reviewer` at the generated specs before merge. It checks whether each test proves its stated user-visible outcome, catches false-green risk, and separates deterministic scanner candidates from context-dependent findings.
-
-### Does it support Cypress as well as Playwright?
-
-Review and failure debugging support both frameworks. New-test generation currently supports Playwright only. Cypress debuggers accept mochawesome and JUnit reports.
-
 ### Can it debug tests that fail only in CI?
 
 Yes, when you provide the local report artifacts or a supported GitHub Actions run. The debugger separates environment, timing, selector, data, authentication, and product-regression causes using the F1–F15 taxonomy.
-
-### Which AI coding agents are supported?
-
-Claude Code, Codex, and the 55+ hosts supported by the `skills` CLI can load the public `SKILL.md` contracts. Optional host-specific agent files improve delegation where available, but the public skills remain usable without them.
 
 ## Detailed documentation
 
@@ -436,7 +420,7 @@ Claude Code, Codex, and the 55+ hosts supported by the `skills` CLI can load the
 
 - [Self-audit of the rules](docs/rule-self-audit.md)
 - [Open-source case studies](docs/case-studies.md)
-- [Raw benchmark run artifacts (Hugging Face dataset)](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)
+- [Frozen historical benchmark snapshot (Hugging Face dataset)](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks)
 - [External evidence ledger](docs/llm-generated-e2e-test-evidence.md)
 - [Historical AI reviewer pilot](docs/ai-reviewer-benchmark.md)
 - [Debugger benchmark protocol](docs/debugger-benchmark/README.md)

@@ -1348,13 +1348,6 @@ for path in sorted(p for p in repo_files() if p.suffix == '.md'):
         except ValueError:
             continue
         if not target_path.exists():
-            # Frozen benchmark evidence written before 3.0.0 may link to generator reference files that moved
-            # byte-for-byte into the v2.0.1 archive; accept the link when the archive holds the same file.
-            rel = target_path.relative_to(pathlib.Path('.').resolve())
-            if (path.parts[:1] == ('benchmarks',)
-                    and rel.parts[:2] == ('skills', 'playwright-test-generator')
-                    and (pathlib.Path('benchmarks/generator-skill-v2.0.1-archive') / pathlib.Path(*rel.parts[2:])).exists()):
-                continue
             errors.append(f"{path}: broken local link {raw}")
 
 if errors:
