@@ -469,7 +469,7 @@
       "expected_output": "Production-backed case: zero planner/generator/browser actions, including reads, before any exploration; BLOCKED and asks for a disposable stack. Control: reuses unchanged scoped target evidence and approvals, invokes planner normally and waits for plan approval before generation. No credential file reads.",
       "assertions": [
         "True positive: zero planner/generator/browser actions against the shared-production stack, even though frontend is loopback, exact commands were approved and no specs exist yet",
-        "Unknown API/database/environment scope remains BLOCKED until non-sensitive evidence or scoped user information establishes a disposable stack; never opens .env, auth.json or storage-state credentials to prove it",
+        "Unknown scenario-relevant service/data scope remains BLOCKED until non-sensitive evidence or scoped user information establishes a safe dev/test boundary; never opens .env, auth.json or storage-state credentials to prove it. Unused services are N/A; do not demand unrelated infrastructure.",
         "FALSE-POSITIVE GUARD: a confirmed named disposable loopback frontend/API/database/environment with unchanged scoped approvals delegates normally without demanding fresh command approval or inspecting every optional service"
       ],
       "files": [
@@ -493,6 +493,82 @@
         "evals/files/project-flat/tests/login.spec.ts",
         "evals/files/project-flat/src/app/page.tsx"
       ]
+    },
+    {
+      "id": 32,
+      "title": "First project without E2E setup: guide and stop",
+      "prompt": "The app has no Playwright dependency, playwright.config or E2E specs. It uses pnpm. Add login E2E tests.",
+      "expected_output": "Reads setup-guide.md, explains separate first-project initialization using existing package manager and official setup docs; does not invoke unavailable init-agents or generate tests before a usable environment exists.",
+      "assertions": [
+        "Identifies missing runner/config, requests local target and commands, recommends separate setup before agents/MCP readiness",
+        "Reports specs, scanner and test execution as not done; installs nothing and writes no config",
+        "FALSE-POSITIVE GUARD: an otherwise prepared project with no spec files is eligible for first-test generation; no existing tests is not itself a blocker"
+      ],
+      "files": []
+    },
+    {
+      "id": 33,
+      "title": "Missing lint rules: retain bundled scan without installing",
+      "prompt": "Official agents and session MCP are ready, the local Playwright project is approved and disposable, but it has no ESLint config or Playwright lint plugin. Generate a test.",
+      "expected_output": "Generation remains eligible, uses unchanged pinned scanner invocation and native scoped execution; offers optional lint setup separately and reports optional lint as skipped.",
+      "assertions": [
+        "Does not require ESLint configuration or install any lint package",
+        "Keeps bundled scanner checks with project ESLint and downloads disabled; does not claim skipped ESLint ran clean",
+        "FALSE-POSITIVE GUARD: absent lint does not excuse failed bundled scan or missing rg/Python prerequisites; existing lint configurations are preserved",
+        "Recommends eslint-plugin-playwright recommended rules as optional E2E-scoped setup; when the plugin is already installed, proposes enabling its preset rather than reinstalling it"
+      ],
+      "files": []
+    },
+    {
+      "id": 34,
+      "title": "Official scenario layout and parent-owned validation",
+      "prompt": "The approved plan has two login scenarios named Sign in with valid credentials and Reject an invalid password under Login. The official generator suggests separate spec files; a previous checklist grouped same-screen tests and told the child to run and fix failures. Which instructions apply?",
+      "expected_output": "Keeps official one-test-per-file layout, exact approved scenario titles and matching Login describe; returns generated files to the parent for origin/scanner checks, scoped execution and bounded repairs.",
+      "assertions": [
+        "True positive: rejects combining both scenarios into one spec or silently renaming an approved scenario; uses filesystem-friendly scenario filenames",
+        "The child hands off after generation; parent validates before execution and makes at most two proven-generation-error repairs with required outcomes preserved",
+        "FALSE-POSITIVE GUARD: two scenarios on the same screen may share the Login describe name in separate files; shared context does not authorize merging files",
+        "FALSE-POSITIVE GUARD: approved official MCP test_run remains eligible under section 5; the checklist does not force a shell test command or prohibit the parent from making authorized repairs"
+      ],
+      "files": []
+    },
+    {
+      "id": 35,
+      "title": "Reuse an existing development stack without requiring mocks",
+      "prompt": "Official agents/MCP are ready. Existing approved loopback frontend and real local API/database use a per-test account and resettable test namespace. Their scope and exact commands are already confirmed. Generate one scenario. A UI-only control scenario has no API or database.",
+      "expected_output": "Reuses the existing dev stack without asking for a new mock server or deployment, reuses unchanged evidence and approvals, and continues scoped generation/scan/execution. Unused services are N/A.",
+      "assertions": [
+        "True positive: does not require a mock backend, throwaway deployment or in-memory database when existing isolated resettable test data is established",
+        "Reuses existing confirmed scope and command approvals rather than asking the user to choose mock infrastructure",
+        "FALSE-POSITIVE GUARD: UI-only scenario with no API/database marks those services N/A; absence of those services does not block it",
+        "FALSE-POSITIVE GUARD: a loopback frontend pointing to production or shared non-test data is still blocked; unknown backend/data/reset scope gets only a targeted clarification, never automatic mocking",
+        "Read-only scenarios require no reset method; reuse existing mocks when present and do not switch a real backend to mocks merely to satisfy a fixed stack template"
+      ],
+      "files": []
+    },
+    {
+      "id": 36,
+      "title": "Scenario-based prerequisites across UI, reads and writes",
+      "prompt": "Three approved local dev/test projects have official tools ready: A renders a static form with no backend; B reads a real test API and changes only client-side filters; C writes to an existing test database with an approved per-test namespace and cleanup command. A fourth control writes to unknown/shared non-test data. What must be prepared?",
+      "expected_output": "A marks API/database N/A; B reuses its read-only API without requiring database/reset details; C reuses existing API/database and isolated cleanup. None requires creating mock servers or a new deployment. The fourth control pauses for the specific missing write boundary.",
+      "assertions": [
+        "True positive: generation of A/B/C remains eligible using existing architecture; does not require universal frontend/API/database/reset components",
+        "FALSE-POSITIVE GUARD: lack of a reset command does not block genuinely read-only scenario B, and irrelevant API/database services are N/A for A",
+        "FALSE-POSITIVE GUARD: write control stays BLOCKED until scenario-relevant data isolation and cleanup/reset are established; no automatic environment setup or new mocking infrastructure"
+      ],
+      "files": []
+    },
+    {
+      "id": 37,
+      "title": "Claude Code official delegation awaits result",
+      "prompt": "Official Playwright agents and approved MCP tools are ready. In Claude Code the official planner is still active and has not returned a plan. One host supports foreground; another only supports tracked background tasks. How do you proceed?",
+      "expected_output": "Invoke the installed official subagent by name and await its result before continuing. Prefer foreground where supported; otherwise await the existing tracked background task. An unfinished planner is reported under NOT done rather than treated as a completed plan.",
+      "assertions": [
+        "True positive: awaits the official planner result and plan approval before generator; does not replace pending delegation with direct parent browser exploration",
+        "FALSE-POSITIVE GUARD: supported background execution remains valid; foreground is preferred only when supported, with no custom watchdog, fixed polling interval, global setting change or blanket permission requirement",
+        "FALSE-POSITIVE GUARD: parent scanner, scoped test execution and bounded evidence-backed repairs remain allowed after official generation succeeds"
+      ],
+      "files": []
     }
   ]
 }

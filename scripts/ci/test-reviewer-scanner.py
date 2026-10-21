@@ -3570,6 +3570,33 @@ def assert_multiline_locator_assertions() -> None:
         assert "locator.spec.mts:11:" not in locator
 
 
+def assert_scanner_statement_boundaries() -> None:
+    with tempfile.TemporaryDirectory(prefix="e2e-reviewer-statement-boundaries-") as temp:
+        root = Path(temp)
+        for name in (
+            "assertion-statement-boundaries.spec.ts",
+            "cypress-action-statement-boundaries.cy.ts",
+        ):
+            shutil.copyfile(EVAL_FILES / name, root / name)
+        result = scan_path(root)
+        assert result.returncode == 1, result.stdout
+        truthy = section(result.stdout, "[P0] #4f Locator always-true assertion")
+        prefix = "assertion-statement-boundaries.spec.ts"
+        for line in (14, 15, 18):
+            assert f"{prefix}:{line}:" in truthy, result.stdout
+        for line in (6, 8, 9, 10, 11, 13):
+            assert f"{prefix}:{line}:" not in truthy, result.stdout
+        continued = section(
+            result.stdout,
+            "[P1?][LLM-TRIAGE] #10f Cypress action followed",
+        )
+        prefix = "cypress-action-statement-boundaries.cy.ts"
+        for line in (5, 7, 8, 10, 16):
+            assert f"{prefix}:{line}:" in continued, result.stdout
+        for line in (4, 6, 14):
+            assert f"{prefix}:{line}:" not in continued, result.stdout
+
+
 def assert_locator_identifier_requires_provenance() -> None:
     with tempfile.TemporaryDirectory(prefix="e2e-reviewer-locator-provenance-") as temp:
         root = Path(temp)
@@ -7436,6 +7463,7 @@ def main() -> None:
         assert_private_temp_storage_ignores_ambient_tmpdir,
         assert_python3_prerequisite_binding,
         assert_multiline_locator_assertions,
+        assert_scanner_statement_boundaries,
         assert_locator_identifier_requires_provenance,
         assert_pom_member_truthiness_is_triage_only,
         assert_arbitrary_conditional_assertions_are_triage,

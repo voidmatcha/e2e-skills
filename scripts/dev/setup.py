@@ -4,8 +4,9 @@
 
 Project configuration is planned and collision-checked before global writes.
 Official agents are generated against a temporary config, never the user's
-executable config. No tests, browsers, project dependency installs, or MCP
-servers run during setup. Restart/approval and live tool discovery are separate.
+executable config. Normal installation runs no tests, browsers or MCP servers.
+The explicit --check diagnostic starts the trusted local MCP for tool discovery
+only; host approval and active-session readiness remain separate.
 """
 
 import argparse
@@ -13,6 +14,9 @@ import json
 import os
 from pathlib import Path
 import re
+import selectors
+import signal
+import time
 import shlex
 import subprocess
 import sys
@@ -120,7 +124,7 @@ def plan_mcp(plan, project, host, node, cli, config):
     plan[target] = (before, content)
 
 
-def project_plan(project, host, env, dry_run):
+def project_dependencies(project):
     node = next((Path(p).resolve() for p in NODE_PATHS if Path(p).is_file() and os.access(p, os.X_OK)), None)
     if node is None:
         raise ValueError("no Node executable found at a standard system or Homebrew location")
@@ -140,6 +144,11 @@ def project_plan(project, host, env, dry_run):
     config = next((project / ("playwright.config" + ext) for ext in (".ts", ".js", ".mts", ".mjs", ".cts", ".cjs") if (project / ("playwright.config" + ext)).is_file()), None)
     if config is None:
         raise ValueError("--project must name the directory containing playwright.config.*")
+    return node, cli, config
+
+
+def project_plan(project, host, env, dry_run):
+    node, cli, config = project_dependencies(project)
     plan = {}
     plan_mcp(plan, project, host, node, cli, config)
     print("Official agent generation (temporary workspace): " + shlex.join([str(node), str(cli), "init-agents", "--loop=" + host]))
@@ -209,13 +218,184 @@ def apply_plan(plan):
             target.write_bytes(content)
 
 
+def mcp_tools(command, project, env, timeout=20):
+    """Initialize and list tools only; bound output/time and reap our process group."""
+    process = subprocess.Popen(command, cwd=project, env=env, stdin=subprocess.PIPE,
+                               stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                               start_new_session=True, bufsize=0)
+    os.set_blocking(process.stdin.fileno(), False)
+    deadline = time.monotonic() + timeout
+    buffer = b""
+    total = 0
+    selector = selectors.DefaultSelector()
+    selector.register(process.stdout, selectors.EVENT_READ)
+
+    def send(message):
+        payload = memoryview((json.dumps({"jsonrpc": "2.0", **message}) + "\n").encode())
+        with selectors.DefaultSelector() as writable:
+            writable.register(process.stdin, selectors.EVENT_WRITE)
+            while payload:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0 or not writable.select(remaining):
+                    raise TimeoutError("MCP request timed out")
+                try:
+                    written = os.write(process.stdin.fileno(), payload)
+                    payload = payload[written:]
+                except BlockingIOError:
+                    continue
+
+    def receive(request_id):
+        nonlocal buffer, total
+        while True:
+            while b"\n" in buffer:
+                line, buffer = buffer.split(b"\n", 1)
+                if not line.strip():
+                    continue
+                message = json.loads(line)
+                if not isinstance(message, dict):
+                    raise ValueError("invalid MCP response")
+                if message.get("id") == request_id and ("result" in message or "error" in message):
+                    if "error" in message:
+                        # Do not echo server-controlled error text or project secrets.
+                        raise ValueError("MCP returned a protocol error")
+                    return message["result"]
+            remaining = deadline - time.monotonic()
+            if remaining <= 0 or not selector.select(remaining):
+                raise TimeoutError("MCP startup/tool discovery timed out")
+            chunk = os.read(process.stdout.fileno(), 65536)
+            if not chunk:
+                raise ValueError("MCP exited before tool discovery completed")
+            total += len(chunk)
+            buffer += chunk
+            if total > 16 * 1024 * 1024 or len(buffer) > 4 * 1024 * 1024:
+                raise ValueError("MCP discovery output exceeded its limit")
+
+    try:
+        send({"id": 1, "method": "initialize", "params": {
+            "protocolVersion": "2024-11-05", "capabilities": {},
+            "clientInfo": {"name": "e2e-skills-setup-check", "version": "1"}}})
+        initialized = receive(1)
+        if not isinstance(initialized, dict) or not isinstance(initialized.get("capabilities"), dict):
+            raise ValueError("invalid MCP initialization")
+        send({"method": "notifications/initialized"})
+        names = set()
+        cursors = set()
+        cursor = None
+        for request_id in range(2, 102):
+            send({"id": request_id, "method": "tools/list", "params": {"cursor": cursor} if cursor else {}})
+            result = receive(request_id)
+            if not isinstance(result, dict) or not isinstance(result.get("tools"), list):
+                raise ValueError("invalid MCP tool catalog")
+            for tool in result["tools"]:
+                if not isinstance(tool, dict) or not isinstance(tool.get("name"), str):
+                    raise ValueError("invalid MCP tool entry")
+                names.add(tool["name"])
+            cursor = result.get("nextCursor")
+            if cursor is None:
+                return names
+            if not isinstance(cursor, str) or not cursor or len(cursor) > 4096 or cursor in cursors:
+                raise ValueError("invalid MCP pagination")
+            cursors.add(cursor)
+        raise ValueError("MCP pagination exceeded its limit")
+    finally:
+        selector.close()
+        # Only the diagnostic's newly created group is terminated, never a host MCP.
+        try:
+            try:
+                os.killpg(process.pid, signal.SIGTERM)
+            except ProcessLookupError:
+                pass
+            try:
+                process.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                pass
+        finally:
+            # A server can exit while leaving its own descendants alive.
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            process.wait(timeout=2)
+        for stream in (process.stdin, process.stdout):
+            stream.close()
+
+
+def check_setup(project, host, env):
+    """Check this installer's project config without installing or changing files."""
+    report = {"status": "CONFIG_MISSING", "server": "not_checked",
+              "session": "unverified", "approval": "unknown"}
+    target = project / (".codex/config.toml" if host == "codex" else ".mcp.json")
+    try:
+        safe_path(target)
+        if not target.is_file():
+            report["next"] = "Run the installer with --project to prepare project MCP configuration."
+            return report
+        parsed = tomllib.loads(target.read_text()) if host == "codex" else json.loads(target.read_text())
+        server = parsed.get("mcp_servers" if host == "codex" else "mcpServers", {}).get("playwright-test")
+        if not isinstance(server, dict):
+            report["next"] = "The project config has no playwright-test server; review setup or host-level configuration."
+            return report
+        if server.get("enabled") is False:
+            report.update(status="CONFIG_DISABLED", next="Review the disabled playwright-test server; no settings were changed.")
+            return report
+        required = {"planner_setup_page", "planner_save_plan", "generator_setup_page", "generator_write_test"}
+        enabled = server.get("enabled_tools")
+        if required.intersection(server.get("disabled_tools", [])) or (enabled is not None and not required.issubset(enabled)):
+            report.update(status="TOOLS_BLOCKED", next="Required planner/generator tools are excluded by the project configuration.")
+            return report
+        if host == "claude":
+            for relative in (".claude/settings.json", ".claude/settings.local.json"):
+                settings_path = project / relative
+                safe_path(settings_path)
+                if settings_path.is_file():
+                    settings = json.loads(settings_path.read_text())
+                    if "playwright-test" in settings.get("disabledMcpjsonServers", []):
+                        report.update(status="CONFIG_DISABLED", next="Project Claude settings disable playwright-test; review them in /mcp.")
+                        return report
+        # Never execute an arbitrary replacement from a project MCP config. Match
+        # the installed local CLI and config against the installer's dry plan.
+        node, cli, config = project_dependencies(project)
+        expected_plan = {}
+        plan_mcp(expected_plan, project, host, node, cli, config)
+        expected_raw = expected_plan[target][1].decode()
+        expected = (tomllib.loads(expected_raw)["mcp_servers"]["playwright-test"] if host == "codex"
+                    else json.loads(expected_raw)["mcpServers"]["playwright-test"])
+        command = [expected["command"], *expected["args"]]
+    except (ValueError, OSError, TypeError, AttributeError):
+        report.update(status="CONFIG_ERROR", next="Project MCP configuration is invalid or differs from this installer; review it without overwriting existing settings.")
+        return report
+    report["server"] = "checking"
+    try:
+        names = mcp_tools(command, project, env)
+    except (ValueError, OSError, subprocess.SubprocessError, TimeoutError):
+        report.update(status="SERVER_ERROR", server="failed", next="MCP did not complete initialize/tools/list. Check the local Playwright installation and project config; this does not establish an approval problem.")
+        return report
+    missing = sorted(required - names)
+    if missing:
+        report.update(status="TOOLS_MISSING", server="connected", missing_tools=missing,
+                      next="The server responded but required official planner/generator tools are missing.")
+        return report
+    report.update(status="SERVER_VERIFIED", server="connected", required_tools=sorted(required),
+                  next="Restart the host in this trusted project if needed. Check /mcp and the active session's tool catalog for generator_write_test; complete any host approval. Server verification does not prove session readiness.")
+    return report
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", required=True, choices=("claude", "codex"))
     parser.add_argument("--project", type=Path, help="existing Playwright config directory; omit for skills/agents only")
     parser.add_argument("--dry-run", action="store_true", help="preview without executing installers or project code")
+    parser.add_argument("--check", action="store_true", help="check configured local MCP via initialize/tools/list; no installs or tool calls; executes trusted project code")
     opts = parser.parse_args(argv)
+    if opts.check and (opts.project is None or opts.dry_run):
+        parser.error("--check requires --project and cannot be combined with --dry-run")
     env = clean_env()
+    if opts.check:
+        if not opts.project.is_dir():
+            raise ValueError("--project is not an existing directory")
+        report = check_setup(opts.project.resolve(), opts.host, env)
+        print(json.dumps(report, indent=2))
+        return 0 if report["status"] == "SERVER_VERIFIED" else 1
     dedicated_preflight(opts.host, env)
     plan = {}
     if opts.project is not None:
@@ -250,7 +430,10 @@ def main(argv=None):
         print("No project config executed, no seed/spec files copied, and no tests or browsers run.")
         print("Use the project's existing auth/seed fixtures; browser availability remains unchecked.")
         print("Restart the host in this trusted project, approve the MCP tools, and confirm generator_write_test is visible.")
-        print("Live agent/tool discovery is NOT verified by installation.")
+        print("Installation complete; generator session readiness remains unverified.")
+        print("Check the server in this trusted project (executes project code, no tool calls): " +
+              shlex.join(["bash", str(ROOT / "install.sh"), "--host", opts.host, "--project", str(opts.project.resolve()), "--check"]))
+        print("Do not infer approval is the cause of missing tools; distinguish configuration, server startup, and host/session discovery.")
     else:
         print("Playwright agents/MCP not configured; rerun with --project to prepare them.")
     return 0

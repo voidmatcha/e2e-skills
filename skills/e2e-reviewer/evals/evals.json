@@ -1253,6 +1253,21 @@
         "False-positive guard: line 2 uses exact string matching by default and must not be flagged for omitting exact:true",
         "False-positive guard: line 8 is a suitably anchored regex; ByRole has no exact option for the accessible name"
       ]
+    },
+    {
+      "id": 77,
+      "prompt": "Review evals/files/assertion-statement-boundaries.spec.ts and evals/files/cypress-action-statement-boundaries.cy.ts. Keep each assertion subject with its own matcher and each Cypress continuation with the candidate action; do not execute project code.",
+      "expected_output": "Report real Locator-nullness/truthiness assertions as #4f P0 and actual continued Cypress action chains as #10f candidates. Do not borrow a later value assertion's nullness matcher or another command's continuation.",
+      "files": [
+        "evals/files/assertion-statement-boundaries.spec.ts",
+        "evals/files/cypress-action-statement-boundaries.cy.ts"
+      ],
+      "assertions": [
+        "True positives: assertion-statement-boundaries.spec.ts lines 14, 15 and 18 assert nullness/truthiness of a Locator, including a multiline assertion; report #4f P0",
+        "False-positive guards: assertion-statement-boundaries.spec.ts lines 6, 9 and 11 await real visibility assertions; do not combine them with later box nullness checks at lines 8, 10 or 13",
+        "True positives: cypress-action-statement-boundaries.cy.ts lines 5, 7, 8, 10 and 16 continue their own actions into assertions, including balanced nested action arguments and a second action on the same line; retain #10f triage",
+        "False-positive guards: cypress-action-statement-boundaries.cy.ts lines 4, 6 and 14 end independent actions; neither a semicolon nor semicolonless new cy.get command can supply a continuation for the preceding action"
+      ]
     }
   ]
 }

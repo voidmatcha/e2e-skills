@@ -28,9 +28,12 @@ THIN_MAX_BYTES = 2500
 # scripts/evals/generator-value/notepad-official-pair-v4/RESULT.md
 # (one actual defining-tool pair, six native normal/fault/recovery cells).
 # This is one direct-actor effect case, not native-child or cross-app lift.
-THIN_SHA256 = "49425994fbddd05d3178cd57150f2589fcbd1c6ce4f2004b943b795c9cb5b83b"
+# Source-contract comparison against Playwright 1.64.0 aligns layout/titles and
+# leaves execution/repair with the parent. Retained separately as
+# postrelease-20261021/generator-official-alignment-v1; no quality lift claimed.
+THIN_SHA256 = "4dff3e824f42681e99b0673b6ed22be99885863d1605bacf7246b57ccec6a798"
 
-ALLOWED_TOP_LEVEL = {"SKILL.md", "thin-rules.md", "agents", "evals", "LICENSE", "NOTICE"}
+ALLOWED_TOP_LEVEL = {"SKILL.md", "thin-rules.md", "setup-guide.md", "agents", "evals", "LICENSE", "NOTICE"}
 REMOVED_REFERENCES = (
     "best-practices.md", "code-rules.md", "scenario-design.md",
     "verification-rules.md", "exploration-preflight.md", "playwright-agents.md",
@@ -62,13 +65,15 @@ REQUIRED_STATEMENTS = {
     "monorepo package named": "Monorepo: report the config's owning package.",
     "already running server is reported": "Report host-started servers.",
     "post-delegation origin check": "Inspect executable navigation/request destinations in specs, called helpers/hooks/config and generator output/redirects.",
-    "Claude Code subagent by name": "invoke the installed subagent by name",
+    "Claude Code subagent by name": "invoke the installed official planner/generator subagent by name and await its result before continuing",
+    "Claude Code execution mode fallback": "prefer foreground when supported, otherwise wait on the tracked background task",
     "Codex spawn session-wide MCP": "spawn a child that follows the installed definition",
     "readiness routes": "Ready: section 3. Not ready: section 4.",
     "guide then stop": "Show this guide and stop.",
     "guide is not executed": "Do not run it, write no agent or MCP configuration, install nothing, write no specs",
+    "guide mock proposal is conditional": "Suggest a new mock only as an optional alternative when the scenario would write to a real backend and an isolated test-data boundary cannot be established.",
     "guide step init-agents": "`npx --no-install playwright init-agents --loop=<claude|codex>`",
-    "guide step MCP declaration": "Declare `playwright-test` (`npx playwright run-test-mcp-server`) in the host with tool approval",
+    "guide step MCP declaration": "Declare `playwright-test` (`npx --no-install playwright run-test-mcp-server`) in the host with tool approval",
     "guide says init-agents writes repo files": "Writes repo files (agents, `specs/README.md`, seed spec)",
     "guide says the skill never runs init-agents": "this skill never runs it",
     "guide Claude Code step is the .mcp.json approval": "Claude Code: `init-agents` wrote `.mcp.json`; approve its prompt.",
@@ -89,8 +94,8 @@ REQUIRED_STATEMENTS = {
     "scanner blocked": "P0 or P1 left or scan not clean: report BLOCKED, never claim completion.",
     "stay on approved origin": "Stay on the approved origin",
     "baseURL unknown asks": "unknown: ask",
-    "loopback frontend insufficient": "Before any planner/generator/browser action, including reads: confirm frontend, API, database and environment form a named disposable stack via non-sensitive evidence or scoped user information; unknown: BLOCKED.",
-    "write reset check": "Before rerunning writes, confirm the stack can be reset.",
+    "loopback frontend insufficient": "Before any planner/generator/browser action, including reads: identify the existing dev/test stack and scenario-used services via non-sensitive evidence or scoped user information; unknown relevant scope: BLOCKED. Reuse its real test backend or existing mocks; require no new mock server or deployment. For writes, confirm isolated test data and cleanup/reset; read-only scenarios need no reset. Unused API/database: N/A.",
+    "write reset check": "Before rerunning writes, confirm test data can be reset or cleaned up.",
     "delegation continues to scanner": "Apply section 5 to its output.",
     "scanner skipped is incomplete": "Skipped gate/run: not complete.",
     "approved scoped run": "Run the approved test command",
@@ -164,6 +169,21 @@ def main() -> None:
     if hashlib.sha256(thin_bytes).hexdigest() != THIN_SHA256:
         fail("thin-rules.md differs from the pinned product rules; update the pin only with retained comparison evidence")
 
+    thin_text = thin_bytes.decode("utf-8")
+    for clause in (
+        "Match each test title to its approved scenario name",
+        "one test per spec file",
+        "describe matching the top-level plan item",
+        "Return generated files to the parent",
+        "bounded repair loop to the parent under SKILL.md section 5",
+    ):
+        if clause not in thin_text:
+            fail(f"official-generator handoff is missing {clause!r}")
+    for conflict in ("Group related behaviours of one screen in one spec file",
+                     "fix failures before finishing"):
+        if conflict in thin_text:
+            fail(f"thin rules conflict with official layout or parent-owned validation: {conflict!r}")
+
     entries = {path.name for path in SKILL_DIR.iterdir()}
     if entries != ALLOWED_TOP_LEVEL:
         fail(f"skill directory must hold exactly {sorted(ALLOWED_TOP_LEVEL)}, found {sorted(entries)}")
@@ -182,9 +202,18 @@ def main() -> None:
     if meta.get("metadata", {}).get("version") != plugin_version:
         fail("metadata.version must equal the plugin version")
 
+    setup_guide = (SKILL_DIR / "setup-guide.md").read_text()
+    if "Read `setup-guide.md`" not in text:
+        fail("missing on-demand setup guide routing")
     for label, needle in REQUIRED_STATEMENTS.items():
-        if needle not in text:
+        surface = text + setup_guide if label.startswith("guide ") else text
+        if needle not in surface:
             fail(f"SKILL.md missing required statement: {label} ({needle!r})")
+    for clause in ("No spec files alone is not missing setup", "No Playwright dependency or config",
+                   "existing package manager", "does not block generation or the bundled scanner",
+                   "optional ESLint as skipped, not lint-clean", "do not install plugins"):
+        if clause not in setup_guide:
+            fail(f"setup guidance missing {clause!r}")
     # The skill names the install commands only to forbid them.
     if FORBIDDEN_COMMANDS.search(text.replace("no `npm install`", "").replace("no `playwright install`", "")):
         fail("SKILL.md must not issue install commands")
@@ -212,7 +241,7 @@ def main() -> None:
     for sibling in re.findall(r"`?([A-Za-z0-9_./-]+\.md)`?", text):
         if sibling.startswith(".claude/agents/") or sibling == "specs/README.md":
             continue  # files init-agents installs or writes, not shipped files
-        if sibling.rsplit("/", 1)[-1] not in {"thin-rules.md", "SKILL.md"}:
+        if sibling.rsplit("/", 1)[-1] not in {"thin-rules.md", "SKILL.md", "setup-guide.md"}:
             fail(f"SKILL.md references an unshipped file: {sibling}")
     safety = text.split("## 1.")[1].split("## 2.")[0]
     if "Before any planner/generator/browser action, including reads" not in safety:
@@ -246,6 +275,8 @@ def main() -> None:
                 fail(f"eval {entry['id']} asserts on removed file {name}")
     # Each safety gate needs an eval that asserts it plus a false-positive guard.
     gates = {
+        "Claude Code official-agent wait": ("claude code official delegation awaits result", "official", "awaits", "foreground", "background", "not done"),
+        "existing dev server reuse": ("reuse an existing development stack", "real local api/database", "mock", "n/a", "shared non-test data"),
         "command approval": ("approval before starting webserver.command", "exact", "one yes"),
         "repo agents untrusted": ("repo-supplied agent", "init-agents", "repo-supplied"),
         "baseURL mismatch refusal": ("effective baseurl", "does not run", "approved origin"),

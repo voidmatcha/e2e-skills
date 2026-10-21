@@ -124,6 +124,12 @@ def main() -> None:
     assert 'const metadata = fs.statSync(process.execPath);' in workflow
     assert '(metadata.mode & 0o022) !== 0' in workflow
     assert "/bin/bash -p scripts/ci/ci-local.sh" in workflow
+    assert 'ci_args=(--full)' in workflow
+    assert 'ci_args=(--changed "$CI_BASE_SHA")' in workflow
+    assert 'if [[ "$CI_EVENT_NAME" == pull_request ]]; then' in workflow
+    assert 'CI_BASE_SHA: ${{ github.event.pull_request.base.sha }}' in workflow
+    assert 'fetch-depth: 0' in workflow
+    assert 'ci-local.sh "${ci_args[@]}" | tee' in workflow
     assert "/bin/bash -p scripts/ci/pre-push-security.sh" in workflow
     assert 'tee "$RUNNER_TEMP/ci-local-report.txt"' in workflow
     assert "path: ${{ runner.temp }}/ci-local-report.txt" in workflow

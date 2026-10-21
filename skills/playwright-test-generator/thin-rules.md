@@ -14,6 +14,6 @@ description: Apply a compact checklist for stable Playwright locators, meaningfu
 - [ ] For an operation with an explicit ownership or filtering boundary, include an unaffected witness outside that boundary and verify that it remains unchanged.
 - [ ] Wait for an observable condition, never a hard sleep or `waitForTimeout`; readiness varies across machines.
 - [ ] Reject vacuous checks, including locator truthiness and constant assertions such as `expect(true)`; an assertion must fail when the promised outcome is absent.
-- [ ] Give every test a title describing its action and expected behaviour; never use generic numbered placeholders because failures need useful names.
-- [ ] Group related behaviours of one screen in one spec file while keeping tests independent; this makes coverage and shared setup readable.
-- [ ] Run the generated tests at least once with the project's existing command and fix failures before finishing; execution reveals errors that source inspection misses.
+- [ ] Match each test title to its approved scenario name; resolve unclear or generic names in the plan before generation, rather than silently renaming scenarios.
+- [ ] Follow the official generator layout: one test per spec file, a filesystem-friendly scenario filename, and a describe matching the top-level plan item; keep scenarios independent.
+- [ ] Return generated files to the parent for origin checks, scanner gate and approved scoped execution; leave failure diagnosis and the bounded repair loop to the parent under SKILL.md section 5.

@@ -13,6 +13,8 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # The changed-file selector needs the PR merge base.
 
       # Hosted runners expose Node from a versioned toolcache path. The raw-ARIA
       # launcher deliberately ignores PATH and accepts only fixed system paths,
@@ -70,10 +72,17 @@ jobs:
 
       - name: Run convention and security checks
         shell: /bin/bash --noprofile --norc -p -e -o pipefail {0}
+        env:
+          CI_EVENT_NAME: ${{ github.event_name }}
+          CI_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
+          ci_args=(--full)
+          if [[ "$CI_EVENT_NAME" == pull_request ]]; then
+            ci_args=(--changed "$CI_BASE_SHA")
+          fi
           # Keep generated output outside the checkout so the disposable
           # parity proof sees a stable publishable source snapshot.
-          /bin/bash -p scripts/ci/ci-local.sh | tee "$RUNNER_TEMP/ci-local-report.txt"
+          /bin/bash -p scripts/ci/ci-local.sh "${ci_args[@]}" | tee "$RUNNER_TEMP/ci-local-report.txt"
 
       - name: Upload CI report
         if: always()

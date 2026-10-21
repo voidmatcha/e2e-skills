@@ -1738,7 +1738,7 @@ contract_re = re.compile(
 )
 contract_hashes = {
     "README.md": "cbbd4e1b91f895b712d8d3aa042b1fccb8d76de80bcf4cd505388b9c51c99232",
-    "README.ko.md": "a9d9299e581098d3a9c1c840f25fae0e32200b973f5bbed6fffaae0352fd885b",
+    "README.ko.md": "8f6f8bc1aeceef6dd52379ac7ddcf20ee687c30063a38d0998f392d66ef85af2",
     "README.ja.md": "1495195118011f8c46f2ca210c708aecb1bf65dcbe15730376b7c67f672e0b60",
     "README.zh-cn.md": "5a5f90af2b35f7ddae068f6618a5efc1f7106e230ac6a89a5c97493542782b3b"
 }
@@ -1759,7 +1759,7 @@ read_scope_re = re.compile(
 )
 read_scope_hashes = {
     "README.md": "9209cac05d579471fd256711cef1dbf6f76d65b8b562cf04ca187471a82d100c",
-    "README.ko.md": "7c523daf39e9c6a4629551d5ff4028b71ab373286cdf968df825ceb4ab559983",
+    "README.ko.md": "f2acdd5b643cf521142015c2ae10a762ec4e43401b09c7bad8b4c7bca7852518",
     "README.ja.md": "e3ff750d899a3d4d63f3df80c25330b1528e71c297c793ba05ecc22f0aefb55e",
     "README.zh-cn.md": "845d90bae16c9b33eba5de39b18c20a088c65fd8643cde55f1fa175b59c87c8f",
 }

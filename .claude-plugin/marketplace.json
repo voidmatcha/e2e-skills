@@ -8,7 +8,7 @@
       "name": "e2e-skills",
       "source": "./",
       "description": "Four agent skills for Playwright and Cypress end-to-end tests: generate new Playwright specs through the installed official Playwright agents with a short rules checklist and a scanner gate, review existing specs or PR diffs, and debug failed runs.",
-      "version": "3.0.0",
+      "version": "3.0.1",
       "author": {
         "name": "YONGJAE LEE"
       },

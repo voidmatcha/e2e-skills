@@ -120,16 +120,16 @@ Because this run reports P0 findings, `scan.sh` exits 1.
 
 ## Talk: Can You Trust E2E Tests That Pass?
 
-Starting with tests that pass while missing defects, the talk covers combining lint with LLM review, verification through assertion mutation and app-fault injection, benchmark results, and merged open-source fixes. Click the cover to read the slides.
+Starting with cases where tests pass despite bugs, the talk covers combining lint with LLM review, verification through assertion mutation and app-fault injection, benchmark results, and open-source contributions.
 
 <p align="center">
-<a href="assets/talks/awskrug-e2e-2026-en.pdf">
+<a href="https://voidmatcha.art/talks/awskrug-e2e-2026-en">
   <img src="docs/assets/talk-cover-en.png" alt="Talk: Can You Trust E2E Tests That Pass?" width="640" />
 </a>
 </p>
 
 <p align="center">
-  <a href="assets/talks/awskrug-e2e-2026-en.pdf">Read the slides (English PDF)</a>
+  <a href="https://voidmatcha.art/talks/awskrug-e2e-2026-en">Read the slides (English)</a>
 </p>
 
 ## Install and try it
@@ -139,12 +139,14 @@ Starting with tests that pass while missing defects, the talk covers combining l
 To include test generation, paste the prompt below into Claude Code or Codex and identify your existing local Playwright project:
 
 ```text
-Install https://github.com/voidmatcha/e2e-skills using its install.sh for my current host and Playwright project.
+Install https://github.com/voidmatcha/e2e-skills using its install.sh for my current host and Playwright project. Run the printed --check command when authorized for that exact command, then verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
 ```
 
-1. Tell your agent which existing local Playwright project to use. The installer prepares the skills, dedicated agents, official Playwright agents and project MCP configuration.
-2. Restart your coding agent and approve the MCP tools: the tools that let it control the browser and write Playwright tests.
-3. Ask it to generate tests. The agent checks readiness and guides you through anything missing.
+1. Tell your agent which existing local Playwright project to use. The installer prepares the skills, dedicated agents, official Playwright agents and project MCP configuration, then prints a diagnostic command.
+2. Authorize that exact command in a trusted project: `bash install.sh --host codex --project /path/to/playwright-project --check` (use `--host claude` for Claude Code). It skips installation and configuration writes, starts the configured local MCP server and checks `initialize` and `tools/list` only. It executes project code/configuration, without calling tools, opening a browser or running tests.
+3. If needed, restart your coding agent yourself, complete host trust/approval, and ask it to resume verification. It must see `generator_write_test` in the active session before proceeding with generation.
+
+The diagnostic verifies server tools only; it cannot establish active session tool availability or approval. A missing tool alone does not prove an approval problem.
 
 After this setup, you do not need to repeat the manual installation steps. Use the [installation guide](docs/installation.md) only for prerequisites, conflicts or manual setup.
 
@@ -216,9 +218,9 @@ The bundled shell scripts and artifact readers target conventional macOS/Linux l
 
 The generator prepends `thin-rules.md` and safety instructions to the official planner and generator, then runs the reviewer scanner and the new tests. It installs nothing, changes no agent or MCP configuration, and uses no CLI fallback or healer. Missing configuration is reported with setup guidance.
 
-Generation uses the loopback addresses common in local development (`localhost`, `127.0.0.1`, or `::1`). Before any browser action, including reads, the frontend, API, database and environment must form a named disposable stack. Executable navigation and request destinations must resolve to approved origins, matching scheme, hostname and effective port; separately approved loopback API destinations are allowed. Other or unresolved destinations are BLOCKED. These checks do not provide browser-wide origin containment.
+Generation uses the loopback addresses common in local development (`localhost`, `127.0.0.1`, or `::1`). Reuse your approved development server and its existing test backend or mocks. Before browser work, confirm only the services the scenario uses. Writes require isolated test data and cleanup or reset; read-only scenarios need no reset. A new mock server or deployment is not required. Unused API or database services are N/A; shared or production data remain ineligible. Executable navigation and request destinations must resolve to approved origins, matching scheme, hostname and effective port; separately approved loopback API destinations are allowed. Other or unresolved destinations are BLOCKED. These checks do not provide browser-wide origin containment.
 
-Only proven generation errors permit up to two parent-owned repairs. Required outcomes and expected values stay intact; writes are safely reset and origin/scanner gates repeated using the same approved execution method. Product defects, uncertain causes, and remaining failures stay BLOCKED. See the [generator contract](skills/playwright-test-generator/SKILL.md) for the full procedure.
+Only proven generation errors permit up to two parent-owned repairs. Required outcomes and expected values stay intact; test data is safely cleaned up or reset before repeating writes and origin/scanner gates repeated using the same approved execution method. Product defects, uncertain causes, and remaining failures stay BLOCKED. See the [generator contract](skills/playwright-test-generator/SKILL.md) for the full procedure.
 
 Debugger and probe execution require a trusted project and approval of the exact command, including environment variables and flags. Reports identify skipped checks; mutation and app-fault probes are optional follow-ups, never reported as measured without execution.
 
@@ -375,6 +377,8 @@ Tier 3 is the bundled fallback. Optional ESLint and ast-grep tiers add precision
 
 `eslint-plugin-playwright` and `eslint-plugin-cypress` catch common test-code mistakes. The `e2e-skills` scanner also uses these plugins as an optional checking layer.
 
+This project also contributed the `no-unnecessary-assertions` rule to `eslint-plugin-playwright` ([merged PR #470](https://github.com/mskelton/eslint-plugin-playwright/pull/470)). It catches assertions that check only whether a Locator object exists, rather than application state.
+
 Plugin execution requires your explicit permission; the bundled checks run without it. On top of the plugin rules, `e2e-skills` provides:
 
 - Its own code checks to complement the plugin rules
@@ -403,7 +407,7 @@ For non-public benchmark runs, `--isolation-wrapper` is a required hook, not pro
 
 ### Does this replace Playwright or Cypress test execution?
 
-No. Run the application and its real E2E suite after every change. This bundle reviews test quality, generates Playwright coverage, and diagnoses existing failures; it is not a test runner.
+No. This bundle reviews test quality, generates Playwright coverage, and diagnoses existing failures; it is not a test runner.
 
 ### Can it debug tests that fail only in CI?
 

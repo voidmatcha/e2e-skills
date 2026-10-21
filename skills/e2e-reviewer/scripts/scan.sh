@@ -5026,9 +5026,17 @@ cypress_action_chain_hit_matches() {
   file=${hit%%:*}
   rest=${hit#*:}
   line=${rest%%:*}
-  code=$(bounded_executable_source "$file" "$line" "$((line + 12))")
+  # The candidate action must be on this line. A later action inside the
+  # lookahead window cannot supply its continuation for an earlier command.
+  lexical_target_line "$hit" |
+    scanner_rg -q '[.](click|type|check|uncheck|select|selectFile|trigger|scrollIntoView)[[:space:]]*[(]' || return 1
+  # Preserve newlines so only actions on the candidate line can start the
+  # match, including a second action on that same line. Balanced arguments
+  # then bind the continuation to that action instead of a later command.
+  code=$(source_executable_code "$file" |
+    awk -v first="$line" -v last="$((line + 12))" 'NR >= first && NR <= last { print } NR > last { exit }')
   printf '%s\n' "$code" |
-    scanner_rg -qP "[.](?:click|type|check|uncheck|select|selectFile|trigger|scrollIntoView)[[:space:]]*[(][^;]{0,1200}[)][[:space:]]*[.][[:space:]]*(?:should|and|click|type|check|uncheck|select|trigger)[[:space:]]*[(]"
+    scanner_rg -UqP '\A[^\n]*[.](?:click|type|check|uncheck|select|selectFile|trigger|scrollIntoView)[[:space:]]*(?<args>\((?:[^()]++|(?&args))*\))[[:space:]]*[.][[:space:]]*(?:should|and|click|type|check|uncheck|select|trigger)[[:space:]]*[(]'
 }
 
 # Reconstruct a bounded assertion starting at the matched expect( line. The
@@ -5119,6 +5127,14 @@ locator_assertion_source() {
       }
     }
   ' "$file" 2>/dev/null
+}
+
+# #4f needs a subject and matcher from the same assertion. The shared bounded
+# collector also serves catch/credential rules and may include later statements
+# in semicolonless source; do not borrow a later value assertion's matcher.
+locator_truthiness_assertion_source() {
+  locator_assertion_source "$1" "$2" |
+    scanner_rg -oP '^[[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*(?:[[:space:]]*[.][[:space:]]*expect)?[[:space:]]*(?<args>\((?:[^()]++|(?&args))*\))[[:space:]]*(?:[.][[:space:]]*(?:toBeTruthy|toBeDefined)[[:space:]]*\([[:space:]]*\)|[.][[:space:]]*not[[:space:]]*[.][[:space:]]*(?:toBeNull|toBeUndefined)[[:space:]]*\([[:space:]]*\)|[.][[:space:]]*not[[:space:]]*[.][[:space:]]*to[[:space:]]*[.][[:space:]]*equal[[:space:]]*\([[:space:]]*null[[:space:]]*\)|[.][[:space:]]*not[[:space:]]*[.][[:space:]]*to[[:space:]]*[.][[:space:]]*be[[:space:]]*[.][[:space:]]*null)'
 }
 
 playwright_expect_binding() {
@@ -5395,7 +5411,7 @@ locator_assertion_hit_matches() {
   file=${hit%%:*}
   rest=${hit#*:}
   line=${rest%%:*}
-  code=$(locator_assertion_source "$file" "$line")
+  code=$(locator_truthiness_assertion_source "$file" "$line")
   if printf '%s\n' "$code" |
     scanner_rg -q '^[[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*(\s*\.\s*expect)?\s*\(\s*page\.(locator|getBy[A-Z][A-Za-z]*)\s*\(.*\)\s*(\.toBeTruthy\s*\(\s*\)|\.toBeDefined\s*\(\s*\)|\.not\.toBeNull\s*\(\s*\)|\.not\.toBeUndefined\s*\(\s*\)|\.not\.to\.equal\s*\(\s*null\s*\)|\.not\.to\.be\.null)'; then
     direct_shape=1
@@ -5425,7 +5441,7 @@ unresolved_locator_assertion_hit_matches() {
   expect_binding=$(expect_call_binding_at "$hit")
   [[ -n "$expect_binding" ]] || return 1
   source_imports_unresolved_expect_binding "$file" "$expect_binding" || return 1
-  code=$(locator_assertion_source "$file" "$line")
+  code=$(locator_truthiness_assertion_source "$file" "$line")
   printf '%s\n' "$code" |
     scanner_rg -q '^[[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*[[:space:]]*\([[:space:]]*page[.](locator|getBy[A-Z][A-Za-z]*)[[:space:]]*\(.*\)[[:space:]]*\)[[:space:]]*(\.[[:space:]]*toBeTruthy[[:space:]]*\([[:space:]]*\)|\.[[:space:]]*toBeDefined[[:space:]]*\([[:space:]]*\)|\.[[:space:]]*not[[:space:]]*\.[[:space:]]*toBeNull[[:space:]]*\([[:space:]]*\)|\.[[:space:]]*not[[:space:]]*\.[[:space:]]*toBeUndefined[[:space:]]*\([[:space:]]*\))'
 }
@@ -5435,7 +5451,7 @@ wrapped_locator_assertion_hit_matches() {
   file=${hit%%:*}
   rest=${hit#*:}
   line=${rest%%:*}
-  code=$(locator_assertion_source "$file" "$line")
+  code=$(locator_truthiness_assertion_source "$file" "$line")
   printf '%s\n' "$code" |
     scanner_rg -q '^[[:space:]]*[A-Za-z_$][A-Za-z0-9_$]*(\s*\.\s*expect)?\s*\(\s*[A-Za-z_$][A-Za-z0-9_$]*\s*\(\s*page\.(locator|getBy[A-Z][A-Za-z]*)\s*\(.*\)\s*\)\s*\)\s*(\.toBeTruthy\s*\(\s*\)|\.toBeDefined\s*\(\s*\)|\.not\.toBeNull\s*\(\s*\)|\.not\.toBeUndefined\s*\(\s*\))' ||
     return 1
@@ -5449,7 +5465,7 @@ identifier_locator_assertion_hit_matches() {
   file=${hit%%:*}
   rest=${hit#*:}
   line=${rest%%:*}
-  code=$(locator_assertion_source "$file" "$line")
+  code=$(locator_truthiness_assertion_source "$file" "$line")
   printf '%s\n' "$code" |
     scanner_rg -q '[A-Za-z_$][A-Za-z0-9_$]*\s*\(\s*[A-Za-z_$][A-Za-z0-9_$]*[Ll]ocator\s*\)\s*(\.toBeTruthy\s*\(\s*\)|\.toBeDefined\s*\(\s*\)|\.not\.toBeNull\s*\(\s*\)|\.not\.toBeUndefined\s*\(\s*\)|\.not\.to\.equal\s*\(\s*null\s*\)|\.not\.to\.be\.null)' ||
     return 1
@@ -5462,7 +5478,7 @@ member_locator_assertion_hit_matches() {
   file=${hit%%:*}
   rest=${hit#*:}
   line=${rest%%:*}
-  code=$(locator_assertion_source "$file" "$line")
+  code=$(locator_truthiness_assertion_source "$file" "$line")
   printf '%s\n' "$code" |
     scanner_rg -q '[A-Za-z_$][A-Za-z0-9_$]*\s*\(\s*(this|[A-Za-z_$][A-Za-z0-9_$]*[Pp]age)\.[A-Za-z_$][A-Za-z0-9_$]*(Button|Link|Input|Field|Checkbox|Radio|Select|Dialog|Modal|Toast|Banner|Heading|Label|Tab|Menu|Item|Row|Cell|Locator|Element)\s*\)\s*(\.toBeTruthy\s*\(\s*\)|\.toBeDefined\s*\(\s*\)|\.not\.toBeNull\s*\(\s*\)|\.not\.toBeUndefined\s*\(\s*\)|\.not\.to\.equal\s*\(\s*null\s*\)|\.not\.to\.be\.null)'
 }
@@ -5474,7 +5490,7 @@ generic_getby_assertion_hit_matches() {
   line=${rest%%:*}
   # A resolved count/text/attribute is a value read (#4c-4e), not a Locator.
   awaited_locator_value_read_at "$file" "$line" && return 1
-  code=$(locator_assertion_source "$file" "$line")
+  code=$(locator_truthiness_assertion_source "$file" "$line")
   printf '%s\n' "$code" |
     scanner_rg -q '[A-Za-z_$][A-Za-z0-9_$]*\s*\(.*(\.getBy[A-Z][A-Za-z]*|\bgetBy[A-Z][A-Za-z]*)\s*\(.*\)\s*(\.toBeTruthy\s*\(\s*\)|\.toBeDefined\s*\(\s*\)|\.not\.toBeNull\s*\(\s*\)|\.not\.to\.equal\s*\(\s*null\s*\)|\.not\.to\.be\.null)' ||
     return 1

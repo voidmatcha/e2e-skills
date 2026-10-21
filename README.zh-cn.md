@@ -19,7 +19,7 @@
 <p align="center">
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <strong>简体中文</strong>
 </p>
-<!-- README-CANONICAL-REVISION: sha256=2201126083b36a2a54455393e7476b288d152cba987b388e87bcc941f0a12d59; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=76503bbf91d620041574636da32ee71c8fd11b92e67c9d202350c81f1284f638; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` 为 AI 编程 agent 提供四个 skill，用于生成、审查 Playwright/Cypress E2E 测试并诊断失败。skill 是 agent 执行任务时遵循的一组指令。
 
@@ -121,16 +121,16 @@ Summary: 2 total hit(s), 2 P0
 
 ## 演示文稿：通过的 E2E 测试值得信任吗？
 
-从通过却漏掉缺陷的测试案例出发，介绍结合 lint 与 LLM 审查的过程、通过 mutation 和应用缺陷注入进行验证的方法、基准测试结果，以及已合并的开源修复。点击封面即可阅读演示文稿。
+从存在 bug 但测试仍然通过的案例出发，整理了结合 lint 与 LLM 审查的过程、通过 mutation 和应用缺陷注入进行验证的方法、基准测试结果，以及开源贡献成果。
 
 <p align="center">
-<a href="assets/talks/awskrug-e2e-2026-en.pdf">
+<a href="https://voidmatcha.art/talks/awskrug-e2e-2026-en">
   <img src="docs/assets/talk-cover-en.png" alt="演示文稿：通过的 E2E 测试值得信任吗？" width="640" />
 </a>
 </p>
 
 <p align="center">
-  <a href="assets/talks/awskrug-e2e-2026-en.pdf">查看演示文稿（英文 PDF）</a>
+  <a href="https://voidmatcha.art/talks/awskrug-e2e-2026-en">查看演示文稿（英文）</a>
 </p>
 
 ## 安装并试用
@@ -140,12 +140,14 @@ Summary: 2 total hit(s), 2 P0
 如需同时使用测试生成，请在 Claude Code 或 Codex 中输入以下提示，并告知要使用的现有本地 Playwright 项目：
 
 ```text
-Install https://github.com/voidmatcha/e2e-skills using its install.sh for my current host and Playwright project.
+Install https://github.com/voidmatcha/e2e-skills using its install.sh for my current host and Playwright project. Run the printed --check command when authorized for that exact command, then verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
 ```
 
-1. 告诉 agent 要使用哪个现有本地 Playwright 项目。安装程序会准备技能、专用 agent、官方 Playwright agent 和项目 MCP 配置。
-2. 重启所用的编程 agent，并批准 MCP 工具。这些工具让 agent 操作浏览器并编写 Playwright 测试。
-3. 请求生成测试。agent 会检查准备状态，并说明缺少的内容。
+1. 告诉 agent 要使用哪个现有本地 Playwright 项目。安装程序会准备技能、专用 agent、官方 Playwright agent 和项目 MCP 配置，然后输出诊断命令。
+2. 在可信项目中批准执行这一确切命令：`bash install.sh --host codex --project /path/to/playwright-project --check`（Claude Code 使用 `--host claude`）。它跳过安装和配置写入，启动已配置的本地 MCP 服务器，仅检查 `initialize` 和 `tools/list`。它会执行项目代码和配置，但不会调用工具、打开浏览器或运行测试。
+3. 如有需要，请自行重启编程 agent，完成 host 的信任和审批流程，然后让 agent 继续验证。开始生成前，当前会话必须能看到 `generator_write_test`。
+
+诊断只验证服务器提供的工具，无法确认当前会话的工具可用性或审批状态。仅凭工具不可见，不能断定是审批问题。
 
 通过此方式完成设置后，无需重复手动安装步骤。[详细安装指南](docs/installation.md)用于检查前提条件、解决冲突或手动设置。
 
@@ -217,9 +219,9 @@ Debug the failed Cypress report in cypress/reports/.
 
 generator 将 `thin-rules.md` 和安全指令附加到官方 planner 与 generator 后委派，再运行 reviewer scanner 和新测试。它不安装任何内容，不修改 agent 或 MCP 设置，不使用 CLI fallback 或 healer。缺少设置时会提供指南。
 
-生成使用本地开发中常见的 loopback 地址（`localhost`、`127.0.0.1`、`::1`）。包括读取在内的 browser 操作前，frontend、API、database 和整个环境必须组成已命名且可丢弃的栈。实际 navigation 和 request 目的地必须与获批 origin 的 scheme、hostname 和有效 port 一致；允许单独获批的 loopback API 目的地。其他或无法解析的目的地均为 BLOCKED。这些检查不提供 browser 全局 origin 隔离。
+生成使用本地开发中常见的 loopback 地址（`localhost`、`127.0.0.1`、`::1`）。复用已获批的开发服务器及其现有测试 backend 或 mock。browser 操作前只确认场景使用的服务。写入需要隔离的测试数据及清理或重置方法；只读场景不需要重置。无需创建新的 mock 服务器或部署环境。未使用的 API 或 database 标为 N/A；共享数据或生产数据仍不适用。实际 navigation 和 request 目的地必须与获批 origin 的 scheme、hostname 和有效 port 一致；允许单独获批的 loopback API 目的地。其他或无法解析的目的地均为 BLOCKED。这些检查不提供 browser 全局 origin 隔离。
 
-仅在证实为生成错误时，父 agent 才能最多修复两次。必须保留要求的结果和预期值，安全重置写入，并使用相同的获批执行方式重复 origin 和 scanner 检查。产品缺陷、原因不明和剩余失败均保持 BLOCKED。完整流程见 [generator 约定](skills/playwright-test-generator/SKILL.md)。
+仅在证实为生成错误时，父 agent 才能最多修复两次。必须保留要求的结果和预期值，重复写入前安全清理或重置测试数据，并使用相同的获批执行方式重复 origin 和 scanner 检查。产品缺陷、原因不明和剩余失败均保持 BLOCKED。完整流程见 [generator 约定](skills/playwright-test-generator/SKILL.md)。
 
 debugger 和 probe 执行需要可信项目，以及对包括环境变量和 flag 在内的确切命令的批准。报告注明跳过的检查。mutation 和应用 fault probe 是可选后续操作；未执行的结果不会报告为已测量。
 
@@ -376,6 +378,8 @@ Tier 3 是内置 fallback。可选的 ESLint 和 ast-grep tiers 会提高精度�
 
 `eslint-plugin-playwright` 和 `eslint-plugin-cypress` 用于发现测试代码中的常见错误。`e2e-skills` 扫描器也将这两个插件用作可选检查层。
 
+本项目还向 `eslint-plugin-playwright` 贡献了 `no-unnecessary-assertions` 规则，[PR #470 已合并](https://github.com/mskelton/eslint-plugin-playwright/pull/470)。该规则检测仅检查 Locator 对象是否存在、而非应用状态的断言。
+
 执行插件需要用户明确许可；未获许可时仍运行内置检查。在现有插件规则之外，`e2e-skills` 还提供：
 
 - 补充插件规则的自有代码检查
@@ -404,7 +408,7 @@ debuggers 会按稳定的 F1–F15 taxonomy 对 failures 分类。只有在你�
 
 ### 这会替代 Playwright 或 Cypress 测试执行吗？
 
-不会。每次修改后都要运行应用及其真实 E2E suite。这套 bundle 用于审查测试质量、生成 Playwright 覆盖，并诊断已有失败；它不是 test runner。
+不会。这套 bundle 用于审查测试质量、生成 Playwright 覆盖，并诊断已有失败；它不是 test runner。
 
 ### 它能调试只在 CI 中失败的测试吗？
 

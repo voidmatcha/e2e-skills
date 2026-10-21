@@ -23,8 +23,8 @@ Not every change needs the same amount of process. Which tier a change falls int
 
 | Tier | What it covers | What you need |
 | --- | --- | --- |
-| **0 — Docs & typos** | Wording, comments, and typo fixes that do not change installed skill behavior, regardless of file location | Nothing beyond `scripts/ci/review.sh`'s Markdown/link checks passing |
-| **1 — Skill behavior wording** | Any behavior-affecting instruction edit that does not change a pattern ID, F-code, or verdict term, including `skills/*/SKILL.md` and point-of-use procedure files such as `classification-procedure.md`, `safety-procedures.md`, and `semantic-review.md`. A mechanical sub-ID under an existing pattern (for example `#8c` under `#8`) is also Tier 1 when it changes no existing ID, title, or severity and its scanner shape is syntactically certain and contract-tested with a true positive and a false-positive guard; it claims no detection rate | A RED/GREEN contract test proving the old wording violated your intent and the new wording satisfies it (see `scripts/ci/test-routing-contract.py` for a worked example), then `ci-local.sh` green — `scripts/dev/tier1-check.sh` runs that gate for you |
+| **0 — Docs & typos** | Wording, comments, and typo fixes that do not change installed skill behavior, regardless of file location | A passing changed-file CI run; shared security, syntax and document checks still apply |
+| **1 — Skill behavior wording** | Any behavior-affecting instruction edit that does not change a pattern ID, F-code, or verdict term, including `skills/*/SKILL.md` and point-of-use procedure files such as `classification-procedure.md`, `safety-procedures.md`, and `semantic-review.md`. A mechanical sub-ID under an existing pattern (for example `#8c` under `#8`) is also Tier 1 when it changes no existing ID, title, or severity and its scanner shape is syntactically certain and contract-tested with a true positive and a false-positive guard; it claims no detection rate | A RED/GREEN contract test proving the old wording violated your intent and the new wording satisfies it (see `scripts/ci/test-routing-contract.py` for a worked example), then changed-file CI green; `scripts/dev/tier1-check.sh` remains the full-gate alternative |
 | **2 — Taxonomy / decision-surface change** | New or renumbered top-level pattern IDs, F-codes, verdict vocabulary, severity changes, or a delegation-routing decision not yet backed by measured evidence | A new preregistered study preserved on Hugging Face, with its protocol and evidence linked from `benchmarks/STATUS.md`; use the archived routing and stub-echo studies as examples. Required for a new correctness claim about the skills themselves |
 
 Most contributions are Tier 0 or Tier 1. Issues labeled `good first issue` do not require changing frozen studies. The four directories under `skills/` are the product. Current CI and eval harnesses remain in Git with small regression fixtures; historical reports, protocols and frozen inputs live in the pinned Hugging Face snapshot indexed by [benchmark status](benchmarks/STATUS.md).
@@ -50,14 +50,26 @@ git clone --depth 1 https://github.com/calcom/cal.diy testbed/cal.diy
 bash scripts/dev/reinstall-skills.sh
 ```
 
-## Verification gate (must pass before every PR)
+## Verification gate
 
-`ci-local.sh` is the single source of truth for what CI runs. Run both of these and confirm they are green before opening a pull request:
+`ci-local.sh` owns every check command. During development and before a pull request, select checks from the merge-base comparison plus staged, unstaged and nonignored untracked changes:
 
 ```bash
-/bin/bash -p scripts/ci/ci-local.sh          # review checks + drift smoke + 0 P0 smell hits
-/bin/bash -p scripts/ci/pre-push-security.sh # secrets and credential-leak guard
+/bin/bash -p scripts/ci/ci-local.sh --changed origin/main --plan
+/bin/bash -p scripts/ci/ci-local.sh --changed origin/main
+/bin/bash -p scripts/ci/pre-push-security.sh
 ```
+
+`--plan` prints the selected groups and reasons without executing the suites. Shared security, syntax, documentation and contract checks always run during a scoped execution. The selector includes deleted paths and both sides of renames. Shared infrastructure changes, unknown paths or an unavailable comparison select the full suite. Scoped success lists what was omitted and does not claim full validation.
+
+Pull-request CI uses the same selector against the PR base. Main pushes and manual workflow runs execute the full suite. Before a release, run the full suite on the final stable snapshot:
+
+```bash
+/bin/bash -p scripts/ci/ci-local.sh --full
+/bin/bash -p scripts/ci/pre-push-security.sh
+```
+
+No arguments still run the full suite; `--quiet` changes output only. A scoped run does not replace the release gate, the Linux shipped-script checks or the generator host smoke tests required for relevant behavior changes.
 
 `ci-local.sh` runs one Node.js stage and resolves Node from `/opt/homebrew/bin`, `/usr/local/bin`, `/usr/bin`, or `/bin`. If your Node comes from a version manager (nvm, fnm, asdf), point the gate at it explicitly:
 

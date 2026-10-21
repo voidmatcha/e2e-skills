@@ -458,6 +458,35 @@
         "True positive: explicit generated provenance activates immutable approved outcomes and caller-owned V6.",
         "False-positive guard: does not reuse the ordinary handwritten wrong-assertion exception to change Saved to Save or manufacture completion."
       ]
+    },
+    {
+      "id": 34,
+      "title": "Shared hook failure location does not determine fault ownership",
+      "prompt": "Diagnose two ordinary handwritten-test setup failures without executing anything. Case A: the shared setup requests GET /api/warm for valid existing workspace7, expects200, receives500; supplied server source reads row.lifecycle.trim() but the supplied row schema is {id:7,state:'active'}, and the contract requires200/ready:true. Case B: the shared setup installs a static500 stub before the page request, then expects200; supplied app source correctly reads row.state and the same successful-loading contract applies. Group hook fallout; explain ownership and the smallest source-backed fix for each case. Missing-source control: only a500 hook error is supplied, with no handler, stub or contract evidence.",
+      "expected_output": "Consolidates each shared setup failure without treating its stack location as fault ownership. A is a product regression: correct the server's field read and preserve the200 assertion. B is a test fixture defect: correct the success stub, not the application or expectation. Missing-source control retains unknown ownership and names the missing evidence. No executed repair claim.",
+      "files": [],
+      "assertions": [
+        "Case A: diagnoses product regression from the supplied server field mismatch, not a test defect because the failure appears in a hook",
+        "Case A: preserves the correct200 success assertion and does not bypass the shared hook",
+        "Case B: diagnoses test defect from the contradictory static500 stub and corrects only success-path setup",
+        "Groups shared hook fallout rather than one cause per affected or skipped test",
+        "Missing-source control: does not infer product or test ownership from a500 response or hook location alone",
+        "Marks proposed commands recommended; does not claim execution"
+      ]
+    },
+    {
+      "id": 35,
+      "title": "First SSR click is a hydration signal, not causal proof",
+      "prompt": "Diagnose two ordinary handwritten SSR counter tests without execution. Contract: Count starts0, exactly one Increment click after html[data-hydrated=true] must produce Count:1; each click writes data and must not be replayed for readiness. Case A: test clicks at15ms; listeners attach and marker becomes true at80ms; no handler entry for that click. Supplied correct handler increments by1. Case B: listeners attach and marker is true at12ms, test clicks at50ms, handler enters at51ms with count0; supplied handler is if(count<0) setCount(count+1), so count remains0. Both fail their unchanged Count:1 assertion. Identify cause, ownership and minimal fix; preserve the required single click and expected value.",
+      "expected_output": "A is an evidenced F15 readiness defect: wait on the documented true readiness marker before the single click. B is an evidenced product logic defect, not hydration: correct the handler guard and retain the test. SSR/first-action/next-assertion shape alone does not prove F15. No forced clicks, fixed waits, repeated writes or false execution claims.",
+      "files": [],
+      "assertions": [
+        "Case A: classifies F15 from the supplied click-before-listener timeline, not SSR alone",
+        "Case A: adds the documented true readiness wait before the existing single click and preserves Count:1",
+        "Case B: attributes the failure to the supplied count<0 product guard and rejects F15 because the handler was attached and invoked",
+        "Case B: preserves the correct single-click test and Count:1 expectation rather than adding a hydration wait as the repair",
+        "Does not replay the non-idempotent click, weaken the assertion or claim the proposed repair ran"
+      ]
     }
   ]
 }

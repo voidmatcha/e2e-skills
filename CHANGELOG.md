@@ -1,5 +1,31 @@
 # Changelog
 
+## [Unreleased]
+
+## [3.0.1] - 2026-10-21
+
+### Fixed
+
+- Scanner #4f no longer borrows a later assertion's matcher in semicolonless code. Cypress #10f binds continuation checks to the candidate action rather than a later independent command. Regression checks retain genuine findings in both forms.
+
+### Changed
+
+- Claude Code generator routing explicitly invokes the installed official subagent, prefers foreground when supported, and awaits its result before continuing.
+
+- README talk covers and slide links open the hosted presentation pages; bundled PDF copies are removed.
+
+- CI supports conservative changed-file selection with an inspectable plan. Pull requests run relevant suites and mandatory common checks; shared infrastructure changes, unknown paths or missing comparison data select the full suite. Main, manual and release verification retain the full gate, and scoped results identify omitted groups.
+
+- Generator reuses confirmed local development stacks, checking only scenario-used services. Read-only scenarios need no reset; writes require isolated test data and cleanup/reset. It does not require a new mock server or throwaway deployment, and unused services are N/A.
+
+- Generator thin rules follow the official scenario title and single-test file layout. Generated files return to the parent for scanner checks, scoped execution and bounded repairs, removing conflicting child instructions. This is instruction alignment, not a measured quality improvement.
+
+- Generator setup guidance distinguishes a missing E2E runtime from a project with no specs, and treats project lint as optional. The on-demand guide preserves the no-install boundary and explains bundled scanner coverage without claiming skipped ESLint ran.
+
+- The installer prints a `--check` command that verifies the configured local Playwright MCP server through initialization and tool discovery without installing or invoking tools. Diagnostics distinguish missing, disabled, conflicting, unreachable and incomplete setups; active-session availability and host approval remain separate checks.
+
+- Both debuggers distinguish hook failure location from fault ownership and require causal evidence before classifying an SSR first-click failure as F15. Four constructed cases tied with the released instructions; no accuracy or repair advantage was demonstrated.
+
 ## [3.0.0] - 2026-10-21
 
 This is a major version because `playwright-test-generator` stops being a multi-step pipeline and becomes a thin router, and the debugger instructions are minimized. Removed behavior is listed below. Installation commands, pattern IDs `#1`–`#23`/`#3b` and F-codes `F1`–`F15` remain stable. The candidate also includes scanner corrections, narrower evidence rules, richer debugger artifact extraction, and optional reviewer runtime probes. Snapshot validation is recorded below; development evidence does not establish general accuracy improvements.

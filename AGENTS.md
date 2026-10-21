@@ -17,12 +17,14 @@ The repo doubles as a Claude Code plugin (`.claude-plugin/`), a Codex plugin (`.
 
 **Product vs. infrastructure.** The four `skills/` directories above are the product — what a user installs and runs. `scripts/ci/` and the eval harnesses verify the product. Historical research evidence lives in a pinned Hugging Face snapshot; `benchmarks/` keeps its status index and restoration manifest. A typo fix or a small skill-wording change barely touches any of it — see `CONTRIBUTING.md`'s tier table before assuming a change needs the full process below.
 
-## Verification gate (must pass before commit)
+## Verification gate
 
 ```
 [ ] /bin/bash -p scripts/ci/ci-local.sh          # review checks + drift smoke checks + 0 P0 smell hits
 [ ] /bin/bash -p scripts/ci/pre-push-security.sh # secrets and credential leak guard
 ```
+
+For development and pre-commit checks, `ci-local.sh --changed origin/main` selects suites using committed, staged, unstaged and nonignored untracked changes; add `--plan` to preview the selection. Security, syntax and common contracts remain mandatory. Unknown paths, shared infrastructure or an unavailable comparison select the full suite. Scoped success is not full release validation. No arguments or `--full` run the complete suite, which remains required before release.
 
 `ci-local.sh` is the single source of truth for the repository CI mirror (shell syntax, security, parity, evals, public skill surface, framework scope, link integrity, docs orphan check, language, and the E2E smell scan). `ci-local.sh` reaches the security gate through `review.sh`; the explicit `pre-push-security.sh` command above reruns that mandatory gate at the pre-push boundary. If you change a CI check, update `ci-local.sh` first.
 
@@ -80,6 +82,15 @@ Each `skills/<name>/SKILL.md` is the contract. Everything in the skill body shou
 - **Severity-first organization**: tables in SKILL.md, README, and `docs/e2e-test-smells.md` group by P0/P1/P2 in the same order.
 - **English-only public surface**: SKILL.md, README, and `docs/` are English. CI enforces this (`Language` check). Sanctioned exception: root-level `README.<lang>.md` translations (`README.ko.md`, `README.ja.md`, `README.zh-cn.md`) and the language-switcher line in `README.md` that links to them. `README.md` (English) is canonical; translations follow it.
 
+## Benchmark validity (before trusting any arm)
+
+An arm that never used its defining tools makes the comparison meaningless; the official-generator arm was invalid until 2026-10-15 for exactly this reason.
+
+- Count the defining tool calls per cell from rollout or transcript logs. `// spec:` / `// seed:` headers, final summaries, and "delivered" are not evidence.
+- Prove the environment exposes those tools (sandbox, approvals, MCP declared per cell, free ports) with a canary cell before freezing.
+- Gate on content, not a grep for a flag another arm also contains.
+- Report valid-cell counts per arm and the harness version/date a result is valid from; never cite results from invalid attempts, and archive them instead of deleting.
+
 ## Frameworks in Scope
 
 Playwright and Cypress only. The skill does not produce code or advice for Puppeteer, Selenium, WebdriverIO, TestCafe, or Nightwatch. See `docs/framework-scope.md` for the rationale. CI fails on accidental support claims for out-of-scope frameworks.
@@ -124,7 +135,7 @@ bash scripts/ci/codex-smoke.sh
 python3 scripts/ci/check-pending-markers.py # separate release gate
 ```
 
-`ci-local.sh` owns current-product CI and includes the security gate through `review.sh`; run the direct security gate again before pushing. Historical study READMEs in the restored snapshot own their frozen reproduction instructions. Evidence replay downloads the separately pinned source archive, verifies it and builds a temporary Git context; the original commit need not exist locally. Historical CI may require its pinned tokenizer environment. It does not run live models or authorize new benchmark calls.
+`ci-local.sh` owns current-product CI and includes the security gate through `review.sh`; run the direct security gate again before pushing. Pull-request CI uses changed-file selection; main pushes and manual workflows use the full suite. Historical study READMEs in the restored snapshot own their frozen reproduction instructions. Evidence replay downloads the separately pinned source archive, verifies it and builds a temporary Git context; the original commit need not exist locally. Historical CI may require its pinned tokenizer environment. It does not run live models or authorize new benchmark calls.
 
 The hosted `main` workflow reruns the pinned 36-cell browser fault matrix on a disposable runner. Pull-request and local CI remain dependency-free; live model runs and other browser probes are opt-in. For generator behavior changes, use the host smoke procedure in [CONTRIBUTING.md](CONTRIBUTING.md#changing-an-anti-pattern-or-skill-behavior). Run reviewer study arms sequentially under a new preregistered protocol; do not modify a frozen study to test new product bytes.
 

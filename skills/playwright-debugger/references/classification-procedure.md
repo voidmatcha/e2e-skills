@@ -10,7 +10,7 @@ Classification steps:
 2. `duration` near timeout → F1 or F3
 3. CI-only failure → F7 or F8
 4. Passes on retry — spec `outcome` is `flaky` (a trailing `passed` result; cross-check `stats.flaky`) and no SSR first-interaction signature (see step 5) → F1. A flaky outcome is an F1 candidate, not a hard failure.
-5. Action succeeded but the *next* assertion timed out, SSR app, first interaction after `goto` → F15
+5. Action succeeded but the *next* assertion timed out, SSR app, first interaction after `goto` → F15 candidate. Confirm that the action preceded listener attachment; an already-hydrated handler or a different evidenced failure takes precedence.
 6. **F1 vs F7 needs an isolation probe plus causal evidence, not the error text alone.** Both can surface as `TimeoutError` and both can "pass sometimes". Run the probe only after the execution safety gate and the repository execution gate's trust checks have passed (see Prerequisites): the whole target stack is `local/disposable` or an approved non-production test environment, the user explicitly trusts this repository, and both exact commands are approved. The probe replays the test, so the safety gate's rule on replaying non-idempotent writes applies to each repetition as it does to retries. Until both gates pass, or while the failing test performs a non-idempotent write whose system-boundary idempotence is not proven, present the commands as `recommended`; in either case, or if the suite cannot be run, say the probe was not performed and report `CANNOT_VERIFY` between F1 and F7 rather than guessing. Once both gates pass and no unproven non-idempotent write would be replayed, run:
 
    ```bash
@@ -32,7 +32,7 @@ Classification steps:
 
 **Setup-level signals (check before classifying individual tests):**
 
-- **`beforeEach` / fixture failure:** if the error stack points into a hook or a fixture (not the test body) and **every test in the file fails identically**, the bug is in the shared setup — fix the fixture/hook once, not each test. A wall of identical failures across one spec is the tell; don't file N separate findings.
+- **`beforeEach` / fixture failure:** if the error stack points into a hook or a fixture (not the test body) and **every test in the file fails identically**, consolidate the shared setup failure, not each test. A hook is the failure location, not proof of fault ownership: inspect the failed dependency and setup code before choosing a product, test, or environment fix. A wall of identical failures across one spec is the tell; don't file N separate findings.
 - **Sharding / unmerged blob artifacts:** specs that show as "missing"/never-run
   after a `--shard` CI run usually mean the per-shard `blob-report/`
   directories were never merged. These are phantom failures, not real ones —

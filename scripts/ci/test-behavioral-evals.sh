@@ -413,9 +413,10 @@ with tempfile.TemporaryDirectory() as prompt_dir:
 assert (
     "BEGIN_TRUSTED_SKILL_SNAPSHOT playwright-test-generator/thin-rules.md"
 ) in generator_prompt
-# The 3.0.0 router ships exactly one sibling reference; the 2.x pipeline
+# The router ships its thin rules and on-demand setup guide; retired pipeline
 # references live in the archive and must not be snapshotted into prompts.
-assert generator_prompt.count("BEGIN_TRUSTED_SKILL_SNAPSHOT playwright-test-generator/") == 2
+assert "BEGIN_TRUSTED_SKILL_SNAPSHOT playwright-test-generator/setup-guide.md" in generator_prompt
+assert generator_prompt.count("BEGIN_TRUSTED_SKILL_SNAPSHOT playwright-test-generator/") == 3
 assert "BEGIN_TRUSTED_SKILL_SNAPSHOT playwright-test-generator/SKILL.md" in generator_prompt
 for removed in ("best-practices.md", "verification-rules.md", "scenario-design.md"):
     assert f"playwright-test-generator/{removed}" not in generator_prompt

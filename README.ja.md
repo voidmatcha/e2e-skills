@@ -20,7 +20,7 @@
 <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <strong>日本語</strong> | <a href="README.zh-cn.md">简体中文</a>
 </p>
 
-<!-- README-CANONICAL-REVISION: sha256=2201126083b36a2a54455393e7476b288d152cba987b388e87bcc941f0a12d59; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
+<!-- README-CANONICAL-REVISION: sha256=76503bbf91d620041574636da32ee71c8fd11b92e67c9d202350c81f1284f638; bytes=exact-README.md-UTF-8; translation-quality=not-attested -->
 
 `e2e-skills` は、AI コーディング agent が Playwright/Cypress の E2E テストを生成し、レビューし、失敗を診断するための 4 つの skill です。skill は agent が作業時に従う指示の集まりです。
 
@@ -122,16 +122,16 @@ Summary: 2 total hit(s), 2 P0
 
 ## 発表資料: 成功する E2E テストを信頼できますか？
 
-欠陥を見逃しても成功するテストの事例から、lint と LLM レビューを組み合わせた過程、mutation とアプリへの欠陥注入による検証方法、ベンチマーク結果、オープンソースでの修正成果まで紹介します。表紙をクリックすると資料が開きます。
+バグがあってもテストが成功する事例から、lint と LLM レビューを組み合わせた過程、mutation とアプリへの欠陥注入による検証方法、ベンチマーク結果、オープンソースへの貢献成果までまとめています。
 
 <p align="center">
-<a href="assets/talks/awskrug-e2e-2026-en.pdf">
+<a href="https://voidmatcha.art/talks/awskrug-e2e-2026-en">
   <img src="docs/assets/talk-cover-en.png" alt="発表資料: 成功する E2E テストを信頼できますか？" width="640" />
 </a>
 </p>
 
 <p align="center">
-  <a href="assets/talks/awskrug-e2e-2026-en.pdf">発表資料を見る（英語 PDF）</a>
+  <a href="https://voidmatcha.art/talks/awskrug-e2e-2026-en">発表資料を見る（英語）</a>
 </p>
 
 ## インストールして試す
@@ -141,12 +141,14 @@ Summary: 2 total hit(s), 2 P0
 テスト生成も使う場合は、Claude Code または Codex に次のプロンプトを入力し、使用する既存のローカル Playwright プロジェクトを伝えてください。
 
 ```text
-Install https://github.com/voidmatcha/e2e-skills using its install.sh for my current host and Playwright project.
+Install https://github.com/voidmatcha/e2e-skills using its install.sh for my current host and Playwright project. Run the printed --check command when authorized for that exact command, then verify generator_write_test is available in this session. If a restart is needed, tell me how to resume verification afterward. Report installation, server tools, session tools, and approval separately; do not claim readiness until the required session tools are visible. Respect host trust and tool permissions; do not edit global configuration or restart the host automatically.
 ```
 
-1. 既存のローカル Playwright プロジェクトを agent に伝えてください。インストーラーがスキル、専用 agent、公式 Playwright agent とプロジェクトの MCP 設定を準備します。
-2. 使用するコーディング agent を再起動して MCP ツールを承認してください。agent がブラウザーを操作し、Playwright テストを書くためのツールです。
-3. テスト生成を依頼してください。agent が準備状態を確認し、不足があれば案内します。
+1. 既存のローカル Playwright プロジェクトを agent に伝えてください。インストーラーがスキル、専用 agent、公式 Playwright agent とプロジェクトの MCP 設定を準備し、診断コマンドを表示します。
+2. 信頼するプロジェクトで、この正確なコマンドの実行を承認してください: `bash install.sh --host codex --project /path/to/playwright-project --check`（Claude Code は `--host claude`）。インストールと設定の書き込みをスキップし、設定されたローカル MCP サーバーを起動して `initialize` と `tools/list` のみ確認します。プロジェクトのコードと設定は実行しますが、ツール呼び出し、ブラウザー起動、テスト実行は行いません。
+3. 必要ならコーディング agent を自分で再起動し、host の信頼と承認の手続きを済ませて、検証の再開を依頼してください。生成に進むには、現在のセッションで `generator_write_test` が見える必要があります。
+
+診断はサーバーが提供するツールのみ確認します。現在のセッションでのツールの利用可否や承認状態は確認できません。ツールが見えないだけで承認の問題とは判断できません。
 
 この方法で設定した後は、手動インストールを繰り返す必要はありません。[詳細ガイド](docs/installation.md)は、前提条件の確認、競合の解決、手動設定が必要な場合に参照してください。
 
@@ -218,9 +220,9 @@ Debug the failed Cypress report in cypress/reports/.
 
 generator は `thin-rules.md` と安全指示を公式 planner と generator に付けて委譲し、reviewer scanner と新しいテストを実行します。何もインストールせず、agent・MCP 設定を変更せず、CLI fallback や healer を使いません。設定がなければ手順を案内します。
 
-生成には、ローカル開発で一般的な loopback アドレス（`localhost`、`127.0.0.1`、`::1`）を使います。読み取りを含む browser 操作の前に、frontend、API、database、環境全体が、名前を指定した破棄可能なスタックである必要があります。実行される navigation と request の宛先は承認済み origin の scheme・hostname・実効 port に一致する必要があり、別途承認した loopback API 宛先も許可します。それ以外や解決できない宛先は BLOCKED です。この確認は browser 全体の origin 隔離を提供しません。
+生成には、ローカル開発で一般的な loopback アドレス（`localhost`、`127.0.0.1`、`::1`）を使います。承認済みの開発サーバーと既存のテスト用 backend または mock を再利用します。browser 操作の前には、シナリオが使用するサービスだけを確認します。書き込みには隔離されたテストデータと削除またはリセットの方法が必要ですが、読み取り専用のシナリオにはリセットは不要です。新しい mock サーバーやデプロイ環境は必要ありません。使用しない API や database は N/A とし、共有データや本番データは対象外です。実行される navigation と request の宛先は承認済み origin の scheme・hostname・実効 port に一致する必要があり、別途承認した loopback API 宛先も許可します。それ以外や解決できない宛先は BLOCKED です。この確認は browser 全体の origin 隔離を提供しません。
 
-立証された生成エラーに限り、親 agent は最大 2 回修正できます。必要な結果と期待値を維持し、書き込みを安全にリセットし、同じ承認済み実行方法で origin・scanner のゲートを繰り返します。製品の欠陥、原因不明、残った失敗は BLOCKED のままです。全手順は [generator 契約](skills/playwright-test-generator/SKILL.md)を参照してください。
+立証された生成エラーに限り、親 agent は最大 2 回修正できます。必要な結果と期待値を維持し、書き込みを繰り返す前にテストデータを安全に削除またはリセットし、同じ承認済み実行方法で origin・scanner のゲートを繰り返します。製品の欠陥、原因不明、残った失敗は BLOCKED のままです。全手順は [generator 契約](skills/playwright-test-generator/SKILL.md)を参照してください。
 
 debugger と probe の実行には、信頼するプロジェクトと、環境変数・flag を含む正確なコマンドの承認が必要です。レポートにはスキップした確認を記載します。mutation とアプリの fault probe は任意の追加作業であり、未実行の結果を測定済みとして報告しません。
 
@@ -377,6 +379,8 @@ Tier 3 は同梱 fallback です。optional ESLint と ast-grep tiers は精度�
 
 `eslint-plugin-playwright` と `eslint-plugin-cypress` は、テストコードのよくある誤りを検出するツールです。`e2e-skills` のスキャナーも、これらを任意の検査層として活用します。
 
+このプロジェクトから `eslint-plugin-playwright` に `no-unnecessary-assertions` ルールを貢献し、[PR #470 が merge されました](https://github.com/mskelton/eslint-plugin-playwright/pull/470)。アプリの状態ではなく、Locator オブジェクトの存在だけを確認するアサーションを検出します。
+
 プラグインの実行にはユーザーの明示的な許可が必要です。許可がなくても同梱の検査は実行できます。既存のプラグインルールに加え、次を提供します。
 
 - プラグインルールを補完する独自のコード検査
@@ -405,7 +409,7 @@ non-public benchmark runs では、`--isolation-wrapper` は required hook で�
 
 ### これは Playwright/Cypress のテスト実行を置き換えますか?
 
-いいえ。変更のたびにアプリケーションと実際の E2E suite を実行してください。このバンドルはテスト品質をレビューし、Playwright カバレッジを生成し、既存の失敗を診断します。テスト runner ではありません。
+いいえ。このバンドルはテスト品質をレビューし、Playwright カバレッジを生成し、既存の失敗を診断します。テスト runner ではありません。
 
 ### CI でだけ失敗するテストをデバッグできますか?
 
