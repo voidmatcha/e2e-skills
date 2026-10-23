@@ -7,7 +7,7 @@ metadata:
   frameworks: playwright,cypress
   testing-types: e2e
   languages: typescript,javascript
-  version: "3.1.0"
+  version: "3.1.1"
 ---
 
 # E2E Test Scenario Quality Review
@@ -76,7 +76,7 @@ Before a Phase 2 finding is reported, verify it survives its real context — re
 
 After completing the static review, offer at most one source-backed mutation or app-fault probe for a material uncertainty. Name the test and V2 (assertion sensitivity), V3 (app-defect detection), or both if justified. Explain the additional token and execution-time cost, bounded benefit, and commands/prerequisites when known; ask once at the end. Do not block the completed review on a reply. Runtime proof already requested and authorized: proceed without asking again. Static-only requests or no meaningful candidate: omit the offer. An offer is not evidence; do not promise higher overall accuracy or invent costs.
 
-For requested runtime proof, read `references/runtime-probes.md`. Prepare missing wrapper, observer, and plan artifacts yourself in a disposable snapshot. Preview the source-backed plan with `<skill-base>/scripts/run-probe.py`, then execute within recorded checkout trust and exact command/environment approval; reuse existing approval. Preserve the original and retain phase reports and observations. V2 `ASSERTION_SENSITIVE` is not V3 behavior proof; V3 `DETECTED` or `SURVIVED` covers only the exercised fault. Unavailable prerequisites mean `recommended/unexecuted` or `CANNOT_VERIFY` with a concrete reason. Continue static review when execution is unavailable.
+For requested runtime proof, read `references/runtime-probes.md`. Prepare missing wrapper, observer, and plan artifacts yourself in a disposable snapshot. Preview the source-backed plan with `node <skill-base>/scripts/run-probe.mjs`, then execute within recorded checkout trust and exact command/environment approval; reuse existing approval. Preserve the original and retain phase reports and observations. V2 `ASSERTION_SENSITIVE` is not V3 behavior proof; V3 `DETECTED` or `SURVIVED` covers only the exercised fault. Unavailable prerequisites mean `recommended/unexecuted` or `CANNOT_VERIFY` with a concrete reason. Continue static review when execution is unavailable.
 
 ### Optional V3 check with a registered adapter
 

@@ -1,19 +1,41 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 """Dependency-free adversarial contract checks, not native browser evidence."""
+import argparse
 import hashlib
-import importlib.util
 import json
 import os
 from pathlib import Path
 import signal
+import shutil
 import subprocess
 import sys
 import tempfile
 import time
 import unittest
 
-RUNNER = Path(__file__).resolve().parents[2] / 'skills/e2e-reviewer/scripts/run-probe.py'
+RUNNER = Path(__file__).resolve().parents[2] / 'skills/e2e-reviewer/scripts/run-probe.mjs'
+parser = argparse.ArgumentParser(add_help=False)
+parser.add_argument('--node')
+options, remaining = parser.parse_known_args()
+sys.argv = [sys.argv[0], *remaining]
+NODE = options.node or shutil.which('node')
+assert NODE, 'Node.js 22+ required'
+assert Path(NODE).is_absolute(), 'Node executable must be absolute'
+
+class NodeRunner:
+    """Exercise exported production Node functions, not the historical oracle."""
+    @staticmethod
+    def call(name, args):
+        script = "import * as runner from " + json.dumps(RUNNER.as_uri()) + "; const value=JSON.parse(process.argv[1]); try {console.log(JSON.stringify(await runner[process.argv[2]](...value)))} catch(e) {console.error(e.message);process.exitCode=2}"
+        result = subprocess.run([NODE, '--input-type=module', '-e', script,
+                                 json.dumps(args, default=str), name], capture_output=True, text=True, timeout=15)
+        if result.returncode:
+            raise ValueError(result.stderr.strip())
+        return json.loads(result.stdout)
+    def parse_native(self, *args): return self.call('parseNative', args)
+    def run_command(self, *args): return self.call('runCommand', args)
+
 sha = lambda data: hashlib.sha256(data).hexdigest()
 NATIVE = '''import json,os,pathlib
 p=pathlib.Path.cwd();fault=(p/'app.txt').read_text()=='BROKEN';phase=os.environ['E2E_PROBE_PHASE'];policy=(p/'policy.txt').read_text()
@@ -44,7 +66,7 @@ class Probe(unittest.TestCase):
         self.plan['test']['source']['sha256']=sha(script.encode())
     def invoke(self, execute=False, approval=None, trust=True):
         self.number+=1;path=self.root/'plan.json';path.write_text(json.dumps(self.plan));out=self.root/f'out{self.number}'
-        args=[sys.executable,str(RUNNER),'--plan',str(path),'--output-dir',str(out)]
+        args=[NODE,str(RUNNER),'--plan',str(path),'--output-dir',str(out)]
         if execute:
             args+=['--execute','--approve-sha256',approval or 'bad']
             if trust:args+=['--trust-checkout']
@@ -81,7 +103,7 @@ class Probe(unittest.TestCase):
                 self.plan['test']['argv'] = [str(self.root/'missing-python'), 'native.py']
                 result,out = self.boundary_result()
                 self.assertEqual(result['phases'], {})
-                self.assertIn('No such file', result['error'])
+                self.assertIn('ENOENT', result['error'])
                 self.assertFalse((out/'fault').exists())
     def test_native_nonzero_cannot_use_valid_report_as_detection(self):
         for mode in ('behavior-fault', 'assertion-mutation'):
@@ -124,8 +146,7 @@ class Probe(unittest.TestCase):
                     self.assertIn('evidence', json.loads((command_dir/'stdout.txt').read_text()))
     @unittest.skipUnless(os.name == 'posix', 'process groups require POSIX')
     def test_timeout_kills_owned_child_process_group(self):
-        spec = importlib.util.spec_from_file_location('probe_timeout', RUNNER)
-        module = importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        module = NodeRunner()
         output = self.root/'command';output.mkdir()
         child_pid = self.root/'child.pid'
         child_code = 'import time;time.sleep(30)'
@@ -218,7 +239,7 @@ print(json.dumps({'project':str(p),'promised_effect':ready and after=='transferr
         (self.source/'linked').symlink_to(self.source/'app.txt');self.assertEqual(self.invoke()[0]['verdict'],'ERROR')
     def test_output_inside_source(self):
         path=self.root/'plan.json';path.write_text(json.dumps(self.plan))
-        proc=subprocess.run([sys.executable,str(RUNNER),'--plan',str(path),'--output-dir',str(self.source/'out')],capture_output=True,text=True)
+        proc=subprocess.run([NODE,str(RUNNER),'--plan',str(path),'--output-dir',str(self.source/'out')],capture_output=True,text=True)
         self.assertEqual(json.loads(proc.stdout)['verdict'],'ERROR')
     def test_bool_not_evidence(self):
         script="import json,pathlib; print(json.dumps({'project':str(pathlib.Path.cwd()),'promised_effect':True,'fault_reached':True,'evidence':True}))"
@@ -258,11 +279,11 @@ print(json.dumps({'project':str(p),'promised_effect':ready and after=='transferr
         (self.source/'observer.py').write_text(script);self.plan['observer']['source']['sha256']=sha(script.encode())
         self.assertEqual(self.run_probe()['verdict'],'CANNOT_VERIFY')
     def test_installed_copy_selfcontained(self):
-        copied=self.root/'installed'/'run-probe.py';copied.parent.mkdir();copied.write_bytes(RUNNER.read_bytes())
+        copied=self.root/'installed'/'run-probe.mjs';copied.parent.mkdir();copied.write_bytes(RUNNER.read_bytes())
         planpath=self.root/'plan.json';planpath.write_text(json.dumps(self.plan))
-        preview=subprocess.run([sys.executable,str(copied),'--plan',str(planpath),'--output-dir',str(self.root/'installed-preview')],capture_output=True,text=True)
+        preview=subprocess.run([NODE,str(copied),'--plan',str(planpath),'--output-dir',str(self.root/'installed-preview')],capture_output=True,text=True)
         approval=json.loads(preview.stdout)['approval_sha256']
-        run=subprocess.run([sys.executable,str(copied),'--plan',str(planpath),'--output-dir',str(self.root/'installed-run'),'--execute','--trust-checkout','--approve-sha256',approval],capture_output=True,text=True)
+        run=subprocess.run([NODE,str(copied),'--plan',str(planpath),'--output-dir',str(self.root/'installed-run'),'--execute','--trust-checkout','--approve-sha256',approval],capture_output=True,text=True)
         self.assertEqual(json.loads(run.stdout)['verdict'],'SURVIVED')
     def test_env_approval_stale(self):
         import os
@@ -276,7 +297,7 @@ print(json.dumps({'project':str(p),'promised_effect':ready and after=='transferr
     def test_absolute_output_traversal(self):
         planpath=self.root/'plan.json';planpath.write_text(json.dumps(self.plan))
         output=str(self.root/'other')+'/../source/artifact'
-        run=subprocess.run([sys.executable,str(RUNNER),'--plan',str(planpath),'--output-dir',output],capture_output=True,text=True)
+        run=subprocess.run([NODE,str(RUNNER),'--plan',str(planpath),'--output-dir',output],capture_output=True,text=True)
         self.assertEqual(json.loads(run.stdout)['verdict'],'ERROR');self.assertFalse((self.source/'artifact').exists())
     def test_wrapper_mutation_rejected(self):
         self.plan['edits']=[{'path':'native.py','before':'unrelated failure','after':'different failure','sha256':sha(NATIVE.encode()),'kind':'source'}]
@@ -286,8 +307,7 @@ print(json.dumps({'project':str(p),'promised_effect':ready and after=='transferr
         (self.source/'observer.py').write_text(script);self.plan['observer']['source']['sha256']=sha(script.encode())
         self.assertEqual(self.run_probe()['verdict'],'CANNOT_VERIFY')
     def test_playwright_report_guards(self):
-        import types
-        module=types.ModuleType('probe');module.__file__=str(RUNNER);exec(compile(RUNNER.read_bytes(),str(RUNNER),'exec'),module.__dict__)
+        module = NodeRunner()
         r={'config':{'workers':1},'suites':[{'specs':[{'title':'copies content','file':'test.spec.ts','tests':[{'expectedStatus':'passed','status':'expected','results':[{'status':'passed','retry':0,'errors':[]}]}]}]}],'errors':[],'stats':{'expected':1,'unexpected':0,'flaky':0,'skipped':0}}
         parse=lambda:module.parse_native(r,'playwright-json','copies content',['test.spec.ts'],self.source)
         self.assertEqual(parse()[0],'passed')
@@ -300,8 +320,7 @@ print(json.dumps({'project':str(p),'promised_effect':ready and after=='transferr
         self.native(script);(self.source/'policy.txt').write_text('detected')
         self.assertEqual(self.run_probe()['verdict'],'CANNOT_VERIFY')
     def test_playwright_native_rootdir(self):
-        import types
-        module=types.ModuleType('probe');module.__file__=str(RUNNER);exec(compile(RUNNER.read_bytes(),str(RUNNER),'exec'),module.__dict__)
+        module = NodeRunner()
         nested=self.source/'e2e';nested.mkdir();(nested/'smoke.spec.ts').write_text('original test')
         r={'config':{'workers':1,'rootDir':str(nested)},'suites':[{'specs':[{'title':'copies content','file':'smoke.spec.ts','tests':[{'expectedStatus':'passed','results':[{'status':'passed','retry':0,'errors':[]}]}]}]}]}
         parse=lambda:module.parse_native(r,'playwright-json','copies content',['e2e/smoke.spec.ts'],self.source)
@@ -326,7 +345,7 @@ print(json.dumps({'project':str(p),'promised_effect':ready and after=='transferr
         r['suites'][0]['specs'][0]['file']='other/smoke.spec.ts'
         with self.assertRaises(ValueError):parse()
     def test_native_shapes(self):
-        spec=importlib.util.spec_from_file_location('probe',RUNNER);module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        module = NodeRunner()
         r={'totalTests':1,'totalPassed':1,'totalFailed':0,'totalPending':0,'totalSkipped':0,'runs':[{'spec':{'relative':'test.spec.ts'},'tests':[{'title':['suite','copies content'],'state':'passed','attempts':[{'state':'passed'}],'displayError':None}]}]}
         self.assertEqual(module.parse_native(r,'cypress-json','copies content',['test.spec.ts'],self.source)[0],'passed')
         r['runs'][0]['tests'][0]['attempts'].append({'state':'passed'})

@@ -6,10 +6,10 @@ PATH=/usr/bin:/bin:/usr/sbin:/sbin
 export PATH
 unset BASH_ENV ENV CDPATH PYTHONPATH PYTHONHOME NODE_OPTIONS NODE_PATH
 ROOT="$(cd "$(/usr/bin/dirname "$0")" && /bin/pwd -P)"
-for python in /opt/homebrew/bin/python3 /usr/local/bin/python3 /usr/bin/python3; do
-  if [ -x "$python" ] && "$python" -I -S -c 'import sys; sys.exit(sys.version_info < (3, 11))'; then
-    exec "$python" -I -S "$ROOT/scripts/dev/setup.py" "$@"
+for node in /opt/homebrew/bin/node /usr/local/bin/node /usr/bin/node /bin/node; do
+  if [ -x "$node" ] && "$node" -e 'const [major, minor] = process.versions.node.split(".").map(Number); process.exit(major > 22 || (major === 22 && minor >= 20) ? 0 : 1)'; then
+    exec "$node" "$ROOT/scripts/dev/setup.mjs" "$@"
   fi
 done
-echo 'install: Python 3.11+ is required at a standard system or Homebrew location.' >&2
+echo 'install: Node.js 22.20+ is required at a standard system or Homebrew location.' >&2
 exit 2

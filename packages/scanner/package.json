@@ -1,6 +1,6 @@
 {
   "name": "@voidmatcha/e2e-skills-scanner",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "type": "module",
   "license": "Apache-2.0",
   "engines": {
@@ -17,7 +17,7 @@
   },
   "files": [
     "src/",
-    "scripts/run-probe.py",
+    "scripts/run-probe.mjs",
     "examples/",
     "LICENSE",
     "NOTICE",

@@ -1156,7 +1156,7 @@
     {
       "id": 70,
       "prompt": "The user requests a V3 behavior-fault probe for evals/files/optimistic-write-contract.spec.ts. A separately sourced acceptance contract promises persistence after reload. The prepared trusted local project has an existing native runner and observer, and the user has authorized those exact local commands. No fixed registered adapter matches. Explain how to proceed with the current reviewer; do not execute this eval fixture.",
-      "expected_output": "Propose a portable run-probe.py plan anchored to the supplied persistence promise and exact selected test, preview it and use the existing authorized scope. A fixed-project adapter is not required for the portable path. Preserve all original assertions. Require real phase-copy app provenance and raw observer artifacts before accepting any behavior result.",
+      "expected_output": "Propose a portable run-probe.mjs plan anchored to the supplied persistence promise and exact selected test, preview it and use the existing authorized scope. A fixed-project adapter is not required for the portable path. Preserve all original assertions. Require real phase-copy app provenance and raw observer artifacts before accepting any behavior result.",
       "files": [
         "evals/files/optimistic-write-contract.spec.ts"
       ],

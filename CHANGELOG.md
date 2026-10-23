@@ -1,5 +1,23 @@
 # Changelog
 
+## [3.1.1] - 2026-10-23
+
+### Changed
+
+- The all-in-one installer and portable assertion-mutation / fault-injection runner use Node.js instead of Python. Probe plans still require explicit source-backed commands and approval; changing the runner invalidates earlier approval digests and requires a new preview. Debugger artifact helpers, the source-checkout registered-adapter pilot and development/evidence tools still use Python.
+
+### Fixed
+
+- Symlinked skill and installer paths execute their entry points, and probe reports require exclusively created output directories. Probe commands receive closed standard input; interactive commands remain unsupported.
+- The installer enforces the documented Node.js 22.20 minimum.
+- Malformed installer configuration reports a fixed error and its file path without echoing potentially sensitive values.
+- The Node probe runner preserves source file modes, rejects malformed UTF-8 and unsafe paths, substitutes command placeholders literally, and cleans up owned process descendants on timeout. Normal/changed/restored controls and approval checks remain mandatory.
+- CI forwards its verified Node executable to the probe regression suite, so an isolated PATH does not hide an otherwise available runtime. Documentation checks handle removed scripts and Node-based installer references.
+
+### Removed
+
+- The superseded Python installer, both Python portable-probe copies and the Python wrapper around the Node installer test suite. The check CLI no longer accepts `--python`; use `e2e-skills-check probe` with the existing plan arguments and obtain a fresh preview before execution.
+
 ## [3.1.0] - 2026-10-23
 
 ### Added

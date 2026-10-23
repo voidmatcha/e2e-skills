@@ -3474,7 +3474,7 @@ def skill_files(skill_dir: Path) -> list[Path]:
                     and path.suffix == ".mjs"
                 )
             else:
-                allowed = path.suffix in suffixes
+                allowed = path.suffix in suffixes or relative.as_posix() == "scripts/run-probe.mjs"
             if not allowed:
                 raise ValueError(
                     f"{path}: unsupported file type in canonical skill surface"

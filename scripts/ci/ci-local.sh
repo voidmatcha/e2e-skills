@@ -281,8 +281,8 @@ run_python scripts/ci/test-codex-smoke-contract.py ||
   fail "test-codex-smoke-contract.py"
 run_python scripts/ci/test-reinstall-skills.py ||
   fail "test-reinstall-skills.py"
-run_python scripts/ci/test-all-in-one-install.py ||\
-  fail "test-all-in-one-install.py"
+"$NODE_BIN" --test scripts/ci/test-all-in-one-install-node.mjs ||
+  fail "test-all-in-one-install-node.mjs"
 
 fi
 
@@ -417,7 +417,7 @@ run_python scripts/ci/test-reviewer-trust-contract.py ||
   fail "test-reviewer-trust-contract.py"
 run_python scripts/ci/test-reviewer-check.py ||
   fail "test-reviewer-check.py"
-run_python scripts/ci/test-reviewer-probe.py ||
+run_python scripts/ci/test-reviewer-probe.py --node "$NODE_BIN" ||
   fail "test-reviewer-probe.py"
 run_python scripts/evals/hybrid-check-pilot/check-docker-matrix/test_notepad_adapter_v1.py ||
   fail "test_notepad_adapter_v1.py"

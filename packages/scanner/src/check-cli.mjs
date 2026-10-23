@@ -12,7 +12,7 @@ const HELP = `Usage:
   e2e-skills-check discover assertion|post SOURCE_ROOT SOURCE_REL
   e2e-skills-check discover --explain assertion|post SOURCE_ROOT SOURCE_REL
   e2e-skills-check bind CANDIDATE_JSON BINDING_JSON
-  e2e-skills-check probe --python /absolute/python3 [run-probe.py arguments]
+  e2e-skills-check probe [run-probe.mjs arguments]
 
 Discover and bind write JSON to stdout without executing project code or
 changing source files. Bind requires a manually prepared execution plan.
@@ -22,7 +22,7 @@ return NEEDS_INPUT (exit 2); full plan validation remains probe preview's job.
 Candidates prove neither assertion sensitivity nor behavior-fault detection.
 Default discovery keeps its JSON array. --explain adds static support diagnostics;
 no supported candidate exits 2 and never means the project has no problems.
-The probe command uses the bundled Python 3.10+ runner. It previews by default;
+The probe command uses the bundled Node.js runner. It previews by default;
 execution requires --execute --trust-checkout --approve-sha256 HASH. Commands
 have host access; phase copies are not an OS sandbox. No dependencies, browser,
 observer or test command are installed or inferred.
@@ -80,12 +80,8 @@ function bindOrRequirements(candidate, binding, bind) {
 function main(args) {
   if (args.length === 1 && ['--help', '-h'].includes(args[0])) { process.stdout.write(HELP); return; }
   if (args[0] === 'probe') {
-    if (args[1] !== '--python' || !path.isAbsolute(args[2] ?? '')) throw new Error('probe requires --python /absolute/python3');
-    const python = args[2];
-    const version = spawnSync(python, ['-I', '-c', 'import sys; sys.exit(0 if sys.version_info >= (3,10) else 2)'], { encoding: 'utf8' });
-    if (version.status !== 0 || version.error) throw new Error('Python 3.10+ is required');
-    const runner = fileURLToPath(new URL('../scripts/run-probe.py', import.meta.url));
-    const result = spawnSync(python, ['-I', runner, ...args.slice(3)], { stdio: 'inherit' });
+    const runner = fileURLToPath(new URL('../scripts/run-probe.mjs', import.meta.url));
+    const result = spawnSync(process.execPath, [runner, ...args.slice(1)], { stdio: 'inherit' });
     if (result.error || result.signal) throw new Error('probe process did not complete');
     process.exitCode = result.status ?? 2;
     return;

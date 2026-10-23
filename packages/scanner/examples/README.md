@@ -12,7 +12,7 @@ command, observer, promise or fault. Do not execute a template as supplied.
 
    ```bash
    e2e-skills-check bind /absolute/selected-candidate.json /absolute/filled-binding.json > /absolute/plan.json
-   e2e-skills-check probe --python /absolute/python3 \
+   e2e-skills-check probe \
      --plan /absolute/plan.json --output-dir /absolute/fresh-preview --preview
    ```
 

@@ -7,9 +7,11 @@ Use the [all-in-one installation prompt](../README.md#install-with-your-coding-a
 
 After installation, run the printed diagnostic command when authorized for that exact command. If needed, restart the host yourself, complete project trust and MCP approval, then ask the agent to resume verification in the new session. It reports installation, server tools, session tools and approval separately. It must see `generator_write_test` in the active session before proceeding with generation. Installation does not create your application, its API or database, install project dependencies or browsers, or run tests.
 
-The installer requires Python 3.11+ and Node.js 22.20+ with npm and npx at standard system or Homebrew locations. Node.js 24 LTS is recommended. Project setup also requires Playwright already installed in the project or workspace, plus an existing playwright.config.* file. It stops on conflicting configuration instead of overwriting it. Review the checkout and proposed project command before execution.
+The installer requires Node.js 22.20+ with npm and npx at standard system or Homebrew locations. Node.js 24 LTS is recommended. Project setup also requires Playwright already installed in the project or workspace, plus an existing playwright.config.* file. It stops on conflicting configuration instead of overwriting it. Review the checkout and proposed project command before execution.
 
 The reviewer includes its Node scanner and pinned TypeScript parser. Scanning, including the check after generation, requires Node.js 22+ at a standard system or Homebrew location; it does not require ripgrep, ast-grep or Python. See the [scanner prerequisites](../skills/e2e-reviewer/references/scanner-workflow.md#phase-1-mechanical-scan).
+
+The installer and portable probe runner also use Node.js. Debugger artifact helpers and the source-checkout registered-adapter pilot still use Python; their references describe the required interpreter.
 
 After this setup, do not repeat the manual steps below. They are alternatives for users who want to run the commands themselves or troubleshoot configuration.
 

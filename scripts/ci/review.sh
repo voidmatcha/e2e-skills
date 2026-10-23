@@ -1344,7 +1344,8 @@ def repo_files():
             ['git', 'ls-files', '-co', '--exclude-standard', '--'],
             text=True,
         )
-        return [pathlib.Path(line) for line in out.splitlines() if line]
+        return [pathlib.Path(line) for line in out.splitlines()
+                if line and pathlib.Path(line).is_file()]
     except Exception:
         return [p for p in pathlib.Path('.').rglob('*') if p.is_file()]
 
@@ -1397,7 +1398,8 @@ def repo_files():
             ['git', 'ls-files', '-co', '--exclude-standard', '--'],
             text=True,
         )
-        return [pathlib.Path(line) for line in out.splitlines() if line]
+        return [pathlib.Path(line) for line in out.splitlines()
+                if line and pathlib.Path(line).is_file()]
     except Exception as exc:
         raise RuntimeError(f"git file enumeration failed: {exc}") from exc
 
@@ -1408,7 +1410,6 @@ if not docs_dir.is_dir():
 # Files allowed to exist as references from CI scripts or other docs, not just README.
 # Exclude test-parity.sh — it intentionally names docs files for drift smoke tests,
 # which would otherwise mask real orphan detection (meta-circular).
-ci_referenced_globs = ['scripts/**/*.sh', 'scripts/**/*.py']
 excluded_paths = {'scripts/ci/test-parity.sh'}
 
 all_repo_files = repo_files()
@@ -1421,7 +1422,7 @@ ci_text_parts = []
 for path in all_repo_files:
     if path.as_posix() in excluded_paths:
         continue
-    if len(path.parts) > 1 and path.parts[0] == 'scripts' and path.suffix in {'.sh', '.py'}:
+    if len(path.parts) > 1 and path.parts[0] == 'scripts' and path.suffix in {'.sh', '.py', '.mjs'}:
         ci_text_parts.append(path.read_text(encoding='utf-8'))
 ci_text = '\n'.join(ci_text_parts)
 

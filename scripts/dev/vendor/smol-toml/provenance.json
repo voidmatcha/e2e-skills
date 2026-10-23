@@ -1,0 +1,12 @@
+{
+  "name": "smol-toml",
+  "version": "1.4.2",
+  "license": "BSD-3-Clause",
+  "registryTarball": "https://registry.npmjs.org/smol-toml/-/smol-toml-1.4.2.tgz",
+  "registryIntegrity": "sha512-rInDH6lCNiEyn3+hH8KVGFdbjc099j47+OSgbMrfDYX1CmXLfdKd7qi6IfcWj2wFxvSVkuI46M+wPGYfEOEj6g==",
+  "files": {
+    "index.cjs": "c08f704d59f97bec616ad50583e85ef688cb61ef3d5a9bcef53a81157a72bb00",
+    "LICENSE": "fa5659948374d4f555594f47f6da073b40dc503e921aeeece30df4362b3051a5"
+  },
+  "notes": "Unmodified package/dist/index.cjs and package/LICENSE; tarball SHA-512 verified before extraction. Local-only parser; no installation-time package download."
+}

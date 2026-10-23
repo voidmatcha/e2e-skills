@@ -2,7 +2,7 @@
 
 This contributor-only spike discovers narrow assertion and POST omission shapes
 with TypeScript's AST, previews exact source edits, and binds manually reviewed
-execution plans for the existing `run-probe.py`. It is not an installed skill,
+execution plans for the portable `run-probe.mjs` runner. It is not an installed skill,
 an npm package, a general mutation engine, or automatic project setup.
 
 ## Assertion operator
@@ -56,7 +56,7 @@ separate file. Prepare a binding JSON with these explicit fields:
 node scripts/evals/targeted-check/candidate.mjs bind \
   /absolute/typescript/lib/typescript.js \
   /absolute/candidate.json /absolute/binding.json /absolute/new-plan.json
-python3.12 skills/e2e-reviewer/scripts/run-probe.py \
+node skills/e2e-reviewer/scripts/run-probe.mjs \
   --plan /absolute/new-plan.json --output-dir /absolute/new-preview --preview
 ```
 

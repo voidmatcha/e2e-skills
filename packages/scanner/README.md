@@ -2,26 +2,26 @@
 
 Static Playwright and Cypress test review with configuration context and explicitly approved probes. The scanner finds candidates; an LLM reviews context, selects checks and interprets the evidence. Scanning never starts a probe.
 
-The commands below pin version `3.1.0`.
+The commands below pin version `3.1.1`.
 
-Requires Node.js 22+. Probe execution additionally requires Python 3.10+ and a trusted, prepared project.
+Requires Node.js 22+. Neither CLI requires Python. Probe execution additionally requires a trusted, prepared project.
 
 ## Run with npx
 
 ```bash
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.1.0 e2e-skills-scan --scan /absolute/project/tests --format text
-npx --yes --package=@voidmatcha/e2e-skills-scanner@3.1.0 e2e-skills-check discover --explain assertion /absolute/project tests/example.spec.ts
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.1.1 e2e-skills-scan --scan /absolute/project/tests --format text
+npx --yes --package=@voidmatcha/e2e-skills-scanner@3.1.1 e2e-skills-check discover --explain assertion /absolute/project tests/example.spec.ts
 ```
 
 Or install locally:
 
 ```bash
-npm install --save-dev @voidmatcha/e2e-skills-scanner@3.1.0
+npm install --save-dev @voidmatcha/e2e-skills-scanner@3.1.1
 npx e2e-skills-scan --scan ./tests --format json
 npx e2e-skills-check --help
 ```
 
-To validate the prepared stable package locally, run `npm pack --pack-destination /absolute/external/output` from `packages/scanner`, then install the resulting `voidmatcha-e2e-skills-scanner-3.1.0.tgz` in a separate consumer project. This creates a local artifact without publishing it.
+To validate the prepared stable package locally, run `npm pack --pack-destination /absolute/external/output` from `packages/scanner`, then install the resulting `voidmatcha-e2e-skills-scanner-3.1.1.tgz` in a separate consumer project. This creates a local artifact without publishing it.
 
 Scanning does not run tests or probes. The LLM selects a candidate, supplies source-backed inputs and interprets evidence; the CLI validates inputs and preserves reproducible execution evidence. Missing inputs are reported rather than guessed.
 
@@ -119,18 +119,18 @@ Bounded reports also include `execution.diagnostics`: an array of `{code, detect
 Review and select one candidate object from the discovery array, then prepare an explicit binding using the complete [assertion and POST templates](examples/README.md). The templates include every required nested field and intentionally invalid placeholders; fill them from reviewed project evidence before binding. All operators require `source`, `test_selector`, a source-backed `promise`, a pinned `test` command, native `report`, and linked `expected_failure`. POST omission also requires `test_paths` and a pinned independent `observer`. `dependency_dirs` is optional. The binding produces manifest v1 for the bundled probe; command, wrapper and observer discovery are not automatic. Missing inputs are errors. Binding alone does not validate the full execution manifest; probe preview performs that validation. Missing top-level binding inputs return `{"schema":"e2e-skills-check-requirements-v1","status":"NEEDS_INPUT","operator":"omit-awaited-post-statement-v1","requirements":[{"field":"observer","reason":"Explicit manual binding required; no value is inferred."}]}` with exit 2. The LLM can supply those fields and retry. Invalid supplied inputs and source drift remain errors; missing `source` means freshness has not yet been checked.
 
 ```bash
-node src/check-cli.mjs probe --python /absolute/python3.12 \
+node src/check-cli.mjs probe \
   --plan /absolute/plan.json --output-dir /absolute/new-preview --preview
-node src/check-cli.mjs probe --python /absolute/python3.12 \
+node src/check-cli.mjs probe \
   --plan /absolute/plan.json --output-dir /absolute/new-execution \
   --execute --trust-checkout --approve-sha256 REVIEWED_PREVIEW_DIGEST
 ```
 
-Probe execution requires Python 3.10+ and a trusted, prepared project. The bundled runner is byte-identical to the skill's `run-probe.py`; a parity test guards that copy. It freezes commands and source hashes, then runs normal, changed and restored copies. Commands retain host and network access. No dependencies, browser, project, observer or test command are installed or inferred. Output directories must be fresh and outside the source project. `SURVIVED` is an observed result, not a passing quality gate; inspect the verdict, not just exit status.
+Probe execution requires a trusted, prepared project. The bundled Node runner is byte-identical to the skill's `run-probe.mjs`; a parity test guards that copy. It freezes commands and source hashes, then runs normal, changed and restored copies. Commands retain host and network access. No dependencies, browser, project, observer or test command are installed or inferred. Output directories must be fresh and outside the source project. `SURVIVED` is an observed result, not a passing quality gate; inspect the verdict, not just exit status.
 
-## Release validation
+## Historical validation
 
-The [3.1.0 pre-release verification record](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/547146b579f9105a72ed2b90837bab5d89340b08/releases/v3.1.0/pre-release-20261023/README.md) preserves the evaluated source hashes, local CI logs, installed-package and skill receipts, Linux checks and a prepared live reviewer probe. It predates the final README update; the package must be repacked and final release checks rerun before publication.
+The [3.1.0 pre-release verification record](https://huggingface.co/datasets/voidmatcha/e2e-skills-benchmarks/blob/547146b579f9105a72ed2b90837bab5d89340b08/releases/v3.1.0/pre-release-20261023/README.md) preserves the evaluated source hashes, local CI logs, installed-package and skill receipts, Linux checks and a prepared live reviewer probe. That record covers its pinned 3.1.0 source, not the later Node probe runner.
 
 Package and installed-skill checks cover separate distribution paths. Linux used a cached image and an extracted package rather than a fresh npm installation. The live probe used a prepared SvelteKit project and supplied execution inputs: normal passed, the selected fault failed, and the restored copy passed. These are bounded workflow checks, not general detection accuracy. Historical studies and the earlier 5.9.3 parser evidence remain frozen in the [external evidence manifest](https://github.com/voidmatcha/e2e-skills/blob/main/benchmarks/external-evidence.json).
 

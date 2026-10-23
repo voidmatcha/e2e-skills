@@ -48,7 +48,7 @@ When runtime proof is actually requested, require a structured result containing
 
 ## Portable V2/V3 execution
 
-When runtime proof is requested without a registered adapter, read `runtime-probes.md` and use the self-contained `scripts/run-probe.py`. The reviewer discovers the native setup and authors missing wrapper, observer, and plan artifacts in a disposable snapshot under the existing execution trust gate. The Python executor validates and records the frozen plan, runs bounded phase copies, and checks native reports and raw observation artifacts. It does not prepare an arbitrary project's build, install dependencies, or provide an OS sandbox. V2 assertion sensitivity cannot stand in for V3 behavior-fault detection, and neither proves all V1–V6 rules. For fixed project snapshots, the registered-adapter pilot in `v3-adapter.md` provides a separate execution path.
+When runtime proof is requested without a registered adapter, read `runtime-probes.md` and use the self-contained `scripts/run-probe.mjs`. The reviewer discovers the native setup and authors missing wrapper, observer, and plan artifacts in a disposable snapshot under the existing execution trust gate. The Node executor validates and records the frozen plan, runs bounded phase copies, and checks native reports and raw observation artifacts. It does not prepare an arbitrary project's build, install dependencies, or provide an OS sandbox. V2 assertion sensitivity cannot stand in for V3 behavior-fault detection, and neither proves all V1–V6 rules. For fixed project snapshots, the registered-adapter pilot in `v3-adapter.md` provides a separate execution path.
 
 ## Optional registered V3 adapter
 

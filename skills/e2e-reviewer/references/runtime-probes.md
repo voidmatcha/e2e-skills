@@ -4,7 +4,7 @@
 Use this workflow when runtime proof is requested for a Playwright or Cypress
 project. The reviewer discovers its test setup and prepares probe artifacts,
 then selects the behavior, test, and smallest meaningful change from source
-evidence. The bundled Python executor handles copying,
+evidence. The bundled Node.js executor handles copying,
 exact edits, execution, evidence collection, and bounded result classification.
 No project registration or repository evaluation-infrastructure import is needed.
 
@@ -80,7 +80,7 @@ When `@voidmatcha/e2e-skills-scanner` is already installed, use its
 the full plan below. Resolve the installed package's absolute path and version
 from the host or the user's selected installation; do not install it, invoke a
 downloading `npx`, or select a target-project executable from `PATH` during review.
-The skill's bundled scanner and Python executor remain available without npm.
+The skill's bundled scanner and Node.js executor remain available without npm.
 
 Using a trusted Node.js 22+ executable and the resolved package directory:
 
@@ -101,7 +101,7 @@ review or proof of test quality. If the helper is absent or the shape unsupporte
 continue with a source-backed manual plan under the same trust gate.
 
 Binding does not execute commands or validate the entire plan. Preview and
-execution still use the bundled Python executor described below; do not run both
+execution still use the bundled Node.js executor described below; do not run both
 executors for the same plan. Static scans never start these probes automatically.
 
 ### Manifest
@@ -117,7 +117,7 @@ Write JSON version 1 with these fields:
 | `mode` | `behavior-fault` or `assertion-mutation` |
 | `promise` | `{ "path": "relative/source", "quote": "verbatim sourced behavior", "sha256": "file digest" }` |
 | `edits` | Exact edits: `{ "path", "before", "after", "sha256", "kind" }`; `kind` is `source` for V3 or `test` for V2 |
-| `test` | `{ "argv": ["executable", "argument"], "timeout_seconds": 120, "source": { "path": "included/native-wrapper.py", "sha256": "digest" } }` |
+| `test` | `{ "argv": ["executable", "argument"], "timeout_seconds": 120, "source": { "path": "included/native-wrapper.mjs", "sha256": "digest" } }` |
 | `observer` | V3 required: command plus `source: { "path", "sha256" }` pinning the included observer script |
 | `report` | `{ "format": "playwright-json" or "cypress-json", "path": "fresh/relative/report.json" }` |
 | `expected_failure` | Nonempty `contains` and `location` strings identifying the intended assertion failure |
@@ -179,8 +179,8 @@ automatic V6 PASS. Do not let an LLM replace observations with booleans.
 ## Preview and execute
 
 ```sh
-python3 <skill-base>/scripts/run-probe.py --plan <plan.json> --output-dir <fresh-preview-path>
-python3 <skill-base>/scripts/run-probe.py --plan <plan.json> --output-dir <different-fresh-run-path> --trust-checkout --execute --approve-sha256 <preview-digest>
+node <skill-base>/scripts/run-probe.mjs --plan <plan.json> --output-dir <fresh-preview-path>
+node <skill-base>/scripts/run-probe.mjs --plan <plan.json> --output-dir <different-fresh-run-path> --trust-checkout --execute --approve-sha256 <preview-digest>
 ```
 
 Preview reads JSON and source files without importing or running project code.

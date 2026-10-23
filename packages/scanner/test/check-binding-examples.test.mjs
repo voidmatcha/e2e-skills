@@ -10,11 +10,6 @@ import { test } from 'node:test';
 
 const cli = fileURLToPath(new URL('../src/check-cli.mjs', import.meta.url));
 const examples = fileURLToPath(new URL('../examples/', import.meta.url));
-const python = ['python3', '/opt/homebrew/bin/python3.12', '/usr/local/bin/python3']
-  .map(executable => spawnSync(executable, ['-I', '-c',
-    'import sys; assert sys.version_info >= (3,10); print(sys.executable)'], { encoding: 'utf8' }))
-  .find(result => result.status === 0);
-assert.ok(python, 'example preview tests require Python 3.10+');
 const run = (...args) => spawnSync(process.execPath, [cli, ...args], { encoding: 'utf8' });
 const hash = value => createHash('sha256').update(value).digest('hex');
 const json = (filename, value) => { fs.writeFileSync(filename, JSON.stringify(value)); return filename; };
@@ -66,7 +61,7 @@ for (const operator of ['assertion', 'post']) {
     assert.deepEqual(plan.test, filled.test);
     if (operator === 'post') assert.deepEqual(plan.observer, filled.observer);
     let sequence = 0;
-    const preview = input => run('probe', '--python', python.stdout.trim(), '--plan',
+    const preview = input => run('probe', '--plan',
       json(path.join(root, `plan-${sequence}.json`), input), '--output-dir',
       path.join(root, `preview-${sequence++}`), '--preview');
     const result = preview(plan);
