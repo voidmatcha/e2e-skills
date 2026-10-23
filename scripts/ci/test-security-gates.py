@@ -22,6 +22,14 @@ WORKFLOW = ROOT / ".github/workflows/e2e-smell-scan.yml"
 HOL_WORKFLOW = ROOT / ".github/workflows/hol-plugin-scanner.yml"
 HOL_CONFIG = ROOT / ".plugin-scanner.toml"
 HOL_SCANNER_FALSE_POSITIVE_PATHS = {
+    # Reviewed synthetic sentinels and fixed-program scanner regression fixtures.
+    "scripts/ci/test-local-eslint-node.py",
+    "scripts/evals/node-scanner-spike/local-eslint/run.mjs",
+    "packages/scanner/test/credentials.test.mjs",
+    "packages/scanner/test/config-context.test.mjs",
+    "packages/scanner/test/project-context.test.mjs",
+    "packages/scanner/test/cli.test.mjs",
+    "packages/scanner/test/legacy-oracle.test.mjs",
     "skills/cypress-debugger/scripts/publish-mochawesome-report.py",
     "scripts/ci/test-codex-smoke-contract.py",
     "scripts/ci/test-debugger-contracts.py",
@@ -156,6 +164,30 @@ def assert_pinned_typescript_vendor_scanning() -> None:
         rejects(module.TYPESCRIPT_VENDOR_PATH, 'vendor path is not canonical')
 
 
+def assert_hosted_npm_rejects_checkout(workflow: str) -> None:
+    """The setup must reject direct and symlinked project npm before sudo."""
+    start = workflow.index('          hosted_npm="$(command -v npm)"')
+    end = workflow.index('          test -f "$hosted_npm"', start)
+    guard = "\n".join(line[10:] for line in workflow[start:end].splitlines())
+    with tempfile.TemporaryDirectory(prefix="hosted-npm-guard-") as temporary:
+        base = Path(temporary).resolve()
+        workspace = base / "checkout"
+        workspace.mkdir()
+        npm = workspace / "npm"
+        write_executable(npm, "#!/bin/sh\nexit 99\n")
+        external = base / "external-bin"
+        external.mkdir()
+        (external / "npm").symlink_to(npm)
+        for entry in (workspace, external):
+            result = subprocess.run(
+                ["/bin/bash", "--noprofile", "--norc", "-p", "-e", "-o", "pipefail", "-c", guard],
+                cwd=base, env={"PATH": str(entry) + ":/usr/bin:/bin", "GITHUB_WORKSPACE": str(workspace)},
+                capture_output=True, text=True, timeout=10,
+            )
+            assert result.returncode == 1, result
+            assert "Refusing a project-local npm entry point" in result.stderr, result
+
+
 def main() -> None:
     assert_pinned_typescript_vendor_scanning()
     ci_local = CI_LOCAL.read_text(encoding="utf-8")
@@ -187,6 +219,15 @@ def main() -> None:
     assert 'if [[ "$hosted_node" != /usr/local/bin/node ]]; then' in workflow
     assert 'sudo ln -sfn -- "$hosted_node" /usr/local/bin/node' in workflow
     assert 'sudo chmod go-w -- "$hosted_node"' in workflow
+    assert_hosted_npm_rejects_checkout(workflow)
+    assert 'hosted_npm="$(realpath "$hosted_npm")"' in workflow
+    assert 'hosted_npm_root="${hosted_npm%/bin/npm-cli.js}"' in workflow
+    assert 'sudo chmod go-w -- "$hosted_npm"' in workflow
+    assert 'sudo ln -sfnT -- "$hosted_npm_root" /usr/local/lib/node_modules/npm' in workflow
+    assert 'Refusing to replace a different system npm directory' in workflow
+    assert 'const entry = fs.realpathSync("/usr/local/lib/node_modules/npm/bin/npm-cli.js");' in workflow
+    assert '(npmMetadata.mode & 0o022) !== 0' in workflow
+    assert '/usr/local/bin/node /usr/local/lib/node_modules/npm/bin/npm-cli.js --version' in workflow
     assert 'const metadata = fs.statSync(process.execPath);' in workflow
     assert '(metadata.mode & 0o022) !== 0' in workflow
     assert "/bin/bash -p scripts/ci/ci-local.sh" in workflow

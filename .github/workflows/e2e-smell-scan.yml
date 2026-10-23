@@ -16,10 +16,9 @@ jobs:
         with:
           fetch-depth: 0 # The changed-file selector needs the PR merge base.
 
-      # Hosted runners expose Node from a versioned toolcache path. The raw-ARIA
-      # launcher deliberately ignores PATH and accepts only fixed system paths,
-      # so bind the runner-provided executable into that trusted boundary.
-      - name: Bind hosted Node to the generator's trusted path
+      # Hosted runtimes may live in the versioned toolcache. Bind the runner's
+      # Node and coherent npm package into the fixed paths accepted by CI.
+      - name: Bind hosted Node and npm to trusted paths
         shell: /bin/bash --noprofile --norc -p -e -o pipefail {0}
         run: |
           hosted_node="$(command -v node)"
@@ -35,11 +34,41 @@ jobs:
             sudo ln -sfn -- "$hosted_node" /usr/local/bin/node
           fi
           sudo chmod go-w -- "$hosted_node"
+          hosted_npm="$(command -v npm)"
+          hosted_npm="$(realpath "$hosted_npm")"
+          case "$hosted_npm" in
+            "$GITHUB_WORKSPACE"|"$GITHUB_WORKSPACE"/*)
+              echo "Refusing a project-local npm entry point: $hosted_npm" >&2
+              exit 1
+              ;;
+          esac
+          case "$hosted_npm" in
+            */npm/bin/npm-cli.js) ;;
+            *) echo "Refusing an unrecognized npm entry point" >&2; exit 1 ;;
+          esac
+          test -f "$hosted_npm"
+          hosted_npm_root="${hosted_npm%/bin/npm-cli.js}"
+          sudo chmod go-w -- "$hosted_npm"
+          if [[ "$(realpath -m -- /usr/local/lib/node_modules/npm)" != "$hosted_npm_root" ]]; then
+            if [[ -e /usr/local/lib/node_modules/npm && ! -L /usr/local/lib/node_modules/npm ]]; then
+              echo "Refusing to replace a different system npm directory" >&2
+              exit 1
+            fi
+            sudo mkdir -p -- /usr/local/lib/node_modules
+            sudo ln -sfnT -- "$hosted_npm_root" /usr/local/lib/node_modules/npm
+          fi
           /usr/local/bin/node -e '
           const fs = require("node:fs");
           const metadata = fs.statSync(process.execPath);
           if (!metadata.isFile() || (metadata.mode & 0o022) !== 0) process.exit(1);
+          const path = require("node:path");
+          const entry = fs.realpathSync("/usr/local/lib/node_modules/npm/bin/npm-cli.js");
+          const workspace = fs.realpathSync(process.env.GITHUB_WORKSPACE);
+          if (entry === workspace || entry.startsWith(workspace + path.sep)) process.exit(1);
+          const npmMetadata = fs.statSync(entry);
+          if (!npmMetadata.isFile() || (npmMetadata.mode & 0o022) !== 0) process.exit(1);
           '
+          /usr/local/bin/node /usr/local/lib/node_modules/npm/bin/npm-cli.js --version
 
       - name: Install ripgrep
         run: sudo apt-get update && sudo apt-get install -y ripgrep

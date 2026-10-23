@@ -10,6 +10,16 @@
 # The mandatory repository security gate still scans every tracked/unignored file.
 [scanner]
 ignore_paths = [
+  # Synthetic secret sentinels test redaction and child-environment isolation.
+  "scripts/ci/test-local-eslint-node.py",
+  "scripts/evals/node-scanner-spike/local-eslint/run.mjs",
+  "packages/scanner/test/credentials.test.mjs",
+  # eval is source text parsed as a fixture, never executed by this test.
+  "packages/scanner/test/config-context.test.mjs",
+  # Fixed test programs use argv arrays; the oracle shell policy is hash-pinned.
+  "packages/scanner/test/project-context.test.mjs",
+  "packages/scanner/test/cli.test.mjs",
+  "packages/scanner/test/legacy-oracle.test.mjs",
   "skills/cypress-debugger/scripts/publish-mochawesome-report.py",
   "scripts/ci/test-codex-smoke-contract.py",
   "scripts/ci/test-debugger-contracts.py",
